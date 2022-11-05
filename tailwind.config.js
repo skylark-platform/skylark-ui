@@ -19,6 +19,9 @@ module.exports = {
         black: "#0E1825",
         "brand-primary": "#226DFF",
       },
+      transitionProperty: {
+        width: "width",
+      },
     },
   },
   plugins: [require("tailwindcss-radix")()],

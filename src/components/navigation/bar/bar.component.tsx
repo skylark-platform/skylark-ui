@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Logo from "../../../../public/images/skylark.png";
 import { UserAvatar } from "../../user";
+import { QuickSearch } from "../search/search.component";
 
 const apps = [
   {
@@ -47,11 +48,9 @@ export const NavigationBar = () => {
           </Link>
         ))}
       </div>
-      <div className="flex items-center gap-8 md:gap-12 font-semibold">
-        <div>
-          <p>Quick search</p>
-        </div>
-        <div className="flex items-center">
+      <div className="flex items-center font-semibold">
+        <QuickSearch />
+        <div className="flex items-center ml-2 md:ml-6">
           <p className="hidden md:block mr-3 lg:mr-4">{dummyUser.name}</p>
           <UserAvatar name={dummyUser.name} src="" />
         </div>
