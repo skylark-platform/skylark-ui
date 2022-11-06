@@ -10,10 +10,10 @@ export const UserAvatar = ({ name, src }: Props) => (
     <AvatarPrimitive.Image
       src={src}
       alt={`${name} avatar`}
-      className="h-full w-full object-cover rounded-full"
+      className="h-full w-full rounded-full object-cover"
     />
     <AvatarPrimitive.Fallback
-      className="flex h-full w-full items-center justify-center bg-brand-primary rounded-full"
+      className="flex h-full w-full items-center justify-center rounded-full bg-brand-primary"
       // Delay to allow image to load first
       delayMs={300}
     >

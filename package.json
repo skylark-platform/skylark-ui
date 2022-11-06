@@ -10,13 +10,16 @@
     "storybook": "start-storybook -p 6006 -s ./public",
     "build-storybook": "build-storybook -s ./public",
     "tsc": "tsc",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "vercel:link": "vercel link --project skylark-ui --scope skylark-platform --yes",
+    "vercel:env": "vercel env --environment=preview pull"
   },
   "dependencies": {
     "@fontsource/inter": "^4.5.14",
     "@fontsource/work-sans": "^4.5.12",
     "@radix-ui/react-avatar": "^1.0.1",
     "autoprefixer": "^10.4.13",
+    "clsx": "^1.2.1",
     "next": "13.0.2",
     "postcss": "^8.4.18",
     "react": "18.2.0",
@@ -49,6 +52,7 @@
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
+    "prettier-plugin-tailwindcss": "^0.1.13",
     "storybook-addon-next-router": "^4.0.1",
     "typescript": "4.8.4",
     "util": "^0.12.5"
