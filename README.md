@@ -73,6 +73,10 @@ Additionally, all requests that are made to Skylark from the UI are using the of
 
 [StreamTV][saas-streamtv]: https://github.com/skylark-platform/reference-apps
 
+---
+
+<br />
+
 ## Getting Started
 
 To set the code up locally for development, follow these steps:
@@ -87,6 +91,7 @@ To set the code up locally for development, follow these steps:
   ```sh
    npm install -g vercel@latest
   ```
+  
 
 ### Installation
 
@@ -104,7 +109,7 @@ Next, you need to create a `.env` or `.env.local` file so you can to connect to 
 
 There are two ways to do this:
 
-#### [Skylark Vercel team][skylark-vercel-url] member
+#### 1. [Skylark Vercel team][skylark-vercel-url] member
 
 We can use the [Vercel CLI][vercel-cli-url] to download environment variables straight from Vercel.
 
@@ -122,11 +127,12 @@ yarn vercel:env
 
 _Note: When you use this method, it is likely that the values will change each day. Due to this it is neccessary to re-run the env command each day._
 
-#### Connect to a particular Skylark
+#### 2. Connect to your Skylark
 
 You can use the admin panel in your Skylark instance to get the environment variables required to connect.
 
 Coming soon...
+
 
 ### Running
 
@@ -142,7 +148,8 @@ To run Storybook:
 yarn storybook
 ```
 
-### Testing
+
+### Testing
 
 #### Storybook (Component testing)
 
@@ -161,6 +168,7 @@ yarn test
 #### Integration tests
 
 In the future we plan to use Cypress and Percy for Integration tests.
+
 
 ### Deploying
 
