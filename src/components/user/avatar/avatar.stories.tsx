@@ -1,4 +1,5 @@
-import { ComponentStory, ComponentMeta } from "@storybook/react";
+import { ComponentStory } from "@storybook/react";
+
 import { UserAvatar } from "./avatar.component";
 
 export default {

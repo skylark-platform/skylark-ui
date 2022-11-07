@@ -5,4 +5,4 @@ export default {
   component: QuickSearch,
 };
 
-export const Default = () => <QuickSearch />;
+export const Default = () => <QuickSearch onSearch={console.log} />;

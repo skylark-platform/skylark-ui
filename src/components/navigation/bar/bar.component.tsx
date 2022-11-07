@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
+
 import Logo from "../../../../public/images/skylark.png";
 import { UserAvatar } from "../../user";
 import { QuickSearch } from "../search/search.component";
@@ -51,7 +52,7 @@ export const NavigationBar = () => {
         ))}
       </div>
       <div className="flex items-center font-semibold">
-        <QuickSearch />
+        <QuickSearch onSearch={console.log} />
         <div className="ml-2 flex items-center md:ml-6">
           <p className="mr-3 hidden md:block lg:mr-4">{dummyUser.name}</p>
           <UserAvatar name={dummyUser.name} src="" />

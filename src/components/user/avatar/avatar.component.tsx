@@ -17,7 +17,10 @@ export const UserAvatar = ({ name, src }: Props) => (
       // Delay to allow image to load first
       delayMs={300}
     >
-      <span className="text-sm font-medium uppercase text-white">
+      <span
+        className="text-sm font-medium uppercase text-white"
+        data-testid="avatar-fallback"
+      >
         {name[0]}
       </span>
     </AvatarPrimitive.Fallback>

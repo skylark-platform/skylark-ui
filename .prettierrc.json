@@ -2,5 +2,7 @@
   "trailingComma": "all",
   "tabWidth": 2,
   "semi": true,
-  "singleQuote": false
+  "singleQuote": false,
+  "importOrder": ["<THIRD_PARTY_MODULES>", "^[./]"],
+  "importOrderSeparation": true
 }
