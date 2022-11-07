@@ -91,7 +91,6 @@ To set the code up locally for development, follow these steps:
   ```sh
    npm install -g vercel@latest
   ```
-  
 
 ### Installation
 
@@ -133,7 +132,6 @@ You can use the admin panel in your Skylark instance to get the environment vari
 
 Coming soon...
 
-
 ### Running
 
 To run the Next.js dev server:
@@ -147,7 +145,6 @@ To run Storybook:
 ```bash
 yarn storybook
 ```
-
 
 ### Testing
 
@@ -168,7 +165,6 @@ yarn test
 #### Integration tests
 
 In the future we plan to use Cypress and Percy for Integration tests.
-
 
 ### Deploying
 
