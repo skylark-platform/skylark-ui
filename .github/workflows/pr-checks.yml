@@ -28,7 +28,7 @@ jobs:
         if: success() || failure()
         with:
           name: Frontend Unit Test Results
-          path: "!(node_modules)/**/coverage/*.xml"
+          path: "!(node_modules)/**/coverage/jest-junit.xml"
           reporter: jest-junit
 
   chromatic-deployment:
