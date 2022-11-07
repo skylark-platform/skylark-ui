@@ -1,0 +1,46 @@
+name: Pull Request Checks
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+concurrency:
+  group: pr-checks-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Lint, Prettier & Jest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          cache: yarn
+      - run: yarn
+      - run: yarn lint
+      - run: yarn prettier:check
+      - run: yarn test:ci
+      - name: Upload coverage reports to Codecov with GitHub Action
+        uses: codecov/codecov-action@v3
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Frontend Unit Test Results
+          path: "!(node_modules)/**/reports/jest-junit.xml"
+          reporter: jest-junit
+
+  chromatic-deployment:
+    name: Chromatic Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install dependencies
+        run: yarn
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}

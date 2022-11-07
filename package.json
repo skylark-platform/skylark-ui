@@ -8,10 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
+    "test:ci": "yarn test --ci --coverage",
     "storybook": "start-storybook -p 6006 -s ./public",
     "build-storybook": "build-storybook -s ./public",
     "tsc": "tsc",
     "prettier": "prettier --write .",
+    "prettier:check": "prettier --check .",
     "vercel:link": "vercel link --project skylark-ui --scope skylark-platform --yes",
     "vercel:env": "vercel env --environment=preview pull"
   },
