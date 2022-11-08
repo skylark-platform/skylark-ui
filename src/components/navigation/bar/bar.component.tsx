@@ -29,7 +29,7 @@ export const NavigationBar = () => {
   const activeHref = apps[0].href;
 
   return (
-    <div className="flex h-14 w-full items-center justify-between bg-nav-bar px-8 font-sans text-sm text-black lg:h-16 lg:px-14">
+    <div className="flex h-14 w-full items-center justify-between bg-nav-bar px-8 font-sans text-sm text-black lg:h-16 lg:px-14 fixed">
       <div className="flex h-full items-center gap-8 font-bold md:gap-12">
         <div className="flex">
           <Image src={Logo} alt="Skylark Logo" width="30" height="30" />
