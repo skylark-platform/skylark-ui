@@ -13,7 +13,7 @@
 <br />
 <div align="center">
   <a href="https://www.skylarkplatform.com/">
-    <img src="./docs/assets/skylark.png" alt="Logo" width="100" height="100">
+    <img src="./docs/assets/icon-skylark-blue.jpeg" style="border-radius: 10px" alt="Logo" width="100" height="100">
   </a>
 
   <h3 align="center">Skylark UI</h3>
