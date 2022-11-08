@@ -1,0 +1,17 @@
+{
+  "plugins": ["@typescript-eslint", "jest"],
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:jest/recommended",
+    "prettier"
+  ],
+  "overrides": [
+    {
+      "files": ["*.stories.*"],
+      "rules": {
+        "import/no-anonymous-default-export": "off"
+      }
+    }
+  ]
+}
