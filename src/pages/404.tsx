@@ -6,7 +6,9 @@ import Hazel from "../images/pets/hazel.png";
 
 export default function Custom404() {
   const pets = [Hazel, Atticus];
-  const randomPet = pets[Math.floor(Math.random() * pets.length)];
+  const rand = Math.random();
+  const randomPet = pets[Math.floor(rand * pets.length)];
+  console.log("rand", rand, Math.floor(rand), pets.length);
 
   return (
     <div className="flex h-full w-full flex-col-reverse items-center justify-center px-4 md:flex-row md:gap-4">
