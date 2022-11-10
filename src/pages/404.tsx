@@ -2,6 +2,7 @@ import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import Annie from "../images/pets/annie.png";
 import Atticus from "../images/pets/atticus.png";
 import Hazel from "../images/pets/hazel.png";
 
@@ -13,6 +14,10 @@ const pets = [
   {
     src: Atticus,
     alt: "Atticus",
+  },
+  {
+    src: Annie,
+    alt: "Annie",
   },
 ];
 
@@ -43,7 +48,7 @@ export default function Custom404() {
           {`Go home`}
         </Link>
       </div>
-      <div className="h-80 md:h-auto md:w-96">
+      <div className="md:h- h-80 md:h-96 md:w-96">
         {pet && (
           <>
             <Image
