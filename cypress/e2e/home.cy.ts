@@ -1,6 +1,8 @@
 describe("homepage", () => {
   it("visits home", () => {
     cy.visit("/");
+
+    cy.percySnapshot();
   });
 
   it("contains the navigation bar", () => {

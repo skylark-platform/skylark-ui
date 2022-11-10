@@ -10,6 +10,8 @@ describe("404 page", () => {
       .find("img")
       .should("have.attr", "alt")
       .should("contain", "404 pet");
+
+    cy.percySnapshot();
   });
 
   it("returns the user to home when they click the button", () => {
