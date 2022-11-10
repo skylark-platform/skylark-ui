@@ -12,6 +12,12 @@
       "rules": {
         "import/no-anonymous-default-export": "off"
       }
+    },
+    {
+      "files": ["**.cy.**"],
+      "rules": {
+        "jest/expect-expect": "off"
+      }
     }
   ]
 }
