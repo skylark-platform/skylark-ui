@@ -48,7 +48,7 @@ export default function Custom404() {
           {`Go home`}
         </Link>
       </div>
-      <div className="md:h- h-80 md:h-96 md:w-96">
+      <div className="h-80 md:h-96 md:w-96">
         {pet && (
           <>
             <Image
