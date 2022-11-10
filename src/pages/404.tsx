@@ -1,14 +1,29 @@
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import Atticus from "../images/pets/atticus.png";
 import Hazel from "../images/pets/hazel.png";
 
+const pets = [
+  {
+    src: Hazel,
+    alt: "Hazel",
+  },
+  {
+    src: Atticus,
+    alt: "Atticus",
+  },
+];
+
 export default function Custom404() {
-  const pets = [Hazel, Atticus];
-  const rand = Math.random();
-  const randomPet = pets[Math.floor(rand * pets.length)];
-  console.log("rand", rand, Math.floor(rand), pets.length);
+  const [pet, setPet] = useState<{ src: StaticImageData; alt: string }>();
+
+  useEffect(() => {
+    const rand = Math.random();
+    const index = Math.floor(rand * pets.length);
+    setPet(pets[index]);
+  }, []);
 
   return (
     <div className="flex h-full w-full flex-col-reverse items-center justify-center px-4 md:flex-row md:gap-4">
@@ -28,20 +43,26 @@ export default function Custom404() {
           {`Go home`}
         </Link>
       </div>
-      <Image
-        src={randomPet}
-        alt="404 pet"
-        width={400}
-        height={400}
-        className="chromatic-ignore hidden md:block"
-      />
-      <Image
-        src={randomPet}
-        alt="404 pet"
-        width={250}
-        height={250}
-        className="chromatic-ignore my-10 md:hidden"
-      />
+      <div className="h-80 md:h-auto md:w-96">
+        {pet && (
+          <>
+            <Image
+              src={pet.src}
+              alt={`404 pet - ${pet.alt} desktop`}
+              width={400}
+              height={400}
+              className="chromatic-ignore hidden md:block"
+            />
+            <Image
+              src={pet.src}
+              alt={`404 pet - ${pet.alt} mobile`}
+              width={250}
+              height={250}
+              className="chromatic-ignore my-10 md:hidden"
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 }
