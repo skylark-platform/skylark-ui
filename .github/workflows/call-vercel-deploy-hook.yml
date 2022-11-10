@@ -1,6 +1,6 @@
 # While the environment variables for the days sl-develop-10 get updated in Vercel, any deployments are not redeployed.
 # Due to this, we want to schedule the skylark-ui production build to be redeployed after the sl-develop-10 instance is deployed.
-name: Vercel Deploy production
+name: Vercel Deploy Production
 on:
   workflow_dispatch:
   schedule:
