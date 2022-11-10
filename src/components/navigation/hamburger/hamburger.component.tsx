@@ -5,7 +5,11 @@ interface Props {
 }
 
 export const Hamburger = ({ onClick }: Props) => (
-  <button onClick={onClick} className="fixed right-5 top-4 z-50 text-4xl">
+  <button
+    onClick={onClick}
+    id="mobile-nav-toggle"
+    className="fixed right-5 top-4 z-50 text-4xl"
+  >
     <SlMenu />
   </button>
 );

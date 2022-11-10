@@ -12,4 +12,11 @@ describe("homepage", () => {
     cy.get("nav").get("ul").find("li a").should("have.length", 3);
     cy.contains("Quick Search");
   });
+
+  it("opens the navigation bar on mobile", () => {
+    cy.viewport("iphone-xr");
+    cy.get("#mobile-nav-toggle").click();
+    cy.get("nav").get("ul").find("li a").should("have.length", 3);
+    cy.percySnapshot("Mobile Navigation");
+  });
 });
