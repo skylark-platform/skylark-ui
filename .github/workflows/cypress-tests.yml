@@ -73,7 +73,7 @@ jobs:
           record: true
           parallel: true
           group: "UI - Chrome"
-          config-file: cypress.config.js
+          config-file: cypress.config.ts
 
   ui-chrome-mobile-tests:
     timeout-minutes: 15
@@ -108,7 +108,7 @@ jobs:
           record: true
           parallel: true
           group: "UI - Chrome - Mobile"
-          config-file: cypress.config.js
+          config-file: cypress.config.ts
 
   ui-firefox-tests:
     timeout-minutes: 15
@@ -142,7 +142,7 @@ jobs:
           record: true
           parallel: true
           group: "UI - Firefox"
-          config-file: cypress.config.js
+          config-file: cypress.config.ts
 
   ui-firefox-mobile-tests:
     timeout-minutes: 15
@@ -177,7 +177,7 @@ jobs:
           record: true
           parallel: true
           group: "UI - Firefox - Mobile"
-          config-file: cypress.config.js
+          config-file: cypress.config.ts
 
   ui-windows-tests:
     timeout-minutes: 40
@@ -208,4 +208,4 @@ jobs:
           record: true
           parallel: true
           group: "UI - Electron - Windows"
-          config-file: cypress.config.js
+          config-file: cypress.config.ts
