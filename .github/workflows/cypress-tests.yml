@@ -47,6 +47,7 @@ jobs:
           parallel: true
           config-file: cypress.config.ts
           command-prefix: "percy exec --parallel -- npx"
+          group: "Skylark UI"
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
