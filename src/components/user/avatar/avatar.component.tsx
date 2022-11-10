@@ -17,7 +17,7 @@ export const UserAvatar = ({ name, src }: Props) => (
     <AvatarPrimitive.Fallback
       className="flex h-full w-full items-center justify-center rounded-full bg-brand-primary"
       // Delay to allow image to load first
-      delayMs={300}
+      delayMs={100}
     >
       <span
         className="text-base font-medium uppercase text-white md:text-sm"

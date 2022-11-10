@@ -2,7 +2,7 @@ describe("homepage", () => {
   it("visits home", () => {
     cy.visit("/");
 
-    cy.percySnapshot();
+    cy.percySnapshot("Homepage");
   });
 
   it("contains the navigation bar", () => {

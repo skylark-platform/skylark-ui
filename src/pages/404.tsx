@@ -1,5 +1,6 @@
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 import Annie from "../images/pets/annie.png";
@@ -23,12 +24,26 @@ const pets = [
 
 export default function Custom404() {
   const [pet, setPet] = useState<{ src: StaticImageData; alt: string }>();
+  const { asPath } = useRouter();
 
   useEffect(() => {
+    // Workaround for the router.query parameter not being set on the 404 page
+    if (asPath && asPath.includes("pet=")) {
+      const queryPet = asPath.split("pet=")[1];
+      const index = pets.findIndex(
+        ({ alt }) => alt.toLowerCase() === queryPet.toLowerCase(),
+      );
+
+      if (index >= 0) {
+        setPet(pets[index]);
+        return;
+      }
+    }
+
     const rand = Math.random();
     const index = Math.floor(rand * pets.length);
     setPet(pets[index]);
-  }, []);
+  }, [asPath]);
 
   return (
     <div className="flex h-full w-full flex-col-reverse items-center justify-center px-4 md:flex-row md:gap-4">
