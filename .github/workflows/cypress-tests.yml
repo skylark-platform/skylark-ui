@@ -58,4 +58,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: tests
     steps:
+      - uses: actions/checkout@v3
+      - run: yarn
       - run: npx percy build:finalize
