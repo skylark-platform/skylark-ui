@@ -75,33 +75,6 @@ jobs:
       - uses: actions/checkout@v3
       - run: yarn
       - run: yarn add @percy/client
-      # - name: Percy Finalize
-      #   id: percy-finalize
-      #   run: |
-      #     CMD_OUTPUT=$(yarn percy build:finalize)
-      #     echo $CMD_OUTPUT;
-      #     echo "result=$CMD_OUTPUT" >> $GITHUB_OUTPUT
-      # - uses: actions/github-script@v6
-      #   id: percy-info
-      #   env:
-      #     PERCY_CMD_OUTPUT: ${{ steps.percy-finalize.outputs.result }}
-      #   with:
-      #     script: |
-      #       const percyCmdOutput = process.env.PERCY_CMD_OUTPUT;
-
-      #       // Expected output format: [percy] Finalized build #18: https://percy.io/4288b855/skylark-ui/builds/22871728
-      #       const urlPath = percyCmdOutput.split("https://percy.io/")[1];
-      #       console.log("URL Path:", urlPath);
-
-      #       const buildId = percyCmdOutput.split("builds/")[1];
-      #       console.log("Build ID:", buildId);
-
-      #       const url = `https://percy.io/${urlPath}`;
-      #       console.log("URL:", url);
-
-      #       core.setOutput("url", url);
-      #       core.setOutput("build-id", buildId);
-
       - name: Percy Finalize
         uses: actions/github-script@v6
         id: percy-info
@@ -109,10 +82,7 @@ jobs:
           PERCY_PARALLEL_TOTAL: "-1"
         with:
           script: |
-            // const PercyClient = require('@percy/client')
-
             const { PercyClient } = await import('${{ github.workspace }}/node_modules/@percy/client/dist/index.js')
-
 
             const client = new PercyClient({
               token: process.env.PERCY_TOKEN,
@@ -124,7 +94,7 @@ jobs:
             console.log("build", build)
             await client.finalizeBuild(build.id, { all: true });
 
-            const { 'build-number': buildId, 'web-url': url } = build.attributes;
+            const { id: buildId, 'web-url': url } = build.attributes;
             core.setOutput("url", url);
             core.setOutput("build-id", buildId);
 
@@ -139,9 +109,10 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const emoji = process.env.STATUS === "success" ? "✅" : "👀";
+            const emoji = process.env.STATUS === "success" ? "✅" : "🚫";
+            const label = process.env.STATUS === "success" ?  "Percy build (all good)" : "Percy build (changes detected)";
             const json = JSON.stringify([
-              { emoji, label: "Percy build", value: "${{ steps.percy-info.outputs.url }}" },
+              { emoji, label, value: "${{ steps.percy-info.outputs.url }}" },
             ]);
             return json;
       - name: Comment Percy status on PR
