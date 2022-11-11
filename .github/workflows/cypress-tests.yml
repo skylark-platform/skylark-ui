@@ -98,14 +98,16 @@ jobs:
             core.setOutput("url", url);
             core.setOutput("build-id", build.id);
 
-      - name: Percy Build Wait
-        id: percy-build-wait
-        continue-on-error: true
-        run: yarn percy build:wait --fail-on-changes --build ${{ steps.percy-info.outputs.build-id }}
+            await client.waitForBuild({
+              build: build.id
+            }, (data) => {
+              // called whenever data changes
+              console.log("build data", data);
+            })
       - uses: actions/github-script@v6
         id: percy-url
         env:
-          STATUS: ${{ steps.percy-build-wait.outcome }}
+          STATUS: ${{ steps.percy-info.outcome }}
         with:
           result-encoding: string
           script: |
