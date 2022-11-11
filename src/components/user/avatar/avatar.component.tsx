@@ -6,7 +6,9 @@ interface Props {
 }
 
 export const UserAvatar = ({ name, src }: Props) => (
-  <AvatarPrimitive.Root className={`relative inline-flex h-8 w-8`}>
+  <AvatarPrimitive.Root
+    className={`relative inline-flex h-9 w-9 md:h-8 md:w-8`}
+  >
     <AvatarPrimitive.Image
       src={src}
       alt={`${name} avatar`}
@@ -15,10 +17,10 @@ export const UserAvatar = ({ name, src }: Props) => (
     <AvatarPrimitive.Fallback
       className="flex h-full w-full items-center justify-center rounded-full bg-brand-primary"
       // Delay to allow image to load first
-      delayMs={300}
+      delayMs={100}
     >
       <span
-        className="text-sm font-medium uppercase text-white"
+        className="text-base font-medium uppercase text-white md:text-sm"
         data-testid="avatar-fallback"
       >
         {name[0]}

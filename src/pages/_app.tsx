@@ -5,14 +5,14 @@ import "@fontsource/work-sans/700.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 
-import { NavigationBar } from "../components/navigation";
+import { Navigation } from "../components/navigation";
 import "../styles/globals.css";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>My page title</title>
+        <title>Skylark</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <link
           href="/favicons/apple-touch-icon.png"
@@ -34,7 +34,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <link href="/favicons/site.webmanifest" rel="manifest" />
         <link href="/favicons/favicon.ico" rel="icon" />
       </Head>
-      <NavigationBar />
+      <Navigation />
       <Component {...pageProps} />
     </>
   );
