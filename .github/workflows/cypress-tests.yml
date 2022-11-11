@@ -94,9 +94,9 @@ jobs:
             console.log("build", build)
             await client.finalizeBuild(build.id, { all: true });
 
-            const { id: buildId, 'web-url': url } = build.attributes;
+            const { 'web-url': url } = build.attributes;
             core.setOutput("url", url);
-            core.setOutput("build-id", buildId);
+            core.setOutput("build-id", build.id);
 
       - name: Percy Build Wait
         id: percy-build-wait
