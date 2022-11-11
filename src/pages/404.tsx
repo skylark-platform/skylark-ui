@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Annie from "../images/pets/annie.png";
 import Atticus from "../images/pets/atticus.png";
 import Hazel from "../images/pets/hazel.png";
+import Nora from "../images/pets/nora.png";
 
 const pets = [
   {
@@ -19,6 +20,10 @@ const pets = [
   {
     src: Annie,
     alt: "Annie",
+  },
+  {
+    src: Nora,
+    alt: "Nora",
   },
 ];
 
