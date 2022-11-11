@@ -1,7 +1,7 @@
 name: Cypress Tests
 
 on:
-  push:
+  pull_request:
 
 env:
   percy-comment-title: Percy Snapshot Comparison
@@ -63,6 +63,10 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          # overwrite commit message sent to Dashboard
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+          # re-enable PR comment bot
+          COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha }}
 
   percy:
     name: Check Percy Build Status
