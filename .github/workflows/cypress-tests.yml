@@ -111,7 +111,7 @@ jobs:
           script: |
             // const PercyClient = require('@percy/client')
 
-            const { PercyClient } = await import('${{ github.workspace }}/node_modules/@percy/client')
+            const { PercyClient } = await import('${{ github.workspace }}/node_modules/@percy/client/dist/index.js')
 
 
             const client = new PercyClient({
