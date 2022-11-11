@@ -109,7 +109,7 @@ jobs:
           PERCY_PARALLEL_TOTAL: "-1"
         with:
           script: |
-            import PercyClient from '@percy/client'
+            const PercyClient = require('@percy/client')
 
             const client = new PercyClient({
               token: process.env.PERCY_TOKEN,
