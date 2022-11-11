@@ -111,7 +111,7 @@ jobs:
           script: |
             // const PercyClient = require('@percy/client')
 
-            const { default: PercyClient } = await import('@percy/client')
+            const { PercyClient } = await import('@percy/client')
 
 
             const client = new PercyClient({
