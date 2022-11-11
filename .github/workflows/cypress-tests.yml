@@ -74,31 +74,53 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: yarn
-      - run: yarn percy build:id
-        continue-on-error: true
+      - run: yarn add @percy/client
+      # - name: Percy Finalize
+      #   id: percy-finalize
+      #   run: |
+      #     CMD_OUTPUT=$(yarn percy build:finalize)
+      #     echo $CMD_OUTPUT;
+      #     echo "result=$CMD_OUTPUT" >> $GITHUB_OUTPUT
+      # - uses: actions/github-script@v6
+      #   id: percy-info
+      #   env:
+      #     PERCY_CMD_OUTPUT: ${{ steps.percy-finalize.outputs.result }}
+      #   with:
+      #     script: |
+      #       const percyCmdOutput = process.env.PERCY_CMD_OUTPUT;
+
+      #       // Expected output format: [percy] Finalized build #18: https://percy.io/4288b855/skylark-ui/builds/22871728
+      #       const urlPath = percyCmdOutput.split("https://percy.io/")[1];
+      #       console.log("URL Path:", urlPath);
+
+      #       const buildId = percyCmdOutput.split("builds/")[1];
+      #       console.log("Build ID:", buildId);
+
+      #       const url = `https://percy.io/${urlPath}`;
+      #       console.log("URL:", url);
+
+      #       core.setOutput("url", url);
+      #       core.setOutput("build-id", buildId);
+
       - name: Percy Finalize
-        id: percy-finalize
-        run: |
-          OUTPUT=$(yarn percy build:finalize)
-          echo "result=$OUTPUT" >> $GITHUB_OUTPUT
-      - uses: actions/github-script@v6
+        uses: actions/github-script@v6
         id: percy-info
         env:
-          PERCY_CMD_OUTPUT: ${{ steps.percy-finalize.outputs.result }}
+          PERCY_PARALLEL_TOTAL: "-1"
         with:
           script: |
-            const percyCmdOutput = process.env.PERCY_CMD_OUTPUT;
+            import PercyClient from '@percy/client'
 
-            // Expected output format: [percy] Finalized build #18: https://percy.io/4288b855/skylark-ui/builds/22871728
-            const urlPath = percyCmdOutput.split("https://percy.io/")[1];
-            console.log("URL Path:", urlPath);
+            const client = new PercyClient({
+              token: process.env.PERCY_TOKEN,
+            })
 
-            const buildId = percyCmdOutput.split("builds/")[1];
-            console.log("Build ID:", buildId);
+            // Copied from Percy CLI https://github.com/percy/cli/blob/acf5d99373782fa47cc79dababead812679d0054/packages/cli-build/src/finalize.js#L22
+            // rely on the parallel nonce to cause the API to return the current running build for the nonce
+            const { data: build } = await client.createBuild();
+            await percy.client.finalizeBuild(build.id, { all: true });
 
-            const url = `https://percy.io/${urlPath}`;
-            console.log("URL:", url);
-
+            const { 'build-number': buildId, 'web-url': url } = build.attributes;
             core.setOutput("url", url);
             core.setOutput("build-id", buildId);
 
@@ -123,6 +145,6 @@ jobs:
         with:
           title: ${{ env.percy-comment-title }}
           comment_id: ${{ env.percy-comment-id }}
-          status: ${{ steps.percy-build-wait.outcome }}
+          status: success
           github_token: ${{ github.token }}
           additional_urls: ${{ steps.percy-url.outputs.result }}
