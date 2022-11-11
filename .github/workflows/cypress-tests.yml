@@ -121,7 +121,8 @@ jobs:
             // Copied from Percy CLI https://github.com/percy/cli/blob/acf5d99373782fa47cc79dababead812679d0054/packages/cli-build/src/finalize.js#L22
             // rely on the parallel nonce to cause the API to return the current running build for the nonce
             const { data: build } = await client.createBuild();
-            await percy.client.finalizeBuild(build.id, { all: true });
+            console.log("build", build)
+            await client.finalizeBuild(build.id, { all: true });
 
             const { 'build-number': buildId, 'web-url': url } = build.attributes;
             core.setOutput("url", url);
