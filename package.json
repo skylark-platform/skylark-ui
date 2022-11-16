@@ -29,6 +29,7 @@
     "clsx": "^1.2.1",
     "cypress": "^11.0.1",
     "graphql": "^16.6.0",
+    "json-to-graphql-query": "^2.2.4",
     "jsonwebtoken": "^8.5.1",
     "next": "13.0.2",
     "postcss": "^8.4.18",

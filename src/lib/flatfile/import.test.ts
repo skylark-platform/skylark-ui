@@ -1,6 +1,6 @@
 import { Flatfile } from "@flatfile/sdk";
 
-import { startFlatfileImport } from "./importer";
+import { openFlatfileImportClient } from "./import";
 
 jest.mock("@flatfile/sdk", () => {
   return {
@@ -13,7 +13,7 @@ jest.mock("@flatfile/sdk", () => {
 });
 
 test("calls requestDataFromUser with expected arguments", async () => {
-  await startFlatfileImport("embedId", "importToken", jest.fn());
+  await openFlatfileImportClient("embedId", "importToken", jest.fn());
 
   expect(Flatfile.requestDataFromUser).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -26,7 +26,7 @@ test("calls requestDataFromUser with expected arguments", async () => {
 test("calls onComplete argument when Flatfile has completed", async () => {
   const onComplete = jest.fn();
 
-  await startFlatfileImport("embedId", "importToken", onComplete);
+  await openFlatfileImportClient("embedId", "importToken", onComplete);
 
   expect(Flatfile.requestDataFromUser).toHaveBeenCalled();
   expect(onComplete).toHaveBeenCalledWith("batchId");

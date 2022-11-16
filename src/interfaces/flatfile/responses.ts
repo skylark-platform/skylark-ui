@@ -46,3 +46,19 @@ export interface FlatfileUpdateTemplateResponse {
 export interface FlatfileCreateTemplateResponse {
   createSchema: { name: string; id: string };
 }
+
+export interface FlatfileRow {
+  id: number;
+  status: string;
+  valid: boolean;
+  data: {
+    [key: string]: string | boolean | null;
+  };
+  info: [];
+}
+
+export interface FlatfileGetFinalDatabaseViewResponse {
+  getFinalDatabaseView: {
+    rows: FlatfileRow[];
+  };
+}
