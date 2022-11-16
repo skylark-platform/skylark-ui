@@ -20,7 +20,6 @@ export const CREATE_PORTAL = gql`
           scope
           key
         }
-        privateKeyId
       }
     }
   }
@@ -53,7 +52,6 @@ export const UPDATE_PORTAL = gql`
         scope
         key
       }
-      privateKeyId
     }
   }
 `;

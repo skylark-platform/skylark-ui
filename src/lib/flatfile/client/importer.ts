@@ -13,13 +13,12 @@ export const startFlatfileImport = async (
 
   // Import Flatfile clientside otherwise it errors
   const Flatfile = (await import("@flatfile/sdk")).Flatfile;
+
   Flatfile.requestDataFromUser({
     embedId,
     token: importToken,
     theme,
     onComplete(payload) {
-      const { batchId } = payload;
-      console.log("complete ---", payload, batchId);
       onComplete(payload.batchId);
     },
   });

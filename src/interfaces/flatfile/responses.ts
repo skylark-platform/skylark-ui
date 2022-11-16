@@ -13,7 +13,6 @@ export interface FlatfileGetPortalsResponse {
     data: {
       name: string;
       id: string;
-      schemas: { id: string; name: string }[];
     }[];
   };
 }

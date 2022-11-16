@@ -23,4 +23,7 @@ module.exports = {
     // https://github.com/vercel/next.js/issues/30811#issuecomment-963102661
     "^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { presets: ["next/babel"] }],
   },
+  moduleNameMapper: {
+    "src/(.*)": "<rootDir>/src/$1",
+  },
 };

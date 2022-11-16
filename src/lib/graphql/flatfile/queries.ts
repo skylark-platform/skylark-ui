@@ -11,19 +11,9 @@ export const GET_PORTALS = gql`
       archived: false,
       search: $searchQuery
     ) {
-      pagination {
-        nextOffset
-        offset
-        onPage
-        previousOffset
-      }
       data {
-          id
-          name
-          schemas {
-            id
-            name
-          }
+        id
+        name
       }
     }
   }
@@ -39,12 +29,6 @@ export const GET_TEMPLATES = gql`
       archived: false,
       search: $searchQuery
     ) {
-      pagination {
-        nextOffset
-        offset
-        onPage
-        previousOffset
-      }
       data {
           id
           name

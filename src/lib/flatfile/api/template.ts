@@ -16,7 +16,20 @@ import { GET_TEMPLATES } from "src/lib/graphql/flatfile/queries";
 import { hasProperty, isObject } from "../../utils";
 
 export const validateRequestTemplate = (schema: object) => {
-  const validProperties = ["type", "properties", "required", "unique"];
+  const requiredProperties = ["type", "properties"];
+  const optionalProperties = ["required", "unique"];
+  const validProperties = [...requiredProperties, ...optionalProperties];
+
+  const allRequiredKeysFound =
+    Object.keys(schema).length > 0 &&
+    requiredProperties.every((key) => Object.keys(schema).includes(key));
+  if (!allRequiredKeysFound) {
+    throw new Error(
+      `Schema error: required schema properties are "${requiredProperties.join(
+        '", "',
+      )}"`,
+    );
+  }
 
   const validKeys =
     Object.keys(schema).length > 0 &&
