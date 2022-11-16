@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 import Logo from "../../../../public/images/skylark.png";
@@ -21,10 +22,14 @@ export const Navigation = () => {
         <Hamburger onClick={() => setOpen(!open)} />
       </div>
       <div className="fixed top-0 left-0 right-0 flex h-16 flex-col items-center justify-center bg-nav-bar py-2 px-8 font-sans text-black md:h-14 md:flex-row md:justify-start lg:h-16 lg:px-14">
-        <div className="absolute top-5 left-5 z-50 flex md:relative md:top-0 md:left-0">
-          <Image src={Logo} alt="Skylark Logo" width="30" height="30" />
-          <p className="ml-3 font-heading text-xl md:block lg:ml-4">Skylark</p>
-        </div>
+        <Link legacyBehavior href="/">
+          <a className="absolute top-5 left-5 z-50 flex md:relative md:top-0 md:left-0">
+            <Image src={Logo} alt="Skylark Logo" width="30" height="30" />
+            <p className="ml-3 font-heading text-xl md:block lg:ml-4">
+              Skylark
+            </p>
+          </a>
+        </Link>
         <nav
           className={clsx(
             `fixed inset-0 flex-grow flex-col items-center justify-center bg-nav-bar py-20 md:relative md:flex md:flex-row md:py-0`,
