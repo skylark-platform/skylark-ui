@@ -6,7 +6,9 @@
 [![GraphQL][graphql]][graphql-url]
 [![Storybook][storybook]][storybook-url]
 [![Vercel][vercel]][vercel-url]
+
 [![MIT License][license-shield]][license-url]
+[![codecov][codecov-badge]][codecov-url]
 [![PRs Welcome][prs-welcome]][prs-welcome-url]
 
 <!-- PROJECT LOGO -->
@@ -219,6 +221,8 @@ Project Link: [https://github.com/skylark-platform/skylark-ui](https://github.co
 [vercel-url]: https://vercel.com/
 [graphql]: https://img.shields.io/badge/-GraphQL-E10098?style=for-the-badge&logo=graphql&logoColor=white
 [graphql-url]: https://graphql.org/
+[codecov-badge]: https://img.shields.io/codecov/c/github/skylark-platform/skylark-ui?style=for-the-badge&token=G142TWXSJL
+[codecov-url]: https://codecov.io/gh/skylark-platform/skylark-ui
 [skylark-vercel-url]: https://vercel.com/skylark-platform
 [vercel-cli-url]: https://vercel.com/docs/cli
 [nextjs-deploy-url]: https://nextjs.org/docs/deployment

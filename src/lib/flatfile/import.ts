@@ -1,10 +1,10 @@
 import { gql } from "@apollo/client";
 import { ITheme } from "@flatfile/sdk";
 import { jsonToGraphQLQuery } from "json-to-graphql-query";
-import { FlatfileRow } from "src/interfaces/flatfile/responses";
 
-import { SkylarkClient } from "../graphql/skylark/client";
-import { getSkylarkObjectInputFields } from "../skylark/introspection";
+import { FlatfileRow } from "src/interfaces/flatfile/responses";
+import { SkylarkClient } from "src/lib/graphql/skylark/client";
+import { getSkylarkObjectInputFields } from "src/lib/skylark/introspection";
 
 export const openFlatfileImportClient = async (
   embedId: string,

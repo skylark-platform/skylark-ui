@@ -5,10 +5,10 @@ import "@fontsource/inter/700.css";
 import "@fontsource/work-sans/700.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { createSkylarkClient } from "src/lib/graphql/skylark/client";
 
-import { Navigation } from "../components/navigation";
-import "../styles/globals.css";
+import { Navigation } from "src/components/navigation";
+import { createSkylarkClient } from "src/lib/graphql/skylark/client";
+import "src/styles/globals.css";
 
 export default function App({ Component, pageProps }: AppProps) {
   const client = createSkylarkClient();

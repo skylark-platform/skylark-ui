@@ -1,4 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+
+import {
+  FLATFILE_ACCESS_KEY_ID,
+  FLATFILE_SECRET_KEY,
+} from "src/constants/flatfile";
 import {
   createFlatfileObjectsInSkylark,
   exchangeFlatfileAccessKey,
@@ -27,7 +32,7 @@ export default async function handler(
 
   const { body } = req;
 
-  if (!process.env.FLATFILE_ACCESS_KEY_ID || !process.env.FLATFILE_SECRET_KEY) {
+  if (!FLATFILE_ACCESS_KEY_ID || !FLATFILE_SECRET_KEY) {
     return res
       .status(500)
       .send("No Flatfile Access Key ID or Flatfile Secret supplied");
@@ -52,8 +57,8 @@ export default async function handler(
   let flatfileAccessToken = "";
   try {
     const data = await exchangeFlatfileAccessKey(
-      process.env.FLATFILE_ACCESS_KEY_ID,
-      process.env.FLATFILE_SECRET_KEY,
+      FLATFILE_ACCESS_KEY_ID,
+      FLATFILE_SECRET_KEY,
     );
 
     flatfileAccessToken = data.accessToken;

@@ -3,10 +3,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-import Annie from "../images/pets/annie.png";
-import Atticus from "../images/pets/atticus.png";
-import Hazel from "../images/pets/hazel.png";
-import Nora from "../images/pets/nora.png";
+import Annie from "src/images/pets/annie.png";
+import Atticus from "src/images/pets/atticus.png";
+import Hazel from "src/images/pets/hazel.png";
+import Nora from "src/images/pets/nora.png";
 
 const pets = [
   {

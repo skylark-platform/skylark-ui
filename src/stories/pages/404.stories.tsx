@@ -1,4 +1,4 @@
-import Custom404 from "../../pages/404";
+import Custom404 from "src/pages/404";
 
 export default {
   title: "Pages/404",
@@ -6,3 +6,8 @@ export default {
 };
 
 export const Custom404Page = () => <Custom404 />;
+Custom404Page.parameters = {
+  nextRouter: {
+    asPath: "/404?pet=hazel",
+  },
+};

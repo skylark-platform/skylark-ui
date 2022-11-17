@@ -1,4 +1,5 @@
 import { createMockClient, MockApolloClient } from "mock-apollo-client";
+
 import {
   FlatfileCreatePortalResponse,
   FlatfileGetPortalsResponse,
@@ -8,8 +9,8 @@ import {
   CREATE_PORTAL,
   UPDATE_PORTAL,
 } from "src/lib/graphql/flatfile/mutations";
+import { GET_PORTALS } from "src/lib/graphql/flatfile/queries";
 
-import { GET_PORTALS } from "../../graphql/flatfile/queries";
 import { createOrUpdateFlatfilePortal } from "./portal";
 
 const portalName = "portalName";

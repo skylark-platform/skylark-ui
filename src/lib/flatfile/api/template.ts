@@ -12,8 +12,7 @@ import {
 } from "src/lib/graphql/flatfile/mutations";
 import "src/lib/graphql/flatfile/queries";
 import { GET_TEMPLATES } from "src/lib/graphql/flatfile/queries";
-
-import { hasProperty, isObject } from "../../utils";
+import { hasProperty, isObject } from "src/lib/utils";
 
 export const validateRequestTemplate = (schema: object) => {
   const requiredProperties = ["type", "properties"];

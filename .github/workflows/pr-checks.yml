@@ -30,6 +30,12 @@ jobs:
           name: Frontend Unit Test Results
           path: "coverage/jest-*.xml"
           reporter: jest-junit
+      - name: Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./coverage
+          fail_ci_if_error: true
+          verbose: true
 
   chromatic-deployment:
     name: Chromatic Deploy

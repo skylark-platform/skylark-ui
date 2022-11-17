@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { useSkylarkSchema } from "src/hooks/useSkylarkSchema";
 import { ApiRouteTemplateData } from "src/interfaces/apiRoutes";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
@@ -36,16 +37,38 @@ const createFlatfileTemplate = async (
   return data;
 };
 
+const importFlatfileDataToSkylark = async (batchId: string) => {
+  const res = await fetch("/api/flatfile/import", {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    body: JSON.stringify({
+      batchId,
+    }),
+  });
+
+  const data = (await res.json()) as ApiRouteTemplateData;
+
+  return data;
+};
+
 export default function Import() {
   const res = useSkylarkSchema();
   console.log("Skylark: ", res);
 
   const [event, setEvent] = useState<
-    "creatingTemplate" | "runningFlatfile" | "creatingObjects" | null
+    | "creatingTemplate"
+    | "runningFlatfile"
+    | "creatingObjects"
+    | "completed"
+    | null
   >(null);
 
   const createObjectsInSkylark = async (batchId: string) => {
     setEvent("creatingObjects");
+    await importFlatfileDataToSkylark(batchId);
+    setEvent("completed");
   };
 
   const onClick = async () => {
@@ -69,7 +92,7 @@ export default function Import() {
         Import Episode
       </button>
 
-      {event && (
+      {event && event !== "completed" && (
         <div className="flex flex-col items-center justify-center gap-4">
           {event === "creatingTemplate" && <p>Creating Flatfile Template</p>}
           {event === "runningFlatfile" && <p>Running Flatfile Importer</p>}
@@ -89,6 +112,11 @@ export default function Import() {
               fill="currentFill"
             />
           </svg>
+        </div>
+      )}
+      {event === "completed" && (
+        <div className="flex flex-col items-center justify-center gap-4">
+          <p>Data successfully imported</p>
         </div>
       )}
     </div>

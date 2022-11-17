@@ -1,6 +1,11 @@
 import jwt from "jsonwebtoken";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { FLATFILE_ORG } from "src/constants/flatfile";
+
+import {
+  FLATFILE_ACCESS_KEY_ID,
+  FLATFILE_ORG,
+  FLATFILE_SECRET_KEY,
+} from "src/constants/flatfile";
 import { SAAS_ACCOUNT_ID } from "src/constants/skylark";
 import { ApiRouteTemplateData } from "src/interfaces/apiRoutes";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
@@ -20,26 +25,30 @@ export default async function handler(
     return res.status(501).end();
   }
 
-  if (!process.env.FLATFILE_ACCESS_KEY_ID || !process.env.FLATFILE_SECRET_KEY) {
+  if (!FLATFILE_ACCESS_KEY_ID || !FLATFILE_SECRET_KEY) {
     return res
-      .status(500)
-      .send("No Flatfile Access Key ID or Flatfile Secret supplied");
+      .status(503)
+      .send(
+        "Server has not been configured with a Flatfile Access Key ID or Flatfile Secret",
+      );
   }
 
-  if (!req.body) {
-    return res.status(400).send("Invalid request body");
-  }
-
-  const { body } = req;
+  const body = req.body as { template?: object; name?: string };
 
   if (!body || !body.template || !body.name) {
-    return res.status(400).send("Invalid request body");
+    return res
+      .status(400)
+      .send(
+        `Invalid request body: missing "${
+          !body.template ? "template" : "name"
+        }"`,
+      );
   }
 
-  const requestTemplate = body.template as FlatfileTemplate;
+  const name = `${req.body.name as string}-${SAAS_ACCOUNT_ID}`.toLowerCase();
+  const requestTemplate = req.body.template as FlatfileTemplate;
 
   try {
-    console.log(requestTemplate);
     validateRequestTemplate(requestTemplate);
   } catch (err) {
     return res.status(400).send((err as Error).message);
@@ -50,8 +59,8 @@ export default async function handler(
 
   try {
     const data = await exchangeFlatfileAccessKey(
-      process.env.FLATFILE_ACCESS_KEY_ID,
-      process.env.FLATFILE_SECRET_KEY,
+      FLATFILE_ACCESS_KEY_ID,
+      FLATFILE_SECRET_KEY,
     );
 
     user = {
@@ -61,15 +70,10 @@ export default async function handler(
     };
     flatfileAccessToken = data.accessToken;
   } catch (err) {
-    if ((err as Error).message) {
-      res.status(500).send((err as Error).message);
-    }
     return res.status(500).send("Error exchanging Flatfile token");
   }
 
   const flatfileClient = createFlatfileClient(flatfileAccessToken);
-
-  const name = `${body.name as string}-${SAAS_ACCOUNT_ID}`.toLowerCase();
 
   try {
     const template = await createOrUpdateFlatfileTemplate(
@@ -103,6 +107,6 @@ export default async function handler(
 
     res.status(200).json({ embedId: portal.id, token: importToken });
   } catch (err) {
-    return res.status(500).send(err as Error);
+    return res.status(500).send("Error creating Flatfile Template and Portal");
   }
 }
