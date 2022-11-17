@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+
 import { FLATFILE_TEAM, ACTIVE_FLATFILE_ENV } from "src/constants/flatfile";
 
 export const CREATE_PORTAL = gql`

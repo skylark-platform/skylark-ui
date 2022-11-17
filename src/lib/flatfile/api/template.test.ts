@@ -1,4 +1,5 @@
 import { createMockClient, MockApolloClient } from "mock-apollo-client";
+
 import {
   FlatfileCreateTemplateResponse,
   FlatfileGetTemplatesResponse,
@@ -9,8 +10,8 @@ import {
   CREATE_TEMPLATE,
   UPDATE_TEMPLATE,
 } from "src/lib/graphql/flatfile/mutations";
+import { GET_TEMPLATES } from "src/lib/graphql/flatfile/queries";
 
-import { GET_TEMPLATES } from "../../graphql/flatfile/queries";
 import {
   createOrUpdateFlatfileTemplate,
   validateRequestTemplate,

@@ -3,11 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-import Logo from "../../../../public/images/skylark.png";
-import { UserAvatar } from "../../user";
-import { Hamburger } from "../hamburger";
-import { NavigationLinks } from "../links";
-import { QuickSearch } from "../search/search.component";
+import { Hamburger } from "src/components/navigation/hamburger";
+import { NavigationLinks } from "src/components/navigation/links";
+import { QuickSearch } from "src/components/navigation/search/search.component";
+import { UserAvatar } from "src/components/user";
+
+import Logo from "public/images/skylark.png";
 
 const dummyUser = {
   name: "Joe Bloggs",
