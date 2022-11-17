@@ -6,3 +6,8 @@ export default {
 };
 
 export const Custom404Page = () => <Custom404 />;
+Custom404Page.parameters = {
+  nextRouter: {
+    asPath: "/404?pet=hazel",
+  },
+};
