@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSkylarkSchema } from "src/hooks/useSkylarkSchema";
 import { ApiRouteTemplateData } from "src/interfaces/apiRoutes";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
-import { startFlatfileImport } from "src/lib/flatfile";
+import { openFlatfileImportClient } from "src/lib/flatfile";
 
 const schema: FlatfileTemplate = {
   type: "object",
@@ -53,7 +53,7 @@ export default function Import() {
     const template = await createFlatfileTemplate("Episode", schema);
 
     setEvent("runningFlatfile");
-    await startFlatfileImport(
+    await openFlatfileImportClient(
       template.embedId,
       template.token,
       createObjectsInSkylark,
