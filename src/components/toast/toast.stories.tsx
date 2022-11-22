@@ -1,41 +1,50 @@
 import { ComponentStory } from "@storybook/react";
-import { toast } from "react-toastify";
 
 import { Toast, ToastContainer } from "./toast.component";
 
 export default {
   title: "Components/Toast",
   component: ToastContainer,
+  argTypes: {
+    type: {
+      options: ["default", "info", "success", "warning", "error"],
+      control: { type: "select" },
+    },
+  },
 };
 
-const Template: ComponentStory<typeof ToastContainer> = () => (
-  <ToastContainer />
-);
+const Template: ComponentStory<typeof Toast> = (args) => <Toast {...args} />;
 
 export const Default = Template.bind({});
-Default.play = async () => {
-  toast(
-    <Toast
-      title="Connections confirmed"
-      message="Connection modifications saved to GOT S01"
-    />,
-  );
+Default.args = {
+  title: "Default toast",
+  message: "Toast message",
 };
 
-export const Multiple = Template.bind({});
-Multiple.play = async () => {
-  toast(<Toast title="Default" message="This is the default toast" />);
-  toast.info(<Toast title="Info" message="This is an information toast" />);
-  toast.success(
-    <Toast title="Success" message="The operation was a success!" />,
-  );
-  toast.warning(
-    <Toast title="Warning" message="You're almost over your limit" />,
-  );
-  toast.error(<Toast title="Error" message="Operation failed" />);
+export const Info = Template.bind({});
+Info.args = {
+  title: "Information toast",
+  message: "This is some useful information",
+  type: "info",
 };
 
-// export const Success = Template.bind({});
-// Success.play = async () => {
-//   toast.success("Success");
-// };
+export const Success = Template.bind({});
+Success.args = {
+  title: "Success toast",
+  message: "The operation was successful",
+  type: "success",
+};
+
+export const Warning = Template.bind({});
+Warning.args = {
+  title: "Warning toast",
+  message: "Are you sure you want to delete this?",
+  type: "warning",
+};
+
+export const Error = Template.bind({});
+Error.args = {
+  title: "Error toast",
+  message: "Operation has failed",
+  type: "error",
+};
