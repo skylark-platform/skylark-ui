@@ -36,3 +36,15 @@ export interface GQLMutationsList {
   };
 }
 [];
+
+export interface SkylarkGetInputFieldsResponse {
+  __type: {
+    inputFields: GQLInputField[];
+  };
+}
+
+export interface SkylarkGetObjectTypesResponse {
+  __schema: {
+    types: GQLInputField[];
+  };
+}

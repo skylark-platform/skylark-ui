@@ -26,7 +26,7 @@ export default async function handler(
     return res.status(501).end();
   }
 
-  if (!req.body) {
+  if (!req.body || req.body === null || Object.keys(req.body).length === 0) {
     return res.status(400).send("Invalid request body");
   }
 

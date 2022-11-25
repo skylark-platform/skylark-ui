@@ -1,9 +1,14 @@
-import { GQLInputField } from "src/interfaces/graphql/introspection";
+import {
+  GQLInputField,
+  SkylarkGetInputFieldsResponse,
+  SkylarkGetObjectTypesResponse,
+} from "src/interfaces/graphql/introspection";
 import { SkylarkClient } from "src/lib/graphql/skylark/client";
+
 import {
   GET_SKYLARK_OBJECT_INPUT_FIELDS,
   GET_SKYLARK_OBJECT_TYPES,
-} from "src/lib/graphql/skylark/queries";
+} from "../graphql/skylark/queries";
 
 export const getSkylarkObjectInputFields = async (
   client: SkylarkClient,
@@ -11,7 +16,7 @@ export const getSkylarkObjectInputFields = async (
 ): Promise<GQLInputField[]> => {
   const objectTypeInput = `${objectType}Input`;
 
-  const { data } = await client.query<any>({
+  const { data } = await client.query<SkylarkGetInputFieldsResponse>({
     query: GET_SKYLARK_OBJECT_INPUT_FIELDS,
     variables: { objectTypeInput },
   });
@@ -22,7 +27,7 @@ export const getSkylarkObjectInputFields = async (
 export const getSkylarkObjectTypes = async (
   client: SkylarkClient,
 ): Promise<GQLInputField[]> => {
-  const { data } = await client.query<any>({
+  const { data } = await client.query<SkylarkGetObjectTypesResponse>({
     query: GET_SKYLARK_OBJECT_TYPES,
   });
 
