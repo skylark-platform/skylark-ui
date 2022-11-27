@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { Button } from "src/components/button";
+import { StatusCard } from "src/components/statusCard";
 import { useSkylarkSchema } from "src/hooks/useSkylarkSchema";
 import { ApiRouteTemplateData } from "src/interfaces/apiRoutes";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
@@ -82,6 +84,50 @@ export default function Import() {
       createObjectsInSkylark,
     );
   };
+
+  return (
+    <div className="flex h-full flex-row md:mt-14">
+      <div className="w-2/5 flex-col p-20">
+        <h2 className="mb-4 text-xl font-bold">It’s almost done</h2>
+        <div>
+          <p className="text-sm font-light">
+            We are importing your objects from Flatfile
+          </p>
+        </div>
+      </div>
+      <div className="flex w-3/5 flex-col items-center justify-center bg-gray-200">
+        <StatusCard title="Analyzing tables" />
+        <div className="mb-2 flex h-24 w-1/2 flex-row rounded border border-t-4 border-solid border-t-green-500 bg-white p-5">
+          <div className="w-4/5">
+            <h4 className="">Analyzing tables</h4>
+            <div>
+              <p className="text-sm font-light">12 Tables</p>
+            </div>
+          </div>
+          <div className="w-1/5">icon</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col p-20 md:mt-14">
+      <div className="flex-flex-row">
+        <Button title="Create" />
+      </div>
+      <div className="">
+        <table>
+          <thead>
+            <tr>
+              <th>Object type</th>
+              <th>Name</th>
+              <th>Date added</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  );
 
   return (
     <div className="flex h-full flex-col items-center justify-center gap-10">
