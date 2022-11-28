@@ -9,20 +9,15 @@ jest.mock("../../../../lib/flatfile", () => ({
   exchangeFlatfileAccessKey: jest.fn(),
 }));
 
-jest.mock("../../../../lib/skylark/client", () => ({
-  ...jest.requireActual("src/lib/graphql/skylark/client"),
+jest.mock("../../../../lib/graphql/skylark/client", () => ({
+  ...jest.requireActual("../../../../lib/graphql/skylark/client"),
   createSkylarkClient: jest.fn(),
+  skylarkClient: {
+    requestDataFromUser: jest.fn(({ onComplete }) =>
+      onComplete({ batchId: "batchId" }),
+    ),
+  },
 }));
-
-jest.mock("../../../../lib/graphql/skylark/client", () => {
-  return {
-    skylarkClient: {
-      requestDataFromUser: jest.fn(({ onComplete }) =>
-        onComplete({ batchId: "batchId" }),
-      ),
-    },
-  };
-});
 
 const mockConstants = constants as {
   FLATFILE_ACCESS_KEY_ID: string | null;
@@ -99,7 +94,6 @@ test("returns 500 when the objectType is missing from the request body", async (
   expect(res._getData()).toEqual("batchId and objectType are mandatory");
 });
 
-/*
 test("returns 500 when an error occurs while getting a token from Flatfile", async () => {
   spiedExchangeFlatfileAccessKey.mockImplementationOnce(async () => {
     throw new Error("fail");
@@ -119,7 +113,7 @@ test("returns 500 when an error occurs while getting a token from Flatfile", asy
   expect(res._getStatusCode()).toBe(500);
 });
 
-
+/*
 test(" ", async () => {
   const { req, res } = createMocks({
     method: "POST",

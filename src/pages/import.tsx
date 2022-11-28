@@ -88,7 +88,7 @@ export default function Import() {
   return (
     <div className="flex h-full flex-row md:mt-14">
       <div className="w-2/5 flex-col p-20">
-        <h2 className="mb-4 text-xl font-bold">It’s almost done</h2>
+        <h2 className="mb-4 text-2xl font-bold">It’s almost done</h2>
         <div>
           <p className="text-sm font-light">
             We are importing your objects from Flatfile
@@ -96,7 +96,21 @@ export default function Import() {
         </div>
       </div>
       <div className="flex w-3/5 flex-col items-center justify-center bg-gray-200">
-        <StatusCard title="Analyzing tables" />
+        <StatusCard
+          title="Analyzing tables"
+          description="12 tables"
+          status="done"
+        />
+        <StatusCard
+          title="Analyzing tables"
+          description="12 tables"
+          status="loading"
+        />
+        <StatusCard
+          title="Analyzing tables"
+          description="12 tables"
+          status="error"
+        />
         <div className="mb-2 flex h-24 w-1/2 flex-row rounded border border-t-4 border-solid border-t-green-500 bg-white p-5">
           <div className="w-4/5">
             <h4 className="">Analyzing tables</h4>
