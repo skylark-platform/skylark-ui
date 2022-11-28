@@ -70,10 +70,11 @@ export const GET_SKYLARK_OBJECT_INPUT_FIELDS = gql`
   }
 `;
 
+// The "ObjectTypes" enum is built in and updated each time an object is added or removed from Skylark
 export const GET_SKYLARK_OBJECT_TYPES = gql`
-  {
-    __schema {
-      types {
+  query {
+    __type(name: "ObjectTypes") {
+      enumValues {
         name
       }
     }
