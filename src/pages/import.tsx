@@ -60,7 +60,7 @@ export default function Import() {
   const res = useSkylarkSchema();
   console.log("Skylark: ", res);
 
-  const options = res.data?.map(({ objectType }) => objectType).sort();
+  const options = []; // res?.data?.map(({ objectType }) => objectType).sort();
 
   const [event, setEvent] = useState<
     | "creatingTemplate"
