@@ -1,3 +1,5 @@
+import { SkylarkObjectTypes } from "src/interfaces/skylark/objects";
+
 export type GQLKind = "SCALAR" | "LIST" | "NON_NULL" | "ENUM" | "INPUT_OBJECT";
 
 export interface GQLType {
@@ -37,14 +39,6 @@ export interface GQLMutationsList {
 }
 [];
 
-export interface SkylarkGetInputFieldsResponse {
-  __type: {
-    inputFields: GQLInputField[];
-  };
-}
-
-export interface SkylarkGetObjectTypesResponse {
-  __schema: {
-    types: GQLInputField[];
-  };
+export interface GQLSkylarkObjectTypesResponse {
+  __type: { enumValues: SkylarkObjectTypes };
 }

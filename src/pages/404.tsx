@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
+import { Button } from "src/components/button";
 import Annie from "src/images/pets/annie.png";
 import Atticus from "src/images/pets/atticus.png";
 import Hazel from "src/images/pets/hazel.png";
@@ -58,15 +59,10 @@ export default function Custom404() {
           <span className="text-brand-primary">{`Oops!`}</span>
           {` Page not found`}
         </p>
-        <p className="mb-8 text-center text-gray-500 md:text-lg">
+        <p className="mb-4 text-center text-gray-500 md:mb-8 md:text-lg">
           {`The page you're looking for doesn't exist.`}
         </p>
-        <Link
-          href="/"
-          className="bg-brand-primary px-6 py-2 text-sm font-semibold text-white"
-        >
-          {`Go home`}
-        </Link>
+        <Button href="/" variant="primary" block>{`Go home`}</Button>
       </div>
       <div className="h-80 md:h-96 md:w-96">
         {pet && (
@@ -83,7 +79,7 @@ export default function Custom404() {
               alt={`404 pet - ${pet.alt} mobile`}
               width={250}
               height={250}
-              className="chromatic-ignore my-10 md:hidden"
+              className="chromatic-ignore my-6 md:hidden"
             />
           </>
         )}

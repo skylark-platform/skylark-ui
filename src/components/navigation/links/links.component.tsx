@@ -1,18 +1,21 @@
 import clsx from "clsx";
 import Link from "next/link";
+import { TbBooks, TbLink } from "react-icons/tb";
 
 const apps = [
   {
-    text: "Import",
-    href: "/import",
+    text: "Library",
+    href: "/",
+    Icon: <TbBooks className="text-xl" />,
   },
+  // {
+  //   text: "Import",
+  //   href: "/import",
+  // },
   {
-    text: "Relationship",
-    href: "/relationship",
-  },
-  {
-    text: "Content",
-    href: "/content",
+    text: "Connections",
+    href: "/connect",
+    Icon: <TbLink className="text-xl" />,
   },
 ];
 
@@ -21,7 +24,7 @@ export const NavigationLinks = () => {
 
   return (
     <ul className="flex h-full flex-col items-center justify-center font-bold md:ml-4 md:flex-grow md:flex-row md:justify-start md:text-sm lg:ml-6">
-      {apps.map(({ text, href }) => (
+      {apps.map(({ text, href, Icon }) => (
         <li
           key={href}
           className={clsx(
@@ -29,8 +32,11 @@ export const NavigationLinks = () => {
             href !== activeHref && "opacity-50 hover:opacity-100",
           )}
         >
-          <Link key={href} href={href}>
-            {text}
+          <Link key={href} href={href} legacyBehavior>
+            <a className="flex flex-row items-center gap-1">
+              {Icon}
+              {text}
+            </a>
           </Link>
         </li>
       ))}

@@ -1,8 +1,10 @@
 import {
   GQLInputField,
   SkylarkGetInputFieldsResponse,
-  SkylarkGetObjectTypesResponse,
+  GQLSkylarkObjectTypesResponse,
 } from "src/interfaces/graphql/introspection";
+
+import { SkylarkObjectTypes } from "src/interfaces/skylark/objects";
 import { SkylarkClient } from "src/lib/graphql/skylark/client";
 
 import {
@@ -26,10 +28,10 @@ export const getSkylarkObjectInputFields = async (
 
 export const getSkylarkObjectTypes = async (
   client: SkylarkClient,
-): Promise<GQLInputField[]> => {
-  const { data } = await client.query<SkylarkGetObjectTypesResponse>({
+): Promise<SkylarkObjectTypes> => {
+  const { data } = await client.query<GQLSkylarkObjectTypesResponse>({
     query: GET_SKYLARK_OBJECT_TYPES,
   });
 
-  return data?.__schema?.types;
+  return data.__type.enumValues;
 };
