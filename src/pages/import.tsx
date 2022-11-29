@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Button } from "src/components/button";
+import { DropDown } from "src/components/dropdown";
 import { StatusCard } from "src/components/statusCard";
 import { useSkylarkSchema } from "src/hooks/useSkylarkSchema";
 import { ApiRouteTemplateData } from "src/interfaces/apiRoutes";
@@ -59,6 +60,8 @@ export default function Import() {
   const res = useSkylarkSchema();
   console.log("Skylark: ", res);
 
+  const options = res.data?.map(({ objectType }) => objectType).sort();
+
   const [event, setEvent] = useState<
     | "creatingTemplate"
     | "runningFlatfile"
@@ -87,15 +90,16 @@ export default function Import() {
 
   return (
     <div className="flex h-full flex-row md:mt-14">
-      <div className="w-2/5 flex-col p-20">
-        <h2 className="mb-4 text-2xl font-bold">It’s almost done</h2>
-        <div>
-          <p className="text-sm font-light">
-            We are importing your objects from Flatfile
-          </p>
+      <section className="w-2/5 flex-col p-20">
+        <h2 className="text-2xl font-bold">Import from CSV</h2>
+        <div className="mt-6">
+          <p className="text-sm font-light"></p>
+          <DropDown label="Select your Skylark object type" options={options} />
+
+          <button disabled>Import btn</button>
         </div>
-      </div>
-      <div className="flex w-3/5 flex-col items-center justify-center bg-gray-200">
+      </section>
+      <section className="flex w-3/5 flex-col items-center justify-center bg-gray-200">
         <StatusCard
           title="Analyzing tables"
           description="12 tables"
@@ -111,16 +115,7 @@ export default function Import() {
           description="12 tables"
           status="error"
         />
-        <div className="mb-2 flex h-24 w-1/2 flex-row rounded border border-t-4 border-solid border-t-green-500 bg-white p-5">
-          <div className="w-4/5">
-            <h4 className="">Analyzing tables</h4>
-            <div>
-              <p className="text-sm font-light">12 Tables</p>
-            </div>
-          </div>
-          <div className="w-1/5">icon</div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 

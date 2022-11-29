@@ -18,6 +18,7 @@ module.exports = {
         "nav-bar": "#F0F2F6",
         black: "#0E1825",
         "brand-primary": "#226DFF",
+        "success-green": "#00D19F",
       },
       transitionProperty: {
         width: "width",
