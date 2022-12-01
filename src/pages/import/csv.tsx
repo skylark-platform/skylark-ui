@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useReducer } from "react";
 
 import { Button } from "src/components/button";
-import { DropDown } from "src/components/dropdown";
-import { StatusCard } from "src/components/statusCard";
+import { DropDown } from "src/components/select";
+import {
+  StatusCard,
+  Props as StatusCardProps,
+} from "src/components/statusCard";
 import { useSkylarkSchema } from "src/hooks/useSkylarkSchema";
 import { ApiRouteTemplateData } from "src/interfaces/apiRoutes";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
@@ -56,9 +59,74 @@ const importFlatfileDataToSkylark = async (batchId: string) => {
   return data;
 };
 
+const createObjectsInSkylark = async (batchId: string) => {
+  await importFlatfileDataToSkylark(batchId);
+};
+
+const startImporter = async () => {
+  const template = await createFlatfileTemplate("Episode", schema);
+
+  await openFlatfileImportClient(
+    template.embedId,
+    template.token,
+    createObjectsInSkylark,
+  );
+};
+
+const initialState = {
+  select: {
+    title: "Select object type",
+    description: "Choose the Skylark object type to import",
+    status: "stale",
+  },
+  prep: {
+    title: "Preparing import",
+    description: "Updating your template to match your Skylark schema",
+    status: "stale",
+  },
+  import: {
+    title: "Import Data",
+    description: "Map your CSV to your Skylark schema",
+    status: "stale",
+  },
+  create: {
+    title: "Create in Skylark",
+    description: "Your imported data will be created",
+    status: "stale",
+  },
+};
+
+function reducer(
+  state: {
+    select: StatusCardProps;
+    prep: StatusCardProps;
+    import: StatusCardProps;
+    create: StatusCardProps;
+  },
+  action: { type: string },
+) {
+  switch (action.type) {
+    case "select":
+      startImporter();
+      return {
+        ...state,
+        select: {
+          title: "Importing TODO",
+          description: "You have selected {TODO}",
+          status: "completed",
+        },
+      };
+
+    default:
+      return state;
+  }
+}
+
 export default function Import() {
   const res = useSkylarkSchema();
   console.log("Skylark: ", res);
+
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const options = []; // res?.data?.map(({ objectType }) => objectType).sort();
 
@@ -69,12 +137,6 @@ export default function Import() {
     | "completed"
     | null
   >(null);
-
-  const createObjectsInSkylark = async (batchId: string) => {
-    setEvent("creatingObjects");
-    await importFlatfileDataToSkylark(batchId);
-    setEvent("completed");
-  };
 
   const onClick = async () => {
     setEvent("creatingTemplate");
@@ -96,25 +158,20 @@ export default function Import() {
           <p className="text-sm font-light"></p>
           <DropDown label="Select your Skylark object type" options={options} />
 
-          <button disabled>Import btn</button>
+          <Button
+            className="mt-6"
+            variant="primary"
+            block
+            onClick={() => dispatch({ type: "select" })}
+          >
+            Import
+          </Button>
         </div>
       </section>
       <section className="flex w-3/5 flex-col items-center justify-center bg-gray-200">
-        <StatusCard
-          title="Analyzing tables"
-          description="12 tables"
-          status="done"
-        />
-        <StatusCard
-          title="Analyzing tables"
-          description="12 tables"
-          status="loading"
-        />
-        <StatusCard
-          title="Analyzing tables"
-          description="12 tables"
-          status="error"
-        />
+        {Object.values(state).map((card, i) => (
+          <StatusCard key={i} {...card} />
+        ))}
       </section>
     </div>
   );
