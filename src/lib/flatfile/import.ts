@@ -1,10 +1,11 @@
 import { gql } from "@apollo/client";
 import { ITheme } from "@flatfile/sdk";
-import { jsonToGraphQLQuery } from "json-to-graphql-query";
+import { EnumType, jsonToGraphQLQuery } from "json-to-graphql-query";
 
 import { FlatfileRow } from "src/interfaces/flatfile/responses";
+import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
 import { SkylarkClient } from "src/lib/graphql/skylark/client";
-import { getSkylarkObjectInputFields } from "src/lib/skylark/introspection";
+import { getSkylarkObjectOperations } from "src/lib/skylark/introspection";
 
 export const openFlatfileImportClient = async (
   embedId: string,
@@ -36,27 +37,34 @@ export const createFlatfileObjectsInSkylark = async (
   flatfileBatchId: string,
   flatfileRows: FlatfileRow[],
 ): Promise<any> => {
-  const method = `create${objectType}`;
-  const mutationPrefix = `${method}_${flatfileBatchId}`.replaceAll("-", "_");
+  const skylarkObjectOperations: SkylarkObjectMeta["operations"] =
+    await getSkylarkObjectOperations(client, objectType);
 
-  const inputFields = await getSkylarkObjectInputFields(client, objectType);
-
-  const dateProperties = inputFields
-    .filter((property) => property.type.name === "AWSDateTime")
-    .map((property) => property.name);
+  const mutationPrefix =
+    `${skylarkObjectOperations.create.name}_${flatfileBatchId}`.replace(
+      /-/g,
+      "_",
+    );
 
   const operations = flatfileRows.reduce((previousOperations, { id, data }) => {
-    const filteredData = Object.fromEntries(
-      Object.entries(data).filter(
-        ([key, value]) =>
-          value != null && !(dateProperties.includes(key) && value === ""),
-      ),
+    const parsedData = Object.fromEntries(
+      Object.entries(data)
+        .filter(([, value]) => value !== null)
+        .map(([key, value]) => {
+          const input = skylarkObjectOperations.create.inputs.find(
+            (createInput) => createInput.name === key,
+          );
+          if (input?.type === "enum") {
+            return [key, new EnumType(value as string)];
+          }
+          return [key, value];
+        }),
     );
 
     const operation = {
-      __aliasFor: method,
+      __aliasFor: skylarkObjectOperations.create.name,
       __args: {
-        [objectType.toLowerCase()]: filteredData,
+        [objectType.toLowerCase()]: parsedData,
       },
       uid: true,
       external_id: true,
@@ -78,7 +86,9 @@ export const createFlatfileObjectsInSkylark = async (
     },
   };
 
-  const graphQLMutation = jsonToGraphQLQuery(mutation);
+  const graphQLMutation = jsonToGraphQLQuery(mutation, { pretty: true });
+
+  console.log(graphQLMutation);
 
   const { data } = await client.mutate<{
     [key: string]: { uid: string; external_id: string };

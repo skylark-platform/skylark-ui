@@ -1,21 +1,19 @@
 import { useState } from "react";
 
+import { Button } from "src/components/button";
+import {
+  useSkylarkObjectOperations,
+  useSkylarkObjectTypes,
+} from "src/hooks/useSkylarkObjectTypes";
 import { useSkylarkSchema } from "src/hooks/useSkylarkSchema";
 import { ApiRouteTemplateData } from "src/interfaces/apiRoutes";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
+import {
+  NormalizedObjectField,
+  SkylarkObjectType,
+} from "src/interfaces/skylark/objects";
 import { openFlatfileImportClient } from "src/lib/flatfile";
-
-const schema: FlatfileTemplate = {
-  type: "object",
-  required: [],
-  unique: [],
-  properties: {
-    test: {
-      type: "string",
-      label: "Test",
-    },
-  },
-};
+import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
 
 const createFlatfileTemplate = async (
   name: string,
@@ -37,13 +35,17 @@ const createFlatfileTemplate = async (
   return data;
 };
 
-const importFlatfileDataToSkylark = async (batchId: string) => {
+const importFlatfileDataToSkylark = async (
+  objectType: SkylarkObjectType,
+  batchId: string,
+) => {
   const res = await fetch("/api/flatfile/import", {
     headers: {
       "Content-Type": "application/json",
     },
     method: "POST",
     body: JSON.stringify({
+      objectType,
       batchId,
     }),
   });
@@ -54,8 +56,9 @@ const importFlatfileDataToSkylark = async (batchId: string) => {
 };
 
 export default function Import() {
-  const res = useSkylarkSchema();
-
+  const { objectTypes } = useSkylarkObjectTypes();
+  const [objectType, setObjectType] = useState("");
+  const { object } = useSkylarkObjectOperations(objectType);
   const [event, setEvent] = useState<
     | "creatingTemplate"
     | "runningFlatfile"
@@ -66,13 +69,17 @@ export default function Import() {
 
   const createObjectsInSkylark = async (batchId: string) => {
     setEvent("creatingObjects");
-    await importFlatfileDataToSkylark(batchId);
+    await importFlatfileDataToSkylark(objectType, batchId);
     setEvent("completed");
   };
 
   const onClick = async () => {
     setEvent("creatingTemplate");
-    const template = await createFlatfileTemplate("Episode", schema);
+    const schema = convertObjectInputToFlatfileSchema(
+      object?.operations.create.inputs as NormalizedObjectField[],
+    );
+    console.log(objectType, { schema });
+    const template = await createFlatfileTemplate(objectType, schema);
 
     setEvent("runningFlatfile");
     await openFlatfileImportClient(
@@ -83,13 +90,30 @@ export default function Import() {
   };
 
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-10">
-      <button
-        className="rounded bg-brand-primary p-2 px-4 text-white"
-        onClick={onClick}
-      >
-        Import Episode
-      </button>
+    <div className="flex h-full flex-col items-center justify-center gap-10 ">
+      <div className="flex w-64 flex-col gap-4">
+        <select
+          id="type"
+          className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+          onChange={(e) => setObjectType(e.target.value)}
+        >
+          <option value="" defaultChecked>{`Select Skylark object`}</option>
+          {objectTypes?.sort().map((objectType) => (
+            <option key={objectType} value={objectType}>
+              {objectType}
+            </option>
+          ))}
+        </select>
+
+        <Button
+          block
+          variant="primary"
+          disabled={!objectType || !object}
+          onClick={onClick}
+        >
+          Import
+        </Button>
+      </div>
 
       {event && event !== "completed" && (
         <div className="flex flex-col items-center justify-center gap-4">
