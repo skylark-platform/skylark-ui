@@ -46,7 +46,7 @@ export default async function handler(
   const skylarkClient = createSkylarkClient();
 
   const objects = await getSkylarkObjectTypes(skylarkClient);
-  const isObjectValid = objects.find((object) => object.name === objectType);
+  const isObjectValid = objects.find((object) => object === objectType);
 
   if (!isObjectValid) {
     return res

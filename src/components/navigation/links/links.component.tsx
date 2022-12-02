@@ -13,7 +13,7 @@ const apps = [
   //   href: "/import",
   // },
   {
-    text: "Connections",
+    text: "Relationships",
     href: "/connect",
     Icon: <TbLink className="text-xl" />,
   },
