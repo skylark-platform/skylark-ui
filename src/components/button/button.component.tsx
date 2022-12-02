@@ -31,7 +31,7 @@ export const Button = ({
   href,
 }: ButtonProps) => {
   const combinedClassName = clsx(
-    "min-h-8 btn h-8 rounded-full text-xs normal-case md:h-10 md:text-sm",
+    "min-h-8 btn h-8 rounded-full text-xs normal-case md:h-10 md:text-sm min-w-24",
     variant === "primary" && "btn-primary shadow",
     variant === "outline" && "btn-outline btn-primary",
     success && "btn-success text-white",

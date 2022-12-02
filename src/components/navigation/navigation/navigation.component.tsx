@@ -22,7 +22,7 @@ export const Navigation = () => {
       <div className="md:hidden">
         <Hamburger onClick={() => setOpen(!open)} />
       </div>
-      <div className="fixed top-0 left-0 right-0 flex h-16 flex-col items-center justify-center bg-nav-bar py-2 px-8 font-sans text-black md:h-14 md:flex-row md:justify-start lg:h-16 lg:px-14">
+      <div className="fixed top-0 left-0 right-0 z-50 flex h-16 flex-col items-center justify-center bg-nav-bar py-2 px-8 font-sans text-black md:h-14 md:flex-row md:justify-start lg:h-16 lg:px-14">
         <Link legacyBehavior href="/">
           <a className="absolute top-5 left-5 z-50 flex md:relative md:top-0 md:left-0">
             <Image src={Logo} alt="Skylark Logo" width="30" height="30" />

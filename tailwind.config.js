@@ -25,6 +25,9 @@ module.exports = {
       animation: {
         "spin-fast": "spin 0.5s linear infinite",
       },
+      minWidth: (theme) => ({
+        24: theme("spacing.24"),
+      }),
     },
   },
   daisyui: {
@@ -36,7 +39,7 @@ module.exports = {
           secondary: "#D926A9",
           accent: "#1FB2A6",
           neutral: "#B8BCC6",
-          "base-100": "#0E1825",
+          "base-100": "#FFFFFF",
           "base-content": "#0E1825",
           info: "#C1E5FF",
           success: "#33BD6E",

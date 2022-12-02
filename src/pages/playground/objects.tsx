@@ -8,7 +8,6 @@ import {
   useSkylarkObjectOperations,
   useSkylarkObjectTypes,
 } from "src/hooks/useSkylarkObjectTypes";
-import { useSkylarkSchema } from "src/hooks/useSkylarkSchema";
 import {
   createGetObjectQuery,
   createListObjectQuery,
@@ -38,9 +37,6 @@ export default function Home() {
   // });
 
   const { data, error } = useListObjects(activeObjectType);
-
-  // const { data: schema } = useSkylarkSchema();
-  // console.log({ object, data });
 
   return (
     <div className="flex w-full flex-col items-center justify-center p-10 pt-32 text-black">

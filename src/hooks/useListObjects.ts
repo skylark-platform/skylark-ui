@@ -18,7 +18,11 @@ export const useListObjects = (objectType: SkylarkObjectType) => {
     listSkylarkObjects: {
       count: number;
       next_token: string | null;
-      objects: object[];
+      objects: {
+        uid: string;
+        external_id: string;
+        [key: string]: string | number | boolean;
+      }[];
     };
   }>(query || defaultValidQuery, {
     skip: !query,
