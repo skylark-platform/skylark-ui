@@ -84,6 +84,18 @@ export default function Import() {
   };
 
   return (
+    <div className="flex h-full flex-row md:mt-14">
+      <section className="w-2/5 flex-col p-20">
+        <h2 className="text-2xl font-bold">Import from CSV</h2>
+        <div className="mt-6">
+          <p className="text-sm font-light"></p>
+        </div>
+      </section>
+      <section className="flex w-3/5 flex-col items-center justify-center bg-gray-200"></section>
+    </div>
+  );
+
+  return (
     <div className="flex h-full flex-col items-center justify-center gap-10">
       <button
         className="rounded bg-brand-primary p-2 px-4 text-white"
