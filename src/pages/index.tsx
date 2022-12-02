@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Button } from "src/components/button";
+import { Select } from "src/components/select/select.component";
 import { useListObjects } from "src/hooks/useListObjects";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 
@@ -9,8 +10,6 @@ export default function Home() {
   const [objectType, setObjectType] = useState("");
 
   const { data } = useListObjects(objectType);
-
-  console.log(data);
 
   const ignoredKeys = ["__typename"];
   const orderedKeys = ["__typename", "title", "name"];
@@ -32,21 +31,22 @@ export default function Home() {
   return (
     <div className="px-16 pt-28">
       <div className="flex w-full flex-row items-center justify-between gap-4">
-        <select
-          id="type"
-          className="block w-48 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-          onChange={(e) => setObjectType(e.target.value)}
-        >
-          <option value="" defaultChecked>{`Select Skylark object`}</option>
-          {objectTypes?.sort().map((objectType) => (
-            <option key={objectType} value={objectType}>
-              {objectType}
-            </option>
-          ))}
-        </select>
+        <Select
+          className="w-64"
+          placeholder="Select Skylark object"
+          options={
+            objectTypes?.sort().map((objectType) => ({
+              label: objectType,
+              value: objectType,
+            })) || []
+          }
+          onChange={(value) => setObjectType(value as string)}
+        />
         <div className="flex flex-row gap-4">
           <Button variant="primary">Create</Button>
-          <Button variant="outline">Import</Button>
+          <Button variant="outline" href="/import/csv">
+            Import
+          </Button>
         </div>
       </div>
 
