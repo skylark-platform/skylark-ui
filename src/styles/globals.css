@@ -1,14 +1,12 @@
 @import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
-@layer components {
+@layer base {
+  :root,
   html,
   body,
   #__next {
-    @apply h-full min-h-screen;
-  }
-
-  body {
-    @apply bg-white text-black;
+    @apply h-full bg-white text-black;
   }
 }
+
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
