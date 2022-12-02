@@ -104,27 +104,4 @@ export default function Import() {
       <section className="flex flex-grow flex-col items-center justify-center bg-gray-200"></section>
     </div>
   );
-
-  return (
-    // <div className="flex h-full flex-col items-center justify-center gap-10 ">
-    //   <div className="flex w-64 flex-col gap-4">
-    //     <select
-    //       id="type"
-    //       className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-    //       onChange={(e) => setObjectType(e.target.value)}
-    //     >
-    //       <option value="" defaultChecked>{`Select Skylark object`}</option>
-    //       {objectTypes?.sort().map((objectType) => (
-    //         <option key={objectType} value={objectType}>
-    //           {objectType}
-    //         </option>
-    //       ))}
-    //     </select>
-
-    //   </div>
-    // </div>
-
-    // Rui pop it here
-    <></>
-  );
 }
