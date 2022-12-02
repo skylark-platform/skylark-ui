@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Button } from "src/components/button";
+import { Select } from "src/components/select/select.component";
 import {
   useSkylarkObjectOperations,
   useSkylarkObjectTypes,
@@ -76,6 +77,34 @@ export default function Import() {
     );
   };
 
+  const objectTypeOptions =
+    objectTypes
+      ?.sort()
+      .map((objectType) => ({ label: objectType, value: objectType })) || [];
+
+  return (
+    <div className="flex h-full w-full flex-row">
+      <section className="flex flex-col gap-10 p-20 pt-48 lg:w-1/2 xl:w-2/5 2xl:w-1/3">
+        <h2 className="text-2xl font-bold">Import from CSV</h2>
+        <Select
+          options={objectTypeOptions}
+          placeholder="Select Skylark object"
+          label="Select your Skylark object type"
+          onChange={(value) => setObjectType(value as string)}
+        />
+        <Button
+          block
+          variant="primary"
+          disabled={!objectType || !object}
+          onClick={onClick}
+        >
+          Import
+        </Button>
+      </section>
+      <section className="flex flex-grow flex-col items-center justify-center bg-gray-200"></section>
+    </div>
+  );
+
   return (
     // <div className="flex h-full flex-col items-center justify-center gap-10 ">
     //   <div className="flex w-64 flex-col gap-4">
@@ -92,14 +121,6 @@ export default function Import() {
     //       ))}
     //     </select>
 
-    //     <Button
-    //       block
-    //       variant="primary"
-    //       disabled={!objectType || !object}
-    //       onClick={onClick}
-    //     >
-    //       Import
-    //     </Button>
     //   </div>
     // </div>
 
