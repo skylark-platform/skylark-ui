@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import Image from "next/image";
 
-import CheckIcon from "public/icons/check-circle.svg";
+import { CheckCircle } from "src/components/icons/checkCircle.component";
 
 export interface Props {
   title: string;
@@ -26,14 +26,7 @@ export const StatusCard = ({ title, description, status }: Props) => {
         </div>
       </div>
       <div className="flex w-1/5 items-center justify-center">
-        <Image
-          className="fill-success text-success" // TODO not working
-          src={"/icons/check-circle.svg"}
-          width="20"
-          height={"20"}
-          alt=""
-          color=""
-        />
+        <CheckCircle />
       </div>
     </div>
   );

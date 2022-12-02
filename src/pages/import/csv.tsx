@@ -122,6 +122,33 @@ function reducer(
   }
 }
 
+/*
+const text = {
+  select: {
+    success: {
+      title: "sdfs",
+      description: "sdfs",
+    },
+    error: {
+      title: "sdfs",
+      description: "sdfs",
+    }
+  },
+  import: {
+    success: {
+      title: "sdfs",
+      description: "sdfs",
+    },
+    error: {
+      title: "sdfs",
+      description: "sdfs",
+    }
+  }
+}
+
+text[stage][status]
+*/
+
 export default function Import() {
   const res = useSkylarkSchema();
   console.log("Skylark: ", res);
