@@ -3,14 +3,12 @@ import {
   SkylarkGetInputFieldsResponse,
   GQLSkylarkObjectTypesResponse,
 } from "src/interfaces/graphql/introspection";
-
 import { SkylarkObjectTypes } from "src/interfaces/skylark/objects";
 import { SkylarkClient } from "src/lib/graphql/skylark/client";
-
 import {
   GET_SKYLARK_OBJECT_INPUT_FIELDS,
   GET_SKYLARK_OBJECT_TYPES,
-} from "../graphql/skylark/queries";
+} from "src/lib/graphql/skylark/queries";
 
 export const getSkylarkObjectInputFields = async (
   client: SkylarkClient,

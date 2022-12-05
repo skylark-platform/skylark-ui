@@ -1,8 +1,4 @@
-export type FlatfileTemplatePropertyTypes =
-  | "string"
-  | "number"
-  | "boolean"
-  | "enum";
+export type FlatfileTemplatePropertyTypes = "string" | "number" | "boolean";
 
 interface FlatfileTemplatePropertyValue {
   type: FlatfileTemplatePropertyTypes;
@@ -41,12 +37,14 @@ export interface FlatfileTemplatePropertyEnum
   enumLabel: string[];
 }
 
-interface FlatfileTemplatePropertyEmail extends FlatfileTemplatePropertyValue {
+export interface FlatfileTemplatePropertyEmail
+  extends FlatfileTemplatePropertyValue {
   type: "string";
   format: "email";
 }
 
-interface FlatfileTemplatePropertyPhone extends FlatfileTemplatePropertyValue {
+export interface FlatfileTemplatePropertyPhone
+  extends FlatfileTemplatePropertyValue {
   type: "string";
   format: "phone";
 }

@@ -1,20 +1,32 @@
 import { gql } from "@apollo/client";
 
 export const GET_SKYLARK_SCHEMA = gql`
-  {
+  query {
     __schema {
-      mutationType {
+      queryType {
         name
         fields {
           name
           type {
             name
-            kind
-            description
             fields {
               name
+              type {
+                name
+                kind
+                ofType {
+                  name
+                  kind
+                }
+              }
             }
           }
+        }
+      }
+      mutationType {
+        name
+        fields {
+          name
           args {
             name
             defaultValue
@@ -35,34 +47,12 @@ export const GET_SKYLARK_SCHEMA = gql`
                     name
                     kind
                   }
+                  inputFields {
+                    name
+                  }
                 }
               }
             }
-          }
-        }
-      }
-    }
-  }
-`;
-
-export const GET_SKYLARK_OBJECT_INPUT_FIELDS = gql`
-  query ($objectTypeInput: String!) {
-    __type(name: $objectTypeInput) {
-      name
-      kind
-      description
-      inputFields {
-        name
-        type {
-          name
-          kind
-          description
-          enumValues {
-            name
-          }
-          ofType {
-            name
-            kind
           }
         }
       }
