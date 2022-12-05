@@ -1,7 +1,11 @@
-export const CheckCircle = () => {
+interface Props {
+  className: string;
+}
+
+export const CheckCircle = ({ className }: Props) => {
   return (
     <svg
-      className="stroke-success"
+      className={className}
       width="24"
       height="24"
       viewBox="0 0 24 24"
