@@ -5,7 +5,7 @@ interface Props {
 export const CheckCircle = ({ className }: Props) => {
   return (
     <svg
-      className={className}
+      className={`stroke-${className}`}
       width="24"
       height="24"
       viewBox="0 0 24 24"
