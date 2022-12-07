@@ -10,15 +10,15 @@ import { Spinner } from "./spinner.component";
 export default {
   title: "Components/Icons",
   argTypes: {
-    status: {
-      options: statusType,
+    className: {
+      options: ["stroke-success", "stroke-error-2"],
       control: { type: "select" },
     },
   },
 };
 
 const defaultProps = {
-  status: statusType.success,
+  className: statusType.success,
 };
 
 const Template: ComponentStory<any> = (args) => {

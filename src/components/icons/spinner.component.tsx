@@ -1,28 +1,11 @@
-import { statusType } from "src/components/statusCard/statusCard.component";
-
 interface Props {
-  status: statusType;
+  className: string;
 }
 
-const getColor = (status: statusType) => {
-  switch (status) {
-    case statusType.success:
-      return "stroke-success";
-    case statusType.pending:
-      return "stroke-pending";
-    case statusType.error:
-      return "stroke-error-2";
-    case statusType.inProgress:
-      return "stroke-in-progress";
-    default:
-      break;
-  }
-};
-
-export const Spinner = ({ status }: Props) => {
+export const Spinner = ({ className }: Props) => {
   return (
     <svg
-      className={`animate-spin ${getColor(status)}`}
+      className={className}
       width="22"
       height="22"
       viewBox="0 0 22 22"

@@ -17,16 +17,31 @@ export interface Props {
   status: statusType;
 }
 
+const getSVGColor = (status: statusType) => {
+  switch (status) {
+    case statusType.success:
+      return "stroke-success";
+    case statusType.pending:
+      return "stroke-pending";
+    case statusType.error:
+      return "stroke-error-2";
+    case statusType.inProgress:
+      return "stroke-in-progress";
+    default:
+      return "";
+  }
+};
+
 const getIcon = (status: statusType) => {
   switch (status) {
     case statusType.success:
-      return <CheckCircle status={status} />;
+      return <CheckCircle className={getSVGColor(status)} />;
     case statusType.pending:
-      return <Circle status={status} />;
+      return <Circle className={getSVGColor(status)} />;
     case statusType.error:
-      return <AlertCircle status={status} />;
+      return <AlertCircle className={getSVGColor(status)} />;
     case statusType.inProgress:
-      return <Spinner status={status} />;
+      return <Spinner className={getSVGColor(status)} />;
     default:
       break;
   }

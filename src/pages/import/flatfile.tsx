@@ -2,11 +2,7 @@ import { useState, useReducer } from "react";
 
 import { Button } from "src/components/button";
 import { Select } from "src/components/select/select.component";
-import {
-  StatusCard,
-  Props as StatusCardProps,
-  statusType,
-} from "src/components/statusCard";
+import { StatusCard, statusType } from "src/components/statusCard";
 import {
   useSkylarkObjectOperations,
   useSkylarkObjectTypes,
@@ -131,8 +127,8 @@ const copyText: {
 
 const initialState: { [key: string]: statusType } = {
   select: statusType.pending,
-  import: statusType.pending,
   prep: statusType.pending,
+  import: statusType.pending,
   create: statusType.pending,
 };
 
@@ -144,22 +140,6 @@ function reducer(
     ...state,
     [action.stage]: action.status,
   };
-
-  // if(action.stage === )
-
-  switch (action.stage) {
-    case "select":
-      return {
-        ...state,
-        select: action.status,
-      };
-
-    default:
-      return {
-        ...state,
-        [action.stage]: action.status,
-      };
-  }
 }
 
 export default function Import() {
@@ -223,10 +203,6 @@ export default function Import() {
         {Object.keys(state).map((card, i) => {
           const copyCard = copyText[card];
           const status = state[card];
-          // console.log("card", card);
-          //console.log("copyCard", copyCard);
-          console.log(card, status);
-          //console.log("#", copyCard[status]);
 
           return (
             <StatusCard
