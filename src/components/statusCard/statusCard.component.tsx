@@ -1,7 +1,9 @@
 import clsx from "clsx";
 
-import { CheckCircle } from "src/components/icons/checkCircle.component";
-import { Circle } from "src/components/icons/circle.component";
+import { AlertCircle } from "src/components/icons";
+import { CheckCircle } from "src/components/icons";
+import { Circle } from "src/components/icons";
+import { Spinner } from "src/components/icons";
 
 export enum statusType {
   success = "success",
@@ -15,7 +17,23 @@ export interface Props {
   status: statusType;
 }
 
+const getIcon = (status: statusType) => {
+  switch (status) {
+    case statusType.success:
+      return <CheckCircle status={status} />;
+    case statusType.pending:
+      return <Circle status={status} />;
+    case statusType.error:
+      return <AlertCircle status={status} />;
+    case statusType.inProgress:
+      return <Spinner status={status} />;
+    default:
+      break;
+  }
+};
+
 export const StatusCard = ({ title, description, status }: Props) => {
+  console.log(status);
   const combinedClassName = clsx(
     "mb-2 flex h-28 w-2/5 flex-row rounded border border-t-4 border-solid bg-white p-5",
     status === statusType.success && "border-t-success",
@@ -23,17 +41,6 @@ export const StatusCard = ({ title, description, status }: Props) => {
     status === statusType.error && "border-t-error-2",
     status === statusType.pending && "border-t-pending",
   );
-
-  const getIcon = (status: statusType) => {
-    switch (status) {
-      case statusType.success:
-        return <CheckCircle className={`stroke-${status}`} />;
-      case statusType.pending:
-        return <Circle className={`stroke-${status}`} />;
-      default:
-        break;
-    }
-  };
 
   return (
     <div className={combinedClassName}>
@@ -44,7 +51,7 @@ export const StatusCard = ({ title, description, status }: Props) => {
         </div>
       </div>
       <div className="flex w-1/5 items-center justify-center">
-        <CheckCircle className={`stroke-${status}`} />
+        {getIcon(status)}
       </div>
     </div>
   );

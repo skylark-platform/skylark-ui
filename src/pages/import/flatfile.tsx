@@ -121,14 +121,14 @@ const initialState: { [key: string]: statusType } = {
 };
 
 function reducer(
-  state: {
-    select: statusType;
-    prep: statusType;
-    import: statusType;
-    create: statusType;
-  },
+  state: { [key: string]: statusType },
   action: { stage: string; status: statusType },
 ) {
+  return {
+    ...state,
+    [action.stage]: action.status,
+  };
+
   switch (action.stage) {
     case "select":
       return {
@@ -149,15 +149,20 @@ export default function Import() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const createObjectsInSkylark = async (batchId: string) => {
+    dispatch({ stage: "create", status: statusType.inProgress });
     await importFlatfileDataToSkylark(objectType, batchId);
+    dispatch({ stage: "create", status: statusType.success });
   };
 
   const onClick = async () => {
+    dispatch({ stage: "prep", status: statusType.inProgress });
     const schema = convertObjectInputToFlatfileSchema(
       object?.operations.create.inputs as NormalizedObjectField[],
     );
     const template = await createFlatfileTemplate(objectType, schema);
 
+    dispatch({ stage: "prep", status: statusType.success });
+    dispatch({ stage: "import", status: statusType.inProgress });
     await openFlatfileImportClient(
       template.embedId,
       template.token,
@@ -196,15 +201,12 @@ export default function Import() {
         {Object.keys(state).map((card, i) => {
           const copyCard = copyText[card];
           const status = state[card];
-          console.log("1", card);
-          console.log("2", copyText[card]);
-          console.log("3", state[card]);
-          console.log("4", copyText[card][state[card]]);
+
           return (
             <StatusCard
               key={i}
-              title={copyText[card][state[card]].title}
-              description={copyText[card][status].description}
+              title={copyCard[status].title}
+              description={copyCard[status].description}
               status={status}
             />
           );

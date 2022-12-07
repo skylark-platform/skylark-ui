@@ -1,3 +1,5 @@
+import { ComponentStory } from "@storybook/react";
+
 import { StatusCard, statusType } from "./statusCard.component";
 
 export default {
@@ -11,10 +13,20 @@ const defaultProps = {
   status: statusType.pending,
   argTypes: {
     status: {
-      options: [statusType],
+      options: statusType,
       control: { type: "select" },
     },
   },
 };
 
+const Template: ComponentStory<any> = (args) => {
+  return <StatusCard {...args} />;
+};
+
+export const Default = Template.bind({});
+Default.args = {
+  ...defaultProps,
+};
+/*
 export const Default = () => <StatusCard {...defaultProps} />;
+*/

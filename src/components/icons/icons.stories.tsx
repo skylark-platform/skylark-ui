@@ -10,7 +10,7 @@ export default {
   title: "Components/Icons",
   // component: CheckCircle,
   argTypes: {
-    className: {
+    status: {
       options: statusType,
       control: { type: "select" },
     },
@@ -18,7 +18,7 @@ export default {
 };
 
 const defaultProps = {
-  className: "stroke-success",
+  status: statusType.success,
 };
 
 const Template: ComponentStory<any> = (args) => {

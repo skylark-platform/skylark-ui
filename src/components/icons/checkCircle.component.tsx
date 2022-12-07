@@ -1,11 +1,28 @@
+import { statusType } from "src/components/statusCard/statusCard.component";
+
 interface Props {
-  className: string;
+  status: statusType;
 }
 
-export const CheckCircle = ({ className }: Props) => {
+const getColor = (status: statusType) => {
+  switch (status) {
+    case statusType.success:
+      return "stroke-success";
+    case statusType.pending:
+      return "stroke-pending";
+    case statusType.error:
+      return "stroke-error-2";
+    case statusType.inProgress:
+      return "stroke-in-progress";
+    default:
+      break;
+  }
+};
+
+export const CheckCircle = ({ status }: Props) => {
   return (
     <svg
-      className={`stroke-${className}`}
+      className={getColor(status)}
       width="24"
       height="24"
       viewBox="0 0 24 24"
