@@ -1,27 +1,29 @@
+import { getObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
-  GQLInputField,
-  SkylarkGetInputFieldsResponse,
   GQLSkylarkObjectTypesResponse,
+  GQLSkylarkSchemaQueriesMutations,
 } from "src/interfaces/graphql/introspection";
-import { SkylarkObjectTypes } from "src/interfaces/skylark/objects";
+import {
+  SkylarkObjectMeta,
+  SkylarkObjectTypes,
+} from "src/interfaces/skylark/objects";
 import { SkylarkClient } from "src/lib/graphql/skylark/client";
 import {
-  GET_SKYLARK_OBJECT_INPUT_FIELDS,
+  GET_SKYLARK_SCHEMA,
   GET_SKYLARK_OBJECT_TYPES,
 } from "src/lib/graphql/skylark/queries";
 
-export const getSkylarkObjectInputFields = async (
+export const getSkylarkObjectOperations = async (
   client: SkylarkClient,
   objectType: string,
-): Promise<GQLInputField[]> => {
-  const objectTypeInput = `${objectType}Input`;
-
-  const { data } = await client.query<SkylarkGetInputFieldsResponse>({
-    query: GET_SKYLARK_OBJECT_INPUT_FIELDS,
-    variables: { objectTypeInput },
+): Promise<SkylarkObjectMeta["operations"]> => {
+  const { data } = await client.query<GQLSkylarkSchemaQueriesMutations>({
+    query: GET_SKYLARK_SCHEMA,
   });
 
-  return data?.__type?.inputFields;
+  const objectMeta = getObjectOperations(objectType, data.__schema);
+
+  return objectMeta.operations;
 };
 
 export const getSkylarkObjectTypes = async (
@@ -31,5 +33,7 @@ export const getSkylarkObjectTypes = async (
     query: GET_SKYLARK_OBJECT_TYPES,
   });
 
-  return data.__type.enumValues;
+  const objectTypes = data.__type.enumValues.map(({ name }) => name);
+
+  return objectTypes;
 };

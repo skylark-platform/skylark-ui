@@ -27,6 +27,3 @@ export const Default = Template.bind({});
 Default.args = {
   ...defaultProps,
 };
-/*
-export const Default = () => <StatusCard {...defaultProps} />;
-*/

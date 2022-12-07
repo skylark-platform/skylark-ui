@@ -33,7 +33,6 @@ const getIcon = (status: statusType) => {
 };
 
 export const StatusCard = ({ title, description, status }: Props) => {
-  console.log(status);
   const combinedClassName = clsx(
     "mb-2 flex h-28 w-2/5 flex-row rounded border border-t-4 border-solid bg-white p-5",
     status === statusType.success && "border-t-success",

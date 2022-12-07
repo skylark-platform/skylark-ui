@@ -64,51 +64,67 @@ const copyText: {
   [key: string]: { [key: string]: { title: string; description: string } };
 } = {
   select: {
-    success: {
+    pending: {
       title: "Select object type",
       description: "Choose the Skylark object type to import",
     },
-    pending: {
-      title: "sdfs",
-      description: "sdfs",
-    },
-    error: {
-      title: "sdfs",
-      description: "sdfs",
+    success: {
+      title: "Importing {objectType}",
+      description: "You have selected {objectType}",
     },
   },
   prep: {
-    success: {
+    pending: {
       title: "Preparing import",
       description: "Updating your template to match your Skylark schema",
     },
-    pending: {
-      title: "sdfs",
-      description: "sdfs",
+    inProgress: {
+      title: "Preparing import",
+      description: "Updating your template to match your Skylark schema",
+    },
+    success: {
+      title: "Preparation complete",
+      description: "Your import templatehas been updated",
+    },
+    error: {
+      title: "Error",
+      description: "-",
     },
   },
   import: {
-    success: {
+    pending: {
       title: "Import Data",
       description: "Map your CSV to your Skylark schema",
     },
-    pending: {
-      title: "sdfs",
-      description: "sdfs",
+    inProgress: {
+      title: "Importing Data",
+      description: "Opening CSV importer",
+    },
+    success: {
+      title: "Import complete",
+      description: "CSV imported successfully",
     },
     error: {
-      title: "sdfs",
-      description: "sdfs",
+      title: "Error",
+      description: "-",
     },
   },
   create: {
-    success: {
+    pending: {
       title: "Create in Skylark",
       description: "Your imported data will be created",
     },
-    pending: {
-      title: "sdfs",
-      description: "sdfs",
+    inProgress: {
+      title: "Creating Skylark {objectType}s",
+      description: "Your {objectType}s are being created in Skylark",
+    },
+    success: {
+      title: "All {objectType} created",
+      description: "CSV data created in Skylark",
+    },
+    error: {
+      title: "Error",
+      description: "-",
     },
   },
 };
@@ -129,6 +145,8 @@ function reducer(
     [action.stage]: action.status,
   };
 
+  // if(action.stage === )
+
   switch (action.stage) {
     case "select":
       return {
@@ -137,7 +155,10 @@ function reducer(
       };
 
     default:
-      return state;
+      return {
+        ...state,
+        [action.stage]: action.status,
+      };
   }
 }
 
@@ -168,6 +189,7 @@ export default function Import() {
       template.token,
       createObjectsInSkylark,
     );
+    dispatch({ stage: "import", status: statusType.success });
   };
 
   const objectTypeOptions =
@@ -201,12 +223,19 @@ export default function Import() {
         {Object.keys(state).map((card, i) => {
           const copyCard = copyText[card];
           const status = state[card];
+          // console.log("card", card);
+          //console.log("copyCard", copyCard);
+          console.log(card, status);
+          //console.log("#", copyCard[status]);
 
           return (
             <StatusCard
               key={i}
-              title={copyCard[status].title}
-              description={copyCard[status].description}
+              title={copyCard[status].title.replace("{objectType}", objectType)}
+              description={copyCard[status].description.replace(
+                "{objectType}",
+                objectType,
+              )}
               status={status}
             />
           );
