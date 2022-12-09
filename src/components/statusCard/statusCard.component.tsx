@@ -22,11 +22,9 @@ const getSVGColor = (status: statusType) => {
     case statusType.success:
       return "stroke-success";
     case statusType.pending:
-      return "stroke-pending";
+      return "stroke-manatee-500";
     case statusType.error:
-      return "stroke-error-2";
-    case statusType.inProgress:
-      return "stroke-in-progress";
+      return "stroke-error";
     default:
       return "";
   }
@@ -41,7 +39,11 @@ const getIcon = (status: statusType) => {
     case statusType.error:
       return <AlertCircle className={getSVGColor(status)} />;
     case statusType.inProgress:
-      return <Spinner className={getSVGColor(status)} />;
+      return (
+        <Spinner
+          className={clsx(getSVGColor(status), "chromatic-ignore animate-spin")}
+        />
+      );
     default:
       break;
   }
@@ -49,20 +51,18 @@ const getIcon = (status: statusType) => {
 
 export const StatusCard = ({ title, description, status }: Props) => {
   const combinedClassName = clsx(
-    "mb-2 flex h-28 w-2/5 flex-row rounded border border-t-4 border-solid bg-white p-5",
+    "flex flex-row rounded border border-t-4 border-solid bg-white p-4 px-6 w-full",
     status === statusType.success && "border-t-success",
-    status === statusType.inProgress && "border-t-in-progress",
-    status === statusType.error && "border-t-error-2",
-    status === statusType.pending && "border-t-pending",
+    status === statusType.inProgress && "border-t-warning",
+    status === statusType.error && "border-t-error",
+    status === statusType.pending && "border-t-manatee-500",
   );
 
   return (
     <div className={combinedClassName}>
       <div className="w-4/5">
-        <h4 className="font-bold">{title}</h4>
-        <div>
-          <p className="text-sm font-light">{description}</p>
-        </div>
+        <h4 className="font-heading font-bold md:text-lg">{title}</h4>
+        <p className="my-0.5 text-sm font-light">{description}</p>
       </div>
       <div className="flex w-1/5 items-center justify-center">
         {getIcon(status)}

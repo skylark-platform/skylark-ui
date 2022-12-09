@@ -15,6 +15,11 @@ import {
 } from "src/interfaces/skylark/objects";
 import { openFlatfileImportClient } from "src/lib/flatfile";
 import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
+import { pause } from "src/lib/utils";
+
+type ImportStates = "select" | "prep" | "import" | "create";
+
+const orderedStates = ["select", "prep", "import", "create"] as ImportStates[];
 
 const createFlatfileTemplate = async (
   name: string,
@@ -57,75 +62,55 @@ const importFlatfileDataToSkylark = async (
 };
 
 const copyText: {
-  [key: string]: { [key: string]: { title: string; description: string } };
+  [key in ImportStates]: {
+    title: string;
+    messages: {
+      [key in "pending" | "success" | "inProgress" | "error"]: string;
+    };
+  };
 } = {
   select: {
-    pending: {
-      title: "Select object type",
-      description: "Choose the Skylark object type to import",
-    },
-    success: {
-      title: "Importing {objectType}",
-      description: "You have selected {objectType}",
+    title: "Select object type",
+    messages: {
+      pending: "Choose the Skylark object type to import",
+      inProgress: "",
+      success: "You have selected {objectType}",
+      error: "",
     },
   },
   prep: {
-    pending: {
-      title: "Preparing import",
-      description: "Updating your template to match your Skylark schema",
-    },
-    inProgress: {
-      title: "Preparing import",
-      description: "Updating your template to match your Skylark schema",
-    },
-    success: {
-      title: "Preparation complete",
-      description: "Your import templatehas been updated",
-    },
-    error: {
-      title: "Error",
-      description: "-",
+    title: "Pre-import tasks",
+    messages: {
+      pending: "Update import service",
+      inProgress: "Fine tuning the import service...",
+      success: "Ready for CSV import",
+      error: "Error updating the import service",
     },
   },
   import: {
-    pending: {
-      title: "Import Data",
-      description: "Map your CSV to your Skylark schema",
-    },
-    inProgress: {
-      title: "Importing Data",
-      description: "Opening CSV importer",
-    },
-    success: {
-      title: "Import complete",
-      description: "CSV imported successfully",
-    },
-    error: {
-      title: "Error",
-      description: "-",
+    title: "Import",
+    messages: {
+      pending: "Import your CSV",
+      inProgress: "Opening CSV importer...",
+      success: "CSV imported successfully",
+      error: "Error using import service",
     },
   },
   create: {
-    pending: {
-      title: "Create in Skylark",
-      description: "Your imported data will be created",
-    },
-    inProgress: {
-      title: "Creating Skylark {objectType}s",
-      description: "Your {objectType}s are being created in Skylark",
-    },
-    success: {
-      title: "All {objectType} created",
-      description: "CSV data created in Skylark",
-    },
-    error: {
-      title: "Error",
-      description: "-",
+    title: "Create objects in Skylark",
+    messages: {
+      pending: "Your imported data will be created",
+      inProgress: "Your {objectType}s are being created in Skylark",
+      success:
+        "Your {objectType}s have been successfully imported into Skylark",
+      error: "Error while creating {objectType}s",
     },
   },
 };
 
-const initialState: { [key: string]: statusType } = {
+const initialState: {
+  [key in ImportStates]: statusType;
+} = {
   select: statusType.pending,
   prep: statusType.pending,
   import: statusType.pending,
@@ -133,7 +118,7 @@ const initialState: { [key: string]: statusType } = {
 };
 
 function reducer(
-  state: { [key: string]: statusType },
+  state: { [key in ImportStates]: statusType },
   action: { stage: string; status: statusType },
 ) {
   return {
@@ -142,7 +127,7 @@ function reducer(
   };
 }
 
-export default function Import() {
+export default function CSVImportPage() {
   const { objectTypes } = useSkylarkObjectTypes();
   const [objectType, setObjectType] = useState("");
   const { object } = useSkylarkObjectOperations(objectType);
@@ -150,6 +135,7 @@ export default function Import() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const createObjectsInSkylark = async (batchId: string) => {
+    dispatch({ stage: "import", status: statusType.success });
     dispatch({ stage: "create", status: statusType.inProgress });
     await importFlatfileDataToSkylark(objectType, batchId);
     dispatch({ stage: "create", status: statusType.success });
@@ -164,12 +150,12 @@ export default function Import() {
 
     dispatch({ stage: "prep", status: statusType.success });
     dispatch({ stage: "import", status: statusType.inProgress });
-    await openFlatfileImportClient(
+    await pause(500); // Reflect state on client side, then open
+    openFlatfileImportClient(
       template.embedId,
       template.token,
       createObjectsInSkylark,
     );
-    dispatch({ stage: "import", status: statusType.success });
   };
 
   const objectTypeOptions =
@@ -178,9 +164,11 @@ export default function Import() {
       .map((objectType) => ({ label: objectType, value: objectType })) || [];
 
   return (
-    <div className="flex h-full w-full flex-row">
-      <section className="flex flex-col gap-10 p-20 pt-48 lg:w-1/2 xl:w-2/5 2xl:w-1/3">
-        <h2 className="text-2xl font-bold">Import from CSV</h2>
+    <div className="flex h-full w-full flex-col sm:flex-row">
+      <section className="flex w-full flex-col gap-6 p-10 pt-24 sm:w-1/2 sm:gap-10 md:px-20 md:pt-48 lg:w-1/2 xl:w-2/5 xl:px-24 2xl:w-1/3 2xl:px-28">
+        <h2 className="font-heading text-2xl font-bold md:text-3xl">
+          Import from CSV
+        </h2>
         <Select
           options={objectTypeOptions}
           placeholder="Select Skylark object"
@@ -199,23 +187,33 @@ export default function Import() {
           Import
         </Button>
       </section>
-      <section className="flex flex-grow flex-col items-center justify-center bg-gray-200">
-        {Object.keys(state).map((card, i) => {
-          const copyCard = copyText[card];
-          const status = state[card];
+      <section className="flex flex-grow flex-col items-center justify-center bg-gray-200 py-10">
+        <div className="flex w-5/6 flex-col items-center justify-center gap-4 md:gap-6 lg:w-3/5 xl:w-1/2 2xl:w-1/3">
+          {orderedStates.map((card) => {
+            const copyCard = copyText[card];
+            const status = state[card];
 
-          return (
-            <StatusCard
-              key={i}
-              title={copyCard[status].title.replace("{objectType}", objectType)}
-              description={copyCard[status].description.replace(
-                "{objectType}",
-                objectType,
-              )}
-              status={status}
-            />
-          );
-        })}
+            return (
+              <StatusCard
+                key={copyCard.title}
+                title={copyCard.title}
+                description={copyCard.messages[status].replace(
+                  "{objectType}",
+                  objectType,
+                )}
+                status={status}
+              />
+            );
+          })}
+          <Button
+            href="/"
+            variant="primary"
+            disabled={state.create !== statusType.success}
+            block
+          >
+            Start curating in Skylark
+          </Button>
+        </div>
       </section>
     </div>
   );

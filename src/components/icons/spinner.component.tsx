@@ -17,16 +17,9 @@ export const Spinner = ({ className }: Props) => {
         fill="url(#paint0_angular_383_55410)"
       />
       <defs>
-        <radialGradient
-          id="paint0_angular_383_55410"
-          cx="0"
-          cy="0"
-          r="1"
-          gradientUnits="userSpaceOnUse"
-          gradientTransform="translate(11 11) rotate(20.2249) scale(10.1242 28.5091)"
-        >
-          <stop stop-color="#D9D9D9" />
-          <stop offset="1" stop-color="#D9D9D9" stop-opacity="0" />
+        <radialGradient id="paint0_angular_383_55410" cx="0" cy="0" r="1">
+          <stop stopColor="#D9D9D9" />
+          <stop offset="1" stopColor="#D9D9D9" stopOpacity="0" />
         </radialGradient>
       </defs>
     </svg>

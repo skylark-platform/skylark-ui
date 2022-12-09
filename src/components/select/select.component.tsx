@@ -32,15 +32,17 @@ export const Select = ({
     onChange(newSelected.value);
   };
 
-  // TODO figure out why option highlighting only works in Storybook
-
   return (
     <Listbox onChange={onChangeWrapper}>
       <div className={clsx("relative", className)}>
-        {label && <Listbox.Label className="font-light">{label}</Listbox.Label>}
+        {label && (
+          <Listbox.Label className="text-sm font-light md:text-base">
+            {label}
+          </Listbox.Label>
+        )}
         <Listbox.Button
           className={clsx(
-            "relative w-full cursor-default rounded-sm bg-manatee-50 p-3 pl-6 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm",
+            "relative w-full cursor-default rounded-sm bg-manatee-50 p-2 pl-3 text-left text-sm focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 sm:p-3 sm:pl-6",
             label && "mt-2",
           )}
         >
@@ -62,26 +64,29 @@ export const Select = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute z-30 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+          <Listbox.Options className="absolute z-30 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
             {options.map((option) => (
               <Listbox.Option
                 key={option.value}
                 className={({ active }) =>
-                  `relative cursor-default select-none py-2 px-4 pl-6 ${
-                    active ? "bg-ultramarine-50 text-gray-900" : "text-gray-900"
-                  }`
+                  clsx(
+                    "relative cursor-default select-none py-2 px-4 pl-6 text-gray-900",
+                    (active || selected?.value === option.value) &&
+                      "bg-ultramarine-50 ",
+                  )
                 }
                 value={option}
               >
-                {({ selected }) => (
-                  <span
-                    className={`block truncate ${
-                      selected ? "font-medium" : "font-normal"
-                    }`}
-                  >
-                    {option.label}
-                  </span>
-                )}
+                <span
+                  className={clsx(
+                    "block truncate",
+                    selected?.value === option.value
+                      ? "font-medium"
+                      : "font-normal",
+                  )}
+                >
+                  {option.label}
+                </span>
               </Listbox.Option>
             ))}
           </Listbox.Options>
