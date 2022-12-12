@@ -1,17 +1,10 @@
-interface Props {
-  className: string;
-}
+import clsx from "clsx";
 
-export const Circle = ({ className }: Props) => {
+import { IconBase, IconProps } from "./iconBase.component";
+
+export const Circle = ({ className }: IconProps) => {
   return (
-    <svg
-      className={className}
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <IconBase className={clsx("stroke-black", className)}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -20,6 +13,6 @@ export const Circle = ({ className }: Props) => {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-    </svg>
+    </IconBase>
   );
 };

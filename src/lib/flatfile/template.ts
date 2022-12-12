@@ -22,8 +22,6 @@ const convertObjectInputFieldToFlatfileProperty = (
     } as FlatfileTemplatePropertyEnum;
   }
 
-  console.log(field);
-
   switch (field.type) {
     case "int":
     case "float":

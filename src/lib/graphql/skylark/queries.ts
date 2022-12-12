@@ -29,17 +29,14 @@ export const GET_SKYLARK_SCHEMA = gql`
           name
           args {
             name
-            defaultValue
             type {
               name
               kind
-              description
               inputFields {
                 name
                 type {
                   name
                   kind
-                  description
                   enumValues {
                     name
                   }

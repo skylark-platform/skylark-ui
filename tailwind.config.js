@@ -18,8 +18,6 @@ module.exports = {
         "nav-bar": "#F0F2F6",
         black: "#0E1825",
         "brand-primary": "#226DFF",
-        "in-progress": "#FFBD12",
-        // "error-2": "#D83C28",
         manatee: {
           50: "#F6F8FB",
           100: "#F1F3F7",

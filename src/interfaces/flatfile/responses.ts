@@ -54,11 +54,14 @@ export interface FlatfileRow {
   data: {
     [key: string]: string | boolean | null;
   };
-  info: [];
 }
 
 export interface FlatfileGetFinalDatabaseViewResponse {
   getFinalDatabaseView: {
     rows: FlatfileRow[];
   };
+}
+
+export interface FlatfileObjectsCreatedInSkylark {
+  [key: string]: { uid: string; external_id: string };
 }

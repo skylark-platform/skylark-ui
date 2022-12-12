@@ -4,6 +4,7 @@ import {
   FLATFILE_ACCESS_KEY_ID,
   FLATFILE_SECRET_KEY,
 } from "src/constants/flatfile";
+import { SkylarkImportedObject } from "src/interfaces/skylark/import";
 import {
   createFlatfileObjectsInSkylark,
   exchangeFlatfileAccessKey,
@@ -13,14 +14,9 @@ import { createFlatfileClient } from "src/lib/graphql/flatfile/client";
 import { createSkylarkClient } from "src/lib/graphql/skylark/client";
 import { getSkylarkObjectTypes } from "src/lib/skylark/introspection";
 
-interface Data {
-  embedId: string;
-  token: string;
-}
-
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data | string>,
+  res: NextApiResponse<SkylarkImportedObject[] | string>,
 ) {
   if (req.method !== "POST") {
     return res.status(501).end();
