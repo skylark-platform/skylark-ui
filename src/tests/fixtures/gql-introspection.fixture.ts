@@ -1,3 +1,5 @@
+import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
+
 export const GQLSkylarkObjectTypesQueryFixture = {
   data: {
     __type: {
@@ -16,7 +18,9 @@ export const GQLSkylarkObjectTypesQueryFixture = {
   },
 };
 
-export const GQLSkylarkSchemaQueryFixture = {
+export const GQLSkylarkSchemaQueryFixture: {
+  data: GQLSkylarkSchemaQueriesMutations;
+} = {
   data: {
     __schema: {
       queryType: {
