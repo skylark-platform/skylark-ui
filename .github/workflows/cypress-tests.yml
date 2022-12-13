@@ -28,8 +28,10 @@ jobs:
           runTests: false
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
-      - name: Pull Vercel Environment Variables to .env file
-        run: vercel env pull --yes --environment=development --token=${{ secrets.VERCEL_TOKEN }} .env
+      - run: vercel env pull --yes --environment=development --token=${{ secrets.VERCEL_TOKEN }} .env
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       - run: yarn build
       - name: Save build folder
         uses: actions/upload-artifact@v3
@@ -56,8 +58,12 @@ jobs:
           path: .next
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
-      - name: Pull Vercel Environment Variables to .env file
-        run: vercel env pull --yes --environment=development --token=${{ secrets.VERCEL_TOKEN }} .env
+      - run: vercel env pull --yes --environment=development --token=${{ secrets.VERCEL_TOKEN }} .env
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - name: Load environment variables from .env
+        uses: xom9ikk/dotenv@v2
       - name: UI Tests
         uses: cypress-io/github-action@v4
         with:
