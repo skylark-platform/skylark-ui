@@ -15,6 +15,7 @@ interface Props {
   label?: string;
   placeholder: string;
   className?: string;
+  disabled?: boolean;
   onChange: (value: Value) => void;
 }
 
@@ -24,6 +25,7 @@ export const Select = ({
   placeholder,
   className,
   onChange,
+  disabled,
 }: Props) => {
   const [selected, setSelected] = useState<Option | null>(null);
 
@@ -33,7 +35,7 @@ export const Select = ({
   };
 
   return (
-    <Listbox onChange={onChangeWrapper}>
+    <Listbox disabled={disabled} onChange={onChangeWrapper}>
       <div className={clsx("relative", className)}>
         {label && (
           <Listbox.Label className="text-sm font-light md:text-base">
@@ -41,8 +43,9 @@ export const Select = ({
           </Listbox.Label>
         )}
         <Listbox.Button
+          data-cy="select"
           className={clsx(
-            "relative w-full cursor-default rounded-sm bg-manatee-50 p-2 pl-3 text-left text-sm focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 sm:p-3 sm:pl-6",
+            "relative w-full cursor-default rounded-sm bg-manatee-50 p-2 pl-3 text-left text-sm focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 disabled:text-manatee-500 sm:p-3 sm:pl-6",
             label && "mt-2",
           )}
         >
@@ -55,7 +58,7 @@ export const Select = ({
             {selected?.label || placeholder || "Select option"}
           </span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-            <GoTriangleDown className="h-3 w-3 text-black" aria-hidden="true" />
+            <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
           </span>
         </Listbox.Button>
         <Transition
@@ -64,7 +67,10 @@ export const Select = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute z-30 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+          <Listbox.Options
+            data-cy="select-options"
+            className="absolute z-30 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+          >
             {options.map((option) => (
               <Listbox.Option
                 key={option.value}

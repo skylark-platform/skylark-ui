@@ -36,3 +36,4 @@
 //   }
 // }
 import "@percy/cypress";
+import "cypress-iframe";

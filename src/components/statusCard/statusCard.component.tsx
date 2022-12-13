@@ -59,7 +59,7 @@ export const StatusCard = ({ title, description, status }: Props) => {
   );
 
   return (
-    <div className={combinedClassName}>
+    <div data-cy="status-card" className={combinedClassName}>
       <div className="w-4/5">
         <h4 className="font-heading font-bold md:text-lg">{title}</h4>
         <p className="my-0.5 text-sm font-light">{description}</p>

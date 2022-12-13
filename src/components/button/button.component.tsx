@@ -6,7 +6,7 @@ import { CgSpinner } from "react-icons/cg";
 export interface ButtonProps {
   onClick?: () => void;
   children: ReactNode;
-  variant: "primary" | "outline";
+  variant: "primary" | "outline" | "ghost";
   loading?: boolean;
   success?: boolean;
   danger?: boolean;
@@ -33,7 +33,9 @@ export const Button = ({
   const combinedClassName = clsx(
     "min-h-8 btn h-8 rounded-full text-xs normal-case md:h-10 md:text-sm min-w-24",
     variant === "primary" && "btn-primary shadow",
-    variant === "outline" && "btn-outline btn-primary",
+    variant === "outline" &&
+      "btn-outline btn-primary disabled:border-none disabled:shadow",
+    variant === "ghost" && "btn-ghost text-brand-primary",
     success && "btn-success text-white",
     danger && "btn-error",
     (disabled || loading) && "bg-disabled btn-disabled",

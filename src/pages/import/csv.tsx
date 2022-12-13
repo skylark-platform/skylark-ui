@@ -119,8 +119,10 @@ const initialState: {
 
 function reducer(
   state: { [key in ImportStates]: statusType },
-  action: { stage: string; status: statusType },
+  action: { stage: ImportStates; status: statusType } | { stage: "reset" },
 ) {
+  if (action.stage === "reset") return initialState;
+
   return {
     ...state,
     [action.stage]: action.status,
@@ -177,11 +179,12 @@ export default function CSVImportPage() {
             setObjectType(value as string);
             dispatch({ stage: "select", status: statusType.success });
           }}
+          disabled={state.prep !== statusType.pending}
         />
         <Button
           block
           variant="primary"
-          disabled={!objectType || !object}
+          disabled={!objectType || !object || state.prep !== statusType.pending}
           onClick={onClick}
         >
           Import
@@ -205,14 +208,23 @@ export default function CSVImportPage() {
               />
             );
           })}
-          <Button
-            href="/"
-            variant="primary"
-            disabled={state.create !== statusType.success}
-            block
-          >
-            Start curating in Skylark
-          </Button>
+          <div className="flex w-full flex-row justify-end gap-x-4">
+            <Button
+              href="/"
+              variant="primary"
+              disabled={state.create !== statusType.success}
+            >
+              Start curating
+            </Button>
+
+            <Button
+              onClick={() => dispatch({ stage: "reset" })}
+              variant="outline"
+              disabled={state.create !== statusType.success}
+            >
+              Import
+            </Button>
+          </div>
         </div>
       </section>
     </div>
