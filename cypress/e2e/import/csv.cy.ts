@@ -39,10 +39,7 @@ it("opens and closes Flatfile", () => {
     .click();
   cy.get("button").contains("Import").click();
 
-  cy.frameLoaded();
-  cy.iframe()
-    .contains("Drop your file here", { timeout: 10000 })
-    .should("be.visible");
+  cy.frameLoaded(".flatfile-sdk iframe");
 
   cy.get(".flatfile-close").click();
 
@@ -62,7 +59,19 @@ it("import a csv through Flatfile", { retries: 3 }, () => {
     .click();
   cy.get("button").contains("Import").click();
 
-  cy.frameLoaded();
+  cy.frameLoaded(".flatfile-sdk iframe");
+
+  // Allow Flatfile to load before checking for start over button
+  cy.contains("Processing ...", { timeout: 10000 }).should("not.exist");
+  cy.wait(5000);
+
+  // If Start over button exists, click it before continuing tests
+  cy.iframe(".flatfile-sdk iframe").then(($body) => {
+    if ($body.find("button:contains('Start over')").length > 0) {
+      cy.iframe().contains("Start over").click();
+    }
+  });
+
   cy.iframe()
     .contains("Drop your file here", { timeout: 10000 })
     .should("be.visible");
@@ -74,7 +83,7 @@ it("import a csv through Flatfile", { retries: 3 }, () => {
         contents: Cypress.Buffer.from(
           "title,slug\nWinter is Coming,winter-is-coming\nThe Kingsroad,the-kingsroad",
         ),
-        fileName: `${Date.now()}-file.csv`,
+        fileName: "episodes.csv",
         mimeType: "text/csv",
         lastModified: Date.now(),
       },
