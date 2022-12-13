@@ -8,7 +8,7 @@ import { NavigationLinks } from "src/components/navigation/links";
 import { QuickSearch } from "src/components/navigation/search/search.component";
 import { UserAvatar } from "src/components/user";
 
-import Logo from "public/images/skylark.png";
+import Logo from "public/images/skylark-christmas.png";
 
 const dummyUser = {
   name: "Joe Bloggs",
