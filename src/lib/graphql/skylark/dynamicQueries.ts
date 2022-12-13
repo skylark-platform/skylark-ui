@@ -1,10 +1,7 @@
 import { gql } from "@apollo/client";
 import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 
-import {
-  SkylarkObjectMeta,
-  SkylarkObjectType,
-} from "src/interfaces/skylark/objects";
+import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
 
 const common = {
   variables: {

@@ -4,23 +4,19 @@ import {
   FLATFILE_ACCESS_KEY_ID,
   FLATFILE_SECRET_KEY,
 } from "src/constants/flatfile";
+import { SkylarkImportedObject } from "src/interfaces/skylark/import";
 import {
   createFlatfileObjectsInSkylark,
   exchangeFlatfileAccessKey,
+  getFlatfileFinalDatabaseView,
 } from "src/lib/flatfile";
-import { getFlatfileFinalDatabaseView } from "src/lib/flatfile/api/databaseView";
 import { createFlatfileClient } from "src/lib/graphql/flatfile/client";
 import { createSkylarkClient } from "src/lib/graphql/skylark/client";
 import { getSkylarkObjectTypes } from "src/lib/skylark/introspection";
 
-interface Data {
-  embedId: string;
-  token: string;
-}
-
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data | string>,
+  res: NextApiResponse<SkylarkImportedObject[] | string>,
 ) {
   if (req.method !== "POST") {
     return res.status(501).end();
@@ -51,7 +47,7 @@ export default async function handler(
   if (!isObjectValid) {
     return res
       .status(500)
-      .send(`Object "${objectType}" does not exist in Skylark`);
+      .send(`Object type "${objectType}" does not exist in Skylark`);
   }
 
   let flatfileAccessToken = "";
@@ -64,7 +60,7 @@ export default async function handler(
     flatfileAccessToken = data.accessToken;
   } catch (err) {
     if ((err as Error).message) {
-      res.status(500).send((err as Error).message);
+      return res.status(500).send((err as Error).message);
     }
     return res.status(500).send("Error exchanging Flatfile token");
   }
