@@ -53,7 +53,7 @@ it("opens and closes Flatfile", () => {
   cy.get(".border-t-manatee-500").should("have.length", "3");
 });
 
-it("import a csv through Flatfile", () => {
+it("import a csv through Flatfile", { retries: 3 }, () => {
   cy.get('[data-cy="select"]').click();
   cy.get('[data-cy="select-options"]').should("be.visible");
   cy.get('[data-cy="select-options"]')
