@@ -68,12 +68,6 @@ export interface GQLMutationsList {
 }
 [];
 
-export interface SkylarkGetInputFieldsResponse {
-  __type: {
-    inputFields: GQLInputField[];
-  };
-}
-
 export interface GQLSkylarkObjectTypesResponse {
   __type: { enumValues: { name: SkylarkObjectType }[] };
 }
