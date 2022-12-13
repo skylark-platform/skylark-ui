@@ -121,7 +121,8 @@ function reducer(
   state: { [key in ImportStates]: statusType },
   action: { stage: ImportStates; status: statusType } | { stage: "reset" },
 ) {
-  if (action.stage === "reset") return initialState;
+  if (action.stage === "reset")
+    return { ...initialState, select: statusType.success };
 
   return {
     ...state,
@@ -132,13 +133,11 @@ function reducer(
 export default function CSVImportPage() {
   const { objectTypes } = useSkylarkObjectTypes();
   const [objectType, setObjectType] = useState("");
-  const [flatfileIsOpen, setFlatfileIsOpen] = useState(false);
   const { object } = useSkylarkObjectOperations(objectType);
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const createObjectsInSkylark = async (batchId: string) => {
-    setFlatfileIsOpen(false);
     dispatch({ stage: "import", status: statusType.success });
     dispatch({ stage: "create", status: statusType.inProgress });
     await importFlatfileDataToSkylark(objectType, batchId);
@@ -153,23 +152,22 @@ export default function CSVImportPage() {
     const template = await createFlatfileTemplate(objectType, schema);
 
     dispatch({ stage: "prep", status: statusType.success });
-    dispatch({ stage: "import", status: statusType.inProgress });
     await pause(500); // Reflect state on client side, then open
     await openFlatfileImportClient(
       template.embedId,
       template.token,
       createObjectsInSkylark,
     );
-    setFlatfileIsOpen(true);
+    dispatch({ stage: "import", status: statusType.inProgress });
   };
 
   const closeFlatfile = () => {
-    console.log("closed");
-    setFlatfileIsOpen(false);
+    console.log("closing");
+    dispatch({ stage: "reset" });
   };
 
   useEffect(() => {
-    if (flatfileIsOpen) {
+    if (state.import === statusType.inProgress) {
       document
         .getElementsByClassName("flatfile-close")[0]
         ?.addEventListener("click", closeFlatfile);
@@ -179,7 +177,7 @@ export default function CSVImportPage() {
         .getElementsByClassName("flatfile-close")[0]
         ?.removeEventListener("click", closeFlatfile);
     };
-  }, [flatfileIsOpen]);
+  }, [state.import]);
 
   const objectTypeOptions =
     objectTypes
@@ -243,7 +241,7 @@ export default function CSVImportPage() {
               variant="outline"
               disabled={state.create !== statusType.success}
             >
-              Import
+              New import
             </Button>
           </div>
         </div>

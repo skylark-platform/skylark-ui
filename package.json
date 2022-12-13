@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.7.1",
-    "@flatfile/sdk": "^2.1.6",
+    "@flatfile/sdk": "^2.3.2",
     "@fontsource/inter": "^4.5.14",
     "@fontsource/work-sans": "^4.5.12",
     "@headlessui/react": "^1.7.4",

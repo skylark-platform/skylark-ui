@@ -6,6 +6,9 @@ it("visit import/csv page", () => {
   cy.get("button").contains("Import").should("be.disabled");
   cy.get('[data-cy="status-card"]').should("have.length", "4");
   cy.get("a").contains("Start curating").should("have.class", "btn-disabled");
+  cy.get(".btn-outline")
+    .contains("New import")
+    .should("have.class", "btn-disabled");
   cy.percySnapshot("import/csv");
 });
 
@@ -27,6 +30,29 @@ it("select objectType", () => {
   cy.percySnapshot("import/csv - objectType selected");
 });
 
+it("opens and closes Flatfile", () => {
+  cy.get('[data-cy="select"]').click();
+  cy.get('[data-cy="select-options"]').should("be.visible");
+  cy.get('[data-cy="select-options"]')
+    .get("li > span")
+    .contains("Episode")
+    .click();
+  cy.get("button").contains("Import").click();
+
+  cy.frameLoaded();
+  cy.iframe()
+    .contains("Drop your file here", { timeout: 10000 })
+    .should("be.visible");
+
+  cy.get(".flatfile-close").click();
+
+  cy.get(".flatfile-sdk iframe").should("not.exist");
+  cy.get('[data-cy="status-card"]')
+    .first()
+    .should("have.class", "border-t-success");
+  cy.get(".border-t-manatee-500").should("have.length", "3");
+});
+
 it("import a csv through Flatfile", () => {
   cy.get('[data-cy="select"]').click();
   cy.get('[data-cy="select-options"]').should("be.visible");
@@ -37,7 +63,9 @@ it("import a csv through Flatfile", () => {
   cy.get("button").contains("Import").click();
 
   cy.frameLoaded();
-  cy.iframe().contains("Drop your file here").should("be.visible");
+  cy.iframe()
+    .contains("Drop your file here", { timeout: 10000 })
+    .should("be.visible");
 
   cy.iframe()
     .find("#file-inputid")
@@ -46,7 +74,7 @@ it("import a csv through Flatfile", () => {
         contents: Cypress.Buffer.from(
           "title,slug\nWinter is Coming,winter-is-coming\nThe Kingsroad,the-kingsroad",
         ),
-        fileName: "file.csv",
+        fileName: `${Date.now()}-file.csv`,
         mimeType: "text/csv",
         lastModified: Date.now(),
       },
@@ -64,14 +92,27 @@ it("import a csv through Flatfile", () => {
 
   cy.get(".flatfile-sdk iframe").should("not.exist");
 
-  cy.get('[data-cy="status-card"].border-t-success').should("have.length", 4);
+  cy.get('[data-cy="status-card"].border-t-success', { timeout: 10000 }).should(
+    "have.length",
+    4,
+  );
 
   cy.get("a")
     .contains("Start curating")
+    .should("not.have.class", "btn-disabled");
+  cy.get(".btn-outline")
+    .contains("New import")
     .should("not.have.class", "btn-disabled");
 
   cy.get("button").contains("Import").should("be.disabled");
   cy.get('[data-cy="select"]').should("be.disabled");
 
   cy.percySnapshot("import/csv - import complete");
+
+  cy.get(".btn-outline").contains("New import").click();
+  cy.get("button").contains("Import").should("not.disabled");
+  cy.get('[data-cy="status-card"]')
+    .first()
+    .should("have.class", "border-t-success");
+  cy.get(".border-t-manatee-500").should("have.length", "3");
 });

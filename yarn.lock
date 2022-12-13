@@ -1407,10 +1407,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@flatfile/sdk@^2.1.6":
-  version "2.1.6"
-  resolved "https://registry.yarnpkg.com/@flatfile/sdk/-/sdk-2.1.6.tgz#2a1de809609988d5a70b6dcbc42cdb098374ab8c"
-  integrity sha512-IqdHQp4M4APvS9K24SDcnb6Nn/IsQNdndoXhRSDEXIv8rKkQzqt5PoPXdfk2HmgH6aktiwveCMZzYNajzcrr9g==
+"@flatfile/sdk@^2.3.2":
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/@flatfile/sdk/-/sdk-2.3.2.tgz#8a044f150e4f406168b07ac105f27cc83469cf28"
+  integrity sha512-ALxQPPP0dEcnq6Dgn7lbGv071ccARPJs4MQIvbq3lH2x+YY4UFDD1Wx2BnadXo5JDDF459w/7UOKa2yVQWwe/A==
   dependencies:
     eventemitter3 "^4.0.7"
     graphql "^15.5.0"
