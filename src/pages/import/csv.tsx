@@ -161,10 +161,7 @@ export default function CSVImportPage() {
     dispatch({ stage: "import", status: statusType.inProgress });
   };
 
-  const closeFlatfile = () => {
-    console.log("closing");
-    dispatch({ stage: "reset" });
-  };
+  const closeFlatfile = () => dispatch({ stage: "reset" });
 
   useEffect(() => {
     if (state.import === statusType.inProgress) {
