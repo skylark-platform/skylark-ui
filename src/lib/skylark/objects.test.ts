@@ -1,4 +1,3 @@
-import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import { GQLSkylarkSchemaQueryFixture } from "src/tests/fixtures";
 
 import { getObjectOperations } from "./objects";
