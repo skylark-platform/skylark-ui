@@ -51,14 +51,15 @@ describe("createFlatfileObjectsInSkylark", () => {
   const title = "the test title";
   const synopsis = "the test synopsis";
   const slug = "the-test-slug";
+  const type = "SHORT";
 
   const CREATE_EPISODE_MUTATION = gql`
     mutation createEpisode_batchId {
-      createEpisode_batchId_1: createEpisode(episode: { title: "${title}", synopsis: "${synopsis}" }) {
+      createEpisode_batchId_1: createEpisode(episode: { title: "${title}", synopsis: "${synopsis}", type: ${type} }) {
         uid
         external_id
       }
-      createEpisode_batchId_2: createEpisode(episode: { title: "${title}", slug: "${slug}" }) {
+      createEpisode_batchId_2: createEpisode(episode: { title: "${title}", slug: "${slug}", type: ${type} }) {
         uid
         external_id
       }
@@ -73,6 +74,7 @@ describe("createFlatfileObjectsInSkylark", () => {
       data: {
         title,
         synopsis,
+        type,
       },
     },
     {
@@ -82,6 +84,7 @@ describe("createFlatfileObjectsInSkylark", () => {
       data: {
         title,
         slug,
+        type,
       },
     },
   ];

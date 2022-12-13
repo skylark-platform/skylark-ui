@@ -82,6 +82,18 @@ export const GQLSkylarkSchemaQueryFixture: {
                         ofType: null,
                       },
                     },
+                    {
+                      name: "type",
+                      type: {
+                        __typename: "",
+                        name: "String",
+                        kind: "ENUM",
+                        enumValues: [{ name: "SHORT" }, { name: "LONG" }],
+                        fields: [],
+                        inputFields: [],
+                        ofType: null,
+                      },
+                    },
                   ],
                   ofType: null,
                 },

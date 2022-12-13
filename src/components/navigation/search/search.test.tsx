@@ -4,7 +4,7 @@ import { act } from "react-dom/test-utils";
 
 import { QuickSearch } from "./search.component";
 
-test("searches for episodes", async () => {
+test("searches for episodes on click", async () => {
   const search = jest.fn();
 
   render(<QuickSearch onSearch={search} />);
@@ -18,4 +18,34 @@ test("searches for episodes", async () => {
   });
 
   expect(search).toHaveBeenCalledWith("episodes");
+});
+
+test("searches for episodes when enter key is pressed", async () => {
+  const search = jest.fn();
+
+  render(<QuickSearch onSearch={search} />);
+
+  const searchInput = screen.getByRole("textbox");
+
+  act(() => {
+    fireEvent.change(searchInput, { target: { value: "episodes" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: 13, charCode: 13 });
+  });
+
+  expect(search).toHaveBeenCalledWith("episodes");
+});
+
+test("does not search for episodes when a non-enter key is pressed", async () => {
+  const search = jest.fn();
+
+  render(<QuickSearch onSearch={search} />);
+
+  const searchInput = screen.getByRole("textbox");
+
+  act(() => {
+    fireEvent.change(searchInput, { target: { value: "episodes" } });
+    fireEvent.keyDown(searchInput, { key: "Backspace" });
+  });
+
+  expect(search).not.toHaveBeenCalled();
 });

@@ -66,7 +66,7 @@ export const getObjectOperations = (
 
   const object: SkylarkObjectMeta = {
     name: objectType,
-    fields: objectFields || [],
+    fields: objectFields,
     operations,
   };
 

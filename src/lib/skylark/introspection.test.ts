@@ -63,6 +63,13 @@ describe("getSkylarkObjectOperations", () => {
             name: "title",
             type: "string",
           },
+          {
+            enumValues: ["SHORT", "LONG"],
+            isList: false,
+            isRequired: false,
+            name: "type",
+            type: "enum",
+          },
         ],
         relationships: [],
       },

@@ -1,3 +1,4 @@
+import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import { GQLSkylarkSchemaQueryFixture } from "src/tests/fixtures";
 
 import { getObjectOperations } from "./objects";
@@ -37,6 +38,13 @@ test("returns all operations", () => {
             isRequired: false,
             name: "title",
             type: "string",
+          },
+          {
+            enumValues: ["SHORT", "LONG"],
+            isList: false,
+            isRequired: false,
+            name: "type",
+            type: "enum",
           },
         ],
         relationships: [],

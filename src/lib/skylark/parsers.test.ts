@@ -63,6 +63,10 @@ describe("parseObjectInputFields", () => {
         input: "UnknownInput",
         want: "string",
       },
+      {
+        input: null,
+        want: "string",
+      },
     ].forEach(({ input, want }) =>
       test(`parses a ${input} to be a ${want}`, () => {
         const fields: GQLInputField = {
@@ -77,6 +81,11 @@ describe("parseObjectInputFields", () => {
         expect(got).toEqual(want);
       }),
     );
+  });
+
+  test("returns an empty array when inputFields is undefined", () => {
+    const got = parseObjectInputFields(undefined);
+    expect(got).toEqual([]);
   });
 
   test("parses the type from the ofType field when it is given", () => {
