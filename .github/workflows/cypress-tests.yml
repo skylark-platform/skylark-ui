@@ -26,6 +26,10 @@ jobs:
       - uses: cypress-io/github-action@v4
         with:
           runTests: false
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Variables to .env file
+        run: vercel env pull --yes --environment=development --token=${{ secrets.VERCEL_TOKEN }} .env
       - run: yarn build
       - name: Save build folder
         uses: actions/upload-artifact@v3
@@ -50,6 +54,10 @@ jobs:
         with:
           name: build
           path: .next
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Variables to .env file
+        run: vercel env pull --yes --environment=development --token=${{ secrets.VERCEL_TOKEN }} .env
       - name: UI Tests
         uses: cypress-io/github-action@v4
         with:
