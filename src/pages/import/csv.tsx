@@ -1,4 +1,4 @@
-import { useState, useReducer } from "react";
+import { useState, useReducer, useEffect } from "react";
 
 import { Button } from "src/components/button";
 import { Select } from "src/components/select/select.component";
@@ -132,11 +132,13 @@ function reducer(
 export default function CSVImportPage() {
   const { objectTypes } = useSkylarkObjectTypes();
   const [objectType, setObjectType] = useState("");
+  const [flatfileIsOpen, setFlatfileIsOpen] = useState(false);
   const { object } = useSkylarkObjectOperations(objectType);
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const createObjectsInSkylark = async (batchId: string) => {
+    setFlatfileIsOpen(false);
     dispatch({ stage: "import", status: statusType.success });
     dispatch({ stage: "create", status: statusType.inProgress });
     await importFlatfileDataToSkylark(objectType, batchId);
@@ -153,12 +155,31 @@ export default function CSVImportPage() {
     dispatch({ stage: "prep", status: statusType.success });
     dispatch({ stage: "import", status: statusType.inProgress });
     await pause(500); // Reflect state on client side, then open
-    openFlatfileImportClient(
+    await openFlatfileImportClient(
       template.embedId,
       template.token,
       createObjectsInSkylark,
     );
+    setFlatfileIsOpen(true);
   };
+
+  const closeFlatfile = () => {
+    console.log("closed");
+    setFlatfileIsOpen(false);
+  };
+
+  useEffect(() => {
+    if (flatfileIsOpen) {
+      document
+        .getElementsByClassName("flatfile-close")[0]
+        ?.addEventListener("click", closeFlatfile);
+    }
+    return () => {
+      document
+        .getElementsByClassName("flatfile-close")[0]
+        ?.removeEventListener("click", closeFlatfile);
+    };
+  }, [flatfileIsOpen]);
 
   const objectTypeOptions =
     objectTypes
