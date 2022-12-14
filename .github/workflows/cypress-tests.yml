@@ -26,6 +26,12 @@ jobs:
       - uses: cypress-io/github-action@v4
         with:
           runTests: false
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - run: vercel env pull --yes --environment=development --token=${{ secrets.VERCEL_TOKEN }} .env
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       - run: yarn build
       - name: Save build folder
         uses: actions/upload-artifact@v3
@@ -50,6 +56,14 @@ jobs:
         with:
           name: build
           path: .next
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - run: vercel env pull --yes --environment=development --token=${{ secrets.VERCEL_TOKEN }} .env
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - name: Load environment variables from .env
+        uses: xom9ikk/dotenv@v2
       - name: UI Tests
         uses: cypress-io/github-action@v4
         with:
@@ -70,6 +84,8 @@ jobs:
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           # re-enable PR comment bot
           COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha }}
+          # Give Cypress its own account
+          NEXT_PUBLIC_SAAS_ACCOUNT_ID: cypress
 
   percy:
     name: Check Percy Build Status

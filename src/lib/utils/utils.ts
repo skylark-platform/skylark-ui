@@ -8,3 +8,6 @@ export const hasProperty = <T, K extends PropertyKey>(
 export const isObject = (input: unknown): input is Record<string, unknown> => {
   return typeof input === "object" && input !== null && !Array.isArray(input);
 };
+
+export const pause = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));

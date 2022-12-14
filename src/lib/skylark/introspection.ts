@@ -1,11 +1,8 @@
-import { getObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
-  GQLInputField,
   GQLSkylarkObjectTypesResponse,
   GQLSkylarkSchemaQueriesMutations,
 } from "src/interfaces/graphql/introspection";
 import {
-  NormalizedObjectField,
   SkylarkObjectMeta,
   SkylarkObjectTypes,
 } from "src/interfaces/skylark/objects";
@@ -14,6 +11,8 @@ import {
   GET_SKYLARK_SCHEMA,
   GET_SKYLARK_OBJECT_TYPES,
 } from "src/lib/graphql/skylark/queries";
+
+import { getObjectOperations } from "./objects";
 
 export const getSkylarkObjectOperations = async (
   client: SkylarkClient,

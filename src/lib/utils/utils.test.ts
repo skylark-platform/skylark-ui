@@ -1,4 +1,4 @@
-import { hasProperty, isObject } from "./utils";
+import { hasProperty, isObject, pause } from "./utils";
 
 describe("hasProperty", () => {
   test("returns true when the object has the property", () => {
@@ -26,5 +26,21 @@ describe("isObject", () => {
   test("returns false when the given value is a string", () => {
     const got = isObject("str");
     expect(got).toBeFalsy();
+  });
+});
+
+describe("pause", () => {
+  test("pauses for 1000ms", async () => {
+    // Arrange
+    jest.useFakeTimers();
+    const cb = jest.fn();
+
+    // Act
+    pause(1000).then(cb);
+    jest.advanceTimersByTime(1000);
+    await Promise.resolve(); // allow any pending jobs in the PromiseJobs queue to run
+
+    // Assert
+    expect(cb).toHaveBeenCalled();
   });
 });

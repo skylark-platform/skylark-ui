@@ -2,7 +2,11 @@ import { gql } from "@apollo/client";
 import { ITheme } from "@flatfile/sdk";
 import { EnumType, jsonToGraphQLQuery } from "json-to-graphql-query";
 
-import { FlatfileRow } from "src/interfaces/flatfile/responses";
+import {
+  FlatfileObjectsCreatedInSkylark,
+  FlatfileRow,
+} from "src/interfaces/flatfile/responses";
+import { SkylarkImportedObject } from "src/interfaces/skylark/import";
 import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
 import { SkylarkClient } from "src/lib/graphql/skylark/client";
 import { getSkylarkObjectOperations } from "src/lib/skylark/introspection";
@@ -21,7 +25,7 @@ export const openFlatfileImportClient = async (
   // Import Flatfile clientside otherwise it errors
   const Flatfile = (await import("@flatfile/sdk")).Flatfile;
 
-  Flatfile.requestDataFromUser({
+  await Flatfile.requestDataFromUser({
     embedId,
     token: importToken,
     theme,
@@ -36,7 +40,7 @@ export const createFlatfileObjectsInSkylark = async (
   objectType: string,
   flatfileBatchId: string,
   flatfileRows: FlatfileRow[],
-): Promise<any> => {
+): Promise<SkylarkImportedObject[]> => {
   const skylarkObjectOperations: SkylarkObjectMeta["operations"] =
     await getSkylarkObjectOperations(client, objectType);
 
@@ -88,9 +92,9 @@ export const createFlatfileObjectsInSkylark = async (
 
   const graphQLMutation = jsonToGraphQLQuery(mutation, { pretty: true });
 
-  const { data } = await client.mutate<{
-    [key: string]: { uid: string; external_id: string };
-  }>({ mutation: gql(graphQLMutation) });
+  const { data } = await client.mutate<FlatfileObjectsCreatedInSkylark>({
+    mutation: gql(graphQLMutation),
+  });
 
-  return data;
+  return Object.values(data as FlatfileObjectsCreatedInSkylark);
 };

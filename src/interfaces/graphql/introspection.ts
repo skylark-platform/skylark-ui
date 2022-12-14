@@ -26,7 +26,7 @@ export type GQLTypeKind =
 export interface GQLType {
   __typename: string;
   kind: GQLTypeKind | null;
-  name: GQLTypeName;
+  name: GQLTypeName | null;
   enumValues: { name: string }[] | null;
   fields: GQLInputField[];
   inputFields: GQLInputField[];
@@ -35,9 +35,7 @@ export interface GQLType {
 
 export interface GQLInputValue {
   name: string;
-  description: string;
   type: Pick<GQLType, "name" | "kind" | "inputFields">;
-  defaultValue: string;
 }
 
 export interface GQLInputField {
