@@ -30,6 +30,7 @@ export const useListObjects = (objectType: SkylarkObjectType) => {
 
   return {
     data: data?.listSkylarkObjects,
+    fields: object?.fields,
     ...rest,
   };
 };
