@@ -1,6 +1,5 @@
 import {
   createColumnHelper,
-  flexRender,
   getCoreRowModel,
   RowData,
   useReactTable,
@@ -9,20 +8,17 @@ import clsx from "clsx";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-import { Button } from "src/components/button";
-import { Edit, InfoCircle } from "src/components/icons";
 import { Select } from "src/components/select";
 import { useListObjects } from "src/hooks/useListObjects";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
-import {
-  NormalizedObjectField,
-  SkylarkObjectType,
-} from "src/interfaces/skylark/objects";
+import { NormalizedObjectField } from "src/interfaces/skylark/objects";
 
 import { CreateButtons } from "./createButtons";
-import { ColumnFilter } from "./filters";
 import { RowActions } from "./rowActions";
 import { Table } from "./table";
+
+const ignoredKeys = ["__typename"];
+const orderedKeys = ["__typename", "title", "name", "uid", "external_id"];
 
 const columnHelper = createColumnHelper<object>();
 
@@ -46,8 +42,8 @@ const createColumns = (columns: TableColumn[]) => {
   return [
     ...columns.map((column) =>
       columnHelper.accessor(column, {
-        sortDescFirst: column === "slug" ? true : undefined,
         cell: ({ getValue, row, column, table }) => {
+          console.log(row.id, row.getIsSelected());
           const initialValue = getValue();
           // We need to keep and update the state of the cell normally
           // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -69,15 +65,14 @@ const createColumns = (columns: TableColumn[]) => {
               value={value as string}
               onChange={(e) => setValue(e.target.value)}
               className={clsx(
-                "w-full rounded border-2 border-brand-primary p-2 px-2 shadow disabled:border-manatee-200 disabled:text-manatee-500 disabled:shadow-none",
+                "w-full border-b-2 border-brand-primary py-1 outline-none disabled:border-none disabled:border-manatee-200 disabled:text-manatee-500",
                 initialValue !== value && "border-warning",
                 value === "" && initialValue !== "" && "border-error",
               )}
-              // onBlur={onBlur}
               disabled={column.id === "uid"}
             />
           ) : (
-            <span>{value as string}</span>
+            (initialValue as string)
           );
         },
       }),
@@ -87,6 +82,7 @@ const createColumns = (columns: TableColumn[]) => {
       cell: ({ table, row }) => {
         return (
           <RowActions
+            editRowEnabled={false}
             inEditMode={table.options.meta?.rowInEditMode === row.id}
             onEditClick={() => table.options.meta?.onEditClick(row.id)}
             onInfoClick={() => console.log(row)}
@@ -105,8 +101,6 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const [objectType, setObjectType] = useState("");
   const { data, fields } = useListObjects(objectType);
 
-  const ignoredKeys = ["__typename"];
-  const orderedKeys = ["__typename", "title", "name", "uid", "external_id"];
   const objectProperties = fields
     ? fields.filter((key) => !ignoredKeys.includes(key.name))
     : [];
@@ -130,9 +124,9 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const [columnVisibility, setColumnVisibility] = useState({});
 
   const table = useReactTable({
-    debugTable: true,
+    debugAll: true,
     data: data?.objects || [],
-    columns: parsedColumns,
+    columns: data?.objects ? parsedColumns : [],
     getCoreRowModel: getCoreRowModel(),
     state: {
       columnVisibility,
@@ -150,8 +144,8 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   });
 
   return (
-    <div>
-      <div className="flex w-full flex-row items-center justify-between gap-4">
+    <div className="flex h-full flex-col gap-10">
+      <div className="flex w-full flex-row items-center justify-between">
         <Select
           className="w-64"
           placeholder="Select Skylark object"
@@ -174,10 +168,9 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
         />
         {withCreateButtons && <CreateButtons />}
       </div>
-      <ColumnFilter table={table} />
-
-      <div className="w-full overflow-x-auto">
-        <Table table={table} />
+      {/* <ColumnFilter table={table} /> */}
+      <div className="flex h-[75vh] w-full flex-auto overflow-x-auto">
+        {data && <Table table={table} />}
       </div>
     </div>
   );

@@ -49,6 +49,9 @@ module.exports = {
       minWidth: (theme) => ({
         24: theme("spacing.24"),
       }),
+      maxWidth: (theme) => ({
+        ...theme("spacing"),
+      }),
     },
   },
   daisyui: {

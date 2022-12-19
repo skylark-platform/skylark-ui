@@ -6,7 +6,7 @@ interface FilterColumnsProps {
 
 export const ColumnFilter = ({ table }: FilterColumnsProps) => {
   return (
-    <div className="my-14 grid grid-flow-row grid-cols-3 text-sm md:w-1/2">
+    <div className="my-2 grid grid-flow-row grid-cols-5 text-sm md:w-4/5">
       {table.getAllLeafColumns().map((column) => {
         return (
           <div key={column.id} className="px-1">

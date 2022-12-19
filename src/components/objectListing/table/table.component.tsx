@@ -1,12 +1,5 @@
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  Table as ReactTable,
-  useReactTable,
-} from "@tanstack/react-table";
+import { flexRender, Table as ReactTable } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
 
 export type TableColumn = string;
 
@@ -15,18 +8,18 @@ export interface TableProps {
 }
 
 const headAndDataClassNames =
-  "w-fit min-w-24 max-w-xs overflow-hidden text-ellipsis whitespace-pre pl-3 text-sm text-sm text-base-content";
+  "overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm text-base-content max-w-52";
 const firstHeadAndDataClassNames =
-  "first:sticky first:left-0 first:pl-0 first:bg-white first:z-10";
+  "md:first:sticky first:left-0 first:pl-0 first:bg-white first:z-10";
 const lastHeadAndDataClassNames =
   "last:sticky last:right-0 last:pl-0 last:bg-white last:z-10 last:min-w-0 last:border-l-0";
 
 export const Table = ({ table }: TableProps) => {
   return (
-    <table className="relative w-full overflow-x-auto">
+    <table className="relative w-full border-separate overflow-x-auto">
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
+          <tr key={headerGroup.id} className="sticky top-0 z-20 bg-white">
             {headerGroup.headers.map((header) => (
               <th
                 key={header.id}
@@ -34,15 +27,17 @@ export const Table = ({ table }: TableProps) => {
                   headAndDataClassNames,
                   firstHeadAndDataClassNames,
                   lastHeadAndDataClassNames,
-                  "ml-4 border-l pr-10 text-left font-semibold text-opacity-30 first:border-l-0 first:pl-0",
+                  "ml-4 pr-10 pb-2 text-left font-semibold text-opacity-30 [&>span]:border-l [&>span]:pl-2 [&>span]:first:border-l-0 [&>span]:first:pl-0",
                 )}
               >
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext(),
-                    )}
+                <span className="">
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </span>
               </th>
             ))}
           </tr>
@@ -59,7 +54,7 @@ export const Table = ({ table }: TableProps) => {
                   headAndDataClassNames,
                   firstHeadAndDataClassNames,
                   lastHeadAndDataClassNames,
-                  "p-2",
+                  "p-1.5 last:pr-0",
                 )}
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}

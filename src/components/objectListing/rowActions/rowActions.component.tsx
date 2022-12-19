@@ -6,6 +6,7 @@ import {
 } from "src/components/icons";
 
 interface RowActionsProps {
+  editRowEnabled: boolean;
   inEditMode?: boolean;
   onInfoClick: () => void;
   onEditClick: () => void;
@@ -14,6 +15,7 @@ interface RowActionsProps {
 }
 
 export const RowActions = ({
+  editRowEnabled,
   inEditMode,
   onInfoClick,
   onEditClick,
@@ -21,7 +23,7 @@ export const RowActions = ({
   onEditCancelClick,
 }: RowActionsProps) => (
   <div className="flex w-full items-center justify-center gap-3 pl-4 text-center ">
-    {inEditMode ? (
+    {inEditMode && editRowEnabled ? (
       <>
         <button onClick={onEditSaveClick}>
           <CheckSquare className="h-5 stroke-success transition-colors hover:stroke-success/60" />
@@ -35,9 +37,11 @@ export const RowActions = ({
         <button onClick={onInfoClick}>
           <InfoCircle className="h-5 stroke-brand-primary transition-colors hover:stroke-brand-primary/60" />
         </button>
-        <button onClick={onEditClick}>
-          <Edit className="h-5 stroke-brand-primary transition-colors hover:stroke-brand-primary/60" />
-        </button>
+        {editRowEnabled && (
+          <button onClick={onEditClick}>
+            <Edit className="h-5 stroke-brand-primary transition-colors hover:stroke-brand-primary/60" />
+          </button>
+        )}
       </>
     )}
   </div>
