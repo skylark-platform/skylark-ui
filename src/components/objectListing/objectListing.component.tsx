@@ -126,7 +126,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const table = useReactTable({
     debugAll: true,
     data: data?.objects || [],
-    columns: data?.objects ? parsedColumns : [],
+    columns: parsedColumns || [],
     getCoreRowModel: getCoreRowModel(),
     state: {
       columnVisibility,
@@ -170,7 +170,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
       </div>
       {/* <ColumnFilter table={table} /> */}
       <div className="flex h-[75vh] w-full flex-auto overflow-x-auto">
-        {data && <Table table={table} />}
+        {parsedColumns.length > 0 && <Table table={table} />}
       </div>
     </div>
   );
