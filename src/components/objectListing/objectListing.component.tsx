@@ -43,7 +43,6 @@ const createColumns = (columns: TableColumn[]) => {
     ...columns.map((column) =>
       columnHelper.accessor(column, {
         cell: ({ getValue, row, column, table }) => {
-          console.log(row.id, row.getIsSelected());
           const initialValue = getValue();
           // We need to keep and update the state of the cell normally
           // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -126,7 +125,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const table = useReactTable({
     debugAll: true,
     data: data?.objects || [],
-    columns: parsedColumns || [],
+    columns: data?.objects ? parsedColumns : [],
     getCoreRowModel: getCoreRowModel(),
     state: {
       columnVisibility,
@@ -170,7 +169,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
       </div>
       {/* <ColumnFilter table={table} /> */}
       <div className="flex h-[75vh] w-full flex-auto overflow-x-auto">
-        {parsedColumns.length > 0 && <Table table={table} />}
+        {data?.objects && <Table table={table} />}
       </div>
     </div>
   );
