@@ -1,6 +1,6 @@
 import { Listbox, Transition } from "@headlessui/react";
 import clsx from "clsx";
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect, useCallback } from "react";
 import { GoTriangleDown } from "react-icons/go";
 
 type Value = string | number;
@@ -16,6 +16,7 @@ interface Props {
   placeholder: string;
   className?: string;
   disabled?: boolean;
+  initialValue?: string;
   onChange: (value: Value) => void;
 }
 
@@ -26,13 +27,25 @@ export const Select = ({
   className,
   onChange,
   disabled,
+  initialValue,
 }: Props) => {
   const [selected, setSelected] = useState<Option | null>(null);
 
-  const onChangeWrapper = (newSelected: Option) => {
-    setSelected(newSelected);
-    onChange(newSelected.value);
-  };
+  const onChangeWrapper = useCallback(
+    (newSelected: Option) => {
+      setSelected(newSelected);
+      onChange(newSelected.value);
+    },
+    [onChange],
+  );
+
+  useEffect(() => {
+    if (initialValue && selected === null) {
+      const newValue =
+        initialValue && options.find(({ value }) => value === initialValue);
+      newValue && onChangeWrapper(newValue);
+    }
+  }, [initialValue, options, onChangeWrapper, selected]);
 
   return (
     <Listbox disabled={disabled} onChange={onChangeWrapper}>
