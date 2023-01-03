@@ -8,7 +8,7 @@ import { NavigationLinks } from "src/components/navigation/links";
 import { QuickSearch } from "src/components/navigation/search/search.component";
 import { UserAvatar } from "src/components/user";
 
-import Logo from "public/images/skylark-christmas.png";
+import Logo from "public/images/skylark.png";
 
 const dummyUser = {
   name: "Joe Bloggs",
@@ -25,13 +25,7 @@ export const Navigation = () => {
       <div className="fixed top-0 left-0 right-0 z-40 flex h-16 flex-col items-center justify-center bg-nav-bar py-2 px-8 font-sans text-black md:h-14 md:flex-row md:justify-start lg:h-16 lg:px-14">
         <Link legacyBehavior href="/">
           <a className="absolute top-4 left-5 z-50 flex items-center justify-center md:relative md:top-0 md:left-0">
-            <Image
-              src={Logo}
-              alt="Skylark Logo"
-              width="30"
-              height="30"
-              className="pb-1"
-            />
+            <Image src={Logo} alt="Skylark Logo" width="30" height="30" />
             <p className="ml-3 font-heading text-xl md:block lg:ml-4">
               Skylark
             </p>

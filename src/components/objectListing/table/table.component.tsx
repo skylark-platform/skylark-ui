@@ -16,7 +16,7 @@ const lastHeadAndDataClassNames =
 
 export const Table = ({ table }: TableProps) => {
   return (
-    <table className="relative w-full border-separate overflow-x-auto">
+    <table className="relative w-full overflow-x-auto">
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id} className="sticky top-0 z-20 bg-white">
@@ -27,10 +27,11 @@ export const Table = ({ table }: TableProps) => {
                   headAndDataClassNames,
                   firstHeadAndDataClassNames,
                   lastHeadAndDataClassNames,
-                  "ml-4 pr-10 pb-2 text-left font-semibold text-opacity-30 [&>span]:border-l [&>span]:pl-2 [&>span]:first:border-l-0 [&>span]:first:pl-0",
+                  // Use Tailwind & selector to use first: selector on span - used for left-border line styling
+                  "ml-4 p-0 pr-4 pb-2 text-left font-semibold text-opacity-30 [&>span]:border-l [&>span]:pl-2 [&>span]:first:border-l-0 [&>span]:first:pl-0 [&>span]:last:border-l-0 [&>span]:last:pl-0",
                 )}
               >
-                <span className="">
+                <span>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -54,7 +55,7 @@ export const Table = ({ table }: TableProps) => {
                   headAndDataClassNames,
                   firstHeadAndDataClassNames,
                   lastHeadAndDataClassNames,
-                  "p-1.5 last:pr-0",
+                  "border-l border-transparent p-1.5 pl-2 first:border-l-0 last:pr-0",
                 )}
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}

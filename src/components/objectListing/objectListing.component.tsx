@@ -28,16 +28,6 @@ export interface ObjectListProps {
   withCreateButtons?: boolean;
 }
 
-// TODO move this somewhere better?
-// https://github.com/TanStack/table/pull/4539
-declare module "@tanstack/table-core" {
-  interface TableMeta<TData extends RowData> {
-    rowInEditMode: string;
-    onEditClick: (rowId: string) => void;
-    onEditCancelClick: () => void;
-  }
-}
-
 const createColumns = (columns: TableColumn[]) => {
   return [
     ...columns.map((column) =>
