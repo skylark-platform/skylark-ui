@@ -12,11 +12,9 @@ export const ColumnFilter = ({ table }: FilterColumnsProps) => {
           <div key={column.id} className="px-1">
             <label>
               <input
-                {...{
-                  type: "checkbox",
-                  checked: column.getIsVisible(),
-                  onChange: column.getToggleVisibilityHandler(),
-                }}
+                type="checkbox"
+                checked={column.getIsVisible()}
+                onChange={column.getToggleVisibilityHandler()}
               />{" "}
               {column.id}
             </label>

@@ -29,59 +29,60 @@ export interface ObjectListProps {
 }
 
 const createColumns = (columns: TableColumn[]) => {
-  return [
-    ...columns.map((column) =>
-      columnHelper.accessor(column, {
-        cell: ({ getValue, row, column, table }) => {
-          const initialValue = getValue();
-          // We need to keep and update the state of the cell normally
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const [value, setValue] = useState(initialValue);
+  const createdColumns = columns.map((column) =>
+    columnHelper.accessor(column, {
+      cell: ({ getValue, row, column, table }) => {
+        const initialValue = getValue();
+        // We need to keep and update the state of the cell normally
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const [value, setValue] = useState(initialValue);
 
-          // When the input is blurred, we'll call our table meta's updateData function
-          // const onBlur = () => {
-          //   table.options.meta?.updateData(index, id, value);
-          // };
+        // When the input is blurred, we'll call our table meta's updateData function
+        // const onBlur = () => {
+        //   table.options.meta?.updateData(index, id, value);
+        // };
 
-          // If the initialValue is changed external, sync it up with our state
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          useEffect(() => {
-            setValue(initialValue);
-          }, [initialValue]);
+        // If the initialValue is changed external, sync it up with our state
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        useEffect(() => {
+          setValue(initialValue);
+        }, [initialValue]);
 
-          return row.id === table.options.meta?.rowInEditMode ? (
-            <input
-              value={value as string}
-              onChange={(e) => setValue(e.target.value)}
-              className={clsx(
-                "w-full border-b-2 border-brand-primary py-1 outline-none disabled:border-none disabled:border-manatee-200 disabled:text-manatee-500",
-                initialValue !== value && "border-warning",
-                value === "" && initialValue !== "" && "border-error",
-              )}
-              disabled={column.id === "uid"}
-            />
-          ) : (
-            (initialValue as string)
-          );
-        },
-      }),
-    ),
-    columnHelper.display({
-      id: "actions",
-      cell: ({ table, row }) => {
-        return (
-          <RowActions
-            editRowEnabled={false}
-            inEditMode={table.options.meta?.rowInEditMode === row.id}
-            onEditClick={() => table.options.meta?.onEditClick(row.id)}
-            onInfoClick={() => console.log(row)}
-            onEditSaveClick={() => console.log(row)}
-            onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
+        return row.id === table.options.meta?.rowInEditMode ? (
+          <input
+            value={value as string}
+            onChange={(e) => setValue(e.target.value)}
+            className={clsx(
+              "w-full border-b-2 border-brand-primary py-1 outline-none disabled:border-none disabled:border-manatee-200 disabled:text-manatee-500",
+              initialValue !== value && "border-warning",
+              value === "" && initialValue !== "" && "border-error",
+            )}
+            disabled={column.id === "uid"}
           />
+        ) : (
+          (initialValue as string)
         );
       },
     }),
-  ];
+  );
+
+  const actionColumn = columnHelper.display({
+    id: "actions",
+    cell: ({ table, row }) => {
+      return (
+        <RowActions
+          editRowEnabled={false}
+          inEditMode={table.options.meta?.rowInEditMode === row.id}
+          onEditClick={() => table.options.meta?.onEditClick(row.id)}
+          onInfoClick={() => console.log(row)}
+          onEditSaveClick={() => console.log(row)}
+          onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
+        />
+      );
+    },
+  });
+
+  return [...createdColumns, actionColumn];
 };
 
 export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
