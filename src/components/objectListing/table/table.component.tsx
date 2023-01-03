@@ -16,7 +16,7 @@ const lastHeadAndDataClassNames =
 
 export const Table = ({ table }: TableProps) => {
   return (
-    <table className="relative w-full overflow-x-auto">
+    <table className="relative w-full">
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id} className="sticky top-0 z-20 bg-white">
@@ -55,7 +55,7 @@ export const Table = ({ table }: TableProps) => {
                   headAndDataClassNames,
                   firstHeadAndDataClassNames,
                   lastHeadAndDataClassNames,
-                  "border-l border-transparent p-1.5 pl-2 first:border-l-0 last:pr-0",
+                  "border-l border-transparent p-2 first:border-l-0 last:pr-0",
                 )}
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}

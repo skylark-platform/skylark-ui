@@ -22,7 +22,7 @@ export const RowActions = ({
   onEditSaveClick,
   onEditCancelClick,
 }: RowActionsProps) => (
-  <div className="flex w-full items-center justify-center gap-3 pl-4 text-center ">
+  <div className="flex w-full items-center justify-center gap-3 pl-4 pr-3 text-center">
     {inEditMode && editRowEnabled ? (
       <>
         <button onClick={onEditSaveClick}>

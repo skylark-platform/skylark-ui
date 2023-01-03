@@ -158,7 +158,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
         {withCreateButtons && <CreateButtons />}
       </div>
       {/* <ColumnFilter table={table} /> */}
-      <div className="flex h-[75vh] w-full flex-auto overflow-x-auto">
+      <div className="flex h-[70vh] w-full flex-auto overflow-x-auto overscroll-none">
         {data?.objects && <Table table={table} />}
       </div>
     </div>
