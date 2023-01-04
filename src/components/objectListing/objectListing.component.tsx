@@ -1,23 +1,18 @@
 import {
   createColumnHelper,
   getCoreRowModel,
-  RowData,
   useReactTable,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-import { Select } from "src/components/select";
-import { useListObjects } from "src/hooks/useListObjects";
-import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
-import { NormalizedObjectField } from "src/interfaces/skylark/objects";
+import { Pill } from "src/components/pill";
+import { useSearch } from "src/hooks/useSearch";
 
 import { CreateButtons } from "./createButtons";
 import { RowActions } from "./rowActions";
 import { Table } from "./table";
 
-const ignoredKeys = ["__typename"];
 const orderedKeys = ["__typename", "title", "name", "uid", "external_id"];
 
 const columnHelper = createColumnHelper<object>();
@@ -28,9 +23,13 @@ export interface ObjectListProps {
   withCreateButtons?: boolean;
 }
 
+const formatColumnHeader = (header: string) =>
+  header.toLocaleUpperCase().replaceAll("_", " ");
+
 const createColumns = (columns: TableColumn[]) => {
   const createdColumns = columns.map((column) =>
     columnHelper.accessor(column, {
+      header: formatColumnHeader(column),
       cell: ({ getValue, row, column, table }) => {
         const initialValue = getValue();
         // We need to keep and update the state of the cell normally
@@ -66,6 +65,18 @@ const createColumns = (columns: TableColumn[]) => {
     }),
   );
 
+  const objectTypeColumn = columnHelper.accessor("__typename", {
+    header: "",
+    cell: ({ getValue }) => {
+      return (
+        <Pill
+          label={getValue() as string}
+          className="w-full bg-brand-primary"
+        />
+      );
+    },
+  });
+
   const actionColumn = columnHelper.display({
     id: "actions",
     cell: ({ table, row }) => {
@@ -82,41 +93,37 @@ const createColumns = (columns: TableColumn[]) => {
     },
   });
 
-  return [...createdColumns, actionColumn];
+  return [objectTypeColumn, ...createdColumns, actionColumn];
 };
 
 export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
-  const { query, push, pathname } = useRouter();
-  const { objectTypes } = useSkylarkObjectTypes();
-  const [objectType, setObjectType] = useState("");
-  const { data, fields } = useListObjects(objectType);
-
-  const objectProperties = fields
-    ? fields.filter((key) => !ignoredKeys.includes(key.name))
-    : [];
+  const [searchQuery, setSearchQuery] = useState("");
+  const {
+    data: searchData,
+    error: searchError,
+    properties,
+  } = useSearch(searchQuery);
 
   // Sorts objects using the preference array above, any others are added to the end randomly
-  const sortedProperties = objectProperties.sort(
-    (a: NormalizedObjectField, b: NormalizedObjectField) => {
-      if (orderedKeys.indexOf(a.name) === -1) {
-        return 1;
-      }
-      if (orderedKeys.indexOf(b.name) === -1) {
-        return -1;
-      }
-      return orderedKeys.indexOf(a.name) - orderedKeys.indexOf(b.name);
-    },
-  );
+  const sortedHeaders = properties.sort((a: string, b: string) => {
+    if (orderedKeys.indexOf(a) === -1) {
+      return 1;
+    }
+    if (orderedKeys.indexOf(b) === -1) {
+      return -1;
+    }
+    return orderedKeys.indexOf(a) - orderedKeys.indexOf(b);
+  });
 
   const [rowInEditMode, setRowInEditMode] = useState("");
 
-  const parsedColumns = createColumns(sortedProperties.map(({ name }) => name));
+  const parsedColumns = createColumns(sortedHeaders);
   const [columnVisibility, setColumnVisibility] = useState({});
 
   const table = useReactTable({
-    debugAll: true,
-    data: data?.objects || [],
-    columns: data?.objects ? parsedColumns : [],
+    debugAll: false,
+    data: searchData || [],
+    columns: searchData ? parsedColumns : [],
     getCoreRowModel: getCoreRowModel(),
     state: {
       columnVisibility,
@@ -133,35 +140,29 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
     },
   });
 
+  if (searchError) console.error("Search Errors:", { searchError });
+
   return (
-    <div className="flex h-full flex-col gap-10">
+    <div className="flex h-full flex-col gap-8">
       <div className="flex w-full flex-row items-center justify-between">
-        <Select
-          className="w-64"
-          placeholder="Select Skylark object"
-          options={
-            objectTypes?.sort().map((objectType) => ({
-              label: objectType,
-              value: objectType,
-            })) || []
-          }
-          onChange={(value) => {
-            setObjectType(value as string);
-            push({
-              pathname,
-              query: {
-                objectType: value,
-              },
-            });
-          }}
-          initialValue={query?.objectType as string}
-        />
+        <div className="flex flex-row-reverse gap-4">
+          {/* TODO replace with complete search component */}
+          <input
+            type="text"
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search Skylark"
+            className="relative w-96 rounded-sm bg-manatee-50 p-2 text-left text-sm focus:outline-none sm:p-3"
+          />
+        </div>
         {withCreateButtons && <CreateButtons />}
       </div>
       {/* <ColumnFilter table={table} /> */}
-      <div className="flex h-[70vh] w-full flex-auto overflow-x-auto overscroll-none">
-        {data?.objects && <Table table={table} />}
+      <div className="flex max-h-[70vh] w-full flex-auto overflow-x-auto overscroll-none pb-6">
+        {searchData && <Table table={table} />}
       </div>
+      {searchError && (
+        <p className="text-xs text-error">{`Errors hit when requesting data: ${searchError.graphQLErrors.length}. See console.`}</p>
+      )}
     </div>
   );
 };

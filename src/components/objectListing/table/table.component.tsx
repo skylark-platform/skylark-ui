@@ -8,7 +8,7 @@ export interface TableProps {
 }
 
 const headAndDataClassNames =
-  "overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm text-base-content max-w-52";
+  "overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm text-base-content max-w-52 z-20";
 const firstHeadAndDataClassNames =
   "md:first:sticky first:left-0 first:pl-0 first:bg-white first:z-10";
 const lastHeadAndDataClassNames =
@@ -25,10 +25,10 @@ export const Table = ({ table }: TableProps) => {
                 key={header.id}
                 className={clsx(
                   headAndDataClassNames,
-                  firstHeadAndDataClassNames,
+                  // firstHeadAndDataClassNames,
                   lastHeadAndDataClassNames,
                   // Use Tailwind & selector to use first: selector on span - used for left-border line styling
-                  "ml-4 p-0 pr-4 pb-2 text-left font-semibold text-opacity-30 [&>span]:border-l [&>span]:pl-2 [&>span]:first:border-l-0 [&>span]:first:pl-0 [&>span]:last:border-l-0 [&>span]:last:pl-0",
+                  "ml-4 p-0 pr-4 pb-2 text-left font-semibold text-opacity-30 last:-z-10 [&>span]:border-l [&>span]:pl-2 [&>span]:first:border-l-0 [&>span]:first:pl-0 [&>span]:last:border-l-0 [&>span]:last:pl-0",
                 )}
               >
                 <span>
@@ -53,9 +53,9 @@ export const Table = ({ table }: TableProps) => {
                 key={cell.id}
                 className={clsx(
                   headAndDataClassNames,
-                  firstHeadAndDataClassNames,
+                  // firstHeadAndDataClassNames,
                   lastHeadAndDataClassNames,
-                  "border-l border-transparent p-2 first:border-l-0 last:pr-0",
+                  "border-l border-transparent p-2 first:border-l-0 first:pl-0 last:pr-0",
                 )}
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}

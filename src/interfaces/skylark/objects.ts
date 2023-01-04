@@ -44,8 +44,11 @@ export interface SkylarkObjectOperations {
   // delete: Mutation;
 }
 
-export interface SkylarkObjectMeta {
+export interface SkylarkObjectFields {
   name: SkylarkObjectType;
   fields: NormalizedObjectField[];
+}
+
+export interface SkylarkObjectMeta extends SkylarkObjectFields {
   operations: SkylarkObjectOperations;
 }

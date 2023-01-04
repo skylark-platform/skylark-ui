@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const GET_SKYLARK_SCHEMA = gql`
-  query {
+  query GET_SKYLARK_SCHEMA {
     __schema {
       queryType {
         name
@@ -57,11 +57,23 @@ export const GET_SKYLARK_SCHEMA = gql`
   }
 `;
 
-// The "ObjectTypes" enum is built in and updated each time an object is added or removed from Skylark
+// The "ObjectTypes" enum is updated when an object is added or removed from Skylark
 export const GET_SKYLARK_OBJECT_TYPES = gql`
-  query {
+  query GET_SKYLARK_OBJECT_TYPES {
     __type(name: "ObjectTypes") {
       enumValues {
+        name
+      }
+    }
+  }
+`;
+
+// The "Searchable" union is updated when an object is added or removed from Skylark
+export const GET_SEARCHABLE_OBJECTS = gql`
+  query GET_SEARCHABLE_OBJECTS {
+    __type(name: "Searchable") {
+      name
+      possibleTypes {
         name
       }
     }
