@@ -92,9 +92,9 @@ export const createFlatfileObjectsInSkylark = async (
 
   const graphQLMutation = jsonToGraphQLQuery(mutation, { pretty: true });
 
-  const { data } = await client.mutate<FlatfileObjectsCreatedInSkylark>({
+  const response = await client.mutate<FlatfileObjectsCreatedInSkylark>({
     mutation: gql(graphQLMutation),
   });
 
-  return Object.values(data as FlatfileObjectsCreatedInSkylark);
+  return Object.values(response.data as FlatfileObjectsCreatedInSkylark);
 };

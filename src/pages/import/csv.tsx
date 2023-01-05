@@ -226,7 +226,7 @@ export default function CSVImportPage() {
           })}
           <div className="flex w-full flex-row justify-end gap-x-4">
             <Button
-              href="/"
+              href={`/?objectType=${objectType}`}
               variant="primary"
               disabled={state.create !== statusType.success}
             >
