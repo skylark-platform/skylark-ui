@@ -8,7 +8,7 @@ export default {
   component: Button,
   argTypes: {
     variant: {
-      options: ["primary", "outline"],
+      options: ["primary", "outline", "ghost"],
       control: { type: "radio" },
     },
     success: {
@@ -75,6 +75,12 @@ export const Outline = Template.bind({});
 Outline.args = {
   ...defaultProps,
   variant: "outline",
+};
+
+export const Ghost = Template.bind({});
+Outline.args = {
+  ...defaultProps,
+  variant: "ghost",
 };
 
 export const Success = Template.bind({});

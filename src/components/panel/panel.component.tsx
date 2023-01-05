@@ -1,4 +1,5 @@
 import { Button } from "src/components/button";
+import { Expand } from "src/components/icons/expand.component";
 import { Pill } from "src/components/pill";
 import { Tabs } from "src/components/tabs/tabs.component";
 
@@ -12,7 +13,9 @@ export const Panel = ({}: any) => {
         <div className="flex flex-row ">
           <div className="">
             <Button variant="primary">Edit metada</Button>
-            Expand
+            <button>
+              <Expand className="stroke-black" />
+            </button>
           </div>
           <div className="">
             <Button variant="ghost">close</Button>
@@ -24,7 +27,7 @@ export const Panel = ({}: any) => {
         </div>
       </div>
 
-      <Tabs tabs={["One"]} />
+      <Tabs tabs={["One", "third"]} />
 
       <div className="p-5">
         <h2 className="mt-10 text-xl font-semibold ">Global metadata</h2>
