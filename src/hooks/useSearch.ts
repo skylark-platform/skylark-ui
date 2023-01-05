@@ -7,6 +7,7 @@ import { useAllSearchableObjectFields } from "./useSkylarkObjectTypes";
 
 const defaultValidQuery = gql("query { __unknown { name }}");
 
+// TODO rename Objjj
 interface Objjj {
   __typename: string;
   uid: string;
@@ -39,13 +40,20 @@ const removeFieldPrefixFromSearchObjects = (
   return objects;
 };
 
-export const useSearch = (queryString: string) => {
+export interface SearchFilters {
+  objectTypes: string[];
+}
+
+export const useSearch = (queryString: string, filters: SearchFilters) => {
   const [data, setData] = useState<Objjj[]>([]);
 
   const { objects: searchableObjects, allFieldNames } =
     useAllSearchableObjectFields();
 
-  const query = createSearchObjectsQuery(searchableObjects);
+  const query = createSearchObjectsQuery(
+    searchableObjects,
+    filters.objectTypes,
+  );
 
   const { data: searchResponse, ...rest } = useQuery<{
     search: {
@@ -59,6 +67,8 @@ export const useSearch = (queryString: string) => {
     // Using "all" so we can get data even when some is invalid
     // https://www.apollographql.com/docs/react/data/error-handling/#graphql-error-policies
     errorPolicy: "all",
+    // Don't cache search so we always get up to date results
+    fetchPolicy: "no-cache",
   });
 
   useEffect(() => {

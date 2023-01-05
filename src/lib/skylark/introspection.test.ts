@@ -55,6 +55,7 @@ describe("getSkylarkObjectOperations", () => {
       create: {
         name: "createEpisode",
         type: "Mutation",
+        argName: "episode",
         inputs: [
           {
             enumValues: undefined,

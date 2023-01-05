@@ -51,10 +51,12 @@ export const getObjectOperations = (
 
   const objectFields = getObjectFieldsFromGetQuery(getQuery);
 
-  const createInputFields = createMutation.args.find(
+  const foundCreateInput = createMutation.args.find(
     (arg) => arg.type.name === `${objectType}CreateInput`,
-  )?.type.inputFields;
+  );
 
+  const createInputArgName = foundCreateInput?.name || "";
+  const createInputFields = foundCreateInput?.type.inputFields;
   const createInputs = parseObjectInputFields(createInputFields);
   const createRelationships = parseObjectRelationships(createInputFields);
 
@@ -70,6 +72,7 @@ export const getObjectOperations = (
     create: {
       type: "Mutation",
       name: createMutation.name,
+      argName: createInputArgName,
       inputs: createInputs,
       relationships: createRelationships,
     },

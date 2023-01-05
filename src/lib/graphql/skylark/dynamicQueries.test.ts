@@ -36,6 +36,7 @@ const object: SkylarkObjectMeta = {
     },
     create: {
       type: "Mutation",
+      argName: "episode",
       name: "createEpisode",
       inputs: fields,
     },

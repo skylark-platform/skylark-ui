@@ -30,6 +30,7 @@ test("returns all operations", () => {
       create: {
         name: "createEpisode",
         type: "Mutation",
+        argName: "episode",
         inputs: [
           {
             enumValues: undefined,

@@ -33,6 +33,7 @@ interface Query extends BaseQueryMutation {
 interface Mutation extends BaseQueryMutation {
   type: "Mutation";
   inputs: NormalizedObjectField[];
+  argName: string;
   relationships?: string[];
 }
 

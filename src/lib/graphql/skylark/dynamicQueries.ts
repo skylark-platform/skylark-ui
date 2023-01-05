@@ -105,10 +105,19 @@ export const createListObjectQuery = (object: SkylarkObjectMeta | null) => {
   return gql(graphQLQuery);
 };
 
-export const createSearchObjectsQuery = (objects: SkylarkObjectFields[]) => {
+export const createSearchObjectsQuery = (
+  objects: SkylarkObjectFields[],
+  typesToRequest: string[],
+) => {
   if (!objects || objects.length === 0) {
     return null;
   }
+
+  // Default to showing all objects when no types are requested
+  const objectsToRequest =
+    typesToRequest.length > 0
+      ? objects.filter(({ name }) => typesToRequest.includes(name))
+      : objects;
 
   const query = {
     query: {
@@ -125,7 +134,7 @@ export const createSearchObjectsQuery = (objects: SkylarkObjectFields[]) => {
         },
         __typename: true,
         objects: {
-          __on: objects.map(({ name, fields }) => ({
+          __on: objectsToRequest.map(({ name, fields }) => ({
             __typeName: name,
             __typename: true, // To remove the alias later
             ...generateFieldsToReturn(fields, `__${name}__`),

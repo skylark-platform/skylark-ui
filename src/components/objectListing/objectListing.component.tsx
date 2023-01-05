@@ -7,10 +7,12 @@ import clsx from "clsx";
 import { useEffect, useState } from "react";
 
 import { Pill } from "src/components/pill";
-import { useSearch } from "src/hooks/useSearch";
+import { SearchFilters, useSearch } from "src/hooks/useSearch";
+import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 
 import { CreateButtons } from "./createButtons";
 import { RowActions } from "./rowActions";
+import { SearchBar } from "./searchBar/searchBar.component";
 import { Table } from "./table";
 
 const orderedKeys = ["__typename", "title", "name", "uid", "external_id"];
@@ -98,11 +100,16 @@ const createColumns = (columns: TableColumn[]) => {
 
 export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const { objectTypes } = useSkylarkObjectTypes();
+  const [searchFilters, setSearchFilters] = useState<SearchFilters>({
+    objectTypes: [],
+  });
+
   const {
     data: searchData,
     error: searchError,
     properties,
-  } = useSearch(searchQuery);
+  } = useSearch(searchQuery, searchFilters);
 
   // Sorts objects using the preference array above, any others are added to the end randomly
   const sortedHeaders = properties.sort((a: string, b: string) => {
@@ -145,13 +152,12 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   return (
     <div className="flex h-full flex-col gap-8">
       <div className="flex w-full flex-row items-center justify-between">
-        <div className="flex flex-row-reverse gap-4">
-          {/* TODO replace with complete search component */}
-          <input
-            type="text"
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search Skylark"
-            className="relative w-96 rounded-sm bg-manatee-50 p-2 text-left text-sm focus:outline-none sm:p-3"
+        <div className="flex w-full flex-row-reverse gap-4 md:w-1/2 xl:w-1/3">
+          <SearchBar
+            objectTypes={objectTypes || []}
+            onQueryChange={setSearchQuery}
+            activeFilters={searchFilters}
+            onFilterChange={setSearchFilters}
           />
         </div>
         {withCreateButtons && <CreateButtons />}
