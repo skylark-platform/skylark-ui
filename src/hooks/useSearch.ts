@@ -60,7 +60,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
       objects: (Objjj | null)[];
     };
   }>(query || defaultValidQuery, {
-    skip: !query || !filters.objectTypes || filters.objectTypes.length === 0,
+    skip: !query,
     variables: {
       queryString,
     },
