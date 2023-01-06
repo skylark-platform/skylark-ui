@@ -56,7 +56,7 @@ export const Table = ({ table }: TableProps) => {
         ))}
       </thead>
 
-      <tbody>
+      <tbody className="align-top">
         {table.getRowModel().rows.map((row) => (
           <tr key={row.id}>
             {row.getVisibleCells().map((cell, cellIndex) => (

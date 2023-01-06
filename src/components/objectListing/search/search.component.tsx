@@ -34,26 +34,21 @@ export const Search = ({
 
   const filtersDivRef = useRef<HTMLDivElement>(null);
 
-  const closeFilterOnClickOutside = useCallback(
-    (e: MouseEvent) => {
+  useEffect(() => {
+    const closeFilterOnClickOutside = (e: MouseEvent) => {
       if (
         filtersDivRef.current &&
         !filtersDivRef.current.contains(e.target as Node)
       ) {
         setFilterOpen(false);
       }
-    },
-    [setFilterOpen],
-  );
+    };
 
-  useEffect(() => {
-    // if (isFilterOpen) {
     document.addEventListener("mouseup", closeFilterOnClickOutside);
     return () => {
       document.removeEventListener("mouseup", closeFilterOnClickOutside);
     };
-    // }
-  }, []);
+  }, [setFilterOpen]);
 
   return (
     <div className="relative w-full" ref={filtersDivRef}>

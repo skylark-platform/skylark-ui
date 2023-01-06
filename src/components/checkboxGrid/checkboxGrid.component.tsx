@@ -68,7 +68,7 @@ export const CheckboxGrid = ({
         onCheckedChange={handleToggleAll}
         checked={allOptionsChecked}
       />
-      <div className="grid grid-cols-3 gap-2 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
         {Object.keys(checkboxOptions).map((option) => (
           <Checkbox
             label={option}

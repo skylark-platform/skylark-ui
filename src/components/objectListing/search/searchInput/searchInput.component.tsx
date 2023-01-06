@@ -35,6 +35,7 @@ export const SearchInput = ({
     >
       <Search className="ml-6 h-5" />
       <input
+        name="search-query-input"
         type="text"
         placeholder="Search for an object(s)"
         className="flex-grow rounded-none bg-inherit p-3 focus:-outline-offset-1 focus:outline-brand-primary"

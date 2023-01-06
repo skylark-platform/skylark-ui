@@ -151,7 +151,7 @@ export const ObjectList = ({
 
   const parsedColumns = useMemo(
     () => createColumns(sortedHeaders, { withObjectSelect }),
-    [sortedHeaders],
+    [sortedHeaders, withObjectSelect],
   );
 
   const [rowInEditMode, setRowInEditMode] = useState("");
@@ -214,7 +214,7 @@ export const ObjectList = ({
         </div>
         {withCreateButtons && <CreateButtons />}
       </div>
-      <div className="flex max-h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6">
+      <div className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6">
         {!searchLoading && searchData && <Table table={table} />}
         {(searchLoading || searchData) && (
           <div className="flex h-96 w-full flex-col items-center justify-center gap-4">
