@@ -83,24 +83,20 @@ export const SearchFilter = ({
       className="absolute top-14 left-0 z-50 flex w-full flex-col rounded bg-white p-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 md:w-[120%] lg:w-[150%] xl:max-h-[28rem]"
       ref={filtersDivRef}
     >
-      <div className="flex-grow overflow-scroll p-2">
-        <div className="mb-4 border-b-2 border-b-manatee-100 pb-3">
-          <CheckboxGrid
-            label="Object type"
-            options={createCheckboxOptions(
-              objectTypes,
-              activeFilters.objectTypes,
-            )}
-            onChange={updateObjectTypes}
-          />
-        </div>
-        <div className="mb-4 border-b-2 border-b-manatee-100 pb-3">
-          <CheckboxGrid
-            label="Columns"
-            options={createCheckboxOptions(columns, visibleColumns)}
-            onChange={(opts) => updateVisibleColumns(opts)}
-          />
-        </div>
+      <div className="flex-grow overflow-scroll border-none p-2 [&>div]:border-b-2 [&>div]:border-b-manatee-100 [&>div]:pt-3 [&>div]:pb-3 first:[&>div]:pt-0 last:[&>div]:border-none last:[&>div]:pb-0">
+        <CheckboxGrid
+          label="Object type"
+          options={createCheckboxOptions(
+            objectTypes,
+            activeFilters.objectTypes,
+          )}
+          onChange={updateObjectTypes}
+        />
+        <CheckboxGrid
+          label="Columns"
+          options={createCheckboxOptions(columns, visibleColumns)}
+          onChange={(opts) => updateVisibleColumns(opts)}
+        />
       </div>
       <div className="flex w-full justify-end gap-2 px-4 pt-2">
         <Button variant="ghost" onClick={onFilterClear}>

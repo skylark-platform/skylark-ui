@@ -5,7 +5,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Spinner } from "src/components/icons";
 import { Pill } from "src/components/pill";
@@ -129,9 +129,12 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
     return orderedKeys.indexOf(a) - orderedKeys.indexOf(b);
   });
 
-  const [rowInEditMode, setRowInEditMode] = useState("");
+  const parsedColumns = useMemo(
+    () => createColumns(sortedHeaders),
+    [sortedHeaders],
+  );
 
-  const parsedColumns = createColumns(sortedHeaders);
+  const [rowInEditMode, setRowInEditMode] = useState("");
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const table = useReactTable({
@@ -173,7 +176,6 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
         </div>
         {withCreateButtons && <CreateButtons />}
       </div>
-      {/* <ColumnFilter table={table} /> */}
       <div className="flex max-h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6">
         {!searchLoading && searchData && <Table table={table} />}
         {(searchLoading || searchData) && (
