@@ -19,6 +19,20 @@ interface SearchFilterProps {
   setColumnVisibility: (c: VisibilityState) => void;
 }
 
+const convertCheckedColumnsToVisibilityState = (
+  checked: string[],
+  columns: string[],
+) =>
+  checked.length > 0
+    ? columns.reduce(
+        (prev, col) => ({
+          ...prev,
+          [col]: checked.includes(col),
+        }),
+        {},
+      )
+    : {};
+
 export const SearchFilter = ({
   activeFilters,
   objectTypes,
@@ -30,7 +44,7 @@ export const SearchFilter = ({
 }: SearchFilterProps) => {
   const filtersDivRef = useRef<HTMLDivElement>(null);
   const [updatedObjectTypes, updateObjectTypes] = useState<string[]>(
-    activeFilters.objectTypes,
+    activeFilters.objectTypes || [],
   );
   const [updatedVisibleColumns, updateVisibleColumns] =
     useState<string[]>(visibleColumns);
@@ -42,24 +56,19 @@ export const SearchFilter = ({
       objectTypes: updatedObjectTypes,
     });
 
-    const cols =
-      updatedVisibleColumns.length > 0
-        ? columns.reduce(
-            (prev, col) => ({
-              ...prev,
-              [col]: updatedVisibleColumns.includes(col),
-            }),
-            {},
-          )
-        : {};
-    setColumnVisibility(cols);
+    setColumnVisibility(
+      convertCheckedColumnsToVisibilityState(updatedVisibleColumns, columns),
+    );
   };
 
-  const onFilterClear = () => {
+  const onFilterReset = () => {
     closeFilterDiv();
     onFilterSave({
-      objectTypes: [],
+      objectTypes,
     });
+    setColumnVisibility(
+      convertCheckedColumnsToVisibilityState(columns, columns),
+    );
   };
 
   useEffect(() => {
@@ -86,10 +95,7 @@ export const SearchFilter = ({
       <div className="flex-grow overflow-scroll border-none p-2 [&>div]:border-b-2 [&>div]:border-b-manatee-100 [&>div]:pt-3 [&>div]:pb-3 first:[&>div]:pt-0 last:[&>div]:border-none last:[&>div]:pb-0">
         <CheckboxGrid
           label="Object type"
-          options={createCheckboxOptions(
-            objectTypes,
-            activeFilters.objectTypes,
-          )}
+          options={createCheckboxOptions(objectTypes, updatedObjectTypes)}
           onChange={updateObjectTypes}
         />
         <CheckboxGrid
@@ -99,10 +105,16 @@ export const SearchFilter = ({
         />
       </div>
       <div className="flex w-full justify-end gap-2 px-4 pt-2">
-        <Button variant="ghost" onClick={onFilterClear}>
-          Clear
+        <Button variant="ghost" onClick={onFilterReset}>
+          Reset
         </Button>
-        <Button variant="primary" onClick={onFilterSaveWrapper}>
+        <Button
+          variant="primary"
+          onClick={onFilterSaveWrapper}
+          disabled={
+            updatedObjectTypes.length === 0 || visibleColumns.length === 0
+          }
+        >
           Apply
         </Button>
       </div>

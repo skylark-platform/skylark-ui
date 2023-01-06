@@ -41,7 +41,7 @@ const removeFieldPrefixFromSearchObjects = (
 };
 
 export interface SearchFilters {
-  objectTypes: string[];
+  objectTypes: string[] | null;
 }
 
 export const useSearch = (queryString: string, filters: SearchFilters) => {
@@ -52,7 +52,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
 
   const query = createSearchObjectsQuery(
     searchableObjects,
-    filters.objectTypes,
+    filters.objectTypes || [],
   );
 
   const { data: searchResponse, ...rest } = useQuery<{

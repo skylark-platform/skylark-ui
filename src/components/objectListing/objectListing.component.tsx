@@ -10,11 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Spinner } from "src/components/icons";
 import { Pill } from "src/components/pill";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
-import {
-  useAllSearchableObjectFields,
-  useSkylarkObjectTypes,
-  useSkylarkSearchableObjectTypes,
-} from "src/hooks/useSkylarkObjectTypes";
+import { useSkylarkSearchableObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 
 import { CreateButtons } from "./createButtons";
 import { RowActions } from "./rowActions";
@@ -108,7 +104,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const { objectTypes } = useSkylarkSearchableObjectTypes();
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
-    objectTypes: [],
+    objectTypes: null,
   });
 
   const {
@@ -135,7 +131,9 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   );
 
   const [rowInEditMode, setRowInEditMode] = useState("");
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<
+    VisibilityState | undefined
+  >(undefined);
 
   const table = useReactTable({
     debugAll: false,
@@ -156,6 +154,12 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
     },
   });
 
+  useEffect(() => {
+    if (objectTypes.length !== 0 && searchFilters.objectTypes === null) {
+      setSearchFilters({ ...searchFilters, objectTypes });
+    }
+  }, [objectTypes, searchFilters]);
+
   if (searchError) console.error("Search Errors:", { searchError });
 
   return (
@@ -167,9 +171,13 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
             onQueryChange={setSearchQuery}
             activeFilters={searchFilters}
             columns={sortedHeaders}
-            visibleColumns={Object.keys(columnVisibility).filter(
-              (col) => !!columnVisibility[col],
-            )}
+            visibleColumns={
+              columnVisibility !== undefined
+                ? Object.keys(columnVisibility).filter(
+                    (col) => !!columnVisibility[col],
+                  )
+                : sortedHeaders
+            }
             onFilterChange={setSearchFilters}
             setColumnVisibility={setColumnVisibility}
           />

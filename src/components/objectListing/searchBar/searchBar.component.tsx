@@ -1,6 +1,6 @@
 import { VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import { Filter, Search } from "src/components/icons";
 import { SearchFilter } from "src/components/objectListing/searchFilter/searchFilter.component";
