@@ -16,7 +16,7 @@ const lastHeadAndDataClassNames =
 
 export const Table = ({ table }: TableProps) => {
   return (
-    <table className="relative w-full">
+    <table className="relative w-full bg-white">
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id} className="sticky top-0 z-20 bg-white">

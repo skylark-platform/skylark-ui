@@ -165,7 +165,12 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   return (
     <div className="flex h-full flex-col gap-8">
       <div className="flex w-full flex-row items-center justify-between">
-        <div className="flex w-full flex-row-reverse gap-4 md:w-1/2 xl:w-1/3">
+        <div
+          className={clsx(
+            "flex w-full flex-row-reverse gap-4",
+            withCreateButtons ? "md:w-1/2 xl:w-1/3" : "flex-1",
+          )}
+        >
           <Search
             objectTypes={objectTypes || []}
             searchQuery={searchQuery}
