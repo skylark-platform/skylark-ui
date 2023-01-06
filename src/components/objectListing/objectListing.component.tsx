@@ -1,6 +1,5 @@
 import {
   createColumnHelper,
-  FiltersColumn,
   getCoreRowModel,
   useReactTable,
   VisibilityState,
@@ -8,9 +7,14 @@ import {
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 
+import { Spinner } from "src/components/icons";
 import { Pill } from "src/components/pill";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
-import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
+import {
+  useAllSearchableObjectFields,
+  useSkylarkObjectTypes,
+  useSkylarkSearchableObjectTypes,
+} from "src/hooks/useSkylarkObjectTypes";
 
 import { CreateButtons } from "./createButtons";
 import { RowActions } from "./rowActions";
@@ -102,7 +106,7 @@ const createColumns = (columns: TableColumn[]) => {
 
 export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const { objectTypes } = useSkylarkObjectTypes();
+  const { objectTypes } = useSkylarkSearchableObjectTypes();
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     objectTypes: [],
   });
@@ -110,6 +114,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const {
     data: searchData,
     error: searchError,
+    loading: searchLoading,
     properties,
   } = useSearch(searchQuery, searchFilters);
 
@@ -169,8 +174,22 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
         {withCreateButtons && <CreateButtons />}
       </div>
       {/* <ColumnFilter table={table} /> */}
-      <div className="flex max-h-[70vh] w-full flex-auto overflow-x-auto overscroll-none pb-6">
-        {searchData && <Table table={table} />}
+      <div className="flex max-h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6">
+        {!searchLoading && searchData && <Table table={table} />}
+        {(searchLoading || searchData) && (
+          <div className="flex h-96 w-full flex-col items-center justify-center gap-4">
+            {searchLoading && (
+              <>
+                <p>Loading...</p>
+                <Spinner className="h-10 w-10 animate-spin" />
+              </>
+            )}
+
+            {!searchLoading && searchData && searchData.length === 0 && (
+              <p>{`No results found for query: "${searchQuery}"`}</p>
+            )}
+          </div>
+        )}
       </div>
       {searchError && (
         <p className="text-xs text-error">{`Errors hit when requesting data: ${searchError.graphQLErrors.length}. See console.`}</p>

@@ -29,6 +29,20 @@ export const useSkylarkObjectTypes = () => {
   };
 };
 
+export const useSkylarkSearchableObjectTypes = () => {
+  const { data, ...rest } = useQuery<GQLSkylarkSearchableObjectsUnionResponse>(
+    GET_SEARCHABLE_OBJECTS,
+  );
+
+  const searchableObjectTypes =
+    data?.__type.possibleTypes.map(({ name }) => name) || [];
+
+  return {
+    objectTypes: searchableObjectTypes,
+    ...rest,
+  };
+};
+
 // Returns the operations for a given object (createEpisode etc for Episode)
 // Should be fast as it'll keep hitting the Apollo cache both requests noice
 export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
@@ -50,16 +64,13 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
 export const useAllSearchableObjectFields = () => {
   const { data: schemaResponse, ...rest } =
     useQuery<GQLSkylarkSchemaQueriesMutations>(GET_SKYLARK_SCHEMA);
-  const { data: searchableObjectsResponse } =
-    useQuery<GQLSkylarkSearchableObjectsUnionResponse>(GET_SEARCHABLE_OBJECTS);
 
-  if (!schemaResponse || !searchableObjectsResponse) {
+  const { objectTypes: searchableObjects } = useSkylarkSearchableObjectTypes();
+
+  if (!schemaResponse || !searchableObjects || searchableObjects.length === 0) {
     return { objects: [], allFieldNames: [], ...rest };
   }
 
-  const searchableObjects =
-    searchableObjectsResponse?.__type.possibleTypes.map(({ name }) => name) ||
-    [];
   const objects = getAllSearchableObjectFields(
     schemaResponse.__schema.queryType,
     searchableObjects,

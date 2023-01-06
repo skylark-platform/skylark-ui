@@ -109,15 +109,15 @@ export const createSearchObjectsQuery = (
   objects: SkylarkObjectFields[],
   typesToRequest: string[],
 ) => {
-  if (!objects || objects.length === 0) {
-    return null;
-  }
-
   // Default to showing all objects when no types are requested
   const objectsToRequest =
     typesToRequest.length > 0
       ? objects.filter(({ name }) => typesToRequest.includes(name))
       : objects;
+
+  if (!objects || objects.length === 0 || objectsToRequest.length === 0) {
+    return null;
+  }
 
   const query = {
     query: {

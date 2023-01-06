@@ -80,7 +80,7 @@ export const SearchFilter = ({
 
   return (
     <div
-      className="absolute top-14 left-0 z-50 flex max-h-96 w-full flex-col rounded bg-white p-2 text-xs shadow-lg shadow-manatee-500 md:w-[120%] lg:w-[150%]"
+      className="absolute top-14 left-0 z-50 flex w-full flex-col rounded bg-white p-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 md:w-[120%] lg:w-[150%] xl:max-h-[28rem]"
       ref={filtersDivRef}
     >
       <div className="flex-grow overflow-scroll p-2">
@@ -102,7 +102,7 @@ export const SearchFilter = ({
           />
         </div>
       </div>
-      <div className="flex w-full justify-end gap-2 px-4 pb-2">
+      <div className="flex w-full justify-end gap-2 px-4 pt-2">
         <Button variant="ghost" onClick={onFilterClear}>
           Clear
         </Button>
