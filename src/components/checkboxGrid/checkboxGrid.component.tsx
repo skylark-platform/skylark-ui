@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Checkbox } from "src/components/checkbox";
 
 interface CheckboxGridProps {
+  label: string;
   options: {
     [option: string]: CheckedState;
   };
@@ -25,6 +26,7 @@ export const createCheckboxOptions = (
 };
 
 export const CheckboxGrid = ({
+  label,
   options,
   className,
   onChange,
@@ -52,7 +54,6 @@ export const CheckboxGrid = ({
     );
     setCheckboxOptions(updatedOptions);
 
-    console.log({ updatedOptions });
     const optsArr = Object.keys(updatedOptions).filter(
       (option) => !!updatedOptions[option],
     );
@@ -61,13 +62,13 @@ export const CheckboxGrid = ({
 
   return (
     <div className={clsx("flex flex-col gap-2 text-xs", className)}>
-      {/* TODO figure toggle all */}
+      <h4 className="mb-4 font-semibold text-manatee-600">{label}</h4>
       <Checkbox
         label="Toggle all"
         onCheckedChange={handleToggleAll}
         checked={allOptionsChecked}
       />
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2 lg:grid-cols-4 xl:grid-cols-5">
         {Object.keys(checkboxOptions).map((option) => (
           <Checkbox
             label={option}

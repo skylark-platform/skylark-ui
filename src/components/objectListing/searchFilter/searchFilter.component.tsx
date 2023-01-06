@@ -1,7 +1,7 @@
+import { VisibilityState } from "@tanstack/react-table";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "src/components/button";
-import { Checkbox } from "src/components/checkbox";
 import {
   CheckboxGrid,
   createCheckboxOptions,
@@ -9,38 +9,31 @@ import {
 import { SearchFilters } from "src/hooks/useSearch";
 import { SkylarkObjectType } from "src/interfaces/skylark/objects";
 
-const option = {
-  title: "Object type",
-  type: "checkbox",
-  options: [
-    "Episode",
-    "Brand",
-    "Season",
-    "Theme",
-    "Genre",
-    "People",
-    "Credit",
-    "Tag",
-  ],
-};
-
 interface SearchFilterProps {
   activeFilters: SearchFilters;
   objectTypes: SkylarkObjectType[];
+  columns: string[];
+  visibleColumns: string[];
   onFilterSave: (filters: SearchFilters) => void;
   closeFilterDiv: () => void;
+  setColumnVisibility: (c: VisibilityState) => void;
 }
 
 export const SearchFilter = ({
   activeFilters,
   objectTypes,
+  columns,
+  visibleColumns,
   onFilterSave,
   closeFilterDiv,
+  setColumnVisibility,
 }: SearchFilterProps) => {
   const filtersDivRef = useRef<HTMLDivElement>(null);
   const [updatedObjectTypes, updateObjectTypes] = useState<string[]>(
     activeFilters.objectTypes,
   );
+  const [updatedVisibleColumns, updateVisibleColumns] =
+    useState<string[]>(visibleColumns);
 
   const onFilterSaveWrapper = () => {
     closeFilterDiv();
@@ -48,6 +41,18 @@ export const SearchFilter = ({
     onFilterSave({
       objectTypes: updatedObjectTypes,
     });
+
+    const cols =
+      updatedVisibleColumns.length > 0
+        ? columns.reduce(
+            (prev, col) => ({
+              ...prev,
+              [col]: updatedVisibleColumns.includes(col),
+            }),
+            {},
+          )
+        : {};
+    setColumnVisibility(cols);
   };
 
   const onFilterClear = () => {
@@ -75,20 +80,25 @@ export const SearchFilter = ({
 
   return (
     <div
-      className="absolute top-14 left-0 z-50 flex max-h-96 w-full flex-col rounded bg-white p-2 text-xs shadow-lg shadow-manatee-500 md:w-[120%]"
+      className="absolute top-14 left-0 z-50 flex max-h-96 w-full flex-col rounded bg-white p-2 text-xs shadow-lg shadow-manatee-500 md:w-[120%] lg:w-[150%]"
       ref={filtersDivRef}
     >
       <div className="flex-grow overflow-scroll p-2">
         <div className="mb-4 border-b-2 border-b-manatee-100 pb-3">
-          <h4 className="mb-4 font-semibold text-manatee-600">
-            {option.title}
-          </h4>
           <CheckboxGrid
+            label="Object type"
             options={createCheckboxOptions(
               objectTypes,
               activeFilters.objectTypes,
             )}
             onChange={updateObjectTypes}
+          />
+        </div>
+        <div className="mb-4 border-b-2 border-b-manatee-100 pb-3">
+          <CheckboxGrid
+            label="Columns"
+            options={createCheckboxOptions(columns, visibleColumns)}
+            onChange={(opts) => updateVisibleColumns(opts)}
           />
         </div>
       </div>

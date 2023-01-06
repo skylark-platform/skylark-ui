@@ -37,7 +37,6 @@ export const Navigation = () => {
           )}
         >
           <NavigationLinks />
-          {/* <QuickSearch onSearch={console.log} /> */}
         </nav>
 
         <div className="absolute right-16 top-0 mt-4 mr-2 flex items-center text-sm md:relative md:top-0 md:right-0 md:mt-0 md:ml-6">

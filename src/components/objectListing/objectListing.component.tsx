@@ -1,7 +1,9 @@
 import {
   createColumnHelper,
+  FiltersColumn,
   getCoreRowModel,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
@@ -125,7 +127,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const [rowInEditMode, setRowInEditMode] = useState("");
 
   const parsedColumns = createColumns(sortedHeaders);
-  const [columnVisibility, setColumnVisibility] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const table = useReactTable({
     debugAll: false,
@@ -135,7 +137,6 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
     state: {
       columnVisibility,
     },
-    onColumnVisibilityChange: setColumnVisibility,
     meta: {
       rowInEditMode,
       onEditClick(rowId) {
@@ -157,7 +158,12 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
             objectTypes={objectTypes || []}
             onQueryChange={setSearchQuery}
             activeFilters={searchFilters}
+            columns={sortedHeaders}
+            visibleColumns={Object.keys(columnVisibility).filter(
+              (col) => !!columnVisibility[col],
+            )}
             onFilterChange={setSearchFilters}
+            setColumnVisibility={setColumnVisibility}
           />
         </div>
         {withCreateButtons && <CreateButtons />}

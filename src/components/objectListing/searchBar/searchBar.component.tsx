@@ -1,3 +1,4 @@
+import { VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 
@@ -6,21 +7,27 @@ import { SearchFilter } from "src/components/objectListing/searchFilter/searchFi
 import { SearchFilters } from "src/hooks/useSearch";
 import { SkylarkObjectType } from "src/interfaces/skylark/objects";
 
-interface Props {
+interface SearchBarProps {
   activeFilters: SearchFilters;
   objectTypes: SkylarkObjectType[];
+  columns: string[];
+  visibleColumns: string[];
   className?: string;
   onQueryChange: (str: string) => void;
   onFilterChange: (filters: SearchFilters) => void;
+  setColumnVisibility: (c: VisibilityState) => void;
 }
 
 export const SearchBar = ({
   className,
   objectTypes,
+  columns,
+  visibleColumns,
   onQueryChange,
   activeFilters,
   onFilterChange,
-}: Props) => {
+  setColumnVisibility,
+}: SearchBarProps) => {
   const [isFilterOpen, setFilterOpen] = useState(false);
 
   return (
@@ -54,8 +61,11 @@ export const SearchBar = ({
         <SearchFilter
           objectTypes={objectTypes}
           activeFilters={activeFilters}
+          columns={columns}
+          visibleColumns={visibleColumns}
           onFilterSave={onFilterChange}
           closeFilterDiv={() => setFilterOpen(false)}
+          setColumnVisibility={setColumnVisibility}
         />
       )}
     </div>
