@@ -7,8 +7,10 @@ import {
 import clsx from "clsx";
 import { useEffect, useMemo, useState } from "react";
 
+import { Checkbox } from "src/components/checkbox";
 import { Spinner } from "src/components/icons";
 import { Pill } from "src/components/pill";
+import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkSearchableObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 
@@ -25,12 +27,16 @@ export type TableColumn = string;
 
 export interface ObjectListProps {
   withCreateButtons?: boolean;
+  withObjectSelect?: boolean;
 }
 
 const formatColumnHeader = (header: string) =>
   header.toLocaleUpperCase().replaceAll("_", " ");
 
-const createColumns = (columns: TableColumn[]) => {
+const createColumns = (
+  columns: TableColumn[],
+  opts: { withObjectSelect?: boolean },
+) => {
   const createdColumns = columns.map((column) =>
     columnHelper.accessor(column, {
       header: formatColumnHeader(column),
@@ -81,8 +87,14 @@ const createColumns = (columns: TableColumn[]) => {
     },
   });
 
+  const selectColumn = columnHelper.display({
+    id: OBJECT_LIST_TABLE.columnIds.checkbox,
+    header: () => <Checkbox />,
+    cell: () => <Checkbox />,
+  });
+
   const actionColumn = columnHelper.display({
-    id: "actions",
+    id: OBJECT_LIST_TABLE.columnIds.actions,
     cell: ({ table, row }) => {
       return (
         <RowActions
@@ -97,10 +109,22 @@ const createColumns = (columns: TableColumn[]) => {
     },
   });
 
-  return [objectTypeColumn, ...createdColumns, actionColumn];
+  const orderedColumnArray = [
+    objectTypeColumn,
+    ...createdColumns,
+    actionColumn,
+  ];
+  if (opts.withObjectSelect) {
+    return [selectColumn, ...orderedColumnArray];
+  }
+
+  return orderedColumnArray;
 };
 
-export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
+export const ObjectList = ({
+  withCreateButtons,
+  withObjectSelect,
+}: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const { objectTypes } = useSkylarkSearchableObjectTypes();
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
@@ -126,7 +150,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   });
 
   const parsedColumns = useMemo(
-    () => createColumns(sortedHeaders),
+    () => createColumns(sortedHeaders, { withObjectSelect }),
     [sortedHeaders],
   );
 

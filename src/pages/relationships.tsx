@@ -9,10 +9,10 @@ export default function Home() {
       </p>
       <div className="flex w-full shadow [&>div]:border [&>div]:border-manatee-50 [&>div]:p-4">
         <div className="w-1/3">
-          <ObjectList />
+          <ObjectList withObjectSelect />
         </div>
         <div className="w-1/3">
-          <ObjectList />
+          <ObjectList withObjectSelect />
         </div>
         <div className="w-1/3">
           <h2>Relationships</h2>
