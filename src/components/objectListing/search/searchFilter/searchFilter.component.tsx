@@ -1,5 +1,5 @@
 import { VisibilityState } from "@tanstack/react-table";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "src/components/button";
 import {
@@ -42,26 +42,23 @@ export const SearchFilter = ({
   closeFilterDiv,
   setColumnVisibility,
 }: SearchFilterProps) => {
-  const filtersDivRef = useRef<HTMLDivElement>(null);
   const [updatedObjectTypes, updateObjectTypes] = useState<string[]>(
     activeFilters.objectTypes || [],
   );
   const [updatedVisibleColumns, updateVisibleColumns] =
     useState<string[]>(visibleColumns);
 
-  const onFilterSaveWrapper = () => {
+  const makeFiltersActive = () => {
     closeFilterDiv();
-
     onFilterSave({
       objectTypes: updatedObjectTypes,
     });
-
     setColumnVisibility(
       convertCheckedColumnsToVisibilityState(updatedVisibleColumns, columns),
     );
   };
 
-  const onFilterReset = () => {
+  const resetAllFilters = () => {
     closeFilterDiv();
     onFilterSave({
       objectTypes,
@@ -71,27 +68,9 @@ export const SearchFilter = ({
     );
   };
 
-  useEffect(() => {
-    const closeFilterOnClickOutside = (e: MouseEvent) => {
-      if (
-        filtersDivRef.current &&
-        !filtersDivRef.current.contains(e.target as Node)
-      ) {
-        closeFilterDiv();
-      }
-    };
-
-    document.addEventListener("mousedown", closeFilterOnClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", closeFilterOnClickOutside);
-    };
-  }, [closeFilterDiv]);
-
   return (
-    <div
-      className="absolute top-14 left-0 z-50 flex w-full flex-col rounded bg-white p-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 md:w-[120%] lg:w-[150%] xl:max-h-[28rem]"
-      ref={filtersDivRef}
-    >
+    // TODO figure out what width the filter should actually be
+    <div className="flex w-full flex-col rounded bg-white p-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 md:w-[120%] lg:w-[150%] xl:max-h-[28rem]">
       <div className="flex-grow overflow-scroll border-none p-2 [&>div]:border-b-2 [&>div]:border-b-manatee-100 [&>div]:pt-3 [&>div]:pb-3 first:[&>div]:pt-0 last:[&>div]:border-none last:[&>div]:pb-0">
         <CheckboxGrid
           label="Object type"
@@ -105,14 +84,15 @@ export const SearchFilter = ({
         />
       </div>
       <div className="flex w-full justify-end gap-2 px-4 pt-2">
-        <Button variant="ghost" onClick={onFilterReset}>
+        <Button variant="ghost" onClick={resetAllFilters}>
           Reset
         </Button>
         <Button
           variant="primary"
-          onClick={onFilterSaveWrapper}
+          onClick={makeFiltersActive}
           disabled={
-            updatedObjectTypes.length === 0 || visibleColumns.length === 0
+            updatedObjectTypes.length === 0 ||
+            updatedVisibleColumns.length === 0
           }
         >
           Apply

@@ -14,7 +14,7 @@ import { useSkylarkSearchableObjectTypes } from "src/hooks/useSkylarkObjectTypes
 
 import { CreateButtons } from "./createButtons";
 import { RowActions } from "./rowActions";
-import { SearchBar } from "./searchBar/searchBar.component";
+import { Search } from "./search/search.component";
 import { Table } from "./table";
 
 const orderedKeys = ["__typename", "title", "name", "uid", "external_id"];
@@ -166,8 +166,9 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
     <div className="flex h-full flex-col gap-8">
       <div className="flex w-full flex-row items-center justify-between">
         <div className="flex w-full flex-row-reverse gap-4 md:w-1/2 xl:w-1/3">
-          <SearchBar
+          <Search
             objectTypes={objectTypes || []}
+            searchQuery={searchQuery}
             onQueryChange={setSearchQuery}
             activeFilters={searchFilters}
             columns={sortedHeaders}
