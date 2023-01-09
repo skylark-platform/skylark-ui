@@ -184,6 +184,14 @@ export const ObjectList = ({
     }
   }, [objectTypes, searchFilters]);
 
+  const onFilterChangeWrapper = (
+    updatedFilters: SearchFilters,
+    updatedColumnVisibility: VisibilityState,
+  ) => {
+    setSearchFilters(updatedFilters);
+    setColumnVisibility(updatedColumnVisibility);
+  };
+
   if (searchError) console.error("Search Errors:", { searchError });
 
   return (
@@ -208,8 +216,7 @@ export const ObjectList = ({
                   )
                 : sortedHeaders
             }
-            onFilterChange={setSearchFilters}
-            setColumnVisibility={setColumnVisibility}
+            onFilterChange={onFilterChangeWrapper}
           />
         </div>
         {withCreateButtons && <CreateButtons />}

@@ -14,9 +14,10 @@ interface SearchFilterProps {
   objectTypes: SkylarkObjectType[];
   columns: string[];
   visibleColumns: string[];
-  onFilterSave: (filters: SearchFilters) => void;
-  closeFilterDiv: () => void;
-  setColumnVisibility: (c: VisibilityState) => void;
+  onFilterSave: (
+    filters: SearchFilters,
+    columnVisibility: VisibilityState,
+  ) => void;
 }
 
 const convertCheckedColumnsToVisibilityState = (
@@ -39,8 +40,6 @@ export const SearchFilter = ({
   columns,
   visibleColumns,
   onFilterSave,
-  closeFilterDiv,
-  setColumnVisibility,
 }: SearchFilterProps) => {
   const [updatedObjectTypes, updateObjectTypes] = useState<string[]>(
     activeFilters.objectTypes || [],
@@ -51,21 +50,19 @@ export const SearchFilter = ({
   // TODO we only need one call back here really (not onFilterSave, closeFilterDiv and setColumnVisibility)
 
   const makeFiltersActive = () => {
-    closeFilterDiv();
-    onFilterSave({
-      objectTypes: updatedObjectTypes,
-    });
-    setColumnVisibility(
+    onFilterSave(
+      {
+        objectTypes: updatedObjectTypes,
+      },
       convertCheckedColumnsToVisibilityState(updatedVisibleColumns, columns),
     );
   };
 
   const resetAllFilters = () => {
-    closeFilterDiv();
-    onFilterSave({
-      objectTypes,
-    });
-    setColumnVisibility(
+    onFilterSave(
+      {
+        objectTypes,
+      },
       convertCheckedColumnsToVisibilityState(columns, columns),
     );
   };

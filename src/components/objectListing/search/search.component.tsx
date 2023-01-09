@@ -1,5 +1,5 @@
 import { VisibilityState } from "@tanstack/react-table";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { SearchFilter } from "src/components/objectListing/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
@@ -15,8 +15,7 @@ interface SearchBarProps {
   visibleColumns: string[];
   className?: string;
   onQueryChange: (str: string) => void;
-  onFilterChange: (filters: SearchFilters) => void;
-  setColumnVisibility: (c: VisibilityState) => void;
+  onFilterChange: (f: SearchFilters, c: VisibilityState) => void;
 }
 
 export const Search = ({
@@ -28,7 +27,6 @@ export const Search = ({
   onQueryChange,
   activeFilters,
   onFilterChange,
-  setColumnVisibility,
 }: SearchBarProps) => {
   const [isFilterOpen, setFilterOpen] = useState(false);
 
@@ -50,6 +48,14 @@ export const Search = ({
     };
   }, [setFilterOpen]);
 
+  const onFilterSaveWrapper = (
+    filters: SearchFilters,
+    columnVisibility: VisibilityState,
+  ) => {
+    setFilterOpen(false);
+    onFilterChange(filters, columnVisibility);
+  };
+
   return (
     <div className="relative w-full" ref={filtersDivRef}>
       <SearchInput
@@ -66,9 +72,7 @@ export const Search = ({
             activeFilters={activeFilters}
             columns={columns}
             visibleColumns={visibleColumns}
-            onFilterSave={onFilterChange}
-            closeFilterDiv={() => setFilterOpen(false)}
-            setColumnVisibility={setColumnVisibility}
+            onFilterSave={onFilterSaveWrapper}
           />
         </div>
       )}
