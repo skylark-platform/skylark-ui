@@ -48,6 +48,8 @@ export const SearchFilter = ({
   const [updatedVisibleColumns, updateVisibleColumns] =
     useState<string[]>(visibleColumns);
 
+  // TODO we only need one call back here really (not onFilterSave, closeFilterDiv and setColumnVisibility)
+
   const makeFiltersActive = () => {
     closeFilterDiv();
     onFilterSave({
@@ -74,11 +76,13 @@ export const SearchFilter = ({
       <div className="flex-grow overflow-scroll border-none p-2 [&>div]:border-b-2 [&>div]:border-b-manatee-100 [&>div]:pt-3 [&>div]:pb-3 first:[&>div]:pt-0 last:[&>div]:border-none last:[&>div]:pb-0">
         <CheckboxGrid
           label="Object type"
+          withToggleAll
           options={createCheckboxOptions(objectTypes, updatedObjectTypes)}
           onChange={updateObjectTypes}
         />
         <CheckboxGrid
           label="Columns"
+          withToggleAll
           options={createCheckboxOptions(columns, visibleColumns)}
           onChange={(opts) => updateVisibleColumns(opts)}
         />

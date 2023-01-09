@@ -1,3 +1,5 @@
+import { ComponentStory } from "@storybook/react";
+
 import { NavigationLinks } from "./links.component";
 
 export default {
@@ -5,4 +7,16 @@ export default {
   component: NavigationLinks,
 };
 
-export const Default = () => <NavigationLinks />;
+const Template: ComponentStory<typeof NavigationLinks> = () => (
+  <NavigationLinks />
+);
+
+export const Default = Template.bind({});
+
+export const WithActivePath = Template.bind({});
+WithActivePath.parameters = {
+  nextRouter: {
+    path: "/",
+    asPath: "/",
+  },
+};

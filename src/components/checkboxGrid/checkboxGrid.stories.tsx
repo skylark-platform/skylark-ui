@@ -24,3 +24,18 @@ Default.args = {
     Genre: false,
   },
 };
+
+export const WithToggleAll = Template.bind({});
+WithToggleAll.args = {
+  className: "w-96",
+  withToggleAll: true,
+  options: {
+    Brand: true,
+    Season: true,
+    Episode: false,
+    Person: false,
+    Tag: false,
+    Theme: false,
+    Genre: false,
+  },
+};

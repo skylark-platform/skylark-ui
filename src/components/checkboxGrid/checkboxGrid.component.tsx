@@ -10,6 +10,7 @@ interface CheckboxGridProps {
     [option: string]: CheckedState;
   };
   className?: string;
+  withToggleAll?: boolean;
   onChange: (checkedOptions: string[]) => void;
 }
 
@@ -29,6 +30,7 @@ export const CheckboxGrid = ({
   label,
   options,
   className,
+  withToggleAll,
   onChange,
 }: CheckboxGridProps) => {
   const [checkboxOptions, setCheckboxOptions] = useState(options);
@@ -63,11 +65,14 @@ export const CheckboxGrid = ({
   return (
     <div className={clsx("flex flex-col gap-2 text-xs", className)}>
       <h4 className="mb-0.5 font-semibold text-manatee-600">{label}</h4>
-      <Checkbox
-        label="Toggle all"
-        onCheckedChange={handleToggleAll}
-        checked={allOptionsChecked}
-      />
+      {withToggleAll && (
+        <Checkbox
+          label="Toggle all"
+          onCheckedChange={handleToggleAll}
+          name="toggle-all"
+          checked={allOptionsChecked}
+        />
+      )}
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
         {Object.keys(checkboxOptions).map((option) => (
           <Checkbox
