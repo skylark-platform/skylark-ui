@@ -1,6 +1,7 @@
 import {
   createColumnHelper,
   getCoreRowModel,
+  Row,
   RowData,
   useReactTable,
 } from "@tanstack/react-table";
@@ -8,8 +9,10 @@ import clsx from "clsx";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
+import { Panel } from "src/components/panel/panel.component";
 import { Select } from "src/components/select";
 import { useListObjects } from "src/hooks/useListObjects";
+import { usePanel } from "src/hooks/usePanel";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import { NormalizedObjectField } from "src/interfaces/skylark/objects";
 
@@ -29,6 +32,7 @@ export interface ObjectListProps {
 }
 
 const createColumns = (columns: TableColumn[]) => {
+  //  const { setPanelOpen } = usePanel();
   const createdColumns = columns.map((column) =>
     columnHelper.accessor(column, {
       cell: ({ getValue, row, column, table }) => {
@@ -90,6 +94,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const { objectTypes } = useSkylarkObjectTypes();
   const [objectType, setObjectType] = useState("");
   const { data, fields } = useListObjects(objectType);
+  const { isPanelOpen } = usePanel();
 
   const objectProperties = fields
     ? fields.filter((key) => !ignoredKeys.includes(key.name))
@@ -135,6 +140,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
 
   return (
     <div className="flex h-full flex-col gap-10">
+      <Panel isOpen={isPanelOpen} />
       <div className="flex w-full flex-row items-center justify-between">
         <Select
           className="w-64"
