@@ -25,7 +25,10 @@ export const Panel = ({ isOpen = true }: any) => {
 
   return (
     <div className="z-50 ">
-      <section className="fixed left-0 top-0 h-full w-3/5 bg-black bg-opacity-20"></section>
+      <section
+        onClick={() => setOpen(false)}
+        className="fixed left-0 top-0 h-full w-3/5 bg-black bg-opacity-20"
+      ></section>
       <section className="fixed top-0 right-0 h-full w-2/5 bg-white drop-shadow-md ease-in-out">
         <div className="p-5">
           <div className="flex flex-row ">
@@ -35,14 +38,14 @@ export const Panel = ({ isOpen = true }: any) => {
                 <Expand className="stroke-black" />
               </button>
             </div>
-            <div className="absolute right-0">
+            <div className="absolute right-0 ">
               <Button variant="ghost" onClick={() => setOpen(false)}>
-                close
+                Close
               </Button>
             </div>
           </div>
-          <div className="flex flex-row pt-3 ">
-            <Pill bgColor="bg-gray-100" label="Episode" />
+          <div className="flex flex-row items-center pt-3 ">
+            <Pill bgColor="#226DFF" label="Episode" />
             <h1 className="pl-4 text-xl font-bold uppercase">Title</h1>
           </div>
         </div>

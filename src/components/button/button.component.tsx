@@ -35,7 +35,7 @@ export const Button = ({
     variant === "primary" && "btn-primary shadow",
     variant === "outline" &&
       "btn-outline btn-primary disabled:border-none disabled:shadow",
-    variant === "ghost" && "btn-ghost text-brand-primary hover:bg-transparent",
+    variant === "ghost" && "btn-ghost text-gray-400 hover:bg-transparent",
     success && "btn-success text-white",
     danger && "btn-error",
     (disabled || loading) && "bg-disabled btn-disabled",
