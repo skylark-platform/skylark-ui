@@ -31,7 +31,7 @@ export interface ObjectListProps {
   withCreateButtons?: boolean;
 }
 
-const createColumns = (columns: TableColumn[]) => {
+const createColumns = (columns: TableColumn[], toggle: any) => {
   //  const { setPanelOpen } = usePanel();
   const createdColumns = columns.map((column) =>
     columnHelper.accessor(column, {
@@ -78,7 +78,7 @@ const createColumns = (columns: TableColumn[]) => {
           editRowEnabled={false}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() => console.log(row)}
+          onInfoClick={() => toggle()}
           onEditSaveClick={() => console.log(row)}
           onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
         />
@@ -94,7 +94,9 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const { objectTypes } = useSkylarkObjectTypes();
   const [objectType, setObjectType] = useState("");
   const { data, fields } = useListObjects(objectType);
-  const { isPanelOpen } = usePanel();
+  const { isPanelOpen, toggle } = usePanel();
+
+  console.log("in object listing", isPanelOpen);
 
   const objectProperties = fields
     ? fields.filter((key) => !ignoredKeys.includes(key.name))
@@ -115,7 +117,10 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
 
   const [rowInEditMode, setRowInEditMode] = useState("");
 
-  const parsedColumns = createColumns(sortedProperties.map(({ name }) => name));
+  const parsedColumns = createColumns(
+    sortedProperties.map(({ name }) => name),
+    toggle,
+  );
   const [columnVisibility, setColumnVisibility] = useState({});
 
   const table = useReactTable({
@@ -140,7 +145,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
 
   return (
     <div className="flex h-full flex-col gap-10">
-      <Panel isOpen={isPanelOpen} />
+      {isPanelOpen && <Panel toggle={toggle} />}
       <div className="flex w-full flex-row items-center justify-between">
         <Select
           className="w-64"

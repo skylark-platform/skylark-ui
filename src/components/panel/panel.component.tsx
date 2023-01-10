@@ -1,35 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "src/components/button";
 import { Expand } from "src/components/icons/expand.component";
 import { Pill } from "src/components/pill";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { useGetObject } from "src/hooks/useGetObject";
+import { usePanel } from "src/hooks/usePanel";
 
 interface Props {
   objectType: string;
   uid: string;
-  isOpen: boolean;
+  // isOpen: boolean;
 }
 
-export const Panel = ({ isOpen = true }: any) => {
+export const Panel = ({ isOpen = true, toggle }: any) => {
   const { data } = useGetObject("Episode", {
     uid: "01GP158MZD8SW5EC5P048C2V7V",
   });
 
-  console.log(data?.getEpisode);
+  console.log("#", data?.getObject);
 
-  const [isPanelOpen, setOpen] = useState(isOpen);
+  // const { isPanelOpen, toggle } = usePanel();
+  // const [isPanelOpen, setOpen] = useState(isOpen);
 
-  if (!isPanelOpen) return <></>;
+  // TODO
+  const orderedKeys = ["title", "name", "uid"];
+
+  // if (!isPanelOpen) return <></>;
 
   return (
     <div className="z-50 ">
       <section
-        onClick={() => setOpen(false)}
+        onClick={() => toggle()}
         className="fixed left-0 top-0 h-full w-3/5 bg-black bg-opacity-20"
       ></section>
-      <section className="fixed top-0 right-0 h-full w-2/5 bg-white drop-shadow-md ease-in-out">
+      <section className="fixed top-0 right-0 h-full w-2/5 bg-white drop-shadow-md ">
         <div className="p-5">
           <div className="flex flex-row ">
             <div className="pb-2">
@@ -39,7 +44,7 @@ export const Panel = ({ isOpen = true }: any) => {
               </button>
             </div>
             <div className="absolute right-0 ">
-              <Button variant="ghost" onClick={() => setOpen(false)}>
+              <Button variant="ghost" onClick={() => toggle()}>
                 Close
               </Button>
             </div>
