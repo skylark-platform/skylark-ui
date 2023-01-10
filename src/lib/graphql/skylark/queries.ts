@@ -79,3 +79,20 @@ export const GET_SEARCHABLE_OBJECTS = gql`
     }
   }
 `;
+
+// Retrieve global and language fields for an object so the UI can separate them
+// For example, for an Episode we would use variables { globalType: "_EpisodeGlobal", languageType: "_EpisodeLanguage" }
+export const GET_OBJECT_GLOBAL_LANGUAGE_FIELDS = gql`
+  query ($globalType: String!, $languageType: String!) {
+    global: __type(name: $globalType) {
+      fields {
+        name
+      }
+    }
+    language: __type(name: $languageType) {
+      fields {
+        name
+      }
+    }
+  }
+`;

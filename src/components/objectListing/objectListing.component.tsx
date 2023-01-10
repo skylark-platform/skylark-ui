@@ -28,6 +28,7 @@ export type TableColumn = string;
 export interface ObjectListProps {
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
+  withObjectEdit?: boolean;
 }
 
 const formatColumnHeader = (header: string) =>
@@ -35,7 +36,7 @@ const formatColumnHeader = (header: string) =>
 
 const createColumns = (
   columns: TableColumn[],
-  opts: { withObjectSelect?: boolean },
+  opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
 ) => {
   const createdColumns = columns.map((column) =>
     columnHelper.accessor(column, {
@@ -98,7 +99,7 @@ const createColumns = (
     cell: ({ table, row }) => {
       return (
         <RowActions
-          editRowEnabled={false}
+          editRowEnabled={opts.withObjectEdit}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
           onInfoClick={() => console.log(row)}
@@ -124,6 +125,7 @@ const createColumns = (
 export const ObjectList = ({
   withCreateButtons,
   withObjectSelect,
+  withObjectEdit,
 }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const { objectTypes } = useSkylarkSearchableObjectTypes();
@@ -150,7 +152,7 @@ export const ObjectList = ({
   });
 
   const parsedColumns = useMemo(
-    () => createColumns(sortedHeaders, { withObjectSelect }),
+    () => createColumns(sortedHeaders, { withObjectSelect, withObjectEdit }),
     [sortedHeaders, withObjectSelect],
   );
 

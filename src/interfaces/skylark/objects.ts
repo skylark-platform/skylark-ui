@@ -53,3 +53,9 @@ export interface SkylarkObjectFields {
 export interface SkylarkObjectMeta extends SkylarkObjectFields {
   operations: SkylarkObjectOperations;
 }
+
+export type SkylarkGraphQLObject = {
+  __typename: string;
+  uid: string;
+  external_id: string;
+} & Record<string, string | number | boolean>;

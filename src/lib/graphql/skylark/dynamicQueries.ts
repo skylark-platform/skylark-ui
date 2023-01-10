@@ -44,6 +44,10 @@ const generateFieldsToReturn = (
   return fieldsToReturn;
 };
 
+// This is unpleasant but neccessary as Apollo Client doesn't let us pass in any queries that are not valid
+// Should be used inconjunction with the Apollo Client option "skip" so the request is not made
+export const defaultValidBlankQuery = gql("query { __unknown { name }}");
+
 export const createGetObjectQuery = (object: SkylarkObjectMeta | null) => {
   if (!object || !object.operations.get) {
     return null;

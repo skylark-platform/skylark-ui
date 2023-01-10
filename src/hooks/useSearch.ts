@@ -1,18 +1,22 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 
-import { createSearchObjectsQuery } from "src/lib/graphql/skylark/dynamicQueries";
+import { SkylarkGraphQLObject } from "src/interfaces/skylark/objects";
+import {
+  createSearchObjectsQuery,
+  defaultValidBlankQuery,
+} from "src/lib/graphql/skylark/dynamicQueries";
 
 import { useAllSearchableObjectFields } from "./useSkylarkObjectTypes";
 
-const defaultValidQuery = gql("query { __unknown { name }}");
+export interface GQLSearchResponse {
+  search: {
+    objects: (SkylarkGraphQLObject | null)[];
+  };
+}
 
-// TODO rename Objjj
-interface Objjj {
-  __typename: string;
-  uid: string;
-  external_id: string;
-  [key: string]: string | number | boolean;
+export interface SearchFilters {
+  objectTypes: string[] | null;
 }
 
 // When making a search request, we use GraphQL value aliases to eliminate any clashes between
@@ -23,8 +27,8 @@ interface Objjj {
 //   the field and arguments to execute and the resulting value should be unambiguous.
 //   Therefore any two field selections which might both be encountered for the same object are only valid if they are equivalent.
 const removeFieldPrefixFromSearchObjects = (
-  objectsWithPrefixes: Objjj[],
-): Objjj[] => {
+  objectsWithPrefixes: SkylarkGraphQLObject[],
+): SkylarkGraphQLObject[] => {
   const objects = objectsWithPrefixes.map((objectWithPrefix) => {
     const searchAliasPrefix = `__${objectWithPrefix.__typename}__`;
     const result = Object.fromEntries(
@@ -35,18 +39,13 @@ const removeFieldPrefixFromSearchObjects = (
         return [newKey, val];
       }),
     );
-    return result as Objjj;
+    return result as SkylarkGraphQLObject;
   });
   return objects;
 };
 
-export interface SearchFilters {
-  objectTypes: string[] | null;
-}
-
 export const useSearch = (queryString: string, filters: SearchFilters) => {
-  const [data, setData] = useState<Objjj[]>([]);
-
+  const [data, setData] = useState<SkylarkGraphQLObject[]>([]);
   const { objects: searchableObjects, allFieldNames } =
     useAllSearchableObjectFields();
 
@@ -55,27 +54,26 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     filters.objectTypes || [],
   );
 
-  const { data: searchResponse, ...rest } = useQuery<{
-    search: {
-      objects: (Objjj | null)[];
-    };
-  }>(query || defaultValidQuery, {
-    skip: !query,
-    variables: {
-      queryString,
+  const { data: searchResponse, ...rest } = useQuery<GQLSearchResponse>(
+    query || defaultValidBlankQuery,
+    {
+      skip: !query,
+      variables: {
+        queryString,
+      },
+      // Using "all" so we can get data even when some is invalid
+      // https://www.apollographql.com/docs/react/data/error-handling/#graphql-error-policies
+      errorPolicy: "all",
+      // Don't cache search so we always get up to date results
+      fetchPolicy: "no-cache",
     },
-    // Using "all" so we can get data even when some is invalid
-    // https://www.apollographql.com/docs/react/data/error-handling/#graphql-error-policies
-    errorPolicy: "all",
-    // Don't cache search so we always get up to date results
-    fetchPolicy: "no-cache",
-  });
+  );
 
   useEffect(() => {
     // Using the errorPolicy "all" means that some data could be null
     const nonNullObjects = searchResponse?.search.objects.filter(
       (obj) => obj !== null,
-    ) as Objjj[];
+    ) as SkylarkGraphQLObject[];
     const parsedObjects = removeFieldPrefixFromSearchObjects(
       nonNullObjects || [],
     );

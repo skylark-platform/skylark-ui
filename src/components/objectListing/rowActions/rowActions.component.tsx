@@ -6,7 +6,7 @@ import {
 } from "src/components/icons";
 
 interface RowActionsProps {
-  editRowEnabled: boolean;
+  editRowEnabled?: boolean;
   inEditMode?: boolean;
   onInfoClick: () => void;
   onEditClick: () => void;
