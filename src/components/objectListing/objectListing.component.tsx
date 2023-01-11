@@ -130,6 +130,10 @@ export const ObjectList = ({
     VisibilityState | undefined
   >(undefined);
 
+  const [modifiedObject, setModifiedObject] = useState({
+    external_id: "something",
+  });
+
   const table = useReactTable({
     debugAll: false,
     data: searchData || [],
@@ -145,6 +149,17 @@ export const ObjectList = ({
       },
       onEditCancelClick() {
         setRowInEditMode("");
+      },
+      onEditSaveClick() {
+        // setRowInEditMode("");
+        console.log("save", { modifiedObject });
+      },
+      updateEditingObjectData(objectField, newValue) {
+        console.log("update", objectField, newValue);
+        setModifiedObject({
+          ...modifiedObject,
+          [objectField]: newValue,
+        });
       },
     },
   });

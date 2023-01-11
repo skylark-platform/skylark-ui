@@ -7,31 +7,47 @@ export const TableCell = ({
   row,
   column,
   getValue,
+  ...props
 }: CellContext<object, unknown>) => {
-  const initialValue = getValue();
+  const initialValue = getValue<string | number | boolean | null>();
   // We need to keep and update the state of the cell normally
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [value, setValue] = useState(initialValue);
+  // const [value, setValue] = useState<string | number | boolean | null>(
+  //   initialValue,
+  // );
 
   // When the input is blurred, we'll call our table meta's updateData function
   // const onBlur = () => {
   //   table.options.meta?.updateData(index, id, value);
   // };
+  // const onBlur = () => {
+  //   table.options.meta?.updateEditingObjectData(column.id, value);
+  //   console.log({ table, row, column, ...props });
+  // };
 
   // If the initialValue is changed external, sync it up with our state
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
+    table.options.meta?.updateEditingObjectData(column.id, initialValue);
+  }, [column.id, initialValue, table.options.meta]);
 
   return row.id === table.options.meta?.rowInEditMode ? (
     <input
-      value={value as string}
-      onChange={(e) => setValue(e.target.value)}
+      onBlur={onBlur}
+      value={
+        (table.options.meta?.editingObjectData[column.id] as string) ||
+        (initialValue as string)
+      }
+      onChange={(e) =>
+        table.options.meta?.updateEditingObjectData(column.id, e.target.value)
+      }
       className={clsx(
         "w-full border-b-2 border-brand-primary py-1 outline-none disabled:border-none disabled:border-manatee-200 disabled:text-manatee-500",
-        initialValue !== value && "border-warning",
-        value === "" && initialValue !== "" && "border-error",
+        initialValue !== table.options.meta?.editingObjectData[column.id] &&
+          "border-warning",
+        table.options.meta?.editingObjectData[column.id] === "" &&
+          initialValue !== "" &&
+          "border-error",
       )}
       disabled={column.id === "uid"}
     />

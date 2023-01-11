@@ -5,5 +5,11 @@ export declare module "@tanstack/table-core" {
     rowInEditMode: string;
     onEditClick: (rowId: string) => void;
     onEditCancelClick: () => void;
+    onEditSaveClick: () => void;
+    editingObjectData: object;
+    updateEditingObjectData: (
+      objectField: string,
+      newValue: string | number | boolean | null,
+    ) => void;
   }
 }
