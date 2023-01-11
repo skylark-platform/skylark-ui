@@ -19,8 +19,7 @@ export const createCheckboxOptions = (
   activeOptions: string[],
 ): { [option: string]: CheckedState } => {
   const obj = options.reduce(
-    (o, option) =>
-      Object.assign(o, { [option]: activeOptions.includes(option) }),
+    (prev, option) => ({ ...prev, [option]: activeOptions.includes(option) }),
     {},
   );
   return obj;

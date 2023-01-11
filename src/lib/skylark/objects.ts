@@ -93,13 +93,10 @@ const getAllObjectFields = (
   const queries = queryType.fields;
   const getQueries = queries.filter((query) => query.name.startsWith("get"));
   const allObjectsWithFields = getQueries
-    .map((getQuery) => {
-      const objectFields = getObjectFieldsFromGetQuery(getQuery);
-      return {
-        name: getQuery.type.name,
-        fields: objectFields,
-      };
-    })
+    .map((getQuery) => ({
+      name: getQuery.type.name,
+      fields: getObjectFieldsFromGetQuery(getQuery),
+    }))
     .filter(({ name, fields }) => name && fields.length > 0);
 
   return allObjectsWithFields;
