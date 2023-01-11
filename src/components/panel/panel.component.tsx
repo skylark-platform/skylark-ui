@@ -1,74 +1,88 @@
-import { useEffect, useState } from "react";
-
 import { Button } from "src/components/button";
 import { Expand } from "src/components/icons/expand.component";
 import { Pill } from "src/components/pill";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { useGetObject } from "src/hooks/useGetObject";
-import { usePanel } from "src/hooks/usePanel";
 
 interface Props {
   objectType: string;
+  togglePanel: () => void;
   uid: string;
-  // isOpen: boolean;
 }
 
-export const Panel = ({ isOpen = true, toggle }: any) => {
-  const { data } = useGetObject("Episode", {
-    uid: "01GP158MZD8SW5EC5P048C2V7V",
+export const Panel = ({ togglePanel, objectType, uid }: Props) => {
+  console.log("multiple party", uid);
+  const { data } = useGetObject(objectType, {
+    uid: uid,
   });
 
   console.log("#", data?.getObject);
 
-  // const { isPanelOpen, toggle } = usePanel();
-  // const [isPanelOpen, setOpen] = useState(isOpen);
-
   // TODO
   const orderedKeys = ["title", "name", "uid"];
 
-  // if (!isPanelOpen) return <></>;
-
   return (
-    <div className="z-50 ">
+    <div className="z-50">
       <section
-        onClick={() => toggle()}
+        onClick={() => togglePanel()}
         className="fixed left-0 top-0 h-full w-3/5 bg-black bg-opacity-20"
       ></section>
-      <section className="fixed top-0 right-0 h-full w-2/5 bg-white drop-shadow-md ">
-        <div className="p-5">
-          <div className="flex flex-row ">
-            <div className="pb-2">
-              <Button variant="primary">Edit metada</Button>
-              <button className="pl-3 align-middle">
-                <Expand className="stroke-black" />
-              </button>
+      <section className="fixed top-0 right-0 h-full w-2/5 overflow-y-scroll bg-white drop-shadow-md ">
+        {data && (
+          <>
+            <div className="p-5">
+              <div className="flex flex-row ">
+                <div className="pb-2">
+                  {/*
+                    <Button variant="primary">Edit metada</Button>
+                    <button className="pl-3 align-middle">
+                      <Expand className="stroke-black" />
+                    </button>
+                */}
+                </div>
+                <div className="absolute right-0 ">
+                  <Button variant="ghost" onClick={() => togglePanel()}>
+                    Close
+                  </Button>
+                </div>
+              </div>
+              <div className="flex flex-row items-center pt-5 ">
+                <Pill bgColor="#226DFF" label="Episode" />
+                <h1 className="pl-4 text-xl font-bold uppercase">
+                  {data?.getObject?.title}
+                </h1>
+              </div>
             </div>
-            <div className="absolute right-0 ">
-              <Button variant="ghost" onClick={() => toggle()}>
-                Close
-              </Button>
+
+            <Tabs tabs={["Metadata"]} />
+
+            <div className="p-5 ">
+              {/* <h2 className="mt-4 text-xl font-semibold ">Global metadata</h2> */}
+              <div>
+                {data?.getObject &&
+                  Object.keys(data?.getObject).map(
+                    (element) =>
+                      data?.getObject[element] && (
+                        <>
+                          <h3 className="mt-4 mb-2 font-bold">{element}</h3>
+                          <div className="text-base-content">
+                            {data?.getObject[element]}
+                          </div>
+                        </>
+                      ),
+                  )}
+                <h3 className="mt-4 mb-2 font-bold">Title</h3>
+                <div className="text-base-content">
+                  {data?.getObject?.title}
+                </div>
+                <h3 className="mt-4 mb-2 font-bold">Synopsis</h3>
+                <div className="text-base-content">
+                  {data?.getObject?.synopsis_medium}
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="flex flex-row items-center pt-3 ">
-            <Pill bgColor="#226DFF" label="Episode" />
-            <h1 className="pl-4 text-xl font-bold uppercase">Title</h1>
-          </div>
-        </div>
-
-        <Tabs tabs={["Metadata", "Versions"]} />
-
-        <div className="p-5 ">
-          <h2 className="mt-4 text-xl font-semibold ">Global metadata</h2>
-
-          <div>
-            <h3 className="mt-4 mb-2 font-bold">Title</h3>
-            <div className="text-base-content">{data?.getEpisode.title}</div>
-            <h3 className="mt-4 mb-2 font-bold">Synopsis</h3>
-            <div className="text-base-content">
-              {data?.getEpisode.synopsis_medium}
-            </div>
-          </div>
-        </div>
+          </>
+        )}
       </section>
     </div>
   );

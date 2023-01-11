@@ -1,8 +1,6 @@
 import {
   createColumnHelper,
   getCoreRowModel,
-  Row,
-  RowData,
   useReactTable,
 } from "@tanstack/react-table";
 import clsx from "clsx";
@@ -31,8 +29,10 @@ export interface ObjectListProps {
   withCreateButtons?: boolean;
 }
 
-const createColumns = (columns: TableColumn[], toggle: any) => {
-  //  const { setPanelOpen } = usePanel();
+const createColumns = (
+  columns: TableColumn[],
+  setPanelInfo: (objectType: string, uid: string) => void,
+) => {
   const createdColumns = columns.map((column) =>
     columnHelper.accessor(column, {
       cell: ({ getValue, row, column, table }) => {
@@ -73,12 +73,17 @@ const createColumns = (columns: TableColumn[], toggle: any) => {
   const actionColumn = columnHelper.display({
     id: "actions",
     cell: ({ table, row }) => {
+      //TODO fix media types
+      const { uid, __typename: objectType } = row.original as {
+        uid: string;
+        __typename: string;
+      };
       return (
         <RowActions
           editRowEnabled={false}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() => toggle()}
+          onInfoClick={() => setPanelInfo(objectType, uid)}
           onEditSaveClick={() => console.log(row)}
           onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
         />
@@ -94,7 +99,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const { objectTypes } = useSkylarkObjectTypes();
   const [objectType, setObjectType] = useState("");
   const { data, fields } = useListObjects(objectType);
-  const { isPanelOpen, toggle } = usePanel();
+  const { isPanelOpen, setPanelInfo, togglePanel, objectInfo } = usePanel();
 
   console.log("in object listing", isPanelOpen);
 
@@ -119,7 +124,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
 
   const parsedColumns = createColumns(
     sortedProperties.map(({ name }) => name),
-    toggle,
+    setPanelInfo,
   );
   const [columnVisibility, setColumnVisibility] = useState({});
 
@@ -145,7 +150,13 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
 
   return (
     <div className="flex h-full flex-col gap-10">
-      {isPanelOpen && <Panel toggle={toggle} />}
+      {isPanelOpen && objectInfo && (
+        <Panel
+          togglePanel={togglePanel}
+          uid={objectInfo?.uid}
+          objectType={objectInfo?.objectType}
+        />
+      )}
       <div className="flex w-full flex-row items-center justify-between">
         <Select
           className="w-64"

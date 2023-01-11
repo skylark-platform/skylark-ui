@@ -1,18 +1,20 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 
 export function usePanel() {
-  const [isPanelOpen, setPanelOpen] = useState(false);
-  console.log("isPanelOpen", isPanelOpen);
-  useEffect(() => {
-    console.log("useffect", isPanelOpen);
-    //return () => setPanelOpen(!isPanelOpen);
-  }, [isPanelOpen, setPanelOpen]);
+  const [isPanelOpen, setPanelStatus] = useState(false);
+  const [objectInfo, setObjectInfo] = useState<{
+    uid: string;
+    objectType: string;
+  } | null>(null);
 
-  // const toggle = () => setPanelOpen(!isPanelOpen);
-  const toggle = useCallback(
-    () => setPanelOpen((isPanelOpen) => !isPanelOpen),
-    [],
-  );
+  function togglePanel() {
+    setPanelStatus(!isPanelOpen);
+  }
 
-  return { isPanelOpen, toggle };
+  function setPanelInfo(objectType: string, uid: string) {
+    setObjectInfo({ objectType, uid });
+    setPanelStatus(true);
+  }
+
+  return { isPanelOpen, togglePanel, setPanelInfo, objectInfo };
 }
