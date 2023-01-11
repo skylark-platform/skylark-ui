@@ -5,6 +5,7 @@ import {
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
 import * as fixtures from "src/tests/fixtures";
+import { SKYLARK_OBJECT_TYPES_FIXTURE } from "src/tests/fixtures";
 
 import {
   getSkylarkObjectOperations,
@@ -101,6 +102,6 @@ describe("getSkylarkObjectTypes", () => {
   test("returns the expected values", async () => {
     const got = await getSkylarkObjectTypes(mockClient);
 
-    expect(got).toEqual(["Episode", "Brand", "Season"]);
+    expect(got).toEqual(SKYLARK_OBJECT_TYPES_FIXTURE);
   });
 });

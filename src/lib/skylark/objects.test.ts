@@ -1,4 +1,7 @@
-import { GQLSkylarkSchemaQueryFixture } from "src/tests/fixtures";
+import {
+  GQLSkylarkSchemaQueryFixture,
+  SKYLARK_OBJECT_FIELDS_FIXTURE,
+} from "src/tests/fixtures";
 
 import { getAllSearchableObjectFields, getObjectOperations } from "./objects";
 
@@ -10,15 +13,13 @@ describe("getObjectOperations", () => {
     );
     expect(got).toEqual({
       name: "Episode",
-      fields: [
-        {
-          enumValues: undefined,
-          isList: false,
-          isRequired: false,
-          name: "title",
-          type: "string",
-        },
-      ],
+      fields: SKYLARK_OBJECT_FIELDS_FIXTURE.map((name) => ({
+        enumValues: undefined,
+        isList: false,
+        isRequired: false,
+        name,
+        type: "string",
+      })),
       operations: {
         get: {
           name: "getEpisode",
@@ -73,15 +74,13 @@ describe("getAllSearchableObjectFields", () => {
     expect(got).toEqual([
       {
         name: "Episode",
-        fields: [
-          {
-            enumValues: undefined,
-            isList: false,
-            isRequired: false,
-            name: "title",
-            type: "string",
-          },
-        ],
+        fields: SKYLARK_OBJECT_FIELDS_FIXTURE.map((name) => ({
+          enumValues: undefined,
+          isList: false,
+          isRequired: false,
+          name,
+          type: "string",
+        })),
       },
     ]);
   });
@@ -89,7 +88,7 @@ describe("getAllSearchableObjectFields", () => {
   test("returns nothing when Episode is not searchable", () => {
     const got = getAllSearchableObjectFields(
       GQLSkylarkSchemaQueryFixture.data.__schema.queryType,
-      ["Brand"],
+      ["UnknownObject"],
     );
     expect(got).toEqual([]);
   });
