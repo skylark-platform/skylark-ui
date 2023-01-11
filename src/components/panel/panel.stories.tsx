@@ -8,11 +8,7 @@ export default {
 };
 
 const Template: ComponentStory<React.FC<any>> = (args) => {
-  return (
-    <div className="flex flex-row space-x-2">
-      <Panel isOpen />
-    </div>
-  );
+  return <div className="flex flex-row space-x-2"></div>;
 };
 
 export const Default = Template.bind({});
