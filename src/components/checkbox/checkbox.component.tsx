@@ -10,7 +10,12 @@ interface CheckboxProps extends RadixCheckboxProps {
   label?: string;
 }
 
-export const Checkbox = ({ className, label, ...props }: CheckboxProps) => {
+export const Checkbox = ({
+  className,
+  label,
+  "aria-label": ariaLabel,
+  ...props
+}: CheckboxProps) => {
   const htmlFor = label
     ? `checkbox-${label.replace(" ", "-")}`.toLowerCase()
     : "";
@@ -19,6 +24,7 @@ export const Checkbox = ({ className, label, ...props }: CheckboxProps) => {
     <div className="group flex items-center hover:cursor-pointer">
       <Root
         id={htmlFor}
+        aria-label={ariaLabel}
         className={clsx(
           "peer flex h-5 w-5 min-w-5 items-center justify-center rounded-sm",
           "border-2 radix-state-checked:border-brand-primary radix-state-checked:bg-brand-primary radix-state-unchecked:bg-manatee-200",

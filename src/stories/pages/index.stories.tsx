@@ -1,3 +1,6 @@
+import { ComponentStory } from "@storybook/react";
+import { within } from "@storybook/testing-library";
+
 import { SkylarkObjectFields } from "src/interfaces/skylark/objects";
 import { createSearchObjectsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -6,10 +9,10 @@ import {
 } from "src/lib/graphql/skylark/queries";
 import Index from "src/pages/index";
 import {
-  SKYLARK_OBJECT_FIELDS_FIXTURE,
   GQLSkylarkSearchableObjectsQueryFixture,
   GQLSkylarkSchemaQueryFixture,
   GQLSkylarkSearchQueryFixture,
+  GQLSkylarkDynamicSearchQuery,
 } from "src/tests/fixtures";
 
 export default {
@@ -17,20 +20,11 @@ export default {
   component: Index,
 };
 
-const searchableObjects = [
-  {
-    name: "Episode",
-    fields: SKYLARK_OBJECT_FIELDS_FIXTURE.map((name) => ({
-      name,
-      type: "string",
-      isList: false,
-      isRequired: false,
-    })),
-  },
-] as SkylarkObjectFields[];
-const searchQuery = createSearchObjectsQuery(searchableObjects, ["Episode"]);
+const Template: ComponentStory<typeof Index> = () => {
+  return <Index />;
+};
 
-export const IndexPage = () => <Index />;
+export const IndexPage = Template.bind({});
 IndexPage.parameters = {
   apolloClient: {
     mocks: [
@@ -53,7 +47,7 @@ IndexPage.parameters = {
       {
         request: {
           variables: { ignoreAvailability: true, queryString: "" },
-          query: searchQuery,
+          query: GQLSkylarkDynamicSearchQuery,
         },
         result: {
           data: GQLSkylarkSearchQueryFixture,
@@ -61,4 +55,9 @@ IndexPage.parameters = {
       },
     ],
   },
+};
+IndexPage.play = async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  const canvas = within(canvasElement);
+
+  await canvas.findAllByText("Short title");
 };

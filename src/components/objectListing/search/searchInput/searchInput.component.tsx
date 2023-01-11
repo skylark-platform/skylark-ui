@@ -45,6 +45,7 @@ export const SearchInput = ({
       <button
         className="flex items-center justify-center gap-2 rounded-r-full bg-manatee-200 p-3 pl-8 pr-10"
         onClick={toggleFilterOpen}
+        aria-label="open-search-filters"
         type="button"
       >
         <Filter />

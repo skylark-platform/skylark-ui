@@ -32,7 +32,7 @@ export interface ObjectListProps {
 }
 
 const formatColumnHeader = (header: string) =>
-  header.toLocaleUpperCase().replaceAll("_", " ");
+  header.toUpperCase().replaceAll("_", " ");
 
 const createColumns = (
   columns: TableColumn[],
@@ -59,7 +59,7 @@ const createColumns = (
 
   const selectColumn = columnHelper.display({
     id: OBJECT_LIST_TABLE.columnIds.checkbox,
-    header: () => <Checkbox />,
+    header: () => <Checkbox aria-label="toggle-select-all-objects" />,
     cell: () => <Checkbox />,
   });
 

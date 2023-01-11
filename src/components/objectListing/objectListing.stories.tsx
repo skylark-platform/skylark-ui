@@ -1,17 +1,15 @@
 import { ComponentStory } from "@storybook/react";
 import { userEvent, within } from "@storybook/testing-library";
 
-import { SkylarkObjectFields } from "src/interfaces/skylark/objects";
-import { createSearchObjectsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   GET_SEARCHABLE_OBJECTS,
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
 import {
+  GQLSkylarkDynamicSearchQuery,
   GQLSkylarkSchemaQueryFixture,
   GQLSkylarkSearchableObjectsQueryFixture,
   GQLSkylarkSearchQueryFixture,
-  SKYLARK_OBJECT_FIELDS_FIXTURE,
 } from "src/tests/fixtures";
 
 import { ObjectList } from "./objectListing.component";
@@ -20,19 +18,6 @@ export default {
   title: "Components/ObjectListing",
   component: ObjectList,
 };
-
-const searchableObjects = [
-  {
-    name: "Episode",
-    fields: SKYLARK_OBJECT_FIELDS_FIXTURE.map((name) => ({
-      name,
-      type: "string",
-      isList: false,
-      isRequired: false,
-    })),
-  },
-] as SkylarkObjectFields[];
-const searchQuery = createSearchObjectsQuery(searchableObjects, ["Episode"]);
 
 const Template: ComponentStory<typeof ObjectList> = (args) => {
   return <ObjectList {...args} />;
@@ -61,7 +46,7 @@ Default.parameters = {
       {
         request: {
           variables: { ignoreAvailability: true, queryString: "" },
-          query: searchQuery,
+          query: GQLSkylarkDynamicSearchQuery,
         },
         result: {
           data: GQLSkylarkSearchQueryFixture,
