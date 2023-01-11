@@ -11,14 +11,16 @@ interface Props {
 }
 
 export const Panel = ({ togglePanel, objectType, uid }: Props) => {
-  console.log("multiple party", uid);
   const { data } = useGetObject(objectType, {
     uid: uid,
   });
 
-  console.log("#", data?.getObject);
+  const getTitle = (object: { [k: string]: string }, priority: string[]) => {
+    const [title] = priority.map((key) => object[key]).filter((key) => key);
 
-  // TODO
+    return title;
+  };
+
   const orderedKeys = ["title", "name", "uid"];
 
   return (
@@ -49,7 +51,7 @@ export const Panel = ({ togglePanel, objectType, uid }: Props) => {
               <div className="flex flex-row items-center pt-5 ">
                 <Pill bgColor="#226DFF" label="Episode" />
                 <h1 className="pl-4 text-xl font-bold uppercase">
-                  {data?.getObject?.title}
+                  {getTitle(data?.getObject, orderedKeys)}
                 </h1>
               </div>
             </div>
@@ -62,7 +64,8 @@ export const Panel = ({ togglePanel, objectType, uid }: Props) => {
                 {data?.getObject &&
                   Object.keys(data?.getObject).map(
                     (element) =>
-                      data?.getObject[element] && (
+                      data?.getObject[element] &&
+                      element !== "__typename" && (
                         <>
                           <h3 className="mt-4 mb-2 font-bold">{element}</h3>
                           <div className="text-base-content">

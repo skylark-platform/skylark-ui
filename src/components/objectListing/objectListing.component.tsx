@@ -101,8 +101,6 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const { data, fields } = useListObjects(objectType);
   const { isPanelOpen, setPanelInfo, togglePanel, objectInfo } = usePanel();
 
-  console.log("in object listing", isPanelOpen);
-
   const objectProperties = fields
     ? fields.filter((key) => !ignoredKeys.includes(key.name))
     : [];
