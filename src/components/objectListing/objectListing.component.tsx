@@ -195,16 +195,15 @@ export const ObjectList = ({
       <div className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6">
         {!searchLoading && searchData && <Table table={table} />}
         {(searchLoading || searchData) && (
-          <div className="flex h-96 w-full flex-col items-center justify-center gap-4">
+          <div className="items-top justify-left flex h-96 w-full flex-col gap-4 text-manatee-600">
             {searchLoading && (
-              <>
-                <p>Loading...</p>
+              <div className="flex w-full justify-center">
                 <Spinner className="h-10 w-10 animate-spin" />
-              </>
+              </div>
             )}
 
             {!searchLoading && searchData && searchData.length === 0 && (
-              <p>{`No results found for query: "${searchQuery}"`}</p>
+              <p>{`No objects found.`}</p>
             )}
           </div>
         )}
