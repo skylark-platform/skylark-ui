@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 import { Button } from "src/components/button";
 import { Expand } from "src/components/icons/expand.component";
 import { Pill } from "src/components/pill";
@@ -6,7 +8,7 @@ import { useGetObject } from "src/hooks/useGetObject";
 
 interface Props {
   objectType: string;
-  togglePanel: () => void;
+  togglePanel: Dispatch<SetStateAction<string | null>>;
   uid: string;
 }
 
@@ -26,7 +28,7 @@ export const Panel = ({ togglePanel, objectType, uid }: Props) => {
   return (
     <div className="z-50">
       <section
-        onClick={() => togglePanel()}
+        onClick={() => togglePanel(null)}
         className="fixed left-0 top-0 h-full w-3/5 bg-black bg-opacity-20"
       ></section>
       <section className="fixed top-0 right-0 h-full w-2/5 overflow-y-scroll bg-white drop-shadow-md ">
@@ -43,7 +45,7 @@ export const Panel = ({ togglePanel, objectType, uid }: Props) => {
                 */}
                 </div>
                 <div className="absolute right-0 ">
-                  <Button variant="ghost" onClick={() => togglePanel()}>
+                  <Button variant="ghost" onClick={() => togglePanel(null)}>
                     Close
                   </Button>
                 </div>

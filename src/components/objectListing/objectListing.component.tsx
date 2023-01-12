@@ -5,12 +5,11 @@ import {
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { Dispatch, useEffect, useState, SetStateAction } from "react";
 
 import { Panel } from "src/components/panel/panel.component";
 import { Select } from "src/components/select";
 import { useListObjects } from "src/hooks/useListObjects";
-import { usePanel } from "src/hooks/usePanel";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import { NormalizedObjectField } from "src/interfaces/skylark/objects";
 
@@ -31,7 +30,7 @@ export interface ObjectListProps {
 
 const createColumns = (
   columns: TableColumn[],
-  setPanelInfo: (objectType: string, uid: string) => void,
+  setObjectUid: Dispatch<SetStateAction<string | null>>,
 ) => {
   const createdColumns = columns.map((column) =>
     columnHelper.accessor(column, {
@@ -83,7 +82,7 @@ const createColumns = (
           editRowEnabled={false}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() => setPanelInfo(objectType, uid)}
+          onInfoClick={() => setObjectUid(uid)}
           onEditSaveClick={() => console.log(row)}
           onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
         />
@@ -98,8 +97,8 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const { query, push, pathname } = useRouter();
   const { objectTypes } = useSkylarkObjectTypes();
   const [objectType, setObjectType] = useState("");
+  const [objectUid, setObjectUid] = useState<string | null>(null);
   const { data, fields } = useListObjects(objectType);
-  const { isPanelOpen, setPanelInfo, togglePanel, objectInfo } = usePanel();
 
   const objectProperties = fields
     ? fields.filter((key) => !ignoredKeys.includes(key.name))
@@ -122,7 +121,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
 
   const parsedColumns = createColumns(
     sortedProperties.map(({ name }) => name),
-    setPanelInfo,
+    setObjectUid,
   );
   const [columnVisibility, setColumnVisibility] = useState({});
 
@@ -148,11 +147,11 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
 
   return (
     <div className="flex h-full flex-col gap-10">
-      {isPanelOpen && objectInfo && (
+      {objectType && objectUid && (
         <Panel
-          togglePanel={togglePanel}
-          uid={objectInfo?.uid}
-          objectType={objectInfo?.objectType}
+          togglePanel={setObjectUid}
+          uid={objectUid}
+          objectType={objectType}
         />
       )}
       <div className="flex w-full flex-row items-center justify-between">
