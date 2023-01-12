@@ -4,6 +4,7 @@ import React from "react";
 import { AlertCircle } from "./alertCircle.component";
 import { CheckCircle } from "./checkCircle.component";
 import { Circle } from "./circle.component";
+import { Expand } from "./expand.component";
 import { IconProps } from "./iconBase.component";
 import { Spinner } from "./spinner.component";
 
@@ -18,6 +19,7 @@ const Template: ComponentStory<React.FC<IconProps>> = (args) => {
       <Circle {...args} />
       <AlertCircle {...args} />
       <Spinner {...args} />
+      <Expand {...args} />
     </div>
   );
 };

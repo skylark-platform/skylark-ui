@@ -1,13 +1,13 @@
 import {
   createColumnHelper,
   getCoreRowModel,
-  RowData,
   useReactTable,
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { Dispatch, useEffect, useState, SetStateAction } from "react";
 
+import { Panel } from "src/components/panel/panel.component";
 import { Select } from "src/components/select";
 import { useListObjects } from "src/hooks/useListObjects";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
@@ -28,7 +28,10 @@ export interface ObjectListProps {
   withCreateButtons?: boolean;
 }
 
-const createColumns = (columns: TableColumn[]) => {
+const createColumns = (
+  columns: TableColumn[],
+  setObjectUid: Dispatch<SetStateAction<string | null>>,
+) => {
   const createdColumns = columns.map((column) =>
     columnHelper.accessor(column, {
       cell: ({ getValue, row, column, table }) => {
@@ -69,12 +72,17 @@ const createColumns = (columns: TableColumn[]) => {
   const actionColumn = columnHelper.display({
     id: "actions",
     cell: ({ table, row }) => {
+      //TODO fix media types
+      const { uid, __typename: objectType } = row.original as {
+        uid: string;
+        __typename: string;
+      };
       return (
         <RowActions
           editRowEnabled={false}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() => console.log(row)}
+          onInfoClick={() => setObjectUid(uid)}
           onEditSaveClick={() => console.log(row)}
           onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
         />
@@ -89,6 +97,7 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
   const { query, push, pathname } = useRouter();
   const { objectTypes } = useSkylarkObjectTypes();
   const [objectType, setObjectType] = useState("");
+  const [objectUid, setObjectUid] = useState<string | null>(null);
   const { data, fields } = useListObjects(objectType);
 
   const objectProperties = fields
@@ -110,7 +119,10 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
 
   const [rowInEditMode, setRowInEditMode] = useState("");
 
-  const parsedColumns = createColumns(sortedProperties.map(({ name }) => name));
+  const parsedColumns = createColumns(
+    sortedProperties.map(({ name }) => name),
+    setObjectUid,
+  );
   const [columnVisibility, setColumnVisibility] = useState({});
 
   const table = useReactTable({
@@ -135,6 +147,13 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
 
   return (
     <div className="flex h-full flex-col gap-10">
+      {objectType && objectUid && (
+        <Panel
+          togglePanel={setObjectUid}
+          uid={objectUid}
+          objectType={objectType}
+        />
+      )}
       <div className="flex w-full flex-row items-center justify-between">
         <Select
           className="w-64"
