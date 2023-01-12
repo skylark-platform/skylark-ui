@@ -7,6 +7,19 @@ import {
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
 
+const getObjectFieldsFromGetQuery = (
+  getQuery: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"][0],
+) => {
+  if (!getQuery || !getQuery.type || !getQuery.type.fields) {
+    return [];
+  }
+
+  const objectFields = parseObjectInputFields(
+    getQuery.type.fields.filter((field) => field.type.kind !== "OBJECT"),
+  );
+  return objectFields;
+};
+
 export const getObjectOperations = (
   objectType: SkylarkObjectType,
   { queryType, mutationType }: GQLSkylarkSchemaQueriesMutations["__schema"],
@@ -36,14 +49,14 @@ export const getObjectOperations = (
     throw new Error("Skylark ObjectType is missing expected operation");
   }
 
-  const objectFields = parseObjectInputFields(
-    getQuery?.type.fields.filter((field) => field.type.kind !== "OBJECT"),
+  const objectFields = getObjectFieldsFromGetQuery(getQuery);
+
+  const foundCreateInput = createMutation.args.find(
+    (arg) => arg.type.name === `${objectType}CreateInput`,
   );
 
-  const createInputFields = createMutation.args.find(
-    (arg) => arg.type.name === `${objectType}CreateInput`,
-  )?.type.inputFields;
-
+  const createInputArgName = foundCreateInput?.name || "";
+  const createInputFields = foundCreateInput?.type.inputFields;
   const createInputs = parseObjectInputFields(createInputFields);
   const createRelationships = parseObjectRelationships(createInputFields);
 
@@ -59,6 +72,7 @@ export const getObjectOperations = (
     create: {
       type: "Mutation",
       name: createMutation.name,
+      argName: createInputArgName,
       inputs: createInputs,
       relationships: createRelationships,
     },
@@ -71,4 +85,29 @@ export const getObjectOperations = (
   };
 
   return object;
+};
+
+const getAllObjectFields = (
+  queryType: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"],
+) => {
+  const queries = queryType.fields;
+  const getQueries = queries.filter((query) => query.name.startsWith("get"));
+  const allObjectsWithFields = getQueries
+    .map((getQuery) => ({
+      name: getQuery.type.name,
+      fields: getObjectFieldsFromGetQuery(getQuery),
+    }))
+    .filter(({ name, fields }) => name && fields.length > 0);
+
+  return allObjectsWithFields;
+};
+
+export const getAllSearchableObjectFields = (
+  queryType: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"],
+  searchableObjects: string[],
+) => {
+  const validObjects = getAllObjectFields(queryType).filter((object) =>
+    searchableObjects.includes(object.name),
+  );
+  return validObjects;
 };

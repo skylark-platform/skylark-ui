@@ -1,11 +1,12 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 
 import { SkylarkObjectType } from "src/interfaces/skylark/objects";
-import { createListObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
+import {
+  createListObjectQuery,
+  defaultValidBlankQuery,
+} from "src/lib/graphql/skylark/dynamicQueries";
 
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
-
-const defaultValidQuery = gql("query { __unknown { name }}");
 
 // TODO add pagination support
 
@@ -24,7 +25,7 @@ export const useListObjects = (objectType: SkylarkObjectType) => {
         [key: string]: string | number | boolean;
       }[];
     };
-  }>(query || defaultValidQuery, {
+  }>(query || defaultValidBlankQuery, {
     skip: !query,
   });
 

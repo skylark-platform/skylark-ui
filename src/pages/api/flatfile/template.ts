@@ -6,7 +6,6 @@ import {
   FLATFILE_ORG,
   FLATFILE_SECRET_KEY,
 } from "src/constants/flatfile";
-import { SAAS_ACCOUNT_ID } from "src/constants/skylark";
 import { ApiRouteTemplateData } from "src/interfaces/apiRoutes";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
 import {
@@ -45,7 +44,8 @@ export default async function handler(
       );
   }
 
-  const name = `${req.body.name as string}-${SAAS_ACCOUNT_ID}`.toLowerCase();
+  // TODO add an account identifier for Flatfile (used to be account-id)
+  const name = `${req.body.name as string}`.toLowerCase();
   const requestTemplate = req.body.template as FlatfileTemplate;
 
   try {

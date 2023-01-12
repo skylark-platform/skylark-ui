@@ -33,6 +33,7 @@ interface Query extends BaseQueryMutation {
 interface Mutation extends BaseQueryMutation {
   type: "Mutation";
   inputs: NormalizedObjectField[];
+  argName: string;
   relationships?: string[];
 }
 
@@ -44,8 +45,17 @@ export interface SkylarkObjectOperations {
   // delete: Mutation;
 }
 
-export interface SkylarkObjectMeta {
+export interface SkylarkObjectFields {
   name: SkylarkObjectType;
   fields: NormalizedObjectField[];
+}
+
+export interface SkylarkObjectMeta extends SkylarkObjectFields {
   operations: SkylarkObjectOperations;
 }
+
+export type SkylarkGraphQLObject = {
+  __typename: string;
+  uid: string;
+  external_id: string;
+} & Record<string, string | number | boolean>;

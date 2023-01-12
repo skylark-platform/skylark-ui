@@ -68,7 +68,7 @@ export const createFlatfileObjectsInSkylark = async (
     const operation = {
       __aliasFor: skylarkObjectOperations.create.name,
       __args: {
-        [objectType.toLowerCase()]: parsedData,
+        [skylarkObjectOperations.create.argName]: parsedData,
       },
       uid: true,
       external_id: true,

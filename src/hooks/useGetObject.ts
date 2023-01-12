@@ -1,11 +1,12 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 
 import { SkylarkObjectType } from "src/interfaces/skylark/objects";
-import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
+import {
+  createGetObjectQuery,
+  defaultValidBlankQuery,
+} from "src/lib/graphql/skylark/dynamicQueries";
 
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
-
-const defaultValidQuery = gql("query { __unknown { name }}");
 
 export const useGetObject = (
   objectType: SkylarkObjectType,
@@ -15,7 +16,7 @@ export const useGetObject = (
 
   const query = createGetObjectQuery(object);
 
-  return useQuery(query || defaultValidQuery, {
+  return useQuery(query || defaultValidBlankQuery, {
     skip: !query,
     variables: {
       ...lookupValue,

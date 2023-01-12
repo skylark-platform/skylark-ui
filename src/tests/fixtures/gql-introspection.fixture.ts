@@ -1,22 +1,62 @@
-import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
+import {
+  GQLSkylarkSchemaQueriesMutations,
+  GQLSkylarkSearchableObjectsUnionResponse,
+} from "src/interfaces/graphql/introspection";
+
+export const SKYLARK_OBJECT_FIELDS_FIXTURE = [
+  "uid",
+  "title",
+  "title_short",
+  "title_long",
+  "synopsis_short",
+  "synopsis_long",
+];
+
+export const SKYLARK_OBJECT_TYPES_FIXTURE = [
+  "Brand",
+  "Season",
+  "Episode",
+  "Movie",
+  "Theme",
+  "Genre",
+];
 
 export const GQLSkylarkObjectTypesQueryFixture = {
   data: {
     __type: {
-      enumValues: [
-        {
-          name: "Episode",
-        },
-        {
-          name: "Brand",
-        },
-        {
-          name: "Season",
-        },
-      ],
+      enumValues: SKYLARK_OBJECT_TYPES_FIXTURE.map((name) => ({ name })),
     },
   },
 };
+
+const getQueries: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"] =
+  SKYLARK_OBJECT_TYPES_FIXTURE.map((objectType) => ({
+    name: `get${objectType}`,
+    type: {
+      name: objectType,
+      fields: SKYLARK_OBJECT_FIELDS_FIXTURE.map((name) => ({
+        name,
+        type: {
+          __typename: "",
+          name: "String",
+          kind: "SCALAR",
+          ofType: null,
+          enumValues: null,
+          fields: [],
+          inputFields: [],
+        },
+      })),
+    },
+  }));
+
+const listQueries: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"] =
+  SKYLARK_OBJECT_TYPES_FIXTURE.map((objectType) => ({
+    name: `list${objectType}`,
+    type: {
+      name: objectType,
+      fields: [],
+    },
+  }));
 
 export const GQLSkylarkSchemaQueryFixture: {
   data: GQLSkylarkSchemaQueriesMutations;
@@ -25,35 +65,7 @@ export const GQLSkylarkSchemaQueryFixture: {
     __schema: {
       queryType: {
         name: "Query",
-        fields: [
-          {
-            name: "getEpisode",
-            type: {
-              name: "Episode",
-              fields: [
-                {
-                  name: "title",
-                  type: {
-                    __typename: "",
-                    name: "String",
-                    kind: "SCALAR",
-                    ofType: null,
-                    enumValues: null,
-                    fields: [],
-                    inputFields: [],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            name: "listEpisode",
-            type: {
-              name: "Episode",
-              fields: [],
-            },
-          },
-        ],
+        fields: [...getQueries, ...listQueries],
       },
       mutationType: {
         name: "Mutation",
@@ -113,3 +125,11 @@ export const GQLSkylarkSchemaQueryFixture: {
     },
   },
 };
+
+export const GQLSkylarkSearchableObjectsQueryFixture: GQLSkylarkSearchableObjectsUnionResponse =
+  {
+    __type: {
+      name: "Searchable",
+      possibleTypes: SKYLARK_OBJECT_TYPES_FIXTURE.map((name) => ({ name })),
+    },
+  } as GQLSkylarkSearchableObjectsUnionResponse;

@@ -15,6 +15,7 @@ export interface ButtonProps {
   block?: boolean;
   Icon?: JSX.Element;
   href?: string;
+  type?: "button" | "submit" | "reset";
 }
 
 export const Button = ({
@@ -29,13 +30,14 @@ export const Button = ({
   block,
   Icon,
   href,
+  type,
 }: ButtonProps) => {
   const combinedClassName = clsx(
     "min-h-8 btn h-8 rounded-full text-xs normal-case md:h-10 md:text-sm min-w-24",
     variant === "primary" && "btn-primary shadow",
     variant === "outline" &&
       "btn-outline btn-primary disabled:border-none disabled:shadow",
-    variant === "ghost" && "btn-ghost text-brand-primary",
+    variant === "ghost" && "btn-ghost text-black",
     success && "btn-success text-white",
     danger && "btn-error",
     (disabled || loading) && "bg-disabled btn-disabled",
@@ -51,7 +53,12 @@ export const Button = ({
     );
   }
   return (
-    <button className={combinedClassName} disabled={disabled} onClick={onClick}>
+    <button
+      className={combinedClassName}
+      disabled={disabled}
+      onClick={onClick}
+      type={type}
+    >
       {loading && (
         <CgSpinner className="mr-1 animate-spin-fast text-base md:text-lg" />
       )}
