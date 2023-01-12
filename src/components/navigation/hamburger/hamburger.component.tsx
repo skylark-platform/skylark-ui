@@ -1,14 +1,16 @@
+import clsx from "clsx";
 import { SlMenu } from "react-icons/sl";
 
 interface Props {
   onClick: () => void;
+  className?: string;
 }
 
-export const Hamburger = ({ onClick }: Props) => (
+export const Hamburger = ({ onClick, className }: Props) => (
   <button
     onClick={onClick}
     id="mobile-nav-toggle"
-    className="fixed right-5 top-4 z-50 text-4xl"
+    className={clsx("z-50 text-3xl", className)}
   >
     <SlMenu />
   </button>

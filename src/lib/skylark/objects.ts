@@ -20,6 +20,28 @@ const getObjectFieldsFromGetQuery = (
   return objectFields;
 };
 
+const getMutationInfo = (
+  mutation: GQLSkylarkSchemaQueriesMutations["__schema"]["mutationType"]["fields"][0],
+  objectType: string,
+  operation: "create" | "update",
+) => {
+  // On create it will be like EpisodeCreateInput but on update EpisodeInput
+  const foundCreateInput = mutation.args.find(
+    (arg) =>
+      arg.type.name ===
+      `${objectType}${operation === "create" ? "Create" : ""}Input`,
+  );
+  const argName = foundCreateInput?.name || "";
+  const inputFields = foundCreateInput?.type.inputFields;
+  const inputs = parseObjectInputFields(inputFields);
+  const relationships = parseObjectRelationships(inputFields);
+  return {
+    argName,
+    inputs,
+    relationships,
+  };
+};
+
 export const getObjectOperations = (
   objectType: SkylarkObjectType,
   { queryType, mutationType }: GQLSkylarkSchemaQueriesMutations["__schema"],
@@ -51,14 +73,8 @@ export const getObjectOperations = (
 
   const objectFields = getObjectFieldsFromGetQuery(getQuery);
 
-  const foundCreateInput = createMutation.args.find(
-    (arg) => arg.type.name === `${objectType}CreateInput`,
-  );
-
-  const createInputArgName = foundCreateInput?.name || "";
-  const createInputFields = foundCreateInput?.type.inputFields;
-  const createInputs = parseObjectInputFields(createInputFields);
-  const createRelationships = parseObjectRelationships(createInputFields);
+  const createMeta = getMutationInfo(createMutation, objectType, "create");
+  const updateMeta = getMutationInfo(updateMutation, objectType, "update");
 
   const operations: SkylarkObjectOperations = {
     get: {
@@ -72,9 +88,23 @@ export const getObjectOperations = (
     create: {
       type: "Mutation",
       name: createMutation.name,
-      argName: createInputArgName,
-      inputs: createInputs,
-      relationships: createRelationships,
+      argName: createMeta.argName,
+      inputs: createMeta.inputs,
+      relationships: createMeta.relationships,
+    },
+    update: {
+      type: "Mutation",
+      name: createMutation.name,
+      argName: updateMeta.argName,
+      inputs: updateMeta.inputs,
+      relationships: updateMeta.relationships,
+    },
+    delete: {
+      type: "Mutation",
+      name: deleteMutation.name,
+      argName: "",
+      inputs: [],
+      relationships: [],
     },
   };
 

@@ -1,11 +1,17 @@
 import {
   ApolloClient,
+  createHttpLink,
   defaultDataIdFromObject,
   InMemoryCache,
   StoreObject,
 } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 
-import { SAAS_API_KEY, SAAS_API_ENDPOINT } from "src/constants/skylark";
+import {
+  SAAS_API_KEY,
+  SAAS_API_ENDPOINT,
+  LOCAL_STORAGE,
+} from "src/constants/skylark";
 
 export const createApolloClientDataIdFromSkylarkObject = (
   responseObject: Readonly<StoreObject>,
@@ -16,15 +22,31 @@ export const createApolloClientDataIdFromSkylarkObject = (
   return defaultDataIdFromObject(responseObject);
 };
 
+const httpLink = createHttpLink({
+  uri: SAAS_API_ENDPOINT,
+});
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const uri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri);
+  const token = localStorage.getItem(LOCAL_STORAGE.betaAuth.token);
+
+  // return the headers to the context so httpLink can read them
+  return {
+    uri,
+    headers: {
+      ...headers,
+      "x-api-key": token || SAAS_API_KEY,
+    },
+  };
+});
+
 export const createSkylarkClient = () =>
   new ApolloClient({
-    uri: SAAS_API_ENDPOINT,
+    link: authLink.concat(httpLink),
     cache: new InMemoryCache({
       dataIdFromObject: createApolloClientDataIdFromSkylarkObject,
     }),
-    headers: {
-      "x-api-key": SAAS_API_KEY,
-    },
   });
 
 export type SkylarkClient = ReturnType<typeof createSkylarkClient>;

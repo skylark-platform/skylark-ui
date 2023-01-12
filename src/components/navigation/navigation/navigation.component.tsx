@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
+import { AddAuthTokenModal } from "src/components/betaReleaseAuthModal";
+import { Button } from "src/components/button";
 import { Hamburger } from "src/components/navigation/hamburger";
 import { NavigationLinks } from "src/components/navigation/links";
 import { UserAvatar } from "src/components/user";
@@ -16,14 +18,14 @@ const dummyUser = {
 export const Navigation = () => {
   const [open, setOpen] = useState(false);
 
+  // Convert to custom hook which checks localStorage on first load / periodically
+  const [isAuthModalOpen, setAuthModalOpen] = useState(false);
+
   return (
     <>
-      <div className="md:hidden">
-        <Hamburger onClick={() => setOpen(!open)} />
-      </div>
-      <div className="fixed top-0 left-0 right-0 z-40 flex h-16 flex-col items-center justify-center bg-nav-bar py-2 px-8 font-sans text-black md:h-14 md:flex-row md:justify-start lg:h-16 lg:px-14">
+      <div className="fixed top-0 left-0 right-0 z-40 flex h-14 flex-row items-center justify-start bg-nav-bar py-2 px-4 font-sans text-black md:h-14 md:flex-row md:justify-start lg:h-16 lg:px-14">
         <Link legacyBehavior href="/">
-          <a className="absolute top-4 left-5 z-50 flex items-center justify-center md:relative md:top-0 md:left-0">
+          <a className="z-50 flex items-center justify-start">
             <Image src={Logo} alt="Skylark Logo" width="30" height="30" />
             <p className="ml-3 font-heading text-xl md:block lg:ml-4">
               Skylark
@@ -39,13 +41,28 @@ export const Navigation = () => {
           <NavigationLinks />
         </nav>
 
-        <div className="absolute right-16 top-0 mt-4 mr-2 flex items-center text-sm md:relative md:top-0 md:right-0 md:mt-0 md:ml-6">
-          <p className="mr-3 hidden font-semibold md:inline lg:mr-4">
-            {dummyUser.name}
-          </p>
-          <UserAvatar name={dummyUser.name} src="" />
+        <div className="z-50 flex flex-grow flex-row items-center justify-end gap-2 md:flex-grow-0 md:gap-10">
+          <Button variant="outline" onClick={() => setAuthModalOpen(true)}>
+            Connect to Skylark
+          </Button>
+          <div className="hidden items-center text-sm md:flex">
+            <p className="mr-3 hidden font-semibold md:inline lg:mr-4">
+              {dummyUser.name}
+            </p>
+            <UserAvatar name={dummyUser.name} src="" />
+          </div>
         </div>
+
+        <Hamburger
+          onClick={() => setOpen(!open)}
+          className="ml-4 justify-self-end md:hidden"
+        />
       </div>
+      {/* This should be removed after beta when we implement real authentication */}
+      <AddAuthTokenModal
+        isOpen={isAuthModalOpen}
+        setIsOpen={setAuthModalOpen}
+      />
     </>
   );
 };
