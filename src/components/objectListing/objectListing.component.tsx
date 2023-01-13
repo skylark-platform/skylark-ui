@@ -145,11 +145,13 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
     },
   });
 
+  const closePanel = () => setObjectUid(null);
+
   return (
     <div className="flex h-full flex-col gap-10">
       {objectType && objectUid && (
         <Panel
-          togglePanel={setObjectUid}
+          closePanel={closePanel}
           uid={objectUid}
           objectType={objectType}
         />
