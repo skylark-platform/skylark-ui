@@ -1,7 +1,9 @@
 import { Button } from "src/components/button";
+import { Expand } from "src/components/icons";
 import { Pill } from "src/components/pill";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { useGetObject } from "src/hooks/useGetObject";
+import { formatObjectField } from "src/lib/utils";
 
 interface Props {
   objectType: string;
@@ -22,65 +24,61 @@ export const Panel = ({ closePanel, objectType, uid }: Props) => {
   const orderedKeys = ["title", "name", "uid"];
 
   return (
-    <div className="z-50">
-      <section
+    <>
+      <div
         onClick={() => closePanel()}
-        className="fixed left-0 top-0 h-full w-3/5 bg-black bg-opacity-20"
-      ></section>
-      <section className="fixed top-0 right-0 h-full w-2/5 overflow-y-scroll bg-white drop-shadow-md ">
+        className="fixed left-0 top-0 z-50 h-full w-3/5 bg-black bg-opacity-20 "
+      />
+      <section className="fixed top-0 right-0 z-50 h-full w-full overflow-y-scroll bg-white drop-shadow-md md:w-2/3 lg:w-7/12 xl:w-2/5 ">
         {data && (
           <>
-            <div className="p-10">
-              <div className="flex flex-row ">
-                <div className="inline-flex items-center pb-2">
-                  <Pill bgColor="#226DFF" label="Episode" />
-                  <h1 className=" pl-4 text-xl font-bold uppercase">
-                    {getTitle(data?.getObject, orderedKeys)}
-                  </h1>
-                  <div className="col-end-1 row-end-1 flex flex-row-reverse items-end self-end text-end">
-                    <Button
-                      className="text-end "
-                      variant="ghost"
-                      onClick={() => closePanel()}
-                    >
-                      Close
-                    </Button>
-                  </div>
+            <div className="p-4 pb-2 md:p-8">
+              <div className="flex flex-row pb-2">
+                <div className="flex flex-grow items-center gap-4">
+                  <Button disabled variant="primary">
+                    Edit metadata
+                  </Button>
+                  <Button
+                    Icon={<Expand className="stroke-gray-300" />}
+                    disabled
+                    variant="ghost"
+                  />
                 </div>
+
+                <Button variant="ghost" onClick={() => closePanel()}>
+                  Close
+                </Button>
+              </div>
+              <div className="flex flex-row items-center pt-5 ">
+                <Pill bgColor="#226DFF" label={objectType} />
+                <h1 className=" pl-4 text-xl font-bold uppercase">
+                  {getTitle(data?.getObject, orderedKeys)}
+                </h1>
               </div>
             </div>
 
             <Tabs tabs={["Metadata"]} />
 
-            <div className="p-10 pb-12 pt-5 text-sm">
-              {/* <h2 className="mt-4 text-xl font-semibold ">Global metadata</h2> */}
-              <div>
-                {data?.getObject &&
-                  Object.keys(data?.getObject).map(
-                    (element) =>
-                      data?.getObject[element] &&
-                      element !== "__typename" && (
-                        <>
-                          <h3 className="mt-4 mb-2 font-bold">{element}</h3>
-                          <div className="text-base-content">
-                            {data?.getObject[element]}
-                          </div>
-                        </>
-                      ),
-                  )}
-                <h3 className="mt-4 mb-2 font-bold">Title</h3>
-                <div className="text-base-content">
-                  {data?.getObject?.title}
-                </div>
-                <h3 className="mt-4 mb-2 font-bold">Synopsis</h3>
-                <div className="text-base-content">
-                  {data?.getObject?.synopsis_medium}
-                </div>
-              </div>
+            <div className="p-4 pb-12 text-sm md:p-8">
+              {data?.getObject &&
+                Object.keys(data?.getObject).map(
+                  (element) =>
+                    data?.getObject[element] &&
+                    element !== "__typename" && (
+                      <>
+                        <h3 className="mb-2 font-bold ">
+                          {formatObjectField(element)}
+                        </h3>
+                        <div className="mb-4 break-words text-base-content">
+                          {data?.getObject[element]}
+                        </div>
+                      </>
+                    ),
+                )}
             </div>
           </>
         )}
       </section>
-    </div>
+    </>
   );
 };

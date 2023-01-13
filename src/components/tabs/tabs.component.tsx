@@ -19,10 +19,10 @@ export const Tabs = ({ tabs }: Props) => {
                 : "text-gray-400 border-transparent",
             );
             return (
-              <li className="mr-2 ml-5" key={i}>
+              <li className="mr-2 ml-4 md:ml-8" key={i}>
                 <button
                   onClick={() => setSelected(i)}
-                  className={`${combinedClassname} inline-block rounded-t-lg border-b-2  p-4 hover:border-black hover:text-black `}
+                  className={`${combinedClassname} inline-block rounded-t-lg border-b-2 p-2 pb-3 hover:border-black hover:text-black `}
                 >
                   {tab}
                 </button>

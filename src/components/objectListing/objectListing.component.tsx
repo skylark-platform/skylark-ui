@@ -5,7 +5,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { Dispatch, useEffect, useState, SetStateAction, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 import { Checkbox } from "src/components/checkbox";
 import { Spinner } from "src/components/icons";
@@ -14,6 +14,7 @@ import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkSearchableObjectTypes } from "src/hooks/useSkylarkObjectTypes";
+import { formatObjectField } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
 import { RowActions } from "./rowActions";
@@ -32,17 +33,20 @@ export interface ObjectListProps {
   withObjectEdit?: boolean;
 }
 
-const formatColumnHeader = (header: string) =>
-  header.toUpperCase().replaceAll("_", " ");
-
 const createColumns = (
   columns: TableColumn[],
   opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
-  setObjectUid: Dispatch<SetStateAction<string | null>>,
+  setPanelInfo: ({
+    objectType,
+    uid,
+  }: {
+    objectType: string;
+    uid: string;
+  }) => void,
 ) => {
   const createdColumns = columns.map((column) =>
     columnHelper.accessor(column, {
-      header: formatColumnHeader(column),
+      header: formatObjectField(column),
       cell: (props) => <TableCell {...props} />,
     }),
   );
@@ -68,15 +72,16 @@ const createColumns = (
   const actionColumn = columnHelper.display({
     id: OBJECT_LIST_TABLE.columnIds.actions,
     cell: ({ table, row }) => {
-      const { uid } = row.original as {
+      const { uid, __typename: objectType } = row.original as {
         uid: string;
+        __typename: string;
       };
       return (
         <RowActions
           editRowEnabled={opts.withObjectEdit}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() => setObjectUid(uid)}
+          onInfoClick={() => setPanelInfo({ objectType, uid })}
           onEditSaveClick={() => console.log(row)}
           onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
         />
@@ -102,7 +107,11 @@ export const ObjectList = ({
   withObjectEdit,
 }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [objectUid, setObjectUid] = useState<string | null>(null);
+  // const [objectType, setObjectType] = useState("");
+  const [activePanelObject, setActivePanelObject] = useState<{
+    objectType: string;
+    uid: string;
+  } | null>(null);
   const { objectTypes } = useSkylarkSearchableObjectTypes();
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     objectTypes: null,
@@ -131,7 +140,7 @@ export const ObjectList = ({
       createColumns(
         sortedHeaders,
         { withObjectSelect, withObjectEdit },
-        setObjectUid,
+        setActivePanelObject,
       ),
     [sortedHeaders, withObjectEdit, withObjectSelect],
   );
@@ -160,8 +169,6 @@ export const ObjectList = ({
     },
   });
 
-  const closePanel = () => setObjectUid(null);
-
   useEffect(() => {
     if (objectTypes.length !== 0 && searchFilters.objectTypes === null) {
       setSearchFilters({ ...searchFilters, objectTypes });
@@ -180,8 +187,12 @@ export const ObjectList = ({
 
   return (
     <div className="flex h-full flex-col gap-8">
-      {objectUid && (
-        <Panel closePanel={closePanel} uid={objectUid} objectType={"Episode"} />
+      {activePanelObject && (
+        <Panel
+          closePanel={() => setActivePanelObject(null)}
+          uid={activePanelObject.uid}
+          objectType={activePanelObject.objectType}
+        />
       )}
       <div className="flex w-full flex-row items-center justify-between">
         <div
