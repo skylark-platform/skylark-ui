@@ -1,12 +1,8 @@
 import { ComponentStory } from "@storybook/react";
 import React from "react";
 
-import { AlertCircle } from "./alertCircle.component";
-import { CheckCircle } from "./checkCircle.component";
-import { Circle } from "./circle.component";
-import { Expand } from "./expand.component";
 import { IconProps } from "./iconBase.component";
-import { Spinner } from "./spinner.component";
+import * as Icons from "./index";
 
 export default {
   title: "Components/Icons",
@@ -15,11 +11,17 @@ export default {
 const Template: ComponentStory<React.FC<IconProps>> = (args) => {
   return (
     <div className="flex flex-row space-x-2">
-      <CheckCircle {...args} />
-      <Circle {...args} />
-      <AlertCircle {...args} />
-      <Spinner {...args} />
-      <Expand {...args} />
+      <Icons.AlertCircle {...args} />
+      <Icons.CheckCircle {...args} />
+      <Icons.Circle {...args} />
+      <Icons.CheckSquare {...args} />
+      <Icons.CrossSquare {...args} />
+      <Icons.Edit {...args} />
+      <Icons.InfoCircle {...args} />
+      <Icons.Search {...args} />
+      <Icons.Spinner {...args} />
+      <Icons.Filter {...args} />
+      <Icons.Expand {...args} />
     </div>
   );
 };

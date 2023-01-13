@@ -2,22 +2,24 @@ import {
   createColumnHelper,
   getCoreRowModel,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useRouter } from "next/router";
-import { Dispatch, useEffect, useState, SetStateAction } from "react";
+import { Dispatch, useEffect, useState, SetStateAction, useMemo } from "react";
 
+import { Checkbox } from "src/components/checkbox";
+import { Spinner } from "src/components/icons";
 import { Panel } from "src/components/panel/panel.component";
-import { Select } from "src/components/select";
-import { useListObjects } from "src/hooks/useListObjects";
-import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
-import { NormalizedObjectField } from "src/interfaces/skylark/objects";
+import { Pill } from "src/components/pill";
+import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { SearchFilters, useSearch } from "src/hooks/useSearch";
+import { useSkylarkSearchableObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 
 import { CreateButtons } from "./createButtons";
 import { RowActions } from "./rowActions";
-import { Table } from "./table";
+import { Search } from "./search";
+import { Table, TableCell } from "./table";
 
-const ignoredKeys = ["__typename"];
 const orderedKeys = ["__typename", "title", "name", "uid", "external_id"];
 
 const columnHelper = createColumnHelper<object>();
@@ -26,60 +28,52 @@ export type TableColumn = string;
 
 export interface ObjectListProps {
   withCreateButtons?: boolean;
+  withObjectSelect?: boolean;
+  withObjectEdit?: boolean;
 }
+
+const formatColumnHeader = (header: string) =>
+  header.toUpperCase().replaceAll("_", " ");
 
 const createColumns = (
   columns: TableColumn[],
+  opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
   setObjectUid: Dispatch<SetStateAction<string | null>>,
 ) => {
   const createdColumns = columns.map((column) =>
     columnHelper.accessor(column, {
-      cell: ({ getValue, row, column, table }) => {
-        const initialValue = getValue();
-        // We need to keep and update the state of the cell normally
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const [value, setValue] = useState(initialValue);
-
-        // When the input is blurred, we'll call our table meta's updateData function
-        // const onBlur = () => {
-        //   table.options.meta?.updateData(index, id, value);
-        // };
-
-        // If the initialValue is changed external, sync it up with our state
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        useEffect(() => {
-          setValue(initialValue);
-        }, [initialValue]);
-
-        return row.id === table.options.meta?.rowInEditMode ? (
-          <input
-            value={value as string}
-            onChange={(e) => setValue(e.target.value)}
-            className={clsx(
-              "w-full border-b-2 border-brand-primary py-1 outline-none disabled:border-none disabled:border-manatee-200 disabled:text-manatee-500",
-              initialValue !== value && "border-warning",
-              value === "" && initialValue !== "" && "border-error",
-            )}
-            disabled={column.id === "uid"}
-          />
-        ) : (
-          (initialValue as string)
-        );
-      },
+      header: formatColumnHeader(column),
+      cell: (props) => <TableCell {...props} />,
     }),
   );
 
+  const objectTypeColumn = columnHelper.accessor("__typename", {
+    header: "",
+    cell: ({ getValue }) => {
+      return (
+        <Pill
+          label={getValue() as string}
+          className="w-full bg-brand-primary"
+        />
+      );
+    },
+  });
+
+  const selectColumn = columnHelper.display({
+    id: OBJECT_LIST_TABLE.columnIds.checkbox,
+    header: () => <Checkbox aria-label="toggle-select-all-objects" />,
+    cell: () => <Checkbox />,
+  });
+
   const actionColumn = columnHelper.display({
-    id: "actions",
+    id: OBJECT_LIST_TABLE.columnIds.actions,
     cell: ({ table, row }) => {
-      //TODO fix media types
-      const { uid, __typename: objectType } = row.original as {
+      const { uid } = row.original as {
         uid: string;
-        __typename: string;
       };
       return (
         <RowActions
-          editRowEnabled={false}
+          editRowEnabled={opts.withObjectEdit}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
           onInfoClick={() => setObjectUid(uid)}
@@ -90,50 +84,71 @@ const createColumns = (
     },
   });
 
-  return [...createdColumns, actionColumn];
+  const orderedColumnArray = [
+    objectTypeColumn,
+    ...createdColumns,
+    actionColumn,
+  ];
+  if (opts.withObjectSelect) {
+    return [selectColumn, ...orderedColumnArray];
+  }
+
+  return orderedColumnArray;
 };
 
-export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
-  const { query, push, pathname } = useRouter();
-  const { objectTypes } = useSkylarkObjectTypes();
-  const [objectType, setObjectType] = useState("");
+export const ObjectList = ({
+  withCreateButtons,
+  withObjectSelect,
+  withObjectEdit,
+}: ObjectListProps) => {
+  const [searchQuery, setSearchQuery] = useState("");
   const [objectUid, setObjectUid] = useState<string | null>(null);
-  const { data, fields } = useListObjects(objectType);
+  const { objectTypes } = useSkylarkSearchableObjectTypes();
+  const [searchFilters, setSearchFilters] = useState<SearchFilters>({
+    objectTypes: null,
+  });
 
-  const objectProperties = fields
-    ? fields.filter((key) => !ignoredKeys.includes(key.name))
-    : [];
+  const {
+    data: searchData,
+    error: searchError,
+    loading: searchLoading,
+    properties,
+  } = useSearch(searchQuery, searchFilters);
 
   // Sorts objects using the preference array above, any others are added to the end randomly
-  const sortedProperties = objectProperties.sort(
-    (a: NormalizedObjectField, b: NormalizedObjectField) => {
-      if (orderedKeys.indexOf(a.name) === -1) {
-        return 1;
-      }
-      if (orderedKeys.indexOf(b.name) === -1) {
-        return -1;
-      }
-      return orderedKeys.indexOf(a.name) - orderedKeys.indexOf(b.name);
-    },
+  const sortedHeaders = properties.sort((a: string, b: string) => {
+    if (orderedKeys.indexOf(a) === -1) {
+      return 1;
+    }
+    if (orderedKeys.indexOf(b) === -1) {
+      return -1;
+    }
+    return orderedKeys.indexOf(a) - orderedKeys.indexOf(b);
+  });
+
+  const parsedColumns = useMemo(
+    () =>
+      createColumns(
+        sortedHeaders,
+        { withObjectSelect, withObjectEdit },
+        setObjectUid,
+      ),
+    [sortedHeaders, withObjectEdit, withObjectSelect],
   );
 
   const [rowInEditMode, setRowInEditMode] = useState("");
-
-  const parsedColumns = createColumns(
-    sortedProperties.map(({ name }) => name),
-    setObjectUid,
-  );
-  const [columnVisibility, setColumnVisibility] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState<
+    VisibilityState | undefined
+  >(undefined);
 
   const table = useReactTable({
-    debugAll: true,
-    data: data?.objects || [],
-    columns: data?.objects ? parsedColumns : [],
+    debugAll: false,
+    data: searchData || [],
+    columns: searchData ? parsedColumns : [],
     getCoreRowModel: getCoreRowModel(),
     state: {
       columnVisibility,
     },
-    onColumnVisibilityChange: setColumnVisibility,
     meta: {
       rowInEditMode,
       onEditClick(rowId) {
@@ -147,42 +162,71 @@ export const ObjectList = ({ withCreateButtons }: ObjectListProps) => {
 
   const closePanel = () => setObjectUid(null);
 
+  useEffect(() => {
+    if (objectTypes.length !== 0 && searchFilters.objectTypes === null) {
+      setSearchFilters({ ...searchFilters, objectTypes });
+    }
+  }, [objectTypes, searchFilters]);
+
+  const onFilterChangeWrapper = (
+    updatedFilters: SearchFilters,
+    updatedColumnVisibility: VisibilityState,
+  ) => {
+    setSearchFilters(updatedFilters);
+    setColumnVisibility(updatedColumnVisibility);
+  };
+
+  if (searchError) console.error("Search Errors:", { searchError });
+
   return (
-    <div className="flex h-full flex-col gap-10">
-      {objectType && objectUid && (
-        <Panel
-          closePanel={closePanel}
-          uid={objectUid}
-          objectType={objectType}
-        />
+    <div className="flex h-full flex-col gap-8">
+      {objectUid && (
+        <Panel closePanel={closePanel} uid={objectUid} objectType={"Episode"} />
       )}
       <div className="flex w-full flex-row items-center justify-between">
-        <Select
-          className="w-64"
-          placeholder="Select Skylark object"
-          options={
-            objectTypes?.sort().map((objectType) => ({
-              label: objectType,
-              value: objectType,
-            })) || []
-          }
-          onChange={(value) => {
-            setObjectType(value as string);
-            push({
-              pathname,
-              query: {
-                objectType: value,
-              },
-            });
-          }}
-          initialValue={query?.objectType as string}
-        />
+        <div
+          className={clsx(
+            "flex w-full flex-row-reverse gap-4",
+            withCreateButtons ? "md:w-1/2 xl:w-1/3" : "flex-1",
+          )}
+        >
+          <Search
+            objectTypes={objectTypes || []}
+            searchQuery={searchQuery}
+            onQueryChange={setSearchQuery}
+            activeFilters={searchFilters}
+            columns={sortedHeaders}
+            visibleColumns={
+              columnVisibility !== undefined
+                ? Object.keys(columnVisibility).filter(
+                    (col) => !!columnVisibility[col],
+                  )
+                : sortedHeaders
+            }
+            onFilterChange={onFilterChangeWrapper}
+          />
+        </div>
         {withCreateButtons && <CreateButtons />}
       </div>
-      {/* <ColumnFilter table={table} /> */}
-      <div className="flex h-[70vh] w-full flex-auto overflow-x-auto overscroll-none">
-        {data?.objects && <Table table={table} />}
+      <div className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6">
+        {!searchLoading && searchData && <Table table={table} />}
+        {(searchLoading || searchData) && (
+          <div className="items-top justify-left flex h-96 w-full flex-col gap-4 text-manatee-600">
+            {searchLoading && (
+              <div className="flex w-full justify-center">
+                <Spinner className="h-10 w-10 animate-spin" />
+              </div>
+            )}
+
+            {!searchLoading && searchData && searchData.length === 0 && (
+              <p>{`No objects found.`}</p>
+            )}
+          </div>
+        )}
       </div>
+      {searchError && (
+        <p className="text-xs text-error">{`Errors hit when requesting data: ${searchError.graphQLErrors.length}. See console.`}</p>
+      )}
     </div>
   );
 };

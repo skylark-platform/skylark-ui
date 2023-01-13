@@ -47,7 +47,7 @@ module.exports = {
         "spin-fast": "spin 0.5s linear infinite",
       },
       minWidth: (theme) => ({
-        24: theme("spacing.24"),
+        ...theme("spacing"),
       }),
       maxWidth: (theme) => ({
         ...theme("spacing"),

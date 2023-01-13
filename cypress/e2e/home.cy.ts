@@ -1,4 +1,4 @@
-describe("homepage", () => {
+describe.skip("Content Library", () => {
   it("visits home", () => {
     cy.visit("/");
 

@@ -84,8 +84,6 @@ jobs:
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           # re-enable PR comment bot
           COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha }}
-          # Give Cypress its own account
-          NEXT_PUBLIC_SAAS_ACCOUNT_ID: cypress
 
   percy:
     name: Check Percy Build Status

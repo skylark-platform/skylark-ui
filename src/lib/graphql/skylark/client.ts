@@ -1,18 +1,29 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
-
 import {
-  SAAS_API_KEY,
-  SAAS_ACCOUNT_ID,
-  SAAS_API_ENDPOINT,
-} from "src/constants/skylark";
+  ApolloClient,
+  defaultDataIdFromObject,
+  InMemoryCache,
+  StoreObject,
+} from "@apollo/client";
+
+import { SAAS_API_KEY, SAAS_API_ENDPOINT } from "src/constants/skylark";
+
+export const createApolloClientDataIdFromSkylarkObject = (
+  responseObject: Readonly<StoreObject>,
+) => {
+  if (Object.prototype.hasOwnProperty.call(responseObject, "uid")) {
+    return `${responseObject.__typename}:${responseObject.uid}`;
+  }
+  return defaultDataIdFromObject(responseObject);
+};
 
 export const createSkylarkClient = () =>
   new ApolloClient({
     uri: SAAS_API_ENDPOINT,
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      dataIdFromObject: createApolloClientDataIdFromSkylarkObject,
+    }),
     headers: {
       "x-api-key": SAAS_API_KEY,
-      "x-account-id": SAAS_ACCOUNT_ID,
     },
   });
 

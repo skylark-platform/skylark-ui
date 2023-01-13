@@ -6,3 +6,5 @@ export * from "./infoCircle.component";
 export * from "./edit.component";
 export * from "./checkSquare.component";
 export * from "./crossSquare.component";
+export * from "./search.component";
+export * from "./filter.component";

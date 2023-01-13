@@ -99,3 +99,12 @@ export interface GQLSkylarkSchemaQueriesMutations {
     };
   };
 }
+
+export interface GQLSkylarkSearchableObjectsUnionResponse {
+  __type: {
+    name: "Searchable";
+    possibleTypes: {
+      name: string;
+    }[];
+  };
+}
