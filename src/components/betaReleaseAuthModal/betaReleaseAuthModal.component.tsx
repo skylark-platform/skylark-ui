@@ -55,8 +55,8 @@ export const AddAuthTokenModal = ({
 
   useEffect(() => {
     const { origin } = window.location;
-    const useDevelopmentDefaults =
-      origin.includes("http://localhost") || origin.includes("vercel.app");
+    const useDevelopmentDefaults = origin.includes("http://localhost");
+    // || origin.includes("vercel.app");
     const developmentUri = useDevelopmentDefaults ? SAAS_API_ENDPOINT : null;
     const developmentToken = useDevelopmentDefaults ? SAAS_API_KEY : null;
 

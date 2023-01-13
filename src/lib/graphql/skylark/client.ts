@@ -34,11 +34,13 @@ const authLink = setContext((_, { headers }) => {
   console.log({ uri, token });
 
   // return the headers to the context so httpLink can read them
+  // In Beta, only set the token when we have a URI so that Apollo Client fires a failing request when the URI is invalid/missing
+  // It's hacky but it'll go away after Beta
   return {
     uri: uri || SAAS_API_ENDPOINT,
     headers: {
       ...headers,
-      "x-api-key": uri ? token || "" : "sdfsdf",
+      "x-api-key": uri ? token || "" : "",
     },
   };
 });
