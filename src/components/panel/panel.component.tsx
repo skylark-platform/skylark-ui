@@ -34,33 +34,35 @@ export const Panel = ({ togglePanel, objectType, uid }: Props) => {
       <section className="fixed top-0 right-0 h-full w-2/5 overflow-y-scroll bg-white drop-shadow-md ">
         {data && (
           <>
-            <div className="p-5">
+            <div className="p-10">
               <div className="flex flex-row ">
-                <div className="pb-2">
+                <div className="inline-flex items-center pb-2">
                   {/*
                     <Button variant="primary">Edit metada</Button>
                     <button className="pl-3 align-middle">
                       <Expand className="stroke-black" />
                     </button>
                 */}
+                  <Pill bgColor="#226DFF" label="Episode" />
+                  <h1 className=" pl-4 text-xl font-bold uppercase">
+                    {getTitle(data?.getObject, orderedKeys)}
+                  </h1>
+                  <div className="col-end-1 row-end-1 flex flex-row-reverse items-end self-end text-end">
+                    <Button
+                      className="text-end "
+                      variant="ghost"
+                      onClick={() => togglePanel(null)}
+                    >
+                      Close
+                    </Button>
+                  </div>
                 </div>
-                <div className="absolute right-0 ">
-                  <Button variant="ghost" onClick={() => togglePanel(null)}>
-                    Close
-                  </Button>
-                </div>
-              </div>
-              <div className="flex flex-row items-center pt-5 ">
-                <Pill bgColor="#226DFF" label="Episode" />
-                <h1 className="pl-4 text-xl font-bold uppercase">
-                  {getTitle(data?.getObject, orderedKeys)}
-                </h1>
               </div>
             </div>
 
             <Tabs tabs={["Metadata"]} />
 
-            <div className="p-5 ">
+            <div className="p-10 pb-12 pt-5 text-sm">
               {/* <h2 className="mt-4 text-xl font-semibold ">Global metadata</h2> */}
               <div>
                 {data?.getObject &&
