@@ -20,7 +20,7 @@ export const TextInput = ({
       </label>
     )}
     <input
-      className={clsx("rounded border bg-manatee-50 p-2", className)}
+      className={clsx("rounded bg-manatee-50 p-2", className)}
       type="text"
       value={value}
       onChange={(e) => onChange(e.target.value)}

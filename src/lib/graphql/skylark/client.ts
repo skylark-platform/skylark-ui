@@ -1,8 +1,10 @@
 import {
   ApolloClient,
+  ApolloClientOptions,
   createHttpLink,
   defaultDataIdFromObject,
   InMemoryCache,
+  NormalizedCacheObject,
   StoreObject,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
@@ -22,21 +24,21 @@ export const createApolloClientDataIdFromSkylarkObject = (
   return defaultDataIdFromObject(responseObject);
 };
 
-const httpLink = createHttpLink({
-  uri: SAAS_API_ENDPOINT,
-});
+const httpLink = createHttpLink();
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   const uri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri);
   const token = localStorage.getItem(LOCAL_STORAGE.betaAuth.token);
 
+  console.log({ uri, token });
+
   // return the headers to the context so httpLink can read them
   return {
-    uri,
+    uri: uri || SAAS_API_ENDPOINT,
     headers: {
       ...headers,
-      "x-api-key": token || SAAS_API_KEY,
+      "x-api-key": uri ? token || "" : "sdfsdf",
     },
   };
 });

@@ -8,6 +8,7 @@ import { Button } from "src/components/button";
 import { Hamburger } from "src/components/navigation/hamburger";
 import { NavigationLinks } from "src/components/navigation/links";
 import { UserAvatar } from "src/components/user";
+import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
 
 import Logo from "public/images/skylark.png";
 
@@ -17,6 +18,10 @@ const dummyUser = {
 
 export const Navigation = () => {
   const [open, setOpen] = useState(false);
+
+  const { connected, loading } = useConnectedToSkylark();
+
+  console.log({ connected, loading });
 
   // Convert to custom hook which checks localStorage on first load / periodically
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
@@ -42,8 +47,12 @@ export const Navigation = () => {
         </nav>
 
         <div className="z-50 flex flex-grow flex-row items-center justify-end gap-2 md:flex-grow-0 md:gap-10">
-          <Button variant="outline" onClick={() => setAuthModalOpen(true)}>
-            Connect to Skylark
+          <Button
+            variant="outline"
+            success={connected}
+            onClick={() => setAuthModalOpen(true)}
+          >
+            {connected ? "Connected" : "Connect to Skylark"}
           </Button>
           <div className="hidden items-center text-sm md:flex">
             <p className="mr-3 hidden font-semibold md:inline lg:mr-4">
@@ -60,7 +69,7 @@ export const Navigation = () => {
       </div>
       {/* This should be removed after beta when we implement real authentication */}
       <AddAuthTokenModal
-        isOpen={isAuthModalOpen}
+        isOpen={isAuthModalOpen || (!connected && !loading)}
         setIsOpen={setAuthModalOpen}
       />
     </>

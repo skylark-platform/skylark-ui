@@ -10,6 +10,7 @@ import {
 } from "@apollo/client";
 import { Dialog, Transition } from "@headlessui/react";
 import clsx from "clsx";
+import { useRouter } from "next/router";
 import React, { Fragment, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 
@@ -20,6 +21,7 @@ import {
   SAAS_API_ENDPOINT,
   SAAS_API_KEY,
 } from "src/constants/skylark";
+import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
 interface AddAuthTokenModalProps {
@@ -43,51 +45,60 @@ export const AddAuthTokenModal = ({
 }: AddAuthTokenModalProps) => {
   const skylarkClient = useApolloClient();
 
-  const [uri, setUri] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [debouncedUri] = useDebounce(uri, 750);
-  const [debouncedToken] = useDebounce(token, 750);
+  const { connected, loading, invalidUri, invalidToken, setValidatorClient } =
+    useConnectedToSkylark();
 
-  const [validatorClient, setValidatorClient] =
-    useState<ApolloClient<NormalizedCacheObject> | null>(null);
+  const [inputUri, setInputUri] = useState<string | null>(null);
+  const [inputToken, setInputToken] = useState<string | null>(null);
+  const [debouncedUri] = useDebounce(inputUri, 750);
+  const [debouncedToken] = useDebounce(inputToken, 750);
 
-  const { data, error, loading } = useQuery(GET_SKYLARK_OBJECT_TYPES, {
-    skip: !debouncedUri,
-    client: validatorClient as ApolloClient<NormalizedCacheObject>,
-  });
+  useEffect(() => {
+    const { origin } = window.location;
+    const useDevelopmentDefaults =
+      origin.includes("http://localhost") || origin.includes("vercel.app");
+    const developmentUri = useDevelopmentDefaults ? SAAS_API_ENDPOINT : null;
+    const developmentToken = useDevelopmentDefaults ? SAAS_API_KEY : null;
 
-  const unauthenticated =
-    error?.networkError?.name === "ServerError" &&
-    (error.networkError as ServerError).statusCode === 401;
-  const invalidUri = !data && (!error || !unauthenticated);
-  const invalidToken = !debouncedToken || (error && unauthenticated);
+    setInputUri(
+      localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) || developmentUri,
+    );
+    setInputToken(
+      localStorage.getItem(LOCAL_STORAGE.betaAuth.token) || developmentToken,
+    );
+  }, []);
+
+  useEffect(() => {
+    if (debouncedUri) {
+      const validatingRequestClient = new ApolloClient({
+        uri: debouncedUri || "",
+        cache: new InMemoryCache(),
+        headers: {
+          "x-api-key": debouncedToken || "",
+        },
+      });
+      setValidatorClient(validatingRequestClient);
+      return;
+    }
+    setValidatorClient(undefined);
+  }, [debouncedUri, debouncedToken, setValidatorClient]);
 
   // Show loading state before the debounced values have been updated
   const requestLoading =
-    loading || uri !== debouncedUri || token !== debouncedToken;
-
-  useEffect(() => {
-    // const validateUriAndClient = async () => {
-    const validatingRequestClient = new ApolloClient({
-      uri: debouncedUri || "",
-      cache: new InMemoryCache(),
-      headers: {
-        "x-api-key": debouncedToken || "",
-      },
-    });
-    setValidatorClient(validatingRequestClient);
-  }, [debouncedUri, debouncedToken]);
+    loading || inputUri !== debouncedUri || inputToken !== debouncedToken;
 
   const updateLocalStorage = async () => {
-    localStorage.setItem(LOCAL_STORAGE.betaAuth.uri, SAAS_API_ENDPOINT);
-    localStorage.setItem(LOCAL_STORAGE.betaAuth.token, SAAS_API_KEY);
+    if (debouncedUri && debouncedToken) {
+      localStorage.setItem(LOCAL_STORAGE.betaAuth.uri, debouncedUri);
+      localStorage.setItem(LOCAL_STORAGE.betaAuth.token, debouncedToken);
 
-    await skylarkClient.refetchQueries({
-      // we could use "active" but for the Beta we play it safe
-      // https://www.apollographql.com/docs/react/data/refetching/#refetching-all-queries
-      include: "all",
-    });
-    setIsOpen(false);
+      await skylarkClient.refetchQueries({
+        // we could use "active" but for the Beta we play it safe
+        // https://www.apollographql.com/docs/react/data/refetching/#refetching-all-queries
+        include: "all",
+      });
+      setIsOpen(false);
+    }
   };
 
   return (
@@ -99,7 +110,6 @@ export const AddAuthTokenModal = ({
       <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
 
       <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
-        {/* The actual dialog panel  */}
         <Dialog.Panel className="mx-auto max-w-lg rounded bg-white p-6 md:p-10">
           <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">
             Connect to Skylark
@@ -112,34 +122,31 @@ export const AddAuthTokenModal = ({
 
           <div className="my-6 flex flex-col gap-4 md:my-10">
             <TextInput
-              value={uri || ""}
-              onChange={setUri}
+              value={inputUri || ""}
+              onChange={setInputUri}
               label="Skylark URI"
               className={clsx(
-                debouncedUri && "outline",
-                requestLoading && "outline-warning",
+                debouncedUri && "border-2 outline-none",
+                requestLoading && "border-warning",
                 !requestLoading &&
                   debouncedUri &&
-                  (invalidUri ? "outline-error" : "outline-success"),
+                  (invalidUri ? "border-error" : "border-success"),
               )}
             />
 
             <TextInput
-              value={token || ""}
-              onChange={setToken}
+              value={inputToken || ""}
+              onChange={setInputToken}
               label="Access Token"
               className={clsx(
-                debouncedUri && "outline",
-                requestLoading && "outline-warning",
+                debouncedUri && "border-2 outline-none",
+                requestLoading && "border-warning",
                 !requestLoading &&
                   debouncedUri &&
-                  (invalidToken ? "outline-error" : "outline-success"),
+                  (invalidToken ? "border-error" : "border-success"),
               )}
             />
           </div>
-
-          {/* <p>{SAAS_API_ENDPOINT}</p>
-          <p>{SAAS_API_KEY}</p> */}
 
           <div className="flex w-full flex-row justify-end">
             <Button variant="ghost" onClick={() => setIsOpen(false)}>
@@ -147,7 +154,7 @@ export const AddAuthTokenModal = ({
             </Button>
             <Button
               variant="primary"
-              disabled={invalidUri || invalidToken || !data}
+              disabled={!connected || !debouncedUri || !debouncedToken}
               onClick={() => updateLocalStorage()}
               loading={requestLoading}
             >
