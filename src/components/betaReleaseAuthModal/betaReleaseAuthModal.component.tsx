@@ -1,17 +1,7 @@
-// This is meant only for the beta to set a localStorage variable containing a customers API Key.
-// They supply the key, and we add it to localStorage
-import {
-  ApolloClient,
-  InMemoryCache,
-  NormalizedCacheObject,
-  ServerError,
-  useApolloClient,
-  useQuery,
-} from "@apollo/client";
-import { Dialog, Transition } from "@headlessui/react";
+import { ApolloClient, InMemoryCache, useApolloClient } from "@apollo/client";
+import { Dialog } from "@headlessui/react";
 import clsx from "clsx";
-import { useRouter } from "next/router";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 
 import { Button } from "src/components/button";
@@ -22,22 +12,11 @@ import {
   SAAS_API_KEY,
 } from "src/constants/skylark";
 import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
-import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
 interface AddAuthTokenModalProps {
   isOpen: boolean;
   setIsOpen: (b: boolean) => void;
 }
-
-// TODO create custom hook useConnectedToSkylark:
-//   - Checks that the URI and token is set in localStorage
-//   - Has a value connected that can be read to test whether Skylark is configured
-//   - Potentially feedback whether the URI exists but the token is incorrect (401)
-
-// Then display this component on a load when the client does not have any values in localStorage
-// Optionally, read URI and token from UI URL
-
-// If on localhost or vercel.app preview domain, fallback to SAAS variables
 
 export const AddAuthTokenModal = ({
   isOpen,
@@ -56,6 +35,7 @@ export const AddAuthTokenModal = ({
   useEffect(() => {
     const { origin } = window.location;
     const useDevelopmentDefaults = origin.includes("http://localhost");
+    // Enable before merge after Kulbir tests, time saving
     // || origin.includes("vercel.app");
     const developmentUri = useDevelopmentDefaults ? SAAS_API_ENDPOINT : null;
     const developmentToken = useDevelopmentDefaults ? SAAS_API_KEY : null;
@@ -149,9 +129,6 @@ export const AddAuthTokenModal = ({
           </div>
 
           <div className="flex w-full flex-row justify-end">
-            <Button variant="ghost" onClick={() => setIsOpen(false)}>
-              Cancel
-            </Button>
             <Button
               variant="primary"
               disabled={!connected || !debouncedUri || !debouncedToken}

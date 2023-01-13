@@ -1,19 +1,13 @@
 import {
   ApolloClient,
-  ApolloClientOptions,
   createHttpLink,
   defaultDataIdFromObject,
   InMemoryCache,
-  NormalizedCacheObject,
   StoreObject,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 
-import {
-  SAAS_API_KEY,
-  SAAS_API_ENDPOINT,
-  LOCAL_STORAGE,
-} from "src/constants/skylark";
+import { SAAS_API_ENDPOINT, LOCAL_STORAGE } from "src/constants/skylark";
 
 export const createApolloClientDataIdFromSkylarkObject = (
   responseObject: Readonly<StoreObject>,
@@ -31,11 +25,9 @@ const authLink = setContext((_, { headers }) => {
   const uri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri);
   const token = localStorage.getItem(LOCAL_STORAGE.betaAuth.token);
 
-  console.log({ uri, token });
-
   // return the headers to the context so httpLink can read them
   // In Beta, only set the token when we have a URI so that Apollo Client fires a failing request when the URI is invalid/missing
-  // It's hacky but it'll go away after Beta
+  // It's hacky. Apollo Client doesn't make a request when the URI is invalid
   return {
     uri: uri || SAAS_API_ENDPOINT,
     headers: {
