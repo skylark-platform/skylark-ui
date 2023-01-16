@@ -1,6 +1,8 @@
 export const GQLSkylarkGetObjectQueryFixture = {
   data: {
     getObject: {
+      __typename: "Episode",
+      external_id: "episode-1",
       uid: "01GPWZ0ZAK0DPJ3J8ZTDNXC6KG",
       title: "GOT S01E6 - A Golden Crown",
       synopsis_short: null,

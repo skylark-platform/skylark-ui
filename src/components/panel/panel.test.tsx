@@ -69,7 +69,7 @@ test("renders the panel", async () => {
   expect(screen.getAllByText("GOT S01E6 - A Golden Crown")).toHaveLength(2);
 });
 
-test("closing the panel", async () => {
+test("closing the panel using close button", async () => {
   const closePanel = jest.fn();
   render(
     <MockedProvider mocks={mocks} addTypename={false}>
@@ -83,6 +83,26 @@ test("closing the panel", async () => {
 
   await waitFor(() => expect(screen.getByText("Close")).toBeInTheDocument());
   fireEvent.click(screen.getByText("Close"));
+
+  expect(closePanel).toHaveBeenCalled();
+});
+
+test("closing the panel by background backdrop", async () => {
+  const closePanel = jest.fn();
+  render(
+    <MockedProvider mocks={mocks} addTypename={false}>
+      <Panel
+        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
+        objectType={"Episode"}
+        closePanel={closePanel}
+      />
+    </MockedProvider>,
+  );
+
+  await waitFor(() =>
+    expect(screen.getByTestId("panel-background")).toBeInTheDocument(),
+  );
+  fireEvent.click(screen.getByTestId("panel-background"));
 
   expect(closePanel).toHaveBeenCalled();
 });

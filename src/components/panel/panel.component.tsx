@@ -26,6 +26,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   return (
     <>
       <div
+        data-testid="panel-background"
         onClick={() => closePanel()}
         className="fixed left-0 top-0 bottom-0 z-50 w-3/5 bg-black bg-opacity-20 "
       />
@@ -40,7 +41,10 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
         )}
         {data && (
           <>
-            <div className="p-4 pb-2 md:p-8 md:py-6 ">
+            <div
+              data-testid="panel-header"
+              className="p-4 pb-2 md:p-8 md:py-6 "
+            >
               <div className="flex flex-row pb-2">
                 <div className="flex flex-grow items-center gap-4">
                   <Button disabled variant="primary">
