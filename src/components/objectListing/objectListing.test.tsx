@@ -198,7 +198,7 @@ describe("row in edit mode", () => {
   });
 });
 
-test("open panel click info icon", async () => {
+test("open metadata panel, check information and close", async () => {
   const object = {
     name: "Episode",
     fields: SKYLARK_OBJECT_FIELDS_FIXTURE.map((name) => ({

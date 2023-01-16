@@ -1,5 +1,5 @@
 import { VisibilityState } from "@tanstack/react-table";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "src/components/button";
 import {
@@ -84,7 +84,7 @@ export const SearchFilter = ({
           onChange={(opts) => updateVisibleColumns(opts)}
         />
       </div>
-      <div className="flex w-full justify-end gap-2 px-4 pt-2">
+      <div className="flex w-full justify-end gap-4 px-4 pt-2">
         <Button variant="ghost" onClick={resetAllFilters}>
           Reset
         </Button>

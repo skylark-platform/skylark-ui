@@ -78,7 +78,7 @@ Outline.args = {
 };
 
 export const Ghost = Template.bind({});
-Outline.args = {
+Ghost.args = {
   ...defaultProps,
   variant: "ghost",
 };
