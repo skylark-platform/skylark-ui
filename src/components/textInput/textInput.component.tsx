@@ -15,13 +15,18 @@ export const TextInput = ({
 }: TextInputProps) => (
   <div className="flex flex-col">
     {label && (
-      <label className="mb-1 text-xs text-manatee-500 md:text-sm">
+      <label
+        className="mb-1 text-xs text-manatee-500 md:text-sm"
+        htmlFor={label}
+      >
         {label}
       </label>
     )}
     <input
       className={clsx("rounded bg-manatee-50 p-2", className)}
       type="text"
+      id={label}
+      name={label}
       value={value}
       onChange={(e) => onChange(e.target.value)}
     />

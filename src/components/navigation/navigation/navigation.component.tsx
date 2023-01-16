@@ -20,8 +20,6 @@ export const Navigation = () => {
   const [open, setOpen] = useState(false);
 
   const { connected, loading } = useConnectedToSkylark();
-
-  // Convert to custom hook which checks localStorage on first load / periodically
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
 
   return (

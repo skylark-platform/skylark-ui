@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client";
 import { Dialog } from "@headlessui/react";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
@@ -12,6 +12,7 @@ import {
   SAAS_API_KEY,
 } from "src/constants/skylark";
 import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
+import { createBasicSkylarkClient } from "src/lib/graphql/skylark/client";
 
 interface AddAuthTokenModalProps {
   isOpen: boolean;
@@ -34,7 +35,10 @@ export const AddAuthTokenModal = ({
 
   useEffect(() => {
     const { origin } = window.location;
-    const useDevelopmentDefaults = origin.includes("http://localhost");
+    // Timesaving in development to connect to sl-develop-10 when available unless in Storybook.
+    const useDevelopmentDefaults =
+      origin.includes("http://localhost") &&
+      !origin.includes("http://localhost:6006");
     // Enable before merge after Kulbir tests, time saving
     // || origin.includes("vercel.app");
     const developmentUri = useDevelopmentDefaults ? SAAS_API_ENDPOINT : null;
@@ -50,13 +54,10 @@ export const AddAuthTokenModal = ({
 
   useEffect(() => {
     if (debouncedUri) {
-      const validatingRequestClient = new ApolloClient({
-        uri: debouncedUri || "",
-        cache: new InMemoryCache(),
-        headers: {
-          "x-api-key": debouncedToken || "",
-        },
-      });
+      const validatingRequestClient = createBasicSkylarkClient(
+        debouncedUri,
+        debouncedToken || "",
+      );
       setValidatorClient(validatingRequestClient);
       return;
     }

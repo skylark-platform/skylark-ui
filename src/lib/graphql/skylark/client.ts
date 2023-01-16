@@ -21,6 +21,8 @@ export const createApolloClientDataIdFromSkylarkObject = (
 const httpLink = createHttpLink();
 
 const authLink = setContext((_, { headers }) => {
+  // TODO test this?
+
   // get the authentication token from local storage if it exists
   const uri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri);
   const token = localStorage.getItem(LOCAL_STORAGE.betaAuth.token);
@@ -40,6 +42,17 @@ const authLink = setContext((_, { headers }) => {
 export const createSkylarkClient = () =>
   new ApolloClient({
     link: authLink.concat(httpLink),
+    cache: new InMemoryCache({
+      dataIdFromObject: createApolloClientDataIdFromSkylarkObject,
+    }),
+  });
+
+export const createBasicSkylarkClient = (uri: string, token: string) =>
+  new ApolloClient({
+    uri,
+    headers: {
+      "x-api-key": token,
+    },
     cache: new InMemoryCache({
       dataIdFromObject: createApolloClientDataIdFromSkylarkObject,
     }),

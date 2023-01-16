@@ -51,6 +51,35 @@ describe("getObjectOperations", () => {
           ],
           relationships: [],
         },
+        update: {
+          name: "updateEpisode",
+          type: "Mutation",
+          argName: "episode",
+          inputs: [
+            {
+              enumValues: undefined,
+              isList: false,
+              isRequired: false,
+              name: "title",
+              type: "string",
+            },
+            {
+              enumValues: ["SHORT", "LONG"],
+              isList: false,
+              isRequired: false,
+              name: "type",
+              type: "enum",
+            },
+          ],
+          relationships: [],
+        },
+        delete: {
+          name: "deleteEpisode",
+          type: "Mutation",
+          argName: "",
+          inputs: [],
+          relationships: [],
+        },
       },
     });
   });

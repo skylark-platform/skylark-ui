@@ -94,7 +94,7 @@ export const getObjectOperations = (
     },
     update: {
       type: "Mutation",
-      name: createMutation.name,
+      name: updateMutation.name,
       argName: updateMeta.argName,
       inputs: updateMeta.inputs,
       relationships: updateMeta.relationships,
