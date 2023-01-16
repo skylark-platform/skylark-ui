@@ -107,7 +107,6 @@ export const ObjectList = ({
   withObjectEdit,
 }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-  // const [objectType, setObjectType] = useState("");
   const [activePanelObject, setActivePanelObject] = useState<{
     objectType: string;
     uid: string;
