@@ -30,7 +30,7 @@ beforeEach(() => {
   window.IntersectionObserver = mockIntersectionObserver;
 });
 
-test("renders as closed", async () => {
+test("renders as closed", () => {
   render(
     <MockedProvider mocks={[]}>
       <AddAuthTokenModal isOpen={false} setIsOpen={jest.fn()} />
@@ -40,7 +40,7 @@ test("renders as closed", async () => {
   expect(screen.queryByText("Connect to Skylark")).toBeNull();
 });
 
-test("renders as open", async () => {
+test("renders as open", () => {
   render(
     <MockedProvider mocks={[]}>
       <AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />
@@ -48,12 +48,12 @@ test("renders as open", async () => {
   );
 
   expect(screen.getByText("Connect to Skylark")).toBeInTheDocument();
-  expect(screen.getByLabelText("Skylark URI")).toBeInTheDocument();
-  expect(screen.getByLabelText("Access Token")).toBeInTheDocument();
+  expect(screen.getByLabelText("GraphQL URL")).toBeInTheDocument();
+  expect(screen.getByLabelText("API Key")).toBeInTheDocument();
   expect(screen.getByRole("button")).toBeDisabled();
 });
 
-test("renders as open and closes on the esc key", async () => {
+test("renders as open and closes on the esc key", () => {
   const setIsOpen = jest.fn();
 
   render(
@@ -86,8 +86,8 @@ test("changes input to red when they are invalid", async () => {
     </ApolloProvider>,
   );
 
-  const uriInput = screen.getByLabelText("Skylark URI");
-  const tokenInput = screen.getByLabelText("Access Token");
+  const uriInput = screen.getByLabelText("GraphQL URL");
+  const tokenInput = screen.getByLabelText("API Key");
 
   fireEvent.change(uriInput, {
     target: { value: "http://invalidgraphqlurl.com" },
@@ -111,8 +111,8 @@ test("changes input to green when they are valid", async () => {
     </ApolloProvider>,
   );
 
-  const uriInput = screen.getByLabelText("Skylark URI");
-  const tokenInput = screen.getByLabelText("Access Token");
+  const uriInput = screen.getByLabelText("GraphQL URL");
+  const tokenInput = screen.getByLabelText("API Key");
 
   fireEvent.change(uriInput, {
     target: { value: "http://valid.com" },
@@ -138,8 +138,8 @@ test("when GraphQL is valid, updates local storage", async () => {
     </ApolloProvider>,
   );
 
-  const uriInput = screen.getByLabelText("Skylark URI");
-  const tokenInput = screen.getByLabelText("Access Token");
+  const uriInput = screen.getByLabelText("GraphQL URL");
+  const tokenInput = screen.getByLabelText("API Key");
 
   fireEvent.change(uriInput, {
     target: { value: "http://valid.com" },

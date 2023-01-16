@@ -1,10 +1,17 @@
-import { ApolloClient, defaultDataIdFromObject } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloLink,
+  defaultDataIdFromObject,
+  execute,
+} from "@apollo/client";
 
 import {
+  authLink,
   createApolloClientDataIdFromSkylarkObject,
   createBasicSkylarkClient,
   createSkylarkClient,
 } from "./client";
+import { GET_SKYLARK_OBJECT_TYPES } from "./queries";
 
 jest.mock("@apollo/client", () => ({
   ...jest.requireActual("@apollo/client"),

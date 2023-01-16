@@ -99,15 +99,15 @@ export const AddAuthTokenModal = ({
           </Dialog.Title>
 
           <Dialog.Description className="">
-            Enter your GraphQL URI and Access Token below to connect to your
-            Skylark instance.
+            Enter your GraphQL URI and API Key below to connect to your Skylark
+            instance.
           </Dialog.Description>
 
           <div className="my-6 flex flex-col gap-4 md:my-10">
             <TextInput
               value={inputUri || ""}
               onChange={setInputUri}
-              label="Skylark URI"
+              label="GraphQL URL"
               className={clsx(
                 debouncedUri && "border-2 outline-none",
                 requestLoading && "border-warning",
@@ -120,7 +120,7 @@ export const AddAuthTokenModal = ({
             <TextInput
               value={inputToken || ""}
               onChange={setInputToken}
-              label="Access Token"
+              label="API Key"
               className={clsx(
                 debouncedUri && "border-2 outline-none",
                 requestLoading && "border-warning",

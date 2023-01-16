@@ -20,9 +20,7 @@ export const createApolloClientDataIdFromSkylarkObject = (
 
 const httpLink = createHttpLink();
 
-const authLink = setContext((_, { headers }) => {
-  // TODO test this?
-
+export const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   const uri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri);
   const token = localStorage.getItem(LOCAL_STORAGE.betaAuth.token);
