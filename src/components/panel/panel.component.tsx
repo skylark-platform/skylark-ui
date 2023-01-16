@@ -29,15 +29,18 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
         onClick={() => closePanel()}
         className="fixed left-0 top-0 bottom-0 z-50 w-3/5 bg-black bg-opacity-20 "
       />
-      <section className="fixed top-0 right-0 bottom-0 z-50 w-full overflow-y-scroll bg-white drop-shadow-md md:w-2/3 lg:w-7/12 xl:w-2/5 ">
+      <section className="fixed top-0 right-0 bottom-0 z-50 w-full bg-white drop-shadow-md md:w-2/3 lg:w-7/12 xl:w-2/5 ">
         {!data && (
-          <div className="flex h-full w-full items-center justify-center">
+          <div
+            data-testid="loading"
+            className="flex h-full w-full items-center justify-center"
+          >
             <Spinner className="h-16 w-16 animate-spin" />
           </div>
         )}
         {data && (
           <>
-            <div className="p-4 pb-2 md:p-8 md:py-6">
+            <div className="p-4 pb-2 md:p-8 md:py-6 ">
               <div className="flex flex-row pb-2">
                 <div className="flex flex-grow items-center gap-4">
                   <Button disabled variant="primary">
@@ -64,20 +67,20 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
 
             <Tabs tabs={["Metadata"]} />
 
-            <div className=" p-4 pb-12 text-sm md:p-8">
+            <div className=" h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
               {data?.getObject &&
                 Object.keys(data?.getObject).map(
                   (property) =>
                     data?.getObject[property] &&
                     property !== "__typename" && (
-                      <>
+                      <div key={property}>
                         <h3 className="mb-2 font-bold ">
                           {formatObjectField(property)}
                         </h3>
                         <div className="mb-4 break-words text-base-content">
                           {data?.getObject[property]}
                         </div>
-                      </>
+                      </div>
                     ),
                 )}
             </div>

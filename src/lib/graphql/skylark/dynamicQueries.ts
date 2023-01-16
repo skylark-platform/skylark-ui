@@ -72,6 +72,7 @@ export const createGetObjectQuery = (object: SkylarkObjectMeta | null) => {
       },
     },
   };
+
   const graphQLQuery = jsonToGraphQLQuery(query);
 
   return gql(graphQLQuery);
