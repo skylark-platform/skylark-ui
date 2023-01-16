@@ -2,6 +2,7 @@ import { ApolloClient, defaultDataIdFromObject } from "@apollo/client";
 
 import {
   createApolloClientDataIdFromSkylarkObject,
+  createBasicSkylarkClient,
   createSkylarkClient,
 } from "./client";
 
@@ -38,4 +39,16 @@ test("creates a new ApolloClient", () => {
   createSkylarkClient();
 
   expect(ApolloClient).toHaveBeenCalled();
+});
+
+test("creates a basic client with the uri and token passed", () => {
+  createBasicSkylarkClient("uri", "token");
+
+  expect(ApolloClient).toHaveBeenCalledWith({
+    cache: expect.any(Object),
+    headers: {
+      "x-api-key": "token",
+    },
+    uri: "uri",
+  });
 });

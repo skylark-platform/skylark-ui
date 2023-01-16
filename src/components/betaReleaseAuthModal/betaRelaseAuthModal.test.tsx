@@ -1,17 +1,10 @@
 import { ApolloProvider } from "@apollo/client";
 import { MockedProvider } from "@apollo/client/testing";
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { createMockClient, MockApolloClient } from "mock-apollo-client";
 
 import { LOCAL_STORAGE } from "src/constants/skylark";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
-import { pause } from "src/lib/utils";
 import { GQLSkylarkObjectTypesQueryFixture } from "src/tests/fixtures";
 
 import { AddAuthTokenModal } from "./betaReleaseAuthModal.component";
@@ -19,7 +12,6 @@ import { AddAuthTokenModal } from "./betaReleaseAuthModal.component";
 let mockClient: MockApolloClient;
 
 jest.mock("../../lib/graphql/skylark/client", () => ({
-  // ...jest.requireActual("../../lib/graphql/skylark/client"),
   createSkylarkClient: () => mockClient,
   createBasicSkylarkClient: () => mockClient,
   __esModule: true,
@@ -59,6 +51,29 @@ test("renders as open", async () => {
   expect(screen.getByLabelText("Skylark URI")).toBeInTheDocument();
   expect(screen.getByLabelText("Access Token")).toBeInTheDocument();
   expect(screen.getByRole("button")).toBeDisabled();
+});
+
+test("renders as open and closes on the esc key", async () => {
+  const setIsOpen = jest.fn();
+
+  render(
+    <MockedProvider mocks={[]}>
+      <AddAuthTokenModal isOpen={true} setIsOpen={setIsOpen} />
+    </MockedProvider>,
+  );
+
+  const header = screen.getByText("Connect to Skylark");
+
+  expect(header).toBeInTheDocument();
+
+  fireEvent.keyDown(header, {
+    key: "Escape",
+    code: "Escape",
+    keyCode: 27,
+    charCode: 27,
+  });
+
+  expect(setIsOpen).toHaveBeenCalledWith(false);
 });
 
 test("changes input to red when they are invalid", async () => {

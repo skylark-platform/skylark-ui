@@ -74,8 +74,6 @@ export const AddAuthTokenModal = ({
       localStorage.setItem(LOCAL_STORAGE.betaAuth.token, debouncedToken);
 
       await skylarkClient.refetchQueries({
-        // we could use "active" but for the Beta we play it safe
-        // https://www.apollographql.com/docs/react/data/refetching/#refetching-all-queries
         include: "all",
       });
       setIsOpen(false);
@@ -88,7 +86,11 @@ export const AddAuthTokenModal = ({
       onClose={() => setIsOpen(false)}
       className="font-body relative z-50"
     >
-      <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
+      <div
+        className="fixed inset-0 bg-black/40"
+        aria-hidden="true"
+        data-testid="dialog-background"
+      />
 
       <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
         <Dialog.Panel className="mx-auto max-w-lg rounded bg-white p-6 md:p-10">
