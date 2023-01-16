@@ -31,8 +31,8 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
       />
       <section className="fixed top-0 right-0 bottom-0 z-50 w-full overflow-y-scroll bg-white drop-shadow-md md:w-2/3 lg:w-7/12 xl:w-2/5 ">
         {!data && (
-          <div className="flex ">
-            <Spinner className="h-10 w-10 animate-spin content-center" />
+          <div className="flex h-full w-full items-center justify-center">
+            <Spinner className="h-16 w-16 animate-spin" />
           </div>
         )}
         {data && (
