@@ -61,7 +61,8 @@ export const createGetObjectQuery = (object: SkylarkObjectMeta | null) => {
         uid: "String",
         externalId: "String",
       },
-      [object.operations.get.name]: {
+      getObject: {
+        __aliasFor: object.operations.get.name,
         __args: {
           ...common.args,
           uid: new VariableType("uid"),
@@ -71,6 +72,7 @@ export const createGetObjectQuery = (object: SkylarkObjectMeta | null) => {
       },
     },
   };
+
   const graphQLQuery = jsonToGraphQLQuery(query);
 
   return gql(graphQLQuery);

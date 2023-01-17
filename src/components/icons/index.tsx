@@ -8,3 +8,4 @@ export * from "./checkSquare.component";
 export * from "./crossSquare.component";
 export * from "./search.component";
 export * from "./filter.component";
+export * from "./expand.component";

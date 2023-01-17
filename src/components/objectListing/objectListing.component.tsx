@@ -5,14 +5,16 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 import { Checkbox } from "src/components/checkbox";
 import { Spinner } from "src/components/icons";
+import { Panel } from "src/components/panel/panel.component";
 import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkSearchableObjectTypes } from "src/hooks/useSkylarkObjectTypes";
+import { formatObjectField } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
 import { RowActions } from "./rowActions";
@@ -31,16 +33,20 @@ export interface ObjectListProps {
   withObjectEdit?: boolean;
 }
 
-const formatColumnHeader = (header: string) =>
-  header.toUpperCase().replaceAll("_", " ");
-
 const createColumns = (
   columns: TableColumn[],
   opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
+  setPanelInfo: ({
+    objectType,
+    uid,
+  }: {
+    objectType: string;
+    uid: string;
+  }) => void,
 ) => {
   const createdColumns = columns.map((column) =>
     columnHelper.accessor(column, {
-      header: formatColumnHeader(column),
+      header: formatObjectField(column),
       cell: (props) => <TableCell {...props} />,
     }),
   );
@@ -66,12 +72,16 @@ const createColumns = (
   const actionColumn = columnHelper.display({
     id: OBJECT_LIST_TABLE.columnIds.actions,
     cell: ({ table, row }) => {
+      const { uid, __typename: objectType } = row.original as {
+        uid: string;
+        __typename: string;
+      };
       return (
         <RowActions
           editRowEnabled={opts.withObjectEdit}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() => console.log(row)}
+          onInfoClick={() => setPanelInfo({ objectType, uid })}
           onEditSaveClick={() => console.log(row)}
           onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
         />
@@ -97,6 +107,10 @@ export const ObjectList = ({
   withObjectEdit,
 }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [activePanelObject, setActivePanelObject] = useState<{
+    objectType: string;
+    uid: string;
+  } | null>(null);
   const { objectTypes } = useSkylarkSearchableObjectTypes();
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     objectTypes: null,
@@ -121,7 +135,12 @@ export const ObjectList = ({
   });
 
   const parsedColumns = useMemo(
-    () => createColumns(sortedHeaders, { withObjectSelect, withObjectEdit }),
+    () =>
+      createColumns(
+        sortedHeaders,
+        { withObjectSelect, withObjectEdit },
+        setActivePanelObject,
+      ),
     [sortedHeaders, withObjectEdit, withObjectSelect],
   );
 
@@ -167,6 +186,13 @@ export const ObjectList = ({
 
   return (
     <div className="flex h-full flex-col gap-4 md:gap-8">
+      {activePanelObject && (
+        <Panel
+          closePanel={() => setActivePanelObject(null)}
+          uid={activePanelObject.uid}
+          objectType={activePanelObject.objectType}
+        />
+      )}
       <div className="flex w-full flex-col-reverse items-center justify-between gap-2 md:flex-row">
         <div
           className={clsx(

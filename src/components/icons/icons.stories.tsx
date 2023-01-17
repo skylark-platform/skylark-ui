@@ -21,6 +21,7 @@ const Template: ComponentStory<React.FC<IconProps>> = (args) => {
       <Icons.Search {...args} />
       <Icons.Spinner {...args} />
       <Icons.Filter {...args} />
+      <Icons.Expand {...args} />
     </div>
   );
 };

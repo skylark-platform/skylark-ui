@@ -1,7 +1,16 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import { DocumentNode } from "graphql";
 import { act } from "react-dom/test-utils";
 
+import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
+import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   GET_SEARCHABLE_OBJECTS,
   GET_SKYLARK_SCHEMA,
@@ -11,11 +20,13 @@ import {
   GQLSkylarkSchemaQueryFixture,
   GQLSkylarkSearchQueryFixture,
   GQLSkylarkDynamicSearchQuery,
+  SKYLARK_OBJECT_FIELDS_FIXTURE,
 } from "src/tests/fixtures";
+import { GQLSkylarkGetObjectQueryFixture } from "src/tests/fixtures/panel.fixture";
 
 import { ObjectList } from "./objectListing.component";
 
-const defaultMocks = [
+const schemaMocks = [
   {
     request: {
       query: GET_SEARCHABLE_OBJECTS,
@@ -32,6 +43,10 @@ const defaultMocks = [
       data: GQLSkylarkSchemaQueryFixture.data,
     },
   },
+];
+
+const defaultMocks = [
+  ...schemaMocks,
   {
     request: {
       variables: { ignoreAvailability: true, queryString: "" },
@@ -181,4 +196,85 @@ describe("row in edit mode", () => {
       "disabled",
     );
   });
+});
+
+test("open metadata panel, check information and close", async () => {
+  const object = {
+    name: "Episode",
+    fields: SKYLARK_OBJECT_FIELDS_FIXTURE.map((name) => ({
+      enumValues: undefined,
+      isList: false,
+      isRequired: false,
+      name,
+      type: "string",
+    })),
+    operations: {
+      get: {
+        name: "getEpisode",
+        type: "Query",
+      },
+    },
+  };
+  const mocks = [
+    ...schemaMocks,
+    {
+      request: {
+        variables: { ignoreAvailability: true, queryString: "" },
+        query: GQLSkylarkDynamicSearchQuery,
+      },
+      result: {
+        data: {
+          search: {
+            objects: [GQLSkylarkGetObjectQueryFixture.data.getObject],
+          },
+        },
+      },
+    },
+    {
+      request: {
+        query: createGetObjectQuery(
+          object as SkylarkObjectMeta,
+        ) as DocumentNode,
+        variables: {
+          ignoreAvailability: true,
+          uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
+        },
+      },
+      result: GQLSkylarkGetObjectQueryFixture,
+    },
+  ];
+
+  render(
+    <MockedProvider mocks={mocks}>
+      <ObjectList />
+    </MockedProvider>,
+  );
+
+  await screen.findAllByRole("button", {
+    name: /object-info/i,
+  });
+
+  const infoButton = screen.getAllByRole("button", {
+    name: /object-info/i,
+  });
+
+  fireEvent.click(infoButton[0]);
+
+  await waitFor(() =>
+    expect(screen.getByTestId("panel-background")).toBeInTheDocument(),
+  );
+  await waitFor(() =>
+    expect(screen.getByTestId("panel-header")).toBeInTheDocument(),
+  );
+
+  const panelHeader = screen.getByTestId("panel-header");
+  expect(
+    within(panelHeader).getByText("GOT S01E6 - A Golden Crown"),
+  ).toBeInTheDocument();
+
+  fireEvent.click(screen.getByTestId("panel-background"));
+
+  await waitFor(() =>
+    expect(screen.queryByTestId("panel-background")).not.toBeInTheDocument(),
+  );
 });

@@ -72,7 +72,7 @@ describe("createGetObjectQuery", () => {
     expect(got).toEqual(
       gql(
         `
-      query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { name type } }
+      query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { name type } }
       `,
       ),
     );
