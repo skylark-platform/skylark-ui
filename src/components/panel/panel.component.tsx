@@ -75,14 +75,15 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
               {data?.getObject &&
                 Object.keys(data?.getObject).map(
                   (property) =>
-                    data?.getObject[property] &&
                     property !== "__typename" && (
                       <div key={property}>
                         <h3 className="mb-2 font-bold ">
                           {formatObjectField(property)}
                         </h3>
                         <div className="mb-4 break-words text-base-content">
-                          {data?.getObject[property]}
+                          {data?.getObject[property]
+                            ? data?.getObject[property]
+                            : "---"}
                         </div>
                       </div>
                     ),
