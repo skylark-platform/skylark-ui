@@ -11,7 +11,7 @@ import {
   getFlatfileFinalDatabaseView,
 } from "src/lib/flatfile";
 import { createFlatfileClient } from "src/lib/graphql/flatfile/client";
-import { createSkylarkClient } from "src/lib/graphql/skylark/client";
+import { createBasicSkylarkClient } from "src/lib/graphql/skylark/client";
 import { getSkylarkObjectTypes } from "src/lib/skylark/introspection";
 
 export default async function handler(
@@ -34,12 +34,18 @@ export default async function handler(
       .send("No Flatfile Access Key ID or Flatfile Secret supplied");
   }
 
-  const { batchId, objectType } = body;
+  const { batchId, objectType, graphQLUri, graphQLToken } = body;
   if (!batchId || !objectType) {
     return res.status(500).send("batchId and objectType are mandatory");
   }
 
-  const skylarkClient = createSkylarkClient();
+  if (!graphQLUri || !graphQLToken) {
+    return res
+      .status(500)
+      .send("Skylark GraphQL URI and Access Key are mandatory");
+  }
+
+  const skylarkClient = createBasicSkylarkClient(graphQLUri, graphQLToken);
 
   const objects = await getSkylarkObjectTypes(skylarkClient);
   const isObjectValid = objects.find((object) => object === objectType);

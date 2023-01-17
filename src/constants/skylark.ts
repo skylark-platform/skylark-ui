@@ -10,3 +10,9 @@ export const OBJECT_LIST_TABLE = {
     actions: "skylark-ui-actions",
   },
 };
+export const LOCAL_STORAGE = {
+  betaAuth: {
+    uri: "skylark_beta_uri",
+    token: "skylark_beta_auth_token",
+  },
+};

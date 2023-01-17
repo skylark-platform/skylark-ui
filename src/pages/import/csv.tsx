@@ -3,6 +3,7 @@ import { useState, useReducer, useEffect } from "react";
 import { Button } from "src/components/button";
 import { Select } from "src/components/select/select.component";
 import { StatusCard, statusType } from "src/components/statusCard";
+import { LOCAL_STORAGE } from "src/constants/skylark";
 import {
   useSkylarkObjectOperations,
   useSkylarkObjectTypes,
@@ -44,6 +45,8 @@ const createFlatfileTemplate = async (
 const importFlatfileDataToSkylark = async (
   objectType: SkylarkObjectType,
   batchId: string,
+  graphQLUri: string,
+  graphQLToken: string,
 ) => {
   const res = await fetch("/api/flatfile/import", {
     headers: {
@@ -53,6 +56,8 @@ const importFlatfileDataToSkylark = async (
     body: JSON.stringify({
       objectType,
       batchId,
+      graphQLUri,
+      graphQLToken,
     }),
   });
 
@@ -140,7 +145,21 @@ export default function CSVImportPage() {
   const createObjectsInSkylark = async (batchId: string) => {
     dispatch({ stage: "import", status: statusType.success });
     dispatch({ stage: "create", status: statusType.inProgress });
-    await importFlatfileDataToSkylark(objectType, batchId);
+    const graphQLUri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri);
+    const graphQLToken = localStorage.getItem(LOCAL_STORAGE.betaAuth.token);
+    if (!graphQLUri || !graphQLToken) {
+      dispatch({ stage: "create", status: statusType.error });
+      throw new Error(
+        "Skylark GraphQL URI or Access Key not found in local storage",
+      );
+    }
+
+    await importFlatfileDataToSkylark(
+      objectType,
+      batchId,
+      graphQLUri,
+      graphQLToken,
+    );
     dispatch({ stage: "create", status: statusType.success });
   };
 

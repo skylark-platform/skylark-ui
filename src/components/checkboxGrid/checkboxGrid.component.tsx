@@ -1,6 +1,6 @@
 import { CheckedState } from "@radix-ui/react-checkbox";
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Checkbox } from "src/components/checkbox";
 
@@ -60,6 +60,10 @@ export const CheckboxGrid = ({
     );
     onChange(optsArr);
   };
+
+  useEffect(() => {
+    setCheckboxOptions(options);
+  }, [options]);
 
   return (
     <div className={clsx("flex flex-col gap-2 text-xs", className)}>

@@ -47,7 +47,7 @@ test("calls onFilterSave when apply is clicked", async () => {
   );
 });
 
-test("when reset is clicked, all filters are returned to all options checked", async () => {
+test("when reset is clicked, all filters are returned to all options checked without saving", async () => {
   const onFilterSave = jest.fn();
 
   render(
@@ -64,8 +64,8 @@ test("when reset is clicked, all filters are returned to all options checked", a
 
   fireEvent.click(screen.getByText("Reset"));
 
-  expect(onFilterSave).toHaveBeenCalledWith(
-    { objectTypes },
-    { external_id: true, slug: true, uid: true },
-  );
+  screen.getAllByRole("checkbox").map((el) => {
+    expect(el).toHaveAttribute("aria-checked", "true");
+  });
+  expect(onFilterSave).not.toHaveBeenCalled();
 });
