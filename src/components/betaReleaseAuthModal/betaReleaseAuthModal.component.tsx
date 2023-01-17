@@ -98,7 +98,7 @@ export const AddAuthTokenModal = ({
             Connect to Skylark
           </Dialog.Title>
 
-          <Dialog.Description className="">
+          <Dialog.Description>
             Enter your GraphQL URI and API Key below to connect to your Skylark
             instance.
           </Dialog.Description>
