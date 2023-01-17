@@ -44,6 +44,18 @@ const object: SkylarkObjectMeta = {
       name: "createEpisode",
       inputs: fields,
     },
+    update: {
+      type: "Mutation",
+      argName: "episode",
+      name: "updateEpisode",
+      inputs: fields,
+    },
+    delete: {
+      type: "Mutation",
+      argName: "",
+      name: "deleteEpisode",
+      inputs: [],
+    },
   },
 };
 

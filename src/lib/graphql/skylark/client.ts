@@ -1,11 +1,13 @@
 import {
   ApolloClient,
+  createHttpLink,
   defaultDataIdFromObject,
   InMemoryCache,
   StoreObject,
 } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 
-import { SAAS_API_KEY, SAAS_API_ENDPOINT } from "src/constants/skylark";
+import { SAAS_API_ENDPOINT, LOCAL_STORAGE } from "src/constants/skylark";
 
 export const createApolloClientDataIdFromSkylarkObject = (
   responseObject: Readonly<StoreObject>,
@@ -16,15 +18,42 @@ export const createApolloClientDataIdFromSkylarkObject = (
   return defaultDataIdFromObject(responseObject);
 };
 
+const httpLink = createHttpLink();
+
+export const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const uri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri);
+  const token = localStorage.getItem(LOCAL_STORAGE.betaAuth.token);
+
+  // return the headers to the context so httpLink can read them
+  // In Beta, only set the token when we have a URI so that Apollo Client fires a failing request when the URI is invalid/missing
+  // It's hacky. Apollo Client doesn't make a request when the URI is invalid
+  return {
+    uri: uri || SAAS_API_ENDPOINT,
+    headers: {
+      ...headers,
+      "x-api-key": uri ? token || "" : "",
+    },
+  };
+});
+
 export const createSkylarkClient = () =>
   new ApolloClient({
-    uri: SAAS_API_ENDPOINT,
+    link: authLink.concat(httpLink),
     cache: new InMemoryCache({
       dataIdFromObject: createApolloClientDataIdFromSkylarkObject,
     }),
+  });
+
+export const createBasicSkylarkClient = (uri: string, token: string) =>
+  new ApolloClient({
+    uri,
     headers: {
-      "x-api-key": SAAS_API_KEY,
+      "x-api-key": token,
     },
+    cache: new InMemoryCache({
+      dataIdFromObject: createApolloClientDataIdFromSkylarkObject,
+    }),
   });
 
 export type SkylarkClient = ReturnType<typeof createSkylarkClient>;

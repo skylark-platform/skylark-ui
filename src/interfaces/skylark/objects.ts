@@ -41,8 +41,8 @@ export interface SkylarkObjectOperations {
   get: Query | null;
   list: Query | null;
   create: Mutation;
-  // update: Mutation;
-  // delete: Mutation;
+  update: Mutation;
+  delete: Mutation;
 }
 
 export interface SkylarkObjectFields {

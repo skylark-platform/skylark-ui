@@ -66,7 +66,7 @@ export const Search = ({
       />
 
       {isFilterOpen && (
-        <div className="absolute top-14 left-0 z-50">
+        <div className="absolute top-10 left-0 z-50 w-full md:top-14 md:w-auto">
           <SearchFilter
             objectTypes={objectTypes}
             activeFilters={activeFilters}

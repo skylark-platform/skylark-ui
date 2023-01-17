@@ -185,7 +185,7 @@ export const ObjectList = ({
   if (searchError) console.error("Search Errors:", { searchError });
 
   return (
-    <div className="flex h-full flex-col gap-8">
+    <div className="flex h-full flex-col gap-4 md:gap-8">
       {activePanelObject && (
         <Panel
           closePanel={() => setActivePanelObject(null)}
@@ -193,7 +193,7 @@ export const ObjectList = ({
           objectType={activePanelObject.objectType}
         />
       )}
-      <div className="flex w-full flex-row items-center justify-between">
+      <div className="flex w-full flex-col-reverse items-center justify-between gap-2 md:flex-row">
         <div
           className={clsx(
             "flex w-full flex-row-reverse gap-4",
@@ -216,12 +216,14 @@ export const ObjectList = ({
             onFilterChange={onFilterChangeWrapper}
           />
         </div>
-        {withCreateButtons && <CreateButtons />}
+        {withCreateButtons && (
+          <CreateButtons className="w-full justify-end md:w-auto" />
+        )}
       </div>
       <div className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6">
         {!searchLoading && searchData && <Table table={table} />}
         {(searchLoading || searchData) && (
-          <div className="items-top justify-left flex h-96 w-full flex-col gap-4 text-manatee-600">
+          <div className="items-top justify-left flex h-96 w-full flex-col gap-4 text-sm text-manatee-600 md:text-base">
             {searchLoading && (
               <div className="flex w-full justify-center">
                 <Spinner className="h-10 w-10 animate-spin" />

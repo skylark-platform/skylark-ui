@@ -114,7 +114,45 @@ export const GQLSkylarkSchemaQueryFixture: {
           },
           {
             name: "updateEpisode",
-            args: [],
+            args: [
+              {
+                name: "episode",
+                type: {
+                  __typename: "episode",
+                  kind: "INPUT_OBJECT",
+                  enumValues: null,
+                  name: "EpisodeInput",
+                  fields: [],
+                  inputFields: [
+                    {
+                      name: "title",
+                      type: {
+                        __typename: "",
+                        name: "String",
+                        kind: "SCALAR",
+                        enumValues: null,
+                        fields: [],
+                        inputFields: [],
+                        ofType: null,
+                      },
+                    },
+                    {
+                      name: "type",
+                      type: {
+                        __typename: "",
+                        name: "String",
+                        kind: "ENUM",
+                        enumValues: [{ name: "SHORT" }, { name: "LONG" }],
+                        fields: [],
+                        inputFields: [],
+                        ofType: null,
+                      },
+                    },
+                  ],
+                  ofType: null,
+                },
+              },
+            ],
           },
           {
             name: "deleteEpisode",
