@@ -38,8 +38,8 @@ export const AddAuthTokenModal = ({
     // Timesaving in development to connect to sl-develop-10 when available unless in Storybook.
     const useDevelopmentDefaults =
       (origin.includes("http://localhost") &&
-      !origin.includes("http://localhost:6006"))
-      || origin.includes("vercel.app");
+        !origin.includes("http://localhost:6006")) ||
+      origin.includes("vercel.app");
     const developmentUri = useDevelopmentDefaults ? SAAS_API_ENDPOINT : null;
     const developmentToken = useDevelopmentDefaults ? SAAS_API_KEY : null;
 
