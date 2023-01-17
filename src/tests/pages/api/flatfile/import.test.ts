@@ -21,7 +21,7 @@ jest.mock("../../../../lib/flatfile", () => ({
 }));
 
 jest.mock("../../../../lib/graphql/skylark/client", () => ({
-  createSkylarkClient: jest.fn(),
+  createBasicSkylarkClient: jest.fn(),
 }));
 
 jest.mock("../../../../lib/graphql/flatfile/client", () => ({
@@ -111,7 +111,7 @@ describe("request validation", () => {
     const { req, res } = createMocks({
       method: "POST",
       body: {
-        batchId: "",
+        batchId: "123",
       },
     });
 
@@ -124,7 +124,7 @@ describe("request validation", () => {
     const { req, res } = createMocks({
       method: "POST",
       body: {
-        batchId: "",
+        batchId: "123",
       },
     });
 
@@ -132,6 +132,24 @@ describe("request validation", () => {
 
     expect(res._getStatusCode()).toBe(500);
     expect(res._getData()).toEqual("batchId and objectType are mandatory");
+  });
+
+  test("returns 500 when the graphQLToken is missing from the request body", async () => {
+    const { req, res } = createMocks({
+      method: "POST",
+      body: {
+        batchId: "123",
+        objectType: "Episode",
+        graphQLUri: "/graphql",
+      },
+    });
+
+    await handler(req, res);
+
+    expect(res._getStatusCode()).toBe(500);
+    expect(res._getData()).toEqual(
+      "Skylark GraphQL URI and Access Key are mandatory",
+    );
   });
 });
 
@@ -149,6 +167,7 @@ describe("validated request", () => {
   let mockFlatfileClient: MockApolloClient;
   let getFinalDatabaseHandler: jest.Mock;
 
+  let createBasicSkylarkClientSpy: jest.SpyInstance;
   let mockSkylarkClient: MockApolloClient;
   let getSkylarkSchemaHandler: jest.Mock;
   let createEpisodeHandler: jest.Mock;
@@ -159,6 +178,8 @@ describe("validated request", () => {
       body: {
         batchId: "batchId",
         objectType: "Episode",
+        graphQLUri: "/graphql",
+        graphQLToken: "token",
       },
     });
     req = requestMocks.req;
@@ -187,9 +208,11 @@ describe("validated request", () => {
 
   beforeEach(() => {
     mockSkylarkClient = createMockClient();
-    jest
-      .spyOn(skylarkClient, "createSkylarkClient")
-      .mockReturnValue(mockSkylarkClient);
+    createBasicSkylarkClientSpy = jest.spyOn(
+      skylarkClient,
+      "createBasicSkylarkClient",
+    );
+    createBasicSkylarkClientSpy.mockReturnValue(mockSkylarkClient);
 
     getSkylarkSchemaHandler = jest
       .fn()
@@ -211,6 +234,20 @@ describe("validated request", () => {
     mockSkylarkClient.setRequestHandler(
       CREATE_EPISODE_MUTATION,
       createEpisodeHandler,
+    );
+  });
+
+  test("calls createBasicSkylarkClient with the expected URI and Token", async () => {
+    // Arrange
+    spiedGetSkylarkObjectTypes.mockResolvedValue([]);
+
+    // Act
+    await handler(req, res);
+
+    // Assert
+    expect(createBasicSkylarkClientSpy).toHaveBeenCalledWith(
+      "/graphql",
+      "token",
     );
   });
 

@@ -108,6 +108,7 @@ export const AddAuthTokenModal = ({
               value={inputUri || ""}
               onChange={setInputUri}
               label="GraphQL URL"
+              tabIndex={-1}
               className={clsx(
                 debouncedUri && "border-2 outline-none",
                 requestLoading && "border-warning",
@@ -121,6 +122,7 @@ export const AddAuthTokenModal = ({
               value={inputToken || ""}
               onChange={setInputToken}
               label="API Key"
+              tabIndex={-1}
               className={clsx(
                 debouncedUri && "border-2 outline-none",
                 requestLoading && "border-warning",

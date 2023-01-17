@@ -5,6 +5,7 @@ interface TextInputProps {
   onChange: (str: string) => void;
   className?: string;
   label?: string;
+  tabIndex?: number;
 }
 
 export const TextInput = ({
