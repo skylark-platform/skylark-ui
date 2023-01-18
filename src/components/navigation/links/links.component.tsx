@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { TbBooks, TbLink } from "react-icons/tb";
+import { TbBooks } from "react-icons/tb";
 
 const apps = [
   {
@@ -13,11 +13,11 @@ const apps = [
   //   text: "Import",
   //   href: "/import",
   // },
-  {
-    text: "Relationships",
-    href: "/relationships",
-    Icon: <TbLink className="text-xl" />,
-  },
+  // {
+  //   text: "Relationships",
+  //   href: "/relationships",
+  //   Icon: <TbLink className="text-xl" />,
+  // },
 ];
 
 export const NavigationLinks = () => {

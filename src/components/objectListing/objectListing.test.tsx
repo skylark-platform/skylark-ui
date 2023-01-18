@@ -133,7 +133,7 @@ test("opens filters and deselects all object types", async () => {
 
   expect(screen.getAllByRole("checkbox")[0]).toHaveAttribute(
     "id",
-    "checkbox-toggle-all",
+    "checkbox-toggle-all-object-type",
   );
 
   await fireEvent.click(screen.getAllByRole("checkbox")[0]);

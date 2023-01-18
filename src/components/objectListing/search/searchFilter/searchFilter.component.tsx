@@ -66,7 +66,7 @@ export const SearchFilter = ({
   return (
     // TODO figure out what width the filter should actually be
     <div className="flex max-h-96 w-full flex-col rounded bg-white p-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 md:w-[120%] lg:w-[150%] xl:max-h-[28rem]">
-      <div className="flex-grow overflow-scroll border-none p-2 [&>div]:border-b-2 [&>div]:border-b-manatee-100 [&>div]:pt-3 [&>div]:pb-3 first:[&>div]:pt-0 last:[&>div]:border-none last:[&>div]:pb-0">
+      <div className="flex-grow overflow-scroll border-none p-2 [&>section]:border-b-2 [&>section]:border-b-manatee-100 [&>section]:pt-3 [&>section]:pb-3 first:[&>section]:pt-0 last:[&>section]:border-none last:[&>section]:pb-0">
         <CheckboxGrid
           label="Object type"
           withToggleAll

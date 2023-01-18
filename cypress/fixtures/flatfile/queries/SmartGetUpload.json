@@ -1,0 +1,29 @@
+{
+  "data": {
+    "getUpload": {
+      "selectedDataSourceIndex": 0,
+      "batchId": "4bb43bf7-ac3e-4850-a18c-9a345ef87590",
+      "id": "732ac850-2c37-4fc6-8099-a1a45cd086b3",
+      "fileName": "Media Content-Assets.csv",
+      "nextAction": {
+        "derivedViewId": null,
+        "name": "review",
+        "originalViewId": "1301331",
+        "schemaId": "204757",
+        "processingStep": "completedImport",
+        "message": null,
+        "suggestCSVConversion": null
+      },
+      "status": "uploaded",
+      "percentComplete": 100,
+      "uploadDataSources": [
+        {
+          "index": 0,
+          "label": "CSV"
+        }
+      ],
+      "createdAt": "1673978252000",
+      "updatedAt": "1673978253000"
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "data": {
+    "getViewSchema": {
+      "archived": false,
+      "createdAt": "1673346748000",
+      "id": "203556",
+      "importCount": 0,
+      "name": "episode-develop",
+      "teamId": "39821",
+      "updatedAt": "1673978244000",
+      "jsonSchema": {
+        "schema": {
+          "type": "object",
+          "required": [],
+          "unique": [],
+          "properties": {
+            "data_source_id": {
+              "label": "data_source_id",
+              "type": "string"
+            },
+            "data_source_fields": {
+              "label": "data_source_fields",
+              "type": "string"
+            },
+            "external_id": {
+              "label": "external_id",
+              "type": "string"
+            },
+            "slug": {
+              "label": "slug",
+              "type": "string"
+            },
+            "title": {
+              "label": "title",
+              "type": "string"
+            },
+            "synopsis_short": {
+              "label": "synopsis_short",
+              "type": "string"
+            },
+            "synopsis_medium": {
+              "label": "synopsis_medium",
+              "type": "string"
+            },
+            "synopsis_long": {
+              "label": "synopsis_long",
+              "type": "string"
+            },
+            "title_short": {
+              "label": "title_short",
+              "type": "string"
+            },
+            "title_medium": {
+              "label": "title_medium",
+              "type": "string"
+            },
+            "title_long": {
+              "label": "title_long",
+              "type": "string"
+            },
+            "episode_number": {
+              "label": "episode_number",
+              "type": "number"
+            },
+            "release_date": {
+              "label": "release_date",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "linkedSchemas": []
+    }
+  }
+}

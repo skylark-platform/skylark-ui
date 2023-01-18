@@ -21,9 +21,10 @@ module.exports = {
       },
     },
     {
-      files: ["**.cy.**"],
+      files: ["cypress/**"],
       rules: {
         "jest/expect-expect": "off",
+        "no-relative-import-paths/no-relative-import-paths": "off",
       },
     },
   ],
