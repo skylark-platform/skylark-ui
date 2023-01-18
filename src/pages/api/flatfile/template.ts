@@ -32,21 +32,27 @@ export default async function handler(
       );
   }
 
-  const body = req.body as { template?: object; name?: string };
+  const body = req.body as {
+    template?: FlatfileTemplate;
+    name?: string;
+    accountIdentifier?: string;
+  };
 
-  if (!body || !body.template || !body.name) {
+  if (!body || !body.template || !body.name || !body.accountIdentifier) {
+    const missingFields = [
+      !body.template && "template",
+      !body.name && "name",
+      !body.accountIdentifier && "accountIdentifier",
+    ]
+      .filter((field) => !!field)
+      .join('", "');
     return res
       .status(400)
-      .send(
-        `Invalid request body: missing "${
-          !body.template ? "template" : "name"
-        }"`,
-      );
+      .send(`Invalid request body: missing "${missingFields}"`);
   }
 
-  // TODO add an account identifier for Flatfile (used to be account-id)
-  const name = `${req.body.name as string}`.toLowerCase();
-  const requestTemplate = req.body.template as FlatfileTemplate;
+  const name = `${body.accountIdentifier}-${body.name}`.toLowerCase();
+  const requestTemplate = body.template;
 
   try {
     validateRequestTemplate(requestTemplate);

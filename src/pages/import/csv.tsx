@@ -16,7 +16,7 @@ import {
 } from "src/interfaces/skylark/objects";
 import { openFlatfileImportClient } from "src/lib/flatfile";
 import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
-import { pause } from "src/lib/utils";
+import { createAccountIdentifier, pause } from "src/lib/utils";
 
 type ImportStates = "select" | "prep" | "import" | "create";
 
@@ -25,6 +25,7 @@ const orderedStates = ["select", "prep", "import", "create"] as ImportStates[];
 const createFlatfileTemplate = async (
   name: string,
   template: FlatfileTemplate,
+  accountIdentifier: string,
 ) => {
   const res = await fetch("/api/flatfile/template", {
     headers: {
@@ -34,6 +35,7 @@ const createFlatfileTemplate = async (
     body: JSON.stringify({
       name,
       template,
+      accountIdentifier,
     }),
   });
 
@@ -168,7 +170,22 @@ export default function CSVImportPage() {
     const schema = convertObjectInputToFlatfileSchema(
       object?.operations.create.inputs as NormalizedObjectField[],
     );
-    const template = await createFlatfileTemplate(objectType, schema);
+
+    const graphQLUri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri);
+    if (!graphQLUri) {
+      dispatch({ stage: "prep", status: statusType.error });
+      throw new Error(
+        "Skylark GraphQL URI or Access Key not found in local storage",
+      );
+    }
+
+    const accountIdentifier = createAccountIdentifier(graphQLUri);
+    console.log({ accountIdentifier });
+    const template = await createFlatfileTemplate(
+      objectType,
+      schema,
+      accountIdentifier,
+    );
 
     dispatch({ stage: "prep", status: statusType.success });
     await pause(500); // Reflect state on client side, then open

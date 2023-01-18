@@ -1,9 +1,6 @@
 import { Server, WebSocket } from "mock-socket";
 
-import {
-  getOperationName,
-  hasOperationName,
-} from "../../support/utils/graphqlTestUtils";
+import { hasOperationName } from "../../support/utils/graphqlTestUtils";
 
 describe("Import/CSV", () => {
   beforeEach(() => {
@@ -31,13 +28,9 @@ describe("Import/CSV", () => {
       }
     });
 
-    cy.intercept("POST", "**/api/flatfile/template", {
-      statusCode: 200,
-      body: {
-        embedId: "123",
-        token: "oops",
-      },
-    }).as("createFlatfileTemplate");
+    cy.intercept("POST", "**/api/flatfile/template").as(
+      "createFlatfileTemplate",
+    );
 
     cy.intercept("POST", "**/api/flatfile/import", {
       statusCode: 200,
