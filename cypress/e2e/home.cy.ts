@@ -129,7 +129,7 @@ describe("Content Library", () => {
       cy.get('input[name="search-query-input"]').type("GOT S01");
       cy.contains("GOT S01 Trailer").should("exist");
       cy.contains("tr", "GOT S01E1 - Winter").within(() => {
-        cy.get('[aria-label="object-info"]').eq(0).click();
+        cy.get('[aria-label="object-info"]').click();
       });
 
       cy.contains("Metadata");
@@ -141,8 +141,9 @@ describe("Content Library", () => {
 
     it("close Metadata panel", () => {
       cy.get('input[name="search-query-input"]').type("GOT S01");
+      cy.contains("GOT S01 Trailer").should("exist");
       cy.contains("tr", "GOT S01E1 - Winter").within(() => {
-        cy.get('[aria-label="object-info"]').eq(0).click();
+        cy.get('[aria-label="object-info"]').click();
       });
 
       cy.contains("Metadata").should("exist");

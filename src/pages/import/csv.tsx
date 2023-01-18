@@ -180,7 +180,6 @@ export default function CSVImportPage() {
     }
 
     const accountIdentifier = createAccountIdentifier(graphQLUri);
-    console.log({ accountIdentifier });
     const template = await createFlatfileTemplate(
       objectType,
       schema,
