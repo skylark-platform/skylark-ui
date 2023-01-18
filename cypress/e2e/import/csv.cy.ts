@@ -35,8 +35,7 @@ describe("Import/CSV", () => {
       statusCode: 200,
       body: {
         embedId: "123",
-        token:
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWJlZCI6IjhkOTAxZjZlLTY2MTYtNDU2My04YjAzLTk3OGY3OWZiZGJhNSIsInVzZXIiOnsiaWQiOjQyMDM1LCJuYW1lIjoiU2t5bGFyayBTdXBwb3J0IiwiZW1haWwiOiJzdXBwb3J0QHNreWxhcmtwbGF0Zm9ybS5jb20ifSwib3JnIjp7ImlkIjoiMzk4MjEiLCJuYW1lIjoiU2t5bGFyayJ9LCJpYXQiOjE2NzM5NzMwMjd9.HCR5NY1iZfxsry5aMQ4Ue_bHpW5mnixsxDCT1zuyZ7U",
+        token: "oops",
       },
     }).as("createFlatfileTemplate");
 
