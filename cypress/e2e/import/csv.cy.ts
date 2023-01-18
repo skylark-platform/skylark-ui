@@ -5,47 +5,18 @@ import {
   hasOperationName,
 } from "../../support/utils/graphqlTestUtils";
 
-const mockedFlatfileMutations = [
-  "ConfirmUploadDataSourceFields",
-  "InitializeBatchAndUpload",
-  "InitializeEmptyBatch",
-  "InitializeWorkbook",
-  "MapDataSourceAndDataTemplate",
-  "PreflightBatch",
-  "SelectHeaderRow",
-  "SubmitBatch",
-  "UpdateUploadStatus",
-];
-
-const mockedFlatfileQueries = [
-  "GetBatch",
-  "GetSubmissionProgress",
-  "SmartFetchWorkbookRows",
-  "SmartGetBatch",
-  "SmartGetNumericallyIndexedViewRows",
-  "SmartGetSchema",
-  "SmartGetUpload",
-  "SmartGetViewSchema",
-  "SmartGetWorkbookSheets",
-  "SmartViewFields",
-  "SmartWorkspace",
-  "SmartFetchWorkbookRows",
-];
-
 describe("Import/CSV", () => {
   beforeEach(() => {
     cy.login();
     cy.visit("/import/csv");
 
-    cy.intercept("POST", "http://localhost:3000/graphql", (req) => {
+    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
       if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
-        req.alias = "getSkylarkObjectTypesQuery";
         req.reply({
           fixture: "./skylark/queries/introspection/objectTypes.json",
         });
       }
       if (hasOperationName(req, "GET_SKYLARK_SCHEMA")) {
-        req.alias = "getSchema";
         req.reply({
           fixture: "./skylark/queries/introspection/schema.json",
         });
@@ -53,40 +24,12 @@ describe("Import/CSV", () => {
     });
 
     cy.intercept("POST", "https://api.us.flatfile.io/graphql", (req) => {
-      const requestOperationName = getOperationName(req);
-      console.log({ requestOperationName });
-
       if (hasOperationName(req, "InitializeEmptyBatch")) {
         req.reply({
           fixture: "./flatfile/mutations/InitializeEmptyBatch.json",
         });
       }
-
-      // if (
-      //   requestOperationName
-      // ) {
-      //   if (mockedFlatfileMutations.includes(requestOperationName)) {
-      //     req.reply({
-      //       fixture: `./flatfile/mutations/${requestOperationName}.json`,
-      //     });
-      //   } else if (mockedFlatfileQueries.includes(requestOperationName)) {
-      //     req.reply({
-      //       fixture: `./flatfile/queries/${requestOperationName}.json`,
-      //     });
-      //   } else {
-      //     console.log("Unmocked Flatfile call", requestOperationName, req);
-      //     // throw new Error(`Unmocked Flatfile call: ${requestOperationName}`);
-      //   }
-      // }
     });
-
-    // cy.intercept(
-    //   "PUT",
-    //   "https://flatfile-prod-us-uploads.s3-accelerate.amazonaws.com/**",
-    //   {
-    //     statusCode: 200,
-    //   },
-    // );
 
     cy.intercept("POST", "**/api/flatfile/template", {
       statusCode: 200,
@@ -199,6 +142,8 @@ describe("Import/CSV", () => {
       cy.get("button").contains("Import").click();
 
       cy.get(".flatfile-sdk iframe").should("not.exist");
+
+      cy.wait("@createSkylarkObjects");
 
       cy.get('[data-cy="status-card"].border-t-success', {
         timeout: 10000,

@@ -19,7 +19,7 @@ import { LOCAL_STORAGE } from "../../src/constants/skylark";
 Cypress.Commands.add("login", () => {
   window.localStorage.setItem(
     LOCAL_STORAGE.betaAuth.uri,
-    "http://localhost:3000/graphql",
+    Cypress.env("skylark_graphql_uri"),
   );
   window.localStorage.setItem(LOCAL_STORAGE.betaAuth.token, "token");
 });

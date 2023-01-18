@@ -11,13 +11,9 @@ const assetOnlyQuery =
 
 describe("Content Library", () => {
   beforeEach(() => {
-    window.localStorage.setItem(
-      LOCAL_STORAGE.betaAuth.uri,
-      "http://localhost:3000/graphql",
-    );
-    window.localStorage.setItem(LOCAL_STORAGE.betaAuth.token, "token");
+    cy.login();
 
-    cy.intercept("POST", "http://localhost:3000/graphql", (req) => {
+    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
       if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
         req.alias = "getSkylarkObjectTypesQuery";
         req.reply({
@@ -25,30 +21,25 @@ describe("Content Library", () => {
         });
       }
       if (hasOperationName(req, "GET_SEARCHABLE_OBJECTS")) {
-        req.alias = "getSearchableObjects";
         req.reply({
           fixture: "./skylark/queries/introspection/searchableUnion.json",
         });
       }
       if (hasOperationName(req, "GET_SKYLARK_SCHEMA")) {
-        req.alias = "getSchema";
         req.reply({
           fixture: "./skylark/queries/introspection/schema.json",
         });
       }
       if (hasOperationName(req, "SEARCH")) {
         if (hasMatchingVariable(req, "queryString", "GOT S01")) {
-          req.alias = "searchQueryGOTS01";
           req.reply({
             fixture: "./skylark/queries/search/gots01.json",
           });
         } else if (hasMatchingQuery(req, assetOnlyQuery)) {
-          req.alias = "searchQueryAssetsOnly";
           req.reply({
             fixture: "./skylark/queries/search/gotAssetsOnly.json",
           });
         } else {
-          req.alias = "searchQuery";
           req.reply({
             fixture: "./skylark/queries/search/got.json",
           });
@@ -68,7 +59,7 @@ describe("Content Library", () => {
   });
 
   it("visits home when no search data is returned", () => {
-    cy.intercept("POST", "http://localhost:3000/graphql", (req) => {
+    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
       if (hasOperationName(req, "SEARCH")) {
         req.alias = "searchQueryEmpty";
         req.reply({

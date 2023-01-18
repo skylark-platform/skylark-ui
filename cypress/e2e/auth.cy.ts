@@ -20,9 +20,8 @@ describe("Auth", () => {
   });
 
   it("connects to Skylark with correct credentials", () => {
-    cy.intercept("POST", "http://localhost:3000/graphql", (req) => {
+    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
       if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
-        req.alias = "getSkylarkObjectTypesQuery";
         req.reply({
           fixture: "./skylark/queries/introspection/objectTypes.json",
         });
@@ -35,7 +34,7 @@ describe("Auth", () => {
       const tokenInput = cy.get('input[name="API Key"]');
       uriInput.clear();
       tokenInput.clear();
-      uriInput.type("http://localhost:3000/graphql");
+      uriInput.type(Cypress.env("skylark_graphql_uri"));
       tokenInput.type("access-token");
       cy.contains("Validating").should("not.exist");
       cy.get("button").should("be.enabled");
@@ -68,9 +67,8 @@ describe("Auth", () => {
 
   it("when already logged in, can open using the Connected button and close by clicking outside", () => {
     cy.login();
-    cy.intercept("POST", "http://localhost:3000/graphql", (req) => {
+    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
       if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
-        req.alias = "getSkylarkObjectTypesQuery";
         req.reply({
           fixture: "./skylark/queries/introspection/objectTypes.json",
         });

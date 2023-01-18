@@ -5,7 +5,7 @@ import { TbBooks } from "react-icons/tb";
 
 const apps = [
   {
-    text: "Library",
+    text: "Content Library",
     href: "/",
     Icon: <TbBooks className="text-xl" />,
   },

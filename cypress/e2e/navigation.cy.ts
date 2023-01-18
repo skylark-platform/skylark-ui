@@ -4,7 +4,7 @@ describe("Navigation", () => {
   beforeEach(() => {
     cy.login();
 
-    cy.intercept("POST", "http://localhost:3000/graphql", (req) => {
+    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
       if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
         req.alias = "getSkylarkObjectTypesQuery";
         req.reply({
@@ -19,14 +19,14 @@ describe("Navigation", () => {
 
   it("contains the navigation bar", () => {
     cy.contains("Skylark");
-    cy.get("nav").get("ul").find("li a").should("have.length", 2);
+    cy.get("nav").get("ul").find("li a").should("have.length", 1);
     cy.percySnapshot("Navigation - desktop");
   });
 
   it("opens the navigation bar on mobile", () => {
     cy.viewport("iphone-xr");
     cy.get("#mobile-nav-toggle").click();
-    cy.get("nav").get("ul").find("li a").should("have.length", 2);
+    cy.get("nav").get("ul").find("li a").should("have.length", 1);
     cy.percySnapshot("Navigation - mobile");
   });
 });
