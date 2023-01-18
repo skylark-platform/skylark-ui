@@ -1,5 +1,3 @@
-import { LOCAL_STORAGE } from "../../src/constants/skylark";
-
 import {
   hasMatchingQuery,
   hasMatchingVariable,
@@ -28,6 +26,11 @@ describe("Content Library", () => {
       if (hasOperationName(req, "GET_SKYLARK_SCHEMA")) {
         req.reply({
           fixture: "./skylark/queries/introspection/schema.json",
+        });
+      }
+      if (hasOperationName(req, "GET_Episode")) {
+        req.reply({
+          fixture: "./skylark/queries/getObject/gots01e01.json",
         });
       }
       if (hasOperationName(req, "SEARCH")) {
@@ -119,5 +122,32 @@ describe("Content Library", () => {
     cy.percySnapshot("Homepage - filters - fields selected");
     cy.contains("Apply").should("not.be.disabled").click();
     cy.percySnapshot("Homepage - filters - fields active");
+  });
+
+  describe("Metadata panel", () => {
+    it("open Metadata panel", () => {
+      cy.get('input[name="search-query-input"]').type("GOT S01");
+      cy.contains("GOT S01 Trailer").should("exist");
+      cy.contains("tr", "GOT S01E1 - Winter").within(() => {
+        cy.get('[aria-label="object-info"]').eq(0).click();
+      });
+
+      cy.contains("Metadata");
+      cy.contains(
+        "Series Premiere. Eddard Stark is torn between his family and an old friend when asked to serve at the side of King Robert Baratheon; Viserys plans to wed his sister to a nomadic warlord in exchange for an army.",
+      );
+      cy.percySnapshot("Homepage - metadata panel - fields");
+    });
+
+    it("close Metadata panel", () => {
+      cy.get('input[name="search-query-input"]').type("GOT S01");
+      cy.contains("tr", "GOT S01E1 - Winter").within(() => {
+        cy.get('[aria-label="object-info"]').eq(0).click();
+      });
+
+      cy.contains("Metadata").should("exist");
+      cy.get("button").contains("Close").click();
+      cy.contains("Metadata").should("not.exist");
+    });
   });
 });
