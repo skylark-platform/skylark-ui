@@ -5,10 +5,10 @@ import { hasOperationName } from "../../support/utils/graphqlTestUtils";
 describe("Import/CSV", () => {
   beforeEach(() => {
     cy.login();
-    cy.visit("/import/csv");
 
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
       if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
+        req.alias = "getSkylarkObjectTypesQuery";
         req.reply({
           fixture: "./skylark/queries/introspection/objectTypes.json",
         });
@@ -36,6 +36,9 @@ describe("Import/CSV", () => {
       statusCode: 200,
       body: [{ uid: "1" }, { uid: "2" }],
     }).as("createSkylarkObjects");
+
+    cy.visit("/import/csv");
+    cy.wait("@getSkylarkObjectTypesQuery");
   });
 
   it("visit import/csv page", () => {
