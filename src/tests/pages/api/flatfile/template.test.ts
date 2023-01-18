@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { createMocks } from "node-mocks-http";
 
 import * as constants from "src/constants/flatfile";
+import { LOCAL_STORAGE } from "src/constants/skylark";
 import {
   FlatfileCreatePortalResponse,
   FlatfileCreateTemplateResponse,
@@ -127,7 +128,9 @@ test("returns 400 when a request body is missing", async () => {
   await handler(req, res);
 
   expect(res._getStatusCode()).toBe(400);
-  expect(res._getData()).toEqual('Invalid request body: missing "template"');
+  expect(res._getData()).toEqual(
+    'Invalid request body: missing "template", "name", "accountIdentifier"',
+  );
 });
 
 test("returns 400 when the name is missing from the request body", async () => {
@@ -135,6 +138,7 @@ test("returns 400 when the name is missing from the request body", async () => {
     method: "POST",
     body: {
       template: {},
+      accountIdentifier: "account",
     },
   });
 
@@ -149,6 +153,7 @@ test("returns 400 when the template is missing from the request body", async () 
     method: "POST",
     body: {
       name: "name",
+      accountIdentifier: "account",
     },
   });
 
@@ -158,12 +163,30 @@ test("returns 400 when the template is missing from the request body", async () 
   expect(res._getData()).toEqual('Invalid request body: missing "template"');
 });
 
+test("returns 400 when the accountIdentifier is missing from the request body", async () => {
+  const { req, res } = createMocks({
+    method: "POST",
+    body: {
+      name: "name",
+      template: {},
+    },
+  });
+
+  await handler(req, res);
+
+  expect(res._getStatusCode()).toBe(400);
+  expect(res._getData()).toEqual(
+    'Invalid request body: missing "accountIdentifier"',
+  );
+});
+
 test("returns 400 when the template validation fails", async () => {
   const { req, res } = createMocks({
     method: "POST",
     body: {
       name: "name",
       template: {},
+      accountIdentifier: "account",
     },
   });
 
@@ -185,6 +208,7 @@ test("returns 500 when an error occurs while getting a token from Flatfile", asy
     body: {
       name: "name",
       template,
+      accountIdentifier: "account",
     },
   });
 
@@ -205,6 +229,7 @@ test("returns 500 when the Flatfile Template creation errors", async () => {
     body: {
       name: "name",
       template,
+      accountIdentifier: "account",
     },
   });
 
@@ -223,6 +248,7 @@ test("returns 500 when the Flatfile Template creation does not return an ID", as
     body: {
       name: "name",
       template,
+      accountIdentifier: "account",
     },
   });
 
@@ -244,6 +270,7 @@ test("returns 500 when the Flatfile Portal creation errors", async () => {
     body: {
       name: "name",
       template,
+      accountIdentifier: "account",
     },
   });
 
@@ -263,6 +290,7 @@ test("returns 500 when the Flatfile Portal creation does not return an ID", asyn
     body: {
       name: "name",
       template,
+      accountIdentifier: "account",
     },
   });
 
@@ -285,6 +313,7 @@ test("returns 200, a portal ID and import token when the Flatfile Template and P
     body: {
       name: "name",
       template,
+      accountIdentifier: "account",
     },
   });
 

@@ -13,11 +13,12 @@ interface CheckboxProps extends RadixCheckboxProps {
 export const Checkbox = ({
   className,
   label,
+  name,
   "aria-label": ariaLabel,
   ...props
 }: CheckboxProps) => {
   const htmlFor = label
-    ? `checkbox-${label.replace(" ", "-")}`.toLowerCase()
+    ? `checkbox-${name}`.replaceAll(" ", "-").toLowerCase()
     : "";
 
   return (

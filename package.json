@@ -15,7 +15,8 @@
     "tsc": "tsc",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
-    "cypress": "cypress open",
+    "cypress": "cypress open --e2e --browser=chrome",
+    "cypress:headless": "cypress run --quiet --record=false --e2e --browser=chrome",
     "e2e": "start-server-and-test dev http://localhost:3000 cypress",
     "vercel:link": "vercel link --project skylark-ui --scope skylark-platform --yes",
     "vercel:env": "vercel env --environment=preview pull"
@@ -87,6 +88,7 @@
     "jest-junit": "^14.0.1",
     "lint-staged": "^13.0.3",
     "mock-apollo-client": "^1.2.1",
+    "mock-socket": "^9.1.5",
     "node-mocks-http": "^1.12.1",
     "prettier": "^2.8.2",
     "prettier-plugin-tailwindcss": "^0.2.1",

@@ -138,6 +138,7 @@ export const AddAuthTokenModal = ({
               disabled={!connected || !debouncedUri || !debouncedToken}
               onClick={() => updateLocalStorage()}
               loading={requestLoading}
+              type="button"
             >
               {requestLoading ? "Validating" : "Connect"}
             </Button>

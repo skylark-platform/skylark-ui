@@ -5,5 +5,9 @@ export default defineConfig({
   e2e: {
     baseUrl: "http://localhost:3000",
   },
+  env: {
+    // Used to intercept network requests
+    skylark_graphql_uri: "http://localhost:9999/graphql",
+  },
   chromeWebSecurity: false, // Allow accessing iframes
 });

@@ -1,0 +1,54 @@
+{
+  "data": {
+    "search": {
+      "__typename": "SearchResultListing",
+      "objects": [
+        {
+          "__typename": "Asset",
+          "uid": "01GPYWJ7BBFTAMQX8VTG8HC98N",
+          "external_id": "rectpBijSVmb35vSg",
+          "__Asset__slug": "got-s01-trailer",
+          "__Asset__title": "GOT S01 Trailer",
+          "__Asset__type": null,
+          "__Asset__url": "https://dl.airtable.com/.attachments/c9e53e0098a2ffcb6ab34a3a79cbd8d7/3576707a/S01_trailer.mp4"
+        },
+        {
+          "__typename": "Asset",
+          "uid": "01GPYWJ66JKDAGBM3PYDXKHEWR",
+          "external_id": "recnRK3p6qLWrVsMu",
+          "__Asset__slug": "got-s05-trailer",
+          "__Asset__title": "GOT S05 Trailer",
+          "__Asset__type": null,
+          "__Asset__url": "https://dl.airtable.com/.attachments/63e4dee1362f76cbd52511170035a69f/acc4b121/S05_trailer.mp4"
+        },
+        {
+          "__typename": "Asset",
+          "uid": "01GPYWJ419SW3FQP2685PZJ8RC",
+          "external_id": "recYsOkOs6WcsHNB1",
+          "__Asset__slug": "got-s03-trailer",
+          "__Asset__title": "GOT S03 Trailer",
+          "__Asset__type": null,
+          "__Asset__url": "https://dl.airtable.com/.attachments/96690ff8004897fed2326601b088fc5b/34f559ba/S03_trailer.mp4"
+        },
+        {
+          "__typename": "Asset",
+          "uid": "01GPYWJ3EZGQZAMS5YVJAM4X05",
+          "external_id": "rec2OnQzhSJ4BPMfC",
+          "__Asset__slug": "got-s02-trailer",
+          "__Asset__title": "GOT S02 Trailer",
+          "__Asset__type": null,
+          "__Asset__url": "https://dl.airtable.com/.attachments/65af7b331593deb9a59494403387c7d4/7e8cc908/S02_trailer.mp4"
+        },
+        {
+          "__typename": "Asset",
+          "uid": "01GPYWJ3EJHAM4NYPKBN34PD9Z",
+          "external_id": "recxS5dem2efX4LZ8",
+          "__Asset__slug": "got-s04-trailer",
+          "__Asset__title": "GOT S04 Trailer",
+          "__Asset__type": null,
+          "__Asset__url": "https://dl.airtable.com/.attachments/38fcf3531443f4c6b2bfe6c25b2fdbbb/b521d6bd/S04_trailer.mp4"
+        }
+      ]
+    }
+  }
+}

@@ -61,7 +61,7 @@ describe("CheckboxGrid", () => {
 
     expect(screen.getAllByRole("checkbox")[0]).toHaveAttribute(
       "id",
-      "checkbox-toggle-all",
+      "checkbox-toggle-all-check-box-grid",
     );
   });
 
