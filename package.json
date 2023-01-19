@@ -33,6 +33,7 @@
     "autoprefixer": "^10.4.13",
     "clsx": "^1.2.1",
     "daisyui": "^2.41.0",
+    "dayjs": "^1.11.7",
     "graphql": "^16.6.0",
     "json-to-graphql-query": "^2.2.4",
     "jsonwebtoken": "^8.5.1",

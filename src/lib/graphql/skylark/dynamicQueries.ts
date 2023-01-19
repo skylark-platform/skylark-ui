@@ -6,6 +6,10 @@ import {
   SkylarkObjectMeta,
 } from "src/interfaces/skylark/objects";
 
+// This is unpleasant but neccessary as Apollo Client doesn't let us pass in any queries that are not valid
+// Should be used inconjunction with the Apollo Client option "skip" so the request is not made
+export const defaultValidBlankQuery = gql("query { __unknown { name }}");
+
 const common = {
   variables: {
     ignoreAvailability: "Boolean = true",
@@ -44,9 +48,27 @@ const generateFieldsToReturn = (
   return fieldsToReturn;
 };
 
-// This is unpleasant but neccessary as Apollo Client doesn't let us pass in any queries that are not valid
-// Should be used inconjunction with the Apollo Client option "skip" so the request is not made
-export const defaultValidBlankQuery = gql("query { __unknown { name }}");
+const generateRelationshipsToReturn = (
+  object: SkylarkObjectMeta | null,
+): object => {
+  if (!object || !object.availability) {
+    return {};
+  }
+
+  const relationshipsToReturn = {
+    availability: {
+      __args: {
+        limit: 50, // max
+      },
+      next_token: true,
+      objects: {
+        ...generateFieldsToReturn(object.availability?.fields),
+      },
+    },
+  };
+
+  return relationshipsToReturn;
+};
 
 export const createGetObjectQuery = (object: SkylarkObjectMeta | null) => {
   if (!object || !object.operations.get) {
@@ -69,6 +91,7 @@ export const createGetObjectQuery = (object: SkylarkObjectMeta | null) => {
           external_id: new VariableType("externalId"),
         },
         ...generateFieldsToReturn(object.fields),
+        ...generateRelationshipsToReturn(object),
       },
     },
   };
@@ -102,6 +125,7 @@ export const createListObjectQuery = (object: SkylarkObjectMeta | null) => {
         next_token: true,
         objects: {
           ...generateFieldsToReturn(object.fields),
+          ...generateRelationshipsToReturn(object),
         },
       },
     },

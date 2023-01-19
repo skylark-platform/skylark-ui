@@ -3,6 +3,7 @@ import {
   SkylarkObjectType,
   SkylarkObjectMeta,
   SkylarkObjectOperations,
+  BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark/objects";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
@@ -18,6 +19,20 @@ const getObjectFieldsFromGetQuery = (
     getQuery.type.fields.filter((field) => field.type.kind !== "OBJECT"),
   );
   return objectFields;
+};
+
+const objectHasRelationship = (
+  relationship: "availability" | "images",
+  getQuery: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"][0],
+) => {
+  if (!getQuery || !getQuery.type || !getQuery.type.fields) {
+    return false;
+  }
+
+  const relationshipIndex = getQuery.type.fields.findIndex(
+    (field) => field.name === relationship && field.type.kind === "OBJECT",
+  );
+  return relationshipIndex > -1;
 };
 
 const getMutationInfo = (
@@ -73,6 +88,14 @@ export const getObjectOperations = (
 
   const objectFields = getObjectFieldsFromGetQuery(getQuery);
 
+  const hasAvailability = objectHasRelationship("availability", getQuery);
+  const availability = hasAvailability
+    ? getObjectOperations(BuiltInSkylarkObjectType.Availability, {
+        queryType,
+        mutationType,
+      })
+    : null;
+
   const createMeta = getMutationInfo(createMutation, objectType, "create");
   const updateMeta = getMutationInfo(updateMutation, objectType, "update");
 
@@ -112,6 +135,7 @@ export const getObjectOperations = (
     name: objectType,
     fields: objectFields,
     operations,
+    availability,
   };
 
   return object;
