@@ -141,27 +141,13 @@ export const getObjectOperations = (
   return object;
 };
 
-const getAllObjectFields = (
-  queryType: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"],
-) => {
-  const queries = queryType.fields;
-  const getQueries = queries.filter((query) => query.name.startsWith("get"));
-  const allObjectsWithFields = getQueries
-    .map((getQuery) => ({
-      name: getQuery.type.name,
-      fields: getObjectFieldsFromGetQuery(getQuery),
-    }))
-    .filter(({ name, fields }) => name && fields.length > 0);
-
-  return allObjectsWithFields;
-};
-
-export const getAllSearchableObjectFields = (
-  queryType: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"],
+export const getAllSearchableObjectsMeta = (
+  schema: GQLSkylarkSchemaQueriesMutations["__schema"],
   searchableObjects: string[],
 ) => {
-  const validObjects = getAllObjectFields(queryType).filter((object) =>
-    searchableObjects.includes(object.name),
-  );
-  return validObjects;
+  const objects = searchableObjects.map((objectType) => {
+    return getObjectOperations(objectType, schema);
+  });
+
+  return objects;
 };

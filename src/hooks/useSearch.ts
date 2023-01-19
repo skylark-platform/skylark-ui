@@ -7,7 +7,7 @@ import {
   defaultValidBlankQuery,
 } from "src/lib/graphql/skylark/dynamicQueries";
 
-import { useAllSearchableObjectFields } from "./useSkylarkObjectTypes";
+import { useAllSearchableObjectMeta } from "./useSkylarkObjectTypes";
 
 export interface GQLSearchResponse {
   search: {
@@ -47,7 +47,7 @@ const removeFieldPrefixFromSearchObjects = (
 export const useSearch = (queryString: string, filters: SearchFilters) => {
   const [data, setData] = useState<SkylarkGraphQLObject[]>([]);
   const { objects: searchableObjects, allFieldNames } =
-    useAllSearchableObjectFields();
+    useAllSearchableObjectMeta();
 
   const query = createSearchObjectsQuery(
     searchableObjects,

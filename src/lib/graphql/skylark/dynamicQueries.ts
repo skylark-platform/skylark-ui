@@ -1,10 +1,7 @@
 import { gql } from "@apollo/client";
 import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 
-import {
-  SkylarkObjectFields,
-  SkylarkObjectMeta,
-} from "src/interfaces/skylark/objects";
+import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
 
 // This is unpleasant but neccessary as Apollo Client doesn't let us pass in any queries that are not valid
 // Should be used inconjunction with the Apollo Client option "skip" so the request is not made
@@ -136,7 +133,7 @@ export const createListObjectQuery = (object: SkylarkObjectMeta | null) => {
 };
 
 export const createSearchObjectsQuery = (
-  objects: SkylarkObjectFields[],
+  objects: SkylarkObjectMeta[],
   typesToRequest: string[],
 ) => {
   // Default to showing all objects when no types are requested
@@ -164,10 +161,11 @@ export const createSearchObjectsQuery = (
         },
         __typename: true,
         objects: {
-          __on: objectsToRequest.map(({ name, fields }) => ({
-            __typeName: name,
+          __on: objectsToRequest.map((object) => ({
+            __typeName: object.name,
             __typename: true, // To remove the alias later
-            ...generateFieldsToReturn(fields, `__${name}__`),
+            ...generateFieldsToReturn(object.fields, `__${object.name}__`),
+            ...generateRelationshipsToReturn(object),
           })),
         },
       },
