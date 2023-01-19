@@ -1,4 +1,5 @@
 import Image from "next/image";
+import dayjs from "dayjs";
 
 import { Button } from "src/components/button";
 import { Expand, Spinner } from "src/components/icons";
@@ -20,12 +21,16 @@ const getTitle = (object: Record<string, string>, priority: string[]) => {
 
 const orderedKeys = ["title", "name", "uid"];
 
+const isAvailabilityFuture = (start: string) => dayjs().isBefore(start);
+
 export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
-  const { data } = useGetObject(objectType, {
+  const { data, loading } = useGetObject(objectType, {
     uid: uid,
   });
 
-  console.log("data", data);
+
+  console.log({ data });
+
 
   return (
     <>
@@ -35,7 +40,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
         className="fixed left-0 top-0 bottom-0 z-50 w-3/5 bg-black bg-opacity-20 "
       />
       <section className="fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col bg-white drop-shadow-md md:w-2/3 lg:w-7/12 xl:w-2/5 ">
-        {!data && (
+        {loading && (
           <div
             data-testid="loading"
             className="flex h-full w-full items-center justify-center"
@@ -43,7 +48,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
             <Spinner className="h-16 w-16 animate-spin" />
           </div>
         )}
-        {data && (
+        {!loading && data && (
           <>
             <div
               data-testid="panel-header"
@@ -68,10 +73,11 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
               <div className="flex flex-row items-center pt-5 ">
                 <Pill bgColor="#226DFF" label={objectType} />
                 <h1 className=" pl-4 text-xl font-bold uppercase">
-                  {getTitle(data?.getObject, orderedKeys)}
+                  {getTitle(data.metadata, orderedKeys)}
                 </h1>
               </div>
             </div>
+
 
             <Tabs tabs={["Metadata", "Imagery"]} />
 
@@ -100,6 +106,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
 
                   return;
                 })}
+
             </div>
           </>
         )}

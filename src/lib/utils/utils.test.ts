@@ -1,4 +1,4 @@
-import { hasProperty, isObject, pause } from "./utils";
+import { createAccountIdentifier, hasProperty, isObject, pause } from "./utils";
 
 describe("hasProperty", () => {
   test("returns true when the object has the property", () => {
@@ -42,5 +42,16 @@ describe("pause", () => {
 
     // Assert
     expect(cb).toHaveBeenCalled();
+  });
+});
+
+describe("createAccountIdentifier", () => {
+  test("creates an account identifier using a GraphQL URI", async () => {
+    const got = createAccountIdentifier(
+      "https://api.saas-sl-develop-10.skylark-dev.skylarkplatform.io/graphql",
+    );
+    expect(got).toEqual(
+      "api-saas-sl-develop-10-skylark-dev-skylarkplatform-io",
+    );
   });
 });

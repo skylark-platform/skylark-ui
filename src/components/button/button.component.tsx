@@ -62,7 +62,7 @@ export const Button = ({
       className={combinedClassName}
       disabled={disabled}
       onClick={onClick}
-      type={type}
+      type={type || "button"}
     >
       {loading && (
         <CgSpinner className="mr-1 animate-spin-fast text-base md:text-lg" />

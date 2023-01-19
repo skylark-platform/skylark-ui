@@ -1,0 +1,13 @@
+{
+  "data": {
+    "initializeEmptyBatch": {
+      "batchId": "4bb43bf7-ac3e-4850-a18c-9a345ef87590",
+      "workspaceId": "e4c92bec-9b08-40f6-af1b-2e41b1db9ee0",
+      "schemas": [
+        {
+          "id": "203556"
+        }
+      ]
+    }
+  }
+}

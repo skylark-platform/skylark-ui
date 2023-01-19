@@ -1,6 +1,44 @@
+import { Server, WebSocket } from "mock-socket";
+
+import { hasOperationName } from "../../support/utils/graphqlTestUtils";
+
 describe("Import/CSV", () => {
   beforeEach(() => {
+    cy.login();
+
+    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
+      if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
+        req.alias = "getSkylarkObjectTypesQuery";
+        req.reply({
+          fixture: "./skylark/queries/introspection/objectTypes.json",
+        });
+      }
+      if (hasOperationName(req, "GET_SKYLARK_SCHEMA")) {
+        req.reply({
+          fixture: "./skylark/queries/introspection/schema.json",
+        });
+      }
+    });
+
+    cy.intercept("POST", "https://api.us.flatfile.io/graphql", (req) => {
+      if (hasOperationName(req, "InitializeEmptyBatch")) {
+        req.reply({
+          fixture: "./flatfile/mutations/InitializeEmptyBatch.json",
+        });
+      }
+    });
+
+    cy.intercept("POST", "**/api/flatfile/template").as(
+      "createFlatfileTemplate",
+    );
+
+    cy.intercept("POST", "**/api/flatfile/import", {
+      statusCode: 200,
+      body: [{ uid: "1" }, { uid: "2" }],
+    }).as("createSkylarkObjects");
+
     cy.visit("/import/csv");
+    cy.wait("@getSkylarkObjectTypesQuery");
   });
 
   it("visit import/csv page", () => {
@@ -40,6 +78,8 @@ describe("Import/CSV", () => {
       .click();
     cy.get("button").contains("Import").click();
 
+    cy.wait("@createFlatfileTemplate");
+
     cy.frameLoaded(".flatfile-sdk iframe");
 
     cy.get(".flatfile-close").click();
@@ -51,78 +91,95 @@ describe("Import/CSV", () => {
     cy.get(".border-t-manatee-500").should("have.length", "3");
   });
 
-  it("import a csv through Flatfile", { retries: 3 }, () => {
-    cy.get('[data-cy="select"]').click();
-    cy.get('[data-cy="select-options"]').should("be.visible");
-    cy.get('[data-cy="select-options"]')
-      .get("li > span")
-      .contains("Episode")
-      .click();
-    cy.get("button").contains("Import").click();
+  describe("with mocked Flatfile webhook to call onComplete and close", () => {
+    const mockGraphQlSocket = new Server("wss://api.us.flatfile.io/graphql");
 
-    cy.frameLoaded(".flatfile-sdk iframe");
+    beforeEach(() => {
+      const payload = {
+        data: {
+          batchStatusUpdated: {
+            id: "a73c1919-4812-4356-89eb-1b3a21e03d1a",
+            status: "submitted",
+          },
+        },
+      };
 
-    // Allow Flatfile to load before checking for start over button
-    cy.contains("Processing ...", { timeout: 10000 }).should("not.exist");
-    cy.wait(5000);
+      // When Flatfile connects to WebSocket, return success message
+      // https://github.com/cypress-io/cypress/issues/2492#issuecomment-593898708
+      cy.on("window:before:load", (win) => {
+        win.WebSocket = WebSocket;
+        mockGraphQlSocket.on("connection", (socket) => {
+          socket.on("message", (data: string) => {
+            const { id } = JSON.parse(data);
+            if (id === "1") {
+              socket.send(
+                JSON.stringify({
+                  type: "data",
+                  id: "1",
+                  payload,
+                }),
+              );
+            }
+          });
+        });
+      });
 
-    // If Start over button exists, click it before continuing tests
-    cy.iframe(".flatfile-sdk iframe").then(($body) => {
-      if ($body.find("button:contains('Start over')").length > 0) {
-        cy.iframe().contains("Start over").click();
-      }
+      cy.visit("/import/csv");
     });
 
-    cy.iframe()
-      .contains("Drop your file here", { timeout: 10000 })
-      .should("be.visible");
+    it("import a csv through Flatfile", { retries: 0 }, () => {
+      cy.get('[data-cy="select"]').click();
+      cy.get('[data-cy="select-options"]').should("be.visible");
+      cy.get('[data-cy="select-options"]')
+        .get("li > span")
+        .contains("Episode")
+        .click();
+      cy.get("button").contains("Import").click();
 
-    cy.iframe()
-      .find("#file-inputid")
-      .selectFile(
-        {
-          contents: Cypress.Buffer.from(
-            "title,slug\nWinter is Coming,winter-is-coming\nThe Kingsroad,the-kingsroad",
-          ),
-          fileName: "episodes.csv",
-          mimeType: "text/csv",
-          lastModified: Date.now(),
-        },
-        { force: true },
-      );
+      cy.get(".flatfile-sdk iframe").should("not.exist");
 
-    cy.iframe().contains("Change or confirm header selection");
-    cy.iframe().contains("Continue").click();
+      cy.wait("@createSkylarkObjects");
 
-    cy.iframe().contains("Change or confirm column matches");
-    cy.iframe().contains("Continue").click();
+      cy.get('[data-cy="status-card"].border-t-success', {
+        timeout: 10000,
+      }).should("have.length", 4);
 
-    cy.iframe().contains("Review and finalize");
-    cy.iframe().contains("Save and finalize").click();
+      cy.get("a")
+        .contains("Start curating")
+        .should("not.have.class", "btn-disabled");
+      cy.get(".btn-outline")
+        .contains("New import")
+        .should("not.have.class", "btn-disabled");
 
-    cy.get(".flatfile-sdk iframe").should("not.exist");
+      cy.get("button").contains("Import").should("be.disabled");
+      cy.get('[data-cy="select"]').should("be.disabled");
 
-    cy.get('[data-cy="status-card"].border-t-success', {
-      timeout: 10000,
-    }).should("have.length", 4);
+      cy.get("a")
+        .contains("Start curating")
+        .should("not.have.class", "btn-disabled")
+        .should("have.attr", "href")
+        .should("not.be.empty");
 
-    cy.get("a")
-      .contains("Start curating")
-      .should("not.have.class", "btn-disabled");
-    cy.get(".btn-outline")
-      .contains("New import")
-      .should("not.have.class", "btn-disabled");
+      cy.percySnapshot("import/csv - import complete");
+    });
 
-    cy.get("button").contains("Import").should("be.disabled");
-    cy.get('[data-cy="select"]').should("be.disabled");
+    it("can click new import to reset the state", () => {
+      cy.get('[data-cy="select"]').click();
+      cy.get('[data-cy="select-options"]').should("be.visible");
+      cy.get('[data-cy="select-options"]')
+        .get("li > span")
+        .contains("Episode")
+        .click();
+      cy.get("button").contains("Import").click();
 
-    cy.percySnapshot("import/csv - import complete");
+      cy.get("button").contains("Import").should("be.disabled");
 
-    cy.get(".btn-outline").contains("New import").click();
-    cy.get("button").contains("Import").should("not.disabled");
-    cy.get('[data-cy="status-card"]')
-      .first()
-      .should("have.class", "border-t-success");
-    cy.get(".border-t-manatee-500").should("have.length", "3");
+      cy.get(".btn-outline").contains("New import").click();
+      cy.get("button").contains("Import").should("not.disabled");
+      cy.get('[data-cy="status-card"]')
+        .first()
+        .should("have.class", "border-t-success");
+      cy.get(".border-t-manatee-500").should("have.length", "3");
+    });
   });
 });

@@ -13,7 +13,7 @@ import {
 } from "src/lib/graphql/skylark/queries";
 import {
   getObjectOperations,
-  getAllSearchableObjectFields,
+  getAllSearchableObjectsMeta,
 } from "src/lib/skylark/objects";
 
 export const useSkylarkObjectTypes = () => {
@@ -61,7 +61,7 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
   };
 };
 
-export const useAllSearchableObjectFields = () => {
+export const useAllSearchableObjectMeta = () => {
   const { data: schemaResponse, ...rest } =
     useQuery<GQLSkylarkSchemaQueriesMutations>(GET_SKYLARK_SCHEMA);
 
@@ -71,8 +71,8 @@ export const useAllSearchableObjectFields = () => {
     return { objects: [], allFieldNames: [], ...rest };
   }
 
-  const objects = getAllSearchableObjectFields(
-    schemaResponse.__schema.queryType,
+  const objects = getAllSearchableObjectsMeta(
+    schemaResponse.__schema,
     searchableObjects,
   );
 

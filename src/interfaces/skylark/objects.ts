@@ -1,4 +1,9 @@
-export type SkylarkObjectType = string;
+export enum BuiltInSkylarkObjectType {
+  Availability = "Availability",
+  Image = "Image",
+}
+
+export type SkylarkObjectType = string | BuiltInSkylarkObjectType;
 export type SkylarkObjectTypes = SkylarkObjectType[];
 
 export type NormalizedObjectFieldType =
@@ -19,6 +24,25 @@ export interface NormalizedObjectField {
   enumValues?: string[];
   isList: boolean;
   isRequired: boolean;
+}
+
+// TODO should this live here?
+interface ObjectAvailabilityDimension {
+  title: string;
+  slug: string;
+  values: {
+    title: string;
+    slug: string;
+    description: string;
+  }[];
+}
+
+export interface ObjectAvailability {
+  title: string;
+  slug: string;
+  start: string;
+  end: string;
+  dimensions: ObjectAvailabilityDimension[];
 }
 
 interface BaseQueryMutation {
@@ -52,6 +76,7 @@ export interface SkylarkObjectFields {
 }
 
 export interface SkylarkObjectMeta extends SkylarkObjectFields {
+  availability: SkylarkObjectMeta | null;
   operations: SkylarkObjectOperations;
 }
 
