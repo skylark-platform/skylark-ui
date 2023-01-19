@@ -44,6 +44,14 @@ export interface ObjectAvailability {
   end: string;
   dimensions: ObjectAvailabilityDimension[];
 }
+export interface ObjectImage {
+  title: string;
+  url: string;
+  uid: string;
+  slug: string;
+  external_id: string;
+  description: string;
+}
 
 interface BaseQueryMutation {
   type: "Query" | "Mutation";
@@ -72,11 +80,11 @@ export interface SkylarkObjectOperations {
 export interface SkylarkObjectFields {
   name: SkylarkObjectType;
   fields: NormalizedObjectField[];
-  hasImages?: boolean;
 }
 
 export interface SkylarkObjectMeta extends SkylarkObjectFields {
   availability: SkylarkObjectMeta | null;
+  images: SkylarkObjectMeta | null;
   operations: SkylarkObjectOperations;
 }
 

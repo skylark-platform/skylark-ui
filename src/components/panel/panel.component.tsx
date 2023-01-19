@@ -1,4 +1,3 @@
-import Image from "next/image";
 import dayjs from "dayjs";
 
 import { Button } from "src/components/button";
@@ -28,9 +27,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
     uid: uid,
   });
 
-
   console.log({ data });
-
 
   return (
     <>
@@ -78,35 +75,23 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
               </div>
             </div>
 
-
             <Tabs tabs={["Metadata", "Imagery"]} />
 
             <div className=" h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
-              {data?.getObject &&
-                Object.keys(data?.getObject).map((property) => {
-                  console.log(property);
-                  if (typeof data?.getObject[property] !== "string") {
-                    console.log("here");
-                    const images = data?.getObject[property]?.objects;
-                    console.log("images", images);
-                    return images?.map(({ url }) => {
-                      console.log(url);
-                      return (
-                        <img
-                          key={""}
-                          // loader={myLoader}
-                          src={url}
-                          alt="Picture of the author"
-                          width={500}
-                          height={500}
-                        />
-                      );
-                    });
-                  }
-
-                  return;
-                })}
-
+              {data.images.map((image) => (
+                <div key={image.uid}>
+                  <h3 className="mb-2 font-bold ">
+                    {formatObjectField(image.title)}
+                  </h3>
+                  <img
+                    key={""}
+                    src={image.url}
+                    alt="Picture of the author"
+                    width={500}
+                    height={500}
+                  />
+                </div>
+              ))}
             </div>
           </>
         )}

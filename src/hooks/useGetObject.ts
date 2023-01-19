@@ -2,6 +2,7 @@ import { QueryResult, useQuery } from "@apollo/client";
 
 import {
   ObjectAvailability,
+  ObjectImage,
   SkylarkObjectType,
 } from "src/interfaces/skylark/objects";
 import {
@@ -24,6 +25,7 @@ export interface GQLGetObjectResponse {
 interface SkylarkObject {
   metadata: Record<string, string>;
   availability: ObjectAvailability[];
+  images: ObjectImage[];
 }
 
 const parseAvailability = (
@@ -33,6 +35,15 @@ const parseAvailability = (
     return [];
   }
   return unparsedObject.objects as ObjectAvailability[];
+};
+
+const parseImages = (
+  unparsedObject?: GQLGetObjectRelationship,
+): ObjectImage[] => {
+  if (!unparsedObject) {
+    return [];
+  }
+  return unparsedObject.objects as ObjectImage[];
 };
 
 export const useGetObject = (
@@ -70,9 +81,14 @@ export const useGetObject = (
     data?.getObject.availability as GQLGetObjectRelationship,
   );
 
+  const images = parseImages(
+    data?.getObject.images as GQLGetObjectRelationship,
+  );
+
   const parsedObject: SkylarkObject | undefined = data?.getObject && {
     metadata,
     availability,
+    images,
   };
 
   return {
