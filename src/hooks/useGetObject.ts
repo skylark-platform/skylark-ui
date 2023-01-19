@@ -1,8 +1,11 @@
 import { QueryResult, useQuery } from "@apollo/client";
+import dayjs from "dayjs";
 
 import {
   ObjectAvailability,
+  ObjectAvailabilityStatus,
   ObjectImage,
+  SkylarkGraphQLObjectRelationship,
   SkylarkObjectType,
 } from "src/interfaces/skylark/objects";
 import {
@@ -13,32 +16,65 @@ import { isObject } from "src/lib/utils";
 
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
-export interface GQLGetObjectRelationship {
-  nextToken?: string;
-  objects: object[];
-}
-
 export interface GQLGetObjectResponse {
-  getObject: Record<string, null | string | number | GQLGetObjectRelationship>;
+  getObject: Record<
+    string,
+    null | string | number | SkylarkGraphQLObjectRelationship
+  >;
 }
 
-interface SkylarkObject {
+export interface SkylarkObject {
   metadata: Record<string, string>;
-  availability: ObjectAvailability[];
+  availability: ObjectAvailability;
   images: ObjectImage[];
 }
 
-const parseAvailability = (
-  unparsedObject?: GQLGetObjectRelationship,
-): ObjectAvailability[] => {
-  if (!unparsedObject) {
-    return [];
+export const getObjectAvailabilityStatus = (
+  availabilityObjects: ObjectAvailability["objects"],
+): ObjectAvailability["status"] => {
+  if (availabilityObjects.length === 0) {
+    return ObjectAvailabilityStatus.Unavailable;
   }
-  return unparsedObject.objects as ObjectAvailability[];
+
+  const now = dayjs();
+
+  const nonExpiredAvailability = availabilityObjects.filter(({ end }) =>
+    now.isBefore(end),
+  );
+
+  if (nonExpiredAvailability.length === 0) {
+    return ObjectAvailabilityStatus.Expired;
+  }
+
+  const isFuture = nonExpiredAvailability.every(({ start }) =>
+    now.isBefore(start),
+  );
+
+  return isFuture
+    ? ObjectAvailabilityStatus.Future
+    : ObjectAvailabilityStatus.Active;
+};
+
+export const parseAvailability = (
+  unparsedObject?: SkylarkGraphQLObjectRelationship,
+): ObjectAvailability => {
+  if (!unparsedObject) {
+    return {
+      status: null,
+      objects: [],
+    };
+  }
+
+  const objects = unparsedObject.objects as ObjectAvailability["objects"];
+
+  return {
+    status: getObjectAvailabilityStatus(objects),
+    objects,
+  };
 };
 
 const parseImages = (
-  unparsedObject?: GQLGetObjectRelationship,
+  unparsedObject?: SkylarkGraphQLObjectRelationship,
 ): ObjectImage[] => {
   if (!unparsedObject) {
     return [];
@@ -78,11 +114,11 @@ export const useGetObject = (
 
   // TODO improve this to remove the "as"
   const availability = parseAvailability(
-    data?.getObject.availability as GQLGetObjectRelationship,
+    data?.getObject.availability as SkylarkGraphQLObjectRelationship,
   );
 
   const images = parseImages(
-    data?.getObject.images as GQLGetObjectRelationship,
+    data?.getObject.images as SkylarkGraphQLObjectRelationship,
   );
 
   const parsedObject: SkylarkObject | undefined = data?.getObject && {

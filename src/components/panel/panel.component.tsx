@@ -25,7 +25,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
     uid: uid,
   });
 
-  console.log({ data });
+  console.log({ uid, data, loading });
 
   return (
     <>
@@ -71,12 +71,13 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
                   {getTitle(data.metadata, orderedKeys)}
                 </h1>
               </div>
+              {/* <div>{getObjectAvailabilityStatus(data.availability)}</div> */}
             </div>
 
-            <Tabs tabs={["Metadata", "Imagery"]} />
+            <Tabs tabs={["Metadata", "Imagery", "Availability"]} />
 
             {/* {tab === 1 && <PanelAvailability availabilities={data.availability} />} */}
-            <PanelAvailability availabilities={data.availability} />
+            <PanelAvailability availability={data.availability} />
 
             {/* <div className=" h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
               {data.images.map((image) => (
