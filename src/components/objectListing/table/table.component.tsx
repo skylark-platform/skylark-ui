@@ -3,18 +3,23 @@ import {
   flexRender,
   Header,
   Table as ReactTable,
+  Row,
   TableMeta,
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useMemo } from "react";
+import { VirtualItem } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { SkylarkGraphQLObject } from "src/interfaces/skylark/objects";
 
 export type TableColumn = string;
 
 export interface TableProps {
   table: ReactTable<object>;
   withCheckbox?: boolean;
+  virtualRows: VirtualItem[];
+  totalRows: number;
 }
 
 const headAndDataClassNames =
@@ -147,8 +152,20 @@ const TableData = ({
   );
 };
 
-export const Table = ({ table, withCheckbox = false }: TableProps) => {
+export const Table = ({
+  table,
+  withCheckbox = false,
+  virtualRows,
+  totalRows,
+}: TableProps) => {
   const tableMeta = table.options.meta;
+  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
+  const paddingBottom =
+    virtualRows.length > 0
+      ? totalRows - (virtualRows?.[virtualRows.length - 1]?.end || 0)
+      : 0;
+
+  const { rows } = table.getRowModel();
   return (
     <table className="relative w-full bg-white">
       <thead>
@@ -166,18 +183,31 @@ export const Table = ({ table, withCheckbox = false }: TableProps) => {
       </thead>
 
       <tbody className="align-top">
-        {table.getRowModel().rows.map((row) => (
-          <tr key={row.id}>
-            {row.getVisibleCells().map((cell) => (
-              <TableData
-                tableMeta={tableMeta}
-                key={cell.id}
-                cell={cell}
-                withCheckbox={withCheckbox}
-              />
-            ))}
+        {paddingTop > 0 && (
+          <tr>
+            <td style={{ height: `${paddingTop}px` }} />
           </tr>
-        ))}
+        )}
+        {virtualRows.map((virtualRow) => {
+          const row = rows[virtualRow.index] as Row<SkylarkGraphQLObject>;
+          return (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <TableData
+                  tableMeta={tableMeta}
+                  key={cell.id}
+                  cell={cell}
+                  withCheckbox={withCheckbox}
+                />
+              ))}
+            </tr>
+          );
+        })}
+        {paddingBottom > 0 && (
+          <tr>
+            <td style={{ height: `${paddingBottom}px` }} />
+          </tr>
+        )}
       </tbody>
     </table>
   );

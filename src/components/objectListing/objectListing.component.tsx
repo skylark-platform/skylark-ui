@@ -5,7 +5,8 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { useVirtual } from "react-virtual";
 
 import { Checkbox } from "src/components/checkbox";
 import { Spinner } from "src/components/icons";
@@ -287,6 +288,16 @@ export const ObjectList = ({
 
   if (searchError) console.error("Search Errors:", { searchError });
 
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  const { rows } = table.getRowModel();
+  const rowVirtualizer = useVirtual({
+    parentRef: tableContainerRef,
+    size: rows.length,
+    overscan: 10,
+  });
+  const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
+
   return (
     <div className="flex h-full flex-col gap-4 md:gap-8">
       {activePanelObject && (
@@ -323,9 +334,17 @@ export const ObjectList = ({
           <CreateButtons className="w-full justify-end md:w-auto" />
         )}
       </div>
-      <div className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6 xl:h-[75vh]">
+      <div
+        className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6 xl:h-[75vh]"
+        ref={tableContainerRef}
+      >
         {!searchLoading && searchData && (
-          <Table table={table} withCheckbox={withObjectSelect} />
+          <Table
+            table={table}
+            virtualRows={virtualRows}
+            totalRows={totalSize}
+            withCheckbox={withObjectSelect}
+          />
         )}
         {(searchLoading || searchData) && (
           <div className="items-top justify-left flex h-96 w-full flex-col gap-4 text-sm text-manatee-600 md:text-base">
