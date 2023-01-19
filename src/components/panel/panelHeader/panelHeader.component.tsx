@@ -14,7 +14,7 @@ export const PanelHeader = ({
   objectType,
   closePanel,
 }: PanelHeaderProps) => (
-  <div data-testid="panel-header" className="p-4 pb-2 md:p-8 md:pt-6 md:pb-4">
+  <div data-testid="panel-header" className="p-4 pb-2 md:p-8 md:py-6">
     <div className="flex flex-row pb-2">
       <div className="flex flex-grow items-center gap-4">
         <Button disabled variant="primary">

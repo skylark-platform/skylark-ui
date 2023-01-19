@@ -5,7 +5,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 import { Checkbox } from "src/components/checkbox";
 import { Spinner } from "src/components/icons";

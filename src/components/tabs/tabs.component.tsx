@@ -9,7 +9,7 @@ export const Tabs = ({ tabs }: TabProps) => {
   const [selected, setSelected] = useState<number>(0);
 
   return (
-    <ul className="flex w-full items-center justify-center border-b-2 border-gray-200 px-8 text-sm font-medium">
+    <ul className="flex w-full items-center justify-start border-b-2 border-gray-200 px-4 text-sm font-medium">
       {tabs.map((tab, i) => {
         const combinedClassname = clsx(
           selected === i
@@ -17,10 +17,13 @@ export const Tabs = ({ tabs }: TabProps) => {
             : "text-gray-400 border-transparent",
         );
         return (
-          <li className="flex-grow" key={`tab-${tab}`}>
+          <li key={`tab-${tab}`} className="px-4">
             <button
               onClick={() => setSelected(i)}
-              className={`${combinedClassname} -mb-[2px] w-full border-b-2 p-2 pb-3 hover:border-black hover:text-black`}
+              className={clsx(
+                "-mb-[2px] w-full border-b-2  pb-3 hover:border-black hover:text-black",
+                combinedClassname,
+              )}
             >
               {tab}
             </button>
