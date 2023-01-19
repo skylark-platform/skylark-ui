@@ -47,10 +47,13 @@ export enum ObjectAvailabilityStatus {
 export interface ObjectAvailability {
   status: ObjectAvailabilityStatus | null;
   objects: {
+    uid: string;
+    external_id: string;
     title: string;
     slug: string;
     start: string;
     end: string;
+    timezone: string;
     dimensions: ObjectAvailabilityDimension[];
   }[];
 }

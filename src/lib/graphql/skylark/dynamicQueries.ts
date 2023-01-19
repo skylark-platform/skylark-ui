@@ -62,6 +62,8 @@ const generateRelationshipsToReturn = (
       next_token: true,
       objects: {
         ...generateFieldsToReturn(object.availability?.fields),
+        // TODO fetch dimensions
+        ...generateRelationshipsToReturn(object.availability),
       },
     };
   }
