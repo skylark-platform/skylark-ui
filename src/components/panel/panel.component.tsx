@@ -1,11 +1,11 @@
-import dayjs from "dayjs";
-
 import { Button } from "src/components/button";
 import { Expand, Spinner } from "src/components/icons";
 import { Pill } from "src/components/pill";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { useGetObject } from "src/hooks/useGetObject";
 import { formatObjectField } from "src/lib/utils";
+
+import { PanelAvailability } from "./panel-availability/panel-availability.component";
 
 interface PanelProps {
   objectType: string;
@@ -19,8 +19,6 @@ const getTitle = (object: Record<string, string>, priority: string[]) => {
 };
 
 const orderedKeys = ["title", "name", "uid"];
-
-const isAvailabilityFuture = (start: string) => dayjs().isBefore(start);
 
 export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   const { data, loading } = useGetObject(objectType, {
@@ -77,7 +75,10 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
 
             <Tabs tabs={["Metadata", "Imagery"]} />
 
-            <div className=" h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
+            {/* {tab === 1 && <PanelAvailability availabilities={data.availability} />} */}
+            <PanelAvailability availabilities={data.availability} />
+
+            {/* <div className=" h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
               {data.images.map((image) => (
                 <div key={image.uid}>
                   <h3 className="mb-2 font-bold ">
@@ -92,7 +93,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
                   />
                 </div>
               ))}
-            </div>
+            </div> */}
           </>
         )}
       </section>
