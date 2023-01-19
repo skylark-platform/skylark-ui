@@ -18,21 +18,22 @@ const getObjectFieldsFromGetQuery = (
   const objectFields = parseObjectInputFields(
     getQuery.type.fields.filter((field) => field.type.kind !== "OBJECT"),
   );
+
   return objectFields;
 };
 
 const objectHasRelationship = (
   relationship: "availability" | "images",
+
   getQuery: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"][0],
 ) => {
   if (!getQuery || !getQuery.type || !getQuery.type.fields) {
     return false;
   }
 
-  const relationshipIndex = getQuery.type.fields.findIndex(
+  return getQuery.type.fields.some(
     (field) => field.name === relationship && field.type.kind === "OBJECT",
   );
-  return relationshipIndex > -1;
 };
 
 const getMutationInfo = (
@@ -87,6 +88,13 @@ export const getObjectOperations = (
   }
 
   const objectFields = getObjectFieldsFromGetQuery(getQuery);
+  const hasImages = objectHasRelationship("images", getQuery);
+  const images = hasImages
+    ? getObjectOperations(BuiltInSkylarkObjectType.Image, {
+        queryType,
+        mutationType,
+      })
+    : null;
 
   const hasAvailability = objectHasRelationship("availability", getQuery);
   const availability = hasAvailability
@@ -134,6 +142,7 @@ export const getObjectOperations = (
   const object: SkylarkObjectMeta = {
     name: objectType,
     fields: objectFields,
+    images,
     operations,
     availability,
   };

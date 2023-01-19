@@ -48,12 +48,14 @@ const generateFieldsToReturn = (
 const generateRelationshipsToReturn = (
   object: SkylarkObjectMeta | null,
 ): object => {
-  if (!object || !object.availability) {
+  if (!object) {
     return {};
   }
 
-  const relationshipsToReturn = {
-    availability: {
+  const relationshipsToReturn: Record<string, object> = {};
+
+  if (object.availability) {
+    relationshipsToReturn.availability = {
       __args: {
         limit: 50, // max
       },
@@ -61,8 +63,20 @@ const generateRelationshipsToReturn = (
       objects: {
         ...generateFieldsToReturn(object.availability?.fields),
       },
-    },
-  };
+    };
+  }
+
+  if (object.images) {
+    relationshipsToReturn.images = {
+      __args: {
+        limit: 50, // max
+      },
+      next_token: true,
+      objects: {
+        ...generateFieldsToReturn(object.images?.fields),
+      },
+    };
+  }
 
   return relationshipsToReturn;
 };
