@@ -48,6 +48,7 @@ export interface SkylarkObjectOperations {
 export interface SkylarkObjectFields {
   name: SkylarkObjectType;
   fields: NormalizedObjectField[];
+  hasImages?: boolean;
 }
 
 export interface SkylarkObjectMeta extends SkylarkObjectFields {

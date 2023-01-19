@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { Button } from "src/components/button";
 import { Expand, Spinner } from "src/components/icons";
 import { Pill } from "src/components/pill";
@@ -22,6 +24,8 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   const { data } = useGetObject(objectType, {
     uid: uid,
   });
+
+  console.log("data", data);
 
   return (
     <>
@@ -69,25 +73,33 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
               </div>
             </div>
 
-            <Tabs tabs={["Metadata"]} />
+            <Tabs tabs={["Metadata", "Imagery"]} />
 
             <div className=" h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
               {data?.getObject &&
-                Object.keys(data?.getObject).map(
-                  (property) =>
-                    property !== "__typename" && (
-                      <div key={property}>
-                        <h3 className="mb-2 font-bold ">
-                          {formatObjectField(property)}
-                        </h3>
-                        <div className="mb-4 break-words text-base-content">
-                          {data?.getObject[property]
-                            ? data?.getObject[property]
-                            : "---"}
-                        </div>
-                      </div>
-                    ),
-                )}
+                Object.keys(data?.getObject).map((property) => {
+                  console.log(property);
+                  if (typeof data?.getObject[property] !== "string") {
+                    console.log("here");
+                    const images = data?.getObject[property]?.objects;
+                    console.log("images", images);
+                    return images?.map(({ url }) => {
+                      console.log(url);
+                      return (
+                        <img
+                          key={""}
+                          // loader={myLoader}
+                          src={url}
+                          alt="Picture of the author"
+                          width={500}
+                          height={500}
+                        />
+                      );
+                    });
+                  }
+
+                  return;
+                })}
             </div>
           </>
         )}
