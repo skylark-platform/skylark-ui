@@ -5,7 +5,7 @@ import { Tabs } from "src/components/tabs/tabs.component";
 import { useGetObject } from "src/hooks/useGetObject";
 import { formatObjectField } from "src/lib/utils";
 
-import { PanelAvailability } from "./panel-availability/panel-availability.component";
+import { PanelAvailability } from "./panelAvailability/panelAvailability.component";
 
 interface PanelProps {
   objectType: string;
