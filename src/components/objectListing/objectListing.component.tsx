@@ -26,15 +26,8 @@ import { Search } from "./search";
 import { Table, TableCell } from "./table";
 
 const displayFields = ["title", "name"];
-const hardcodedColumns = ["availability"];
-const orderedKeys = [
-  "__typename",
-  "title",
-  "name",
-  "uid",
-  "external_id",
-  "data_source_id",
-];
+const hardcodedColumns = ["__typename", "availability"];
+const orderedKeys = ["uid", "external_id", "data_source_id"];
 
 const columnHelper = createColumnHelper<object>();
 
@@ -70,9 +63,7 @@ const createColumns = (
   });
 
   const createdColumns = columns
-    .filter(
-      (column) => ![...displayFields, ...hardcodedColumns].includes(column),
-    )
+    .filter((column) => !hardcodedColumns.includes(column))
     .map((column) =>
       columnHelper.accessor(column, {
         header: formatObjectField(column),
@@ -178,7 +169,7 @@ export const ObjectList = ({
     );
 
     const orderedProperties = properties.filter(
-      (property) => ![...orderedKeys, ...displayFields].includes(property),
+      (property) => !orderedKeys.includes(property),
     );
 
     return [...hardcodedColumns, ...orderedKeysThatExist, ...orderedProperties];
@@ -199,7 +190,7 @@ export const ObjectList = ({
     VisibilityState | undefined
   >(undefined);
 
-  const searchDataWithPrimaryKey = useMemo(
+  const searchDataWithDisplayField = useMemo(
     () =>
       searchData?.map((obj) => {
         const primaryKey = displayFields.find((field) => !!obj[field]);
@@ -215,7 +206,7 @@ export const ObjectList = ({
 
   const table = useReactTable({
     debugAll: false,
-    data: searchDataWithPrimaryKey || [],
+    data: searchDataWithDisplayField || [],
     columns: searchData ? parsedColumns : [],
     getCoreRowModel: getCoreRowModel(),
     state: {
@@ -284,7 +275,7 @@ export const ObjectList = ({
           <CreateButtons className="w-full justify-end md:w-auto" />
         )}
       </div>
-      <div className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6">
+      <div className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6 xl:h-[75vh]">
         {!searchLoading && searchData && <Table table={table} />}
         {(searchLoading || searchData) && (
           <div className="items-top justify-left flex h-96 w-full flex-col gap-4 text-sm text-manatee-600 md:text-base">
