@@ -62,6 +62,7 @@ export interface ObjectImage {
   url: string;
   uid: string;
   slug: string;
+  type: string;
   external_id: string;
   description: string;
 }

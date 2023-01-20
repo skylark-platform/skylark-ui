@@ -1,9 +1,15 @@
+import { useState } from "react";
+
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { useGetObject } from "src/hooks/useGetObject";
 
-import { PanelAvailability } from "./panelAvailability/panelAvailability.component";
-import { PanelHeader } from "./panelHeader/panelHeader.component";
+import {
+  PanelAvailability,
+  PanelHeader,
+  PanelImages,
+  PanelMetadata,
+} from "./panelSections";
 
 interface PanelProps {
   objectType: string;
@@ -22,6 +28,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   const { data, loading } = useGetObject(objectType, {
     uid: uid,
   });
+  const [selectedTab, setSelectedTab] = useState(0);
 
   console.log({ uid, data, loading });
 
@@ -48,28 +55,16 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
               objectType={objectType}
               closePanel={closePanel}
             />
-
-            <Tabs tabs={["Metadata", "Imagery", "Availability"]} />
-
-            {/* {tab === 1 && <PanelAvailability availabilities={data.availability} />} */}
-            <PanelAvailability availability={data.availability} />
-
-            {/* <div className=" h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
-              {data.images.map((image) => (
-                <div key={image.uid}>
-                  <h3 className="mb-2 font-bold ">
-                    {formatObjectField(image.title)}
-                  </h3>
-                  <img
-                    key={""}
-                    src={image.url}
-                    alt="Picture of the author"
-                    width={500}
-                    height={500}
-                  />
-                </div>
-              ))}
-            </div> */}
+            <Tabs
+              tabs={["Metadata", "Imagery", "Availability"]}
+              selectedTab={selectedTab}
+              onChange={setSelectedTab}
+            />
+            {selectedTab === 0 && <PanelMetadata metadata={data.metadata} />}
+            {selectedTab === 1 && <PanelImages images={data.images} />}
+            {selectedTab === 2 && (
+              <PanelAvailability availability={data.availability} />
+            )}{" "}
           </>
         )}
       </section>
