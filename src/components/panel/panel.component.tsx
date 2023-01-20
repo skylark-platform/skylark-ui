@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import Image from "next/image";
 import { useState } from "react";
 
 import { Button } from "src/components/button";
@@ -7,8 +6,8 @@ import { Expand, Spinner } from "src/components/icons";
 import { Pill } from "src/components/pill";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { useGetObject } from "src/hooks/useGetObject";
-import { ObjectImage } from "src/interfaces/skylark/objects";
-import { formatObjectField } from "src/lib/utils";
+
+import { PanelImages, PanelMetadata } from "./panelSections";
 
 interface PanelProps {
   objectType: string;
@@ -24,31 +23,6 @@ const getTitle = (object: Record<string, string>, priority: string[]) => {
 const orderedKeys = ["title", "name", "uid"];
 
 const isAvailabilityFuture = (start: string) => dayjs().isBefore(start);
-
-const PanelImages = ({ images }: { images: ObjectImage[] }) => {
-  console.log("images", images);
-  return (
-    <div className=" h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
-      {images.map((image) => (
-        <div key={image.uid}>
-          <h3 className="mb-2 font-bold">{formatObjectField(image.type)}</h3>
-          <div className="flex flex-row">
-            <div className="w-1/2">Title: {formatObjectField(image.title)}</div>
-            <div className="w-1/2">
-              <img
-                className="max-h-72 w-full object-cover"
-                src={image.url}
-                alt="Picture of the author"
-                // width={500}
-                // height={500}
-              />
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
 
 export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   const { data, loading } = useGetObject(objectType, {
@@ -110,26 +84,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
               onChange={setSelectedTab}
             />
 
-            {selectedTab === 0 && (
-              <div className=" h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
-                {data?.metadata &&
-                  Object.keys(data?.metadata).map(
-                    (property) =>
-                      property !== "__typename" && (
-                        <div key={property}>
-                          <h3 className="mb-2 font-bold ">
-                            {formatObjectField(property)}
-                          </h3>
-                          <div className="mb-4 break-words text-base-content">
-                            {data?.metadata[property]
-                              ? data?.metadata[property]
-                              : "---"}
-                          </div>
-                        </div>
-                      ),
-                  )}
-              </div>
-            )}
+            {selectedTab === 0 && <PanelMetadata metadata={data.metadata} />}
 
             {selectedTab === 1 && <PanelImages images={data.images} />}
           </>
