@@ -5,14 +5,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import {
-  useEffect,
-  useState,
-  useMemo,
-  Dispatch,
-  SetStateAction,
-  useRef,
-} from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useVirtual } from "react-virtual";
 
 import { Checkbox } from "src/components/checkbox";
@@ -195,6 +188,8 @@ export const ObjectList = ({
     objectTypes: null,
   });
 
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
   const {
     data: searchData,
     error: searchError,
@@ -202,6 +197,8 @@ export const ObjectList = ({
     properties,
     query: graphqlSearchQuery,
     variables: graphqlSearchQueryVariables,
+    fetchingMore,
+    fetchMoreResults,
   } = useSearch(searchQuery, searchFilters);
 
   // Sorts objects using the preference array above, any others are added to the end randomly
@@ -258,6 +255,28 @@ export const ObjectList = ({
 
     return searchDataWithTopLevelMetadata;
   }, [searchData]);
+  const fetchMoreOnBottomReached = useCallback(
+    (containerRefElement?: HTMLDivElement | null) => {
+      if (containerRefElement) {
+        const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
+        // once the user has scrolled within 500px of the bottom of the table, fetch more data if there is any
+        if (
+          searchData.length > 0 &&
+          scrollHeight - scrollTop - clientHeight < 500 &&
+          !searchLoading &&
+          !fetchingMore
+        ) {
+          fetchMoreResults();
+        }
+      }
+    },
+    [fetchMoreResults, searchLoading, fetchingMore, searchData],
+  );
+
+  // a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
+  useEffect(() => {
+    fetchMoreOnBottomReached(tableContainerRef.current);
+  }, [fetchMoreOnBottomReached]);
 
   const table = useReactTable({
     debugAll: false,
@@ -297,8 +316,6 @@ export const ObjectList = ({
   };
 
   if (searchError) console.error("Search Errors:", { searchError });
-
-  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const { rows } = table.getRowModel();
   const rowVirtualizer = useVirtual({
@@ -362,6 +379,7 @@ export const ObjectList = ({
       <div
         className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6 xl:h-[75vh]"
         ref={tableContainerRef}
+        onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
       >
         {!searchLoading && searchData && (
           <Table

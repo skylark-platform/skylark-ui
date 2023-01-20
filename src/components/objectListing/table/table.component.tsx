@@ -17,6 +17,8 @@ import { DisplayNameTableCell } from "./cell";
 
 export type TableColumn = string;
 
+// const alwaysRenderRows = Object.values(OBJECT_LIST_TABLE.columnIds);
+
 export interface TableProps {
   table: ReactTable<object>;
   withCheckbox?: boolean;
@@ -236,6 +238,26 @@ export const Table = ({
                 />
               ))}
             </tr>
+            // <tr key={row.id}>
+            //   {row.getVisibleCells().map((cell) => {
+            //     // TODO should this be moved into TableData so it doesn't keep rerendering
+            //     if (
+            //       !cell.getValue() &&
+            //       !alwaysRenderRows.includes(cell.column.id)
+            //     ) {
+            //       return <td key={cell.id}></td>;
+            //     }
+
+            //     return (
+            //       <TableData
+            //         tableMeta={tableMeta}
+            //         key={cell.id}
+            //         cell={cell}
+            //         withCheckbox={withCheckbox}
+            //       />
+            //     );
+            //   })}
+            // </tr>
           );
         })}
         {paddingBottom > 0 && (

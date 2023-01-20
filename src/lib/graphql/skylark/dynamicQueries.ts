@@ -239,12 +239,15 @@ export const createSearchObjectsQuery = (
       __variables: {
         ...common.variables,
         queryString: "String!",
+        offset: "Int",
+        limit: "Int",
       },
       search: {
         __args: {
           ...common.args,
           query: new VariableType("queryString"),
-          limit: 1000,
+          offset: new VariableType("offset"),
+          limit: new VariableType("limit"),
         },
         __typename: true,
         objects: {
