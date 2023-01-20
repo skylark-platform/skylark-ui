@@ -17,6 +17,7 @@ import { useSkylarkSearchableObjectTypes } from "src/hooks/useSkylarkObjectTypes
 import {
   ObjectAvailability,
   ObjectAvailabilityStatus,
+  ObjectImage,
 } from "src/interfaces/skylark/objects";
 import { formatObjectField } from "src/lib/utils";
 
@@ -26,15 +27,11 @@ import { Search } from "./search";
 import { Table, TableCell } from "./table";
 
 const displayFields = ["title", "name"];
-const hardcodedColumns = ["availability"];
-const orderedKeys = [
-  "__typename",
-  "title",
-  "name",
-  "uid",
-  "external_id",
-  "data_source_id",
+const hardcodedColumns = [
+  OBJECT_LIST_TABLE.columnIds.objectType,
+  "availability",
 ];
+const orderedKeys = ["uid", "external_id", "data_source_id"];
 
 const columnHelper = createColumnHelper<object>();
 
@@ -57,22 +54,23 @@ const createColumns = (
     uid: string;
   }) => void,
 ) => {
-  const objectTypeColumn = columnHelper.accessor("__typename", {
-    header: "",
-    cell: ({ getValue }) => {
-      return (
-        <Pill
-          label={getValue() as string}
-          className="w-full bg-brand-primary"
-        />
-      );
+  const objectTypeColumn = columnHelper.accessor(
+    OBJECT_LIST_TABLE.columnIds.objectType,
+    {
+      header: "",
+      cell: ({ getValue }) => {
+        return (
+          <Pill
+            label={getValue() as string}
+            className="w-full bg-brand-primary"
+          />
+        );
+      },
     },
-  });
+  );
 
   const createdColumns = columns
-    .filter(
-      (column) => ![...displayFields, ...hardcodedColumns].includes(column),
-    )
+    .filter((column) => !hardcodedColumns.includes(column))
     .map((column) =>
       columnHelper.accessor(column, {
         header: formatObjectField(column),
@@ -109,6 +107,31 @@ const createColumns = (
     },
   });
 
+  const imagesColumn = columnHelper.accessor("images", {
+    header: formatObjectField("Images"),
+    cell: (props) => {
+      const images = props.getValue<ObjectImage[]>();
+      // console.log("images", images);
+      if (!images || images.length === 0) {
+        return "";
+      }
+
+      return (
+        <>
+          {images.map(({ uid, url, title }) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={url}
+              key={`${props.row.id}-${uid}`}
+              alt={title}
+              className="mr-0.5 object-cover"
+            />
+          ))}
+        </>
+      );
+    },
+  });
+
   const selectColumn = columnHelper.display({
     id: OBJECT_LIST_TABLE.columnIds.checkbox,
     header: () => <Checkbox aria-label="toggle-select-all-objects" />,
@@ -138,6 +161,7 @@ const createColumns = (
   const orderedColumnArray = [
     objectTypeColumn,
     displayNameColumn,
+    imagesColumn,
     availabilityColumn,
     ...createdColumns,
     actionColumn,
@@ -178,7 +202,7 @@ export const ObjectList = ({
     );
 
     const orderedProperties = properties.filter(
-      (property) => ![...orderedKeys, ...displayFields].includes(property),
+      (property) => !orderedKeys.includes(property),
     );
 
     return [...hardcodedColumns, ...orderedKeysThatExist, ...orderedProperties];
@@ -199,7 +223,7 @@ export const ObjectList = ({
     VisibilityState | undefined
   >(undefined);
 
-  const searchDataWithPrimaryKey = useMemo(
+  const searchDataWithDisplayField = useMemo(
     () =>
       searchData?.map((obj) => {
         const primaryKey = displayFields.find((field) => !!obj[field]);
@@ -215,7 +239,7 @@ export const ObjectList = ({
 
   const table = useReactTable({
     debugAll: false,
-    data: searchDataWithPrimaryKey || [],
+    data: searchDataWithDisplayField || [],
     columns: searchData ? parsedColumns : [],
     getCoreRowModel: getCoreRowModel(),
     state: {
@@ -284,8 +308,10 @@ export const ObjectList = ({
           <CreateButtons className="w-full justify-end md:w-auto" />
         )}
       </div>
-      <div className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6">
-        {!searchLoading && searchData && <Table table={table} />}
+      <div className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6 xl:h-[75vh]">
+        {!searchLoading && searchData && (
+          <Table table={table} withCheckbox={withObjectSelect} />
+        )}
         {(searchLoading || searchData) && (
           <div className="items-top justify-left flex h-96 w-full flex-col gap-4 text-sm text-manatee-600 md:text-base">
             {searchLoading && (

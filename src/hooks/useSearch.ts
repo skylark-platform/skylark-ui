@@ -2,7 +2,6 @@ import { useQuery } from "@apollo/client";
 import { useEffect, useMemo, useState } from "react";
 
 import {
-  ObjectAvailabilityStatus,
   ObjectImage,
   ParsedSkylarkObject,
   SkylarkGraphQLObject,
@@ -12,7 +11,7 @@ import {
   defaultValidBlankQuery,
 } from "src/lib/graphql/skylark/dynamicQueries";
 
-import { parseAvailability } from "./useGetObject";
+import { parseAvailability, parseRelationship } from "./useGetObject";
 import { useAllSearchableObjectMeta } from "./useSkylarkObjectTypes";
 
 export interface GQLSearchResponse {
@@ -88,7 +87,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
       return {
         ...obj,
         availability: parseAvailability(obj.availability),
-        images: [] as ObjectImage[],
+        images: parseRelationship<ObjectImage>(obj.images),
         relationships: [] as string[],
       };
     });

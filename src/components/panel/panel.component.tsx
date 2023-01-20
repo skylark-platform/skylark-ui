@@ -28,7 +28,12 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   const { data, loading } = useGetObject(objectType, {
     uid: uid,
   });
-  const [selectedTab, setSelectedTab] = useState(0);
+
+  const tabs = ["Metadata", data?.images && "Imagery", "Availability"].filter(
+    (tab) => !!tab,
+  ) as string[];
+
+  const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
 
   console.log({ uid, data, loading });
 
@@ -56,13 +61,17 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
               closePanel={closePanel}
             />
             <Tabs
-              tabs={["Metadata", "Imagery", "Availability"]}
+              tabs={tabs}
               selectedTab={selectedTab}
               onChange={setSelectedTab}
             />
-            {selectedTab === 0 && <PanelMetadata metadata={data.metadata} />}
-            {selectedTab === 1 && <PanelImages images={data.images} />}
-            {selectedTab === 2 && (
+            {selectedTab === "Metadata" && (
+              <PanelMetadata metadata={data.metadata} />
+            )}
+            {selectedTab === "Imagery" && data.images && (
+              <PanelImages images={data.images} />
+            )}
+            {selectedTab === "Availability" && (
               <PanelAvailability availability={data.availability} />
             )}{" "}
           </>
