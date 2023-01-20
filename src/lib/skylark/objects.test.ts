@@ -3,7 +3,7 @@ import {
   SKYLARK_OBJECT_FIELDS_FIXTURE,
 } from "src/tests/fixtures";
 
-import { getAllSearchableObjectFields, getObjectOperations } from "./objects";
+import { getAllSearchableObjectsMeta, getObjectOperations } from "./objects";
 
 describe("getObjectOperations", () => {
   test("returns all operations", () => {
@@ -96,8 +96,8 @@ describe("getObjectOperations", () => {
 
 describe("getAllSearchableObjectFields", () => {
   test("returns Episode when it is searchable", () => {
-    const got = getAllSearchableObjectFields(
-      GQLSkylarkSchemaQueryFixture.data.__schema.queryType,
+    const got = getAllSearchableObjectsMeta(
+      GQLSkylarkSchemaQueryFixture.data.__schema,
       ["Episode"],
     );
     expect(got).toEqual([
@@ -115,8 +115,8 @@ describe("getAllSearchableObjectFields", () => {
   });
 
   test("returns nothing when Episode is not searchable", () => {
-    const got = getAllSearchableObjectFields(
-      GQLSkylarkSchemaQueryFixture.data.__schema.queryType,
+    const got = getAllSearchableObjectsMeta(
+      GQLSkylarkSchemaQueryFixture.data.__schema,
       ["UnknownObject"],
     );
     expect(got).toEqual([]);

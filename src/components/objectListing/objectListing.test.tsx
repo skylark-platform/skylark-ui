@@ -7,7 +7,6 @@ import {
   within,
 } from "@testing-library/react";
 import { DocumentNode } from "graphql";
-import { act } from "react-dom/test-utils";
 
 import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
 import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";

@@ -3,6 +3,7 @@ import { gql } from "@apollo/client";
 import {
   NormalizedObjectField,
   SkylarkObjectMeta,
+  SkylarkObjectOperations,
 } from "src/interfaces/skylark/objects";
 
 import {
@@ -29,6 +30,8 @@ const fields: NormalizedObjectField[] = [
 const object: SkylarkObjectMeta = {
   name: "Episode",
   fields: fields,
+  availability: null,
+  images: null,
   operations: {
     get: {
       type: "Query",
@@ -125,6 +128,10 @@ describe("createSearchObjectsQuery", () => {
               isRequired: false,
             },
           ],
+          // TODO use real images, availability and operations
+          images: null,
+          availability: null,
+          operations: {} as SkylarkObjectOperations,
         },
         {
           name: "Brand",
@@ -142,6 +149,9 @@ describe("createSearchObjectsQuery", () => {
               isRequired: false,
             },
           ],
+          images: null,
+          availability: null,
+          operations: {} as SkylarkObjectOperations,
         },
       ],
       [],

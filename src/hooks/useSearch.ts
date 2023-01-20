@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import {
   ObjectImage,

@@ -14,6 +14,7 @@ export const PanelImages = ({ images }: { images: ObjectImage[] }) => {
               Description: {formatObjectField(image.description)}
             </div>
             <div className="w-1/2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 className="max-h-72 w-full object-cover"
                 src={image.url}

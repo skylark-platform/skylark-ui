@@ -1,6 +1,6 @@
 import { DocumentNode } from "graphql";
 
-import { SkylarkObjectFields } from "src/interfaces/skylark/objects";
+import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
 import { createSearchObjectsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 
 import {
@@ -16,7 +16,7 @@ const searchableObjects = SKYLARK_OBJECT_TYPES_FIXTURE.map((name) => ({
     isList: false,
     isRequired: false,
   })),
-})) as SkylarkObjectFields[];
+})) as SkylarkObjectMeta[];
 
 export const GQLSkylarkDynamicSearchQuery = createSearchObjectsQuery(
   searchableObjects,

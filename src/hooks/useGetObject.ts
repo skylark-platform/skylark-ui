@@ -1,4 +1,4 @@
-import { QueryResult, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import dayjs from "dayjs";
 
 import {

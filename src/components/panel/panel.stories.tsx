@@ -19,7 +19,7 @@ export default {
   argTypes: {},
 };
 
-const Template: ComponentStory<typeof Panel> = (args) => {
+const Template: ComponentStory<typeof Panel> = () => {
   return (
     <div className="flex flex-row space-x-2">
       <Panel

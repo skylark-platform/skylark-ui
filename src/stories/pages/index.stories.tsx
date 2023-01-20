@@ -1,8 +1,6 @@
 import { ComponentStory } from "@storybook/react";
 import { within } from "@storybook/testing-library";
 
-import { SkylarkObjectFields } from "src/interfaces/skylark/objects";
-import { createSearchObjectsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   GET_SEARCHABLE_OBJECTS,
   GET_SKYLARK_SCHEMA,
