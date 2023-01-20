@@ -37,12 +37,25 @@ interface ObjectAvailabilityDimension {
   }[];
 }
 
+export enum ObjectAvailabilityStatus {
+  Active = "Active",
+  Future = "Future",
+  Expired = "Expired",
+  Unavailable = "Unavailable",
+}
+
 export interface ObjectAvailability {
-  title: string;
-  slug: string;
-  start: string;
-  end: string;
-  dimensions: ObjectAvailabilityDimension[];
+  status: ObjectAvailabilityStatus | null;
+  objects: {
+    uid: string;
+    external_id: string;
+    title: string;
+    slug: string;
+    start: string;
+    end: string;
+    timezone: string;
+    dimensions: ObjectAvailabilityDimension[];
+  }[];
 }
 export interface ObjectImage {
   title: string;
@@ -89,8 +102,34 @@ export interface SkylarkObjectMeta extends SkylarkObjectFields {
   operations: SkylarkObjectOperations;
 }
 
+export interface SkylarkGraphQLAvailability {
+  title: string;
+  slug: string;
+  start: string;
+  end: string;
+  dimensions: ObjectAvailabilityDimension[];
+}
+
+export interface SkylarkGraphQLObjectRelationship {
+  nextToken?: string;
+  objects: object[]; // TODO make this a Record like SkylarkGraphQLObject
+}
+
 export type SkylarkGraphQLObject = {
   __typename: string;
   uid: string;
   external_id: string;
+  availability?: SkylarkGraphQLObjectRelationship;
 } & Record<string, string | number | boolean>;
+
+export type ParsedSkylarkObject = {
+  __typename: string;
+  uid: string;
+  external_id: string;
+  availability: ObjectAvailability;
+  images: ObjectImage[];
+  relationships: string[];
+} & Record<
+  string,
+  string | string[] | number | boolean | ObjectAvailability | ObjectImage[]
+>;

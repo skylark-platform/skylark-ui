@@ -1,12 +1,18 @@
 import { useQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { SkylarkGraphQLObject } from "src/interfaces/skylark/objects";
+import {
+  ObjectAvailabilityStatus,
+  ObjectImage,
+  ParsedSkylarkObject,
+  SkylarkGraphQLObject,
+} from "src/interfaces/skylark/objects";
 import {
   createSearchObjectsQuery,
   defaultValidBlankQuery,
 } from "src/lib/graphql/skylark/dynamicQueries";
 
+import { parseAvailability } from "./useGetObject";
 import { useAllSearchableObjectMeta } from "./useSkylarkObjectTypes";
 
 export interface GQLSearchResponse {
@@ -45,13 +51,13 @@ const removeFieldPrefixFromSearchObjects = (
 };
 
 export const useSearch = (queryString: string, filters: SearchFilters) => {
-  const [data, setData] = useState<SkylarkGraphQLObject[]>([]);
   const { objects: searchableObjects, allFieldNames } =
     useAllSearchableObjectMeta();
 
-  const query = createSearchObjectsQuery(
-    searchableObjects,
-    filters.objectTypes || [],
+  const query = useMemo(
+    () =>
+      createSearchObjectsQuery(searchableObjects, filters.objectTypes || []),
+    [searchableObjects, filters.objectTypes],
   );
 
   const { data: searchResponse, ...rest } = useQuery<GQLSearchResponse>(
@@ -69,16 +75,25 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     },
   );
 
-  useEffect(() => {
+  const data = useMemo(() => {
     // Using the errorPolicy "all" means that some data could be null
     const nonNullObjects = searchResponse?.search.objects.filter(
       (obj) => obj !== null,
     ) as SkylarkGraphQLObject[];
-    const parsedObjects = removeFieldPrefixFromSearchObjects(
+    const normalisedObjects = removeFieldPrefixFromSearchObjects(
       nonNullObjects || [],
     );
 
-    setData(parsedObjects);
+    const parsedObjects = normalisedObjects.map((obj): ParsedSkylarkObject => {
+      return {
+        ...obj,
+        availability: parseAvailability(obj.availability),
+        images: [] as ObjectImage[],
+        relationships: [] as string[],
+      };
+    });
+
+    return parsedObjects;
   }, [searchResponse?.search.objects]);
 
   return {

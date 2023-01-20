@@ -1,34 +1,33 @@
 import clsx from "clsx";
 import { Dispatch, SetStateAction } from "react";
 
-interface Props {
+interface TabProps {
   tabs: string[];
   selectedTab: number;
   onChange: Dispatch<SetStateAction<number>>;
 }
 
-export const Tabs = ({ tabs, selectedTab, onChange }: Props) => (
-  <nav className="border-b border-gray-200 ">
-    <div className="border-b border-gray-200 text-center text-sm font-medium">
-      <ul className="-mb-px flex flex-wrap">
-        {tabs.map((tab, i) => {
-          const combinedClassname = clsx(
-            selectedTab === i
-              ? "text-black border-black"
-              : "text-gray-400 border-transparent",
-          );
-          return (
-            <li className="mr-2 ml-4 md:ml-8" key={i}>
-              <button
-                onClick={() => onChange(i)}
-                className={`${combinedClassname} inline-block rounded-t-lg border-b-2 p-2 pb-3 hover:border-black hover:text-black `}
-              >
-                {tab}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  </nav>
+export const Tabs = ({ tabs, selectedTab, onChange }: TabProps) => (
+  <ul className="flex w-full items-center justify-start border-b-2 border-gray-200 px-4 text-sm font-medium">
+    {tabs.map((tab, i) => {
+      const combinedClassname = clsx(
+        selectedTab === i
+          ? "text-black border-black"
+          : "text-gray-400 border-transparent",
+      );
+      return (
+        <li key={`tab-${tab}`} className="px-4">
+          <button
+            onClick={() => onChange(i)}
+            className={clsx(
+              "-mb-[2px] w-full border-b-2  pb-3 hover:border-black hover:text-black",
+              combinedClassname,
+            )}
+          >
+            {tab}
+          </button>
+        </li>
+      );
+    })}
+  </ul>
 );

@@ -14,6 +14,10 @@ import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkSearchableObjectTypes } from "src/hooks/useSkylarkObjectTypes";
+import {
+  ObjectAvailability,
+  ObjectAvailabilityStatus,
+} from "src/interfaces/skylark/objects";
 import { formatObjectField } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
@@ -21,7 +25,16 @@ import { RowActions } from "./rowActions";
 import { Search } from "./search";
 import { Table, TableCell } from "./table";
 
-const orderedKeys = ["__typename", "title", "name", "uid", "external_id"];
+const displayFields = ["title", "name"];
+const hardcodedColumns = ["availability"];
+const orderedKeys = [
+  "__typename",
+  "title",
+  "name",
+  "uid",
+  "external_id",
+  "data_source_id",
+];
 
 const columnHelper = createColumnHelper<object>();
 
@@ -44,13 +57,6 @@ const createColumns = (
     uid: string;
   }) => void,
 ) => {
-  const createdColumns = columns.map((column) =>
-    columnHelper.accessor(column, {
-      header: formatObjectField(column),
-      cell: (props) => <TableCell {...props} />,
-    }),
-  );
-
   const objectTypeColumn = columnHelper.accessor("__typename", {
     header: "",
     cell: ({ getValue }) => {
@@ -59,6 +65,46 @@ const createColumns = (
           label={getValue() as string}
           className="w-full bg-brand-primary"
         />
+      );
+    },
+  });
+
+  const createdColumns = columns
+    .filter(
+      (column) => ![...displayFields, ...hardcodedColumns].includes(column),
+    )
+    .map((column) =>
+      columnHelper.accessor(column, {
+        header: formatObjectField(column),
+        cell: (props) => <TableCell {...props} />,
+      }),
+    );
+
+  const displayNameColumn = columnHelper.accessor(
+    OBJECT_LIST_TABLE.columnIds.displayField,
+    {
+      header: formatObjectField("Display Field"),
+      cell: (props) => <TableCell {...props} />,
+    },
+  );
+
+  const availabilityColumn = columnHelper.accessor("availability", {
+    header: formatObjectField("Availability"),
+    cell: (props) => {
+      const { status } = props.getValue<ObjectAvailability>();
+      return (
+        <span
+          className={clsx(
+            "font-medium uppercase",
+            status === ObjectAvailabilityStatus.Active && "text-success",
+            status === ObjectAvailabilityStatus.Future && "text-warning",
+            status === ObjectAvailabilityStatus.Unavailable &&
+              "text-manatee-400",
+            status === ObjectAvailabilityStatus.Expired && "text-error",
+          )}
+        >
+          {status}
+        </span>
       );
     },
   });
@@ -91,6 +137,8 @@ const createColumns = (
 
   const orderedColumnArray = [
     objectTypeColumn,
+    displayNameColumn,
+    availabilityColumn,
     ...createdColumns,
     actionColumn,
   ];
@@ -124,15 +172,17 @@ export const ObjectList = ({
   } = useSearch(searchQuery, searchFilters);
 
   // Sorts objects using the preference array above, any others are added to the end randomly
-  const sortedHeaders = properties.sort((a: string, b: string) => {
-    if (orderedKeys.indexOf(a) === -1) {
-      return 1;
-    }
-    if (orderedKeys.indexOf(b) === -1) {
-      return -1;
-    }
-    return orderedKeys.indexOf(a) - orderedKeys.indexOf(b);
-  });
+  const sortedHeaders = useMemo(() => {
+    const orderedKeysThatExist = properties.filter((property) =>
+      orderedKeys.includes(property),
+    );
+
+    const orderedProperties = properties.filter(
+      (property) => ![...orderedKeys, ...displayFields].includes(property),
+    );
+
+    return [...hardcodedColumns, ...orderedKeysThatExist, ...orderedProperties];
+  }, [properties]);
 
   const parsedColumns = useMemo(
     () =>
@@ -149,9 +199,23 @@ export const ObjectList = ({
     VisibilityState | undefined
   >(undefined);
 
+  const searchDataWithPrimaryKey = useMemo(
+    () =>
+      searchData?.map((obj) => {
+        const primaryKey = displayFields.find((field) => !!obj[field]);
+        return {
+          ...obj,
+          [OBJECT_LIST_TABLE.columnIds.displayField]: primaryKey
+            ? obj[primaryKey]
+            : "",
+        };
+      }),
+    [searchData],
+  );
+
   const table = useReactTable({
     debugAll: false,
-    data: searchData || [],
+    data: searchDataWithPrimaryKey || [],
     columns: searchData ? parsedColumns : [],
     getCoreRowModel: getCoreRowModel(),
     state: {

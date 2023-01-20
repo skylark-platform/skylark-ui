@@ -6,6 +6,7 @@ export const SAAS_API_KEY = (process.env.NEXT_PUBLIC_SAAS_API_KEY ||
   process.env.SAAS_API_KEY) as string;
 export const OBJECT_LIST_TABLE = {
   columnIds: {
+    displayField: "skylark-ui-display-field",
     checkbox: "skylark-ui-select",
     actions: "skylark-ui-actions",
   },

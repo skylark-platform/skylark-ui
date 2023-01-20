@@ -1,13 +1,15 @@
-import dayjs from "dayjs";
 import { useState } from "react";
 
-import { Button } from "src/components/button";
-import { Expand, Spinner } from "src/components/icons";
-import { Pill } from "src/components/pill";
+import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { useGetObject } from "src/hooks/useGetObject";
 
-import { PanelImages, PanelMetadata } from "./panelSections";
+import {
+  PanelAvailability,
+  PanelHeader,
+  PanelImages,
+  PanelMetadata,
+} from "./panelSections";
 
 interface PanelProps {
   objectType: string;
@@ -22,15 +24,13 @@ const getTitle = (object: Record<string, string>, priority: string[]) => {
 
 const orderedKeys = ["title", "name", "uid"];
 
-const isAvailabilityFuture = (start: string) => dayjs().isBefore(start);
-
 export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   const { data, loading } = useGetObject(objectType, {
     uid: uid,
   });
   const [selectedTab, setSelectedTab] = useState(0);
 
-  console.log({ data });
+  console.log({ uid, data, loading });
 
   return (
     <>
@@ -50,43 +50,21 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
         )}
         {!loading && data && (
           <>
-            <div
-              data-testid="panel-header"
-              className="p-4 pb-2 md:p-8 md:py-6 "
-            >
-              <div className="flex flex-row pb-2">
-                <div className="flex flex-grow items-center gap-4">
-                  <Button disabled variant="primary">
-                    Edit metadata
-                  </Button>
-                  <Button
-                    Icon={<Expand className="stroke-gray-300" />}
-                    disabled
-                    variant="ghost"
-                  />
-                </div>
-
-                <Button variant="ghost" onClick={() => closePanel()}>
-                  Close
-                </Button>
-              </div>
-              <div className="flex flex-row items-center pt-5 ">
-                <Pill bgColor="#226DFF" label={objectType} />
-                <h1 className=" pl-4 text-xl font-bold uppercase">
-                  {getTitle(data.metadata, orderedKeys)}
-                </h1>
-              </div>
-            </div>
-
+            <PanelHeader
+              title={getTitle(data.metadata, orderedKeys)}
+              objectType={objectType}
+              closePanel={closePanel}
+            />
             <Tabs
-              tabs={["Metadata", "Imagery"]}
+              tabs={["Metadata", "Imagery", "Availability"]}
               selectedTab={selectedTab}
               onChange={setSelectedTab}
             />
-
             {selectedTab === 0 && <PanelMetadata metadata={data.metadata} />}
-
             {selectedTab === 1 && <PanelImages images={data.images} />}
+            {selectedTab === 2 && (
+              <PanelAvailability availability={data.availability} />
+            )}{" "}
           </>
         )}
       </section>
