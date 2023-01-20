@@ -120,6 +120,7 @@ export type SkylarkGraphQLObject = {
   uid: string;
   external_id: string;
   availability?: SkylarkGraphQLObjectRelationship;
+  images?: SkylarkGraphQLObjectRelationship;
 } & Record<string, string | number | boolean>;
 
 export type ParsedSkylarkObject = {
@@ -127,7 +128,7 @@ export type ParsedSkylarkObject = {
   uid: string;
   external_id: string;
   availability: ObjectAvailability;
-  images: ObjectImage[];
+  images?: ObjectImage[];
   relationships: string[];
 } & Record<
   string,

@@ -26,7 +26,7 @@ export interface GQLGetObjectResponse {
 export interface SkylarkObject {
   metadata: Record<string, string>;
   availability: ObjectAvailability;
-  images: ObjectImage[];
+  images?: ObjectImage[];
 }
 
 export const getObjectAvailabilityStatus = (
@@ -73,13 +73,13 @@ export const parseAvailability = (
   };
 };
 
-const parseImages = (
+export const parseRelationship = <T>(
   unparsedObject?: SkylarkGraphQLObjectRelationship,
-): ObjectImage[] => {
+): T[] => {
   if (!unparsedObject) {
     return [];
   }
-  return unparsedObject.objects as ObjectImage[];
+  return unparsedObject.objects as T[];
 };
 
 export const useGetObject = (
@@ -117,7 +117,7 @@ export const useGetObject = (
     data?.getObject.availability as SkylarkGraphQLObjectRelationship,
   );
 
-  const images = parseImages(
+  const images = parseRelationship<ObjectImage>(
     data?.getObject.images as SkylarkGraphQLObjectRelationship,
   );
 
