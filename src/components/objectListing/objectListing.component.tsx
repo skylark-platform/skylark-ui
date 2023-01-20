@@ -111,7 +111,6 @@ const createColumns = (
     header: formatObjectField("Images"),
     cell: (props) => {
       const images = props.getValue<ObjectImage[]>();
-      // console.log("images", images);
       if (!images || images.length === 0) {
         return "";
       }
@@ -120,12 +119,7 @@ const createColumns = (
         <>
           {images.map(({ uid, url, title }) => (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={url}
-              key={`${props.row.id}-${uid}`}
-              alt={title}
-              className="mr-0.5 object-cover"
-            />
+            <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
           ))}
         </>
       );

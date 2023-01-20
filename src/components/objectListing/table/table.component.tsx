@@ -42,22 +42,25 @@ const customColumnStyling: Record<
   [OBJECT_LIST_TABLE.columnIds.displayField]: {
     width: "min-w-52 max-w-52",
     className: {
-      all: "md:sticky -left-px bg-white z-10 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-0",
-      header: "pl-0",
-      withCheckbox: "left-5",
+      all: "md:sticky -left-px bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-0",
+      header: "",
+      withCheckbox: "left-7",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.objectType]: {
     width: "min-w-24 max-w-24",
+    className: {
+      all: "px-0 pr-3",
+    },
   },
   [OBJECT_LIST_TABLE.columnIds.checkbox]: {
-    width: "min-w-6 max-w-6",
-    className: { all: "pr-2 pl-0 sticky -left-px bg-white" },
+    width: "min-w-8 max-w-8",
+    className: { all: "pr-4 pl-0 sticky -left-px bg-white" },
   },
   images: {
     width: "min-w-24 max-w-24",
     className: {
-      cell: "flex overflow-hidden h-8 pb-0 pt-0.5 mr-2",
+      cell: "flex overflow-hidden h-7 md:h-8 pb-0 pt-0.5 md:pt-1 mr-2 [&>img]:mr-0.5 [&>img]:object-cover",
     },
   },
 };
