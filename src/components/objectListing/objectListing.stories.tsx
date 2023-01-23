@@ -73,7 +73,10 @@ WithFiltersOpen.play = async ({ canvasElement }) => {
 
   const filtersButton = canvas.getByRole("button");
 
-  await canvas.findAllByText("Short title");
+  await canvas.findAllByText(
+    GQLGameOfThronesSearchResults.data.search.objects[0]
+      .__Asset__title as string,
+  );
 
   await userEvent.click(filtersButton);
 };
