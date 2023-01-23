@@ -6,8 +6,10 @@ import {
   FlatfileObjectsCreatedInSkylark,
   FlatfileRow,
 } from "src/interfaces/flatfile/responses";
-import { SkylarkImportedObject } from "src/interfaces/skylark/import";
-import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
+import {
+  SkylarkImportedObject,
+  SkylarkObjectMeta,
+} from "src/interfaces/skylark";
 import { SkylarkClient } from "src/lib/graphql/skylark/client";
 import { getSkylarkObjectOperations } from "src/lib/skylark/introspection";
 

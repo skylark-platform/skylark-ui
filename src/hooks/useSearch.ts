@@ -2,23 +2,21 @@ import { useQuery } from "@apollo/client";
 import { useMemo } from "react";
 
 import {
-  ObjectImage,
+  SkylarkGraphQLObjectImage,
   ParsedSkylarkObject,
   SkylarkGraphQLObject,
-} from "src/interfaces/skylark/objects";
+} from "src/interfaces/skylark";
+import { GQLSkylarkSearchResponse } from "src/interfaces/skylark";
 import {
   createSearchObjectsQuery,
   defaultValidBlankQuery,
 } from "src/lib/graphql/skylark/dynamicQueries";
+import {
+  parseObjectAvailability,
+  parseObjectRelationship,
+} from "src/lib/skylark/parsers";
 
-import { parseAvailability, parseRelationship } from "./useGetObject";
 import { useAllSearchableObjectMeta } from "./useSkylarkObjectTypes";
-
-export interface GQLSearchResponse {
-  search: {
-    objects: (SkylarkGraphQLObject | null)[];
-  };
-}
 
 export interface SearchFilters {
   objectTypes: string[] | null;
@@ -59,7 +57,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     [searchableObjects, filters.objectTypes],
   );
 
-  const { data: searchResponse, ...rest } = useQuery<GQLSearchResponse>(
+  const { data: searchResponse, ...rest } = useQuery<GQLSkylarkSearchResponse>(
     query || defaultValidBlankQuery,
     {
       skip: !query,
@@ -85,9 +83,10 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
 
     const parsedObjects = normalisedObjects.map((obj): ParsedSkylarkObject => {
       return {
-        ...obj,
-        availability: parseAvailability(obj.availability),
-        images: parseRelationship<ObjectImage>(obj.images),
+        objectType: obj.__typename,
+        metadata: obj,
+        availability: parseObjectAvailability(obj.availability),
+        images: parseObjectRelationship<SkylarkGraphQLObjectImage>(obj.images),
         relationships: [] as string[],
       };
     });

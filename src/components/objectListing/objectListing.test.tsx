@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react";
 import { DocumentNode } from "graphql";
 
-import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
+import { SkylarkObjectMeta } from "src/interfaces/skylark";
 import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   GET_SEARCHABLE_OBJECTS,

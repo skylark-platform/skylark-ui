@@ -1,6 +1,6 @@
 import { DocumentNode } from "graphql";
 
-import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
+import { SkylarkObjectMeta } from "src/interfaces/skylark";
 import { createSearchObjectsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 
 import {

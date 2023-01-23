@@ -5,7 +5,11 @@ import {
 import {
   NormalizedObjectFieldType,
   NormalizedObjectField,
-} from "src/interfaces/skylark/objects";
+  ParsedSkylarkObjectAvailability,
+  SkylarkGraphQLObjectRelationship,
+} from "src/interfaces/skylark";
+
+import { getObjectAvailabilityStatus } from "./availability";
 
 const parseObjectInputType = (
   name?: GQLScalars | string | null,
@@ -80,4 +84,32 @@ export const parseObjectRelationships = (
       ?.find((input) => input.name === "relationships")
       ?.type.inputFields.map((relationship) => relationship.name) || []
   );
+};
+
+export const parseObjectAvailability = (
+  unparsedObject?: SkylarkGraphQLObjectRelationship,
+): ParsedSkylarkObjectAvailability => {
+  if (!unparsedObject) {
+    return {
+      status: null,
+      objects: [],
+    };
+  }
+
+  const objects =
+    unparsedObject.objects as ParsedSkylarkObjectAvailability["objects"];
+
+  return {
+    status: getObjectAvailabilityStatus(objects),
+    objects,
+  };
+};
+
+export const parseObjectRelationship = <T>(
+  unparsedObject?: SkylarkGraphQLObjectRelationship,
+): T[] => {
+  if (!unparsedObject) {
+    return [];
+  }
+  return unparsedObject.objects as T[];
 };

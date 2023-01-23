@@ -13,7 +13,7 @@ import { FlatfileTemplate } from "src/interfaces/flatfile/template";
 import {
   NormalizedObjectField,
   SkylarkObjectType,
-} from "src/interfaces/skylark/objects";
+} from "src/interfaces/skylark";
 import { openFlatfileImportClient } from "src/lib/flatfile";
 import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
 import { createAccountIdentifier, pause } from "src/lib/utils";

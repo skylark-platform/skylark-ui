@@ -1,7 +1,7 @@
 import { Button } from "src/components/button";
 import { Expand } from "src/components/icons";
 import { Pill } from "src/components/pill";
-import { SkylarkObjectType } from "src/interfaces/skylark/objects";
+import { SkylarkObjectType } from "src/interfaces/skylark";
 
 interface PanelHeaderProps {
   title: string;

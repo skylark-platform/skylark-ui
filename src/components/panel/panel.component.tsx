@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { useGetObject } from "src/hooks/useGetObject";
+import { ParsedSkylarkObjectMetadata } from "src/interfaces/skylark";
 
 import {
   PanelAvailability,
@@ -17,9 +18,12 @@ interface PanelProps {
   uid: string;
 }
 
-const getTitle = (object: Record<string, string>, priority: string[]) => {
+const getTitle = (
+  object: ParsedSkylarkObjectMetadata,
+  priority: string[],
+): string => {
   const [title] = priority.map((key) => object[key]).filter((key) => key);
-  return title;
+  return title as string;
 };
 
 const orderedKeys = ["title", "name", "uid"];
@@ -73,7 +77,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
             )}
             {selectedTab === "Availability" && (
               <PanelAvailability availability={data.availability} />
-            )}{" "}
+            )}
           </>
         )}
       </section>

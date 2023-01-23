@@ -7,7 +7,7 @@ import {
   createCheckboxOptions,
 } from "src/components/checkboxGrid/checkboxGrid.component";
 import { SearchFilters } from "src/hooks/useSearch";
-import { SkylarkObjectType } from "src/interfaces/skylark/objects";
+import { SkylarkObjectType } from "src/interfaces/skylark";
 
 interface SearchFilterProps {
   activeFilters: SearchFilters;

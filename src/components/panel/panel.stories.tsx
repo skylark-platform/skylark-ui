@@ -2,7 +2,7 @@ import { ComponentStory } from "@storybook/react";
 import { DocumentNode } from "graphql";
 import React from "react";
 
-import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
+import { SkylarkObjectMeta } from "src/interfaces/skylark";
 import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import { GET_SKYLARK_SCHEMA } from "src/lib/graphql/skylark/queries";
 import {

@@ -1,86 +1,23 @@
 import { useQuery } from "@apollo/client";
-import dayjs from "dayjs";
 
 import {
-  ObjectAvailability,
-  ObjectAvailabilityStatus,
-  ObjectImage,
+  SkylarkGraphQLObjectImage,
+  ParsedSkylarkObject,
   SkylarkGraphQLObjectRelationship,
   SkylarkObjectType,
-} from "src/interfaces/skylark/objects";
+} from "src/interfaces/skylark";
+import { GQLSkylarkGetObjectResponse } from "src/interfaces/skylark";
 import {
   createGetObjectQuery,
   defaultValidBlankQuery,
 } from "src/lib/graphql/skylark/dynamicQueries";
+import {
+  parseObjectAvailability,
+  parseObjectRelationship,
+} from "src/lib/skylark/parsers";
 import { isObject } from "src/lib/utils";
 
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
-
-export interface GQLGetObjectResponse {
-  getObject: Record<
-    string,
-    null | string | number | SkylarkGraphQLObjectRelationship
-  >;
-}
-
-export interface SkylarkObject {
-  metadata: Record<string, string>;
-  availability: ObjectAvailability;
-  images?: ObjectImage[];
-}
-
-export const getObjectAvailabilityStatus = (
-  availabilityObjects: ObjectAvailability["objects"],
-): ObjectAvailability["status"] => {
-  if (availabilityObjects.length === 0) {
-    return ObjectAvailabilityStatus.Unavailable;
-  }
-
-  const now = dayjs();
-
-  const nonExpiredAvailability = availabilityObjects.filter(({ end }) =>
-    now.isBefore(end),
-  );
-
-  if (nonExpiredAvailability.length === 0) {
-    return ObjectAvailabilityStatus.Expired;
-  }
-
-  const isFuture = nonExpiredAvailability.every(({ start }) =>
-    now.isBefore(start),
-  );
-
-  return isFuture
-    ? ObjectAvailabilityStatus.Future
-    : ObjectAvailabilityStatus.Active;
-};
-
-export const parseAvailability = (
-  unparsedObject?: SkylarkGraphQLObjectRelationship,
-): ObjectAvailability => {
-  if (!unparsedObject) {
-    return {
-      status: null,
-      objects: [],
-    };
-  }
-
-  const objects = unparsedObject.objects as ObjectAvailability["objects"];
-
-  return {
-    status: getObjectAvailabilityStatus(objects),
-    objects,
-  };
-};
-
-export const parseRelationship = <T>(
-  unparsedObject?: SkylarkGraphQLObjectRelationship,
-): T[] => {
-  if (!unparsedObject) {
-    return [];
-  }
-  return unparsedObject.objects as T[];
-};
 
 export const useGetObject = (
   objectType: SkylarkObjectType,
@@ -90,7 +27,7 @@ export const useGetObject = (
 
   const query = createGetObjectQuery(objectOperations);
 
-  const { data, ...rest } = useQuery<GQLGetObjectResponse>(
+  const { data, ...rest } = useQuery<GQLSkylarkGetObjectResponse>(
     query || defaultValidBlankQuery,
     {
       skip: !query,
@@ -101,30 +38,36 @@ export const useGetObject = (
   );
 
   // TODO split into Language and Global
-  const metadata: Record<string, string> = data?.getObject
-    ? Object.keys(data?.getObject).reduce((prev, key) => {
-        return {
-          ...prev,
-          ...(!isObject(data.getObject[key])
-            ? { [key]: data.getObject[key] }
-            : {}),
-        };
-      }, {})
-    : {};
+  const metadata: ParsedSkylarkObject["metadata"] = data?.getObject
+    ? {
+        ...Object.keys(data?.getObject).reduce((prev, key) => {
+          return {
+            ...prev,
+            ...(!isObject(data.getObject[key])
+              ? { [key]: data.getObject[key] }
+              : {}),
+          };
+        }, {}),
+        uid: data.getObject.uid,
+        external_id: data.getObject.uid,
+      }
+    : { uid: lookupValue.uid || "", external_id: lookupValue.externalId || "" };
 
   // TODO improve this to remove the "as"
-  const availability = parseAvailability(
+  const availability = parseObjectAvailability(
     data?.getObject.availability as SkylarkGraphQLObjectRelationship,
   );
 
-  const images = parseRelationship<ObjectImage>(
+  const images = parseObjectRelationship<SkylarkGraphQLObjectImage>(
     data?.getObject.images as SkylarkGraphQLObjectRelationship,
   );
 
-  const parsedObject: SkylarkObject | undefined = data?.getObject && {
+  const parsedObject: ParsedSkylarkObject | undefined = data?.getObject && {
+    objectType: data.getObject.__typename,
     metadata,
     availability,
     images,
+    relationships: [],
   };
 
   return {

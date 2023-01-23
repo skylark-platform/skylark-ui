@@ -3,40 +3,41 @@ import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
 
 import {
-  ObjectAvailability,
-  ObjectAvailabilityStatus,
-} from "src/interfaces/skylark/objects";
+  ParsedSkylarkObjectAvailability,
+  ParsedSkylarkObjectAvailabilityStatus,
+} from "src/interfaces/skylark";
 
 dayjs.extend(LocalizedFormat);
 
 interface PanelAvailabilityProps {
-  availability: ObjectAvailability;
+  availability: ParsedSkylarkObjectAvailability;
 }
 
 export const getSingleAvailabilityStatus = (
   now: dayjs.Dayjs,
   start: string,
   end: string,
-): ObjectAvailability["status"] => {
+): ParsedSkylarkObjectAvailability["status"] => {
   if (now.isAfter(end)) {
-    return ObjectAvailabilityStatus.Expired;
+    return ParsedSkylarkObjectAvailabilityStatus.Expired;
   }
 
   return now.isBefore(start)
-    ? ObjectAvailabilityStatus.Future
-    : ObjectAvailabilityStatus.Active;
+    ? ParsedSkylarkObjectAvailabilityStatus.Future
+    : ParsedSkylarkObjectAvailabilityStatus.Active;
 };
 
 export const PanelAvailability = ({ availability }: PanelAvailabilityProps) => {
   const info: {
     label: string;
-    key: keyof Omit<ObjectAvailability["objects"][0], "dimensions">;
+    key: keyof Omit<
+      ParsedSkylarkObjectAvailability["objects"][0],
+      "dimensions"
+    >;
   }[] = [
     { label: "Start", key: "start" },
     { label: "End", key: "end" },
     { label: "Timezone", key: "timezone" },
-    // { label: "Slug", key: "slug" },
-    // { label: "External ID", key: "external_id" },
   ];
 
   const now = dayjs();
@@ -50,9 +51,12 @@ export const PanelAvailability = ({ availability }: PanelAvailabilityProps) => {
             key={obj.slug}
             className={clsx(
               "rounded-lg border-2 p-4 shadow",
-              status === ObjectAvailabilityStatus.Active && "border-success",
-              status === ObjectAvailabilityStatus.Expired && "border-error",
-              status === ObjectAvailabilityStatus.Future && "border-warning",
+              status === ParsedSkylarkObjectAvailabilityStatus.Active &&
+                "border-success",
+              status === ParsedSkylarkObjectAvailabilityStatus.Expired &&
+                "border-error",
+              status === ParsedSkylarkObjectAvailabilityStatus.Future &&
+                "border-warning",
             )}
           >
             <h3 className="font-bold">

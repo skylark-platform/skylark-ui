@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { SearchFilter } from "src/components/objectListing/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
-import { SkylarkObjectType } from "src/interfaces/skylark/objects";
+import { SkylarkObjectType } from "src/interfaces/skylark";
 
 import { SearchInput } from "./searchInput/searchInput.component";
 

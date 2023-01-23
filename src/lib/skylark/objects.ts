@@ -4,7 +4,7 @@ import {
   SkylarkObjectMeta,
   SkylarkObjectOperations,
   BuiltInSkylarkObjectType,
-} from "src/interfaces/skylark/objects";
+} from "src/interfaces/skylark";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
 

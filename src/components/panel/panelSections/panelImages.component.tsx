@@ -1,8 +1,11 @@
-import { ObjectImage } from "src/interfaces/skylark/objects";
+import { SkylarkGraphQLObjectImage } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
-export const PanelImages = ({ images }: { images: ObjectImage[] }) => {
-  console.log("images", images);
+export const PanelImages = ({
+  images,
+}: {
+  images: SkylarkGraphQLObjectImage[];
+}) => {
   return (
     <div className=" h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
       {images.map((image) => (
@@ -18,9 +21,13 @@ export const PanelImages = ({ images }: { images: ObjectImage[] }) => {
               <img
                 className="max-h-72 w-full object-cover"
                 src={image.url}
-                alt="Picture of the author"
-                // width={500}
-                // height={500}
+                alt={
+                  image.title ||
+                  image.description ||
+                  `Preview for ${
+                    image.url || image.slug || image.external_id || image.uid
+                  }`
+                }
               />
             </div>
           </div>

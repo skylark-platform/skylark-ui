@@ -43,7 +43,6 @@ const customColumnStyling: Record<
     width: "min-w-52 max-w-52",
     className: {
       all: "md:sticky -left-px bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-0",
-      header: "",
       withCheckbox: "left-7",
     },
   },

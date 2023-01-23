@@ -2,10 +2,7 @@ import {
   GQLSkylarkObjectTypesResponse,
   GQLSkylarkSchemaQueriesMutations,
 } from "src/interfaces/graphql/introspection";
-import {
-  SkylarkObjectMeta,
-  SkylarkObjectTypes,
-} from "src/interfaces/skylark/objects";
+import { SkylarkObjectMeta, SkylarkObjectTypes } from "src/interfaces/skylark";
 import { SkylarkClient } from "src/lib/graphql/skylark/client";
 import {
   GET_SKYLARK_SCHEMA,

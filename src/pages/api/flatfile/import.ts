@@ -4,7 +4,7 @@ import {
   FLATFILE_ACCESS_KEY_ID,
   FLATFILE_SECRET_KEY,
 } from "src/constants/flatfile";
-import { SkylarkImportedObject } from "src/interfaces/skylark/import";
+import { SkylarkImportedObject } from "src/interfaces/skylark";
 import {
   createFlatfileObjectsInSkylark,
   exchangeFlatfileAccessKey,

@@ -4,7 +4,7 @@ import {
   NormalizedObjectField,
   SkylarkObjectMeta,
   SkylarkObjectOperations,
-} from "src/interfaces/skylark/objects";
+} from "src/interfaces/skylark";
 
 import {
   createGetObjectQuery,

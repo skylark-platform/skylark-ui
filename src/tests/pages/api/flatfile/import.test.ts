@@ -5,7 +5,7 @@ import { createMocks, Mocks } from "node-mocks-http";
 
 import * as constants from "src/constants/flatfile";
 import { FlatfileRow } from "src/interfaces/flatfile/responses";
-import { SkylarkImportedObject } from "src/interfaces/skylark/import";
+import { SkylarkImportedObject } from "src/interfaces/skylark";
 import * as flatfile from "src/lib/flatfile";
 import * as flatfileClient from "src/lib/graphql/flatfile/client";
 import { GET_FINAL_DATABASE_VIEW } from "src/lib/graphql/flatfile/queries";

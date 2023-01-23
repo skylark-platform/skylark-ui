@@ -1,5 +1,5 @@
-import { GQLSearchResponse } from "src/hooks/useSearch";
-import { SkylarkGraphQLObject } from "src/interfaces/skylark/objects";
+import { SkylarkGraphQLObject } from "src/interfaces/skylark";
+import { GQLSkylarkSearchResponse } from "src/interfaces/skylark";
 
 export const GQLSkylarkSearchQueryFixture = {
   search: {
@@ -18,4 +18,4 @@ export const GQLSkylarkSearchQueryFixture = {
         } as SkylarkGraphQLObject),
     ),
   },
-} as GQLSearchResponse;
+} as GQLSkylarkSearchResponse;

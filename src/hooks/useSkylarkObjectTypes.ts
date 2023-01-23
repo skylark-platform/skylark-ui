@@ -5,7 +5,7 @@ import {
   GQLSkylarkSchemaQueriesMutations,
   GQLSkylarkSearchableObjectsUnionResponse,
 } from "src/interfaces/graphql/introspection";
-import { SkylarkObjectType } from "src/interfaces/skylark/objects";
+import { SkylarkObjectType } from "src/interfaces/skylark";
 import {
   GET_SKYLARK_SCHEMA,
   GET_SKYLARK_OBJECT_TYPES,

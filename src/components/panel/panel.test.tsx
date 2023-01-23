@@ -2,7 +2,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { DocumentNode } from "graphql";
 
-import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
+import { SkylarkObjectMeta } from "src/interfaces/skylark";
 import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import { GET_SKYLARK_SCHEMA } from "src/lib/graphql/skylark/queries";
 import {

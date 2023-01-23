@@ -15,10 +15,10 @@ import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkSearchableObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ObjectAvailability,
-  ObjectAvailabilityStatus,
-  ObjectImage,
-} from "src/interfaces/skylark/objects";
+  ParsedSkylarkObjectAvailability,
+  ParsedSkylarkObjectAvailabilityStatus,
+  SkylarkGraphQLObjectImage,
+} from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
@@ -89,16 +89,19 @@ const createColumns = (
   const availabilityColumn = columnHelper.accessor("availability", {
     header: formatObjectField("Availability"),
     cell: (props) => {
-      const { status } = props.getValue<ObjectAvailability>();
+      const { status } = props.getValue<ParsedSkylarkObjectAvailability>();
       return (
         <span
           className={clsx(
             "font-medium uppercase",
-            status === ObjectAvailabilityStatus.Active && "text-success",
-            status === ObjectAvailabilityStatus.Future && "text-warning",
-            status === ObjectAvailabilityStatus.Unavailable &&
+            status === ParsedSkylarkObjectAvailabilityStatus.Active &&
+              "text-success",
+            status === ParsedSkylarkObjectAvailabilityStatus.Future &&
+              "text-warning",
+            status === ParsedSkylarkObjectAvailabilityStatus.Unavailable &&
               "text-manatee-400",
-            status === ObjectAvailabilityStatus.Expired && "text-error",
+            status === ParsedSkylarkObjectAvailabilityStatus.Expired &&
+              "text-error",
           )}
         >
           {status}
@@ -107,10 +110,11 @@ const createColumns = (
     },
   });
 
+  // TODO only add/create this column if the schema has images. Or always created it but hide it when it doesn't have images
   const imagesColumn = columnHelper.accessor("images", {
     header: formatObjectField("Images"),
     cell: (props) => {
-      const images = props.getValue<ObjectImage[]>();
+      const images = props.getValue<SkylarkGraphQLObjectImage[]>();
       if (!images || images.length === 0) {
         return "";
       }
@@ -220,11 +224,11 @@ export const ObjectList = ({
   const searchDataWithDisplayField = useMemo(
     () =>
       searchData?.map((obj) => {
-        const primaryKey = displayFields.find((field) => !!obj[field]);
+        const primaryKey = displayFields.find((field) => !!obj.metadata[field]);
         return {
           ...obj,
           [OBJECT_LIST_TABLE.columnIds.displayField]: primaryKey
-            ? obj[primaryKey]
+            ? obj.metadata[primaryKey]
             : "",
         };
       }),
