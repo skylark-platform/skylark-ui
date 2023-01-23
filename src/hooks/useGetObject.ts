@@ -23,7 +23,7 @@ export const useGetObject = (
   objectType: SkylarkObjectType,
   lookupValue: { externalId?: string; uid?: string },
 ) => {
-  const { object: objectOperations } = useSkylarkObjectOperations(objectType);
+  const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const query = createGetObjectQuery(objectOperations);
 

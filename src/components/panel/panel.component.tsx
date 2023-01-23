@@ -18,6 +18,12 @@ interface PanelProps {
   uid: string;
 }
 
+enum PanelTab {
+  Metadata = "Metadata",
+  Imagery = "Imagery",
+  Availability = "Availability",
+}
+
 const getTitle = (
   object: ParsedSkylarkObjectMetadata,
   priority: string[],
@@ -33,13 +39,13 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
     uid: uid,
   });
 
-  const tabs = ["Metadata", data?.images && "Imagery", "Availability"].filter(
-    (tab) => !!tab,
-  ) as string[];
+  const tabs = [
+    PanelTab.Metadata,
+    data?.images && PanelTab.Imagery,
+    PanelTab.Availability,
+  ].filter((tab) => !!tab) as string[];
 
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
-
-  console.log({ uid, data, loading });
 
   return (
     <>
@@ -69,13 +75,13 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
               selectedTab={selectedTab}
               onChange={setSelectedTab}
             />
-            {selectedTab === "Metadata" && (
+            {selectedTab === PanelTab.Metadata && (
               <PanelMetadata metadata={data.metadata} />
             )}
-            {selectedTab === "Imagery" && data.images && (
+            {selectedTab === PanelTab.Imagery && data.images && (
               <PanelImages images={data.images} />
             )}
-            {selectedTab === "Availability" && (
+            {selectedTab === PanelTab.Availability && (
               <PanelAvailability availability={data.availability} />
             )}
           </>

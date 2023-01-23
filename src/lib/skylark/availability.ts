@@ -5,6 +5,20 @@ import {
   ParsedSkylarkObjectAvailabilityStatus,
 } from "src/interfaces/skylark";
 
+export const getSingleAvailabilityStatus = (
+  now: dayjs.Dayjs,
+  start: string,
+  end: string,
+): ParsedSkylarkObjectAvailability["status"] => {
+  if (now.isAfter(end)) {
+    return ParsedSkylarkObjectAvailabilityStatus.Expired;
+  }
+
+  return now.isBefore(start)
+    ? ParsedSkylarkObjectAvailabilityStatus.Future
+    : ParsedSkylarkObjectAvailabilityStatus.Active;
+};
+
 export const getObjectAvailabilityStatus = (
   availabilityObjects: ParsedSkylarkObjectAvailability["objects"],
 ): ParsedSkylarkObjectAvailability["status"] => {

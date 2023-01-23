@@ -50,13 +50,13 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
     useQuery<GQLSkylarkSchemaQueriesMutations>(GET_SKYLARK_SCHEMA);
 
   if (!data || !objectType) {
-    return { object: null, ...rest };
+    return { objectOperations: null, ...rest };
   }
 
-  const object = getObjectOperations(objectType, data.__schema);
+  const objectOperations = getObjectOperations(objectType, data.__schema);
 
   return {
-    object,
+    objectOperations,
     ...rest,
   };
 };

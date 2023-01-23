@@ -6,26 +6,13 @@ import {
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObjectAvailabilityStatus,
 } from "src/interfaces/skylark";
+import { getSingleAvailabilityStatus } from "src/lib/skylark/availability";
 
 dayjs.extend(LocalizedFormat);
 
 interface PanelAvailabilityProps {
   availability: ParsedSkylarkObjectAvailability;
 }
-
-export const getSingleAvailabilityStatus = (
-  now: dayjs.Dayjs,
-  start: string,
-  end: string,
-): ParsedSkylarkObjectAvailability["status"] => {
-  if (now.isAfter(end)) {
-    return ParsedSkylarkObjectAvailabilityStatus.Expired;
-  }
-
-  return now.isBefore(start)
-    ? ParsedSkylarkObjectAvailabilityStatus.Future
-    : ParsedSkylarkObjectAvailabilityStatus.Active;
-};
 
 export const PanelAvailability = ({ availability }: PanelAvailabilityProps) => {
   const info: {
