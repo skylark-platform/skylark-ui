@@ -12,7 +12,7 @@ import {
 } from "src/lib/flatfile";
 import { createFlatfileClient } from "src/lib/graphql/flatfile/client";
 import { createBasicSkylarkClient } from "src/lib/graphql/skylark/client";
-import { getSkylarkObjectTypes } from "src/lib/skylark/introspection";
+import { getSkylarkObjectTypes } from "src/lib/skylark/introspection/introspection";
 
 export default async function handler(
   req: NextApiRequest,

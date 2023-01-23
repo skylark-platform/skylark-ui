@@ -24,7 +24,6 @@ const getObjectFieldsFromGetQuery = (
 
 const objectHasRelationship = (
   relationship: "availability" | "images",
-
   getQuery: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"][0],
 ) => {
   if (!getQuery || !getQuery.type || !getQuery.type.fields) {

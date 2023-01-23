@@ -4,13 +4,16 @@ import {
   GET_SKYLARK_OBJECT_TYPES,
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
-import * as fixtures from "src/tests/fixtures";
-import { SKYLARK_OBJECT_TYPES_FIXTURE } from "src/tests/fixtures";
 
 import {
   getSkylarkObjectOperations,
   getSkylarkObjectTypes,
 } from "./introspection";
+import {
+  GQLSkylarkObjectTypesQueryFixture,
+  GQLSkylarkSchemaQueryFixture,
+  SKYLARK_OBJECT_TYPES_FIXTURE,
+} from "./introspection.fixture";
 
 jest.mock("src/lib/graphql/skylark/client", () => ({
   ...jest.requireActual("src/lib/graphql/skylark/client"),
@@ -30,7 +33,7 @@ describe("getSkylarkObjectOperations", () => {
 
     schemaQueryHandler = jest
       .fn()
-      .mockResolvedValue(fixtures.GQLSkylarkSchemaQueryFixture);
+      .mockResolvedValue(GQLSkylarkSchemaQueryFixture);
 
     mockClient.setRequestHandler(GET_SKYLARK_SCHEMA, schemaQueryHandler);
   });
@@ -117,7 +120,7 @@ describe("getSkylarkObjectTypes", () => {
 
     queryHandler = jest
       .fn()
-      .mockResolvedValue(fixtures.GQLSkylarkObjectTypesQueryFixture);
+      .mockResolvedValue(GQLSkylarkObjectTypesQueryFixture);
 
     mockClient.setRequestHandler(GET_SKYLARK_OBJECT_TYPES, queryHandler);
   });

@@ -16,7 +16,7 @@ import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkSearchableObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectAvailability,
-  ParsedSkylarkObjectAvailabilityStatus,
+  AvailabilityStatus,
   SkylarkGraphQLObjectImage,
 } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
@@ -95,14 +95,10 @@ const createColumns = (
         <span
           className={clsx(
             "font-medium uppercase",
-            status === ParsedSkylarkObjectAvailabilityStatus.Active &&
-              "text-success",
-            status === ParsedSkylarkObjectAvailabilityStatus.Future &&
-              "text-warning",
-            status === ParsedSkylarkObjectAvailabilityStatus.Unavailable &&
-              "text-manatee-400",
-            status === ParsedSkylarkObjectAvailabilityStatus.Expired &&
-              "text-error",
+            status === AvailabilityStatus.Active && "text-success",
+            status === AvailabilityStatus.Future && "text-warning",
+            status === AvailabilityStatus.Unavailable && "text-manatee-400",
+            status === AvailabilityStatus.Expired && "text-error",
           )}
         >
           {status}

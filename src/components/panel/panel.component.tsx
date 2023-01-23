@@ -24,15 +24,11 @@ enum PanelTab {
   Availability = "Availability",
 }
 
-const getTitle = (
-  object: ParsedSkylarkObjectMetadata,
-  priority: string[],
-): string => {
+const getTitle = (object: ParsedSkylarkObjectMetadata): string => {
+  const priority = ["title", "name", "uid"];
   const [title] = priority.map((key) => object[key]).filter((key) => key);
   return title as string;
 };
-
-const orderedKeys = ["title", "name", "uid"];
 
 export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   const { data, loading } = useGetObject(objectType, {
@@ -66,7 +62,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
         {!loading && data && (
           <>
             <PanelHeader
-              title={getTitle(data.metadata, orderedKeys)}
+              title={getTitle(data.metadata)}
               objectType={objectType}
               closePanel={closePanel}
             />

@@ -4,7 +4,7 @@ import { createMockClient, MockApolloClient } from "mock-apollo-client";
 
 import { FlatfileRow } from "src/interfaces/flatfile/responses";
 import { GET_SKYLARK_SCHEMA } from "src/lib/graphql/skylark/queries";
-import * as fixtures from "src/tests/fixtures";
+import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 
 import {
   createFlatfileObjectsInSkylark,
@@ -55,11 +55,11 @@ describe("createFlatfileObjectsInSkylark", () => {
 
   const CREATE_EPISODE_MUTATION = gql`
     mutation createEpisode_batchId {
-      createEpisode_batchId_1: createEpisode(episode: { title: "${title}", synopsis: "${synopsis}", type: ${type} }) {
+      createEpisode_batchId_1: createEpisode(episode: { title: "${title}", synopsis: "${synopsis}", type: "${type}" }) {
         uid
         external_id
       }
-      createEpisode_batchId_2: createEpisode(episode: { title: "${title}", slug: "${slug}", type: ${type} }) {
+      createEpisode_batchId_2: createEpisode(episode: { title: "${title}", slug: "${slug}", type: "${type}" }) {
         uid
         external_id
       }
@@ -94,7 +94,7 @@ describe("createFlatfileObjectsInSkylark", () => {
 
     schemaQueryHandler = jest
       .fn()
-      .mockResolvedValue(fixtures.GQLSkylarkSchemaQueryFixture);
+      .mockResolvedValue(GQLSkylarkSchemaQueryFixture);
     createEpisodeMutationHandler = jest.fn().mockResolvedValue({
       data: {
         createEpisode_batchId_1: {

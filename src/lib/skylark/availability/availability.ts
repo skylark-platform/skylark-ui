@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 
 import {
   ParsedSkylarkObjectAvailability,
-  ParsedSkylarkObjectAvailabilityStatus,
+  AvailabilityStatus,
 } from "src/interfaces/skylark";
 
 export const getSingleAvailabilityStatus = (
@@ -11,19 +11,19 @@ export const getSingleAvailabilityStatus = (
   end: string,
 ): ParsedSkylarkObjectAvailability["status"] => {
   if (now.isAfter(end)) {
-    return ParsedSkylarkObjectAvailabilityStatus.Expired;
+    return AvailabilityStatus.Expired;
   }
 
   return now.isBefore(start)
-    ? ParsedSkylarkObjectAvailabilityStatus.Future
-    : ParsedSkylarkObjectAvailabilityStatus.Active;
+    ? AvailabilityStatus.Future
+    : AvailabilityStatus.Active;
 };
 
 export const getObjectAvailabilityStatus = (
   availabilityObjects: ParsedSkylarkObjectAvailability["objects"],
 ): ParsedSkylarkObjectAvailability["status"] => {
   if (availabilityObjects.length === 0) {
-    return ParsedSkylarkObjectAvailabilityStatus.Unavailable;
+    return AvailabilityStatus.Unavailable;
   }
 
   const now = dayjs();
@@ -33,14 +33,12 @@ export const getObjectAvailabilityStatus = (
   );
 
   if (nonExpiredAvailability.length === 0) {
-    return ParsedSkylarkObjectAvailabilityStatus.Expired;
+    return AvailabilityStatus.Expired;
   }
 
   const isFuture = nonExpiredAvailability.every(({ start }) =>
     now.isBefore(start),
   );
 
-  return isFuture
-    ? ParsedSkylarkObjectAvailabilityStatus.Future
-    : ParsedSkylarkObjectAvailabilityStatus.Active;
+  return isFuture ? AvailabilityStatus.Future : AvailabilityStatus.Active;
 };

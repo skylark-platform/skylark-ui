@@ -7,7 +7,7 @@ import {
   SkylarkObjectType,
 } from "./objectOperations";
 
-export enum ParsedSkylarkObjectAvailabilityStatus {
+export enum AvailabilityStatus {
   Active = "Active",
   Future = "Future",
   Expired = "Expired",
@@ -15,7 +15,7 @@ export enum ParsedSkylarkObjectAvailabilityStatus {
 }
 
 export interface ParsedSkylarkObjectAvailability {
-  status: ParsedSkylarkObjectAvailabilityStatus | null;
+  status: AvailabilityStatus | null;
   objects: {
     uid: string;
     external_id: string;

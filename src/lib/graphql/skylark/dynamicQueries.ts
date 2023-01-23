@@ -173,7 +173,7 @@ export const createSearchObjectsQuery = (
         __args: {
           ...common.args,
           query: new VariableType("queryString"),
-          limit: 100,
+          limit: 1000,
         },
         __typename: true,
         objects: {

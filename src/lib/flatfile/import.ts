@@ -11,7 +11,7 @@ import {
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
 import { SkylarkClient } from "src/lib/graphql/skylark/client";
-import { getSkylarkObjectOperations } from "src/lib/skylark/introspection";
+import { getSkylarkObjectOperations } from "src/lib/skylark/introspection/introspection";
 
 export const openFlatfileImportClient = async (
   embedId: string,
