@@ -73,6 +73,7 @@ const createColumns = (
     .filter((column) => !hardcodedColumns.includes(column))
     .map((column) =>
       columnHelper.accessor(column, {
+        id: column,
         header: formatObjectField(column),
         cell: (props) => <TableCell {...props} />,
       }),
@@ -221,23 +222,32 @@ export const ObjectList = ({
     VisibilityState | undefined
   >(undefined);
 
-  const searchDataWithDisplayField = useMemo(
-    () =>
-      searchData?.map((obj) => {
-        const primaryKey = displayFields.find((field) => !!obj.metadata[field]);
-        return {
-          ...obj,
-          [OBJECT_LIST_TABLE.columnIds.displayField]: primaryKey
-            ? obj.metadata[primaryKey]
-            : "",
-        };
+  const formattedSearchData = useMemo(() => {
+    const searchDataWithDisplayField = searchData?.map((obj) => {
+      const primaryKey = displayFields.find((field) => !!obj.metadata[field]);
+      return {
+        ...obj,
+        [OBJECT_LIST_TABLE.columnIds.displayField]: primaryKey
+          ? obj.metadata[primaryKey]
+          : "",
+      };
+    });
+
+    // Move all entries in .metadata into the top level as tanstack-table doesn't support nested properties that are undefined
+    // TODO when https://github.com/TanStack/table/pull/4620 is merged we can remove this, and handle global/language metadata differently
+    const searchDataWithTopLevelMetadata = searchDataWithDisplayField.map(
+      (obj) => ({
+        ...obj.metadata,
+        ...obj,
       }),
-    [searchData],
-  );
+    );
+
+    return searchDataWithTopLevelMetadata;
+  }, [searchData]);
 
   const table = useReactTable({
     debugAll: false,
-    data: searchDataWithDisplayField || [],
+    data: formattedSearchData || [],
     columns: searchData ? parsedColumns : [],
     getCoreRowModel: getCoreRowModel(),
     state: {
