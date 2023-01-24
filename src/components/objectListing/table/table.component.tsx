@@ -3,6 +3,7 @@ import {
   flexRender,
   Header,
   Table as ReactTable,
+  TableMeta,
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useMemo } from "react";
@@ -43,7 +44,6 @@ const customColumnStyling: Record<
     width: "min-w-52 max-w-52",
     className: {
       all: "md:sticky -left-px bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-0",
-      header: "",
       withCheckbox: "left-7",
     },
   },
@@ -114,9 +114,11 @@ const TableHeader = ({
 const TableData = ({
   cell,
   withCheckbox,
+  tableMeta,
 }: {
   cell: Cell<object, unknown>;
   withCheckbox: boolean;
+  tableMeta: TableMeta<object> | undefined;
 }) => {
   const className = useMemo(
     () =>
@@ -130,11 +132,13 @@ const TableData = ({
   );
 
   const cellValue = cell.getValue();
+  const rowInEditMode = tableMeta?.rowInEditMode === cell.row.id || false;
+
   const children = useMemo(() => {
-    // EXPERIMENTAL: Only render cell when value changes
+    // EXPERIMENTAL: Only render cell when value changes, or row is switched into edit mode
     return flexRender(cell.column.columnDef.cell, cell.getContext());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cellValue]);
+  }, [cellValue, rowInEditMode]);
 
   return (
     <td key={cell.id} className={className}>
@@ -144,6 +148,7 @@ const TableData = ({
 };
 
 export const Table = ({ table, withCheckbox = false }: TableProps) => {
+  const tableMeta = table.options.meta;
   return (
     <table className="relative w-full bg-white">
       <thead>
@@ -165,6 +170,7 @@ export const Table = ({ table, withCheckbox = false }: TableProps) => {
           <tr key={row.id}>
             {row.getVisibleCells().map((cell) => (
               <TableData
+                tableMeta={tableMeta}
                 key={cell.id}
                 cell={cell}
                 withCheckbox={withCheckbox}

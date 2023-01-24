@@ -1,42 +1,31 @@
 import clsx from "clsx";
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
+import { Fragment } from "react";
 
 import {
-  ObjectAvailability,
-  ObjectAvailabilityStatus,
-} from "src/interfaces/skylark/objects";
+  ParsedSkylarkObjectAvailability,
+  AvailabilityStatus,
+} from "src/interfaces/skylark";
+import { getSingleAvailabilityStatus } from "src/lib/skylark/availability";
 
 dayjs.extend(LocalizedFormat);
 
 interface PanelAvailabilityProps {
-  availability: ObjectAvailability;
+  availability: ParsedSkylarkObjectAvailability;
 }
-
-export const getSingleAvailabilityStatus = (
-  now: dayjs.Dayjs,
-  start: string,
-  end: string,
-): ObjectAvailability["status"] => {
-  if (now.isAfter(end)) {
-    return ObjectAvailabilityStatus.Expired;
-  }
-
-  return now.isBefore(start)
-    ? ObjectAvailabilityStatus.Future
-    : ObjectAvailabilityStatus.Active;
-};
 
 export const PanelAvailability = ({ availability }: PanelAvailabilityProps) => {
   const info: {
     label: string;
-    key: keyof Omit<ObjectAvailability["objects"][0], "dimensions">;
+    key: keyof Omit<
+      ParsedSkylarkObjectAvailability["objects"][0],
+      "dimensions"
+    >;
   }[] = [
     { label: "Start", key: "start" },
     { label: "End", key: "end" },
     { label: "Timezone", key: "timezone" },
-    // { label: "Slug", key: "slug" },
-    // { label: "External ID", key: "external_id" },
   ];
 
   const now = dayjs();
@@ -47,12 +36,12 @@ export const PanelAvailability = ({ availability }: PanelAvailabilityProps) => {
         const status = getSingleAvailabilityStatus(now, obj.start, obj.end);
         return (
           <div
-            key={obj.slug}
+            key={obj.uid}
             className={clsx(
               "rounded-lg border-2 p-4 shadow",
-              status === ObjectAvailabilityStatus.Active && "border-success",
-              status === ObjectAvailabilityStatus.Expired && "border-error",
-              status === ObjectAvailabilityStatus.Future && "border-warning",
+              status === AvailabilityStatus.Active && "border-success",
+              status === AvailabilityStatus.Expired && "border-error",
+              status === AvailabilityStatus.Future && "border-warning",
             )}
           >
             <h3 className="font-bold">
@@ -62,14 +51,14 @@ export const PanelAvailability = ({ availability }: PanelAvailabilityProps) => {
             <p className="text-manatee-300">{`UID: ${obj.uid}`}</p>
             <div className="grid grid-cols-[auto_1fr] gap-y-1 gap-x-4 break-words pt-4 text-base-content">
               {info.map(({ label, key }) => (
-                <>
+                <Fragment key={`${obj.uid}-${key}`}>
                   <span>{`${label}:`}</span>
                   <span className="">
                     {["start", "end"].includes(key)
                       ? dayjs(obj[key]).format("LLLL")
                       : obj[key]}
                   </span>
-                </>
+                </Fragment>
               ))}
             </div>
           </div>

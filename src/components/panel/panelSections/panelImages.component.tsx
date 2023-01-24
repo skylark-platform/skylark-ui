@@ -1,9 +1,13 @@
-import { ObjectImage } from "src/interfaces/skylark/objects";
+import { SkylarkGraphQLObjectImage } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
-export const PanelImages = ({ images }: { images: ObjectImage[] }) => {
+export const PanelImages = ({
+  images,
+}: {
+  images: SkylarkGraphQLObjectImage[];
+}) => {
   const imgs = images.reduce(
-    (acc: { [key: string]: ObjectImage[] }, currentValue) => {
+    (acc: { [key: string]: SkylarkGraphQLObjectImage[] }, currentValue) => {
       if (acc && acc[currentValue.type])
         return {
           ...acc,

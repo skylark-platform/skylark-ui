@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { useGetObject } from "src/hooks/useGetObject";
+import { ParsedSkylarkObjectMetadata } from "src/interfaces/skylark";
 
 import {
   PanelAvailability,
@@ -17,21 +18,28 @@ interface PanelProps {
   uid: string;
 }
 
-const getTitle = (object: Record<string, string>, priority: string[]) => {
-  const [title] = priority.map((key) => object[key]).filter((key) => key);
-  return title;
-};
+enum PanelTab {
+  Metadata = "Metadata",
+  Imagery = "Imagery",
+  Availability = "Availability",
+}
 
-const orderedKeys = ["title", "name", "uid"];
+const getTitle = (object: ParsedSkylarkObjectMetadata): string => {
+  const priority = ["title", "name", "uid"];
+  const [title] = priority.map((key) => object[key]).filter((key) => key);
+  return title as string;
+};
 
 export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   const { data, loading } = useGetObject(objectType, {
     uid: uid,
   });
 
-  const tabs = ["Metadata", data?.images && "Imagery", "Availability"].filter(
-    (tab) => !!tab,
-  ) as string[];
+  const tabs = [
+    PanelTab.Metadata,
+    data?.images && PanelTab.Imagery,
+    PanelTab.Availability,
+  ].filter((tab) => !!tab) as string[];
 
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
 
@@ -54,7 +62,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
         {!loading && data && (
           <>
             <PanelHeader
-              title={getTitle(data.metadata, orderedKeys)}
+              title={getTitle(data.metadata)}
               objectType={objectType}
               closePanel={closePanel}
             />
@@ -63,15 +71,15 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
               selectedTab={selectedTab}
               onChange={setSelectedTab}
             />
-            {selectedTab === "Metadata" && (
+            {selectedTab === PanelTab.Metadata && (
               <PanelMetadata metadata={data.metadata} />
             )}
-            {selectedTab === "Imagery" && data.images && (
+            {selectedTab === PanelTab.Imagery && data.images && (
               <PanelImages images={data.images} />
             )}
-            {selectedTab === "Availability" && (
+            {selectedTab === PanelTab.Availability && (
               <PanelAvailability availability={data.availability} />
-            )}{" "}
+            )}
           </>
         )}
       </section>

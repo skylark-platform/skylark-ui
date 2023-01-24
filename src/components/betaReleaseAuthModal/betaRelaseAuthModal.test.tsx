@@ -5,7 +5,7 @@ import { createMockClient, MockApolloClient } from "mock-apollo-client";
 
 import { LOCAL_STORAGE } from "src/constants/skylark";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
-import { GQLSkylarkObjectTypesQueryFixture } from "src/tests/fixtures";
+import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
 
 import { AddAuthTokenModal } from "./betaReleaseAuthModal.component";
 

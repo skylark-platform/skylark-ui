@@ -15,10 +15,10 @@ import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkSearchableObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ObjectAvailability,
-  ObjectAvailabilityStatus,
-  ObjectImage,
-} from "src/interfaces/skylark/objects";
+  ParsedSkylarkObjectAvailability,
+  AvailabilityStatus,
+  SkylarkGraphQLObjectImage,
+} from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
@@ -73,6 +73,7 @@ const createColumns = (
     .filter((column) => !hardcodedColumns.includes(column))
     .map((column) =>
       columnHelper.accessor(column, {
+        id: column,
         header: formatObjectField(column),
         cell: (props) => <TableCell {...props} />,
       }),
@@ -89,16 +90,15 @@ const createColumns = (
   const availabilityColumn = columnHelper.accessor("availability", {
     header: formatObjectField("Availability"),
     cell: (props) => {
-      const { status } = props.getValue<ObjectAvailability>();
+      const { status } = props.getValue<ParsedSkylarkObjectAvailability>();
       return (
         <span
           className={clsx(
             "font-medium uppercase",
-            status === ObjectAvailabilityStatus.Active && "text-success",
-            status === ObjectAvailabilityStatus.Future && "text-warning",
-            status === ObjectAvailabilityStatus.Unavailable &&
-              "text-manatee-400",
-            status === ObjectAvailabilityStatus.Expired && "text-error",
+            status === AvailabilityStatus.Active && "text-success",
+            status === AvailabilityStatus.Future && "text-warning",
+            status === AvailabilityStatus.Unavailable && "text-manatee-400",
+            status === AvailabilityStatus.Expired && "text-error",
           )}
         >
           {status}
@@ -107,10 +107,11 @@ const createColumns = (
     },
   });
 
+  // TODO only add/create this column if the schema has images. Or always created it but hide it when it doesn't have images
   const imagesColumn = columnHelper.accessor("images", {
     header: formatObjectField("Images"),
     cell: (props) => {
-      const images = props.getValue<ObjectImage[]>();
+      const images = props.getValue<SkylarkGraphQLObjectImage[]>();
       if (!images || images.length === 0) {
         return "";
       }
@@ -217,23 +218,32 @@ export const ObjectList = ({
     VisibilityState | undefined
   >(undefined);
 
-  const searchDataWithDisplayField = useMemo(
-    () =>
-      searchData?.map((obj) => {
-        const primaryKey = displayFields.find((field) => !!obj[field]);
-        return {
-          ...obj,
-          [OBJECT_LIST_TABLE.columnIds.displayField]: primaryKey
-            ? obj[primaryKey]
-            : "",
-        };
+  const formattedSearchData = useMemo(() => {
+    const searchDataWithDisplayField = searchData?.map((obj) => {
+      const primaryKey = displayFields.find((field) => !!obj.metadata[field]);
+      return {
+        ...obj,
+        [OBJECT_LIST_TABLE.columnIds.displayField]: primaryKey
+          ? obj.metadata[primaryKey]
+          : "",
+      };
+    });
+
+    // Move all entries in .metadata into the top level as tanstack-table doesn't support nested properties that are undefined
+    // TODO when https://github.com/TanStack/table/pull/4620 is merged we can remove this, and handle global/language metadata differently
+    const searchDataWithTopLevelMetadata = searchDataWithDisplayField.map(
+      (obj) => ({
+        ...obj.metadata,
+        ...obj,
       }),
-    [searchData],
-  );
+    );
+
+    return searchDataWithTopLevelMetadata;
+  }, [searchData]);
 
   const table = useReactTable({
     debugAll: false,
-    data: searchDataWithDisplayField || [],
+    data: formattedSearchData || [],
     columns: searchData ? parsedColumns : [],
     getCoreRowModel: getCoreRowModel(),
     state: {

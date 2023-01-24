@@ -5,7 +5,7 @@ import {
   GQLSkylarkSchemaQueriesMutations,
   GQLSkylarkSearchableObjectsUnionResponse,
 } from "src/interfaces/graphql/introspection";
-import { SkylarkObjectType } from "src/interfaces/skylark/objects";
+import { SkylarkObjectType } from "src/interfaces/skylark";
 import {
   GET_SKYLARK_SCHEMA,
   GET_SKYLARK_OBJECT_TYPES,
@@ -50,13 +50,13 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
     useQuery<GQLSkylarkSchemaQueriesMutations>(GET_SKYLARK_SCHEMA);
 
   if (!data || !objectType) {
-    return { object: null, ...rest };
+    return { objectOperations: null, ...rest };
   }
 
-  const object = getObjectOperations(objectType, data.__schema);
+  const objectOperations = getObjectOperations(objectType, data.__schema);
 
   return {
-    object,
+    objectOperations,
     ...rest,
   };
 };

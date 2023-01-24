@@ -1,4 +1,4 @@
-import { SkylarkObjectType } from "src/interfaces/skylark/objects";
+import { SkylarkObjectType } from "src/interfaces/skylark";
 
 type GQLBuiltInScalars = "Int" | "Float" | "String" | "Boolean" | "ID";
 type GQLAdditionalScalars =

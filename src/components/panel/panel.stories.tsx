@@ -1,15 +1,15 @@
 import { ComponentStory } from "@storybook/react";
+import { userEvent, waitFor, within } from "@storybook/testing-library";
 import { DocumentNode } from "graphql";
 import React from "react";
 
-import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
+import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
+import { SkylarkObjectMeta } from "src/interfaces/skylark";
 import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import { GET_SKYLARK_SCHEMA } from "src/lib/graphql/skylark/queries";
-import {
-  GQLSkylarkSchemaQueryFixture,
-  SKYLARK_OBJECT_FIELDS_FIXTURE,
-} from "src/tests/fixtures";
-import { GQLSkylarkGetObjectQueryFixture } from "src/tests/fixtures/panel.fixture";
+import { getObjectOperations } from "src/lib/skylark/objects";
+import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
+import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 
 import { Panel } from "./panel.component";
 
@@ -19,44 +19,28 @@ export default {
   argTypes: {},
 };
 
-const Template: ComponentStory<typeof Panel> = () => {
+const objectOperations = getObjectOperations(
+  "Episode",
+  GQLSkylarkSchemaQueryFixture.data
+    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
+);
+
+const Template: ComponentStory<typeof Panel> = (args) => {
   return (
     <div className="flex flex-row space-x-2">
-      <Panel
-        objectType="Episode"
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        closePanel={() => false}
-      />
+      <Panel {...args} closePanel={() => alert("Close clicked")} />
     </div>
   );
 };
 
 export const Default = Template.bind({});
-
-const object = {
-  name: "Episode",
-  fields: SKYLARK_OBJECT_FIELDS_FIXTURE.map((name) => ({
-    enumValues: undefined,
-    isList: false,
-    isRequired: false,
-    name,
-    type: "string",
-  })),
-  operations: {
-    get: {
-      name: "getEpisode",
-      type: "Query",
-    },
-  },
-};
-
 Default.parameters = {
   apolloClient: {
     mocks: [
       {
         request: {
           query: createGetObjectQuery(
-            object as SkylarkObjectMeta,
+            objectOperations as SkylarkObjectMeta,
           ) as DocumentNode,
           variables: {
             ignoreAvailability: true,
@@ -73,4 +57,40 @@ Default.parameters = {
       },
     ],
   },
+};
+Default.args = {
+  objectType: "Episode",
+  uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
+};
+
+export const Imagery = Template.bind({});
+Imagery.parameters = Default.parameters;
+Imagery.args = {
+  ...Default.args,
+};
+Imagery.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  await canvas.findByRole("button", { name: /Imagery/i });
+  const imageryButton = canvas.getByRole("button", { name: /Imagery/i });
+
+  await waitFor(async () => {
+    userEvent.click(imageryButton);
+  });
+};
+
+export const Availability = Template.bind({});
+Availability.parameters = Default.parameters;
+Availability.args = {
+  ...Default.args,
+};
+Availability.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  await canvas.findByRole("button", { name: /Availability/i });
+  const imageryButton = canvas.getByRole("button", { name: /Availability/i });
+
+  await waitFor(async () => {
+    userEvent.click(imageryButton);
+  });
 };

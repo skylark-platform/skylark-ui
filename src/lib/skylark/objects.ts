@@ -4,7 +4,7 @@ import {
   SkylarkObjectMeta,
   SkylarkObjectOperations,
   BuiltInSkylarkObjectType,
-} from "src/interfaces/skylark/objects";
+} from "src/interfaces/skylark";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
 
@@ -24,7 +24,6 @@ const getObjectFieldsFromGetQuery = (
 
 const objectHasRelationship = (
   relationship: "availability" | "images",
-
   getQuery: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"][0],
 ) => {
   if (!getQuery || !getQuery.type || !getQuery.type.fields) {

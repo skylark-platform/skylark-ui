@@ -13,7 +13,7 @@ import { FlatfileTemplate } from "src/interfaces/flatfile/template";
 import {
   NormalizedObjectField,
   SkylarkObjectType,
-} from "src/interfaces/skylark/objects";
+} from "src/interfaces/skylark";
 import { openFlatfileImportClient } from "src/lib/flatfile";
 import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
 import { createAccountIdentifier, pause } from "src/lib/utils";
@@ -140,7 +140,7 @@ function reducer(
 export default function CSVImportPage() {
   const { objectTypes } = useSkylarkObjectTypes();
   const [objectType, setObjectType] = useState("");
-  const { object } = useSkylarkObjectOperations(objectType);
+  const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -168,7 +168,7 @@ export default function CSVImportPage() {
   const onClick = async () => {
     dispatch({ stage: "prep", status: statusType.inProgress });
     const schema = convertObjectInputToFlatfileSchema(
-      object?.operations.create.inputs as NormalizedObjectField[],
+      objectOperations?.operations.create.inputs as NormalizedObjectField[],
     );
 
     const graphQLUri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri);
@@ -235,7 +235,11 @@ export default function CSVImportPage() {
         <Button
           block
           variant="primary"
-          disabled={!objectType || !object || state.prep !== statusType.pending}
+          disabled={
+            !objectType ||
+            !objectOperations ||
+            state.prep !== statusType.pending
+          }
           onClick={onClick}
         >
           Import

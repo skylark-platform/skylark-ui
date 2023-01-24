@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 
-import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
+import { SkylarkObjectMeta } from "src/interfaces/skylark";
 
 // This is unpleasant but neccessary as Apollo Client doesn't let us pass in any queries that are not valid
 // Should be used inconjunction with the Apollo Client option "skip" so the request is not made
@@ -173,7 +173,7 @@ export const createSearchObjectsQuery = (
         __args: {
           ...common.args,
           query: new VariableType("queryString"),
-          limit: 100,
+          limit: 1000,
         },
         __typename: true,
         objects: {

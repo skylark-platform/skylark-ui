@@ -5,15 +5,15 @@ import { createMocks, Mocks } from "node-mocks-http";
 
 import * as constants from "src/constants/flatfile";
 import { FlatfileRow } from "src/interfaces/flatfile/responses";
-import { SkylarkImportedObject } from "src/interfaces/skylark/import";
+import { SkylarkImportedObject } from "src/interfaces/skylark";
 import * as flatfile from "src/lib/flatfile";
 import * as flatfileClient from "src/lib/graphql/flatfile/client";
 import { GET_FINAL_DATABASE_VIEW } from "src/lib/graphql/flatfile/queries";
 import * as skylarkClient from "src/lib/graphql/skylark/client";
 import { GET_SKYLARK_SCHEMA } from "src/lib/graphql/skylark/queries";
-import * as skylarkIntrospection from "src/lib/skylark/introspection";
+import * as skylarkIntrospection from "src/lib/skylark/introspection/introspection";
 import handler from "src/pages/api/flatfile/import";
-import { GQLSkylarkSchemaQueryFixture } from "src/tests/fixtures";
+import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 
 jest.mock("../../../../lib/flatfile", () => ({
   ...jest.requireActual("../../../../lib/flatfile"),

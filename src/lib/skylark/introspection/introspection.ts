@@ -2,17 +2,13 @@ import {
   GQLSkylarkObjectTypesResponse,
   GQLSkylarkSchemaQueriesMutations,
 } from "src/interfaces/graphql/introspection";
-import {
-  SkylarkObjectMeta,
-  SkylarkObjectTypes,
-} from "src/interfaces/skylark/objects";
+import { SkylarkObjectMeta, SkylarkObjectTypes } from "src/interfaces/skylark";
 import { SkylarkClient } from "src/lib/graphql/skylark/client";
 import {
   GET_SKYLARK_SCHEMA,
   GET_SKYLARK_OBJECT_TYPES,
 } from "src/lib/graphql/skylark/queries";
-
-import { getObjectOperations } from "./objects";
+import { getObjectOperations } from "src/lib/skylark/objects";
 
 export const getSkylarkObjectOperations = async (
   client: SkylarkClient,

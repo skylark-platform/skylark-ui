@@ -26,7 +26,7 @@ export const TableCell = ({
 
   return row.id === table.options.meta?.rowInEditMode ? (
     <input
-      value={value as string}
+      value={(value || "") as string}
       onChange={(e) => setValue(e.target.value)}
       className={clsx(
         "w-full border-b-2 border-brand-primary py-1 outline-none disabled:border-none disabled:border-manatee-200 disabled:text-manatee-500",
