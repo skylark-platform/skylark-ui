@@ -13,7 +13,11 @@ const getEnvironmentFromLocalStorage = () => {
 
 export default function GraphQLQueryEditor() {
   const { connected } = useConnectedToSkylark();
-  const { uri, token } = useMemo(getEnvironmentFromLocalStorage, [connected]);
+  const { uri, token } = useMemo(() => {
+    return connected
+      ? getEnvironmentFromLocalStorage()
+      : { uri: "", token: "" };
+  }, [connected]);
 
   return (
     <div className="pt-nav h-full w-full">
