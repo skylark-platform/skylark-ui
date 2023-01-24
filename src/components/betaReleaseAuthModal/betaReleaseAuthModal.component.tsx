@@ -71,6 +71,8 @@ export const AddAuthTokenModal = ({
     if (debouncedUri && debouncedToken) {
       localStorage.setItem(LOCAL_STORAGE.betaAuth.uri, debouncedUri);
       localStorage.setItem(LOCAL_STORAGE.betaAuth.token, debouncedToken);
+      // storage events are not picked up in the same tab, so dispatch it for the current one
+      window.dispatchEvent(new Event("storage"));
 
       await skylarkClient.refetchQueries({
         include: "all",
