@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { GrGraphQl } from "react-icons/gr";
 import { TbBooks } from "react-icons/tb";
 
 const apps = [
@@ -18,6 +19,11 @@ const apps = [
   //   href: "/relationships",
   //   Icon: <TbLink className="text-xl" />,
   // },
+  {
+    text: "GraphQL Playground",
+    href: "/developer/playground",
+    Icon: <GrGraphQl className="text-xl" />,
+  },
 ];
 
 export const NavigationLinks = () => {

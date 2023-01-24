@@ -1,17 +1,12 @@
-import {
-  ApolloClient,
-  ApolloLink,
-  defaultDataIdFromObject,
-  execute,
-} from "@apollo/client";
+import { ApolloClient, defaultDataIdFromObject } from "@apollo/client";
+
+import { REQUEST_HEADERS } from "src/constants/skylark";
 
 import {
-  authLink,
   createApolloClientDataIdFromSkylarkObject,
   createBasicSkylarkClient,
   createSkylarkClient,
 } from "./client";
-import { GET_SKYLARK_OBJECT_TYPES } from "./queries";
 
 jest.mock("@apollo/client", () => ({
   ...jest.requireActual("@apollo/client"),
@@ -21,6 +16,7 @@ jest.mock("@apollo/client", () => ({
 jest.mock("../../../constants/skylark", () => ({
   SAAS_API_ENDPOINT: "endpoint",
   SAAS_API_KEY: "api-key",
+  ...jest.requireActual("../../../constants/skylark"),
   __esModule: true,
 }));
 
@@ -54,7 +50,7 @@ test("creates a basic client with the uri and token passed", () => {
   expect(ApolloClient).toHaveBeenCalledWith({
     cache: expect.any(Object),
     headers: {
-      "x-api-key": "token",
+      [REQUEST_HEADERS.apiKey]: "token",
     },
     uri: "uri",
   });
