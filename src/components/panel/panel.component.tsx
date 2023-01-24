@@ -35,8 +35,6 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
 
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
 
-  console.log({ uid, data, loading });
-
   return (
     <>
       <div

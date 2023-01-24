@@ -65,6 +65,7 @@ export interface ObjectImage {
   type: string;
   external_id: string;
   description: string;
+  content_type: string;
 }
 
 interface BaseQueryMutation {
