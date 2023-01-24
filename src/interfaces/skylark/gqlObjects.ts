@@ -29,6 +29,7 @@ export interface SkylarkGraphQLObjectImage {
   type: string;
   external_id: string;
   description: string;
+  content_type: string;
 }
 
 export type SkylarkGraphQLObject = {
