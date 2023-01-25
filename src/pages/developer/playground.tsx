@@ -83,17 +83,19 @@ export default function GraphQLQueryEditor() {
           defaultQuery={query}
           schema={schema}
           query={query}
+          headers={JSON.stringify({ "x-time-travel": "" })}
           onEditQuery={setQuery}
-          isHeadersEditorEnabled={false}
+          isHeadersEditorEnabled={true}
           plugins={[explorerPlugin]}
           onSchemaChange={setSchema}
-          fetcher={async (graphQLParams) => {
+          fetcher={async (graphQLParams, opts) => {
             const data = await fetch(uri, {
               method: "POST",
               headers: {
                 Accept: "application/json",
                 "Content-Type": "application/json",
                 [REQUEST_HEADERS.apiKey]: token,
+                ...opts?.headers,
               },
               body: JSON.stringify(graphQLParams),
               credentials: "same-origin",
