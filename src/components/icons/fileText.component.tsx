@@ -4,7 +4,7 @@ import { IconBase, IconProps } from "./iconBase.component";
 
 export const FileText = ({ className }: IconProps) => {
   return (
-    <IconBase className={clsx("stroke-black", className)}>
+    <IconBase className={clsx("stroke-black", className)} width="20">
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"

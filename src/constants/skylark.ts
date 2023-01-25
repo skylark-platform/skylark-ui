@@ -19,3 +19,6 @@ export const LOCAL_STORAGE = {
     token: "skylark_beta_auth_token",
   },
 };
+export const HREFS = {
+  apiDocs: "https://docs.skylarkplatform.com/",
+};
