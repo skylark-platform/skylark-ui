@@ -20,3 +20,8 @@
     @apply pt-14 lg:pt-16;
   }
 }
+
+/* Overrides for GraphiQL Explorer */
+.graphiql-explorer-graphql-arguments span {
+  display: inline-flex !important;
+}

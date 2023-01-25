@@ -1,11 +1,14 @@
+import { useExplorerPlugin } from "@graphiql/plugin-explorer";
+import "@graphiql/plugin-explorer/dist/style.css";
 import { GraphiQL } from "graphiql";
 import "graphiql/graphiql.min.css";
-import { useEffect, useMemo } from "react";
+import { GraphQLSchema } from "graphql";
+import { useEffect, useMemo, useState } from "react";
 
 import { LOCAL_STORAGE, REQUEST_HEADERS } from "src/constants/skylark";
 import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
 
-const defaultQuery = `# Welcome to Skylark's GraphQL Playground
+const DEFAULT_QUERY = `# Welcome to Skylark's GraphQL Playground
 #
 # Skylark uses GraphiQL as an in-browser tool for writing, validating, and
 # testing GraphQL queries against your Skylark instance.
@@ -51,11 +54,19 @@ const getEnvironmentFromLocalStorage = () => {
 
 export default function GraphQLQueryEditor() {
   const { connected } = useConnectedToSkylark();
+  const [query, setQuery] = useState(DEFAULT_QUERY);
+  const [schema, setSchema] = useState<GraphQLSchema | undefined>();
+
   const { uri, token } = useMemo(() => {
     return connected
       ? getEnvironmentFromLocalStorage()
       : { uri: "", token: "" };
   }, [connected]);
+
+  const explorerPlugin = useExplorerPlugin({
+    query,
+    onEdit: setQuery,
+  });
 
   useEffect(() => {
     // Default to light theme https://github.com/graphql/graphiql/issues/2924
@@ -69,8 +80,13 @@ export default function GraphQLQueryEditor() {
     <div className="pt-nav h-full w-full">
       {connected && uri && token && (
         <GraphiQL
-          defaultQuery={defaultQuery}
+          defaultQuery={query}
+          schema={schema}
+          query={query}
+          onEditQuery={setQuery}
           isHeadersEditorEnabled={false}
+          plugins={[explorerPlugin]}
+          onSchemaChange={setSchema}
           fetcher={async (graphQLParams) => {
             const data = await fetch(uri, {
               method: "POST",
