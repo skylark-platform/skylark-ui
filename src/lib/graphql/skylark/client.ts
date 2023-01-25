@@ -7,7 +7,11 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 
-import { SAAS_API_ENDPOINT, LOCAL_STORAGE } from "src/constants/skylark";
+import {
+  SAAS_API_ENDPOINT,
+  LOCAL_STORAGE,
+  REQUEST_HEADERS,
+} from "src/constants/skylark";
 
 export const createApolloClientDataIdFromSkylarkObject = (
   responseObject: Readonly<StoreObject>,
@@ -32,7 +36,7 @@ export const authLink = setContext((_, { headers }) => {
     uri: uri || SAAS_API_ENDPOINT,
     headers: {
       ...headers,
-      "x-api-key": uri ? token || "" : "",
+      [REQUEST_HEADERS.apiKey]: uri ? token || "" : "",
     },
   };
 });
@@ -49,7 +53,7 @@ export const createBasicSkylarkClient = (uri: string, token: string) =>
   new ApolloClient({
     uri,
     headers: {
-      "x-api-key": token,
+      [REQUEST_HEADERS.apiKey]: token,
     },
     cache: new InMemoryCache({
       dataIdFromObject: createApolloClientDataIdFromSkylarkObject,
