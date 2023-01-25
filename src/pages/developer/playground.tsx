@@ -83,9 +83,9 @@ export default function GraphQLQueryEditor() {
           defaultQuery={query}
           schema={schema}
           query={query}
-          headers={JSON.stringify({ "x-time-travel": "" })}
+          headers={JSON.stringify({ "x-time-travel": "" }, null, 2)}
+          variables={JSON.stringify({}, null, 2)}
           onEditQuery={setQuery}
-          isHeadersEditorEnabled={true}
           plugins={[explorerPlugin]}
           onSchemaChange={setSchema}
           fetcher={async (graphQLParams, opts) => {
