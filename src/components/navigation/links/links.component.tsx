@@ -63,10 +63,8 @@ const Link = ({ href, Icon, text, className, onClick }: LinkProps) => {
   }
   return (
     <NextLink href={href} className={className} onClick={onClick}>
-      {/* <a className={className} onClick={onClick}> */}
       {Icon}
       {text}
-      {/* </a> */}
     </NextLink>
   );
 };
