@@ -31,14 +31,12 @@ export const PanelImages = ({
               {formatObjectField(type)} ({imgs[type].length})
             </h3>
             {imgs[type].map((image) => (
-              <div key={image.uid} className="pb-4">
+              <div key={image.uid} className="break-words pb-4">
                 <div className="flex flex-row">
                   <div className="w-1/2 pr-4">
                     <div className="flex flex-row pb-1">
                       <div className="w-1/2">title: </div>
-                      <div className="w-1/2">
-                        {formatObjectField(image.title) || "---"}
-                      </div>
+                      <div className="w-1/2">{image.title || "---"}</div>
                     </div>
                     <div className="flex flex-row pb-1">
                       <div className="w-1/2">content_type: </div>
@@ -58,7 +56,7 @@ export const PanelImages = ({
                     <img
                       className="m-auto max-h-64"
                       src={image.url}
-                      alt="Picture of the author"
+                      alt={image.title}
                     />
                   </div>
                 </div>

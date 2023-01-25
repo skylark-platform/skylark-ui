@@ -1,5 +1,11 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  getByAltText,
+} from "@testing-library/react";
 import { DocumentNode } from "graphql";
 
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
@@ -56,8 +62,7 @@ test("renders the panel in the default view", async () => {
   expect(screen.getAllByText("All Avail Test Movie")).toHaveLength(2);
 });
 
-// TODO add imagery view tests when its finished
-test.skip("imagery view", async () => {
+test("imagery view", async () => {
   render(
     <MockedProvider mocks={mocks} addTypename={false}>
       <Panel
@@ -77,6 +82,15 @@ test.skip("imagery view", async () => {
       GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].title,
     ),
   ).toBeInTheDocument();
+
+  const image = screen.getByAltText(
+    GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].title,
+  );
+
+  expect(image).toHaveAttribute(
+    "src",
+    GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].url,
+  );
 });
 
 test("availability view", async () => {
