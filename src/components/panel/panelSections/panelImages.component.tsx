@@ -1,6 +1,12 @@
 import { SkylarkGraphQLObjectImage } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
+const getImgSize = (url: string, cb: CallableFunction) => {
+  const img = new Image();
+  img.onload = () => cb(img);
+  img.src = url;
+};
+
 export const PanelImages = ({
   images,
 }: {
@@ -22,46 +28,27 @@ export const PanelImages = ({
   );
 
   return (
-    <div className=" h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
-      <h2 className="mb-4 text-xl font-bold">Imagery</h2>
+    <div className="h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
+      <h2 className="mb-2 text-xl font-bold">Imagery</h2>
       {Object.keys(imgs).map((type) => {
         return (
           <>
-            <h3 className="mt-2 mb-4 font-bold">
+            <h3 className="mt-6 mb-2 font-bold">
               {formatObjectField(type)} ({imgs[type].length})
             </h3>
-            {imgs[type].map((image) => (
-              <div key={image.uid} className="break-words pb-4">
-                <div className="flex flex-row">
-                  <div className="w-1/2 pr-4">
-                    <div className="flex flex-row pb-1">
-                      <div className="w-1/2">title: </div>
-                      <div className="w-1/2">{image.title || "---"}</div>
-                    </div>
-                    <div className="flex flex-row pb-1">
-                      <div className="w-1/2">content_type: </div>
-                      <div className="w-1/2">
-                        {formatObjectField(image.content_type) || "---"}
-                      </div>
-                    </div>
-                    <div className="flex flex-row pb-1">
-                      <div className="w-1/2">description: </div>
-                      <div className="w-1/2">
-                        {formatObjectField(image.description) || "---"}
-                      </div>
-                    </div>
-                  </div>
-                  <div className=" w-1/2">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      className="m-auto max-h-64"
-                      src={image.url}
-                      alt={image.title}
-                    />
-                  </div>
+            {imgs[type].map((image) => {
+              getImgSize(image.url, (img: HTMLImageElement) => {
+                console.log(img.naturalWidth, img.naturalHeight);
+              });
+              return (
+                <div key={image.uid} className="break-words pb-4">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img className="max-h-72" src={image.url} alt={image.title} />
+                  <p className="mt-1">Title: {image.title}</p>
+                  <p>Original size: 300x300</p>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </>
         );
       })}

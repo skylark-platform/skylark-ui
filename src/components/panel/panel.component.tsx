@@ -38,7 +38,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   const tabs = [
     PanelTab.Metadata,
     data?.images && PanelTab.Imagery,
-    PanelTab.Availability,
+    // PanelTab.Availability,
   ].filter((tab) => !!tab) as string[];
 
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
