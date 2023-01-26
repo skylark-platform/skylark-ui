@@ -44,7 +44,7 @@ const AdditionalImageMetadata = ({
     <>
       <PanelMetadataProperty
         property="Original Size"
-        value={`${size?.h}x${size?.w}`}
+        value={size ? `${size?.h}x${size?.w}` : ""}
       />
       <PanelMetadataProperty
         property="Rendered image"

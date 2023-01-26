@@ -1,0 +1,35 @@
+{
+  "data": {
+    "getObject": {
+      "uid": "01GQQ9TK0HGK72PCWR6S8C1991",
+      "external_id": "recxjWXqZDVG3TWKa",
+      "slug": null,
+      "title": "GotImageTitle",
+      "description": null,
+      "type": "THUMBNAIL",
+      "url": "https://dl.airtable.com/.attachments/c31d37b4ed01c91e098c5350400807ac/19afe02a/GOT-S5-5.jpg",
+      "external_url": "https://dl.airtable.com/.attachments/c31d37b4ed01c91e098c5350400807ac/19afe02a/GOT-S5-5.jpg",
+      "upload_url": "https://obj-reg-storage-sl-develop-10-eu-west-1-storage.s3.amazonaws.com/media/images/ftrweh3hvza27nfv2vx2atjmqu/01GQQ9TK0HGK72PCWR6S8C1991/01GQQK1XKNR4N0927N26H1D4BB?AWSAccessKeyId=ASIAQP5PT3NIU3B7CGEM&Signature=%2F20V2z%2F2OtCEbOTxQnG9mc169jU%3D&content-type=application%2Foctet&x-amz-meta-account_id=ftrweh3hvza27nfv2vx2atjmqu&x-amz-meta-uid=01GQQ9TK0HGK72PCWR6S8C1991&x-amz-security-token=IQoJb3JpZ2luX2VjELr%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCWV1LXdlc3QtMSJHMEUCIDf%2BJK%2BKLWaAE5eu1hS4IbZMJNd2CV%2F720GEaenC%2BTpZAiEAmnIepZWr4HOIKvEx6uINdjGznx9bIa5BnqqI9Dyw1E8qowMIMxABGgwwMzQxOTExNzAzODUiDE3nKe76GACV6Z5SqCqAA4nDKeFVpPjjeldRIvVzsyMokQV1lGetulegCuUvgWHJiPXpUj0KH1EkpB%2FeeYpNwJyXHaUtEMTv7lLW0LGxR%2BsQcK3WSx864%2Bq2J62L59zW3MhpfS%2FzZXzgj9FcgKJNm8jnjAsien71SXZ51iIPv6S8GtYULmJ9HUuzRmgPVH%2Fu8CrHcinWHNitTo7pY6muJ2y095S6o5uKL1E1TEcAmPDFYebRz5feJJecE%2BvgSTEZ36pMz5vum4T6ipTg8Zcc%2BRa3BvsafF3ItHsXsfq43bHQV2stp8tJ%2FqRTqcit2oo1tjOZXBb7IMFuebhSw%2B7rnS2Ji3HMuIfd%2FOdrGrt6OYR9IwFLgPNqUq09yca77UScJj1bBU%2FJ0ELnWc6GnoGVCd375qXpC5IPEN9FegOsTuOv%2BWfUXxC8zMdM3fYrHSQ5LXnxZ%2B1BwHqjk8enQRR%2BLqN4PX%2BsUQBpbLJ0aZe4PJvCWbHGL8ABNgZuGm3v8HzrCfI%2FMbv3hKxl8HwwpsS0nzCx%2BMqeBjqdAfxcglqslJ%2ForFQL84IntHtfL%2B1j1vnda0htiUitS%2FpLf42m9zhEelDYkquFp8Ok2Yxyvx4iRYLNwtPSjplaL9n66867qXQ9iM9OSk%2FwSboPvYlCpmmucR5IgRqi58zxOKTXIJEsuIjYRxMk3noDQ%2FW5vKJ5g9CSIfu1XQeoDZ16smMsgVJO%2FeW6lVqkPTWWsOx6fOP8ljbDTpEWRNs%3D&Expires=1674758841",
+      "download_from_url": null,
+      "file_name": null,
+      "content_type": null,
+      "availability": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01GQQ9TC8A6S8BMZ798J40YNSS",
+            "external_id": "recXNjJNyc6nKQIYa",
+            "title": "Always - All devices, all customer types",
+            "slug": "always-all-devices-all-customer-types",
+            "start": "2022-01-01T00:00:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "+00:00",
+            "__typename": "Availability"
+          }
+        ],
+        "__typename": "AvailabilityListing"
+      },
+      "__typename": "Image"
+    }
+  }
+}
