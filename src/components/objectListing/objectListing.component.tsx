@@ -228,6 +228,8 @@ export const ObjectList = ({
       );
       return {
         ...obj,
+        // When the object type is an image, we want to display its preview in the images tab
+        images: obj.objectType === "Image" ? [obj.metadata] : obj.images,
         [OBJECT_LIST_TABLE.columnIds.displayField]: primaryKey
           ? obj.metadata[primaryKey]
           : "",
