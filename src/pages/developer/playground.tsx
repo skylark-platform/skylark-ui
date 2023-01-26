@@ -1,9 +1,10 @@
 import { useExplorerPlugin } from "@graphiql/plugin-explorer";
 import "@graphiql/plugin-explorer/dist/style.css";
+import { Fetcher } from "@graphiql/toolkit";
 import { GraphiQL } from "graphiql";
 import "graphiql/graphiql.min.css";
-import { GraphQLSchema } from "graphql";
-import { useEffect, useMemo, useState } from "react";
+import { DocumentNode, GraphQLSchema } from "graphql";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { LOCAL_STORAGE, REQUEST_HEADERS } from "src/constants/skylark";
 import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
@@ -55,18 +56,7 @@ const getEnvironmentFromLocalStorage = () => {
 export default function GraphQLQueryEditor() {
   const { connected } = useConnectedToSkylark();
   const [query, setQuery] = useState(DEFAULT_QUERY);
-  const [schema, setSchema] = useState<GraphQLSchema | undefined>();
-
-  const { uri, token } = useMemo(() => {
-    return connected
-      ? getEnvironmentFromLocalStorage()
-      : { uri: "", token: "" };
-  }, [connected]);
-
-  const explorerPlugin = useExplorerPlugin({
-    query,
-    onEdit: setQuery,
-  });
+  const [{ uri, token }, setEnvironment] = useState({ uri: "", token: "" });
 
   useEffect(() => {
     // Default to light theme https://github.com/graphql/graphiql/issues/2924
@@ -74,34 +64,48 @@ export default function GraphQLQueryEditor() {
     if (!storedTheme) {
       localStorage.setItem("graphiql:theme", "light");
     }
+
+    const refresh = () => {
+      setEnvironment(getEnvironmentFromLocalStorage());
+    };
+    refresh();
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener("storage", refresh);
+    };
+  }, []);
+
+  const fetcher: Fetcher = useMemo(
+    () => async (graphQLParams, opts) => {
+      const data = await fetch(uri, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          [REQUEST_HEADERS.apiKey]: token,
+          ...opts?.headers,
+        },
+        body: JSON.stringify(graphQLParams),
+        credentials: "same-origin",
+      });
+      return data.json().catch(() => data.text());
+    },
+    [token, uri],
+  );
+
+  const explorerPlugin = useExplorerPlugin({
+    query,
+    onEdit: setQuery,
   });
 
   return (
     <div className="pt-nav h-full w-full">
       {connected && uri && token && (
         <GraphiQL
-          defaultQuery={query}
-          schema={schema}
           query={query}
-          headers={JSON.stringify({ "x-time-travel": "" }, null, 2)}
-          variables={JSON.stringify({}, null, 2)}
           onEditQuery={setQuery}
           plugins={[explorerPlugin]}
-          onSchemaChange={setSchema}
-          fetcher={async (graphQLParams, opts) => {
-            const data = await fetch(uri, {
-              method: "POST",
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                [REQUEST_HEADERS.apiKey]: token,
-                ...opts?.headers,
-              },
-              body: JSON.stringify(graphQLParams),
-              credentials: "same-origin",
-            });
-            return data.json().catch(() => data.text());
-          }}
+          fetcher={fetcher}
         >
           <GraphiQL.Logo>GraphQL Playground</GraphiQL.Logo>
         </GraphiQL>
