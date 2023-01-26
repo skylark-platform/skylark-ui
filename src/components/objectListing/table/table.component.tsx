@@ -11,7 +11,7 @@ import { useMemo } from "react";
 import { VirtualItem } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { SkylarkGraphQLObject } from "src/interfaces/skylark/objects";
+import { SkylarkGraphQLObject } from "src/interfaces/skylark";
 
 export type TableColumn = string;
 
@@ -121,7 +121,7 @@ const TableData = ({
   withCheckbox,
   tableMeta,
 }: {
-  cell: Cell<object, unknown>;
+  cell: Cell<SkylarkGraphQLObject, unknown>;
   withCheckbox: boolean;
   tableMeta: TableMeta<object> | undefined;
 }) => {
