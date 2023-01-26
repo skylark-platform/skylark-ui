@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
+import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
 import { useGetObject } from "src/hooks/useGetObject";
 import { ParsedSkylarkObjectMetadata } from "src/interfaces/skylark";
 
@@ -25,8 +26,9 @@ enum PanelTab {
 }
 
 const getTitle = (object: ParsedSkylarkObjectMetadata): string => {
-  const priority = ["title", "name", "uid"];
-  const [title] = priority.map((key) => object[key]).filter((key) => key);
+  const [title] = DISPLAY_NAME_PRIORITY.map((key) => object[key]).filter(
+    (key) => key,
+  );
   return title as string;
 };
 
@@ -72,7 +74,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
               onChange={setSelectedTab}
             />
             {selectedTab === PanelTab.Metadata && (
-              <PanelMetadata metadata={data.metadata} />
+              <PanelMetadata metadata={data.metadata} objectType={objectType} />
             )}
             {selectedTab === PanelTab.Imagery && data.images && (
               <PanelImages images={data.images} />

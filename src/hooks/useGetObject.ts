@@ -15,7 +15,7 @@ import {
   parseObjectAvailability,
   parseObjectRelationship,
 } from "src/lib/skylark/parsers";
-import { isObject } from "src/lib/utils";
+import { hasProperty, isObject } from "src/lib/utils";
 
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
@@ -58,9 +58,12 @@ export const useGetObject = (
     data?.getObject.availability as SkylarkGraphQLObjectRelationship,
   );
 
-  const images = parseObjectRelationship<SkylarkGraphQLObjectImage>(
-    data?.getObject.images as SkylarkGraphQLObjectRelationship,
-  );
+  const images =
+    data?.getObject && hasProperty(data?.getObject, "images")
+      ? parseObjectRelationship<SkylarkGraphQLObjectImage>(
+          data?.getObject.images as SkylarkGraphQLObjectRelationship,
+        )
+      : undefined;
 
   const parsedObject: ParsedSkylarkObject | undefined = data?.getObject && {
     objectType: data.getObject.__typename,

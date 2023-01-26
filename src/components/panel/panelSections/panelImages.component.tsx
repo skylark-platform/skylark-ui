@@ -1,29 +1,24 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 
+import { useImageSize } from "src/hooks/useImageSize";
 import { SkylarkGraphQLObjectImage } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
-const getImgSize = (url: string, cb: CallableFunction) => {
-  const img = new Image();
-  img.onload = () => cb(img);
-  img.src = url;
-};
-
-const PanelImage = ({ image }: { image: SkylarkGraphQLObjectImage }) => {
-  const [size, setSize] = useState<{ w: number; h: number } | null>(null);
-
-  getImgSize(image.url, (img: HTMLImageElement) => {
-    setSize({
-      w: img.naturalWidth,
-      h: img.naturalHeight,
-    });
-  });
-
+const PanelImage = ({
+  src,
+  alt,
+  title,
+}: {
+  src: string;
+  title?: string;
+  alt?: string;
+}) => {
+  const { size } = useImageSize(src);
   return (
     <div className="break-words pb-4">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="max-h-72" src={image.url} alt={image.title} />
-      <p className="mt-1">Title: {image.title}</p>
+      <img className="max-h-72" src={src} alt={title || alt || ""} />
+      {title && <p className="mt-1">Title: {title}</p>}
       <p>Original size: {size ? `${size.h}x${size.w}` : ""}</p>
     </div>
   );
@@ -51,15 +46,14 @@ export const PanelImages = ({
 
   return (
     <div className="h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
-      <h2 className="mb-2 text-xl font-bold">Imagery</h2>
       {Object.keys(imgs).map((type) => {
         return (
           <Fragment key={type}>
-            <h3 className="mt-6 mb-2 font-bold">
+            <h3 className="mb-6 text-base font-bold">
               {formatObjectField(type)} ({imgs[type].length})
             </h3>
             {imgs[type].map((image) => (
-              <PanelImage key={image.uid} image={image} />
+              <PanelImage key={image.uid} src={image.url} title={image.title} />
             ))}
           </Fragment>
         );

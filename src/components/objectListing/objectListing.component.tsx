@@ -11,7 +11,10 @@ import { Checkbox } from "src/components/checkbox";
 import { Spinner } from "src/components/icons";
 import { Panel } from "src/components/panel/panel.component";
 import { Pill } from "src/components/pill";
-import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import {
+  DISPLAY_NAME_PRIORITY,
+  OBJECT_LIST_TABLE,
+} from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
@@ -26,10 +29,10 @@ import { RowActions } from "./rowActions";
 import { Search } from "./search";
 import { Table, TableCell } from "./table";
 
-const displayFields = ["title", "name"];
 const hardcodedColumns = [
   OBJECT_LIST_TABLE.columnIds.objectType,
   "availability",
+  "images",
 ];
 const orderedKeys = ["uid", "external_id", "data_source_id"];
 
@@ -220,7 +223,9 @@ export const ObjectList = ({
 
   const formattedSearchData = useMemo(() => {
     const searchDataWithDisplayField = searchData?.map((obj) => {
-      const primaryKey = displayFields.find((field) => !!obj.metadata[field]);
+      const primaryKey = DISPLAY_NAME_PRIORITY.find(
+        (field) => !!obj.metadata[field],
+      );
       return {
         ...obj,
         [OBJECT_LIST_TABLE.columnIds.displayField]: primaryKey

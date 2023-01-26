@@ -26,3 +26,10 @@ export const LOCAL_STORAGE = {
 export const HREFS = {
   apiDocs: "https://docs.skylarkplatform.com/",
 };
+export const DISPLAY_NAME_PRIORITY = [
+  "title",
+  "name",
+  "slug",
+  "external_id",
+  "uid",
+];

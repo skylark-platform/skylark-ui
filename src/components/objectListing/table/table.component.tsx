@@ -60,7 +60,7 @@ const customColumnStyling: Record<
   images: {
     width: "min-w-24 max-w-24",
     className: {
-      cell: "flex overflow-hidden h-7 md:h-8 pb-0 pt-0.5 md:pt-1 mr-2 [&>img]:mr-0.5 [&>img]:object-cover",
+      cell: "flex overflow-hidden h-7 md:h-8 pb-0 pt-0.5 md:pt-1 mr-2 [&>img]:mr-0.5 [&>img]:h-full",
     },
   },
 };
