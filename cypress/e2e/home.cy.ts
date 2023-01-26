@@ -125,6 +125,7 @@ describe("Content Library", () => {
       cy.contains("GOT S01 Trailer").should("exist");
       cy.contains("tr", "GOT S01E1 - Winter").within(() => {
         cy.contains("Episode");
+        cy.wait(500);
         cy.get('[aria-label="object-info"]').click();
       });
 
@@ -140,6 +141,7 @@ describe("Content Library", () => {
       cy.contains("GOT S01 Trailer").should("exist");
       cy.contains("tr", "GOT S01E1 - Winter").within(() => {
         cy.contains("Episode");
+        cy.wait(500);
         cy.get('[aria-label="object-info"]').click();
       });
 
@@ -163,6 +165,7 @@ describe("Content Library", () => {
       cy.contains("GOT S01 Trailer").should("exist");
       cy.contains("tr", "GOT S01E1 - Winter").within(() => {
         cy.contains("Episode");
+        cy.wait(500);
         cy.get('[aria-label="object-info"]').click();
       });
 
