@@ -1,87 +1,77 @@
-import {
-  GQLSkylarkSchemaQueryFixture,
-  SKYLARK_OBJECT_FIELDS_FIXTURE,
-} from "src/tests/fixtures";
+import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
+import GQLSkylarkSchemaQueryFixtureJSON from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 
-import { getAllSearchableObjectFields, getObjectOperations } from "./objects";
+import { getAllObjectsMeta, getObjectOperations } from "./objects";
+
+const GQLSkylarkSchemaQueryFixture =
+  GQLSkylarkSchemaQueryFixtureJSON as unknown as {
+    data: GQLSkylarkSchemaQueriesMutations;
+  };
 
 describe("getObjectOperations", () => {
-  test("returns all operations", () => {
+  test("returns all operations for Asset", () => {
     const got = getObjectOperations(
-      "Episode",
+      "Asset",
       GQLSkylarkSchemaQueryFixture.data.__schema,
     );
-    expect(got).toEqual({
-      name: "Episode",
-      fields: SKYLARK_OBJECT_FIELDS_FIXTURE.map((name) => ({
-        enumValues: undefined,
-        isList: false,
-        isRequired: false,
-        name,
-        type: "string",
-      })),
-      operations: {
-        get: {
-          name: "getEpisode",
-          type: "Query",
-        },
-        list: {
-          name: "listEpisode",
-          type: "Query",
-        },
-        create: {
-          name: "createEpisode",
-          type: "Mutation",
-          argName: "episode",
-          inputs: [
-            {
-              enumValues: undefined,
-              isList: false,
-              isRequired: false,
-              name: "title",
-              type: "string",
-            },
-            {
-              enumValues: ["SHORT", "LONG"],
-              isList: false,
-              isRequired: false,
-              name: "type",
-              type: "enum",
-            },
-          ],
-          relationships: [],
-        },
-        update: {
-          name: "updateEpisode",
-          type: "Mutation",
-          argName: "episode",
-          inputs: [
-            {
-              enumValues: undefined,
-              isList: false,
-              isRequired: false,
-              name: "title",
-              type: "string",
-            },
-            {
-              enumValues: ["SHORT", "LONG"],
-              isList: false,
-              isRequired: false,
-              name: "type",
-              type: "enum",
-            },
-          ],
-          relationships: [],
-        },
-        delete: {
-          name: "deleteEpisode",
-          type: "Mutation",
-          argName: "",
-          inputs: [],
-          relationships: [],
-        },
-      },
+    expect(got.name).toEqual("Asset");
+
+    // Check fields
+    expect(got.fields.length).toBe(6);
+    expect(got.fields).toContainEqual({
+      enumValues: undefined,
+      isList: false,
+      isRequired: true,
+      name: "uid",
+      type: "string",
     });
+    expect(got.fields).toContainEqual({
+      enumValues: undefined,
+      isList: false,
+      isRequired: false,
+      name: "title",
+      type: "string",
+    });
+
+    // Check operations
+    expect(got.operations.get).toBeTruthy();
+    expect(got.operations.get?.name).toEqual("getAsset");
+    expect(got.operations.list).toBeTruthy();
+    expect(got.operations.list?.name).toEqual("listAsset");
+    expect(got.operations.create).toBeTruthy();
+    expect(got.operations.create?.name).toEqual("createAsset");
+    expect(got.operations.update).toBeTruthy();
+    expect(got.operations.update?.name).toEqual("updateAsset");
+    expect(got.operations.delete).toBeTruthy();
+    expect(got.operations.delete?.name).toEqual("deleteAsset");
+
+    expect(got.operations.create.inputs).toContainEqual({
+      enumValues: undefined,
+      isList: false,
+      isRequired: false,
+      name: "title",
+      type: "string",
+    });
+  });
+
+  test("returns availability for an Asset", () => {
+    const got = getObjectOperations(
+      "Asset",
+      GQLSkylarkSchemaQueryFixture.data.__schema,
+    );
+    expect(got.availability).toBeTruthy();
+    expect(got.availability?.name).toEqual("Availability");
+    expect(got.availability?.fields.length).toEqual(7);
+  });
+
+  test("returns images for an Asset", () => {
+    const got = getObjectOperations(
+      "Asset",
+      GQLSkylarkSchemaQueryFixture.data.__schema,
+    );
+    expect(got.images).toBeTruthy();
+    expect(got.images?.name).toEqual("Image");
+    expect(got.images?.fields.length).toEqual(12);
   });
 
   test("throws when an operation doesn't exist for an object type", () => {
@@ -94,31 +84,13 @@ describe("getObjectOperations", () => {
   });
 });
 
-describe("getAllSearchableObjectFields", () => {
-  test("returns Episode when it is searchable", () => {
-    const got = getAllSearchableObjectFields(
-      GQLSkylarkSchemaQueryFixture.data.__schema.queryType,
-      ["Episode"],
-    );
-    expect(got).toEqual([
-      {
-        name: "Episode",
-        fields: SKYLARK_OBJECT_FIELDS_FIXTURE.map((name) => ({
-          enumValues: undefined,
-          isList: false,
-          isRequired: false,
-          name,
-          type: "string",
-        })),
-      },
+describe("getAllObjectsMeta", () => {
+  test("returns Episode", () => {
+    const got = getAllObjectsMeta(GQLSkylarkSchemaQueryFixture.data.__schema, [
+      "Episode",
     ]);
-  });
-
-  test("returns nothing when Episode is not searchable", () => {
-    const got = getAllSearchableObjectFields(
-      GQLSkylarkSchemaQueryFixture.data.__schema.queryType,
-      ["UnknownObject"],
-    );
-    expect(got).toEqual([]);
+    expect(got.length).toEqual(1);
+    expect(got[0].name).toEqual("Episode");
+    expect(got[0].fields.length).toEqual(12);
   });
 });

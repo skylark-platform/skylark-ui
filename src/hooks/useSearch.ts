@@ -1,19 +1,22 @@
 import { useQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 
-import { SkylarkGraphQLObject } from "src/interfaces/skylark/objects";
+import {
+  SkylarkGraphQLObjectImage,
+  ParsedSkylarkObject,
+  SkylarkGraphQLObject,
+} from "src/interfaces/skylark";
+import { GQLSkylarkSearchResponse } from "src/interfaces/skylark";
 import {
   createSearchObjectsQuery,
   defaultValidBlankQuery,
 } from "src/lib/graphql/skylark/dynamicQueries";
+import {
+  parseObjectAvailability,
+  parseObjectRelationship,
+} from "src/lib/skylark/parsers";
 
-import { useAllSearchableObjectFields } from "./useSkylarkObjectTypes";
-
-export interface GQLSearchResponse {
-  search: {
-    objects: (SkylarkGraphQLObject | null)[];
-  };
-}
+import { useAllSearchableObjectMeta } from "./useSkylarkObjectTypes";
 
 export interface SearchFilters {
   objectTypes: string[] | null;
@@ -45,16 +48,16 @@ const removeFieldPrefixFromSearchObjects = (
 };
 
 export const useSearch = (queryString: string, filters: SearchFilters) => {
-  const [data, setData] = useState<SkylarkGraphQLObject[]>([]);
   const { objects: searchableObjects, allFieldNames } =
-    useAllSearchableObjectFields();
+    useAllSearchableObjectMeta();
 
-  const query = createSearchObjectsQuery(
-    searchableObjects,
-    filters.objectTypes || [],
+  const query = useMemo(
+    () =>
+      createSearchObjectsQuery(searchableObjects, filters.objectTypes || []),
+    [searchableObjects, filters.objectTypes],
   );
 
-  const { data: searchResponse, ...rest } = useQuery<GQLSearchResponse>(
+  const { data: searchResponse, ...rest } = useQuery<GQLSkylarkSearchResponse>(
     query || defaultValidBlankQuery,
     {
       skip: !query,
@@ -65,20 +68,30 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
       // https://www.apollographql.com/docs/react/data/error-handling/#graphql-error-policies
       errorPolicy: "all",
       // Don't cache search so we always get up to date results
-      fetchPolicy: "no-cache",
+      fetchPolicy: "network-only",
     },
   );
 
-  useEffect(() => {
+  const data = useMemo(() => {
     // Using the errorPolicy "all" means that some data could be null
     const nonNullObjects = searchResponse?.search.objects.filter(
       (obj) => obj !== null,
     ) as SkylarkGraphQLObject[];
-    const parsedObjects = removeFieldPrefixFromSearchObjects(
+    const normalisedObjects = removeFieldPrefixFromSearchObjects(
       nonNullObjects || [],
     );
 
-    setData(parsedObjects);
+    const parsedObjects = normalisedObjects.map((obj): ParsedSkylarkObject => {
+      return {
+        objectType: obj.__typename,
+        metadata: obj,
+        availability: parseObjectAvailability(obj.availability),
+        images: parseObjectRelationship<SkylarkGraphQLObjectImage>(obj.images),
+        relationships: [] as string[],
+      };
+    });
+
+    return parsedObjects;
   }, [searchResponse?.search.objects]);
 
   return {

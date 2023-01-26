@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 import { createMocks } from "node-mocks-http";
 
 import * as constants from "src/constants/flatfile";
-import { LOCAL_STORAGE } from "src/constants/skylark";
 import {
   FlatfileCreatePortalResponse,
   FlatfileCreateTemplateResponse,

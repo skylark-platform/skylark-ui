@@ -7,7 +7,7 @@ import {
   FlatfileTemplatePropertyPhone,
   FlatfileTemplatePropertyString,
 } from "src/interfaces/flatfile/template";
-import { NormalizedObjectField } from "src/interfaces/skylark/objects";
+import { NormalizedObjectField } from "src/interfaces/skylark";
 
 const convertObjectInputFieldToFlatfileProperty = (
   field: NormalizedObjectField,

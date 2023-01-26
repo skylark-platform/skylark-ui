@@ -1,7 +1,4 @@
 import { ComponentStory } from "@storybook/react";
-import { userEvent, within } from "@storybook/testing-library";
-
-import { pause } from "src/lib/utils";
 
 import { AddAuthTokenModal } from "./betaReleaseAuthModal.component";
 

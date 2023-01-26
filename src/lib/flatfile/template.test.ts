@@ -1,4 +1,4 @@
-import { NormalizedObjectField } from "src/interfaces/skylark/objects";
+import { NormalizedObjectField } from "src/interfaces/skylark";
 
 import { convertObjectInputToFlatfileSchema } from "./template";
 

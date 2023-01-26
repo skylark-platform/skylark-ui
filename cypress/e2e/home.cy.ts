@@ -18,11 +18,6 @@ describe("Content Library", () => {
           fixture: "./skylark/queries/introspection/objectTypes.json",
         });
       }
-      if (hasOperationName(req, "GET_SEARCHABLE_OBJECTS")) {
-        req.reply({
-          fixture: "./skylark/queries/introspection/searchableUnion.json",
-        });
-      }
       if (hasOperationName(req, "GET_SKYLARK_SCHEMA")) {
         req.reply({
           fixture: "./skylark/queries/introspection/schema.json",
@@ -128,6 +123,7 @@ describe("Content Library", () => {
     it("open Metadata panel", () => {
       cy.get('input[name="search-query-input"]').type("GOT S01");
       cy.contains("GOT S01 Trailer").should("exist");
+      cy.contains("tr", "GOT S01E1 - Winter");
       cy.contains("tr", "GOT S01E1 - Winter").within(() => {
         cy.get('[aria-label="object-info"]').click();
       });
@@ -139,9 +135,33 @@ describe("Content Library", () => {
       cy.percySnapshot("Homepage - metadata panel - fields");
     });
 
+    it("open Imagery tab", () => {
+      cy.get('input[name="search-query-input"]').type("GOT S01");
+      cy.contains("GOT S01 Trailer").should("exist");
+      cy.contains("tr", "GOT S01E1 - Winter");
+      cy.contains("tr", "GOT S01E1 - Winter").within(() => {
+        cy.get('[aria-label="object-info"]').click();
+      });
+
+      cy.contains("button", "Imagery").click();
+
+      cy.contains("Imagery");
+      cy.contains("Title: Better-Call-Saul-Season-6-Lalo-Salamanca");
+      cy.contains("section", "THUMBNAIL")
+        .find("img")
+        .should(
+          "have.attr",
+          "src",
+          "https://dl.airtable.com/.attachments/7fad203e1c23d2379d277517b51cb705/d1c00b51/Better-Call-Saul-Season-6-Lalo-Salamanca1.webp",
+        );
+
+      cy.percySnapshot("Homepage - metadata panel - imagery");
+    });
+
     it("close Metadata panel", () => {
       cy.get('input[name="search-query-input"]').type("GOT S01");
       cy.contains("GOT S01 Trailer").should("exist");
+      cy.contains("tr", "GOT S01E1 - Winter");
       cy.contains("tr", "GOT S01E1 - Winter").within(() => {
         cy.get('[aria-label="object-info"]').click();
       });

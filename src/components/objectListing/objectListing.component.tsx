@@ -11,9 +11,17 @@ import { Checkbox } from "src/components/checkbox";
 import { Spinner } from "src/components/icons";
 import { Panel } from "src/components/panel/panel.component";
 import { Pill } from "src/components/pill";
-import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import {
+  DISPLAY_NAME_PRIORITY,
+  OBJECT_LIST_TABLE,
+} from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
-import { useSkylarkSearchableObjectTypes } from "src/hooks/useSkylarkObjectTypes";
+import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
+import {
+  ParsedSkylarkObjectAvailability,
+  AvailabilityStatus,
+  SkylarkGraphQLObjectImage,
+} from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
@@ -21,7 +29,12 @@ import { RowActions } from "./rowActions";
 import { Search } from "./search";
 import { Table, TableCell } from "./table";
 
-const orderedKeys = ["__typename", "title", "name", "uid", "external_id"];
+const hardcodedColumns = [
+  OBJECT_LIST_TABLE.columnIds.objectType,
+  "availability",
+  "images",
+];
+const orderedKeys = ["uid", "external_id", "data_source_id"];
 
 const columnHelper = createColumnHelper<object>();
 
@@ -44,21 +57,75 @@ const createColumns = (
     uid: string;
   }) => void,
 ) => {
-  const createdColumns = columns.map((column) =>
-    columnHelper.accessor(column, {
-      header: formatObjectField(column),
-      cell: (props) => <TableCell {...props} />,
-    }),
+  const objectTypeColumn = columnHelper.accessor(
+    OBJECT_LIST_TABLE.columnIds.objectType,
+    {
+      header: "",
+      cell: ({ getValue }) => {
+        return (
+          <Pill
+            label={getValue() as string}
+            className="w-full bg-brand-primary"
+          />
+        );
+      },
+    },
   );
 
-  const objectTypeColumn = columnHelper.accessor("__typename", {
-    header: "",
-    cell: ({ getValue }) => {
+  const createdColumns = columns
+    .filter((column) => !hardcodedColumns.includes(column))
+    .map((column) =>
+      columnHelper.accessor(column, {
+        id: column,
+        header: formatObjectField(column),
+        cell: (props) => <TableCell {...props} />,
+      }),
+    );
+
+  const displayNameColumn = columnHelper.accessor(
+    OBJECT_LIST_TABLE.columnIds.displayField,
+    {
+      header: formatObjectField("Display Field"),
+      cell: (props) => <TableCell {...props} />,
+    },
+  );
+
+  const availabilityColumn = columnHelper.accessor("availability", {
+    header: formatObjectField("Availability"),
+    cell: (props) => {
+      const { status } = props.getValue<ParsedSkylarkObjectAvailability>();
       return (
-        <Pill
-          label={getValue() as string}
-          className="w-full bg-brand-primary"
-        />
+        <span
+          className={clsx(
+            "font-medium uppercase",
+            status === AvailabilityStatus.Active && "text-success",
+            status === AvailabilityStatus.Future && "text-warning",
+            status === AvailabilityStatus.Unavailable && "text-manatee-400",
+            status === AvailabilityStatus.Expired && "text-error",
+          )}
+        >
+          {status}
+        </span>
+      );
+    },
+  });
+
+  // TODO only add/create this column if the schema has images. Or always created it but hide it when it doesn't have images
+  const imagesColumn = columnHelper.accessor("images", {
+    header: formatObjectField("Images"),
+    cell: (props) => {
+      const images = props.getValue<SkylarkGraphQLObjectImage[]>();
+      if (!images || images.length === 0) {
+        return "";
+      }
+
+      return (
+        <>
+          {images.map(({ uid, url, title }) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
+          ))}
+        </>
       );
     },
   });
@@ -91,6 +158,9 @@ const createColumns = (
 
   const orderedColumnArray = [
     objectTypeColumn,
+    displayNameColumn,
+    imagesColumn,
+    availabilityColumn,
     ...createdColumns,
     actionColumn,
   ];
@@ -111,7 +181,7 @@ export const ObjectList = ({
     objectType: string;
     uid: string;
   } | null>(null);
-  const { objectTypes } = useSkylarkSearchableObjectTypes();
+  const { objectTypes } = useSkylarkObjectTypes();
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     objectTypes: null,
   });
@@ -124,15 +194,17 @@ export const ObjectList = ({
   } = useSearch(searchQuery, searchFilters);
 
   // Sorts objects using the preference array above, any others are added to the end randomly
-  const sortedHeaders = properties.sort((a: string, b: string) => {
-    if (orderedKeys.indexOf(a) === -1) {
-      return 1;
-    }
-    if (orderedKeys.indexOf(b) === -1) {
-      return -1;
-    }
-    return orderedKeys.indexOf(a) - orderedKeys.indexOf(b);
-  });
+  const sortedHeaders = useMemo(() => {
+    const orderedKeysThatExist = properties.filter((property) =>
+      orderedKeys.includes(property),
+    );
+
+    const orderedProperties = properties.filter(
+      (property) => !orderedKeys.includes(property),
+    );
+
+    return [...hardcodedColumns, ...orderedKeysThatExist, ...orderedProperties];
+  }, [properties]);
 
   const parsedColumns = useMemo(
     () =>
@@ -149,9 +221,36 @@ export const ObjectList = ({
     VisibilityState | undefined
   >(undefined);
 
+  const formattedSearchData = useMemo(() => {
+    const searchDataWithDisplayField = searchData?.map((obj) => {
+      const primaryKey = DISPLAY_NAME_PRIORITY.find(
+        (field) => !!obj.metadata[field],
+      );
+      return {
+        ...obj,
+        // When the object type is an image, we want to display its preview in the images tab
+        images: obj.objectType === "Image" ? [obj.metadata] : obj.images,
+        [OBJECT_LIST_TABLE.columnIds.displayField]: primaryKey
+          ? obj.metadata[primaryKey]
+          : "",
+      };
+    });
+
+    // Move all entries in .metadata into the top level as tanstack-table doesn't support nested properties that are undefined
+    // TODO when https://github.com/TanStack/table/pull/4620 is merged we can remove this, and handle global/language metadata differently
+    const searchDataWithTopLevelMetadata = searchDataWithDisplayField.map(
+      (obj) => ({
+        ...obj.metadata,
+        ...obj,
+      }),
+    );
+
+    return searchDataWithTopLevelMetadata;
+  }, [searchData]);
+
   const table = useReactTable({
     debugAll: false,
-    data: searchData || [],
+    data: formattedSearchData || [],
     columns: searchData ? parsedColumns : [],
     getCoreRowModel: getCoreRowModel(),
     state: {
@@ -169,8 +268,12 @@ export const ObjectList = ({
   });
 
   useEffect(() => {
-    if (objectTypes.length !== 0 && searchFilters.objectTypes === null) {
-      setSearchFilters({ ...searchFilters, objectTypes });
+    if (
+      objectTypes &&
+      objectTypes.length !== 0 &&
+      searchFilters.objectTypes === null
+    ) {
+      setSearchFilters({ ...searchFilters, objectTypes: objectTypes });
     }
   }, [objectTypes, searchFilters]);
 
@@ -220,8 +323,10 @@ export const ObjectList = ({
           <CreateButtons className="w-full justify-end md:w-auto" />
         )}
       </div>
-      <div className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6">
-        {!searchLoading && searchData && <Table table={table} />}
+      <div className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6 xl:h-[75vh]">
+        {!searchLoading && searchData && (
+          <Table table={table} withCheckbox={withObjectSelect} />
+        )}
         {(searchLoading || searchData) && (
           <div className="items-top justify-left flex h-96 w-full flex-col gap-4 text-sm text-manatee-600 md:text-base">
             {searchLoading && (

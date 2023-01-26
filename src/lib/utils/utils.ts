@@ -12,8 +12,8 @@ export const isObject = (input: unknown): input is Record<string, unknown> => {
 export const pause = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-export const formatObjectField = (field: string) =>
-  field.toUpperCase().replaceAll("_", " ");
+export const formatObjectField = (field?: string) =>
+  field?.toUpperCase().replaceAll("_", " ") || "";
 
 // Creates an Account Identifier (used in Flatfile template)
 // Will change when we have proper auth / teams / accounts

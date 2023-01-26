@@ -7,33 +7,44 @@ import {
   within,
 } from "@testing-library/react";
 import { DocumentNode } from "graphql";
-import { act } from "react-dom/test-utils";
 
-import { SkylarkObjectMeta } from "src/interfaces/skylark/objects";
-import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
+import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import {
-  GET_SEARCHABLE_OBJECTS,
+  createGetObjectQuery,
+  createSearchObjectsQuery,
+} from "src/lib/graphql/skylark/dynamicQueries";
+import {
+  GET_SKYLARK_OBJECT_TYPES,
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
 import {
-  GQLSkylarkSearchableObjectsQueryFixture,
-  GQLSkylarkSchemaQueryFixture,
-  GQLSkylarkSearchQueryFixture,
-  GQLSkylarkDynamicSearchQuery,
-  SKYLARK_OBJECT_FIELDS_FIXTURE,
-} from "src/tests/fixtures";
-import { GQLSkylarkGetObjectQueryFixture } from "src/tests/fixtures/panel.fixture";
+  getAllObjectsMeta,
+  getObjectOperations,
+} from "src/lib/skylark/objects";
+import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
+import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
+import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
+import GQLSkylarkAllAvailTestMovieSearchFixture from "src/tests/fixtures/skylark/queries/search/allMediaTestMovieOnly.json";
+import GQLGameOfThronesSearchResults from "src/tests/fixtures/skylark/queries/search/got.json";
 
 import { ObjectList } from "./objectListing.component";
+
+const searchableObjectTypes =
+  GQLSkylarkObjectTypesQueryFixture.data.__type.possibleTypes.map(
+    ({ name }) => name,
+  ) || [];
+const searchableObjectsMeta = getAllObjectsMeta(
+  GQLSkylarkSchemaQueryFixture.data
+    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
+  searchableObjectTypes,
+);
 
 const schemaMocks = [
   {
     request: {
-      query: GET_SEARCHABLE_OBJECTS,
+      query: GET_SKYLARK_OBJECT_TYPES,
     },
-    result: {
-      data: GQLSkylarkSearchableObjectsQueryFixture,
-    },
+    result: GQLSkylarkObjectTypesQueryFixture,
   },
   {
     request: {
@@ -50,11 +61,12 @@ const defaultMocks = [
   {
     request: {
       variables: { ignoreAvailability: true, queryString: "" },
-      query: GQLSkylarkDynamicSearchQuery,
+      query: createSearchObjectsQuery(
+        searchableObjectsMeta,
+        [],
+      ) as DocumentNode,
     },
-    result: {
-      data: GQLSkylarkSearchQueryFixture,
-    },
+    result: GQLGameOfThronesSearchResults,
   },
 ];
 
@@ -101,15 +113,20 @@ test("renders search results", async () => {
 
   await screen.findByText("UID"); // Search for table header
   // Search for table content
-  await screen.findAllByText("xxxx-xxxx-xxxx-xxxx");
-  await screen.findAllByText("Short title");
+  await screen.findAllByText(
+    GQLGameOfThronesSearchResults.data.search.objects[0].uid,
+  );
 
   // Check for object info button
   await screen.findAllByRole("button", {
     name: /object-info/i,
   });
 
-  expect(screen.getByText("Episode 1")).toBeInTheDocument();
+  expect(
+    screen.getByText(
+      GQLGameOfThronesSearchResults.data.search.objects[0].uid as string,
+    ),
+  ).toBeInTheDocument();
 });
 
 test("opens filters and deselects all object types", async () => {
@@ -192,52 +209,40 @@ describe("row in edit mode", () => {
       })[0],
     );
 
-    expect(screen.getByDisplayValue("xxxx-xxxx-xxxx-xxxx")).toHaveAttribute(
-      "disabled",
-    );
+    expect(
+      screen.getByDisplayValue(
+        GQLGameOfThronesSearchResults.data.search.objects[0].uid,
+      ),
+    ).toHaveAttribute("disabled");
   });
 });
 
 test("open metadata panel, check information and close", async () => {
-  const object = {
-    name: "Episode",
-    fields: SKYLARK_OBJECT_FIELDS_FIXTURE.map((name) => ({
-      enumValues: undefined,
-      isList: false,
-      isRequired: false,
-      name,
-      type: "string",
-    })),
-    operations: {
-      get: {
-        name: "getEpisode",
-        type: "Query",
-      },
-    },
-  };
+  const objectOperations = getObjectOperations(
+    "Movie",
+    GQLSkylarkSchemaQueryFixture.data
+      .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
+  );
+
   const mocks = [
     ...schemaMocks,
     {
       request: {
         variables: { ignoreAvailability: true, queryString: "" },
-        query: GQLSkylarkDynamicSearchQuery,
+        query: createSearchObjectsQuery(
+          searchableObjectsMeta,
+          [],
+        ) as DocumentNode,
       },
-      result: {
-        data: {
-          search: {
-            objects: [GQLSkylarkGetObjectQueryFixture.data.getObject],
-          },
-        },
-      },
+      result: GQLSkylarkAllAvailTestMovieSearchFixture,
     },
     {
       request: {
-        query: createGetObjectQuery(
-          object as SkylarkObjectMeta,
-        ) as DocumentNode,
+        query: createGetObjectQuery(objectOperations) as DocumentNode,
         variables: {
           ignoreAvailability: true,
-          uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
+          uid: GQLSkylarkAllAvailTestMovieSearchFixture.data.search.objects[0]
+            .uid,
         },
       },
       result: GQLSkylarkGetObjectQueryFixture,
@@ -269,7 +274,7 @@ test("open metadata panel, check information and close", async () => {
 
   const panelHeader = screen.getByTestId("panel-header");
   expect(
-    within(panelHeader).getByText("GOT S01E6 - A Golden Crown"),
+    within(panelHeader).getByText("All Avail Test Movie"),
   ).toBeInTheDocument();
 
   fireEvent.click(screen.getByTestId("panel-background"));

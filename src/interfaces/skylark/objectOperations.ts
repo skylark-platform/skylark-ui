@@ -1,5 +1,16 @@
-export type SkylarkObjectType = string;
+export enum BuiltInSkylarkObjectType {
+  Availability = "Availability",
+  Image = "Image",
+}
+
+export type SkylarkObjectType = string | BuiltInSkylarkObjectType;
 export type SkylarkObjectTypes = SkylarkObjectType[];
+export type SkylarkObjectMetadataField =
+  | null
+  | string
+  | string[]
+  | number
+  | boolean;
 
 export type NormalizedObjectFieldType =
   | "string"
@@ -51,11 +62,7 @@ export interface SkylarkObjectFields {
 }
 
 export interface SkylarkObjectMeta extends SkylarkObjectFields {
+  availability: SkylarkObjectMeta | null;
+  images: SkylarkObjectMeta | null;
   operations: SkylarkObjectOperations;
 }
-
-export type SkylarkGraphQLObject = {
-  __typename: string;
-  uid: string;
-  external_id: string;
-} & Record<string, string | number | boolean>;

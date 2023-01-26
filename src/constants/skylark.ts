@@ -9,8 +9,12 @@ export const REQUEST_HEADERS = {
 };
 export const OBJECT_LIST_TABLE = {
   columnIds: {
+    objectType: "__typename", // This is the built-in GraphQL __typename
+    displayField: "skylark-ui-display-field",
     checkbox: "skylark-ui-select",
     actions: "skylark-ui-actions",
+    availability: "availability",
+    images: "images",
   },
 };
 export const LOCAL_STORAGE = {
@@ -22,3 +26,10 @@ export const LOCAL_STORAGE = {
 export const HREFS = {
   apiDocs: "https://docs.skylarkplatform.com/",
 };
+export const DISPLAY_NAME_PRIORITY = [
+  "title",
+  "name",
+  "slug",
+  "external_id",
+  "uid",
+];

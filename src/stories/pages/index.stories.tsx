@@ -1,24 +1,32 @@
 import { ComponentStory } from "@storybook/react";
-import { within } from "@storybook/testing-library";
+import { DocumentNode } from "graphql";
 
-import { SkylarkObjectFields } from "src/interfaces/skylark/objects";
+import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import { createSearchObjectsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
-  GET_SEARCHABLE_OBJECTS,
+  GET_SKYLARK_OBJECT_TYPES,
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
+import { getAllObjectsMeta } from "src/lib/skylark/objects";
 import Index from "src/pages/index";
-import {
-  GQLSkylarkSearchableObjectsQueryFixture,
-  GQLSkylarkSchemaQueryFixture,
-  GQLSkylarkSearchQueryFixture,
-  GQLSkylarkDynamicSearchQuery,
-} from "src/tests/fixtures";
+import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
+import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
+import GQLGameOfThronesSearchResults from "src/tests/fixtures/skylark/queries/search/got.json";
 
 export default {
   title: "Pages/Index",
   component: Index,
 };
+
+const objectTypes =
+  GQLSkylarkObjectTypesQueryFixture.data.__type.possibleTypes.map(
+    ({ name }) => name,
+  ) || [];
+const searchableObjectsMeta = getAllObjectsMeta(
+  GQLSkylarkSchemaQueryFixture.data
+    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
+  objectTypes,
+);
 
 const Template: ComponentStory<typeof Index> = () => {
   return <Index />;
@@ -30,34 +38,26 @@ IndexPage.parameters = {
     mocks: [
       {
         request: {
-          query: GET_SEARCHABLE_OBJECTS,
+          query: GET_SKYLARK_OBJECT_TYPES,
         },
-        result: {
-          data: GQLSkylarkSearchableObjectsQueryFixture,
-        },
+        result: GQLSkylarkObjectTypesQueryFixture,
       },
       {
         request: {
           query: GET_SKYLARK_SCHEMA,
         },
-        result: {
-          data: GQLSkylarkSchemaQueryFixture.data,
-        },
+        result: GQLSkylarkSchemaQueryFixture,
       },
       {
         request: {
           variables: { ignoreAvailability: true, queryString: "" },
-          query: GQLSkylarkDynamicSearchQuery,
+          query: createSearchObjectsQuery(
+            searchableObjectsMeta,
+            [],
+          ) as DocumentNode,
         },
-        result: {
-          data: GQLSkylarkSearchQueryFixture,
-        },
+        result: GQLGameOfThronesSearchResults,
       },
     ],
   },
-};
-IndexPage.play = async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-  const canvas = within(canvasElement);
-
-  await canvas.findAllByText("Short title");
 };

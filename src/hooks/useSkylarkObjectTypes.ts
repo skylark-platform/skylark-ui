@@ -1,44 +1,32 @@
-import { useQuery } from "@apollo/client";
+import { QueryResult, useQuery } from "@apollo/client";
 
 import {
   GQLSkylarkObjectTypesResponse,
   GQLSkylarkSchemaQueriesMutations,
-  GQLSkylarkSearchableObjectsUnionResponse,
 } from "src/interfaces/graphql/introspection";
-import { SkylarkObjectType } from "src/interfaces/skylark/objects";
+import { SkylarkObjectType } from "src/interfaces/skylark";
 import {
   GET_SKYLARK_SCHEMA,
   GET_SKYLARK_OBJECT_TYPES,
-  GET_SEARCHABLE_OBJECTS,
 } from "src/lib/graphql/skylark/queries";
 import {
   getObjectOperations,
-  getAllSearchableObjectFields,
+  getAllObjectsMeta,
 } from "src/lib/skylark/objects";
 
-export const useSkylarkObjectTypes = () => {
+export const useSkylarkObjectTypes = (): Omit<QueryResult, "data"> & {
+  objectTypes: string[] | undefined;
+} => {
   const { data, ...rest } = useQuery<GQLSkylarkObjectTypesResponse>(
     GET_SKYLARK_OBJECT_TYPES,
   );
 
-  const objectTypes = data?.__type.enumValues.map(({ name }) => name);
+  const objectTypes = data
+    ? data?.__type.possibleTypes.map(({ name }) => name) || []
+    : undefined;
 
   return {
     objectTypes,
-    ...rest,
-  };
-};
-
-export const useSkylarkSearchableObjectTypes = () => {
-  const { data, ...rest } = useQuery<GQLSkylarkSearchableObjectsUnionResponse>(
-    GET_SEARCHABLE_OBJECTS,
-  );
-
-  const searchableObjectTypes =
-    data?.__type.possibleTypes.map(({ name }) => name) || [];
-
-  return {
-    objectTypes: searchableObjectTypes,
     ...rest,
   };
 };
@@ -50,31 +38,28 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
     useQuery<GQLSkylarkSchemaQueriesMutations>(GET_SKYLARK_SCHEMA);
 
   if (!data || !objectType) {
-    return { object: null, ...rest };
+    return { objectOperations: null, ...rest };
   }
 
-  const object = getObjectOperations(objectType, data.__schema);
+  const objectOperations = getObjectOperations(objectType, data.__schema);
 
   return {
-    object,
+    objectOperations,
     ...rest,
   };
 };
 
-export const useAllSearchableObjectFields = () => {
+export const useAllSearchableObjectMeta = () => {
   const { data: schemaResponse, ...rest } =
     useQuery<GQLSkylarkSchemaQueriesMutations>(GET_SKYLARK_SCHEMA);
 
-  const { objectTypes: searchableObjects } = useSkylarkSearchableObjectTypes();
+  const { objectTypes: searchableObjects } = useSkylarkObjectTypes();
 
   if (!schemaResponse || !searchableObjects || searchableObjects.length === 0) {
     return { objects: [], allFieldNames: [], ...rest };
   }
 
-  const objects = getAllSearchableObjectFields(
-    schemaResponse.__schema.queryType,
-    searchableObjects,
-  );
+  const objects = getAllObjectsMeta(schemaResponse.__schema, searchableObjects);
 
   const allFieldNames = objects
     .flatMap(({ fields }) => fields)
