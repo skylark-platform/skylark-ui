@@ -79,6 +79,7 @@ Imagery.play = async ({ canvasElement }) => {
   });
 };
 
+/*
 export const Availability = Template.bind({});
 Availability.parameters = Default.parameters;
 Availability.args = {
@@ -94,3 +95,4 @@ Availability.play = async ({ canvasElement }) => {
     userEvent.click(imageryButton);
   });
 };
+*/

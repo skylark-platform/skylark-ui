@@ -150,6 +150,13 @@ describe("Content Library", () => {
 
       cy.contains("Imagery");
       cy.contains("Title: Better-Call-Saul-Season-6-Lalo-Salamanca");
+      cy.contains("section", "THUMBNAIL")
+        .find("img")
+        .should(
+          "have.attr",
+          "src",
+          "https://dl.airtable.com/.attachments/7fad203e1c23d2379d277517b51cb705/d1c00b51/Better-Call-Saul-Season-6-Lalo-Salamanca1.webp",
+        );
 
       cy.percySnapshot("Homepage - metadata panel - imagery");
     });
