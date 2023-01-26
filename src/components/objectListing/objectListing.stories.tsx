@@ -5,12 +5,12 @@ import { DocumentNode } from "graphql";
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import { createSearchObjectsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
-  GET_SEARCHABLE_OBJECTS,
+  GET_SKYLARK_OBJECT_TYPES,
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
-import { getAllSearchableObjectsMeta } from "src/lib/skylark/objects";
+import { getAllObjectsMeta } from "src/lib/skylark/objects";
+import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
 import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
-import GQLSkylarkSearchableObjectsQueryFixture from "src/tests/fixtures/skylark/queries/introspection/searchableUnion.json";
 import GQLGameOfThronesSearchResults from "src/tests/fixtures/skylark/queries/search/got.json";
 
 import { ObjectList } from "./objectListing.component";
@@ -20,14 +20,14 @@ export default {
   component: ObjectList,
 };
 
-const searchableObjectTypes =
-  GQLSkylarkSearchableObjectsQueryFixture.data.__type.possibleTypes.map(
+const objectTypes =
+  GQLSkylarkObjectTypesQueryFixture.data.__type.possibleTypes.map(
     ({ name }) => name,
   ) || [];
-const searchableObjectsMeta = getAllSearchableObjectsMeta(
+const searchableObjectsMeta = getAllObjectsMeta(
   GQLSkylarkSchemaQueryFixture.data
     .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-  searchableObjectTypes,
+  objectTypes,
 );
 
 const Template: ComponentStory<typeof ObjectList> = (args) => {
@@ -40,9 +40,9 @@ Default.parameters = {
     mocks: [
       {
         request: {
-          query: GET_SEARCHABLE_OBJECTS,
+          query: GET_SKYLARK_OBJECT_TYPES,
         },
-        result: GQLSkylarkSearchableObjectsQueryFixture,
+        result: GQLSkylarkObjectTypesQueryFixture,
       },
       {
         request: {

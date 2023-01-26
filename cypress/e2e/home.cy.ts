@@ -18,11 +18,6 @@ describe("Content Library", () => {
           fixture: "./skylark/queries/introspection/objectTypes.json",
         });
       }
-      if (hasOperationName(req, "GET_SEARCHABLE_OBJECTS")) {
-        req.reply({
-          fixture: "./skylark/queries/introspection/searchableUnion.json",
-        });
-      }
       if (hasOperationName(req, "GET_SKYLARK_SCHEMA")) {
         req.reply({
           fixture: "./skylark/queries/introspection/schema.json",
@@ -129,6 +124,7 @@ describe("Content Library", () => {
       cy.get('input[name="search-query-input"]').type("GOT S01");
       cy.contains("GOT S01 Trailer").should("exist");
       cy.contains("tr", "GOT S01E1 - Winter").within(() => {
+        cy.contains("Episode");
         cy.get('[aria-label="object-info"]').click();
       });
 
@@ -143,10 +139,11 @@ describe("Content Library", () => {
       cy.get('input[name="search-query-input"]').type("GOT S01");
       cy.contains("GOT S01 Trailer").should("exist");
       cy.contains("tr", "GOT S01E1 - Winter").within(() => {
+        cy.contains("Episode");
         cy.get('[aria-label="object-info"]').click();
       });
 
-      cy.get("button").contains("Imagery").click();
+      cy.contains("button", "Imagery").click();
 
       cy.contains("Imagery");
       cy.contains("Title: Better-Call-Saul-Season-6-Lalo-Salamanca");
@@ -165,6 +162,7 @@ describe("Content Library", () => {
       cy.get('input[name="search-query-input"]').type("GOT S01");
       cy.contains("GOT S01 Trailer").should("exist");
       cy.contains("tr", "GOT S01E1 - Winter").within(() => {
+        cy.contains("Episode");
         cy.get('[aria-label="object-info"]').click();
       });
 

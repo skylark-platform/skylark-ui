@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { SkylarkGraphQLObjectImage } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
@@ -54,14 +54,14 @@ export const PanelImages = ({
       <h2 className="mb-2 text-xl font-bold">Imagery</h2>
       {Object.keys(imgs).map((type) => {
         return (
-          <>
+          <Fragment key={type}>
             <h3 className="mt-6 mb-2 font-bold">
               {formatObjectField(type)} ({imgs[type].length})
             </h3>
             {imgs[type].map((image) => (
               <PanelImage key={image.uid} image={image} />
             ))}
-          </>
+          </Fragment>
         );
       })}
     </div>

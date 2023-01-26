@@ -68,7 +68,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
       // https://www.apollographql.com/docs/react/data/error-handling/#graphql-error-policies
       errorPolicy: "all",
       // Don't cache search so we always get up to date results
-      fetchPolicy: "no-cache",
+      fetchPolicy: "network-only",
     },
   );
 

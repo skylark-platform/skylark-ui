@@ -1,22 +1,22 @@
 {
   "data": {
     "__type": {
-      "enumValues": [
-        { "name": "Image", "__typename": "__EnumValue" },
-        { "name": "Asset", "__typename": "__EnumValue" },
-        { "name": "Genre", "__typename": "__EnumValue" },
-        { "name": "Theme", "__typename": "__EnumValue" },
-        { "name": "ParentalGuidance", "__typename": "__EnumValue" },
-        { "name": "Rating", "__typename": "__EnumValue" },
-        { "name": "Tag", "__typename": "__EnumValue" },
-        { "name": "Person", "__typename": "__EnumValue" },
-        { "name": "Credit", "__typename": "__EnumValue" },
-        { "name": "Role", "__typename": "__EnumValue" },
-        { "name": "Episode", "__typename": "__EnumValue" },
-        { "name": "Season", "__typename": "__EnumValue" },
-        { "name": "Brand", "__typename": "__EnumValue" },
-        { "name": "Movie", "__typename": "__EnumValue" },
-        { "name": "Set", "__typename": "__EnumValue" }
+      "possibleTypes": [
+        { "name": "Episode", "__typename": "__Type" },
+        { "name": "Image", "__typename": "__Type" },
+        { "name": "Credit", "__typename": "__Type" },
+        { "name": "Person", "__typename": "__Type" },
+        { "name": "Set", "__typename": "__Type" },
+        { "name": "Asset", "__typename": "__Type" },
+        { "name": "ParentalGuidance", "__typename": "__Type" },
+        { "name": "Rating", "__typename": "__Type" },
+        { "name": "Tag", "__typename": "__Type" },
+        { "name": "Theme", "__typename": "__Type" },
+        { "name": "Genre", "__typename": "__Type" },
+        { "name": "Movie", "__typename": "__Type" },
+        { "name": "Brand", "__typename": "__Type" },
+        { "name": "Season", "__typename": "__Type" },
+        { "name": "Role", "__typename": "__Type" }
       ],
       "__typename": "__Type"
     }

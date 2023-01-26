@@ -4,13 +4,13 @@ import {
   GET_SKYLARK_OBJECT_TYPES,
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
+import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
 
 import {
   getSkylarkObjectOperations,
   getSkylarkObjectTypes,
 } from "./introspection";
 import {
-  GQLSkylarkObjectTypesQueryFixture,
   GQLSkylarkSchemaQueryFixture,
   SKYLARK_OBJECT_TYPES_FIXTURE,
 } from "./introspection.fixture";

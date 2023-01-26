@@ -30,7 +30,7 @@ export const getSkylarkObjectTypes = async (
     query: GET_SKYLARK_OBJECT_TYPES,
   });
 
-  const objectTypes = data.__type.enumValues.map(({ name }) => name);
+  const objectTypes = data.__type.possibleTypes.map(({ name }) => name);
 
   return objectTypes;
 };

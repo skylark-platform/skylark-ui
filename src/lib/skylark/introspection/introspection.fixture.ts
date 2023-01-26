@@ -1,7 +1,5 @@
-import {
-  GQLSkylarkSchemaQueriesMutations,
-  GQLSkylarkSearchableObjectsUnionResponse,
-} from "src/interfaces/graphql/introspection";
+import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
+import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
 
 export const SKYLARK_OBJECT_FIELDS_FIXTURE = [
   "uid",
@@ -12,22 +10,10 @@ export const SKYLARK_OBJECT_FIELDS_FIXTURE = [
   "synopsis_long",
 ];
 
-export const SKYLARK_OBJECT_TYPES_FIXTURE = [
-  "Brand",
-  "Season",
-  "Episode",
-  "Movie",
-  "Theme",
-  "Genre",
-];
-
-export const GQLSkylarkObjectTypesQueryFixture = {
-  data: {
-    __type: {
-      enumValues: SKYLARK_OBJECT_TYPES_FIXTURE.map((name) => ({ name })),
-    },
-  },
-};
+export const SKYLARK_OBJECT_TYPES_FIXTURE =
+  GQLSkylarkObjectTypesQueryFixture.data.__type.possibleTypes.map(
+    ({ name }) => name,
+  );
 
 const getQueries: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"] =
   SKYLARK_OBJECT_TYPES_FIXTURE.map((objectType) => ({
@@ -168,11 +154,3 @@ export const GQLSkylarkSchemaQueryFixture: {
     },
   },
 };
-
-export const GQLSkylarkSearchableObjectsQueryFixture: GQLSkylarkSearchableObjectsUnionResponse =
-  {
-    __type: {
-      name: "Searchable",
-      possibleTypes: SKYLARK_OBJECT_TYPES_FIXTURE.map((name) => ({ name })),
-    },
-  } as GQLSkylarkSearchableObjectsUnionResponse;

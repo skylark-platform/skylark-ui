@@ -1,5 +1,3 @@
-import { SkylarkObjectType } from "src/interfaces/skylark";
-
 type GQLBuiltInScalars = "Int" | "Float" | "String" | "Boolean" | "ID";
 type GQLAdditionalScalars =
   | "AWSDate"
@@ -69,7 +67,12 @@ export interface GQLMutationsList {
 [];
 
 export interface GQLSkylarkObjectTypesResponse {
-  __type: { enumValues: { name: SkylarkObjectType }[] };
+  __type: {
+    name: "Metadata";
+    possibleTypes: {
+      name: string;
+    }[];
+  };
 }
 
 export interface GQLSkylarkSchemaQueriesMutations {
@@ -97,14 +100,5 @@ export interface GQLSkylarkSchemaQueriesMutations {
         }[];
       }[];
     };
-  };
-}
-
-export interface GQLSkylarkSearchableObjectsUnionResponse {
-  __type: {
-    name: "Searchable";
-    possibleTypes: {
-      name: string;
-    }[];
   };
 }

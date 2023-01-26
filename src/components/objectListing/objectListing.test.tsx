@@ -14,25 +14,26 @@ import {
   createSearchObjectsQuery,
 } from "src/lib/graphql/skylark/dynamicQueries";
 import {
-  GET_SEARCHABLE_OBJECTS,
+  GET_SKYLARK_OBJECT_TYPES,
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
 import {
-  getAllSearchableObjectsMeta,
+  getAllObjectsMeta,
   getObjectOperations,
 } from "src/lib/skylark/objects";
 import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
+import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
 import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
-import GQLSkylarkSearchableObjectsQueryFixture from "src/tests/fixtures/skylark/queries/introspection/searchableUnion.json";
+import GQLSkylarkAllAvailTestMovieSearchFixture from "src/tests/fixtures/skylark/queries/search/allMediaTestMovieOnly.json";
 import GQLGameOfThronesSearchResults from "src/tests/fixtures/skylark/queries/search/got.json";
 
 import { ObjectList } from "./objectListing.component";
 
 const searchableObjectTypes =
-  GQLSkylarkSearchableObjectsQueryFixture.data.__type.possibleTypes.map(
+  GQLSkylarkObjectTypesQueryFixture.data.__type.possibleTypes.map(
     ({ name }) => name,
   ) || [];
-const searchableObjectsMeta = getAllSearchableObjectsMeta(
+const searchableObjectsMeta = getAllObjectsMeta(
   GQLSkylarkSchemaQueryFixture.data
     .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
   searchableObjectTypes,
@@ -41,9 +42,9 @@ const searchableObjectsMeta = getAllSearchableObjectsMeta(
 const schemaMocks = [
   {
     request: {
-      query: GET_SEARCHABLE_OBJECTS,
+      query: GET_SKYLARK_OBJECT_TYPES,
     },
-    result: GQLSkylarkSearchableObjectsQueryFixture,
+    result: GQLSkylarkObjectTypesQueryFixture,
   },
   {
     request: {
@@ -233,20 +234,15 @@ test("open metadata panel, check information and close", async () => {
           [],
         ) as DocumentNode,
       },
-      result: {
-        data: {
-          search: {
-            objects: [GQLSkylarkGetObjectQueryFixture.data.getObject],
-          },
-        },
-      },
+      result: GQLSkylarkAllAvailTestMovieSearchFixture,
     },
     {
       request: {
         query: createGetObjectQuery(objectOperations) as DocumentNode,
         variables: {
           ignoreAvailability: true,
-          uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
+          uid: GQLSkylarkAllAvailTestMovieSearchFixture.data.search.objects[0]
+            .uid,
         },
       },
       result: GQLSkylarkGetObjectQueryFixture,

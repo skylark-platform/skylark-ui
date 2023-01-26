@@ -13,7 +13,7 @@ import { Panel } from "src/components/panel/panel.component";
 import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
-import { useSkylarkSearchableObjectTypes } from "src/hooks/useSkylarkObjectTypes";
+import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
@@ -178,7 +178,7 @@ export const ObjectList = ({
     objectType: string;
     uid: string;
   } | null>(null);
-  const { objectTypes } = useSkylarkSearchableObjectTypes();
+  const { objectTypes } = useSkylarkObjectTypes();
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     objectTypes: null,
   });
@@ -261,8 +261,12 @@ export const ObjectList = ({
   });
 
   useEffect(() => {
-    if (objectTypes.length !== 0 && searchFilters.objectTypes === null) {
-      setSearchFilters({ ...searchFilters, objectTypes });
+    if (
+      objectTypes &&
+      objectTypes.length !== 0 &&
+      searchFilters.objectTypes === null
+    ) {
+      setSearchFilters({ ...searchFilters, objectTypes: objectTypes });
     }
   }, [objectTypes, searchFilters]);
 

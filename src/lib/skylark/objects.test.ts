@@ -1,7 +1,7 @@
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import GQLSkylarkSchemaQueryFixtureJSON from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 
-import { getAllSearchableObjectsMeta, getObjectOperations } from "./objects";
+import { getAllObjectsMeta, getObjectOperations } from "./objects";
 
 const GQLSkylarkSchemaQueryFixture =
   GQLSkylarkSchemaQueryFixtureJSON as unknown as {
@@ -84,12 +84,11 @@ describe("getObjectOperations", () => {
   });
 });
 
-describe("getAllSearchableObjectFields", () => {
-  test("returns Episode when it is searchable", () => {
-    const got = getAllSearchableObjectsMeta(
-      GQLSkylarkSchemaQueryFixture.data.__schema,
-      ["Episode"],
-    );
+describe("getAllObjectsMeta", () => {
+  test("returns Episode", () => {
+    const got = getAllObjectsMeta(GQLSkylarkSchemaQueryFixture.data.__schema, [
+      "Episode",
+    ]);
     expect(got.length).toEqual(1);
     expect(got[0].name).toEqual("Episode");
     expect(got[0].fields.length).toEqual(12);

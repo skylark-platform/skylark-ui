@@ -149,13 +149,13 @@ export const getObjectOperations = (
   return object;
 };
 
-export const getAllSearchableObjectsMeta = (
+export const getAllObjectsMeta = (
   schema: GQLSkylarkSchemaQueriesMutations["__schema"],
-  searchableObjects: string[],
+  objects: string[],
 ) => {
-  const objects = searchableObjects.map((objectType) => {
+  const objectOperations = objects.map((objectType) => {
     return getObjectOperations(objectType, schema);
   });
 
-  return objects;
+  return objectOperations;
 };
