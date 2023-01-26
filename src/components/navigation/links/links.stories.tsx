@@ -1,4 +1,5 @@
 import { ComponentStory } from "@storybook/react";
+import { userEvent, within } from "@storybook/testing-library";
 
 import { NavigationLinks } from "./links.component";
 
@@ -19,4 +20,15 @@ WithActivePath.parameters = {
     path: "/",
     asPath: "/",
   },
+};
+
+export const WithOpenDropdown = Template.bind({});
+WithOpenDropdown.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  const navigationButton = canvas.getByText("Developer");
+
+  await userEvent.click(navigationButton);
+
+  await canvas.findAllByText("API Documentation");
 };

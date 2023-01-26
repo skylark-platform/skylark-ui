@@ -9,3 +9,4 @@ export * from "./crossSquare.component";
 export * from "./search.component";
 export * from "./filter.component";
 export * from "./expand.component";
+export * from "./fileText.component";

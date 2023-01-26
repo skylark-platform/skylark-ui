@@ -77,5 +77,9 @@ module.exports = {
       },
     ],
   },
-  plugins: [require("daisyui"), require("tailwindcss-radix")()],
+  plugins: [
+    require("daisyui"),
+    require("tailwindcss-radix")(),
+    require("@headlessui/tailwindcss"),
+  ],
 };

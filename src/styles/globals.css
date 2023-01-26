@@ -10,3 +10,24 @@
 
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+@layer components {
+  .h-nav {
+    @apply h-14 lg:h-16;
+  }
+
+  .pt-nav {
+    @apply pt-14 lg:pt-16;
+  }
+}
+
+/* Overrides for GraphiQL Explorer */
+.graphiql-explorer-graphql-arguments span {
+  display: inline-flex !important;
+}
+
+.graphiql-dialog-close > svg {
+  height: 2rem !important;
+  width: 2rem !important;
+  padding: 0.5rem !important;
+}
