@@ -1,9 +1,9 @@
-import { ObjectList } from "src/components/objectListing";
+import { ContentLibrary } from "src/components/contentLibrary";
 
 export default function Home() {
   return (
-    <div className="px-4 pt-20 md:px-14 md:pt-28">
-      <ObjectList withCreateButtons />
+    <div className=" pt-14 md:pt-20">
+      <ContentLibrary />
     </div>
   );
 }
