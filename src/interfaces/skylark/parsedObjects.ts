@@ -34,6 +34,10 @@ export type ParsedSkylarkObjectMetadata = {
 } & Record<string, SkylarkObjectMetadataField>;
 
 export interface ParsedSkylarkObject {
+  config: {
+    colour?: string;
+    primaryField?: string;
+  };
   objectType: SkylarkObjectType;
   metadata: ParsedSkylarkObjectMetadata;
   availability: ParsedSkylarkObjectAvailability;

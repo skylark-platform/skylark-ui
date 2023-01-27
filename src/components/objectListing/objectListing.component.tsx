@@ -6,9 +6,12 @@ import {
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useEffect, useState, useMemo, useRef } from "react";
+import { GrGraphQl } from "react-icons/gr";
 import { useVirtual } from "react-virtual";
 
+import { Button } from "src/components/button";
 import { Checkbox } from "src/components/checkbox";
+import { GraphQLQueryModal } from "src/components/graphQLDocumentNodeModal/graphQLQueryModal.component";
 import { Spinner } from "src/components/icons";
 import { Panel } from "src/components/panel/panel.component";
 import { Pill } from "src/components/pill";
@@ -22,6 +25,7 @@ import {
   ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
   SkylarkGraphQLObjectImage,
+  ParsedSkylarkObject,
 } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
@@ -62,10 +66,12 @@ const createColumns = (
     OBJECT_LIST_TABLE.columnIds.objectType,
     {
       header: "",
-      cell: ({ getValue }) => {
+      cell: ({ row }) => {
+        const original = row.original as ParsedSkylarkObject;
         return (
           <Pill
-            label={getValue() as string}
+            label={original.objectType}
+            bgColor={original.config.colour}
             className="w-full bg-brand-primary"
           />
         );
@@ -192,6 +198,7 @@ export const ObjectList = ({
     error: searchError,
     loading: searchLoading,
     properties,
+    query: graphqlSearchQuery,
   } = useSearch(searchQuery, searchFilters);
 
   // Sorts objects using the preference array above, any others are added to the end randomly
@@ -224,9 +231,10 @@ export const ObjectList = ({
 
   const formattedSearchData = useMemo(() => {
     const searchDataWithDisplayField = searchData?.map((obj) => {
-      const primaryKey = DISPLAY_NAME_PRIORITY.find(
-        (field) => !!obj.metadata[field],
-      );
+      const primaryKey = [
+        obj.config.primaryField || "",
+        ...DISPLAY_NAME_PRIORITY,
+      ].find((field) => !!obj.metadata[field]);
       return {
         ...obj,
         // When the object type is an image, we want to display its preview in the images tab
@@ -294,7 +302,7 @@ export const ObjectList = ({
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
     size: rows.length,
-    overscan: 10,
+    overscan: 30,
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
 
@@ -310,7 +318,7 @@ export const ObjectList = ({
       <div className="flex w-full flex-col-reverse items-center justify-between gap-2 md:flex-row">
         <div
           className={clsx(
-            "flex w-full flex-row-reverse gap-4",
+            "flex w-full flex-row-reverse gap-4 md:flex-row",
             withCreateButtons ? "md:w-1/2 xl:w-1/3" : "flex-1",
           )}
         >
@@ -328,6 +336,10 @@ export const ObjectList = ({
                 : sortedHeaders
             }
             onFilterChange={onFilterChangeWrapper}
+          />
+          <GraphQLQueryModal
+            label="Content Library Search"
+            query={graphqlSearchQuery}
           />
         </div>
         {withCreateButtons && (

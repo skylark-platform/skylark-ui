@@ -14,6 +14,12 @@ const common = {
   args: {
     ignore_availability: new VariableType("ignoreAvailability"),
   },
+  objectConfig: {
+    _config: {
+      primary_field: true,
+      colour: true,
+    },
+  },
 };
 
 const fieldNamesToNeverAlias = ["uid", "external_id"];
@@ -103,6 +109,7 @@ export const createGetObjectQuery = (object: SkylarkObjectMeta | null) => {
           uid: new VariableType("uid"),
           external_id: new VariableType("externalId"),
         },
+        ...common.objectConfig,
         ...generateFieldsToReturn(object.fields),
         ...generateRelationshipsToReturn(object),
       },
@@ -137,6 +144,7 @@ export const createListObjectQuery = (object: SkylarkObjectMeta | null) => {
         count: true,
         next_token: true,
         objects: {
+          ...common.objectConfig,
           ...generateFieldsToReturn(object.fields),
           ...generateRelationshipsToReturn(object),
         },
@@ -180,6 +188,7 @@ export const createSearchObjectsQuery = (
           __on: objectsToRequest.map((object) => ({
             __typeName: object.name,
             __typename: true, // To remove the alias later
+            ...common.objectConfig,
             ...generateFieldsToReturn(object.fields, `__${object.name}__`),
             ...generateRelationshipsToReturn(object),
           })),
