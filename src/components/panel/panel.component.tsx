@@ -33,7 +33,7 @@ const getTitle = (object: ParsedSkylarkObjectMetadata): string => {
 };
 
 export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
-  const { data, loading, query } = useGetObject(objectType, {
+  const { data, loading, query, variables } = useGetObject(objectType, {
     uid: uid,
   });
 
@@ -68,6 +68,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
               objectType={objectType}
               pillColor={data.config.colour}
               graphQLQuery={query}
+              graphQLVariables={variables}
               closePanel={closePanel}
             />
             <Tabs

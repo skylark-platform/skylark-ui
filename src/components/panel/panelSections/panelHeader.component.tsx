@@ -1,7 +1,8 @@
+import { OperationVariables } from "@apollo/client";
 import { DocumentNode } from "graphql";
 
 import { Button } from "src/components/button";
-import { GraphQLQueryModal } from "src/components/graphQLDocumentNodeModal/graphQLQueryModal.component";
+import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { Expand } from "src/components/icons";
 import { Pill } from "src/components/pill";
 import { SkylarkObjectType } from "src/interfaces/skylark";
@@ -11,6 +12,7 @@ interface PanelHeaderProps {
   objectType: SkylarkObjectType;
   pillColor?: string;
   graphQLQuery: DocumentNode | null;
+  graphQLVariables?: OperationVariables;
   closePanel: () => void;
 }
 
@@ -19,6 +21,7 @@ export const PanelHeader = ({
   objectType,
   pillColor,
   graphQLQuery,
+  graphQLVariables,
   closePanel,
 }: PanelHeaderProps) => (
   <div data-testid="panel-header" className="p-4 pb-2 md:p-8 md:py-6">
@@ -32,7 +35,11 @@ export const PanelHeader = ({
           disabled
           variant="ghost"
         />
-        <GraphQLQueryModal label="Get Object" query={graphQLQuery || null} />
+        <DisplayGraphQLQuery
+          label="Get Object"
+          query={graphQLQuery || null}
+          variables={graphQLVariables}
+        />
       </div>
 
       <Button variant="ghost" onClick={closePanel}>

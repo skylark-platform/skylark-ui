@@ -6,12 +6,10 @@ import {
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useEffect, useState, useMemo, useRef } from "react";
-import { GrGraphQl } from "react-icons/gr";
 import { useVirtual } from "react-virtual";
 
-import { Button } from "src/components/button";
 import { Checkbox } from "src/components/checkbox";
-import { GraphQLQueryModal } from "src/components/graphQLDocumentNodeModal/graphQLQueryModal.component";
+import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { Spinner } from "src/components/icons";
 import { Panel } from "src/components/panel/panel.component";
 import { Pill } from "src/components/pill";
@@ -199,6 +197,7 @@ export const ObjectList = ({
     loading: searchLoading,
     properties,
     query: graphqlSearchQuery,
+    variables: graphqlSearchQueryVariables,
   } = useSearch(searchQuery, searchFilters);
 
   // Sorts objects using the preference array above, any others are added to the end randomly
@@ -302,7 +301,7 @@ export const ObjectList = ({
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
     size: rows.length,
-    overscan: 30,
+    overscan: 15,
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
 
@@ -337,9 +336,10 @@ export const ObjectList = ({
             }
             onFilterChange={onFilterChangeWrapper}
           />
-          <GraphQLQueryModal
+          <DisplayGraphQLQuery
             label="Content Library Search"
             query={graphqlSearchQuery}
+            variables={graphqlSearchQueryVariables}
           />
         </div>
         {withCreateButtons && (
