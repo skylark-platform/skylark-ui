@@ -17,6 +17,7 @@ export const SyntaxHighlighter = ({
 }: SyntaxHighlighterProps) => {
   return (
     <ReactSyntaxHighlighter
+      data-testid="syntax-highlighter"
       language={language}
       style={highlightStyles}
       showLineNumbers

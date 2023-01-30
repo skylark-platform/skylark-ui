@@ -32,7 +32,7 @@ const modalVariants = {
   },
 };
 
-export interface GraphQLQueryModalProps {
+interface GraphQLQueryModalProps {
   label: string;
   query: DocumentNode | null;
   variables?: OperationVariables;
