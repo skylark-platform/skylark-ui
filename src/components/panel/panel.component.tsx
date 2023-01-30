@@ -4,7 +4,10 @@ import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
 import { useGetObject } from "src/hooks/useGetObject";
-import { ParsedSkylarkObjectMetadata } from "src/interfaces/skylark";
+import {
+  ParsedSkylarkObjectMetadata,
+  ParsedSkylarkObjectConfig,
+} from "src/interfaces/skylark";
 
 import {
   PanelAvailability,
@@ -25,10 +28,13 @@ enum PanelTab {
   Availability = "Availability",
 }
 
-const getTitle = (object: ParsedSkylarkObjectMetadata): string => {
-  const [title] = DISPLAY_NAME_PRIORITY.map((key) => object[key]).filter(
-    (key) => key,
-  );
+const getTitle = (
+  object: ParsedSkylarkObjectMetadata,
+  config: ParsedSkylarkObjectConfig,
+): string => {
+  const [title] = [config.primaryField || "", ...DISPLAY_NAME_PRIORITY]
+    .filter((key) => key)
+    .map((key) => object[key as string]);
   return title as string;
 };
 
@@ -64,7 +70,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
         {!loading && data && (
           <>
             <PanelHeader
-              title={getTitle(data.metadata)}
+              title={getTitle(data.metadata, data.config)}
               objectType={objectType}
               pillColor={data.config.colour}
               graphQLQuery={query}

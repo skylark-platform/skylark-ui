@@ -24,7 +24,12 @@ export const DisplayGraphQLQuery = ({
     <>
       <Button
         variant="ghost"
-        Icon={<GrGraphQl className="text-xl" />}
+        Icon={
+          <GrGraphQl
+            className="text-xl"
+            data-testid="graphql-query-modal-button"
+          />
+        }
         onClick={() => setOpen(true)}
         disabled={!query}
       />
