@@ -317,7 +317,7 @@ export const ObjectList = ({
       <div className="flex w-full flex-col-reverse items-center justify-between gap-2 md:flex-row">
         <div
           className={clsx(
-            "flex w-full flex-row-reverse gap-4 md:flex-row",
+            "flex w-full flex-row gap-2 md:gap-4",
             withCreateButtons ? "md:w-1/2 xl:w-1/3" : "flex-1",
           )}
         >

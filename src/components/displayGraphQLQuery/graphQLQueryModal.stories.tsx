@@ -1,16 +1,17 @@
 import { ComponentStory } from "@storybook/react";
+import { userEvent, waitFor, within } from "@storybook/testing-library";
 
 import { GET_SKYLARK_SCHEMA } from "src/lib/graphql/skylark/queries";
 
-import { GraphQLQueryModal } from "./graphQLQueryModal.component";
+import { DisplayGraphQLQuery } from "./graphQLQueryModal.component";
 
 export default {
   title: "Components/DisplayGraphQLQuery",
-  component: GraphQLQueryModal,
+  component: DisplayGraphQLQuery,
 };
 
-const Template: ComponentStory<typeof GraphQLQueryModal> = (args) => (
-  <GraphQLQueryModal {...args} />
+const Template: ComponentStory<typeof DisplayGraphQLQuery> = (args) => (
+  <DisplayGraphQLQuery {...args} />
 );
 
 export const Default = Template.bind({});
@@ -20,5 +21,15 @@ Default.args = {
   variables: {
     variable1: "value1",
   },
-  closeModal: () => alert("closed clicked"),
+};
+Default.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  const graphqlButton = canvas.getByRole("button");
+
+  await userEvent.click(graphqlButton);
+
+  await waitFor(async () => {
+    canvas.findAllByText("Query for Schema");
+  });
 };

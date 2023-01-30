@@ -1,1 +1,1 @@
-export * from "./graphQLQueryContainer.component";
+export * from "./graphQLQueryModal.component";
