@@ -1,5 +1,4 @@
 import { ComponentStory } from "@storybook/react";
-import { userEvent, within } from "@storybook/testing-library";
 
 import { GET_SKYLARK_SCHEMA } from "src/lib/graphql/skylark/queries";
 
