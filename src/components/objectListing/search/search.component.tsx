@@ -1,5 +1,5 @@
 import { VisibilityState } from "@tanstack/react-table";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 import { SearchFilter } from "src/components/objectListing/search/searchFilter/searchFilter.component";
@@ -68,7 +68,7 @@ export const Search = ({
 
       <AnimatePresence>
         {isFilterOpen && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
@@ -82,7 +82,7 @@ export const Search = ({
               visibleColumns={visibleColumns}
               onFilterSave={onFilterSaveWrapper}
             />
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

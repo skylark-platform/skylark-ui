@@ -1,15 +1,20 @@
 {
   "data": {
     "getObject": {
-      "uid": "01GQQ9TK0HGK72PCWR6S8C1991",
-      "external_id": "recxjWXqZDVG3TWKa",
+      "_config": {
+        "primary_field": "title",
+        "colour": "#607d8b",
+        "__typename": "ObjectConfig"
+      },
+      "uid": "01GR0BKCK1C8E32KVXEFR4HFQQ",
+      "external_id": "recPTz6boXKXgPnAs",
       "slug": null,
       "title": "GotImageTitle",
       "description": null,
-      "type": "THUMBNAIL",
-      "url": "https://dl.airtable.com/.attachments/c31d37b4ed01c91e098c5350400807ac/19afe02a/GOT-S5-5.jpg",
-      "external_url": "https://dl.airtable.com/.attachments/c31d37b4ed01c91e098c5350400807ac/19afe02a/GOT-S5-5.jpg",
-      "upload_url": "https://obj-reg-storage-sl-develop-10-eu-west-1-storage.s3.amazonaws.com/media/images/ftrweh3hvza27nfv2vx2atjmqu/01GQQ9TK0HGK72PCWR6S8C1991/01GQQK1XKNR4N0927N26H1D4BB?AWSAccessKeyId=ASIAQP5PT3NIU3B7CGEM&Signature=%2F20V2z%2F2OtCEbOTxQnG9mc169jU%3D&content-type=application%2Foctet&x-amz-meta-account_id=ftrweh3hvza27nfv2vx2atjmqu&x-amz-meta-uid=01GQQ9TK0HGK72PCWR6S8C1991&x-amz-security-token=IQoJb3JpZ2luX2VjELr%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCWV1LXdlc3QtMSJHMEUCIDf%2BJK%2BKLWaAE5eu1hS4IbZMJNd2CV%2F720GEaenC%2BTpZAiEAmnIepZWr4HOIKvEx6uINdjGznx9bIa5BnqqI9Dyw1E8qowMIMxABGgwwMzQxOTExNzAzODUiDE3nKe76GACV6Z5SqCqAA4nDKeFVpPjjeldRIvVzsyMokQV1lGetulegCuUvgWHJiPXpUj0KH1EkpB%2FeeYpNwJyXHaUtEMTv7lLW0LGxR%2BsQcK3WSx864%2Bq2J62L59zW3MhpfS%2FzZXzgj9FcgKJNm8jnjAsien71SXZ51iIPv6S8GtYULmJ9HUuzRmgPVH%2Fu8CrHcinWHNitTo7pY6muJ2y095S6o5uKL1E1TEcAmPDFYebRz5feJJecE%2BvgSTEZ36pMz5vum4T6ipTg8Zcc%2BRa3BvsafF3ItHsXsfq43bHQV2stp8tJ%2FqRTqcit2oo1tjOZXBb7IMFuebhSw%2B7rnS2Ji3HMuIfd%2FOdrGrt6OYR9IwFLgPNqUq09yca77UScJj1bBU%2FJ0ELnWc6GnoGVCd375qXpC5IPEN9FegOsTuOv%2BWfUXxC8zMdM3fYrHSQ5LXnxZ%2B1BwHqjk8enQRR%2BLqN4PX%2BsUQBpbLJ0aZe4PJvCWbHGL8ABNgZuGm3v8HzrCfI%2FMbv3hKxl8HwwpsS0nzCx%2BMqeBjqdAfxcglqslJ%2ForFQL84IntHtfL%2B1j1vnda0htiUitS%2FpLf42m9zhEelDYkquFp8Ok2Yxyvx4iRYLNwtPSjplaL9n66867qXQ9iM9OSk%2FwSboPvYlCpmmucR5IgRqi58zxOKTXIJEsuIjYRxMk3noDQ%2FW5vKJ5g9CSIfu1XQeoDZ16smMsgVJO%2FeW6lVqkPTWWsOx6fOP8ljbDTpEWRNs%3D&Expires=1674758841",
+      "type": "MAIN",
+      "url": "https://dl.airtable.com/.attachments/1cb0b174fb684054eac6de51921e8a57/ec5f37e7/Hero-GOT-s01.jpg",
+      "external_url": "https://dl.airtable.com/.attachments/1cb0b174fb684054eac6de51921e8a57/ec5f37e7/Hero-GOT-s01.jpg",
+      "upload_url": "https://obj-reg-storage-saas-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/qfmk74pkejb3ldjxbwbsk4ldju/01GR0BKCK1C8E32KVXEFR4HFQQ/01GR18GMQJ6ZDJTBBTSHYD2HW9?AWSAccessKeyId=ASIAZOW2GFFBELOYS5FU&Signature=8JeKM65PzV9cSetSs8T5q4xTGrs%3D&content-type=application%2Foctet&x-amz-meta-account_id=qfmk74pkejb3ldjxbwbsk4ldju&x-amz-meta-uid=01GR0BKCK1C8E32KVXEFR4HFQQ&x-amz-security-token=IQoJb3JpZ2luX2VjEBQaCWV1LXdlc3QtMSJHMEUCIHKpP1%2BNKMtOe4M8eiz2sRLmL0vk8QyL%2B11P3qBTwPvkAiEAp5LZjPRYp2ZJ9PoBl19jON55I7Yy3MWRm5yC8Ur4VzcqrAMIjf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2NTAwNzEzODY0MzQiDAGF%2BtNxI%2FZUEfZbMCqAA9KvuBC12FF92SKqt6JjTbfgHH0N%2FP3ziX3F20Qnum1kokV8UjTFyzeuzeViTXUvRwJPxpnyhS%2B3Zr6bbJw%2F1%2BPH7ZsTNNcgmA6ErAU7mi%2Bt0KSKiFlthz7XqhFRbtt3gI84WkvQ%2BheMM1nT9rWkG0bRhudlhSBsgVPRQ1gmY5h9ZyRLkBOuXuBbIHjfC4uM4N2UAflLH1Mt3FoLnbkqzLTyVRaHq%2B%2FZnwkSxvC%2Bdws540UnpVbHSg2gHUjOz99DVcOK9laxSswx95rOZrUwzq%2B%2BZgtXkqUiyD4hqUMBrrLmsM3omlDd%2Bx%2BS9WsBVOWuP0ubqiif0%2F%2F7AYxOMhHWzSuLuVBoZdRm%2BmblXzkWNor2VweGJU7AFl3oa9W3sadZvnCoNVDr56IxK4UVKvNDKteN3ZlHBvcn%2BxUSjrM9d3iF9%2FFDq0QaOjZi4DmLXEB11n9ycwLQCgnr6aWJTCV8a6Y3%2BYcGeFjb1L%2FETOlK0Pz1DyIZFDUcjVP7jwjIQOZwfTDx3t6eBjqdAZwo8vtwzC%2BP4uYoyTx4x27T2f6XAMZEQC7I0FfA6ukfvl60HX1FuJ%2FXEGp9%2FQ4VkMNFhYVtKC8oH5eC1MZL9cnm9Kg7wxaxSsLuWtVv%2F12sKLS%2FvTW2hrLC55TmyyAKwC27w4Y%2Fox8iNKtq%2BlRDX2d1TArnNLLAWl4%2BP7qDwuzP7v6MGKiSszMV9ijOE0x0DBnrUfOR%2BPF0q8y2VAA%3D&Expires=1675083334",
       "download_from_url": null,
       "file_name": null,
       "content_type": null,
@@ -17,7 +22,7 @@
         "next_token": null,
         "objects": [
           {
-            "uid": "01GQQ9TC8A6S8BMZ798J40YNSS",
+            "uid": "01GR0BK6VZH7WRNCN1D8P0JTYE",
             "external_id": "recXNjJNyc6nKQIYa",
             "title": "Always - All devices, all customer types",
             "slug": "always-all-devices-all-customer-types",

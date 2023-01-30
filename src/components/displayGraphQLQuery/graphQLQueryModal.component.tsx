@@ -1,6 +1,6 @@
 import { OperationVariables } from "@apollo/client";
 import { Dialog } from "@headlessui/react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { DocumentNode, print } from "graphql/language";
 import { useMemo, useState } from "react";
 import { GrCopy, GrClose } from "react-icons/gr";
@@ -20,6 +20,17 @@ export interface GraphQLQueryModalProps {
   variables?: OperationVariables;
   closeModal: () => void;
 }
+
+const modalVariants = {
+  background: {
+    hidden: { opacity: 0 },
+    show: { opacity: 1 },
+  },
+  modal: {
+    hidden: { opacity: 0, y: 100 },
+    show: { opacity: 1, y: 0 },
+  },
+};
 
 export const GraphQLQueryModal = ({
   label,
@@ -45,22 +56,23 @@ export const GraphQLQueryModal = ({
       open={true}
       onClose={closeModal}
       className="font-body relative z-50"
-      as={motion.div}
     >
-      <motion.div
+      <m.div
         className="fixed inset-0 bg-black/40"
         aria-hidden="true"
         data-testid="dialog-background"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        variants={modalVariants.background}
+        initial="hidden"
+        animate="show"
+        exit="hidden"
         transition={{ duration: 0.1 }}
       />
 
-      <motion.div
-        initial={{ opacity: 0, y: 100 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 100 }}
+      <m.div
+        initial="hidden"
+        animate="show"
+        variants={modalVariants.background}
+        exit="hidden"
         transition={{ duration: 0.5, type: "spring" }}
         className="fixed inset-0 flex h-full items-center justify-center overflow-y-hidden py-4 text-sm sm:py-10 md:py-20"
       >
@@ -74,13 +86,13 @@ export const GraphQLQueryModal = ({
             </button>
 
             <Dialog.Title className="mb-1 px-4 font-heading text-xl sm:text-2xl md:mb-2 md:px-8 md:text-3xl">
-              GraphQL query for {label}
+              Query for {label}
             </Dialog.Title>
 
             <Dialog.Description className="mb-6 px-4 md:px-8 ">
-              The Skylark UI creates dynamic GraphQL Queries at runtime to match
-              your Skyark Schema exactly. Below is the Query used for the{" "}
-              {label}.
+              The Skylark UI uses dynamic GraphQL Queries generated at runtime
+              to match your Skylark Schema exactly. This enables developers to
+              copy the query into their application with minimal changes.
             </Dialog.Description>
 
             <Tabs
@@ -127,7 +139,7 @@ export const GraphQLQueryModal = ({
             </SyntaxHighlighter>
           )}
         </Dialog.Panel>
-      </motion.div>
+      </m.div>
     </Dialog>
   );
 };

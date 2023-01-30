@@ -4,6 +4,7 @@ import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/work-sans/700.css";
+import { LazyMotion, domMax } from "framer-motion";
 import "react-toastify/dist/ReactToastify.min.css";
 
 import "../src/styles/globals.css";
@@ -20,3 +21,11 @@ export const parameters = {
     MockedProvider,
   },
 };
+
+export const decorators = [
+  (Story) => (
+    <LazyMotion features={domMax}>
+      <Story />
+    </LazyMotion>
+  ),
+];
