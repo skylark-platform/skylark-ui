@@ -3,7 +3,7 @@ import "@graphiql/plugin-explorer/dist/style.css";
 import { Fetcher } from "@graphiql/toolkit";
 import { GraphiQL } from "graphiql";
 import "graphiql/graphiql.min.css";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { REQUEST_HEADERS } from "src/constants/skylark";
 
@@ -52,14 +52,6 @@ interface GraphiQLPlaygroundProps {
 
 export const GraphiQLPlayground = ({ uri, token }: GraphiQLPlaygroundProps) => {
   const [query, setQuery] = useState(DEFAULT_QUERY);
-
-  useEffect(() => {
-    // Default to light theme https://github.com/graphql/graphiql/issues/2924
-    const storedTheme = localStorage.getItem("graphiql:theme");
-    if (!storedTheme) {
-      localStorage.setItem("graphiql:theme", "light");
-    }
-  }, []);
 
   const fetcher: Fetcher = useMemo(
     () => async (graphQLParams, opts) => {
