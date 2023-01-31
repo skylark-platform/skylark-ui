@@ -75,7 +75,7 @@ describe("createGetObjectQuery", () => {
     expect(got).toEqual(
       gql(
         `
-      query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { name type } }
+      query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } name type } }
       `,
       ),
     );
@@ -95,7 +95,7 @@ describe("createListObjectQuery", () => {
     expect(got).toEqual(
       gql(
         `
-        query LIST_Episode ($ignoreAvailability: Boolean = true, $nextToken: String) { listSkylarkObjects: listEpisode (ignore_availability: $ignoreAvailability, limit: 50, next_token: $nextToken) { count next_token objects { name type } } }
+        query LIST_Episode ($ignoreAvailability: Boolean = true, $nextToken: String) { listSkylarkObjects: listEpisode (ignore_availability: $ignoreAvailability, limit: 50, next_token: $nextToken) { count next_token objects { _config { primary_field colour } name type } } }
       `,
       ),
     );
@@ -159,7 +159,7 @@ describe("createSearchObjectsQuery", () => {
 
     expect(got).toEqual(
       gql(`
-        query SEARCH ($ignoreAvailability: Boolean = true, $queryString: String!) { search (ignore_availability: $ignoreAvailability, query: $queryString, limit: 1000) { __typename objects { ... on Episode { __typename __Episode__title: title __Episode__episode_number: episode_number } ... on Brand { __typename __Brand__title: title __Brand__synopsis: synopsis } } } }
+        query SEARCH ($ignoreAvailability: Boolean = true, $queryString: String!) { search (ignore_availability: $ignoreAvailability, query: $queryString, limit: 1000) { __typename objects { ... on Episode { __typename _config { primary_field colour } __Episode__title: title __Episode__episode_number: episode_number } ... on Brand { __typename _config { primary_field colour } __Brand__title: title __Brand__synopsis: synopsis } } } }
       `),
     );
   });

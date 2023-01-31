@@ -26,6 +26,7 @@ export const LOCAL_STORAGE = {
 export const HREFS = {
   apiDocs: "https://docs.skylarkplatform.com/",
 };
+// Helpful way to priorise common display names when one isn't set
 export const DISPLAY_NAME_PRIORITY = [
   "title",
   "name",

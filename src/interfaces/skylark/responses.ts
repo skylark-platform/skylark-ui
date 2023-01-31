@@ -1,14 +1,7 @@
-import {
-  SkylarkGraphQLObject,
-  SkylarkGraphQLObjectRelationship,
-} from "./gqlObjects";
-import { SkylarkObjectMetadataField } from "./objectOperations";
+import { SkylarkGraphQLObject } from "./gqlObjects";
 
 export interface GQLSkylarkGetObjectResponse {
-  getObject: { __typename: string; uid: string; external_id: string } & Record<
-    string,
-    SkylarkObjectMetadataField | SkylarkGraphQLObjectRelationship
-  >;
+  getObject: SkylarkGraphQLObject;
 }
 
 export interface GQLSkylarkSearchResponse {

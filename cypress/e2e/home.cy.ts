@@ -135,6 +135,21 @@ describe("Content Library", () => {
       cy.percySnapshot("Homepage - metadata panel - fields");
     });
 
+    it("view GraphQL query", () => {
+      cy.get('input[name="search-query-input"]').type("GOT S01");
+      cy.contains("GOT S01 Trailer").should("exist");
+      cy.contains("tr", "GOT S01E1 - Winter");
+      cy.contains("tr", "GOT S01E1 - Winter").within(() => {
+        cy.get('[aria-label="object-info"]').click();
+      });
+      cy.contains("Metadata");
+      cy.get("[data-testid=panel-header]").within(() => {
+        cy.get("[data-testid=graphql-query-modal-button]").parent().click();
+      });
+      cy.contains("Query for");
+      cy.percySnapshot("Homepage - metadata panel - graphql query");
+    });
+
     it("open Imagery tab", () => {
       cy.get('input[name="search-query-input"]').type("GOT S01");
       cy.contains("GOT S01 Trailer").should("exist");
@@ -146,13 +161,13 @@ describe("Content Library", () => {
       cy.contains("button", "Imagery").click();
 
       cy.contains("Imagery");
-      cy.contains("Title: Better-Call-Saul-Season-6-Lalo-Salamanca");
+      cy.contains("Title: GOT - S1 - 1.jpg");
       cy.contains("section", "THUMBNAIL")
         .find("img")
         .should(
           "have.attr",
           "src",
-          "https://dl.airtable.com/.attachments/7fad203e1c23d2379d277517b51cb705/d1c00b51/Better-Call-Saul-Season-6-Lalo-Salamanca1.webp",
+          "https://dl.airtable.com/.attachments/c8b23d45c55cf09081954dd208dcce4b/80b72296/GOT-S1-1.jpg",
         );
 
       cy.percySnapshot("Homepage - metadata panel - imagery");

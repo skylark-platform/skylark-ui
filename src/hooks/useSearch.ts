@@ -5,6 +5,7 @@ import {
   SkylarkGraphQLObjectImage,
   ParsedSkylarkObject,
   SkylarkGraphQLObject,
+  ParsedSkylarkObjectMetadata,
 } from "src/interfaces/skylark";
 import { GQLSkylarkSearchResponse } from "src/interfaces/skylark";
 import {
@@ -83,8 +84,13 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
 
     const parsedObjects = normalisedObjects.map((obj): ParsedSkylarkObject => {
       return {
+        config: {
+          colour: obj._config?.colour,
+          primaryField: obj._config?.primary_field,
+        },
         objectType: obj.__typename,
-        metadata: obj,
+        // TODO filter out any values in obj that are relationships (not metadata types)
+        metadata: obj as ParsedSkylarkObjectMetadata,
         availability: parseObjectAvailability(obj.availability),
         images: parseObjectRelationship<SkylarkGraphQLObjectImage>(obj.images),
         relationships: [] as string[],
@@ -97,6 +103,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
   return {
     data,
     properties: allFieldNames,
+    query,
     ...rest,
   };
 };

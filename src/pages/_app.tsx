@@ -5,12 +5,18 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/inter/700.css";
 import "@fontsource/work-sans/700.css";
+import { LazyMotion } from "framer-motion";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 
 import { Navigation } from "src/components/navigation";
 import { createSkylarkClient } from "src/lib/graphql/skylark/client";
 import "src/styles/globals.css";
+
+const loadFramerMotionFeatures = () =>
+  import("../lib/utils/lazyLoadFramerMotionFeatures").then(
+    (res) => res.default,
+  );
 
 export default function App({ Component, pageProps }: AppProps) {
   const client = createSkylarkClient();
@@ -41,7 +47,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <link href="/favicons/favicon.ico" rel="icon" />
       </Head>
       <Navigation />
-      <Component {...pageProps} />
+      <LazyMotion features={loadFramerMotionFeatures} strict>
+        <Component {...pageProps} />
+      </LazyMotion>
     </ApolloProvider>
   );
 }

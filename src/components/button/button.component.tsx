@@ -35,13 +35,12 @@ export const Button = ({
   const iconOnly = Icon && !children;
 
   const combinedClassName = clsx(
-    "min-h-8 btn h-8 rounded-full text-xs normal-case md:h-10 md:text-sm",
-    variant !== "ghost" && "min-w-24",
+    "min-h-8 btn h-8 text-xs normal-case md:h-10 md:text-sm",
+    variant !== "ghost" && "min-w-24 rounded-full",
     variant === "primary" && "btn-primary shadow",
     variant === "outline" &&
       "btn-outline btn-primary disabled:border-none disabled:shadow",
     variant === "ghost" && "btn-ghost text-back hover:bg-transparent p-0",
-
     success && "btn-success text-white",
     danger && "btn-error",
     !iconOnly && (disabled || loading) && "bg-disabled btn-disabled",
@@ -67,7 +66,9 @@ export const Button = ({
       {loading && (
         <CgSpinner className="mr-1 animate-spin-fast text-base md:text-lg" />
       )}
-      {!loading && Icon && <div className="mr-1">{Icon}</div>}
+      {!loading && Icon && (
+        <div className={clsx(!iconOnly && "mr-1")}>{Icon}</div>
+      )}
       {children}
     </button>
   );

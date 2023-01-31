@@ -67,6 +67,10 @@ export const useGetObject = (
 
   const parsedObject: ParsedSkylarkObject | undefined = data?.getObject && {
     objectType: data.getObject.__typename,
+    config: {
+      colour: data.getObject._config?.colour,
+      primaryField: data.getObject._config?.primary_field,
+    },
     metadata,
     availability,
     images,
@@ -76,5 +80,6 @@ export const useGetObject = (
   return {
     ...rest,
     data: parsedObject,
+    query,
   };
 };
