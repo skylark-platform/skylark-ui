@@ -89,15 +89,8 @@ export const parseObjectRelationships = (
 export const parseObjectAvailability = (
   unparsedObject?: SkylarkGraphQLObjectRelationship,
 ): ParsedSkylarkObjectAvailability => {
-  if (!unparsedObject) {
-    return {
-      status: null,
-      objects: [],
-    };
-  }
-
-  const objects =
-    unparsedObject.objects as ParsedSkylarkObjectAvailability["objects"];
+  const objects = (unparsedObject?.objects ||
+    []) as ParsedSkylarkObjectAvailability["objects"];
 
   return {
     status: getObjectAvailabilityStatus(objects),

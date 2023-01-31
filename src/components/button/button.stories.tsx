@@ -1,5 +1,5 @@
 import { ComponentStory } from "@storybook/react";
-import { BsPlusLg } from "react-icons/bs";
+import { BsPlusLg, BsPlusCircle } from "react-icons/bs";
 
 import { Button } from "./button.component";
 
@@ -81,6 +81,14 @@ export const Ghost = Template.bind({});
 Ghost.args = {
   ...defaultProps,
   variant: "ghost",
+};
+
+export const GhostIconOnly = Template.bind({});
+GhostIconOnly.args = {
+  ...defaultProps,
+  variant: "ghost",
+  children: undefined,
+  Icon: <BsPlusCircle className="text-xl" />,
 };
 
 export const Success = Template.bind({});

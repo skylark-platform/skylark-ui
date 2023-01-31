@@ -71,7 +71,7 @@ WithFiltersOpen.parameters = {
 WithFiltersOpen.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
-  const filtersButton = canvas.getByRole("button");
+  const filtersButton = canvas.getByRole("button", { name: /Filters/i });
 
   await canvas.findAllByText(
     GQLGameOfThronesSearchResults.data.search.objects[0]

@@ -1,3 +1,5 @@
+import { SkylarkObjectMetadataField } from "./objectOperations";
+
 export interface SkylarkGraphQLAvailabilityDimension {
   title: string;
   slug: string;
@@ -38,4 +40,11 @@ export type SkylarkGraphQLObject = {
   external_id: string;
   availability?: SkylarkGraphQLObjectRelationship;
   images?: SkylarkGraphQLObjectRelationship;
-} & Record<string, string | number | boolean>;
+  _config?: {
+    colour: string;
+    primary_field: string;
+  };
+} & Record<
+  string,
+  SkylarkObjectMetadataField | SkylarkGraphQLObjectRelationship
+>;
