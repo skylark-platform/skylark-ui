@@ -1,6 +1,6 @@
 # While the environment variables for the days sl-develop-10 get updated in Vercel, any deployments are not redeployed.
 # Due to this, we want to schedule the skylark-ui production build to be redeployed after the sl-develop-10 instance is deployed.
-name: Vercel Deploy Production
+name: Call Vercel Deploy Hook
 on:
   workflow_dispatch:
     inputs:
@@ -38,5 +38,5 @@ jobs:
 
             return "VERCEL_DEPLOY_HOOK_MAIN";
 
-      - run: echo "Using GitHub Secret \"${{ steps.set-secret-name.outputs.result }}\""
+      - run: echo "Using GitHub Secret ${{ steps.set-secret-name.outputs.result }}"
       - run: curl -X POST ${{ secrets[steps.set-secret-name.outputs.result] }}
