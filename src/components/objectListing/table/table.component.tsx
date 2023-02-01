@@ -48,7 +48,7 @@ const customColumnStyling: Record<
   [OBJECT_LIST_TABLE.columnIds.displayField]: {
     width: "min-w-56 max-w-56",
     className: {
-      all: "md:sticky bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-0 shadow-[6px_0px_8px_0px_rgba(0,0,0,0.39)]",
+      all: "md:sticky bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-0",
       cell: "left-5",
       header: "left-0",
       withCheckbox: "left-10",
