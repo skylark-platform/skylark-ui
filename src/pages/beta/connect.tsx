@@ -2,11 +2,9 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 import { LOCAL_STORAGE } from "src/constants/skylark";
-import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
 
 export default function BetaConnect() {
   const { query, push: navigateTo } = useRouter();
-  // const { connected } = useConnectedToSkylark();
 
   useEffect(() => {
     if (query.uri && query.apikey) {
@@ -21,8 +19,6 @@ export default function BetaConnect() {
     }
   }, [query, navigateTo]);
 
-  console.log({ query });
-
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center gap-4">
       <h1 className="mb-4 font-heading text-3xl">Skylark Auto Connect</h1>
@@ -32,7 +28,7 @@ export default function BetaConnect() {
             Enter your Skylark URI and API Key into the URL to auto connect.
           </p>
           <p>
-            {"Format: "}{" "}
+            {"Format: "}
             <code>
               {"?uri=${skylark_graphql_url}&apikey=${skylark_api_key}"}
             </code>
