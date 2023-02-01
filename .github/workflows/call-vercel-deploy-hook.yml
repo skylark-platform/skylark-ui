@@ -3,6 +3,14 @@
 name: Vercel Deploy Production
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        required: true
+        description: Environment to redeploy
+        options:
+          - main
+          - beta
   schedule:
     - cron: "00 08 * * 1-5"
 
@@ -11,4 +19,24 @@ jobs:
     name: Trigger Vercel Deploy Hook
     runs-on: ubuntu-latest
     steps:
-      - run: curl -X POST ${{ secrets.VERCEL_DEPLOY_HOOK_MAIN }}
+      - name: Set deploy hook secret name
+        id: set-secret-name
+        uses: actions/github-script@v6
+        env:
+          INPUT_ENVIRONMENT: ${{ github.event.inputs.environment }}
+        with:
+          result-encoding: string
+          script: |
+            const inputEnvironment = process.env.INPUT_ENVIRONMENT;
+            if(!inputEnvironment) {
+              throw new Error("Environment not given")
+            }
+
+            if(inputEnvironment === "beta") {
+              return "VERCEL_DEPLOY_HOOK_BETA";
+            }
+
+            return "VERCEL_DEPLOY_HOOK_MAIN";
+
+      - run: echo "Using GitHub Secret \"${{ steps.set-secret-name.outputs.result }}\""
+      - run: curl -X POST ${{ secrets[steps.set-secret-name.outputs.result] }}
