@@ -29,7 +29,7 @@ export const PanelImages = ({
 }: {
   images: SkylarkGraphQLObjectImage[];
 }) => {
-  const imgs = images.reduce(
+  const imagesGroupedByType = images.reduce(
     (acc: { [key: string]: SkylarkGraphQLObjectImage[] }, currentValue) => {
       if (acc && acc[currentValue.type])
         return {
@@ -46,13 +46,14 @@ export const PanelImages = ({
 
   return (
     <div className="h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
-      {Object.keys(imgs).map((type) => {
+      {images.length === 0 && <p>No images connected to this object.</p>}
+      {Object.keys(imagesGroupedByType).map((type) => {
         return (
           <Fragment key={type}>
             <h3 className="mb-6 text-base font-bold">
-              {formatObjectField(type)} ({imgs[type].length})
+              {formatObjectField(type)} ({imagesGroupedByType[type].length})
             </h3>
-            {imgs[type].map((image) => (
+            {imagesGroupedByType[type].map((image) => (
               <PanelImage key={image.uid} src={image.url} title={image.title} />
             ))}
           </Fragment>

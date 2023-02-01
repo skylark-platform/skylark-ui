@@ -47,7 +47,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <link href="/favicons/favicon.ico" rel="icon" />
       </Head>
       <Navigation />
-      <LazyMotion features={loadFramerMotionFeatures} strict>
+      <LazyMotion features={loadFramerMotionFeatures} strict={false}>
         <Component {...pageProps} />
       </LazyMotion>
     </ApolloProvider>

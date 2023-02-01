@@ -28,6 +28,14 @@ export interface ParsedSkylarkObjectAvailability {
   }[];
 }
 
+export interface ParsedSkylarkObjectContent {
+  objects: {
+    config: ParsedSkylarkObjectConfig;
+    object: ParsedSkylarkObjectMetadata;
+    position: number;
+  }[];
+}
+
 export type ParsedSkylarkObjectMetadata = {
   uid: string;
   external_id: string;
@@ -45,4 +53,5 @@ export interface ParsedSkylarkObject {
   availability: ParsedSkylarkObjectAvailability;
   images?: SkylarkGraphQLObjectImage[];
   relationships: string[];
+  content?: ParsedSkylarkObjectContent;
 }

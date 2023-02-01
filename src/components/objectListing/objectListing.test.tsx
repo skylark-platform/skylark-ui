@@ -238,7 +238,7 @@ test("open metadata panel, check information and close", async () => {
     },
     {
       request: {
-        query: createGetObjectQuery(objectOperations) as DocumentNode,
+        query: createGetObjectQuery(objectOperations, []) as DocumentNode,
         variables: {
           ignoreAvailability: true,
           uid: GQLSkylarkAllAvailTestMovieSearchFixture.data.search.objects[0]

@@ -15,6 +15,7 @@ import {
   PanelImages,
   PanelMetadata,
 } from "./panelSections";
+import { PanelContent } from "./panelSections/panelContent.component.component";
 
 interface PanelProps {
   objectType: string;
@@ -26,6 +27,7 @@ enum PanelTab {
   Metadata = "Metadata",
   Imagery = "Imagery",
   Availability = "Availability",
+  Content = "Content",
 }
 
 const getTitle = (
@@ -46,6 +48,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   const tabs = [
     PanelTab.Metadata,
     data?.images && PanelTab.Imagery,
+    data?.content && PanelTab.Content,
     // PanelTab.Availability,
   ].filter((tab) => !!tab) as string[];
 
@@ -90,6 +93,9 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
             )}
             {selectedTab === PanelTab.Availability && (
               <PanelAvailability availability={data.availability} />
+            )}
+            {selectedTab === PanelTab.Content && data.content && (
+              <PanelContent content={data.content} />
             )}
           </>
         )}

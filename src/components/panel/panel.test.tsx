@@ -33,7 +33,7 @@ const imageObjectOperations = getObjectOperations(
 const mocks = [
   {
     request: {
-      query: createGetObjectQuery(movieObjectOperations) as DocumentNode,
+      query: createGetObjectQuery(movieObjectOperations, []) as DocumentNode,
       variables: {
         ignoreAvailability: true,
         uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
@@ -43,7 +43,7 @@ const mocks = [
   },
   {
     request: {
-      query: createGetObjectQuery(imageObjectOperations) as DocumentNode,
+      query: createGetObjectQuery(imageObjectOperations, []) as DocumentNode,
       variables: {
         ignoreAvailability: true,
         uid: GQLSkylarkGetObjectImageQueryFixture.data.getObject.uid,
@@ -82,7 +82,7 @@ test("renders the panel in the default view", async () => {
 test("renders the objects primaryField and colour in the header when given", async () => {
   const mockWithRandomPrimaryField = {
     request: {
-      query: createGetObjectQuery(movieObjectOperations) as DocumentNode,
+      query: createGetObjectQuery(movieObjectOperations, []) as DocumentNode,
       variables: {
         ignoreAvailability: true,
         uid: "withPrimaryField",

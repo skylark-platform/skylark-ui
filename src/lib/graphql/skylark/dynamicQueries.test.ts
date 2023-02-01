@@ -64,13 +64,13 @@ const object: SkylarkObjectMeta = {
 
 describe("createGetObjectQuery", () => {
   test("returns null when the object doesn't have a get operation", () => {
-    const got = createGetObjectQuery(null);
+    const got = createGetObjectQuery(null, []);
 
     expect(got).toBeNull();
   });
 
   test("returns expected GraphQL get query", () => {
-    const got = createGetObjectQuery(object);
+    const got = createGetObjectQuery(object, []);
 
     expect(got).toEqual(
       gql(

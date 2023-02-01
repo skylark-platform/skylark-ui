@@ -41,6 +41,7 @@ Default.parameters = {
         request: {
           query: createGetObjectQuery(
             objectOperations as SkylarkObjectMeta,
+            [],
           ) as DocumentNode,
           variables: {
             ignoreAvailability: true,
