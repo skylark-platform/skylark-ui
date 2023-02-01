@@ -57,7 +57,7 @@ const customColumnStyling: Record<
   [OBJECT_LIST_TABLE.columnIds.objectType]: {
     width: "min-w-24 max-w-24",
     className: {
-      all: "px-0 pr-1 md:pr-1.5 md:bg-white md:sticky md:-left-18",
+      all: "px-0 pr-1 md:pr-1.5 md:bg-white md:sticky",
       cell: "sticky -left-20",
       withCheckbox: "-left-14 md:-left-12",
     },
