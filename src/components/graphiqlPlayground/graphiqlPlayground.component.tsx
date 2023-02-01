@@ -51,7 +51,9 @@ interface GraphiQLPlaygroundProps {
 }
 
 export const GraphiQLPlayground = ({ uri, token }: GraphiQLPlaygroundProps) => {
+  // We only update the GraphiQL query when the explorer changes to stop the cursor jumping around
   const [query, setQuery] = useState(DEFAULT_QUERY);
+  const [explorerQuery, setExplorerQuery] = useState(query);
 
   const fetcher: Fetcher = useMemo(
     () => async (graphQLParams, opts) => {
@@ -72,14 +74,17 @@ export const GraphiQLPlayground = ({ uri, token }: GraphiQLPlaygroundProps) => {
   );
 
   const explorerPlugin = useExplorerPlugin({
-    query,
-    onEdit: setQuery,
+    explorerQuery,
+    onEdit: (updatedQuery: string) => {
+      setExplorerQuery(updatedQuery);
+      setQuery(updatedQuery);
+    },
   });
 
   return (
     <GraphiQL
       query={query}
-      onEditQuery={setQuery}
+      onEditQuery={setExplorerQuery}
       plugins={[explorerPlugin]}
       fetcher={fetcher}
     >
