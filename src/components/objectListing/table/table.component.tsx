@@ -46,21 +46,27 @@ const customColumnStyling: Record<
     className: { all: "pr-1" },
   },
   [OBJECT_LIST_TABLE.columnIds.displayField]: {
-    width: "min-w-52 max-w-52",
+    width: "min-w-56 max-w-56",
     className: {
-      all: "md:sticky -left-px bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-0",
-      withCheckbox: "left-7",
+      all: "md:sticky bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-0 shadow-[6px_0px_8px_0px_rgba(0,0,0,0.39)]",
+      cell: "left-5",
+      header: "left-0",
+      withCheckbox: "left-10",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.objectType]: {
     width: "min-w-24 max-w-24",
     className: {
-      all: "px-0 pr-3",
+      all: "px-0 pr-1 md:pr-3 md:bg-white md:sticky md:-left-18",
+      cell: "sticky -left-20",
+      withCheckbox: "-left-14 md:-left-12",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.checkbox]: {
-    width: "min-w-8 max-w-8",
-    className: { all: "pr-4 pl-0 sticky -left-px bg-white" },
+    width: "min-w-7 max-w-7 md:min-w-7 md:max-w-7",
+    className: {
+      all: "pr-2 pl-0 sticky -left-px bg-white z-20",
+    },
   },
   images: {
     width: "min-w-24 max-w-24",
