@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { Button } from "src/components/button";
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
@@ -15,7 +16,7 @@ import {
   PanelImages,
   PanelMetadata,
 } from "./panelSections";
-import { PanelContent } from "./panelSections/panelContent.component.component";
+import { PanelContent } from "./panelSections/panelContent.component";
 
 interface PanelProps {
   objectType: string;
@@ -61,7 +62,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
         onClick={() => closePanel()}
         className="fixed left-0 top-0 bottom-0 z-50 w-3/5 bg-black bg-opacity-20 "
       />
-      <section className="fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col bg-white drop-shadow-md md:w-2/3 lg:w-7/12 xl:w-2/5 ">
+      <section className="fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col bg-white pb-20 drop-shadow-md md:w-2/3 lg:w-7/12 xl:w-2/5">
         {loading && (
           <div
             data-testid="loading"
@@ -97,6 +98,18 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
             {selectedTab === PanelTab.Content && data.content && (
               <PanelContent content={data.content} />
             )}
+            <div className="fixed bottom-0 flex h-20 w-full items-center justify-end gap-4 border-t-2 bg-white px-8 shadow">
+              <Button variant="outline" danger>
+                Delete
+              </Button>
+              <Button variant="primary">Update</Button>
+              {/* <Button variant="ghost" danger>
+                Cancel
+              </Button>
+              <Button variant="primary" success>
+                Save
+              </Button> */}
+            </div>
           </>
         )}
       </section>
