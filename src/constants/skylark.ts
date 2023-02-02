@@ -9,7 +9,7 @@ export const REQUEST_HEADERS = {
 };
 export const OBJECT_LIST_TABLE = {
   columnIds: {
-    objectType: "object type",
+    objectType: "__typename",
     displayField: "skylark-ui-display-field",
     checkbox: "skylark-ui-select",
     actions: "skylark-ui-actions",

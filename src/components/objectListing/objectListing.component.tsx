@@ -32,11 +32,7 @@ import { RowActions } from "./rowActions";
 import { Search } from "./search";
 import { Table, TableCell } from "./table";
 
-const hardcodedColumns = [
-  OBJECT_LIST_TABLE.columnIds.objectType,
-  "availability",
-  "images",
-];
+const hardcodedColumns = ["availability", "images"];
 const orderedKeys = ["uid", "external_id", "data_source_id"];
 
 const columnHelper = createColumnHelper<object>();
