@@ -24,7 +24,7 @@ export const Navigation = () => {
 
   return (
     <>
-      <div className="h-nav fixed top-0 left-0 right-0 z-40 flex flex-row items-center justify-start bg-nav-bar py-2 px-4 font-sans text-black md:flex-row md:justify-start lg:px-14">
+      <div className="h-nav fixed top-0 left-0 right-0 z-40 flex flex-row items-center justify-start bg-nav-bar py-2 px-4 font-sans text-black md:flex-row md:justify-start md:px-6 lg:px-10">
         <Link legacyBehavior href="/">
           <a className="z-50 flex items-center justify-start">
             <Image src={Logo} alt="Skylark Logo" width="30" height="30" />

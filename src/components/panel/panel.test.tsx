@@ -128,10 +128,11 @@ test("renders the objects primaryField and colour in the header when given", asy
       mockWithRandomPrimaryField.result.data.getObject.release_date,
     ),
   ).toBeInTheDocument();
+
   expect(
-    panelHeader.getByText(
-      mockWithRandomPrimaryField.result.data.getObject.__typename,
-    ),
+    panelHeader
+      .getByText(mockWithRandomPrimaryField.result.data.getObject.__typename)
+      .closest("div"),
   ).toHaveAttribute("style", "background-color: rgb(123, 123, 123);");
 });
 
