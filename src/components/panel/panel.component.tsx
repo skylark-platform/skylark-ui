@@ -46,7 +46,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
 
   return (
-    <section className="flex h-full flex-col md:w-2/5 xl:w-1/4 ">
+    <section className="flex grow flex-col  ">
       {loading && (
         <div
           data-testid="loading"
