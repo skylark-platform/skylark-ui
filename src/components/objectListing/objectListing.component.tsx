@@ -234,8 +234,7 @@ export const ObjectList = ({
       };
     });
 
-    // Move all entries in .metadata into the top level as tanstack-table doesn't support nested properties that are undefined
-    // TODO when https://github.com/TanStack/table/pull/4620 is merged we can remove this, and handle global/language metadata differently
+    // Move all entries in .metadata into the top level as tanstack-table outputs a warning messaged saying nested properties that are undefined
     const searchDataWithTopLevelMetadata = searchDataWithDisplayField.map(
       (obj) => ({
         ...obj.metadata,
