@@ -297,7 +297,7 @@ export const ObjectList = ({
         <div
           className={clsx(
             "flex w-full flex-row-reverse gap-4",
-            withCreateButtons ? "md:w-1/2 xl:w-1/3" : "flex-1",
+            withCreateButtons ? "md:w-1/2 " : "flex-1",
           )}
         >
           <Search

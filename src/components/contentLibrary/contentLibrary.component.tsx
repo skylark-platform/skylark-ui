@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { motion, useDragControls, useMotionValue } from "framer-motion";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { ObjectList } from "src/components/objectListing";
 import { Panel } from "src/components/panel";
@@ -11,7 +11,14 @@ export const ContentLibrary = () => {
     uid: string;
   } | null>(null);
 
-  const panelWidth = useMotionValue(500); // from localstorage
+  const [windowSize, setWindowSize] = useState(500);
+  const panelWidth = useMotionValue(500); // from localstorage get saved sized
+
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      setWindowSize(window.innerWidth);
+    });
+  }, []);
 
   const handleDrag = React.useCallback(
     (event, info) => {
@@ -24,27 +31,26 @@ export const ContentLibrary = () => {
   );
 
   return (
-    <div className="flex h-screen flex-row ">
-      <motion.div
-        className={"w-full"}
-        style={{
-          width: activePanelObject ? panelWidth : "100%",
-        }}
-      >
+    <div
+      className="mx-4 flex h-screen flex-row"
+      style={{
+        maxHeight: `calc(100vh - 4rem)`,
+      }}
+    >
+      <motion.div className={" max-w-full grow pt-6"}>
         <ObjectList withCreateButtons onInfoClick={setActivePanelObject} />
       </motion.div>
 
-      <div
+      <motion.div
         className="flex"
         style={{
-          backgroundColor: "powderblue",
-          textAlign: "center",
+          width: activePanelObject ? panelWidth : "100%",
         }}
       >
         {activePanelObject && (
           <>
             <motion.div
-              className="flex w-3 cursor-col-resize items-center rounded-md bg-black"
+              className="flex w-3 cursor-col-resize items-center bg-manatee-100"
               // id="dragMe"
               onDrag={handleDrag}
               drag="x"
@@ -52,7 +58,7 @@ export const ContentLibrary = () => {
               dragElastic={0}
               dragMomentum={false}
             >
-              <div className="mx-1 h-14 w-full rounded bg-white"></div>
+              <div className="mx-1 h-20 w-full rounded bg-manatee-600"></div>
             </motion.div>
             <Panel
               closePanel={() => setActivePanelObject(null)}
@@ -61,7 +67,7 @@ export const ContentLibrary = () => {
             />
           </>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };
