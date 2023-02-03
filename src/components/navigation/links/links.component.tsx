@@ -38,8 +38,8 @@ const navigationItems = [
         Icon: <FileText className="h-5" />,
       },
       {
-        text: "GraphQL Playground",
-        href: "/developer/playground",
+        text: "GraphQL Editor",
+        href: "/developer/graphql-editor",
         Icon: <GrGraphQl className="text-xl" />,
       },
     ],

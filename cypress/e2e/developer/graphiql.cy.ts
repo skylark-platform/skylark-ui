@@ -1,6 +1,6 @@
 import { hasOperationName } from "../../support/utils/graphqlTestUtils";
 
-describe("GraphiQL Playground", () => {
+describe("GraphiQL Editor", () => {
   beforeEach(() => {
     cy.login();
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
@@ -11,13 +11,13 @@ describe("GraphiQL Playground", () => {
       }
     });
 
-    cy.visit("/developer/playground");
+    cy.visit("/developer/graphql-editor");
   });
 
   it("should load GraphiQL", () => {
     cy.get(".graphiql-logo").within(() => {
-      cy.contains("GraphQL Playground");
+      cy.contains("GraphQL Editor");
     });
-    cy.contains("Welcome to Skylark's GraphQL Playground");
+    cy.contains("Welcome to Skylark's GraphQL Editor");
   });
 });

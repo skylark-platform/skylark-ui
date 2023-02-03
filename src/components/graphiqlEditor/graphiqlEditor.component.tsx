@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 
 import { REQUEST_HEADERS } from "src/constants/skylark";
 
-const DEFAULT_QUERY = `# Welcome to Skylark's GraphQL Playground
+export const DEFAULT_QUERY = `# Welcome to Skylark's GraphQL Editor
 #
 # Skylark uses GraphiQL as an in-browser tool for writing, validating, and
 # testing GraphQL queries against your Skylark instance.
@@ -45,14 +45,19 @@ const DEFAULT_QUERY = `# Welcome to Skylark's GraphQL Playground
 #
 `;
 
-interface GraphiQLPlaygroundProps {
+interface GraphiQLEditorProps {
   uri: string;
   token: string;
+  defaultQuery: string;
 }
 
-export const GraphiQLPlayground = ({ uri, token }: GraphiQLPlaygroundProps) => {
+export const GraphiQLEditor = ({
+  uri,
+  token,
+  defaultQuery,
+}: GraphiQLEditorProps) => {
   // We only update the GraphiQL query when the explorer changes to stop the cursor jumping around
-  const [query, setQuery] = useState(DEFAULT_QUERY);
+  const [query, setQuery] = useState(defaultQuery);
   const [explorerQuery, setExplorerQuery] = useState(query);
 
   const fetcher: Fetcher = useMemo(
@@ -74,7 +79,7 @@ export const GraphiQLPlayground = ({ uri, token }: GraphiQLPlaygroundProps) => {
   );
 
   const explorerPlugin = useExplorerPlugin({
-    explorerQuery,
+    query: explorerQuery,
     onEdit: (updatedQuery: string) => {
       setExplorerQuery(updatedQuery);
       setQuery(updatedQuery);
@@ -88,7 +93,7 @@ export const GraphiQLPlayground = ({ uri, token }: GraphiQLPlaygroundProps) => {
       plugins={[explorerPlugin]}
       fetcher={fetcher}
     >
-      <GraphiQL.Logo>GraphQL Playground</GraphiQL.Logo>
+      <GraphiQL.Logo>Query Editor</GraphiQL.Logo>
     </GraphiQL>
   );
 };
