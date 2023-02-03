@@ -65,6 +65,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
           colour: obj._config?.colour,
           primaryField: obj._config?.primary_field,
         },
+        uid: obj.uid,
         objectType: obj.__typename,
         // TODO filter out any values in obj that are relationships (not metadata types)
         metadata: obj as ParsedSkylarkObjectMetadata,

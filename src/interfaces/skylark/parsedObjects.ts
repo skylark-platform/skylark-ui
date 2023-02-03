@@ -48,8 +48,9 @@ export interface ParsedSkylarkObjectConfig {
 }
 
 export interface ParsedSkylarkObject {
-  config: ParsedSkylarkObjectConfig;
   objectType: SkylarkObjectType;
+  uid: string;
+  config: ParsedSkylarkObjectConfig;
   metadata: ParsedSkylarkObjectMetadata;
   availability: ParsedSkylarkObjectAvailability;
   images?: SkylarkGraphQLObjectImage[];

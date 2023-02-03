@@ -2,7 +2,6 @@ import { Menu, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { Fragment } from "react";
 import { GrGraphQl } from "react-icons/gr";
 import { TbBooks, TbTerminal2 } from "react-icons/tb";
 

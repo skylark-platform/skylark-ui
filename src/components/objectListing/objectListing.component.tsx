@@ -48,13 +48,7 @@ export interface ObjectListProps {
 const createColumns = (
   columns: TableColumn[],
   opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
-  setPanelInfo: ({
-    objectType,
-    uid,
-  }: {
-    objectType: string;
-    uid: string;
-  }) => void,
+  setPanelObject: (object: { objectType: string; uid: string }) => void,
 ) => {
   const objectTypeColumn = columnHelper.accessor(
     OBJECT_LIST_TABLE.columnIds.objectType,
@@ -149,7 +143,7 @@ const createColumns = (
           editRowEnabled={opts.withObjectEdit}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() => setPanelInfo({ objectType, uid })}
+          onInfoClick={() => setPanelObject({ objectType, uid })}
           onEditSaveClick={() => console.log(row)}
           onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
         />
@@ -179,8 +173,8 @@ export const ObjectList = ({
 }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activePanelObject, setActivePanelObject] = useState<{
-    objectType: string;
     uid: string;
+    objectType: string;
   } | null>(null);
   const { objectTypes } = useSkylarkObjectTypes();
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
@@ -352,6 +346,7 @@ export const ObjectList = ({
             virtualRows={virtualRows}
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
+            setPanelObject={setActivePanelObject}
           />
         )}
         {(searchLoading || searchData) && (

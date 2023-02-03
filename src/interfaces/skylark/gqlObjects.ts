@@ -44,6 +44,7 @@ export interface SkylarkGraphQLObjectContent {
 export type SkylarkGraphQLObject = {
   __typename: string;
   uid: string;
+  objectType: string;
   external_id: string;
   availability?: SkylarkGraphQLObjectRelationship;
   images?: SkylarkGraphQLObjectRelationship;

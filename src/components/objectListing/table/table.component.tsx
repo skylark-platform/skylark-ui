@@ -11,7 +11,10 @@ import { useMemo } from "react";
 import { VirtualItem } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { SkylarkGraphQLObject } from "src/interfaces/skylark";
+import {
+  ParsedSkylarkObject,
+  SkylarkGraphQLObject,
+} from "src/interfaces/skylark";
 
 import { DisplayNameTableCell } from "./cell";
 
@@ -22,6 +25,13 @@ export interface TableProps {
   withCheckbox?: boolean;
   virtualRows: VirtualItem[];
   totalRows: number;
+  setPanelObject: ({
+    uid,
+    objectType,
+  }: {
+    uid: string;
+    objectType: string;
+  }) => void;
 }
 
 const headAndDataClassNames =
@@ -62,7 +72,7 @@ const customColumnStyling: Record<
     width: "min-w-20 max-w-20 md:min-w-24 md:max-w-24",
     className: {
       all: "px-0 pr-3",
-      cell: "absolute z-40 bg-white",
+      cell: "absolute z-20 bg-white",
       header: "sm:sticky bg-white w-10 -left-px",
     },
   },
@@ -184,6 +194,7 @@ export const Table = ({
   withCheckbox = false,
   virtualRows,
   totalRows,
+  setPanelObject,
 }: TableProps) => {
   const tableMeta = table.options.meta;
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
@@ -197,7 +208,7 @@ export const Table = ({
     <table className="relative w-full bg-white">
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id} className="sticky top-0 z-20 bg-white">
+          <tr key={headerGroup.id} className="sticky top-0 z-30 bg-white">
             {headerGroup.headers.map((header) => (
               <TableHeader
                 key={header.id}
@@ -217,8 +228,14 @@ export const Table = ({
         )}
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<SkylarkGraphQLObject>;
+          const { uid, objectType } = row.original;
           return (
-            <tr key={row.id} className="group/row" tabIndex={-1}>
+            <tr
+              key={row.id}
+              className="group/row"
+              tabIndex={-1}
+              onDoubleClick={() => setPanelObject({ uid, objectType })}
+            >
               {row.getVisibleCells().map((cell) => (
                 <TableData
                   tableMeta={tableMeta}
