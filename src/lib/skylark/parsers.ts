@@ -114,7 +114,6 @@ export const parseObjectRelationship = <T>(
 export const parseObjectContent = (
   unparsedContent?: SkylarkGraphQLObjectContent,
 ): ParsedSkylarkObjectContent => {
-  console.log({ unparsedContent });
   const normalisedContentObjects = unparsedContent?.objects.map(
     ({ object, position }) => {
       const normalisedObject =
@@ -122,6 +121,7 @@ export const parseObjectContent = (
           object,
         );
       return {
+        objectType: object.__typename,
         position,
         config: {
           primaryField: object._config?.primary_field,
@@ -131,8 +131,6 @@ export const parseObjectContent = (
       };
     },
   );
-
-  console.log({ normalisedContentObjects });
 
   return {
     objects: normalisedContentObjects || [],

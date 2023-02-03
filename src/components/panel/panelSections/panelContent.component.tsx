@@ -6,24 +6,34 @@ import { Pill } from "src/components/pill";
 import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
 import { ParsedSkylarkObjectContent } from "src/interfaces/skylark";
 
-export const PanelContent = ({
-  content,
-}: {
-  content: ParsedSkylarkObjectContent;
-}) => {
-  console.log({ content });
+interface PanelContentProps {
+  objects: ParsedSkylarkObjectContent["objects"];
+  onReorder: (objs: ParsedSkylarkObjectContent["objects"]) => void;
+  inEditMode?: boolean;
+}
 
-  const [contentObjects, setContentObjects] = useState(content.objects);
+export const PanelContent = ({
+  objects,
+  inEditMode,
+  onReorder,
+}: PanelContentProps) => {
+  // const [contentObjects, setContentObjects] = useState(objects);
+
+  // const onReorder = (newOrder: ParsedSkylarkObjectContent["objects"]) => {
+  //   setContentObjects(newOrder);
+  //   onChange(newOrder);
+  // };
 
   return (
-    <div className="h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
+    <div className="h-full overflow-y-scroll p-4 text-sm md:p-8">
       <Reorder.Group
         axis="y"
-        values={contentObjects}
-        onReorder={setContentObjects}
+        values={objects}
+        onReorder={onReorder}
         as="div"
+        className="mt-4"
       >
-        {contentObjects.map((item, index) => {
+        {objects.map((item, index) => {
           const { object, config, position } = item;
 
           const primaryKey = [
@@ -34,9 +44,12 @@ export const PanelContent = ({
             <Reorder.Item
               key={`content-item-${object.uid}`}
               value={item}
-              className="my-0 flex cursor-pointer flex-row-reverse items-center justify-center gap-4 border-b p-4 py-3 text-sm last:border-b-0"
+              className={clsx(
+                "my-0 flex flex-row-reverse items-center justify-center gap-2 border-b px-2 py-3 text-sm last:border-b-0 md:gap-4 md:px-4",
+                inEditMode && "cursor-pointer",
+              )}
               as="div"
-              // dragListener={false} // This can control edit mode
+              dragListener={inEditMode}
             >
               <div className="flex">
                 <span
@@ -62,9 +75,6 @@ export const PanelContent = ({
                 <div className="flex gap-1">
                   <p>{primaryKey ? object[primaryKey] : object.uid}</p>
                   <p></p>
-                </div>
-                <div className="flex text-xs text-manatee-400">
-                  {object.uid} / {object.external_id}
                 </div>
               </div>
               <Pill

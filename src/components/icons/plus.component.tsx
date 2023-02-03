@@ -2,7 +2,7 @@ import clsx from "clsx";
 
 import { IconBase, IconProps } from "./iconBase.component";
 
-export const CrossSquare = ({ className }: IconProps) => {
+export const PlusSquare = ({ className }: IconProps) => {
   return (
     <IconBase className={clsx("stroke-black", className)}>
       <path
@@ -14,13 +14,32 @@ export const CrossSquare = ({ className }: IconProps) => {
         strokeLinejoin="round"
       />
       <path
-        d="M9 9L15 15"
+        d="M12 8V16"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M15 9L9 15"
+        d="M8 12H16"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </IconBase>
+  );
+};
+
+export const Plus = ({ className }: IconProps) => {
+  return (
+    <IconBase className={clsx("stroke-black", className)} viewBox="3 3 18 18">
+      <path
+        d="M12 5V19"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M5 12H19"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"

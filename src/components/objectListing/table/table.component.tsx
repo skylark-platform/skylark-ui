@@ -13,6 +13,8 @@ import { VirtualItem } from "react-virtual";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SkylarkGraphQLObject } from "src/interfaces/skylark";
 
+import { DisplayNameTableCell } from "./cell";
+
 export type TableColumn = string;
 
 export interface TableProps {
@@ -28,6 +30,8 @@ const lastHeadAndDataClassNames =
   "last:sticky last:right-0 last:pl-0 last:bg-white last:z-10 last:min-w-0 last:border-l-0";
 const headerLeftLineStyling =
   "[&>span]:border-l [&>span]:pl-2 [&>span]:first:border-l-0 [&>span]:first:pl-0 [&>span]:last:border-l-0 [&>span]:last:pl-0";
+const rowGroupClassName =
+  "group-hover/row:bg-manatee-50 group-hover/row:border-manatee-50 group-focus/row:bg-manatee-200 group-focus/row:border-manatee-200";
 
 const customColumnStyling: Record<
   string,
@@ -37,6 +41,7 @@ const customColumnStyling: Record<
       all?: string;
       header?: string;
       cell?: string;
+      withoutCheckbox?: string;
       withCheckbox?: string;
     };
   }
@@ -46,31 +51,29 @@ const customColumnStyling: Record<
     className: { all: "pr-1" },
   },
   [OBJECT_LIST_TABLE.columnIds.displayField]: {
-    width: "min-w-56 max-w-56",
+    width: "min-w-44 max-w-44 md:min-w-52 md:max-w-52",
     className: {
-      all: "md:sticky bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-0",
-      cell: "left-3.5",
-      header: "left-3.5",
+      all: "sm:sticky bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-0",
+      withoutCheckbox: "left-2",
       withCheckbox: "left-10",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.objectType]: {
-    width: "min-w-24 max-w-24",
+    width: "min-w-20 max-w-20 md:min-w-24 md:max-w-24",
     className: {
-      all: "px-0 pr-1 md:pr-1.5 md:bg-white sticky -left-20",
-      withCheckbox: "-left-14 md:-left-12",
+      all: "px-0 pr-3",
+      cell: "absolute z-40 bg-white",
+      header: "sm:sticky bg-white w-10 -left-px",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.checkbox]: {
-    width: "min-w-7 max-w-7",
-    className: {
-      all: "pr-2 pl-0 sticky -left-px bg-white z-20",
-    },
+    width: "min-w-8 max-w-8",
+    className: { all: "pr-4 pl-0 sticky -left-px bg-white absolute z-[41]" },
   },
   images: {
     width: "min-w-24 max-w-24",
     className: {
-      cell: "flex overflow-hidden h-7 md:h-8 pb-0 pt-0.5 md:pt-1 mr-2 [&>img]:mr-0.5 [&>img]:h-full",
+      cell: "[&>div]:flex [&>div]:overflow-hidden [&>div]:h-7 [&>div]:md:h-8 pb-0 pt-0.5 md:py-0.5 [&>div]:mr-2 [&>div>img]:mr-0.5 [&>div>img]:h-full",
     },
   },
 };
@@ -88,7 +91,11 @@ const columnStyles = (
   const typeSpecificClassName = colStyles?.className?.[type] || "";
   return `${colStyles.className?.all || ""} ${typeSpecificClassName} ${
     colStyles.width
-  } ${withCheckbox && colStyles.className?.withCheckbox}`;
+  } ${
+    withCheckbox
+      ? colStyles.className?.withCheckbox
+      : colStyles.className?.withoutCheckbox
+  }`;
 };
 
 const TableHeader = ({
@@ -136,6 +143,7 @@ const TableData = ({
         columnStyles(cell.column.id, "cell", withCheckbox),
         headAndDataClassNames,
         lastHeadAndDataClassNames,
+        rowGroupClassName,
         "border-l border-transparent p-2 last:pr-0",
       ),
     [cell.column.id, withCheckbox],
@@ -149,6 +157,20 @@ const TableData = ({
     return flexRender(cell.column.columnDef.cell, cell.getContext());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cellValue, rowInEditMode]);
+
+  // We add some custom styling to the Display Name column so that it displays the object colour indicator
+  if (cell.column.id === OBJECT_LIST_TABLE.columnIds.displayField) {
+    return (
+      <DisplayNameTableCell
+        id={cell.id}
+        className={className}
+        rowGroupClassName={rowGroupClassName}
+        colour={cell.row.original._config?.colour}
+      >
+        {children}
+      </DisplayNameTableCell>
+    );
+  }
 
   return (
     <td key={cell.id} className={className}>
@@ -196,7 +218,7 @@ export const Table = ({
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<SkylarkGraphQLObject>;
           return (
-            <tr key={row.id}>
+            <tr key={row.id} className="group/row" tabIndex={-1}>
               {row.getVisibleCells().map((cell) => (
                 <TableData
                   tableMeta={tableMeta}

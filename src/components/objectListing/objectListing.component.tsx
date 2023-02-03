@@ -121,12 +121,12 @@ const createColumns = (
       }
 
       return (
-        <>
+        <div>
           {images.map(({ uid, url, title }) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
           ))}
-        </>
+        </div>
       );
     },
   });

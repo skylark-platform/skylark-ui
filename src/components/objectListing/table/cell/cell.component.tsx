@@ -1,6 +1,36 @@
 import { CellContext } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
+
+interface PrimaryFieldTableCellProps {
+  id: string;
+  colour?: string;
+  className: string;
+  rowGroupClassName: string;
+  children: ReactNode | JSX.Element;
+}
+
+export const DisplayNameTableCell = ({
+  id,
+  colour,
+  className,
+  rowGroupClassName,
+  children,
+}: PrimaryFieldTableCellProps) => {
+  return (
+    <td key={id} className={`${className} overflow-visible`}>
+      <div
+        className={`absolute z-30 -ml-2.5 -mt-2 flex h-full items-center bg-white ${rowGroupClassName}`}
+      >
+        <div
+          className="h-6 w-2.5 border-l-4 border-l-brand-primary"
+          style={{ borderLeftColor: colour }}
+        />
+      </div>
+      <div className="w-full overflow-hidden text-ellipsis">{children}</div>
+    </td>
+  );
+};
 
 export const TableCell = ({
   table,

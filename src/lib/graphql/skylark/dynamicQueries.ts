@@ -13,6 +13,7 @@ import {
 // This is unpleasant but neccessary as Apollo Client doesn't let us pass in any queries that are not valid
 // Should be used inconjunction with the Apollo Client option "skip" so the request is not made
 export const defaultValidBlankQuery = gql("query { __unknown { name }}");
+export const defaultValidBlankMutation = gql("mutation { __unknown { name }}");
 
 const common = {
   variables: {

@@ -30,6 +30,7 @@ export interface ParsedSkylarkObjectAvailability {
 
 export interface ParsedSkylarkObjectContent {
   objects: {
+    objectType: SkylarkObjectType;
     config: ParsedSkylarkObjectConfig;
     object: ParsedSkylarkObjectMetadata;
     position: number;
