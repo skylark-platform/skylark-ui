@@ -1,25 +1,7 @@
-// mutation {
-//   updateSet(
-//     uid: "48d1e078-4ec0-47df-afd9-7a993e4d822b"
-//     set: {
-//       content: {
-//         Episode: {
-//           reposition: [
-//             { uid: "1c379e29-27f0-446e-8dcc-4c7e54ea772f", position: 1 }
-//             { uid: "2bcac925-3d9d-4f27-a361-d93b8d395d40", position: 2 }
-//           ]
-//         }
-//       }
-//     }
-//   ) {
-//     uid
-//   }
-// }
 import { gql } from "@apollo/client";
 import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 
 import {
-  ParsedSkylarkObject,
   ParsedSkylarkObjectContent,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";

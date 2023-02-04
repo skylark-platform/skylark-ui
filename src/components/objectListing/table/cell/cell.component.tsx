@@ -2,7 +2,7 @@ import { CellContext } from "@tanstack/react-table";
 import clsx from "clsx";
 import { ReactNode, useEffect, useState } from "react";
 
-interface PrimaryFieldTableCellProps {
+interface DisplayNameTableCellProps {
   id: string;
   colour?: string;
   className: string;
@@ -16,7 +16,7 @@ export const DisplayNameTableCell = ({
   className,
   rowGroupClassName,
   children,
-}: PrimaryFieldTableCellProps) => {
+}: DisplayNameTableCellProps) => {
   return (
     <td key={id} className={`${className} overflow-visible`}>
       <div
