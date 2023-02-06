@@ -102,7 +102,7 @@ const generateContentsToReturn = (
   objectsToRequest: SkylarkObjectMeta[],
 ) => {
   // Only Set has contents
-  if (!object || object.name !== "Set") {
+  if (!object || object.name !== "Set" || objectsToRequest.length === 0) {
     return {};
   }
 
