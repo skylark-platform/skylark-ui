@@ -9,7 +9,7 @@ export const REQUEST_HEADERS = {
 };
 export const OBJECT_LIST_TABLE = {
   columnIds: {
-    objectType: "__typename", // This is the built-in GraphQL __typename
+    objectType: "__typename",
     displayField: "skylark-ui-display-field",
     checkbox: "skylark-ui-select",
     actions: "skylark-ui-actions",
@@ -21,6 +21,10 @@ export const LOCAL_STORAGE = {
   betaAuth: {
     uri: "skylark_beta_uri",
     token: "skylark_beta_auth_token",
+  },
+  graphiql: {
+    theme: "graphiql:theme",
+    tabState: "graphiql:tabState",
   },
 };
 export const HREFS = {

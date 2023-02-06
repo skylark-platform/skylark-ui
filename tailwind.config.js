@@ -46,6 +46,9 @@ module.exports = {
       animation: {
         "spin-fast": "spin 0.5s linear infinite",
       },
+      spacing: {
+        18: "4.5rem",
+      },
       minWidth: (theme) => ({
         ...theme("spacing"),
       }),
