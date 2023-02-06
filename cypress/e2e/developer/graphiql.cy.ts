@@ -16,7 +16,7 @@ describe("GraphiQL Editor", () => {
 
   it("should load GraphiQL", () => {
     cy.get(".graphiql-logo").within(() => {
-      cy.contains("GraphQL Editor");
+      cy.contains("Query Editor");
     });
     cy.contains("Welcome to Skylark's GraphQL Editor");
   });
