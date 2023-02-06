@@ -36,13 +36,17 @@ export const createDeleteObjectMutation = (
 
 export const createUpdateSetContentPositionMutation = (
   object: SkylarkObjectMeta | null,
-  content: ParsedSkylarkObjectContent["objects"],
+  orderedContentObjects: ParsedSkylarkObjectContent["objects"],
 ) => {
-  if (!object || !object.operations.update || content.length === 0) {
+  if (
+    !object ||
+    !object.operations.update ||
+    orderedContentObjects.length === 0
+  ) {
     return null;
   }
 
-  const setContent = content.reduce(
+  const setContent = orderedContentObjects.reduce(
     (prev, { objectType, object: { uid } }, index) => {
       const position = index + 1;
 
