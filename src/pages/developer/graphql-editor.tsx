@@ -1,15 +1,16 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
+import { DEFAULT_QUERY } from "src/components/graphiqlEditor/graphiqlEditor.component";
 import { Spinner } from "src/components/icons";
 import { LOCAL_STORAGE } from "src/constants/skylark";
 import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
 
-const DynamicGraphiQLPlayground = dynamic(
+const DynamicGraphiQLEditor = dynamic(
   () =>
-    import(
-      "../../components/graphiqlPlayground/graphiqlPlayground.component"
-    ).then((mod) => mod.GraphiQLPlayground),
+    import("../../components/graphiqlEditor/graphiqlEditor.component").then(
+      (mod) => mod.GraphiQLEditor,
+    ),
   {
     loading: () => (
       <div className="flex w-full justify-center">
@@ -28,12 +29,31 @@ const getEnvironmentFromLocalStorage = () => {
 export default function GraphQLQueryEditor() {
   const { connected } = useConnectedToSkylark();
   const [{ uri, token }, setEnvironment] = useState({ uri: "", token: "" });
+  const [defaultQuery, setDefaultQuery] = useState(DEFAULT_QUERY);
 
   useEffect(() => {
     // Default to light theme https://github.com/graphql/graphiql/issues/2924
-    const storedTheme = localStorage.getItem("graphiql:theme");
+    const storedTheme = localStorage.getItem(LOCAL_STORAGE.graphiql.theme);
     if (!storedTheme) {
-      localStorage.setItem("graphiql:theme", "light");
+      localStorage.setItem(LOCAL_STORAGE.graphiql.theme, "light");
+    }
+
+    // If a previous active tab exists in localStorage open to that rather than creating a new tab
+    const tabStateJSON = localStorage.getItem(LOCAL_STORAGE.graphiql.tabState);
+    if (tabStateJSON) {
+      try {
+        const tabState: {
+          tabs: { id: string; title: string; query: string }[];
+          activeTabIndex: number;
+        } = JSON.parse(tabStateJSON);
+
+        const lastActiveTab = tabState.tabs[tabState.activeTabIndex];
+        if (lastActiveTab && lastActiveTab.query) {
+          setDefaultQuery(lastActiveTab.query);
+        }
+      } catch (err) {
+        console.warn("GraphiQL TabState set but invalid JSON", tabStateJSON);
+      }
     }
 
     const refresh = () => {
@@ -49,7 +69,11 @@ export default function GraphQLQueryEditor() {
   return (
     <div className="pt-nav h-full w-full">
       {connected && uri && token && (
-        <DynamicGraphiQLPlayground uri={uri} token={token} />
+        <DynamicGraphiQLEditor
+          uri={uri}
+          token={token}
+          defaultQuery={defaultQuery}
+        />
       )}
     </div>
   );
