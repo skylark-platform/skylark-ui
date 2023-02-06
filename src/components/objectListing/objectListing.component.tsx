@@ -293,7 +293,7 @@ export const ObjectList = ({
 
   return (
     <div className="flex h-full flex-col gap-4 md:gap-8">
-      <div className="flex w-full flex-col-reverse items-center justify-between gap-2 md:flex-row">
+      <div className="flex w-full flex-col-reverse items-center justify-between gap-2 pr-2 md:flex-row">
         <div
           className={clsx(
             "flex w-full flex-row-reverse gap-4",
