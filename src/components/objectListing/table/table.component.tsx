@@ -3,18 +3,23 @@ import {
   flexRender,
   Header,
   Table as ReactTable,
+  Row,
   TableMeta,
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useMemo } from "react";
+import { VirtualItem } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { SkylarkGraphQLObject } from "src/interfaces/skylark";
 
 export type TableColumn = string;
 
 export interface TableProps {
   table: ReactTable<object>;
   withCheckbox?: boolean;
+  virtualRows: VirtualItem[];
+  totalRows: number;
 }
 
 const headAndDataClassNames =
@@ -41,21 +46,26 @@ const customColumnStyling: Record<
     className: { all: "pr-1" },
   },
   [OBJECT_LIST_TABLE.columnIds.displayField]: {
-    width: "min-w-52 max-w-52",
+    width: "min-w-56 max-w-56",
     className: {
-      all: "md:sticky -left-px bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-0",
-      withCheckbox: "left-7",
+      all: "md:sticky bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-0",
+      cell: "left-3.5",
+      header: "left-3.5",
+      withCheckbox: "left-10",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.objectType]: {
     width: "min-w-24 max-w-24",
     className: {
-      all: "px-0 pr-3",
+      all: "px-0 pr-1 md:pr-1.5 md:bg-white sticky -left-20",
+      withCheckbox: "-left-14 md:-left-12",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.checkbox]: {
-    width: "min-w-8 max-w-8",
-    className: { all: "pr-4 pl-0 sticky -left-px bg-white" },
+    width: "min-w-7 max-w-7",
+    className: {
+      all: "pr-2 pl-0 sticky -left-px bg-white z-20",
+    },
   },
   images: {
     width: "min-w-24 max-w-24",
@@ -116,7 +126,7 @@ const TableData = ({
   withCheckbox,
   tableMeta,
 }: {
-  cell: Cell<object, unknown>;
+  cell: Cell<SkylarkGraphQLObject, unknown>;
   withCheckbox: boolean;
   tableMeta: TableMeta<object> | undefined;
 }) => {
@@ -147,8 +157,20 @@ const TableData = ({
   );
 };
 
-export const Table = ({ table, withCheckbox = false }: TableProps) => {
+export const Table = ({
+  table,
+  withCheckbox = false,
+  virtualRows,
+  totalRows,
+}: TableProps) => {
   const tableMeta = table.options.meta;
+  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
+  const paddingBottom =
+    virtualRows.length > 0
+      ? totalRows - (virtualRows?.[virtualRows.length - 1]?.end || 0)
+      : 0;
+
+  const { rows } = table.getRowModel();
   return (
     <table className="relative w-full bg-white">
       <thead>
@@ -166,18 +188,31 @@ export const Table = ({ table, withCheckbox = false }: TableProps) => {
       </thead>
 
       <tbody className="align-top">
-        {table.getRowModel().rows.map((row) => (
-          <tr key={row.id}>
-            {row.getVisibleCells().map((cell) => (
-              <TableData
-                tableMeta={tableMeta}
-                key={cell.id}
-                cell={cell}
-                withCheckbox={withCheckbox}
-              />
-            ))}
+        {paddingTop > 0 && (
+          <tr>
+            <td style={{ height: `${paddingTop}px` }} />
           </tr>
-        ))}
+        )}
+        {virtualRows.map((virtualRow) => {
+          const row = rows[virtualRow.index] as Row<SkylarkGraphQLObject>;
+          return (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <TableData
+                  tableMeta={tableMeta}
+                  key={cell.id}
+                  cell={cell}
+                  withCheckbox={withCheckbox}
+                />
+              ))}
+            </tr>
+          );
+        })}
+        {paddingBottom > 0 && (
+          <tr>
+            <td style={{ height: `${paddingBottom}px` }} />
+          </tr>
+        )}
       </tbody>
     </table>
   );

@@ -5,9 +5,18 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useState, useMemo, Dispatch, SetStateAction } from "react";
+import {
+  useEffect,
+  useState,
+  useMemo,
+  Dispatch,
+  SetStateAction,
+  useRef,
+} from "react";
+import { useVirtual } from "react-virtual";
 
 import { Checkbox } from "src/components/checkbox";
+import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { Spinner } from "src/components/icons";
 import { Pill } from "src/components/pill";
 import {
@@ -20,6 +29,7 @@ import {
   ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
   SkylarkGraphQLObjectImage,
+  ParsedSkylarkObject,
 } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
@@ -28,11 +38,7 @@ import { RowActions } from "./rowActions";
 import { Search } from "./search";
 import { Table, TableCell } from "./table";
 
-const hardcodedColumns = [
-  OBJECT_LIST_TABLE.columnIds.objectType,
-  "availability",
-  "images",
-];
+const hardcodedColumns = ["availability", "images"];
 const orderedKeys = ["uid", "external_id", "data_source_id"];
 
 const columnHelper = createColumnHelper<object>();
@@ -67,10 +73,12 @@ const createColumns = (
     OBJECT_LIST_TABLE.columnIds.objectType,
     {
       header: "",
-      cell: ({ getValue }) => {
+      cell: ({ row }) => {
+        const original = row.original as ParsedSkylarkObject;
         return (
           <Pill
-            label={getValue() as string}
+            label={original.objectType}
+            bgColor={original.config.colour}
             className="w-full bg-brand-primary"
           />
         );
@@ -197,6 +205,8 @@ export const ObjectList = ({
     error: searchError,
     loading: searchLoading,
     properties,
+    query: graphqlSearchQuery,
+    variables: graphqlSearchQueryVariables,
   } = useSearch(searchQuery, searchFilters);
 
   // Sorts objects using the preference array above, any others are added to the end randomly
@@ -229,9 +239,10 @@ export const ObjectList = ({
 
   const formattedSearchData = useMemo(() => {
     const searchDataWithDisplayField = searchData?.map((obj) => {
-      const primaryKey = DISPLAY_NAME_PRIORITY.find(
-        (field) => !!obj.metadata[field],
-      );
+      const primaryKey = [
+        obj.config.primaryField || "",
+        ...DISPLAY_NAME_PRIORITY,
+      ].find((field) => !!obj.metadata[field]);
       return {
         ...obj,
         // When the object type is an image, we want to display its preview in the images tab
@@ -293,6 +304,16 @@ export const ObjectList = ({
 
   if (searchError) console.error("Search Errors:", { searchError });
 
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  const { rows } = table.getRowModel();
+  const rowVirtualizer = useVirtual({
+    parentRef: tableContainerRef,
+    size: rows.length,
+    overscan: 15,
+  });
+  const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
+
   return (
     <div
       className={clsx(
@@ -308,8 +329,8 @@ export const ObjectList = ({
       >
         <div
           className={clsx(
-            "flex w-full flex-row-reverse gap-4",
-            withCreateButtons && !isPanelOpen ? "md:w-1/2 " : "flex-1",
+            "flex w-full flex-row gap-2 md:gap-4",
+            withCreateButtons && !isPanelOpen ? "md:w-1/2 xl:w-1/3 " : "flex-1",
             isPanelOpen ? "lg:w-1/2" : "flex-1",
           )}
         >
@@ -328,6 +349,11 @@ export const ObjectList = ({
             }
             onFilterChange={onFilterChangeWrapper}
           />
+          <DisplayGraphQLQuery
+            label="Content Library Search"
+            query={graphqlSearchQuery}
+            variables={graphqlSearchQueryVariables}
+          />
         </div>
         {withCreateButtons && (
           <CreateButtons
@@ -338,9 +364,17 @@ export const ObjectList = ({
           />
         )}
       </div>
-      <div className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6 xl:h-[75vh]">
+      <div
+        className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6 xl:h-[75vh]"
+        ref={tableContainerRef}
+      >
         {!searchLoading && searchData && (
-          <Table table={table} withCheckbox={withObjectSelect} />
+          <Table
+            table={table}
+            virtualRows={virtualRows}
+            totalRows={totalSize}
+            withCheckbox={withObjectSelect}
+          />
         )}
         {(searchLoading || searchData) && (
           <div className="items-top justify-left flex h-96 w-full flex-col gap-4 text-sm text-manatee-600 md:text-base">

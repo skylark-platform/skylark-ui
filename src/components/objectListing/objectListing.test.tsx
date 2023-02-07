@@ -79,7 +79,7 @@ test("renders search bar, filters with no objects returned", () => {
 
   screen.findByPlaceholderText("Search for an object(s)");
 
-  expect(screen.getByRole("button")).toHaveTextContent("Filters");
+  expect(screen.getByText("Filters")).toBeInTheDocument();
 });
 
 test("renders create buttons", () => {

@@ -3,13 +3,11 @@ import "@graphiql/plugin-explorer/dist/style.css";
 import { Fetcher } from "@graphiql/toolkit";
 import { GraphiQL } from "graphiql";
 import "graphiql/graphiql.min.css";
-import { DocumentNode, GraphQLSchema } from "graphql";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 
-import { LOCAL_STORAGE, REQUEST_HEADERS } from "src/constants/skylark";
-import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
+import { REQUEST_HEADERS } from "src/constants/skylark";
 
-const DEFAULT_QUERY = `# Welcome to Skylark's GraphQL Playground
+export const DEFAULT_QUERY = `# Welcome to Skylark's GraphQL Editor
 #
 # Skylark uses GraphiQL as an in-browser tool for writing, validating, and
 # testing GraphQL queries against your Skylark instance.
@@ -47,33 +45,20 @@ const DEFAULT_QUERY = `# Welcome to Skylark's GraphQL Playground
 #
 `;
 
-const getEnvironmentFromLocalStorage = () => {
-  const uri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) || "";
-  const token = localStorage.getItem(LOCAL_STORAGE.betaAuth.token) || "";
-  return { uri, token };
-};
+interface GraphiQLEditorProps {
+  uri: string;
+  token: string;
+  defaultQuery: string;
+}
 
-export default function GraphQLQueryEditor() {
-  const { connected } = useConnectedToSkylark();
-  const [query, setQuery] = useState(DEFAULT_QUERY);
-  const [{ uri, token }, setEnvironment] = useState({ uri: "", token: "" });
-
-  useEffect(() => {
-    // Default to light theme https://github.com/graphql/graphiql/issues/2924
-    const storedTheme = localStorage.getItem("graphiql:theme");
-    if (!storedTheme) {
-      localStorage.setItem("graphiql:theme", "light");
-    }
-
-    const refresh = () => {
-      setEnvironment(getEnvironmentFromLocalStorage());
-    };
-    refresh();
-    window.addEventListener("storage", refresh);
-    return () => {
-      window.removeEventListener("storage", refresh);
-    };
-  }, []);
+export const GraphiQLEditor = ({
+  uri,
+  token,
+  defaultQuery,
+}: GraphiQLEditorProps) => {
+  // We only update the GraphiQL query when the explorer changes to stop the cursor jumping around
+  const [query, setQuery] = useState(defaultQuery);
+  const [explorerQuery, setExplorerQuery] = useState(query);
 
   const fetcher: Fetcher = useMemo(
     () => async (graphQLParams, opts) => {
@@ -94,22 +79,21 @@ export default function GraphQLQueryEditor() {
   );
 
   const explorerPlugin = useExplorerPlugin({
-    query,
-    onEdit: setQuery,
+    query: explorerQuery,
+    onEdit: (updatedQuery: string) => {
+      setExplorerQuery(updatedQuery);
+      setQuery(updatedQuery);
+    },
   });
 
   return (
-    <div className="pt-nav h-full w-full">
-      {connected && uri && token && (
-        <GraphiQL
-          query={query}
-          onEditQuery={setQuery}
-          plugins={[explorerPlugin]}
-          fetcher={fetcher}
-        >
-          <GraphiQL.Logo>GraphQL Playground</GraphiQL.Logo>
-        </GraphiQL>
-      )}
-    </div>
+    <GraphiQL
+      query={query}
+      onEditQuery={setExplorerQuery}
+      plugins={[explorerPlugin]}
+      fetcher={fetcher}
+    >
+      <GraphiQL.Logo>Query Editor</GraphiQL.Logo>
+    </GraphiQL>
   );
-}
+};

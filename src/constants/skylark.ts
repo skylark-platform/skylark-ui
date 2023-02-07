@@ -9,7 +9,7 @@ export const REQUEST_HEADERS = {
 };
 export const OBJECT_LIST_TABLE = {
   columnIds: {
-    objectType: "__typename", // This is the built-in GraphQL __typename
+    objectType: "__typename",
     displayField: "skylark-ui-display-field",
     checkbox: "skylark-ui-select",
     actions: "skylark-ui-actions",
@@ -22,10 +22,15 @@ export const LOCAL_STORAGE = {
     uri: "skylark_beta_uri",
     token: "skylark_beta_auth_token",
   },
+  graphiql: {
+    theme: "graphiql:theme",
+    tabState: "graphiql:tabState",
+  },
 };
 export const HREFS = {
   apiDocs: "https://docs.skylarkplatform.com/",
 };
+// Helpful way to priorise common display names when one isn't set
 export const DISPLAY_NAME_PRIORITY = [
   "title",
   "name",

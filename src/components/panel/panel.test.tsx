@@ -1,5 +1,11 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  within,
+} from "@testing-library/react";
 import { DocumentNode } from "graphql";
 
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
@@ -71,6 +77,63 @@ test("renders the panel in the default view", async () => {
     screen.getByText("All Availabilities Test Movie (for dimension testing)"),
   ).toBeInTheDocument();
   expect(screen.getAllByText("All Avail Test Movie")).toHaveLength(2);
+});
+
+test("renders the objects primaryField and colour in the header when given", async () => {
+  const mockWithRandomPrimaryField = {
+    request: {
+      query: createGetObjectQuery(movieObjectOperations) as DocumentNode,
+      variables: {
+        ignoreAvailability: true,
+        uid: "withPrimaryField",
+      },
+    },
+    result: {
+      data: {
+        getObject: {
+          ...GQLSkylarkGetObjectQueryFixture.data.getObject,
+          uid: "withPrimaryField",
+          _config: {
+            ...GQLSkylarkGetObjectQueryFixture.data.getObject._config,
+            primary_field: "release_date",
+            colour: "rgb(123, 123, 123)",
+          },
+        },
+      },
+    },
+  };
+
+  render(
+    <MockedProvider
+      mocks={[...mocks, mockWithRandomPrimaryField]}
+      addTypename={false}
+    >
+      <Panel
+        uid={mockWithRandomPrimaryField.result.data.getObject.uid}
+        objectType={"Movie"}
+        closePanel={jest.fn()}
+      />
+    </MockedProvider>,
+  );
+
+  await waitFor(() => expect(screen.getByText("TITLE")).toBeInTheDocument());
+
+  expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
+  expect(
+    screen.getByText("All Availabilities Test Movie (for dimension testing)"),
+  ).toBeInTheDocument();
+  const panelHeader = within(screen.getByTestId("panel-header"));
+  expect(
+    panelHeader.getByText(
+      mockWithRandomPrimaryField.result.data.getObject.release_date,
+    ),
+  ).toBeInTheDocument();
+
+  expect(
+    panelHeader
+      .getByText(mockWithRandomPrimaryField.result.data.getObject.__typename)
+      .closest("div"),
+  ).toHaveAttribute("style", "background-color: rgb(123, 123, 123);");
 });
 
 test("renders an image and the original image size when the object type is an Image", async () => {

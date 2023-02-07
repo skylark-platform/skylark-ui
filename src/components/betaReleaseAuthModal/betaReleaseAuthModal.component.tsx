@@ -43,12 +43,20 @@ export const AddAuthTokenModal = ({
     const developmentUri = useDevelopmentDefaults ? SAAS_API_ENDPOINT : null;
     const developmentToken = useDevelopmentDefaults ? SAAS_API_KEY : null;
 
-    setInputUri(
-      localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) || developmentUri,
-    );
-    setInputToken(
-      localStorage.getItem(LOCAL_STORAGE.betaAuth.token) || developmentToken,
-    );
+    const updateInputsFromLocalStorage = () => {
+      setInputUri(
+        localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) || developmentUri,
+      );
+      setInputToken(
+        localStorage.getItem(LOCAL_STORAGE.betaAuth.token) || developmentToken,
+      );
+    };
+    updateInputsFromLocalStorage();
+
+    window.addEventListener("storage", updateInputsFromLocalStorage);
+    return () => {
+      window.removeEventListener("storage", updateInputsFromLocalStorage);
+    };
   }, []);
 
   useEffect(() => {
