@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { GrCopy } from "react-icons/gr";
 
 interface TextInputProps {
   value: string;
@@ -6,6 +7,7 @@ interface TextInputProps {
   className?: string;
   label?: string;
   tabIndex?: number;
+  copyIcon?: boolean;
 }
 
 export const TextInput = ({
@@ -13,8 +15,9 @@ export const TextInput = ({
   onChange,
   className,
   label,
+  copyIcon,
 }: TextInputProps) => (
-  <div className="flex flex-col">
+  <div className="relative flex flex-col">
     {label && (
       <label
         className="mb-1 text-xs text-manatee-500 md:text-sm"
@@ -31,5 +34,13 @@ export const TextInput = ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
     />
+    {copyIcon && (
+      <GrCopy
+        onClick={() => {
+          navigator.clipboard.writeText(value);
+        }}
+        className="absolute right-3 top-9 cursor-pointer text-lg"
+      />
+    )}
   </div>
 );

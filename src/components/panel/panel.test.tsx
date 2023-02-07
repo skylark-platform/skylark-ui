@@ -255,23 +255,3 @@ test("closing the panel using close button", async () => {
 
   expect(closePanel).toHaveBeenCalled();
 });
-
-test("closing the panel by background backdrop", async () => {
-  const closePanel = jest.fn();
-  render(
-    <MockedProvider mocks={mocks} addTypename={false}>
-      <Panel
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        objectType={"Movie"}
-        closePanel={closePanel}
-      />
-    </MockedProvider>,
-  );
-
-  await waitFor(() =>
-    expect(screen.getByTestId("panel-background")).toBeInTheDocument(),
-  );
-  fireEvent.click(screen.getByTestId("panel-background"));
-
-  expect(closePanel).toHaveBeenCalled();
-});

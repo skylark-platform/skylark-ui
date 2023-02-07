@@ -50,7 +50,7 @@ test("renders as open", () => {
   expect(screen.getByText("Connect to Skylark")).toBeInTheDocument();
   expect(screen.getByLabelText("GraphQL URL")).toBeInTheDocument();
   expect(screen.getByLabelText("API Key")).toBeInTheDocument();
-  expect(screen.getByRole("button")).toBeDisabled();
+  expect(screen.getByText("Validating")).toBeDisabled();
 });
 
 test("renders as open and closes on the esc key", () => {
@@ -98,7 +98,7 @@ test("changes input to red when they are invalid", async () => {
 
   await waitFor(() => expect(uriInput).toHaveClass("border-error"));
   await waitFor(() => expect(tokenInput).toHaveClass("border-error"));
-  expect(screen.getByRole("button")).toBeDisabled();
+  expect(screen.getByText("Connect")).toBeDisabled();
 });
 
 test("changes input to green when they are valid", async () => {
@@ -123,7 +123,7 @@ test("changes input to green when they are valid", async () => {
 
   await waitFor(() => expect(uriInput).toHaveClass("border-success"));
   await waitFor(() => expect(tokenInput).toHaveClass("border-success"));
-  await waitFor(() => expect(screen.getByRole("button")).not.toBeDisabled());
+  await waitFor(() => expect(screen.getByText("Connect")).not.toBeDisabled());
 });
 
 test("when GraphQL is valid, updates local storage", async () => {
@@ -148,7 +148,9 @@ test("when GraphQL is valid, updates local storage", async () => {
     target: { value: "token" },
   });
 
-  const connect = screen.getByRole("button");
+  const connect = screen.getByRole("button", {
+    name: "Validating",
+  });
 
   await waitFor(() => expect(connect).not.toBeDisabled());
 
