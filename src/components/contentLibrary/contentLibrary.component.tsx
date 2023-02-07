@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { motion, useMotionValue } from "framer-motion";
+import { m, useMotionValue } from "framer-motion";
 import React, { useEffect, useState, useRef } from "react";
 
 import { ObjectList } from "src/components/objectListing";
@@ -27,7 +27,7 @@ export const ContentLibrary = () => {
         objectListingWidth.get() || objectListingRef?.current?.offsetWidth || 0;
       const newWidth = width + info.delta.x;
 
-      if (newWidth > 450 && newWidth < windowSize - 375) {
+      if (newWidth > 425 && newWidth < windowSize - 375) {
         objectListingWidth.set(newWidth);
       }
     },
@@ -37,7 +37,7 @@ export const ContentLibrary = () => {
   const objecListingSize = clsx(
     activePanelObject
       ? "pl-4 w-full md:w-1/2 lg:w-5/12 xl:w-3/5"
-      : "w-full px-4",
+      : "w-full pl-4",
   );
 
   return (
@@ -47,7 +47,7 @@ export const ContentLibrary = () => {
         maxHeight: `calc(100vh - 4rem)`,
       }}
     >
-      <motion.div
+      <m.div
         ref={objectListingRef}
         className={`max-w-full pt-6 ${objecListingSize}`}
         style={{
@@ -60,12 +60,12 @@ export const ContentLibrary = () => {
           onInfoClick={setActivePanelObject}
           isPanelOpen={!!activePanelObject}
         />
-      </motion.div>
+      </m.div>
 
-      <motion.div className="fixed z-50 flex h-full grow flex-row bg-white drop-shadow-md md:relative md:z-auto lg:drop-shadow-none">
+      <m.div className="fixed z-50 flex h-full grow flex-row bg-white drop-shadow-md md:relative md:z-auto lg:drop-shadow-none">
         {activePanelObject && (
           <>
-            <motion.div
+            <m.div
               key={windowSize}
               className="hidden w-3 cursor-col-resize items-center bg-manatee-100 lg:flex "
               onDrag={handleDrag}
@@ -75,7 +75,7 @@ export const ContentLibrary = () => {
               dragMomentum={false}
             >
               <div className="mx-1 h-20 w-full rounded bg-manatee-600"></div>
-            </motion.div>
+            </m.div>
             <Panel
               closePanel={() => setActivePanelObject(null)}
               uid={activePanelObject.uid}
@@ -83,7 +83,7 @@ export const ContentLibrary = () => {
             />
           </>
         )}
-      </motion.div>
+      </m.div>
     </div>
   );
 };

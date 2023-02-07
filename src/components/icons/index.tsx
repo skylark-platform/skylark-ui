@@ -10,3 +10,4 @@ export * from "./search.component";
 export * from "./filter.component";
 export * from "./expand.component";
 export * from "./fileText.component";
+export * from "./copy.component";

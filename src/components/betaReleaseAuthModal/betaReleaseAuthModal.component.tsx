@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 
 import { Button } from "src/components/button";
+import { Copy } from "src/components/icons";
 import { TextInput } from "src/components/textInput";
 import {
   LOCAL_STORAGE,
@@ -102,16 +103,21 @@ export const AddAuthTokenModal = ({
       />
 
       <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
-        <Dialog.Panel className="mx-auto max-w-lg rounded bg-white p-6 md:p-10">
+        <Dialog.Panel className="relative mx-auto max-w-lg rounded bg-white p-6 md:p-10">
+          <Button
+            className="absolute right-6 top-1 md:right-10"
+            variant="ghost"
+            onClick={() => setIsOpen(false)}
+          >
+            Close
+          </Button>
           <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">
             Connect to Skylark
           </Dialog.Title>
-
           <Dialog.Description>
             Enter your GraphQL URI and API Key below to connect to your Skylark
             instance.
           </Dialog.Description>
-
           <div className="my-6 flex flex-col gap-4 md:my-10">
             <TextInput
               value={inputUri || ""}
@@ -141,7 +147,6 @@ export const AddAuthTokenModal = ({
               )}
             />
           </div>
-
           <div className="flex w-full flex-row justify-end">
             <Button
               variant="primary"
