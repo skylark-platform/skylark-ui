@@ -43,6 +43,7 @@ export interface ObjectListProps {
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
   withObjectEdit?: boolean;
+  isPanelOpen?: boolean;
   onInfoClick?: Dispatch<
     SetStateAction<{
       objectType: string;
@@ -102,7 +103,7 @@ const createColumns = (
       return (
         <span
           className={clsx(
-            "font-medium uppercase md:px-10 ",
+            "font-medium uppercase lg:px-10 ",
             status === AvailabilityStatus.Active && "text-success",
             status === AvailabilityStatus.Future && "text-warning",
             status === AvailabilityStatus.Unavailable && "text-manatee-400",
@@ -183,6 +184,7 @@ export const ObjectList = ({
   withObjectSelect,
   withObjectEdit,
   onInfoClick,
+  isPanelOpen,
 }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const { objectTypes } = useSkylarkObjectTypes();
@@ -292,12 +294,23 @@ export const ObjectList = ({
   if (searchError) console.error("Search Errors:", { searchError });
 
   return (
-    <div className="flex h-full flex-col gap-4 md:gap-8">
-      <div className="flex w-full flex-col-reverse items-center justify-between gap-2 pr-2 md:flex-row">
+    <div
+      className={clsx(
+        "flex h-full flex-col gap-4",
+        isPanelOpen ? "lg:gap-8" : "md:gap-8",
+      )}
+    >
+      <div
+        className={clsx(
+          "flex w-full flex-col-reverse items-center justify-between gap-2 pr-2",
+          isPanelOpen ? "lg:flex-row" : "md:flex-row",
+        )}
+      >
         <div
           className={clsx(
             "flex w-full flex-row-reverse gap-4",
-            withCreateButtons ? "md:w-1/2 " : "flex-1",
+            withCreateButtons && !isPanelOpen ? "md:w-1/2 " : "flex-1",
+            isPanelOpen ? "lg:w-1/2" : "flex-1",
           )}
         >
           <Search
@@ -317,7 +330,12 @@ export const ObjectList = ({
           />
         </div>
         {withCreateButtons && (
-          <CreateButtons className="w-full justify-end md:w-auto" />
+          <CreateButtons
+            className={clsx(
+              "w-full justify-end",
+              isPanelOpen ? "lg:w-auto" : "md:w-auto",
+            )}
+          />
         )}
       </div>
       <div className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6 xl:h-[75vh]">

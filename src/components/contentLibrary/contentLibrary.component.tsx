@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { motion, useDragControls, useMotionValue } from "framer-motion";
+import { motion, useMotionValue } from "framer-motion";
 import React, { useEffect, useState, useRef } from "react";
 
 import { ObjectList } from "src/components/objectListing";
@@ -13,42 +13,36 @@ export const ContentLibrary = () => {
 
   const [windowSize, setWindowSize] = useState(0);
   const objectListingWidth = useMotionValue<number | undefined>(undefined); // from localstorage get saved sized
-  const objectListingRef = useRef(null);
-
-  console.log("window size", windowSize);
-  console.log("panelWidth", objectListingWidth);
+  const objectListingRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     window.addEventListener("resize", () => {
       setWindowSize(window.innerWidth);
-      // panelWidth.set(window.innerWidth / 2);
     });
   }, [objectListingWidth]);
 
   const handleDrag = React.useCallback(
-    (event, info) => {
+    (event: unknown, info: { delta: { x: number } }) => {
       const width =
-        objectListingWidth.get() || objectListingRef?.current?.offsetWidth;
+        objectListingWidth.get() || objectListingRef?.current?.offsetWidth || 0;
       const newWidth = width + info.delta.x;
 
-      console.log("panelWidth", objectListingWidth.get());
-      console.log("width", width);
-      console.log("newWidth", newWidth);
-
-      if (newWidth > 450) {
+      if (newWidth > 450 && newWidth < windowSize - 375) {
         objectListingWidth.set(newWidth);
       }
     },
-    [objectListingWidth],
+    [objectListingWidth, windowSize],
   );
 
   const objecListingSize = clsx(
-    activePanelObject ? "w-full md:w-1/3 lg:w-5/12 xl:w-3/5" : "w-full",
+    activePanelObject
+      ? "pl-4 w-full md:w-1/2 lg:w-5/12 xl:w-3/5"
+      : "w-full px-4",
   );
 
   return (
     <div
-      className="ml-4 flex h-screen flex-row "
+      className=" flex h-screen flex-row "
       style={{
         maxHeight: `calc(100vh - 4rem)`,
       }}
@@ -61,15 +55,19 @@ export const ContentLibrary = () => {
             activePanelObject && objectListingWidth ? objectListingWidth : "",
         }}
       >
-        <ObjectList withCreateButtons onInfoClick={setActivePanelObject} />
+        <ObjectList
+          withCreateButtons
+          onInfoClick={setActivePanelObject}
+          isPanelOpen={!!activePanelObject}
+        />
       </motion.div>
 
-      <motion.div className="z-60 fixed flex h-full grow flex-row bg-white md:relative md:z-auto">
+      <motion.div className="fixed z-50 flex h-full grow flex-row bg-white drop-shadow-md md:relative md:z-auto lg:drop-shadow-none">
         {activePanelObject && (
           <>
             <motion.div
               key={windowSize}
-              className="hidden w-3 cursor-col-resize items-center bg-manatee-100 md:overflow-auto "
+              className="hidden w-3 cursor-col-resize items-center bg-manatee-100 lg:flex "
               onDrag={handleDrag}
               drag="x"
               dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
