@@ -40,8 +40,8 @@ const navigationItems = [
       },
       {
         id: "graphql-ide",
-        text: "GraphQL Playground",
-        href: "/developer/playground",
+        text: "GraphQL Editor",
+        href: "/developer/graphql-editor",
         Icon: <GrGraphQl className="text-xl" />,
       },
     ],
