@@ -67,7 +67,10 @@ export const PanelContent = ({
     onReorder(filtered);
   };
 
-  const handleInputBlur = (currentIndex: number, updatedIndex: number) => {
+  const handleManualOrderChange = (
+    currentIndex: number,
+    updatedIndex: number,
+  ) => {
     const realUpdatedIndex =
       updatedIndex <= 0
         ? 0
@@ -78,8 +81,6 @@ export const PanelContent = ({
 
     const objToMove = updatedObjects.splice(currentIndex, 1)[0];
     updatedObjects.splice(realUpdatedIndex, 0, objToMove);
-
-    console.log({ realUpdatedIndex, objToMove, updatedObjects });
 
     onReorder(updatedObjects);
   };
@@ -131,7 +132,7 @@ export const PanelContent = ({
                 position={index + 1}
                 hasMoved={position !== index + 1}
                 onBlur={(updatedPosition: number) =>
-                  handleInputBlur(index, updatedPosition - 1)
+                  handleManualOrderChange(index, updatedPosition - 1)
                 }
               />
               <button

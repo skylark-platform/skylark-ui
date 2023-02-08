@@ -29,6 +29,9 @@ import GQLGameOfThronesSearchResults from "src/tests/fixtures/skylark/queries/se
 
 import { ObjectList } from "./objectListing.component";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const useRouter = jest.spyOn(require("next/router"), "useRouter");
+
 const searchableObjectTypes =
   GQLSkylarkObjectTypesQueryFixture.data.__type.possibleTypes.map(
     ({ name }) => name,
@@ -69,6 +72,11 @@ const defaultMocks = [
     result: GQLGameOfThronesSearchResults,
   },
 ];
+
+beforeEach(() => {
+  const router = { query: { edit: "true" } };
+  useRouter.mockReturnValue(router);
+});
 
 test("renders search bar, filters with no objects returned", () => {
   render(

@@ -212,7 +212,7 @@ describe("Content Library", () => {
       cy.percySnapshot("Homepage - metadata panel - content");
     });
 
-    it.only("open Content tab - edit and cancel", () => {
+    it("open Content tab - edit and cancel", () => {
       cy.get('input[name="search-query-input"]').type("Homepage");
       cy.contains("Homepage").should("exist");
       cy.contains("tr", "Homepage")
@@ -271,7 +271,6 @@ describe("Content Library", () => {
       cy.get("[data-testid=panel-content-items] > li p")
         .then(($els) => {
           const text = $els.toArray().map((el) => el.innerText.trim());
-          console.log(text);
           return text;
         })
         .should("deep.eq", [
