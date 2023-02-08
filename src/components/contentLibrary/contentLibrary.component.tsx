@@ -16,17 +16,23 @@ export const ContentLibrary = () => {
   const objectListingRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    window.addEventListener("resize", () => {
+    const updateWindowSize = () => {
       setWindowSize(window.innerWidth);
-    });
-  }, [objectListingWidth]);
+      if (!activePanelObject) objectListingWidth.set(undefined);
+    };
+    updateWindowSize();
+
+    window.addEventListener("resize", updateWindowSize);
+    return () => {
+      window.removeEventListener("resize", updateWindowSize);
+    };
+  }, [activePanelObject, objectListingWidth]);
 
   const handleDrag = React.useCallback(
     (event: unknown, info: { delta: { x: number } }) => {
       const width =
         objectListingWidth.get() || objectListingRef?.current?.offsetWidth || 0;
       const newWidth = width + info.delta.x;
-
       if (newWidth > 425 && newWidth < windowSize - 375) {
         objectListingWidth.set(newWidth);
       }
@@ -35,14 +41,13 @@ export const ContentLibrary = () => {
   );
 
   const objecListingSize = clsx(
-    activePanelObject
-      ? "pl-4 w-full md:w-1/2 lg:w-5/12 xl:w-3/5"
-      : "w-full pl-4",
+    "w-full pl-2 md:pl-6 lg:pl-10",
+    activePanelObject && "md:w-1/2 lg:w-5/12 xl:w-3/5",
   );
 
   return (
     <div
-      className=" flex h-screen flex-row "
+      className="flex h-screen flex-row"
       style={{
         maxHeight: `calc(100vh - 4rem)`,
       }}
@@ -52,7 +57,9 @@ export const ContentLibrary = () => {
         className={`max-w-full pt-6 ${objecListingSize}`}
         style={{
           width:
-            activePanelObject && objectListingWidth ? objectListingWidth : "",
+            activePanelObject && objectListingWidth
+              ? objectListingWidth
+              : "100%",
         }}
       >
         <ObjectList
@@ -62,29 +69,27 @@ export const ContentLibrary = () => {
         />
       </m.div>
 
-      <m.div className="fixed z-50 flex h-full w-full grow flex-row bg-white drop-shadow-md md:relative md:z-auto lg:drop-shadow-none">
-        {activePanelObject && (
-          <>
-            <m.div
-              data-testid="drag-bar"
-              key={windowSize}
-              className="hidden w-3 cursor-col-resize items-center bg-manatee-100 lg:flex "
-              onDrag={handleDrag}
-              drag="x"
-              dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-              dragElastic={0}
-              dragMomentum={false}
-            >
-              <div className="mx-1 h-20 w-full rounded bg-manatee-600"></div>
-            </m.div>
-            <Panel
-              closePanel={() => setActivePanelObject(null)}
-              uid={activePanelObject.uid}
-              objectType={activePanelObject.objectType}
-            />
-          </>
-        )}
-      </m.div>
+      {activePanelObject && (
+        <m.div className="fixed z-50 flex h-full w-full grow flex-row bg-white drop-shadow-md md:relative md:z-auto lg:drop-shadow-none">
+          <m.div
+            data-testid="drag-bar"
+            key={windowSize}
+            className="hidden w-3 cursor-col-resize items-center bg-manatee-100 lg:flex "
+            onDrag={handleDrag}
+            drag="x"
+            dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+            dragElastic={0}
+            dragMomentum={false}
+          >
+            <div className="mx-1 h-20 w-full rounded bg-manatee-600"></div>
+          </m.div>
+          <Panel
+            closePanel={() => setActivePanelObject(null)}
+            uid={activePanelObject.uid}
+            objectType={activePanelObject.objectType}
+          />
+        </m.div>
+      )}
     </div>
   );
 };

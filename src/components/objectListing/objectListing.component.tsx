@@ -162,9 +162,7 @@ const createColumns = (
           editRowEnabled={opts.withObjectEdit}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() =>
-            setPanelInfo ? setPanelInfo({ objectType, uid }) : console.log(uid)
-          }
+          onInfoClick={() => setPanelInfo?.({ objectType, uid })}
           onEditSaveClick={() => console.log(row)}
           onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
         />
@@ -324,14 +322,15 @@ export const ObjectList = ({
       <div
         className={clsx(
           "flex w-full flex-col-reverse items-center justify-between gap-2 pr-2",
-          isPanelOpen ? "lg:flex-row" : "md:flex-row",
+          isPanelOpen ? "lg:flex-row" : "pr-2 md:flex-row md:pr-8",
         )}
       >
         <div
           className={clsx(
-            "flex w-full flex-row gap-2 md:gap-4",
-            withCreateButtons && !isPanelOpen ? "md:w-1/2 xl:w-1/3 " : "flex-1",
-            isPanelOpen ? "lg:w-1/2" : "flex-1",
+            "flex w-full flex-1 flex-row gap-2 md:gap-4",
+            withCreateButtons &&
+              !isPanelOpen &&
+              "md:max-w-[50%] xl:max-w-[33%]",
           )}
         >
           <Search

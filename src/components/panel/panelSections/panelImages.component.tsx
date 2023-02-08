@@ -45,7 +45,7 @@ export const PanelImages = ({
   );
 
   return (
-    <div className="h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
+    <div className="h-full overflow-y-auto p-4 pb-12 text-sm md:p-8">
       {Object.keys(imgs).map((type) => {
         return (
           <Fragment key={type}>
