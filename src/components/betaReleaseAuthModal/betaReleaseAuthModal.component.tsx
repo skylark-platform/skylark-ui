@@ -132,7 +132,7 @@ export const AddAuthTokenModal = ({
                   debouncedUri &&
                   (invalidUri ? "border-error" : "border-success"),
               )}
-              copyIcon
+              withCopy
             />
 
             <TextInput
@@ -148,7 +148,7 @@ export const AddAuthTokenModal = ({
                   debouncedUri &&
                   (invalidToken ? "border-error" : "border-success"),
               )}
-              copyIcon
+              withCopy
             />
           </div>
           <div className="flex w-full flex-row justify-end">

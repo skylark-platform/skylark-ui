@@ -7,7 +7,7 @@ interface TextInputProps {
   className?: string;
   label?: string;
   tabIndex?: number;
-  copyIcon?: boolean;
+  withCopy?: boolean;
 }
 
 export const TextInput = ({
@@ -15,7 +15,7 @@ export const TextInput = ({
   onChange,
   className,
   label,
-  copyIcon,
+  withCopy,
 }: TextInputProps) => (
   <div className="relative flex flex-col">
     {label && (
@@ -34,7 +34,7 @@ export const TextInput = ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
     />
-    {copyIcon && (
+    {withCopy && (
       <GrCopy
         onClick={() => {
           navigator.clipboard.writeText(value);
