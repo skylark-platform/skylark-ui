@@ -6,7 +6,6 @@ import { GrClose } from "react-icons/gr";
 import { useDebounce } from "use-debounce";
 
 import { Button } from "src/components/button";
-import { Copy } from "src/components/icons";
 import { TextInput } from "src/components/textInput";
 import {
   LOCAL_STORAGE,

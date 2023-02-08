@@ -25,7 +25,6 @@ import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/
 import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
 import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 import GQLSkylarkAllAvailTestMovieSearchFixture from "src/tests/fixtures/skylark/queries/search/allMediaTestMovieOnly.json";
-import GQLGameOfThronesSearchResults from "src/tests/fixtures/skylark/queries/search/got.json";
 
 import { ContentLibrary } from "./contentLibrary.component";
 
@@ -53,20 +52,6 @@ const schemaMocks = [
     result: {
       data: GQLSkylarkSchemaQueryFixture.data,
     },
-  },
-];
-
-const defaultMocks = [
-  ...schemaMocks,
-  {
-    request: {
-      variables: { ignoreAvailability: true, queryString: "" },
-      query: createSearchObjectsQuery(
-        searchableObjectsMeta,
-        [],
-      ) as DocumentNode,
-    },
-    result: GQLGameOfThronesSearchResults,
   },
 ];
 
