@@ -80,6 +80,24 @@ describe("createGetObjectQuery", () => {
       ),
     );
   });
+
+  test("returns expected GraphQL get query with content", () => {
+    const got = createGetObjectQuery(
+      {
+        ...object,
+        name: "Set",
+      },
+      [object],
+    );
+
+    expect(got).toEqual(
+      gql(
+        `
+        query GET_Set ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } name type content (order: ASC) { objects { object { ... on Episode { __typename _config { primary_field colour } __Episode__name: name __Episode__type: type } } position } } } }
+        `,
+      ),
+    );
+  });
 });
 
 describe("createListObjectQuery", () => {

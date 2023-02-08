@@ -10,13 +10,20 @@ import { DocumentNode } from "graphql";
 
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
-import { GET_SKYLARK_SCHEMA } from "src/lib/graphql/skylark/queries";
+import {
+  GET_SKYLARK_OBJECT_TYPES,
+  GET_SKYLARK_SCHEMA,
+} from "src/lib/graphql/skylark/queries";
 import { getObjectOperations } from "src/lib/skylark/objects";
 import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
 import GQLSkylarkGetObjectImageQueryFixture from "src/tests/fixtures/skylark/queries/getObject/gotImage.json";
+import GQLSkylarkGetSetWithContentQueryFixture from "src/tests/fixtures/skylark/queries/getObject/setWithContent.json";
 import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 
 import { Panel } from "./panel.component";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const useRouter = jest.spyOn(require("next/router"), "useRouter");
 
 const movieObjectOperations = getObjectOperations(
   "Movie",
@@ -26,6 +33,18 @@ const movieObjectOperations = getObjectOperations(
 
 const imageObjectOperations = getObjectOperations(
   "Image",
+  GQLSkylarkSchemaQueryFixture.data
+    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
+);
+
+const seasonObjectOperations = getObjectOperations(
+  "Season",
+  GQLSkylarkSchemaQueryFixture.data
+    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
+);
+
+const setObjectOperations = getObjectOperations(
+  "Set",
   GQLSkylarkSchemaQueryFixture.data
     .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
 );
@@ -53,11 +72,45 @@ const mocks = [
   },
   {
     request: {
+      query: createGetObjectQuery(setObjectOperations, [
+        seasonObjectOperations,
+        setObjectOperations,
+      ]) as DocumentNode,
+      variables: {
+        ignoreAvailability: true,
+        uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
+      },
+    },
+    result: GQLSkylarkGetSetWithContentQueryFixture,
+  },
+  {
+    request: {
       query: GET_SKYLARK_SCHEMA,
     },
     result: GQLSkylarkSchemaQueryFixture,
   },
+  {
+    request: {
+      query: GET_SKYLARK_OBJECT_TYPES,
+    },
+    result: {
+      data: {
+        __type: {
+          possibleTypes: [
+            { name: "Season", __typename: "__Type" },
+            { name: "Set", __typename: "__Type" },
+          ],
+          __typename: "__Type",
+        },
+      },
+    },
+  },
 ];
+
+beforeEach(() => {
+  const router = { query: { edit: "true" } };
+  useRouter.mockReturnValue(router);
+});
 
 test("renders the panel in the default view", async () => {
   render(
@@ -198,6 +251,50 @@ test("imagery view", async () => {
     "src",
     GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].url,
   );
+});
+
+test("content view", async () => {
+  render(
+    <MockedProvider mocks={mocks} addTypename={false}>
+      <Panel
+        uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
+        objectType={"Set"}
+        closePanel={jest.fn()}
+      />
+    </MockedProvider>,
+  );
+
+  await waitFor(() => expect(screen.getByText("Content")).toBeInTheDocument());
+  fireEvent.click(screen.getByText("Content"));
+
+  expect(screen.getAllByText("Homepage")).toHaveLength(1);
+  expect(
+    screen.getByText(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[0]
+        .object?.__Season__title as string,
+    ),
+  ).toBeInTheDocument();
+});
+
+test("content view - edit view", async () => {
+  render(
+    <MockedProvider mocks={mocks} addTypename={false}>
+      <Panel
+        uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
+        objectType={"Set"}
+        closePanel={jest.fn()}
+      />
+    </MockedProvider>,
+  );
+
+  await waitFor(() => expect(screen.getByText("Content")).toBeInTheDocument());
+  fireEvent.click(screen.getByText("Content"));
+
+  expect(screen.getAllByText("Homepage")).toHaveLength(1);
+
+  fireEvent.click(screen.getByText("Edit Content"));
+
+  await waitFor(() => expect(screen.getByText("Editing")).toBeInTheDocument());
 });
 
 test.skip("availability view", async () => {

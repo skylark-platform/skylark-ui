@@ -9,7 +9,10 @@ export interface PillProps {
 export const Pill = ({ label, bgColor, className }: PillProps) => (
   <div
     // TODO determine text colour based on background
-    className={clsx(`badge border-none px-3 text-xs text-white`, className)}
+    className={clsx(
+      `badge border-none bg-brand-primary px-3 text-xs text-white`,
+      className,
+    )}
     style={bgColor ? { backgroundColor: bgColor } : undefined}
   >
     <span className="overflow-hidden text-clip">{label}</span>

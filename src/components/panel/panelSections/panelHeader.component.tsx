@@ -1,29 +1,17 @@
-import { OperationVariables, useMutation } from "@apollo/client";
-import { Menu } from "@headlessui/react";
+import { OperationVariables } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useMemo, useState } from "react";
 import { GrGraphQl } from "react-icons/gr";
 
 import { Button } from "src/components/button";
-import {
-  DisplayGraphQLQuery,
-  DisplayGraphQLQueryModal,
-} from "src/components/displayGraphQLQuery";
+import { DisplayGraphQLQueryModal } from "src/components/displayGraphQLQuery";
 import {
   DropdownMenu,
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
-import {
-  Cog,
-  Edit,
-  Expand,
-  Trash,
-  Cross,
-  MoreVertical,
-} from "src/components/icons";
+import { Edit, Expand, Trash, MoreVertical } from "src/components/icons";
 import { Pill } from "src/components/pill";
-import { useDeleteObject } from "src/hooks/useDeleteObject";
 import { SkylarkObjectType } from "src/interfaces/skylark";
 
 interface PanelHeaderProps {
@@ -62,7 +50,12 @@ export const PanelHeader = ({
       {
         id: "graphql-query",
         text: `Get ${objectType} Query`,
-        Icon: <GrGraphQl className="text-lg" />,
+        Icon: (
+          <GrGraphQl
+            className="text-lg"
+            data-testid="graphql-query-modal-button"
+          />
+        ),
         onClick: () => setGraphQLModalOpen(true),
       },
       {
@@ -70,11 +63,12 @@ export const PanelHeader = ({
         text: `Delete ${objectType}`,
         Icon: <Trash className="w-5 fill-error stroke-error" />,
         danger: true,
-        disabled: true,
+        // Disable while no tabs have edit mode TODO remove this check
+        disabled: tabsWithEditMode.length === 0,
         onClick: deleteObject,
       },
     ],
-    [deleteObject, objectType],
+    [deleteObject, objectType, tabsWithEditMode],
   );
 
   return (
@@ -93,7 +87,10 @@ export const PanelHeader = ({
             options={objectMenuOptions}
             className="text-sm font-bold"
           >
-            <DropdownMenuButton className="focus:outline-none focus-visible:ring-2 group-hover:text-black">
+            <DropdownMenuButton
+              className="focus:outline-none focus-visible:ring-2 group-hover:text-black"
+              aria-label="Open Panel Menu"
+            >
               <MoreVertical className="h-5 w-5" />
             </DropdownMenuButton>
           </DropdownMenu>
@@ -134,7 +131,7 @@ export const PanelHeader = ({
         <h1 className="flex-grow text-xl font-bold uppercase">{title}</h1>
         <div className="flex flex-row items-end justify-end gap-2">
           {inEditMode && (
-            <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 rounded bg-black py-1 px-4 text-sm text-white">
+            <div className="absolute left-1/2 -bottom-16 -translate-x-1/2 rounded bg-black py-1 px-3 text-xs text-white md:px-4 md:text-sm">
               Editing
             </div>
           )}

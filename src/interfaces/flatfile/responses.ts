@@ -51,9 +51,7 @@ export interface FlatfileRow {
   id: number;
   status: string;
   valid: boolean;
-  data: {
-    [key: string]: string | boolean | null;
-  };
+  data: Record<string, string | boolean | null>;
 }
 
 export interface FlatfileGetFinalDatabaseViewResponse {

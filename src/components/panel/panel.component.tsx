@@ -1,12 +1,11 @@
+import { useRouter } from "next/router";
 import { useState } from "react";
 
-import { Button } from "src/components/button";
-import { Edit, Spinner, Trash } from "src/components/icons";
+import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
 import { useDeleteObject } from "src/hooks/useDeleteObject";
 import { useGetObject } from "src/hooks/useGetObject";
-import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import { useUpdateObjectContentPositioning } from "src/hooks/useUpdateSetContentPositioning";
 import {
   ParsedSkylarkObjectMetadata,
@@ -46,6 +45,10 @@ const getTitle = (
 };
 
 export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
+  const {
+    query: { edit },
+  } = useRouter();
+
   const { data, loading, query, variables } = useGetObject(objectType, {
     uid: uid,
   });
@@ -111,7 +114,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
               graphQLQuery={query}
               graphQLVariables={variables}
               currentTab={selectedTab}
-              tabsWithEditMode={[]}
+              tabsWithEditMode={edit ? [PanelTab.Content] : []}
               closePanel={closePanel}
               deleteObject={deleteObjectWrapper}
               inEditMode={inEditMode}

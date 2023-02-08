@@ -37,7 +37,7 @@
     "clsx": "^1.2.1",
     "daisyui": "^2.41.0",
     "dayjs": "^1.11.7",
-    "framer-motion": "^8.5.4",
+    "framer-motion": "^9.0.2",
     "graphiql": "2.2.0",
     "graphql": "^16.6.0",
     "json-to-graphql-query": "^2.2.4",
