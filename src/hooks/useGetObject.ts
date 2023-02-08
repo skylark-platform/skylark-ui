@@ -49,7 +49,7 @@ export const useGetObject = (
           };
         }, {}),
         uid: data.getObject.uid,
-        external_id: data.getObject.uid,
+        external_id: data.getObject.external_id,
       }
     : { uid: lookupValue.uid || "", external_id: lookupValue.externalId || "" };
 
