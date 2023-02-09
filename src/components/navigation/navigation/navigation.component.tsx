@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { AddAuthTokenModal } from "src/components/betaReleaseAuthModal";
 import { Button } from "src/components/button";
@@ -12,15 +12,26 @@ import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
 
 import Logo from "public/images/skylark.png";
 
-const dummyUser = {
-  name: "Joe Bloggs",
-};
-
 export const Navigation = () => {
   const [open, setOpen] = useState(false);
 
-  const { connected, loading } = useConnectedToSkylark();
+  const {
+    connected,
+    loading,
+    currentCreds: { uri },
+  } = useConnectedToSkylark();
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
+
+  const [customerIdentifier, setCustomerIdentifier] = useState("");
+
+  useEffect(() => {
+    if (uri) {
+      const urlId = uri.split(".")[1];
+      setCustomerIdentifier(urlId);
+    } else {
+      setCustomerIdentifier("");
+    }
+  }, [uri]);
 
   return (
     <>
@@ -52,9 +63,9 @@ export const Navigation = () => {
           </Button>
           <div className="hidden items-center text-sm md:flex">
             <p className="mr-3 hidden font-semibold md:inline lg:mr-4">
-              {dummyUser.name}
+              {customerIdentifier}
             </p>
-            <UserAvatar name={dummyUser.name} src="" />
+            <UserAvatar name={customerIdentifier || "S"} src="" />
           </div>
         </div>
 
