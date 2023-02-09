@@ -1,16 +1,16 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
-import { DEFAULT_QUERY } from "src/components/graphiqlEditor/graphiqlEditor.component";
+import { DEFAULT_QUERY } from "src/components/developer/graphiqlEditor/graphiqlEditor.component";
 import { Spinner } from "src/components/icons";
 import { LOCAL_STORAGE } from "src/constants/skylark";
 import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
 
 const DynamicGraphiQLEditor = dynamic(
   () =>
-    import("../../components/graphiqlEditor/graphiqlEditor.component").then(
-      (mod) => mod.GraphiQLEditor,
-    ),
+    import(
+      "../../components/developer/graphiqlEditor/graphiqlEditor.component"
+    ).then((mod) => mod.GraphiQLEditor),
   {
     loading: () => (
       <div className="flex w-full justify-center">

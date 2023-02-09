@@ -40,6 +40,7 @@
     "framer-motion": "^8.5.4",
     "graphiql": "2.2.0",
     "graphql": "^16.6.0",
+    "graphql-voyager": "^1.0.0-rc.31",
     "json-to-graphql-query": "^2.2.4",
     "jsonwebtoken": "^8.5.1",
     "next": "^13.1.1",
