@@ -28,3 +28,22 @@ export const CrossSquare = ({ className }: IconProps) => {
     </IconBase>
   );
 };
+
+export const Cross = ({ className }: IconProps) => {
+  return (
+    <IconBase className={clsx("stroke-black", className)}>
+      <path
+        d="M18 6L6 18"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6 6L18 18"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </IconBase>
+  );
+};

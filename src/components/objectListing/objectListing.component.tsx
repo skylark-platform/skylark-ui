@@ -50,18 +50,13 @@ export interface ObjectListProps {
   withObjectSelect?: boolean;
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
-  onInfoClick?: Dispatch<
-    SetStateAction<{
-      objectType: string;
-      uid: string;
-    } | null>
-  >;
+  onInfoClick?: (obj: { uid: string; objectType: string }) => void;
 }
 
 const createColumns = (
   columns: TableColumn[],
   opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
-  setPanelInfo?: ({
+  setPanelObject?: ({
     objectType,
     uid,
   }: {
@@ -134,12 +129,12 @@ const createColumns = (
       }
 
       return (
-        <>
+        <div>
           {images.map(({ uid, url, title }) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
           ))}
-        </>
+        </div>
       );
     },
   });
@@ -162,7 +157,7 @@ const createColumns = (
           editRowEnabled={opts.withObjectEdit}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() => setPanelInfo?.({ objectType, uid })}
+          onInfoClick={() => setPanelObject?.({ objectType, uid })}
           onEditSaveClick={() => console.log(row)}
           onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
         />
@@ -180,7 +175,7 @@ const createColumns = (
   if (opts.withObjectSelect) {
     return [selectColumn, ...orderedColumnArray];
   }
-  if (setPanelInfo) {
+  if (setPanelObject) {
     return [...orderedColumnArray, actionColumn];
   }
 
@@ -253,8 +248,7 @@ export const ObjectList = ({
       };
     });
 
-    // Move all entries in .metadata into the top level as tanstack-table doesn't support nested properties that are undefined
-    // TODO when https://github.com/TanStack/table/pull/4620 is merged we can remove this, and handle global/language metadata differently
+    // Move all entries in .metadata into the top level as tanstack-table outputs a warning messaged saying nested properties that are undefined
     const searchDataWithTopLevelMetadata = searchDataWithDisplayField.map(
       (obj) => ({
         ...obj.metadata,
@@ -310,7 +304,7 @@ export const ObjectList = ({
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
     size: rows.length,
-    overscan: 15,
+    overscan: 50,
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
 
@@ -323,13 +317,13 @@ export const ObjectList = ({
     >
       <div
         className={clsx(
-          "flex w-full flex-col-reverse items-center justify-between gap-2 pr-2",
+          "flex w-full items-center gap-2 md:justify-between",
           isPanelOpen ? "lg:flex-row" : "pr-2 md:flex-row md:pr-8",
         )}
       >
         <div
           className={clsx(
-            "flex w-full flex-1 flex-row gap-2 md:gap-4",
+            "flex w-full flex-1 flex-row items-center justify-center gap-1 md:gap-2",
             withCreateButtons &&
               !isPanelOpen &&
               "md:max-w-[50%] xl:max-w-[33%]",
@@ -359,7 +353,7 @@ export const ObjectList = ({
         {withCreateButtons && (
           <CreateButtons
             className={clsx(
-              "w-full justify-end",
+              "justify-end pr-2 md:w-full",
               isPanelOpen ? "lg:w-auto" : "md:w-auto",
             )}
           />
@@ -375,6 +369,7 @@ export const ObjectList = ({
             virtualRows={virtualRows}
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
+            setPanelObject={onInfoClick}
           />
         )}
         {(searchLoading || searchData) && (

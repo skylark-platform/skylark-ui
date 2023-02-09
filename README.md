@@ -106,7 +106,7 @@ _This should also install the pre-commit hooks._
 
 <br>
 
-Next, you need to create a `.env` or `.env.local` file so you can to connect to your Skylark instance.
+Next, you need to create a `.env` or `.env.local` file so you can to connect to your Skylark account.
 
 There are two ways to do this:
 
@@ -130,7 +130,7 @@ _Note: When you use this method, it is likely that the values will change each d
 
 #### 2. Connect to your Skylark
 
-You can use the admin panel in your Skylark instance to get the environment variables required to connect.
+You can use the admin panel in your Skylark account to get the environment variables required to connect.
 
 Coming soon...
 

@@ -29,6 +29,9 @@ import GQLGameOfThronesSearchResults from "src/tests/fixtures/skylark/queries/se
 
 import { ObjectList } from "./objectListing.component";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const useRouter = jest.spyOn(require("next/router"), "useRouter");
+
 const searchableObjectTypes =
   GQLSkylarkObjectTypesQueryFixture.data.__type.possibleTypes.map(
     ({ name }) => name,
@@ -70,6 +73,11 @@ const defaultMocks = [
   },
 ];
 
+beforeEach(() => {
+  const router = { query: { edit: "true" } };
+  useRouter.mockReturnValue(router);
+});
+
 test("renders search bar, filters with no objects returned", () => {
   render(
     <MockedProvider>
@@ -82,14 +90,32 @@ test("renders search bar, filters with no objects returned", () => {
   expect(screen.getByText("Filters")).toBeInTheDocument();
 });
 
-test("renders create buttons", () => {
+test("renders create button", () => {
   render(
     <MockedProvider>
-      <ObjectList withCreateButtons />
+      <ObjectList withCreateButtons onInfoClick={jest.fn()} />
     </MockedProvider>,
   );
 
-  expect(screen.getByRole("link")).toHaveTextContent("Import");
+  const createButton = screen.getByText("Create");
+
+  fireEvent.click(createButton);
+
+  expect(screen.getByText("Import (CSV)")).toBeInTheDocument();
+});
+
+test("does not render info button when onInfoClick is undefined", async () => {
+  render(
+    <MockedProvider>
+      <ObjectList onInfoClick={undefined} />
+    </MockedProvider>,
+  );
+
+  expect(
+    await screen.queryByRole("button", {
+      name: /object-info/i,
+    }),
+  ).not.toBeInTheDocument();
 });
 
 test("renders row select checkboxes", () => {
@@ -116,11 +142,6 @@ test("renders search results", async () => {
   await screen.findAllByText(
     GQLGameOfThronesSearchResults.data.search.objects[0].uid,
   );
-
-  // Check for object info button
-  await screen.findAllByRole("button", {
-    name: /object-info/i,
-  });
 
   expect(
     screen.getByText(
@@ -162,7 +183,7 @@ describe("row in edit mode", () => {
   test("save/cancel icon appears", async () => {
     render(
       <MockedProvider mocks={defaultMocks}>
-        <ObjectList withObjectEdit />
+        <ObjectList withObjectEdit onInfoClick={jest.fn()} />
       </MockedProvider>,
     );
 
@@ -193,7 +214,7 @@ describe("row in edit mode", () => {
   test("row turns into inputs", async () => {
     render(
       <MockedProvider mocks={defaultMocks}>
-        <ObjectList withObjectEdit />
+        <ObjectList withObjectEdit onInfoClick={jest.fn()} />
       </MockedProvider>,
     );
 
