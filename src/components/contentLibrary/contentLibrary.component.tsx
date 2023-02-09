@@ -12,7 +12,7 @@ export const ContentLibrary = () => {
   } | null>(null);
 
   const [windowSize, setWindowSize] = useState(0);
-  const objectListingWidth = useMotionValue<number | undefined>(undefined); // from localstorage get saved sized
+  const objectListingWidth = useMotionValue<number | undefined>(undefined);
   const objectListingRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -40,11 +40,6 @@ export const ContentLibrary = () => {
     [objectListingWidth, windowSize],
   );
 
-  const objecListingSize = clsx(
-    "w-full pl-2 md:pl-6 lg:pl-10",
-    activePanelObject && "md:w-1/2 lg:w-5/12 xl:w-3/5",
-  );
-
   return (
     <div
       className="flex h-screen flex-row"
@@ -54,7 +49,10 @@ export const ContentLibrary = () => {
     >
       <m.div
         ref={objectListingRef}
-        className={`max-w-full pt-6 ${objecListingSize}`}
+        className={clsx(
+          "w-full max-w-full pt-6 pl-2 md:pl-6 lg:pl-10",
+          activePanelObject && "md:w-1/2 lg:w-5/12 xl:w-3/5",
+        )}
         style={{
           width:
             activePanelObject && objectListingWidth

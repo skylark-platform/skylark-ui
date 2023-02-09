@@ -105,6 +105,7 @@ export const AddAuthTokenModal = ({
       <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
         <Dialog.Panel className="relative mx-auto max-w-lg rounded bg-white p-6 md:p-10">
           <button
+            aria-label="close"
             className="absolute top-4 right-4 sm:top-9 sm:right-8"
             onClick={() => setIsOpen(false)}
           >

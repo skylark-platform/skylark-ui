@@ -176,10 +176,12 @@ const createColumns = (
     imagesColumn,
     availabilityColumn,
     ...createdColumns,
-    actionColumn,
   ];
   if (opts.withObjectSelect) {
     return [selectColumn, ...orderedColumnArray];
+  }
+  if (setPanelInfo) {
+    return [...orderedColumnArray, actionColumn];
   }
 
   return orderedColumnArray;

@@ -36,6 +36,7 @@ export const TextInput = ({
     />
     {withCopy && (
       <GrCopy
+        aria-label={`Copy ${label} to clipboard`}
         onClick={() => {
           navigator.clipboard.writeText(value);
         }}
