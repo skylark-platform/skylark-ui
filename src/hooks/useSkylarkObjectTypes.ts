@@ -49,17 +49,17 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
   };
 };
 
-export const useAllSearchableObjectMeta = () => {
+export const useAllObjectsMeta = () => {
   const { data: schemaResponse, ...rest } =
     useQuery<GQLSkylarkSchemaQueriesMutations>(GET_SKYLARK_SCHEMA);
 
-  const { objectTypes: searchableObjects } = useSkylarkObjectTypes();
+  const { objectTypes } = useSkylarkObjectTypes();
 
-  if (!schemaResponse || !searchableObjects || searchableObjects.length === 0) {
+  if (!schemaResponse || !objectTypes || objectTypes.length === 0) {
     return { objects: [], allFieldNames: [], ...rest };
   }
 
-  const objects = getAllObjectsMeta(schemaResponse.__schema, searchableObjects);
+  const objects = getAllObjectsMeta(schemaResponse.__schema, objectTypes);
 
   const allFieldNames = objects
     .flatMap(({ fields }) => fields)

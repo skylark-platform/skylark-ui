@@ -7,7 +7,11 @@ import {
   NormalizedObjectField,
   ParsedSkylarkObjectAvailability,
   SkylarkGraphQLObjectRelationship,
+  SkylarkGraphQLObjectContent,
+  ParsedSkylarkObjectContent,
+  ParsedSkylarkObjectMetadata,
 } from "src/interfaces/skylark";
+import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { getObjectAvailabilityStatus } from "./availability";
 
@@ -105,4 +109,30 @@ export const parseObjectRelationship = <T>(
     return [];
   }
   return unparsedObject.objects as T[];
+};
+
+export const parseObjectContent = (
+  unparsedContent?: SkylarkGraphQLObjectContent,
+): ParsedSkylarkObjectContent => {
+  const normalisedContentObjects = unparsedContent?.objects.map(
+    ({ object, position }) => {
+      const normalisedObject =
+        removeFieldPrefixFromReturnedObject<ParsedSkylarkObjectMetadata>(
+          object,
+        );
+      return {
+        objectType: object.__typename,
+        position,
+        config: {
+          primaryField: object._config?.primary_field,
+          colour: object._config?.colour,
+        },
+        object: normalisedObject,
+      };
+    },
+  );
+
+  return {
+    objects: normalisedContentObjects || [],
+  };
 };

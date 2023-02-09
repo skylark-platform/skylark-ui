@@ -60,4 +60,6 @@ export const createBasicSkylarkClient = (uri: string, token: string) =>
     }),
   });
 
-export type SkylarkClient = ReturnType<typeof createSkylarkClient>;
+export type SkylarkClient =
+  | ReturnType<typeof createSkylarkClient>
+  | ApolloClient<object>;

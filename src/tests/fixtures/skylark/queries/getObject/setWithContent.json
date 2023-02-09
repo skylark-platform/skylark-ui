@@ -1,0 +1,176 @@
+{
+  "data": {
+    "getObject": {
+      "_config": {
+        "primary_field": "title",
+        "colour": "#000000",
+        "__typename": "ObjectConfig"
+      },
+      "uid": "01GR4EBD7JVG560WKWG52ETZ8J",
+      "slug": "media-reference-homepage",
+      "external_id": "ingestor_set_media_reference_homepage",
+      "type": "PAGE",
+      "title": "Homepage",
+      "synopsis_short": null,
+      "synopsis_medium": null,
+      "synopsis_long": null,
+      "title_short": null,
+      "title_medium": null,
+      "title_long": null,
+      "release_date": null,
+      "description": null,
+      "availability": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01GR44X9FHDMPV2646DPRRJZB1",
+            "external_id": "recXNjJNyc6nKQIYa",
+            "title": "Always - All devices, all customer types",
+            "slug": "always-all-devices-all-customer-types",
+            "start": "2022-01-01T00:00:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "+00:00",
+            "__typename": "Availability"
+          }
+        ],
+        "__typename": "AvailabilityListing"
+      },
+      "images": {
+        "next_token": null,
+        "objects": [],
+        "__typename": "ImageListing"
+      },
+      "content": {
+        "objects": [
+          {
+            "object": {
+              "__typename": "Season",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#9c27b0",
+                "__typename": "ObjectConfig"
+              },
+              "uid": "01GR44Y4SDCZX4J2S7T2JN9AZ1",
+              "external_id": "recu3652kRsRiyBZI",
+              "__Season__slug": "slx-alpha-2-demos",
+              "__Season__title": "SLX Alpha 2 Demos",
+              "__Season__synopsis_short": null,
+              "__Season__synopsis_medium": null,
+              "__Season__synopsis_long": null,
+              "__Season__title_short": "Alpha 2",
+              "__Season__title_medium": null,
+              "__Season__title_long": null,
+              "__Season__release_date": "2022-12-08",
+              "__Season__season_number": 2,
+              "__Season__number_of_episodes": null
+            },
+            "position": 1,
+            "__typename": "SetContent"
+          },
+          {
+            "object": {
+              "__typename": "Season",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#9c27b0",
+                "__typename": "ObjectConfig"
+              },
+              "uid": "01GR44Y47MP76YQTERA1DDWGTJ",
+              "external_id": "recZ1pqj7JqVyCfUF",
+              "__Season__slug": "slx-beta-1-demos",
+              "__Season__title": "SLX Beta 1 Demos",
+              "__Season__synopsis_short": null,
+              "__Season__synopsis_medium": null,
+              "__Season__synopsis_long": null,
+              "__Season__title_short": "Beta 1",
+              "__Season__title_medium": null,
+              "__Season__title_long": null,
+              "__Season__release_date": "2023-01-09",
+              "__Season__season_number": 3,
+              "__Season__number_of_episodes": null
+            },
+            "position": 2,
+            "__typename": "SetContent"
+          },
+          {
+            "object": {
+              "__typename": "Season",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#9c27b0",
+                "__typename": "ObjectConfig"
+              },
+              "uid": "01GR44Y4G86VTJ2X05BG3YBHKH",
+              "external_id": "rectOwgshfdp7PFun",
+              "__Season__slug": "slx-alpha-1-demos",
+              "__Season__title": "SLX Alpha 1 Demos",
+              "__Season__synopsis_short": null,
+              "__Season__synopsis_medium": null,
+              "__Season__synopsis_long": null,
+              "__Season__title_short": "Alpha 1",
+              "__Season__title_medium": null,
+              "__Season__title_long": null,
+              "__Season__release_date": "2022-10-13",
+              "__Season__season_number": 1,
+              "__Season__number_of_episodes": null
+            },
+            "position": 3,
+            "__typename": "SetContent"
+          },
+          {
+            "object": {
+              "__typename": "Season",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#9c27b0",
+                "__typename": "ObjectConfig"
+              },
+              "uid": "01GR44Y3Y3ZY5Z0Y4AC0TW08A5",
+              "external_id": "recHF0RonRvx6v7zJ",
+              "__Season__slug": "slx-under-the-hood",
+              "__Season__title": "SLX Under The Hood",
+              "__Season__synopsis_short": null,
+              "__Season__synopsis_medium": null,
+              "__Season__synopsis_long": null,
+              "__Season__title_short": "Under the Hood",
+              "__Season__title_medium": null,
+              "__Season__title_long": null,
+              "__Season__release_date": "2023-01-10",
+              "__Season__season_number": 1,
+              "__Season__number_of_episodes": null
+            },
+            "position": 4,
+            "__typename": "SetContent"
+          },
+          {
+            "object": {
+              "__typename": "Set",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#000000",
+                "__typename": "ObjectConfig"
+              },
+              "uid": "01GR4EB8HDZH1839REXCQ1C8ZW",
+              "__Set__slug": "home-page-hero",
+              "external_id": "ingestor_set_home_page_slider",
+              "__Set__type": "SLIDER",
+              "__Set__title": "Home page hero",
+              "__Set__synopsis_short": null,
+              "__Set__synopsis_medium": null,
+              "__Set__synopsis_long": null,
+              "__Set__title_short": null,
+              "__Set__title_medium": null,
+              "__Set__title_long": null,
+              "__Set__release_date": null,
+              "__Set__description": null
+            },
+            "position": 5,
+            "__typename": "SetContent"
+          }
+        ],
+        "__typename": "MetadataListing"
+      },
+      "__typename": "Set"
+    }
+  }
+}

@@ -10,7 +10,7 @@ import { REQUEST_HEADERS } from "src/constants/skylark";
 export const DEFAULT_QUERY = `# Welcome to Skylark's GraphQL Editor
 #
 # Skylark uses GraphiQL as an in-browser tool for writing, validating, and
-# testing GraphQL queries against your Skylark instance.
+# testing GraphQL queries against your Skylark account.
 #
 # Type queries into this side of the screen, and you will see intelligent
 # typeaheads aware of the current GraphQL type schema and live syntax and

@@ -64,19 +64,37 @@ const object: SkylarkObjectMeta = {
 
 describe("createGetObjectQuery", () => {
   test("returns null when the object doesn't have a get operation", () => {
-    const got = createGetObjectQuery(null);
+    const got = createGetObjectQuery(null, []);
 
     expect(got).toBeNull();
   });
 
   test("returns expected GraphQL get query", () => {
-    const got = createGetObjectQuery(object);
+    const got = createGetObjectQuery(object, []);
 
     expect(got).toEqual(
       gql(
         `
       query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } name type } }
       `,
+      ),
+    );
+  });
+
+  test("returns expected GraphQL get query with content", () => {
+    const got = createGetObjectQuery(
+      {
+        ...object,
+        name: "Set",
+      },
+      [object],
+    );
+
+    expect(got).toEqual(
+      gql(
+        `
+        query GET_Set ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } name type content (order: ASC) { objects { object { ... on Episode { __typename _config { primary_field colour } __Episode__name: name __Episode__type: type } } position } } } }
+        `,
       ),
     );
   });

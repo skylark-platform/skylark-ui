@@ -34,9 +34,17 @@ export interface SkylarkGraphQLObjectImage {
   content_type: string;
 }
 
+export interface SkylarkGraphQLObjectContent {
+  objects: {
+    object: SkylarkGraphQLObject;
+    position: number;
+  }[];
+}
+
 export type SkylarkGraphQLObject = {
   __typename: string;
   uid: string;
+  objectType: string;
   external_id: string;
   availability?: SkylarkGraphQLObjectRelationship;
   images?: SkylarkGraphQLObjectRelationship;
@@ -44,6 +52,7 @@ export type SkylarkGraphQLObject = {
     colour: string;
     primary_field: string;
   };
+  content?: SkylarkGraphQLObjectContent;
 } & Record<
   string,
   SkylarkObjectMetadataField | SkylarkGraphQLObjectRelationship
