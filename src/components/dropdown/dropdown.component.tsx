@@ -17,7 +17,8 @@ interface DropdownMenuOption {
 interface DropdownMenuProps {
   children: JSX.Element;
   options: DropdownMenuOption[];
-  className?: string;
+  align: "left" | "right";
+  mobileAlign?: "center";
 }
 
 export const DropdownMenuButton = Menu.Button;
@@ -25,10 +26,14 @@ export const DropdownMenuButton = Menu.Button;
 export const DropdownMenu = ({
   children,
   options,
-  className,
+  align,
+  mobileAlign,
 }: DropdownMenuProps) => {
   return (
-    <Menu as="div" className="relative inline-block text-left">
+    <Menu
+      as="div"
+      className="relative inline-block text-left text-sm font-bold"
+    >
       {children}
       <Transition
         as={Fragment}
@@ -41,8 +46,11 @@ export const DropdownMenu = ({
       >
         <Menu.Items
           className={clsx(
-            "absolute -left-4 z-50 mx-auto mt-2 w-56 divide-y divide-manatee-100 rounded-sm bg-white shadow-lg focus:outline-none",
-            className,
+            "absolute z-50 mx-auto mt-2 w-56 divide-y divide-manatee-100 rounded-sm bg-white shadow-lg ring-1 ring-manatee-700 ring-opacity-5 focus:outline-none",
+            align === "left" && "-left-4",
+            align === "right" && "right-0 origin-top-right",
+            mobileAlign === "center" &&
+              "max-md:left-1/2 max-md:origin-center max-md:-translate-x-1/2",
           )}
         >
           {options.map((option) => (

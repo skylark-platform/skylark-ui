@@ -303,10 +303,10 @@ export const ObjectList = ({
           objectType={activePanelObject.objectType}
         />
       )}
-      <div className="flex w-full flex-col-reverse items-center justify-between gap-2 md:flex-row">
+      <div className="flex w-full items-center gap-2 md:flex-row md:justify-between">
         <div
           className={clsx(
-            "flex w-full flex-row gap-2 md:gap-4",
+            "flex w-full flex-1 flex-row items-center justify-center gap-2 md:gap-4",
             withCreateButtons ? "md:w-1/2 xl:w-1/3" : "flex-1",
           )}
         >
@@ -332,7 +332,7 @@ export const ObjectList = ({
           />
         </div>
         {withCreateButtons && (
-          <CreateButtons className="w-full justify-end md:w-auto" />
+          <CreateButtons className="justify-end md:w-full" />
         )}
       </div>
       <div

@@ -83,10 +83,7 @@ export const PanelHeader = ({
             disabled
             variant="ghost"
           />
-          <DropdownMenu
-            options={objectMenuOptions}
-            className="text-sm font-bold"
-          >
+          <DropdownMenu options={objectMenuOptions} align="left">
             <DropdownMenuButton
               className="focus:outline-none focus-visible:ring-2 group-hover:text-black"
               aria-label="Open Panel Menu"

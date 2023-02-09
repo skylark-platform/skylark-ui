@@ -1,10 +1,8 @@
-import clsx from "clsx";
-
 import { IconBase, IconProps } from "./iconBase.component";
 
 export const PlusSquare = ({ className }: IconProps) => {
   return (
-    <IconBase className={clsx("stroke-black", className)}>
+    <IconBase className={className}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -12,18 +10,24 @@ export const PlusSquare = ({ className }: IconProps) => {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        stroke="currentColor"
+        fill="none"
       />
       <path
         d="M12 8V16"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        stroke="currentColor"
+        fill="none"
       />
       <path
         d="M8 12H16"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        stroke="currentColor"
+        fill="none"
       />
     </IconBase>
   );
@@ -31,18 +35,22 @@ export const PlusSquare = ({ className }: IconProps) => {
 
 export const Plus = ({ className }: IconProps) => {
   return (
-    <IconBase className={clsx("stroke-black", className)} viewBox="3 3 18 18">
+    <IconBase className={className} viewBox="3 3 18 18">
       <path
         d="M12 5V19"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        stroke="currentColor"
+        fill="none"
       />
       <path
         d="M5 12H19"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        stroke="currentColor"
+        fill="none"
       />
     </IconBase>
   );

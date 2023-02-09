@@ -14,3 +14,4 @@ export * from "./trash.component";
 export * from "./cog.component";
 export * from "./plus.component";
 export * from "./more.component";
+export * from "./upload.component";

@@ -90,14 +90,18 @@ test("renders search bar, filters with no objects returned", () => {
   expect(screen.getByText("Filters")).toBeInTheDocument();
 });
 
-test("renders create buttons", () => {
+test("renders create button", () => {
   render(
     <MockedProvider>
       <ObjectList withCreateButtons />
     </MockedProvider>,
   );
 
-  expect(screen.getByRole("link")).toHaveTextContent("Import");
+  const createButton = screen.getByText("Create");
+
+  fireEvent.click(createButton);
+
+  expect(screen.getByText("Import (CSV)")).toBeInTheDocument();
 });
 
 test("renders row select checkboxes", () => {

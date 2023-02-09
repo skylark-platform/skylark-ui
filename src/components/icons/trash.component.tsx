@@ -1,10 +1,8 @@
-import clsx from "clsx";
-
 import { IconBase, IconProps } from "./iconBase.component";
 
 export const Trash = ({ className }: IconProps) => {
   return (
-    <IconBase className={clsx("", className)}>
+    <IconBase className={className}>
       <path
         d="M3 6H5H21"
         strokeWidth="2"
