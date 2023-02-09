@@ -21,7 +21,6 @@ export const Navigation = () => {
     currentCreds: { uri },
   } = useConnectedToSkylark();
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
-
   const [customerIdentifier, setCustomerIdentifier] = useState("");
 
   useEffect(() => {
