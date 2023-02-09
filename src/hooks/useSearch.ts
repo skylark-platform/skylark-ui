@@ -11,46 +11,21 @@ import { GQLSkylarkSearchResponse } from "src/interfaces/skylark";
 import {
   createSearchObjectsQuery,
   defaultValidBlankQuery,
+  removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   parseObjectAvailability,
   parseObjectRelationship,
 } from "src/lib/skylark/parsers";
 
-import { useAllSearchableObjectMeta } from "./useSkylarkObjectTypes";
+import { useAllObjectsMeta } from "./useSkylarkObjectTypes";
 
 export interface SearchFilters {
   objectTypes: string[] | null;
 }
 
-// When making a search request, we use GraphQL value aliases to eliminate any clashes between
-// objects in the Skylark schema sharing the same value name but with different types - causes errors
-// e.g. an image type with a string and a set type with a required string are different types and throw an error
-// From docs:
-// - If multiple field selections with the same response names are encountered during execution,
-//   the field and arguments to execute and the resulting value should be unambiguous.
-//   Therefore any two field selections which might both be encountered for the same object are only valid if they are equivalent.
-const removeFieldPrefixFromSearchObjects = (
-  objectsWithPrefixes: SkylarkGraphQLObject[],
-): SkylarkGraphQLObject[] => {
-  const objects = objectsWithPrefixes.map((objectWithPrefix) => {
-    const searchAliasPrefix = `__${objectWithPrefix.__typename}__`;
-    const result = Object.fromEntries(
-      Object.entries(objectWithPrefix).map(([key, val]) => {
-        const newKey = key.startsWith(searchAliasPrefix)
-          ? key.replace(searchAliasPrefix, "")
-          : key;
-        return [newKey, val];
-      }),
-    );
-    return result as SkylarkGraphQLObject;
-  });
-  return objects;
-};
-
 export const useSearch = (queryString: string, filters: SearchFilters) => {
-  const { objects: searchableObjects, allFieldNames } =
-    useAllSearchableObjectMeta();
+  const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta();
 
   const query = useMemo(
     () =>
@@ -77,10 +52,12 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     // Using the errorPolicy "all" means that some data could be null
     const nonNullObjects = searchResponse?.search.objects.filter(
       (obj) => obj !== null,
-    ) as SkylarkGraphQLObject[];
-    const normalisedObjects = removeFieldPrefixFromSearchObjects(
-      nonNullObjects || [],
-    );
+    ) as SkylarkGraphQLObject[] | undefined;
+
+    const normalisedObjects =
+      nonNullObjects?.map(
+        removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>,
+      ) || [];
 
     const parsedObjects = normalisedObjects.map((obj): ParsedSkylarkObject => {
       return {
@@ -88,6 +65,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
           colour: obj._config?.colour,
           primaryField: obj._config?.primary_field,
         },
+        uid: obj.uid,
         objectType: obj.__typename,
         // TODO filter out any values in obj that are relationships (not metadata types)
         metadata: obj as ParsedSkylarkObjectMetadata,

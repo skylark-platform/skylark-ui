@@ -1,11 +1,19 @@
 import { gql } from "@apollo/client";
-import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
+import {
+  EnumType,
+  jsonToGraphQLQuery,
+  VariableType,
+} from "json-to-graphql-query";
 
-import { SkylarkObjectMeta } from "src/interfaces/skylark";
+import {
+  SkylarkGraphQLObject,
+  SkylarkObjectMeta,
+} from "src/interfaces/skylark";
 
 // This is unpleasant but neccessary as Apollo Client doesn't let us pass in any queries that are not valid
 // Should be used inconjunction with the Apollo Client option "skip" so the request is not made
 export const defaultValidBlankQuery = gql("query { __unknown { name }}");
+export const defaultValidBlankMutation = gql("mutation { __unknown { name }}");
 
 const common = {
   variables: {
@@ -89,7 +97,61 @@ const generateRelationshipsToReturn = (
   return relationshipsToReturn;
 };
 
-export const createGetObjectQuery = (object: SkylarkObjectMeta | null) => {
+const generateContentsToReturn = (
+  object: SkylarkObjectMeta | null,
+  objectsToRequest: SkylarkObjectMeta[],
+) => {
+  // Only Set has contents
+  if (!object || object.name !== "Set" || objectsToRequest.length === 0) {
+    return {};
+  }
+
+  return {
+    content: {
+      __args: {
+        order: new EnumType("ASC"),
+      },
+      objects: {
+        object: {
+          __on: objectsToRequest.map((object) => ({
+            __typeName: object.name,
+            __typename: true, // To remove the alias later
+            ...common.objectConfig,
+            ...generateFieldsToReturn(object.fields, `__${object.name}__`),
+          })),
+        },
+        position: true,
+      },
+    },
+  };
+};
+
+// When making a search / set content request, we use GraphQL value aliases to eliminate any clashes between
+// object types in the Skylark schema sharing the same value name but with different types - causes errors
+// e.g. an image type with a string and a set type with a required string are different types and throw an error
+// From docs:
+// - If multiple field selections with the same response names are encountered during execution,
+//   the field and arguments to execute and the resulting value should be unambiguous.
+//   Therefore any two field selections which might both be encountered for the same object are only valid if they are equivalent.
+export const removeFieldPrefixFromReturnedObject = <T>(
+  objectWithPrefix: SkylarkGraphQLObject,
+) => {
+  const searchAliasPrefix = `__${objectWithPrefix.__typename}__`;
+  const result = Object.fromEntries(
+    Object.entries(objectWithPrefix).map(([key, val]) => {
+      const newKey = key.startsWith(searchAliasPrefix)
+        ? key.replace(searchAliasPrefix, "")
+        : key;
+      return [newKey, val];
+    }),
+  );
+  return result as T;
+};
+
+export const createGetObjectQuery = (
+  object: SkylarkObjectMeta | null,
+  contentTypesToRequest: SkylarkObjectMeta[],
+) => {
   if (!object || !object.operations.get) {
     return null;
   }
@@ -112,6 +174,7 @@ export const createGetObjectQuery = (object: SkylarkObjectMeta | null) => {
         ...common.objectConfig,
         ...generateFieldsToReturn(object.fields),
         ...generateRelationshipsToReturn(object),
+        ...generateContentsToReturn(object, contentTypesToRequest),
       },
     },
   };

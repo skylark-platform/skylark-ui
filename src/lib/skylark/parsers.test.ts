@@ -1,6 +1,11 @@
 import { GQLInputField, GQLType } from "src/interfaces/graphql/introspection";
+import { SkylarkGraphQLObject } from "src/interfaces/skylark";
 
-import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
+import {
+  parseObjectContent,
+  parseObjectInputFields,
+  parseObjectRelationships,
+} from "./parsers";
 
 const defaultType: GQLType = {
   __typename: "",
@@ -205,5 +210,66 @@ describe("parseObjectRelationships", () => {
 
     const got = parseObjectRelationships(fields);
     expect(got).toEqual(["episode", "brand"]);
+  });
+});
+
+describe("parseObjectContent", () => {
+  test("returns empty array when undefined is given", () => {
+    const got = parseObjectContent(undefined);
+    expect(got).toEqual({ objects: [] });
+  });
+
+  test("returns empty array when content.objects is empty", () => {
+    const got = parseObjectContent({ objects: [] });
+    expect(got).toEqual({ objects: [] });
+  });
+
+  test("parses an objects content objects", () => {
+    const objects = [
+      {
+        position: 1,
+        object: {
+          __typename: "Episode",
+          uid: "episode_1",
+          _config: {
+            colour: "black",
+            primary_field: "uid",
+          },
+        } as SkylarkGraphQLObject,
+      },
+      {
+        position: 2,
+        object: {
+          __typename: "Set",
+          uid: "set_1",
+        } as SkylarkGraphQLObject,
+      },
+    ];
+
+    const got = parseObjectContent({
+      objects,
+    });
+    expect(got).toEqual({
+      objects: [
+        {
+          config: {
+            colour: "black",
+            primaryField: "uid",
+          },
+          object: objects[0].object,
+          objectType: objects[0].object.__typename,
+          position: 1,
+        },
+        {
+          config: {
+            colour: undefined,
+            primaryField: undefined,
+          },
+          object: objects[1].object,
+          objectType: objects[1].object.__typename,
+          position: 2,
+        },
+      ],
+    });
   });
 });

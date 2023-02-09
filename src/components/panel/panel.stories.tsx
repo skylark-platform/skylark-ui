@@ -6,9 +6,13 @@ import React from "react";
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import { SkylarkObjectMeta } from "src/interfaces/skylark";
 import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
-import { GET_SKYLARK_SCHEMA } from "src/lib/graphql/skylark/queries";
+import {
+  GET_SKYLARK_OBJECT_TYPES,
+  GET_SKYLARK_SCHEMA,
+} from "src/lib/graphql/skylark/queries";
 import { getObjectOperations } from "src/lib/skylark/objects";
 import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
+import GQLSkylarkGetSetWithContentQueryFixture from "src/tests/fixtures/skylark/queries/getObject/setWithContent.json";
 import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 
 import { Panel } from "./panel.component";
@@ -19,8 +23,20 @@ export default {
   argTypes: {},
 };
 
-const objectOperations = getObjectOperations(
+const episodeObjectOperations = getObjectOperations(
   "Episode",
+  GQLSkylarkSchemaQueryFixture.data
+    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
+);
+
+const seasonObjectOperations = getObjectOperations(
+  "Season",
+  GQLSkylarkSchemaQueryFixture.data
+    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
+);
+
+const setObjectOperations = getObjectOperations(
+  "Set",
   GQLSkylarkSchemaQueryFixture.data
     .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
 );
@@ -40,7 +56,8 @@ Default.parameters = {
       {
         request: {
           query: createGetObjectQuery(
-            objectOperations as SkylarkObjectMeta,
+            episodeObjectOperations as SkylarkObjectMeta,
+            [],
           ) as DocumentNode,
           variables: {
             ignoreAvailability: true,
@@ -51,9 +68,38 @@ Default.parameters = {
       },
       {
         request: {
+          query: createGetObjectQuery(
+            setObjectOperations as SkylarkObjectMeta,
+            [seasonObjectOperations, setObjectOperations], // Order should be the same as the object types returned in GET_SKYLARK_OBJECT_TYPES
+          ) as DocumentNode,
+          variables: {
+            ignoreAvailability: true,
+            uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
+          },
+        },
+        result: GQLSkylarkGetSetWithContentQueryFixture,
+      },
+      {
+        request: {
           query: GET_SKYLARK_SCHEMA,
         },
         result: GQLSkylarkSchemaQueryFixture,
+      },
+      {
+        request: {
+          query: GET_SKYLARK_OBJECT_TYPES,
+        },
+        result: {
+          data: {
+            __type: {
+              possibleTypes: [
+                { name: "Season", __typename: "__Type" },
+                { name: "Set", __typename: "__Type" },
+              ],
+              __typename: "__Type",
+            },
+          },
+        },
       },
     ],
   },
@@ -73,6 +119,23 @@ Imagery.play = async ({ canvasElement }) => {
 
   await canvas.findByRole("button", { name: /Imagery/i });
   const imageryButton = canvas.getByRole("button", { name: /Imagery/i });
+
+  await waitFor(async () => {
+    userEvent.click(imageryButton);
+  });
+};
+
+export const Content = Template.bind({});
+Content.parameters = Default.parameters;
+Content.args = {
+  objectType: "Set",
+  uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
+};
+Content.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  await canvas.findByRole("button", { name: /Content/i });
+  const imageryButton = canvas.getByRole("button", { name: /Content/i });
 
   await waitFor(async () => {
     userEvent.click(imageryButton);

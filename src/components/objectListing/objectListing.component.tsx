@@ -48,13 +48,7 @@ export interface ObjectListProps {
 const createColumns = (
   columns: TableColumn[],
   opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
-  setPanelInfo: ({
-    objectType,
-    uid,
-  }: {
-    objectType: string;
-    uid: string;
-  }) => void,
+  setPanelObject: (object: { objectType: string; uid: string }) => void,
 ) => {
   const objectTypeColumn = columnHelper.accessor(
     OBJECT_LIST_TABLE.columnIds.objectType,
@@ -121,12 +115,12 @@ const createColumns = (
       }
 
       return (
-        <>
+        <div>
           {images.map(({ uid, url, title }) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
           ))}
-        </>
+        </div>
       );
     },
   });
@@ -149,7 +143,7 @@ const createColumns = (
           editRowEnabled={opts.withObjectEdit}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() => setPanelInfo({ objectType, uid })}
+          onInfoClick={() => setPanelObject({ objectType, uid })}
           onEditSaveClick={() => console.log(row)}
           onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
         />
@@ -179,8 +173,8 @@ export const ObjectList = ({
 }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activePanelObject, setActivePanelObject] = useState<{
-    objectType: string;
     uid: string;
+    objectType: string;
   } | null>(null);
   const { objectTypes } = useSkylarkObjectTypes();
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
@@ -240,8 +234,7 @@ export const ObjectList = ({
       };
     });
 
-    // Move all entries in .metadata into the top level as tanstack-table doesn't support nested properties that are undefined
-    // TODO when https://github.com/TanStack/table/pull/4620 is merged we can remove this, and handle global/language metadata differently
+    // Move all entries in .metadata into the top level as tanstack-table outputs a warning messaged saying nested properties that are undefined
     const searchDataWithTopLevelMetadata = searchDataWithDisplayField.map(
       (obj) => ({
         ...obj.metadata,
@@ -297,7 +290,7 @@ export const ObjectList = ({
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
     size: rows.length,
-    overscan: 15,
+    overscan: 50,
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
 
@@ -310,10 +303,10 @@ export const ObjectList = ({
           objectType={activePanelObject.objectType}
         />
       )}
-      <div className="flex w-full flex-col-reverse items-center justify-between gap-2 md:flex-row">
+      <div className="flex w-full items-center gap-2 md:flex-row md:justify-between">
         <div
           className={clsx(
-            "flex w-full flex-row gap-2 md:gap-4",
+            "flex w-full flex-1 flex-row items-center justify-center gap-2 md:gap-4",
             withCreateButtons ? "md:w-1/2 xl:w-1/3" : "flex-1",
           )}
         >
@@ -339,7 +332,7 @@ export const ObjectList = ({
           />
         </div>
         {withCreateButtons && (
-          <CreateButtons className="w-full justify-end md:w-auto" />
+          <CreateButtons className="justify-end md:w-full" />
         )}
       </div>
       <div
@@ -352,6 +345,7 @@ export const ObjectList = ({
             virtualRows={virtualRows}
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
+            setPanelObject={setActivePanelObject}
           />
         )}
         {(searchLoading || searchData) && (

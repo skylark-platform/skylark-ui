@@ -13,19 +13,24 @@ import {
 } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   parseObjectAvailability,
+  parseObjectContent,
   parseObjectRelationship,
 } from "src/lib/skylark/parsers";
 import { hasProperty, isObject } from "src/lib/utils";
 
-import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
+import {
+  useAllObjectsMeta,
+  useSkylarkObjectOperations,
+} from "./useSkylarkObjectTypes";
 
 export const useGetObject = (
   objectType: SkylarkObjectType,
   lookupValue: { externalId?: string; uid?: string },
 ) => {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
+  const { objects: searchableObjects } = useAllObjectsMeta();
 
-  const query = createGetObjectQuery(objectOperations);
+  const query = createGetObjectQuery(objectOperations, searchableObjects);
 
   const { data, ...rest } = useQuery<GQLSkylarkGetObjectResponse>(
     query || defaultValidBlankQuery,
@@ -49,7 +54,7 @@ export const useGetObject = (
           };
         }, {}),
         uid: data.getObject.uid,
-        external_id: data.getObject.uid,
+        external_id: data.getObject.external_id,
       }
     : { uid: lookupValue.uid || "", external_id: lookupValue.externalId || "" };
 
@@ -65,8 +70,14 @@ export const useGetObject = (
         )
       : undefined;
 
+  const content =
+    data?.getObject && hasProperty(data.getObject, "content")
+      ? parseObjectContent(data.getObject.content)
+      : undefined;
+
   const parsedObject: ParsedSkylarkObject | undefined = data?.getObject && {
     objectType: data.getObject.__typename,
+    uid: data.getObject.uid,
     config: {
       colour: data.getObject._config?.colour,
       primaryField: data.getObject._config?.primary_field,
@@ -75,6 +86,7 @@ export const useGetObject = (
     availability,
     images,
     relationships: [],
+    content,
   };
 
   return {
