@@ -4,6 +4,7 @@ import {
   FLATFILE_ACCESS_KEY_ID,
   FLATFILE_SECRET_KEY,
 } from "src/constants/flatfile";
+import { FlatfileRow } from "src/interfaces/flatfile/responses";
 import { SkylarkImportedObject } from "src/interfaces/skylark";
 import {
   createFlatfileObjectsInSkylark,
@@ -16,7 +17,7 @@ import { getSkylarkObjectTypes } from "src/lib/skylark/introspection/introspecti
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<SkylarkImportedObject[] | string>,
+  res: NextApiResponse<FlatfileRow[] | string>,
 ) {
   if (req.method !== "POST") {
     return res.status(501).end();
@@ -81,12 +82,5 @@ export default async function handler(
     (item) => item.status === "accepted" && item.valid,
   );
 
-  const skylarkObjects = await createFlatfileObjectsInSkylark(
-    skylarkClient,
-    objectType,
-    batchId,
-    flatfileRows,
-  );
-
-  return res.status(200).send(skylarkObjects);
+  return res.status(200).send(flatfileRows);
 }

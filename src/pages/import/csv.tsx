@@ -1,3 +1,4 @@
+import { useApolloClient } from "@apollo/client";
 import { useState, useReducer, useEffect } from "react";
 
 import { Button } from "src/components/button";
@@ -9,12 +10,16 @@ import {
   useSkylarkObjectTypes,
 } from "src/hooks/useSkylarkObjectTypes";
 import { ApiRouteTemplateData } from "src/interfaces/apiRoutes";
+import { FlatfileRow } from "src/interfaces/flatfile/responses";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
 import {
   NormalizedObjectField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import { openFlatfileImportClient } from "src/lib/flatfile";
+import {
+  createFlatfileObjectsInSkylark,
+  openFlatfileImportClient,
+} from "src/lib/flatfile";
 import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
 import { createAccountIdentifier, pause } from "src/lib/utils";
 
@@ -63,7 +68,7 @@ const importFlatfileDataToSkylark = async (
     }),
   });
 
-  const data = (await res.json()) as ApiRouteTemplateData;
+  const data = (await res.json()) as FlatfileRow[];
 
   return data;
 };
@@ -107,10 +112,12 @@ const copyText: {
     title: "Create objects in Skylark",
     messages: {
       pending: "Your imported data will be created",
-      inProgress: "Your {objectType}s are being created in Skylark",
+      inProgress:
+        "{objectType} objects being created in Skylark. Do not refresh the page...",
       success:
-        "Your {objectType}s have been successfully imported into Skylark",
-      error: "Error while creating {objectType}s",
+        "{numCreated} {objectType} objects have been successfully imported into Skylark",
+      error:
+        "Error creating {numErrored} {objectType} objects ({numCreated} successful). Check the console or try again.",
     },
   },
 };
@@ -138,11 +145,17 @@ function reducer(
 }
 
 export default function CSVImportPage() {
+  const client = useApolloClient();
+
   const { objectTypes } = useSkylarkObjectTypes();
   const [objectType, setObjectType] = useState("");
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [{ numCreated, numErrored }, setObjectAmounts] = useState({
+    numCreated: 0,
+    numErrored: 0,
+  });
 
   const createObjectsInSkylark = async (batchId: string) => {
     dispatch({ stage: "import", status: statusType.success });
@@ -156,13 +169,35 @@ export default function CSVImportPage() {
       );
     }
 
-    await importFlatfileDataToSkylark(
-      objectType,
-      batchId,
-      graphQLUri,
-      graphQLToken,
-    );
-    dispatch({ stage: "create", status: statusType.success });
+    try {
+      const acceptedData = await importFlatfileDataToSkylark(
+        objectType,
+        batchId,
+        graphQLUri,
+        graphQLToken,
+      );
+
+      const skylarkObjects = await createFlatfileObjectsInSkylark(
+        client,
+        objectType,
+        batchId,
+        acceptedData,
+      );
+
+      setObjectAmounts({
+        numCreated: skylarkObjects.data.length,
+        numErrored: skylarkObjects.errors.length,
+      });
+      if (skylarkObjects.errors.length > 0) {
+        console.error("Errors creating objects:", skylarkObjects.errors);
+        dispatch({ stage: "create", status: statusType.error });
+      } else {
+        dispatch({ stage: "create", status: statusType.success });
+      }
+    } catch (err) {
+      console.error(err);
+      dispatch({ stage: "create", status: statusType.error });
+    }
   };
 
   const onClick = async () => {
@@ -255,10 +290,10 @@ export default function CSVImportPage() {
               <StatusCard
                 key={copyCard.title}
                 title={copyCard.title}
-                description={copyCard.messages[status].replace(
-                  "{objectType}",
-                  objectType,
-                )}
+                description={copyCard.messages[status]
+                  .replace("{objectType}", objectType)
+                  .replace("{numCreated}", numCreated.toString())
+                  .replace("{numErrored}", numErrored.toString())}
                 status={status}
               />
             );
@@ -275,7 +310,10 @@ export default function CSVImportPage() {
             <Button
               onClick={() => dispatch({ stage: "reset" })}
               variant="outline"
-              disabled={state.create !== statusType.success}
+              disabled={
+                state.create !== statusType.success &&
+                state.create !== statusType.error
+              }
             >
               New import
             </Button>
