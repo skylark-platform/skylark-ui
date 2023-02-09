@@ -29,7 +29,7 @@ export const ContentLibrary = () => {
   }, [activePanelObject, objectListingWidth]);
 
   const handleDrag = React.useCallback(
-    (event: unknown, info: { delta: { x: number } }) => {
+    (event: PointerEvent, info: { delta: { x: number } }) => {
       const width =
         objectListingWidth.get() || objectListingRef?.current?.offsetWidth || 0;
       const newWidth = width + info.delta.x;
