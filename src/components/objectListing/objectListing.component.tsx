@@ -5,13 +5,19 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useState, useMemo, useRef } from "react";
+import {
+  useEffect,
+  useState,
+  useMemo,
+  Dispatch,
+  SetStateAction,
+  useRef,
+} from "react";
 import { useVirtual } from "react-virtual";
 
 import { Checkbox } from "src/components/checkbox";
 import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { Spinner } from "src/components/icons";
-import { Panel } from "src/components/panel/panel.component";
 import { Pill } from "src/components/pill";
 import {
   DISPLAY_NAME_PRIORITY,
@@ -43,12 +49,20 @@ export interface ObjectListProps {
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
   withObjectEdit?: boolean;
+  isPanelOpen?: boolean;
+  onInfoClick?: (obj: { uid: string; objectType: string }) => void;
 }
 
 const createColumns = (
   columns: TableColumn[],
   opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
-  setPanelObject: (object: { objectType: string; uid: string }) => void,
+  setPanelObject?: ({
+    objectType,
+    uid,
+  }: {
+    objectType: string;
+    uid: string;
+  }) => void,
 ) => {
   const objectTypeColumn = columnHelper.accessor(
     OBJECT_LIST_TABLE.columnIds.objectType,
@@ -92,7 +106,7 @@ const createColumns = (
       return (
         <span
           className={clsx(
-            "font-medium uppercase",
+            "font-medium uppercase lg:px-10 ",
             status === AvailabilityStatus.Active && "text-success",
             status === AvailabilityStatus.Future && "text-warning",
             status === AvailabilityStatus.Unavailable && "text-manatee-400",
@@ -143,7 +157,7 @@ const createColumns = (
           editRowEnabled={opts.withObjectEdit}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() => setPanelObject({ objectType, uid })}
+          onInfoClick={() => setPanelObject?.({ objectType, uid })}
           onEditSaveClick={() => console.log(row)}
           onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
         />
@@ -157,10 +171,12 @@ const createColumns = (
     imagesColumn,
     availabilityColumn,
     ...createdColumns,
-    actionColumn,
   ];
   if (opts.withObjectSelect) {
     return [selectColumn, ...orderedColumnArray];
+  }
+  if (setPanelObject) {
+    return [...orderedColumnArray, actionColumn];
   }
 
   return orderedColumnArray;
@@ -170,12 +186,10 @@ export const ObjectList = ({
   withCreateButtons,
   withObjectSelect,
   withObjectEdit,
+  onInfoClick,
+  isPanelOpen,
 }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [activePanelObject, setActivePanelObject] = useState<{
-    uid: string;
-    objectType: string;
-  } | null>(null);
   const { objectTypes } = useSkylarkObjectTypes();
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     objectTypes: null,
@@ -208,9 +222,9 @@ export const ObjectList = ({
       createColumns(
         sortedHeaders,
         { withObjectSelect, withObjectEdit },
-        setActivePanelObject,
+        onInfoClick,
       ),
-    [sortedHeaders, withObjectEdit, withObjectSelect],
+    [sortedHeaders, withObjectEdit, withObjectSelect, onInfoClick],
   );
 
   const [rowInEditMode, setRowInEditMode] = useState("");
@@ -295,19 +309,24 @@ export const ObjectList = ({
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
 
   return (
-    <div className="flex h-full flex-col gap-4 md:gap-8">
-      {activePanelObject && (
-        <Panel
-          closePanel={() => setActivePanelObject(null)}
-          uid={activePanelObject.uid}
-          objectType={activePanelObject.objectType}
-        />
+    <div
+      className={clsx(
+        "flex h-full flex-col gap-4",
+        isPanelOpen ? "lg:gap-8" : "md:gap-8",
       )}
-      <div className="flex w-full items-center gap-2 md:flex-row md:justify-between">
+    >
+      <div
+        className={clsx(
+          "flex w-full items-center gap-2 md:justify-between",
+          isPanelOpen ? "lg:flex-row" : "pr-2 md:flex-row md:pr-8",
+        )}
+      >
         <div
           className={clsx(
-            "flex w-full flex-1 flex-row items-center justify-center gap-2 md:gap-4",
-            withCreateButtons ? "md:w-1/2 xl:w-1/3" : "flex-1",
+            "flex w-full flex-1 flex-row items-center justify-center gap-1 md:gap-2",
+            withCreateButtons &&
+              !isPanelOpen &&
+              "md:max-w-[50%] xl:max-w-[33%]",
           )}
         >
           <Search
@@ -332,7 +351,12 @@ export const ObjectList = ({
           />
         </div>
         {withCreateButtons && (
-          <CreateButtons className="justify-end md:w-full" />
+          <CreateButtons
+            className={clsx(
+              "justify-end pr-2 md:w-full",
+              isPanelOpen ? "lg:w-auto" : "md:w-auto",
+            )}
+          />
         )}
       </div>
       <div
@@ -345,7 +369,7 @@ export const ObjectList = ({
             virtualRows={virtualRows}
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
-            setPanelObject={setActivePanelObject}
+            setPanelObject={onInfoClick}
           />
         )}
         {(searchLoading || searchData) && (

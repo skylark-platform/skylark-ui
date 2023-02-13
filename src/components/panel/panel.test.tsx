@@ -123,6 +123,9 @@ test("renders the panel in the default view", async () => {
     </MockedProvider>,
   );
 
+  await waitFor(() =>
+    expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+  );
   await waitFor(() => expect(screen.getByText("TITLE")).toBeInTheDocument());
 
   expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
@@ -169,6 +172,9 @@ test("renders the objects primaryField and colour in the header when given", asy
     </MockedProvider>,
   );
 
+  await waitFor(() =>
+    expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+  );
   await waitFor(() => expect(screen.getByText("TITLE")).toBeInTheDocument());
 
   expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
@@ -200,6 +206,9 @@ test("renders an image and the original image size when the object type is an Im
     </MockedProvider>,
   );
 
+  await waitFor(() =>
+    expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+  );
   await waitFor(() => expect(screen.getByText("TITLE")).toBeInTheDocument());
 
   expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
@@ -349,26 +358,6 @@ test("closing the panel using close button", async () => {
 
   await waitFor(() => expect(screen.getByText("Close")).toBeInTheDocument());
   fireEvent.click(screen.getByText("Close"));
-
-  expect(closePanel).toHaveBeenCalled();
-});
-
-test("closing the panel by background backdrop", async () => {
-  const closePanel = jest.fn();
-  render(
-    <MockedProvider mocks={mocks} addTypename={false}>
-      <Panel
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        objectType={"Movie"}
-        closePanel={closePanel}
-      />
-    </MockedProvider>,
-  );
-
-  await waitFor(() =>
-    expect(screen.getByTestId("panel-background")).toBeInTheDocument(),
-  );
-  fireEvent.click(screen.getByTestId("panel-background"));
 
   expect(closePanel).toHaveBeenCalled();
 });

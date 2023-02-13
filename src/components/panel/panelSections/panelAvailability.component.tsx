@@ -31,7 +31,7 @@ export const PanelAvailability = ({ availability }: PanelAvailabilityProps) => {
   const now = dayjs();
 
   return (
-    <div className="flex h-full flex-col gap-4 overflow-y-scroll p-4 pb-12 text-sm md:p-8">
+    <div className="flex h-full flex-col gap-4 overflow-y-auto p-4 pb-12 text-sm md:p-8">
       {availability.objects.map((obj) => {
         const status = getSingleAvailabilityStatus(now, obj.start, obj.end);
         return (

@@ -1,0 +1,133 @@
+import { MockedProvider } from "@apollo/client/testing";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import { DocumentNode } from "graphql";
+
+import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
+import {
+  createGetObjectQuery,
+  createSearchObjectsQuery,
+} from "src/lib/graphql/skylark/dynamicQueries";
+import {
+  GET_SKYLARK_OBJECT_TYPES,
+  GET_SKYLARK_SCHEMA,
+} from "src/lib/graphql/skylark/queries";
+import {
+  getAllObjectsMeta,
+  getObjectOperations,
+} from "src/lib/skylark/objects";
+import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
+import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
+import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
+import GQLSkylarkAllAvailTestMovieSearchFixture from "src/tests/fixtures/skylark/queries/search/allMediaTestMovieOnly.json";
+
+import { ContentLibrary } from "./contentLibrary.component";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const useRouter = jest.spyOn(require("next/router"), "useRouter");
+
+const searchableObjectTypes =
+  GQLSkylarkObjectTypesQueryFixture.data.__type.possibleTypes.map(
+    ({ name }) => name,
+  ) || [];
+const searchableObjectsMeta = getAllObjectsMeta(
+  GQLSkylarkSchemaQueryFixture.data
+    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
+  searchableObjectTypes,
+);
+
+const schemaMocks = [
+  {
+    request: {
+      query: GET_SKYLARK_OBJECT_TYPES,
+    },
+    result: GQLSkylarkObjectTypesQueryFixture,
+  },
+  {
+    request: {
+      query: GET_SKYLARK_SCHEMA,
+    },
+    result: {
+      data: GQLSkylarkSchemaQueryFixture.data,
+    },
+  },
+];
+
+beforeEach(() => {
+  const router = { query: { edit: "true" } };
+  useRouter.mockReturnValue(router);
+});
+
+test("open metadata panel, check information and close", async () => {
+  const objectOperations = getObjectOperations(
+    "Movie",
+    GQLSkylarkSchemaQueryFixture.data
+      .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
+  );
+
+  const mocks = [
+    ...schemaMocks,
+    {
+      request: {
+        variables: { ignoreAvailability: true, queryString: "" },
+        query: createSearchObjectsQuery(
+          searchableObjectsMeta,
+          [],
+        ) as DocumentNode,
+      },
+      result: GQLSkylarkAllAvailTestMovieSearchFixture,
+    },
+    {
+      request: {
+        query: createGetObjectQuery(objectOperations, []) as DocumentNode,
+        variables: {
+          ignoreAvailability: true,
+          uid: GQLSkylarkAllAvailTestMovieSearchFixture.data.search.objects[0]
+            .uid,
+        },
+      },
+      result: GQLSkylarkGetObjectQueryFixture,
+    },
+  ];
+
+  render(
+    <MockedProvider mocks={mocks}>
+      <ContentLibrary />
+    </MockedProvider>,
+  );
+
+  await screen.findAllByRole("button", {
+    name: /object-info/i,
+  });
+
+  const infoButton = screen.getAllByRole("button", {
+    name: /object-info/i,
+  });
+
+  fireEvent.click(infoButton[0]);
+
+  await waitFor(() =>
+    expect(screen.getByTestId("drag-bar")).toBeInTheDocument(),
+  );
+
+  await waitFor(() =>
+    expect(screen.getByTestId("panel-header")).toBeInTheDocument(),
+  );
+
+  const panelHeader = screen.getByTestId("panel-header");
+  expect(
+    within(panelHeader).getByText("All Avail Test Movie"),
+  ).toBeInTheDocument();
+
+  await waitFor(() => expect(screen.getByText("Close")).toBeInTheDocument());
+  fireEvent.click(screen.getByText("Close"));
+
+  await waitFor(() =>
+    expect(screen.queryByTestId("panel-header")).not.toBeInTheDocument(),
+  );
+});

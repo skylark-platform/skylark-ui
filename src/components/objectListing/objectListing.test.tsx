@@ -93,7 +93,7 @@ test("renders search bar, filters with no objects returned", () => {
 test("renders create button", () => {
   render(
     <MockedProvider>
-      <ObjectList withCreateButtons />
+      <ObjectList withCreateButtons onInfoClick={jest.fn()} />
     </MockedProvider>,
   );
 
@@ -102,6 +102,20 @@ test("renders create button", () => {
   fireEvent.click(createButton);
 
   expect(screen.getByText("Import (CSV)")).toBeInTheDocument();
+});
+
+test("does not render info button when onInfoClick is undefined", async () => {
+  render(
+    <MockedProvider>
+      <ObjectList onInfoClick={undefined} />
+    </MockedProvider>,
+  );
+
+  expect(
+    await screen.queryByRole("button", {
+      name: /object-info/i,
+    }),
+  ).not.toBeInTheDocument();
 });
 
 test("renders row select checkboxes", () => {
@@ -128,11 +142,6 @@ test("renders search results", async () => {
   await screen.findAllByText(
     GQLGameOfThronesSearchResults.data.search.objects[0].uid,
   );
-
-  // Check for object info button
-  await screen.findAllByRole("button", {
-    name: /object-info/i,
-  });
 
   expect(
     screen.getByText(
@@ -174,7 +183,7 @@ describe("row in edit mode", () => {
   test("save/cancel icon appears", async () => {
     render(
       <MockedProvider mocks={defaultMocks}>
-        <ObjectList withObjectEdit />
+        <ObjectList withObjectEdit onInfoClick={jest.fn()} />
       </MockedProvider>,
     );
 
@@ -205,7 +214,7 @@ describe("row in edit mode", () => {
   test("row turns into inputs", async () => {
     render(
       <MockedProvider mocks={defaultMocks}>
-        <ObjectList withObjectEdit />
+        <ObjectList withObjectEdit onInfoClick={jest.fn()} />
       </MockedProvider>,
     );
 
@@ -227,71 +236,4 @@ describe("row in edit mode", () => {
       ),
     ).toHaveAttribute("disabled");
   });
-});
-
-test("open metadata panel, check information and close", async () => {
-  const objectOperations = getObjectOperations(
-    "Movie",
-    GQLSkylarkSchemaQueryFixture.data
-      .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-  );
-
-  const mocks = [
-    ...schemaMocks,
-    {
-      request: {
-        variables: { ignoreAvailability: true, queryString: "" },
-        query: createSearchObjectsQuery(
-          searchableObjectsMeta,
-          [],
-        ) as DocumentNode,
-      },
-      result: GQLSkylarkAllAvailTestMovieSearchFixture,
-    },
-    {
-      request: {
-        query: createGetObjectQuery(objectOperations, []) as DocumentNode,
-        variables: {
-          ignoreAvailability: true,
-          uid: GQLSkylarkAllAvailTestMovieSearchFixture.data.search.objects[0]
-            .uid,
-        },
-      },
-      result: GQLSkylarkGetObjectQueryFixture,
-    },
-  ];
-
-  render(
-    <MockedProvider mocks={mocks}>
-      <ObjectList />
-    </MockedProvider>,
-  );
-
-  await screen.findAllByRole("button", {
-    name: /object-info/i,
-  });
-
-  const infoButton = screen.getAllByRole("button", {
-    name: /object-info/i,
-  });
-
-  fireEvent.click(infoButton[0]);
-
-  await waitFor(() =>
-    expect(screen.getByTestId("panel-background")).toBeInTheDocument(),
-  );
-  await waitFor(() =>
-    expect(screen.getByTestId("panel-header")).toBeInTheDocument(),
-  );
-
-  const panelHeader = screen.getByTestId("panel-header");
-  expect(
-    within(panelHeader).getByText("All Avail Test Movie"),
-  ).toBeInTheDocument();
-
-  fireEvent.click(screen.getByTestId("panel-background"));
-
-  await waitFor(() =>
-    expect(screen.queryByTestId("panel-background")).not.toBeInTheDocument(),
-  );
 });

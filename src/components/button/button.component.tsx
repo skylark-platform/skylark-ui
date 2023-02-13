@@ -35,7 +35,7 @@ export const Button = ({
   const iconOnly = Icon && !children;
 
   const combinedClassName = clsx(
-    "btn",
+    "btn flex-nowrap",
     Icon && children && "gap-2",
     !iconOnly && "min-h-8 text-xs normal-case h-8 md:h-10 md:text-sm",
     variant !== "ghost" && "min-w-24 rounded-full",

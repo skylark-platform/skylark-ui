@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
@@ -58,14 +58,23 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
     ParsedSkylarkObjectContent["objects"] | null
   >(null);
 
-  const tabs = [
-    PanelTab.Metadata,
-    data?.images && PanelTab.Imagery,
-    data?.content && PanelTab.Content,
-    // PanelTab.Availability,
-  ].filter((tab) => !!tab) as string[];
+  const tabs = useMemo(
+    () =>
+      [
+        PanelTab.Metadata,
+        data?.images && PanelTab.Imagery,
+        data?.content && PanelTab.Content,
+        // PanelTab.Availability,
+      ].filter((tab) => !!tab) as string[],
+    [data],
+  );
 
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
+
+  useEffect(() => {
+    // Reset selected tab when object changes
+    setSelectedTab(PanelTab.Metadata);
+  }, [uid]);
 
   const [deleteObjectMutation] = useDeleteObject(objectType);
   const [updateContentPositioningMutation] = useUpdateObjectContentPositioning(
@@ -90,67 +99,60 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   };
 
   return (
-    <>
-      <div
-        data-testid="panel-background"
-        onClick={() => closePanel()}
-        className="fixed left-0 top-0 bottom-0 z-50 w-3/5 bg-black bg-opacity-20 "
-      />
-      <section className="fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col bg-white drop-shadow-md md:w-2/3 lg:w-7/12 xl:w-2/5 2xl:w-2/5">
-        {loading && (
-          <div
-            data-testid="loading"
-            className="flex h-full w-full items-center justify-center"
-          >
-            <Spinner className="h-16 w-16 animate-spin" />
-          </div>
-        )}
-        {!loading && data && (
-          <>
-            <PanelHeader
-              title={getTitle(data.metadata, data.config)}
-              objectType={objectType}
-              pillColor={data.config.colour}
-              graphQLQuery={query}
-              graphQLVariables={variables}
-              currentTab={selectedTab}
-              tabsWithEditMode={edit ? [PanelTab.Content] : []}
-              closePanel={closePanel}
-              deleteObject={deleteObjectWrapper}
+    <section className="flex w-full flex-col">
+      {loading && (
+        <div
+          data-testid="loading"
+          className="flex h-full w-full items-center justify-center"
+        >
+          <Spinner className="h-16 w-16 animate-spin" />
+        </div>
+      )}
+      {!loading && data && (
+        <>
+          <PanelHeader
+            title={getTitle(data.metadata, data.config)}
+            objectType={objectType}
+            pillColor={data.config.colour}
+            graphQLQuery={query}
+            graphQLVariables={variables}
+            currentTab={selectedTab}
+            tabsWithEditMode={edit ? [PanelTab.Content] : []}
+            closePanel={closePanel}
+            deleteObject={deleteObjectWrapper}
+            inEditMode={inEditMode}
+            save={saveActiveTabChanges}
+            toggleEditMode={() => {
+              setEditMode(!inEditMode);
+              if (inEditMode) {
+                setContentObjects(null);
+              }
+            }}
+          />
+          <Tabs
+            tabs={tabs}
+            selectedTab={selectedTab}
+            onChange={setSelectedTab}
+            disabled={inEditMode}
+          />
+          {selectedTab === PanelTab.Metadata && (
+            <PanelMetadata metadata={data.metadata} objectType={objectType} />
+          )}
+          {selectedTab === PanelTab.Imagery && data.images && (
+            <PanelImages images={data.images} />
+          )}
+          {selectedTab === PanelTab.Availability && (
+            <PanelAvailability availability={data.availability} />
+          )}
+          {selectedTab === PanelTab.Content && data.content && (
+            <PanelContent
+              objects={updatedContentObjects || data?.content?.objects}
               inEditMode={inEditMode}
-              save={saveActiveTabChanges}
-              toggleEditMode={() => {
-                setEditMode(!inEditMode);
-                if (inEditMode) {
-                  setContentObjects(null);
-                }
-              }}
+              onReorder={setContentObjects}
             />
-            <Tabs
-              tabs={tabs}
-              selectedTab={selectedTab}
-              onChange={setSelectedTab}
-              disabled={inEditMode}
-            />
-            {selectedTab === PanelTab.Metadata && (
-              <PanelMetadata metadata={data.metadata} objectType={objectType} />
-            )}
-            {selectedTab === PanelTab.Imagery && data.images && (
-              <PanelImages images={data.images} />
-            )}
-            {selectedTab === PanelTab.Availability && (
-              <PanelAvailability availability={data.availability} />
-            )}
-            {selectedTab === PanelTab.Content && data.content && (
-              <PanelContent
-                objects={updatedContentObjects || data?.content?.objects}
-                inEditMode={inEditMode}
-                onReorder={setContentObjects}
-              />
-            )}
-          </>
-        )}
-      </section>
-    </>
+          )}
+        </>
+      )}
+    </section>
   );
 };

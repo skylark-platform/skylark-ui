@@ -2,6 +2,7 @@ import { useApolloClient } from "@apollo/client";
 import { Dialog } from "@headlessui/react";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
+import { GrClose } from "react-icons/gr";
 import { useDebounce } from "use-debounce";
 
 import { Button } from "src/components/button";
@@ -102,16 +103,22 @@ export const AddAuthTokenModal = ({
       />
 
       <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
-        <Dialog.Panel className="mx-auto max-w-lg rounded bg-white p-6 md:p-10">
+        <Dialog.Panel className="relative mx-auto max-w-lg rounded bg-white p-6 md:p-10">
+          <button
+            aria-label="close"
+            className="absolute top-4 right-4 sm:top-9 sm:right-8"
+            onClick={() => setIsOpen(false)}
+          >
+            <GrClose className="text-xl" />
+          </button>
+
           <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">
             Connect to Skylark
           </Dialog.Title>
-
           <Dialog.Description>
             Enter your GraphQL URI and API Key below to connect to your Skylark
             account.
           </Dialog.Description>
-
           <div className="my-6 flex flex-col gap-4 md:my-10">
             <TextInput
               value={inputUri || ""}
@@ -119,12 +126,14 @@ export const AddAuthTokenModal = ({
               label="GraphQL URL"
               tabIndex={-1}
               className={clsx(
+                "pr-9",
                 debouncedUri && "border-2 outline-none",
                 requestLoading && "border-warning",
                 !requestLoading &&
                   debouncedUri &&
                   (invalidUri ? "border-error" : "border-success"),
               )}
+              withCopy
             />
 
             <TextInput
@@ -133,15 +142,16 @@ export const AddAuthTokenModal = ({
               label="API Key"
               tabIndex={-1}
               className={clsx(
+                "pr-9",
                 debouncedUri && "border-2 outline-none",
                 requestLoading && "border-warning",
                 !requestLoading &&
                   debouncedUri &&
                   (invalidToken ? "border-error" : "border-success"),
               )}
+              withCopy
             />
           </div>
-
           <div className="flex w-full flex-row justify-end">
             <Button
               variant="primary"
