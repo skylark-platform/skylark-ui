@@ -45,7 +45,7 @@ export const PanelImages = ({
   );
 
   return (
-    <div className="h-full overflow-y-scroll p-4 pb-12 text-sm md:p-8">
+    <div className="h-full overflow-y-auto p-4 pb-12 text-sm md:p-8">
       {images.length === 0 && <p>No images connected to this object.</p>}
       {Object.keys(imagesGroupedByType).map((type) => {
         return (

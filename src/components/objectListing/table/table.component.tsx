@@ -11,10 +11,7 @@ import { useMemo } from "react";
 import { VirtualItem } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import {
-  ParsedSkylarkObject,
-  SkylarkGraphQLObject,
-} from "src/interfaces/skylark";
+import { SkylarkGraphQLObject } from "src/interfaces/skylark";
 
 import { DisplayNameTableCell } from "./cell";
 
@@ -25,13 +22,7 @@ export interface TableProps {
   withCheckbox?: boolean;
   virtualRows: VirtualItem[];
   totalRows: number;
-  setPanelObject: ({
-    uid,
-    objectType,
-  }: {
-    uid: string;
-    objectType: string;
-  }) => void;
+  setPanelObject?: (obj: { uid: string; objectType: string }) => void;
 }
 
 const headAndDataClassNames =
@@ -234,7 +225,7 @@ export const Table = ({
               key={row.id}
               className="group/row"
               tabIndex={-1}
-              onDoubleClick={() => setPanelObject({ uid, objectType })}
+              onDoubleClick={() => setPanelObject?.({ uid, objectType })}
             >
               {row.getVisibleCells().map((cell) => (
                 <TableData
