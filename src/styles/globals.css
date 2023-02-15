@@ -22,8 +22,10 @@
 }
 
 /* Overrides for GraphiQL Explorer */
-.graphiql-explorer-graphql-arguments span {
+.graphiql-explorer-graphql-arguments span,
+.graphiql-explorer-objects span {
   display: inline-flex !important;
+  align-items: center;
 }
 
 .graphiql-dialog-close > svg {
