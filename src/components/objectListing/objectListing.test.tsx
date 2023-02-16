@@ -1,36 +1,19 @@
 import { MockedProvider } from "@apollo/client/testing";
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { DocumentNode } from "graphql";
 
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
-import {
-  createGetObjectQuery,
-  createSearchObjectsQuery,
-} from "src/lib/graphql/skylark/dynamicQueries";
+import { createSearchObjectsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   GET_SKYLARK_OBJECT_TYPES,
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
-import {
-  getAllObjectsMeta,
-  getObjectOperations,
-} from "src/lib/skylark/objects";
-import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
+import { getAllObjectsMeta } from "src/lib/skylark/objects";
 import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
 import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
-import GQLSkylarkAllAvailTestMovieSearchFixture from "src/tests/fixtures/skylark/queries/search/allMediaTestMovieOnly.json";
 import GQLGameOfThronesSearchResults from "src/tests/fixtures/skylark/queries/search/got.json";
 
 import { ObjectList } from "./objectListing.component";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const useRouter = jest.spyOn(require("next/router"), "useRouter");
 
 const searchableObjectTypes =
   GQLSkylarkObjectTypesQueryFixture.data.__type.possibleTypes.map(
@@ -72,11 +55,6 @@ const defaultMocks = [
     result: GQLGameOfThronesSearchResults,
   },
 ];
-
-beforeEach(() => {
-  const router = { query: { edit: "true" } };
-  useRouter.mockReturnValue(router);
-});
 
 test("renders search bar, filters with no objects returned", () => {
   render(

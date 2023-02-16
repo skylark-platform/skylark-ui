@@ -28,9 +28,6 @@ import GQLSkylarkAllAvailTestMovieSearchFixture from "src/tests/fixtures/skylark
 
 import { ContentLibrary } from "./contentLibrary.component";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const useRouter = jest.spyOn(require("next/router"), "useRouter");
-
 const searchableObjectTypes =
   GQLSkylarkObjectTypesQueryFixture.data.__type.possibleTypes.map(
     ({ name }) => name,
@@ -57,11 +54,6 @@ const schemaMocks = [
     },
   },
 ];
-
-beforeEach(() => {
-  const router = { query: { edit: "true" } };
-  useRouter.mockReturnValue(router);
-});
 
 test("open metadata panel, check information and close", async () => {
   const objectOperations = getObjectOperations(

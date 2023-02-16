@@ -6,12 +6,13 @@ import { Tabs } from "src/components/tabs/tabs.component";
 import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
 import { useDeleteObject } from "src/hooks/useDeleteObject";
 import { useGetObject } from "src/hooks/useGetObject";
-import { useUpdateObjectContentPositioning } from "src/hooks/useUpdateSetContentPositioning";
+import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
 import {
   ParsedSkylarkObjectMetadata,
   ParsedSkylarkObjectConfig,
-  ParsedSkylarkObjectContent,
+  ParsedSkylarkObjectContentObject,
 } from "src/interfaces/skylark";
+import { parseObjectContent } from "src/lib/skylark/parsers";
 
 import {
   PanelAvailability,
@@ -45,17 +46,13 @@ const getTitle = (
 };
 
 export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
-  const {
-    query: { edit },
-  } = useRouter();
-
   const { data, loading, query, variables } = useGetObject(objectType, {
     uid: uid,
   });
 
   const [inEditMode, setEditMode] = useState(false);
-  const [updatedContentObjects, setContentObjects] = useState<
-    ParsedSkylarkObjectContent["objects"] | null
+  const [contentObjects, setContentObjects] = useState<
+    ParsedSkylarkObjectContentObject[] | null
   >(null);
 
   const tabs = useMemo(
@@ -74,13 +71,18 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   useEffect(() => {
     // Reset selected tab when object changes
     setSelectedTab(PanelTab.Metadata);
+    setContentObjects(null);
+    setEditMode(false);
   }, [uid]);
 
   const [deleteObjectMutation] = useDeleteObject(objectType);
-  const [updateContentPositioningMutation] = useUpdateObjectContentPositioning(
-    objectType,
-    updatedContentObjects || [],
-  );
+  const { updateObjectContent, loading: updatingObjectContents } =
+    useUpdateObjectContent(
+      objectType,
+      uid,
+      data?.content?.objects || [],
+      contentObjects || [],
+    );
 
   const deleteObjectWrapper = () => {
     deleteObjectMutation({ variables: { uid } });
@@ -89,13 +91,25 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   const saveActiveTabChanges = () => {
     if (
       selectedTab === PanelTab.Content &&
-      updatedContentObjects !== data?.content?.objects
+      contentObjects &&
+      contentObjects !== data?.content?.objects
     ) {
-      updateContentPositioningMutation({
-        variables: { uid: data?.metadata.uid },
+      updateObjectContent().then(({ data, errors }) => {
+        console.log("data", data);
+        if (
+          (!errors || errors.length === 0) &&
+          data?.updateObjectContent.content.objects
+        ) {
+          const parsedObjectContent = parseObjectContent(
+            data.updateObjectContent.content,
+          );
+          setContentObjects(parsedObjectContent.objects);
+          setEditMode(false);
+        }
       });
+    } else {
+      setEditMode(false);
     }
-    setEditMode(false);
   };
 
   return (
@@ -117,11 +131,12 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
             graphQLQuery={query}
             graphQLVariables={variables}
             currentTab={selectedTab}
-            tabsWithEditMode={edit ? [PanelTab.Content] : []}
+            tabsWithEditMode={[PanelTab.Content]}
             closePanel={closePanel}
             deleteObject={deleteObjectWrapper}
             inEditMode={inEditMode}
             save={saveActiveTabChanges}
+            isSaving={updatingObjectContents}
             toggleEditMode={() => {
               setEditMode(!inEditMode);
               if (inEditMode) {
@@ -146,7 +161,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
           )}
           {selectedTab === PanelTab.Content && data.content && (
             <PanelContent
-              objects={updatedContentObjects || data?.content?.objects}
+              objects={contentObjects || data?.content?.objects}
               inEditMode={inEditMode}
               onReorder={setContentObjects}
             />

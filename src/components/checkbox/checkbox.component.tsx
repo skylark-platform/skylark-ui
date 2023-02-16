@@ -40,7 +40,7 @@ export const Checkbox = ({
       </Root>
       {label && (
         <label
-          className="ml-2 flex-grow overflow-hidden font-medium group-hover:cursor-pointer peer-radix-state-checked:text-black peer-radix-state-unchecked:text-manatee-500"
+          className="flex-grow select-none overflow-hidden pl-2 font-medium group-hover:cursor-pointer peer-radix-state-checked:text-black peer-radix-state-unchecked:text-manatee-500"
           htmlFor={htmlFor}
         >
           {label}

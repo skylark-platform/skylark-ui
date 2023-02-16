@@ -97,7 +97,7 @@ const generateRelationshipsToReturn = (
   return relationshipsToReturn;
 };
 
-const generateContentsToReturn = (
+export const generateContentsToReturn = (
   object: SkylarkObjectMeta | null,
   objectsToRequest: SkylarkObjectMeta[],
 ) => {
@@ -110,6 +110,7 @@ const generateContentsToReturn = (
     content: {
       __args: {
         order: new EnumType("ASC"),
+        limit: 50,
       },
       objects: {
         object: {
@@ -244,7 +245,7 @@ export const createSearchObjectsQuery = (
         __args: {
           ...common.args,
           query: new VariableType("queryString"),
-          limit: 1000,
+          limit: 30,
         },
         __typename: true,
         objects: {

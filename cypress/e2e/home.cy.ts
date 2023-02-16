@@ -54,7 +54,7 @@ describe("Content Library", () => {
       }
     });
 
-    cy.visit("/?edit=true"); // TODO remove edit=true when all edit modes are enabled
+    cy.visit("/");
     cy.wait("@getSkylarkObjectTypesQuery");
   });
 

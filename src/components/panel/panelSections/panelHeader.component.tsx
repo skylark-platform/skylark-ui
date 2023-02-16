@@ -1,7 +1,9 @@
 import { OperationVariables } from "@apollo/client";
+import clsx from "clsx";
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useMemo, useState } from "react";
+import { CgSpinner } from "react-icons/cg";
 import { GrGraphQl } from "react-icons/gr";
 
 import { Button } from "src/components/button";
@@ -23,6 +25,7 @@ interface PanelHeaderProps {
   graphQLQuery: DocumentNode | null;
   graphQLVariables?: OperationVariables;
   inEditMode: boolean;
+  isSaving?: boolean;
   toggleEditMode: () => void;
   closePanel: () => void;
   deleteObject: () => void;
@@ -38,6 +41,7 @@ export const PanelHeader = ({
   graphQLQuery,
   graphQLVariables,
   inEditMode,
+  isSaving,
   toggleEditMode,
   closePanel,
   deleteObject,
@@ -94,10 +98,20 @@ export const PanelHeader = ({
 
           {inEditMode ? (
             <>
-              <Button variant="primary" success onClick={save}>
+              <Button
+                variant="primary"
+                success
+                onClick={save}
+                disabled={isSaving}
+              >
                 Save
               </Button>
-              <Button variant="outline" danger onClick={toggleEditMode}>
+              <Button
+                variant="outline"
+                danger
+                onClick={toggleEditMode}
+                disabled={isSaving}
+              >
                 Cancel
               </Button>
             </>
@@ -128,8 +142,19 @@ export const PanelHeader = ({
         <h1 className="flex-grow text-xl font-bold uppercase">{title}</h1>
         <div className="flex flex-row items-end justify-end gap-2">
           {inEditMode && (
-            <div className="absolute left-1/2 -bottom-16 -translate-x-1/2 rounded bg-black py-1 px-3 text-xs text-white md:px-4 md:text-sm">
-              Editing
+            <div className="absolute left-1/2 -bottom-16 -translate-x-1/2">
+              {/* TODO split into label component, isSaving -> loading */}
+              <span
+                className={clsx(
+                  "flex items-center justify-center rounded bg-black py-1 text-xs text-white md:text-sm",
+                  isSaving ? "px-2 md:px-3" : "px-3 md:px-4",
+                )}
+              >
+                {isSaving && (
+                  <CgSpinner className="mr-1 animate-spin-fast text-sm md:text-base" />
+                )}
+                {isSaving ? "Saving" : "Editing"}
+              </span>
             </div>
           )}
         </div>

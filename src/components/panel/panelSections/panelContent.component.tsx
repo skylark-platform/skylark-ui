@@ -8,8 +8,8 @@ import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
 import { ParsedSkylarkObjectContent } from "src/interfaces/skylark";
 
 interface PanelContentProps {
-  objects: ParsedSkylarkObjectContent["objects"];
-  onReorder: (objs: ParsedSkylarkObjectContent["objects"]) => void;
+  objects: ParsedSkylarkObjectContentObject;
+  onReorder: (objs: ParsedSkylarkObjectContentObject) => void;
   inEditMode?: boolean;
 }
 

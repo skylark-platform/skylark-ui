@@ -75,7 +75,7 @@ export const NavigationLinks = () => {
   const { asPath } = useRouter();
 
   return (
-    <ul className="flex h-full flex-col items-center justify-center text-base font-bold md:ml-4 md:flex-grow md:flex-row md:items-center md:justify-start md:text-sm lg:ml-6">
+    <ul className="flex h-full select-none flex-col items-center justify-center text-base font-bold md:ml-4 md:flex-grow md:flex-row md:items-center md:justify-start md:text-sm lg:ml-6">
       {navigationItems.map(({ text, href, Icon, links }) => {
         const subhrefs = links?.map((l) => l.href);
         const isActiveLink = href === asPath || subhrefs?.includes(asPath);

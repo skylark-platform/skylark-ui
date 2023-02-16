@@ -22,9 +22,6 @@ import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/int
 
 import { Panel } from "./panel.component";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const useRouter = jest.spyOn(require("next/router"), "useRouter");
-
 const movieObjectOperations = getObjectOperations(
   "Movie",
   GQLSkylarkSchemaQueryFixture.data
@@ -106,11 +103,6 @@ const mocks = [
     },
   },
 ];
-
-beforeEach(() => {
-  const router = { query: { edit: "true" } };
-  useRouter.mockReturnValue(router);
-});
 
 test("renders the panel in the default view", async () => {
   render(

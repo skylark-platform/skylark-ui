@@ -9,7 +9,7 @@ import {
 
 import {
   createDeleteObjectMutation,
-  createUpdateSetContentPositionMutation,
+  createUpdateObjectContentMutation,
 } from "./dynamicMutations";
 
 const fields: NormalizedObjectField[] = [
@@ -84,13 +84,13 @@ describe("createDeleteObjectMutation", () => {
 
 describe("createUpdateSetContentPositionMutation", () => {
   test("returns null when the object doesn't have an update operation", () => {
-    const got = createUpdateSetContentPositionMutation(null, []);
+    const got = createUpdateObjectContentMutation(null, []);
 
     expect(got).toBeNull();
   });
 
   test("returns null when no content is supplied", () => {
-    const got = createUpdateSetContentPositionMutation(object, []);
+    const got = createUpdateObjectContentMutation(object, []);
 
     expect(got).toBeNull();
   });
@@ -122,7 +122,7 @@ describe("createUpdateSetContentPositionMutation", () => {
       },
     ];
 
-    const got = createUpdateSetContentPositionMutation(object, content);
+    const got = createUpdateObjectContentMutation(object, content);
 
     expect(got).toEqual(
       gql(
