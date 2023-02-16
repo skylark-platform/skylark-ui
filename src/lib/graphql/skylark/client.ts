@@ -6,6 +6,7 @@ import {
   StoreObject,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { offsetLimitPagination } from "@apollo/client/utilities";
 
 import {
   SAAS_API_ENDPOINT,
@@ -46,6 +47,27 @@ export const createSkylarkClient = () =>
     link: authLink.concat(httpLink),
     cache: new InMemoryCache({
       dataIdFromObject: createApolloClientDataIdFromSkylarkObject,
+      typePolicies: {
+        Query: {
+          fields: {
+            search: {
+              keyArgs: ["query"],
+              merge(existing, incoming, ...others) {
+                console.log({ existing, incoming, others });
+                if (!incoming) return existing;
+                if (!existing) return incoming; // existing will be empty the first time
+
+                const { objects, ...rest } = incoming;
+
+                const result = rest;
+                result.objects = [...existing.objects, ...objects]; // Merge existing items with the items from incoming
+
+                return result;
+              },
+            },
+          },
+        },
+      },
     }),
   });
 

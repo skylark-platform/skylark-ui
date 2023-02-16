@@ -10,6 +10,7 @@ import clsx from "clsx";
 import { useMemo } from "react";
 import { VirtualItem } from "react-virtual";
 
+import { Spinner } from "src/components/icons";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SkylarkGraphQLObject } from "src/interfaces/skylark";
 
@@ -17,13 +18,12 @@ import { DisplayNameTableCell } from "./cell";
 
 export type TableColumn = string;
 
-// const alwaysRenderRows = Object.values(OBJECT_LIST_TABLE.columnIds);
-
 export interface TableProps {
   table: ReactTable<object>;
   withCheckbox?: boolean;
   virtualRows: VirtualItem[];
   totalRows: number;
+  morePaginatedDataAvailable?: boolean;
   setPanelObject?: (obj: { uid: string; objectType: string }) => void;
 }
 
@@ -187,6 +187,7 @@ export const Table = ({
   withCheckbox = false,
   virtualRows,
   totalRows,
+  morePaginatedDataAvailable,
   setPanelObject,
 }: TableProps) => {
   const tableMeta = table.options.meta;
@@ -197,20 +198,19 @@ export const Table = ({
       : 0;
 
   const { rows } = table.getRowModel();
+  const headers = table.getHeaderGroups()[0].headers;
   return (
     <table className="relative w-full bg-white">
       <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id} className="sticky top-0 z-30 bg-white">
-            {headerGroup.headers.map((header) => (
-              <TableHeader
-                key={header.id}
-                header={header}
-                withCheckbox={withCheckbox}
-              />
-            ))}
-          </tr>
-        ))}
+        <tr className="sticky top-0 z-30 bg-white">
+          {headers.map((header) => (
+            <TableHeader
+              key={header.id}
+              header={header}
+              withCheckbox={withCheckbox}
+            />
+          ))}
+        </tr>
       </thead>
 
       <tbody className="align-top">
@@ -238,31 +238,23 @@ export const Table = ({
                 />
               ))}
             </tr>
-            // <tr key={row.id}>
-            //   {row.getVisibleCells().map((cell) => {
-            //     // TODO should this be moved into TableData so it doesn't keep rerendering
-            //     if (
-            //       !cell.getValue() &&
-            //       !alwaysRenderRows.includes(cell.column.id)
-            //     ) {
-            //       return <td key={cell.id}></td>;
-            //     }
-
-            //     return (
-            //       <TableData
-            //         tableMeta={tableMeta}
-            //         key={cell.id}
-            //         cell={cell}
-            //         withCheckbox={withCheckbox}
-            //       />
-            //     );
-            //   })}
-            // </tr>
           );
         })}
+
         {paddingBottom > 0 && (
           <tr>
             <td style={{ height: `${paddingBottom}px` }} />
+          </tr>
+        )}
+        {/* TODO Hide when reached end of data */}
+        {/* Loading spinner for when there is more data available to be fetched */}
+        {morePaginatedDataAvailable && (
+          <tr>
+            <td colSpan={headers.length} className="relative h-14">
+              <div className="absolute left-[46vw]">
+                <Spinner className="-z-10 h-10 w-10 animate-spin" />
+              </div>
+            </td>
           </tr>
         )}
       </tbody>

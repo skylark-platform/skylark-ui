@@ -377,7 +377,7 @@ export const ObjectList = ({
         )}
       </div>
       <div
-        className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6 xl:h-[75vh]"
+        className="relative mb-6 flex w-full flex-auto flex-grow flex-col overflow-x-auto overscroll-none"
         ref={tableContainerRef}
         onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
       >
@@ -387,6 +387,8 @@ export const ObjectList = ({
             virtualRows={virtualRows}
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
+            // TODO detect when all data has been fetched
+            morePaginatedDataAvailable={true}
             setPanelObject={onInfoClick}
           />
         )}

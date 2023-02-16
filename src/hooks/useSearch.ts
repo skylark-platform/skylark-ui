@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import {
   SkylarkGraphQLObjectImage,
@@ -36,21 +36,25 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
   const {
     data: searchResponse,
     fetchMore,
+    refetch,
     ...rest
-  } = useQuery<GQLSkylarkSearchResponse>(query || defaultValidBlankQuery, {
-    skip: !query,
-    variables: {
-      queryString,
-      limit: 50,
+  } = useQuery<GQLSkylarkSearchResponse | undefined>(
+    query || defaultValidBlankQuery,
+    {
+      skip: !query,
+      variables: {
+        queryString,
+        limit: 30,
+      },
+      notifyOnNetworkStatusChange: true,
+      // Using "all" so we can get data even when some is invalid
+      // https://www.apollographql.com/docs/react/data/error-handling/#graphql-error-policies
+      errorPolicy: "all",
+      // Don't cache search so we always get up to date results
+      fetchPolicy: "network-only",
+      nextFetchPolicy: "network-only",
     },
-    notifyOnNetworkStatusChange: true,
-    // Using "all" so we can get data even when some is invalid
-    // https://www.apollographql.com/docs/react/data/error-handling/#graphql-error-policies
-    errorPolicy: "all",
-    // Don't cache search so we always get up to date results
-    fetchPolicy: "no-cache",
-    nextFetchPolicy: "network-only",
-  });
+  );
 
   const data = useMemo(() => {
     // Using the errorPolicy "all" means that some data could be null
@@ -82,46 +86,29 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     return parsedObjects;
   }, [searchResponse?.search.objects]);
 
-  const fetchMoreWrapper = useCallback(() => {
-    // console.log(
-    //   "**** FETCH MORE CALLED. Offset: ",
-    //   searchResponse?.search.objects.length,
-    // );
-    return fetchMore({
+  const fetchMoreWrapper = () => {
+    fetchMore({
       variables: {
-        offset: searchResponse?.search.objects.length,
-      },
-      updateQuery(previousData, options) {
-        if (Object.keys(previousData).length === 0) {
-          return options.fetchMoreResult;
-        }
-
-        console.log({ previousData, options });
-
-        const updatedData = {
-          ...previousData,
-          search: {
-            ...previousData.search,
-            objects: [
-              ...previousData.search.objects,
-              ...options.fetchMoreResult.search.objects,
-            ],
-          },
-        };
-        return updatedData;
+        offset: searchResponse?.search.objects.length || 0,
       },
     });
-  }, [searchResponse?.search.objects.length, fetchMore]);
+  };
 
-  console.log(rest.networkStatus);
+  useEffect(() => {
+    console.log("query changed");
+    refetch();
+  }, [refetch, query]);
 
   return {
     data,
     properties: allFieldNames,
     query,
     fetchMoreResults: fetchMoreWrapper,
+    refetch,
     ...rest,
-    loading: rest.networkStatus === 1,
+    // https://github.com/apollographql/apollo-client/blob/d470c964db46728d8a5dfc63990859c550fa1656/src/core/networkStatus.ts#L4
+    // Loading is either "loading" or "refetching" - we use refetching when updating the search filters
+    loading: rest.networkStatus === 1 || rest.networkStatus === 4,
     fetchingMore: rest.networkStatus === 3,
   };
 };
