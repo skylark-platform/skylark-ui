@@ -106,7 +106,7 @@ const createColumns = (
       return (
         <span
           className={clsx(
-            "font-medium uppercase lg:px-10 ",
+            "font-medium uppercase",
             status === AvailabilityStatus.Active && "text-success",
             status === AvailabilityStatus.Future && "text-warning",
             status === AvailabilityStatus.Unavailable && "text-manatee-400",
