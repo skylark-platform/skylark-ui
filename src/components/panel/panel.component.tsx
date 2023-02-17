@@ -94,7 +94,6 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
       contentObjects !== data?.content?.objects
     ) {
       updateObjectContent().then(({ data, errors }) => {
-        console.log("data", data);
         if (
           (!errors || errors.length === 0) &&
           data?.updateObjectContent.content.objects

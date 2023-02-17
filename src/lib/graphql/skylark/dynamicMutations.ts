@@ -153,7 +153,5 @@ export const createUpdateObjectContentMutation = (
 
   const graphQLQuery = jsonToGraphQLQuery(mutation);
 
-  console.log(graphQLQuery);
-
   return gql(graphQLQuery);
 };

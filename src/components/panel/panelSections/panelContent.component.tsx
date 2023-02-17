@@ -17,11 +17,13 @@ export const PanelContentItemOrderInput = ({
   hasMoved,
   position,
   disabled,
+  maxPosition,
   onBlur,
 }: {
   hasMoved: boolean;
   position: number;
   disabled: boolean;
+  maxPosition: number;
   onBlur: (n: number) => void;
 }) => {
   const [value, setValue] = useState<number | "">(position);
@@ -39,6 +41,19 @@ export const PanelContentItemOrderInput = ({
     if (!Number.isNaN(int)) setValue(int);
   };
 
+  const onBlurWrapper = () => {
+    if (value === "") {
+      onBlur(position);
+    } else if (value >= 1 && value <= maxPosition) {
+      onBlur(value);
+    } else {
+      // If the value is less than 0 or more than the maximum allowed position, normalise it
+      const minMaxedValue = value < 1 ? 1 : maxPosition;
+      onBlur(minMaxedValue);
+      setValue(minMaxedValue);
+    }
+  };
+
   return (
     <input
       type="text"
@@ -51,7 +66,7 @@ export const PanelContentItemOrderInput = ({
           : "bg-warning text-warning-content",
       )}
       onChange={(e) => onChange(e.target.value)}
-      onBlur={() => onBlur(value === "" ? position : value)}
+      onBlur={onBlurWrapper}
       value={value}
     />
   );
@@ -137,6 +152,7 @@ export const PanelContent = ({
                 onBlur={(updatedPosition: number) =>
                   handleManualOrderChange(index, updatedPosition)
                 }
+                maxPosition={objects.length}
               />
               <button
                 disabled={!inEditMode}

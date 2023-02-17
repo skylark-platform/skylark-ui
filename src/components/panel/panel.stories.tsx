@@ -118,10 +118,10 @@ Imagery.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
   await canvas.findByRole("button", { name: /Imagery/i });
-  const imageryButton = canvas.getByRole("button", { name: /Imagery/i });
+  const tabButton = canvas.getByRole("button", { name: /Imagery/i });
 
   await waitFor(async () => {
-    userEvent.click(imageryButton);
+    userEvent.click(tabButton);
   });
 };
 
@@ -135,10 +135,34 @@ Content.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
   await canvas.findByRole("button", { name: /Content/i });
-  const imageryButton = canvas.getByRole("button", { name: /Content/i });
+  const tabButton = canvas.getByRole("button", { name: /Content/i });
 
   await waitFor(async () => {
-    userEvent.click(imageryButton);
+    userEvent.click(tabButton);
+  });
+};
+
+export const ContentEditing = Template.bind({});
+ContentEditing.parameters = Default.parameters;
+ContentEditing.args = {
+  objectType: "Set",
+  uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
+};
+ContentEditing.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  await canvas.findByRole("button", { name: /Content/i });
+  const tabButton = canvas.getByRole("button", { name: /Content/i });
+
+  await waitFor(async () => {
+    userEvent.click(tabButton);
+  });
+
+  await canvas.findByRole("button", { name: /Edit metadata/i });
+  const editButton = canvas.getByRole("button", { name: /Edit metadata/i });
+
+  await waitFor(async () => {
+    userEvent.click(editButton);
   });
 };
 

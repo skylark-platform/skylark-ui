@@ -6,8 +6,6 @@ const Object = () => {
   const router = useRouter();
   const { objectType, uid } = router.query;
 
-  console.log({ objectType, uid });
-
   return (
     <div className="pt-nav flex w-full">
       {objectType && uid && (
