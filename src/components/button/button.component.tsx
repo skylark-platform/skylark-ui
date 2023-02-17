@@ -42,11 +42,13 @@ export const Button = ({
     variant === "primary" && "btn-primary shadow",
     variant === "outline" &&
       "btn-outline btn-primary disabled:border-none disabled:shadow",
-    variant === "ghost" && "btn-ghost text-back hover:bg-transparent p-0",
+    variant === "ghost" && "btn-ghost text-black hover:bg-transparent p-0",
     success && !disabled && !loading && "btn-success text-white",
     danger && "btn-error",
     !iconOnly && (disabled || loading) && "bg-disabled btn-disabled",
-    iconOnly && disabled && "btn-disabled disabled:bg-transparent",
+    iconOnly &&
+      disabled &&
+      "btn-disabled bg-transparent disabled:bg-transparent",
     block && "btn-block",
     className,
   );

@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 import { Trash } from "src/components/icons";
 import { Pill } from "src/components/pill";
 import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
-import { ParsedSkylarkObjectContent } from "src/interfaces/skylark";
+import { ParsedSkylarkObjectContentObject } from "src/interfaces/skylark";
 
 interface PanelContentProps {
-  objects: ParsedSkylarkObjectContentObject;
-  onReorder: (objs: ParsedSkylarkObjectContentObject) => void;
+  objects: ParsedSkylarkObjectContentObject[];
+  onReorder: (objs: ParsedSkylarkObjectContentObject[]) => void;
   inEditMode?: boolean;
 }
 
@@ -46,7 +46,7 @@ export const PanelContentItemOrderInput = ({
       size={value.toString().length || 1}
       className={clsx(
         "flex h-6 min-w-6 items-center justify-center rounded-full px-1 pb-0.5 text-center transition-colors",
-        !hasMoved
+        !hasMoved || disabled
           ? "bg-brand-primary text-white"
           : "bg-warning text-warning-content",
       )}
@@ -69,8 +69,9 @@ export const PanelContent = ({
 
   const handleManualOrderChange = (
     currentIndex: number,
-    updatedIndex: number,
+    updatedPosition: number,
   ) => {
+    const updatedIndex = updatedPosition - 1;
     const realUpdatedIndex =
       updatedIndex <= 0
         ? 0
@@ -122,7 +123,9 @@ export const PanelContent = ({
               <span
                 className={clsx(
                   "flex h-6 min-w-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
-                  position === index + 1 ? "opacity-0" : "opacity-100",
+                  !inEditMode || position === index + 1
+                    ? "opacity-0"
+                    : "opacity-100",
                 )}
               >
                 {position}
@@ -132,7 +135,7 @@ export const PanelContent = ({
                 position={index + 1}
                 hasMoved={position !== index + 1}
                 onBlur={(updatedPosition: number) =>
-                  handleManualOrderChange(index, updatedPosition - 1)
+                  handleManualOrderChange(index, updatedPosition)
                 }
               />
               <button

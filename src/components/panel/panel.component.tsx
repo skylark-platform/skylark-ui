@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 
 import { Spinner } from "src/components/icons";
@@ -46,7 +45,7 @@ const getTitle = (
 };
 
 export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
-  const { data, loading, query, variables } = useGetObject(objectType, {
+  const { data, loading, query, variables, error } = useGetObject(objectType, {
     uid: uid,
   });
 
@@ -113,13 +112,18 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
   };
 
   return (
-    <section className="flex w-full flex-col">
+    <section className="mx-auto flex h-full w-full flex-col">
       {loading && (
         <div
           data-testid="loading"
-          className="flex h-full w-full items-center justify-center"
+          className="flex h-full w-full items-center justify-center pt-10"
         >
           <Spinner className="h-16 w-16 animate-spin" />
+        </div>
+      )}
+      {!loading && error && (
+        <div className="flex h-full w-full items-center justify-center pt-10">
+          <p>{error.message}</p>
         </div>
       )}
       {!loading && data && (
@@ -127,6 +131,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
           <PanelHeader
             title={getTitle(data.metadata, data.config)}
             objectType={objectType}
+            objectUid={uid}
             pillColor={data.config.colour}
             graphQLQuery={query}
             graphQLVariables={variables}

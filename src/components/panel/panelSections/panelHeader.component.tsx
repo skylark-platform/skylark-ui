@@ -21,6 +21,7 @@ interface PanelHeaderProps {
   currentTab: string;
   tabsWithEditMode: string[];
   objectType: SkylarkObjectType;
+  objectUid: string;
   pillColor?: string;
   graphQLQuery: DocumentNode | null;
   graphQLVariables?: OperationVariables;
@@ -35,6 +36,7 @@ interface PanelHeaderProps {
 export const PanelHeader = ({
   title,
   objectType,
+  objectUid,
   currentTab,
   tabsWithEditMode,
   pillColor,
@@ -86,6 +88,7 @@ export const PanelHeader = ({
             Icon={<Expand className="stroke-gray-300" />}
             disabled
             variant="ghost"
+            href={`/object/${objectType}/${objectUid}`}
           />
           <DropdownMenu options={objectMenuOptions} align="left">
             <DropdownMenuButton
