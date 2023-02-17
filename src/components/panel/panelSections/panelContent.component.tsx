@@ -120,6 +120,7 @@ export const PanelContent = ({
           <Reorder.Item
             key={`panel-content-item-${object.uid}`}
             value={item}
+            data-testid={`panel-object-content-item-${index + 1}`}
             className={clsx(
               "my-0 flex items-center justify-center gap-2 border-b px-2 py-3 text-sm last:border-b-0 md:gap-4 md:px-4",
               inEditMode && "cursor-pointer",
@@ -156,6 +157,7 @@ export const PanelContent = ({
               />
               <button
                 disabled={!inEditMode}
+                data-testid={`panel-object-content-item-${index + 1}-remove`}
                 onClick={() => removeItem(object.uid)}
               >
                 <Trash
