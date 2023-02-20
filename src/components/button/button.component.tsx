@@ -58,7 +58,7 @@ export const Button = ({
       <Link legacyBehavior href={href}>
         <a className={combinedClassName}>
           {Icon}
-          {children}
+          {Icon && children ? <span>{children}</span> : children}
         </a>
       </Link>
     );
@@ -74,7 +74,7 @@ export const Button = ({
         <CgSpinner className="mr-1 animate-spin-fast text-base md:text-lg" />
       )}
       {!loading && Icon}
-      <span>{children}</span>
+      {Icon && children ? <span>{children}</span> : children}
     </button>
   );
 };

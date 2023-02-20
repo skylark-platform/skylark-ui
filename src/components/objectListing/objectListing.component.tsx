@@ -304,8 +304,8 @@ export const ObjectList = ({
   return (
     <div
       className={clsx(
-        "flex h-full flex-col space-y-2",
-        isPanelOpen ? "lg:space-y-4" : "md:space-y-4",
+        "flex h-full flex-col space-y-4",
+        isPanelOpen ? "lg:space-y-8" : "md:space-y-8",
       )}
     >
       <div
