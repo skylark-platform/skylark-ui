@@ -61,7 +61,7 @@ export const PanelContentItemOrderInput = ({
       size={value.toString().length || 1}
       style={{
         // Safari darkens the text on a disabled input
-        WebkitTextFillColor: "inherit",
+        WebkitTextFillColor: "#fff",
       }}
       className={clsx(
         "flex h-6 min-w-6 items-center justify-center rounded-full px-1 pb-0.5 text-center transition-colors",
