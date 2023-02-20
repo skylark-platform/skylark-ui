@@ -146,7 +146,7 @@ export const PanelHeader = ({
         <h1 className="flex-grow text-xl font-bold uppercase">{title}</h1>
         <div className="flex flex-row items-end justify-end gap-2">
           {inEditMode && (
-            <div className="absolute left-1/2 -bottom-16 -translate-x-1/2">
+            <div className="absolute left-1/2 -bottom-16 -translate-x-1/2 md:-bottom-18">
               <PanelLabel
                 text={isSaving ? "Saving" : "Editing"}
                 loading={isSaving}

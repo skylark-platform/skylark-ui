@@ -106,7 +106,7 @@ export const PanelContent = ({
       axis="y"
       values={objects}
       onReorder={onReorder}
-      className="h-full overflow-y-auto p-4 text-sm md:p-8"
+      className="h-full overflow-y-auto p-4 pt-6 text-sm md:p-8"
       data-testid="panel-content-items"
     >
       {objects.map((item, index) => {
