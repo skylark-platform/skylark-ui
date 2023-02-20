@@ -50,7 +50,7 @@ test("renders as open", () => {
   expect(screen.getByText("Connect to Skylark")).toBeInTheDocument();
   expect(screen.getByLabelText("GraphQL URL")).toBeInTheDocument();
   expect(screen.getByLabelText("API Key")).toBeInTheDocument();
-  expect(screen.getByText("Validating")).toBeDisabled();
+  expect(screen.getByText("Validating").closest("button")).toBeDisabled();
 });
 
 test("renders as open and closes on the esc key", () => {
@@ -157,7 +157,7 @@ test("changes input to red when they are invalid", async () => {
 
   await waitFor(() => expect(uriInput).toHaveClass("border-error"));
   await waitFor(() => expect(tokenInput).toHaveClass("border-error"));
-  expect(screen.getByText("Connect")).toBeDisabled();
+  expect(screen.getByText("Connect").closest("button")).toBeDisabled();
 });
 
 test("changes input to green when they are valid", async () => {
@@ -182,7 +182,9 @@ test("changes input to green when they are valid", async () => {
 
   await waitFor(() => expect(uriInput).toHaveClass("border-success"));
   await waitFor(() => expect(tokenInput).toHaveClass("border-success"));
-  await waitFor(() => expect(screen.getByText("Connect")).not.toBeDisabled());
+  await waitFor(() =>
+    expect(screen.getByText("Connect").closest("button")).not.toBeDisabled(),
+  );
 });
 
 test("when GraphQL is valid, updates local storage", async () => {
