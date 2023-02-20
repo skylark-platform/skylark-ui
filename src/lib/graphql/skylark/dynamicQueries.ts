@@ -6,6 +6,7 @@ import {
 } from "json-to-graphql-query";
 
 import {
+  BuiltInSkylarkObjectType,
   SkylarkGraphQLObject,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
@@ -102,7 +103,11 @@ export const generateContentsToReturn = (
   objectsToRequest: SkylarkObjectMeta[],
 ) => {
   // Only Set has contents
-  if (!object || object.name !== "Set" || objectsToRequest.length === 0) {
+  if (
+    !object ||
+    object.name !== BuiltInSkylarkObjectType.Set ||
+    objectsToRequest.length === 0
+  ) {
     return {};
   }
 
@@ -245,7 +250,7 @@ export const createSearchObjectsQuery = (
         __args: {
           ...common.args,
           query: new VariableType("queryString"),
-          limit: 30,
+          limit: 1000,
         },
         __typename: true,
         objects: {

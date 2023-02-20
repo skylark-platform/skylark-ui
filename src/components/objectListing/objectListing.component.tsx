@@ -5,14 +5,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import {
-  useEffect,
-  useState,
-  useMemo,
-  Dispatch,
-  SetStateAction,
-  useRef,
-} from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useVirtual } from "react-virtual";
 
 import { Checkbox } from "src/components/checkbox";

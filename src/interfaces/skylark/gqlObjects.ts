@@ -49,7 +49,6 @@ export interface SkylarkGraphQLObjectContent {
 export type SkylarkGraphQLObject = {
   __typename: string;
   uid: string;
-  // objectType: string; // TODO this shouldn't be here because its from GraphQL directly
   external_id: string;
   availability?: SkylarkGraphQLObjectRelationship;
   images?: SkylarkGraphQLObjectRelationship;

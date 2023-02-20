@@ -1,9 +1,7 @@
 import { OperationVariables } from "@apollo/client";
-import clsx from "clsx";
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useMemo, useState } from "react";
-import { CgSpinner } from "react-icons/cg";
 import { GrGraphQl } from "react-icons/gr";
 
 import { Button } from "src/components/button";
@@ -13,6 +11,7 @@ import {
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
 import { Edit, Expand, Trash, MoreVertical } from "src/components/icons";
+import { PanelLabel } from "src/components/panel/panelLabel";
 import { Pill } from "src/components/pill";
 import { SkylarkObjectType } from "src/interfaces/skylark";
 
@@ -28,7 +27,7 @@ interface PanelHeaderProps {
   inEditMode: boolean;
   isSaving?: boolean;
   toggleEditMode: () => void;
-  closePanel: () => void;
+  closePanel?: () => void;
   deleteObject: () => void;
   save: () => void;
 }
@@ -132,9 +131,11 @@ export const PanelHeader = ({
           )}
         </div>
 
-        <Button variant="ghost" onClick={closePanel}>
-          Close
-        </Button>
+        {closePanel && (
+          <Button variant="ghost" onClick={closePanel}>
+            Close
+          </Button>
+        )}
       </div>
       <div className="flex flex-row items-center gap-2 pb-2">
         <Pill
@@ -146,18 +147,10 @@ export const PanelHeader = ({
         <div className="flex flex-row items-end justify-end gap-2">
           {inEditMode && (
             <div className="absolute left-1/2 -bottom-16 -translate-x-1/2">
-              {/* TODO split into label component, isSaving -> loading */}
-              <span
-                className={clsx(
-                  "flex items-center justify-center rounded bg-black py-1 text-xs text-white md:text-sm",
-                  isSaving ? "px-2 md:px-3" : "px-3 md:px-4",
-                )}
-              >
-                {isSaving && (
-                  <CgSpinner className="mr-1 animate-spin-fast text-sm md:text-base" />
-                )}
-                {isSaving ? "Saving" : "Editing"}
-              </span>
+              <PanelLabel
+                text={isSaving ? "Saving" : "Editing"}
+                loading={isSaving}
+              />
             </div>
           )}
         </div>

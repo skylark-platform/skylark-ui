@@ -2,7 +2,6 @@ import { gql } from "@apollo/client";
 import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 
 import {
-  ParsedSkylarkObjectContent,
   ParsedSkylarkObjectContentObject,
   SkylarkObjectMeta,
   SkylarkObjectType,

@@ -3,17 +3,20 @@ import { userEvent, waitFor, within } from "@storybook/testing-library";
 import { DocumentNode } from "graphql";
 import React from "react";
 
-import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import { SkylarkObjectMeta } from "src/interfaces/skylark";
 import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   GET_SKYLARK_OBJECT_TYPES,
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
-import { getObjectOperations } from "src/lib/skylark/objects";
 import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
 import GQLSkylarkGetSetWithContentQueryFixture from "src/tests/fixtures/skylark/queries/getObject/setWithContent.json";
 import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
+import {
+  episodeObjectOperations,
+  seasonObjectOperations,
+  setObjectOperations,
+} from "src/tests/utils/objectOperations";
 
 import { Panel } from "./panel.component";
 
@@ -22,24 +25,6 @@ export default {
   component: Panel,
   argTypes: {},
 };
-
-const episodeObjectOperations = getObjectOperations(
-  "Episode",
-  GQLSkylarkSchemaQueryFixture.data
-    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-);
-
-const seasonObjectOperations = getObjectOperations(
-  "Season",
-  GQLSkylarkSchemaQueryFixture.data
-    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-);
-
-const setObjectOperations = getObjectOperations(
-  "Set",
-  GQLSkylarkSchemaQueryFixture.data
-    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-);
 
 const Template: ComponentStory<typeof Panel> = (args) => {
   return (
@@ -158,8 +143,8 @@ ContentEditing.play = async ({ canvasElement }) => {
     userEvent.click(tabButton);
   });
 
-  await canvas.findByRole("button", { name: /Edit metadata/i });
-  const editButton = canvas.getByRole("button", { name: /Edit metadata/i });
+  await canvas.findByRole("button", { name: /Edit Content/i });
+  const editButton = canvas.getByRole("button", { name: /Edit Content/i });
 
   await waitFor(async () => {
     userEvent.click(editButton);

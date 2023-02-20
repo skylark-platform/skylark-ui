@@ -10,6 +10,7 @@ import {
   ParsedSkylarkObjectMetadata,
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectContentObject,
+  BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import { parseObjectContent } from "src/lib/skylark/parsers";
 
@@ -23,7 +24,7 @@ import { PanelContent } from "./panelSections/panelContent.component";
 
 interface PanelProps {
   objectType: string;
-  closePanel: () => void;
+  closePanel?: () => void;
   uid: string;
 }
 
@@ -59,10 +60,10 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
       [
         PanelTab.Metadata,
         data?.images && PanelTab.Imagery,
-        data?.content && PanelTab.Content,
+        objectType === BuiltInSkylarkObjectType.Set && PanelTab.Content,
         // PanelTab.Availability,
       ].filter((tab) => !!tab) as string[],
-    [data],
+    [data?.images, objectType],
   );
 
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);

@@ -17,14 +17,12 @@ import {
   GET_SKYLARK_OBJECT_TYPES,
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
-import {
-  getAllObjectsMeta,
-  getObjectOperations,
-} from "src/lib/skylark/objects";
+import { getAllObjectsMeta } from "src/lib/skylark/objects";
 import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
 import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
 import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 import GQLSkylarkAllAvailTestMovieSearchFixture from "src/tests/fixtures/skylark/queries/search/allMediaTestMovieOnly.json";
+import { movieObjectOperations } from "src/tests/utils/objectOperations";
 
 import { ContentLibrary } from "./contentLibrary.component";
 
@@ -56,12 +54,6 @@ const schemaMocks = [
 ];
 
 test("open metadata panel, check information and close", async () => {
-  const objectOperations = getObjectOperations(
-    "Movie",
-    GQLSkylarkSchemaQueryFixture.data
-      .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-  );
-
   const mocks = [
     ...schemaMocks,
     {
@@ -76,7 +68,7 @@ test("open metadata panel, check information and close", async () => {
     },
     {
       request: {
-        query: createGetObjectQuery(objectOperations, []) as DocumentNode,
+        query: createGetObjectQuery(movieObjectOperations, []) as DocumentNode,
         variables: {
           ignoreAvailability: true,
           uid: GQLSkylarkAllAvailTestMovieSearchFixture.data.search.objects[0]

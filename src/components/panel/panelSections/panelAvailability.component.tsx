@@ -38,17 +38,19 @@ export const PanelAvailability = ({ availability }: PanelAvailabilityProps) => {
           <div
             key={obj.uid}
             className={clsx(
-              "rounded-lg border-2 p-4 shadow",
-              status === AvailabilityStatus.Active && "border-success",
-              status === AvailabilityStatus.Expired && "border-error",
-              status === AvailabilityStatus.Future && "border-warning",
+              // TODO styling
+              // "rounded-lg border-2 p-4 shadow",
+              "border border-l-4 py-4 pl-4",
+              status === AvailabilityStatus.Active && "border-l-success",
+              status === AvailabilityStatus.Expired && "border-l-error",
+              status === AvailabilityStatus.Future && "border-l-warning",
             )}
           >
             <h3 className="font-bold">
               {obj.title || obj.slug || obj.external_id || obj.uid}
-              <span className="ml-1 font-normal">{`(${status})`}</span>
+              <span className="ml-1 font-normal uppercase">{`(${status})`}</span>
             </h3>
-            <p className="text-manatee-300">{`UID: ${obj.uid}`}</p>
+            <p className="text-manatee-300">{`${obj.uid}`}</p>
             <div className="grid grid-cols-[auto_1fr] gap-y-1 gap-x-4 break-words pt-4 text-base-content">
               {info.map(({ label, key }) => (
                 <Fragment key={`${obj.uid}-${key}`}>

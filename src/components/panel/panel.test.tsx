@@ -8,46 +8,25 @@ import {
 } from "@testing-library/react";
 import { DocumentNode } from "graphql";
 
-import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
-import { SkylarkGraphQLObjectContent } from "src/interfaces/skylark";
 import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynamicMutations";
 import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   GET_SKYLARK_OBJECT_TYPES,
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
-import { getObjectOperations } from "src/lib/skylark/objects";
 import { parseObjectContent } from "src/lib/skylark/parsers";
 import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
 import GQLSkylarkGetObjectImageQueryFixture from "src/tests/fixtures/skylark/queries/getObject/gotImage.json";
 import GQLSkylarkGetSetWithContentQueryFixture from "src/tests/fixtures/skylark/queries/getObject/setWithContent.json";
 import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
+import {
+  movieObjectOperations,
+  imageObjectOperations,
+  setObjectOperations,
+  seasonObjectOperations,
+} from "src/tests/utils/objectOperations";
 
 import { Panel } from "./panel.component";
-
-const movieObjectOperations = getObjectOperations(
-  "Movie",
-  GQLSkylarkSchemaQueryFixture.data
-    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-);
-
-const imageObjectOperations = getObjectOperations(
-  "Image",
-  GQLSkylarkSchemaQueryFixture.data
-    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-);
-
-const seasonObjectOperations = getObjectOperations(
-  "Season",
-  GQLSkylarkSchemaQueryFixture.data
-    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-);
-
-const setObjectOperations = getObjectOperations(
-  "Set",
-  GQLSkylarkSchemaQueryFixture.data
-    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-);
 
 const mocks = [
   {
@@ -118,6 +97,9 @@ test("renders the panel in the default view", async () => {
     </MockedProvider>,
   );
 
+  await waitFor(() =>
+    expect(screen.getByTestId("loading")).toBeInTheDocument(),
+  );
   await waitFor(() =>
     expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
   );

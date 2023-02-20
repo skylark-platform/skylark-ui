@@ -11,7 +11,7 @@ import { useMemo } from "react";
 import { VirtualItem } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { SkylarkGraphQLObject } from "src/interfaces/skylark";
+import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 import { DisplayNameTableCell } from "./cell";
 
@@ -134,7 +134,7 @@ const TableData = ({
   withCheckbox,
   tableMeta,
 }: {
-  cell: Cell<SkylarkGraphQLObject, unknown>;
+  cell: Cell<ParsedSkylarkObject, unknown>;
   withCheckbox: boolean;
   tableMeta: TableMeta<object> | undefined;
 }) => {
@@ -166,7 +166,7 @@ const TableData = ({
         id={cell.id}
         className={className}
         rowGroupClassName={rowGroupClassName}
-        colour={cell.row.original._config?.colour}
+        colour={cell.row.original.config?.colour}
       >
         {children}
       </DisplayNameTableCell>
@@ -218,7 +218,7 @@ export const Table = ({
           </tr>
         )}
         {virtualRows.map((virtualRow) => {
-          const row = rows[virtualRow.index] as Row<SkylarkGraphQLObject>;
+          const row = rows[virtualRow.index] as Row<ParsedSkylarkObject>;
           const { uid, objectType } = row.original;
           return (
             <tr
