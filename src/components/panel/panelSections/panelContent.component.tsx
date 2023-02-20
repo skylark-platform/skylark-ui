@@ -59,6 +59,10 @@ export const PanelContentItemOrderInput = ({
       type="text"
       disabled={disabled}
       size={value.toString().length || 1}
+      style={{
+        // Safari darkens the text on a disabled input
+        WebkitTextFillColor: "inherit",
+      }}
       className={clsx(
         "flex h-6 min-w-6 items-center justify-center rounded-full px-1 pb-0.5 text-center transition-colors",
         !hasMoved || disabled
@@ -122,7 +126,7 @@ export const PanelContent = ({
             value={item}
             data-testid={`panel-object-content-item-${index + 1}`}
             className={clsx(
-              "my-0 flex items-center justify-center gap-2 border-b px-2 py-3 text-sm last:border-b-0 md:gap-4 md:px-4",
+              "my-0 flex items-center justify-center space-x-1 border-b px-2 py-3 text-sm last:border-b-0 md:space-x-2 md:px-4",
               inEditMode && "cursor-pointer",
             )}
             dragListener={inEditMode}

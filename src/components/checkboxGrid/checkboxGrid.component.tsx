@@ -67,7 +67,7 @@ export const CheckboxGrid = ({
 
   return (
     <section
-      className={clsx("flex flex-col gap-2 text-xs", className)}
+      className={clsx("flex flex-col space-y-1 text-xs", className)}
       data-testid={`checkbox-grid-${label}`}
     >
       <h4 className="mb-0.5 select-none font-semibold text-manatee-600">
@@ -81,7 +81,7 @@ export const CheckboxGrid = ({
           checked={allOptionsChecked}
         />
       )}
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
+      <div className="grid grid-cols-2 space-y-1 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
         {Object.keys(checkboxOptions).map((option) => (
           <Checkbox
             label={option}

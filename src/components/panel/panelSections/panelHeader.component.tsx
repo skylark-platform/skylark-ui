@@ -82,7 +82,7 @@ export const PanelHeader = ({
       className="relative p-4 pb-2 md:p-8 md:py-4"
     >
       <div className="flex flex-row pb-2">
-        <div className="flex flex-grow items-center gap-4">
+        <div className="flex flex-grow items-center space-x-2">
           <Button
             Icon={<Expand className="stroke-gray-300" />}
             disabled
@@ -137,14 +137,14 @@ export const PanelHeader = ({
           </Button>
         )}
       </div>
-      <div className="flex flex-row items-center gap-2 pb-2">
+      <div className="flex flex-row items-center space-x-2 pb-2">
         <Pill
           bgColor={pillColor}
           className="bg-brand-primary"
           label={objectType}
         />
         <h1 className="flex-grow text-xl font-bold uppercase">{title}</h1>
-        <div className="flex flex-row items-end justify-end gap-2">
+        <div className="flex flex-row items-end justify-end space-x-2">
           {inEditMode && (
             <div className="absolute left-1/2 -bottom-16 -translate-x-1/2 md:-bottom-18">
               <PanelLabel

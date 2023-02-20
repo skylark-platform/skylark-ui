@@ -31,7 +31,7 @@ export const PanelAvailability = ({ availability }: PanelAvailabilityProps) => {
   const now = dayjs();
 
   return (
-    <div className="flex h-full flex-col gap-4 overflow-y-auto p-4 pb-12 text-sm md:p-8">
+    <div className="flex h-full flex-col space-x-2 overflow-y-auto p-4 pb-12 text-sm md:p-8">
       {availability.objects.map((obj) => {
         const status = getSingleAvailabilityStatus(now, obj.start, obj.end);
         return (
@@ -51,7 +51,7 @@ export const PanelAvailability = ({ availability }: PanelAvailabilityProps) => {
               <span className="ml-1 font-normal uppercase">{`(${status})`}</span>
             </h3>
             <p className="text-manatee-300">{`${obj.uid}`}</p>
-            <div className="grid grid-cols-[auto_1fr] gap-y-1 gap-x-4 break-words pt-4 text-base-content">
+            <div className="grid grid-cols-[auto_1fr] space-y-0.5 space-x-2 break-words pt-4 text-base-content">
               {info.map(({ label, key }) => (
                 <Fragment key={`${obj.uid}-${key}`}>
                   <span>{`${label}:`}</span>

@@ -57,7 +57,7 @@ export const DropdownMenu = ({
             <Menu.Item key={option.id} as="div">
               {({ close }) => {
                 const className = clsx(
-                  "flex w-full items-center gap-1 rounded-sm px-4 py-2 md:py-3",
+                  "flex w-full items-center space-x-1 rounded-sm px-4 py-2 md:py-3",
                   !option.disabled &&
                     "ui-active:bg-manatee-200 ui-active:text-gray-900",
                   option.disabled && "bg-manatee-100 text-manatee-500",
@@ -80,7 +80,7 @@ export const DropdownMenu = ({
                     disabled={option.disabled}
                   >
                     {option.Icon}
-                    {option.text}
+                    <span>{option.text}</span>
                   </button>
                 );
               }}
