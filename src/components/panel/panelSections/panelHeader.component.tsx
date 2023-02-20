@@ -79,10 +79,10 @@ export const PanelHeader = ({
   return (
     <div
       data-testid="panel-header"
-      className="relative p-4 pb-2 md:p-8 md:py-4"
+      className="relative p-4 pb-2 md:p-8 md:py-6"
     >
       <div className="flex flex-row pb-2">
-        <div className="flex flex-grow items-center space-x-2">
+        <div className="flex flex-grow items-center space-x-3">
           <Button
             Icon={<Expand className="stroke-gray-300" />}
             disabled
