@@ -70,7 +70,9 @@ export const CheckboxGrid = ({
       className={clsx("flex flex-col gap-2 text-xs", className)}
       data-testid={`checkbox-grid-${label}`}
     >
-      <h4 className="mb-0.5 font-semibold text-manatee-600">{label}</h4>
+      <h4 className="mb-0.5 select-none font-semibold text-manatee-600">
+        {label}
+      </h4>
       {withToggleAll && (
         <Checkbox
           label="Toggle all"
