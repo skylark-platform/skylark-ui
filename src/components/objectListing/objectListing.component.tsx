@@ -111,24 +111,24 @@ const createColumns = (
   });
 
   // TODO only add/create this column if the schema has images. Or always created it but hide it when it doesn't have images
-  const imagesColumn = columnHelper.accessor("images", {
-    header: formatObjectField("Images"),
-    cell: (props) => {
-      const images = props.getValue<SkylarkGraphQLObjectImage[]>();
-      if (!images || images.length === 0) {
-        return "";
-      }
+  // const imagesColumn = columnHelper.accessor("images", {
+  //   header: formatObjectField("Images"),
+  //   cell: (props) => {
+  //     const images = props.getValue<SkylarkGraphQLObjectImage[]>();
+  //     if (!images || images.length === 0) {
+  //       return "";
+  //     }
 
-      return (
-        <div>
-          {images.map(({ uid, url, title }) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
-          ))}
-        </div>
-      );
-    },
-  });
+  //     return (
+  //       <div>
+  //         {images.map(({ uid, url, title }) => (
+  //           // eslint-disable-next-line @next/next/no-img-element
+  //           <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
+  //         ))}
+  //       </div>
+  //     );
+  //   },
+  // });
 
   const selectColumn = columnHelper.display({
     id: OBJECT_LIST_TABLE.columnIds.checkbox,
@@ -159,7 +159,7 @@ const createColumns = (
   const orderedColumnArray = [
     objectTypeColumn,
     displayNameColumn,
-    imagesColumn,
+    // imagesColumn,
     availabilityColumn,
     ...createdColumns,
   ];
@@ -398,10 +398,8 @@ export const ObjectList = ({
           />
         )}
         {!searchLoading && searchData && fetchingMore && (
-          <div className="sticky left-0 right-0 bottom-4 flex items-center justify-center">
-            <div className="rounded bg-manatee-50 p-2 px-14 md:p-4 md:px-40">
-              <Spinner className="-z-10 h-8 w-8 animate-spin md:h-10 md:w-10" />
-            </div>
+          <div className="sticky left-0 right-0 bottom-2 flex items-center justify-center">
+            <Spinner className="-z-10 h-8 w-8 animate-spin md:h-10 md:w-10" />
           </div>
         )}
         {(searchLoading || searchData) && (

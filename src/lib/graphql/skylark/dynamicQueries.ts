@@ -84,7 +84,7 @@ const generateRelationshipsToReturn = (
     };
   }
 
-  if (object.images) {
+  if (!isSearch && object.images) {
     relationshipsToReturn.images = {
       __args: {
         limit: isSearch ? 5 : 50, // max
