@@ -10,20 +10,16 @@ import clsx from "clsx";
 import { useMemo } from "react";
 import { VirtualItem } from "react-virtual";
 
-import { Spinner } from "src/components/icons";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 import { DisplayNameTableCell } from "./cell";
-
-export type TableColumn = string;
 
 export interface TableProps {
   table: ReactTable<object>;
   withCheckbox?: boolean;
   virtualRows: VirtualItem[];
   totalRows: number;
-  morePaginatedDataAvailable?: boolean;
   setPanelObject?: (obj: { uid: string; objectType: string }) => void;
 }
 
@@ -187,7 +183,6 @@ export const Table = ({
   withCheckbox = false,
   virtualRows,
   totalRows,
-  morePaginatedDataAvailable,
   setPanelObject,
 }: TableProps) => {
   const tableMeta = table.options.meta;
@@ -244,17 +239,6 @@ export const Table = ({
         {paddingBottom > 0 && (
           <tr>
             <td style={{ height: `${paddingBottom}px` }} />
-          </tr>
-        )}
-        {/* TODO Hide when reached end of data */}
-        {/* Loading spinner for when there is more data available to be fetched */}
-        {morePaginatedDataAvailable && (
-          <tr>
-            <td colSpan={headers.length} className="relative h-14">
-              <div className="absolute left-[46vw]">
-                <Spinner className="-z-10 h-10 w-10 animate-spin" />
-              </div>
-            </td>
           </tr>
         )}
       </tbody>

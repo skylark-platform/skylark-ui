@@ -36,8 +36,6 @@ const orderedKeys = ["uid", "external_id", "data_source_id"];
 
 const columnHelper = createColumnHelper<object>();
 
-export type TableColumn = string;
-
 export interface ObjectListProps {
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
@@ -47,7 +45,7 @@ export interface ObjectListProps {
 }
 
 const createColumns = (
-  columns: TableColumn[],
+  columns: string[],
   opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
   setPanelObject?: ({
     objectType,
@@ -197,6 +195,7 @@ export const ObjectList = ({
     properties,
     query: graphqlSearchQuery,
     variables: graphqlSearchQueryVariables,
+    moreResultsAvailable,
     fetchingMore,
     fetchMoreResults,
   } = useSearch(searchQuery, searchFilters);
@@ -263,6 +262,7 @@ export const ObjectList = ({
         if (
           searchData.length > 0 &&
           scrollHeight - scrollTop - clientHeight < 500 &&
+          moreResultsAvailable &&
           !searchLoading &&
           !fetchingMore
         ) {
@@ -270,7 +270,13 @@ export const ObjectList = ({
         }
       }
     },
-    [fetchMoreResults, searchLoading, fetchingMore, searchData],
+    [
+      searchData.length,
+      moreResultsAvailable,
+      searchLoading,
+      fetchingMore,
+      fetchMoreResults,
+    ],
   );
 
   // a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
@@ -321,7 +327,7 @@ export const ObjectList = ({
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
     size: rows.length,
-    overscan: 50,
+    overscan: 40,
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
 
@@ -387,10 +393,15 @@ export const ObjectList = ({
             virtualRows={virtualRows}
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
-            // TODO detect when all data has been fetched
-            morePaginatedDataAvailable={true}
             setPanelObject={onInfoClick}
           />
+        )}
+        {!searchLoading && searchData && fetchingMore && (
+          <div className="sticky left-0 right-0 bottom-4 flex items-center justify-center">
+            <div className="rounded bg-manatee-50 p-2 px-14 md:p-4 md:px-40">
+              <Spinner className="-z-10 h-8 w-8 animate-spin md:h-10 md:w-10" />
+            </div>
+          </div>
         )}
         {(searchLoading || searchData) && (
           <div className="items-top justify-left flex h-96 w-full flex-col space-y-2 text-sm text-manatee-600 md:text-base">

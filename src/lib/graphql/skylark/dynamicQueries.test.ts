@@ -111,7 +111,7 @@ describe("createSearchObjectsQuery", () => {
     );
 
     expect(got?.loc?.source.body).toEqual(
-      `query SEARCH ($ignoreAvailability: Boolean = true, $queryString: String!) { search (ignore_availability: $ignoreAvailability, query: $queryString, limit: 1000) { __typename objects { ... on Episode { __typename _config { primary_field colour } __Episode__title: title __Episode__episode_number: episode_number } ... on Brand { __typename _config { primary_field colour } __Brand__title: title __Brand__synopsis: synopsis } } } }`,
+      `query SEARCH ($ignoreAvailability: Boolean = true, $queryString: String!, $offset: Int, $limit: Int) { search (ignore_availability: $ignoreAvailability, query: $queryString, offset: $offset, limit: $limit) { __typename objects { ... on Episode { __typename _config { primary_field colour } __Episode__title: title __Episode__episode_number: episode_number } ... on Brand { __typename _config { primary_field colour } __Brand__title: title __Brand__synopsis: synopsis } } } }`,
     );
   });
 });

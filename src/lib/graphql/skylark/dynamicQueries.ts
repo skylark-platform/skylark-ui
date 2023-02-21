@@ -62,6 +62,7 @@ const generateFieldsToReturn = (
 
 const generateRelationshipsToReturn = (
   object: SkylarkObjectMeta | null,
+  isSearch?: boolean,
 ): object => {
   if (!object) {
     return {};
@@ -86,7 +87,7 @@ const generateRelationshipsToReturn = (
   if (object.images) {
     relationshipsToReturn.images = {
       __args: {
-        limit: 50, // max
+        limit: isSearch ? 5 : 50, // max
       },
       next_token: true,
       objects: {
@@ -262,7 +263,7 @@ export const createSearchObjectsQuery = (
             __typename: true, // To remove the alias later
             ...common.objectConfig,
             ...generateFieldsToReturn(object.fields, `__${object.name}__`),
-            ...generateRelationshipsToReturn(object),
+            ...generateRelationshipsToReturn(object, true),
           })),
         },
       },

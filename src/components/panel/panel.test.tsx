@@ -98,7 +98,11 @@ test("renders the panel in the default view", async () => {
   );
 
   await waitFor(() =>
-    expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    expect(screen.queryByTestId("loading")).toBeInTheDocument(),
+  );
+  await waitFor(
+    () => expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    { timeout: 2000 },
   );
   await waitFor(() =>
     expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),

@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import {
   SkylarkGraphQLObjectImage,
@@ -24,6 +24,8 @@ export interface SearchFilters {
   objectTypes: string[] | null;
 }
 
+export const SEARCH_PAGE_SIZE = 30;
+
 export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta();
 
@@ -44,7 +46,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
       skip: !query,
       variables: {
         queryString,
-        limit: 30,
+        limit: SEARCH_PAGE_SIZE,
       },
       notifyOnNetworkStatusChange: true,
       // Using "all" so we can get data even when some is invalid
@@ -95,9 +97,11 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
   };
 
   useEffect(() => {
-    console.log("query changed");
     refetch();
   }, [refetch, query]);
+
+  // TODO detect when all data has been fetched, rather than guessing the end
+  const moreResultsAvailable = data.length % SEARCH_PAGE_SIZE === 0;
 
   return {
     data,
@@ -110,5 +114,6 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     // Loading is either "loading" or "refetching" - we use refetching when updating the search filters
     loading: rest.networkStatus === 1 || rest.networkStatus === 4,
     fetchingMore: rest.networkStatus === 3,
+    moreResultsAvailable,
   };
 };
