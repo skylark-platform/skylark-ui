@@ -2,9 +2,19 @@ import { gql } from "@apollo/client";
 import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 
 import {
-  ParsedSkylarkObjectContent,
+  ParsedSkylarkObjectContentObject,
   SkylarkObjectMeta,
+  SkylarkObjectType,
 } from "src/interfaces/skylark";
+
+import { generateContentsToReturn } from "./dynamicQueries";
+
+interface SetContentOperation {
+  operation: "link" | "unlink" | "reposition";
+  uid: string;
+  objectType: SkylarkObjectType;
+  position: number;
+}
 
 export const createDeleteObjectMutation = (
   object: SkylarkObjectMeta | null,
@@ -34,39 +44,90 @@ export const createDeleteObjectMutation = (
   return gql(graphQLQuery);
 };
 
-export const createUpdateSetContentPositionMutation = (
+export const createUpdateObjectContentMutation = (
   object: SkylarkObjectMeta | null,
-  orderedContentObjects: ParsedSkylarkObjectContent["objects"],
+  currentContentObjects: ParsedSkylarkObjectContentObject[],
+  updatedContentObjects: ParsedSkylarkObjectContentObject[],
+  contentTypesToRequest: SkylarkObjectMeta[],
 ) => {
   if (
     !object ||
     !object.operations.update ||
-    orderedContentObjects.length === 0
+    updatedContentObjects.length === 0
   ) {
     return null;
   }
 
-  const setContent = orderedContentObjects.reduce(
-    (prev, { objectType, object: { uid } }, index) => {
-      const position = index + 1;
+  const currentContentObjectUids = currentContentObjects.map(
+    ({ object }) => object.uid,
+  );
+  const updatedContentObjectUids = updatedContentObjects.map(
+    ({ object }) => object.uid,
+  );
 
-      if (prev[objectType]) {
+  const linkOrRepositionOperations = updatedContentObjects.map(
+    ({ objectType, object: { uid } }, index): SetContentOperation => {
+      const position = index + 1;
+      if (currentContentObjectUids.includes(uid)) {
         return {
-          ...prev,
-          [objectType]: {
-            reposition: [...prev[objectType].reposition, { uid, position }],
-          },
+          operation: "reposition",
+          objectType,
+          uid,
+          position,
         };
+      }
+      return {
+        operation: "link",
+        objectType,
+        uid,
+        position,
+      };
+    },
+  );
+
+  const deleteOperations = currentContentObjects
+    .filter(({ object: { uid } }) => !updatedContentObjectUids.includes(uid))
+    .map(({ objectType, object: { uid } }): SetContentOperation => {
+      return {
+        operation: "unlink",
+        objectType,
+        uid,
+        position: -1,
+      };
+    });
+
+  const objectContentOperations = [
+    ...linkOrRepositionOperations,
+    ...deleteOperations,
+  ];
+
+  const setContent = objectContentOperations.reduce(
+    (prev, { operation, objectType, uid, position }) => {
+      const updatedOperations = prev[objectType] || {
+        link: [],
+        unlink: [],
+        reposition: [],
+      };
+
+      if (operation === "unlink") {
+        updatedOperations.unlink.push(uid);
+      } else {
+        updatedOperations[operation].push({ uid, position });
       }
 
       return {
         ...prev,
-        [objectType]: {
-          reposition: [{ uid, position }],
-        },
+        [objectType]: updatedOperations,
       };
     },
-    {} as Record<string, { reposition: { uid: string; position: number }[] }>,
+    {} as Record<
+      string,
+      {
+        link: { uid: string; position: number }[];
+        unlink: string[];
+        reposition: { uid: string; position: number }[];
+      }
+    >,
   );
 
   const mutation = {
@@ -75,7 +136,7 @@ export const createUpdateSetContentPositionMutation = (
       __variables: {
         uid: "String!",
       },
-      updateObjectContentPositioning: {
+      updateObjectContent: {
         __aliasFor: object.operations.update.name,
         __args: {
           uid: new VariableType("uid"),
@@ -84,6 +145,7 @@ export const createUpdateSetContentPositionMutation = (
           },
         },
         uid: true,
+        ...generateContentsToReturn(object, contentTypesToRequest),
       },
     },
   };

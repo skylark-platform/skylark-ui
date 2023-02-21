@@ -1,5 +1,10 @@
 import { SkylarkObjectMetadataField } from "./objectOperations";
 
+export interface SkylarkGraphQLObjectConfig {
+  colour: string;
+  primary_field: string;
+}
+
 export interface SkylarkGraphQLAvailabilityDimension {
   title: string;
   slug: string;
@@ -44,16 +49,14 @@ export interface SkylarkGraphQLObjectContent {
 export type SkylarkGraphQLObject = {
   __typename: string;
   uid: string;
-  objectType: string;
   external_id: string;
   availability?: SkylarkGraphQLObjectRelationship;
   images?: SkylarkGraphQLObjectRelationship;
-  _config?: {
-    colour: string;
-    primary_field: string;
-  };
+  _config?: SkylarkGraphQLObjectConfig;
   content?: SkylarkGraphQLObjectContent;
-} & Record<
-  string,
-  SkylarkObjectMetadataField | SkylarkGraphQLObjectRelationship
->;
+  [key: string]:
+    | SkylarkObjectMetadataField
+    | SkylarkGraphQLObjectRelationship
+    | SkylarkGraphQLObjectConfig
+    | undefined;
+};

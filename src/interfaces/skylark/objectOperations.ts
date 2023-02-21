@@ -1,6 +1,8 @@
 export enum BuiltInSkylarkObjectType {
   Availability = "Availability",
   Image = "Image",
+  Asset = "Asset",
+  Set = "Set",
 }
 
 export type SkylarkObjectType = string | BuiltInSkylarkObjectType;

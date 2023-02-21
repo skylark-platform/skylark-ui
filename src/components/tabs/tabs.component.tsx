@@ -11,20 +11,17 @@ interface TabProps {
 export const Tabs = ({ tabs, selectedTab, disabled, onChange }: TabProps) => (
   <ul className="flex w-full items-center justify-start border-b-2 border-gray-200 px-2 text-sm font-medium md:px-4">
     {tabs.map((tab) => {
-      const combinedClassname = clsx(
-        selectedTab === tab
-          ? "text-black border-black"
-          : "text-gray-400 border-transparent",
-      );
       return (
-        <li key={`tab-${tab}`} className="px-3 md:px-4">
+        <li key={`tab-${tab}`} className="px-2 md:px-3">
           <button
             disabled={disabled}
             onClick={disabled ? undefined : () => onChange(tab)}
             className={clsx(
-              "-mb-[2px] w-full border-b-2 pb-3 ",
+              "-mb-[2px] w-full rounded-t border-b-2 p-1 pb-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary md:pb-3",
               !disabled && "hover:border-black hover:text-black",
-              combinedClassname,
+              selectedTab === tab
+                ? "border-black text-black"
+                : "border-transparent text-gray-400",
             )}
           >
             {tab}

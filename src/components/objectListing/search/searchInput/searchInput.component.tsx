@@ -43,7 +43,7 @@ export const SearchInput = ({
         onChange={(e) => setQuery(e.target.value)}
       />
       <button
-        className="flex items-center justify-center gap-2 rounded-r-full bg-manatee-200 p-2 pl-4 pr-5 md:p-3 md:pl-8 md:pr-10"
+        className="flex items-center justify-center space-x-2 rounded-r-full bg-manatee-200 p-2 pl-4 pr-5 md:p-3 md:pl-8 md:pr-10"
         onClick={toggleFilterOpen}
         aria-label="open-search-filters"
         type="button"
