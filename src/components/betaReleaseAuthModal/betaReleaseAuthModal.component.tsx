@@ -108,6 +108,7 @@ export const AddAuthTokenModal = ({
             aria-label="close"
             className="absolute top-4 right-4 sm:top-9 sm:right-8"
             onClick={() => setIsOpen(false)}
+            tabIndex={-1}
           >
             <GrClose className="text-xl" />
           </button>
@@ -119,7 +120,7 @@ export const AddAuthTokenModal = ({
             Enter your GraphQL URI and API Key below to connect to your Skylark
             account.
           </Dialog.Description>
-          <div className="my-6 flex flex-col gap-4 md:my-10">
+          <div className="my-6 flex flex-col space-y-2 md:my-10">
             <TextInput
               value={inputUri || ""}
               onChange={setInputUri}

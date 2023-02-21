@@ -28,7 +28,7 @@ const createOptions = [
 ];
 
 export const CreateButtons = ({ className }: CreateButtonProps) => (
-  <div className={clsx("flex flex-row gap-4", className)}>
+  <div className={clsx("flex flex-row", className)}>
     <DropdownMenu options={createOptions} align="right">
       <DropdownMenuButton as={Fragment}>
         <Button
