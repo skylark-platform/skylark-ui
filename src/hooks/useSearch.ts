@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   SkylarkGraphQLObjectImage,
@@ -28,6 +28,7 @@ export const SEARCH_PAGE_SIZE = 30;
 
 export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta();
+  const [allResultsFetched, setAllResultsFetched] = useState(false);
 
   const query = useMemo(
     () =>
@@ -89,19 +90,27 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
   }, [searchResponse?.search.objects]);
 
   const fetchMoreWrapper = () => {
-    fetchMore({
-      variables: {
-        offset: searchResponse?.search.objects.length || 0,
-      },
-    });
+    if (!allResultsFetched) {
+      fetchMore({
+        variables: {
+          offset: searchResponse?.search.objects.length || 0,
+        },
+      }).then(({ data: newSearchData }) => {
+        if (
+          newSearchData?.search.objects.length === 0 ||
+          data.length % SEARCH_PAGE_SIZE !== 0
+        ) {
+          setAllResultsFetched(true);
+          return;
+        }
+      });
+    }
   };
 
   useEffect(() => {
+    setAllResultsFetched(false);
     refetch();
   }, [refetch, query]);
-
-  // TODO detect when all data has been fetched, rather than guessing the end
-  const moreResultsAvailable = data.length % SEARCH_PAGE_SIZE === 0;
 
   return {
     data,
@@ -114,6 +123,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     // Loading is either "loading" or "refetching" - we use refetching when updating the search filters
     loading: rest.networkStatus === 1 || rest.networkStatus === 4,
     fetchingMore: rest.networkStatus === 3,
-    moreResultsAvailable,
+    moreResultsAvailable:
+      !allResultsFetched && data.length % SEARCH_PAGE_SIZE === 0,
   };
 };

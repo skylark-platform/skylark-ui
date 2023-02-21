@@ -220,7 +220,7 @@ export const Table = ({
           return (
             <tr
               key={row.id}
-              className="group/row outline-none"
+              className="group/row h-10 align-middle outline-none"
               tabIndex={-1}
               onDoubleClick={() => setPanelObject?.({ uid, objectType })}
             >
