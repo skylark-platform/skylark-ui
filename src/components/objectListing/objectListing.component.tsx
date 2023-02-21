@@ -99,7 +99,7 @@ const createColumns = (
       return (
         <span
           className={clsx(
-            "font-medium uppercase lg:px-10 ",
+            "font-medium uppercase",
             status === AvailabilityStatus.Active && "text-success",
             status === AvailabilityStatus.Future && "text-warning",
             status === AvailabilityStatus.Unavailable && "text-manatee-400",
@@ -328,19 +328,19 @@ export const ObjectList = ({
   return (
     <div
       className={clsx(
-        "flex h-full flex-col gap-4",
-        isPanelOpen ? "lg:gap-8" : "md:gap-8",
+        "flex h-full flex-col space-y-4",
+        isPanelOpen ? "lg:space-y-8" : "md:space-y-8",
       )}
     >
       <div
         className={clsx(
-          "flex w-full items-center gap-2 md:justify-between",
+          "flex w-full items-center space-x-1 md:justify-between",
           isPanelOpen ? "lg:flex-row" : "pr-2 md:flex-row md:pr-8",
         )}
       >
         <div
           className={clsx(
-            "flex w-full flex-1 flex-row items-center justify-center gap-1 md:gap-2",
+            "flex w-full flex-1 flex-row items-center justify-center space-x-0.5 md:space-x-1",
             withCreateButtons &&
               !isPanelOpen &&
               "md:max-w-[50%] xl:max-w-[33%]",
@@ -393,7 +393,7 @@ export const ObjectList = ({
           />
         )}
         {(searchLoading || searchData) && (
-          <div className="items-top justify-left flex h-96 w-full flex-col gap-4 text-sm text-manatee-600 md:text-base">
+          <div className="items-top justify-left flex h-96 w-full flex-col space-y-2 text-sm text-manatee-600 md:text-base">
             {searchLoading && (
               <div className="flex w-full justify-center">
                 <Spinner className="h-10 w-10 animate-spin" />

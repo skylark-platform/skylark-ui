@@ -1,66 +1,14 @@
-import { gql } from "@apollo/client";
-
+import { SkylarkObjectOperations } from "src/interfaces/skylark";
 import {
-  NormalizedObjectField,
-  SkylarkObjectMeta,
-  SkylarkObjectOperations,
-} from "src/interfaces/skylark";
+  episodeObjectOperations,
+  setObjectOperations,
+} from "src/tests/utils/objectOperations";
 
 import {
   createGetObjectQuery,
   createListObjectQuery,
   createSearchObjectsQuery,
 } from "./dynamicQueries";
-
-const fields: NormalizedObjectField[] = [
-  {
-    name: "name",
-    type: "string",
-    isList: false,
-    isRequired: false,
-  },
-  {
-    name: "type",
-    type: "enum",
-    isList: false,
-    isRequired: false,
-  },
-];
-
-const object: SkylarkObjectMeta = {
-  name: "Episode",
-  fields: fields,
-  availability: null,
-  images: null,
-  operations: {
-    get: {
-      type: "Query",
-      name: "getEpisode",
-    },
-    list: {
-      type: "Query",
-      name: "listEpisode",
-    },
-    create: {
-      type: "Mutation",
-      argName: "episode",
-      name: "createEpisode",
-      inputs: fields,
-    },
-    update: {
-      type: "Mutation",
-      argName: "episode",
-      name: "updateEpisode",
-      inputs: fields,
-    },
-    delete: {
-      type: "Mutation",
-      argName: "",
-      name: "deleteEpisode",
-      inputs: [],
-    },
-  },
-};
 
 describe("createGetObjectQuery", () => {
   test("returns null when the object doesn't have a get operation", () => {
@@ -70,32 +18,23 @@ describe("createGetObjectQuery", () => {
   });
 
   test("returns expected GraphQL get query", () => {
-    const got = createGetObjectQuery(object, []);
+    const got = createGetObjectQuery(episodeObjectOperations, []);
 
-    expect(got).toEqual(
-      gql(
-        `
-      query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } name type } }
-      `,
-      ),
+    expect(got?.loc?.source.body).toEqual(
+      "query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } uid external_id slug title synopsis_short synopsis_medium synopsis_long title_short title_medium title_long release_date episode_number availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { uid external_id slug title description type url external_url upload_url download_from_url file_name content_type } } } }",
     );
   });
 
   test("returns expected GraphQL get query with content", () => {
-    const got = createGetObjectQuery(
-      {
-        ...object,
-        name: "Set",
-      },
-      [object],
-    );
+    const got = createGetObjectQuery(setObjectOperations, [
+      episodeObjectOperations,
+    ]);
 
-    expect(got).toEqual(
-      gql(
-        `
-        query GET_Set ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } name type content (order: ASC) { objects { object { ... on Episode { __typename _config { primary_field colour } __Episode__name: name __Episode__type: type } } position } } } }
-        `,
-      ),
+    expect(got?.loc?.source.body).toContain(
+      "content (order: ASC, limit: 50) { objects { object { ... on Episode { __typename _config { primary_field colour } uid external_id __Episode__slug: slug __Episode__title: title __Episode__synopsis_short: synopsis_short __Episode__synopsis_medium: synopsis_medium __Episode__synopsis_long: synopsis_long __Episode__title_short: title_short __Episode__title_medium: title_medium __Episode__title_long: title_long __Episode__release_date: release_date __Episode__episode_number: episode_number } } position }",
+    );
+    expect(got?.loc?.source.body).toEqual(
+      "query GET_Set ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getSet (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } uid slug external_id type title synopsis_short synopsis_medium synopsis_long title_short title_medium title_long release_date description availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { uid external_id slug title description type url external_url upload_url download_from_url file_name content_type } } content (order: ASC, limit: 50) { objects { object { ... on Episode { __typename _config { primary_field colour } uid external_id __Episode__slug: slug __Episode__title: title __Episode__synopsis_short: synopsis_short __Episode__synopsis_medium: synopsis_medium __Episode__synopsis_long: synopsis_long __Episode__title_short: title_short __Episode__title_medium: title_medium __Episode__title_long: title_long __Episode__release_date: release_date __Episode__episode_number: episode_number } } position } } } }",
     );
   });
 });
@@ -108,14 +47,10 @@ describe("createListObjectQuery", () => {
   });
 
   test("returns expected GraphQL get query", () => {
-    const got = createListObjectQuery(object);
+    const got = createListObjectQuery(episodeObjectOperations);
 
-    expect(got).toEqual(
-      gql(
-        `
-        query LIST_Episode ($ignoreAvailability: Boolean = true, $nextToken: String) { listSkylarkObjects: listEpisode (ignore_availability: $ignoreAvailability, limit: 50, next_token: $nextToken) { count next_token objects { _config { primary_field colour } name type } } }
-      `,
-      ),
+    expect(got?.loc?.source.body).toEqual(
+      "query LIST_Episode ($ignoreAvailability: Boolean = true, $nextToken: String) { listSkylarkObjects: listEpisode (ignore_availability: $ignoreAvailability, limit: 50, next_token: $nextToken) { count next_token objects { _config { primary_field colour } uid external_id slug title synopsis_short synopsis_medium synopsis_long title_short title_medium title_long release_date episode_number availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { uid external_id slug title description type url external_url upload_url download_from_url file_name content_type } } } } }",
     );
   });
 });
@@ -175,10 +110,8 @@ describe("createSearchObjectsQuery", () => {
       [],
     );
 
-    expect(got).toEqual(
-      gql(`
-        query SEARCH ($ignoreAvailability: Boolean = true, $queryString: String!) { search (ignore_availability: $ignoreAvailability, query: $queryString, limit: 1000) { __typename objects { ... on Episode { __typename _config { primary_field colour } __Episode__title: title __Episode__episode_number: episode_number } ... on Brand { __typename _config { primary_field colour } __Brand__title: title __Brand__synopsis: synopsis } } } }
-      `),
+    expect(got?.loc?.source.body).toEqual(
+      `query SEARCH ($ignoreAvailability: Boolean = true, $queryString: String!) { search (ignore_availability: $ignoreAvailability, query: $queryString, limit: 1000) { __typename objects { ... on Episode { __typename _config { primary_field colour } __Episode__title: title __Episode__episode_number: episode_number } ... on Brand { __typename _config { primary_field colour } __Brand__title: title __Brand__synopsis: synopsis } } } }`,
     );
   });
 });

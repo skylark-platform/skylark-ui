@@ -1,4 +1,4 @@
-import { MockedProvider } from "@apollo/client/testing";
+import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import {
   render,
   screen,
@@ -8,46 +8,25 @@ import {
 } from "@testing-library/react";
 import { DocumentNode } from "graphql";
 
-import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
+import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynamicMutations";
 import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   GET_SKYLARK_OBJECT_TYPES,
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
-import { getObjectOperations } from "src/lib/skylark/objects";
+import { parseObjectContent } from "src/lib/skylark/parsers";
 import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
 import GQLSkylarkGetObjectImageQueryFixture from "src/tests/fixtures/skylark/queries/getObject/gotImage.json";
 import GQLSkylarkGetSetWithContentQueryFixture from "src/tests/fixtures/skylark/queries/getObject/setWithContent.json";
 import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
+import {
+  movieObjectOperations,
+  imageObjectOperations,
+  setObjectOperations,
+  seasonObjectOperations,
+} from "src/tests/utils/objectOperations";
 
 import { Panel } from "./panel.component";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const useRouter = jest.spyOn(require("next/router"), "useRouter");
-
-const movieObjectOperations = getObjectOperations(
-  "Movie",
-  GQLSkylarkSchemaQueryFixture.data
-    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-);
-
-const imageObjectOperations = getObjectOperations(
-  "Image",
-  GQLSkylarkSchemaQueryFixture.data
-    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-);
-
-const seasonObjectOperations = getObjectOperations(
-  "Season",
-  GQLSkylarkSchemaQueryFixture.data
-    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-);
-
-const setObjectOperations = getObjectOperations(
-  "Set",
-  GQLSkylarkSchemaQueryFixture.data
-    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-);
 
 const mocks = [
   {
@@ -107,11 +86,6 @@ const mocks = [
   },
 ];
 
-beforeEach(() => {
-  const router = { query: { edit: "true" } };
-  useRouter.mockReturnValue(router);
-});
-
 test("renders the panel in the default view", async () => {
   render(
     <MockedProvider mocks={mocks} addTypename={false}>
@@ -123,6 +97,9 @@ test("renders the panel in the default view", async () => {
     </MockedProvider>,
   );
 
+  await waitFor(() =>
+    expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+  );
   await waitFor(() =>
     expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
   );
@@ -285,7 +262,7 @@ test("content view", async () => {
   ).toBeInTheDocument();
 });
 
-test("content view - edit view", async () => {
+test("content view - enter edit view", async () => {
   render(
     <MockedProvider mocks={mocks} addTypename={false}>
       <Panel
@@ -304,6 +281,266 @@ test("content view - edit view", async () => {
   fireEvent.click(screen.getByText("Edit Content"));
 
   await waitFor(() => expect(screen.getByText("Editing")).toBeInTheDocument());
+});
+
+describe("content view - edit view", () => {
+  const renderAndSwitchToEditView = async (
+    additionalMocks?: MockedResponse<Record<string, object>>[],
+  ) => {
+    render(
+      <MockedProvider
+        mocks={[...mocks, ...(additionalMocks || [])]}
+        addTypename={false}
+      >
+        <Panel
+          uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
+          objectType={"Set"}
+          closePanel={jest.fn()}
+        />
+      </MockedProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText("Content")).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByText("Content"));
+
+    expect(screen.getAllByText("Homepage")).toHaveLength(1);
+
+    fireEvent.click(screen.getByText("Edit Content"));
+
+    await waitFor(() =>
+      expect(screen.getByText("Editing")).toBeInTheDocument(),
+    );
+
+    expect(
+      screen.getByText(
+        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
+          .objects[0].object.__Season__title as string,
+      ),
+    ).toBeInTheDocument();
+  };
+
+  test("cancel/exit edit view", async () => {
+    await renderAndSwitchToEditView();
+
+    const cancelButton = screen.getByText("Cancel");
+    fireEvent.click(cancelButton);
+
+    expect(screen.queryByText("Editing")).not.toBeInTheDocument();
+  });
+
+  test("reordering", async () => {
+    await renderAndSwitchToEditView();
+
+    expect(screen.getByTestId("panel-object-content-item-1")).toHaveTextContent(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[0]
+        .object.__Season__title as string,
+    );
+    expect(screen.getByTestId("panel-object-content-item-2")).toHaveTextContent(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[1]
+        .object.__Season__title as string,
+    );
+    expect(screen.getByTestId("panel-object-content-item-3")).toHaveTextContent(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[2]
+        .object.__Season__title as string,
+    );
+
+    expect(screen.getByDisplayValue("1")).toBeInTheDocument();
+    const input = screen.getByDisplayValue("1");
+    input.focus();
+    fireEvent.change(input, { target: { value: "3" } });
+    fireEvent.blur(input);
+
+    // Verify that the first object is now third
+    expect(screen.getByTestId("panel-object-content-item-1")).toHaveTextContent(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[1]
+        .object.__Season__title as string,
+    );
+    expect(screen.getByTestId("panel-object-content-item-2")).toHaveTextContent(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[2]
+        .object.__Season__title as string,
+    );
+    expect(screen.getByTestId("panel-object-content-item-3")).toHaveTextContent(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[0]
+        .object.__Season__title as string,
+    );
+  });
+
+  test("when first item is made 0, it changes back to 1", async () => {
+    await renderAndSwitchToEditView();
+
+    expect(screen.getByDisplayValue("1")).toBeInTheDocument();
+
+    const input = screen.getByDisplayValue("1");
+    input.focus();
+    fireEvent.change(input, { target: { value: "0" } });
+    fireEvent.blur(input);
+
+    expect(screen.getByDisplayValue("1")).toBeInTheDocument();
+  });
+
+  test("when last item is made 10000, it changes back to the length of the content array", async () => {
+    await renderAndSwitchToEditView();
+    const maxPosition =
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects
+        .length;
+
+    expect(maxPosition).toBeGreaterThan(0);
+
+    expect(screen.getByDisplayValue(maxPosition)).toBeInTheDocument();
+    expect(
+      screen.getByTestId(`panel-object-content-item-${maxPosition}`),
+    ).toHaveTextContent(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[
+        maxPosition - 1
+      ].object.__Set__title as string,
+    );
+
+    const input = screen.getByDisplayValue(maxPosition);
+    input.focus();
+    fireEvent.change(input, { target: { value: "10000" } });
+    fireEvent.blur(input);
+
+    expect(screen.getByDisplayValue(maxPosition)).toBeInTheDocument();
+    expect(
+      screen.getByTestId(`panel-object-content-item-${maxPosition}`),
+    ).toHaveTextContent(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[
+        maxPosition - 1
+      ].object.__Set__title as string,
+    );
+  });
+
+  test("doesn't change the value when the value is cleared", async () => {
+    await renderAndSwitchToEditView();
+
+    expect(screen.getByDisplayValue(1)).toBeInTheDocument();
+    expect(screen.getByTestId("panel-object-content-item-1")).toHaveTextContent(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[0]
+        .object.__Season__title as string,
+    );
+
+    const input = screen.getByDisplayValue(1);
+    input.focus();
+    fireEvent.change(input, { target: { value: "" } });
+    fireEvent.blur(input);
+
+    expect(screen.getByTestId("panel-object-content-item-1")).toHaveTextContent(
+      `${
+        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
+          .objects[0].object.__Season__title as string
+      }1`,
+    );
+  });
+
+  test("doesn't change the value when the value isn't a number", async () => {
+    await renderAndSwitchToEditView();
+
+    expect(screen.getByDisplayValue(1)).toBeInTheDocument();
+    expect(screen.getByTestId("panel-object-content-item-2")).toHaveTextContent(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[1]
+        .object.__Season__title as string,
+    );
+
+    const input = screen.getByDisplayValue(1);
+    input.focus();
+    fireEvent.change(input, { target: { value: "sdf" } });
+    fireEvent.blur(input);
+
+    expect(screen.getByDisplayValue(1)).toBeInTheDocument();
+    expect(screen.getByTestId("panel-object-content-item-2")).toHaveTextContent(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[1]
+        .object.__Season__title as string,
+    );
+  });
+
+  test("removes an item from the content", async () => {
+    await renderAndSwitchToEditView();
+
+    const maxPosition =
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects
+        .length;
+    expect(maxPosition).toBeGreaterThan(0);
+
+    expect(
+      screen.queryByTestId(`panel-object-content-item-${maxPosition}`),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("panel-object-content-item-1")).toHaveTextContent(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[0]
+        .object.__Season__title as string,
+    );
+
+    const removeButton = screen.getByTestId(
+      "panel-object-content-item-1-remove",
+    );
+    fireEvent.click(removeButton);
+
+    expect(
+      screen.queryByTestId(`panel-object-content-item-${maxPosition}`),
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId("panel-object-content-item-1")).toHaveTextContent(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[1]
+        .object.__Season__title as string,
+    );
+  });
+
+  test("moves an item, removes an item and saves", async () => {
+    const parsedFixtureContent = parseObjectContent(
+      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content,
+    );
+    const query = createUpdateObjectContentMutation(
+      setObjectOperations,
+      parsedFixtureContent.objects,
+      // We're expecting the 1st content item to be removed and the 3rd and 4th to be swapped
+      [
+        parsedFixtureContent.objects[1],
+        parsedFixtureContent.objects[3],
+        parsedFixtureContent.objects[2],
+        parsedFixtureContent.objects[4],
+      ],
+      [seasonObjectOperations, setObjectOperations],
+    ) as DocumentNode;
+
+    await renderAndSwitchToEditView([
+      {
+        request: {
+          query,
+          variables: {
+            uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
+          },
+        },
+        result: {
+          data: {
+            updateObjectContent:
+              GQLSkylarkGetSetWithContentQueryFixture.data.getObject,
+          },
+        },
+      },
+    ]);
+
+    const removeButton = screen.getByTestId(
+      "panel-object-content-item-1-remove",
+    );
+    fireEvent.click(removeButton);
+
+    const input = screen.getByDisplayValue(2);
+    input.focus();
+    fireEvent.change(input, { target: { value: "3" } });
+    fireEvent.blur(input);
+
+    const saveButton = screen.getByText("Save");
+    fireEvent.click(saveButton);
+
+    await waitFor(() => expect(screen.getByText("Saving")).toBeInTheDocument());
+
+    await waitFor(() =>
+      expect(screen.queryByText("Editing")).not.toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(screen.getByText("Edit Content")).toBeInTheDocument(),
+    );
+  });
 });
 
 test.skip("availability view", async () => {

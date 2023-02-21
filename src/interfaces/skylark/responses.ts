@@ -1,4 +1,7 @@
-import { SkylarkGraphQLObject } from "./gqlObjects";
+import {
+  SkylarkGraphQLObject,
+  SkylarkGraphQLObjectContent,
+} from "./gqlObjects";
 
 export interface GQLSkylarkGetObjectResponse {
   getObject: SkylarkGraphQLObject;
@@ -7,5 +10,11 @@ export interface GQLSkylarkGetObjectResponse {
 export interface GQLSkylarkSearchResponse {
   search: {
     objects: (SkylarkGraphQLObject | null)[];
+  };
+}
+
+export interface GQLSkylarkUpdateObjectContentResponse {
+  updateObjectContent: {
+    content: SkylarkGraphQLObjectContent;
   };
 }
