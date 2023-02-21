@@ -1,3 +1,4 @@
+import { useDroppable } from "@dnd-kit/core";
 import clsx from "clsx";
 import { Reorder } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -11,6 +12,7 @@ interface PanelContentProps {
   objects: ParsedSkylarkObjectContent["objects"];
   onReorder: (objs: ParsedSkylarkObjectContent["objects"]) => void;
   inEditMode?: boolean;
+  activeId?: any;
 }
 
 export const PanelContentItemOrderInput = ({
@@ -61,10 +63,17 @@ export const PanelContent = ({
   objects,
   inEditMode,
   onReorder,
+  activeId,
 }: PanelContentProps) => {
   const removeItem = (uid: string) => {
     const filtered = objects.filter(({ object }) => uid !== object.uid);
     onReorder(filtered);
+  };
+  const { isOver, setNodeRef } = useDroppable({
+    id: "droppable",
+  });
+  const style = {
+    color: isOver ? "green" : undefined,
   };
 
   const handleManualOrderChange = (
@@ -85,8 +94,19 @@ export const PanelContent = ({
     onReorder(updatedObjects);
   };
 
+  if (activeId)
+    return (
+      <div className="m-4 h-72 border-2 border-dotted text-center text-manatee-400">
+        <span className="content-center items-center justify-center">
+          Drop in media to start curating or set dynamic controls
+        </span>
+      </div>
+    );
+
   return (
     <Reorder.Group
+      ref={setNodeRef}
+      style={style}
       axis="y"
       values={objects}
       onReorder={onReorder}

@@ -25,6 +25,7 @@ interface PanelProps {
   objectType: string;
   closePanel: () => void;
   uid: string;
+  activeId?: any;
 }
 
 enum PanelTab {
@@ -44,7 +45,12 @@ const getTitle = (
   return title as string;
 };
 
-export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
+export const Panel = ({
+  closePanel,
+  objectType,
+  uid,
+  activeId,
+}: PanelProps) => {
   const {
     query: { edit },
   } = useRouter();
@@ -149,6 +155,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
               objects={updatedContentObjects || data?.content?.objects}
               inEditMode={inEditMode}
               onReorder={setContentObjects}
+              activeId={activeId}
             />
           )}
         </>

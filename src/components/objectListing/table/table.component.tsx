@@ -1,3 +1,5 @@
+import { useDraggable, DragOverlay } from "@dnd-kit/core";
+import { restrictToWindowEdges, snapCenterToCursor } from "@dnd-kit/modifiers";
 import {
   Cell,
   flexRender,
@@ -10,6 +12,7 @@ import clsx from "clsx";
 import { useMemo } from "react";
 import { VirtualItem } from "react-virtual";
 
+import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SkylarkGraphQLObject } from "src/interfaces/skylark";
 
@@ -22,6 +25,7 @@ export interface TableProps {
   withCheckbox?: boolean;
   virtualRows: VirtualItem[];
   totalRows: number;
+  activeId: any;
   setPanelObject?: (obj: { uid: string; objectType: string }) => void;
 }
 
@@ -180,11 +184,56 @@ const TableData = ({
   );
 };
 
+const TableRow = ({
+  rows,
+  virtualRow,
+  setPanelObject,
+  tableMeta,
+  withCheckbox,
+}: any) => {
+  const row = rows[virtualRow.index] as Row<SkylarkGraphQLObject>;
+  const { uid, objectType } = row.original;
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: uid,
+    data: {
+      record: row.original,
+    },
+  });
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : undefined;
+
+  return (
+    <tr
+      ref={setNodeRef}
+      // style={style}
+      {...listeners}
+      {...attributes}
+      key={row.id}
+      className="group/row"
+      tabIndex={-1}
+      onDoubleClick={() => setPanelObject?.({ uid, objectType })}
+    >
+      {row.getVisibleCells().map((cell) => (
+        <TableData
+          tableMeta={tableMeta}
+          key={cell.id}
+          cell={cell}
+          withCheckbox={withCheckbox}
+        />
+      ))}
+    </tr>
+  );
+};
+
 export const Table = ({
   table,
   withCheckbox = false,
   virtualRows,
   totalRows,
+  activeId,
   setPanelObject,
 }: TableProps) => {
   const tableMeta = table.options.meta;
@@ -195,6 +244,9 @@ export const Table = ({
       : 0;
 
   const { rows } = table.getRowModel();
+
+  console.log("here ###", activeId);
+
   return (
     <table className="relative w-full bg-white">
       <thead>
@@ -218,10 +270,35 @@ export const Table = ({
           </tr>
         )}
         {virtualRows.map((virtualRow) => {
+          return (
+            <TableRow
+              key={virtualRow.index}
+              rows={rows}
+              virtualRow={virtualRow}
+              setPanelObject={setPanelObject}
+              tableMeta={tableMeta}
+              withCheckbox={withCheckbox}
+            />
+          );
           const row = rows[virtualRow.index] as Row<SkylarkGraphQLObject>;
           const { uid, objectType } = row.original;
+          const { attributes, listeners, setNodeRef, transform } = useDraggable(
+            {
+              id: "draggable" + virtualRow.index,
+            },
+          );
+          const style = transform
+            ? {
+                transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+              }
+            : undefined;
+
           return (
             <tr
+              ref={setNodeRef}
+              // style={style}
+              {...listeners}
+              {...attributes}
               key={row.id}
               className="group/row"
               tabIndex={-1}
@@ -238,6 +315,23 @@ export const Table = ({
             </tr>
           );
         })}
+        <DragOverlay modifiers={[snapCenterToCursor]}>
+          {activeId ? (
+            <div
+              className="my-o flex items-center space-x-2"
+              style={{ maxWidth: 250 }}
+            >
+              <Pill
+                label={activeId.__typename as string}
+                bgColor={activeId.config.colour}
+                className="w-20"
+              />
+              <div className="flex flex-1">
+                <p>{activeId.title || activeId.uid}</p>
+              </div>
+            </div>
+          ) : null}
+        </DragOverlay>
         {paddingBottom > 0 && (
           <tr>
             <td style={{ height: `${paddingBottom}px` }} />

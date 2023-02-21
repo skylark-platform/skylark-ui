@@ -107,7 +107,7 @@ export const PanelHeader = ({
                 variant="primary"
                 Icon={<Edit className="h-4 w-4 stroke-success-content" />}
                 onClick={toggleEditMode}
-                disabled={!tabsWithEditMode.includes(currentTab)}
+                // disabled={!tabsWithEditMode.includes(currentTab)}
               >
                 Edit {currentTab}
               </Button>

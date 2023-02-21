@@ -1,3 +1,9 @@
+import {
+  DndContext,
+  useSensor,
+  useSensors,
+  PointerSensor,
+} from "@dnd-kit/core";
 import clsx from "clsx";
 import { m, useMotionValue } from "framer-motion";
 import React, { useEffect, useState, useRef } from "react";
@@ -27,6 +33,7 @@ export const ContentLibrary = () => {
       window.removeEventListener("resize", updateWindowSize);
     };
   }, [activePanelObject, objectListingWidth]);
+  const [activeId, setActiveId] = useState(null);
 
   const handleDrag = React.useCallback(
     (event: PointerEvent, info: { delta: { x: number } }) => {
@@ -40,54 +47,84 @@ export const ContentLibrary = () => {
     [objectListingWidth, windowSize],
   );
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
+  );
+
   return (
-    <div
-      className="flex h-screen flex-row"
-      style={{
-        maxHeight: `calc(100vh - 4rem)`,
-      }}
+    <DndContext
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      sensors={sensors}
     >
-      <m.div
-        ref={objectListingRef}
-        className={clsx(
-          "w-full max-w-full pt-6 pl-2 md:pl-6 lg:pl-10",
-          activePanelObject && "md:w-1/2 lg:w-5/12 xl:w-3/5",
-        )}
+      <div
+        className="flex h-screen flex-row"
         style={{
-          width:
-            activePanelObject && objectListingWidth
-              ? objectListingWidth
-              : "100%",
+          maxHeight: `calc(100vh - 4rem)`,
         }}
       >
-        <ObjectList
-          withCreateButtons
-          onInfoClick={setActivePanelObject}
-          isPanelOpen={!!activePanelObject}
-        />
-      </m.div>
-
-      {activePanelObject && (
-        <m.div className="fixed z-50 flex h-full w-full grow flex-row bg-white drop-shadow-md md:relative md:z-auto lg:drop-shadow-none">
-          <m.div
-            data-testid="drag-bar"
-            key={windowSize}
-            className="hidden w-3 cursor-col-resize items-center bg-manatee-100 lg:flex "
-            onDrag={handleDrag}
-            drag="x"
-            dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-            dragElastic={0}
-            dragMomentum={false}
-          >
-            <div className="mx-1 h-20 w-full rounded bg-manatee-600"></div>
-          </m.div>
-          <Panel
-            closePanel={() => setActivePanelObject(null)}
-            uid={activePanelObject.uid}
-            objectType={activePanelObject.objectType}
+        <m.div
+          ref={objectListingRef}
+          className={clsx(
+            "w-full max-w-full pt-6 pl-2 md:pl-6 lg:pl-10",
+            activePanelObject && "md:w-1/2 lg:w-5/12 xl:w-3/5",
+          )}
+          style={{
+            width:
+              activePanelObject && objectListingWidth
+                ? objectListingWidth
+                : "100%",
+          }}
+        >
+          <ObjectList
+            withCreateButtons
+            onInfoClick={setActivePanelObject}
+            isPanelOpen={!!activePanelObject}
+            activeId={activeId}
           />
         </m.div>
-      )}
-    </div>
+
+        {activePanelObject && (
+          <m.div className="fixed z-50 flex h-full w-full grow flex-row bg-white drop-shadow-md md:relative md:z-auto lg:drop-shadow-none">
+            <m.div
+              data-testid="drag-bar"
+              key={windowSize}
+              className="hidden w-3 cursor-col-resize items-center bg-manatee-100 lg:flex "
+              onDrag={handleDrag}
+              drag="x"
+              dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+              dragElastic={0}
+              dragMomentum={false}
+            >
+              <div className="mx-1 h-20 w-full rounded bg-manatee-600"></div>
+            </m.div>
+            <Panel
+              closePanel={() => setActivePanelObject(null)}
+              uid={activePanelObject.uid}
+              objectType={activePanelObject.objectType}
+              activeId={activeId}
+            />
+          </m.div>
+        )}
+      </div>
+    </DndContext>
   );
+
+  function handleDragStart(event) {
+    console.log(event.active.data.current.record);
+    setActiveId(event.active.data.current.record);
+  }
+
+  function handleDragEnd(event) {
+    console.log("not cool", event);
+    setActiveId(null);
+    if (event.over && event.over.id === "droppable") {
+      console.log("happy", event);
+    }
+  }
 };

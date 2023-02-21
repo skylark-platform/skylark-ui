@@ -5,14 +5,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import {
-  useEffect,
-  useState,
-  useMemo,
-  Dispatch,
-  SetStateAction,
-  useRef,
-} from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useVirtual } from "react-virtual";
 
 import { Checkbox } from "src/components/checkbox";
@@ -51,6 +44,7 @@ export interface ObjectListProps {
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
   onInfoClick?: (obj: { uid: string; objectType: string }) => void;
+  activeId: any;
 }
 
 const createColumns = (
@@ -187,6 +181,7 @@ export const ObjectList = ({
   withObjectSelect,
   withObjectEdit,
   onInfoClick,
+  activeId,
   isPanelOpen,
 }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -259,6 +254,8 @@ export const ObjectList = ({
     return searchDataWithTopLevelMetadata;
   }, [searchData]);
 
+  console.log("formattedSearchData", formattedSearchData);
+
   const table = useReactTable({
     debugAll: false,
     data: formattedSearchData || [],
@@ -307,6 +304,8 @@ export const ObjectList = ({
     overscan: 50,
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
+
+  console.log("rowVirtualizer", rowVirtualizer);
 
   return (
     <div
@@ -360,12 +359,15 @@ export const ObjectList = ({
         )}
       </div>
       <div
-        className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6 xl:h-[75vh]"
+        className={`${
+          activeId ? "overflow-hidden" : "overflow-x-auto"
+        } flex h-[70vh] w-full flex-auto flex-col  overscroll-none pb-6 xl:h-[75vh]`}
         ref={tableContainerRef}
       >
         {!searchLoading && searchData && (
           <Table
             table={table}
+            activeId={activeId}
             virtualRows={virtualRows}
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
