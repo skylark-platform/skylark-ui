@@ -385,6 +385,7 @@ export const ObjectList = ({
       <div
         className="relative mb-6 flex w-full flex-auto flex-grow flex-col overflow-x-auto overscroll-none"
         ref={tableContainerRef}
+        data-testid="table-container"
         onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
       >
         {!searchLoading && searchData && (

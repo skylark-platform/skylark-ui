@@ -102,6 +102,7 @@ test("renders the panel in the default view", async () => {
   );
   await waitFor(
     () => expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    // First load can be a bit slow due to the number of requests it makes. In production these requests are client side cached
     { timeout: 2000 },
   );
   await waitFor(() =>

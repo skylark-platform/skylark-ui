@@ -4,6 +4,7 @@ import { DocumentNode } from "graphql";
 
 import { SEARCH_PAGE_SIZE } from "src/hooks/useSearch";
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
+import { skylarkClientCache } from "src/lib/graphql/skylark/client";
 import { createSearchObjectsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   GET_SKYLARK_OBJECT_TYPES,
@@ -13,6 +14,8 @@ import { getAllObjectsMeta } from "src/lib/skylark/objects";
 import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
 import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 import GQLGameOfThronesSearchResults from "src/tests/fixtures/skylark/queries/search/got.json";
+import GQLGameOfThronesSearchResultsPage1 from "src/tests/fixtures/skylark/queries/search/gotPage1.json";
+import GQLGameOfThronesSearchResultsPage2 from "src/tests/fixtures/skylark/queries/search/gotPage2.json";
 
 import { ObjectList } from "./objectListing.component";
 
@@ -129,6 +132,65 @@ test("renders search results", async () => {
   expect(
     screen.getByText(
       GQLGameOfThronesSearchResults.data.search.objects[0].uid as string,
+    ),
+  ).toBeInTheDocument();
+});
+
+test("renders more search results on scroll", async () => {
+  render(
+    <MockedProvider
+      cache={skylarkClientCache()}
+      mocks={[
+        ...schemaMocks,
+        {
+          request: {
+            variables: {
+              ignoreAvailability: true,
+              queryString: "",
+              limit: SEARCH_PAGE_SIZE,
+            },
+            query: createSearchObjectsQuery(
+              searchableObjectsMeta,
+              [],
+            ) as DocumentNode,
+          },
+          result: GQLGameOfThronesSearchResultsPage1,
+        },
+        {
+          request: {
+            variables: {
+              ignoreAvailability: true,
+              queryString: "",
+              limit: SEARCH_PAGE_SIZE,
+              offset:
+                GQLGameOfThronesSearchResultsPage1.data.search.objects.length,
+            },
+            query: createSearchObjectsQuery(
+              searchableObjectsMeta,
+              [],
+            ) as DocumentNode,
+          },
+          result: GQLGameOfThronesSearchResultsPage2,
+        },
+      ]}
+    >
+      <ObjectList />
+    </MockedProvider>,
+  );
+
+  await screen.findByText("UID"); // Search for table header
+
+  const scrollContainer = screen.getByTestId("table-container");
+  fireEvent.scroll(scrollContainer, { target: { scrollY: 500 } });
+
+  // Search for page2 table content
+  await screen.findAllByText(
+    GQLGameOfThronesSearchResultsPage2.data.search.objects[0].uid,
+  );
+
+  expect(
+    screen.getByText(
+      GQLGameOfThronesSearchResultsPage2.data.search.objects[0].uid as string,
     ),
   ).toBeInTheDocument();
 });

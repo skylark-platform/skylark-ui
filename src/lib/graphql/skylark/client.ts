@@ -42,33 +42,35 @@ export const authLink = setContext((_, { headers }) => {
   };
 });
 
-export const createSkylarkClient = () =>
-  new ApolloClient({
-    link: authLink.concat(httpLink),
-    cache: new InMemoryCache({
-      dataIdFromObject: createApolloClientDataIdFromSkylarkObject,
-      typePolicies: {
-        Query: {
-          fields: {
-            search: {
-              keyArgs: ["query"],
-              merge(existing, incoming, ...others) {
-                console.log({ existing, incoming, others });
-                if (!incoming) return existing;
-                if (!existing) return incoming; // existing will be empty the first time
+export const skylarkClientCache = () =>
+  new InMemoryCache({
+    dataIdFromObject: createApolloClientDataIdFromSkylarkObject,
+    typePolicies: {
+      Query: {
+        fields: {
+          search: {
+            keyArgs: ["query"],
+            merge(existing, incoming) {
+              if (!incoming) return existing;
+              if (!existing) return incoming; // existing will be empty the first time
 
-                const { objects, ...rest } = incoming;
+              const { objects, ...rest } = incoming;
 
-                const result = rest;
-                result.objects = [...existing.objects, ...objects]; // Merge existing items with the items from incoming
+              const result = rest;
+              result.objects = [...existing.objects, ...objects]; // Merge existing items with the items from incoming
 
-                return result;
-              },
+              return result;
             },
           },
         },
       },
-    }),
+    },
+  });
+
+export const createSkylarkClient = () =>
+  new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache: skylarkClientCache(),
   });
 
 export const createBasicSkylarkClient = (uri: string, token: string) =>
