@@ -89,7 +89,7 @@ export const createFlatfileObjectsInSkylark = async (
                 return [key, dayjs(value as string).format("YYYY-MM-DD")];
               }
               if (input?.type === "time") {
-                return [key, dayjs(value as string).format("HH:mm:ss.SSS")];
+                return [key, dayjs(value as string).format("HH:mm:ss.SSSZ")];
               }
               if (input?.type === "int") {
                 return [key, parseInt(value as string)];
