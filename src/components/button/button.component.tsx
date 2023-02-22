@@ -36,7 +36,7 @@ export const Button = ({
 
   const combinedClassName = clsx(
     "btn flex-nowrap",
-    Icon && children && "space-x-2",
+    Icon && children && "gap-x-2",
     !iconOnly && "min-h-8 text-xs normal-case h-8 md:h-10 md:text-sm",
     variant !== "ghost" && "min-w-24 rounded-full",
     variant === "primary" && "btn-primary shadow",
@@ -58,7 +58,7 @@ export const Button = ({
       <Link legacyBehavior href={href}>
         <a className={combinedClassName}>
           {Icon}
-          {Icon && children ? <span>{children}</span> : children}
+          {children}
         </a>
       </Link>
     );
@@ -74,7 +74,7 @@ export const Button = ({
         <CgSpinner className="mr-1 animate-spin-fast text-base md:text-lg" />
       )}
       {!loading && Icon}
-      {Icon && children ? <span>{children}</span> : children}
+      {children}
     </button>
   );
 };

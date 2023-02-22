@@ -92,6 +92,7 @@ export const useGetObject = (
   return {
     ...rest,
     data: parsedObject,
+    loading: rest.loading || !query,
     query,
   };
 };
