@@ -82,7 +82,11 @@ export const createFlatfileObjectsInSkylark = async (
               if (input?.type === "enum") {
                 return [key, new EnumType(value as string)];
               }
-              if (input?.type === "datetime") {
+              if (
+                input?.type === "datetime" ||
+                input?.type === "date" ||
+                input?.type === "time"
+              ) {
                 return [key, dayjs(value as string).toISOString()];
               }
               if (input?.type === "int") {
