@@ -1,6 +1,7 @@
 import { useApolloClient } from "@apollo/client";
 import { Dialog } from "@headlessui/react";
 import clsx from "clsx";
+import { usePlausible } from "next-plausible";
 import React, { useEffect, useState } from "react";
 import { GrClose } from "react-icons/gr";
 import { useDebounce } from "use-debounce";
@@ -25,6 +26,7 @@ export const AddAuthTokenModal = ({
   setIsOpen,
 }: AddAuthTokenModalProps) => {
   const skylarkClient = useApolloClient();
+  const plausible = usePlausible();
 
   const { connected, loading, invalidUri, invalidToken, setValidatorClient } =
     useConnectedToSkylark();
@@ -78,6 +80,7 @@ export const AddAuthTokenModal = ({
 
   const updateLocalStorage = async () => {
     if (debouncedUri && debouncedToken) {
+      plausible("connectedToSkylark", { props: { skylark_url: debouncedUri } });
       localStorage.setItem(LOCAL_STORAGE.betaAuth.uri, debouncedUri);
       localStorage.setItem(LOCAL_STORAGE.betaAuth.token, debouncedToken);
       // storage events are not picked up in the same tab, so dispatch it for the current one
