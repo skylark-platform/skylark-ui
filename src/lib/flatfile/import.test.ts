@@ -1,5 +1,5 @@
-import { gql } from "@apollo/client";
 import { Flatfile } from "@flatfile/sdk";
+import { gql } from "graphql-tag";
 import { createMockClient, MockApolloClient } from "mock-apollo-client";
 
 import { FlatfileRow } from "src/interfaces/flatfile/responses";

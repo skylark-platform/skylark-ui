@@ -1,5 +1,5 @@
-import { gql } from "@apollo/client";
 import { ITheme } from "@flatfile/sdk";
+import { gql } from "graphql-tag";
 import { EnumType, jsonToGraphQLQuery } from "json-to-graphql-query";
 
 import {

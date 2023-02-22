@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from "graphql-tag";
 
 import { FLATFILE_TEAM, ACTIVE_FLATFILE_ENV } from "src/constants/flatfile";
 

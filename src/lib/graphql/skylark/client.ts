@@ -2,11 +2,13 @@ import {
   ApolloClient,
   createHttpLink,
   defaultDataIdFromObject,
+  DocumentNode,
   InMemoryCache,
   StoreObject,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { offsetLimitPagination } from "@apollo/client/utilities";
+import { QueryClient } from "@tanstack/react-query";
+import graphqlRequest from "graphql-request";
 
 import {
   SAAS_API_ENDPOINT,
@@ -87,3 +89,27 @@ export const createBasicSkylarkClient = (uri: string, token: string) =>
 export type SkylarkClient =
   | ReturnType<typeof createSkylarkClient>
   | ApolloClient<object>;
+
+export const createSkylarkReactQueryClient = () => new QueryClient();
+
+export const request = <T>(
+  query: DocumentNode | string,
+  variables?: object,
+) => {
+  // get the authentication token from local storage if it exists
+  const uri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri);
+  const token = localStorage.getItem(LOCAL_STORAGE.betaAuth.token);
+
+  // return the headers to the context so httpLink can read them
+  // In Beta, only set the token when we have a URI so that Apollo Client fires a failing request when the URI is invalid/missing
+  // It's hacky. Apollo Client doesn't make a request when the URI is invalid
+  // return {
+  //   uri: uri || SAAS_API_ENDPOINT,
+  //   headers: {
+  //     ...headers,
+  //     [REQUEST_HEADERS.apiKey]: uri ? token || "" : "",
+  //   },
+  return graphqlRequest<T>(uri || SAAS_API_ENDPOINT, query, variables, {
+    [REQUEST_HEADERS.apiKey]: uri ? token || "" : "",
+  });
+};

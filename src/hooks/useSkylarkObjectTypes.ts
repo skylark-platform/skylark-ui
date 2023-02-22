@@ -1,10 +1,11 @@
-import { QueryResult, useQuery } from "@apollo/client";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
 import {
   GQLSkylarkObjectTypesResponse,
   GQLSkylarkSchemaQueriesMutations,
 } from "src/interfaces/graphql/introspection";
 import { SkylarkObjectType } from "src/interfaces/skylark";
+import { request } from "src/lib/graphql/skylark/client";
 import {
   GET_SKYLARK_SCHEMA,
   GET_SKYLARK_OBJECT_TYPES,
@@ -14,12 +15,13 @@ import {
   getAllObjectsMeta,
 } from "src/lib/skylark/objects";
 
-export const useSkylarkObjectTypes = (): Omit<QueryResult, "data"> & {
+export const useSkylarkObjectTypes = (): Omit<UseQueryResult, "data"> & {
   objectTypes: string[] | undefined;
 } => {
-  const { data, ...rest } = useQuery<GQLSkylarkObjectTypesResponse>(
-    GET_SKYLARK_OBJECT_TYPES,
-  );
+  const { data, ...rest } = useQuery<GQLSkylarkObjectTypesResponse>({
+    queryKey: [GET_SKYLARK_OBJECT_TYPES],
+    queryFn: async () => request(GET_SKYLARK_OBJECT_TYPES),
+  });
 
   const objectTypes = data
     ? data?.__type.possibleTypes.map(({ name }) => name) || []
@@ -34,8 +36,10 @@ export const useSkylarkObjectTypes = (): Omit<QueryResult, "data"> & {
 // Returns the operations for a given object (createEpisode etc for Episode)
 // Should be fast as it'll keep hitting the Apollo cache both requests noice
 export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
-  const { data, ...rest } =
-    useQuery<GQLSkylarkSchemaQueriesMutations>(GET_SKYLARK_SCHEMA);
+  const { data, ...rest } = useQuery<GQLSkylarkSchemaQueriesMutations>({
+    queryKey: [GET_SKYLARK_SCHEMA],
+    queryFn: async () => request(GET_SKYLARK_SCHEMA),
+  });
 
   if (!data || !objectType) {
     return { objectOperations: null, ...rest };
@@ -51,7 +55,10 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
 
 export const useAllObjectsMeta = () => {
   const { data: schemaResponse, ...rest } =
-    useQuery<GQLSkylarkSchemaQueriesMutations>(GET_SKYLARK_SCHEMA);
+    useQuery<GQLSkylarkSchemaQueriesMutations>({
+      queryKey: [GET_SKYLARK_SCHEMA],
+      queryFn: async () => request(GET_SKYLARK_SCHEMA),
+    });
 
   const { objectTypes } = useSkylarkObjectTypes();
 

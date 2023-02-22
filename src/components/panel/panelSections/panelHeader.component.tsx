@@ -1,4 +1,3 @@
-import { OperationVariables } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useMemo, useState } from "react";
@@ -23,7 +22,7 @@ interface PanelHeaderProps {
   objectUid: string;
   pillColor?: string;
   graphQLQuery: DocumentNode | null;
-  graphQLVariables?: OperationVariables;
+  graphQLVariables?: object;
   inEditMode: boolean;
   isSaving?: boolean;
   toggleEditMode: () => void;

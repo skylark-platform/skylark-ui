@@ -46,9 +46,10 @@ const getTitle = (
 };
 
 export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
-  const { data, loading, query, variables, error } = useGetObject(objectType, {
-    uid: uid,
-  });
+  const { data, isLoading, query, variables, isError, error } = useGetObject(
+    objectType,
+    uid,
+  );
 
   const [inEditMode, setEditMode] = useState(false);
   const [contentObjects, setContentObjects] = useState<
@@ -113,7 +114,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
 
   return (
     <section className="mx-auto flex h-full w-full flex-col">
-      {loading && (
+      {isLoading && (
         <div
           data-testid="loading"
           className="flex h-full w-full items-center justify-center pt-10"
@@ -121,12 +122,12 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
           <Spinner className="h-16 w-16 animate-spin" />
         </div>
       )}
-      {!loading && error && (
+      {!isLoading && isError && (
         <div className="flex h-full w-full items-center justify-center pt-10">
           <p>{error.message}</p>
         </div>
       )}
-      {!loading && data && (
+      {!isLoading && data && (
         <>
           <PanelHeader
             title={getTitle(data.metadata, data.config)}

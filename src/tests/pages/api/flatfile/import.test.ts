@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from "graphql-tag";
 import { createMockClient, MockApolloClient } from "mock-apollo-client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createMocks, Mocks } from "node-mocks-http";

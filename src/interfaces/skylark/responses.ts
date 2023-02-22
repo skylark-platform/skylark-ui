@@ -3,6 +3,11 @@ import {
   SkylarkGraphQLObjectContent,
 } from "./gqlObjects";
 
+// TODO extend to be the full error structure
+export interface GQLSkylarkResponseError {
+  message: string;
+}
+
 export interface GQLSkylarkGetObjectResponse {
   getObject: SkylarkGraphQLObject;
 }
