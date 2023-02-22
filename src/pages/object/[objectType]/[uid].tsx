@@ -15,11 +15,7 @@ const Object = () => {
             maxHeight: `calc(100vh - 4rem)`,
           }}
         >
-          <Panel
-            closePanel={() => console.log("close")}
-            uid={uid as string}
-            objectType={objectType as string}
-          />
+          <Panel uid={uid as string} objectType={objectType as string} />
         </div>
       )}
     </div>

@@ -15,8 +15,6 @@ import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 import { DisplayNameTableCell } from "./cell";
 
-export type TableColumn = string;
-
 export interface TableProps {
   table: ReactTable<object>;
   withCheckbox?: boolean;
@@ -195,20 +193,19 @@ export const Table = ({
       : 0;
 
   const { rows } = table.getRowModel();
+  const headers = table.getHeaderGroups()[0].headers;
   return (
     <table className="relative w-full bg-white">
       <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id} className="sticky top-0 z-30 bg-white">
-            {headerGroup.headers.map((header) => (
-              <TableHeader
-                key={header.id}
-                header={header}
-                withCheckbox={withCheckbox}
-              />
-            ))}
-          </tr>
-        ))}
+        <tr className="sticky top-0 z-30 bg-white">
+          {headers.map((header) => (
+            <TableHeader
+              key={header.id}
+              header={header}
+              withCheckbox={withCheckbox}
+            />
+          ))}
+        </tr>
       </thead>
 
       <tbody className="align-top">
@@ -223,7 +220,7 @@ export const Table = ({
           return (
             <tr
               key={row.id}
-              className="group/row outline-none"
+              className="group/row h-6 align-middle outline-none md:h-10"
               tabIndex={-1}
               onDoubleClick={() => setPanelObject?.({ uid, objectType })}
             >
@@ -238,6 +235,7 @@ export const Table = ({
             </tr>
           );
         })}
+
         {paddingBottom > 0 && (
           <tr>
             <td style={{ height: `${paddingBottom}px` }} />

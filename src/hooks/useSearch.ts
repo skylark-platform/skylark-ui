@@ -1,13 +1,13 @@
 import { useQuery } from "@apollo/client";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   SkylarkGraphQLObjectImage,
   ParsedSkylarkObject,
   SkylarkGraphQLObject,
   ParsedSkylarkObjectMetadata,
+  GQLSkylarkSearchResponse,
 } from "src/interfaces/skylark";
-import { GQLSkylarkSearchResponse } from "src/interfaces/skylark";
 import {
   createSearchObjectsQuery,
   defaultValidBlankQuery,
@@ -24,8 +24,11 @@ export interface SearchFilters {
   objectTypes: string[] | null;
 }
 
+export const SEARCH_PAGE_SIZE = 30;
+
 export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta();
+  const [allResultsFetched, setAllResultsFetched] = useState(false);
 
   const query = useMemo(
     () =>
@@ -33,18 +36,26 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     [searchableObjects, filters.objectTypes],
   );
 
-  const { data: searchResponse, ...rest } = useQuery<GQLSkylarkSearchResponse>(
+  const {
+    data: searchResponse,
+    fetchMore,
+    refetch,
+    ...rest
+  } = useQuery<GQLSkylarkSearchResponse | undefined>(
     query || defaultValidBlankQuery,
     {
       skip: !query,
       variables: {
         queryString,
+        limit: SEARCH_PAGE_SIZE,
       },
+      notifyOnNetworkStatusChange: true,
       // Using "all" so we can get data even when some is invalid
       // https://www.apollographql.com/docs/react/data/error-handling/#graphql-error-policies
       errorPolicy: "all",
       // Don't cache search so we always get up to date results
       fetchPolicy: "network-only",
+      nextFetchPolicy: "network-only",
     },
   );
 
@@ -78,10 +89,41 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     return parsedObjects;
   }, [searchResponse?.search.objects]);
 
+  const fetchMoreWrapper = () => {
+    if (!allResultsFetched) {
+      fetchMore({
+        variables: {
+          offset: searchResponse?.search.objects.length || 0,
+        },
+      }).then(({ data: newSearchData }) => {
+        if (
+          newSearchData?.search.objects.length === 0 ||
+          data.length % SEARCH_PAGE_SIZE !== 0
+        ) {
+          setAllResultsFetched(true);
+          return;
+        }
+      });
+    }
+  };
+
+  useEffect(() => {
+    setAllResultsFetched(false);
+    refetch();
+  }, [refetch, query]);
+
   return {
     data,
     properties: allFieldNames,
     query,
+    fetchMoreResults: fetchMoreWrapper,
+    refetch,
     ...rest,
+    // https://github.com/apollographql/apollo-client/blob/d470c964db46728d8a5dfc63990859c550fa1656/src/core/networkStatus.ts#L4
+    // Loading is either "loading" or "refetching" - we use refetching when updating the search filters
+    loading: rest.networkStatus === 1 || rest.networkStatus === 4,
+    fetchingMore: rest.networkStatus === 3,
+    moreResultsAvailable:
+      !allResultsFetched && data.length % SEARCH_PAGE_SIZE === 0,
   };
 };

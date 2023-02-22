@@ -8,6 +8,7 @@ import {
 } from "@testing-library/react";
 import { DocumentNode } from "graphql";
 
+import { SEARCH_PAGE_SIZE } from "src/hooks/useSearch";
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import {
   createGetObjectQuery,
@@ -58,7 +59,11 @@ test("open metadata panel, check information and close", async () => {
     ...schemaMocks,
     {
       request: {
-        variables: { ignoreAvailability: true, queryString: "" },
+        variables: {
+          ignoreAvailability: true,
+          queryString: "",
+          limit: SEARCH_PAGE_SIZE,
+        },
         query: createSearchObjectsQuery(
           searchableObjectsMeta,
           [],

@@ -5,7 +5,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useVirtual } from "react-virtual";
 
 import { Checkbox } from "src/components/checkbox";
@@ -36,8 +36,6 @@ const orderedKeys = ["uid", "external_id", "data_source_id"];
 
 const columnHelper = createColumnHelper<object>();
 
-export type TableColumn = string;
-
 export interface ObjectListProps {
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
@@ -47,7 +45,7 @@ export interface ObjectListProps {
 }
 
 const createColumns = (
-  columns: TableColumn[],
+  columns: string[],
   opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
   setPanelObject?: ({
     objectType,
@@ -113,24 +111,24 @@ const createColumns = (
   });
 
   // TODO only add/create this column if the schema has images. Or always created it but hide it when it doesn't have images
-  const imagesColumn = columnHelper.accessor("images", {
-    header: formatObjectField("Images"),
-    cell: (props) => {
-      const images = props.getValue<SkylarkGraphQLObjectImage[]>();
-      if (!images || images.length === 0) {
-        return "";
-      }
+  // const imagesColumn = columnHelper.accessor("images", {
+  //   header: formatObjectField("Images"),
+  //   cell: (props) => {
+  //     const images = props.getValue<SkylarkGraphQLObjectImage[]>();
+  //     if (!images || images.length === 0) {
+  //       return "";
+  //     }
 
-      return (
-        <div>
-          {images.map(({ uid, url, title }) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
-          ))}
-        </div>
-      );
-    },
-  });
+  //     return (
+  //       <div>
+  //         {images.map(({ uid, url, title }) => (
+  //           // eslint-disable-next-line @next/next/no-img-element
+  //           <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
+  //         ))}
+  //       </div>
+  //     );
+  //   },
+  // });
 
   const selectColumn = columnHelper.display({
     id: OBJECT_LIST_TABLE.columnIds.checkbox,
@@ -161,7 +159,7 @@ const createColumns = (
   const orderedColumnArray = [
     objectTypeColumn,
     displayNameColumn,
-    imagesColumn,
+    // imagesColumn,
     availabilityColumn,
     ...createdColumns,
   ];
@@ -188,6 +186,8 @@ export const ObjectList = ({
     objectTypes: null,
   });
 
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
   const {
     data: searchData,
     error: searchError,
@@ -195,6 +195,9 @@ export const ObjectList = ({
     properties,
     query: graphqlSearchQuery,
     variables: graphqlSearchQueryVariables,
+    moreResultsAvailable,
+    fetchingMore,
+    fetchMoreResults,
   } = useSearch(searchQuery, searchFilters);
 
   // Sorts objects using the preference array above, any others are added to the end randomly
@@ -251,6 +254,35 @@ export const ObjectList = ({
 
     return searchDataWithTopLevelMetadata;
   }, [searchData]);
+  const fetchMoreOnBottomReached = useCallback(
+    (containerRefElement?: HTMLDivElement | null) => {
+      if (containerRefElement) {
+        const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
+        // once the user has scrolled within 500px of the bottom of the table, fetch more data if there is any
+        if (
+          searchData.length > 0 &&
+          scrollHeight - scrollTop - clientHeight < 500 &&
+          moreResultsAvailable &&
+          !searchLoading &&
+          !fetchingMore
+        ) {
+          fetchMoreResults();
+        }
+      }
+    },
+    [
+      searchData.length,
+      moreResultsAvailable,
+      searchLoading,
+      fetchingMore,
+      fetchMoreResults,
+    ],
+  );
+
+  // a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
+  useEffect(() => {
+    fetchMoreOnBottomReached(tableContainerRef.current);
+  }, [fetchMoreOnBottomReached]);
 
   const table = useReactTable({
     debugAll: false,
@@ -291,13 +323,11 @@ export const ObjectList = ({
 
   if (searchError) console.error("Search Errors:", { searchError });
 
-  const tableContainerRef = useRef<HTMLDivElement>(null);
-
   const { rows } = table.getRowModel();
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
     size: rows.length,
-    overscan: 50,
+    overscan: 40,
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
 
@@ -353,8 +383,10 @@ export const ObjectList = ({
         )}
       </div>
       <div
-        className="flex h-[70vh] w-full flex-auto flex-col overflow-x-auto overscroll-none pb-6 xl:h-[75vh]"
+        className="relative mb-6 flex w-full flex-auto flex-grow flex-col overflow-x-auto overscroll-none"
         ref={tableContainerRef}
+        data-testid="table-container"
+        onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
       >
         {!searchLoading && searchData && (
           <Table
@@ -364,6 +396,11 @@ export const ObjectList = ({
             withCheckbox={withObjectSelect}
             setPanelObject={onInfoClick}
           />
+        )}
+        {!searchLoading && searchData && fetchingMore && (
+          <div className="sticky left-0 right-0 bottom-2 flex items-center justify-center">
+            <Spinner className="-z-10 h-8 w-8 animate-spin md:h-10 md:w-10" />
+          </div>
         )}
         {(searchLoading || searchData) && (
           <div className="items-top justify-left flex h-96 w-full flex-col space-y-2 text-sm text-manatee-600 md:text-base">
