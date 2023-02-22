@@ -1,5 +1,5 @@
-import { useApolloClient } from "@apollo/client";
 import { Dialog } from "@headlessui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import { GrClose } from "react-icons/gr";
@@ -24,7 +24,7 @@ export const AddAuthTokenModal = ({
   isOpen,
   setIsOpen,
 }: AddAuthTokenModalProps) => {
-  const skylarkClient = useApolloClient();
+  const skylarkClient = useQueryClient();
 
   const { connected, loading, invalidUri, invalidToken, setValidatorClient } =
     useConnectedToSkylark();
@@ -83,9 +83,8 @@ export const AddAuthTokenModal = ({
       // storage events are not picked up in the same tab, so dispatch it for the current one
       window.dispatchEvent(new Event("storage"));
 
-      await skylarkClient.refetchQueries({
-        include: "all",
-      });
+      await skylarkClient.refetchQueries();
+
       setIsOpen(false);
     }
   };
