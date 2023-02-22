@@ -1,5 +1,5 @@
 import { useDraggable, DragOverlay } from "@dnd-kit/core";
-import { restrictToWindowEdges, snapCenterToCursor } from "@dnd-kit/modifiers";
+import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import {
   Cell,
   flexRender,
@@ -27,6 +27,14 @@ export interface TableProps {
   totalRows: number;
   activeId: any;
   setPanelObject?: (obj: { uid: string; objectType: string }) => void;
+}
+
+export interface TableRowProps {
+  rows: any;
+  virtualRow: VirtualItem;
+  setPanelObject?: (obj: { uid: string; objectType: string }) => void;
+  tableMeta: any;
+  withCheckbox: any;
 }
 
 const headAndDataClassNames =
@@ -190,25 +198,19 @@ const TableRow = ({
   setPanelObject,
   tableMeta,
   withCheckbox,
-}: any) => {
+}: TableRowProps) => {
   const row = rows[virtualRow.index] as Row<SkylarkGraphQLObject>;
   const { uid, objectType } = row.original;
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+  const { attributes, listeners, setNodeRef } = useDraggable({
     id: uid,
     data: {
-      record: row.original,
+      object: row.original,
     },
   });
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
 
   return (
     <tr
       ref={setNodeRef}
-      // style={style}
       {...listeners}
       {...attributes}
       key={row.id}
@@ -280,54 +282,17 @@ export const Table = ({
               withCheckbox={withCheckbox}
             />
           );
-          const row = rows[virtualRow.index] as Row<SkylarkGraphQLObject>;
-          const { uid, objectType } = row.original;
-          const { attributes, listeners, setNodeRef, transform } = useDraggable(
-            {
-              id: "draggable" + virtualRow.index,
-            },
-          );
-          const style = transform
-            ? {
-                transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-              }
-            : undefined;
-
-          return (
-            <tr
-              ref={setNodeRef}
-              // style={style}
-              {...listeners}
-              {...attributes}
-              key={row.id}
-              className="group/row"
-              tabIndex={-1}
-              onDoubleClick={() => setPanelObject?.({ uid, objectType })}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <TableData
-                  tableMeta={tableMeta}
-                  key={cell.id}
-                  cell={cell}
-                  withCheckbox={withCheckbox}
-                />
-              ))}
-            </tr>
-          );
         })}
         <DragOverlay modifiers={[snapCenterToCursor]}>
           {activeId ? (
-            <div
-              className="my-o flex items-center space-x-2"
-              style={{ maxWidth: 250 }}
-            >
+            <div className="my-o flex max-w-[350px] items-center space-x-2 ">
               <Pill
                 label={activeId.__typename as string}
                 bgColor={activeId.config.colour}
                 className="w-20"
               />
               <div className="flex flex-1">
-                <p>{activeId.title || activeId.uid}</p>
+                <p>{activeId.object.title || activeId.object.uid}</p>
               </div>
             </div>
           ) : null}

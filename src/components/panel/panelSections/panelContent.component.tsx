@@ -96,7 +96,11 @@ export const PanelContent = ({
 
   if (activeId)
     return (
-      <div className="m-4 h-72 border-2 border-dotted text-center text-manatee-400">
+      <div
+        ref={setNodeRef}
+        style={style}
+        className="m-4 h-72 border-2 border-dotted text-center text-manatee-400"
+      >
         <span className="content-center items-center justify-center">
           Drop in media to start curating or set dynamic controls
         </span>
@@ -105,8 +109,6 @@ export const PanelContent = ({
 
   return (
     <Reorder.Group
-      ref={setNodeRef}
-      style={style}
       axis="y"
       values={objects}
       onReorder={onReorder}

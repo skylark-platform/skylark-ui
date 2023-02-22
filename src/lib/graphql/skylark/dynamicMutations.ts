@@ -46,6 +46,8 @@ export const createUpdateSetContentPositionMutation = (
     return null;
   }
 
+  console.log("vefore crashhhh ==", orderedContentObjects);
+
   const setContent = orderedContentObjects.reduce(
     (prev, { objectType, object: { uid } }, index) => {
       const position = index + 1;

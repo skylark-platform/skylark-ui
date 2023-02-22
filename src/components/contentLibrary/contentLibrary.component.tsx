@@ -10,6 +10,7 @@ import React, { useEffect, useState, useRef } from "react";
 
 import { ObjectList } from "src/components/objectListing";
 import { Panel } from "src/components/panel";
+import { ParsedSkylarkObjectContent } from "src/interfaces/skylark";
 
 export const ContentLibrary = () => {
   const [activePanelObject, setActivePanelObject] = useState<{
@@ -34,6 +35,7 @@ export const ContentLibrary = () => {
     };
   }, [activePanelObject, objectListingWidth]);
   const [activeId, setActiveId] = useState(null);
+  const [newObjects, setObjects] = useState([]);
 
   const handleDrag = React.useCallback(
     (event: PointerEvent, info: { delta: { x: number } }) => {
@@ -108,6 +110,7 @@ export const ContentLibrary = () => {
               uid={activePanelObject.uid}
               objectType={activePanelObject.objectType}
               activeId={activeId}
+              newObjects={newObjects}
             />
           </m.div>
         )}
@@ -115,16 +118,30 @@ export const ContentLibrary = () => {
     </DndContext>
   );
 
-  function handleDragStart(event) {
-    console.log(event.active.data.current.record);
-    setActiveId(event.active.data.current.record);
+  function parse(obj: any) {
+    return {
+      config: obj.config,
+      object: obj.metadata,
+      objectType: obj.objectType,
+      position: 6,
+    };
   }
 
-  function handleDragEnd(event) {
-    console.log("not cool", event);
+  function handleDragStart(event: any) {
+    console.log("start", event.active.data.current.object);
+
+    setActiveId(parse(event.active.data.current.object));
+  }
+
+  function handleDragEnd(event: any) {
     setActiveId(null);
     if (event.over && event.over.id === "droppable") {
       console.log("happy", event);
+      const parsed = {
+        ...event.active.data.current.record,
+        activeId,
+      };
+      setObjects([activeId]);
     }
   }
 };

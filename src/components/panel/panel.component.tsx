@@ -26,6 +26,7 @@ interface PanelProps {
   closePanel: () => void;
   uid: string;
   activeId?: any;
+  newObjects?: any;
 }
 
 enum PanelTab {
@@ -50,6 +51,7 @@ export const Panel = ({
   objectType,
   uid,
   activeId,
+  newObjects,
 }: PanelProps) => {
   const {
     query: { edit },
@@ -91,6 +93,9 @@ export const Panel = ({
   const deleteObjectWrapper = () => {
     deleteObjectMutation({ variables: { uid } });
   };
+
+  console.log("$$$", updatedContentObjects);
+  console.log("$$$ %%", data?.content?.objects);
 
   const saveActiveTabChanges = () => {
     if (
@@ -152,7 +157,12 @@ export const Panel = ({
           )}
           {selectedTab === PanelTab.Content && data.content && (
             <PanelContent
-              objects={updatedContentObjects || data?.content?.objects}
+              objects={
+                updatedContentObjects || [
+                  ...(data?.content?.objects ?? []),
+                  ...newObjects,
+                ]
+              }
               inEditMode={inEditMode}
               onReorder={setContentObjects}
               activeId={activeId}
