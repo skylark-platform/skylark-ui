@@ -11,8 +11,6 @@ on:
         options:
           - main
           - beta
-  schedule:
-    - cron: "00 08 * * 1-5"
 
 jobs:
   trigger-deploy-hook:

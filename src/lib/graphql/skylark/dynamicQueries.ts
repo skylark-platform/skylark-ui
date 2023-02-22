@@ -6,6 +6,7 @@ import {
 } from "json-to-graphql-query";
 
 import {
+  BuiltInSkylarkObjectType,
   SkylarkGraphQLObject,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
@@ -61,6 +62,7 @@ const generateFieldsToReturn = (
 
 const generateRelationshipsToReturn = (
   object: SkylarkObjectMeta | null,
+  isSearch?: boolean,
 ): object => {
   if (!object) {
     return {};
@@ -82,10 +84,10 @@ const generateRelationshipsToReturn = (
     };
   }
 
-  if (object.images) {
+  if (!isSearch && object.images) {
     relationshipsToReturn.images = {
       __args: {
-        limit: 50, // max
+        limit: isSearch ? 5 : 50, // max
       },
       next_token: true,
       objects: {
@@ -97,12 +99,16 @@ const generateRelationshipsToReturn = (
   return relationshipsToReturn;
 };
 
-const generateContentsToReturn = (
+export const generateContentsToReturn = (
   object: SkylarkObjectMeta | null,
   objectsToRequest: SkylarkObjectMeta[],
 ) => {
   // Only Set has contents
-  if (!object || object.name !== "Set" || objectsToRequest.length === 0) {
+  if (
+    !object ||
+    object.name !== BuiltInSkylarkObjectType.Set ||
+    objectsToRequest.length === 0
+  ) {
     return {};
   }
 
@@ -110,6 +116,7 @@ const generateContentsToReturn = (
     content: {
       __args: {
         order: new EnumType("ASC"),
+        limit: 50,
       },
       objects: {
         object: {
@@ -239,12 +246,15 @@ export const createSearchObjectsQuery = (
       __variables: {
         ...common.variables,
         queryString: "String!",
+        offset: "Int",
+        limit: "Int",
       },
       search: {
         __args: {
           ...common.args,
           query: new VariableType("queryString"),
-          limit: 1000,
+          offset: new VariableType("offset"),
+          limit: new VariableType("limit"),
         },
         __typename: true,
         objects: {
@@ -253,7 +263,7 @@ export const createSearchObjectsQuery = (
             __typename: true, // To remove the alias later
             ...common.objectConfig,
             ...generateFieldsToReturn(object.fields, `__${object.name}__`),
-            ...generateRelationshipsToReturn(object),
+            ...generateRelationshipsToReturn(object, true),
           })),
         },
       },

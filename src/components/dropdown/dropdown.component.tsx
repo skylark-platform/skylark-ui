@@ -46,7 +46,7 @@ export const DropdownMenu = ({
       >
         <Menu.Items
           className={clsx(
-            "absolute z-50 mx-auto mt-2 w-56 divide-y divide-manatee-100 rounded-sm bg-white shadow-lg ring-1 ring-manatee-700 ring-opacity-5 focus:outline-none",
+            "absolute z-50 mx-auto mt-2 w-56 select-none divide-y divide-manatee-100 rounded-sm bg-white shadow-lg ring-1 ring-manatee-700 ring-opacity-5 focus:outline-none",
             align === "left" && "-left-4",
             align === "right" && "right-0 origin-top-right",
             mobileAlign === "center" &&
@@ -57,7 +57,7 @@ export const DropdownMenu = ({
             <Menu.Item key={option.id} as="div">
               {({ close }) => {
                 const className = clsx(
-                  "flex w-full items-center gap-1 rounded-sm px-4 py-2 md:py-3",
+                  "flex w-full items-center space-x-1 rounded-sm px-4 py-2 md:py-3",
                   !option.disabled &&
                     "ui-active:bg-manatee-200 ui-active:text-gray-900",
                   option.disabled && "bg-manatee-100 text-manatee-500",
@@ -80,7 +80,7 @@ export const DropdownMenu = ({
                     disabled={option.disabled}
                   >
                     {option.Icon}
-                    {option.text}
+                    <span>{option.text}</span>
                   </button>
                 );
               }}

@@ -20,7 +20,7 @@ export default function BetaConnect() {
   }, [query, navigateTo]);
 
   return (
-    <div className="flex h-screen w-screen flex-col items-center justify-center gap-4">
+    <div className="flex h-screen w-screen flex-col items-center justify-center space-y-2">
       <h1 className="mb-4 font-heading text-3xl">Skylark Auto Connect</h1>
       {!query.uri || !query.apikey ? (
         <>

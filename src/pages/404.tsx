@@ -51,7 +51,7 @@ export default function Custom404() {
   }, [asPath]);
 
   return (
-    <div className="flex h-screen w-full flex-col-reverse items-center justify-center px-4 md:flex-row md:gap-4">
+    <div className="flex h-screen w-full flex-col-reverse items-center justify-center px-4 md:flex-row md:space-x-4">
       <div className="flex flex-col items-center justify-center">
         <h1 className="text-7xl font-bold md:text-9xl">404</h1>
         <p className="mb-2 text-center text-xl font-bold text-gray-800 md:text-3xl">

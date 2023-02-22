@@ -52,9 +52,15 @@ describe("Content Library", () => {
           });
         }
       }
+      if (hasOperationName(req, "UPDATE_OBJECT_CONTENT_Set")) {
+        req.alias = "updateHomepageSetContent";
+        req.reply({
+          fixture: "./skylark/mutations/updateHomepageSetContent.json",
+        });
+      }
     });
 
-    cy.visit("/?edit=true"); // TODO remove edit=true when all edit modes are enabled
+    cy.visit("/");
     cy.wait("@getSkylarkObjectTypesQuery");
   });
 
@@ -169,139 +175,6 @@ describe("Content Library", () => {
       cy.percySnapshot("Homepage - metadata panel - graphql query");
     });
 
-    it("open Imagery tab", () => {
-      cy.get('input[name="search-query-input"]').type("GOT S01");
-      cy.contains("GOT S01 Trailer").should("exist");
-      cy.contains("tr", "GOT S01E1 - Winter")
-        .should(($el) => {
-          // eslint-disable-next-line jest/valid-expect
-          expect(Cypress.dom.isDetached($el)).to.eq(false);
-        })
-        .within(() => {
-          cy.get('[aria-label="object-info"]').click();
-        });
-
-      cy.contains("button", "Imagery").click();
-
-      cy.contains("Imagery");
-      cy.contains("Title: GOT - S1 - 1.jpg");
-      cy.contains("section", "THUMBNAIL")
-        .find("img")
-        .should(
-          "have.attr",
-          "src",
-          "https://dl.airtable.com/.attachments/c8b23d45c55cf09081954dd208dcce4b/80b72296/GOT-S1-1.jpg",
-        );
-
-      cy.percySnapshot("Homepage - metadata panel - imagery");
-    });
-
-    it("open Content tab", () => {
-      cy.get('input[name="search-query-input"]').type("Homepage");
-      cy.contains("Homepage").should("exist");
-      cy.contains("tr", "Homepage")
-        .should(($el) => {
-          // eslint-disable-next-line jest/valid-expect
-          expect(Cypress.dom.isDetached($el)).to.eq(false);
-        })
-        .within(() => {
-          cy.get('[aria-label="object-info"]').click();
-        });
-      cy.contains("button", "Content").click();
-
-      cy.percySnapshot("Homepage - metadata panel - content");
-    });
-
-    it("open Content tab - edit and cancel", () => {
-      cy.get('input[name="search-query-input"]').type("Homepage");
-      cy.contains("Homepage").should("exist");
-      cy.contains("tr", "Homepage")
-        .should(($el) => {
-          // eslint-disable-next-line jest/valid-expect
-          expect(Cypress.dom.isDetached($el)).to.eq(false);
-        })
-        .within(() => {
-          cy.get('[aria-label="object-info"]').click();
-        });
-      cy.contains("button", "Content").click();
-
-      // Test switching to edit mode
-      cy.contains("Editing").should("not.exist");
-      cy.contains("button", "Edit Content").should("not.be.disabled").click();
-      cy.get("[data-testid=panel-header]").within(() => {
-        cy.contains("button", "Save").should("not.be.disabled");
-        cy.contains("button", "Cancel").should("not.be.disabled");
-      });
-      cy.contains("Editing").should("exist");
-      cy.get("[data-testid=panel-content-items] > li p")
-        .then(($els) => {
-          const text = $els.toArray().map((el) => el.innerText.trim());
-          return text;
-        })
-        .should("deep.eq", [
-          "Home page hero",
-          "Spotlight movies",
-          "New TV Releases",
-          "GOT S01",
-          "GOT S02",
-          "Discover Collection",
-        ]);
-
-      cy.percySnapshot("Homepage - metadata panel - content (edit)");
-
-      // Test deleting
-      cy.contains("Discover Collection")
-        .parent()
-        .parent()
-        .within(() => {
-          cy.get("svg").click();
-        });
-      cy.contains("Discover Collection").should("not.exist");
-
-      // Test reorder
-      cy.get("[data-testid=panel-content-items] > li")
-        .first()
-        .within(() => {
-          cy.get("input").clear().type("20");
-        });
-
-      cy.get("[data-testid=panel-content-items]").click();
-
-      // Test updated order
-      cy.get("[data-testid=panel-content-items] > li p")
-        .then(($els) => {
-          const text = $els.toArray().map((el) => el.innerText.trim());
-          return text;
-        })
-        .should("deep.eq", [
-          "Spotlight movies",
-          "New TV Releases",
-          "GOT S01",
-          "GOT S02",
-          "Home page hero",
-        ]);
-
-      cy.percySnapshot("Homepage - metadata panel - content (reorder)");
-
-      // Test cancel
-      cy.contains("Cancel").click();
-
-      cy.contains("Editing").should("not.exist");
-      cy.get("[data-testid=panel-content-items] > li p")
-        .then(($els) => {
-          const text = $els.toArray().map((el) => el.innerText.trim());
-          return text;
-        })
-        .should("deep.eq", [
-          "Home page hero",
-          "Spotlight movies",
-          "New TV Releases",
-          "GOT S01",
-          "GOT S02",
-          "Discover Collection",
-        ]);
-    });
-
     it("close Metadata panel", () => {
       cy.get('input[name="search-query-input"]').type("GOT S01");
       cy.contains("GOT S01 Trailer").should("exist");
@@ -318,6 +191,210 @@ describe("Content Library", () => {
       cy.contains("Metadata").should("exist");
       cy.get("button").contains("Close").click();
       cy.contains("Metadata").should("not.exist");
+    });
+
+    describe("Imagery tab", () => {
+      it("open Imagery tab", () => {
+        cy.get('input[name="search-query-input"]').type("GOT S01");
+        cy.contains("GOT S01 Trailer").should("exist");
+        cy.contains("tr", "GOT S01E1 - Winter")
+          .should(($el) => {
+            // eslint-disable-next-line jest/valid-expect
+            expect(Cypress.dom.isDetached($el)).to.eq(false);
+          })
+          .within(() => {
+            cy.get('[aria-label="object-info"]').click();
+          });
+
+        cy.contains("button", "Imagery").click();
+
+        cy.contains("Imagery");
+        cy.contains("Title: GOT - S1 - 1.jpg");
+        cy.contains("section", "THUMBNAIL")
+          .find("img")
+          .should(
+            "have.attr",
+            "src",
+            "https://dl.airtable.com/.attachments/c8b23d45c55cf09081954dd208dcce4b/80b72296/GOT-S1-1.jpg",
+          );
+
+        cy.percySnapshot("Homepage - metadata panel - imagery");
+      });
+    });
+
+    describe("Content tab", () => {
+      it("Open", () => {
+        cy.get('input[name="search-query-input"]').type("Homepage");
+        cy.contains("Homepage").should("exist");
+        cy.contains("tr", "Homepage")
+          .should(($el) => {
+            // eslint-disable-next-line jest/valid-expect
+            expect(Cypress.dom.isDetached($el)).to.eq(false);
+          })
+          .within(() => {
+            cy.get('[aria-label="object-info"]').click();
+          });
+        cy.contains("button", "Content").click();
+
+        cy.percySnapshot("Homepage - metadata panel - content");
+      });
+
+      it("Reorder, remove and cancel", () => {
+        cy.get('input[name="search-query-input"]').type("Homepage");
+        cy.contains("Homepage").should("exist");
+        cy.contains("tr", "Homepage")
+          .should(($el) => {
+            // eslint-disable-next-line jest/valid-expect
+            expect(Cypress.dom.isDetached($el)).to.eq(false);
+          })
+          .within(() => {
+            cy.get('[aria-label="object-info"]').click();
+          });
+        cy.contains("button", "Content").click();
+
+        // Test switching to edit mode
+        cy.contains("Editing").should("not.exist");
+        cy.contains("button", "Edit Content").should("not.be.disabled").click();
+        cy.get("[data-testid=panel-header]").within(() => {
+          cy.contains("button", "Save").should("not.be.disabled");
+          cy.contains("button", "Cancel").should("not.be.disabled");
+        });
+        cy.contains("Editing").should("exist");
+        cy.get("[data-testid=panel-content-items] > li p")
+          .then(($els) => {
+            const text = $els.toArray().map((el) => el.innerText.trim());
+            return text;
+          })
+          .should("deep.eq", [
+            "Home page hero",
+            "Spotlight movies",
+            "New TV Releases",
+            "GOT S01",
+            "GOT S02",
+            "Discover Collection",
+          ]);
+
+        cy.percySnapshot("Homepage - metadata panel - content (edit)");
+
+        // Test deleting
+        cy.contains("Discover Collection")
+          .parent()
+          .parent()
+          .within(() => {
+            cy.get("svg").click();
+          });
+        cy.contains("Discover Collection").should("not.exist");
+
+        // Test reorder
+        cy.get("[data-testid=panel-content-items] > li")
+          .first()
+          .within(() => {
+            cy.get("input").clear().type("20");
+          });
+
+        cy.get("[data-testid=panel-content-items]").click();
+
+        // Test updated order
+        cy.get("[data-testid=panel-content-items] > li p")
+          .then(($els) => {
+            const text = $els.toArray().map((el) => el.innerText.trim());
+            return text;
+          })
+          .should("deep.eq", [
+            "Spotlight movies",
+            "New TV Releases",
+            "GOT S01",
+            "GOT S02",
+            "Home page hero",
+          ]);
+
+        cy.percySnapshot("Homepage - metadata panel - content (reorder)");
+
+        // Test cancel
+        cy.contains("Cancel").click();
+
+        cy.contains("Editing").should("not.exist");
+        cy.get("[data-testid=panel-content-items] > li p")
+          .then(($els) => {
+            const text = $els.toArray().map((el) => el.innerText.trim());
+            return text;
+          })
+          .should("deep.eq", [
+            "Home page hero",
+            "Spotlight movies",
+            "New TV Releases",
+            "GOT S01",
+            "GOT S02",
+            "Discover Collection",
+          ]);
+      });
+
+      it("Reorder, remove and save", () => {
+        cy.get('input[name="search-query-input"]').type("Homepage");
+        cy.contains("Homepage").should("exist");
+        cy.contains("tr", "Homepage")
+          .should(($el) => {
+            // eslint-disable-next-line jest/valid-expect
+            expect(Cypress.dom.isDetached($el)).to.eq(false);
+          })
+          .within(() => {
+            cy.get('[aria-label="object-info"]').click();
+          });
+        cy.contains("button", "Content").click();
+
+        // Test switching to edit mode
+        cy.contains("button", "Edit Content").should("not.be.disabled").click();
+
+        // Delete
+        cy.contains("Discover Collection")
+          .parent()
+          .parent()
+          .within(() => {
+            cy.get("svg").click();
+          });
+
+        // Reorder
+        cy.get("[data-testid=panel-content-items] > li")
+          .first()
+          .within(() => {
+            cy.get("input").clear().type("20");
+          });
+        cy.get("[data-testid=panel-content-items]").click();
+
+        // Test updated order
+        cy.get("[data-testid=panel-content-items] > li p")
+          .then(($els) => {
+            const text = $els.toArray().map((el) => el.innerText.trim());
+            return text;
+          })
+          .should("deep.eq", [
+            "Spotlight movies",
+            "New TV Releases",
+            "GOT S01",
+            "GOT S02",
+            "Home page hero",
+          ]);
+
+        // Test save
+        cy.contains("Save").click();
+
+        cy.wait("@updateHomepageSetContent");
+
+        cy.contains("button", "Edit Content").should("not.be.disabled");
+
+        cy.get("[data-testid=panel-content-items] > li p")
+          .then(($els) => {
+            const text = $els.toArray().map((el) => el.innerText.trim());
+            return text;
+          })
+          .should("deep.eq", [
+            "Spotlight movies",
+            "New TV Releases",
+            "GOT S01",
+            "GOT S02",
+            "Home page hero",
+          ]);
+      });
     });
   });
 });

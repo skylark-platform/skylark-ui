@@ -63,7 +63,7 @@ export const Navigation = () => {
           <NavigationLinks />
         </nav>
 
-        <div className="z-50 flex flex-grow flex-row items-center justify-end gap-2 md:flex-grow-0 md:gap-10">
+        <div className="z-50 flex flex-grow flex-row items-center justify-end space-x-1 md:flex-grow-0 md:space-x-5">
           <Button
             variant="outline"
             success={connected}

@@ -28,13 +28,15 @@ export interface ParsedSkylarkObjectAvailability {
   }[];
 }
 
+export interface ParsedSkylarkObjectContentObject {
+  objectType: SkylarkObjectType;
+  config: ParsedSkylarkObjectConfig;
+  object: ParsedSkylarkObjectMetadata;
+  position: number;
+}
+
 export interface ParsedSkylarkObjectContent {
-  objects: {
-    objectType: SkylarkObjectType;
-    config: ParsedSkylarkObjectConfig;
-    object: ParsedSkylarkObjectMetadata;
-    position: number;
-  }[];
+  objects: ParsedSkylarkObjectContentObject[];
 }
 
 export type ParsedSkylarkObjectMetadata = {

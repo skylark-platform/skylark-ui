@@ -253,7 +253,7 @@ export default function CSVImportPage() {
 
   return (
     <div className="flex h-full w-full flex-col sm:flex-row">
-      <section className="flex w-full flex-col gap-6 p-10 pt-24 sm:w-1/2 sm:gap-10 md:px-20 md:pt-48 lg:w-1/2 xl:w-2/5 xl:px-24 2xl:w-1/3 2xl:px-28">
+      <section className="flex w-full flex-col space-y-3 p-10 pt-24 sm:w-1/2 sm:space-y-5 md:px-20 md:pt-48 lg:w-1/2 xl:w-2/5 xl:px-24 2xl:w-1/3 2xl:px-28">
         <h2 className="font-heading text-2xl font-bold md:text-3xl">
           Import from CSV
         </h2>
@@ -281,7 +281,7 @@ export default function CSVImportPage() {
         </Button>
       </section>
       <section className="flex flex-grow flex-col items-center justify-center bg-gray-200 py-10">
-        <div className="flex w-5/6 flex-col items-center justify-center gap-4 md:gap-6 lg:w-3/5 xl:w-1/2 2xl:w-1/3">
+        <div className="flex w-5/6 flex-col items-center justify-center space-y-2 md:space-y-3 lg:w-3/5 xl:w-1/2 2xl:w-1/3">
           {orderedStates.map((card) => {
             const copyCard = copyText[card];
             const status = state[card];
@@ -298,7 +298,7 @@ export default function CSVImportPage() {
               />
             );
           })}
-          <div className="flex w-full flex-row justify-end gap-x-4">
+          <div className="flex w-full flex-row justify-end space-x-2">
             <Button
               href={`/?objectType=${objectType}`}
               variant="primary"

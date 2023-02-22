@@ -8,6 +8,7 @@ import {
 } from "@testing-library/react";
 import { DocumentNode } from "graphql";
 
+import { SEARCH_PAGE_SIZE } from "src/hooks/useSearch";
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import {
   createGetObjectQuery,
@@ -17,19 +18,14 @@ import {
   GET_SKYLARK_OBJECT_TYPES,
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
-import {
-  getAllObjectsMeta,
-  getObjectOperations,
-} from "src/lib/skylark/objects";
+import { getAllObjectsMeta } from "src/lib/skylark/objects";
 import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
 import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
 import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 import GQLSkylarkAllAvailTestMovieSearchFixture from "src/tests/fixtures/skylark/queries/search/allMediaTestMovieOnly.json";
+import { movieObjectOperations } from "src/tests/utils/objectOperations";
 
 import { ContentLibrary } from "./contentLibrary.component";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const useRouter = jest.spyOn(require("next/router"), "useRouter");
 
 const searchableObjectTypes =
   GQLSkylarkObjectTypesQueryFixture.data.__type.possibleTypes.map(
@@ -58,23 +54,16 @@ const schemaMocks = [
   },
 ];
 
-beforeEach(() => {
-  const router = { query: { edit: "true" } };
-  useRouter.mockReturnValue(router);
-});
-
 test("open metadata panel, check information and close", async () => {
-  const objectOperations = getObjectOperations(
-    "Movie",
-    GQLSkylarkSchemaQueryFixture.data
-      .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-  );
-
   const mocks = [
     ...schemaMocks,
     {
       request: {
-        variables: { ignoreAvailability: true, queryString: "" },
+        variables: {
+          ignoreAvailability: true,
+          queryString: "",
+          limit: SEARCH_PAGE_SIZE,
+        },
         query: createSearchObjectsQuery(
           searchableObjectsMeta,
           [],
@@ -84,7 +73,7 @@ test("open metadata panel, check information and close", async () => {
     },
     {
       request: {
-        query: createGetObjectQuery(objectOperations, []) as DocumentNode,
+        query: createGetObjectQuery(movieObjectOperations, []) as DocumentNode,
         variables: {
           ignoreAvailability: true,
           uid: GQLSkylarkAllAvailTestMovieSearchFixture.data.search.objects[0]
