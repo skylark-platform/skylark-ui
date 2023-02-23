@@ -70,7 +70,10 @@ export const SearchFilter = ({
         <CheckboxGrid
           label="Object type"
           withToggleAll
-          options={createCheckboxOptions(objectTypes, updatedObjectTypes)}
+          options={createCheckboxOptions(
+            objectTypes.sort(),
+            updatedObjectTypes,
+          )}
           onChange={updateObjectTypes}
         />
         <CheckboxGrid
@@ -80,7 +83,7 @@ export const SearchFilter = ({
           onChange={updateVisibleColumns}
         />
       </div>
-      <div className="flex w-full justify-end gap-4 px-4 pt-2">
+      <div className="flex w-full justify-end space-x-4 px-4 pt-2">
         <Button variant="ghost" onClick={resetAllFilters}>
           Reset
         </Button>

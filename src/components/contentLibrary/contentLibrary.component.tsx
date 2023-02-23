@@ -67,7 +67,7 @@ export const ContentLibrary = () => {
       <div
         className="flex h-screen flex-row"
         style={{
-          maxHeight: `calc(100vh - 4rem)`,
+          maxHeight: `calc(100vh - 5rem)`,
         }}
       >
         <m.div

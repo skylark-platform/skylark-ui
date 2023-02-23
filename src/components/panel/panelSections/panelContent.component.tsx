@@ -6,11 +6,11 @@ import { useEffect, useState } from "react";
 import { Trash } from "src/components/icons";
 import { Pill } from "src/components/pill";
 import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
-import { ParsedSkylarkObjectContent } from "src/interfaces/skylark";
+import { ParsedSkylarkObjectContentObject } from "src/interfaces/skylark";
 
 interface PanelContentProps {
-  objects: ParsedSkylarkObjectContent["objects"];
-  onReorder: (objs: ParsedSkylarkObjectContent["objects"]) => void;
+  objects: ParsedSkylarkObjectContentObject[];
+  onReorder: (objs: ParsedSkylarkObjectContentObject[]) => void;
   inEditMode?: boolean;
   activeId?: any;
 }
@@ -19,11 +19,13 @@ export const PanelContentItemOrderInput = ({
   hasMoved,
   position,
   disabled,
+  maxPosition,
   onBlur,
 }: {
   hasMoved: boolean;
   position: number;
   disabled: boolean;
+  maxPosition: number;
   onBlur: (n: number) => void;
 }) => {
   const [value, setValue] = useState<number | "">(position);
@@ -41,19 +43,36 @@ export const PanelContentItemOrderInput = ({
     if (!Number.isNaN(int)) setValue(int);
   };
 
+  const onBlurWrapper = () => {
+    if (value === "") {
+      onBlur(position);
+    } else if (value >= 1 && value <= maxPosition) {
+      onBlur(value);
+    } else {
+      // If the value is less than 0 or more than the maximum allowed position, normalise it
+      const minMaxedValue = value < 1 ? 1 : maxPosition;
+      onBlur(minMaxedValue);
+      setValue(minMaxedValue);
+    }
+  };
+
   return (
     <input
       type="text"
       disabled={disabled}
       size={value.toString().length || 1}
+      style={{
+        // Safari darkens the text on a disabled input
+        WebkitTextFillColor: "#fff",
+      }}
       className={clsx(
         "flex h-6 min-w-6 items-center justify-center rounded-full px-1 pb-0.5 text-center transition-colors",
-        !hasMoved
+        !hasMoved || disabled
           ? "bg-brand-primary text-white"
           : "bg-warning text-warning-content",
       )}
       onChange={(e) => onChange(e.target.value)}
-      onBlur={() => onBlur(value === "" ? position : value)}
+      onBlur={onBlurWrapper}
       value={value}
     />
   );
@@ -78,8 +97,9 @@ export const PanelContent = ({
 
   const handleManualOrderChange = (
     currentIndex: number,
-    updatedIndex: number,
+    updatedPosition: number,
   ) => {
+    const updatedIndex = updatedPosition - 1;
     const realUpdatedIndex =
       updatedIndex <= 0
         ? 0
@@ -112,7 +132,7 @@ export const PanelContent = ({
       axis="y"
       values={objects}
       onReorder={onReorder}
-      className="h-full overflow-y-auto p-4 text-sm md:p-8"
+      className="h-full overflow-y-auto p-4 pt-6 text-sm md:p-8"
       data-testid="panel-content-items"
     >
       {objects.map((item, index) => {
@@ -126,8 +146,9 @@ export const PanelContent = ({
           <Reorder.Item
             key={`panel-content-item-${object.uid}`}
             value={item}
+            data-testid={`panel-object-content-item-${index + 1}`}
             className={clsx(
-              "my-0 flex items-center justify-center gap-2 border-b px-2 py-3 text-sm last:border-b-0 md:gap-4 md:px-4",
+              "my-0 flex items-center justify-center space-x-1 border-b px-2 py-3 text-sm last:border-b-0 md:space-x-2 md:px-4",
               inEditMode && "cursor-pointer",
             )}
             dragListener={inEditMode}
@@ -144,7 +165,9 @@ export const PanelContent = ({
               <span
                 className={clsx(
                   "flex h-6 min-w-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
-                  position === index + 1 ? "opacity-0" : "opacity-100",
+                  !inEditMode || position === index + 1
+                    ? "opacity-0"
+                    : "opacity-100",
                 )}
               >
                 {position}
@@ -154,11 +177,13 @@ export const PanelContent = ({
                 position={index + 1}
                 hasMoved={position !== index + 1}
                 onBlur={(updatedPosition: number) =>
-                  handleManualOrderChange(index, updatedPosition - 1)
+                  handleManualOrderChange(index, updatedPosition)
                 }
+                maxPosition={objects.length}
               />
               <button
                 disabled={!inEditMode}
+                data-testid={`panel-object-content-item-${index + 1}-remove`}
                 onClick={() => removeItem(object.uid)}
               >
                 <Trash

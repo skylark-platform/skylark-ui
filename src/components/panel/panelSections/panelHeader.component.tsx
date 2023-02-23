@@ -11,6 +11,7 @@ import {
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
 import { Edit, Expand, Trash, MoreVertical } from "src/components/icons";
+import { PanelLabel } from "src/components/panel/panelLabel";
 import { Pill } from "src/components/pill";
 import { SkylarkObjectType } from "src/interfaces/skylark";
 
@@ -19,12 +20,14 @@ interface PanelHeaderProps {
   currentTab: string;
   tabsWithEditMode: string[];
   objectType: SkylarkObjectType;
+  objectUid: string;
   pillColor?: string;
   graphQLQuery: DocumentNode | null;
   graphQLVariables?: OperationVariables;
   inEditMode: boolean;
+  isSaving?: boolean;
   toggleEditMode: () => void;
-  closePanel: () => void;
+  closePanel?: () => void;
   deleteObject: () => void;
   save: () => void;
 }
@@ -32,12 +35,14 @@ interface PanelHeaderProps {
 export const PanelHeader = ({
   title,
   objectType,
+  objectUid,
   currentTab,
   tabsWithEditMode,
   pillColor,
   graphQLQuery,
   graphQLVariables,
   inEditMode,
+  isSaving,
   toggleEditMode,
   closePanel,
   deleteObject,
@@ -74,14 +79,15 @@ export const PanelHeader = ({
   return (
     <div
       data-testid="panel-header"
-      className="relative p-4 pb-2 md:p-8 md:py-4"
+      className="relative p-4 pb-2 md:p-8 md:py-6"
     >
       <div className="flex flex-row pb-2">
-        <div className="flex flex-grow items-center gap-4">
+        <div className="flex flex-grow items-center space-x-3">
           <Button
             Icon={<Expand className="stroke-gray-300" />}
             disabled
             variant="ghost"
+            href={`/object/${objectType}/${objectUid}`}
           />
           <DropdownMenu options={objectMenuOptions} align="left">
             <DropdownMenuButton
@@ -94,10 +100,20 @@ export const PanelHeader = ({
 
           {inEditMode ? (
             <>
-              <Button variant="primary" success onClick={save}>
+              <Button
+                variant="primary"
+                success
+                onClick={save}
+                disabled={isSaving}
+              >
                 Save
               </Button>
-              <Button variant="outline" danger onClick={toggleEditMode}>
+              <Button
+                variant="outline"
+                danger
+                onClick={toggleEditMode}
+                disabled={isSaving}
+              >
                 Cancel
               </Button>
             </>
@@ -115,21 +131,26 @@ export const PanelHeader = ({
           )}
         </div>
 
-        <Button variant="ghost" onClick={closePanel}>
-          Close
-        </Button>
+        {closePanel && (
+          <Button variant="ghost" onClick={closePanel}>
+            Close
+          </Button>
+        )}
       </div>
-      <div className="flex flex-row items-center gap-2 pb-2">
+      <div className="flex flex-row items-center space-x-2 pb-2">
         <Pill
           bgColor={pillColor}
           className="bg-brand-primary"
           label={objectType}
         />
         <h1 className="flex-grow text-xl font-bold uppercase">{title}</h1>
-        <div className="flex flex-row items-end justify-end gap-2">
+        <div className="flex flex-row items-end justify-end space-x-2">
           {inEditMode && (
-            <div className="absolute left-1/2 -bottom-16 -translate-x-1/2 rounded bg-black py-1 px-3 text-xs text-white md:px-4 md:text-sm">
-              Editing
+            <div className="absolute left-1/2 -bottom-16 -translate-x-1/2 md:-bottom-18">
+              <PanelLabel
+                text={isSaving ? "Saving" : "Editing"}
+                loading={isSaving}
+              />
             </div>
           )}
         </div>

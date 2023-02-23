@@ -36,17 +36,19 @@ export const Button = ({
 
   const combinedClassName = clsx(
     "btn flex-nowrap",
-    Icon && children && "gap-2",
+    Icon && children && "gap-x-2",
     !iconOnly && "min-h-8 text-xs normal-case h-8 md:h-10 md:text-sm",
     variant !== "ghost" && "min-w-24 rounded-full",
     variant === "primary" && "btn-primary shadow",
     variant === "outline" &&
       "btn-outline btn-primary disabled:border-none disabled:shadow",
-    variant === "ghost" && "btn-ghost text-back hover:bg-transparent p-0",
-    success && "btn-success text-white",
+    variant === "ghost" && "btn-ghost text-black hover:bg-transparent p-0",
+    success && !disabled && !loading && "btn-success text-white",
     danger && "btn-error",
     !iconOnly && (disabled || loading) && "bg-disabled btn-disabled",
-    iconOnly && disabled && "btn-disabled disabled:bg-transparent",
+    iconOnly &&
+      disabled &&
+      "btn-disabled bg-transparent disabled:bg-transparent",
     block && "btn-block",
     className,
   );

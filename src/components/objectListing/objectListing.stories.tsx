@@ -2,6 +2,7 @@ import { ComponentStory } from "@storybook/react";
 import { userEvent, within } from "@storybook/testing-library";
 import { DocumentNode } from "graphql";
 
+import { SEARCH_PAGE_SIZE } from "src/hooks/useSearch";
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import { createSearchObjectsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -52,7 +53,11 @@ Default.parameters = {
       },
       {
         request: {
-          variables: { ignoreAvailability: true, queryString: "" },
+          variables: {
+            ignoreAvailability: true,
+            queryString: "",
+            limit: SEARCH_PAGE_SIZE,
+          },
           query: createSearchObjectsQuery(
             searchableObjectsMeta,
             [],

@@ -14,11 +14,9 @@ import { VirtualItem } from "react-virtual";
 
 import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { SkylarkGraphQLObject } from "src/interfaces/skylark";
+import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 import { DisplayNameTableCell } from "./cell";
-
-export type TableColumn = string;
 
 export interface TableProps {
   table: ReactTable<object>;
@@ -146,7 +144,7 @@ const TableData = ({
   withCheckbox,
   tableMeta,
 }: {
-  cell: Cell<SkylarkGraphQLObject, unknown>;
+  cell: Cell<ParsedSkylarkObject, unknown>;
   withCheckbox: boolean;
   tableMeta: TableMeta<object> | undefined;
 }) => {
@@ -178,7 +176,7 @@ const TableData = ({
         id={cell.id}
         className={className}
         rowGroupClassName={rowGroupClassName}
-        colour={cell.row.original._config?.colour}
+        colour={cell.row.original.config?.colour}
       >
         {children}
       </DisplayNameTableCell>
@@ -199,7 +197,7 @@ const TableRow = ({
   tableMeta,
   withCheckbox,
 }: TableRowProps) => {
-  const row = rows[virtualRow.index] as Row<SkylarkGraphQLObject>;
+  const row = rows[virtualRow.index] as Row<ParsedSkylarkObject>;
   const { uid, objectType } = row.original;
   const { attributes, listeners, setNodeRef } = useDraggable({
     id: uid,
@@ -207,14 +205,13 @@ const TableRow = ({
       object: row.original,
     },
   });
-
   return (
     <tr
       ref={setNodeRef}
       {...listeners}
       {...attributes}
       key={row.id}
-      className="group/row"
+      className="group/row h-6 align-middle outline-none md:h-10"
       tabIndex={-1}
       onDoubleClick={() => setPanelObject?.({ uid, objectType })}
     >
@@ -249,20 +246,19 @@ export const Table = ({
 
   console.log("here ###", activeId);
 
+  const headers = table.getHeaderGroups()[0].headers;
   return (
     <table className="relative w-full bg-white">
       <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id} className="sticky top-0 z-30 bg-white">
-            {headerGroup.headers.map((header) => (
-              <TableHeader
-                key={header.id}
-                header={header}
-                withCheckbox={withCheckbox}
-              />
-            ))}
-          </tr>
-        ))}
+        <tr className="sticky top-0 z-30 bg-white">
+          {headers.map((header) => (
+            <TableHeader
+              key={header.id}
+              header={header}
+              withCheckbox={withCheckbox}
+            />
+          ))}
+        </tr>
       </thead>
 
       <tbody className="align-top">
