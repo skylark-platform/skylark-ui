@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
-import { useDeleteObject } from "src/hooks/useDeleteObject";
 import { useGetObject } from "src/hooks/useGetObject";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
 import {
@@ -12,7 +11,6 @@ import {
   ParsedSkylarkObjectContentObject,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
-import { parseObjectContent } from "src/lib/skylark/parsers";
 
 import {
   PanelAvailability,
@@ -46,10 +44,8 @@ const getTitle = (
 };
 
 export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
-  const { data, isLoading, query, variables, isError, error } = useGetObject(
-    objectType,
-    uid,
-  );
+  const { data, isLoading, query, variables, isError, isNotFound, error } =
+    useGetObject(objectType, uid);
 
   const [inEditMode, setEditMode] = useState(false);
   const [contentObjects, setContentObjects] = useState<
@@ -76,18 +72,17 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
     setEditMode(false);
   }, [uid]);
 
-  const [deleteObjectMutation] = useDeleteObject(objectType);
-  const { updateObjectContent, loading: updatingObjectContents } =
-    useUpdateObjectContent(
+  const { updateObjectContent, isLoading: updatingObjectContents } =
+    useUpdateObjectContent({
       objectType,
       uid,
-      data?.content?.objects || [],
-      contentObjects || [],
-    );
-
-  const deleteObjectWrapper = () => {
-    deleteObjectMutation({ variables: { uid } });
-  };
+      currentContentObjects: data?.content?.objects || [],
+      updatedContentObjects: contentObjects || [],
+      onSuccess: (updatedContent) => {
+        setEditMode(false);
+        setContentObjects(updatedContent.objects);
+      },
+    });
 
   const saveActiveTabChanges = () => {
     if (
@@ -95,18 +90,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
       contentObjects &&
       contentObjects !== data?.content?.objects
     ) {
-      updateObjectContent().then(({ data, errors }) => {
-        if (
-          (!errors || errors.length === 0) &&
-          data?.updateObjectContent.content.objects
-        ) {
-          const parsedObjectContent = parseObjectContent(
-            data.updateObjectContent.content,
-          );
-          setContentObjects(parsedObjectContent.objects);
-          setEditMode(false);
-        }
-      });
+      updateObjectContent();
     } else {
       setEditMode(false);
     }
@@ -124,10 +108,14 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
       )}
       {!isLoading && isError && (
         <div className="flex h-full w-full items-center justify-center pt-10">
-          <p>{error.message}</p>
+          {isNotFound ? (
+            <p>{`${objectType} ${uid} not found`}</p>
+          ) : (
+            <p>{error?.response.errors[0].message}</p>
+          )}
         </div>
       )}
-      {!isLoading && data && (
+      {!isLoading && !isError && data && (
         <>
           <PanelHeader
             title={getTitle(data.metadata, data.config)}
@@ -139,7 +127,6 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
             currentTab={selectedTab}
             tabsWithEditMode={[PanelTab.Content]}
             closePanel={closePanel}
-            deleteObject={deleteObjectWrapper}
             inEditMode={inEditMode}
             save={saveActiveTabChanges}
             isSaving={updatingObjectContents}

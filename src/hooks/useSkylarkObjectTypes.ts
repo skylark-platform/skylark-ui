@@ -1,5 +1,6 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
+import { QueryKeys } from "src/enums/graphql";
 import {
   GQLSkylarkObjectTypesResponse,
   GQLSkylarkSchemaQueriesMutations,
@@ -19,7 +20,7 @@ export const useSkylarkObjectTypes = (): Omit<UseQueryResult, "data"> & {
   objectTypes: string[] | undefined;
 } => {
   const { data, ...rest } = useQuery<GQLSkylarkObjectTypesResponse>({
-    queryKey: [GET_SKYLARK_OBJECT_TYPES],
+    queryKey: [QueryKeys.ObjectTypes, GET_SKYLARK_OBJECT_TYPES],
     queryFn: async () => request(GET_SKYLARK_OBJECT_TYPES),
   });
 
@@ -37,7 +38,7 @@ export const useSkylarkObjectTypes = (): Omit<UseQueryResult, "data"> & {
 // Should be fast as it'll keep hitting the Apollo cache both requests noice
 export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
   const { data, ...rest } = useQuery<GQLSkylarkSchemaQueriesMutations>({
-    queryKey: [GET_SKYLARK_SCHEMA],
+    queryKey: [QueryKeys.Schema, GET_SKYLARK_SCHEMA],
     queryFn: async () => request(GET_SKYLARK_SCHEMA),
   });
 
@@ -56,7 +57,7 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
 export const useAllObjectsMeta = () => {
   const { data: schemaResponse, ...rest } =
     useQuery<GQLSkylarkSchemaQueriesMutations>({
-      queryKey: [GET_SKYLARK_SCHEMA],
+      queryKey: [QueryKeys.Schema, GET_SKYLARK_SCHEMA],
       queryFn: async () => request(GET_SKYLARK_SCHEMA),
     });
 

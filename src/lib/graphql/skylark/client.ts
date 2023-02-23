@@ -90,7 +90,14 @@ export type SkylarkClient =
   | ReturnType<typeof createSkylarkClient>
   | ApolloClient<object>;
 
-export const createSkylarkReactQueryClient = () => new QueryClient();
+export const createSkylarkReactQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 1,
+      },
+    },
+  });
 
 export const request = <T>(
   query: RequestDocument | string,

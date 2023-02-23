@@ -4,8 +4,17 @@ import {
 } from "./gqlObjects";
 
 // TODO extend to be the full error structure
-export interface GQLSkylarkResponseError {
-  message: string;
+export interface GQLSkylarkResponseError<T> {
+  response: {
+    data: T | null;
+    errors: {
+      data: T | null;
+      errorInfo: null;
+      errorType: string;
+      message: string;
+      path: string[];
+    }[];
+  };
 }
 
 export interface GQLSkylarkGetObjectResponse {

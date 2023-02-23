@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
 
+import { QueryErrorMessages, QueryKeys } from "src/enums/graphql";
 import {
   SkylarkGraphQLObjectImage,
   ParsedSkylarkObject,
@@ -22,6 +23,14 @@ import {
   useSkylarkObjectOperations,
 } from "./useSkylarkObjectTypes";
 
+export const createGetObjectKeyPrefix = ({
+  objectType,
+  uid,
+}: {
+  objectType: string;
+  uid: string;
+}) => [QueryKeys.GetObject, objectType, uid];
+
 export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
   const { objects: searchableObjects } = useAllObjectsMeta();
@@ -29,11 +38,15 @@ export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
   const query = createGetObjectQuery(objectOperations, searchableObjects);
   const variables = { uid };
 
-  const { data, ...rest } = useQuery<
+  const { data, error, ...rest } = useQuery<
     GQLSkylarkGetObjectResponse,
-    GQLSkylarkResponseError
+    GQLSkylarkResponseError<GQLSkylarkGetObjectResponse>
   >({
-    queryKey: [query, objectType, variables],
+    queryKey: [
+      ...createGetObjectKeyPrefix({ objectType, uid }),
+      query,
+      variables,
+    ],
     queryFn: async () => request(query as DocumentNode, variables),
     enabled: query !== null,
   });
@@ -84,8 +97,11 @@ export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
 
   return {
     ...rest,
+    error,
     data: parsedObject,
     isLoading: rest.isLoading || !query,
+    isNotFound:
+      error?.response.errors?.[0]?.errorType === QueryErrorMessages.NotFound,
     query,
     variables,
   };

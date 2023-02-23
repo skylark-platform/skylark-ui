@@ -2,6 +2,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 import { useEffect, useMemo, useState } from "react";
 
+import { QueryKeys } from "src/enums/graphql";
 import {
   SkylarkGraphQLObjectImage,
   ParsedSkylarkObject,
@@ -45,7 +46,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
 
   const { data: searchResponse, ...rest } =
     useInfiniteQuery<GQLSkylarkSearchResponse>({
-      queryKey: [query, variables],
+      queryKey: [QueryKeys.Search, query, variables],
       queryFn: async ({ pageParam: offset = 0 }) =>
         request(query as RequestDocument, {
           ...variables,

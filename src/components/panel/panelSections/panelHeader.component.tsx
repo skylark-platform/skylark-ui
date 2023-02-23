@@ -2,6 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useMemo, useState } from "react";
 import { GrGraphQl } from "react-icons/gr";
+import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
 import { DisplayGraphQLQueryModal } from "src/components/displayGraphQLQuery";
@@ -12,6 +13,8 @@ import {
 import { Edit, Expand, Trash, MoreVertical } from "src/components/icons";
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { Pill } from "src/components/pill";
+import { Toast } from "src/components/toast/toast.component";
+import { useDeleteObject } from "src/hooks/useDeleteObject";
 import { SkylarkObjectType } from "src/interfaces/skylark";
 
 interface PanelHeaderProps {
@@ -27,7 +30,6 @@ interface PanelHeaderProps {
   isSaving?: boolean;
   toggleEditMode: () => void;
   closePanel?: () => void;
-  deleteObject: () => void;
   save: () => void;
 }
 
@@ -44,10 +46,18 @@ export const PanelHeader = ({
   isSaving,
   toggleEditMode,
   closePanel,
-  deleteObject,
   save,
 }: PanelHeaderProps) => {
   const [showGraphQLModal, setGraphQLModalOpen] = useState(false);
+
+  const { mutate: deleteObjectMutation } = useDeleteObject({
+    objectType,
+    onSuccess: ({ objectType, uid }) => {
+      // TODO finesse this so the toast slides in and looks better
+      toast(<Toast title={`${objectType} ${uid} deleted`} type="success" />);
+      closePanel?.();
+    },
+  });
 
   const objectMenuOptions = useMemo(
     () => [
@@ -67,12 +77,11 @@ export const PanelHeader = ({
         text: `Delete ${objectType}`,
         Icon: <Trash className="w-5 fill-error stroke-error" />,
         danger: true,
-        // Disable while no tabs have edit mode TODO remove this check
-        disabled: tabsWithEditMode.length === 0,
-        onClick: deleteObject,
+        disabled: true, // TODO finish object deletion
+        onClick: () => deleteObjectMutation({ uid: objectUid }),
       },
     ],
-    [deleteObject, objectType, tabsWithEditMode],
+    [deleteObjectMutation, objectType, objectUid],
   );
 
   return (
