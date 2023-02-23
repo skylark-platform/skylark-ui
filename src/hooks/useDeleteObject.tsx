@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
-import { toast } from "react-toastify";
 
 import { QueryKeys } from "src/enums/graphql";
 import { SkylarkObjectType } from "src/interfaces/skylark";

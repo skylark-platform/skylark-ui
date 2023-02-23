@@ -2,7 +2,6 @@ import {
   ApolloClient,
   createHttpLink,
   defaultDataIdFromObject,
-  DocumentNode,
   InMemoryCache,
   StoreObject,
 } from "@apollo/client";

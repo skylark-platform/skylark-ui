@@ -31,7 +31,7 @@ export const Toast = ({
   message,
   type: propType,
 }: ToastProps) => {
-  const type = toastProps?.type || propType;
+  const type = propType || toastProps?.type;
   return (
     <div
       className={clsx(

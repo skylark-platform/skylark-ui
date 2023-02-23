@@ -54,7 +54,13 @@ export const PanelHeader = ({
     objectType,
     onSuccess: ({ objectType, uid }) => {
       // TODO finesse this so the toast slides in and looks better
-      toast(<Toast title={`${objectType} ${uid} deleted`} type="success" />);
+      toast(
+        <Toast
+          title={`${objectType} deleted`}
+          message={`${objectType} ${uid} has been deleted`}
+          type="success"
+        />,
+      );
       closePanel?.();
     },
   });

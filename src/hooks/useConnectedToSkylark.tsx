@@ -68,7 +68,7 @@ export const useConnectedToSkylark = () => {
     !currentCreds.uri || (!data && isError && !unauthenticated);
   const invalidToken = invalidUri || (error && unauthenticated) || false;
 
-  const connected = !invalidUri && !invalidToken && data;
+  const connected = !!(!invalidUri && !invalidToken && data);
 
   useEffect(() => {
     setCreds({
