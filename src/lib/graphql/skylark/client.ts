@@ -8,7 +8,7 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { QueryClient } from "@tanstack/react-query";
-import graphqlRequest from "graphql-request";
+import graphqlRequest, { RequestDocument } from "graphql-request";
 
 import {
   SAAS_API_ENDPOINT,
@@ -93,7 +93,7 @@ export type SkylarkClient =
 export const createSkylarkReactQueryClient = () => new QueryClient();
 
 export const request = <T>(
-  query: DocumentNode | string,
+  query: RequestDocument | string,
   variables?: object,
 ) => {
   // get the authentication token from local storage if it exists
@@ -103,12 +103,6 @@ export const request = <T>(
   // return the headers to the context so httpLink can read them
   // In Beta, only set the token when we have a URI so that Apollo Client fires a failing request when the URI is invalid/missing
   // It's hacky. Apollo Client doesn't make a request when the URI is invalid
-  // return {
-  //   uri: uri || SAAS_API_ENDPOINT,
-  //   headers: {
-  //     ...headers,
-  //     [REQUEST_HEADERS.apiKey]: uri ? token || "" : "",
-  //   },
   return graphqlRequest<T>(uri || SAAS_API_ENDPOINT, query, variables, {
     [REQUEST_HEADERS.apiKey]: uri ? token || "" : "",
   });

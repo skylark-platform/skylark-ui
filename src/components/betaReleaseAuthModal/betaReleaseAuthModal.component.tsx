@@ -13,7 +13,6 @@ import {
   SAAS_API_KEY,
 } from "src/constants/skylark";
 import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
-import { createBasicSkylarkClient } from "src/lib/graphql/skylark/client";
 
 interface AddAuthTokenModalProps {
   isOpen: boolean;
@@ -26,7 +25,7 @@ export const AddAuthTokenModal = ({
 }: AddAuthTokenModalProps) => {
   const skylarkClient = useQueryClient();
 
-  const { connected, loading, invalidUri, invalidToken, setValidatorClient } =
+  const { connected, loading, invalidUri, invalidToken, setCreds } =
     useConnectedToSkylark();
 
   const [inputUri, setInputUri] = useState<string | null>(null);
@@ -62,15 +61,11 @@ export const AddAuthTokenModal = ({
 
   useEffect(() => {
     if (debouncedUri) {
-      const validatingRequestClient = createBasicSkylarkClient(
-        debouncedUri,
-        debouncedToken || "",
-      );
-      setValidatorClient(validatingRequestClient);
+      setCreds({ uri: debouncedUri, token: debouncedToken });
       return;
     }
-    setValidatorClient(undefined);
-  }, [debouncedUri, debouncedToken, setValidatorClient]);
+    setCreds({ uri: null, token: null });
+  }, [debouncedUri, debouncedToken, setCreds]);
 
   // Show loading state before the debounced values have been updated
   const requestLoading =
