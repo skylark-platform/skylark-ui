@@ -238,15 +238,17 @@ export const Table = ({
             </tr>
           );
         })}
-        <tr>
-          <td colSpan={headers.length}>
-            <div className="sticky left-0 right-0 bottom-2 flex h-32 w-screen items-center justify-center">
-              {isLoadingMore && (
-                <Spinner className="-z-10 h-8 w-8 animate-spin md:h-10 md:w-10" />
-              )}
-            </div>
-          </td>
-        </tr>
+        {totalRows > 0 && (
+          <tr>
+            <td colSpan={headers.length}>
+              <div className="sticky left-0 right-0 bottom-2 flex h-32 w-screen items-center justify-center">
+                {isLoadingMore && (
+                  <Spinner className="-z-10 h-8 w-8 animate-spin md:h-10 md:w-10" />
+                )}
+              </div>
+            </td>
+          </tr>
+        )}
         {paddingBottom > 0 && (
           <tr>
             <td style={{ height: `${paddingBottom}px` }} />

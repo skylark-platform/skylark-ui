@@ -23,15 +23,21 @@ export const AddAuthTokenModal = ({
   isOpen,
   setIsOpen,
 }: AddAuthTokenModalProps) => {
-  const skylarkClient = useQueryClient();
+  const { refetchQueries } = useQueryClient();
 
-  const { connected, loading, invalidUri, invalidToken, setCreds } =
+  const { isConnected, isLoading, invalidUri, invalidToken, setCreds } =
     useConnectedToSkylark();
 
   const [inputUri, setInputUri] = useState<string | null>(null);
   const [inputToken, setInputToken] = useState<string | null>(null);
   const [debouncedUri] = useDebounce(inputUri, 750);
   const [debouncedToken] = useDebounce(inputToken, 750);
+
+  useEffect(() => {
+    if (!isLoading && !isConnected) {
+      setIsOpen(true);
+    }
+  }, [isLoading, isConnected, setIsOpen]);
 
   useEffect(() => {
     const { origin } = window.location;
@@ -69,7 +75,7 @@ export const AddAuthTokenModal = ({
 
   // Show loading state before the debounced values have been updated
   const requestLoading =
-    loading || inputUri !== debouncedUri || inputToken !== debouncedToken;
+    isLoading || inputUri !== debouncedUri || inputToken !== debouncedToken;
 
   const updateLocalStorage = async () => {
     if (debouncedUri && debouncedToken) {
@@ -78,7 +84,7 @@ export const AddAuthTokenModal = ({
       // storage events are not picked up in the same tab, so dispatch it for the current one
       window.dispatchEvent(new Event("storage"));
 
-      await skylarkClient.refetchQueries();
+      await refetchQueries();
 
       setIsOpen(false);
     }
@@ -150,7 +156,7 @@ export const AddAuthTokenModal = ({
           <div className="flex w-full flex-row justify-end">
             <Button
               variant="primary"
-              disabled={!connected || !debouncedUri || !debouncedToken}
+              disabled={!isConnected || !debouncedUri || !debouncedToken}
               onClick={() => updateLocalStorage()}
               loading={requestLoading}
               type="button"
