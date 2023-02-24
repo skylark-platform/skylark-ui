@@ -94,7 +94,6 @@ export const createOrUpdateFlatfileTemplate = async (
     await client.request<FlatfileGetTemplatesResponse>(GET_TEMPLATES, {
       searchQuery: name,
     });
-  console.log({ getTemplatesResponse });
 
   const foundTemplates = getTemplatesResponse.getSchemas.data;
 

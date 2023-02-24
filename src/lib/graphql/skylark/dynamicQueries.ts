@@ -155,6 +155,9 @@ export const removeFieldPrefixFromReturnedObject = <T>(
   return result as T;
 };
 
+export const createGetObjectQueryName = (objectType: string) =>
+  `GET_${objectType}`;
+
 export const createGetObjectQuery = (
   object: SkylarkObjectMeta | null,
   contentTypesToRequest: SkylarkObjectMeta[],
@@ -165,7 +168,7 @@ export const createGetObjectQuery = (
 
   const query = {
     query: {
-      __name: `GET_${object.name}`,
+      __name: createGetObjectQueryName(object.name),
       __variables: {
         ...common.variables,
         uid: "String",
@@ -242,7 +245,7 @@ export const createSearchObjectsQuery = (
 
   const query = {
     query: {
-      __name: `SEARCH`,
+      __name: "SEARCH",
       __variables: {
         ...common.variables,
         queryString: "String!",

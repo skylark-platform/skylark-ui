@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "src/tests/utils/test-utils";
 
 import { CheckboxGrid, createCheckboxOptions } from "./checkboxGrid.component";
 

@@ -1,11 +1,4 @@
 import { MockedProvider } from "@apollo/client/testing";
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
 import { DocumentNode } from "graphql";
 
 import { SEARCH_PAGE_SIZE } from "src/hooks/useSearch";
@@ -24,6 +17,13 @@ import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/querie
 import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 import GQLSkylarkAllAvailTestMovieSearchFixture from "src/tests/fixtures/skylark/queries/search/allMediaTestMovieOnly.json";
 import { movieObjectOperations } from "src/tests/utils/objectOperations";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "src/tests/utils/test-utils";
 
 import { ContentLibrary } from "./contentLibrary.component";
 

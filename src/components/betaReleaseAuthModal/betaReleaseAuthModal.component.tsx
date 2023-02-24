@@ -84,7 +84,7 @@ export const AddAuthTokenModal = ({
       // storage events are not picked up in the same tab, so dispatch it for the current one
       window.dispatchEvent(new Event("storage"));
 
-      await refetchQueries();
+      refetchQueries();
 
       setIsOpen(false);
     }

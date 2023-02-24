@@ -30,6 +30,7 @@ export const SEARCH_PAGE_SIZE = 20;
 
 export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta();
+
   const [allResultsFetched, setAllResultsFetched] = useState(false);
 
   const query = useMemo(
@@ -65,7 +66,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
   const data = useMemo(() => {
     // Using the errorPolicy "all" means that some data could be null
     const nonNullObjects = searchResponse?.pages
-      .flatMap((page) => page.search.objects)
+      ?.flatMap((page) => page.search.objects)
       .filter((obj) => obj !== null) as SkylarkGraphQLObject[] | undefined;
 
     const normalisedObjects =

@@ -1,5 +1,6 @@
 import { fireEvent } from "@storybook/testing-library";
-import { render, screen } from "@testing-library/react";
+
+import { render, screen } from "src/tests/utils/test-utils";
 
 import { Checkbox } from "./checkbox.component";
 
