@@ -26,8 +26,8 @@ interface PanelProps {
   objectType: string;
   closePanel?: () => void;
   uid: string;
-  activeId?: any;
-  newObjects?: any;
+  draggedObject?: any;
+  newObject?: any;
 }
 
 enum PanelTab {
@@ -47,12 +47,21 @@ const getTitle = (
   return title as string;
 };
 
+function parse(obj: any) {
+  return {
+    config: obj.config,
+    object: obj.metadata,
+    objectType: obj.objectType,
+    position: 6, // TODO
+  };
+}
+
 export const Panel = ({
   closePanel,
   objectType,
   uid,
-  activeId,
-  newObjects,
+  draggedObject,
+  newObject,
 }: PanelProps) => {
   const { data, loading, query, variables, error } = useGetObject(objectType, {
     uid: uid,
@@ -82,6 +91,22 @@ export const Panel = ({
     setContentObjects(null);
     setEditMode(false);
   }, [uid]);
+
+  useEffect(() => {
+    console.log("UªDATING CONTENT", newObject);
+    // setSelectedTab(PanelTab.Content); TODO efect when start dragging
+    if (newObject) {
+      setContentObjects([
+        ...(contentObjects || data?.content?.objects || []),
+        {
+          ...newObject,
+          position:
+            (contentObjects?.length || data?.content?.objects.length || 0) + 1,
+        },
+      ]);
+      setEditMode(true);
+    }
+  }, [newObject]);
 
   const [deleteObjectMutation] = useDeleteObject(objectType);
   const { updateObjectContent, loading: updatingObjectContents } =
@@ -180,7 +205,7 @@ export const Panel = ({
               objects={contentObjects || data?.content?.objects}
               inEditMode={inEditMode}
               onReorder={setContentObjects}
-              activeId={activeId}
+              draggedObject={draggedObject}
             />
           )}
         </>

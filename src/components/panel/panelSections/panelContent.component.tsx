@@ -12,7 +12,7 @@ interface PanelContentProps {
   objects: ParsedSkylarkObjectContentObject[];
   onReorder: (objs: ParsedSkylarkObjectContentObject[]) => void;
   inEditMode?: boolean;
-  activeId?: any;
+  draggedObject?: any;
 }
 
 export const PanelContentItemOrderInput = ({
@@ -82,7 +82,7 @@ export const PanelContent = ({
   objects,
   inEditMode,
   onReorder,
-  activeId,
+  draggedObject,
 }: PanelContentProps) => {
   const removeItem = (uid: string) => {
     const filtered = objects.filter(({ object }) => uid !== object.uid);
@@ -114,7 +114,7 @@ export const PanelContent = ({
     onReorder(updatedObjects);
   };
 
-  if (activeId)
+  if (draggedObject)
     return (
       <div
         ref={setNodeRef}
@@ -128,75 +128,80 @@ export const PanelContent = ({
     );
 
   return (
-    <Reorder.Group
-      axis="y"
-      values={objects}
-      onReorder={onReorder}
-      className="h-full overflow-y-auto p-4 pt-6 text-sm md:p-8"
-      data-testid="panel-content-items"
-    >
-      {objects.map((item, index) => {
-        const { object, config, position } = item;
+    <>
+      <span className="mt-10 text-center text-manatee-600">
+        Drag & Drop objects here to curate set content
+      </span>
+      <Reorder.Group
+        axis="y"
+        values={objects}
+        onReorder={onReorder}
+        className="h-full overflow-y-auto p-4 pt-6 text-sm md:p-8"
+        data-testid="panel-content-items"
+      >
+        {objects.map((item, index) => {
+          const { object, config, position } = item;
 
-        const primaryKey = [
-          config.primaryField || "",
-          ...DISPLAY_NAME_PRIORITY,
-        ].find((field) => !!object[field]);
-        return (
-          <Reorder.Item
-            key={`panel-content-item-${object.uid}`}
-            value={item}
-            data-testid={`panel-object-content-item-${index + 1}`}
-            className={clsx(
-              "my-0 flex items-center justify-center space-x-1 border-b px-2 py-3 text-sm last:border-b-0 md:space-x-2 md:px-4",
-              inEditMode && "cursor-pointer",
-            )}
-            dragListener={inEditMode}
-          >
-            <Pill
-              label={object.__typename as string}
-              bgColor={config.colour}
-              className="w-20"
-            />
-            <div className="flex flex-1">
-              <p>{primaryKey ? object[primaryKey] : object.uid}</p>
-            </div>
-            <div className="flex">
-              <span
-                className={clsx(
-                  "flex h-6 min-w-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
-                  !inEditMode || position === index + 1
-                    ? "opacity-0"
-                    : "opacity-100",
-                )}
-              >
-                {position}
-              </span>
-              <PanelContentItemOrderInput
-                disabled={!inEditMode}
-                position={index + 1}
-                hasMoved={position !== index + 1}
-                onBlur={(updatedPosition: number) =>
-                  handleManualOrderChange(index, updatedPosition)
-                }
-                maxPosition={objects.length}
+          const primaryKey = [
+            config.primaryField || "",
+            ...DISPLAY_NAME_PRIORITY,
+          ].find((field) => !!object[field]);
+          return (
+            <Reorder.Item
+              key={`panel-content-item-${object.uid}`}
+              value={item}
+              data-testid={`panel-object-content-item-${index + 1}`}
+              className={clsx(
+                "my-0 flex items-center justify-center space-x-1 border-b px-2 py-3 text-sm last:border-b-0 md:space-x-2 md:px-4",
+                inEditMode && "cursor-pointer",
+              )}
+              dragListener={inEditMode}
+            >
+              <Pill
+                label={object.__typename as string}
+                bgColor={config.colour}
+                className="w-20"
               />
-              <button
-                disabled={!inEditMode}
-                data-testid={`panel-object-content-item-${index + 1}-remove`}
-                onClick={() => removeItem(object.uid)}
-              >
-                <Trash
+              <div className="flex flex-1">
+                <p>{primaryKey ? object[primaryKey] : object.uid}</p>
+              </div>
+              <div className="flex">
+                <span
                   className={clsx(
-                    "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
-                    inEditMode ? "w-6" : "w-0",
+                    "flex h-6 min-w-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
+                    !inEditMode || position === index + 1
+                      ? "opacity-0"
+                      : "opacity-100",
                   )}
+                >
+                  {position}
+                </span>
+                <PanelContentItemOrderInput
+                  disabled={!inEditMode}
+                  position={index + 1}
+                  hasMoved={position !== index + 1}
+                  onBlur={(updatedPosition: number) =>
+                    handleManualOrderChange(index, updatedPosition)
+                  }
+                  maxPosition={objects.length}
                 />
-              </button>
-            </div>
-          </Reorder.Item>
-        );
-      })}
-    </Reorder.Group>
+                <button
+                  disabled={!inEditMode}
+                  data-testid={`panel-object-content-item-${index + 1}-remove`}
+                  onClick={() => removeItem(object.uid)}
+                >
+                  <Trash
+                    className={clsx(
+                      "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
+                      inEditMode ? "w-6" : "w-0",
+                    )}
+                  />
+                </button>
+              </div>
+            </Reorder.Item>
+          );
+        })}
+      </Reorder.Group>
+    </>
   );
 };

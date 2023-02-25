@@ -17,6 +17,8 @@ export const ContentLibrary = () => {
     objectType: string;
     uid: string;
   } | null>(null);
+  const [draggedObject, setDraggedObject] = useState(null);
+  const [newObject, setObject] = useState(null);
 
   const [windowSize, setWindowSize] = useState(0);
   const objectListingWidth = useMotionValue<number | undefined>(undefined);
@@ -34,8 +36,6 @@ export const ContentLibrary = () => {
       window.removeEventListener("resize", updateWindowSize);
     };
   }, [activePanelObject, objectListingWidth]);
-  const [activeId, setActiveId] = useState(null);
-  const [newObjects, setObjects] = useState([]);
 
   const handleDrag = React.useCallback(
     (event: PointerEvent, info: { delta: { x: number } }) => {
@@ -87,7 +87,7 @@ export const ContentLibrary = () => {
             withCreateButtons
             onInfoClick={setActivePanelObject}
             isPanelOpen={!!activePanelObject}
-            activeId={activeId}
+            draggedObject={draggedObject}
           />
         </m.div>
 
@@ -109,8 +109,8 @@ export const ContentLibrary = () => {
               closePanel={() => setActivePanelObject(null)}
               uid={activePanelObject.uid}
               objectType={activePanelObject.objectType}
-              activeId={activeId}
-              newObjects={newObjects}
+              draggedObject={draggedObject}
+              newObject={newObject}
             />
           </m.div>
         )}
@@ -118,30 +118,27 @@ export const ContentLibrary = () => {
     </DndContext>
   );
 
+  // TODO review this parser
   function parse(obj: any) {
     return {
       config: obj.config,
       object: obj.metadata,
       objectType: obj.objectType,
-      position: 6,
+      position: 6, // TODO
     };
   }
 
   function handleDragStart(event: any) {
     console.log("start", event.active.data.current.object);
 
-    setActiveId(parse(event.active.data.current.object));
+    setDraggedObject(parse(event.active.data.current.object));
   }
 
   function handleDragEnd(event: any) {
-    setActiveId(null);
+    setDraggedObject(null);
     if (event.over && event.over.id === "droppable") {
       console.log("happy", event);
-      const parsed = {
-        ...event.active.data.current.record,
-        activeId,
-      };
-      setObjects([activeId]);
+      setObject(draggedObject);
     }
   }
 };

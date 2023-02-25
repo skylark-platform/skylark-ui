@@ -23,7 +23,8 @@ export interface TableProps {
   withCheckbox?: boolean;
   virtualRows: VirtualItem[];
   totalRows: number;
-  activeId: any;
+  draggedObject: any;
+  ableToDrag: boolean;
   setPanelObject?: (obj: { uid: string; objectType: string }) => void;
 }
 
@@ -33,6 +34,7 @@ export interface TableRowProps {
   setPanelObject?: (obj: { uid: string; objectType: string }) => void;
   tableMeta: any;
   withCheckbox: any;
+  ableToDrag: boolean;
 }
 
 const headAndDataClassNames =
@@ -196,6 +198,7 @@ const TableRow = ({
   setPanelObject,
   tableMeta,
   withCheckbox,
+  ableToDrag,
 }: TableRowProps) => {
   const row = rows[virtualRow.index] as Row<ParsedSkylarkObject>;
   const { uid, objectType } = row.original;
@@ -204,6 +207,7 @@ const TableRow = ({
     data: {
       object: row.original,
     },
+    disabled: !ableToDrag,
   });
   return (
     <tr
@@ -232,8 +236,9 @@ export const Table = ({
   withCheckbox = false,
   virtualRows,
   totalRows,
-  activeId,
+  draggedObject,
   setPanelObject,
+  ableToDrag,
 }: TableProps) => {
   const tableMeta = table.options.meta;
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
@@ -244,7 +249,7 @@ export const Table = ({
 
   const { rows } = table.getRowModel();
 
-  console.log("here ###", activeId);
+  console.log("here ###", draggedObject);
 
   const headers = table.getHeaderGroups()[0].headers;
   return (
@@ -276,19 +281,20 @@ export const Table = ({
               setPanelObject={setPanelObject}
               tableMeta={tableMeta}
               withCheckbox={withCheckbox}
+              ableToDrag={ableToDrag}
             />
           );
         })}
         <DragOverlay modifiers={[snapCenterToCursor]}>
-          {activeId ? (
+          {draggedObject ? (
             <div className="my-o flex max-w-[350px] items-center space-x-2 ">
               <Pill
-                label={activeId.__typename as string}
-                bgColor={activeId.config.colour}
+                label={draggedObject.__typename as string}
+                bgColor={draggedObject.config.colour}
                 className="w-20"
               />
               <div className="flex flex-1">
-                <p>{activeId.object.title || activeId.object.uid}</p>
+                <p>{draggedObject.object.title || draggedObject.object.uid}</p>
               </div>
             </div>
           ) : null}

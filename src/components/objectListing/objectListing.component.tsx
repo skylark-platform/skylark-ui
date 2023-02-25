@@ -42,7 +42,7 @@ export interface ObjectListProps {
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
   onInfoClick?: (obj: { uid: string; objectType: string }) => void;
-  activeId: any;
+  draggedObject: any;
 }
 
 const createColumns = (
@@ -179,7 +179,7 @@ export const ObjectList = ({
   withObjectSelect,
   withObjectEdit,
   onInfoClick,
-  activeId,
+  draggedObject,
   isPanelOpen,
 }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -390,7 +390,7 @@ export const ObjectList = ({
       </div>
       <div
         className={`${
-          activeId ? "overflow-hidden" : "overflow-x-auto"
+          draggedObject ? "overflow-hidden" : "overflow-x-auto"
         } relative mb-6 flex w-full flex-auto flex-grow flex-col overflow-x-auto overscroll-none`}
         ref={tableContainerRef}
         data-testid="table-container"
@@ -399,11 +399,12 @@ export const ObjectList = ({
         {!searchLoading && searchData && (
           <Table
             table={table}
-            activeId={activeId}
+            draggedObject={draggedObject}
             virtualRows={virtualRows}
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
             setPanelObject={onInfoClick}
+            ableToDrag={!!isPanelOpen} // TODO check if we have contents
           />
         )}
         {!searchLoading && searchData && fetchingMore && (
