@@ -2,12 +2,12 @@ import { graphql, rest } from "msw";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createMocks, Mocks } from "node-mocks-http";
 
+import { erroredFlatfileAccessKeyExchangeHandler } from "src/__tests__/mocks/handlers/flatfile";
+import { skylarkObjectTypesHandler } from "src/__tests__/mocks/handlers/introspectionHandlers";
+import { server } from "src/__tests__/mocks/server";
 import * as constants from "src/constants/flatfile";
 import { SkylarkImportedObject } from "src/interfaces/skylark";
 import handler from "src/pages/api/flatfile/import";
-import { erroredFlatfileAccessKeyExchangeHandler } from "src/tests/mocks/handlers/flatfile";
-import { skylarkObjectTypesHandler } from "src/tests/mocks/handlers/introspectionHandlers";
-import { server } from "src/tests/mocks/server";
 
 const mockConstants = constants as {
   FLATFILE_ACCESS_KEY_ID: string | null;

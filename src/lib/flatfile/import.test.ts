@@ -2,9 +2,9 @@ import { Flatfile } from "@flatfile/sdk";
 import { gql } from "graphql-tag";
 import { createMockClient, MockApolloClient } from "mock-apollo-client";
 
+import GQLSkylarkSchemaQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/schema.json";
 import { FlatfileRow } from "src/interfaces/flatfile/responses";
 import { GET_SKYLARK_SCHEMA } from "src/lib/graphql/skylark/queries";
-import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 
 import {
   createFlatfileObjectsInSkylark,

@@ -1,19 +1,19 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { graphql } from "msw";
 
-import { createGetObjectKeyPrefix } from "src/hooks/useGetObject";
-import { createGetObjectQueryName } from "src/lib/graphql/skylark/dynamicQueries";
-import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
-import GQLSkylarkGetObjectImageQueryFixture from "src/tests/fixtures/skylark/queries/getObject/gotImage.json";
-import GQLSkylarkGetSetWithContentQueryFixture from "src/tests/fixtures/skylark/queries/getObject/setWithContent.json";
-import { server } from "src/tests/mocks/server";
+import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
+import GQLSkylarkGetObjectImageQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gotImage.json";
+import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
+import { server } from "src/__tests__/mocks/server";
 import {
   render,
   screen,
   waitFor,
   fireEvent,
   within,
-} from "src/tests/utils/test-utils";
+} from "src/__tests__/utils/test-utils";
+import { createGetObjectKeyPrefix } from "src/hooks/useGetObject";
+import { createGetObjectQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { Panel } from "./panel.component";
 

@@ -1,9 +1,9 @@
 import { graphql } from "msw";
 
+import GQLSkylarkAllAvailTestMovieSearchFixture from "src/__tests__/fixtures/skylark/queries/search/allMediaTestMovieOnly.json";
+import GQLGameOfThronesSearchResultsPage1 from "src/__tests__/fixtures/skylark/queries/search/gotPage1.json";
+import GQLGameOfThronesSearchResultsPage2 from "src/__tests__/fixtures/skylark/queries/search/gotPage2.json";
 import { SEARCH_PAGE_SIZE } from "src/hooks/useSearch";
-import GQLSkylarkAllAvailTestMovieSearchFixture from "src/tests/fixtures/skylark/queries/search/allMediaTestMovieOnly.json";
-import GQLGameOfThronesSearchResultsPage1 from "src/tests/fixtures/skylark/queries/search/gotPage1.json";
-import GQLGameOfThronesSearchResultsPage2 from "src/tests/fixtures/skylark/queries/search/gotPage2.json";
 
 export const searchHandlers = [
   graphql.query(

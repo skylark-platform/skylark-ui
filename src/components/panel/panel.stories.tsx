@@ -3,20 +3,20 @@ import { userEvent, waitFor, within } from "@storybook/testing-library";
 import { DocumentNode } from "graphql";
 import React from "react";
 
+import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
+import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
+import GQLSkylarkSchemaQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/schema.json";
+import {
+  episodeObjectOperations,
+  seasonObjectOperations,
+  setObjectOperations,
+} from "src/__tests__/utils/objectOperations";
 import { SkylarkObjectMeta } from "src/interfaces/skylark";
 import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   GET_SKYLARK_OBJECT_TYPES,
   GET_SKYLARK_SCHEMA,
 } from "src/lib/graphql/skylark/queries";
-import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
-import GQLSkylarkGetSetWithContentQueryFixture from "src/tests/fixtures/skylark/queries/getObject/setWithContent.json";
-import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
-import {
-  episodeObjectOperations,
-  seasonObjectOperations,
-  setObjectOperations,
-} from "src/tests/utils/objectOperations";
 
 import { Panel } from "./panel.component";
 

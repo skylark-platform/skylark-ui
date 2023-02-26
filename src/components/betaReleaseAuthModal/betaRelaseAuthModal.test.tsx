@@ -1,8 +1,13 @@
 import { graphql } from "msw";
 
+import { server } from "src/__tests__/mocks/server";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "src/__tests__/utils/test-utils";
 import { LOCAL_STORAGE } from "src/constants/skylark";
-import { server } from "src/tests/mocks/server";
-import { fireEvent, render, screen, waitFor } from "src/tests/utils/test-utils";
 
 import { AddAuthTokenModal } from "./betaReleaseAuthModal.component";
 

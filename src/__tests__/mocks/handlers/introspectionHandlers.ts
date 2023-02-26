@@ -1,7 +1,7 @@
 import { graphql } from "msw";
 
-import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
-import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
+import GQLSkylarkObjectTypesQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/objectTypes.json";
+import GQLSkylarkSchemaQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/schema.json";
 
 export const skylarkObjectTypesHandler = (types?: string[]) =>
   graphql.query("GET_SKYLARK_OBJECT_TYPES", (req, res, ctx) => {

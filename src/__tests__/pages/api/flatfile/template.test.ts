@@ -2,6 +2,11 @@ import jwt from "jsonwebtoken";
 import { graphql } from "msw";
 import { createMocks } from "node-mocks-http";
 
+import {
+  erroredFlatfileAccessKeyExchangeHandler,
+  erroredFlatfileTemplateSearch,
+} from "src/__tests__/mocks/handlers/flatfile";
+import { server } from "src/__tests__/mocks/server";
 import * as constants from "src/constants/flatfile";
 import {
   FlatfileCreatePortalResponse,
@@ -11,11 +16,6 @@ import {
 } from "src/interfaces/flatfile/responses";
 import * as flatfile from "src/lib/flatfile";
 import handler from "src/pages/api/flatfile/template";
-import {
-  erroredFlatfileAccessKeyExchangeHandler,
-  erroredFlatfileTemplateSearch,
-} from "src/tests/mocks/handlers/flatfile";
-import { server } from "src/tests/mocks/server";
 
 const mockConstants = constants as {
   FLATFILE_ACCESS_KEY_ID: string | null;

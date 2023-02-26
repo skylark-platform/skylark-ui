@@ -1,6 +1,6 @@
+import { render, screen } from "src/__tests__/utils/test-utils";
 import { LOCAL_STORAGE } from "src/constants/skylark";
 import ConnectPage from "src/pages/beta/connect";
-import { render, screen } from "src/tests/utils/test-utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const useRouter = jest.spyOn(require("next/router"), "useRouter");

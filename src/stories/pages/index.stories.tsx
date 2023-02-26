@@ -1,6 +1,9 @@
 import { ComponentStory } from "@storybook/react";
 import { DocumentNode } from "graphql";
 
+import GQLSkylarkObjectTypesQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/objectTypes.json";
+import GQLSkylarkSchemaQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/schema.json";
+import GQLGameOfThronesSearchResults from "src/__tests__/fixtures/skylark/queries/search/got.json";
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import { createSearchObjectsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -9,9 +12,6 @@ import {
 } from "src/lib/graphql/skylark/queries";
 import { getAllObjectsMeta } from "src/lib/skylark/objects";
 import Index from "src/pages/index";
-import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
-import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
-import GQLGameOfThronesSearchResults from "src/tests/fixtures/skylark/queries/search/got.json";
 
 export default {
   title: "Pages/Index",

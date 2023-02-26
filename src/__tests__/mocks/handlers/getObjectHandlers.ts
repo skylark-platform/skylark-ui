@@ -1,9 +1,9 @@
 import { graphql } from "msw";
 
+import GQLSkylarkGetMovieQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
+import GQLSkylarkGetObjectImageQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gotImage.json";
+import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
 import { createGetObjectQueryName } from "src/lib/graphql/skylark/dynamicQueries";
-import GQLSkylarkGetMovieQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
-import GQLSkylarkGetObjectImageQueryFixture from "src/tests/fixtures/skylark/queries/getObject/gotImage.json";
-import GQLSkylarkGetSetWithContentQueryFixture from "src/tests/fixtures/skylark/queries/getObject/setWithContent.json";
 
 export const getObjectHandlers = [
   graphql.query(

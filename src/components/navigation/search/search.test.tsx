@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { act } from "react-dom/test-utils";
 
-import { fireEvent, render, screen } from "src/tests/utils/test-utils";
+import { fireEvent, render, screen } from "src/__tests__/utils/test-utils";
 
 import { QuickSearch } from "./search.component";
 

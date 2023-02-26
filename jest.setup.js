@@ -3,12 +3,12 @@ import "@testing-library/jest-dom";
 // Polyfill "window.fetch" used in the React component.
 import "whatwg-fetch";
 
-import { LOCAL_STORAGE } from "./src/constants/skylark";
 // TODO potentially remove this package after proper auth is implemented
 // TODO remove this package
 // import { enableFetchMocks } from "jest-fetch-mock";
 // enableFetchMocks();
-import { server } from "./src/tests/mocks/server";
+import { server } from "./src/__tests__/mocks/server";
+import { LOCAL_STORAGE } from "./src/constants/skylark";
 
 // Establish API mocking before all tests.
 beforeAll(() => {

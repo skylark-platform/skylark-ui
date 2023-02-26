@@ -1,6 +1,11 @@
-import GQLGameOfThronesSearchResultsPage1 from "src/tests/fixtures/skylark/queries/search/gotPage1.json";
-import GQLGameOfThronesSearchResultsPage2 from "src/tests/fixtures/skylark/queries/search/gotPage2.json";
-import { fireEvent, render, screen, waitFor } from "src/tests/utils/test-utils";
+import GQLGameOfThronesSearchResultsPage1 from "src/__tests__/fixtures/skylark/queries/search/gotPage1.json";
+import GQLGameOfThronesSearchResultsPage2 from "src/__tests__/fixtures/skylark/queries/search/gotPage2.json";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "src/__tests__/utils/test-utils";
 
 import { ObjectList } from "./objectListing.component";
 

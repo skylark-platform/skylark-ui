@@ -5,7 +5,7 @@ import {
   screen,
   waitFor,
   within,
-} from "src/tests/utils/test-utils";
+} from "src/__tests__/utils/test-utils";
 
 import { ContentLibrary } from "./contentLibrary.component";
 

@@ -1,5 +1,5 @@
+import { mockFlatfileGetFinalDatabaseView } from "src/__tests__/mocks/handlers/flatfile";
 import { createFlatfileClient } from "src/lib/graphql/flatfile/client";
-import { mockFlatfileGetFinalDatabaseView } from "src/tests/mocks/handlers/flatfile";
 
 import { getFlatfileFinalDatabaseView } from "./databaseView";
 
