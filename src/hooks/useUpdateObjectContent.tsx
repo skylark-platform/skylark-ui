@@ -7,7 +7,7 @@ import {
   ParsedSkylarkObjectContentObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import { request } from "src/lib/graphql/skylark/client";
+import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynamicMutations";
 import { parseObjectContent } from "src/lib/skylark/parsers";
 

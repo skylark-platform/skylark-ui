@@ -10,7 +10,7 @@ import {
   ParsedSkylarkObjectMetadata,
   GQLSkylarkSearchResponse,
 } from "src/interfaces/skylark";
-import { request } from "src/lib/graphql/skylark/client";
+import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
   createSearchObjectsQuery,
   removeFieldPrefixFromReturnedObject,
@@ -49,7 +49,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     useInfiniteQuery<GQLSkylarkSearchResponse>({
       queryKey: [QueryKeys.Search, query, variables],
       queryFn: async ({ pageParam: offset = 0 }) =>
-        request(query as RequestDocument, {
+        skylarkRequest(query as RequestDocument, {
           ...variables,
           offset,
         }),

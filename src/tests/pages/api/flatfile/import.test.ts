@@ -1,32 +1,13 @@
-import { gql } from "graphql-tag";
-import { createMockClient, MockApolloClient } from "mock-apollo-client";
+import { graphql, rest } from "msw";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createMocks, Mocks } from "node-mocks-http";
 
 import * as constants from "src/constants/flatfile";
-import { FlatfileRow } from "src/interfaces/flatfile/responses";
 import { SkylarkImportedObject } from "src/interfaces/skylark";
-import * as flatfile from "src/lib/flatfile";
-import * as flatfileClient from "src/lib/graphql/flatfile/client";
-import { GET_FINAL_DATABASE_VIEW } from "src/lib/graphql/flatfile/queries";
-import * as skylarkClient from "src/lib/graphql/skylark/client";
-import { GET_SKYLARK_SCHEMA } from "src/lib/graphql/skylark/queries";
-import * as skylarkIntrospection from "src/lib/skylark/introspection/introspection";
 import handler from "src/pages/api/flatfile/import";
-import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
-
-jest.mock("../../../../lib/flatfile", () => ({
-  ...jest.requireActual("../../../../lib/flatfile"),
-  exchangeFlatfileAccessKey: jest.fn(),
-}));
-
-jest.mock("../../../../lib/graphql/skylark/client", () => ({
-  createBasicSkylarkClient: jest.fn(),
-}));
-
-jest.mock("../../../../lib/graphql/flatfile/client", () => ({
-  createFlatfileClient: jest.fn(),
-}));
+import { erroredFlatfileAccessKeyExchangeHandler } from "src/tests/mocks/handlers/flatfile";
+import { skylarkObjectTypesHandler } from "src/tests/mocks/handlers/introspectionHandlers";
+import { server } from "src/tests/mocks/server";
 
 const mockConstants = constants as {
   FLATFILE_ACCESS_KEY_ID: string | null;
@@ -37,46 +18,9 @@ const mockConstants = constants as {
   };
 };
 
-const flatfileRows: FlatfileRow[] = [
-  {
-    id: 1,
-    status: "accepted",
-    valid: true,
-    data: { title: "episode 1" },
-  },
-  {
-    id: 2,
-    status: "invalid",
-    valid: false, // This one will be filtered out, if it breaks the GraphQL mutation below will fail
-    data: { title: "episode 2" },
-  },
-];
-
-const CREATE_EPISODE_MUTATION = gql`
-  mutation createEpisode_batchId {
-    createEpisode_batchId_1: createEpisode(episode: { title: "episode 1" }) {
-      uid
-      external_id
-    }
-  }
-`;
-
-let spiedExchangeFlatfileAccessKey: jest.SpyInstance;
-let spiedGetSkylarkObjectTypes: jest.SpyInstance;
-
 beforeEach(() => {
   mockConstants.FLATFILE_ACCESS_KEY_ID = "accessKeyId";
   mockConstants.FLATFILE_SECRET_KEY = "secretKey";
-
-  spiedExchangeFlatfileAccessKey = jest.spyOn(
-    flatfile,
-    "exchangeFlatfileAccessKey",
-  );
-
-  spiedGetSkylarkObjectTypes = jest.spyOn(
-    skylarkIntrospection,
-    "getSkylarkObjectTypes",
-  );
 });
 
 afterEach(() => {
@@ -163,22 +107,13 @@ describe("validated request", () => {
     NextApiResponse<string | SkylarkImportedObject[]>
   >["res"];
 
-  let createFlatfileClient: jest.SpyInstance;
-  let mockFlatfileClient: MockApolloClient;
-  let getFinalDatabaseHandler: jest.Mock;
-
-  let createBasicSkylarkClientSpy: jest.SpyInstance;
-  let mockSkylarkClient: MockApolloClient;
-  let getSkylarkSchemaHandler: jest.Mock;
-  let createEpisodeHandler: jest.Mock;
-
   beforeEach(() => {
     const requestMocks = createMocks({
       method: "POST",
       body: {
         batchId: "batchId",
         objectType: "Episode",
-        graphQLUri: "/graphql",
+        graphQLUri: "http://localhost:3000/graphql",
         graphQLToken: "token",
       },
     });
@@ -186,74 +121,9 @@ describe("validated request", () => {
     res = requestMocks.res;
   });
 
-  beforeEach(() => {
-    mockFlatfileClient = createMockClient();
-    createFlatfileClient = jest
-      .spyOn(flatfileClient, "createFlatfileClient")
-      .mockReturnValue(mockFlatfileClient);
-
-    getFinalDatabaseHandler = jest.fn().mockResolvedValue({
-      data: {
-        getFinalDatabaseView: {
-          rows: flatfileRows,
-        },
-      },
-    });
-
-    mockFlatfileClient.setRequestHandler(
-      GET_FINAL_DATABASE_VIEW,
-      getFinalDatabaseHandler,
-    );
-  });
-
-  beforeEach(() => {
-    mockSkylarkClient = createMockClient();
-    createBasicSkylarkClientSpy = jest.spyOn(
-      skylarkClient,
-      "createBasicSkylarkClient",
-    );
-    createBasicSkylarkClientSpy.mockReturnValue(mockSkylarkClient);
-
-    getSkylarkSchemaHandler = jest
-      .fn()
-      .mockResolvedValue(GQLSkylarkSchemaQueryFixture);
-
-    createEpisodeHandler = jest.fn().mockResolvedValue({
-      data: {
-        createEpisode_batchId_1: {
-          external_id: "external_1",
-          uid: "1",
-        },
-      },
-    });
-
-    mockSkylarkClient.setRequestHandler(
-      GET_SKYLARK_SCHEMA,
-      getSkylarkSchemaHandler,
-    );
-    mockSkylarkClient.setRequestHandler(
-      CREATE_EPISODE_MUTATION,
-      createEpisodeHandler,
-    );
-  });
-
-  test("calls createBasicSkylarkClient with the expected URI and Token", async () => {
-    // Arrange
-    spiedGetSkylarkObjectTypes.mockResolvedValue([]);
-
-    // Act
-    await handler(req, res);
-
-    // Assert
-    expect(createBasicSkylarkClientSpy).toHaveBeenCalledWith(
-      "/graphql",
-      "token",
-    );
-  });
-
   test("returns 500 when the object type is not valid", async () => {
     // Arrange
-    spiedGetSkylarkObjectTypes.mockResolvedValue([]);
+    server.use(skylarkObjectTypesHandler());
 
     // Act
     await handler(req, res);
@@ -267,25 +137,8 @@ describe("validated request", () => {
 
   test("returns 500 and the error message while getting a token from Flatfile", async () => {
     // Arrange
-    spiedGetSkylarkObjectTypes.mockResolvedValue(["Episode"]);
-    spiedExchangeFlatfileAccessKey.mockImplementationOnce(async () => {
-      throw new Error("actual error message");
-    });
-
-    // Act
-    await handler(req, res);
-
-    // Assert
-    expect(res._getData()).toEqual("actual error message");
-    expect(res._getStatusCode()).toBe(500);
-  });
-
-  test("returns 500 and a generic error message while getting a token from Flatfile with no error message", async () => {
-    // Arrange
-    spiedGetSkylarkObjectTypes.mockResolvedValue(["Episode"]);
-    spiedExchangeFlatfileAccessKey.mockImplementationOnce(async () => {
-      throw new Error();
-    });
+    server.use(skylarkObjectTypesHandler(["Episode"]));
+    server.use(erroredFlatfileAccessKeyExchangeHandler);
 
     // Act
     await handler(req, res);
@@ -295,26 +148,38 @@ describe("validated request", () => {
     expect(res._getStatusCode()).toBe(500);
   });
 
-  test("creates a Flatfile client using the token from the exchange flatfile access key call", async () => {
+  test("returns 500 and the error message when the Flatfile response is a bad format", async () => {
     // Arrange
-    spiedGetSkylarkObjectTypes.mockResolvedValue(["Episode"]);
-    spiedExchangeFlatfileAccessKey.mockResolvedValue({
-      accessToken: "flatfileAccessToken",
-    });
+    server.use(skylarkObjectTypesHandler(["Episode"]));
+    server.use(
+      rest.post(
+        "https://api.us.flatfile.io/auth/access-key/exchange/",
+        (req, res, ctx) => {
+          const tokenResponse = {
+            invalid: true,
+          };
+
+          return res(ctx.status(200), ctx.json(tokenResponse));
+        },
+      ),
+    );
 
     // Act
     await handler(req, res);
 
     // Assert
-    expect(createFlatfileClient).toHaveBeenCalledWith("flatfileAccessToken");
+    expect(res._getData()).toEqual("Invalid response returned by Flatfile");
+    expect(res._getStatusCode()).toBe(500);
   });
 
   test("returns 200 status and created data imported from Flatfile with non-accepted data filtered out", async () => {
     // Arrange
-    spiedGetSkylarkObjectTypes.mockResolvedValue(["Episode"]);
-    spiedExchangeFlatfileAccessKey.mockResolvedValue({
-      accessToken: "flatfileAccessToken",
-    });
+    server.use(skylarkObjectTypesHandler(["Episode"]));
+    server.use(
+      graphql.mutation("createEpisode_batchId", (req, res, ctx) => {
+        return res(ctx.data([{ external_id: "external_1", uid: "1" }]));
+      }),
+    );
 
     // Act
     await handler(req, res);

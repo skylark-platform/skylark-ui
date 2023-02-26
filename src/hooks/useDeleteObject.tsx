@@ -3,7 +3,7 @@ import { RequestDocument } from "graphql-request";
 
 import { QueryKeys } from "src/enums/graphql";
 import { SkylarkObjectType } from "src/interfaces/skylark";
-import { request } from "src/lib/graphql/skylark/client";
+import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createDeleteObjectMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
 import { createGetObjectKeyPrefix } from "./useGetObject";
@@ -24,7 +24,7 @@ export const useDeleteObject = ({
 
   const mutation = useMutation({
     mutationFn: ({ uid }: { uid: string }) => {
-      return request(deleteObjectMutation as RequestDocument, { uid });
+      return skylarkRequest(deleteObjectMutation as RequestDocument, { uid });
     },
     onSuccess: (_, { uid }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.Search] });

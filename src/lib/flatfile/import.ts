@@ -1,5 +1,5 @@
 import { ITheme } from "@flatfile/sdk";
-import { gql } from "graphql-tag";
+import { GraphQLClient } from "graphql-request";
 import { EnumType, jsonToGraphQLQuery } from "json-to-graphql-query";
 
 import {
@@ -10,7 +10,6 @@ import {
   SkylarkImportedObject,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
-import { SkylarkClient } from "src/lib/graphql/skylark/client";
 import { getSkylarkObjectOperations } from "src/lib/skylark/introspection/introspection";
 
 export const openFlatfileImportClient = async (
@@ -38,7 +37,7 @@ export const openFlatfileImportClient = async (
 };
 
 export const createFlatfileObjectsInSkylark = async (
-  client: SkylarkClient,
+  client: GraphQLClient,
   objectType: string,
   flatfileBatchId: string,
   flatfileRows: FlatfileRow[],
@@ -94,9 +93,9 @@ export const createFlatfileObjectsInSkylark = async (
 
   const graphQLMutation = jsonToGraphQLQuery(mutation, { pretty: true });
 
-  const response = await client.mutate<FlatfileObjectsCreatedInSkylark>({
-    mutation: gql(graphQLMutation),
-  });
+  const data = await client.request<FlatfileObjectsCreatedInSkylark>(
+    graphQLMutation,
+  );
 
-  return Object.values(response.data as FlatfileObjectsCreatedInSkylark);
+  return Object.values(data);
 };

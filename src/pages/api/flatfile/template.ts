@@ -113,7 +113,6 @@ export default async function handler(
 
     res.status(200).json({ embedId: portal.id, token: importToken });
   } catch (err) {
-    console.error(err);
     return res.status(500).send("Error creating Flatfile Template and Portal");
   }
 }

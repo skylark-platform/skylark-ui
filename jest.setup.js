@@ -1,4 +1,7 @@
+// Extend Jest "expect" functionality with Testing Library assertions.
 import "@testing-library/jest-dom";
+// Polyfill "window.fetch" used in the React component.
+import "whatwg-fetch";
 
 import { LOCAL_STORAGE } from "./src/constants/skylark";
 // TODO potentially remove this package after proper auth is implemented

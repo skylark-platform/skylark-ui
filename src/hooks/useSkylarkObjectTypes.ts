@@ -6,7 +6,7 @@ import {
   GQLSkylarkSchemaQueriesMutations,
 } from "src/interfaces/graphql/introspection";
 import { SkylarkObjectType } from "src/interfaces/skylark";
-import { request } from "src/lib/graphql/skylark/client";
+import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
   GET_SKYLARK_SCHEMA,
   GET_SKYLARK_OBJECT_TYPES,
@@ -21,7 +21,7 @@ export const useSkylarkObjectTypes = (): Omit<UseQueryResult, "data"> & {
 } => {
   const { data, ...rest } = useQuery<GQLSkylarkObjectTypesResponse>({
     queryKey: [QueryKeys.ObjectTypes, GET_SKYLARK_OBJECT_TYPES],
-    queryFn: async () => request(GET_SKYLARK_OBJECT_TYPES),
+    queryFn: async () => skylarkRequest(GET_SKYLARK_OBJECT_TYPES),
   });
 
   const objectTypes = data
@@ -39,7 +39,7 @@ export const useSkylarkObjectTypes = (): Omit<UseQueryResult, "data"> & {
 export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
   const { data, ...rest } = useQuery<GQLSkylarkSchemaQueriesMutations>({
     queryKey: [QueryKeys.Schema, GET_SKYLARK_SCHEMA],
-    queryFn: async () => request(GET_SKYLARK_SCHEMA),
+    queryFn: async () => skylarkRequest(GET_SKYLARK_SCHEMA),
   });
 
   if (!data || !objectType) {
@@ -58,7 +58,7 @@ export const useAllObjectsMeta = () => {
   const { data: schemaResponse, ...rest } =
     useQuery<GQLSkylarkSchemaQueriesMutations>({
       queryKey: [QueryKeys.Schema, GET_SKYLARK_SCHEMA],
-      queryFn: async () => request(GET_SKYLARK_SCHEMA),
+      queryFn: async () => skylarkRequest(GET_SKYLARK_SCHEMA),
     });
 
   const { objectTypes } = useSkylarkObjectTypes();

@@ -1,25 +1,17 @@
-import { ApolloProvider } from "@apollo/client";
-import { MockedProvider } from "@apollo/client/testing";
-import { createMockClient, MockApolloClient } from "mock-apollo-client";
+import { graphql } from "msw";
 
 import { LOCAL_STORAGE } from "src/constants/skylark";
-import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
-import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
+import { server } from "src/tests/mocks/server";
 import { fireEvent, render, screen, waitFor } from "src/tests/utils/test-utils";
 
 import { AddAuthTokenModal } from "./betaReleaseAuthModal.component";
 
-let mockClient: MockApolloClient;
-
-jest.mock("../../lib/graphql/skylark/client", () => ({
-  createSkylarkClient: () => mockClient,
-  createBasicSkylarkClient: () => mockClient,
-  __esModule: true,
+jest.mock("@tanstack/react-query", () => ({
+  ...jest.requireActual("@tanstack/react-query"),
+  useQueryClient: jest.fn().mockReturnValue({ refetchQueries: jest.fn() }),
 }));
 
 beforeEach(() => {
-  mockClient = createMockClient();
-
   // IntersectionObserver isn't available in test environment
   const mockIntersectionObserver = jest.fn();
   mockIntersectionObserver.mockReturnValue({
@@ -31,21 +23,13 @@ beforeEach(() => {
 });
 
 test("renders as closed", () => {
-  render(
-    <MockedProvider mocks={[]}>
-      <AddAuthTokenModal isOpen={false} setIsOpen={jest.fn()} />
-    </MockedProvider>,
-  );
+  render(<AddAuthTokenModal isOpen={false} setIsOpen={jest.fn()} />);
 
   expect(screen.queryByText("Connect to Skylark")).toBeNull();
 });
 
 test("renders as open", () => {
-  render(
-    <MockedProvider mocks={[]}>
-      <AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />
-    </MockedProvider>,
-  );
+  render(<AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />);
 
   expect(screen.getByText("Connect to Skylark")).toBeInTheDocument();
   expect(screen.getByLabelText("GraphQL URL")).toBeInTheDocument();
@@ -56,11 +40,7 @@ test("renders as open", () => {
 test("renders as open and closes on the esc key", () => {
   const setIsOpen = jest.fn();
 
-  render(
-    <MockedProvider mocks={[]}>
-      <AddAuthTokenModal isOpen={true} setIsOpen={setIsOpen} />
-    </MockedProvider>,
-  );
+  render(<AddAuthTokenModal isOpen={true} setIsOpen={setIsOpen} />);
 
   const header = screen.getByText("Connect to Skylark");
 
@@ -79,11 +59,7 @@ test("renders as open and closes on the esc key", () => {
 test("renders and close with close button", () => {
   const setIsOpen = jest.fn();
 
-  render(
-    <MockedProvider mocks={[]}>
-      <AddAuthTokenModal isOpen={true} setIsOpen={setIsOpen} />
-    </MockedProvider>,
-  );
+  render(<AddAuthTokenModal isOpen={true} setIsOpen={setIsOpen} />);
 
   const header = screen.getByText("Connect to Skylark");
 
@@ -107,11 +83,7 @@ test("clicks the copy buttons", () => {
 
   jest.spyOn(navigator.clipboard, "writeText");
 
-  render(
-    <MockedProvider mocks={[]}>
-      <AddAuthTokenModal isOpen={true} setIsOpen={setIsOpen} />
-    </MockedProvider>,
-  );
+  render(<AddAuthTokenModal isOpen={true} setIsOpen={setIsOpen} />);
 
   const header = screen.getByText("Connect to Skylark");
 
@@ -136,14 +108,18 @@ test("clicks the copy buttons", () => {
 });
 
 test("changes input to red when they are invalid", async () => {
-  mockClient.setRequestHandler(GET_SKYLARK_OBJECT_TYPES, () =>
-    Promise.reject(new Error("An error occurred")),
+  server.use(
+    graphql.query("GET_SKYLARK_OBJECT_TYPES", (req, res, ctx) => {
+      return res(
+        ctx.errors([
+          {
+            message: "Not authorized",
+          },
+        ]),
+      );
+    }),
   );
-  render(
-    <ApolloProvider client={mockClient}>
-      <AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />
-    </ApolloProvider>,
-  );
+  render(<AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />);
 
   const uriInput = screen.getByLabelText("GraphQL URL");
   const tokenInput = screen.getByLabelText("API Key");
@@ -161,14 +137,7 @@ test("changes input to red when they are invalid", async () => {
 });
 
 test("changes input to green when they are valid", async () => {
-  mockClient.setRequestHandler(GET_SKYLARK_OBJECT_TYPES, () =>
-    Promise.resolve(GQLSkylarkObjectTypesQueryFixture),
-  );
-  render(
-    <ApolloProvider client={mockClient}>
-      <AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />
-    </ApolloProvider>,
-  );
+  render(<AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />);
 
   const uriInput = screen.getByLabelText("GraphQL URL");
   const tokenInput = screen.getByLabelText("API Key");
@@ -190,14 +159,7 @@ test("changes input to green when they are valid", async () => {
 test("when GraphQL is valid, updates local storage", async () => {
   const setItem = jest.spyOn(Storage.prototype, "setItem");
 
-  mockClient.setRequestHandler(GET_SKYLARK_OBJECT_TYPES, () =>
-    Promise.resolve(GQLSkylarkObjectTypesQueryFixture),
-  );
-  render(
-    <ApolloProvider client={mockClient}>
-      <AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />
-    </ApolloProvider>,
-  );
+  render(<AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />);
 
   const uriInput = screen.getByLabelText("GraphQL URL");
   const tokenInput = screen.getByLabelText("API Key");

@@ -9,7 +9,7 @@ import {
   GQLSkylarkResponseError,
 } from "src/interfaces/skylark";
 import { GQLSkylarkGetObjectResponse } from "src/interfaces/skylark";
-import { request } from "src/lib/graphql/skylark/client";
+import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   parseObjectAvailability,
@@ -47,7 +47,7 @@ export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
       query,
       variables,
     ],
-    queryFn: async () => request(query as DocumentNode, variables),
+    queryFn: async () => skylarkRequest(query as DocumentNode, variables),
     enabled: query !== null,
   });
 
