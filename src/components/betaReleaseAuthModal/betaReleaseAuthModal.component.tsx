@@ -24,7 +24,7 @@ export const AddAuthTokenModal = ({
   isOpen,
   setIsOpen,
 }: AddAuthTokenModalProps) => {
-  const { refetchQueries } = useQueryClient();
+  const client = useQueryClient();
   const plausible = usePlausible();
 
   const { isConnected, isLoading, invalidUri, invalidToken, setCreds } =
@@ -36,7 +36,11 @@ export const AddAuthTokenModal = ({
   const [debouncedToken] = useDebounce(inputToken, 750);
 
   useEffect(() => {
-    if (!isLoading && !isConnected) {
+    if (
+      (!isLoading && !isConnected) ||
+      !localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) ||
+      !localStorage.getItem(LOCAL_STORAGE.betaAuth.token)
+    ) {
       setIsOpen(true);
     }
   }, [isLoading, isConnected, setIsOpen]);
@@ -89,16 +93,20 @@ export const AddAuthTokenModal = ({
       // storage events are not picked up in the same tab, so dispatch it for the current one
       window.dispatchEvent(new Event("storage"));
 
-      refetchQueries();
+      client.refetchQueries();
 
       setIsOpen(false);
     }
   };
 
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
   return (
     <Dialog
       open={isOpen}
-      onClose={() => setIsOpen(false)}
+      onClose={closeModal}
       className="font-body relative z-50"
     >
       <div
@@ -112,7 +120,7 @@ export const AddAuthTokenModal = ({
           <button
             aria-label="close"
             className="absolute top-4 right-4 sm:top-9 sm:right-8"
-            onClick={() => setIsOpen(false)}
+            onClick={closeModal}
             tabIndex={-1}
           >
             <GrClose className="text-xl" />
