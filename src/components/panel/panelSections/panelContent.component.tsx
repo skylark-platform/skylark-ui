@@ -119,11 +119,9 @@ export const PanelContent = ({
       <div
         ref={setNodeRef}
         style={style}
-        className="m-4 h-72 border-2 border-dotted text-center text-manatee-400"
+        className="m-4 mt-10 flex h-72 items-center justify-center border-2 border-dotted text-center text-manatee-400"
       >
-        <span className="content-center items-center justify-center">
-          Drop in media to start curating or set dynamic controls
-        </span>
+        <span>Drop in media to start curating or set dynamic controls</span>
       </div>
     );
 
@@ -142,6 +140,7 @@ export const PanelContent = ({
         {objects.map((item, index) => {
           const { object, config, position } = item;
 
+          // TODO use this on overlay
           const primaryKey = [
             config.primaryField || "",
             ...DISPLAY_NAME_PRIORITY,

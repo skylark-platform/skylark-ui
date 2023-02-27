@@ -29,11 +29,11 @@ export interface TableProps {
 }
 
 export interface TableRowProps {
-  rows: any;
+  rows: Row<object>[];
   virtualRow: VirtualItem;
   setPanelObject?: (obj: { uid: string; objectType: string }) => void;
-  tableMeta: any;
-  withCheckbox: any;
+  tableMeta: TableMeta<object> | undefined;
+  withCheckbox: boolean;
   ableToDrag: boolean;
 }
 
@@ -289,7 +289,7 @@ export const Table = ({
           {draggedObject ? (
             <div className="my-o flex max-w-[350px] items-center space-x-2 ">
               <Pill
-                label={draggedObject.__typename as string}
+                label={draggedObject.object.__typename as string}
                 bgColor={draggedObject.config.colour}
                 className="w-20"
               />
