@@ -80,7 +80,7 @@ export const AddAuthTokenModal = ({
     (debouncedUri && debouncedToken && isLoading) ||
     inputUri !== debouncedUri ||
     inputToken !== debouncedToken;
-  console.log(isLoading, inputUri, debouncedUri, inputToken, debouncedToken);
+
   const updateLocalStorage = async () => {
     if (debouncedUri && debouncedToken) {
       plausible("connectedToSkylark", { props: { skylark_url: debouncedUri } });
