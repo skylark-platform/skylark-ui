@@ -1,6 +1,7 @@
 import { Dialog } from "@headlessui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
+import { usePlausible } from "next-plausible";
 import React, { useEffect, useState } from "react";
 import { GrClose } from "react-icons/gr";
 import { useDebounce } from "use-debounce";
@@ -24,6 +25,7 @@ export const AddAuthTokenModal = ({
   setIsOpen,
 }: AddAuthTokenModalProps) => {
   const { refetchQueries } = useQueryClient();
+  const plausible = usePlausible();
 
   const { isConnected, isLoading, invalidUri, invalidToken, setCreds } =
     useConnectedToSkylark();
@@ -79,6 +81,7 @@ export const AddAuthTokenModal = ({
 
   const updateLocalStorage = async () => {
     if (debouncedUri && debouncedToken) {
+      plausible("connectedToSkylark", { props: { skylark_url: debouncedUri } });
       localStorage.setItem(LOCAL_STORAGE.betaAuth.uri, debouncedUri);
       localStorage.setItem(LOCAL_STORAGE.betaAuth.token, debouncedToken);
       // storage events are not picked up in the same tab, so dispatch it for the current one
