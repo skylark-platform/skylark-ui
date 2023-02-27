@@ -6,6 +6,7 @@ import "@fontsource/work-sans/700.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LazyMotion, domMax } from "framer-motion";
 import { initialize as initializeMsw, mswDecorator } from "msw-storybook-addon";
+import PlausibleProvider from "next-plausible";
 import "react-toastify/dist/ReactToastify.min.css";
 
 import { getObjectHandlers } from "../src/__tests__/mocks/handlers/getObjectHandlers";
@@ -42,9 +43,11 @@ export const decorators = [
   (Story) => {
     return (
       <QueryClientProvider client={queryClient}>
-        <LazyMotion features={domMax}>
-          <Story />
-        </LazyMotion>
+        <PlausibleProvider domain={""} enabled={false}>
+          <LazyMotion features={domMax}>
+            <Story />
+          </LazyMotion>
+        </PlausibleProvider>
       </QueryClientProvider>
     );
   },

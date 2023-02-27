@@ -1,7 +1,7 @@
 import { ComponentStory } from "@storybook/react";
 import { userEvent, within } from "@storybook/testing-library";
 
-import GQLGameOfThronesSearchResults from "src/__tests__/fixtures/skylark/queries/search/got.json";
+import GQLGameOfThronesSearchResults from "src/__tests__/fixtures/skylark/queries/search/gotPage1.json";
 
 import { ObjectList } from "./objectListing.component";
 
@@ -24,7 +24,7 @@ WithFiltersOpen.play = async ({ canvasElement }) => {
 
   await canvas.findAllByText(
     GQLGameOfThronesSearchResults.data.search.objects[0]
-      .__Asset__title as string,
+      .__Episode__title as string,
   );
 
   await userEvent.click(filtersButton);

@@ -77,8 +77,10 @@ export const AddAuthTokenModal = ({
 
   // Show loading state before the debounced values have been updated
   const requestLoading =
-    isLoading || inputUri !== debouncedUri || inputToken !== debouncedToken;
-
+    (debouncedUri && debouncedToken && isLoading) ||
+    inputUri !== debouncedUri ||
+    inputToken !== debouncedToken;
+  console.log(isLoading, inputUri, debouncedUri, inputToken, debouncedToken);
   const updateLocalStorage = async () => {
     if (debouncedUri && debouncedToken) {
       plausible("connectedToSkylark", { props: { skylark_url: debouncedUri } });

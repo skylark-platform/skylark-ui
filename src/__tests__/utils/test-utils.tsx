@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, RenderOptions } from "@testing-library/react";
 import { LazyMotion, domMax } from "framer-motion";
+import PlausibleProvider from "next-plausible";
 import { ReactElement, ReactNode } from "react";
 
 const AllTheProviders = ({ children }: { children: ReactNode }) => {
@@ -20,7 +21,9 @@ const AllTheProviders = ({ children }: { children: ReactNode }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <LazyMotion features={domMax}>{children}</LazyMotion>
+      <PlausibleProvider domain={""} enabled={false}>
+        <LazyMotion features={domMax}>{children}</LazyMotion>
+      </PlausibleProvider>
     </QueryClientProvider>
   );
 };
