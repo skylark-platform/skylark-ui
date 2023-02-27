@@ -16,13 +16,7 @@ import "../src/styles/globals.css";
 
 initializeMsw();
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
