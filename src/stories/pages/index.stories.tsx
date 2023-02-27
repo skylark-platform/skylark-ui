@@ -33,31 +33,3 @@ const Template: ComponentStory<typeof Index> = () => {
 };
 
 export const IndexPage = Template.bind({});
-IndexPage.parameters = {
-  apolloClient: {
-    mocks: [
-      {
-        request: {
-          query: GET_SKYLARK_OBJECT_TYPES,
-        },
-        result: GQLSkylarkObjectTypesQueryFixture,
-      },
-      {
-        request: {
-          query: GET_SKYLARK_SCHEMA,
-        },
-        result: GQLSkylarkSchemaQueryFixture,
-      },
-      {
-        request: {
-          variables: { ignoreAvailability: true, queryString: "" },
-          query: createSearchObjectsQuery(
-            searchableObjectsMeta,
-            [],
-          ) as DocumentNode,
-        },
-        result: GQLGameOfThronesSearchResults,
-      },
-    ],
-  },
-};

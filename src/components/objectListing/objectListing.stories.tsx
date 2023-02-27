@@ -36,43 +36,8 @@ const Template: ComponentStory<typeof ObjectList> = (args) => {
 };
 
 export const Default = Template.bind({});
-Default.parameters = {
-  apolloClient: {
-    mocks: [
-      {
-        request: {
-          query: GET_SKYLARK_OBJECT_TYPES,
-        },
-        result: GQLSkylarkObjectTypesQueryFixture,
-      },
-      {
-        request: {
-          query: GET_SKYLARK_SCHEMA,
-        },
-        result: GQLSkylarkSchemaQueryFixture,
-      },
-      {
-        request: {
-          variables: {
-            ignoreAvailability: true,
-            queryString: "",
-            limit: SEARCH_PAGE_SIZE,
-          },
-          query: createSearchObjectsQuery(
-            searchableObjectsMeta,
-            [],
-          ) as DocumentNode,
-        },
-        result: GQLGameOfThronesSearchResults,
-      },
-    ],
-  },
-};
 
 export const WithFiltersOpen = Template.bind({});
-WithFiltersOpen.parameters = {
-  ...Default.parameters,
-};
 WithFiltersOpen.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
@@ -90,16 +55,10 @@ export const WithCreateButtons = Template.bind({});
 WithCreateButtons.args = {
   withCreateButtons: true,
 };
-WithCreateButtons.parameters = {
-  ...Default.parameters,
-};
 
 export const KitchenSink = Template.bind({});
 KitchenSink.args = {
   withCreateButtons: true,
   withObjectSelect: true,
   withObjectEdit: true,
-};
-KitchenSink.parameters = {
-  ...Default.parameters,
 };

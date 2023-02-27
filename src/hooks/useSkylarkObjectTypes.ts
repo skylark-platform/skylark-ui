@@ -35,7 +35,6 @@ export const useSkylarkObjectTypes = (): Omit<UseQueryResult, "data"> & {
 };
 
 // Returns the operations for a given object (createEpisode etc for Episode)
-// Should be fast as it'll keep hitting the Apollo cache both requests noice
 export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
   const { data, ...rest } = useQuery<GQLSkylarkSchemaQueriesMutations>({
     queryKey: [QueryKeys.Schema, GET_SKYLARK_SCHEMA],

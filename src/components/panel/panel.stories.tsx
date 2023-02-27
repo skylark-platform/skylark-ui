@@ -1,22 +1,9 @@
 import { ComponentStory } from "@storybook/react";
 import { userEvent, waitFor, within } from "@storybook/testing-library";
-import { DocumentNode } from "graphql";
 import React from "react";
 
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
 import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
-import GQLSkylarkSchemaQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/schema.json";
-import {
-  episodeObjectOperations,
-  seasonObjectOperations,
-  setObjectOperations,
-} from "src/__tests__/utils/objectOperations";
-import { SkylarkObjectMeta } from "src/interfaces/skylark";
-import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
-import {
-  GET_SKYLARK_OBJECT_TYPES,
-  GET_SKYLARK_SCHEMA,
-} from "src/lib/graphql/skylark/queries";
 
 import { Panel } from "./panel.component";
 
@@ -35,62 +22,8 @@ const Template: ComponentStory<typeof Panel> = (args) => {
 };
 
 export const Default = Template.bind({});
-Default.parameters = {
-  apolloClient: {
-    mocks: [
-      {
-        request: {
-          query: createGetObjectQuery(
-            episodeObjectOperations as SkylarkObjectMeta,
-            [],
-          ) as DocumentNode,
-          variables: {
-            ignoreAvailability: true,
-            uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
-          },
-        },
-        result: GQLSkylarkGetObjectQueryFixture,
-      },
-      {
-        request: {
-          query: createGetObjectQuery(
-            setObjectOperations as SkylarkObjectMeta,
-            [seasonObjectOperations, setObjectOperations], // Order should be the same as the object types returned in GET_SKYLARK_OBJECT_TYPES
-          ) as DocumentNode,
-          variables: {
-            ignoreAvailability: true,
-            uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
-          },
-        },
-        result: GQLSkylarkGetSetWithContentQueryFixture,
-      },
-      {
-        request: {
-          query: GET_SKYLARK_SCHEMA,
-        },
-        result: GQLSkylarkSchemaQueryFixture,
-      },
-      {
-        request: {
-          query: GET_SKYLARK_OBJECT_TYPES,
-        },
-        result: {
-          data: {
-            __type: {
-              possibleTypes: [
-                { name: "Season", __typename: "__Type" },
-                { name: "Set", __typename: "__Type" },
-              ],
-              __typename: "__Type",
-            },
-          },
-        },
-      },
-    ],
-  },
-};
 Default.args = {
-  objectType: "Episode",
+  objectType: "Movie",
   uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
 };
 

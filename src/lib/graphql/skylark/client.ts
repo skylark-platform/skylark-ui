@@ -32,8 +32,7 @@ export const skylarkRequest = <T>(
   const token = localStorage.getItem(LOCAL_STORAGE.betaAuth.token);
 
   // return the headers to the context so httpLink can read them
-  // In Beta, only set the token when we have a URI so that Apollo Client fires a failing request when the URI is invalid/missing
-  // It's hacky. Apollo Client doesn't make a request when the URI is invalid
+  // In Beta, only set the token when we have a URI so that it fires a failing request when the URI is invalid/missing
   return request<T>(uri || SAAS_API_ENDPOINT, query, variables, {
     [REQUEST_HEADERS.apiKey]: uri ? token || "" : "",
   });

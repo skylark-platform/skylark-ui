@@ -22,7 +22,6 @@
     "vercel:env": "vercel env --environment=preview pull"
   },
   "dependencies": {
-    "@apollo/client": "^3.7.1",
     "@flatfile/sdk": "^2.3.2",
     "@fontsource/inter": "^4.5.14",
     "@fontsource/work-sans": "^4.5.12",
@@ -105,7 +104,6 @@
     "prettier": "^2.8.2",
     "prettier-plugin-tailwindcss": "^0.2.1",
     "start-server-and-test": "^1.14.0",
-    "storybook-addon-apollo-client": "^4.0.13",
     "storybook-addon-next": "^1.6.10",
     "ts-jest": "^29.0.3",
     "typescript": "4.9.4",
@@ -116,5 +114,8 @@
     "webpack": "^5"
   },
   "readme": "ERROR: No README data found!",
-  "_id": "skylark-ui@0.1.0"
+  "_id": "skylark-ui@0.1.0",
+  "msw": {
+    "workerDirectory": "public"
+  }
 }
