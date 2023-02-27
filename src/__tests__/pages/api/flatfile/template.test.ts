@@ -14,7 +14,6 @@ import {
   FlatfileGetPortalsResponse,
   FlatfileGetTemplatesResponse,
 } from "src/interfaces/flatfile/responses";
-import * as flatfile from "src/lib/flatfile";
 import handler from "src/pages/api/flatfile/template";
 
 const mockConstants = constants as {

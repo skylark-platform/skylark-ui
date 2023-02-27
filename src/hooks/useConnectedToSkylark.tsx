@@ -15,38 +15,37 @@ export const useConnectedToSkylark = () => {
     token: null,
   });
 
-  const { data, error, isError, isLoading, isSuccess, isFetching, refetch } =
-    useQuery<
-      GQLSkylarkObjectTypesResponse,
-      { response?: { errors?: { errorType?: string; message?: string }[] } }
-    >({
-      queryKey: [
-        "credentialValidator",
-        GET_SKYLARK_OBJECT_TYPES,
-        currentCreds.uri,
-        currentCreds.token,
-        REQUEST_HEADERS.apiKey,
-      ],
-      queryFn: currentCreds.uri
-        ? async () =>
-            request(
-              currentCreds.uri ||
-                localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) ||
+  const { data, error, isError, isLoading, isSuccess, refetch } = useQuery<
+    GQLSkylarkObjectTypesResponse,
+    { response?: { errors?: { errorType?: string; message?: string }[] } }
+  >({
+    queryKey: [
+      "credentialValidator",
+      GET_SKYLARK_OBJECT_TYPES,
+      currentCreds.uri,
+      currentCreds.token,
+      REQUEST_HEADERS.apiKey,
+    ],
+    queryFn: currentCreds.uri
+      ? async () =>
+          request(
+            currentCreds.uri ||
+              localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) ||
+              "",
+            GET_SKYLARK_OBJECT_TYPES,
+            {},
+            {
+              [REQUEST_HEADERS.apiKey]:
+                currentCreds.token ||
+                localStorage.getItem(LOCAL_STORAGE.betaAuth.token) ||
                 "",
-              GET_SKYLARK_OBJECT_TYPES,
-              {},
-              {
-                [REQUEST_HEADERS.apiKey]:
-                  currentCreds.token ||
-                  localStorage.getItem(LOCAL_STORAGE.betaAuth.token) ||
-                  "",
-              },
-            )
-        : undefined,
-      enabled: !!currentCreds.uri,
-      retry: false,
-      cacheTime: 0,
-    });
+            },
+          )
+      : undefined,
+    enabled: !!currentCreds.uri,
+    retry: false,
+    cacheTime: 0,
+  });
 
   useEffect(() => {
     const refresh = () => {

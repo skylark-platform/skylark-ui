@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { graphql } from "msw";
 
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
@@ -12,68 +11,9 @@ import {
   fireEvent,
   within,
 } from "src/__tests__/utils/test-utils";
-import { createGetObjectKeyPrefix } from "src/hooks/useGetObject";
 import { createGetObjectQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { Panel } from "./panel.component";
-
-// const mocks = [
-//   {
-//     request: {
-//       query: createGetObjectQuery(movieObjectOperations, []) as DocumentNode,
-//       variables: {
-//         ignoreAvailability: true,
-//         uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
-//       },
-//     },
-//     result: GQLSkylarkGetObjectQueryFixture,
-//   },
-//   {
-//     request: {
-//       query: createGetObjectQuery(imageObjectOperations, []) as DocumentNode,
-//       variables: {
-//         ignoreAvailability: true,
-//         uid: GQLSkylarkGetObjectImageQueryFixture.data.getObject.uid,
-//       },
-//     },
-//     result: GQLSkylarkGetObjectImageQueryFixture,
-//   },
-//   {
-//     request: {
-//       query: createGetObjectQuery(setObjectOperations, [
-//         seasonObjectOperations,
-//         setObjectOperations,
-//       ]) as DocumentNode,
-//       variables: {
-//         ignoreAvailability: true,
-//         uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
-//       },
-//     },
-//     result: GQLSkylarkGetSetWithContentQueryFixture,
-//   },
-//   {
-//     request: {
-//       query: GET_SKYLARK_SCHEMA,
-//     },
-//     result: GQLSkylarkSchemaQueryFixture,
-//   },
-//   {
-//     request: {
-//       query: GET_SKYLARK_OBJECT_TYPES,
-//     },
-//     result: {
-//       data: {
-//         __type: {
-//           possibleTypes: [
-//             { name: "Season", __typename: "__Type" },
-//             { name: "Set", __typename: "__Type" },
-//           ],
-//           __typename: "__Type",
-//         },
-//       },
-//     },
-//   },
-// ];
 
 test("renders the panel in the default view", async () => {
   render(

@@ -18,7 +18,4 @@ module.exports = {
     builder: "webpack5",
   },
   staticDirs: ["../public"],
-  env: (config) => ({
-    ...config,
-  }),
 };
