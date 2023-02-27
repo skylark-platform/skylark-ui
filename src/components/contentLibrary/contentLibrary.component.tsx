@@ -111,6 +111,7 @@ export const ContentLibrary = () => {
               objectType={activePanelObject.objectType}
               draggedObject={draggedObject}
               newObject={newObject}
+              setObject={setObject}
             />
           </m.div>
         )}
@@ -130,15 +131,14 @@ export const ContentLibrary = () => {
 
   function handleDragStart(event: any) {
     console.log("start", event.active.data.current.object);
-
     setDraggedObject(parse(event.active.data.current.object));
   }
 
   function handleDragEnd(event: any) {
-    setDraggedObject(null);
     if (event.over && event.over.id === "droppable") {
       console.log("happy", event);
       setObject(draggedObject);
     }
+    setDraggedObject(null);
   }
 };

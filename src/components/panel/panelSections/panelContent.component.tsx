@@ -91,9 +91,7 @@ export const PanelContent = ({
   const { isOver, setNodeRef } = useDroppable({
     id: "droppable",
   });
-  const style = {
-    color: isOver ? "green" : undefined,
-  };
+  const overStyle = isOver ? "border-primary text-primary" : "";
 
   const handleManualOrderChange = (
     currentIndex: number,
@@ -118,18 +116,24 @@ export const PanelContent = ({
     return (
       <div
         ref={setNodeRef}
-        style={style}
-        className="m-4 mt-10 flex h-72 items-center justify-center border-2 border-dotted text-center text-manatee-400"
+        className={clsx(
+          overStyle,
+          "m-4 mt-10 flex h-72 items-center justify-center border-2 border-dotted text-center text-manatee-400",
+        )}
       >
-        <span>Drop in media to start curating or set dynamic controls</span>
+        <span>{"Drop object here to add to the Set's content"}</span>
       </div>
     );
 
   return (
     <>
-      <span className="mt-10 text-center text-manatee-600">
-        Drag & Drop objects here to curate set content
-      </span>
+      {inEditMode && (
+        <span className="mt-16 text-center text-sm text-manatee-600">
+          {
+            "Drag an object from the Content Library to add to this Set's content"
+          }
+        </span>
+      )}
       <Reorder.Group
         axis="y"
         values={objects}

@@ -28,6 +28,7 @@ interface PanelProps {
   uid: string;
   draggedObject?: any;
   newObject?: any;
+  setObject: any;
 }
 
 enum PanelTab {
@@ -62,6 +63,7 @@ export const Panel = ({
   uid,
   draggedObject,
   newObject,
+  setObject,
 }: PanelProps) => {
   const { data, loading, query, variables, error } = useGetObject(objectType, {
     uid: uid,
@@ -93,8 +95,6 @@ export const Panel = ({
   }, [uid]);
 
   useEffect(() => {
-    console.log("UªDATING CONTENT", newObject);
-    // setSelectedTab(PanelTab.Content); TODO efect when start dragging
     if (newObject) {
       setContentObjects([
         ...(contentObjects || data?.content?.objects || []),
@@ -105,8 +105,9 @@ export const Panel = ({
         },
       ]);
       setEditMode(true);
+      setObject(null);
     }
-  }, [newObject]);
+  }, [contentObjects, data?.content?.objects, newObject, setObject]);
 
   const [deleteObjectMutation] = useDeleteObject(objectType);
   const { updateObjectContent, loading: updatingObjectContents } =
