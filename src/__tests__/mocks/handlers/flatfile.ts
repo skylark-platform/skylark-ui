@@ -54,7 +54,14 @@ export const erroredFlatfileAccessKeyExchangeHandler = rest.post(
 export const erroredFlatfileTemplateSearch = graphql.query(
   "GET_TEMPLATES",
   (req, res, ctx) => {
-    return res(ctx.errors([{ message: "No templates" }]));
+    return res(ctx.errors([{ message: "Error fetching templates" }]));
+  },
+);
+
+export const erroredFlatfilePortalSearch = graphql.query(
+  "GET_PORTALS",
+  (req, res, ctx) => {
+    return res(ctx.errors([{ message: "Error fetching portals" }]));
   },
 );
 

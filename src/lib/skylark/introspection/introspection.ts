@@ -31,7 +31,6 @@ export const getSkylarkObjectTypes = async (
     GET_SKYLARK_OBJECT_TYPES,
   );
 
-  console.log("SDFS", data);
   const objectTypes = data.__type.possibleTypes.map(({ name }) => name);
 
   return objectTypes;

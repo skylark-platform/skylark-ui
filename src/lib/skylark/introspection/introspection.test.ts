@@ -1,26 +1,12 @@
 import { GraphQLClient } from "graphql-request";
-import { MockApolloClient, createMockClient } from "mock-apollo-client";
 
-import GQLSkylarkObjectTypesQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/objectTypes.json";
 import { createSkylarkClient } from "src/lib/graphql/skylark/client";
-import {
-  GET_SKYLARK_OBJECT_TYPES,
-  GET_SKYLARK_SCHEMA,
-} from "src/lib/graphql/skylark/queries";
 
 import {
   getSkylarkObjectOperations,
   getSkylarkObjectTypes,
 } from "./introspection";
-import {
-  GQLSkylarkSchemaQueryFixture,
-  SKYLARK_OBJECT_TYPES_FIXTURE,
-} from "./introspection.fixture";
-
-jest.mock("src/lib/graphql/skylark/client", () => ({
-  ...jest.requireActual("src/lib/graphql/skylark/client"),
-  // createSkylarkClient: jest.fn(),
-}));
+import { SKYLARK_OBJECT_TYPES_FIXTURE } from "./introspection.fixture";
 
 afterEach(() => {
   jest.resetAllMocks();

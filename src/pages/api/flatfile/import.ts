@@ -35,7 +35,6 @@ export default async function handler(
   }
 
   const { batchId, objectType, graphQLUri, graphQLToken } = body;
-  console.log(graphQLUri, graphQLToken);
   if (!batchId || !objectType) {
     return res.status(500).send("batchId and objectType are mandatory");
   }

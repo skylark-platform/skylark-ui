@@ -43,7 +43,7 @@ export const useUpdateObjectContent = ({
 
   const { mutate, ...rest } = useMutation({
     mutationFn: ({ uid }: { uid: string }) => {
-      return request<GQLSkylarkUpdateObjectContentResponse>(
+      return skylarkRequest<GQLSkylarkUpdateObjectContentResponse>(
         updateObjectContentMutation as RequestDocument,
         { uid },
       );
