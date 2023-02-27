@@ -11,6 +11,7 @@ import {
   fireEvent,
   within,
 } from "src/__tests__/utils/test-utils";
+import { QueryErrorMessages } from "src/enums/graphql";
 import { createGetObjectQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { Panel } from "./panel.component";
@@ -42,6 +43,50 @@ test("renders the panel in the default view", async () => {
     screen.getByText("All Availabilities Test Movie (for dimension testing)"),
   ).toBeInTheDocument();
   expect(screen.getAllByText("All Avail Test Movie")).toHaveLength(2);
+});
+
+test("renders object not found when the object doesn't exist", async () => {
+  server.use(
+    graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
+      return res(
+        ctx.errors([
+          { errorType: QueryErrorMessages.NotFound, message: "Not found" },
+        ]),
+      );
+    }),
+  );
+
+  render(
+    <Panel uid="nonexistant" objectType={"Movie"} closePanel={jest.fn()} />,
+  );
+
+  await waitFor(() =>
+    expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+  );
+
+  expect(screen.getByText("Movie nonexistant not found")).toBeInTheDocument();
+});
+
+test("renders an error message when an unknown error occurs", async () => {
+  server.use(
+    graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
+      return res(ctx.errors([{ message: "Something went wrong" }]));
+    }),
+  );
+
+  render(
+    <Panel
+      uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
+      objectType={"Movie"}
+      closePanel={jest.fn()}
+    />,
+  );
+
+  await waitFor(() =>
+    expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+  );
+
+  expect(screen.getByText("Something went wrong")).toBeInTheDocument();
 });
 
 test("renders the objects primaryField and colour in the header when given", async () => {
