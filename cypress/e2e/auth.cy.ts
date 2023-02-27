@@ -1,18 +1,7 @@
 import { hasOperationName } from "../support/utils/graphqlTestUtils";
 
-const emptyObjectTypes = {
-  data: {
-    __type: {
-      possibleTypes: [],
-      __typename: "__Type",
-    },
-  },
-};
-
 describe("Auth", () => {
   beforeEach(() => {
-    cy.visit("/");
-
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
       if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
         req.reply({
@@ -20,6 +9,7 @@ describe("Auth", () => {
         });
       }
     });
+    cy.visit("/");
   });
 
   it("shows the connect modal when not connected", () => {
