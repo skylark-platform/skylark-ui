@@ -18,4 +18,9 @@ module.exports = {
     builder: "webpack5",
   },
   staticDirs: ["../public"],
+  env: (config) => ({
+    ...config,
+    NEXT_PUBLIC_SAAS_API_ENDPOINT: "http://localhost:3000",
+    NEXT_PUBLIC_SAAS_API_KEY: "token",
+  }),
 };
