@@ -22,6 +22,7 @@ import {
   ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
   ParsedSkylarkObject,
+  SkylarkGraphQLObjectImage,
 } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
@@ -110,24 +111,24 @@ const createColumns = (
   });
 
   // TODO only add/create this column if the schema has images. Or always created it but hide it when it doesn't have images
-  // const imagesColumn = columnHelper.accessor("images", {
-  //   header: formatObjectField("Images"),
-  //   cell: (props) => {
-  //     const images = props.getValue<SkylarkGraphQLObjectImage[]>();
-  //     if (!images || images.length === 0) {
-  //       return "";
-  //     }
+  const imagesColumn = columnHelper.accessor("images", {
+    header: formatObjectField("Images"),
+    cell: (props) => {
+      const images = props.getValue<SkylarkGraphQLObjectImage[]>();
+      if (!images || images.length === 0) {
+        return "";
+      }
 
-  //     return (
-  //       <div>
-  //         {images.map(({ uid, url, title }) => (
-  //           // eslint-disable-next-line @next/next/no-img-element
-  //           <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
-  //         ))}
-  //       </div>
-  //     );
-  //   },
-  // });
+      return (
+        <div>
+          {images.map(({ uid, url, title }) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
+          ))}
+        </div>
+      );
+    },
+  });
 
   const selectColumn = columnHelper.display({
     id: OBJECT_LIST_TABLE.columnIds.checkbox,
@@ -158,7 +159,7 @@ const createColumns = (
   const orderedColumnArray = [
     objectTypeColumn,
     displayNameColumn,
-    // imagesColumn,
+    imagesColumn,
     availabilityColumn,
     ...createdColumns,
   ];
