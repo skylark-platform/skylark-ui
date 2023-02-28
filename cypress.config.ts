@@ -9,6 +9,6 @@ export default defineConfig({
     // Used to intercept network requests
     skylark_graphql_uri: "http://localhost:9999/graphql",
   },
-  fixturesFolder: "./src/__tests__/fixtures",
+  fixturesFolder: "./src/tests/fixtures",
   chromeWebSecurity: false, // Allow accessing iframes
 });

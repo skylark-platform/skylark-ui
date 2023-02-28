@@ -1,9 +1,11 @@
-import { GraphQLClient } from "graphql-request";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 import { FLATFILE_GRAPHQL_URL } from "src/constants/flatfile";
 
 export const createFlatfileClient = (token: string) =>
-  new GraphQLClient(FLATFILE_GRAPHQL_URL, {
+  new ApolloClient({
+    uri: FLATFILE_GRAPHQL_URL,
+    cache: new InMemoryCache(),
     headers: {
       Authorization: `Bearer ${token}`,
     },

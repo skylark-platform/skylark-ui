@@ -1,7 +1,6 @@
 import "@testing-library/jest-dom";
+import { render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-
-import { render, screen } from "src/__tests__/utils/test-utils";
 
 import { UserAvatar } from "./avatar.component";
 

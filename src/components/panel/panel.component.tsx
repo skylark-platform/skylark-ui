@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
+import { useDeleteObject } from "src/hooks/useDeleteObject";
 import { useGetObject } from "src/hooks/useGetObject";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
 import {
@@ -11,6 +12,7 @@ import {
   ParsedSkylarkObjectContentObject,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
+import { parseObjectContent } from "src/lib/skylark/parsers";
 
 import {
   PanelAvailability,
@@ -44,8 +46,9 @@ const getTitle = (
 };
 
 export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
-  const { data, isLoading, query, variables, isError, isNotFound, error } =
-    useGetObject(objectType, uid);
+  const { data, loading, query, variables, error } = useGetObject(objectType, {
+    uid: uid,
+  });
 
   const [inEditMode, setEditMode] = useState(false);
   const [contentObjects, setContentObjects] = useState<
@@ -72,17 +75,18 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
     setEditMode(false);
   }, [uid]);
 
-  const { updateObjectContent, isLoading: updatingObjectContents } =
-    useUpdateObjectContent({
+  const [deleteObjectMutation] = useDeleteObject(objectType);
+  const { updateObjectContent, loading: updatingObjectContents } =
+    useUpdateObjectContent(
       objectType,
       uid,
-      currentContentObjects: data?.content?.objects || [],
-      updatedContentObjects: contentObjects || [],
-      onSuccess: (updatedContent) => {
-        setEditMode(false);
-        setContentObjects(updatedContent.objects);
-      },
-    });
+      data?.content?.objects || [],
+      contentObjects || [],
+    );
+
+  const deleteObjectWrapper = () => {
+    deleteObjectMutation({ variables: { uid } });
+  };
 
   const saveActiveTabChanges = () => {
     if (
@@ -90,7 +94,18 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
       contentObjects &&
       contentObjects !== data?.content?.objects
     ) {
-      updateObjectContent();
+      updateObjectContent().then(({ data, errors }) => {
+        if (
+          (!errors || errors.length === 0) &&
+          data?.updateObjectContent.content.objects
+        ) {
+          const parsedObjectContent = parseObjectContent(
+            data.updateObjectContent.content,
+          );
+          setContentObjects(parsedObjectContent.objects);
+          setEditMode(false);
+        }
+      });
     } else {
       setEditMode(false);
     }
@@ -98,7 +113,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
 
   return (
     <section className="mx-auto flex h-full w-full flex-col">
-      {isLoading && (
+      {loading && (
         <div
           data-testid="loading"
           className="flex h-full w-full items-center justify-center pt-10"
@@ -106,16 +121,12 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
           <Spinner className="h-16 w-16 animate-spin" />
         </div>
       )}
-      {!isLoading && isError && (
+      {!loading && error && (
         <div className="flex h-full w-full items-center justify-center pt-10">
-          {isNotFound ? (
-            <p>{`${objectType} ${uid} not found`}</p>
-          ) : (
-            <p>{error?.response.errors[0].message}</p>
-          )}
+          <p>{error.message}</p>
         </div>
       )}
-      {!isLoading && !isError && data && (
+      {!loading && data && (
         <>
           <PanelHeader
             title={getTitle(data.metadata, data.config)}
@@ -127,6 +138,7 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
             currentTab={selectedTab}
             tabsWithEditMode={[PanelTab.Content]}
             closePanel={closePanel}
+            deleteObject={deleteObjectWrapper}
             inEditMode={inEditMode}
             save={saveActiveTabChanges}
             isSaving={updatingObjectContents}

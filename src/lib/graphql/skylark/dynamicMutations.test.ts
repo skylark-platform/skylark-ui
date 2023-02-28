@@ -1,12 +1,12 @@
 import {
-  episodeObjectOperations,
-  setObjectOperations,
-  movieObjectOperations,
-} from "src/__tests__/utils/objectOperations";
-import {
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectMetadata,
 } from "src/interfaces/skylark";
+import {
+  episodeObjectOperations,
+  setObjectOperations,
+  movieObjectOperations,
+} from "src/tests/utils/objectOperations";
 
 import {
   createDeleteObjectMutation,

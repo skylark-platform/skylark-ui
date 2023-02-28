@@ -1,19 +1,12 @@
 import jwt from "jsonwebtoken";
-import { graphql } from "msw";
 import { createMocks } from "node-mocks-http";
 
-import {
-  erroredFlatfileAccessKeyExchangeHandler,
-  erroredFlatfileTemplateSearch,
-} from "src/__tests__/mocks/handlers/flatfile";
-import { server } from "src/__tests__/mocks/server";
 import * as constants from "src/constants/flatfile";
 import {
   FlatfileCreatePortalResponse,
   FlatfileCreateTemplateResponse,
-  FlatfileGetPortalsResponse,
-  FlatfileGetTemplatesResponse,
 } from "src/interfaces/flatfile/responses";
+import * as flatfile from "src/lib/flatfile";
 import handler from "src/pages/api/flatfile/template";
 
 const mockConstants = constants as {
@@ -26,6 +19,15 @@ const mockConstants = constants as {
 };
 
 jest.mock("jsonwebtoken");
+jest.mock("../../../../constants/flatfile", () => ({
+  __esModule: true,
+}));
+jest.mock("../../../../lib/flatfile", () => ({
+  ...jest.requireActual("../../../../lib/flatfile"),
+  exchangeFlatfileAccessKey: jest.fn(),
+  createOrUpdateFlatfileTemplate: jest.fn(),
+  createOrUpdateFlatfilePortal: jest.fn(),
+}));
 
 const template = {
   type: "object",
@@ -42,10 +44,52 @@ const flatfileOrg = {
   name: "teamName",
 };
 
+const flatfileUserAndToken = {
+  accessToken: "token",
+  user: {
+    id: 123,
+    name: "User 1",
+    email: "user1@email.com",
+    type: "user type",
+  },
+};
+
+const flatfileTemplate: FlatfileCreateTemplateResponse["createSchema"] = {
+  id: "template-1",
+  name: "Template 1",
+};
+
+const flatfilePortal: FlatfileCreatePortalResponse["createEmbed"]["embed"] = {
+  id: "portal-1",
+  name: "Portal 1",
+  privateKey: {
+    id: "key-1",
+    scope: "all",
+    key: "12345",
+  },
+};
+
+let spiedExchangeFlatfileAccessKey: jest.SpyInstance;
+let spiedCreateOrUpdateFlatfileTemplate: jest.SpyInstance;
+let spiedCreateOrUpdateFlatfilePortal: jest.SpyInstance;
+
 beforeEach(() => {
   mockConstants.FLATFILE_ACCESS_KEY_ID = "accessKeyId";
   mockConstants.FLATFILE_SECRET_KEY = "secretKey";
   mockConstants.FLATFILE_ORG = flatfileOrg;
+
+  spiedExchangeFlatfileAccessKey = jest.spyOn(
+    flatfile,
+    "exchangeFlatfileAccessKey",
+  );
+  spiedCreateOrUpdateFlatfileTemplate = jest.spyOn(
+    flatfile,
+    "createOrUpdateFlatfileTemplate",
+  );
+  spiedCreateOrUpdateFlatfilePortal = jest.spyOn(
+    flatfile,
+    "createOrUpdateFlatfilePortal",
+  );
 });
 
 afterEach(() => {
@@ -154,7 +198,9 @@ test("returns 400 when the template validation fails", async () => {
 });
 
 test("returns 500 when an error occurs while getting a token from Flatfile", async () => {
-  server.use(erroredFlatfileAccessKeyExchangeHandler);
+  spiedExchangeFlatfileAccessKey.mockImplementationOnce(async () => {
+    throw new Error("fail");
+  });
 
   const { req, res } = createMocks({
     method: "POST",
@@ -171,8 +217,11 @@ test("returns 500 when an error occurs while getting a token from Flatfile", asy
   expect(res._getStatusCode()).toBe(500);
 });
 
-test("returns 500 when the Flatfile Template or Portal creation errors", async () => {
-  server.use(erroredFlatfileTemplateSearch);
+test("returns 500 when the Flatfile Template creation errors", async () => {
+  spiedExchangeFlatfileAccessKey.mockResolvedValue(flatfileUserAndToken);
+  spiedCreateOrUpdateFlatfileTemplate.mockImplementationOnce(async () => {
+    throw new Error("");
+  });
 
   const { req, res } = createMocks({
     method: "POST",
@@ -190,25 +239,8 @@ test("returns 500 when the Flatfile Template or Portal creation errors", async (
 });
 
 test("returns 500 when the Flatfile Template creation does not return an ID", async () => {
-  server.use(
-    graphql.query("GET_TEMPLATES", (req, res, ctx) => {
-      const data: FlatfileGetTemplatesResponse = {
-        getSchemas: {
-          data: [],
-        },
-      };
-      return res(ctx.data(data));
-    }),
-    graphql.mutation("CREATE_TEMPLATE", (req, res, ctx) => {
-      const data: FlatfileCreateTemplateResponse = {
-        createSchema: {
-          name: "",
-          id: "",
-        },
-      };
-      return res(ctx.data(data));
-    }),
-  );
+  spiedExchangeFlatfileAccessKey.mockResolvedValue(flatfileUserAndToken);
+  spiedCreateOrUpdateFlatfileTemplate.mockResolvedValue({});
 
   const { req, res } = createMocks({
     method: "POST",
@@ -225,33 +257,32 @@ test("returns 500 when the Flatfile Template creation does not return an ID", as
   expect(res._getStatusCode()).toBe(500);
 });
 
+test("returns 500 when the Flatfile Portal creation errors", async () => {
+  spiedExchangeFlatfileAccessKey.mockResolvedValue(flatfileUserAndToken);
+  spiedCreateOrUpdateFlatfileTemplate.mockResolvedValue(flatfileTemplate);
+  spiedCreateOrUpdateFlatfilePortal.mockImplementationOnce(async () => {
+    throw new Error("");
+  });
+
+  const { req, res } = createMocks({
+    method: "POST",
+    body: {
+      name: "name",
+      template,
+      accountIdentifier: "account",
+    },
+  });
+
+  await handler(req, res);
+
+  expect(res._getData()).toEqual("Error creating Flatfile Template and Portal");
+  expect(res._getStatusCode()).toBe(500);
+});
+
 test("returns 500 when the Flatfile Portal creation does not return an ID", async () => {
-  server.use(
-    graphql.query("GET_PORTALS", (req, res, ctx) => {
-      const data: FlatfileGetPortalsResponse = {
-        getEmbeds: {
-          data: [],
-        },
-      };
-      return res(ctx.data(data));
-    }),
-    graphql.mutation("CREATE_PORTAL", (req, res, ctx) => {
-      const data: FlatfileCreatePortalResponse = {
-        createEmbed: {
-          embed: {
-            name: "",
-            id: "",
-            privateKey: {
-              id: "",
-              scope: "",
-              key: "",
-            },
-          },
-        },
-      };
-      return res(ctx.data(data));
-    }),
-  );
+  spiedExchangeFlatfileAccessKey.mockResolvedValue(flatfileUserAndToken);
+  spiedCreateOrUpdateFlatfileTemplate.mockResolvedValue(flatfileTemplate);
+  spiedCreateOrUpdateFlatfilePortal.mockResolvedValue({});
 
   const { req, res } = createMocks({
     method: "POST",
@@ -268,62 +299,11 @@ test("returns 500 when the Flatfile Portal creation does not return an ID", asyn
   expect(res._getStatusCode()).toBe(500);
 });
 
-test("returns 200, the created Portal ID and import token when the Flatfile Template and Portal are created successfully", async () => {
-  const mockedSign = jwt.sign as jest.Mock;
-  mockedSign.mockReturnValue("import-token");
+test("returns 200, a portal ID and import token when the Flatfile Template and Portal is created successfully", async () => {
+  spiedExchangeFlatfileAccessKey.mockResolvedValue(flatfileUserAndToken);
+  spiedCreateOrUpdateFlatfileTemplate.mockResolvedValue(flatfileTemplate);
+  spiedCreateOrUpdateFlatfilePortal.mockResolvedValue(flatfilePortal);
 
-  server.use(
-    graphql.query("GET_TEMPLATES", (req, res, ctx) => {
-      const data: FlatfileGetTemplatesResponse = {
-        getSchemas: {
-          data: [],
-        },
-      };
-      return res(ctx.data(data));
-    }),
-    graphql.query("GET_PORTALS", (req, res, ctx) => {
-      const data: FlatfileGetPortalsResponse = {
-        getEmbeds: {
-          data: [],
-        },
-      };
-      return res(ctx.data(data));
-    }),
-  );
-
-  const { req, res } = createMocks({
-    method: "POST",
-    body: {
-      name: "name",
-      template,
-      accountIdentifier: "account",
-    },
-  });
-
-  await handler(req, res);
-
-  expect(res._getData()).toEqual(
-    JSON.stringify({
-      embedId: "created-portal",
-      token: "import-token",
-    }),
-  );
-  expect(res._getStatusCode()).toBe(200);
-  expect(mockedSign).toHaveBeenCalledWith(
-    {
-      embed: "created-portal",
-      org: flatfileOrg,
-      user: {
-        email: "user@flatfile.com",
-        id: 123,
-        name: "Flatfile user",
-      },
-    },
-    "flatfile_private_key",
-  );
-});
-
-test("returns 200, the updated Portal ID when the Flatfile Template and Portal are updated successfully", async () => {
   const mockedSign = jwt.sign as jest.Mock;
   mockedSign.mockReturnValue("import-token");
 
@@ -340,21 +320,21 @@ test("returns 200, the updated Portal ID when the Flatfile Template and Portal a
 
   expect(res._getData()).toEqual(
     JSON.stringify({
-      embedId: "update-portal",
+      embedId: flatfilePortal.id,
       token: "import-token",
     }),
   );
   expect(res._getStatusCode()).toBe(200);
   expect(mockedSign).toHaveBeenCalledWith(
     {
-      embed: "update-portal",
+      embed: flatfilePortal.id,
       org: flatfileOrg,
       user: {
-        email: "user@flatfile.com",
-        id: 123,
-        name: "Flatfile user",
+        email: flatfileUserAndToken.user.email,
+        id: flatfileUserAndToken.user.id,
+        name: flatfileUserAndToken.user.name,
       },
     },
-    "flatfile_private_key",
+    flatfilePortal.privateKey.key,
   );
 });

@@ -1,19 +1,18 @@
+import { ApolloProvider } from "@apollo/client";
 import "@fontsource/inter/300.css";
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/inter/700.css";
 import "@fontsource/work-sans/700.css";
-import { QueryClientProvider } from "@tanstack/react-query";
 import { LazyMotion } from "framer-motion";
 import PlausibleProvider from "next-plausible";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 
 import { Navigation } from "src/components/navigation";
-import { ToastContainer } from "src/components/toast/toast.component";
 import { APP_URL } from "src/constants/skylark";
-import { createSkylarkReactQueryClient } from "src/lib/graphql/skylark/client";
+import { createSkylarkClient } from "src/lib/graphql/skylark/client";
 import "src/styles/globals.css";
 
 const loadFramerMotionFeatures = () =>
@@ -22,12 +21,11 @@ const loadFramerMotionFeatures = () =>
   );
 
 export default function App({ Component, pageProps }: AppProps) {
-  const queryClient = createSkylarkReactQueryClient();
+  const client = createSkylarkClient();
 
   return (
     <PlausibleProvider domain={APP_URL} enabled={!!APP_URL}>
-      <QueryClientProvider client={queryClient}>
-        <ToastContainer />
+      <ApolloProvider client={client}>
         <Head>
           <title>Skylark</title>
           <meta
@@ -58,7 +56,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <LazyMotion features={loadFramerMotionFeatures} strict>
           <Component {...pageProps} />
         </LazyMotion>
-      </QueryClientProvider>
+      </ApolloProvider>
     </PlausibleProvider>
   );
 }

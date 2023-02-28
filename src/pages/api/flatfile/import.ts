@@ -11,7 +11,7 @@ import {
   getFlatfileFinalDatabaseView,
 } from "src/lib/flatfile";
 import { createFlatfileClient } from "src/lib/graphql/flatfile/client";
-import { createSkylarkClient } from "src/lib/graphql/skylark/client";
+import { createBasicSkylarkClient } from "src/lib/graphql/skylark/client";
 import { getSkylarkObjectTypes } from "src/lib/skylark/introspection/introspection";
 
 export default async function handler(
@@ -45,7 +45,7 @@ export default async function handler(
       .send("Skylark GraphQL URI and Access Key are mandatory");
   }
 
-  const skylarkClient = createSkylarkClient(graphQLUri, graphQLToken);
+  const skylarkClient = createBasicSkylarkClient(graphQLUri, graphQLToken);
 
   const objects = await getSkylarkObjectTypes(skylarkClient);
   const isObjectValid = objects.find((object) => object === objectType);

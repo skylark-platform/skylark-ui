@@ -1,17 +1,19 @@
-import { GraphQLClient } from "graphql-request";
+import { ApolloClient } from "@apollo/client";
 
 import { createFlatfileClient } from "./client";
 
-jest.mock("graphql-request");
+jest.mock("@apollo/client");
 jest.mock("../../../constants/flatfile", () => ({
   FLATFILE_GRAPHQL_URL: "https://flatfile",
   __esModule: true,
 }));
 
-test("creates a new GraphQLClient", () => {
+test("creates a new ApolloClient", () => {
   createFlatfileClient("token");
 
-  expect(GraphQLClient).toHaveBeenCalledWith("https://flatfile", {
+  expect(ApolloClient).toHaveBeenCalledWith({
+    cache: expect.any(Object),
+    uri: "https://flatfile",
     headers: {
       Authorization: "Bearer token",
     },

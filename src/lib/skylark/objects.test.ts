@@ -1,5 +1,5 @@
-import GQLSkylarkSchemaQueryFixtureJSON from "src/__tests__/fixtures/skylark/queries/introspection/schema.json";
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
+import GQLSkylarkSchemaQueryFixtureJSON from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 
 import { getAllObjectsMeta, getObjectOperations } from "./objects";
 

@@ -1,68 +1,47 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { RequestDocument } from "graphql-request";
+import { useMutation } from "@apollo/client";
 
 import {
   GQLSkylarkUpdateObjectContentResponse,
-  ParsedSkylarkObjectContent,
   ParsedSkylarkObjectContentObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynamicMutations";
-import { parseObjectContent } from "src/lib/skylark/parsers";
+import { defaultValidBlankMutation } from "src/lib/graphql/skylark/dynamicQueries";
 
-import { createGetObjectKeyPrefix } from "./useGetObject";
 import {
   useAllObjectsMeta,
   useSkylarkObjectOperations,
 } from "./useSkylarkObjectTypes";
 
-export const useUpdateObjectContent = ({
-  objectType,
-  uid,
-  currentContentObjects,
-  updatedContentObjects,
-  onSuccess,
-}: {
-  objectType: SkylarkObjectType;
-  uid: string;
-  currentContentObjects: ParsedSkylarkObjectContentObject[];
-  updatedContentObjects: ParsedSkylarkObjectContentObject[];
-  onSuccess: (updatedContent: ParsedSkylarkObjectContent) => void;
-}) => {
-  const queryClient = useQueryClient();
+export const useUpdateObjectContent = (
+  objectType: SkylarkObjectType,
+  objectUid: string,
+  currentContentObjects: ParsedSkylarkObjectContentObject[],
+  updatedContentObjects: ParsedSkylarkObjectContentObject[],
+) => {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
   const { objects } = useAllObjectsMeta();
 
-  const updateObjectContentMutation = createUpdateObjectContentMutation(
+  const mutation = createUpdateObjectContentMutation(
     objectOperations,
     currentContentObjects,
     updatedContentObjects,
     objects,
   );
 
-  const { mutate, ...rest } = useMutation({
-    mutationFn: ({ uid }: { uid: string }) => {
-      return skylarkRequest<GQLSkylarkUpdateObjectContentResponse>(
-        updateObjectContentMutation as RequestDocument,
-        { uid },
-      );
-    },
-    onSuccess: (data, { uid }) => {
-      queryClient.invalidateQueries({
-        queryKey: createGetObjectKeyPrefix({ objectType, uid }),
-      });
-      const parsedObjectContent = parseObjectContent(
-        data.updateObjectContent.content,
-      );
-      onSuccess(parsedObjectContent);
-    },
-  });
+  const [updateObjectContentMutation, { data, loading }] =
+    useMutation<GQLSkylarkUpdateObjectContentResponse>(
+      mutation || defaultValidBlankMutation,
+    );
 
-  const updateObjectContent = () => mutate({ uid });
+  const updateObjectContent = () =>
+    updateObjectContentMutation({
+      variables: { uid: objectUid },
+    });
 
   return {
     updateObjectContent,
-    ...rest,
+    data,
+    loading,
   };
 };

@@ -1,9 +1,9 @@
-import { gql } from "graphql-tag";
+import { gql } from "@apollo/client";
 
 import { FLATFILE_TEAM, ACTIVE_FLATFILE_ENV } from "src/constants/flatfile";
 
 export const CREATE_PORTAL = gql`
-  mutation CREATE_PORTAL(
+  mutation(
     $name: String!
     $templateId: ID!
   ) {
@@ -27,7 +27,7 @@ export const CREATE_PORTAL = gql`
 `;
 
 export const CREATE_TEMPLATE = gql`
-  mutation CREATE_TEMPLATE(
+  mutation(
     $name: String!
     $schema: JsonSchemaDto!
   ) {
@@ -44,7 +44,7 @@ export const CREATE_TEMPLATE = gql`
 `;
 
 export const UPDATE_PORTAL = gql`
-  mutation UPDATE_PORTAL($portalId: UUID!, $templateId: ID!) {
+  mutation ($portalId: UUID!, $templateId: ID!) {
     updateEmbed(embedId: $portalId, schemaIds: [$templateId]) {
       name
       id
@@ -58,7 +58,7 @@ export const UPDATE_PORTAL = gql`
 `;
 
 export const UPDATE_TEMPLATE = gql`
-  mutation UPDATE_TEMPLATE($schemaId: ID!, $schema: JsonSchemaDto!) {
+  mutation ($schemaId: ID!, $schema: JsonSchemaDto!) {
     updateSchema(schemaId: $schemaId, jsonSchema: $schema) {
       name
       id

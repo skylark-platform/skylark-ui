@@ -1,8 +1,6 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { RequestDocument } from "graphql-request";
-import { useMemo } from "react";
+import { useQuery } from "@apollo/client";
+import { useEffect, useMemo, useState } from "react";
 
-import { QueryKeys } from "src/enums/graphql";
 import {
   SkylarkGraphQLObjectImage,
   ParsedSkylarkObject,
@@ -10,9 +8,9 @@ import {
   ParsedSkylarkObjectMetadata,
   GQLSkylarkSearchResponse,
 } from "src/interfaces/skylark";
-import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
   createSearchObjectsQuery,
+  defaultValidBlankQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -26,10 +24,11 @@ export interface SearchFilters {
   objectTypes: string[] | null;
 }
 
-export const SEARCH_PAGE_SIZE = 50;
+export const SEARCH_PAGE_SIZE = 30;
 
 export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta();
+  const [allResultsFetched, setAllResultsFetched] = useState(false);
 
   const query = useMemo(
     () =>
@@ -37,36 +36,34 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     [searchableObjects, filters.objectTypes],
   );
 
-  const variables = {
-    queryString,
-    limit: SEARCH_PAGE_SIZE,
-    offset: 0,
-  };
-
-  const { data: searchResponse, ...rest } =
-    useInfiniteQuery<GQLSkylarkSearchResponse>({
-      queryKey: [QueryKeys.Search, query, variables],
-      queryFn: async ({ pageParam: offset = 0 }) =>
-        skylarkRequest(query as RequestDocument, {
-          ...variables,
-          offset,
-        }),
-      getNextPageParam: (lastPage, pages): number | undefined => {
-        const totalNumObjects = pages.flatMap(
-          (page) => page.search.objects,
-        ).length;
-        const shouldFetchMore =
-          totalNumObjects % SEARCH_PAGE_SIZE === 0 &&
-          lastPage.search.objects.length > 0;
-        return shouldFetchMore ? totalNumObjects : undefined;
+  const {
+    data: searchResponse,
+    fetchMore,
+    refetch,
+    ...rest
+  } = useQuery<GQLSkylarkSearchResponse | undefined>(
+    query || defaultValidBlankQuery,
+    {
+      skip: !query,
+      variables: {
+        queryString,
+        limit: SEARCH_PAGE_SIZE,
       },
-    });
+      notifyOnNetworkStatusChange: true,
+      // Using "all" so we can get data even when some is invalid
+      // https://www.apollographql.com/docs/react/data/error-handling/#graphql-error-policies
+      errorPolicy: "all",
+      // Don't cache search so we always get up to date results
+      fetchPolicy: "network-only",
+      nextFetchPolicy: "network-only",
+    },
+  );
 
   const data = useMemo(() => {
     // Using the errorPolicy "all" means that some data could be null
-    const nonNullObjects = searchResponse?.pages
-      ?.flatMap((page) => page.search.objects)
-      .filter((obj) => obj !== null) as SkylarkGraphQLObject[] | undefined;
+    const nonNullObjects = searchResponse?.search.objects.filter(
+      (obj) => obj !== null,
+    ) as SkylarkGraphQLObject[] | undefined;
 
     const normalisedObjects =
       nonNullObjects?.map(
@@ -90,13 +87,43 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     });
 
     return parsedObjects;
-  }, [searchResponse?.pages]);
+  }, [searchResponse?.search.objects]);
+
+  const fetchMoreWrapper = () => {
+    if (!allResultsFetched) {
+      fetchMore({
+        variables: {
+          offset: searchResponse?.search.objects.length || 0,
+        },
+      }).then(({ data: newSearchData }) => {
+        if (
+          newSearchData?.search.objects.length === 0 ||
+          data.length % SEARCH_PAGE_SIZE !== 0
+        ) {
+          setAllResultsFetched(true);
+          return;
+        }
+      });
+    }
+  };
+
+  useEffect(() => {
+    setAllResultsFetched(false);
+    refetch();
+  }, [refetch, query]);
 
   return {
-    ...rest,
     data,
     properties: allFieldNames,
     query,
-    variables,
+    fetchMoreResults: fetchMoreWrapper,
+    refetch,
+    ...rest,
+    // https://github.com/apollographql/apollo-client/blob/d470c964db46728d8a5dfc63990859c550fa1656/src/core/networkStatus.ts#L4
+    // Loading is either "loading" or "refetching" - we use refetching when updating the search filters
+    loading: rest.networkStatus === 1 || rest.networkStatus === 4,
+    fetchingMore: rest.networkStatus === 3,
+    moreResultsAvailable:
+      !allResultsFetched && data.length % SEARCH_PAGE_SIZE === 0,
   };
 };

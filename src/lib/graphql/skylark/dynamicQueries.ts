@@ -1,4 +1,4 @@
-import { gql } from "graphql-tag";
+import { gql } from "@apollo/client";
 import {
   EnumType,
   jsonToGraphQLQuery,
@@ -10,6 +10,11 @@ import {
   SkylarkGraphQLObject,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
+
+// This is unpleasant but neccessary as Apollo Client doesn't let us pass in any queries that are not valid
+// Should be used inconjunction with the Apollo Client option "skip" so the request is not made
+export const defaultValidBlankQuery = gql("query { __unknown { name }}");
+export const defaultValidBlankMutation = gql("mutation { __unknown { name }}");
 
 const common = {
   variables: {
@@ -150,9 +155,6 @@ export const removeFieldPrefixFromReturnedObject = <T>(
   return result as T;
 };
 
-export const createGetObjectQueryName = (objectType: string) =>
-  `GET_${objectType}`;
-
 export const createGetObjectQuery = (
   object: SkylarkObjectMeta | null,
   contentTypesToRequest: SkylarkObjectMeta[],
@@ -163,7 +165,7 @@ export const createGetObjectQuery = (
 
   const query = {
     query: {
-      __name: createGetObjectQueryName(object.name),
+      __name: `GET_${object.name}`,
       __variables: {
         ...common.variables,
         uid: "String",
@@ -240,7 +242,7 @@ export const createSearchObjectsQuery = (
 
   const query = {
     query: {
-      __name: "SEARCH",
+      __name: `SEARCH`,
       __variables: {
         ...common.variables,
         queryString: "String!",

@@ -1,4 +1,4 @@
-import { gql } from "graphql-tag";
+import { gql } from "@apollo/client";
 
 export const GET_SKYLARK_SCHEMA = gql`
   query GET_SKYLARK_SCHEMA {

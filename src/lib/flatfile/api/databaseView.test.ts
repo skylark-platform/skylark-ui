@@ -1,12 +1,42 @@
-import { mockFlatfileGetFinalDatabaseView } from "src/__tests__/mocks/handlers/flatfile";
-import { createFlatfileClient } from "src/lib/graphql/flatfile/client";
+import { createMockClient, MockApolloClient } from "mock-apollo-client";
+
+import { FlatfileGetFinalDatabaseViewResponse } from "src/interfaces/flatfile/responses";
+import { GET_FINAL_DATABASE_VIEW } from "src/lib/graphql/flatfile/queries";
 
 import { getFlatfileFinalDatabaseView } from "./databaseView";
 
+let mockClient: MockApolloClient;
+let queryHandler: jest.Mock;
+
+const data: FlatfileGetFinalDatabaseViewResponse = {
+  getFinalDatabaseView: {
+    rows: [
+      {
+        id: 1,
+        status: "success",
+        valid: true,
+        data: {
+          title: "Episode 1",
+          slug: "episode-1",
+        },
+      },
+    ],
+  },
+};
+
+beforeEach(() => {
+  mockClient = createMockClient();
+
+  queryHandler = jest.fn().mockResolvedValue({
+    data,
+  });
+
+  mockClient.setRequestHandler(GET_FINAL_DATABASE_VIEW, queryHandler);
+});
+
 test("makes a request to Flatfile with expected variables", async () => {
-  const flatfileClient = createFlatfileClient("token");
+  const got = await getFlatfileFinalDatabaseView(mockClient, "batchId");
 
-  const got = await getFlatfileFinalDatabaseView(flatfileClient, "batchId");
-
-  expect(got).toEqual(mockFlatfileGetFinalDatabaseView.getFinalDatabaseView);
+  expect(queryHandler).toHaveBeenCalledWith({ batchId: "batchId" });
+  expect(got).toEqual(data.getFinalDatabaseView);
 });

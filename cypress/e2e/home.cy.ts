@@ -48,7 +48,7 @@ describe("Content Library", () => {
           });
         } else {
           req.reply({
-            fixture: "./skylark/queries/search/gotPage1.json",
+            fixture: "./skylark/queries/search/got.json",
           });
         }
       }
@@ -66,6 +66,7 @@ describe("Content Library", () => {
 
   it("visits home", () => {
     cy.contains("No objects found").should("not.exist");
+    cy.get(".animate-spin").should("not.exist");
     cy.contains("GOT");
     cy.percySnapshot("Homepage");
   });

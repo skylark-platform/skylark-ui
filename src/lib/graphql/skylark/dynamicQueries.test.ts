@@ -1,8 +1,8 @@
+import { SkylarkObjectOperations } from "src/interfaces/skylark";
 import {
   episodeObjectOperations,
   setObjectOperations,
-} from "src/__tests__/utils/objectOperations";
-import { SkylarkObjectOperations } from "src/interfaces/skylark";
+} from "src/tests/utils/objectOperations";
 
 import {
   createGetObjectQuery,

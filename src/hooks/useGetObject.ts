@@ -1,16 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
-import { DocumentNode } from "graphql";
+import { useQuery } from "@apollo/client";
 
-import { QueryErrorMessages, QueryKeys } from "src/enums/graphql";
 import {
   SkylarkGraphQLObjectImage,
   ParsedSkylarkObject,
+  SkylarkGraphQLObjectRelationship,
   SkylarkObjectType,
-  GQLSkylarkResponseError,
 } from "src/interfaces/skylark";
 import { GQLSkylarkGetObjectResponse } from "src/interfaces/skylark";
-import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
+import {
+  createGetObjectQuery,
+  defaultValidBlankQuery,
+} from "src/lib/graphql/skylark/dynamicQueries";
 import {
   parseObjectAvailability,
   parseObjectContent,
@@ -23,33 +23,24 @@ import {
   useSkylarkObjectOperations,
 } from "./useSkylarkObjectTypes";
 
-export const createGetObjectKeyPrefix = ({
-  objectType,
-  uid,
-}: {
-  objectType: string;
-  uid: string;
-}) => [QueryKeys.GetObject, objectType, uid];
-
-export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
+export const useGetObject = (
+  objectType: SkylarkObjectType,
+  lookupValue: { externalId?: string; uid?: string },
+) => {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
   const { objects: searchableObjects } = useAllObjectsMeta();
 
   const query = createGetObjectQuery(objectOperations, searchableObjects);
-  const variables = { uid };
 
-  const { data, error, ...rest } = useQuery<
-    GQLSkylarkGetObjectResponse,
-    GQLSkylarkResponseError<GQLSkylarkGetObjectResponse>
-  >({
-    queryKey: [
-      ...createGetObjectKeyPrefix({ objectType, uid }),
-      query,
-      variables,
-    ],
-    queryFn: async () => skylarkRequest(query as DocumentNode, variables),
-    enabled: query !== null,
-  });
+  const { data, ...rest } = useQuery<GQLSkylarkGetObjectResponse>(
+    query || defaultValidBlankQuery,
+    {
+      skip: !query,
+      variables: {
+        ...lookupValue,
+      },
+    },
+  );
 
   // TODO split into Language and Global
   const metadata: ParsedSkylarkObject["metadata"] = data?.getObject
@@ -65,14 +56,17 @@ export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
         uid: data.getObject.uid,
         external_id: data.getObject.external_id,
       }
-    : { uid, external_id: "" };
+    : { uid: lookupValue.uid || "", external_id: lookupValue.externalId || "" };
 
-  const availability = parseObjectAvailability(data?.getObject.availability);
+  // TODO improve this to remove the "as"
+  const availability = parseObjectAvailability(
+    data?.getObject.availability as SkylarkGraphQLObjectRelationship,
+  );
 
   const images =
     data?.getObject && hasProperty(data?.getObject, "images")
       ? parseObjectRelationship<SkylarkGraphQLObjectImage>(
-          data?.getObject.images,
+          data?.getObject.images as SkylarkGraphQLObjectRelationship,
         )
       : undefined;
 
@@ -97,12 +91,8 @@ export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
 
   return {
     ...rest,
-    error,
     data: parsedObject,
-    isLoading: rest.isLoading || !query,
-    isNotFound:
-      error?.response.errors?.[0]?.errorType === QueryErrorMessages.NotFound,
+    loading: rest.loading || !query,
     query,
-    variables,
   };
 };

@@ -15,8 +15,11 @@ export const createOrUpdateFlatfilePortal = async (
   name: string,
   templateId: string,
 ) => {
-  const data = await client.request<FlatfileGetPortalsResponse>(GET_PORTALS, {
-    searchQuery: name,
+  const { data } = await client.query<FlatfileGetPortalsResponse>({
+    query: GET_PORTALS,
+    variables: {
+      searchQuery: name,
+    },
   });
 
   const foundPortals = data.getEmbeds.data;
@@ -24,19 +27,25 @@ export const createOrUpdateFlatfilePortal = async (
   if (foundPortals.length > 0) {
     const [portal] = foundPortals;
     const updatePortalResponse =
-      await client.request<FlatfileUpdatePortalResponse>(UPDATE_PORTAL, {
-        portalId: portal.id,
-        templateId,
+      await client.mutate<FlatfileUpdatePortalResponse>({
+        mutation: UPDATE_PORTAL,
+        variables: {
+          portalId: portal.id,
+          templateId,
+        },
       });
 
-    return updatePortalResponse.updateEmbed;
+    return updatePortalResponse.data?.updateEmbed;
   }
 
   const createPortalResponse =
-    await client.request<FlatfileCreatePortalResponse>(CREATE_PORTAL, {
-      name,
-      templateId,
+    await client.mutate<FlatfileCreatePortalResponse>({
+      mutation: CREATE_PORTAL,
+      variables: {
+        name,
+        templateId,
+      },
     });
 
-  return createPortalResponse.createEmbed.embed;
+  return createPortalResponse.data?.createEmbed.embed;
 };

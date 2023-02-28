@@ -1,8 +1,8 @@
+import { OperationVariables } from "@apollo/client";
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useMemo, useState } from "react";
 import { GrGraphQl } from "react-icons/gr";
-import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
 import { DisplayGraphQLQueryModal } from "src/components/displayGraphQLQuery";
@@ -13,8 +13,6 @@ import {
 import { Edit, Expand, Trash, MoreVertical } from "src/components/icons";
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { Pill } from "src/components/pill";
-import { Toast } from "src/components/toast/toast.component";
-import { useDeleteObject } from "src/hooks/useDeleteObject";
 import { SkylarkObjectType } from "src/interfaces/skylark";
 
 interface PanelHeaderProps {
@@ -25,11 +23,12 @@ interface PanelHeaderProps {
   objectUid: string;
   pillColor?: string;
   graphQLQuery: DocumentNode | null;
-  graphQLVariables?: object;
+  graphQLVariables?: OperationVariables;
   inEditMode: boolean;
   isSaving?: boolean;
   toggleEditMode: () => void;
   closePanel?: () => void;
+  deleteObject: () => void;
   save: () => void;
 }
 
@@ -46,24 +45,10 @@ export const PanelHeader = ({
   isSaving,
   toggleEditMode,
   closePanel,
+  deleteObject,
   save,
 }: PanelHeaderProps) => {
   const [showGraphQLModal, setGraphQLModalOpen] = useState(false);
-
-  const { mutate: deleteObjectMutation } = useDeleteObject({
-    objectType,
-    onSuccess: ({ objectType, uid }) => {
-      // TODO finesse this so the toast slides in and looks better
-      toast(
-        <Toast
-          title={`${objectType} deleted`}
-          message={`${objectType} ${uid} has been deleted`}
-          type="success"
-        />,
-      );
-      closePanel?.();
-    },
-  });
 
   const objectMenuOptions = useMemo(
     () => [
@@ -83,11 +68,12 @@ export const PanelHeader = ({
         text: `Delete ${objectType}`,
         Icon: <Trash className="w-5 fill-error stroke-error" />,
         danger: true,
-        disabled: true, // TODO finish object deletion
-        onClick: () => deleteObjectMutation({ uid: objectUid }),
+        // Disable while no tabs have edit mode TODO remove this check
+        disabled: tabsWithEditMode.length === 0,
+        onClick: deleteObject,
       },
     ],
-    [deleteObjectMutation, objectType, objectUid],
+    [deleteObject, objectType, tabsWithEditMode],
   );
 
   return (

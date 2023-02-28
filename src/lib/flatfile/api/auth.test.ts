@@ -1,59 +1,44 @@
-import { rest } from "msw";
-
-import { server } from "src/__tests__/mocks/server";
-import { FlatfileTokenExchangeResponse } from "src/interfaces/flatfile/responses";
-
 import { exchangeFlatfileAccessKey } from "./auth";
 
+const validResponse = {
+  accessToken: "accessToken",
+  user: {
+    id: "user-1",
+  },
+};
+
 test("calls the Flatfile API to get an API token", async () => {
-  server.use(
-    rest.post(
-      "https://api.us.flatfile.io/auth/access-key/exchange/",
-      async (req, res, ctx) => {
-        const reqBody = await req.json();
-        if (
-          reqBody.accessKeyId === "accessKeyId" &&
-          reqBody.secretAccessKey === "secretAccessKey"
-        ) {
-          const tokenResponse: FlatfileTokenExchangeResponse = {
-            accessToken: "flatfile-token",
-            user: {
-              id: 123,
-              name: "Flatfile user",
-              email: "user@flatfile.com",
-              type: "a-user",
-            },
-          };
+  global.fetch = jest.fn(() =>
+    Promise.resolve({
+      json: () => Promise.resolve(validResponse),
+    }),
+  ) as jest.Mock;
 
-          return res(ctx.status(200), ctx.json(tokenResponse));
-        }
-        return res(ctx.status(500));
+  await exchangeFlatfileAccessKey("accessKeyId", "secretAccessKey");
+
+  expect(global.fetch).toHaveBeenCalledWith(
+    "https://api.us.flatfile.io/auth/access-key/exchange/",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
       },
-    ),
-  );
-
-  const got = await exchangeFlatfileAccessKey("accessKeyId", "secretAccessKey");
-
-  expect(got).toEqual({
-    accessToken: "flatfile-token",
-    user: {
-      id: 123,
-      name: "Flatfile user",
-      email: "user@flatfile.com",
-      type: "a-user",
+      body: JSON.stringify({
+        accessKeyId: "accessKeyId",
+        secretAccessKey: "secretAccessKey",
+        expiresIn: 60,
+      }),
     },
-  });
+  );
 });
 
 test("throws an error when invalid data is returned by Flatfile", async () => {
-  server.use(
-    rest.post(
-      "https://api.us.flatfile.io/auth/access-key/exchange/",
-      (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      },
-    ),
-  );
+  global.fetch = jest.fn().mockImplementationOnce(() =>
+    Promise.resolve({
+      json: () => Promise.resolve({}),
+    }),
+  ) as jest.Mock;
 
   await expect(
     exchangeFlatfileAccessKey("accessKeyId", "secretAccessKey"),
@@ -61,16 +46,11 @@ test("throws an error when invalid data is returned by Flatfile", async () => {
 });
 
 test("throws an error when the fetch request fails", async () => {
-  server.use(
-    rest.post(
-      "https://api.us.flatfile.io/auth/access-key/exchange/",
-      (req, res, ctx) => {
-        return res(ctx.status(500));
-      },
-    ),
-  );
+  global.fetch = jest.fn().mockImplementationOnce(() => {
+    throw new Error("failure");
+  }) as jest.Mock;
 
   await expect(
     exchangeFlatfileAccessKey("accessKeyId", "secretAccessKey"),
-  ).rejects.toThrow();
+  ).rejects.toThrow("failure");
 });

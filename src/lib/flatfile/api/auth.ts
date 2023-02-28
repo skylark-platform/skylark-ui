@@ -24,10 +24,6 @@ export const exchangeFlatfileAccessKey = async (
     },
   );
 
-  if (!tokenRes.ok) {
-    throw new Error();
-  }
-
   const data = (await tokenRes.json()) as FlatfileTokenExchangeResponse;
 
   if (

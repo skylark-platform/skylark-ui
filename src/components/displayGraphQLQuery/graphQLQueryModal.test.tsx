@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "src/__tests__/utils/test-utils";
+import { fireEvent, render, screen } from "@testing-library/react";
+
 import { GET_SKYLARK_SCHEMA } from "src/lib/graphql/skylark/queries";
 
 import { DisplayGraphQLQuery } from "./graphQLQueryModal.component";

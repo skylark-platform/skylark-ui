@@ -1,16 +1,16 @@
-import { graphql } from "msw";
+import { createMockClient, MockApolloClient } from "mock-apollo-client";
 
 import {
-  erroredFlatfileTemplateSearch,
-  mockFlatfileUpdatedTemplate,
-} from "src/__tests__/mocks/handlers/flatfile";
-import { server } from "src/__tests__/mocks/server";
-import { FlatfileGetTemplatesResponse } from "src/interfaces/flatfile/responses";
+  FlatfileCreateTemplateResponse,
+  FlatfileGetTemplatesResponse,
+  FlatfileUpdateTemplateResponse,
+} from "src/interfaces/flatfile/responses";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
 import {
-  createFlatfileClient,
-  FlatfileClient,
-} from "src/lib/graphql/flatfile/client";
+  CREATE_TEMPLATE,
+  UPDATE_TEMPLATE,
+} from "src/lib/graphql/flatfile/mutations";
+import { GET_TEMPLATES } from "src/lib/graphql/flatfile/queries";
 
 import {
   createOrUpdateFlatfileTemplate,
@@ -122,51 +122,107 @@ describe("validateRequestTemplate", () => {
 describe("createOrUpdateFlatfileTemplate", () => {
   const templateName = "templateName";
 
-  let flatfileClient: FlatfileClient;
+  const getTemplatesDataEmpty: FlatfileGetTemplatesResponse = {
+    getSchemas: {
+      data: [],
+    },
+  };
+
+  const getTemplatesDataFound: FlatfileGetTemplatesResponse = {
+    getSchemas: {
+      data: [
+        {
+          id: "template-1",
+          name: "Template 1",
+        },
+      ],
+    },
+  };
+
+  let mockClient: MockApolloClient;
+  let getTemplatesHandler: jest.Mock;
+  let createTemplateHandler: jest.Mock;
+  let updateTemplateHandler: jest.Mock;
 
   beforeEach(() => {
-    flatfileClient = createFlatfileClient("token");
+    mockClient = createMockClient();
+
+    const createTemplateData: FlatfileCreateTemplateResponse = {
+      createSchema: {
+        name: "Template 1",
+        id: "template-1",
+      },
+    };
+    createTemplateHandler = jest.fn().mockResolvedValue({
+      data: createTemplateData,
+    });
+
+    const updateTemplateData: FlatfileUpdateTemplateResponse = {
+      updateSchema: {
+        name: "Template 1",
+        id: "template-1",
+      },
+    };
+    updateTemplateHandler = jest.fn().mockResolvedValue({
+      data: updateTemplateData,
+    });
+
+    mockClient.setRequestHandler(CREATE_TEMPLATE, createTemplateHandler);
+    mockClient.setRequestHandler(UPDATE_TEMPLATE, updateTemplateHandler);
+  });
+
+  test("makes a request to get all the Portals from Flatfile", async () => {
+    getTemplatesHandler = jest.fn().mockResolvedValue({
+      data: getTemplatesDataEmpty,
+    });
+    mockClient.setRequestHandler(GET_TEMPLATES, getTemplatesHandler);
+
+    await createOrUpdateFlatfileTemplate(mockClient, templateName, template);
+
+    expect(getTemplatesHandler).toHaveBeenCalledWith({
+      searchQuery: templateName,
+    });
   });
 
   test("makes a create request when a Portal is not found in Flatfile", async () => {
-    server.use(
-      graphql.query("GET_TEMPLATES", (req, res, ctx) => {
-        const data: FlatfileGetTemplatesResponse = {
-          getSchemas: {
-            data: [],
-          },
-        };
-        return res(ctx.data(data));
-      }),
-    );
+    getTemplatesHandler = jest.fn().mockResolvedValue({
+      data: getTemplatesDataEmpty,
+    });
+    mockClient.setRequestHandler(GET_TEMPLATES, getTemplatesHandler);
 
-    const got = await createOrUpdateFlatfileTemplate(
-      flatfileClient,
-      templateName,
-      template,
-    );
+    await createOrUpdateFlatfileTemplate(mockClient, templateName, template);
 
-    expect(got).toEqual({
-      id: "created-template",
-      name: "Created Template 1",
+    expect(createTemplateHandler).toHaveBeenCalledWith({
+      name: templateName,
+      schema: {
+        schema: template,
+      },
     });
   });
 
   test("makes an update request when a Portal is found in Flatfile", async () => {
-    const got = await createOrUpdateFlatfileTemplate(
-      flatfileClient,
-      templateName,
-      template,
-    );
+    getTemplatesHandler = jest.fn().mockResolvedValue({
+      data: getTemplatesDataFound,
+    });
+    mockClient.setRequestHandler(GET_TEMPLATES, getTemplatesHandler);
 
-    expect(got).toEqual(mockFlatfileUpdatedTemplate);
+    await createOrUpdateFlatfileTemplate(mockClient, templateName, template);
+
+    expect(updateTemplateHandler).toHaveBeenCalledWith({
+      schemaId: getTemplatesDataFound.getSchemas.data[0].id,
+      schema: {
+        schema: template,
+      },
+    });
   });
 
   test("throws an error when a Flatfile request fails", async () => {
-    server.use(erroredFlatfileTemplateSearch);
+    mockClient.setRequestHandler(GET_TEMPLATES, () =>
+      Promise.resolve({ errors: [{ message: "GraphQL Error" }] }),
+    );
 
     await expect(
-      createOrUpdateFlatfileTemplate(flatfileClient, templateName, template),
-    ).rejects.toThrow("Error fetching templates");
+      createOrUpdateFlatfileTemplate(mockClient, templateName, template),
+    ).rejects.toThrow("GraphQL Error");
   });
 });

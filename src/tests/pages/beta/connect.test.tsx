@@ -1,4 +1,5 @@
-import { render, screen } from "src/__tests__/utils/test-utils";
+import { render, screen } from "@testing-library/react";
+
 import { LOCAL_STORAGE } from "src/constants/skylark";
 import ConnectPage from "src/pages/beta/connect";
 

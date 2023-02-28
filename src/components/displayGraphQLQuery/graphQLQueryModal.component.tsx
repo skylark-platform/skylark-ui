@@ -1,3 +1,4 @@
+import { OperationVariables } from "@apollo/client";
 import { Dialog } from "@headlessui/react";
 import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode, print } from "graphql/language";
@@ -34,7 +35,7 @@ const modalVariants = {
 interface GraphQLQueryModalProps {
   label: string;
   query: DocumentNode | null;
-  variables?: object;
+  variables?: OperationVariables;
 }
 
 export const DisplayGraphQLQueryModal = ({
