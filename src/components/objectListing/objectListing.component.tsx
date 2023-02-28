@@ -334,14 +334,11 @@ export const ObjectList = ({
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
 
-  console.log("rowVirtualizer", rowVirtualizer);
-
-  /*
   const primaryKey = [
-    config.primaryField || "",
+    draggedObject.config.primaryField || "",
     ...DISPLAY_NAME_PRIORITY,
-  ].find((field) => !!object[field]);
-*/
+  ].find((field) => !!draggedObject.object[field]);
+
   return (
     <div
       className={clsx(
@@ -358,7 +355,7 @@ export const ObjectList = ({
               className="w-20"
             />
             <div className="flex flex-1">
-              <p>{draggedObject.object.title || draggedObject.object.uid}</p>
+              <p>{primaryKey ? draggedObject.object[primaryKey] || draggedObject.object.uid}</p>
             </div>
           </div>
         ) : null}
@@ -422,7 +419,7 @@ export const ObjectList = ({
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
             setPanelObject={onInfoClick}
-            ableToDrag={!!isPanelOpen} // TODO check if we have contents
+            withDraggableRow={!!isPanelOpen}
           />
         )}
         {!searchLoading && searchData && fetchingMore && (

@@ -12,7 +12,7 @@ interface PanelContentProps {
   objects: ParsedSkylarkObjectContentObject[];
   onReorder: (objs: ParsedSkylarkObjectContentObject[]) => void;
   inEditMode?: boolean;
-  draggedObject?: any;
+  draggedObject?: ParsedSkylarkObjectContentObject | undefined;
 }
 
 export const PanelContentItemOrderInput = ({
@@ -91,7 +91,6 @@ export const PanelContent = ({
   const { isOver, setNodeRef } = useDroppable({
     id: "droppable",
   });
-  const overStyle = isOver ? "border-primary text-primary" : "";
 
   const handleManualOrderChange = (
     currentIndex: number,
@@ -117,7 +116,7 @@ export const PanelContent = ({
       <div
         ref={setNodeRef}
         className={clsx(
-          overStyle,
+          isOver && "border-primary text-primary",
           "m-4 mt-10 flex h-72 items-center justify-center border-2 border-dotted text-center text-manatee-400",
         )}
       >

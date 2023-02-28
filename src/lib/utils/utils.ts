@@ -15,6 +15,13 @@ export const pause = (ms: number) =>
 export const formatObjectField = (field?: string) =>
   field?.toUpperCase().replaceAll("_", " ") || "";
 
+/*
+  export const getPrimaryKey = (obj?: any) =>[
+    obj.config.primaryField || "",
+    ...DISPLAY_NAME_PRIORITY,
+  ].find((field) => !!obj.object[field])
+  */
+
 // Creates an Account Identifier (used in Flatfile template)
 // Will change when we have proper auth / teams / accounts
 export const createAccountIdentifier = (uri: string) => {

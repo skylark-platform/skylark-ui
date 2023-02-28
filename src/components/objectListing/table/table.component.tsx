@@ -21,17 +21,16 @@ export interface TableProps {
   withCheckbox?: boolean;
   virtualRows: VirtualItem[];
   totalRows: number;
-  ableToDrag: boolean;
+  withDraggableRow?: boolean;
   setPanelObject?: (obj: { uid: string; objectType: string }) => void;
 }
 
 export interface TableRowProps {
-  rows: Row<object>[];
-  virtualRow: VirtualItem;
+  row: Row<ParsedSkylarkObject>;
   setPanelObject?: (obj: { uid: string; objectType: string }) => void;
   tableMeta: TableMeta<object> | undefined;
   withCheckbox: boolean;
-  ableToDrag: boolean;
+  withDraggableRow?: boolean;
 }
 
 const headAndDataClassNames =
@@ -190,21 +189,19 @@ const TableData = ({
 };
 
 const TableRow = ({
-  rows,
-  virtualRow,
+  row,
   setPanelObject,
   tableMeta,
   withCheckbox,
-  ableToDrag,
+  withDraggableRow,
 }: TableRowProps) => {
-  const row = rows[virtualRow.index] as Row<ParsedSkylarkObject>;
   const { uid, objectType } = row.original;
   const { attributes, listeners, setNodeRef } = useDraggable({
     id: uid,
     data: {
       object: row.original,
     },
-    disabled: !ableToDrag,
+    disabled: !withDraggableRow,
   });
   return (
     <tr
@@ -234,7 +231,7 @@ export const Table = ({
   virtualRows,
   totalRows,
   setPanelObject,
-  ableToDrag,
+  withDraggableRow,
 }: TableProps) => {
   const tableMeta = table.options.meta;
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
@@ -267,15 +264,15 @@ export const Table = ({
           </tr>
         )}
         {virtualRows.map((virtualRow) => {
+          const row = rows[virtualRow.index] as Row<ParsedSkylarkObject>;
           return (
             <TableRow
               key={virtualRow.index}
-              rows={rows}
-              virtualRow={virtualRow}
+              row={row}
               setPanelObject={setPanelObject}
               tableMeta={tableMeta}
               withCheckbox={withCheckbox}
-              ableToDrag={ableToDrag}
+              withDraggableRow={withDraggableRow}
             />
           );
         })}
