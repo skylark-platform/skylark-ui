@@ -334,10 +334,13 @@ export const ObjectList = ({
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
 
-  const primaryKey = [
-    draggedObject.config.primaryField || "",
-    ...DISPLAY_NAME_PRIORITY,
-  ].find((field) => !!draggedObject.object[field]);
+  let primaryKey = undefined;
+  if (draggedObject) {
+    primaryKey = [
+      draggedObject.config.primaryField || "",
+      ...DISPLAY_NAME_PRIORITY,
+    ].find((field) => !!draggedObject.object[field]);
+  }
 
   return (
     <div
@@ -355,7 +358,11 @@ export const ObjectList = ({
               className="w-20"
             />
             <div className="flex flex-1">
-              <p>{primaryKey ? draggedObject.object[primaryKey] || draggedObject.object.uid}</p>
+              <p>
+                {primaryKey
+                  ? draggedObject.object[primaryKey]
+                  : draggedObject.object.uid}
+              </p>
             </div>
           </div>
         ) : null}
