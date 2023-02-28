@@ -88,7 +88,15 @@ export const Panel = ({
   }, [uid]);
 
   useEffect(() => {
-    if (newObject) {
+    if (
+      newObject &&
+      !contentObjects
+        ?.map(({ object }) => object.uid)
+        .includes(newObject.object.uid) &&
+      !data?.content?.objects
+        ?.map(({ object }) => object.uid)
+        .includes(newObject.object.uid)
+    ) {
       setContentObjects([
         ...(contentObjects || data?.content?.objects || []),
         {
