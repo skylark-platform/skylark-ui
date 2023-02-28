@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
@@ -26,9 +26,9 @@ interface PanelProps {
   objectType: string;
   closePanel?: () => void;
   uid: string;
-  draggedObject?: any;
-  newObject?: any;
-  setObject: any;
+  draggedObject?: ParsedSkylarkObjectContentObject;
+  newObject?: ParsedSkylarkObjectContentObject;
+  setObject: Dispatch<SetStateAction<undefined>>;
 }
 
 enum PanelTab {
@@ -105,7 +105,7 @@ export const Panel = ({
         },
       ]);
       setEditMode(true);
-      setObject(null);
+      setObject(undefined);
     }
   }, [contentObjects, data?.content?.objects, newObject, setObject]);
 

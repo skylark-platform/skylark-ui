@@ -1,5 +1,4 @@
-import { useDraggable, DragOverlay } from "@dnd-kit/core";
-import { snapCenterToCursor } from "@dnd-kit/modifiers";
+import { useDraggable } from "@dnd-kit/core";
 import {
   Cell,
   flexRender,
@@ -12,7 +11,6 @@ import clsx from "clsx";
 import { useMemo } from "react";
 import { VirtualItem } from "react-virtual";
 
-import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
@@ -285,20 +283,6 @@ export const Table = ({
             />
           );
         })}
-        <DragOverlay modifiers={[snapCenterToCursor]}>
-          {draggedObject ? (
-            <div className="my-o flex max-w-[350px] items-center space-x-2 ">
-              <Pill
-                label={draggedObject.object.__typename as string}
-                bgColor={draggedObject.config.colour}
-                className="w-20"
-              />
-              <div className="flex flex-1">
-                <p>{draggedObject.object.title || draggedObject.object.uid}</p>
-              </div>
-            </div>
-          ) : null}
-        </DragOverlay>
         {paddingBottom > 0 && (
           <tr>
             <td style={{ height: `${paddingBottom}px` }} />

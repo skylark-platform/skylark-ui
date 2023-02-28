@@ -1,3 +1,5 @@
+import { DragOverlay } from "@dnd-kit/core";
+import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import {
   createColumnHelper,
   getCoreRowModel,
@@ -21,7 +23,6 @@ import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
-  SkylarkGraphQLObjectImage,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
@@ -344,6 +345,20 @@ export const ObjectList = ({
         isPanelOpen ? "lg:space-y-8" : "md:space-y-8",
       )}
     >
+      <DragOverlay modifiers={[snapCenterToCursor]}>
+        {draggedObject ? (
+          <div className="my-o flex max-w-[350px] items-center space-x-2 ">
+            <Pill
+              label={draggedObject.object.__typename as string}
+              bgColor={draggedObject.config.colour}
+              className="w-20"
+            />
+            <div className="flex flex-1">
+              <p>{draggedObject.object.title || draggedObject.object.uid}</p>
+            </div>
+          </div>
+        ) : null}
+      </DragOverlay>
       <div
         className={clsx(
           "flex w-full items-center space-x-1 md:justify-between",

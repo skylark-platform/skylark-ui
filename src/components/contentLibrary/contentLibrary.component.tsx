@@ -10,15 +10,15 @@ import React, { useEffect, useState, useRef } from "react";
 
 import { ObjectList } from "src/components/objectListing";
 import { Panel } from "src/components/panel";
-import { ParsedSkylarkObjectContent } from "src/interfaces/skylark";
+import { ParsedSkylarkObjectContentObject } from "src/interfaces/skylark";
 
 export const ContentLibrary = () => {
   const [activePanelObject, setActivePanelObject] = useState<{
     objectType: string;
     uid: string;
   } | null>(null);
-  const [draggedObject, setDraggedObject] = useState(null);
-  const [newObject, setObject] = useState(null);
+  const [draggedObject, setDraggedObject] = useState(undefined);
+  const [newObject, setObject] = useState(undefined);
 
   const [windowSize, setWindowSize] = useState(0);
   const objectListingWidth = useMotionValue<number | undefined>(undefined);
@@ -120,12 +120,12 @@ export const ContentLibrary = () => {
   );
 
   // TODO review this parser
-  function parse(obj: any) {
+  function parse(obj: any): ParsedSkylarkObjectContentObject {
     return {
       config: obj.config,
       object: obj.metadata,
       objectType: obj.objectType,
-      position: 6, // TODO
+      position: 1,
     };
   }
 
@@ -139,6 +139,6 @@ export const ContentLibrary = () => {
       console.log("happy", event);
       setObject(draggedObject);
     }
-    setDraggedObject(null);
+    setDraggedObject(undefined);
   }
 };
