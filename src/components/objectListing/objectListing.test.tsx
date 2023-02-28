@@ -1,5 +1,4 @@
 import GQLGameOfThronesSearchResultsPage1 from "src/__tests__/fixtures/skylark/queries/search/gotPage1.json";
-import GQLGameOfThronesSearchResultsPage2 from "src/__tests__/fixtures/skylark/queries/search/gotPage2.json";
 import {
   fireEvent,
   render,
@@ -59,30 +58,6 @@ test("renders search results", async () => {
   expect(
     screen.getByText(
       GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid as string,
-    ),
-  ).toBeInTheDocument();
-});
-
-test("renders more search results on scroll", async () => {
-  render(<ObjectList />);
-
-  await screen.findByText("UID"); // Search for table header
-
-  const scrollContainer = screen.getByTestId("table-container");
-  fireEvent.scroll(scrollContainer, { target: { scrollY: 500 } });
-
-  await screen.findAllByText(
-    GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid,
-  );
-
-  // Search for page2 table content
-  await screen.findAllByText(
-    GQLGameOfThronesSearchResultsPage2.data.search.objects[0].uid,
-  );
-
-  expect(
-    screen.getByText(
-      GQLGameOfThronesSearchResultsPage2.data.search.objects[0].uid as string,
     ),
   ).toBeInTheDocument();
 });

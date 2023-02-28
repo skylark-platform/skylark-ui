@@ -14,33 +14,11 @@ export const searchHandlers = [
       }
 
       if (offset === 0) {
-        return res(
-          ctx.data({
-            search: {
-              __typename: "SearchResultListing",
-              objects:
-                GQLGameOfThronesSearchResultsPage1.data.search.objects.slice(
-                  0,
-                  SEARCH_PAGE_SIZE,
-                ),
-            },
-          }),
-        );
+        return res(ctx.data(GQLGameOfThronesSearchResultsPage1.data));
       }
 
       if (offset === SEARCH_PAGE_SIZE) {
-        return res(
-          ctx.data({
-            search: {
-              __typename: "SearchResultListing",
-              objects:
-                GQLGameOfThronesSearchResultsPage2.data.search.objects.slice(
-                  0,
-                  SEARCH_PAGE_SIZE - 1,
-                ),
-            },
-          }),
-        );
+        return res(ctx.data(GQLGameOfThronesSearchResultsPage2.data));
       }
 
       return res(

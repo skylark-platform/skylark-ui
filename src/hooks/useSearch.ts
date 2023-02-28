@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import {
@@ -55,6 +55,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
         const totalNumObjects = pages.flatMap(
           (page) => page.search.objects,
         ).length;
+        console.log("SEARCH_PAEG", SEARCH_PAGE_SIZE);
         const shouldFetchMore =
           totalNumObjects % SEARCH_PAGE_SIZE === 0 &&
           lastPage.search.objects.length > 0;

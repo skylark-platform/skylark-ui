@@ -11,11 +11,6 @@ import { LOCAL_STORAGE } from "src/constants/skylark";
 
 import { AddAuthTokenModal } from "./betaReleaseAuthModal.component";
 
-// jest.mock("@tanstack/react-query", () => ({
-//   ...jest.requireActual("@tanstack/react-query"),
-//   useQueryClient: jest.fn().mockReturnValue({ refetchQueries: jest.fn() }),
-// }));
-
 beforeEach(() => {
   // IntersectionObserver isn't available in test environment
   const mockIntersectionObserver = jest.fn();

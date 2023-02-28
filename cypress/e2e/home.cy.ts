@@ -48,7 +48,7 @@ describe("Content Library", () => {
           });
         } else {
           req.reply({
-            fixture: "./skylark/queries/search/got.json",
+            fixture: "./skylark/queries/search/gotPage1.json",
           });
         }
       }
