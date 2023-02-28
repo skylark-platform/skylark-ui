@@ -1,3 +1,4 @@
+import { TEMPLATE_REGEX } from "src/constants/flatfile";
 import {
   FlatfileTemplate,
   FlatfileTemplatePropertyBoolean,
@@ -49,6 +50,28 @@ const convertObjectInputFieldToFlatfileProperty = (
         type: "string",
         format: "email",
       } as FlatfileTemplatePropertyEmail;
+
+    case "url":
+      return {
+        label: field?.name,
+        type: "string",
+        regexp: {
+          pattern: TEMPLATE_REGEX.url,
+          flags: "isg",
+          ignoreBlanks: true,
+        },
+      } as FlatfileTemplatePropertyString;
+
+    case "ipaddress":
+      return {
+        label: field?.name,
+        type: "string",
+        regexp: {
+          pattern: TEMPLATE_REGEX.ipaddress,
+          flags: "isg",
+          ignoreBlanks: true,
+        },
+      } as FlatfileTemplatePropertyString;
 
     default:
       return {

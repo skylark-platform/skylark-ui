@@ -22,7 +22,11 @@ export type NormalizedObjectFieldType =
   | "datetime"
   | "date"
   | "time"
+  | "timestamp"
   | "email"
+  | "url"
+  | "ipaddress"
+  | "json"
   | "phone"
   | "boolean";
 
@@ -47,7 +51,6 @@ interface Mutation extends BaseQueryMutation {
   type: "Mutation";
   inputs: NormalizedObjectField[];
   argName: string;
-  relationships?: string[];
 }
 
 export interface SkylarkObjectOperations {
@@ -63,8 +66,14 @@ export interface SkylarkObjectFields {
   fields: NormalizedObjectField[];
 }
 
+export interface SkylarkObjectRelationship {
+  relationshipName: string;
+  objectType: SkylarkObjectType;
+}
+
 export interface SkylarkObjectMeta extends SkylarkObjectFields {
   availability: SkylarkObjectMeta | null;
   images: SkylarkObjectMeta | null;
   operations: SkylarkObjectOperations;
+  relationships: SkylarkObjectRelationship[];
 }

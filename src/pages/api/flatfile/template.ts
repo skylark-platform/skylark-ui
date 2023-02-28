@@ -81,6 +81,8 @@ export default async function handler(
 
   const flatfileClient = createFlatfileClient(flatfileAccessToken);
 
+  console.log(requestTemplate);
+
   try {
     const template = await createOrUpdateFlatfileTemplate(
       flatfileClient,
