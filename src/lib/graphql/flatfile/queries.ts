@@ -1,9 +1,9 @@
-import { gql } from "@apollo/client";
+import { gql } from "graphql-tag";
 
 import { ACTIVE_FLATFILE_ENV, FLATFILE_TEAM } from "src/constants/flatfile";
 
 export const GET_PORTALS = gql`
-  query(
+  query GET_PORTALS(
     $searchQuery: String
   ) {
     getEmbeds(
@@ -21,7 +21,7 @@ export const GET_PORTALS = gql`
 `;
 
 export const GET_TEMPLATES = gql`
-  query(
+  query GET_TEMPLATES(
     $searchQuery: String
   ) {
     getSchemas(
@@ -39,7 +39,7 @@ export const GET_TEMPLATES = gql`
 `;
 
 export const GET_FINAL_DATABASE_VIEW = gql`
-  query ($batchId: UUID!) {
+  query GET_FINAL_DATABASE_VIEW($batchId: UUID!) {
     getFinalDatabaseView(batchId: $batchId, limit: 1000000) {
       rows
     }

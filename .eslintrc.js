@@ -1,8 +1,14 @@
 module.exports = {
-  plugins: ["@typescript-eslint", "jest", "no-relative-import-paths"],
+  plugins: [
+    "@typescript-eslint",
+    "jest",
+    "no-relative-import-paths",
+    "@tanstack/query",
+  ],
   extends: [
     "next/core-web-vitals",
     "plugin:@typescript-eslint/recommended",
+    "plugin:@tanstack/eslint-plugin-query/recommended",
     "plugin:jest/recommended",
     "prettier",
   ],

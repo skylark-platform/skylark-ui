@@ -10,6 +10,7 @@ import clsx from "clsx";
 import { useMemo } from "react";
 import { VirtualItem } from "react-virtual";
 
+import { Spinner } from "src/components/icons";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
@@ -20,6 +21,7 @@ export interface TableProps {
   withCheckbox?: boolean;
   virtualRows: VirtualItem[];
   totalRows: number;
+  isLoadingMore?: boolean;
   setPanelObject?: (obj: { uid: string; objectType: string }) => void;
 }
 
@@ -183,6 +185,7 @@ export const Table = ({
   withCheckbox = false,
   virtualRows,
   totalRows,
+  isLoadingMore,
   setPanelObject,
 }: TableProps) => {
   const tableMeta = table.options.meta;
@@ -220,9 +223,12 @@ export const Table = ({
           return (
             <tr
               key={row.id}
-              className="group/row h-6 align-middle outline-none md:h-10"
+              className="group/row align-middle outline-none"
               tabIndex={-1}
               onDoubleClick={() => setPanelObject?.({ uid, objectType })}
+              style={{
+                height: `${virtualRow.size}px`,
+              }}
             >
               {row.getVisibleCells().map((cell) => (
                 <TableData
@@ -235,10 +241,18 @@ export const Table = ({
             </tr>
           );
         })}
-
         {paddingBottom > 0 && (
           <tr>
             <td style={{ height: `${paddingBottom}px` }} />
+          </tr>
+        )}
+        {totalRows > 0 && isLoadingMore && (
+          <tr>
+            <td colSpan={headers.length}>
+              <div className="sticky left-0 right-0 bottom-2 flex h-32 w-screen items-center justify-center">
+                <Spinner className="-z-10 h-8 w-8 animate-spin md:h-10 md:w-10" />
+              </div>
+            </td>
           </tr>
         )}
       </tbody>

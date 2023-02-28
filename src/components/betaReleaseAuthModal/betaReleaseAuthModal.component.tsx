@@ -1,5 +1,5 @@
-import { useApolloClient } from "@apollo/client";
 import { Dialog } from "@headlessui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { usePlausible } from "next-plausible";
 import React, { useEffect, useState } from "react";
@@ -14,7 +14,6 @@ import {
   SAAS_API_KEY,
 } from "src/constants/skylark";
 import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
-import { createBasicSkylarkClient } from "src/lib/graphql/skylark/client";
 
 interface AddAuthTokenModalProps {
   isOpen: boolean;
@@ -25,16 +24,26 @@ export const AddAuthTokenModal = ({
   isOpen,
   setIsOpen,
 }: AddAuthTokenModalProps) => {
-  const skylarkClient = useApolloClient();
+  const client = useQueryClient();
   const plausible = usePlausible();
 
-  const { connected, loading, invalidUri, invalidToken, setValidatorClient } =
+  const { isConnected, isLoading, invalidUri, invalidToken, setCreds } =
     useConnectedToSkylark();
 
   const [inputUri, setInputUri] = useState<string | null>(null);
   const [inputToken, setInputToken] = useState<string | null>(null);
   const [debouncedUri] = useDebounce(inputUri, 750);
   const [debouncedToken] = useDebounce(inputToken, 750);
+
+  useEffect(() => {
+    if (
+      (!isLoading && !isConnected) ||
+      !localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) ||
+      !localStorage.getItem(LOCAL_STORAGE.betaAuth.token)
+    ) {
+      setIsOpen(true);
+    }
+  }, [isLoading, isConnected, setIsOpen]);
 
   useEffect(() => {
     const { origin } = window.location;
@@ -64,19 +73,17 @@ export const AddAuthTokenModal = ({
 
   useEffect(() => {
     if (debouncedUri) {
-      const validatingRequestClient = createBasicSkylarkClient(
-        debouncedUri,
-        debouncedToken || "",
-      );
-      setValidatorClient(validatingRequestClient);
+      setCreds({ uri: debouncedUri, token: debouncedToken });
       return;
     }
-    setValidatorClient(undefined);
-  }, [debouncedUri, debouncedToken, setValidatorClient]);
+    setCreds({ uri: null, token: null });
+  }, [debouncedUri, debouncedToken, setCreds]);
 
   // Show loading state before the debounced values have been updated
   const requestLoading =
-    loading || inputUri !== debouncedUri || inputToken !== debouncedToken;
+    (debouncedUri && debouncedToken && isLoading) ||
+    inputUri !== debouncedUri ||
+    inputToken !== debouncedToken;
 
   const updateLocalStorage = async () => {
     if (debouncedUri && debouncedToken) {
@@ -86,17 +93,20 @@ export const AddAuthTokenModal = ({
       // storage events are not picked up in the same tab, so dispatch it for the current one
       window.dispatchEvent(new Event("storage"));
 
-      await skylarkClient.refetchQueries({
-        include: "all",
-      });
+      client.refetchQueries();
+
       setIsOpen(false);
     }
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
   };
 
   return (
     <Dialog
       open={isOpen}
-      onClose={() => setIsOpen(false)}
+      onClose={closeModal}
       className="font-body relative z-50"
     >
       <div
@@ -110,7 +120,7 @@ export const AddAuthTokenModal = ({
           <button
             aria-label="close"
             className="absolute top-4 right-4 sm:top-9 sm:right-8"
-            onClick={() => setIsOpen(false)}
+            onClick={closeModal}
             tabIndex={-1}
           >
             <GrClose className="text-xl" />
@@ -159,7 +169,7 @@ export const AddAuthTokenModal = ({
           <div className="flex w-full flex-row justify-end">
             <Button
               variant="primary"
-              disabled={!connected || !debouncedUri || !debouncedToken}
+              disabled={!isConnected || !debouncedUri || !debouncedToken}
               onClick={() => updateLocalStorage()}
               loading={requestLoading}
               type="button"

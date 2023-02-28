@@ -90,38 +90,36 @@ export const createOrUpdateFlatfileTemplate = async (
   name: string,
   schema: FlatfileTemplate,
 ) => {
-  const { data } = await client.query<FlatfileGetTemplatesResponse>({
-    query: GET_TEMPLATES,
-    variables: {
+  const getTemplatesResponse =
+    await client.request<FlatfileGetTemplatesResponse>(GET_TEMPLATES, {
       searchQuery: name,
-    },
-  });
+    });
 
-  const foundTemplates = data.getSchemas.data;
+  const foundTemplates = getTemplatesResponse.getSchemas.data;
 
   if (foundTemplates.length > 0) {
     const [existingTemplate] = foundTemplates;
 
-    const updateResponse = await client.mutate<FlatfileUpdateTemplateResponse>({
-      mutation: UPDATE_TEMPLATE,
-      variables: {
+    const updateResponse = await client.request<FlatfileUpdateTemplateResponse>(
+      UPDATE_TEMPLATE,
+      {
         schemaId: existingTemplate.id,
         schema: {
           schema,
         },
       },
-    });
-    return updateResponse.data?.updateSchema;
+    );
+    return updateResponse.updateSchema;
   }
 
-  const createResponse = await client.mutate<FlatfileCreateTemplateResponse>({
-    mutation: CREATE_TEMPLATE,
-    variables: {
+  const createResponse = await client.request<FlatfileCreateTemplateResponse>(
+    CREATE_TEMPLATE,
+    {
       name,
       schema: {
         schema,
       },
     },
-  });
-  return createResponse.data?.createSchema;
+  );
+  return createResponse.createSchema;
 };
