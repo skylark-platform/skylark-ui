@@ -7,6 +7,7 @@ import { Trash } from "src/components/icons";
 import { Pill } from "src/components/pill";
 import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
 import { ParsedSkylarkObjectContentObject } from "src/interfaces/skylark";
+import { getPrimaryKey } from "src/lib/utils";
 
 interface PanelContentProps {
   objects: ParsedSkylarkObjectContentObject[];
@@ -143,10 +144,8 @@ export const PanelContent = ({
         {objects.map((item, index) => {
           const { object, config, position } = item;
 
-          const primaryKey = [
-            config.primaryField || "",
-            ...DISPLAY_NAME_PRIORITY,
-          ].find((field) => !!object[field]);
+          const primaryKey = getPrimaryKey(item);
+
           return (
             <Reorder.Item
               key={`panel-content-item-${object.uid}`}

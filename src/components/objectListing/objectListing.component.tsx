@@ -24,8 +24,9 @@ import {
   ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
   ParsedSkylarkObject,
+  ParsedSkylarkObjectContentObject,
 } from "src/interfaces/skylark";
-import { formatObjectField } from "src/lib/utils";
+import { formatObjectField, getPrimaryKey } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
 import { RowActions } from "./rowActions";
@@ -43,7 +44,7 @@ export interface ObjectListProps {
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
   onInfoClick?: (obj: { uid: string; objectType: string }) => void;
-  draggedObject: any;
+  draggedObject: ParsedSkylarkObjectContentObject | undefined;
 }
 
 const createColumns = (
@@ -334,13 +335,7 @@ export const ObjectList = ({
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
 
-  let primaryKey = undefined;
-  if (draggedObject) {
-    primaryKey = [
-      draggedObject.config.primaryField || "",
-      ...DISPLAY_NAME_PRIORITY,
-    ].find((field) => !!draggedObject.object[field]);
-  }
+  const primaryKey = draggedObject && getPrimaryKey(draggedObject);
 
   return (
     <div

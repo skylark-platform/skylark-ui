@@ -28,7 +28,7 @@ interface PanelProps {
   uid: string;
   draggedObject?: ParsedSkylarkObjectContentObject;
   newObject?: ParsedSkylarkObjectContentObject;
-  setObject: Dispatch<
+  setObject?: Dispatch<
     SetStateAction<ParsedSkylarkObjectContentObject | undefined>
   >;
 }
@@ -98,7 +98,7 @@ export const Panel = ({
         },
       ]);
       setEditMode(true);
-      setObject(undefined);
+      setObject && setObject(undefined);
     }
   }, [contentObjects, data?.content?.objects, newObject, setObject]);
 
