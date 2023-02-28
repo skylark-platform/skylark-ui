@@ -1,6 +1,6 @@
+import GQLSkylarkSchemaQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/schema.json";
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import { getObjectOperations } from "src/lib/skylark/objects";
-import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
 
 export const episodeObjectOperations = getObjectOperations(
   "Episode",

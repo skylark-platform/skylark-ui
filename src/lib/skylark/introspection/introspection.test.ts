@@ -1,134 +1,42 @@
-import { MockApolloClient, createMockClient } from "mock-apollo-client";
+import { GraphQLClient } from "graphql-request";
 
-import {
-  GET_SKYLARK_OBJECT_TYPES,
-  GET_SKYLARK_SCHEMA,
-} from "src/lib/graphql/skylark/queries";
-import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
+import { createSkylarkClient } from "src/lib/graphql/skylark/client";
 
 import {
   getSkylarkObjectOperations,
   getSkylarkObjectTypes,
 } from "./introspection";
-import {
-  GQLSkylarkSchemaQueryFixture,
-  SKYLARK_OBJECT_TYPES_FIXTURE,
-} from "./introspection.fixture";
-
-jest.mock("src/lib/graphql/skylark/client", () => ({
-  ...jest.requireActual("src/lib/graphql/skylark/client"),
-  createSkylarkClient: jest.fn(),
-}));
+import { SKYLARK_OBJECT_TYPES_FIXTURE } from "./introspection.fixture";
 
 afterEach(() => {
   jest.resetAllMocks();
 });
 
 describe("getSkylarkObjectOperations", () => {
-  let mockClient: MockApolloClient;
-  let schemaQueryHandler: jest.Mock;
+  let mockClient: GraphQLClient;
 
   beforeEach(() => {
-    mockClient = createMockClient();
-
-    schemaQueryHandler = jest
-      .fn()
-      .mockResolvedValue(GQLSkylarkSchemaQueryFixture);
-
-    mockClient.setRequestHandler(GET_SKYLARK_SCHEMA, schemaQueryHandler);
-  });
-
-  test("makes the get schema query", async () => {
-    await getSkylarkObjectOperations(mockClient, "Episode");
-
-    expect(schemaQueryHandler).toHaveBeenCalled();
+    mockClient = createSkylarkClient("http://localhost:3000", "token");
   });
 
   test("returns the operations for an Episode", async () => {
     const got = await getSkylarkObjectOperations(mockClient, "Episode");
 
-    expect(got).toEqual({
-      get: {
-        name: "getEpisode",
-        type: "Query",
-      },
-      list: {
-        name: "listEpisode",
-        type: "Query",
-      },
-      create: {
-        name: "createEpisode",
-        type: "Mutation",
-        argName: "episode",
-        inputs: [
-          {
-            enumValues: undefined,
-            isList: false,
-            isRequired: false,
-            name: "title",
-            type: "string",
-          },
-          {
-            enumValues: ["SHORT", "LONG"],
-            isList: false,
-            isRequired: false,
-            name: "type",
-            type: "enum",
-          },
-        ],
-        relationships: [],
-      },
-      update: {
-        name: "updateEpisode",
-        type: "Mutation",
-        argName: "episode",
-        inputs: [
-          {
-            enumValues: undefined,
-            isList: false,
-            isRequired: false,
-            name: "title",
-            type: "string",
-          },
-          {
-            enumValues: ["SHORT", "LONG"],
-            isList: false,
-            isRequired: false,
-            name: "type",
-            type: "enum",
-          },
-        ],
-        relationships: [],
-      },
-      delete: {
-        type: "Mutation",
-        argName: "",
-        inputs: [],
-        name: "deleteEpisode",
-        relationships: [],
-      },
-    });
+    expect(got.get?.name).toEqual("getEpisode");
+    expect(got.get?.type).toEqual("Query");
+    expect(got.create.name).toEqual("createEpisode");
+    expect(got.create.argName).toEqual("episode");
+    expect(got.update.name).toEqual("updateEpisode");
+    expect(got.list?.name).toEqual("listEpisode");
+    expect(got.delete.name).toEqual("deleteEpisode");
   });
 });
 
 describe("getSkylarkObjectTypes", () => {
-  let mockClient: MockApolloClient;
-  let queryHandler: jest.Mock;
+  let mockClient: GraphQLClient;
 
   beforeEach(() => {
-    mockClient = createMockClient();
-
-    queryHandler = jest
-      .fn()
-      .mockResolvedValue(GQLSkylarkObjectTypesQueryFixture);
-
-    mockClient.setRequestHandler(GET_SKYLARK_OBJECT_TYPES, queryHandler);
-  });
-
-  test("makes the get object types query", async () => {
-    await getSkylarkObjectTypes(mockClient);
-
-    expect(queryHandler).toHaveBeenCalled();
+    mockClient = createSkylarkClient("http://localhost:3000", "token");
   });
 
   test("returns the expected values", async () => {

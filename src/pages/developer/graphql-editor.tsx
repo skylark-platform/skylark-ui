@@ -27,7 +27,7 @@ const getEnvironmentFromLocalStorage = () => {
 };
 
 export default function GraphQLQueryEditor() {
-  const { connected } = useConnectedToSkylark();
+  const { isConnected } = useConnectedToSkylark();
   const [{ uri, token }, setEnvironment] = useState({ uri: "", token: "" });
   const [defaultQuery, setDefaultQuery] = useState(DEFAULT_QUERY);
 
@@ -68,7 +68,7 @@ export default function GraphQLQueryEditor() {
 
   return (
     <div className="pt-nav h-full w-full">
-      {connected && uri && token && (
+      {isConnected && uri && token && (
         <DynamicGraphiQLEditor
           uri={uri}
           token={token}

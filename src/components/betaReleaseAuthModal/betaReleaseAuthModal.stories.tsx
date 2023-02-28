@@ -14,4 +14,5 @@ const Template: ComponentStory<typeof AddAuthTokenModal> = (args) => (
 export const Default = Template.bind({});
 Default.args = {
   isOpen: true,
+  setIsOpen: () => "",
 };

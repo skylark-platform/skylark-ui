@@ -1,5 +1,5 @@
+import GQLSkylarkObjectTypesQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/objectTypes.json";
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
-import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
 
 export const SKYLARK_OBJECT_FIELDS_FIXTURE = [
   "uid",

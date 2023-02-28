@@ -16,8 +16,8 @@ export const Navigation = () => {
   const [open, setOpen] = useState(false);
 
   const {
-    connected,
-    loading,
+    isConnected,
+    isLoading,
     currentCreds: { uri },
   } = useConnectedToSkylark();
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
@@ -55,10 +55,10 @@ export const Navigation = () => {
         <div className="z-50 flex flex-grow flex-row items-center justify-end space-x-1 md:flex-grow-0 md:space-x-5">
           <Button
             variant="outline"
-            success={connected}
+            success={isConnected}
             onClick={() => setAuthModalOpen(true)}
           >
-            {connected ? "Connected" : "Connect to Skylark"}
+            {isConnected ? "Connected" : "Connect to Skylark"}
           </Button>
           <div className="hidden items-center text-sm md:flex">
             <p className="mr-3 hidden font-semibold md:inline lg:mr-4">
@@ -75,7 +75,7 @@ export const Navigation = () => {
       </div>
       {/* This should be removed after beta when we implement real authentication */}
       <AddAuthTokenModal
-        isOpen={isAuthModalOpen || (!connected && !loading)}
+        isOpen={isAuthModalOpen || (!isConnected && !isLoading)}
         setIsOpen={setAuthModalOpen}
       />
     </>

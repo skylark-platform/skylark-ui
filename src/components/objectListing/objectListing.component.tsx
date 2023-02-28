@@ -21,7 +21,6 @@ import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
-  SkylarkGraphQLObjectImage,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
@@ -191,13 +190,13 @@ export const ObjectList = ({
   const {
     data: searchData,
     error: searchError,
-    loading: searchLoading,
+    isLoading: searchLoading,
     properties,
     query: graphqlSearchQuery,
     variables: graphqlSearchQueryVariables,
-    moreResultsAvailable,
-    fetchingMore,
-    fetchMoreResults,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
   } = useSearch(searchQuery, searchFilters);
 
   // Sorts objects using the preference array above, any others are added to the end randomly
@@ -262,20 +261,20 @@ export const ObjectList = ({
         if (
           searchData.length > 0 &&
           scrollHeight - scrollTop - clientHeight < 500 &&
-          moreResultsAvailable &&
+          hasNextPage &&
           !searchLoading &&
-          !fetchingMore
+          !isFetchingNextPage
         ) {
-          fetchMoreResults();
+          fetchNextPage();
         }
       }
     },
     [
       searchData.length,
-      moreResultsAvailable,
+      hasNextPage,
       searchLoading,
-      fetchingMore,
-      fetchMoreResults,
+      isFetchingNextPage,
+      fetchNextPage,
     ],
   );
 
@@ -327,6 +326,7 @@ export const ObjectList = ({
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
     size: rows.length,
+    estimateSize: useCallback(() => 40, []),
     overscan: 40,
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
@@ -394,13 +394,9 @@ export const ObjectList = ({
             virtualRows={virtualRows}
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
+            isLoadingMore={hasNextPage || isFetchingNextPage}
             setPanelObject={onInfoClick}
           />
-        )}
-        {!searchLoading && searchData && fetchingMore && (
-          <div className="sticky left-0 right-0 bottom-2 flex items-center justify-center">
-            <Spinner className="-z-10 h-8 w-8 animate-spin md:h-10 md:w-10" />
-          </div>
         )}
         {(searchLoading || searchData) && (
           <div className="items-top justify-left flex h-96 w-full flex-col space-y-2 text-sm text-manatee-600 md:text-base">
@@ -416,9 +412,6 @@ export const ObjectList = ({
           </div>
         )}
       </div>
-      {searchError && (
-        <p className="text-xs text-error">{`Errors hit when requesting data: ${searchError.graphQLErrors.length}. See console.`}</p>
-      )}
     </div>
   );
 };
