@@ -22,10 +22,12 @@ WithFiltersOpen.play = async ({ canvasElement }) => {
 
   const filtersButton = canvas.getByRole("button", { name: /Filters/i });
 
-  await canvas.findAllByText(
-    GQLGameOfThronesSearchResults.data.search.objects[0]
-      .__Episode__title as string,
+  // Not all of the UID will be shown so just search for the first 10 characters
+  const uidRegex = new RegExp(
+    GQLGameOfThronesSearchResults.data.search.objects[0].uid.substring(0, 10),
+    "i",
   );
+  await canvas.findAllByText(uidRegex);
 
   await userEvent.click(filtersButton);
 };

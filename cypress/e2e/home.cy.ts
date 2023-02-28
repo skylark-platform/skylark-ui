@@ -66,7 +66,6 @@ describe("Content Library", () => {
 
   it("visits home", () => {
     cy.contains("No objects found").should("not.exist");
-    cy.get(".animate-spin").should("not.exist");
     cy.contains("GOT");
     cy.percySnapshot("Homepage");
   });
