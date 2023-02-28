@@ -26,12 +26,10 @@ export interface SearchFilters {
   objectTypes: string[] | null;
 }
 
-export const SEARCH_PAGE_SIZE = 20;
+export const SEARCH_PAGE_SIZE = 50;
 
 export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta();
-
-  const [allResultsFetched, setAllResultsFetched] = useState(false);
 
   const query = useMemo(
     () =>
@@ -53,12 +51,13 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
           ...variables,
           offset,
         }),
-      getNextPageParam: (_, pages): number | undefined => {
+      getNextPageParam: (lastPage, pages): number | undefined => {
         const totalNumObjects = pages.flatMap(
           (page) => page.search.objects,
         ).length;
         const shouldFetchMore =
-          !allResultsFetched && totalNumObjects % SEARCH_PAGE_SIZE === 0;
+          totalNumObjects % SEARCH_PAGE_SIZE === 0 &&
+          lastPage.search.objects.length > 0;
         return shouldFetchMore ? totalNumObjects : undefined;
       },
     });
@@ -92,10 +91,6 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
 
     return parsedObjects;
   }, [searchResponse?.pages]);
-
-  useEffect(() => {
-    setAllResultsFetched(false);
-  }, [query]);
 
   return {
     ...rest,
