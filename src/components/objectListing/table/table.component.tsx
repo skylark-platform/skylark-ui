@@ -238,6 +238,11 @@ export const Table = ({
             </tr>
           );
         })}
+        {paddingBottom > 0 && (
+          <tr>
+            <td style={{ height: `${paddingBottom}px` }} />
+          </tr>
+        )}
         {totalRows > 0 && isLoadingMore && (
           <tr>
             <td colSpan={headers.length}>
@@ -245,11 +250,6 @@ export const Table = ({
                 <Spinner className="-z-10 h-8 w-8 animate-spin md:h-10 md:w-10" />
               </div>
             </td>
-          </tr>
-        )}
-        {paddingBottom > 0 && (
-          <tr>
-            <td style={{ height: `${paddingBottom}px` }} />
           </tr>
         )}
       </tbody>
