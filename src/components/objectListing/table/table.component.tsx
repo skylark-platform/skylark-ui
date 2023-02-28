@@ -223,9 +223,12 @@ export const Table = ({
           return (
             <tr
               key={row.id}
-              className="group/row h-6 align-middle outline-none md:h-10"
+              className="group/row align-middle outline-none"
               tabIndex={-1}
               onDoubleClick={() => setPanelObject?.({ uid, objectType })}
+              style={{
+                height: `${virtualRow.size}px`,
+              }}
             >
               {row.getVisibleCells().map((cell) => (
                 <TableData

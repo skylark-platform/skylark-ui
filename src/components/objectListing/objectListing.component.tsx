@@ -326,6 +326,7 @@ export const ObjectList = ({
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
     size: rows.length,
+    estimateSize: useCallback(() => 40, []),
     overscan: 40,
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
