@@ -21,7 +21,6 @@ export interface TableProps {
   withCheckbox?: boolean;
   virtualRows: VirtualItem[];
   totalRows: number;
-  draggedObject: any;
   ableToDrag: boolean;
   setPanelObject?: (obj: { uid: string; objectType: string }) => void;
 }
@@ -234,7 +233,6 @@ export const Table = ({
   withCheckbox = false,
   virtualRows,
   totalRows,
-  draggedObject,
   setPanelObject,
   ableToDrag,
 }: TableProps) => {
@@ -246,10 +244,8 @@ export const Table = ({
       : 0;
 
   const { rows } = table.getRowModel();
-
-  console.log("here ###", draggedObject);
-
   const headers = table.getHeaderGroups()[0].headers;
+
   return (
     <table className="relative w-full bg-white">
       <thead>

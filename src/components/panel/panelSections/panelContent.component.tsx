@@ -144,7 +144,6 @@ export const PanelContent = ({
         {objects.map((item, index) => {
           const { object, config, position } = item;
 
-          // TODO use this on overlay
           const primaryKey = [
             config.primaryField || "",
             ...DISPLAY_NAME_PRIORITY,

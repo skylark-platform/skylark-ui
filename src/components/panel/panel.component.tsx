@@ -28,7 +28,9 @@ interface PanelProps {
   uid: string;
   draggedObject?: ParsedSkylarkObjectContentObject;
   newObject?: ParsedSkylarkObjectContentObject;
-  setObject: Dispatch<SetStateAction<undefined>>;
+  setObject: Dispatch<
+    SetStateAction<ParsedSkylarkObjectContentObject | undefined>
+  >;
 }
 
 enum PanelTab {
@@ -47,15 +49,6 @@ const getTitle = (
     .map((key) => object[key as string]);
   return title as string;
 };
-
-function parse(obj: any) {
-  return {
-    config: obj.config,
-    object: obj.metadata,
-    objectType: obj.objectType,
-    position: 6, // TODO
-  };
-}
 
 export const Panel = ({
   closePanel,
@@ -121,9 +114,6 @@ export const Panel = ({
   const deleteObjectWrapper = () => {
     deleteObjectMutation({ variables: { uid } });
   };
-
-  console.log("$$$", contentObjects);
-  console.log("$$$ %%", data?.content?.objects);
 
   const saveActiveTabChanges = () => {
     if (

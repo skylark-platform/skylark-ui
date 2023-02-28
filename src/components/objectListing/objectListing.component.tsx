@@ -287,8 +287,6 @@ export const ObjectList = ({
     fetchMoreOnBottomReached(tableContainerRef.current);
   }, [fetchMoreOnBottomReached]);
 
-  console.log("formattedSearchData", formattedSearchData);
-
   const table = useReactTable({
     debugAll: false,
     data: formattedSearchData || [],
@@ -338,6 +336,12 @@ export const ObjectList = ({
 
   console.log("rowVirtualizer", rowVirtualizer);
 
+  /*
+  const primaryKey = [
+    config.primaryField || "",
+    ...DISPLAY_NAME_PRIORITY,
+  ].find((field) => !!object[field]);
+*/
   return (
     <div
       className={clsx(
@@ -414,7 +418,6 @@ export const ObjectList = ({
         {!searchLoading && searchData && (
           <Table
             table={table}
-            draggedObject={draggedObject}
             virtualRows={virtualRows}
             totalRows={totalSize}
             withCheckbox={withObjectSelect}

@@ -10,15 +10,22 @@ import React, { useEffect, useState, useRef } from "react";
 
 import { ObjectList } from "src/components/objectListing";
 import { Panel } from "src/components/panel";
-import { ParsedSkylarkObjectContentObject } from "src/interfaces/skylark";
+import {
+  ParsedSkylarkObject,
+  ParsedSkylarkObjectContentObject,
+} from "src/interfaces/skylark";
 
 export const ContentLibrary = () => {
   const [activePanelObject, setActivePanelObject] = useState<{
     objectType: string;
     uid: string;
   } | null>(null);
-  const [draggedObject, setDraggedObject] = useState(undefined);
-  const [newObject, setObject] = useState(undefined);
+  const [draggedObject, setDraggedObject] = useState<
+    ParsedSkylarkObjectContentObject | undefined
+  >(undefined);
+  const [newObject, setObject] = useState<
+    ParsedSkylarkObjectContentObject | undefined
+  >(undefined);
 
   const [windowSize, setWindowSize] = useState(0);
   const objectListingWidth = useMotionValue<number | undefined>(undefined);
@@ -119,24 +126,27 @@ export const ContentLibrary = () => {
     </DndContext>
   );
 
-  // TODO review this parser
-  function parse(obj: any): ParsedSkylarkObjectContentObject {
+  function parseSkylarkObjectContent(
+    skylarkObject: ParsedSkylarkObject,
+  ): ParsedSkylarkObjectContentObject {
     return {
-      config: obj.config,
-      object: obj.metadata,
-      objectType: obj.objectType,
+      config: skylarkObject.config,
+      object: skylarkObject.metadata,
+      objectType: skylarkObject.objectType,
       position: 1,
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function handleDragStart(event: any) {
-    console.log("start", event.active.data.current.object);
-    setDraggedObject(parse(event.active.data.current.object));
+    setDraggedObject(
+      parseSkylarkObjectContent(event.active.data.current.object),
+    );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function handleDragEnd(event: any) {
     if (event.over && event.over.id === "droppable") {
-      console.log("happy", event);
       setObject(draggedObject);
     }
     setDraggedObject(undefined);

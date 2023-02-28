@@ -16,7 +16,7 @@ export const DisplayNameTableCell = ({
   className,
   rowGroupClassName,
   children,
-}: DisplayNameTableCellProps & HTMLElement) => {
+}: DisplayNameTableCellProps) => {
   return (
     <td key={id} className={`${className} overflow-visible`}>
       <div
