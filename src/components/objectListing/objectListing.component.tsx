@@ -44,7 +44,7 @@ export interface ObjectListProps {
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
   onInfoClick?: (obj: { uid: string; objectType: string }) => void;
-  draggedObject: ParsedSkylarkObjectContentObject | undefined;
+  draggedObject?: ParsedSkylarkObjectContentObject | undefined;
 }
 
 const createColumns = (
