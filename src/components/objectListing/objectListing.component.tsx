@@ -396,24 +396,6 @@ export const ObjectList = ({
         data-testid="table-container"
         onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
       >
-        <DragOverlay modifiers={[snapCenterToCursor]}>
-          {draggedObject ? (
-            <div className="flex max-w-[350px] items-center space-x-2 border border-manatee-400 bg-white p-2">
-              <Pill
-                label={draggedObject.object.__typename as string}
-                bgColor={draggedObject.config.colour}
-                className="w-20"
-              />
-              <div className="flex flex-1">
-                <p>
-                  {primaryKey
-                    ? draggedObject.object[primaryKey]
-                    : draggedObject.object.uid}
-                </p>
-              </div>
-            </div>
-          ) : null}
-        </DragOverlay>
         {!searchLoading && searchData && (
           <Table
             table={table}

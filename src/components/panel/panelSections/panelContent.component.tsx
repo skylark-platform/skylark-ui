@@ -70,10 +70,9 @@ export const PanelContentItemOrderInput = ({
       }}
       className={clsx(
         "flex h-6 min-w-6 items-center justify-center rounded-full px-1 pb-0.5 text-center transition-colors",
-        !hasMoved || disabled
-          ? "bg-brand-primary text-white"
-          : "bg-warning text-warning-content",
-        newObject && "bg-green-400",
+        (!hasMoved || disabled) && "bg-brand-primary text-white",
+        !newObject && hasMoved && "bg-warning text-warning-content",
+        newObject && "bg-success",
       )}
       onChange={(e) => onChange(e.target.value)}
       onBlur={onBlurWrapper}
@@ -130,13 +129,6 @@ export const PanelContent = ({
 
   return (
     <>
-      {inEditMode && (
-        <span className="mt-16 text-center text-sm text-manatee-600">
-          {
-            "Drag an object from the Content Library to add to this Set's content"
-          }
-        </span>
-      )}
       <Reorder.Group
         axis="y"
         values={objects}
@@ -206,6 +198,13 @@ export const PanelContent = ({
           );
         })}
       </Reorder.Group>
+      {inEditMode && (
+        <span className="py-4 text-center text-sm text-manatee-600">
+          {
+            "Drag an object from the Content Library to add to this Set's content"
+          }
+        </span>
+      )}
     </>
   );
 };

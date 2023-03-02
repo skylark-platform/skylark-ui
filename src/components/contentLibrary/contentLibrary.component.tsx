@@ -3,13 +3,17 @@ import {
   useSensor,
   useSensors,
   PointerSensor,
+  DragOverlay,
+  getClientRect,
 } from "@dnd-kit/core";
+import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import clsx from "clsx";
 import { m, useMotionValue } from "framer-motion";
 import React, { useEffect, useState, useRef } from "react";
 
 import { ObjectList } from "src/components/objectListing";
 import { Panel } from "src/components/panel";
+import { Pill } from "src/components/pill";
 import { DROPPABLE_ID } from "src/constants/skylark";
 import {
   ParsedSkylarkObject,
@@ -60,7 +64,7 @@ export const ContentLibrary = () => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        delay: 250,
+        delay: 100,
         tolerance: 5,
       },
     }),
@@ -71,7 +75,33 @@ export const ContentLibrary = () => {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       sensors={sensors}
+      measuring={{
+        draggable: {
+          measure: (element) => {
+            console.log("$$ #", element);
+            console.log("$$", getClientRect(element));
+            return {
+              ...getClientRect(element),
+              left: 0,
+            };
+          },
+        },
+      }}
     >
+      <DragOverlay modifiers={[snapCenterToCursor]} zIndex={100}>
+        {draggedObject ? (
+          <div className="flex max-w-[350px] items-center space-x-2 border border-manatee-400 bg-white p-2">
+            <Pill
+              label={draggedObject.object.__typename as string}
+              bgColor={draggedObject.config.colour}
+              className="w-20"
+            />
+            <div className="flex flex-1">
+              <p>{"test this"}</p>
+            </div>
+          </div>
+        ) : null}
+      </DragOverlay>
       <div
         className="flex h-screen flex-row"
         style={{
