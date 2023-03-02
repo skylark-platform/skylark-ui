@@ -385,9 +385,10 @@ export const ObjectList = ({
         )}
       </div>
       <div
-        className={`${
-          isDragging ? "overflow-hidden" : "overflow-x-auto"
-        } relative mb-6 flex w-full flex-auto flex-grow flex-col overscroll-none`}
+        className={clsx(
+          isDragging ? "overflow-hidden" : "overflow-x-auto",
+          "relative mb-6 flex w-full flex-auto flex-grow flex-col overscroll-none",
+        )}
         ref={tableContainerRef}
         data-testid="table-container"
         onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}

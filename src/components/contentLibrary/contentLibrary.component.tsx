@@ -89,7 +89,11 @@ export const ContentLibrary = () => {
         },
       }}
     >
-      <DragOverlay modifiers={[snapCenterToCursor]} zIndex={100}>
+      <DragOverlay
+        modifiers={[snapCenterToCursor]}
+        zIndex={100}
+        dropAnimation={null}
+      >
         {draggedObject ? (
           <div className="flex max-w-[350px] items-center space-x-2 border border-manatee-400 bg-white p-2">
             <Pill
