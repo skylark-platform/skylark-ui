@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client";
 import { ITheme } from "@flatfile/sdk";
 import dayjs from "dayjs";
+import { GraphQLClient } from "graphql-request";
 import { EnumType, jsonToGraphQLQuery } from "json-to-graphql-query";
 
 import {
@@ -11,7 +11,6 @@ import {
   SkylarkImportedObject,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
-import { SkylarkClient } from "src/lib/graphql/skylark/client";
 import { getSkylarkObjectOperations } from "src/lib/skylark/introspection/introspection";
 
 const chunkArray = <T>(arr: T[], chunkSize: number) => {
@@ -49,7 +48,7 @@ export const openFlatfileImportClient = async (
 };
 
 export const createFlatfileObjectsInSkylark = async (
-  client: SkylarkClient,
+  client: GraphQLClient,
   objectType: string,
   flatfileBatchId: string,
   allFlatfileRows: FlatfileRow[],
@@ -136,11 +135,12 @@ export const createFlatfileObjectsInSkylark = async (
       const graphQLMutation = jsonToGraphQLQuery(mutation, { pretty: true });
 
       try {
-        const response = await client.mutate<FlatfileObjectsCreatedInSkylark>({
-          mutation: gql(graphQLMutation),
-        });
+        const responseData =
+          await client.request<FlatfileObjectsCreatedInSkylark>(
+            graphQLMutation,
+          );
         const data = Object.values(
-          response.data as FlatfileObjectsCreatedInSkylark,
+          responseData as FlatfileObjectsCreatedInSkylark,
         );
         return { error: undefined, data };
       } catch (err) {

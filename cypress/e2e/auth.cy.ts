@@ -2,6 +2,13 @@ import { hasOperationName } from "../support/utils/graphqlTestUtils";
 
 describe("Auth", () => {
   beforeEach(() => {
+    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
+      if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
+        req.reply({
+          statusCode: 401,
+        });
+      }
+    });
     cy.visit("/");
   });
 
@@ -20,14 +27,6 @@ describe("Auth", () => {
   });
 
   it("connects to Skylark with correct credentials", () => {
-    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
-        req.reply({
-          fixture: "./skylark/queries/introspection/objectTypes.json",
-        });
-      }
-    });
-
     cy.get('*[id^="headlessui-dialog-panel-"]').within(() => {
       cy.contains("Connect to Skylark");
       const uriInput = cy.get('input[name="GraphQL URL"]');
@@ -36,6 +35,14 @@ describe("Auth", () => {
       tokenInput.clear();
       uriInput.type(Cypress.env("skylark_graphql_uri"));
       tokenInput.type("access-token");
+
+      cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
+        if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
+          req.reply({
+            fixture: "./skylark/queries/introspection/objectTypes.json",
+          });
+        }
+      });
       cy.contains("Validating").should("not.exist");
       cy.get("button").should("be.enabled");
       cy.get('input[name="GraphQL URL"]').should(

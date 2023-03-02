@@ -6,12 +6,12 @@ export const getFlatfileFinalDatabaseView = async (
   client: FlatfileClient,
   batchId: string,
 ) => {
-  const { data } = await client.query<FlatfileGetFinalDatabaseViewResponse>({
-    query: GET_FINAL_DATABASE_VIEW,
-    variables: {
+  const data = await client.request<FlatfileGetFinalDatabaseViewResponse>(
+    GET_FINAL_DATABASE_VIEW,
+    {
       batchId,
     },
-  });
+  );
 
   return data.getFinalDatabaseView;
 };

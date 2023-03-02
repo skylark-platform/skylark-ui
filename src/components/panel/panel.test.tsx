@@ -1,100 +1,28 @@
-import { MockedProvider, MockedResponse } from "@apollo/client/testing";
+import { graphql } from "msw";
+
+import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
+import GQLSkylarkGetObjectImageQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gotImage.json";
+import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
+import { server } from "src/__tests__/mocks/server";
 import {
   render,
   screen,
   waitFor,
   fireEvent,
   within,
-} from "@testing-library/react";
-import { DocumentNode } from "graphql";
-
-import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynamicMutations";
-import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
-import {
-  GET_SKYLARK_OBJECT_TYPES,
-  GET_SKYLARK_SCHEMA,
-} from "src/lib/graphql/skylark/queries";
-import { parseObjectContent } from "src/lib/skylark/parsers";
-import GQLSkylarkGetObjectQueryFixture from "src/tests/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
-import GQLSkylarkGetObjectImageQueryFixture from "src/tests/fixtures/skylark/queries/getObject/gotImage.json";
-import GQLSkylarkGetSetWithContentQueryFixture from "src/tests/fixtures/skylark/queries/getObject/setWithContent.json";
-import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
-import {
-  movieObjectOperations,
-  imageObjectOperations,
-  setObjectOperations,
-  seasonObjectOperations,
-} from "src/tests/utils/objectOperations";
+} from "src/__tests__/utils/test-utils";
+import { QueryErrorMessages } from "src/enums/graphql";
+import { createGetObjectQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { Panel } from "./panel.component";
 
-const mocks = [
-  {
-    request: {
-      query: createGetObjectQuery(movieObjectOperations, []) as DocumentNode,
-      variables: {
-        ignoreAvailability: true,
-        uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
-      },
-    },
-    result: GQLSkylarkGetObjectQueryFixture,
-  },
-  {
-    request: {
-      query: createGetObjectQuery(imageObjectOperations, []) as DocumentNode,
-      variables: {
-        ignoreAvailability: true,
-        uid: GQLSkylarkGetObjectImageQueryFixture.data.getObject.uid,
-      },
-    },
-    result: GQLSkylarkGetObjectImageQueryFixture,
-  },
-  {
-    request: {
-      query: createGetObjectQuery(setObjectOperations, [
-        seasonObjectOperations,
-        setObjectOperations,
-      ]) as DocumentNode,
-      variables: {
-        ignoreAvailability: true,
-        uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
-      },
-    },
-    result: GQLSkylarkGetSetWithContentQueryFixture,
-  },
-  {
-    request: {
-      query: GET_SKYLARK_SCHEMA,
-    },
-    result: GQLSkylarkSchemaQueryFixture,
-  },
-  {
-    request: {
-      query: GET_SKYLARK_OBJECT_TYPES,
-    },
-    result: {
-      data: {
-        __type: {
-          possibleTypes: [
-            { name: "Season", __typename: "__Type" },
-            { name: "Set", __typename: "__Type" },
-          ],
-          __typename: "__Type",
-        },
-      },
-    },
-  },
-];
-
 test("renders the panel in the default view", async () => {
   render(
-    <MockedProvider mocks={mocks} addTypename={false}>
-      <Panel
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        objectType={"Movie"}
-        closePanel={jest.fn()}
-      />
-    </MockedProvider>,
+    <Panel
+      uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
+      objectType={"Movie"}
+      closePanel={jest.fn()}
+    />,
   );
 
   await waitFor(() =>
@@ -117,41 +45,75 @@ test("renders the panel in the default view", async () => {
   expect(screen.getAllByText("All Avail Test Movie")).toHaveLength(2);
 });
 
+test("renders object not found when the object doesn't exist", async () => {
+  server.use(
+    graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
+      return res(
+        ctx.errors([
+          { errorType: QueryErrorMessages.NotFound, message: "Not found" },
+        ]),
+      );
+    }),
+  );
+
+  render(
+    <Panel uid="nonexistant" objectType={"Movie"} closePanel={jest.fn()} />,
+  );
+
+  await waitFor(() =>
+    expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+  );
+
+  expect(screen.getByText("Movie nonexistant not found")).toBeInTheDocument();
+});
+
+test("renders an error message when an unknown error occurs", async () => {
+  server.use(
+    graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
+      return res(ctx.errors([{ message: "Something went wrong" }]));
+    }),
+  );
+
+  render(
+    <Panel
+      uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
+      objectType={"Movie"}
+      closePanel={jest.fn()}
+    />,
+  );
+
+  await waitFor(() =>
+    expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+  );
+
+  expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+});
+
 test("renders the objects primaryField and colour in the header when given", async () => {
-  const mockWithRandomPrimaryField = {
-    request: {
-      query: createGetObjectQuery(movieObjectOperations, []) as DocumentNode,
-      variables: {
-        ignoreAvailability: true,
-        uid: "withPrimaryField",
-      },
-    },
-    result: {
-      data: {
-        getObject: {
-          ...GQLSkylarkGetObjectQueryFixture.data.getObject,
-          uid: "withPrimaryField",
-          _config: {
-            ...GQLSkylarkGetObjectQueryFixture.data.getObject._config,
-            primary_field: "release_date",
-            colour: "rgb(123, 123, 123)",
-          },
-        },
+  const withPrimaryFieldMock = {
+    getObject: {
+      ...GQLSkylarkGetObjectQueryFixture.data.getObject,
+      uid: "withPrimaryField",
+      _config: {
+        ...GQLSkylarkGetObjectQueryFixture.data.getObject._config,
+        primary_field: "release_date",
+        colour: "rgb(123, 123, 123)",
       },
     },
   };
 
+  server.use(
+    graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
+      return res(ctx.data(withPrimaryFieldMock));
+    }),
+  );
+
   render(
-    <MockedProvider
-      mocks={[...mocks, mockWithRandomPrimaryField]}
-      addTypename={false}
-    >
-      <Panel
-        uid={mockWithRandomPrimaryField.result.data.getObject.uid}
-        objectType={"Movie"}
-        closePanel={jest.fn()}
-      />
-    </MockedProvider>,
+    <Panel
+      uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
+      objectType={"Movie"}
+      closePanel={jest.fn()}
+    />,
   );
 
   await waitFor(() =>
@@ -165,27 +127,23 @@ test("renders the objects primaryField and colour in the header when given", asy
   ).toBeInTheDocument();
   const panelHeader = within(screen.getByTestId("panel-header"));
   expect(
-    panelHeader.getByText(
-      mockWithRandomPrimaryField.result.data.getObject.release_date,
-    ),
+    panelHeader.getByText(withPrimaryFieldMock.getObject.release_date),
   ).toBeInTheDocument();
 
   expect(
     panelHeader
-      .getByText(mockWithRandomPrimaryField.result.data.getObject.__typename)
+      .getByText(withPrimaryFieldMock.getObject.__typename)
       .closest("div"),
   ).toHaveAttribute("style", "background-color: rgb(123, 123, 123);");
 });
 
 test("renders an image and the original image size when the object type is an Image", async () => {
   render(
-    <MockedProvider mocks={mocks} addTypename={false}>
-      <Panel
-        uid={GQLSkylarkGetObjectImageQueryFixture.data.getObject.uid}
-        objectType={"Image"}
-        closePanel={jest.fn()}
-      />
-    </MockedProvider>,
+    <Panel
+      uid={GQLSkylarkGetObjectImageQueryFixture.data.getObject.uid}
+      objectType={"Image"}
+      closePanel={jest.fn()}
+    />,
   );
 
   await waitFor(() =>
@@ -204,13 +162,11 @@ test("renders an image and the original image size when the object type is an Im
 
 test("imagery view", async () => {
   render(
-    <MockedProvider mocks={mocks} addTypename={false}>
-      <Panel
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        objectType={"Movie"}
-        closePanel={jest.fn()}
-      />
-    </MockedProvider>,
+    <Panel
+      uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
+      objectType={"Movie"}
+      closePanel={jest.fn()}
+    />,
   );
 
   await waitFor(() => expect(screen.getByText("Imagery")).toBeInTheDocument());
@@ -246,13 +202,11 @@ test("imagery view", async () => {
 
 test("content view", async () => {
   render(
-    <MockedProvider mocks={mocks} addTypename={false}>
-      <Panel
-        uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
-        objectType={"Set"}
-        closePanel={jest.fn()}
-      />
-    </MockedProvider>,
+    <Panel
+      uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
+      objectType={"Set"}
+      closePanel={jest.fn()}
+    />,
   );
 
   await waitFor(() => expect(screen.getByText("Content")).toBeInTheDocument());
@@ -269,13 +223,11 @@ test("content view", async () => {
 
 test("content view - enter edit view", async () => {
   render(
-    <MockedProvider mocks={mocks} addTypename={false}>
-      <Panel
-        uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
-        objectType={"Set"}
-        closePanel={jest.fn()}
-      />
-    </MockedProvider>,
+    <Panel
+      uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
+      objectType={"Set"}
+      closePanel={jest.fn()}
+    />,
   );
 
   await waitFor(() => expect(screen.getByText("Content")).toBeInTheDocument());
@@ -289,20 +241,13 @@ test("content view - enter edit view", async () => {
 });
 
 describe("content view - edit view", () => {
-  const renderAndSwitchToEditView = async (
-    additionalMocks?: MockedResponse<Record<string, object>>[],
-  ) => {
+  const renderAndSwitchToEditView = async () => {
     render(
-      <MockedProvider
-        mocks={[...mocks, ...(additionalMocks || [])]}
-        addTypename={false}
-      >
-        <Panel
-          uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
-          objectType={"Set"}
-          closePanel={jest.fn()}
-        />
-      </MockedProvider>,
+      <Panel
+        uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
+        objectType={"Set"}
+        closePanel={jest.fn()}
+      />,
     );
 
     await waitFor(() =>
@@ -491,38 +436,7 @@ describe("content view - edit view", () => {
   });
 
   test("moves an item, removes an item and saves", async () => {
-    const parsedFixtureContent = parseObjectContent(
-      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content,
-    );
-    const query = createUpdateObjectContentMutation(
-      setObjectOperations,
-      parsedFixtureContent.objects,
-      // We're expecting the 1st content item to be removed and the 3rd and 4th to be swapped
-      [
-        parsedFixtureContent.objects[1],
-        parsedFixtureContent.objects[3],
-        parsedFixtureContent.objects[2],
-        parsedFixtureContent.objects[4],
-      ],
-      [seasonObjectOperations, setObjectOperations],
-    ) as DocumentNode;
-
-    await renderAndSwitchToEditView([
-      {
-        request: {
-          query,
-          variables: {
-            uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
-          },
-        },
-        result: {
-          data: {
-            updateObjectContent:
-              GQLSkylarkGetSetWithContentQueryFixture.data.getObject,
-          },
-        },
-      },
-    ]);
+    await renderAndSwitchToEditView();
 
     const removeButton = screen.getByTestId(
       "panel-object-content-item-1-remove",
@@ -537,11 +451,10 @@ describe("content view - edit view", () => {
     const saveButton = screen.getByText("Save");
     fireEvent.click(saveButton);
 
-    await waitFor(() => expect(screen.getByText("Saving")).toBeInTheDocument());
-
     await waitFor(() =>
       expect(screen.queryByText("Editing")).not.toBeInTheDocument(),
     );
+
     await waitFor(() =>
       expect(screen.getByText("Edit Content")).toBeInTheDocument(),
     );
@@ -550,13 +463,11 @@ describe("content view - edit view", () => {
 
 test.skip("availability view", async () => {
   render(
-    <MockedProvider mocks={mocks} addTypename={false}>
-      <Panel
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        objectType={"Movie"}
-        closePanel={jest.fn()}
-      />
-    </MockedProvider>,
+    <Panel
+      uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
+      objectType={"Movie"}
+      closePanel={jest.fn()}
+    />,
   );
 
   expect(
@@ -589,13 +500,11 @@ test.skip("availability view", async () => {
 test("closing the panel using close button", async () => {
   const closePanel = jest.fn();
   render(
-    <MockedProvider mocks={mocks} addTypename={false}>
-      <Panel
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        objectType={"Movie"}
-        closePanel={closePanel}
-      />
-    </MockedProvider>,
+    <Panel
+      uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
+      objectType={"Movie"}
+      closePanel={closePanel}
+    />,
   );
 
   await waitFor(() => expect(screen.getByText("Close")).toBeInTheDocument());

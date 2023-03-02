@@ -1,4 +1,3 @@
-import { useApolloClient } from "@apollo/client";
 import { useState, useReducer, useEffect } from "react";
 
 import { Button } from "src/components/button";
@@ -21,6 +20,7 @@ import {
   openFlatfileImportClient,
 } from "src/lib/flatfile";
 import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
+import { createSkylarkClient } from "src/lib/graphql/skylark/client";
 import { createAccountIdentifier, pause } from "src/lib/utils";
 
 type ImportStates = "select" | "prep" | "import" | "create";
@@ -49,7 +49,7 @@ const createFlatfileTemplate = async (
   return data;
 };
 
-const importFlatfileDataToSkylark = async (
+const getImportedFlatfileData = async (
   objectType: SkylarkObjectType,
   batchId: string,
   graphQLUri: string,
@@ -145,8 +145,6 @@ function reducer(
 }
 
 export default function CSVImportPage() {
-  const client = useApolloClient();
-
   const { objectTypes } = useSkylarkObjectTypes();
   const [objectType, setObjectType] = useState("");
   const { objectOperations } = useSkylarkObjectOperations(objectType);
@@ -170,15 +168,17 @@ export default function CSVImportPage() {
     }
 
     try {
-      const acceptedData = await importFlatfileDataToSkylark(
+      const acceptedData = await getImportedFlatfileData(
         objectType,
         batchId,
         graphQLUri,
         graphQLToken,
       );
 
+      const skylarkClient = createSkylarkClient(graphQLUri, graphQLToken);
+
       const skylarkObjects = await createFlatfileObjectsInSkylark(
-        client,
+        skylarkClient,
         objectType,
         batchId,
         acceptedData,

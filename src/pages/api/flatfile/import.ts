@@ -5,14 +5,12 @@ import {
   FLATFILE_SECRET_KEY,
 } from "src/constants/flatfile";
 import { FlatfileRow } from "src/interfaces/flatfile/responses";
-import { SkylarkImportedObject } from "src/interfaces/skylark";
 import {
-  createFlatfileObjectsInSkylark,
   exchangeFlatfileAccessKey,
   getFlatfileFinalDatabaseView,
 } from "src/lib/flatfile";
 import { createFlatfileClient } from "src/lib/graphql/flatfile/client";
-import { createBasicSkylarkClient } from "src/lib/graphql/skylark/client";
+import { createSkylarkClient } from "src/lib/graphql/skylark/client";
 import { getSkylarkObjectTypes } from "src/lib/skylark/introspection/introspection";
 
 export default async function handler(
@@ -46,7 +44,7 @@ export default async function handler(
       .send("Skylark GraphQL URI and Access Key are mandatory");
   }
 
-  const skylarkClient = createBasicSkylarkClient(graphQLUri, graphQLToken);
+  const skylarkClient = createSkylarkClient(graphQLUri, graphQLToken);
 
   const objects = await getSkylarkObjectTypes(skylarkClient);
   const isObjectValid = objects.find((object) => object === objectType);

@@ -61,7 +61,7 @@
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
-Skylark UI is the offical frontend app for Skylark. It provides a user interface that enables customers to:
+Skylark UI is the offical frontend app for Skylark. It provides a user interface that enables users to:
 
 - Import, create, update objects
 - Create relationships between objects
@@ -69,7 +69,7 @@ Skylark UI is the offical frontend app for Skylark. It provides a user interface
 - Assign availability rules to determine which objects are returned
 - Modify their Skylark configuration
 
-We made the decision to Open Source the repository so that customers are able to take the UI and modify it to fit their needs. This can be anywhere from adding their logo, to crafting new features that are currently missing. All we ask in return is that when you create these features, you raise a pull request so that other customers can benefit too!
+We made the decision to Open Source the repository so that users are able to take the UI and modify it to fit their needs. This can be anywhere from adding their logo, to crafting new features that are currently missing. All we ask in return is that when you create these features, you raise a pull request so that other users can benefit too!
 
 Additionally, all requests that are made to Skylark from the UI are using the official Skylark GraphQL API meaning you can use this repository as an aid when developing your own Skylark applications. If this sounds like you, you may also want to check out our [StreamTV application][saas-streamtv] - a demo Streaming App built on Skylark.
 
