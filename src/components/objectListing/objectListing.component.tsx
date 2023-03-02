@@ -1,5 +1,3 @@
-import { DragOverlay } from "@dnd-kit/core";
-import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import {
   createColumnHelper,
   getCoreRowModel,
@@ -24,9 +22,8 @@ import {
   ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
   ParsedSkylarkObject,
-  ParsedSkylarkObjectContentObject,
 } from "src/interfaces/skylark";
-import { formatObjectField, getPrimaryKey } from "src/lib/utils";
+import { formatObjectField } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
 import { RowActions } from "./rowActions";
@@ -44,7 +41,7 @@ export interface ObjectListProps {
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
   onInfoClick?: (obj: { uid: string; objectType: string }) => void;
-  draggedObject?: ParsedSkylarkObjectContentObject | undefined;
+  isDragging?: boolean;
 }
 
 const createColumns = (
@@ -181,7 +178,7 @@ export const ObjectList = ({
   withObjectSelect,
   withObjectEdit,
   onInfoClick,
-  draggedObject,
+  isDragging,
   isPanelOpen,
 }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -336,8 +333,6 @@ export const ObjectList = ({
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
 
-  const primaryKey = draggedObject && getPrimaryKey(draggedObject);
-
   return (
     <div
       className={clsx(
@@ -391,7 +386,7 @@ export const ObjectList = ({
       </div>
       <div
         className={`${
-          draggedObject ? "overflow-hidden" : "overflow-x-auto"
+          isDragging ? "overflow-hidden" : "overflow-x-auto"
         } relative mb-6 flex w-full flex-auto flex-grow flex-col overscroll-none`}
         ref={tableContainerRef}
         data-testid="table-container"

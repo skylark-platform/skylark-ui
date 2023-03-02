@@ -19,6 +19,7 @@ import {
   ParsedSkylarkObject,
   ParsedSkylarkObjectContentObject,
 } from "src/interfaces/skylark";
+import { getPrimaryKey } from "src/lib/utils";
 
 export const ContentLibrary = () => {
   const [activePanelObject, setActivePanelObject] = useState<{
@@ -70,6 +71,8 @@ export const ContentLibrary = () => {
     }),
   );
 
+  const primaryKey = draggedObject && getPrimaryKey(draggedObject);
+
   return (
     <DndContext
       onDragStart={handleDragStart}
@@ -78,8 +81,6 @@ export const ContentLibrary = () => {
       measuring={{
         draggable: {
           measure: (element) => {
-            console.log("$$ #", element);
-            console.log("$$", getClientRect(element));
             return {
               ...getClientRect(element),
               left: 0,
@@ -97,7 +98,11 @@ export const ContentLibrary = () => {
               className="w-20"
             />
             <div className="flex flex-1">
-              <p>{"test this"}</p>
+              <p>
+                {primaryKey
+                  ? draggedObject.object[primaryKey]
+                  : draggedObject.object.uid}
+              </p>
             </div>
           </div>
         ) : null}
@@ -125,7 +130,7 @@ export const ContentLibrary = () => {
             withCreateButtons
             onInfoClick={setActivePanelObject}
             isPanelOpen={!!activePanelObject}
-            draggedObject={draggedObject}
+            isDragging={!!draggedObject}
           />
         </m.div>
 
