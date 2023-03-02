@@ -26,9 +26,7 @@ const PanelMetadataProperty = ({
 }) => (
   <div>
     <h3 className="mb-2 font-bold ">{formatObjectField(property)}</h3>
-    <div className="mb-4 break-words break-all text-base-content">
-      {value ? value : "---"}
-    </div>
+    <div className="mb-4 text-base-content">{value ? value : "---"}</div>
   </div>
 );
 
