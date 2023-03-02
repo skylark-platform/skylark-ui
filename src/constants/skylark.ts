@@ -39,3 +39,5 @@ export const DISPLAY_NAME_PRIORITY = [
   "external_id",
   "uid",
 ];
+
+export const DROPPABLE_ID = "droppable";

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 import { Trash } from "src/components/icons";
 import { Pill } from "src/components/pill";
-import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
+import { DROPPABLE_ID } from "src/constants/skylark";
 import { ParsedSkylarkObjectContentObject } from "src/interfaces/skylark";
 import { getPrimaryKey } from "src/lib/utils";
 
@@ -18,12 +18,14 @@ interface PanelContentProps {
 
 export const PanelContentItemOrderInput = ({
   hasMoved,
+  newObject,
   position,
   disabled,
   maxPosition,
   onBlur,
 }: {
   hasMoved: boolean;
+  newObject: boolean;
   position: number;
   disabled: boolean;
   maxPosition: number;
@@ -71,6 +73,7 @@ export const PanelContentItemOrderInput = ({
         !hasMoved || disabled
           ? "bg-brand-primary text-white"
           : "bg-warning text-warning-content",
+        newObject && "bg-green-400",
       )}
       onChange={(e) => onChange(e.target.value)}
       onBlur={onBlurWrapper}
@@ -90,7 +93,7 @@ export const PanelContent = ({
     onReorder(filtered);
   };
   const { isOver, setNodeRef } = useDroppable({
-    id: "droppable",
+    id: DROPPABLE_ID,
   });
 
   const handleManualOrderChange = (
@@ -142,7 +145,7 @@ export const PanelContent = ({
         data-testid="panel-content-items"
       >
         {objects.map((item, index) => {
-          const { object, config, position } = item;
+          const { object, config, position, newObject } = item;
 
           const primaryKey = getPrimaryKey(item);
 
@@ -169,7 +172,7 @@ export const PanelContent = ({
                 <span
                   className={clsx(
                     "flex h-6 min-w-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
-                    !inEditMode || position === index + 1
+                    !inEditMode || position === index + 1 || newObject
                       ? "opacity-0"
                       : "opacity-100",
                   )}
@@ -180,6 +183,7 @@ export const PanelContent = ({
                   disabled={!inEditMode}
                   position={index + 1}
                   hasMoved={position !== index + 1}
+                  newObject={newObject || false}
                   onBlur={(updatedPosition: number) =>
                     handleManualOrderChange(index, updatedPosition)
                   }

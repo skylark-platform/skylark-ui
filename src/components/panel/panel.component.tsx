@@ -103,6 +103,7 @@ export const Panel = ({
           ...newObject,
           position:
             (contentObjects?.length || data?.content?.objects.length || 0) + 1,
+          newObject: true,
         },
       ]);
       setEditMode(true);

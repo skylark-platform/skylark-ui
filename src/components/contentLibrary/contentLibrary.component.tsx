@@ -10,6 +10,7 @@ import React, { useEffect, useState, useRef } from "react";
 
 import { ObjectList } from "src/components/objectListing";
 import { Panel } from "src/components/panel";
+import { DROPPABLE_ID } from "src/constants/skylark";
 import {
   ParsedSkylarkObject,
   ParsedSkylarkObjectContentObject,
@@ -146,7 +147,7 @@ export const ContentLibrary = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function handleDragEnd(event: any) {
-    if (event.over && event.over.id === "droppable") {
+    if (event.over && event.over.id === DROPPABLE_ID) {
       setObject(draggedObject);
     }
     setDraggedObject(undefined);
