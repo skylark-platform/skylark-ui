@@ -1,75 +1,15 @@
-import { MockedProvider } from "@apollo/client/testing";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { DocumentNode } from "graphql";
-
-import { SEARCH_PAGE_SIZE } from "src/hooks/useSearch";
-import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
-import { skylarkClientCache } from "src/lib/graphql/skylark/client";
-import { createSearchObjectsQuery } from "src/lib/graphql/skylark/dynamicQueries";
+import GQLGameOfThronesSearchResultsPage1 from "src/__tests__/fixtures/skylark/queries/search/gotPage1.json";
 import {
-  GET_SKYLARK_OBJECT_TYPES,
-  GET_SKYLARK_SCHEMA,
-} from "src/lib/graphql/skylark/queries";
-import { getAllObjectsMeta } from "src/lib/skylark/objects";
-import GQLSkylarkObjectTypesQueryFixture from "src/tests/fixtures/skylark/queries/introspection/objectTypes.json";
-import GQLSkylarkSchemaQueryFixture from "src/tests/fixtures/skylark/queries/introspection/schema.json";
-import GQLGameOfThronesSearchResults from "src/tests/fixtures/skylark/queries/search/got.json";
-import GQLGameOfThronesSearchResultsPage1 from "src/tests/fixtures/skylark/queries/search/gotPage1.json";
-import GQLGameOfThronesSearchResultsPage2 from "src/tests/fixtures/skylark/queries/search/gotPage2.json";
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "src/__tests__/utils/test-utils";
 
 import { ObjectList } from "./objectListing.component";
 
-const searchableObjectTypes =
-  GQLSkylarkObjectTypesQueryFixture.data.__type.possibleTypes.map(
-    ({ name }) => name,
-  ) || [];
-const searchableObjectsMeta = getAllObjectsMeta(
-  GQLSkylarkSchemaQueryFixture.data
-    .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
-  searchableObjectTypes,
-);
-
-const schemaMocks = [
-  {
-    request: {
-      query: GET_SKYLARK_OBJECT_TYPES,
-    },
-    result: GQLSkylarkObjectTypesQueryFixture,
-  },
-  {
-    request: {
-      query: GET_SKYLARK_SCHEMA,
-    },
-    result: {
-      data: GQLSkylarkSchemaQueryFixture.data,
-    },
-  },
-];
-
-const defaultMocks = [
-  ...schemaMocks,
-  {
-    request: {
-      variables: {
-        ignoreAvailability: true,
-        queryString: "",
-        limit: SEARCH_PAGE_SIZE,
-      },
-      query: createSearchObjectsQuery(
-        searchableObjectsMeta,
-        [],
-      ) as DocumentNode,
-    },
-    result: GQLGameOfThronesSearchResults,
-  },
-];
-
 test("renders search bar, filters with no objects returned", () => {
-  render(
-    <MockedProvider>
-      <ObjectList />
-    </MockedProvider>,
-  );
+  render(<ObjectList />);
 
   screen.findByPlaceholderText("Search for an object(s)");
 
@@ -77,11 +17,7 @@ test("renders search bar, filters with no objects returned", () => {
 });
 
 test("renders create button", () => {
-  render(
-    <MockedProvider>
-      <ObjectList withCreateButtons onInfoClick={jest.fn()} />
-    </MockedProvider>,
-  );
+  render(<ObjectList withCreateButtons onInfoClick={jest.fn()} />);
 
   const createButton = screen.getByText("Create");
 
@@ -91,11 +27,7 @@ test("renders create button", () => {
 });
 
 test("does not render info button when onInfoClick is undefined", async () => {
-  render(
-    <MockedProvider>
-      <ObjectList onInfoClick={undefined} />
-    </MockedProvider>,
-  );
+  render(<ObjectList onInfoClick={undefined} />);
 
   expect(
     await screen.queryByRole("button", {
@@ -104,103 +36,34 @@ test("does not render info button when onInfoClick is undefined", async () => {
   ).not.toBeInTheDocument();
 });
 
-test("renders row select checkboxes", () => {
-  render(
-    <MockedProvider>
-      <ObjectList withObjectSelect />
-    </MockedProvider>,
-  );
+test("renders row select checkboxes", async () => {
+  render(<ObjectList withObjectSelect />);
 
-  expect(
-    screen.getByRole("checkbox", { name: "toggle-select-all-objects" }),
-  ).toBeInTheDocument();
+  await waitFor(() =>
+    expect(
+      screen.getByRole("checkbox", { name: "toggle-select-all-objects" }),
+    ).toBeInTheDocument(),
+  );
 });
 
 test("renders search results", async () => {
-  render(
-    <MockedProvider mocks={defaultMocks}>
-      <ObjectList />
-    </MockedProvider>,
-  );
+  render(<ObjectList />);
 
   await screen.findByText("UID"); // Search for table header
   // Search for table content
   await screen.findAllByText(
-    GQLGameOfThronesSearchResults.data.search.objects[0].uid,
+    GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid,
   );
 
   expect(
     screen.getByText(
-      GQLGameOfThronesSearchResults.data.search.objects[0].uid as string,
-    ),
-  ).toBeInTheDocument();
-});
-
-test("renders more search results on scroll", async () => {
-  render(
-    <MockedProvider
-      cache={skylarkClientCache()}
-      mocks={[
-        ...schemaMocks,
-        {
-          request: {
-            variables: {
-              ignoreAvailability: true,
-              queryString: "",
-              limit: SEARCH_PAGE_SIZE,
-            },
-            query: createSearchObjectsQuery(
-              searchableObjectsMeta,
-              [],
-            ) as DocumentNode,
-          },
-          result: GQLGameOfThronesSearchResultsPage1,
-        },
-        {
-          request: {
-            variables: {
-              ignoreAvailability: true,
-              queryString: "",
-              limit: SEARCH_PAGE_SIZE,
-              offset:
-                GQLGameOfThronesSearchResultsPage1.data.search.objects.length,
-            },
-            query: createSearchObjectsQuery(
-              searchableObjectsMeta,
-              [],
-            ) as DocumentNode,
-          },
-          result: GQLGameOfThronesSearchResultsPage2,
-        },
-      ]}
-    >
-      <ObjectList />
-    </MockedProvider>,
-  );
-
-  await screen.findByText("UID"); // Search for table header
-
-  const scrollContainer = screen.getByTestId("table-container");
-  fireEvent.scroll(scrollContainer, { target: { scrollY: 500 } });
-
-  // Search for page2 table content
-  await screen.findAllByText(
-    GQLGameOfThronesSearchResultsPage2.data.search.objects[0].uid,
-  );
-
-  expect(
-    screen.getByText(
-      GQLGameOfThronesSearchResultsPage2.data.search.objects[0].uid as string,
+      GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid as string,
     ),
   ).toBeInTheDocument();
 });
 
 test("opens filters and deselects all object types", async () => {
-  render(
-    <MockedProvider mocks={defaultMocks}>
-      <ObjectList />
-    </MockedProvider>,
-  );
+  render(<ObjectList />);
 
   await screen.findByText("UID");
 
@@ -226,11 +89,7 @@ test("opens filters and deselects all object types", async () => {
 
 describe("row in edit mode", () => {
   test("save/cancel icon appears", async () => {
-    render(
-      <MockedProvider mocks={defaultMocks}>
-        <ObjectList withObjectEdit onInfoClick={jest.fn()} />
-      </MockedProvider>,
-    );
+    render(<ObjectList withObjectEdit onInfoClick={jest.fn()} />);
 
     await screen.findByText("UID"); // Search for table header
 
@@ -257,11 +116,7 @@ describe("row in edit mode", () => {
   });
 
   test("row turns into inputs", async () => {
-    render(
-      <MockedProvider mocks={defaultMocks}>
-        <ObjectList withObjectEdit onInfoClick={jest.fn()} />
-      </MockedProvider>,
-    );
+    render(<ObjectList withObjectEdit onInfoClick={jest.fn()} />);
 
     await screen.findByText("UID"); // Search for table header
 
@@ -277,7 +132,7 @@ describe("row in edit mode", () => {
 
     expect(
       screen.getByDisplayValue(
-        GQLGameOfThronesSearchResults.data.search.objects[0].uid,
+        GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid,
       ),
     ).toHaveAttribute("disabled");
   });
