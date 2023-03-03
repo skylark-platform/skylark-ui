@@ -5,6 +5,7 @@ import {
   PointerSensor,
   DragOverlay,
   getClientRect,
+  DraggableMeasuring,
 } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import clsx from "clsx";
