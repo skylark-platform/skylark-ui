@@ -33,7 +33,7 @@ export interface ParsedSkylarkObjectContentObject {
   config: ParsedSkylarkObjectConfig;
   object: ParsedSkylarkObjectMetadata;
   position: number;
-  newObject?: boolean;
+  isNewObject?: boolean;
 }
 
 export interface ParsedSkylarkObjectContent {

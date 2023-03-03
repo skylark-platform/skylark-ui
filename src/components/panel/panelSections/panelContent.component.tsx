@@ -11,6 +11,7 @@ import { getPrimaryKey } from "src/lib/utils";
 
 interface PanelContentProps {
   objects: ParsedSkylarkObjectContentObject[];
+  objectType: string;
   onReorder: (objs: ParsedSkylarkObjectContentObject[]) => void;
   inEditMode?: boolean;
   draggedObject?: ParsedSkylarkObjectContentObject | undefined;
@@ -18,14 +19,14 @@ interface PanelContentProps {
 
 export const PanelContentItemOrderInput = ({
   hasMoved,
-  newObject,
+  isNewObject,
   position,
   disabled,
   maxPosition,
   onBlur,
 }: {
   hasMoved: boolean;
-  newObject: boolean;
+  isNewObject?: boolean;
   position: number;
   disabled: boolean;
   maxPosition: number;
@@ -71,8 +72,8 @@ export const PanelContentItemOrderInput = ({
       className={clsx(
         "flex h-6 min-w-6 items-center justify-center rounded-full px-1 pb-0.5 text-center transition-colors",
         (!hasMoved || disabled) && "bg-brand-primary text-white",
-        !newObject && hasMoved && "bg-warning text-warning-content",
-        newObject && "bg-success",
+        !isNewObject && hasMoved && "bg-warning text-warning-content",
+        isNewObject && "bg-success",
       )}
       onChange={(e) => onChange(e.target.value)}
       onBlur={onBlurWrapper}
@@ -84,6 +85,7 @@ export const PanelContentItemOrderInput = ({
 export const PanelContent = ({
   objects,
   inEditMode,
+  objectType,
   onReorder,
   draggedObject,
 }: PanelContentProps) => {
@@ -123,7 +125,7 @@ export const PanelContent = ({
           "m-4 mt-10 flex h-72 items-center justify-center border-2 border-dotted text-center text-manatee-400",
         )}
       >
-        <span>{"Drop object here to add to the Set's content"}</span>
+        <span>{`Drop object here to add to the ${objectType}'s content`}</span>
       </div>
     );
 
@@ -137,7 +139,7 @@ export const PanelContent = ({
         data-testid="panel-content-items"
       >
         {objects.map((item, index) => {
-          const { object, config, position, newObject } = item;
+          const { object, config, position, isNewObject } = item;
 
           const primaryKey = getPrimaryKey(item);
 
@@ -164,7 +166,7 @@ export const PanelContent = ({
                 <span
                   className={clsx(
                     "flex h-6 min-w-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
-                    !inEditMode || position === index + 1 || newObject
+                    !inEditMode || position === index + 1 || isNewObject
                       ? "opacity-0"
                       : "opacity-100",
                   )}
@@ -175,7 +177,7 @@ export const PanelContent = ({
                   disabled={!inEditMode}
                   position={index + 1}
                   hasMoved={position !== index + 1}
-                  newObject={newObject || false}
+                  isNewObject={isNewObject}
                   onBlur={(updatedPosition: number) =>
                     handleManualOrderChange(index, updatedPosition)
                   }
@@ -200,9 +202,7 @@ export const PanelContent = ({
       </Reorder.Group>
       {inEditMode && (
         <span className="py-4 text-center text-sm text-manatee-600">
-          {
-            "Drag an object from the Content Library to add to this Set's content"
-          }
+          {`Drag an object from the Content Library to add to this ${objectType}'s content`}
         </span>
       )}
     </>

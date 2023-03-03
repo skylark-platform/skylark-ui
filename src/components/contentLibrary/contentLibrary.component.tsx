@@ -21,6 +21,8 @@ import {
 } from "src/interfaces/skylark";
 import { getPrimaryKey } from "src/lib/utils";
 
+import { ObjectIdentifierCard } from "../objectIdentifierCard";
+
 export const ContentLibrary = () => {
   const [activePanelObject, setActivePanelObject] = useState<{
     objectType: string;
@@ -29,7 +31,7 @@ export const ContentLibrary = () => {
   const [draggedObject, setDraggedObject] = useState<
     ParsedSkylarkObjectContentObject | undefined
   >(undefined);
-  const [newObject, setObject] = useState<
+  const [newContentObject, updateNewContentObject] = useState<
     ParsedSkylarkObjectContentObject | undefined
   >(undefined);
 
@@ -51,7 +53,7 @@ export const ContentLibrary = () => {
   }, [activePanelObject, objectListingWidth]);
 
   const handleDrag = React.useCallback(
-    (event: PointerEvent, info: { delta: { x: number } }) => {
+    (_: PointerEvent, info: { delta: { x: number } }) => {
       const width =
         objectListingWidth.get() || objectListingRef?.current?.offsetWidth || 0;
       const newWidth = width + info.delta.x;
@@ -96,18 +98,11 @@ export const ContentLibrary = () => {
       >
         {draggedObject ? (
           <div className="flex max-w-[350px] items-center space-x-2 border border-manatee-400 bg-white p-2">
-            <Pill
-              label={draggedObject.object.__typename as string}
-              bgColor={draggedObject.config.colour}
-              className="w-20"
+            <ObjectIdentifierCard
+              object={draggedObject.object}
+              colour={draggedObject.config.colour}
+              primaryKey={primaryKey}
             />
-            <div className="flex flex-1">
-              <p>
-                {primaryKey
-                  ? draggedObject.object[primaryKey]
-                  : draggedObject.object.uid}
-              </p>
-            </div>
           </div>
         ) : null}
       </DragOverlay>
@@ -157,8 +152,8 @@ export const ContentLibrary = () => {
               uid={activePanelObject.uid}
               objectType={activePanelObject.objectType}
               draggedObject={draggedObject}
-              newObject={newObject}
-              setObject={setObject}
+              newContentObject={newContentObject}
+              updateNewContentObject={updateNewContentObject}
             />
           </m.div>
         )}
@@ -187,7 +182,7 @@ export const ContentLibrary = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function handleDragEnd(event: any) {
     if (event.over && event.over.id === DROPPABLE_ID) {
-      setObject(draggedObject);
+      updateNewContentObject(draggedObject);
     }
     setDraggedObject(undefined);
   }

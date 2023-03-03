@@ -29,6 +29,7 @@ export interface TableProps {
 
 export interface TableRowProps {
   row: Row<ParsedSkylarkObject>;
+  virtualRowSize: number;
   setPanelObject?: (obj: { uid: string; objectType: string }) => void;
   tableMeta: TableMeta<object> | undefined;
   withCheckbox: boolean;
@@ -196,6 +197,7 @@ const TableRow = ({
   tableMeta,
   withCheckbox,
   withDraggableRow,
+  virtualRowSize,
 }: TableRowProps) => {
   const { uid, objectType } = row.original;
   const { attributes, listeners, setNodeRef } = useDraggable({
@@ -214,11 +216,9 @@ const TableRow = ({
       className="group/row align-middle outline-none"
       tabIndex={-1}
       onDoubleClick={() => setPanelObject?.({ uid, objectType })}
-      style={
-        {
-          // height: `${virtualRow.size}px`,
-        }
-      }
+      style={{
+        height: `${virtualRowSize}px`,
+      }}
     >
       {row.getVisibleCells().map((cell) => (
         <TableData
@@ -281,6 +281,7 @@ export const Table = ({
               tableMeta={tableMeta}
               withCheckbox={withCheckbox}
               withDraggableRow={withDraggableRow}
+              virtualRowSize={virtualRow.size}
             />
           );
         })}

@@ -25,8 +25,8 @@ interface PanelProps {
   closePanel?: () => void;
   uid: string;
   draggedObject?: ParsedSkylarkObjectContentObject;
-  newObject?: ParsedSkylarkObjectContentObject;
-  setObject?: Dispatch<
+  newContentObject?: ParsedSkylarkObjectContentObject;
+  updateNewContentObject?: Dispatch<
     SetStateAction<ParsedSkylarkObjectContentObject | undefined>
   >;
 }
@@ -53,8 +53,8 @@ export const Panel = ({
   objectType,
   uid,
   draggedObject,
-  newObject,
-  setObject,
+  newContentObject,
+  updateNewContentObject,
 }: PanelProps) => {
   const { data, isLoading, query, variables, isError, isNotFound, error } =
     useGetObject(objectType, uid);
@@ -86,27 +86,32 @@ export const Panel = ({
 
   useEffect(() => {
     if (
-      newObject &&
+      newContentObject &&
       !contentObjects
         ?.map(({ object }) => object.uid)
-        .includes(newObject.object.uid) &&
+        .includes(newContentObject.object.uid) &&
       !data?.content?.objects
         ?.map(({ object }) => object.uid)
-        .includes(newObject.object.uid)
+        .includes(newContentObject.object.uid)
     ) {
       setContentObjects([
         ...(contentObjects || data?.content?.objects || []),
         {
-          ...newObject,
+          ...newContentObject,
           position:
             (contentObjects?.length || data?.content?.objects.length || 0) + 1,
-          newObject: true,
+          isNewObject: true,
         },
       ]);
       setEditMode(true);
-      setObject && setObject(undefined);
+      updateNewContentObject && updateNewContentObject(undefined);
     }
-  }, [contentObjects, data?.content?.objects, newObject, setObject]);
+  }, [
+    contentObjects,
+    data?.content?.objects,
+    newContentObject,
+    updateNewContentObject,
+  ]);
 
   const { updateObjectContent, isLoading: updatingObjectContents } =
     useUpdateObjectContent({
@@ -192,6 +197,7 @@ export const Panel = ({
             <PanelContent
               objects={contentObjects || data?.content?.objects}
               inEditMode={inEditMode}
+              objectType={objectType}
               onReorder={setContentObjects}
               draggedObject={draggedObject}
             />
