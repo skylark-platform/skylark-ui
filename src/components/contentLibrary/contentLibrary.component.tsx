@@ -5,7 +5,8 @@ import {
   PointerSensor,
   DragOverlay,
   getClientRect,
-  DraggableMeasuring,
+  DragEndEvent,
+  DragStartEvent,
 } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import clsx from "clsx";
@@ -14,7 +15,6 @@ import React, { useEffect, useState, useRef } from "react";
 
 import { ObjectList } from "src/components/objectListing";
 import { Panel } from "src/components/panel";
-import { Pill } from "src/components/pill";
 import { DROPPABLE_ID } from "src/constants/skylark";
 import {
   ParsedSkylarkObject,
@@ -35,8 +35,9 @@ export const ContentLibrary = () => {
   const [newContentObject, updateNewContentObject] = useState<
     ParsedSkylarkObjectContentObject | undefined
   >(undefined);
-
   const [windowSize, setWindowSize] = useState(0);
+  const [mousePosition, setMouseXPosition] = useState(0);
+
   const objectListingWidth = useMotionValue<number | undefined>(undefined);
   const objectListingRef = useRef<HTMLInputElement | null>(null);
 
@@ -52,6 +53,18 @@ export const ContentLibrary = () => {
       window.removeEventListener("resize", updateWindowSize);
     };
   }, [activePanelObject, objectListingWidth]);
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      setMouseXPosition(event.clientX);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
 
   const handleDrag = React.useCallback(
     (_: PointerEvent, info: { delta: { x: number } }) => {
@@ -86,7 +99,7 @@ export const ContentLibrary = () => {
           measure: (element) => {
             return {
               ...getClientRect(element),
-              left: 0,
+              left: mousePosition,
             };
           },
         },
@@ -173,15 +186,13 @@ export const ContentLibrary = () => {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function handleDragStart(event: any) {
+  function handleDragStart(event: DragStartEvent) {
     setDraggedObject(
-      parseSkylarkObjectContent(event.active.data.current.object),
+      parseSkylarkObjectContent(event.active.data.current?.object),
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function handleDragEnd(event: any) {
+  function handleDragEnd(event: DragEndEvent) {
     if (event.over && event.over.id === DROPPABLE_ID) {
       updateNewContentObject(draggedObject);
     }
