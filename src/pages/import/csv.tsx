@@ -117,7 +117,7 @@ const copyText: {
       success:
         "{numCreated} {objectType} objects have been successfully imported into Skylark",
       error:
-        "Error creating {numErrored} {objectType} objects ({numCreated} successful). Check the console or try again.",
+        "Error creating {numErrored} {objectType} objects ({numCreated} created). Check the console or try again.",
     },
   },
 };
@@ -167,6 +167,7 @@ export default function CSVImportPage() {
       );
     }
 
+    let numObjectsToCreate = 0;
     try {
       const acceptedData = await getImportedFlatfileData(
         objectType,
@@ -174,6 +175,7 @@ export default function CSVImportPage() {
         graphQLUri,
         graphQLToken,
       );
+      numObjectsToCreate = acceptedData.length;
 
       const skylarkClient = createSkylarkClient(graphQLUri, graphQLToken);
 
@@ -196,6 +198,10 @@ export default function CSVImportPage() {
       }
     } catch (err) {
       console.error(err);
+      setObjectAmounts({
+        numCreated: 0,
+        numErrored: numObjectsToCreate,
+      });
       dispatch({ stage: "create", status: statusType.error });
     }
   };

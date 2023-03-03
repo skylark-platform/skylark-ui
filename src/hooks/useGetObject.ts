@@ -6,7 +6,7 @@ import {
   SkylarkGraphQLObjectImage,
   ParsedSkylarkObject,
   SkylarkObjectType,
-  GQLSkylarkResponseError,
+  GQLSkylarkErrorResponse,
 } from "src/interfaces/skylark";
 import { GQLSkylarkGetObjectResponse } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -40,7 +40,7 @@ export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
 
   const { data, error, ...rest } = useQuery<
     GQLSkylarkGetObjectResponse,
-    GQLSkylarkResponseError<GQLSkylarkGetObjectResponse>
+    GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>
   >({
     queryKey: [
       ...createGetObjectKeyPrefix({ objectType, uid }),

@@ -49,6 +49,18 @@ describe("parseObjectInputFields", () => {
         want: "phone",
       },
       {
+        input: "AWSURL",
+        want: "url",
+      },
+      {
+        input: "AWSIPAddress",
+        want: "ipaddress",
+      },
+      {
+        input: "AWSJSON",
+        want: "json",
+      },
+      {
         input: "Int",
         want: "int",
       },
