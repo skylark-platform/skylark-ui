@@ -8,7 +8,6 @@ import {
   DragEndEvent,
   DragStartEvent,
 } from "@dnd-kit/core";
-import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import clsx from "clsx";
 import { m, useMotionValue } from "framer-motion";
 import React, { useEffect, useState, useRef, useCallback } from "react";
@@ -83,7 +82,7 @@ export const ContentLibrary = () => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        delay: 100,
+        delay: 150,
         tolerance: 5,
       },
     }),
@@ -100,11 +99,7 @@ export const ContentLibrary = () => {
         },
       }}
     >
-      <DragOverlay
-        modifiers={[snapCenterToCursor]}
-        zIndex={100}
-        dropAnimation={null}
-      >
+      <DragOverlay zIndex={100} dropAnimation={null}>
         {draggedObject ? (
           <div className="flex max-w-[350px] items-center space-x-2 border border-manatee-400 bg-white p-2">
             <ObjectIdentifierCard contentObject={draggedObject} />
