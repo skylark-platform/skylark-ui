@@ -20,7 +20,6 @@ import {
   ParsedSkylarkObject,
   ParsedSkylarkObjectContentObject,
 } from "src/interfaces/skylark";
-import { getPrimaryKey } from "src/lib/utils";
 
 import { ObjectIdentifierCard } from "../objectIdentifierCard";
 
@@ -59,10 +58,10 @@ export const ContentLibrary = () => {
       setMouseXPosition(event.clientX);
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousedown", handleMouseMove);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mousedown", handleMouseMove);
     };
   }, []);
 
@@ -78,6 +77,13 @@ export const ContentLibrary = () => {
     [objectListingWidth, windowSize],
   );
 
+  const handleMeasure = (element: HTMLElement) => {
+    return {
+      ...getClientRect(element),
+      left: mousePosition,
+    };
+  };
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -87,8 +93,6 @@ export const ContentLibrary = () => {
     }),
   );
 
-  const primaryKey = draggedObject && getPrimaryKey(draggedObject);
-
   return (
     <DndContext
       onDragStart={handleDragStart}
@@ -96,12 +100,7 @@ export const ContentLibrary = () => {
       sensors={sensors}
       measuring={{
         draggable: {
-          measure: (element) => {
-            return {
-              ...getClientRect(element),
-              left: mousePosition,
-            };
-          },
+          measure: handleMeasure,
         },
       }}
     >
@@ -112,11 +111,7 @@ export const ContentLibrary = () => {
       >
         {draggedObject ? (
           <div className="flex max-w-[350px] items-center space-x-2 border border-manatee-400 bg-white p-2">
-            <ObjectIdentifierCard
-              object={draggedObject.object}
-              colour={draggedObject.config.colour}
-              primaryKey={primaryKey}
-            />
+            <ObjectIdentifierCard contentObject={draggedObject} />
           </div>
         ) : null}
       </DragOverlay>

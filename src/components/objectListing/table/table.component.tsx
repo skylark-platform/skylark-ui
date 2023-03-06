@@ -32,7 +32,7 @@ export interface TableRowProps {
   virtualRowSize: number;
   setPanelObject?: (obj: { uid: string; objectType: string }) => void;
   tableMeta: TableMeta<object> | undefined;
-  withCheckbox: boolean;
+  withCheckbox?: boolean;
   withDraggableRow?: boolean;
 }
 
@@ -146,7 +146,7 @@ const TableData = ({
   tableMeta,
 }: {
   cell: Cell<ParsedSkylarkObject, unknown>;
-  withCheckbox: boolean;
+  withCheckbox?: boolean;
   tableMeta: TableMeta<object> | undefined;
 }) => {
   const className = useMemo(
