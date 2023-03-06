@@ -11,17 +11,13 @@ import {
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import clsx from "clsx";
 import { m, useMotionValue } from "framer-motion";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 
+import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { ObjectList } from "src/components/objectListing";
 import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
-import {
-  ParsedSkylarkObject,
-  ParsedSkylarkObjectContentObject,
-} from "src/interfaces/skylark";
-
-import { ObjectIdentifierCard } from "../objectIdentifierCard";
+import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 export const ContentLibrary = () => {
   const [activePanelObject, setActivePanelObject] = useState<{
@@ -29,10 +25,10 @@ export const ContentLibrary = () => {
     uid: string;
   } | null>(null);
   const [draggedObject, setDraggedObject] = useState<
-    ParsedSkylarkObjectContentObject | undefined
+    ParsedSkylarkObject | undefined
   >(undefined);
-  const [newContentObject, updateNewContentObject] = useState<
-    ParsedSkylarkObjectContentObject | undefined
+  const [droppedObject, setDroppedObject] = useState<
+    ParsedSkylarkObject | undefined
   >(undefined);
   const [windowSize, setWindowSize] = useState(0);
   const [mousePosition, setMouseXPosition] = useState(0);
@@ -65,7 +61,7 @@ export const ContentLibrary = () => {
     };
   }, []);
 
-  const handleDrag = React.useCallback(
+  const handleDrag = useCallback(
     (_: PointerEvent, info: { delta: { x: number } }) => {
       const width =
         objectListingWidth.get() || objectListingRef?.current?.offsetWidth || 0;
@@ -78,6 +74,7 @@ export const ContentLibrary = () => {
   );
 
   const handleMeasure = (element: HTMLElement) => {
+    // console.log("get mouse here ?");
     return {
       ...getClientRect(element),
       left: mousePosition,
@@ -160,9 +157,8 @@ export const ContentLibrary = () => {
               closePanel={() => setActivePanelObject(null)}
               uid={activePanelObject.uid}
               objectType={activePanelObject.objectType}
-              draggedObject={draggedObject}
-              newContentObject={newContentObject}
-              updateNewContentObject={updateNewContentObject}
+              showDropArea={!!draggedObject}
+              droppedObject={droppedObject}
             />
           </m.div>
         )}
@@ -170,26 +166,13 @@ export const ContentLibrary = () => {
     </DndContext>
   );
 
-  function parseSkylarkObjectContent(
-    skylarkObject: ParsedSkylarkObject,
-  ): ParsedSkylarkObjectContentObject {
-    return {
-      config: skylarkObject.config,
-      object: skylarkObject.metadata,
-      objectType: skylarkObject.objectType,
-      position: 1,
-    };
-  }
-
   function handleDragStart(event: DragStartEvent) {
-    setDraggedObject(
-      parseSkylarkObjectContent(event.active.data.current?.object),
-    );
+    setDraggedObject(event.active.data.current?.object);
   }
 
   function handleDragEnd(event: DragEndEvent) {
     if (event.over && event.over.id === DROPPABLE_ID) {
-      updateNewContentObject(draggedObject);
+      setDroppedObject(draggedObject);
     }
     setDraggedObject(undefined);
   }

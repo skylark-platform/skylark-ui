@@ -5,16 +5,18 @@ import { useEffect, useState } from "react";
 
 import { Trash } from "src/components/icons";
 import { Pill } from "src/components/pill";
-import { DROPPABLE_ID } from "src/constants/skylark";
-import { ParsedSkylarkObjectContentObject } from "src/interfaces/skylark";
-import { getPrimaryKey } from "src/lib/utils";
+import { DISPLAY_NAME_PRIORITY, DROPPABLE_ID } from "src/constants/skylark";
+import {
+  ParsedSkylarkObjectContentObject,
+  CustomSkylarkObjectContentObject,
+} from "src/interfaces/skylark";
 
 interface PanelContentProps {
-  objects: ParsedSkylarkObjectContentObject[];
+  objects: CustomSkylarkObjectContentObject[];
   objectType: string;
   onReorder: (objs: ParsedSkylarkObjectContentObject[]) => void;
   inEditMode?: boolean;
-  draggedObject?: ParsedSkylarkObjectContentObject | undefined;
+  showDropArea?: boolean;
 }
 
 export const PanelContentItemOrderInput = ({
@@ -87,7 +89,7 @@ export const PanelContent = ({
   inEditMode,
   objectType,
   onReorder,
-  draggedObject,
+  showDropArea,
 }: PanelContentProps) => {
   const removeItem = (uid: string) => {
     const filtered = objects.filter(({ object }) => uid !== object.uid);
@@ -116,7 +118,7 @@ export const PanelContent = ({
     onReorder(updatedObjects);
   };
 
-  if (draggedObject)
+  if (showDropArea)
     return (
       <div
         ref={setNodeRef}
@@ -141,7 +143,10 @@ export const PanelContent = ({
         {objects.map((item, index) => {
           const { object, config, position, isNewObject } = item;
 
-          const primaryKey = getPrimaryKey(item);
+          const primaryKey = [
+            config.primaryField || "",
+            ...DISPLAY_NAME_PRIORITY,
+          ].find((field) => !!object[field]);
 
           return (
             <Reorder.Item

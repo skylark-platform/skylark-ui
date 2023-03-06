@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
@@ -10,6 +10,8 @@ import {
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectContentObject,
   BuiltInSkylarkObjectType,
+  ParsedSkylarkObject,
+  CustomSkylarkObjectContentObject,
 } from "src/interfaces/skylark";
 
 import {
@@ -24,11 +26,8 @@ interface PanelProps {
   objectType: string;
   closePanel?: () => void;
   uid: string;
-  draggedObject?: ParsedSkylarkObjectContentObject;
-  newContentObject?: ParsedSkylarkObjectContentObject;
-  updateNewContentObject?: Dispatch<
-    SetStateAction<ParsedSkylarkObjectContentObject | undefined>
-  >;
+  showDropArea?: boolean;
+  droppedObject?: ParsedSkylarkObject;
 }
 
 enum PanelTab {
@@ -48,20 +47,30 @@ const getTitle = (
   return title as string;
 };
 
+function parseSkylarkObjectContent(
+  skylarkObject: ParsedSkylarkObject,
+): ParsedSkylarkObjectContentObject {
+  return {
+    config: skylarkObject.config,
+    object: skylarkObject.metadata,
+    objectType: skylarkObject.objectType,
+    position: 1,
+  };
+}
+
 export const Panel = ({
   closePanel,
   objectType,
   uid,
-  draggedObject,
-  newContentObject,
-  updateNewContentObject,
+  showDropArea,
+  droppedObject,
 }: PanelProps) => {
   const { data, isLoading, query, variables, isError, isNotFound, error } =
     useGetObject(objectType, uid);
 
   const [inEditMode, setEditMode] = useState(false);
   const [contentObjects, setContentObjects] = useState<
-    ParsedSkylarkObjectContentObject[] | null
+    CustomSkylarkObjectContentObject[] | null
   >(null);
 
   const tabs = useMemo(
@@ -86,32 +95,27 @@ export const Panel = ({
 
   useEffect(() => {
     if (
-      newContentObject &&
+      droppedObject &&
       !contentObjects
         ?.map(({ object }) => object.uid)
-        .includes(newContentObject.object.uid) &&
+        .includes(droppedObject.uid) &&
       !data?.content?.objects
         ?.map(({ object }) => object.uid)
-        .includes(newContentObject.object.uid)
+        .includes(droppedObject.uid)
     ) {
+      const parseDroppedObject = parseSkylarkObjectContent(droppedObject);
       setContentObjects([
         ...(contentObjects || data?.content?.objects || []),
         {
-          ...newContentObject,
+          ...parseDroppedObject,
           position:
             (contentObjects?.length || data?.content?.objects.length || 0) + 1,
           isNewObject: true,
         },
       ]);
       setEditMode(true);
-      updateNewContentObject && updateNewContentObject(undefined);
     }
-  }, [
-    contentObjects,
-    data?.content?.objects,
-    newContentObject,
-    updateNewContentObject,
-  ]);
+  }, [contentObjects, data?.content?.objects, droppedObject]);
 
   const { updateObjectContent, isLoading: updatingObjectContents } =
     useUpdateObjectContent({
@@ -199,7 +203,7 @@ export const Panel = ({
               inEditMode={inEditMode}
               objectType={objectType}
               onReorder={setContentObjects}
-              draggedObject={draggedObject}
+              showDropArea={showDropArea}
             />
           )}
         </>
