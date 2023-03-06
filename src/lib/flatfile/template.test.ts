@@ -1,3 +1,4 @@
+import { TEMPLATE_FIELDS_TO_IGNORE } from "src/constants/flatfile";
 import { NormalizedObjectField } from "src/interfaces/skylark";
 
 import { convertObjectInputToFlatfileSchema } from "./template";
@@ -213,5 +214,17 @@ describe("input type parsing", () => {
         type: "string",
       },
     });
+  });
+
+  test("doesn't add a field in TEMPLATE_FIELDS_TO_IGNORE", () => {
+    const input: NormalizedObjectField = {
+      ...defaultInput,
+      name: TEMPLATE_FIELDS_TO_IGNORE[0],
+      type: "string",
+    };
+
+    const { properties } = convertObjectInputToFlatfileSchema([input]);
+
+    expect(properties).toEqual({});
   });
 });

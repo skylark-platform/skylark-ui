@@ -1,4 +1,7 @@
-import { TEMPLATE_REGEX } from "src/constants/flatfile";
+import {
+  TEMPLATE_FIELDS_TO_IGNORE,
+  TEMPLATE_REGEX,
+} from "src/constants/flatfile";
 import {
   FlatfileTemplate,
   FlatfileTemplatePropertyBoolean,
@@ -88,14 +91,16 @@ export const convertObjectInputToFlatfileSchema = (
     .filter((input) => input.isRequired)
     .map((input) => input.name);
 
-  const properties = inputs.reduce((previousProperties, input) => {
-    const convertedInput = convertObjectInputFieldToFlatfileProperty(input);
+  const properties = inputs
+    .filter(({ name }) => !TEMPLATE_FIELDS_TO_IGNORE.includes(name))
+    .reduce((previousProperties, input) => {
+      const convertedInput = convertObjectInputFieldToFlatfileProperty(input);
 
-    return {
-      ...previousProperties,
-      [input.name]: convertedInput,
-    };
-  }, {});
+      return {
+        ...previousProperties,
+        [input.name]: convertedInput,
+      };
+    }, {});
 
   const schema: FlatfileTemplate = {
     type: "object",

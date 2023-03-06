@@ -15,7 +15,11 @@ export const FLATFILE_ORG = {
   id: process.env.FLATFILE_TEAM_ID as string,
   name: "Skylark",
 };
-
+// Fields in Skylark that shouldn't show in the import flow
+export const TEMPLATE_FIELDS_TO_IGNORE = [
+  "data_source_id",
+  "data_source_fields",
+];
 export const TEMPLATE_REGEX = {
   // Skylark uses built in Appsync GraphQL Scalars from: https://docs.aws.amazon.com/appsync/latest/devguide/scalars.html
   // These regex's validate Flatfile inputs to ensure they match the GraphQL formats so we don't cause API errors

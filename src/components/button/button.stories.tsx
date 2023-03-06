@@ -91,6 +91,12 @@ GhostIconOnly.args = {
   Icon: <BsPlusCircle className="text-xl" />,
 };
 
+export const Link = Template.bind({});
+Link.args = {
+  ...defaultProps,
+  variant: "link",
+};
+
 export const Success = Template.bind({});
 Success.args = {
   ...defaultProps,

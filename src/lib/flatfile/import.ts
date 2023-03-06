@@ -1,8 +1,10 @@
 import { ITheme } from "@flatfile/sdk/dist/types";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import { GraphQLClient } from "graphql-request";
 import { EnumType, jsonToGraphQLQuery } from "json-to-graphql-query";
 
+import { TEMPLATE_FIELDS_TO_IGNORE } from "src/constants/flatfile";
 import {
   FlatfileObjectsCreatedInSkylark,
   FlatfileObjectsCreatedInSkylarkFields,
@@ -11,11 +13,15 @@ import {
 import {
   GQLSkylarkError,
   GQLSkylarkErrorResponse,
+  NormalizedObjectField,
+  NormalizedObjectFieldType,
   SkylarkImportedObject,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
 import { getSkylarkObjectOperations } from "src/lib/skylark/introspection/introspection";
 import { hasProperty } from "src/lib/utils";
+
+dayjs.extend(customParseFormat);
 
 const chunkArray = <T>(arr: T[], chunkSize: number) => {
   const chunkedArray: T[][] = [];
@@ -32,6 +38,22 @@ const validateAndParseDate = (type: string, value: string) => {
     throw new Error(`Value given for ${type} is an invalid format: "${value}"`);
   }
   return dayjs(value);
+};
+
+const validateAndParseTime = (value: string) => {
+  const defaultParsed = dayjs(value);
+  const hourMinutesSeconds = dayjs(value, "HH:mm:ss");
+  const hourMinutes = dayjs(value, "HH:mm");
+
+  const parsedTime =
+    (defaultParsed.isValid() && defaultParsed) ||
+    (hourMinutesSeconds.isValid() && hourMinutesSeconds) ||
+    (hourMinutes.isValid() && hourMinutes);
+
+  if (!parsedTime) {
+    throw new Error(`Value given for time is an invalid format: "${value}"`);
+  }
+  return parsedTime;
 };
 
 export const openFlatfileImportClient = async (
@@ -56,6 +78,37 @@ export const openFlatfileImportClient = async (
       onComplete(payload.batchId);
     },
   });
+};
+
+const parseCSVInputFieldValue = (
+  value: string | number | boolean,
+  type: NormalizedObjectFieldType,
+): string | number | boolean | EnumType => {
+  if (type === "enum") {
+    return new EnumType(value as string);
+  }
+  if (type === "datetime") {
+    return validateAndParseDate(type, value as string).toISOString();
+  }
+  if (type === "date") {
+    return validateAndParseDate(type, value as string).format("YYYY-MM-DDZ");
+  }
+  if (type === "time") {
+    return validateAndParseTime(value as string).format("HH:mm:ss.SSSZ");
+  }
+  if (type === "timestamp") {
+    return validateAndParseDate(type, value as string).unix();
+  }
+  if (type === "int") {
+    return parseInt(value as string);
+  }
+  if (type === "float") {
+    return parseFloat(value as string);
+  }
+  if (type === "json") {
+    return value;
+  }
+  return value;
 };
 
 export const createFlatfileObjectsInSkylark = async (
@@ -98,55 +151,18 @@ export const createFlatfileObjectsInSkylark = async (
                   return null;
                 }
 
-                console.log(key, value);
-
                 const input = skylarkObjectOperations.create.inputs.find(
                   (createInput) => createInput.name === key,
                 );
-                if (input?.type === "enum") {
-                  return [key, new EnumType(value as string)];
+                if (!input) {
+                  return null;
                 }
-                if (input?.type === "datetime") {
-                  return [
-                    key,
-                    validateAndParseDate(
-                      input.type,
-                      value as string,
-                    ).toISOString(),
-                  ];
-                }
-                if (input?.type === "date") {
-                  return [
-                    key,
-                    validateAndParseDate(input.type, value as string).format(
-                      "YYYY-MM-DDZ",
-                    ),
-                  ];
-                }
-                if (input?.type === "time") {
-                  return [
-                    key,
-                    validateAndParseDate(input.type, value as string).format(
-                      "HH:mm:ss.SSSZ",
-                    ),
-                  ];
-                }
-                if (input?.type === "timestamp") {
-                  return [
-                    key,
-                    validateAndParseDate(input.type, value as string).unix(),
-                  ];
-                }
-                if (input?.type === "int") {
-                  return [key, parseInt(value as string)];
-                }
-                if (input?.type === "float") {
-                  return [key, parseFloat(value as string)];
-                }
-                if (input?.type === "json") {
-                  return [key, parseFloat(value as string)];
-                }
-                return [key, value];
+
+                const parsedFieldValue = parseCSVInputFieldValue(
+                  value,
+                  input.type,
+                );
+                return [key, parsedFieldValue];
               })
               .filter((value) => value !== null) as [
               string,
@@ -220,4 +236,83 @@ export const createFlatfileObjectsInSkylark = async (
     data,
     errors,
   };
+};
+
+const getExampleData = (
+  { type, enumValues }: NormalizedObjectField,
+  rowNum: number,
+): string | number | boolean | EnumType => {
+  const now = dayjs().toString();
+  const examples: Record<
+    NormalizedObjectFieldType,
+    (string | number | boolean | EnumType)[]
+  > = {
+    string: ["string1", "string2", "string3"],
+    int: [10, 22, 300, -5],
+    float: [1.2, 20.23, 0.2],
+    boolean: [true, false],
+    enum: enumValues as string[],
+    url: ["http://example.com", "https://example.com"],
+    date: [
+      parseCSVInputFieldValue(now, type),
+      parseCSVInputFieldValue("2011-02-02", type),
+    ],
+    datetime: [
+      parseCSVInputFieldValue(now, type),
+      parseCSVInputFieldValue("2023-03-06T11:12:05Z", type),
+    ],
+    time: [parseCSVInputFieldValue(now, "time"), "14:04", "10:30:11"],
+    timestamp: [
+      parseCSVInputFieldValue(now, type),
+      parseCSVInputFieldValue("1678101125", type),
+    ],
+    email: ["customer@email.com", "mail@email.co.uk"],
+    ipaddress: [
+      "0.0.0.0",
+      "9.255.255.255",
+      "21DA:D3:0:2F3B:2AA:FF:FE28:9C5A",
+      "1200:0000:AB00:1234:0000:2552:7777:1313",
+    ],
+    json: [],
+    phone: ["+447975777666", "+12025886500"],
+  };
+
+  return examples[type]?.[rowNum] !== "" &&
+    examples[type]?.[rowNum] !== undefined
+    ? examples[type]?.[rowNum]
+    : "";
+};
+
+export const generateExampleCSV = (
+  objectMeta: SkylarkObjectMeta | null,
+): string | null => {
+  const inputs = objectMeta?.operations.create.inputs.filter(
+    ({ name }) => !TEMPLATE_FIELDS_TO_IGNORE.includes(name),
+  );
+
+  if (!inputs || inputs.length === 0) {
+    return null;
+  }
+
+  const columns = inputs
+    .map(({ name, isRequired }) => (isRequired ? `${name} (required)` : name))
+    .join(",");
+  const blankRow = inputs.length > 1 ? ",".repeat(inputs.length - 1) : ",";
+
+  const exampleRows: string[] = [];
+
+  let exampleRowNum = 0;
+  while (
+    exampleRows[exampleRows.length - 1] !== blankRow &&
+    exampleRows[exampleRows.length - 1] !== ""
+  ) {
+    const examples = inputs.map((input) =>
+      getExampleData(input, exampleRowNum),
+    );
+    exampleRowNum += 1;
+    exampleRows.push(examples.join(","));
+  }
+
+  const csv = [columns, ...exampleRows].join("\n");
+  return csv;
 };

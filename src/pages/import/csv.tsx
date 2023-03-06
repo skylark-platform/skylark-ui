@@ -17,6 +17,7 @@ import {
 } from "src/interfaces/skylark";
 import {
   createFlatfileObjectsInSkylark,
+  generateExampleCSV,
   openFlatfileImportClient,
 } from "src/lib/flatfile";
 import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
@@ -257,6 +258,8 @@ export default function CSVImportPage() {
       ?.sort()
       .map((objectType) => ({ label: objectType, value: objectType })) || [];
 
+  const exampleCSV = generateExampleCSV(objectOperations);
+
   return (
     <div className="flex h-full w-full flex-col sm:flex-row">
       <section className="flex w-full flex-col space-y-3 p-10 pt-24 sm:w-1/2 sm:space-y-5 md:px-20 md:pt-48 lg:w-1/2 xl:w-2/5 xl:px-24 2xl:w-1/3 2xl:px-28">
@@ -285,6 +288,17 @@ export default function CSVImportPage() {
         >
           Import
         </Button>
+        {exampleCSV && (
+          <Button
+            variant="link"
+            href={
+              "data:text/plain;charset=utf-8," + encodeURIComponent(exampleCSV)
+            }
+            downloadName={`${objectType}_example.csv`}
+          >
+            Download Example CSV
+          </Button>
+        )}
       </section>
       <section className="flex flex-grow flex-col items-center justify-center bg-gray-200 py-10">
         <div className="flex w-5/6 flex-col items-center justify-center space-y-2 md:space-y-3 lg:w-3/5 xl:w-1/2 2xl:w-1/3">
