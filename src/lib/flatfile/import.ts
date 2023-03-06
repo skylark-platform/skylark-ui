@@ -1,5 +1,6 @@
 import { ITheme } from "@flatfile/sdk/dist/types";
 import dayjs from "dayjs";
+import advancedFormat from "dayjs/plugin/advancedFormat";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { GraphQLClient } from "graphql-request";
 import { EnumType, jsonToGraphQLQuery } from "json-to-graphql-query";
@@ -22,6 +23,7 @@ import { getSkylarkObjectOperations } from "src/lib/skylark/introspection/intros
 import { hasProperty } from "src/lib/utils";
 
 dayjs.extend(customParseFormat);
+dayjs.extend(advancedFormat);
 
 const chunkArray = <T>(arr: T[], chunkSize: number) => {
   const chunkedArray: T[][] = [];
@@ -33,27 +35,24 @@ const chunkArray = <T>(arr: T[], chunkSize: number) => {
   return chunkedArray;
 };
 
-const validateAndParseDate = (type: string, value: string) => {
-  if (!dayjs(value as string).isValid()) {
-    throw new Error(`Value given for ${type} is an invalid format: "${value}"`);
+const validateAndParseDate = (
+  type: string,
+  value: string,
+  formats?: string[],
+) => {
+  const validFormat = formats?.find((format) => dayjs(value, format).isValid());
+  if (validFormat) {
+    return dayjs(value, validFormat);
+  }
+
+  if (!dayjs(value).isValid()) {
+    throw new Error(
+      `Value given for ${type} is an invalid format: "${value}"${
+        formats ? `. Valid formats: "${formats?.join('", "')}"` : ""
+      }`,
+    );
   }
   return dayjs(value);
-};
-
-const validateAndParseTime = (value: string) => {
-  const defaultParsed = dayjs(value);
-  const hourMinutesSeconds = dayjs(value, "HH:mm:ss");
-  const hourMinutes = dayjs(value, "HH:mm");
-
-  const parsedTime =
-    (defaultParsed.isValid() && defaultParsed) ||
-    (hourMinutesSeconds.isValid() && hourMinutesSeconds) ||
-    (hourMinutes.isValid() && hourMinutes);
-
-  if (!parsedTime) {
-    throw new Error(`Value given for time is an invalid format: "${value}"`);
-  }
-  return parsedTime;
 };
 
 export const openFlatfileImportClient = async (
@@ -91,13 +90,22 @@ const parseCSVInputFieldValue = (
     return validateAndParseDate(type, value as string).toISOString();
   }
   if (type === "date") {
-    return validateAndParseDate(type, value as string).format("YYYY-MM-DDZ");
+    return validateAndParseDate(type, value as string, [
+      "YYYY-MM-DD",
+      "YYYY-MM-DDZ",
+      "DD/MM/YYYY",
+    ]).format("YYYY-MM-DDZ");
   }
   if (type === "time") {
-    return validateAndParseTime(value as string).format("HH:mm:ss.SSSZ");
+    return validateAndParseDate(type, value as string, [
+      "HH:mm:ss",
+      "HH:mm",
+      "HH:mm:ssZ",
+      "HH:mmZ",
+    ]).format("HH:mm:ss.SSSZ");
   }
   if (type === "timestamp") {
-    return validateAndParseDate(type, value as string).unix();
+    return validateAndParseDate(type, value as string, ["X", "x"]).unix();
   }
   if (type === "int") {
     return parseInt(value as string);
@@ -242,7 +250,7 @@ const getExampleData = (
   { type, enumValues }: NormalizedObjectField,
   rowNum: number,
 ): string | number | boolean | EnumType => {
-  const now = dayjs().toString();
+  const now = dayjs();
   const examples: Record<
     NormalizedObjectFieldType,
     (string | number | boolean | EnumType)[]
@@ -254,16 +262,20 @@ const getExampleData = (
     enum: enumValues as string[],
     url: ["http://example.com", "https://example.com"],
     date: [
-      parseCSVInputFieldValue(now, type),
+      parseCSVInputFieldValue(now.format("YYYY-MM-DD"), type),
       parseCSVInputFieldValue("2011-02-02", type),
     ],
     datetime: [
-      parseCSVInputFieldValue(now, type),
+      parseCSVInputFieldValue(now.toISOString(), type),
       parseCSVInputFieldValue("2023-03-06T11:12:05Z", type),
     ],
-    time: [parseCSVInputFieldValue(now, "time"), "14:04", "10:30:11"],
+    time: [
+      parseCSVInputFieldValue(now.format("HH:mm:ss"), "time"),
+      "14:04",
+      "10:30:11",
+    ],
     timestamp: [
-      parseCSVInputFieldValue(now, type),
+      parseCSVInputFieldValue(now.unix(), type),
       parseCSVInputFieldValue("1678101125", type),
     ],
     email: ["customer@email.com", "mail@email.co.uk"],
