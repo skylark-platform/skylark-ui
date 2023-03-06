@@ -11,7 +11,7 @@ import {
   ParsedSkylarkObjectContentObject,
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
-  CustomSkylarkObjectContentObject,
+  AddedSkylarkObjectContentObject,
 } from "src/interfaces/skylark";
 
 import {
@@ -72,7 +72,7 @@ export const Panel = ({
 
   const [inEditMode, setEditMode] = useState(false);
   const [contentObjects, setContentObjects] = useState<
-    CustomSkylarkObjectContentObject[] | null
+    AddedSkylarkObjectContentObject[] | null
   >(null);
 
   const tabs = useMemo(

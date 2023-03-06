@@ -35,7 +35,7 @@ export interface ParsedSkylarkObjectContentObject {
   position: number;
 }
 
-export interface CustomSkylarkObjectContentObject
+export interface AddedSkylarkObjectContentObject
   extends ParsedSkylarkObjectContentObject {
   isNewObject?: boolean;
 }

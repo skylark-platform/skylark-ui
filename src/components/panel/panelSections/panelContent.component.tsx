@@ -8,11 +8,11 @@ import { Pill } from "src/components/pill";
 import { DISPLAY_NAME_PRIORITY, DROPPABLE_ID } from "src/constants/skylark";
 import {
   ParsedSkylarkObjectContentObject,
-  CustomSkylarkObjectContentObject,
+  AddedSkylarkObjectContentObject,
 } from "src/interfaces/skylark";
 
 interface PanelContentProps {
-  objects: CustomSkylarkObjectContentObject[];
+  objects: AddedSkylarkObjectContentObject[];
   objectType: string;
   onReorder: (objs: ParsedSkylarkObjectContentObject[]) => void;
   inEditMode?: boolean;

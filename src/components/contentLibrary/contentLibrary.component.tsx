@@ -49,14 +49,14 @@ export const ContentLibrary = () => {
   }, [activePanelObject, objectListingWidth]);
 
   useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
+    const handleMouseClick = (event: MouseEvent) => {
       mousePosition.current = event.clientX;
     };
 
-    window.addEventListener("mousedown", handleMouseMove);
+    window.addEventListener("mousedown", handleMouseClick);
 
     return () => {
-      window.removeEventListener("mousedown", handleMouseMove);
+      window.removeEventListener("mousedown", handleMouseClick);
     };
   }, []);
 
