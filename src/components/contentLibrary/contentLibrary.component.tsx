@@ -31,7 +31,7 @@ export const ContentLibrary = () => {
     ParsedSkylarkObject | undefined
   >(undefined);
   const [windowSize, setWindowSize] = useState(0);
-  const [mousePosition, setMouseXPosition] = useState(0);
+  const mousePosition = useRef(0);
 
   const objectListingWidth = useMotionValue<number | undefined>(undefined);
   const objectListingRef = useRef<HTMLInputElement | null>(null);
@@ -51,7 +51,7 @@ export const ContentLibrary = () => {
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
-      setMouseXPosition(event.clientX);
+      mousePosition.current = event.clientX;
     };
 
     window.addEventListener("mousedown", handleMouseMove);
@@ -74,10 +74,9 @@ export const ContentLibrary = () => {
   );
 
   const handleMeasure = (element: HTMLElement) => {
-    // console.log("get mouse here ?");
     return {
       ...getClientRect(element),
-      left: mousePosition,
+      left: mousePosition.current,
     };
   };
 
@@ -159,6 +158,7 @@ export const ContentLibrary = () => {
               objectType={activePanelObject.objectType}
               showDropArea={!!draggedObject}
               droppedObject={droppedObject}
+              clearDroppedObject={() => setDroppedObject(undefined)}
             />
           </m.div>
         )}

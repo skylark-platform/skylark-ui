@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Dispatch, useEffect, useMemo, useState } from "react";
 
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
@@ -28,6 +28,7 @@ interface PanelProps {
   uid: string;
   showDropArea?: boolean;
   droppedObject?: ParsedSkylarkObject;
+  clearDroppedObject?: () => void;
 }
 
 enum PanelTab {
@@ -64,6 +65,7 @@ export const Panel = ({
   uid,
   showDropArea,
   droppedObject,
+  clearDroppedObject,
 }: PanelProps) => {
   const { data, isLoading, query, variables, isError, isNotFound, error } =
     useGetObject(objectType, uid);
@@ -114,6 +116,7 @@ export const Panel = ({
         },
       ]);
       setEditMode(true);
+      clearDroppedObject && clearDroppedObject();
     }
   }, [contentObjects, data?.content?.objects, droppedObject]);
 
