@@ -70,6 +70,7 @@ describe("createFlatfileObjectsInSkylark", () => {
         title,
         synopsis,
         type,
+        date: "",
       },
     },
     {
@@ -128,7 +129,69 @@ describe("createFlatfileObjectsInSkylark", () => {
     });
   });
 
-  // TODO add test for errors
+  test("throws an error when a date is an invalid format", async () => {
+    await expect(
+      createFlatfileObjectsInSkylark(flatfileClient, "Episode", "batchId", [
+        {
+          id: 1,
+          status: "completed",
+          valid: true,
+          data: {
+            release_date: "invalidformat",
+          },
+        },
+      ]),
+    ).rejects.toThrow(
+      'Value given for date is an invalid format: "invalidformat". Valid formats: "YYYY-MM-DD", "YYYY-MM-DDZ", "DD/MM/YYYY"',
+    );
+  });
+
+  test("errors are returned", async () => {
+    const errors = [
+      {
+        path: ["createEveryFieldType_d021204b_9165_4eb9_92b2_d9b82e32d469_1"],
+        data: null,
+        errorType: "TypeError",
+        errorInfo: null,
+        locations: [{ line: 2, column: 5, sourceName: null }],
+        message:
+          "Unexpected type <class 'int'> for attribute timestamp. Expected <class 'str'>",
+      },
+      {
+        path: ["createEveryFieldType_d021204b_9165_4eb9_92b2_d9b82e32d469_2"],
+        data: null,
+        errorType: "TypeError",
+        errorInfo: null,
+        locations: [{ line: 6, column: 5, sourceName: null }],
+        message:
+          "Unexpected type <class 'int'> for attribute timestamp. Expected <class 'str'>",
+      },
+      {
+        path: ["createEveryFieldType_d021204b_9165_4eb9_92b2_d9b82e32d469_3"],
+        data: null,
+        errorType: "ExternalIDException",
+        errorInfo: null,
+        locations: [{ line: 10, column: 5, sourceName: null }],
+        message: "External ID string3 already exists",
+      },
+    ];
+    server.use(
+      graphql.mutation("createEpisode_batchId", (req, res, ctx) => {
+        return res(ctx.errors(errors));
+      }),
+    );
+
+    const got = await createFlatfileObjectsInSkylark(
+      flatfileClient,
+      "Episode",
+      "batchId",
+      flatfileRows,
+    );
+
+    expect(got.data).toEqual([]);
+    expect(got.errors.length).toEqual(3);
+    expect(got.errors).toEqual(errors);
+  });
 });
 
 describe("generateExampleCSV", () => {
