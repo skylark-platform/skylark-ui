@@ -2,7 +2,11 @@ import { rest } from "msw";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createMocks, Mocks } from "node-mocks-http";
 
-import { erroredFlatfileAccessKeyExchangeHandler } from "src/__tests__/mocks/handlers/flatfile";
+import {
+  erroredFlatfileAccessKeyExchangeHandler,
+  mockFlatfileGetFinalDatabaseView,
+  mockFlatfileGetFinalDatabaseViewPaginated,
+} from "src/__tests__/mocks/handlers/flatfile";
 import { skylarkObjectTypesHandler } from "src/__tests__/mocks/handlers/introspectionHandlers";
 import { server } from "src/__tests__/mocks/server";
 import * as constants from "src/constants/flatfile";
@@ -139,7 +143,7 @@ describe("validated request", () => {
     expect(res._getStatusCode()).toBe(500);
   });
 
-  test("returns 200 status and created data imported from Flatfile with non-accepted data filtered out", async () => {
+  test("returns 200 status and Flatfile import data", async () => {
     // Arrange
     server.use(skylarkObjectTypesHandler(["Episode"]));
 
@@ -148,24 +152,30 @@ describe("validated request", () => {
 
     // Assert
     expect(res._getStatusCode()).toBe(200);
-    expect(res._getData()).toEqual({
-      rows: [
-        {
-          id: 1,
-          status: "accepted",
-          valid: true,
-          data: {
-            title: "episode 1",
-          },
-        },
-        {
-          id: 2,
-          status: "accepted",
-          valid: true,
-          data: { title: "episode 2" },
-        },
-      ],
-      totalRows: 2,
+    expect(res._getData()).toEqual(
+      mockFlatfileGetFinalDatabaseView.getFinalDatabaseView,
+    );
+  });
+
+  test("returns 200 status and Flatfile import data when offset is given", async () => {
+    // Arrange
+    server.use(skylarkObjectTypesHandler(["Episode"]));
+    const requestMocks = createMocks({
+      method: "POST",
+      body: {
+        batchId: "batchId",
+        limit: 1000,
+        offset: 20,
+      },
     });
+
+    // Act
+    await handler(requestMocks.req, requestMocks.res);
+
+    // Assert
+    expect(requestMocks.res._getStatusCode()).toBe(200);
+    expect(requestMocks.res._getData()).toEqual(
+      mockFlatfileGetFinalDatabaseViewPaginated.getFinalDatabaseView,
+    );
   });
 });

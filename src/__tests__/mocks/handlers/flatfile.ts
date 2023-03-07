@@ -45,6 +45,25 @@ export const mockFlatfileGetFinalDatabaseView: FlatfileGetFinalDatabaseViewRespo
     },
   };
 
+export const mockFlatfileGetFinalDatabaseViewPaginated: FlatfileGetFinalDatabaseViewResponse =
+  {
+    getFinalDatabaseView: {
+      totalRows: rows.length,
+      rows: [
+        {
+          ...rows[0],
+          id: 100,
+          data: { title: "paginated 1" },
+        },
+        {
+          ...rows[1],
+          id: 101,
+          data: { title: "paginated 2" },
+        },
+      ],
+    },
+  };
+
 export const erroredFlatfileAccessKeyExchangeHandler = rest.post(
   "https://api.us.flatfile.io/auth/access-key/exchange/",
   (req, res, ctx) => {
@@ -84,9 +103,15 @@ export const flatfileHandlers = [
     },
   ),
 
-  graphql.query("GET_FINAL_DATABASE_VIEW", (req, res, ctx) => {
-    return res(ctx.data(mockFlatfileGetFinalDatabaseView));
-  }),
+  graphql.query(
+    "GET_FINAL_DATABASE_VIEW",
+    ({ variables: { offset } }, res, ctx) => {
+      if (offset) {
+        return res(ctx.data(mockFlatfileGetFinalDatabaseViewPaginated));
+      }
+      return res(ctx.data(mockFlatfileGetFinalDatabaseView));
+    },
+  ),
 
   graphql.query("GET_TEMPLATES", (req, res, ctx) => {
     const data: FlatfileGetTemplatesResponse = {
