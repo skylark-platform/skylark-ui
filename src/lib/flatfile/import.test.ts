@@ -266,7 +266,7 @@ describe("generateExampleCSV", () => {
     const got = generateExampleCSV(
       skylarkObjectMeta as unknown as SkylarkObjectMeta,
     );
-    expect(got).toEqual("string (required)\nstring1\nstring2\nstring3\n");
+    expect(got).toEqual("string (required)\nexample\n");
   });
 
   it("returns all exampleData when the object has all field types", () => {
@@ -313,10 +313,9 @@ describe("generateExampleCSV", () => {
     expect(gotHeaders).toEqual(types.join(","));
     expect(got)
       .toEqual(`string,int,float,enum,datetime,date,time,timestamp,email,url,ipaddress,json,phone,boolean
-string1,10,1.2,enum1,2023-03-06T14:39:46.000Z,2023-03-06+00:00,14:39:46.000+00:00,1678113586,customer@email.com,http://example.com,0.0.0.0,,+447975777666,true
-string2,22,20.23,enum2,2023-03-06T11:12:05.000Z,2011-02-02+00:00,14:04,1678101125,mail@email.co.uk,https://example.com,9.255.255.255,,+12025886500,false
-string3,300,0.2,enum3,,,10:30:11,,,,21DA:D3:0:2F3B:2AA:FF:FE28:9C5A,,,
-,-5,,,,,,,,,1200:0000:AB00:1234:0000:2552:7777:1313,,,
+example,10,1.2,enum1,2023-03-06T14:39:46.000Z,2023-03-06+00:00,14:39:46.000+00:00,1678113586,customer@email.com,http://example.com,0.0.0.0,,+447975777666,true
+,-5,20.23,enum2,2023-03-06T11:12:05.000Z,2011-02-02+00:00,14:04,1678101125,mail@email.co.uk,https://example.com,9.255.255.255,,+12025886500,false
+,,0.2,enum3,,,10:30:11,,,,21DA:D3:0:2F3B:2AA:FF:FE28:9C5A,,,
 ,,,,,,,,,,,,,`);
   });
 });

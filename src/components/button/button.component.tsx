@@ -48,8 +48,11 @@ export const Button = ({
     variant === "link" && "btn-link",
     success && !disabled && !loading && "btn-success text-white",
     danger && "btn-error",
-    !iconOnly && (disabled || loading) && "bg-disabled btn-disabled",
-    iconOnly &&
+    !iconOnly &&
+      variant !== "link" &&
+      (disabled || loading) &&
+      "bg-disabled btn-disabled",
+    (iconOnly || variant === "link") &&
       disabled &&
       "btn-disabled bg-transparent disabled:bg-transparent",
     block && "btn-block",

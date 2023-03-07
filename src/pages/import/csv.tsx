@@ -262,7 +262,7 @@ export default function CSVImportPage() {
 
   return (
     <div className="flex h-full w-full flex-col sm:flex-row">
-      <section className="flex w-full flex-col space-y-3 p-10 pt-24 sm:w-1/2 sm:space-y-5 md:px-20 md:pt-48 lg:w-1/2 xl:w-2/5 xl:px-24 2xl:w-1/3 2xl:px-28">
+      <section className="flex w-full flex-col space-y-3 p-10 pb-6 pt-24 sm:w-1/2 sm:space-y-5 md:px-20 md:pt-48 lg:w-1/2 xl:w-2/5 xl:px-24 2xl:w-1/3 2xl:px-28">
         <h2 className="font-heading text-2xl font-bold md:text-3xl">
           Import from CSV
         </h2>
@@ -288,17 +288,22 @@ export default function CSVImportPage() {
         >
           Import
         </Button>
-        {exampleCSV && (
-          <Button
-            variant="link"
-            href={
-              "data:text/plain;charset=utf-8," + encodeURIComponent(exampleCSV)
-            }
-            downloadName={`${objectType}_example.csv`}
-          >
-            Download Example CSV
-          </Button>
-        )}
+        <Button
+          variant="link"
+          href={
+            "data:text/plain;charset=utf-8," +
+            encodeURIComponent(exampleCSV as string)
+          }
+          downloadName={`${objectType}_example.csv`}
+          disabled={
+            !exampleCSV ||
+            !objectType ||
+            !objectOperations ||
+            state.prep !== statusType.pending
+          }
+        >
+          Download Example CSV
+        </Button>
       </section>
       <section className="flex flex-grow flex-col items-center justify-center bg-gray-200 py-10">
         <div className="flex w-5/6 flex-col items-center justify-center space-y-2 md:space-y-3 lg:w-3/5 xl:w-1/2 2xl:w-1/3">

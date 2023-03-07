@@ -255,8 +255,8 @@ const getExampleData = (
     NormalizedObjectFieldType,
     (string | number | boolean | EnumType)[]
   > = {
-    string: ["string1", "string2", "string3"],
-    int: [10, 22, 300, -5],
+    string: ["example"],
+    int: [10, -5],
     float: [1.2, 20.23, 0.2],
     boolean: [true, false],
     enum: enumValues as string[],
@@ -279,12 +279,7 @@ const getExampleData = (
       parseCSVInputFieldValue("1678101125", type),
     ],
     email: ["customer@email.com", "mail@email.co.uk"],
-    ipaddress: [
-      "0.0.0.0",
-      "9.255.255.255",
-      "21DA:D3:0:2F3B:2AA:FF:FE28:9C5A",
-      "1200:0000:AB00:1234:0000:2552:7777:1313",
-    ],
+    ipaddress: ["0.0.0.0", "9.255.255.255", "21DA:D3:0:2F3B:2AA:FF:FE28:9C5A"],
     json: [],
     phone: ["+447975777666", "+12025886500"],
   };
