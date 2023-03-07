@@ -1,4 +1,4 @@
-import { graphql, rest } from "msw";
+import { rest } from "msw";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createMocks, Mocks } from "node-mocks-http";
 
@@ -6,7 +6,7 @@ import { erroredFlatfileAccessKeyExchangeHandler } from "src/__tests__/mocks/han
 import { skylarkObjectTypesHandler } from "src/__tests__/mocks/handlers/introspectionHandlers";
 import { server } from "src/__tests__/mocks/server";
 import * as constants from "src/constants/flatfile";
-import { SkylarkImportedObject } from "src/interfaces/skylark";
+import { FlatfileRow } from "src/interfaces/flatfile/responses";
 import handler from "src/pages/api/flatfile/import";
 
 const mockConstants = constants as {
@@ -64,47 +64,29 @@ describe("request validation", () => {
     expect(res._getStatusCode()).toBe(500);
   });
 
-  test("returns 500 when the objectType is missing from the request body", async () => {
+  test("returns 500 when the batchId is empty in the request body", async () => {
     const { req, res } = createMocks({
       method: "POST",
       body: {
-        batchId: "123",
+        batchId: "",
       },
     });
 
     await handler(req, res);
 
     expect(res._getStatusCode()).toBe(500);
-    expect(res._getData()).toEqual("batchId and objectType are mandatory");
-  });
-
-  test("returns 500 when the graphQLToken is missing from the request body", async () => {
-    const { req, res } = createMocks({
-      method: "POST",
-      body: {
-        batchId: "123",
-        objectType: "Episode",
-        graphQLUri: "/graphql",
-      },
-    });
-
-    await handler(req, res);
-
-    expect(res._getStatusCode()).toBe(500);
-    expect(res._getData()).toEqual(
-      "Skylark GraphQL URI and Access Key are mandatory",
-    );
+    expect(res._getData()).toEqual("batchId is mandatory");
   });
 });
 
 describe("validated request", () => {
   let req: Mocks<
     NextApiRequest,
-    NextApiResponse<string | SkylarkImportedObject[]>
+    NextApiResponse<string | FlatfileRow[]>
   >["req"];
   let res: Mocks<
     NextApiRequest,
-    NextApiResponse<string | SkylarkImportedObject[]>
+    NextApiResponse<string | FlatfileRow[]>
   >["res"];
 
   beforeEach(() => {
@@ -119,20 +101,6 @@ describe("validated request", () => {
     });
     req = requestMocks.req;
     res = requestMocks.res;
-  });
-
-  test("returns 500 when the object type is not valid", async () => {
-    // Arrange
-    server.use(skylarkObjectTypesHandler());
-
-    // Act
-    await handler(req, res);
-
-    // Assert
-    expect(res._getData()).toEqual(
-      `Object type "Episode" does not exist in Skylark`,
-    );
-    expect(res._getStatusCode()).toBe(500);
   });
 
   test("returns 500 and the error message while getting a token from Flatfile", async () => {
@@ -175,11 +143,6 @@ describe("validated request", () => {
   test("returns 200 status and created data imported from Flatfile with non-accepted data filtered out", async () => {
     // Arrange
     server.use(skylarkObjectTypesHandler(["Episode"]));
-    server.use(
-      graphql.mutation("createEpisode_batchId", (req, res, ctx) => {
-        return res(ctx.data([{ external_id: "external_1", uid: "1" }]));
-      }),
-    );
 
     // Act
     await handler(req, res);
@@ -188,8 +151,12 @@ describe("validated request", () => {
     expect(res._getStatusCode()).toBe(200);
     expect(res._getData()).toEqual([
       {
-        external_id: "external_1",
-        uid: "1",
+        id: 1,
+        status: "accepted",
+        valid: true,
+        data: {
+          title: "episode 1",
+        },
       },
     ]);
   });

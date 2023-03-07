@@ -1,4 +1,8 @@
 import {
+  TEMPLATE_FIELDS_TO_IGNORE,
+  TEMPLATE_REGEX,
+} from "src/constants/flatfile";
+import {
   FlatfileTemplate,
   FlatfileTemplatePropertyBoolean,
   FlatfileTemplatePropertyEmail,
@@ -50,6 +54,28 @@ const convertObjectInputFieldToFlatfileProperty = (
         format: "email",
       } as FlatfileTemplatePropertyEmail;
 
+    case "url":
+      return {
+        label: field?.name,
+        type: "string",
+        regexp: {
+          pattern: TEMPLATE_REGEX.url,
+          flags: "isg",
+          ignoreBlanks: true,
+        },
+      } as FlatfileTemplatePropertyString;
+
+    case "ipaddress":
+      return {
+        label: field?.name,
+        type: "string",
+        regexp: {
+          pattern: TEMPLATE_REGEX.ipaddress,
+          flags: "isg",
+          ignoreBlanks: true,
+        },
+      } as FlatfileTemplatePropertyString;
+
     default:
       return {
         label: field?.name,
@@ -65,14 +91,16 @@ export const convertObjectInputToFlatfileSchema = (
     .filter((input) => input.isRequired)
     .map((input) => input.name);
 
-  const properties = inputs.reduce((previousProperties, input) => {
-    const convertedInput = convertObjectInputFieldToFlatfileProperty(input);
+  const properties = inputs
+    .filter(({ name }) => !TEMPLATE_FIELDS_TO_IGNORE.includes(name))
+    .reduce((previousProperties, input) => {
+      const convertedInput = convertObjectInputFieldToFlatfileProperty(input);
 
-    return {
-      ...previousProperties,
-      [input.name]: convertedInput,
-    };
-  }, {});
+      return {
+        ...previousProperties,
+        [input.name]: convertedInput,
+      };
+    }, {});
 
   const schema: FlatfileTemplate = {
     type: "object",

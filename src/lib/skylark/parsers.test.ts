@@ -26,7 +26,7 @@ describe("parseObjectInputFields", () => {
       },
       {
         input: "AWSTimestamp",
-        want: "time",
+        want: "timestamp",
       },
       {
         input: "AWSTime",
@@ -47,6 +47,18 @@ describe("parseObjectInputFields", () => {
       {
         input: "AWSPhone",
         want: "phone",
+      },
+      {
+        input: "AWSURL",
+        want: "url",
+      },
+      {
+        input: "AWSIPAddress",
+        want: "ipaddress",
+      },
+      {
+        input: "AWSJSON",
+        want: "json",
       },
       {
         input: "Int",
@@ -196,12 +208,20 @@ describe("parseObjectRelationships", () => {
           ...defaultType,
           inputFields: [
             {
-              name: "episode",
-              type: defaultType,
+              name: "episodes",
+              type: {
+                ...defaultType,
+                name: "EpisodeRelationshipInput",
+                kind: "INPUT_OBJECT",
+              },
             },
             {
-              name: "brand",
-              type: defaultType,
+              name: "brands",
+              type: {
+                ...defaultType,
+                name: "BrandRelationshipInput",
+                kind: "INPUT_OBJECT",
+              },
             },
           ],
         },
@@ -209,7 +229,10 @@ describe("parseObjectRelationships", () => {
     ];
 
     const got = parseObjectRelationships(fields);
-    expect(got).toEqual(["episode", "brand"]);
+    expect(got).toEqual([
+      { objectType: "Episode", relationshipName: "episodes" },
+      { objectType: "Brand", relationshipName: "brands" },
+    ]);
   });
 });
 

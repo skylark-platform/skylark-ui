@@ -6,7 +6,7 @@ import { CgSpinner } from "react-icons/cg";
 export interface ButtonProps {
   onClick?: () => void;
   children?: ReactNode;
-  variant: "primary" | "outline" | "ghost";
+  variant: "primary" | "outline" | "ghost" | "link";
   loading?: boolean;
   success?: boolean;
   danger?: boolean;
@@ -15,6 +15,7 @@ export interface ButtonProps {
   block?: boolean;
   Icon?: JSX.Element;
   href?: string;
+  downloadName?: string;
   type?: "button" | "submit" | "reset";
 }
 
@@ -30,6 +31,7 @@ export const Button = ({
   block,
   Icon,
   href,
+  downloadName,
   type,
 }: ButtonProps) => {
   const iconOnly = Icon && !children;
@@ -43,10 +45,14 @@ export const Button = ({
     variant === "outline" &&
       "btn-outline btn-primary disabled:border-none disabled:shadow",
     variant === "ghost" && "btn-ghost text-black hover:bg-transparent p-0",
+    variant === "link" && "btn-link",
     success && !disabled && !loading && "btn-success text-white",
     danger && "btn-error",
-    !iconOnly && (disabled || loading) && "bg-disabled btn-disabled",
-    iconOnly &&
+    !iconOnly &&
+      variant !== "link" &&
+      (disabled || loading) &&
+      "bg-disabled btn-disabled",
+    (iconOnly || variant === "link") &&
       disabled &&
       "btn-disabled bg-transparent disabled:bg-transparent",
     block && "btn-block",
@@ -56,7 +62,7 @@ export const Button = ({
   if (href) {
     return (
       <Link legacyBehavior href={href}>
-        <a className={combinedClassName}>
+        <a className={combinedClassName} download={downloadName}>
           {Icon}
           {children}
         </a>

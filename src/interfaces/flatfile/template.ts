@@ -11,7 +11,7 @@ export interface FlatfileTemplatePropertyString
   extends FlatfileTemplatePropertyValue {
   type: "string";
   regexp?: {
-    pattern: "regex";
+    pattern: string;
     flags: string;
     ignoreBlanks: boolean;
   };

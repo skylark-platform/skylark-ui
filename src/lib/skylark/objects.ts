@@ -103,7 +103,12 @@ export const getObjectOperations = (
       })
     : null;
 
-  const createMeta = getMutationInfo(createMutation, objectType, "create");
+  // Parse the relationships out of the create mutation as it has a relationships parameter
+  const { relationships, ...createMeta } = getMutationInfo(
+    createMutation,
+    objectType,
+    "create",
+  );
   const updateMeta = getMutationInfo(updateMutation, objectType, "update");
 
   const operations: SkylarkObjectOperations = {
@@ -120,21 +125,18 @@ export const getObjectOperations = (
       name: createMutation.name,
       argName: createMeta.argName,
       inputs: createMeta.inputs,
-      relationships: createMeta.relationships,
     },
     update: {
       type: "Mutation",
       name: updateMutation.name,
       argName: updateMeta.argName,
       inputs: updateMeta.inputs,
-      relationships: updateMeta.relationships,
     },
     delete: {
       type: "Mutation",
       name: deleteMutation.name,
       argName: "",
       inputs: [],
-      relationships: [],
     },
   };
 
@@ -144,6 +146,7 @@ export const getObjectOperations = (
     images,
     operations,
     availability,
+    relationships,
   };
 
   return object;

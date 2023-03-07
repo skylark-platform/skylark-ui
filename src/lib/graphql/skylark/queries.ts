@@ -46,6 +46,10 @@ export const GET_SKYLARK_SCHEMA = gql`
                   }
                   inputFields {
                     name
+                    type {
+                      name
+                      kind
+                    }
                   }
                 }
               }

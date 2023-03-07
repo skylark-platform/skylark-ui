@@ -9,13 +9,19 @@ import {
   useSkylarkObjectTypes,
 } from "src/hooks/useSkylarkObjectTypes";
 import { ApiRouteTemplateData } from "src/interfaces/apiRoutes";
+import { FlatfileRow } from "src/interfaces/flatfile/responses";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
 import {
   NormalizedObjectField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import { openFlatfileImportClient } from "src/lib/flatfile";
+import {
+  createFlatfileObjectsInSkylark,
+  generateExampleCSV,
+  openFlatfileImportClient,
+} from "src/lib/flatfile";
 import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
+import { createSkylarkClient } from "src/lib/graphql/skylark/client";
 import { createAccountIdentifier, pause } from "src/lib/utils";
 
 type ImportStates = "select" | "prep" | "import" | "create";
@@ -44,11 +50,9 @@ const createFlatfileTemplate = async (
   return data;
 };
 
-const importFlatfileDataToSkylark = async (
+const getImportedFlatfileData = async (
   objectType: SkylarkObjectType,
   batchId: string,
-  graphQLUri: string,
-  graphQLToken: string,
 ) => {
   const res = await fetch("/api/flatfile/import", {
     headers: {
@@ -58,12 +62,10 @@ const importFlatfileDataToSkylark = async (
     body: JSON.stringify({
       objectType,
       batchId,
-      graphQLUri,
-      graphQLToken,
     }),
   });
 
-  const data = (await res.json()) as ApiRouteTemplateData;
+  const data = (await res.json()) as FlatfileRow[];
 
   return data;
 };
@@ -107,10 +109,12 @@ const copyText: {
     title: "Create objects in Skylark",
     messages: {
       pending: "Your imported data will be created",
-      inProgress: "Your {objectType}s are being created in Skylark",
+      inProgress:
+        "{objectType} objects being created in Skylark. Do not refresh the page...",
       success:
-        "Your {objectType}s have been successfully imported into Skylark",
-      error: "Error while creating {objectType}s",
+        "{numCreated} {objectType} objects have been successfully imported into Skylark",
+      error:
+        "Error creating {numErrored} {objectType} objects ({numCreated} created). Check the console or try again.",
     },
   },
 };
@@ -143,6 +147,10 @@ export default function CSVImportPage() {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [{ numCreated, numErrored }, setObjectAmounts] = useState({
+    numCreated: 0,
+    numErrored: 0,
+  });
 
   const createObjectsInSkylark = async (batchId: string) => {
     dispatch({ stage: "import", status: statusType.success });
@@ -156,13 +164,38 @@ export default function CSVImportPage() {
       );
     }
 
-    await importFlatfileDataToSkylark(
-      objectType,
-      batchId,
-      graphQLUri,
-      graphQLToken,
-    );
-    dispatch({ stage: "create", status: statusType.success });
+    let numObjectsToCreate = 0;
+    try {
+      const acceptedData = await getImportedFlatfileData(objectType, batchId);
+      numObjectsToCreate = acceptedData.length;
+
+      const skylarkClient = createSkylarkClient(graphQLUri, graphQLToken);
+
+      const skylarkObjects = await createFlatfileObjectsInSkylark(
+        skylarkClient,
+        objectType,
+        batchId,
+        acceptedData,
+      );
+
+      setObjectAmounts({
+        numCreated: skylarkObjects.data.length,
+        numErrored: skylarkObjects.errors.length,
+      });
+      if (skylarkObjects.errors.length > 0) {
+        console.error("Errors creating objects:", skylarkObjects.errors);
+        dispatch({ stage: "create", status: statusType.error });
+      } else {
+        dispatch({ stage: "create", status: statusType.success });
+      }
+    } catch (err) {
+      console.error(err);
+      setObjectAmounts({
+        numCreated: 0,
+        numErrored: numObjectsToCreate,
+      });
+      dispatch({ stage: "create", status: statusType.error });
+    }
   };
 
   const onClick = async () => {
@@ -216,9 +249,11 @@ export default function CSVImportPage() {
       ?.sort()
       .map((objectType) => ({ label: objectType, value: objectType })) || [];
 
+  const exampleCSV = generateExampleCSV(objectOperations);
+
   return (
     <div className="flex h-full w-full flex-col sm:flex-row">
-      <section className="flex w-full flex-col space-y-3 p-10 pt-24 sm:w-1/2 sm:space-y-5 md:px-20 md:pt-48 lg:w-1/2 xl:w-2/5 xl:px-24 2xl:w-1/3 2xl:px-28">
+      <section className="flex w-full flex-col space-y-3 p-10 pb-6 pt-24 sm:w-1/2 sm:space-y-5 md:px-20 md:pt-48 lg:w-1/2 xl:w-2/5 xl:px-24 2xl:w-1/3 2xl:px-28">
         <h2 className="font-heading text-2xl font-bold md:text-3xl">
           Import from CSV
         </h2>
@@ -244,6 +279,22 @@ export default function CSVImportPage() {
         >
           Import
         </Button>
+        <Button
+          variant="link"
+          href={
+            "data:text/plain;charset=utf-8," +
+            encodeURIComponent(exampleCSV as string)
+          }
+          downloadName={`${objectType}_example.csv`}
+          disabled={
+            !exampleCSV ||
+            !objectType ||
+            !objectOperations ||
+            state.prep !== statusType.pending
+          }
+        >
+          Download Example CSV
+        </Button>
       </section>
       <section className="flex flex-grow flex-col items-center justify-center bg-gray-200 py-10">
         <div className="flex w-5/6 flex-col items-center justify-center space-y-2 md:space-y-3 lg:w-3/5 xl:w-1/2 2xl:w-1/3">
@@ -255,10 +306,10 @@ export default function CSVImportPage() {
               <StatusCard
                 key={copyCard.title}
                 title={copyCard.title}
-                description={copyCard.messages[status].replace(
-                  "{objectType}",
-                  objectType,
-                )}
+                description={copyCard.messages[status]
+                  .replace("{objectType}", objectType)
+                  .replace("{numCreated}", numCreated.toString())
+                  .replace("{numErrored}", numErrored.toString())}
                 status={status}
               />
             );
@@ -275,7 +326,10 @@ export default function CSVImportPage() {
             <Button
               onClick={() => dispatch({ stage: "reset" })}
               variant="outline"
-              disabled={state.create !== statusType.success}
+              disabled={
+                state.create !== statusType.success &&
+                state.create !== statusType.error
+              }
             >
               New import
             </Button>
