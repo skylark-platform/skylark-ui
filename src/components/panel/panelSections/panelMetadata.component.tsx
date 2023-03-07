@@ -66,7 +66,7 @@ export const PanelMetadata = ({ metadata, objectType }: PanelMetadataProps) => {
     : Object.keys(metadata);
 
   return (
-    <div className="h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20">
+    <div className="overflow-anywhere h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20">
       {metadata &&
         metadataProperties.map(
           (property) =>

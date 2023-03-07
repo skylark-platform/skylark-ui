@@ -21,6 +21,12 @@
   }
 }
 
+@layer utilities {
+  .overflow-anywhere {
+    overflow-wrap: anywhere;
+  }
+}
+
 /* Overrides for GraphiQL Explorer */
 .graphiql-explorer-graphql-arguments span,
 .graphiql-explorer-objects span {
