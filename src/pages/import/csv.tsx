@@ -121,7 +121,7 @@ const copyText: {
       success:
         "{numCreated} {objectType} objects have been successfully imported into Skylark",
       error:
-        "Error creating {numErrored} {objectType} objects ({numCreated} created). Check the console or try again.",
+        "Error creating {numErrored} {objectType} objects ({numCreated}/{totalImportedToFlatfile} created). Check the console or try again.",
     },
   },
 };
@@ -154,7 +154,11 @@ export default function CSVImportPage() {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [{ numCreated, numErrored }, setObjectAmounts] = useState({
+  const [
+    { numCreated, numErrored, totalImportedToFlatfile },
+    setObjectAmounts,
+  ] = useState({
+    totalImportedToFlatfile: 0,
     numCreated: 0,
     numErrored: 0,
   });
@@ -212,6 +216,7 @@ export default function CSVImportPage() {
       );
 
       setObjectAmounts({
+        totalImportedToFlatfile: numObjectsToCreate,
         numCreated: skylarkObjects.data.length,
         numErrored: skylarkObjects.errors.length,
       });
@@ -224,6 +229,7 @@ export default function CSVImportPage() {
     } catch (err) {
       console.error(err);
       setObjectAmounts({
+        totalImportedToFlatfile: numObjectsToCreate,
         numCreated: 0,
         numErrored: numObjectsToCreate,
       });
@@ -341,6 +347,10 @@ export default function CSVImportPage() {
                 title={copyCard.title}
                 description={copyCard.messages[status]
                   .replace("{objectType}", objectType)
+                  .replace(
+                    "{totalImportedToFlatfile}",
+                    totalImportedToFlatfile.toString(),
+                  )
                   .replace("{numCreated}", numCreated.toString())
                   .replace("{numErrored}", numErrored.toString())}
                 status={status}

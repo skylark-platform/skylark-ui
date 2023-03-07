@@ -179,6 +179,53 @@ describe("Import/CSV", () => {
       cy.percySnapshot("import/csv - import complete");
     });
 
+    it("fail to create objects in Skylark", { retries: 0 }, () => {
+      cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
+        if (operationNameStartsWith(req, "createEpisode_")) {
+          req.reply({
+            fixture:
+              "./skylark/mutations/import/csvImportEpisodeCreationErrored.json",
+          });
+        }
+      });
+
+      cy.get('[data-cy="select"]').click();
+      cy.get('[data-cy="select-options"]').should("be.visible");
+      cy.get('[data-cy="select-options"]')
+        .get("li > span")
+        .contains("Episode")
+        .click();
+      cy.get("button").contains("Import").click();
+
+      cy.get(".flatfile-sdk iframe").should("not.exist");
+
+      cy.wait("@getImportedObjects");
+
+      cy.get('[data-cy="status-card"].border-t-success', {
+        timeout: 10000,
+      }).should("have.length", 3);
+      cy.get('[data-cy="status-card"]')
+        .last()
+        .should("have.class", "border-t-error");
+
+      // Should match the number of errors/data in the fixture
+      cy.contains("Error creating 1 Episode objects (4/5 created)");
+
+      cy.get("a")
+        .contains("Start curating")
+        .should("have.class", "btn-disabled");
+      cy.get(".btn-outline")
+        .contains("New import")
+        .should("not.have.class", "btn-disabled");
+
+      cy.get("button").contains("Import").should("be.disabled");
+      cy.get('[data-cy="select"]').should("be.disabled");
+
+      cy.percySnapshot(
+        "import/csv - import failed (skylark object creation error)",
+      );
+    });
+
     it("can click new import to reset the state", () => {
       cy.get('[data-cy="select"]').click();
       cy.get('[data-cy="select-options"]').should("be.visible");
