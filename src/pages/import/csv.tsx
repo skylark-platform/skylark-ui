@@ -53,8 +53,6 @@ const createFlatfileTemplate = async (
 const getImportedFlatfileData = async (
   objectType: SkylarkObjectType,
   batchId: string,
-  graphQLUri: string,
-  graphQLToken: string,
 ) => {
   const res = await fetch("/api/flatfile/import", {
     headers: {
@@ -64,8 +62,6 @@ const getImportedFlatfileData = async (
     body: JSON.stringify({
       objectType,
       batchId,
-      graphQLUri,
-      graphQLToken,
     }),
   });
 
@@ -170,12 +166,7 @@ export default function CSVImportPage() {
 
     let numObjectsToCreate = 0;
     try {
-      const acceptedData = await getImportedFlatfileData(
-        objectType,
-        batchId,
-        graphQLUri,
-        graphQLToken,
-      );
+      const acceptedData = await getImportedFlatfileData(objectType, batchId);
       numObjectsToCreate = acceptedData.length;
 
       const skylarkClient = createSkylarkClient(graphQLUri, graphQLToken);

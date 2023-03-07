@@ -190,9 +190,7 @@ export const createFlatfileObjectsInSkylark = async (
 
             const updatedOperations = {
               ...previousOperations,
-              [`${mutationPrefix}_${id}`]: {
-                ...operation,
-              },
+              [`${mutationPrefix}_${id}`]: operation,
             };
             return updatedOperations;
           },

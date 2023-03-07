@@ -10,8 +10,6 @@ import {
   getFlatfileFinalDatabaseView,
 } from "src/lib/flatfile";
 import { createFlatfileClient } from "src/lib/graphql/flatfile/client";
-import { createSkylarkClient } from "src/lib/graphql/skylark/client";
-import { getSkylarkObjectTypes } from "src/lib/skylark/introspection/introspection";
 
 export default async function handler(
   req: NextApiRequest,
@@ -33,26 +31,9 @@ export default async function handler(
       .send("No Flatfile Access Key ID or Flatfile Secret supplied");
   }
 
-  const { batchId, objectType, graphQLUri, graphQLToken } = body;
-  if (!batchId || !objectType) {
-    return res.status(500).send("batchId and objectType are mandatory");
-  }
-
-  if (!graphQLUri || !graphQLToken) {
-    return res
-      .status(500)
-      .send("Skylark GraphQL URI and Access Key are mandatory");
-  }
-
-  const skylarkClient = createSkylarkClient(graphQLUri, graphQLToken);
-
-  const objects = await getSkylarkObjectTypes(skylarkClient);
-  const isObjectValid = objects.find((object) => object === objectType);
-
-  if (!isObjectValid) {
-    return res
-      .status(500)
-      .send(`Object type "${objectType}" does not exist in Skylark`);
+  const { batchId } = body;
+  if (!batchId) {
+    return res.status(500).send("batchId is mandatory");
   }
 
   let flatfileAccessToken = "";
