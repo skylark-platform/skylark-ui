@@ -26,9 +26,7 @@ const PanelMetadataProperty = ({
 }) => (
   <div>
     <h3 className="mb-2 font-bold ">{formatObjectField(property)}</h3>
-    <div className="mb-4 break-words break-all text-base-content">
-      {value ? value : "---"}
-    </div>
+    <div className="mb-4 text-base-content">{value ? value : "---"}</div>
   </div>
 );
 
@@ -68,7 +66,7 @@ export const PanelMetadata = ({ metadata, objectType }: PanelMetadataProps) => {
     : Object.keys(metadata);
 
   return (
-    <div className="h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20">
+    <div className="overflow-anywhere h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20">
       {metadata &&
         metadataProperties.map(
           (property) =>
