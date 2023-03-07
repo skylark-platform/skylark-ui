@@ -4,7 +4,10 @@ import {
   FLATFILE_ACCESS_KEY_ID,
   FLATFILE_SECRET_KEY,
 } from "src/constants/flatfile";
-import { FlatfileRow } from "src/interfaces/flatfile/responses";
+import {
+  ApiRouteFlatfileImportRequestBody,
+  ApiRouteFlatfileImportResponse,
+} from "src/interfaces/apiRoutes";
 import {
   exchangeFlatfileAccessKey,
   getFlatfileFinalDatabaseView,
@@ -13,7 +16,7 @@ import { createFlatfileClient } from "src/lib/graphql/flatfile/client";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<FlatfileRow[] | string>,
+  res: NextApiResponse<ApiRouteFlatfileImportResponse | string>,
 ) {
   if (req.method !== "POST") {
     return res.status(501).end();
@@ -31,9 +34,9 @@ export default async function handler(
       .send("No Flatfile Access Key ID or Flatfile Secret supplied");
   }
 
-  const { batchId } = body;
-  if (!batchId) {
-    return res.status(500).send("batchId is mandatory");
+  const { batchId, limit, offset }: ApiRouteFlatfileImportRequestBody = body;
+  if (!batchId || !limit) {
+    return res.status(500).send("batchId and limit are mandatory");
   }
 
   let flatfileAccessToken = "";
@@ -56,10 +59,15 @@ export default async function handler(
   const finalDatabaseView = await getFlatfileFinalDatabaseView(
     flatfileClient,
     batchId,
+    limit,
+    offset,
   );
   const flatfileRows = finalDatabaseView.rows.filter(
     (item) => item.status === "accepted" && item.valid,
   );
 
-  return res.status(200).send(flatfileRows);
+  return res.status(200).send({
+    totalRows: finalDatabaseView.totalRows,
+    rows: flatfileRows,
+  });
 }

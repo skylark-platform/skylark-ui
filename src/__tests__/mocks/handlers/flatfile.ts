@@ -31,8 +31,8 @@ const rows: FlatfileRow[] = [
   },
   {
     id: 2,
-    status: "invalid",
-    valid: false, // This one will be filtered out, if it breaks the GraphQL mutation below will fail
+    status: "accepted",
+    valid: true,
     data: { title: "episode 2" },
   },
 ];
@@ -40,6 +40,7 @@ const rows: FlatfileRow[] = [
 export const mockFlatfileGetFinalDatabaseView: FlatfileGetFinalDatabaseViewResponse =
   {
     getFinalDatabaseView: {
+      totalRows: rows.length,
       rows,
     },
   };

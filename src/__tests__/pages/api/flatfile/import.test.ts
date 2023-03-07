@@ -6,6 +6,7 @@ import { erroredFlatfileAccessKeyExchangeHandler } from "src/__tests__/mocks/han
 import { skylarkObjectTypesHandler } from "src/__tests__/mocks/handlers/introspectionHandlers";
 import { server } from "src/__tests__/mocks/server";
 import * as constants from "src/constants/flatfile";
+import { ApiRouteFlatfileImportResponse } from "src/interfaces/apiRoutes";
 import { FlatfileRow } from "src/interfaces/flatfile/responses";
 import handler from "src/pages/api/flatfile/import";
 
@@ -64,7 +65,7 @@ describe("request validation", () => {
     expect(res._getStatusCode()).toBe(500);
   });
 
-  test("returns 500 when the batchId is empty in the request body", async () => {
+  test("returns 500 when the limit isn't given in the request body", async () => {
     const { req, res } = createMocks({
       method: "POST",
       body: {
@@ -75,18 +76,18 @@ describe("request validation", () => {
     await handler(req, res);
 
     expect(res._getStatusCode()).toBe(500);
-    expect(res._getData()).toEqual("batchId is mandatory");
+    expect(res._getData()).toEqual("batchId and limit are mandatory");
   });
 });
 
 describe("validated request", () => {
   let req: Mocks<
     NextApiRequest,
-    NextApiResponse<string | FlatfileRow[]>
+    NextApiResponse<string | ApiRouteFlatfileImportResponse>
   >["req"];
   let res: Mocks<
     NextApiRequest,
-    NextApiResponse<string | FlatfileRow[]>
+    NextApiResponse<string | ApiRouteFlatfileImportResponse>
   >["res"];
 
   beforeEach(() => {
@@ -94,9 +95,7 @@ describe("validated request", () => {
       method: "POST",
       body: {
         batchId: "batchId",
-        objectType: "Episode",
-        graphQLUri: "http://localhost:3000/graphql",
-        graphQLToken: "token",
+        limit: 1000,
       },
     });
     req = requestMocks.req;
@@ -149,15 +148,24 @@ describe("validated request", () => {
 
     // Assert
     expect(res._getStatusCode()).toBe(200);
-    expect(res._getData()).toEqual([
-      {
-        id: 1,
-        status: "accepted",
-        valid: true,
-        data: {
-          title: "episode 1",
+    expect(res._getData()).toEqual({
+      rows: [
+        {
+          id: 1,
+          status: "accepted",
+          valid: true,
+          data: {
+            title: "episode 1",
+          },
         },
-      },
-    ]);
+        {
+          id: 2,
+          status: "accepted",
+          valid: true,
+          data: { title: "episode 2" },
+        },
+      ],
+      totalRows: 2,
+    });
   });
 });
