@@ -99,10 +99,6 @@ export const AddAuthTokenModal = ({
         queryKey: [QueryKeys.Schema],
         type: "active",
       });
-      await queryClient.refetchQueries({
-        queryKey: [QueryKeys.ObjectTypes],
-        type: "active",
-      });
 
       setIsOpen(false);
     }
