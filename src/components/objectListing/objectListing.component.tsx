@@ -9,7 +9,6 @@ import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useVirtual } from "react-virtual";
 
 import { Checkbox } from "src/components/checkbox";
-import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { Spinner } from "src/components/icons";
 import { Pill } from "src/components/pill";
 import {
@@ -97,7 +96,7 @@ const createColumns = (
   const languagesColumn = columnHelper.accessor(
     OBJECT_LIST_TABLE.columnIds.availableLanguages,
     {
-      header: formatObjectField("Languages"),
+      header: formatObjectField("Available Languages"),
       cell: (props) => <TableCell {...props} />,
     },
   );
