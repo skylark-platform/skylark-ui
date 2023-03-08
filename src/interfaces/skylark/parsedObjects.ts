@@ -35,6 +35,11 @@ export interface ParsedSkylarkObjectContentObject {
   position: number;
 }
 
+export interface AddedSkylarkObjectContentObject
+  extends ParsedSkylarkObjectContentObject {
+  isNewObject?: boolean;
+}
+
 export interface ParsedSkylarkObjectContent {
   objects: ParsedSkylarkObjectContentObject[];
 }
