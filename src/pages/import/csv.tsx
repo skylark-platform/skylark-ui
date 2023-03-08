@@ -8,7 +8,11 @@ import {
   useSkylarkObjectOperations,
   useSkylarkObjectTypes,
 } from "src/hooks/useSkylarkObjectTypes";
-import { ApiRouteTemplateData } from "src/interfaces/apiRoutes";
+import {
+  ApiRouteFlatfileImportRequestBody,
+  ApiRouteFlatfileImportResponse,
+  ApiRouteTemplateData,
+} from "src/interfaces/apiRoutes";
 import { FlatfileRow } from "src/interfaces/flatfile/responses";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
 import {
@@ -51,21 +55,24 @@ const createFlatfileTemplate = async (
 };
 
 const getImportedFlatfileData = async (
-  objectType: SkylarkObjectType,
   batchId: string,
+  limit: number,
+  offset: number,
 ) => {
+  const body: ApiRouteFlatfileImportRequestBody = {
+    batchId,
+    offset,
+    limit,
+  };
   const res = await fetch("/api/flatfile/import", {
     headers: {
       "Content-Type": "application/json",
     },
     method: "POST",
-    body: JSON.stringify({
-      objectType,
-      batchId,
-    }),
+    body: JSON.stringify(body),
   });
 
-  const data = (await res.json()) as FlatfileRow[];
+  const data = (await res.json()) as ApiRouteFlatfileImportResponse;
 
   return data;
 };
@@ -114,7 +121,7 @@ const copyText: {
       success:
         "{numCreated} {objectType} objects have been successfully imported into Skylark",
       error:
-        "Error creating {numErrored} {objectType} objects ({numCreated} created). Check the console or try again.",
+        "Error creating {numErrored} {objectType} objects ({numCreated}/{totalImportedToFlatfile} created). Check the console or try again.",
     },
   },
 };
@@ -147,7 +154,11 @@ export default function CSVImportPage() {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [{ numCreated, numErrored }, setObjectAmounts] = useState({
+  const [
+    { numCreated, numErrored, totalImportedToFlatfile },
+    setObjectAmounts,
+  ] = useState({
+    totalImportedToFlatfile: 0,
     numCreated: 0,
     numErrored: 0,
   });
@@ -166,8 +177,34 @@ export default function CSVImportPage() {
 
     let numObjectsToCreate = 0;
     try {
-      const acceptedData = await getImportedFlatfileData(objectType, batchId);
-      numObjectsToCreate = acceptedData.length;
+      const flatfileRequestLimit = 1000;
+      const acceptedData: FlatfileRow[] = [];
+
+      const { rows: intialRows, totalRows } = await getImportedFlatfileData(
+        batchId,
+        flatfileRequestLimit,
+        0,
+      );
+
+      acceptedData.push(...intialRows);
+      numObjectsToCreate = totalRows;
+
+      if (totalRows > intialRows.length) {
+        // Floor because of the initial request
+        const requestsToMake = Math.floor(totalRows / flatfileRequestLimit);
+        const additionalRequests = await Promise.all(
+          Array.from({ length: requestsToMake }, (_, i) => ({
+            offset: (i + 1) * flatfileRequestLimit,
+          })).map(({ offset }) =>
+            getImportedFlatfileData(batchId, flatfileRequestLimit, offset),
+          ),
+        );
+
+        const flattenedAdditionalRows = additionalRequests.flatMap(
+          ({ rows }) => rows,
+        );
+        acceptedData.push(...flattenedAdditionalRows);
+      }
 
       const skylarkClient = createSkylarkClient(graphQLUri, graphQLToken);
 
@@ -179,6 +216,7 @@ export default function CSVImportPage() {
       );
 
       setObjectAmounts({
+        totalImportedToFlatfile: numObjectsToCreate,
         numCreated: skylarkObjects.data.length,
         numErrored: skylarkObjects.errors.length,
       });
@@ -191,6 +229,7 @@ export default function CSVImportPage() {
     } catch (err) {
       console.error(err);
       setObjectAmounts({
+        totalImportedToFlatfile: numObjectsToCreate,
         numCreated: 0,
         numErrored: numObjectsToCreate,
       });
@@ -308,6 +347,10 @@ export default function CSVImportPage() {
                 title={copyCard.title}
                 description={copyCard.messages[status]
                   .replace("{objectType}", objectType)
+                  .replace(
+                    "{totalImportedToFlatfile}",
+                    totalImportedToFlatfile.toString(),
+                  )
                   .replace("{numCreated}", numCreated.toString())
                   .replace("{numErrored}", numErrored.toString())}
                 status={status}

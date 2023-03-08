@@ -31,8 +31,8 @@ const rows: FlatfileRow[] = [
   },
   {
     id: 2,
-    status: "invalid",
-    valid: false, // This one will be filtered out, if it breaks the GraphQL mutation below will fail
+    status: "accepted",
+    valid: true,
     data: { title: "episode 2" },
   },
 ];
@@ -40,7 +40,27 @@ const rows: FlatfileRow[] = [
 export const mockFlatfileGetFinalDatabaseView: FlatfileGetFinalDatabaseViewResponse =
   {
     getFinalDatabaseView: {
+      totalRows: rows.length,
       rows,
+    },
+  };
+
+export const mockFlatfileGetFinalDatabaseViewPaginated: FlatfileGetFinalDatabaseViewResponse =
+  {
+    getFinalDatabaseView: {
+      totalRows: rows.length,
+      rows: [
+        {
+          ...rows[0],
+          id: 100,
+          data: { title: "paginated 1" },
+        },
+        {
+          ...rows[1],
+          id: 101,
+          data: { title: "paginated 2" },
+        },
+      ],
     },
   };
 
@@ -83,9 +103,15 @@ export const flatfileHandlers = [
     },
   ),
 
-  graphql.query("GET_FINAL_DATABASE_VIEW", (req, res, ctx) => {
-    return res(ctx.data(mockFlatfileGetFinalDatabaseView));
-  }),
+  graphql.query(
+    "GET_FINAL_DATABASE_VIEW",
+    ({ variables: { offset } }, res, ctx) => {
+      if (offset) {
+        return res(ctx.data(mockFlatfileGetFinalDatabaseViewPaginated));
+      }
+      return res(ctx.data(mockFlatfileGetFinalDatabaseView));
+    },
+  ),
 
   graphql.query("GET_TEMPLATES", (req, res, ctx) => {
     const data: FlatfileGetTemplatesResponse = {
