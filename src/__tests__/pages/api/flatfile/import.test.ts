@@ -7,11 +7,9 @@ import {
   mockFlatfileGetFinalDatabaseView,
   mockFlatfileGetFinalDatabaseViewPaginated,
 } from "src/__tests__/mocks/handlers/flatfile";
-import { skylarkObjectTypesHandler } from "src/__tests__/mocks/handlers/introspectionHandlers";
 import { server } from "src/__tests__/mocks/server";
 import * as constants from "src/constants/flatfile";
 import { ApiRouteFlatfileImportResponse } from "src/interfaces/apiRoutes";
-import { FlatfileRow } from "src/interfaces/flatfile/responses";
 import handler from "src/pages/api/flatfile/import";
 
 const mockConstants = constants as {
@@ -108,7 +106,6 @@ describe("validated request", () => {
 
   test("returns 500 and the error message while getting a token from Flatfile", async () => {
     // Arrange
-    server.use(skylarkObjectTypesHandler(["Episode"]));
     server.use(erroredFlatfileAccessKeyExchangeHandler);
 
     // Act
@@ -121,7 +118,6 @@ describe("validated request", () => {
 
   test("returns 500 and the error message when the Flatfile response is a bad format", async () => {
     // Arrange
-    server.use(skylarkObjectTypesHandler(["Episode"]));
     server.use(
       rest.post(
         "https://api.us.flatfile.io/auth/access-key/exchange/",
@@ -144,9 +140,6 @@ describe("validated request", () => {
   });
 
   test("returns 200 status and Flatfile import data", async () => {
-    // Arrange
-    server.use(skylarkObjectTypesHandler(["Episode"]));
-
     // Act
     await handler(req, res);
 
@@ -159,7 +152,6 @@ describe("validated request", () => {
 
   test("returns 200 status and Flatfile import data when offset is given", async () => {
     // Arrange
-    server.use(skylarkObjectTypesHandler(["Episode"]));
     const requestMocks = createMocks({
       method: "POST",
       body: {

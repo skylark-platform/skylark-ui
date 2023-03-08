@@ -4,6 +4,8 @@ import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
 import { useGetObject } from "src/hooks/useGetObject";
+import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
+import { useSkylarkSchemaIntrospection } from "src/hooks/useSkylarkSchemaIntrospection";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
 import {
   ParsedSkylarkObjectMetadata,

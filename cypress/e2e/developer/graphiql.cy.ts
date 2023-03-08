@@ -4,9 +4,9 @@ describe("GraphiQL Editor", () => {
   beforeEach(() => {
     cy.login();
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
+      if (hasOperationName(req, "IntrospectionQuery")) {
         req.reply({
-          fixture: "./skylark/queries/introspection/objectTypes.json",
+          fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
     });
