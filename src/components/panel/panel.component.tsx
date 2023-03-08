@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Dispatch, useEffect, useMemo, useState } from "react";
 
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
@@ -12,6 +12,8 @@ import {
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectContentObject,
   BuiltInSkylarkObjectType,
+  ParsedSkylarkObject,
+  AddedSkylarkObjectContentObject,
 } from "src/interfaces/skylark";
 
 import {
@@ -26,6 +28,9 @@ interface PanelProps {
   objectType: string;
   closePanel?: () => void;
   uid: string;
+  showDropArea?: boolean;
+  droppedObject?: ParsedSkylarkObject;
+  clearDroppedObject?: () => void;
 }
 
 enum PanelTab {
@@ -45,13 +50,31 @@ const getTitle = (
   return title as string;
 };
 
-export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
+function parseSkylarkObjectContent(
+  skylarkObject: ParsedSkylarkObject,
+): ParsedSkylarkObjectContentObject {
+  return {
+    config: skylarkObject.config,
+    object: skylarkObject.metadata,
+    objectType: skylarkObject.objectType,
+    position: 1,
+  };
+}
+
+export const Panel = ({
+  closePanel,
+  objectType,
+  uid,
+  showDropArea,
+  droppedObject,
+  clearDroppedObject,
+}: PanelProps) => {
   const { data, isLoading, query, variables, isError, isNotFound, error } =
     useGetObject(objectType, uid);
 
   const [inEditMode, setEditMode] = useState(false);
   const [contentObjects, setContentObjects] = useState<
-    ParsedSkylarkObjectContentObject[] | null
+    AddedSkylarkObjectContentObject[] | null
   >(null);
 
   const tabs = useMemo(
@@ -73,6 +96,31 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
     setContentObjects(null);
     setEditMode(false);
   }, [uid]);
+
+  useEffect(() => {
+    if (
+      droppedObject &&
+      !contentObjects
+        ?.map(({ object }) => object.uid)
+        .includes(droppedObject.uid) &&
+      !data?.content?.objects
+        ?.map(({ object }) => object.uid)
+        .includes(droppedObject.uid)
+    ) {
+      const parseDroppedObject = parseSkylarkObjectContent(droppedObject);
+      setContentObjects([
+        ...(contentObjects || data?.content?.objects || []),
+        {
+          ...parseDroppedObject,
+          position:
+            (contentObjects?.length || data?.content?.objects.length || 0) + 1,
+          isNewObject: true,
+        },
+      ]);
+      setEditMode(true);
+      clearDroppedObject && clearDroppedObject();
+    }
+  }, [contentObjects, data?.content?.objects, droppedObject]);
 
   const { updateObjectContent, isLoading: updatingObjectContents } =
     useUpdateObjectContent({
@@ -158,7 +206,9 @@ export const Panel = ({ closePanel, objectType, uid }: PanelProps) => {
             <PanelContent
               objects={contentObjects || data?.content?.objects}
               inEditMode={inEditMode}
+              objectType={objectType}
               onReorder={setContentObjects}
+              showDropArea={showDropArea}
             />
           )}
         </>

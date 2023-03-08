@@ -39,8 +39,18 @@ export const GET_TEMPLATES = gql`
 `;
 
 export const GET_FINAL_DATABASE_VIEW = gql`
-  query GET_FINAL_DATABASE_VIEW($batchId: UUID!) {
-    getFinalDatabaseView(batchId: $batchId, limit: 1000000) {
+  query GET_FINAL_DATABASE_VIEW(
+    $batchId: UUID!
+    $limit: Int!
+    $offset: Int = 0
+  ) {
+    getFinalDatabaseView(
+      status: "accepted"
+      batchId: $batchId
+      limit: $limit
+      skip: $offset
+    ) {
+      totalRows
       rows
     }
   }

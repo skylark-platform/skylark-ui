@@ -57,6 +57,7 @@ export interface FlatfileRow {
 export interface FlatfileGetFinalDatabaseViewResponse {
   getFinalDatabaseView: {
     rows: FlatfileRow[];
+    totalRows: number;
   };
 }
 

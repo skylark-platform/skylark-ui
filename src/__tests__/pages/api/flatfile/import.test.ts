@@ -2,10 +2,14 @@ import { rest } from "msw";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createMocks, Mocks } from "node-mocks-http";
 
-import { erroredFlatfileAccessKeyExchangeHandler } from "src/__tests__/mocks/handlers/flatfile";
+import {
+  erroredFlatfileAccessKeyExchangeHandler,
+  mockFlatfileGetFinalDatabaseView,
+  mockFlatfileGetFinalDatabaseViewPaginated,
+} from "src/__tests__/mocks/handlers/flatfile";
 import { server } from "src/__tests__/mocks/server";
 import * as constants from "src/constants/flatfile";
-import { FlatfileRow } from "src/interfaces/flatfile/responses";
+import { ApiRouteFlatfileImportResponse } from "src/interfaces/apiRoutes";
 import handler from "src/pages/api/flatfile/import";
 
 const mockConstants = constants as {
@@ -63,7 +67,7 @@ describe("request validation", () => {
     expect(res._getStatusCode()).toBe(500);
   });
 
-  test("returns 500 when the batchId is empty in the request body", async () => {
+  test("returns 500 when the limit isn't given in the request body", async () => {
     const { req, res } = createMocks({
       method: "POST",
       body: {
@@ -74,18 +78,18 @@ describe("request validation", () => {
     await handler(req, res);
 
     expect(res._getStatusCode()).toBe(500);
-    expect(res._getData()).toEqual("batchId is mandatory");
+    expect(res._getData()).toEqual("batchId and limit are mandatory");
   });
 });
 
 describe("validated request", () => {
   let req: Mocks<
     NextApiRequest,
-    NextApiResponse<string | FlatfileRow[]>
+    NextApiResponse<string | ApiRouteFlatfileImportResponse>
   >["req"];
   let res: Mocks<
     NextApiRequest,
-    NextApiResponse<string | FlatfileRow[]>
+    NextApiResponse<string | ApiRouteFlatfileImportResponse>
   >["res"];
 
   beforeEach(() => {
@@ -93,9 +97,7 @@ describe("validated request", () => {
       method: "POST",
       body: {
         batchId: "batchId",
-        objectType: "Episode",
-        graphQLUri: "http://localhost:3000/graphql",
-        graphQLToken: "token",
+        limit: 1000,
       },
     });
     req = requestMocks.req;
@@ -137,21 +139,35 @@ describe("validated request", () => {
     expect(res._getStatusCode()).toBe(500);
   });
 
-  test("returns 200 status and created data imported from Flatfile with non-accepted data filtered out", async () => {
+  test("returns 200 status and Flatfile import data", async () => {
     // Act
     await handler(req, res);
 
     // Assert
     expect(res._getStatusCode()).toBe(200);
-    expect(res._getData()).toEqual([
-      {
-        id: 1,
-        status: "accepted",
-        valid: true,
-        data: {
-          title: "episode 1",
-        },
+    expect(res._getData()).toEqual(
+      mockFlatfileGetFinalDatabaseView.getFinalDatabaseView,
+    );
+  });
+
+  test("returns 200 status and Flatfile import data when offset is given", async () => {
+    // Arrange
+    const requestMocks = createMocks({
+      method: "POST",
+      body: {
+        batchId: "batchId",
+        limit: 1000,
+        offset: 20,
       },
-    ]);
+    });
+
+    // Act
+    await handler(requestMocks.req, requestMocks.res);
+
+    // Assert
+    expect(requestMocks.res._getStatusCode()).toBe(200);
+    expect(requestMocks.res._getData()).toEqual(
+      mockFlatfileGetFinalDatabaseViewPaginated.getFinalDatabaseView,
+    );
   });
 });

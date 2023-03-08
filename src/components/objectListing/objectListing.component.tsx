@@ -45,6 +45,7 @@ export interface ObjectListProps {
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
   onInfoClick?: (obj: { uid: string; objectType: string }) => void;
+  isDragging?: boolean;
 }
 
 const createColumns = (
@@ -190,6 +191,7 @@ export const ObjectList = ({
   withObjectSelect,
   withObjectEdit,
   onInfoClick,
+  isDragging,
   isPanelOpen,
 }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -397,7 +399,10 @@ export const ObjectList = ({
         )}
       </div>
       <div
-        className="relative mb-6 flex w-full flex-auto flex-grow flex-col overflow-x-auto overscroll-none"
+        className={clsx(
+          isDragging ? "overflow-hidden" : "overflow-x-auto",
+          "relative mb-6 flex w-full flex-auto flex-grow flex-col overscroll-none",
+        )}
         ref={tableContainerRef}
         data-testid="table-container"
         onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
@@ -410,6 +415,7 @@ export const ObjectList = ({
             withCheckbox={withObjectSelect}
             isLoadingMore={hasNextPage || isFetchingNextPage}
             setPanelObject={onInfoClick}
+            withDraggableRow={!!isPanelOpen}
           />
         )}
         {(searchLoading || searchData) && (

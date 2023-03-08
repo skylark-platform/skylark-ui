@@ -221,7 +221,7 @@ export const createFlatfileObjectsInSkylark = async (
               err as GQLSkylarkErrorResponse<FlatfileObjectsCreatedInSkylarkFields>;
             return {
               errors: response.errors,
-              data: [],
+              data: response.data ? Object.values(response.data) : [],
             };
           }
           return {
