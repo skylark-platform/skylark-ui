@@ -24,6 +24,11 @@ const common = {
       colour: true,
     },
   },
+  objectMeta: {
+    _meta: {
+      available_languages: true,
+    },
+  },
 };
 
 const fieldNamesToNeverAlias = ["uid", "external_id"];
@@ -177,6 +182,7 @@ export const createGetObjectQuery = (
           external_id: new VariableType("externalId"),
         },
         ...common.objectConfig,
+        ...common.objectMeta,
         ...generateFieldsToReturn(object.fields),
         ...generateRelationshipsToReturn(object),
         ...generateContentsToReturn(object, contentTypesToRequest),
@@ -260,6 +266,7 @@ export const createSearchObjectsQuery = (
             __typeName: object.name,
             __typename: true, // To remove the alias later
             ...common.objectConfig,
+            ...common.objectMeta,
             ...generateFieldsToReturn(object.fields, `__${object.name}__`),
             ...generateRelationshipsToReturn(object, true),
           })),

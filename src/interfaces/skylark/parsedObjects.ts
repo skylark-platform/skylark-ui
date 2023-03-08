@@ -49,10 +49,15 @@ export interface ParsedSkylarkObjectConfig {
   primaryField?: string;
 }
 
+export interface ParsedSkylarkObjectMeta {
+  availableLanguages?: string[];
+}
+
 export interface ParsedSkylarkObject {
   objectType: SkylarkObjectType;
   uid: string;
   config: ParsedSkylarkObjectConfig;
+  meta: ParsedSkylarkObjectMeta;
   metadata: ParsedSkylarkObjectMetadata;
   availability: ParsedSkylarkObjectAvailability;
   images?: SkylarkGraphQLObjectImage[];

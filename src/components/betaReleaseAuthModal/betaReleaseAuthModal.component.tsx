@@ -13,6 +13,7 @@ import {
   SAAS_API_ENDPOINT,
   SAAS_API_KEY,
 } from "src/constants/skylark";
+import { QueryKeys } from "src/enums/graphql";
 import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
 
 interface AddAuthTokenModalProps {
@@ -24,7 +25,7 @@ export const AddAuthTokenModal = ({
   isOpen,
   setIsOpen,
 }: AddAuthTokenModalProps) => {
-  const client = useQueryClient();
+  const queryClient = useQueryClient();
   const plausible = usePlausible();
 
   const { isConnected, isLoading, invalidUri, invalidToken, setCreds } =
@@ -93,7 +94,15 @@ export const AddAuthTokenModal = ({
       // storage events are not picked up in the same tab, so dispatch it for the current one
       window.dispatchEvent(new Event("storage"));
 
-      client.refetchQueries();
+      queryClient.resetQueries({ queryKey: [] });
+      await queryClient.refetchQueries({
+        queryKey: [QueryKeys.Schema],
+        type: "active",
+      });
+      await queryClient.refetchQueries({
+        queryKey: [QueryKeys.ObjectTypes],
+        type: "active",
+      });
 
       setIsOpen(false);
     }

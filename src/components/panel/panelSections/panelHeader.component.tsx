@@ -151,23 +151,24 @@ export const PanelHeader = ({
           </Button>
         )}
       </div>
-      <div className="flex flex-row items-center space-x-2 pb-2">
+      <h1 className="my-2 flex-grow text-xl font-bold uppercase">{title}</h1>
+      <div className="flex flex-row items-center space-x-4 pb-2 text-sm text-manatee-600">
         <Pill
           bgColor={pillColor}
-          className="bg-brand-primary"
+          className="w-20 bg-brand-primary"
           label={objectType}
         />
-        <h1 className="flex-grow text-xl font-bold uppercase">{title}</h1>
-        <div className="flex flex-row items-end justify-end space-x-2">
-          {inEditMode && (
-            <div className="absolute left-1/2 -bottom-16 -translate-x-1/2 md:-bottom-18">
-              <PanelLabel
-                text={isSaving ? "Saving" : "Editing"}
-                loading={isSaving}
-              />
-            </div>
-          )}
-        </div>
+        <p>en-GB</p>
+      </div>
+      <div className="flex flex-row items-end justify-end space-x-2">
+        {inEditMode && (
+          <div className="absolute left-1/2 -bottom-16 -translate-x-1/2 md:-bottom-18">
+            <PanelLabel
+              text={isSaving ? "Saving" : "Editing"}
+              loading={isSaving}
+            />
+          </div>
+        )}
       </div>
       <AnimatePresence>
         {showGraphQLModal && (

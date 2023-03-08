@@ -30,7 +30,11 @@ import { RowActions } from "./rowActions";
 import { Search } from "./search";
 import { Table, TableCell } from "./table";
 
-const hardcodedColumns = ["availability", "images"];
+const hardcodedColumns = [
+  OBJECT_LIST_TABLE.columnIds.availability,
+  OBJECT_LIST_TABLE.columnIds.images,
+  OBJECT_LIST_TABLE.columnIds.availableLanguages,
+];
 const orderedKeys = ["uid", "external_id", "data_source_id"];
 
 const columnHelper = createColumnHelper<object>();
@@ -85,6 +89,14 @@ const createColumns = (
     OBJECT_LIST_TABLE.columnIds.displayField,
     {
       header: formatObjectField("Display Field"),
+      cell: (props) => <TableCell {...props} />,
+    },
+  );
+
+  const languagesColumn = columnHelper.accessor(
+    OBJECT_LIST_TABLE.columnIds.availableLanguages,
+    {
+      header: formatObjectField("Languages"),
       cell: (props) => <TableCell {...props} />,
     },
   );
@@ -160,6 +172,7 @@ const createColumns = (
     displayNameColumn,
     // imagesColumn,
     availabilityColumn,
+    languagesColumn,
     ...createdColumns,
   ];
   if (opts.withObjectSelect) {
@@ -240,6 +253,8 @@ export const ObjectList = ({
         [OBJECT_LIST_TABLE.columnIds.displayField]: primaryKey
           ? obj.metadata[primaryKey]
           : "",
+        [OBJECT_LIST_TABLE.columnIds.availableLanguages]:
+          obj.meta.availableLanguages?.join(", "),
       };
     });
 
@@ -340,7 +355,7 @@ export const ObjectList = ({
     >
       <div
         className={clsx(
-          "flex w-full items-center space-x-1 md:justify-between",
+          "flex w-full items-center space-x-2 md:justify-between",
           isPanelOpen ? "lg:flex-row" : "pr-2 md:flex-row md:pr-8",
         )}
       >
@@ -355,6 +370,10 @@ export const ObjectList = ({
           <Search
             objectTypes={objectTypes || []}
             searchQuery={searchQuery}
+            graphqlQuery={{
+              query: graphqlSearchQuery,
+              variables: graphqlSearchQueryVariables,
+            }}
             onQueryChange={setSearchQuery}
             activeFilters={searchFilters}
             columns={sortedHeaders}
@@ -367,16 +386,11 @@ export const ObjectList = ({
             }
             onFilterChange={onFilterChangeWrapper}
           />
-          <DisplayGraphQLQuery
-            label="Content Library Search"
-            query={graphqlSearchQuery}
-            variables={graphqlSearchQueryVariables}
-          />
         </div>
         {withCreateButtons && (
           <CreateButtons
             className={clsx(
-              "justify-end pr-2 md:w-full",
+              "justify-end md:w-full",
               isPanelOpen ? "lg:w-auto" : "md:w-auto",
             )}
           />

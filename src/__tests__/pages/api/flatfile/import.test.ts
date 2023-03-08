@@ -3,7 +3,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { createMocks, Mocks } from "node-mocks-http";
 
 import { erroredFlatfileAccessKeyExchangeHandler } from "src/__tests__/mocks/handlers/flatfile";
-import { skylarkObjectTypesHandler } from "src/__tests__/mocks/handlers/introspectionHandlers";
 import { server } from "src/__tests__/mocks/server";
 import * as constants from "src/constants/flatfile";
 import { FlatfileRow } from "src/interfaces/flatfile/responses";
@@ -105,7 +104,6 @@ describe("validated request", () => {
 
   test("returns 500 and the error message while getting a token from Flatfile", async () => {
     // Arrange
-    server.use(skylarkObjectTypesHandler(["Episode"]));
     server.use(erroredFlatfileAccessKeyExchangeHandler);
 
     // Act
@@ -118,7 +116,6 @@ describe("validated request", () => {
 
   test("returns 500 and the error message when the Flatfile response is a bad format", async () => {
     // Arrange
-    server.use(skylarkObjectTypesHandler(["Episode"]));
     server.use(
       rest.post(
         "https://api.us.flatfile.io/auth/access-key/exchange/",
@@ -141,9 +138,6 @@ describe("validated request", () => {
   });
 
   test("returns 200 status and created data imported from Flatfile with non-accepted data filtered out", async () => {
-    // Arrange
-    server.use(skylarkObjectTypesHandler(["Episode"]));
-
     // Act
     await handler(req, res);
 

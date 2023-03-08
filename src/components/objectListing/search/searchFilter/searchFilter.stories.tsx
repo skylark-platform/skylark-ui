@@ -1,10 +1,17 @@
 import { ComponentStory } from "@storybook/react";
 
+import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
+
 import { SearchFilter } from "./searchFilter.component";
 
 export default {
   title: "Components/ObjectListing/Search/Filter",
   component: SearchFilter,
+};
+
+const graphqlQuery = {
+  query: GET_SKYLARK_OBJECT_TYPES,
+  variables: {},
 };
 
 const objectTypes = [
@@ -44,6 +51,7 @@ Default.args = {
   objectTypes,
   columns,
   visibleColumns: columns,
+  graphqlQuery,
 };
 
 export const WithNoFiltersSelected = Template.bind({});
@@ -54,4 +62,5 @@ WithNoFiltersSelected.args = {
   objectTypes,
   columns,
   visibleColumns: [],
+  graphqlQuery,
 };

@@ -88,6 +88,9 @@ export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
       colour: data.getObject._config?.colour,
       primaryField: data.getObject._config?.primary_field,
     },
+    meta: {
+      availableLanguages: data.getObject._meta?.available_languages,
+    },
     metadata,
     availability,
     images,

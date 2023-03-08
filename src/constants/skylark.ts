@@ -16,6 +16,7 @@ export const OBJECT_LIST_TABLE = {
     actions: "skylark-ui-actions",
     availability: "availability",
     images: "images",
+    availableLanguages: "available_languages",
   },
 };
 export const LOCAL_STORAGE = {
