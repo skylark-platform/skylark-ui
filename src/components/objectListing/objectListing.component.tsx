@@ -32,7 +32,7 @@ import { Table, TableCell } from "./table";
 const hardcodedColumns = [
   OBJECT_LIST_TABLE.columnIds.availability,
   OBJECT_LIST_TABLE.columnIds.images,
-  OBJECT_LIST_TABLE.columnIds.availableLanguages,
+  OBJECT_LIST_TABLE.columnIds.translations,
 ];
 const orderedKeys = ["uid", "external_id", "data_source_id"];
 
@@ -94,9 +94,9 @@ const createColumns = (
   );
 
   const languagesColumn = columnHelper.accessor(
-    OBJECT_LIST_TABLE.columnIds.availableLanguages,
+    OBJECT_LIST_TABLE.columnIds.translations,
     {
-      header: formatObjectField("Available Languages"),
+      header: formatObjectField("Translations"),
       cell: (props) => <TableCell {...props} />,
     },
   );
@@ -254,7 +254,7 @@ export const ObjectList = ({
         [OBJECT_LIST_TABLE.columnIds.displayField]: primaryKey
           ? obj.metadata[primaryKey]
           : "",
-        [OBJECT_LIST_TABLE.columnIds.availableLanguages]:
+        [OBJECT_LIST_TABLE.columnIds.translations]:
           obj.meta.availableLanguages?.join(", "),
       };
     });
