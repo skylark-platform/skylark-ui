@@ -10,6 +10,7 @@ import {
   SkylarkGraphQLObjectContent,
   ParsedSkylarkObjectContent,
   ParsedSkylarkObjectMetadata,
+  SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 
@@ -21,6 +22,7 @@ const parseObjectInputType = (
   if (!name) return "string";
   switch (name) {
     case "AWSTimestamp":
+      return "timestamp";
     case "AWSTime":
       return "time";
     case "AWSDate":
@@ -29,8 +31,14 @@ const parseObjectInputType = (
       return "datetime";
     case "AWSEmail":
       return "email";
+    case "AWSURL":
+      return "url";
     case "AWSPhone":
       return "phone";
+    case "AWSIPAddress":
+      return "ipaddress";
+    case "AWSJSON":
+      return "json";
     case "Int":
       return "int";
     case "Float":
@@ -82,12 +90,42 @@ export const parseObjectInputFields = (
 // TODO convert from "credits" to the Object type like "Credit" or "episodes" -> "Episode"
 export const parseObjectRelationships = (
   inputFields?: GQLInputField[],
-): string[] => {
-  return (
-    inputFields
-      ?.find((input) => input.name === "relationships")
-      ?.type.inputFields.map((relationship) => relationship.name) || []
+): SkylarkObjectRelationship[] => {
+  const relationshipsInput = inputFields?.find(
+    (input) => input.name === "relationships",
   );
+
+  if (
+    !relationshipsInput?.type.inputFields ||
+    relationshipsInput.type.inputFields.length === 0
+  ) {
+    return [];
+  }
+
+  // Relationship input format is `${objectType}RelationshipInput`, we just need the objectType
+  const relationshipInputPostfix = "RelationshipInput";
+  const potentialRelationships = relationshipsInput.type.inputFields.map(
+    ({ name, type: { name: objectTypeWithRelationshipInput } }) => ({
+      name,
+      objectTypeWithRelationshipInput,
+    }),
+  );
+
+  const relationships: SkylarkObjectRelationship[] = potentialRelationships
+    .filter(
+      ({ name, objectTypeWithRelationshipInput }) =>
+        name &&
+        objectTypeWithRelationshipInput &&
+        objectTypeWithRelationshipInput.endsWith(relationshipInputPostfix),
+    )
+    .map(({ name, objectTypeWithRelationshipInput }) => ({
+      relationshipName: name,
+      objectType: (objectTypeWithRelationshipInput as string).split(
+        relationshipInputPostfix,
+      )[0],
+    }));
+
+  return relationships;
 };
 
 export const parseObjectAvailability = (

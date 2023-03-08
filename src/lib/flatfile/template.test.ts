@@ -1,3 +1,7 @@
+import {
+  TEMPLATE_FIELDS_TO_IGNORE,
+  TEMPLATE_REGEX,
+} from "src/constants/flatfile";
 import { NormalizedObjectField } from "src/interfaces/skylark";
 
 import { convertObjectInputToFlatfileSchema } from "./template";
@@ -213,5 +217,59 @@ describe("input type parsing", () => {
         type: "string",
       },
     });
+  });
+
+  test("parses an ipaddress input (string with regex)", () => {
+    const input: NormalizedObjectField = {
+      ...defaultInput,
+      type: "ipaddress",
+    };
+
+    const { properties } = convertObjectInputToFlatfileSchema([input]);
+
+    expect(properties).toEqual({
+      [input.name]: {
+        label: input.name,
+        type: "string",
+        regexp: {
+          pattern: TEMPLATE_REGEX.ipaddress,
+          flags: "isg",
+          ignoreBlanks: true,
+        },
+      },
+    });
+  });
+
+  test("parses a url input (string with regex)", () => {
+    const input: NormalizedObjectField = {
+      ...defaultInput,
+      type: "url",
+    };
+
+    const { properties } = convertObjectInputToFlatfileSchema([input]);
+
+    expect(properties).toEqual({
+      [input.name]: {
+        label: input.name,
+        type: "string",
+        regexp: {
+          pattern: TEMPLATE_REGEX.url,
+          flags: "isg",
+          ignoreBlanks: true,
+        },
+      },
+    });
+  });
+
+  test("doesn't add a field in TEMPLATE_FIELDS_TO_IGNORE", () => {
+    const input: NormalizedObjectField = {
+      ...defaultInput,
+      name: TEMPLATE_FIELDS_TO_IGNORE[0],
+      type: "string",
+    };
+
+    const { properties } = convertObjectInputToFlatfileSchema([input]);
+
+    expect(properties).toEqual({});
   });
 });

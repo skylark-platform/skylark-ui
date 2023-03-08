@@ -57,9 +57,15 @@ export interface FlatfileRow {
 export interface FlatfileGetFinalDatabaseViewResponse {
   getFinalDatabaseView: {
     rows: FlatfileRow[];
+    totalRows: number;
   };
 }
 
+export interface FlatfileObjectsCreatedInSkylarkFields {
+  uid: string;
+  external_id: string;
+}
+
 export interface FlatfileObjectsCreatedInSkylark {
-  [key: string]: { uid: string; external_id: string };
+  [key: string]: FlatfileObjectsCreatedInSkylarkFields;
 }

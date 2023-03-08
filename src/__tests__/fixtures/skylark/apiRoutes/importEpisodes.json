@@ -1,0 +1,100 @@
+{
+  "totalRows": 5,
+  "rows": [
+    {
+      "id": 1,
+      "status": "accepted",
+      "valid": true,
+      "data": {
+        "episode_number": 1,
+        "external_id": null,
+        "release_date": null,
+        "slug": "episode-1",
+        "synopsis_long": null,
+        "synopsis_medium": null,
+        "synopsis_short": null,
+        "title": "Episode1",
+        "title_long": "Episode 1: The Original",
+        "title_medium": null,
+        "title_short": "Episode 1"
+      },
+      "info": []
+    },
+    {
+      "id": 2,
+      "status": "accepted",
+      "valid": true,
+      "data": {
+        "episode_number": 2,
+        "external_id": null,
+        "release_date": null,
+        "slug": "episode-2",
+        "synopsis_long": null,
+        "synopsis_medium": null,
+        "synopsis_short": null,
+        "title": "Episode2",
+        "title_long": "Episode 2: Back Again",
+        "title_medium": null,
+        "title_short": "Episode 2"
+      },
+      "info": []
+    },
+    {
+      "id": 3,
+      "status": "accepted",
+      "valid": true,
+      "data": {
+        "episode_number": 3,
+        "external_id": null,
+        "release_date": null,
+        "slug": "episode-3",
+        "synopsis_long": null,
+        "synopsis_medium": null,
+        "synopsis_short": null,
+        "title": "Episode3",
+        "title_long": "Episode 3: Three's a crowd",
+        "title_medium": null,
+        "title_short": "Episode 3"
+      },
+      "info": []
+    },
+    {
+      "id": 4,
+      "status": "accepted",
+      "valid": true,
+      "data": {
+        "episode_number": 4,
+        "external_id": null,
+        "release_date": null,
+        "slug": "episode-4",
+        "synopsis_long": null,
+        "synopsis_medium": null,
+        "synopsis_short": null,
+        "title": "Episode4",
+        "title_long": "Episode 4: Penultimate",
+        "title_medium": null,
+        "title_short": "Episode 4"
+      },
+      "info": []
+    },
+    {
+      "id": 5,
+      "status": "accepted",
+      "valid": true,
+      "data": {
+        "episode_number": 5,
+        "external_id": null,
+        "release_date": null,
+        "slug": "episode-5",
+        "synopsis_long": null,
+        "synopsis_medium": null,
+        "synopsis_short": null,
+        "title": "Episode5",
+        "title_long": "Episode 5: Cease to exist",
+        "title_medium": null,
+        "title_short": "Episode 5"
+      },
+      "info": []
+    }
+  ]
+}

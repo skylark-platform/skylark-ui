@@ -18,6 +18,15 @@ export const hasOperationName = (
   return requestOperationName && requestOperationName === operationName;
 };
 
+// Utility to match GraphQL query/mutation based on the operation name
+export const operationNameStartsWith = (
+  req: CyHttpMessages.IncomingHttpRequest,
+  prefix: string,
+) => {
+  const requestOperationName = getOperationName(req);
+  return requestOperationName && requestOperationName.startsWith(prefix);
+};
+
 // Utility to check GraphQL query/mutation has a given variable that matches a value
 export const hasMatchingQuery = (
   req: CyHttpMessages.IncomingHttpRequest,

@@ -1,6 +1,9 @@
 import { Server, WebSocket } from "mock-socket";
 
-import { hasOperationName } from "../../support/utils/graphqlTestUtils";
+import {
+  hasOperationName,
+  operationNameStartsWith,
+} from "../../support/utils/graphqlTestUtils";
 
 describe("Import/CSV", () => {
   beforeEach(() => {
@@ -18,6 +21,11 @@ describe("Import/CSV", () => {
           fixture: "./skylark/queries/introspection/schema.json",
         });
       }
+      if (operationNameStartsWith(req, "createEpisode_")) {
+        req.reply({
+          fixture: "./skylark/mutations/import/csvImportEpisodeCreation.json",
+        });
+      }
     });
 
     cy.intercept("POST", "https://api.us.flatfile.io/graphql", (req) => {
@@ -32,10 +40,12 @@ describe("Import/CSV", () => {
       "createFlatfileTemplate",
     );
 
-    cy.intercept("POST", "**/api/flatfile/import", {
-      statusCode: 200,
-      body: [{ uid: "1" }, { uid: "2" }],
-    }).as("createSkylarkObjects");
+    cy.intercept("POST", "**/api/flatfile/import", (req) => {
+      req.alias = "getImportedObjects";
+      req.reply({
+        fixture: "./skylark/apiRoutes/importEpisodes.json",
+      });
+    });
 
     cy.visit("/import/csv");
     cy.wait("@getSkylarkObjectTypesQuery");
@@ -52,6 +62,7 @@ describe("Import/CSV", () => {
   });
 
   it("select objectType", () => {
+    cy.contains("Download Example CSV").should("have.class", "btn-disabled");
     cy.get('[data-cy="select"]').click();
     cy.get('[data-cy="select-options"]').should("be.visible");
     cy.percySnapshot("import/csv - objectType select open");
@@ -66,6 +77,11 @@ describe("Import/CSV", () => {
       .first()
       .should("have.class", "border-t-success");
     cy.get(".border-t-manatee-500").should("have.length", "3");
+
+    cy.contains("Download Example CSV")
+      .should("not.have.class", "btn-disabled")
+      .should("have.attr", "href")
+      .and("include", "data:text/plain;charset=utf-8,external_id");
     cy.percySnapshot("import/csv - objectType selected");
   });
 
@@ -138,7 +154,7 @@ describe("Import/CSV", () => {
 
       cy.get(".flatfile-sdk iframe").should("not.exist");
 
-      cy.wait("@createSkylarkObjects");
+      cy.wait("@getImportedObjects");
 
       cy.get('[data-cy="status-card"].border-t-success', {
         timeout: 10000,
@@ -161,6 +177,53 @@ describe("Import/CSV", () => {
         .should("not.be.empty");
 
       cy.percySnapshot("import/csv - import complete");
+    });
+
+    it("fail to create objects in Skylark", { retries: 0 }, () => {
+      cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
+        if (operationNameStartsWith(req, "createEpisode_")) {
+          req.reply({
+            fixture:
+              "./skylark/mutations/import/csvImportEpisodeCreationErrored.json",
+          });
+        }
+      });
+
+      cy.get('[data-cy="select"]').click();
+      cy.get('[data-cy="select-options"]').should("be.visible");
+      cy.get('[data-cy="select-options"]')
+        .get("li > span")
+        .contains("Episode")
+        .click();
+      cy.get("button").contains("Import").click();
+
+      cy.get(".flatfile-sdk iframe").should("not.exist");
+
+      cy.wait("@getImportedObjects");
+
+      cy.get('[data-cy="status-card"].border-t-success', {
+        timeout: 10000,
+      }).should("have.length", 3);
+      cy.get('[data-cy="status-card"]')
+        .last()
+        .should("have.class", "border-t-error");
+
+      // Should match the number of errors/data in the fixture
+      cy.contains("Error creating 1 Episode objects (4/5 created)");
+
+      cy.get("a")
+        .contains("Start curating")
+        .should("have.class", "btn-disabled");
+      cy.get(".btn-outline")
+        .contains("New import")
+        .should("not.have.class", "btn-disabled");
+
+      cy.get("button").contains("Import").should("be.disabled");
+      cy.get('[data-cy="select"]').should("be.disabled");
+
+      cy.percySnapshot(
+        "import/csv - import failed (skylark object creation error)",
+      );
     });
 
     it("can click new import to reset the state", () => {

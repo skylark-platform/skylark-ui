@@ -1,3 +1,9 @@
+import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
+import {
+  ParsedSkylarkObject,
+  ParsedSkylarkObjectContentObject,
+} from "src/interfaces/skylark";
+
 export const hasProperty = <T, K extends PropertyKey>(
   object: T,
   property: K,
@@ -14,6 +20,11 @@ export const pause = (ms: number) =>
 
 export const formatObjectField = (field?: string) =>
   field?.toUpperCase().replaceAll("_", " ") || "";
+
+export const getPrimaryKey = (obj: ParsedSkylarkObject) =>
+  [obj.config.primaryField || "", ...DISPLAY_NAME_PRIORITY].find(
+    (field) => !!obj.metadata[field],
+  );
 
 // Creates an Account Identifier (used in Flatfile template)
 // Will change when we have proper auth / teams / accounts

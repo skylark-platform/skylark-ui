@@ -1,0 +1,27 @@
+{
+  "data": {
+    "createEpisode_bf553d58_816d_4a1b_a3c9_ff34dc2bdbee_1": {
+      "uid": "01GTYFH4X75A60MEKQKQ8NJRV1",
+      "external_id": "string1"
+    },
+    "createEpisode_bf553d58_816d_4a1b_a3c9_ff34dc2bdbee_2": {
+      "uid": "01GTYFH50JAP4NRE693YQA4WRW",
+      "external_id": "string2"
+    },
+    "createEpisode_bf553d58_816d_4a1b_a3c9_ff34dc2bdbee_3": null,
+    "createEpisode_bf553d58_816d_4a1b_a3c9_ff34dc2bdbee_4": {
+      "uid": "01GTYFH53GZWEBEG9TSD0TF5KK",
+      "external_id": null
+    }
+  },
+  "errors": [
+    {
+      "path": ["createEpisode_bf553d58_816d_4a1b_a3c9_ff34dc2bdbee_3"],
+      "data": null,
+      "errorType": "ExternalIDException",
+      "errorInfo": null,
+      "locations": [{ "line": 10, "column": 5, "sourceName": null }],
+      "message": "External ID string3 already exists"
+    }
+  ]
+}

@@ -21,7 +21,7 @@ describe("createGetObjectQuery", () => {
     const got = createGetObjectQuery(episodeObjectOperations, []);
 
     expect(got?.loc?.source.body).toEqual(
-      "query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } uid external_id slug title synopsis_short synopsis_medium synopsis_long title_short title_medium title_long release_date episode_number availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { uid external_id slug title description type url external_url upload_url download_from_url file_name content_type } } } }",
+      "query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } uid external_id slug episode_number release_date synopsis_long synopsis_medium synopsis_short title title_long title_medium title_short availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { uid external_id slug title description type url external_url upload_url download_from_url file_name content_type } } } }",
     );
   });
 
@@ -31,10 +31,10 @@ describe("createGetObjectQuery", () => {
     ]);
 
     expect(got?.loc?.source.body).toContain(
-      "content (order: ASC, limit: 50) { objects { object { ... on Episode { __typename _config { primary_field colour } uid external_id __Episode__slug: slug __Episode__title: title __Episode__synopsis_short: synopsis_short __Episode__synopsis_medium: synopsis_medium __Episode__synopsis_long: synopsis_long __Episode__title_short: title_short __Episode__title_medium: title_medium __Episode__title_long: title_long __Episode__release_date: release_date __Episode__episode_number: episode_number } } position }",
+      "content (order: ASC, limit: 50) { objects { object { ... on Episode",
     );
     expect(got?.loc?.source.body).toEqual(
-      "query GET_Set ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getSet (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } uid slug external_id type title synopsis_short synopsis_medium synopsis_long title_short title_medium title_long release_date description availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { uid external_id slug title description type url external_url upload_url download_from_url file_name content_type } } content (order: ASC, limit: 50) { objects { object { ... on Episode { __typename _config { primary_field colour } uid external_id __Episode__slug: slug __Episode__title: title __Episode__synopsis_short: synopsis_short __Episode__synopsis_medium: synopsis_medium __Episode__synopsis_long: synopsis_long __Episode__title_short: title_short __Episode__title_medium: title_medium __Episode__title_long: title_long __Episode__release_date: release_date __Episode__episode_number: episode_number } } position } } } }",
+      "query GET_Set ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getSet (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } uid slug external_id type title synopsis_short synopsis_medium synopsis_long title_short title_medium title_long release_date description availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { uid external_id slug title description type url external_url upload_url download_from_url file_name content_type } } content (order: ASC, limit: 50) { objects { object { ... on Episode { __typename _config { primary_field colour } uid external_id __Episode__slug: slug __Episode__episode_number: episode_number __Episode__release_date: release_date __Episode__synopsis_long: synopsis_long __Episode__synopsis_medium: synopsis_medium __Episode__synopsis_short: synopsis_short __Episode__title: title __Episode__title_long: title_long __Episode__title_medium: title_medium __Episode__title_short: title_short } } position } } } }",
     );
   });
 });
@@ -50,7 +50,7 @@ describe("createListObjectQuery", () => {
     const got = createListObjectQuery(episodeObjectOperations);
 
     expect(got?.loc?.source.body).toEqual(
-      "query LIST_Episode ($ignoreAvailability: Boolean = true, $nextToken: String) { listSkylarkObjects: listEpisode (ignore_availability: $ignoreAvailability, limit: 50, next_token: $nextToken) { count next_token objects { _config { primary_field colour } uid external_id slug title synopsis_short synopsis_medium synopsis_long title_short title_medium title_long release_date episode_number availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { uid external_id slug title description type url external_url upload_url download_from_url file_name content_type } } } } }",
+      "query LIST_Episode ($ignoreAvailability: Boolean = true, $nextToken: String) { listSkylarkObjects: listEpisode (ignore_availability: $ignoreAvailability, limit: 50, next_token: $nextToken) { count next_token objects { _config { primary_field colour } uid external_id slug episode_number release_date synopsis_long synopsis_medium synopsis_short title title_long title_medium title_short availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { uid external_id slug title description type url external_url upload_url download_from_url file_name content_type } } } } }",
     );
   });
 });
@@ -85,6 +85,7 @@ describe("createSearchObjectsQuery", () => {
           images: null,
           availability: null,
           operations: {} as SkylarkObjectOperations,
+          relationships: [],
         },
         {
           name: "Brand",
@@ -105,6 +106,7 @@ describe("createSearchObjectsQuery", () => {
           images: null,
           availability: null,
           operations: {} as SkylarkObjectOperations,
+          relationships: [],
         },
       ],
       [],

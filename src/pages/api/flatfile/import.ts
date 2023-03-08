@@ -4,19 +4,19 @@ import {
   FLATFILE_ACCESS_KEY_ID,
   FLATFILE_SECRET_KEY,
 } from "src/constants/flatfile";
-import { SkylarkImportedObject } from "src/interfaces/skylark";
 import {
-  createFlatfileObjectsInSkylark,
+  ApiRouteFlatfileImportRequestBody,
+  ApiRouteFlatfileImportResponse,
+} from "src/interfaces/apiRoutes";
+import {
   exchangeFlatfileAccessKey,
   getFlatfileFinalDatabaseView,
 } from "src/lib/flatfile";
 import { createFlatfileClient } from "src/lib/graphql/flatfile/client";
-import { createSkylarkClient } from "src/lib/graphql/skylark/client";
-import { getSkylarkObjectTypes } from "src/lib/skylark/introspection/introspection";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<SkylarkImportedObject[] | string>,
+  res: NextApiResponse<ApiRouteFlatfileImportResponse | string>,
 ) {
   if (req.method !== "POST") {
     return res.status(501).end();
@@ -34,26 +34,9 @@ export default async function handler(
       .send("No Flatfile Access Key ID or Flatfile Secret supplied");
   }
 
-  const { batchId, objectType, graphQLUri, graphQLToken } = body;
-  if (!batchId || !objectType) {
-    return res.status(500).send("batchId and objectType are mandatory");
-  }
-
-  if (!graphQLUri || !graphQLToken) {
-    return res
-      .status(500)
-      .send("Skylark GraphQL URI and Access Key are mandatory");
-  }
-
-  const skylarkClient = createSkylarkClient(graphQLUri, graphQLToken);
-
-  const objects = await getSkylarkObjectTypes(skylarkClient);
-  const isObjectValid = objects.find((object) => object === objectType);
-
-  if (!isObjectValid) {
-    return res
-      .status(500)
-      .send(`Object type "${objectType}" does not exist in Skylark`);
+  const { batchId, limit, offset }: ApiRouteFlatfileImportRequestBody = body;
+  if (!batchId || !limit) {
+    return res.status(500).send("batchId and limit are mandatory");
   }
 
   let flatfileAccessToken = "";
@@ -76,17 +59,15 @@ export default async function handler(
   const finalDatabaseView = await getFlatfileFinalDatabaseView(
     flatfileClient,
     batchId,
+    limit,
+    offset,
   );
   const flatfileRows = finalDatabaseView.rows.filter(
     (item) => item.status === "accepted" && item.valid,
   );
 
-  const skylarkObjects = await createFlatfileObjectsInSkylark(
-    skylarkClient,
-    objectType,
-    batchId,
-    flatfileRows,
-  );
-
-  return res.status(200).send(skylarkObjects);
+  return res.status(200).send({
+    totalRows: finalDatabaseView.totalRows,
+    rows: flatfileRows,
+  });
 }

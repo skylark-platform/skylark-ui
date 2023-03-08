@@ -1,3 +1,4 @@
+import { useDraggable } from "@dnd-kit/core";
 import {
   Cell,
   flexRender,
@@ -21,8 +22,18 @@ export interface TableProps {
   withCheckbox?: boolean;
   virtualRows: VirtualItem[];
   totalRows: number;
+  withDraggableRow?: boolean;
   isLoadingMore?: boolean;
   setPanelObject?: (obj: { uid: string; objectType: string }) => void;
+}
+
+export interface TableRowProps {
+  row: Row<ParsedSkylarkObject>;
+  virtualRowSize: number;
+  setPanelObject?: (obj: { uid: string; objectType: string }) => void;
+  tableMeta: TableMeta<object> | undefined;
+  withCheckbox?: boolean;
+  withDraggableRow?: boolean;
 }
 
 const headAndDataClassNames =
@@ -135,7 +146,7 @@ const TableData = ({
   tableMeta,
 }: {
   cell: Cell<ParsedSkylarkObject, unknown>;
-  withCheckbox: boolean;
+  withCheckbox?: boolean;
   tableMeta: TableMeta<object> | undefined;
 }) => {
   const className = useMemo(
@@ -180,6 +191,47 @@ const TableData = ({
   );
 };
 
+const TableRow = ({
+  row,
+  setPanelObject,
+  tableMeta,
+  withCheckbox,
+  withDraggableRow,
+  virtualRowSize,
+}: TableRowProps) => {
+  const { uid, objectType } = row.original;
+  const { attributes, listeners, setNodeRef } = useDraggable({
+    id: uid,
+    data: {
+      object: row.original,
+    },
+    disabled: !withDraggableRow,
+  });
+  return (
+    <tr
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      key={row.id}
+      className="group/row align-middle outline-none"
+      tabIndex={-1}
+      onDoubleClick={() => setPanelObject?.({ uid, objectType })}
+      style={{
+        height: `${virtualRowSize}px`,
+      }}
+    >
+      {row.getVisibleCells().map((cell) => (
+        <TableData
+          tableMeta={tableMeta}
+          key={cell.id}
+          cell={cell}
+          withCheckbox={withCheckbox}
+        />
+      ))}
+    </tr>
+  );
+};
+
 export const Table = ({
   table,
   withCheckbox = false,
@@ -187,6 +239,7 @@ export const Table = ({
   totalRows,
   isLoadingMore,
   setPanelObject,
+  withDraggableRow,
 }: TableProps) => {
   const tableMeta = table.options.meta;
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
@@ -197,6 +250,7 @@ export const Table = ({
 
   const { rows } = table.getRowModel();
   const headers = table.getHeaderGroups()[0].headers;
+
   return (
     <table className="relative w-full bg-white">
       <thead>
@@ -219,26 +273,16 @@ export const Table = ({
         )}
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ParsedSkylarkObject>;
-          const { uid, objectType } = row.original;
           return (
-            <tr
-              key={row.id}
-              className="group/row align-middle outline-none"
-              tabIndex={-1}
-              onDoubleClick={() => setPanelObject?.({ uid, objectType })}
-              style={{
-                height: `${virtualRow.size}px`,
-              }}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <TableData
-                  tableMeta={tableMeta}
-                  key={cell.id}
-                  cell={cell}
-                  withCheckbox={withCheckbox}
-                />
-              ))}
-            </tr>
+            <TableRow
+              key={virtualRow.index}
+              row={row}
+              setPanelObject={setPanelObject}
+              tableMeta={tableMeta}
+              withCheckbox={withCheckbox}
+              withDraggableRow={withDraggableRow}
+              virtualRowSize={virtualRow.size}
+            />
           );
         })}
         {paddingBottom > 0 && (
