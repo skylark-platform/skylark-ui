@@ -6,7 +6,7 @@ export const SAAS_API_ENDPOINT = (process.env.NEXT_PUBLIC_SAAS_API_ENDPOINT ||
 export const SAAS_API_KEY = (process.env.NEXT_PUBLIC_SAAS_API_KEY ||
   process.env.SAAS_API_KEY) as string;
 export const REQUEST_HEADERS = {
-  apiKey: "x-api-key",
+  apiKey: "Authorization",
 };
 export const OBJECT_LIST_TABLE = {
   columnIds: {
