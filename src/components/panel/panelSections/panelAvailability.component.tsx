@@ -6,6 +6,7 @@ import { InView } from "react-intersection-observer";
 
 import { AvailabilityLabel } from "src/components/availability";
 import { Spinner } from "src/components/icons";
+import { PanelLoading } from "src/components/panel/panelLoading";
 import { useGetObjectAvailability } from "src/hooks/useGetObjectAvailability";
 import {
   ParsedSkylarkObjectAvailability,
@@ -131,16 +132,10 @@ export const PanelAvailability = ({
           </div>
         );
       })}
-      <InView as="div" onChange={(inView) => inView && fetchNextPage()}>
-        {(isLoading || hasNextPage) && (
-          <div
-            data-chromatic="ignore"
-            className="flex w-full items-center justify-center py-10"
-          >
-            <Spinner className="h-10 w-10  animate-spin md:h-14 md:w-14" />
-          </div>
-        )}
-      </InView>
+      <PanelLoading
+        isLoading={isLoading || hasNextPage}
+        loadMore={() => fetchNextPage()}
+      />
     </div>
   );
 };
