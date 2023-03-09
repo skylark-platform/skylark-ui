@@ -1,7 +1,7 @@
 import { SkylarkObjectMetadataField } from "./objectOperations";
 import { SkylarkExternalId, SkylarkUID } from "./parsedObjects";
 
-type NextToken = string | null;
+export type NextToken = string | null;
 
 export interface SkylarkGraphQLObjectConfig {
   colour: string;

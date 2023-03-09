@@ -36,20 +36,7 @@ export const useGetObjectAvailability = (
   const query = createGetObjectAvailabilityQuery(objectOperations);
   const variables = { uid };
 
-  // const { data, error, ...rest } = useQuery<
-  //   GQLSkylarkGetObjectAvailabilityResponse,
-  //   GQLSkylarkErrorResponse<GQLSkylarkGetObjectAvailabilityResponse>
-  // >({
-  //   queryKey: [
-  //     ...createGetObjectAvailabilityKeyPrefix({ objectType, uid }),
-  //     query,
-  //     variables,
-  //   ],
-  //   queryFn: async () => skylarkRequest(query as DocumentNode, variables),
-  //   enabled: query !== null,
-  // });
-
-  const { data, error, ...rest } = useInfiniteQuery<
+  const { data, ...rest } = useInfiniteQuery<
     GQLSkylarkGetObjectAvailabilityResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectAvailabilityResponse>
   >({
@@ -88,14 +75,10 @@ export const useGetObjectAvailability = (
         };
       });
 
-  console.log("Availability data", availability);
   return {
     ...rest,
-    error,
     data: availability,
     isLoading: rest.isLoading || !query,
-    isNotFound:
-      error?.response.errors?.[0]?.errorType === QueryErrorMessages.NotFound,
     query,
     variables,
   };
