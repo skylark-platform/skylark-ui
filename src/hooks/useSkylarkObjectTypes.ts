@@ -1,31 +1,23 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { UseQueryResult } from "@tanstack/react-query";
 
-import { QueryKeys } from "src/enums/graphql";
-import {
-  GQLSkylarkObjectTypesResponse,
-  GQLSkylarkSchemaQueriesMutations,
-} from "src/interfaces/graphql/introspection";
 import { SkylarkObjectType } from "src/interfaces/skylark";
-import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import {
-  GET_SKYLARK_SCHEMA,
-  GET_SKYLARK_OBJECT_TYPES,
-} from "src/lib/graphql/skylark/queries";
 import {
   getObjectOperations,
   getAllObjectsMeta,
 } from "src/lib/skylark/objects";
 
+import {
+  useSkylarkSchema,
+  useSkylarkSchemaInterfaceType,
+} from "./useSkylarkSchemaIntrospection";
+
 export const useSkylarkObjectTypes = (): Omit<UseQueryResult, "data"> & {
   objectTypes: string[] | undefined;
 } => {
-  const { data, ...rest } = useQuery<GQLSkylarkObjectTypesResponse>({
-    queryKey: [QueryKeys.ObjectTypes, GET_SKYLARK_OBJECT_TYPES],
-    queryFn: async () => skylarkRequest(GET_SKYLARK_OBJECT_TYPES),
-  });
+  const { data, ...rest } = useSkylarkSchemaInterfaceType("Metadata");
 
   const objectTypes = data
-    ? data?.__type.possibleTypes.map(({ name }) => name) || []
+    ? data?.possibleTypes.map(({ name }) => name) || []
     : undefined;
 
   return {
@@ -36,10 +28,7 @@ export const useSkylarkObjectTypes = (): Omit<UseQueryResult, "data"> & {
 
 // Returns the operations for a given object (createEpisode etc for Episode)
 export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
-  const { data, ...rest } = useQuery<GQLSkylarkSchemaQueriesMutations>({
-    queryKey: [QueryKeys.Schema, GET_SKYLARK_SCHEMA],
-    queryFn: async () => skylarkRequest(GET_SKYLARK_SCHEMA),
-  });
+  const { data, ...rest } = useSkylarkSchema();
 
   if (!data || !objectType) {
     return { objectOperations: null, ...rest };
@@ -54,11 +43,7 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
 };
 
 export const useAllObjectsMeta = () => {
-  const { data: schemaResponse, ...rest } =
-    useQuery<GQLSkylarkSchemaQueriesMutations>({
-      queryKey: [QueryKeys.Schema, GET_SKYLARK_SCHEMA],
-      queryFn: async () => skylarkRequest(GET_SKYLARK_SCHEMA),
-    });
+  const { data: schemaResponse, ...rest } = useSkylarkSchema();
 
   const { objectTypes } = useSkylarkObjectTypes();
 

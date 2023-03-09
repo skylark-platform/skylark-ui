@@ -1,11 +1,17 @@
 import { fireEvent } from "@storybook/testing-library";
 
 import { render, screen } from "src/__tests__/utils/test-utils";
+import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
 import { SearchFilter } from "./searchFilter.component";
 
 const objectTypes = ["Brand", "Season", "Episode"];
 const columns = ["uid", "external_id", "slug"];
+
+const graphqlQuery = {
+  query: GET_SKYLARK_OBJECT_TYPES,
+  variables: {},
+};
 
 test("renders with all checkboxes checked", async () => {
   render(
@@ -15,6 +21,7 @@ test("renders with all checkboxes checked", async () => {
       columns={columns}
       visibleColumns={columns}
       onFilterSave={jest.fn()}
+      graphqlQuery={graphqlQuery}
     />,
   );
 
@@ -35,6 +42,7 @@ test("calls onFilterSave when apply is clicked", async () => {
       columns={columns}
       visibleColumns={columns}
       onFilterSave={onFilterSave}
+      graphqlQuery={graphqlQuery}
     />,
   );
 
@@ -58,6 +66,7 @@ test("when reset is clicked, all filters are returned to all options checked wit
       columns={columns}
       visibleColumns={[]}
       onFilterSave={onFilterSave}
+      graphqlQuery={graphqlQuery}
     />,
   );
 

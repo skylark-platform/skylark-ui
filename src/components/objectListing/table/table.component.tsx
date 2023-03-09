@@ -293,7 +293,10 @@ export const Table = ({
         {totalRows > 0 && isLoadingMore && (
           <tr>
             <td colSpan={headers.length}>
-              <div className="sticky left-0 right-0 bottom-2 flex h-32 w-screen items-center justify-center">
+              <div
+                data-chromatic="ignore"
+                className="sticky left-0 right-0 bottom-2 flex h-32 w-screen items-center justify-center"
+              >
                 <Spinner className="-z-10 h-8 w-8 animate-spin md:h-10 md:w-10" />
               </div>
             </td>

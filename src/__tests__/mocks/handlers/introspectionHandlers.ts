@@ -1,27 +1,15 @@
 import { graphql } from "msw";
 
-import GQLSkylarkObjectTypesQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/objectTypes.json";
+import GQLSkylarkIntrospectionQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/introspectionQuery.json";
 import GQLSkylarkSchemaQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/schema.json";
-
-export const skylarkObjectTypesHandler = (types?: string[]) =>
-  graphql.query("GET_SKYLARK_OBJECT_TYPES", (req, res, ctx) => {
-    return res(
-      ctx.data({
-        __type: {
-          possibleTypes:
-            types?.map((type) => ({ name: type, __typename: "__Type" })) || [],
-          __typename: "__Type",
-        },
-      }),
-    );
-  });
+import { SKYLARK_SCHEMA_INTROSPECTION_QUERY_NAME } from "src/lib/graphql/skylark/queries";
 
 export const introspectionHandlers = [
   graphql.query("GET_SKYLARK_SCHEMA", (req, res, ctx) => {
     return res(ctx.data(GQLSkylarkSchemaQueryFixture.data));
   }),
 
-  graphql.query("GET_SKYLARK_OBJECT_TYPES", (req, res, ctx) => {
-    return res(ctx.data(GQLSkylarkObjectTypesQueryFixture.data));
+  graphql.query(SKYLARK_SCHEMA_INTROSPECTION_QUERY_NAME, (req, res, ctx) => {
+    return res(ctx.data(GQLSkylarkIntrospectionQueryFixture.data));
   }),
 ];

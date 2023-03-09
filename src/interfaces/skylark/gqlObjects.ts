@@ -5,6 +5,10 @@ export interface SkylarkGraphQLObjectConfig {
   primary_field: string;
 }
 
+export interface SkylarkGraphQLObjectMeta {
+  available_languages: string[];
+}
+
 export interface SkylarkGraphQLAvailabilityDimension {
   title: string;
   slug: string;
@@ -53,10 +57,12 @@ export type SkylarkGraphQLObject = {
   availability?: SkylarkGraphQLObjectRelationship;
   images?: SkylarkGraphQLObjectRelationship;
   _config?: SkylarkGraphQLObjectConfig;
+  _meta?: SkylarkGraphQLObjectMeta;
   content?: SkylarkGraphQLObjectContent;
   [key: string]:
     | SkylarkObjectMetadataField
     | SkylarkGraphQLObjectRelationship
     | SkylarkGraphQLObjectConfig
+    | SkylarkGraphQLObjectMeta
     | undefined;
 };

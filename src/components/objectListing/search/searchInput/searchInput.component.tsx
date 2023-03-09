@@ -29,7 +29,7 @@ export const SearchInput = ({
   return (
     <div
       className={clsx(
-        "flex w-full flex-row items-center justify-center rounded-full bg-manatee-50 text-xs sm:text-sm",
+        "flex w-full flex-row items-center justify-center rounded-full bg-manatee-50 text-sm",
         className,
       )}
     >
@@ -49,10 +49,7 @@ export const SearchInput = ({
         type="button"
       >
         <Filter />
-        <span className="font-medium">
-          Filters
-          {/* : <span className="text-brand-primary">0</span> */}
-        </span>
+        <span className="font-medium">Filters</span>
       </button>
     </div>
   );
