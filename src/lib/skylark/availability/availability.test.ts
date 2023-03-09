@@ -8,6 +8,8 @@ import {
 import {
   getObjectAvailabilityStatus,
   getSingleAvailabilityStatus,
+  getTimeFromDate,
+  is2038Problem,
 } from "./availability";
 
 const now = dayjs();
@@ -115,5 +117,59 @@ describe("getObjectAvailabilityStatus", () => {
       },
     ]);
     expect(got).toEqual(AvailabilityStatus.Active);
+  });
+});
+
+describe("is2038Problem", () => {
+  test("returns true when the date is the 2038 problem", () => {
+    const got = is2038Problem("2038-01-19T03:14:07.000Z");
+    expect(got).toBeTruthy();
+  });
+
+  test("returns false when the date is not the 2038 problem", () => {
+    const got = is2038Problem("2038-01-19T03:14:06.000Z");
+    expect(got).toBeFalsy();
+  });
+});
+
+describe("getTimeFromDate", () => {
+  beforeEach(() => {
+    jest.useFakeTimers().setSystemTime(new Date("2023-01-01T00:00:00.000Z"));
+  });
+
+  test("future time window", () => {
+    const got = getTimeFromDate(
+      AvailabilityStatus.Future,
+      "2024-01-19T03:14:07.000Z",
+      "2038-01-19T03:14:07.000Z",
+    );
+    expect(got).toEqual("Active in a year");
+  });
+
+  test("active time window", () => {
+    const got = getTimeFromDate(
+      AvailabilityStatus.Active,
+      "2020-01-19T03:14:07.000Z",
+      "2028-01-19T03:14:07.000Z",
+    );
+    expect(got).toEqual("Expires in 5 years");
+  });
+
+  test("active time window that never expires (2038 problem)", () => {
+    const got = getTimeFromDate(
+      AvailabilityStatus.Active,
+      "2020-01-19T03:14:07.000Z",
+      "2038-01-19T03:14:07.000Z",
+    );
+    expect(got).toEqual("Never expires");
+  });
+
+  test("expired time window", () => {
+    const got = getTimeFromDate(
+      AvailabilityStatus.Expired,
+      "2020-01-19T03:14:07.000Z",
+      "2022-01-19T03:14:07.000Z",
+    );
+    expect(got).toEqual("Expired a year ago");
   });
 });

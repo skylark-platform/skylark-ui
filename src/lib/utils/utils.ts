@@ -25,7 +25,7 @@ export const formatObjectField = (field?: string) =>
     : "";
 
 export const getPrimaryKeyField = (object: ParsedSkylarkObject) =>
-  [object.config.primaryField || "", ...DISPLAY_NAME_PRIORITY].find(
+  [object?.config?.primaryField || "", ...DISPLAY_NAME_PRIORITY].find(
     (field) => !!object.metadata[field],
   );
 
