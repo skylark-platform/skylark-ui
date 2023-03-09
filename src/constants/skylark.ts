@@ -27,6 +27,9 @@ export const LOCAL_STORAGE = {
   graphiql: {
     theme: "graphiql:theme",
     tabState: "graphiql:tabState",
+    queries: "graphiql:queries",
+    query: "graphiql:query",
+    variables: "graphiql:variables",
   },
 };
 export const HREFS = {

@@ -1,8 +1,7 @@
+import { sentenceCase } from "sentence-case";
+
 import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
-import {
-  ParsedSkylarkObject,
-  ParsedSkylarkObjectContentObject,
-} from "src/interfaces/skylark";
+import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 export const hasProperty = <T, K extends PropertyKey>(
   object: T,
@@ -19,12 +18,22 @@ export const pause = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 export const formatObjectField = (field?: string) =>
-  field?.toUpperCase().replaceAll("_", " ") || "";
+  field
+    ? field === "uid"
+      ? "UID"
+      : sentenceCase(field?.replaceAll("_", " "))
+    : "";
 
-export const getPrimaryKey = (obj: ParsedSkylarkObject) =>
-  [obj.config.primaryField || "", ...DISPLAY_NAME_PRIORITY].find(
-    (field) => !!obj.metadata[field],
+export const getPrimaryKeyField = (object: ParsedSkylarkObject) =>
+  [object.config.primaryField || "", ...DISPLAY_NAME_PRIORITY].find(
+    (field) => !!object.metadata[field],
   );
+
+export const getObjectDisplayName = (object: ParsedSkylarkObject): string => {
+  const primaryKeyField = getPrimaryKeyField(object);
+  const displayName = primaryKeyField && object.metadata[primaryKeyField];
+  return (displayName as string) || object.uid;
+};
 
 // Creates an Account Identifier (used in Flatfile template)
 // Will change when we have proper auth / teams / accounts

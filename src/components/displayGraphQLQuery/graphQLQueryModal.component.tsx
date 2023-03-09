@@ -1,6 +1,8 @@
 import { Dialog } from "@headlessui/react";
+import dayjs from "dayjs";
 import { AnimatePresence, m } from "framer-motion";
-import { DocumentNode, print } from "graphql/language";
+import { getOperationAST } from "graphql";
+import { DocumentNode, NameNode, print } from "graphql/language";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { GrClose, GrCopy, GrGraphQl } from "react-icons/gr";
@@ -8,6 +10,118 @@ import { GrClose, GrCopy, GrGraphQl } from "react-icons/gr";
 import { Button } from "src/components/button";
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
+import { LOCAL_STORAGE } from "src/constants/skylark";
+
+interface GraphiQLTabStateTab {
+  hash: null;
+  headers: null;
+  id: string;
+  operationName: string;
+  query: string;
+  response: null;
+  title: string;
+  variables: string;
+}
+
+interface GraphiQLTabState {
+  tabs: GraphiQLTabStateTab[];
+  activeTabIndex: number;
+}
+
+interface GraphiQLQueriesStateQuery {
+  headers: string | null;
+  operationName: string | null;
+  query: string;
+  variables: string | null;
+}
+
+interface GraphiQLQueriesState {
+  queries: GraphiQLQueriesStateQuery[];
+}
+
+const getGraphiQLLocalStorageObject = <T,>(
+  key: "tabState" | "queries",
+): T | null => {
+  try {
+    const valueJSON = localStorage.getItem(LOCAL_STORAGE.graphiql[key]);
+    if (!valueJSON) {
+      return null;
+    }
+
+    const value: T = JSON.parse(valueJSON);
+    return value;
+  } catch (err) {
+    return null;
+  }
+};
+
+const setGraphiQLLocalStorageObject = (
+  key: "tabState" | "queries",
+  object: object,
+) => {
+  localStorage.setItem(LOCAL_STORAGE.graphiql[key], JSON.stringify(object));
+};
+
+const updateGraphiQLLocalStorage = (
+  query: DocumentNode,
+  formattedQuery: string,
+  variables: object = {},
+) => {
+  const operation = getOperationAST(query as DocumentNode);
+  const operationName = operation && operation.name?.value;
+
+  const newTab: GraphiQLTabStateTab = {
+    id: "dynamically-generated-query",
+    hash: null,
+    headers: null,
+    operationName: operationName || "",
+    query: formattedQuery,
+    response: null,
+    title: operationName || "",
+    variables: JSON.stringify(variables),
+  };
+
+  localStorage.setItem(LOCAL_STORAGE.graphiql.query, formattedQuery);
+  localStorage.setItem(
+    LOCAL_STORAGE.graphiql.variables,
+    JSON.stringify(variables),
+  );
+
+  const tabState = getGraphiQLLocalStorageObject<GraphiQLTabState>("tabState");
+  if (tabState) {
+    const newTabs: GraphiQLTabState["tabs"] = [...tabState.tabs, newTab];
+    const updatedTabState: GraphiQLTabState = {
+      tabs: newTabs,
+      activeTabIndex: newTabs.length - 1,
+    };
+    setGraphiQLLocalStorageObject("tabState", updatedTabState);
+  } else {
+    const newTabState: GraphiQLTabState = {
+      tabs: [newTab],
+      activeTabIndex: 0,
+    };
+    setGraphiQLLocalStorageObject("tabState", newTabState);
+  }
+
+  const newQuery: GraphiQLQueriesStateQuery = {
+    query: formattedQuery,
+    variables: JSON.stringify(variables),
+    headers: "",
+    operationName: operationName || "",
+  };
+
+  const queriesState =
+    getGraphiQLLocalStorageObject<GraphiQLQueriesState>("queries");
+  if (queriesState) {
+    const updatedQueries: GraphiQLQueriesState = {
+      queries: [...queriesState.queries, newQuery],
+    };
+    setGraphiQLLocalStorageObject("queries", updatedQueries);
+  } else {
+    const newQueries: GraphiQLQueriesState = { queries: [newQuery] };
+    setGraphiQLLocalStorageObject("queries", newQueries);
+  }
+};
 
 const DynamicSyntaxHighlighter = dynamic(
   () => import("./lightweightSyntaxHighlighter.component"),
@@ -55,6 +169,10 @@ export const DisplayGraphQLQueryModal = ({
     }
   };
 
+  const openQueryInGraphQLEditor = () => {
+    query && updateGraphiQLLocalStorage(query, formattedQuery, variables);
+  };
+
   return (
     <Dialog
       static
@@ -90,15 +208,26 @@ export const DisplayGraphQLQueryModal = ({
               <GrClose className="text-xl" />
             </button>
 
-            <Dialog.Title className="mb-1 px-4 font-heading text-xl sm:text-2xl md:mb-2 md:px-8 md:text-3xl">
-              Query for {label}
-            </Dialog.Title>
+            <div className="mb-6 px-4 md:px-8">
+              <Dialog.Title className="mb-2 font-heading text-xl sm:text-2xl md:mb-4 md:text-3xl">
+                Query for {label}
+              </Dialog.Title>
 
-            <Dialog.Description className="mb-6 px-4 md:px-8 ">
-              The Skylark UI uses dynamic GraphQL Queries generated at runtime
-              to match your Skylark Schema exactly. This enables developers to
-              copy the query into their application with minimal changes.
-            </Dialog.Description>
+              <Dialog.Description className="mb-2">
+                The Skylark UI uses dynamic GraphQL Queries generated at runtime
+                to match your Skylark Schema exactly. This enables developers to
+                copy the query into their application with minimal changes.
+              </Dialog.Description>
+
+              <a
+                className="link text-brand-primary"
+                onClick={openQueryInGraphQLEditor}
+                target="_blank"
+                href="/developer/graphql-editor"
+              >
+                Open Query in GraphQL Editor
+              </a>
+            </div>
 
             <Tabs
               tabs={["Query", "Variables"]}

@@ -13,6 +13,7 @@ import {
 } from "src/__tests__/utils/test-utils";
 import { QueryErrorMessages } from "src/enums/graphql";
 import { createGetObjectQueryName } from "src/lib/graphql/skylark/dynamicQueries";
+import { formatObjectField } from "src/lib/utils";
 
 import { Panel } from "./panel.component";
 
@@ -36,7 +37,7 @@ test("renders the panel in the default view", async () => {
   await waitFor(() =>
     expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
   );
-  await waitFor(() => expect(screen.getByText("TITLE")).toBeInTheDocument());
+  await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
 
   expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
   expect(
@@ -119,7 +120,7 @@ test("renders the objects primaryField and colour in the header when given", asy
   await waitFor(() =>
     expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
   );
-  await waitFor(() => expect(screen.getByText("TITLE")).toBeInTheDocument());
+  await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
 
   expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
   expect(
@@ -149,10 +150,10 @@ test("renders an image and the original image size when the object type is an Im
   await waitFor(() =>
     expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
   );
-  await waitFor(() => expect(screen.getByText("TITLE")).toBeInTheDocument());
+  await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
 
   expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
-  expect(screen.getByText("ORIGINAL SIZE")).toBeInTheDocument();
+  expect(screen.getByText("Original size")).toBeInTheDocument();
   expect(
     screen.getByAltText(
       GQLSkylarkGetObjectImageQueryFixture.data.getObject.title,
@@ -183,10 +184,11 @@ test("imagery view", async () => {
     GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects.filter(
       ({ type }) => type === "THUMBNAIL",
     ).length;
-
   expect(
     screen.getByText(
-      `${GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].type} (${thumbnailCount})`,
+      `${formatObjectField(
+        GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].type,
+      )} (${thumbnailCount})`,
     ),
   ).toBeInTheDocument();
 

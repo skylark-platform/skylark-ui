@@ -1,9 +1,12 @@
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 
 import {
   ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
 } from "src/interfaces/skylark";
+
+dayjs.extend(relativeTime);
 
 export const getSingleAvailabilityStatus = (
   now: dayjs.Dayjs,
@@ -41,4 +44,26 @@ export const getObjectAvailabilityStatus = (
   );
 
   return isFuture ? AvailabilityStatus.Future : AvailabilityStatus.Active;
+};
+
+export const is2038Problem = (date: string) => {
+  return dayjs(date).isSame("2038-01-19T03:14:07.000Z");
+};
+
+export const getTimeFromDate = (
+  status: AvailabilityStatus,
+  start: string,
+  end: string,
+): string => {
+  if (status === AvailabilityStatus.Future) {
+    return `Active ${dayjs(start).fromNow()}`;
+  }
+  if (status === AvailabilityStatus.Active) {
+    const neverExpires = is2038Problem(end);
+    if (neverExpires) {
+      return "Never expires";
+    }
+    return `Expires ${dayjs(end).fromNow()}`;
+  }
+  return `Expired ${dayjs(end).fromNow()}`;
 };
