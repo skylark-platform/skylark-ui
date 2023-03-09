@@ -21,6 +21,7 @@ import {
   PanelMetadata,
 } from "./panelSections";
 import { PanelContent } from "./panelSections/panelContent.component";
+import { PanelRelationships } from "./panelSections/panelRelationships.component";
 
 interface PanelProps {
   objectType: string;
@@ -36,6 +37,7 @@ enum PanelTab {
   Imagery = "Imagery",
   Availability = "Availability",
   Content = "Content",
+  Relationships = "Relationships",
 }
 
 const getTitle = (
@@ -70,6 +72,8 @@ export const Panel = ({
   const { data, isLoading, query, variables, isError, isNotFound, error } =
     useGetObject(objectType, uid);
 
+  console.log("data", data);
+
   const [inEditMode, setEditMode] = useState(false);
   const [contentObjects, setContentObjects] = useState<
     AddedSkylarkObjectContentObject[] | null
@@ -81,6 +85,7 @@ export const Panel = ({
         PanelTab.Metadata,
         data?.images && PanelTab.Imagery,
         objectType === BuiltInSkylarkObjectType.Set && PanelTab.Content,
+        PanelTab.Relationships,
         // PanelTab.Availability,
       ].filter((tab) => !!tab) as string[],
     [data?.images, objectType],
@@ -209,6 +214,7 @@ export const Panel = ({
               showDropArea={showDropArea}
             />
           )}
+          {selectedTab === PanelTab.Relationships && <PanelRelationships />}
         </>
       )}
     </section>
