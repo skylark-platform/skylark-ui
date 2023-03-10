@@ -46,6 +46,9 @@ export const getObjectAvailabilityStatus = (
   return isFuture ? AvailabilityStatus.Future : AvailabilityStatus.Active;
 };
 
+export const formatReadableDate = (date?: string | null) =>
+  date ? dayjs(date).format("llll") : "";
+
 export const is2038Problem = (date: string) => {
   return dayjs(date).isSame("2038-01-19T03:14:07.000Z");
 };

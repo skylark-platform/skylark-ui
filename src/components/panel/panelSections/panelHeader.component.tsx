@@ -157,7 +157,9 @@ export const PanelHeader = ({
           className="bg-brand-primary"
           label={objectType}
         />
-        <h1 className="flex-grow text-xl font-bold uppercase">{title}</h1>
+        <h1 className="flex-grow text-lg font-bold uppercase md:text-xl">
+          {title}
+        </h1>
         <div className="flex flex-row items-end justify-end space-x-2">
           {inEditMode && (
             <div className="absolute left-1/2 -bottom-16 -translate-x-1/2 md:-bottom-18">

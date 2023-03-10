@@ -2,10 +2,9 @@ import clsx from "clsx";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import { Fragment } from "react";
-import { InView } from "react-intersection-observer";
 
 import { AvailabilityLabel } from "src/components/availability";
-import { Spinner } from "src/components/icons";
+import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import { useGetObjectAvailability } from "src/hooks/useGetObjectAvailability";
 import {
@@ -13,7 +12,10 @@ import {
   AvailabilityStatus,
   SkylarkGraphQLAvailabilityDimension,
 } from "src/interfaces/skylark";
-import { getTimeFromDate } from "src/lib/skylark/availability";
+import {
+  formatReadableDate,
+  getTimeFromDate,
+} from "src/lib/skylark/availability";
 
 dayjs.extend(localizedFormat);
 
@@ -60,13 +62,15 @@ export const PanelAvailability = ({
   objectType,
   objectUid,
 }: PanelAvailabilityProps) => {
-  const { data, hasNextPage, isLoading, fetchNextPage } =
+  const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
     useGetObjectAvailability(objectType, objectUid);
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto p-4 pb-12 text-sm md:p-8">
+    <div className="relative flex h-full flex-col overflow-y-auto p-4 pb-12 text-sm md:p-8">
+      {data?.length === 0 && <p>No availability assigned to this object.</p>}
       {data?.map((obj) => {
         const { status, neverExpires } = obj;
+        console.log({ obj });
         const availabilityInfo: {
           key: keyof Omit<
             ParsedSkylarkObjectAvailability["objects"][0],
@@ -78,12 +82,12 @@ export const PanelAvailability = ({
           {
             label: "Start",
             key: "start",
-            value: dayjs(obj.start).format("llll"),
+            value: formatReadableDate(obj.start),
           },
           {
             label: "End",
             key: "end",
-            value: neverExpires ? "Never" : dayjs(obj.end).format("llll"),
+            value: neverExpires ? "Never" : formatReadableDate(obj.end),
           },
           { label: "Timezone", key: "timezone", value: obj.timezone || "" },
         ];
@@ -135,6 +139,12 @@ export const PanelAvailability = ({
       <PanelLoading
         isLoading={isLoading || hasNextPage}
         loadMore={() => fetchNextPage()}
+      />
+      <DisplayGraphQLQuery
+        label="Get Object Availability"
+        query={query}
+        variables={variables}
+        buttonClassName="absolute right-2 top-0"
       />
     </div>
   );

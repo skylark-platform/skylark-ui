@@ -34,7 +34,7 @@ export const useGetObjectAvailability = (
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const query = createGetObjectAvailabilityQuery(objectOperations);
-  const variables = { uid };
+  const variables = { uid, nextToken: "" };
 
   const { data, ...rest } = useInfiniteQuery<
     GQLSkylarkGetObjectAvailabilityResponse,
@@ -66,7 +66,7 @@ export const useGetObjectAvailability = (
           ...object,
           title: object.title || "",
           slug: object.slug || "",
-          start: object.slug || "",
+          start: object.start || "",
           end: object.end || "",
           timezone: object.timezone || "",
           dimensions: object.dimensions.objects,

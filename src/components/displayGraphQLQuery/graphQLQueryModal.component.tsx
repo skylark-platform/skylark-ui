@@ -148,6 +148,7 @@ const modalVariants = {
 interface GraphQLQueryModalProps {
   label: string;
   query: DocumentNode | null;
+  buttonClassName?: string;
   variables?: object;
 }
 
@@ -197,9 +198,10 @@ export const DisplayGraphQLQueryModal = ({
         variants={modalVariants.background}
         exit="hidden"
         transition={{ duration: 0.5, type: "spring" }}
+        id="graphql-query-modal"
         className="fixed inset-0 flex h-full items-center justify-center overflow-y-hidden py-4 text-sm sm:py-10 md:py-20"
       >
-        <Dialog.Panel className="relative mx-auto h-full w-full overflow-y-scroll rounded bg-white sm:w-11/12 md:w-5/6 lg:w-3/4 xl:w-1/2">
+        <Dialog.Panel className="relative mx-auto flex h-full w-full flex-col overflow-y-hidden rounded bg-white sm:w-11/12 md:w-5/6 lg:w-3/4 xl:w-1/2">
           <div className="sticky top-0 bg-white pt-8 text-black shadow">
             <button
               className="absolute top-4 right-4 sm:top-9 sm:right-8"
@@ -247,14 +249,16 @@ export const DisplayGraphQLQueryModal = ({
             </div>
           </div>
 
-          <DynamicSyntaxHighlighter
-            language={activeTab === "Query" ? "graphql" : "json"}
-            value={
-              activeTab === "Query"
-                ? formattedQuery
-                : JSON.stringify(variables || {}, null, 4)
-            }
-          />
+          <div className="flex-grow overflow-y-scroll">
+            <DynamicSyntaxHighlighter
+              language={activeTab === "Query" ? "graphql" : "json"}
+              value={
+                activeTab === "Query"
+                  ? formattedQuery
+                  : JSON.stringify(variables || {}, null, 4)
+              }
+            />
+          </div>
         </Dialog.Panel>
       </m.div>
     </Dialog>
@@ -276,6 +280,7 @@ export const DisplayGraphQLQuery = (props: GraphQLQueryModalProps) => {
         }
         onClick={() => setOpen(true)}
         disabled={!props.query}
+        className={props.buttonClassName}
       />
       <AnimatePresence>
         {isOpen && (
