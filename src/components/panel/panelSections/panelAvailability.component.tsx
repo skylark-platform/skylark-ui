@@ -12,7 +12,7 @@ import {
 } from "src/interfaces/skylark";
 import {
   formatReadableDate,
-  getTimeFromDate,
+  getRelativeTimeFromDate,
 } from "src/lib/skylark/availability";
 
 interface PanelAvailabilityProps {
@@ -60,10 +60,11 @@ export const PanelAvailability = ({
 }: PanelAvailabilityProps) => {
   const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
     useGetObjectAvailability(objectType, objectUid);
-
   return (
     <div className="relative flex h-full flex-col overflow-y-auto p-4 pb-12 text-sm md:p-8">
-      {data?.length === 0 && <p>No availability assigned to this object.</p>}
+      {!isLoading && data?.length === 0 && (
+        <p>No availability assigned to this object.</p>
+      )}
       {data?.map((obj) => {
         const { status, neverExpires } = obj;
         const availabilityInfo: {
@@ -100,7 +101,11 @@ export const PanelAvailability = ({
                 </h3>
                 <p className="text-manatee-400">
                   {status &&
-                    getTimeFromDate(status, obj.start || "", obj.end || "")}
+                    getRelativeTimeFromDate(
+                      status,
+                      obj.start || "",
+                      obj.end || "",
+                    )}
                 </p>
               </div>
 

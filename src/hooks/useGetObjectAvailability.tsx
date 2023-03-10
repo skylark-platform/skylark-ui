@@ -1,9 +1,8 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { DocumentNode } from "graphql";
 import { RequestDocument } from "graphql-request";
 
-import { QueryErrorMessages, QueryKeys } from "src/enums/graphql";
+import { QueryKeys } from "src/enums/graphql";
 import {
   SkylarkObjectType,
   GQLSkylarkErrorResponse,

@@ -55,7 +55,7 @@ export const is2038Problem = (date: string) => {
   return dayjs(date).isSame("2038-01-19T03:14:07.000Z");
 };
 
-export const getTimeFromDate = (
+export const getRelativeTimeFromDate = (
   status: AvailabilityStatus,
   start: string,
   end: string,

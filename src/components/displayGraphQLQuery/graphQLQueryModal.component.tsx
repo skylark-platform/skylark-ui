@@ -1,8 +1,6 @@
 import { Dialog } from "@headlessui/react";
-import dayjs from "dayjs";
 import { AnimatePresence, m } from "framer-motion";
-import { getOperationAST } from "graphql";
-import { DocumentNode, NameNode, print } from "graphql/language";
+import { DocumentNode, print, getOperationAST } from "graphql";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { GrClose, GrCopy, GrGraphQl } from "react-icons/gr";
@@ -10,7 +8,7 @@ import { GrClose, GrCopy, GrGraphQl } from "react-icons/gr";
 import { Button } from "src/components/button";
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
-import { LOCAL_STORAGE } from "src/constants/skylark";
+import { HREFS, LOCAL_STORAGE } from "src/constants/skylark";
 
 interface GraphiQLTabStateTab {
   hash: null;
@@ -24,8 +22,8 @@ interface GraphiQLTabStateTab {
 }
 
 interface GraphiQLTabState {
-  tabs: GraphiQLTabStateTab[];
-  activeTabIndex: number;
+  tabs?: GraphiQLTabStateTab[];
+  activeTabIndex?: number;
 }
 
 interface GraphiQLQueriesStateQuery {
@@ -36,7 +34,7 @@ interface GraphiQLQueriesStateQuery {
 }
 
 interface GraphiQLQueriesState {
-  queries: GraphiQLQueriesStateQuery[];
+  queries?: GraphiQLQueriesStateQuery[];
 }
 
 const getGraphiQLLocalStorageObject = <T,>(
@@ -89,7 +87,10 @@ const updateGraphiQLLocalStorage = (
 
   const tabState = getGraphiQLLocalStorageObject<GraphiQLTabState>("tabState");
   if (tabState) {
-    const newTabs: GraphiQLTabState["tabs"] = [...tabState.tabs, newTab];
+    const newTabs: GraphiQLTabState["tabs"] = [
+      ...(tabState?.tabs || []),
+      newTab,
+    ];
     const updatedTabState: GraphiQLTabState = {
       tabs: newTabs,
       activeTabIndex: newTabs.length - 1,
@@ -114,7 +115,7 @@ const updateGraphiQLLocalStorage = (
     getGraphiQLLocalStorageObject<GraphiQLQueriesState>("queries");
   if (queriesState) {
     const updatedQueries: GraphiQLQueriesState = {
-      queries: [...queriesState.queries, newQuery],
+      queries: [...(queriesState?.queries || []), newQuery],
     };
     setGraphiQLLocalStorageObject("queries", updatedQueries);
   } else {
@@ -225,7 +226,8 @@ export const DisplayGraphQLQueryModal = ({
                 className="link text-brand-primary"
                 onClick={openQueryInGraphQLEditor}
                 target="_blank"
-                href="/developer/graphql-editor"
+                href={HREFS.relative.graphqlEditor}
+                rel="noreferrer"
               >
                 Open Query in GraphQL Editor
               </a>
@@ -240,6 +242,7 @@ export const DisplayGraphQLQueryModal = ({
             <div className="absolute right-0 z-50 w-auto">
               <div className="mr-4 mt-3 sm:mr-8 sm:mt-6">
                 <button
+                  data-testid="copy-active-tab-to-clipboard"
                   className="rounded border bg-manatee-100 p-2 shadow transition-colors hover:bg-brand-primary hover:stroke-white sm:p-3"
                   onClick={copyActiveTab}
                 >

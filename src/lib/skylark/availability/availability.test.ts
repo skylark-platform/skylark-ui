@@ -8,7 +8,7 @@ import {
 import {
   getObjectAvailabilityStatus,
   getSingleAvailabilityStatus,
-  getTimeFromDate,
+  getRelativeTimeFromDate,
   is2038Problem,
 } from "./availability";
 
@@ -132,13 +132,13 @@ describe("is2038Problem", () => {
   });
 });
 
-describe("getTimeFromDate", () => {
+describe("getRelativeTimeFromDate", () => {
   beforeEach(() => {
     jest.useFakeTimers().setSystemTime(new Date("2023-01-01T00:00:00.000Z"));
   });
 
   test("future time window", () => {
-    const got = getTimeFromDate(
+    const got = getRelativeTimeFromDate(
       AvailabilityStatus.Future,
       "2024-01-19T03:14:07.000Z",
       "2038-01-19T03:14:07.000Z",
@@ -147,7 +147,7 @@ describe("getTimeFromDate", () => {
   });
 
   test("active time window", () => {
-    const got = getTimeFromDate(
+    const got = getRelativeTimeFromDate(
       AvailabilityStatus.Active,
       "2020-01-19T03:14:07.000Z",
       "2028-01-19T03:14:07.000Z",
@@ -156,7 +156,7 @@ describe("getTimeFromDate", () => {
   });
 
   test("active time window that never expires (2038 problem)", () => {
-    const got = getTimeFromDate(
+    const got = getRelativeTimeFromDate(
       AvailabilityStatus.Active,
       "2020-01-19T03:14:07.000Z",
       "2038-01-19T03:14:07.000Z",
@@ -165,7 +165,7 @@ describe("getTimeFromDate", () => {
   });
 
   test("expired time window", () => {
-    const got = getTimeFromDate(
+    const got = getRelativeTimeFromDate(
       AvailabilityStatus.Expired,
       "2020-01-19T03:14:07.000Z",
       "2022-01-19T03:14:07.000Z",
