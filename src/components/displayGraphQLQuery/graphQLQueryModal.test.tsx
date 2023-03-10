@@ -164,6 +164,17 @@ test("copies the active tab to the clipboard", async () => {
 
 test("clicks the open query in editor button which sets the GraphiQL localStorage when it is not set", async () => {
   Storage.prototype.setItem = jest.fn();
+  Storage.prototype.getItem = jest.fn().mockImplementation((key: string) => {
+    if (key === LOCAL_STORAGE.graphiql.tabState) {
+      // Invalid JSON to test error
+      return "{";
+    }
+    if (key === LOCAL_STORAGE.graphiql.queries) {
+      return "";
+    }
+
+    return "";
+  });
   render(
     <DisplayGraphQLQuery
       label={label}

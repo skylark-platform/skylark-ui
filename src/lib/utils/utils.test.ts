@@ -65,6 +65,11 @@ describe("formatObjectField", () => {
     const got = formatObjectField("uid");
     expect(got).toEqual("UID");
   });
+
+  test("empty string when undefined is given", () => {
+    const got = formatObjectField(undefined);
+    expect(got).toEqual("");
+  });
 });
 
 describe("getPrimaryKeyField", () => {
