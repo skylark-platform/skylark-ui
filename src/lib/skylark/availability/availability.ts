@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 import {
@@ -6,6 +7,7 @@ import {
   AvailabilityStatus,
 } from "src/interfaces/skylark";
 
+dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
 
 export const getSingleAvailabilityStatus = (

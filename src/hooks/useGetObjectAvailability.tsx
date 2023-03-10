@@ -46,10 +46,8 @@ export const useGetObjectAvailability = (
         ...variables,
         nextToken,
       }),
-    getNextPageParam: (lastPage): string | undefined => {
-      const nextToken = lastPage.getObjectAvailability.availability.next_token;
-      return nextToken || undefined;
-    },
+    getNextPageParam: (lastPage): string | undefined =>
+      lastPage.getObjectAvailability.availability?.next_token || undefined,
   });
 
   const now = dayjs();
@@ -58,15 +56,15 @@ export const useGetObjectAvailability = (
       ?.flatMap((page) => page.getObjectAvailability.availability.objects)
       .map((object): ParsedSkylarkObjectAvailabilityObject => {
         const { start, end } = object;
-        const neverExpires = is2038Problem(end || "");
+        const neverExpires = !!(end && is2038Problem(end));
         const status = getSingleAvailabilityStatus(now, start || "", end || "");
 
         return {
           ...object,
           title: object.title || "",
           slug: object.slug || "",
-          start: object.start || "",
-          end: object.end || "",
+          start: start || "",
+          end: end || "",
           timezone: object.timezone || "",
           dimensions: object.dimensions.objects,
           status,

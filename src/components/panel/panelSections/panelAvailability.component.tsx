@@ -1,6 +1,4 @@
 import clsx from "clsx";
-import dayjs from "dayjs";
-import localizedFormat from "dayjs/plugin/localizedFormat";
 import { Fragment } from "react";
 
 import { AvailabilityLabel } from "src/components/availability";
@@ -8,16 +6,14 @@ import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import { useGetObjectAvailability } from "src/hooks/useGetObjectAvailability";
 import {
-  ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
   SkylarkGraphQLAvailabilityDimension,
+  ParsedSkylarkObjectAvailabilityObject,
 } from "src/interfaces/skylark";
 import {
   formatReadableDate,
   getTimeFromDate,
 } from "src/lib/skylark/availability";
-
-dayjs.extend(localizedFormat);
 
 interface PanelAvailabilityProps {
   objectType: string;
@@ -71,10 +67,7 @@ export const PanelAvailability = ({
       {data?.map((obj) => {
         const { status, neverExpires } = obj;
         const availabilityInfo: {
-          key: keyof Omit<
-            ParsedSkylarkObjectAvailability["objects"][0],
-            "dimensions"
-          >;
+          key: keyof Omit<ParsedSkylarkObjectAvailabilityObject, "dimensions">;
           label: string;
           value: string;
         }[] = [
