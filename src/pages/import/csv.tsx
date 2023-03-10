@@ -15,10 +15,7 @@ import {
 } from "src/interfaces/apiRoutes";
 import { FlatfileRow } from "src/interfaces/flatfile/responses";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
-import {
-  NormalizedObjectField,
-  SkylarkObjectType,
-} from "src/interfaces/skylark";
+import { NormalizedObjectField } from "src/interfaces/skylark";
 import {
   createFlatfileObjectsInSkylark,
   generateExampleCSV,

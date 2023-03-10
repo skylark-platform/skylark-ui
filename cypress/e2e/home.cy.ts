@@ -12,10 +12,10 @@ describe("Content Library", () => {
     cy.login();
 
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
-        req.alias = "getSkylarkObjectTypesQuery";
+      if (hasOperationName(req, "IntrospectionQuery")) {
+        req.alias = "introspectionQuery";
         req.reply({
-          fixture: "./skylark/queries/introspection/objectTypes.json",
+          fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
       if (hasOperationName(req, "GET_SKYLARK_SCHEMA")) {
@@ -33,6 +33,17 @@ describe("Content Library", () => {
           fixture: "./skylark/queries/getObject/homepage.json",
         });
       }
+      if (hasOperationName(req, "GET_Movie")) {
+        req.reply({
+          fixture: "./skylark/queries/getObject/allAvailTestMovie.json",
+        });
+      }
+      if (hasOperationName(req, "GET_Movie_AVAILABILITY")) {
+        req.reply({
+          fixture:
+            "./skylark/queries/getObjectAvailability/allAvailTestMovieAvailability.json",
+        });
+      }
       if (hasOperationName(req, "SEARCH")) {
         if (hasMatchingVariable(req, "queryString", "GOT S01")) {
           req.reply({
@@ -41,6 +52,12 @@ describe("Content Library", () => {
         } else if (hasMatchingVariable(req, "queryString", "Homepage")) {
           req.reply({
             fixture: "./skylark/queries/search/homepage.json",
+          });
+        } else if (
+          hasMatchingVariable(req, "queryString", "all avail test movie")
+        ) {
+          req.reply({
+            fixture: "./skylark/queries/search/allMediaTestMovieOnly.json",
           });
         } else if (hasMatchingQuery(req, assetOnlyQuery)) {
           req.reply({
@@ -61,7 +78,7 @@ describe("Content Library", () => {
     });
 
     cy.visit("/");
-    cy.wait("@getSkylarkObjectTypesQuery");
+    cy.wait("@introspectionQuery");
   });
 
   it("visits home", () => {
@@ -187,9 +204,9 @@ describe("Content Library", () => {
           cy.get('[aria-label="object-info"]').click();
         });
 
-      cy.contains("Metadata").should("exist");
+      cy.contains("Edit Metadata").should("exist");
       cy.get("button").contains("Close").click();
-      cy.contains("Metadata").should("not.exist");
+      cy.contains("Edit Metadata").should("not.exist");
     });
 
     describe("Imagery tab", () => {
@@ -209,7 +226,7 @@ describe("Content Library", () => {
 
         cy.contains("Imagery");
         cy.contains("Title: GOT - S1 - 1.jpg");
-        cy.contains("section", "THUMBNAIL")
+        cy.contains("section", "Thumbnail")
           .find("img")
           .should(
             "have.attr",
@@ -393,6 +410,29 @@ describe("Content Library", () => {
             "GOT S02",
             "Home page hero",
           ]);
+      });
+    });
+
+    describe("Availability tab", () => {
+      it("open Availability tab", () => {
+        cy.get('input[name="search-query-input"]').type("all avail test movie");
+        cy.contains("All Avail Test Movie").should("exist");
+        cy.contains("tr", "All Avail Test Movie")
+          .should(($el) => {
+            // eslint-disable-next-line jest/valid-expect
+            expect(Cypress.dom.isDetached($el)).to.eq(false);
+          })
+          .within(() => {
+            cy.get('[aria-label="object-info"]').click();
+          });
+
+        cy.contains("button", "Availability").click();
+
+        cy.contains("Active in the past");
+        cy.contains("Time Window");
+        cy.contains("Audience");
+
+        cy.percySnapshot("Homepage - metadata panel - availability");
       });
     });
   });

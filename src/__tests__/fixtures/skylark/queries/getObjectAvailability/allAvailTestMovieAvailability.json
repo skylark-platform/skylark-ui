@@ -1,0 +1,100 @@
+{
+  "data": {
+    "getObjectAvailability": {
+      "availability": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01GV4SM26PWS6HHRSKDVXZX33H",
+            "external_id": "recN2Jf4j9UCblsIc",
+            "title": "Active in the past",
+            "slug": "active-in-the-past",
+            "start": "2000-01-01T15:15:00+00:00",
+            "end": "2020-01-01T15:15:00+00:00",
+            "timezone": "+00:00",
+            "dimensions": { "next_token": null, "objects": [] }
+          },
+          {
+            "uid": "01GV4SM28HEQT0PRCVD4ZBHA98",
+            "external_id": "recQzQ8ZUyh6VzVAw",
+            "title": "Active Next Sunday",
+            "slug": "active-next-sunday",
+            "start": "2023-03-12T00:00:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "+00:00",
+            "dimensions": { "next_token": null, "objects": [] }
+          },
+          {
+            "uid": "01GV4SM29F5VW8EGRPHB0Q72QQ",
+            "external_id": "recX0Ztue3iBQR7rl",
+            "title": "Active Until Next Sunday",
+            "slug": "active-until-next-sunday",
+            "start": "2000-01-01T00:00:00+00:00",
+            "end": "2023-03-12T00:00:00+00:00",
+            "timezone": "+00:00",
+            "dimensions": { "next_token": null, "objects": [] }
+          },
+          {
+            "uid": "01GV4SM2F2PRB3AM2Z8N0E43CF",
+            "external_id": "recMdBZyVPsIGqAYq",
+            "title": "Premium",
+            "slug": "premium",
+            "start": "2022-01-01T00:00:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "+00:00",
+            "dimensions": {
+              "next_token": null,
+              "objects": [
+                {
+                  "uid": "01GV4SKQY0G4Z1FTV6Q86M2VR0",
+                  "title": "Device Type",
+                  "slug": "device-types",
+                  "external_id": null,
+                  "description": null,
+                  "values": {
+                    "objects": [
+                      {
+                        "description": null,
+                        "external_id": "recPOR7ivzMd90XLe",
+                        "slug": "pc",
+                        "title": "PC",
+                        "uid": "01GV4SKXB0V4JTGN0Y4KW4ZQ3M"
+                      },
+                      {
+                        "description": null,
+                        "external_id": "rec50TFQHwT76pY2K",
+                        "slug": "smartphone",
+                        "title": "SmartPhone",
+                        "uid": "01GV4SKX4PWD15RMNYD42H7E21"
+                      }
+                    ],
+                    "next_token": null
+                  }
+                },
+                {
+                  "uid": "01GV4SKQWWSSMGFTSJ21HJVCM8",
+                  "title": "Customer Type",
+                  "slug": "customer-types",
+                  "external_id": null,
+                  "description": null,
+                  "values": {
+                    "objects": [
+                      {
+                        "description": null,
+                        "external_id": "recD4WfhAYw4gFnJh",
+                        "slug": "premium",
+                        "title": "Premium",
+                        "uid": "01GV4SKX9D6FMPY2YRRXXBWR9E"
+                      }
+                    ],
+                    "next_token": null
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

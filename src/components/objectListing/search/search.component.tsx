@@ -1,5 +1,6 @@
 import { VisibilityState } from "@tanstack/react-table";
 import { AnimatePresence, m } from "framer-motion";
+import { DocumentNode } from "graphql";
 import { useEffect, useRef, useState } from "react";
 
 import { SearchFilter } from "src/components/objectListing/search/searchFilter/searchFilter.component";
@@ -15,6 +16,10 @@ interface SearchBarProps {
   columns: string[];
   visibleColumns: string[];
   className?: string;
+  graphqlQuery: {
+    query: DocumentNode | null;
+    variables: object;
+  };
   onQueryChange: (str: string) => void;
   onFilterChange: (f: SearchFilters, c: VisibilityState) => void;
 }
@@ -25,6 +30,7 @@ export const Search = ({
   columns,
   visibleColumns,
   searchQuery,
+  graphqlQuery,
   onQueryChange,
   activeFilters,
   onFilterChange,
@@ -35,9 +41,14 @@ export const Search = ({
 
   useEffect(() => {
     const closeFilterOnClickOutside = (e: MouseEvent) => {
+      // If the GraphQL Query Modal is open, don't close the filters
+      const graphqlQueryModalIsOpen = !!document.getElementById(
+        "graphql-query-modal",
+      );
       if (
         filtersDivRef.current &&
-        !filtersDivRef.current.contains(e.target as Node)
+        !filtersDivRef.current.contains(e.target as Node) &&
+        !graphqlQueryModalIsOpen
       ) {
         setFilterOpen(false);
       }
@@ -80,6 +91,7 @@ export const Search = ({
               activeFilters={activeFilters}
               columns={columns}
               visibleColumns={visibleColumns}
+              graphqlQuery={graphqlQuery}
               onFilterSave={onFilterSaveWrapper}
             />
           </m.div>

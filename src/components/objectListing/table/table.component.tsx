@@ -42,6 +42,8 @@ const lastHeadAndDataClassNames =
   "last:sticky last:right-0 last:pl-0 last:bg-white last:z-10 last:min-w-0 last:border-l-0";
 const headerLeftLineStyling =
   "[&>span]:border-l [&>span]:pl-2 [&>span]:first:border-l-0 [&>span]:first:pl-0 [&>span]:last:border-l-0 [&>span]:last:pl-0";
+const rowClassName =
+  "group/row hover:bg-manatee-50 hover:border-manatee-50 focus:bg-manatee-200 focus:border-manatee-200";
 const rowGroupClassName =
   "group-hover/row:bg-manatee-50 group-hover/row:border-manatee-50 group-focus/row:bg-manatee-200 group-focus/row:border-manatee-200";
 
@@ -213,7 +215,7 @@ const TableRow = ({
       {...listeners}
       {...attributes}
       key={row.id}
-      className="group/row align-middle outline-none"
+      className={clsx("align-middle outline-none", rowClassName)}
       tabIndex={-1}
       onDoubleClick={() => setPanelObject?.({ uid, objectType })}
       style={{
@@ -293,7 +295,10 @@ export const Table = ({
         {totalRows > 0 && isLoadingMore && (
           <tr>
             <td colSpan={headers.length}>
-              <div className="sticky left-0 right-0 bottom-2 flex h-32 w-screen items-center justify-center">
+              <div
+                data-chromatic="ignore"
+                className="sticky left-0 right-0 bottom-2 flex h-32 w-screen items-center justify-center"
+              >
                 <Spinner className="-z-10 h-8 w-8 animate-spin md:h-10 md:w-10" />
               </div>
             </td>

@@ -1,4 +1,6 @@
 import {
+  NextToken,
+  SkylarkGraphQLAvailability,
   SkylarkGraphQLObject,
   SkylarkGraphQLObjectContent,
 } from "./gqlObjects";
@@ -20,6 +22,15 @@ export interface GQLSkylarkErrorResponse<T> {
 
 export interface GQLSkylarkGetObjectResponse {
   getObject: SkylarkGraphQLObject;
+}
+
+export interface GQLSkylarkGetObjectAvailabilityResponse {
+  getObjectAvailability: {
+    availability: {
+      next_token: NextToken;
+      objects: SkylarkGraphQLAvailability[];
+    };
+  };
 }
 
 export interface GQLSkylarkSearchResponse {

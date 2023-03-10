@@ -8,19 +8,9 @@ import {
   waitFor,
 } from "src/__tests__/utils/test-utils";
 import { LOCAL_STORAGE } from "src/constants/skylark";
+import { SKYLARK_SCHEMA_INTROSPECTION_QUERY_NAME } from "src/lib/graphql/skylark/queries";
 
 import { AddAuthTokenModal } from "./betaReleaseAuthModal.component";
-
-beforeEach(() => {
-  // IntersectionObserver isn't available in test environment
-  const mockIntersectionObserver = jest.fn();
-  mockIntersectionObserver.mockReturnValue({
-    observe: () => null,
-    unobserve: () => null,
-    disconnect: () => null,
-  });
-  window.IntersectionObserver = mockIntersectionObserver;
-});
 
 test("renders as closed", () => {
   render(<AddAuthTokenModal isOpen={false} setIsOpen={jest.fn()} />);
@@ -109,7 +99,7 @@ test("clicks the copy buttons", () => {
 
 test("changes input to red when they are invalid", async () => {
   server.use(
-    graphql.query("GET_SKYLARK_OBJECT_TYPES", (req, res, ctx) => {
+    graphql.query(SKYLARK_SCHEMA_INTROSPECTION_QUERY_NAME, (req, res, ctx) => {
       return res(
         ctx.errors([
           {

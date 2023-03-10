@@ -16,6 +16,7 @@ export const OBJECT_LIST_TABLE = {
     actions: "skylark-ui-actions",
     availability: "availability",
     images: "images",
+    translations: "translations",
   },
 };
 export const LOCAL_STORAGE = {
@@ -26,10 +27,18 @@ export const LOCAL_STORAGE = {
   graphiql: {
     theme: "graphiql:theme",
     tabState: "graphiql:tabState",
+    queries: "graphiql:queries",
+    query: "graphiql:query",
+    variables: "graphiql:variables",
   },
 };
 export const HREFS = {
-  apiDocs: "https://docs.skylarkplatform.com/",
+  relative: {
+    graphqlEditor: "/developer/graphql-editor",
+  },
+  external: {
+    apiDocs: "https://docs.skylarkplatform.com/",
+  },
 };
 // Helpful way to priorise common display names when one isn't set
 export const DISPLAY_NAME_PRIORITY = [

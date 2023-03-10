@@ -1,4 +1,14 @@
-import { createAccountIdentifier, hasProperty, isObject, pause } from "./utils";
+import { ParsedSkylarkObject } from "src/interfaces/skylark";
+
+import {
+  createAccountIdentifier,
+  formatObjectField,
+  getObjectDisplayName,
+  getPrimaryKeyField,
+  hasProperty,
+  isObject,
+  pause,
+} from "./utils";
 
 describe("hasProperty", () => {
   test("returns true when the object has the property", () => {
@@ -42,6 +52,100 @@ describe("pause", () => {
 
     // Assert
     expect(cb).toHaveBeenCalled();
+  });
+});
+
+describe("formatObjectField", () => {
+  test("tests the case and _ change", () => {
+    const got = formatObjectField("title_short");
+    expect(got).toEqual("Title short");
+  });
+
+  test("tests uid -> UID (special case)", () => {
+    const got = formatObjectField("uid");
+    expect(got).toEqual("UID");
+  });
+
+  test("empty string when undefined is given", () => {
+    const got = formatObjectField(undefined);
+    expect(got).toEqual("");
+  });
+});
+
+describe("getPrimaryKeyField", () => {
+  test("uses the displayField when given in object config", () => {
+    const object = {
+      config: {
+        primaryField: "title_short",
+      },
+      metadata: {
+        title_short: "Short title",
+        title: "default",
+        uid: "uid",
+        external_id: "external_id",
+        slug: "slug",
+      },
+    } as unknown as ParsedSkylarkObject;
+    const got = getPrimaryKeyField(object);
+    expect(got).toEqual("title_short");
+  });
+
+  test("uses display name priority when primaryField is null", () => {
+    const object = {
+      config: {
+        primaryField: null,
+      },
+      metadata: {
+        title: "default",
+        uid: "uid",
+        external_id: "external_id",
+        slug: "slug",
+      },
+    } as unknown as ParsedSkylarkObject;
+    const got = getPrimaryKeyField(object);
+    expect(got).toEqual("title");
+  });
+
+  test("defaults to uid", () => {
+    const object = {
+      metadata: {
+        uid: "uid",
+      },
+    } as unknown as ParsedSkylarkObject;
+    const got = getPrimaryKeyField(object);
+    expect(got).toEqual("uid");
+  });
+});
+
+describe("getObjectDisplayName", () => {
+  test("gets the display name", () => {
+    const object = {
+      config: {
+        primaryField: "title_short",
+      },
+      metadata: {
+        title_short: "Short title",
+        title: "default",
+        uid: "uid",
+        external_id: "external_id",
+        slug: "slug",
+      },
+    } as unknown as ParsedSkylarkObject;
+    const got = getObjectDisplayName(object);
+    expect(got).toEqual("Short title");
+  });
+
+  test("defaults to uid", () => {
+    const object = {
+      config: {
+        primaryField: null,
+      },
+      metadata: {
+        uid: "xxx",
+      },
+    } as unknown as ParsedSkylarkObject;
+    const got = getObjectDisplayName(object);
+    expect(got).toEqual("xxx");
   });
 });
 

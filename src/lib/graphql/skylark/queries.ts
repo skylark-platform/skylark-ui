@@ -1,3 +1,4 @@
+import { getIntrospectionQuery } from "graphql";
 import { gql } from "graphql-tag";
 
 export const GET_SKYLARK_SCHEMA = gql`
@@ -60,6 +61,9 @@ export const GET_SKYLARK_SCHEMA = gql`
     }
   }
 `;
+
+export const SKYLARK_SCHEMA_INTROSPECTION_QUERY_NAME = "IntrospectionQuery";
+export const SKYLARK_SCHEMA_INTROSPECTION_QUERY = getIntrospectionQuery();
 
 // The "ObjectTypes" enum is updated when an object is added or removed from Skylark
 export const GET_SKYLARK_OBJECT_TYPES = gql`

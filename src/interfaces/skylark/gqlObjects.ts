@@ -1,40 +1,63 @@
 import { SkylarkObjectMetadataField } from "./objectOperations";
+import { SkylarkExternalId, SkylarkUID } from "./parsedObjects";
+
+export type NextToken = string | null;
 
 export interface SkylarkGraphQLObjectConfig {
   colour: string;
   primary_field: string;
 }
 
-export interface SkylarkGraphQLAvailabilityDimension {
-  title: string;
+export interface SkylarkGraphQLObjectMeta {
+  available_languages: string[];
+}
+
+export interface SkylarkGraphQLAvailabilityDimensionValue {
+  uid: SkylarkUID;
+  external_id: SkylarkExternalId;
   slug: string;
+  title: string | null;
+  description: string | null;
+}
+
+export interface SkylarkGraphQLAvailabilityDimension {
+  uid: SkylarkUID;
+  external_id: SkylarkExternalId;
+  slug: string;
+  title: string | null;
+  description: string | null;
   values: {
-    title: string;
-    slug: string;
-    description: string;
-  }[];
+    next_token: NextToken;
+    objects: SkylarkGraphQLAvailabilityDimensionValue[];
+  };
 }
 
 export interface SkylarkGraphQLAvailability {
-  title: string;
-  slug: string;
-  start: string;
-  end: string;
-  dimensions: SkylarkGraphQLAvailabilityDimension[];
+  uid: SkylarkUID;
+  external_id: SkylarkExternalId;
+  slug: string | null;
+  title: string | null;
+  start: string | null;
+  end: string | null;
+  timezone: string | null;
+  dimensions: {
+    next_token: NextToken;
+    objects: SkylarkGraphQLAvailabilityDimension[];
+  };
 }
 
 export interface SkylarkGraphQLObjectRelationship {
-  nextToken?: string;
+  nextToken?: NextToken;
   objects: object[]; // TODO make this a Record like SkylarkGraphQLObject
 }
 
 export interface SkylarkGraphQLObjectImage {
+  uid: SkylarkUID;
+  external_id: SkylarkExternalId;
   title: string;
   url: string;
-  uid: string;
   slug: string;
   type: string;
-  external_id: string;
   description: string;
   content_type: string;
 }
@@ -48,15 +71,17 @@ export interface SkylarkGraphQLObjectContent {
 
 export type SkylarkGraphQLObject = {
   __typename: string;
-  uid: string;
-  external_id: string;
+  uid: SkylarkUID;
+  external_id: SkylarkExternalId;
   availability?: SkylarkGraphQLObjectRelationship;
   images?: SkylarkGraphQLObjectRelationship;
   _config?: SkylarkGraphQLObjectConfig;
+  _meta?: SkylarkGraphQLObjectMeta;
   content?: SkylarkGraphQLObjectContent;
   [key: string]:
     | SkylarkObjectMetadataField
     | SkylarkGraphQLObjectRelationship
     | SkylarkGraphQLObjectConfig
+    | SkylarkGraphQLObjectMeta
     | undefined;
 };

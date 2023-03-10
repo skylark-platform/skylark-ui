@@ -10,10 +10,10 @@ describe("Import/CSV", () => {
     cy.login();
 
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
-        req.alias = "getSkylarkObjectTypesQuery";
+      if (hasOperationName(req, "IntrospectionQuery")) {
+        req.alias = "introspectionQuery";
         req.reply({
-          fixture: "./skylark/queries/introspection/objectTypes.json",
+          fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
       if (hasOperationName(req, "GET_SKYLARK_SCHEMA")) {
@@ -48,7 +48,7 @@ describe("Import/CSV", () => {
     });
 
     cy.visit("/import/csv");
-    cy.wait("@getSkylarkObjectTypesQuery");
+    cy.wait("@introspectionQuery");
   });
 
   it("visit import/csv page", () => {

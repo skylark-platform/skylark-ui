@@ -63,7 +63,7 @@ export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
           };
         }, {}),
         uid: data.getObject.uid,
-        external_id: data.getObject.external_id,
+        external_id: data.getObject.external_id || "",
       }
     : { uid, external_id: "" };
 
@@ -87,6 +87,9 @@ export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
     config: {
       colour: data.getObject._config?.colour,
       primaryField: data.getObject._config?.primary_field,
+    },
+    meta: {
+      availableLanguages: data.getObject._meta?.available_languages,
     },
     metadata,
     availability,

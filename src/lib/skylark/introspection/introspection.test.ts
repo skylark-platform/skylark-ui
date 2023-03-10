@@ -2,11 +2,7 @@ import { GraphQLClient } from "graphql-request";
 
 import { createSkylarkClient } from "src/lib/graphql/skylark/client";
 
-import {
-  getSkylarkObjectOperations,
-  getSkylarkObjectTypes,
-} from "./introspection";
-import { SKYLARK_OBJECT_TYPES_FIXTURE } from "./introspection.fixture";
+import { getSkylarkObjectOperations } from "./introspection";
 
 afterEach(() => {
   jest.resetAllMocks();
@@ -29,19 +25,5 @@ describe("getSkylarkObjectOperations", () => {
     expect(got.update.name).toEqual("updateEpisode");
     expect(got.list?.name).toEqual("listEpisode");
     expect(got.delete.name).toEqual("deleteEpisode");
-  });
-});
-
-describe("getSkylarkObjectTypes", () => {
-  let mockClient: GraphQLClient;
-
-  beforeEach(() => {
-    mockClient = createSkylarkClient("http://localhost:3000", "token");
-  });
-
-  test("returns the expected values", async () => {
-    const got = await getSkylarkObjectTypes(mockClient);
-
-    expect(got).toEqual(SKYLARK_OBJECT_TYPES_FIXTURE);
   });
 });

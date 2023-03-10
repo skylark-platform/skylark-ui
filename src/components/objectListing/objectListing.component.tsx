@@ -8,29 +8,29 @@ import clsx from "clsx";
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useVirtual } from "react-virtual";
 
+import { AvailabilityLabel } from "src/components/availability";
 import { Checkbox } from "src/components/checkbox";
-import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { Spinner } from "src/components/icons";
 import { Pill } from "src/components/pill";
-import {
-  DISPLAY_NAME_PRIORITY,
-  OBJECT_LIST_TABLE,
-} from "src/constants/skylark";
+import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectAvailability,
-  AvailabilityStatus,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
-import { formatObjectField } from "src/lib/utils";
+import { formatObjectField, getObjectDisplayName } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
 import { RowActions } from "./rowActions";
 import { Search } from "./search";
 import { Table, TableCell } from "./table";
 
-const hardcodedColumns = ["availability", "images"];
+const hardcodedColumns = [
+  OBJECT_LIST_TABLE.columnIds.availability,
+  OBJECT_LIST_TABLE.columnIds.images,
+  OBJECT_LIST_TABLE.columnIds.translations,
+];
 const orderedKeys = ["uid", "external_id", "data_source_id"];
 
 const columnHelper = createColumnHelper<object>();
@@ -90,23 +90,19 @@ const createColumns = (
     },
   );
 
+  const languagesColumn = columnHelper.accessor(
+    OBJECT_LIST_TABLE.columnIds.translations,
+    {
+      header: formatObjectField("Translations"),
+      cell: (props) => <TableCell {...props} />,
+    },
+  );
+
   const availabilityColumn = columnHelper.accessor("availability", {
     header: formatObjectField("Availability"),
     cell: (props) => {
       const { status } = props.getValue<ParsedSkylarkObjectAvailability>();
-      return (
-        <span
-          className={clsx(
-            "font-medium uppercase",
-            status === AvailabilityStatus.Active && "text-success",
-            status === AvailabilityStatus.Future && "text-warning",
-            status === AvailabilityStatus.Unavailable && "text-manatee-400",
-            status === AvailabilityStatus.Expired && "text-error",
-          )}
-        >
-          {status}
-        </span>
-      );
+      return status && <AvailabilityLabel status={status} />;
     },
   });
 
@@ -161,6 +157,7 @@ const createColumns = (
     displayNameColumn,
     // imagesColumn,
     availabilityColumn,
+    languagesColumn,
     ...createdColumns,
   ];
   if (opts.withObjectSelect) {
@@ -231,17 +228,13 @@ export const ObjectList = ({
 
   const formattedSearchData = useMemo(() => {
     const searchDataWithDisplayField = searchData?.map((obj) => {
-      const primaryKey = [
-        obj.config.primaryField || "",
-        ...DISPLAY_NAME_PRIORITY,
-      ].find((field) => !!obj.metadata[field]);
       return {
         ...obj,
         // When the object type is an image, we want to display its preview in the images tab
         images: obj.objectType === "Image" ? [obj.metadata] : obj.images,
-        [OBJECT_LIST_TABLE.columnIds.displayField]: primaryKey
-          ? obj.metadata[primaryKey]
-          : "",
+        [OBJECT_LIST_TABLE.columnIds.displayField]: getObjectDisplayName(obj),
+        [OBJECT_LIST_TABLE.columnIds.translations]:
+          obj.meta.availableLanguages?.join(", "),
       };
     });
 
@@ -342,7 +335,7 @@ export const ObjectList = ({
     >
       <div
         className={clsx(
-          "flex w-full items-center space-x-1 md:justify-between",
+          "flex w-full items-center space-x-2 md:justify-between",
           isPanelOpen ? "lg:flex-row" : "pr-2 md:flex-row md:pr-8",
         )}
       >
@@ -357,6 +350,10 @@ export const ObjectList = ({
           <Search
             objectTypes={objectTypes || []}
             searchQuery={searchQuery}
+            graphqlQuery={{
+              query: graphqlSearchQuery,
+              variables: graphqlSearchQueryVariables,
+            }}
             onQueryChange={setSearchQuery}
             activeFilters={searchFilters}
             columns={sortedHeaders}
@@ -369,17 +366,12 @@ export const ObjectList = ({
             }
             onFilterChange={onFilterChangeWrapper}
           />
-          <DisplayGraphQLQuery
-            label="Content Library Search"
-            query={graphqlSearchQuery}
-            variables={graphqlSearchQueryVariables}
-          />
         </div>
         {withCreateButtons && (
           <CreateButtons
             className={clsx(
-              "justify-end pr-2 md:w-full",
-              isPanelOpen ? "lg:w-auto" : "md:w-auto",
+              "justify-end md:w-full",
+              isPanelOpen ? "pr-2 lg:w-auto lg:pr-4" : "md:w-auto",
             )}
           />
         )}

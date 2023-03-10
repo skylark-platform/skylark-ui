@@ -21,7 +21,7 @@ describe("createGetObjectQuery", () => {
     const got = createGetObjectQuery(episodeObjectOperations, []);
 
     expect(got?.loc?.source.body).toEqual(
-      "query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } uid external_id slug episode_number release_date synopsis_long synopsis_medium synopsis_short title title_long title_medium title_short availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { uid external_id slug title description type url external_url upload_url download_from_url file_name content_type } } } }",
+      "query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } _meta { available_languages } uid external_id slug episode_number release_date synopsis_long synopsis_medium synopsis_short title title_long title_medium title_short availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { uid external_id slug title description type url external_url upload_url download_from_url file_name content_type } } } }",
     );
   });
 
@@ -34,7 +34,7 @@ describe("createGetObjectQuery", () => {
       "content (order: ASC, limit: 50) { objects { object { ... on Episode",
     );
     expect(got?.loc?.source.body).toEqual(
-      "query GET_Set ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getSet (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } uid slug external_id type title synopsis_short synopsis_medium synopsis_long title_short title_medium title_long release_date description availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { uid external_id slug title description type url external_url upload_url download_from_url file_name content_type } } content (order: ASC, limit: 50) { objects { object { ... on Episode { __typename _config { primary_field colour } uid external_id __Episode__slug: slug __Episode__episode_number: episode_number __Episode__release_date: release_date __Episode__synopsis_long: synopsis_long __Episode__synopsis_medium: synopsis_medium __Episode__synopsis_short: synopsis_short __Episode__title: title __Episode__title_long: title_long __Episode__title_medium: title_medium __Episode__title_short: title_short } } position } } } }",
+      "query GET_Set ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getSet (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { _config { primary_field colour } _meta { available_languages } uid slug external_id type title synopsis_short synopsis_medium synopsis_long title_short title_medium title_long release_date description availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { uid external_id slug title description type url external_url upload_url download_from_url file_name content_type } } content (order: ASC, limit: 50) { objects { object { ... on Episode { __typename _config { primary_field colour } uid external_id __Episode__slug: slug __Episode__episode_number: episode_number __Episode__release_date: release_date __Episode__synopsis_long: synopsis_long __Episode__synopsis_medium: synopsis_medium __Episode__synopsis_short: synopsis_short __Episode__title: title __Episode__title_long: title_long __Episode__title_medium: title_medium __Episode__title_short: title_short } } position } } } }",
     );
   });
 });
@@ -113,7 +113,7 @@ describe("createSearchObjectsQuery", () => {
     );
 
     expect(got?.loc?.source.body).toEqual(
-      `query SEARCH ($ignoreAvailability: Boolean = true, $queryString: String!, $offset: Int, $limit: Int) { search (ignore_availability: $ignoreAvailability, query: $queryString, offset: $offset, limit: $limit) { __typename objects { ... on Episode { __typename _config { primary_field colour } __Episode__title: title __Episode__episode_number: episode_number } ... on Brand { __typename _config { primary_field colour } __Brand__title: title __Brand__synopsis: synopsis } } } }`,
+      `query SEARCH ($ignoreAvailability: Boolean = true, $queryString: String!, $offset: Int, $limit: Int) { search (ignore_availability: $ignoreAvailability, query: $queryString, offset: $offset, limit: $limit) { __typename objects { ... on Episode { __typename _config { primary_field colour } _meta { available_languages } __Episode__title: title __Episode__episode_number: episode_number } ... on Brand { __typename _config { primary_field colour } _meta { available_languages } __Brand__title: title __Brand__synopsis: synopsis } } } }`,
     );
   });
 });

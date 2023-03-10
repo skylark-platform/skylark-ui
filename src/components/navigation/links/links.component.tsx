@@ -35,13 +35,13 @@ const navigationItems = [
       {
         id: "api-docs",
         text: "API Documentation",
-        href: HREFS.apiDocs,
+        href: HREFS.external.apiDocs,
         Icon: <FileText className="h-5" />,
       },
       {
         id: "graphql-ide",
         text: "GraphQL Editor",
-        href: "/developer/graphql-editor",
+        href: HREFS.relative.graphqlEditor,
         Icon: <GrGraphQl className="text-xl" />,
       },
     ],
