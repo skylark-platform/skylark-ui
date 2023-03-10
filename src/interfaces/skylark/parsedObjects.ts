@@ -1,3 +1,5 @@
+import { Dayjs } from "dayjs";
+
 import {
   SkylarkGraphQLAvailabilityDimension,
   SkylarkGraphQLObjectImage,
@@ -22,8 +24,8 @@ export interface ParsedSkylarkObjectAvailabilityObject {
   external_id: SkylarkExternalId;
   title: string;
   slug: string;
-  start: string;
-  end: string;
+  start: Dayjs;
+  end: Dayjs;
   timezone: string;
   neverExpires: boolean;
   status: AvailabilityStatus | null;

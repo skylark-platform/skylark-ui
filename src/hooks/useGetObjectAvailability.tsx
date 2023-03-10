@@ -14,6 +14,7 @@ import { createGetObjectAvailabilityQuery } from "src/lib/graphql/skylark/dynami
 import {
   getSingleAvailabilityStatus,
   is2038Problem,
+  offsetAvailabilityByTimeZone,
 } from "src/lib/skylark/availability";
 
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
@@ -58,12 +59,18 @@ export const useGetObjectAvailability = (
         const neverExpires = !!(end && is2038Problem(end));
         const status = getSingleAvailabilityStatus(now, start || "", end || "");
 
+        const { offsetStart, offsetEnd } = offsetAvailabilityByTimeZone(
+          start || "",
+          end || "",
+          object.timezone || undefined,
+        );
+
         return {
           ...object,
           title: object.title || "",
           slug: object.slug || "",
-          start: start || "",
-          end: end || "",
+          start: offsetStart,
+          end: offsetEnd,
           timezone: object.timezone || "",
           dimensions: object.dimensions.objects,
           status,

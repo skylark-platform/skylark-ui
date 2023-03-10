@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc";
 
 import {
   ParsedSkylarkObjectAvailability,
@@ -9,6 +10,21 @@ import {
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
+dayjs.extend(utc);
+
+export const offsetAvailabilityByTimeZone = (
+  start: string,
+  end: string,
+  timezone = "00:00",
+) => {
+  const offsetStart = dayjs.utc(start).utcOffset(timezone);
+  const offsetEnd = dayjs.utc(end).utcOffset(timezone);
+  console.log(offsetStart.format(), offsetEnd.format());
+  return {
+    offsetStart,
+    offsetEnd,
+  };
+};
 
 export const getSingleAvailabilityStatus = (
   now: dayjs.Dayjs,
@@ -61,14 +77,14 @@ export const getRelativeTimeFromDate = (
   end: string,
 ): string => {
   if (status === AvailabilityStatus.Future) {
-    return `Active ${dayjs(start).fromNow()}`;
+    return `Active ${dayjs(start).utc().fromNow()}`;
   }
   if (status === AvailabilityStatus.Active) {
     const neverExpires = is2038Problem(end);
     if (neverExpires) {
       return "Never expires";
     }
-    return `Expires ${dayjs(end).fromNow()}`;
+    return `Expires ${dayjs(end).utc().fromNow()}`;
   }
-  return `Expired ${dayjs(end).fromNow()}`;
+  return `Expired ${dayjs(end).utc().fromNow()}`;
 };
