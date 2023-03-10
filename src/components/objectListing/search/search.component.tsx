@@ -45,7 +45,6 @@ export const Search = ({
       const graphqlQueryModalIsOpen = !!document.getElementById(
         "graphql-query-modal",
       );
-      console.log({ graphqlQueryModalIsOpen });
       if (
         filtersDivRef.current &&
         !filtersDivRef.current.contains(e.target as Node) &&

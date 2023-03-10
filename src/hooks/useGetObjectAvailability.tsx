@@ -48,7 +48,6 @@ export const useGetObjectAvailability = (
       }),
     getNextPageParam: (lastPage): string | undefined => {
       const nextToken = lastPage.getObjectAvailability.availability.next_token;
-      console.log({ nextToken });
       return nextToken || undefined;
     },
   });

@@ -210,7 +210,7 @@ export const DisplayGraphQLQueryModal = ({
               <GrClose className="text-xl" />
             </button>
 
-            <div className="mb-6 px-4 md:px-8">
+            <div className="mb-2 px-4 md:mb-4 md:px-8">
               <Dialog.Title className="mb-2 font-heading text-xl sm:text-2xl md:mb-4 md:text-3xl">
                 Query for {label}
               </Dialog.Title>

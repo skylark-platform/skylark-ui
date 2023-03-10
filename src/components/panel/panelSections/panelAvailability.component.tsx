@@ -45,7 +45,7 @@ const AvailabilityValueGrid = ({
     <div className="mt-3">
       <h4 className="font-semibold">{header}</h4>
       {data.length > 0 && (
-        <div className="mt-2 grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 break-words text-base-content">
+        <div className="mt-1 grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 break-words text-base-content">
           {data.map(({ key, label, value }) => (
             <Fragment key={key}>
               <span>{`${label}:`}</span>
@@ -70,7 +70,6 @@ export const PanelAvailability = ({
       {data?.length === 0 && <p>No availability assigned to this object.</p>}
       {data?.map((obj) => {
         const { status, neverExpires } = obj;
-        console.log({ obj });
         const availabilityInfo: {
           key: keyof Omit<
             ParsedSkylarkObjectAvailability["objects"][0],
