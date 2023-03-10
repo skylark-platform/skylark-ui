@@ -25,7 +25,7 @@ const PanelMetadataProperty = ({
   value?: JSX.Element | SkylarkObjectMetadataField;
 }) => (
   <div>
-    <h3 className="mb-2 font-bold ">{formatObjectField(property)}</h3>
+    <h3 className="mb-2 font-bold">{formatObjectField(property)}</h3>
     <div className="mb-4 text-base-content">{value ? value : "---"}</div>
   </div>
 );

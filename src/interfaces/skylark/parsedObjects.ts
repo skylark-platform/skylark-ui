@@ -7,6 +7,9 @@ import {
   SkylarkObjectType,
 } from "./objectOperations";
 
+export type SkylarkUID = string;
+export type SkylarkExternalId = string | null;
+
 export enum AvailabilityStatus {
   Active = "Active",
   Future = "Future",
@@ -14,18 +17,22 @@ export enum AvailabilityStatus {
   Unavailable = "Unavailable",
 }
 
+export interface ParsedSkylarkObjectAvailabilityObject {
+  uid: SkylarkUID;
+  external_id: SkylarkExternalId;
+  title: string;
+  slug: string;
+  start: string;
+  end: string;
+  timezone: string;
+  neverExpires: boolean;
+  status: AvailabilityStatus | null;
+  dimensions: SkylarkGraphQLAvailabilityDimension[];
+}
+
 export interface ParsedSkylarkObjectAvailability {
   status: AvailabilityStatus | null;
-  objects: {
-    uid: string;
-    external_id: string;
-    title: string;
-    slug: string;
-    start: string;
-    end: string;
-    timezone: string;
-    dimensions: SkylarkGraphQLAvailabilityDimension[];
-  }[];
+  objects: ParsedSkylarkObjectAvailabilityObject[];
 }
 
 export interface ParsedSkylarkObjectContentObject {
@@ -45,8 +52,8 @@ export interface ParsedSkylarkObjectContent {
 }
 
 export type ParsedSkylarkObjectMetadata = {
-  uid: string;
-  external_id: string;
+  uid: SkylarkUID;
+  external_id: SkylarkExternalId;
 } & Record<string, SkylarkObjectMetadataField>;
 
 export interface ParsedSkylarkObjectConfig {
@@ -60,7 +67,7 @@ export interface ParsedSkylarkObjectMeta {
 
 export interface ParsedSkylarkObject {
   objectType: SkylarkObjectType;
-  uid: string;
+  uid: SkylarkUID;
   config: ParsedSkylarkObjectConfig;
   meta: ParsedSkylarkObjectMeta;
   metadata: ParsedSkylarkObjectMetadata;
