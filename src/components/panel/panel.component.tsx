@@ -125,7 +125,12 @@ export const Panel = ({
       setEditMode(true);
       clearDroppedObject && clearDroppedObject();
     }
-  }, [contentObjects, data?.content?.objects, droppedObject]);
+  }, [
+    clearDroppedObject,
+    contentObjects,
+    data?.content?.objects,
+    droppedObject,
+  ]);
 
   const { updateObjectContent, isLoading: updatingObjectContents } =
     useUpdateObjectContent({
@@ -216,7 +221,9 @@ export const Panel = ({
               showDropArea={showDropArea}
             />
           )}
-          {selectedTab === PanelTab.Relationships && <PanelRelationships />}
+          {selectedTab === PanelTab.Relationships && (
+            <PanelRelationships objectType={objectType} uid={uid} />
+          )}
         </>
       )}
     </section>

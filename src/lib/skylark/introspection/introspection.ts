@@ -15,5 +15,7 @@ export const getSkylarkObjectOperations = async (
 
   const objectMeta = getObjectOperations(objectType, data.__schema);
 
+  console.log("#1", objectMeta);
+
   return objectMeta.operations;
 };

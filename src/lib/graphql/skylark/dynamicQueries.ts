@@ -68,6 +68,8 @@ const generateRelationshipsToReturn = (
     return {};
   }
 
+  console.log("#5", object.relationships);
+
   const relationshipsToReturn: Record<string, object> = {};
 
   if (object.availability) {
@@ -95,6 +97,8 @@ const generateRelationshipsToReturn = (
       },
     };
   }
+
+  console.log({ relationshipsToReturn });
 
   return relationshipsToReturn;
 };
@@ -157,6 +161,9 @@ export const removeFieldPrefixFromReturnedObject = <T>(
 
 export const createGetObjectQueryName = (objectType: string) =>
   `GET_${objectType}`;
+
+export const createGetObjectRelationshipsQueryName = (objectType: string) =>
+  `GET_${objectType}_RELATIONSHIPS`;
 
 export const createGetObjectQuery = (
   object: SkylarkObjectMeta | null,
@@ -271,6 +278,47 @@ export const createSearchObjectsQuery = (
             ...generateFieldsToReturn(object.fields, `__${object.name}__`),
             ...generateRelationshipsToReturn(object, true),
           })),
+        },
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(query);
+
+  return gql(graphQLQuery);
+};
+
+export const createGetObjectRelationshipsQuery = (
+  object: SkylarkObjectMeta | null,
+) => {
+  if (!object || !object.operations.get) {
+    return null;
+  }
+
+  const query = {
+    query: {
+      __name: createGetObjectRelationshipsQueryName(object.name),
+      __variables: {
+        uid: "String",
+        nextToken: "String",
+        ...common.variables,
+      },
+      getObjectRelationships: {
+        __aliasFor: object.operations.get.name,
+        __args: {
+          ...common.args,
+          uid: new VariableType("uid"),
+        },
+        credits: {
+          // TODO iterate
+          __args: {
+            limit: 3,
+            next_token: new VariableType("nextToken"),
+          },
+          next_token: true,
+          objects: {
+            uid: true,
+          },
         },
       },
     },

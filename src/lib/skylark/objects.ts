@@ -140,7 +140,7 @@ export const getObjectOperations = (
     },
   };
 
-  const object: SkylarkObjectMeta = {
+  return {
     name: objectType,
     fields: objectFields,
     images,
@@ -148,8 +148,6 @@ export const getObjectOperations = (
     availability,
     relationships,
   };
-
-  return object;
 };
 
 export const getAllObjectsMeta = (

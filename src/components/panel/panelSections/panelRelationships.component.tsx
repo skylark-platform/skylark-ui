@@ -1,5 +1,6 @@
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useImageSize } from "src/hooks/useImageSize";
+import { useObjectRelationships } from "src/hooks/useObjectRelationship";
 import {
   SkylarkObjectMetadataField,
   SkylarkObjectType,
@@ -12,9 +13,16 @@ const objectOptions: Record<SkylarkObjectType, { fieldsToHide: string[] }> = {
   },
 };
 
-interface PanelRelationshipsProps {}
+interface PanelRelationshipsProps {
+  objectType: SkylarkObjectType;
+  uid: string;
+}
 
-export const PanelRelationships = ({}: PanelRelationshipsProps) => {
+export const PanelRelationships = ({
+  objectType,
+  uid,
+}: PanelRelationshipsProps) => {
+  useObjectRelationships(objectType, uid);
   return (
     <div className="overflow-anywhere h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20">
       <div>test it</div>
