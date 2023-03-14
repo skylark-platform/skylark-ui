@@ -45,6 +45,7 @@ export const useObjectRelationships = (
   });
 
   console.log("query pleeaaaase", data);
+  const relationships = data?.getObjectRelationships;
 
-  return;
+  return { data: relationships };
 };

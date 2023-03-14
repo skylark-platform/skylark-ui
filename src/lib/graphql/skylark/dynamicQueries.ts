@@ -309,20 +309,26 @@ export const createGetObjectRelationshipsQuery = (
           ...common.args,
           uid: new VariableType("uid"),
         },
-        credits: {
-          // TODO iterate
-          __args: {
-            limit: 3,
-            next_token: new VariableType("nextToken"),
-          },
-          next_token: true,
-          objects: {
-            uid: true,
-          },
-        },
+        ...object.relationships.reduce((acc, currentValue) => {
+          return {
+            ...acc,
+            [currentValue.relationshipName]: {
+              __args: {
+                limit: 3,
+                next_token: new VariableType("nextToken"),
+              },
+              next_token: true,
+              objects: {
+                uid: true,
+              },
+            },
+          };
+        }, {}),
       },
     },
   };
+
+  console.log("query", query);
 
   const graphQLQuery = jsonToGraphQLQuery(query);
 
