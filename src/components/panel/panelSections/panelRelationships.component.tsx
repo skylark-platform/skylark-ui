@@ -1,4 +1,8 @@
-import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { Pill } from "src/components/pill";
+import {
+  DISPLAY_NAME_PRIORITY,
+  OBJECT_LIST_TABLE,
+} from "src/constants/skylark";
 import { useImageSize } from "src/hooks/useImageSize";
 import { useObjectRelationships } from "src/hooks/useObjectRelationship";
 import {
@@ -32,16 +36,36 @@ export const PanelRelationships = ({
         {data &&
           Object.keys(data)?.map((relation) => {
             return (
-              <div key={relation} className="my-1">
-                <div className="bg-manatee-100 p-2">
+              <div key={relation} className="my-2">
+                <div className="mb-1 mt-3 bg-manatee-100 p-2 capitalize">
                   <h1>{relation}</h1>
                 </div>
 
-                {data[relation].objects.map((obj) => (
-                  <div key={obj.uid}>{obj.slug}</div>
-                ))}
-                {data[relation].objects.length > 0 && (
-                  <div className="mt-2 border-t-[1px] pt-1 text-center text-manatee-500">
+                {data[relation].objects.length > 0 ? (
+                  data[relation].objects.map((obj) => {
+                    const primaryKey = [
+                      obj?._config?.primaryField || "",
+                      ...DISPLAY_NAME_PRIORITY,
+                    ].find((field) => !!obj[field]);
+                    return (
+                      <div key={obj.uid} className="m-1">
+                        <Pill
+                          label={obj?.__typename}
+                          bgColor={obj?._config?.colour}
+                          className="mr-2"
+                        />
+                        {obj[primaryKey]}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <span className="ml-2 text-sm italic text-manatee-500">
+                    None
+                  </span>
+                )}
+
+                {data[relation].objects.length > 3 && (
+                  <div className="mt-2 border-t-[1px] py-1 text-center text-manatee-500">
                     <span className="text-xs">Show more</span>
                   </div>
                 )}

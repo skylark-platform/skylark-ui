@@ -321,10 +321,11 @@ export const createGetObjectRelationshipsQuery = (
               next_token: true,
               objects: {
                 uid: true,
+                __typename: true,
                 ...generateFieldsToReturn(
                   relationshipsFields[currentValue.objectType],
                 ),
-                slug: true,
+                ...common.objectConfig,
               },
             },
           };
