@@ -19,6 +19,8 @@ const getObjectFieldsFromGetQuery = (
     getQuery.type.fields.filter((field) => field.type.kind !== "OBJECT"),
   );
 
+  console.log("| | | ", getQuery);
+
   return objectFields;
 };
 
@@ -49,7 +51,7 @@ const getMutationInfo = (
   const argName = foundCreateInput?.name || "";
   const inputFields = foundCreateInput?.type.inputFields;
   const inputs = parseObjectInputFields(inputFields);
-  const relationships = parseObjectRelationships(inputFields);
+  const relationships = parseObjectRelationships(inputFields); //INMPORTANT TO FOLLOW
   return {
     argName,
     inputs,

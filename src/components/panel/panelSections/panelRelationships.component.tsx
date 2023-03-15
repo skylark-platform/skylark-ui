@@ -28,20 +28,24 @@ export const PanelRelationships = ({
   console.log("party data ~~", data);
   return (
     <div className="overflow-anywhere h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20">
-      <div>test it</div>
       <div>
         {data &&
           Object.keys(data)?.map((relation) => {
             return (
-              <>
-                <h1>{relation}</h1>
-                {data[relation].objects.map((obj) => (
-                  <div key={obj.uid}>{obj.uid}</div>
-                ))}
-                <div>
-                  <span>Show more</span>
+              <div key={relation} className="my-1">
+                <div className="bg-manatee-100 p-2">
+                  <h1>{relation}</h1>
                 </div>
-              </>
+
+                {data[relation].objects.map((obj) => (
+                  <div key={obj.uid}>{obj.slug}</div>
+                ))}
+                {data[relation].objects.length > 0 && (
+                  <div className="mt-2 border-t-[1px] pt-1 text-center text-manatee-500">
+                    <span className="text-xs">Show more</span>
+                  </div>
+                )}
+              </div>
             );
           })}
       </div>

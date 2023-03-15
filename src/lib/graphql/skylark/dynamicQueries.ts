@@ -290,6 +290,7 @@ export const createSearchObjectsQuery = (
 
 export const createGetObjectRelationshipsQuery = (
   object: SkylarkObjectMeta | null,
+  relationshipsFields: any,
 ) => {
   if (!object || !object.operations.get) {
     return null;
@@ -320,6 +321,10 @@ export const createGetObjectRelationshipsQuery = (
               next_token: true,
               objects: {
                 uid: true,
+                ...generateFieldsToReturn(
+                  relationshipsFields[currentValue.objectType],
+                ),
+                slug: true,
               },
             },
           };

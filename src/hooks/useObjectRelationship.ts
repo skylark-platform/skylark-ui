@@ -20,15 +20,33 @@ import {
   useSkylarkSchemaInterfaceType,
 } from "./useSkylarkSchemaIntrospection";
 
+export const Test = (objectType: string) => {
+  const { objectOperations } = useSkylarkObjectOperations(objectType);
+  return objectOperations?.fields;
+};
+
 export const useObjectRelationships = (
   objectType: SkylarkObjectType,
   uid: string,
 ): any => {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  console.log("starting point party ----------- > ", objectOperations);
+  const relationshipsFields = objectOperations?.relationships.reduce(
+    (acc, { objectType }) => {
+      // const { objectOperations } = useSkylarkObjectOperations(objectType);
+      const t = Test(objectType);
+      return { ...acc, [objectType]: t };
+    },
+    {},
+  );
 
-  const query = createGetObjectRelationshipsQuery(objectOperations);
+  console.log("starting point party ----------- > ", objectOperations);
+  console.log("fields ----------- > ", relationshipsFields);
+
+  const query = createGetObjectRelationshipsQuery(
+    objectOperations,
+    relationshipsFields,
+  );
   const variables = { uid, nextToken: "" };
 
   const { data, error, ...rest } = useQuery<
