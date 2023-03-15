@@ -74,8 +74,6 @@ export const Panel = ({
   const { data, isLoading, query, variables, isError, isNotFound, error } =
     useGetObject(objectType, uid);
 
-  console.log("data", data);
-
   const [inEditMode, setEditMode] = useState(false);
   const [contentObjects, setContentObjects] = useState<
     AddedSkylarkObjectContentObject[] | null

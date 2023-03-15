@@ -35,8 +35,6 @@ export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
   const { objects: searchableObjects } = useAllObjectsMeta();
 
-  console.log("#3", objectOperations?.relationships);
-
   const query = createGetObjectQuery(objectOperations, searchableObjects);
   const variables = { uid };
 
@@ -82,8 +80,6 @@ export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
     data?.getObject && hasProperty(data.getObject, "content")
       ? parseObjectContent(data.getObject.content)
       : undefined;
-
-  console.log("#4", data);
 
   const parsedObject: ParsedSkylarkObject | undefined = data?.getObject && {
     objectType: data.getObject.__typename,

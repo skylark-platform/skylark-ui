@@ -1,21 +1,10 @@
 import { Pill } from "src/components/pill";
-import {
-  DISPLAY_NAME_PRIORITY,
-  OBJECT_LIST_TABLE,
-} from "src/constants/skylark";
-import { useImageSize } from "src/hooks/useImageSize";
+import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
 import { useObjectRelationships } from "src/hooks/useObjectRelationship";
 import {
-  SkylarkObjectMetadataField,
+  SkylarkGraphQLObjectRelationship,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import { formatObjectField, hasProperty } from "src/lib/utils";
-
-const objectOptions: Record<SkylarkObjectType, { fieldsToHide: string[] }> = {
-  Image: {
-    fieldsToHide: ["external_url", "upload_url", "download_from_url"],
-  },
-};
 
 interface PanelRelationshipsProps {
   objectType: SkylarkObjectType;
@@ -26,8 +15,7 @@ export const PanelRelationships = ({
   objectType,
   uid,
 }: PanelRelationshipsProps) => {
-  const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
-    useObjectRelationships(objectType, uid);
+  const { data } = useObjectRelationships(objectType, uid);
 
   console.log("party data ~~", data);
   return (
@@ -35,14 +23,17 @@ export const PanelRelationships = ({
       <div>
         {data &&
           Object.keys(data)?.map((relation) => {
+            const relationship = data[
+              relation
+            ] as SkylarkGraphQLObjectRelationship;
             return (
               <div key={relation} className="my-2">
                 <div className="mb-1 mt-3 bg-manatee-100 p-2 capitalize">
                   <h1>{relation}</h1>
                 </div>
 
-                {data[relation].objects.length > 0 ? (
-                  data[relation].objects.map((obj) => {
+                {relationship && relationship?.objects?.length > 0 ? (
+                  relationship.objects.map((obj) => {
                     const primaryKey = [
                       obj?._config?.primaryField || "",
                       ...DISPLAY_NAME_PRIORITY,
@@ -64,7 +55,7 @@ export const PanelRelationships = ({
                   </span>
                 )}
 
-                {data[relation].objects.length > 3 && (
+                {relationship && relationship?.objects.length > 3 && (
                   <div className="mt-2 border-t-[1px] py-1 text-center text-manatee-500">
                     <span className="text-xs">Show more</span>
                   </div>

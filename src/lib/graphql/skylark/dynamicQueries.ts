@@ -7,6 +7,7 @@ import {
 
 import {
   BuiltInSkylarkObjectType,
+  NormalizedObjectField,
   SkylarkGraphQLObject,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
@@ -68,8 +69,6 @@ const generateRelationshipsToReturn = (
     return {};
   }
 
-  console.log("#5", object.relationships);
-
   const relationshipsToReturn: Record<string, object> = {};
 
   if (object.availability) {
@@ -97,8 +96,6 @@ const generateRelationshipsToReturn = (
       },
     };
   }
-
-  console.log({ relationshipsToReturn });
 
   return relationshipsToReturn;
 };
@@ -290,7 +287,7 @@ export const createSearchObjectsQuery = (
 
 export const createGetObjectRelationshipsQuery = (
   object: SkylarkObjectMeta | null,
-  relationshipsFields: any,
+  relationshipsFields: { [key: string]: NormalizedObjectField[] },
 ) => {
   if (!object || !object.operations.get) {
     return null;
@@ -315,7 +312,7 @@ export const createGetObjectRelationshipsQuery = (
             ...acc,
             [currentValue.relationshipName]: {
               __args: {
-                limit: 3,
+                limit: 50,
                 next_token: new VariableType("nextToken"),
               },
               next_token: true,
@@ -333,8 +330,6 @@ export const createGetObjectRelationshipsQuery = (
       },
     },
   };
-
-  console.log("query", query);
 
   const graphQLQuery = jsonToGraphQLQuery(query);
 

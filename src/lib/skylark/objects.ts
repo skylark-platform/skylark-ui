@@ -19,8 +19,6 @@ const getObjectFieldsFromGetQuery = (
     getQuery.type.fields.filter((field) => field.type.kind !== "OBJECT"),
   );
 
-  console.log("| | | ", getQuery);
-
   return objectFields;
 };
 

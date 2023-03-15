@@ -36,8 +36,6 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
 
   const objectOperations = getObjectOperations(objectType, data.__schema);
 
-  console.log("#2", objectOperations);
-
   return {
     objectOperations,
     ...rest,

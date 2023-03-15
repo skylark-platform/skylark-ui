@@ -3,24 +3,20 @@ import { DocumentNode } from "graphql";
 
 import {
   GQLSkylarkErrorResponse,
+  GQLSkylarkGetObjectRelationshipsResponse,
   GQLSkylarkGetObjectResponse,
+  NormalizedObjectField,
+  SkylarkGraphQLObject,
+  SkylarkObjectMeta,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectRelationshipsQuery } from "src/lib/graphql/skylark/dynamicQueries";
-import {
-  getObjectOperations,
-  getAllObjectsMeta,
-} from "src/lib/skylark/objects";
 
 import { createGetObjectKeyPrefix } from "./useGetObject";
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
-import {
-  useSkylarkSchema,
-  useSkylarkSchemaInterfaceType,
-} from "./useSkylarkSchemaIntrospection";
 
-export const Test = (objectType: string) => {
+export const FieldsFromObjectType = (objectType: string) => {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
   return objectOperations?.fields;
 };
@@ -28,17 +24,15 @@ export const Test = (objectType: string) => {
 export const useObjectRelationships = (
   objectType: SkylarkObjectType,
   uid: string,
-): any => {
+): { data: SkylarkGraphQLObject | undefined } => {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  const relationshipsFields = objectOperations?.relationships.reduce(
-    (acc, { objectType }) => {
+  const relationshipsFields: { [key: string]: NormalizedObjectField[] } =
+    objectOperations?.relationships.reduce((acc, { objectType }) => {
       // const { objectOperations } = useSkylarkObjectOperations(objectType);
-      const t = Test(objectType);
-      return { ...acc, [objectType]: t };
-    },
-    {},
-  );
+      const fields = FieldsFromObjectType(objectType);
+      return { ...acc, [objectType]: fields };
+    }, {}) || {};
 
   console.log("starting point party ----------- > ", objectOperations);
   console.log("fields ----------- > ", relationshipsFields);
@@ -49,8 +43,8 @@ export const useObjectRelationships = (
   );
   const variables = { uid, nextToken: "" };
 
-  const { data, error, ...rest } = useQuery<
-    any,
+  const { data, ...rest } = useQuery<
+    GQLSkylarkGetObjectRelationshipsResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>
   >({
     queryKey: [
@@ -65,5 +59,5 @@ export const useObjectRelationships = (
   console.log("query pleeaaaase", data);
   const relationships = data?.getObjectRelationships;
 
-  return { data: relationships };
+  return { data: relationships, ...rest };
 };
