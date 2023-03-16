@@ -29,13 +29,12 @@ export const useObjectRelationships = (
 
   const relationshipsFields: { [key: string]: NormalizedObjectField[] } =
     objectOperations?.relationships.reduce((acc, { objectType }) => {
-      // const { objectOperations } = useSkylarkObjectOperations(objectType);
       const fields = FieldsFromObjectType(objectType);
       return { ...acc, [objectType]: fields };
     }, {}) || {};
 
-  console.log("starting point party ----------- > ", objectOperations);
-  console.log("fields ----------- > ", relationshipsFields);
+  // console.log("starting point party ----------- > ", objectOperations);
+  // console.log("fields ----------- > ", relationshipsFields);
 
   const query = createGetObjectRelationshipsQuery(
     objectOperations,
@@ -57,7 +56,6 @@ export const useObjectRelationships = (
   });
 
   console.log("query pleeaaaase", data);
-  const relationships = data?.getObjectRelationships;
 
-  return { data: relationships, ...rest };
+  return { data: data?.getObjectRelationships, ...rest };
 };
