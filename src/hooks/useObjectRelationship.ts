@@ -1,4 +1,4 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
 
 import {
@@ -7,7 +7,6 @@ import {
   GQLSkylarkGetObjectResponse,
   NormalizedObjectField,
   SkylarkGraphQLObject,
-  SkylarkObjectMeta,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -33,9 +32,6 @@ export const useObjectRelationships = (
       return { ...acc, [objectType]: fields };
     }, {}) || {};
 
-  // console.log("starting point party ----------- > ", objectOperations);
-  // console.log("fields ----------- > ", relationshipsFields);
-
   const query = createGetObjectRelationshipsQuery(
     objectOperations,
     relationshipsFields,
@@ -54,8 +50,6 @@ export const useObjectRelationships = (
     queryFn: async () => skylarkRequest(query as DocumentNode, variables),
     enabled: query !== null,
   });
-
-  console.log("query pleeaaaase", data);
 
   return { data: data?.getObjectRelationships, ...rest };
 };

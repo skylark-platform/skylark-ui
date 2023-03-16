@@ -1,5 +1,4 @@
-import { Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 
 import { Pill } from "src/components/pill";
 import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
@@ -42,20 +41,16 @@ export const PanelRelationships = ({
 
                 <div className="transition duration-300 ease-in-out">
                   {relationship && relationship?.objects?.length > 0 ? (
-                    relationship.objects.map((obj, index) => {
-                      console.log("status", expandStatus[relation]);
-                      console.log(
-                        "status",
-                        index > 2 && expandStatus[relation],
-                      );
+                    relationship.objects?.map((obj: any, index: number) => {
                       if (index > 2 && !expandStatus[relation]) {
                         return;
                       }
 
-                      const primaryKey = [
-                        obj?._config?.primaryField || "",
-                        ...DISPLAY_NAME_PRIORITY,
-                      ].find((field) => !!obj[field]);
+                      const primaryKey =
+                        [
+                          obj?._config?.primary_field || "",
+                          ...DISPLAY_NAME_PRIORITY,
+                        ].find((field) => !!obj[field]) || "";
 
                       return (
                         <div
