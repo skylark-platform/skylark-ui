@@ -12,17 +12,6 @@ import { SKYLARK_SCHEMA_INTROSPECTION_QUERY_NAME } from "src/lib/graphql/skylark
 
 import { AddAuthTokenModal } from "./betaReleaseAuthModal.component";
 
-beforeEach(() => {
-  // IntersectionObserver isn't available in test environment
-  const mockIntersectionObserver = jest.fn();
-  mockIntersectionObserver.mockReturnValue({
-    observe: () => null,
-    unobserve: () => null,
-    disconnect: () => null,
-  });
-  window.IntersectionObserver = mockIntersectionObserver;
-});
-
 test("renders as closed", () => {
   render(<AddAuthTokenModal isOpen={false} setIsOpen={jest.fn()} />);
 

@@ -1,3 +1,5 @@
+import { HREFS } from "../../../src/constants/skylark";
+
 import { hasOperationName } from "../../support/utils/graphqlTestUtils";
 
 describe("GraphiQL Editor", () => {
@@ -11,7 +13,7 @@ describe("GraphiQL Editor", () => {
       }
     });
 
-    cy.visit("/developer/graphql-editor");
+    cy.visit(HREFS.relative.graphqlEditor);
   });
 
   it("should load GraphiQL", () => {

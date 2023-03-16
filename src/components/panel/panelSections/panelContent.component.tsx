@@ -5,11 +5,13 @@ import { useEffect, useState } from "react";
 
 import { Trash } from "src/components/icons";
 import { Pill } from "src/components/pill";
-import { DISPLAY_NAME_PRIORITY, DROPPABLE_ID } from "src/constants/skylark";
+import { DROPPABLE_ID } from "src/constants/skylark";
 import {
   ParsedSkylarkObjectContentObject,
   AddedSkylarkObjectContentObject,
+  ParsedSkylarkObject,
 } from "src/interfaces/skylark";
+import { getObjectDisplayName } from "src/lib/utils";
 
 interface PanelContentProps {
   objects: AddedSkylarkObjectContentObject[];
@@ -143,11 +145,6 @@ export const PanelContent = ({
         {objects.map((item, index) => {
           const { object, config, position, isNewObject } = item;
 
-          const primaryKey = [
-            config.primaryField || "",
-            ...DISPLAY_NAME_PRIORITY,
-          ].find((field) => !!object[field]);
-
           return (
             <Reorder.Item
               key={`panel-content-item-${object.uid}`}
@@ -165,7 +162,13 @@ export const PanelContent = ({
                 className="w-20"
               />
               <div className="flex flex-1">
-                <p>{primaryKey ? object[primaryKey] : object.uid}</p>
+                <p>
+                  {getObjectDisplayName({
+                    uid: object.uid,
+                    metadata: object,
+                    config,
+                  } as ParsedSkylarkObject)}
+                </p>
               </div>
               <div className="flex">
                 <span

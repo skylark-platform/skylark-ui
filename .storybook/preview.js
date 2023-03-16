@@ -9,7 +9,10 @@ import { initialize as initializeMsw, mswDecorator } from "msw-storybook-addon";
 import PlausibleProvider from "next-plausible";
 import "react-toastify/dist/ReactToastify.min.css";
 
-import { getObjectHandlers } from "../src/__tests__/mocks/handlers/getObjectHandlers";
+import {
+  getObjectAvailabilityHandlers,
+  getObjectHandlers,
+} from "../src/__tests__/mocks/handlers/getObjectHandlers";
 import { introspectionHandlers } from "../src/__tests__/mocks/handlers/introspectionHandlers";
 import { searchHandlers } from "../src/__tests__/mocks/handlers/searchHandlers";
 import { updateObjectHandlers } from "../src/__tests__/mocks/handlers/updateObjectHandlers";
@@ -33,6 +36,7 @@ export const parameters = {
       introspection: introspectionHandlers,
       search: searchHandlers,
       getObject: getObjectHandlers,
+      getObjectAvailability: getObjectAvailabilityHandlers,
       updateObject: updateObjectHandlers,
     },
   },
