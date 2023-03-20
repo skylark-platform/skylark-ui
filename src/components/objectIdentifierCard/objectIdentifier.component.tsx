@@ -1,6 +1,6 @@
 import { Pill } from "src/components/pill";
 import { ParsedSkylarkObject } from "src/interfaces/skylark/parsedObjects";
-import { getPrimaryKey } from "src/lib/utils";
+import { getObjectDisplayName } from "src/lib/utils";
 
 interface ObjectIdentifierCardProps {
   contentObject: ParsedSkylarkObject;
@@ -9,7 +9,6 @@ interface ObjectIdentifierCardProps {
 export const ObjectIdentifierCard = ({
   contentObject,
 }: ObjectIdentifierCardProps) => {
-  const primaryKey = contentObject && getPrimaryKey(contentObject);
   return (
     <>
       <Pill
@@ -18,9 +17,7 @@ export const ObjectIdentifierCard = ({
         className="w-20"
       />
       <div className="flex flex-1 text-sm">
-        <p>
-          {primaryKey ? contentObject.metadata[primaryKey] : contentObject.uid}
-        </p>
+        <p>{getObjectDisplayName(contentObject)}</p>
       </div>
     </>
   );

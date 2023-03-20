@@ -78,8 +78,6 @@ const generateRelationshipsToReturn = (
       next_token: true,
       objects: {
         ...generateFieldsToReturn(object.availability?.fields),
-        // TODO fetch dimensions
-        ...generateRelationshipsToReturn(object.availability),
       },
     };
   }
@@ -157,6 +155,8 @@ export const removeFieldPrefixFromReturnedObject = <T>(
 
 export const createGetObjectQueryName = (objectType: string) =>
   `GET_${objectType}`;
+export const createGetObjectAvailabilityQueryName = (objectType: string) =>
+  `GET_${objectType}_AVAILABILITY`;
 
 export const createGetObjectQuery = (
   object: SkylarkObjectMeta | null,
@@ -186,6 +186,77 @@ export const createGetObjectQuery = (
         ...generateFieldsToReturn(object.fields),
         ...generateRelationshipsToReturn(object),
         ...generateContentsToReturn(object, contentTypesToRequest),
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(query);
+
+  return gql(graphQLQuery);
+};
+
+export const createGetObjectAvailabilityQuery = (
+  object: SkylarkObjectMeta | null,
+) => {
+  if (!object || !object.operations.get) {
+    return null;
+  }
+
+  const query = {
+    query: {
+      __name: createGetObjectAvailabilityQueryName(object.name),
+      __variables: {
+        ...common.variables,
+        uid: "String",
+        externalId: "String",
+        nextToken: "String",
+      },
+      getObjectAvailability: {
+        __aliasFor: object.operations.get.name,
+        __args: {
+          ...common.args,
+          uid: new VariableType("uid"),
+          external_id: new VariableType("externalId"),
+        },
+        availability: {
+          __args: {
+            limit: 5,
+            next_token: new VariableType("nextToken"),
+          },
+          next_token: true,
+          objects: {
+            uid: true,
+            external_id: true,
+            title: true,
+            slug: true,
+            start: true,
+            end: true,
+            timezone: true,
+            dimensions: {
+              __args: {
+                limit: 50,
+              },
+              next_token: true,
+              objects: {
+                uid: true,
+                title: true,
+                slug: true,
+                external_id: true,
+                description: true,
+                values: {
+                  objects: {
+                    description: true,
+                    external_id: true,
+                    slug: true,
+                    title: true,
+                    uid: true,
+                  },
+                  next_token: true,
+                },
+              },
+            },
+          },
+        },
       },
     },
   };

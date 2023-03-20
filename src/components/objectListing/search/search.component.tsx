@@ -41,9 +41,14 @@ export const Search = ({
 
   useEffect(() => {
     const closeFilterOnClickOutside = (e: MouseEvent) => {
+      // If the GraphQL Query Modal is open, don't close the filters
+      const graphqlQueryModalIsOpen = !!document.getElementById(
+        "graphql-query-modal",
+      );
       if (
         filtersDivRef.current &&
-        !filtersDivRef.current.contains(e.target as Node)
+        !filtersDivRef.current.contains(e.target as Node) &&
+        !graphqlQueryModalIsOpen
       ) {
         setFilterOpen(false);
       }

@@ -3,7 +3,11 @@ import { graphql } from "msw";
 import GQLSkylarkGetMovieQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
 import GQLSkylarkGetObjectImageQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gotImage.json";
 import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
-import { createGetObjectQueryName } from "src/lib/graphql/skylark/dynamicQueries";
+import GQLSkylarkGetMovieQueryAvailabilityFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/allAvailTestMovieAvailability.json";
+import {
+  createGetObjectAvailabilityQueryName,
+  createGetObjectQueryName,
+} from "src/lib/graphql/skylark/dynamicQueries";
 
 export const getObjectHandlers = [
   graphql.query(
@@ -35,4 +39,15 @@ export const getObjectHandlers = [
       return res(ctx.data(GQLSkylarkGetSetWithContentQueryFixture.data));
     }
   }),
+];
+
+export const getObjectAvailabilityHandlers = [
+  graphql.query(
+    createGetObjectAvailabilityQueryName("Movie"),
+    ({ variables }, res, ctx) => {
+      if (variables.uid === GQLSkylarkGetMovieQueryFixture.data.getObject.uid) {
+        return res(ctx.data(GQLSkylarkGetMovieQueryAvailabilityFixture.data));
+      }
+    },
+  ),
 ];

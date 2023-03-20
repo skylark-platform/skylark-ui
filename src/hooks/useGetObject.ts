@@ -63,7 +63,7 @@ export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
           };
         }, {}),
         uid: data.getObject.uid,
-        external_id: data.getObject.external_id,
+        external_id: data.getObject.external_id || "",
       }
     : { uid, external_id: "" };
 

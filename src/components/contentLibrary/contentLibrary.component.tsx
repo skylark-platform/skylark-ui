@@ -134,7 +134,7 @@ export const ContentLibrary = () => {
         </m.div>
 
         {activePanelObject && (
-          <m.div className="fixed z-50 flex h-full w-full grow flex-row bg-white drop-shadow-md md:relative md:z-auto lg:drop-shadow-none">
+          <m.div className="fixed z-50 flex h-full w-full grow flex-row bg-white md:relative md:z-auto">
             <m.div
               data-testid="drag-bar"
               key={windowSize}

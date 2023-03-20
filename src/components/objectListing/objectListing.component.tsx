@@ -8,21 +8,18 @@ import clsx from "clsx";
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useVirtual } from "react-virtual";
 
+import { AvailabilityLabel } from "src/components/availability";
 import { Checkbox } from "src/components/checkbox";
 import { Spinner } from "src/components/icons";
 import { Pill } from "src/components/pill";
-import {
-  DISPLAY_NAME_PRIORITY,
-  OBJECT_LIST_TABLE,
-} from "src/constants/skylark";
+import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectAvailability,
-  AvailabilityStatus,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
-import { formatObjectField } from "src/lib/utils";
+import { formatObjectField, getObjectDisplayName } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
 import { RowActions } from "./rowActions";
@@ -105,19 +102,7 @@ const createColumns = (
     header: formatObjectField("Availability"),
     cell: (props) => {
       const { status } = props.getValue<ParsedSkylarkObjectAvailability>();
-      return (
-        <span
-          className={clsx(
-            "font-medium uppercase",
-            status === AvailabilityStatus.Active && "text-success",
-            status === AvailabilityStatus.Future && "text-warning",
-            status === AvailabilityStatus.Unavailable && "text-manatee-400",
-            status === AvailabilityStatus.Expired && "text-error",
-          )}
-        >
-          {status}
-        </span>
-      );
+      return status && <AvailabilityLabel status={status} />;
     },
   });
 
@@ -243,17 +228,11 @@ export const ObjectList = ({
 
   const formattedSearchData = useMemo(() => {
     const searchDataWithDisplayField = searchData?.map((obj) => {
-      const primaryKey = [
-        obj.config.primaryField || "",
-        ...DISPLAY_NAME_PRIORITY,
-      ].find((field) => !!obj.metadata[field]);
       return {
         ...obj,
         // When the object type is an image, we want to display its preview in the images tab
         images: obj.objectType === "Image" ? [obj.metadata] : obj.images,
-        [OBJECT_LIST_TABLE.columnIds.displayField]: primaryKey
-          ? obj.metadata[primaryKey]
-          : "",
+        [OBJECT_LIST_TABLE.columnIds.displayField]: getObjectDisplayName(obj),
         [OBJECT_LIST_TABLE.columnIds.translations]:
           obj.meta.availableLanguages?.join(", "),
       };
@@ -392,7 +371,7 @@ export const ObjectList = ({
           <CreateButtons
             className={clsx(
               "justify-end md:w-full",
-              isPanelOpen ? "lg:w-auto" : "md:w-auto",
+              isPanelOpen ? "pr-2 lg:w-auto lg:pr-4" : "md:w-auto",
             )}
           />
         )}
