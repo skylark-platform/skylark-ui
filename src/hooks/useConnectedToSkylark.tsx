@@ -24,23 +24,25 @@ export const useConnectedToSkylark = () => {
       SKYLARK_SCHEMA_INTROSPECTION_QUERY,
       currentCreds.uri,
       currentCreds.token,
-      REQUEST_HEADERS.apiKey,
     ],
     queryFn: currentCreds.uri
-      ? async () =>
-          request(
+      ? async () => {
+          const token =
+            currentCreds.token ||
+            localStorage.getItem(LOCAL_STORAGE.betaAuth.token) ||
+            "";
+          return request(
             currentCreds.uri ||
               localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) ||
               "",
             SKYLARK_SCHEMA_INTROSPECTION_QUERY,
             {},
             {
-              [REQUEST_HEADERS.apiKey]:
-                currentCreds.token ||
-                localStorage.getItem(LOCAL_STORAGE.betaAuth.token) ||
-                "",
+              [REQUEST_HEADERS.apiKey]: token,
+              [REQUEST_HEADERS.betaApiKey]: token,
             },
-          )
+          );
+        }
       : undefined,
     enabled: !!currentCreds.uri,
     retry: false,
