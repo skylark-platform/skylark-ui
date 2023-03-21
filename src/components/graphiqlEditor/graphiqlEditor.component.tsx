@@ -68,6 +68,7 @@ export const GraphiQLEditor = ({
           Accept: "application/json",
           "Content-Type": "application/json",
           [REQUEST_HEADERS.apiKey]: token,
+          [REQUEST_HEADERS.betaApiKey]: token,
           ...opts?.headers,
         },
         body: JSON.stringify(graphQLParams),

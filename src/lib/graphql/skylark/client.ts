@@ -11,6 +11,7 @@ export const createSkylarkClient = (uri: string, token: string) =>
   new GraphQLClient(uri, {
     headers: {
       [REQUEST_HEADERS.apiKey]: token,
+      [REQUEST_HEADERS.betaApiKey]: token,
     },
   });
 
@@ -33,7 +34,10 @@ export const skylarkRequest = <T>(
 
   // return the headers to the context so httpLink can read them
   // In Beta, only set the token when we have a URI so that it fires a failing request when the URI is invalid/missing
+  const tokenToSend = uri ? token || "" : "";
+
   return request<T>(uri || SAAS_API_ENDPOINT, query, variables, {
-    [REQUEST_HEADERS.apiKey]: uri ? token || "" : "",
+    [REQUEST_HEADERS.apiKey]: tokenToSend,
+    [REQUEST_HEADERS.betaApiKey]: tokenToSend,
   });
 };
