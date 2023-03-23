@@ -384,9 +384,7 @@ export const createGetObjectRelationshipsQuery = (
             [currentValue.relationshipName]: {
               __args: {
                 limit: 50,
-                next_token: new VariableType(
-                  `${currentValue.relationshipName}NextToken`,
-                ),
+                next_token: new VariableType("nextToken"),
               },
               next_token: true,
               objects: {

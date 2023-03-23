@@ -34,7 +34,7 @@ export const PanelRelationships = ({
 
             return (
               <div key={relationshipName} className="my-2">
-                <div className="mb-5 bg-manatee-100 p-4">
+                <div className="mb-1 mt-5 bg-manatee-100 p-4">
                   <h1>{formatObjectField(relationshipName)}</h1>
                 </div>
 
