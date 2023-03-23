@@ -15,7 +15,11 @@ const Object = () => {
             maxHeight: `calc(100vh - 4rem)`,
           }}
         >
-          <Panel uid={uid as string} objectType={objectType as string} />
+          <Panel
+            uid={uid as string}
+            objectType={objectType as string}
+            language=""
+          />
         </div>
       )}
     </div>
