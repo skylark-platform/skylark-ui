@@ -31,6 +31,7 @@ test("renders the panel in the default view", async () => {
     <Panel
       uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
       objectType={"Movie"}
+      language={""}
       closePanel={jest.fn()}
     />,
   );
@@ -67,7 +68,12 @@ test("renders object not found when the object doesn't exist", async () => {
   );
 
   render(
-    <Panel uid="nonexistant" objectType={"Movie"} closePanel={jest.fn()} />,
+    <Panel
+      uid="nonexistant"
+      objectType={"Movie"}
+      language={""}
+      closePanel={jest.fn()}
+    />,
   );
 
   await waitFor(() =>
@@ -88,6 +94,7 @@ test("renders an error message when an unknown error occurs", async () => {
     <Panel
       uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
       objectType={"Movie"}
+      language={""}
       closePanel={jest.fn()}
     />,
   );
@@ -122,6 +129,7 @@ test("renders the objects primaryField and colour in the header when given", asy
     <Panel
       uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
       objectType={"Movie"}
+      language={""}
       closePanel={jest.fn()}
     />,
   );
@@ -152,6 +160,7 @@ test("renders an image and the original image size when the object type is an Im
     <Panel
       uid={GQLSkylarkGetObjectImageQueryFixture.data.getObject.uid}
       objectType={"Image"}
+      language={""}
       closePanel={jest.fn()}
     />,
   );
@@ -176,6 +185,7 @@ describe("imagery view", () => {
       <Panel
         uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
         objectType={"Movie"}
+        language={""}
         closePanel={jest.fn()}
       />,
     );
@@ -221,6 +231,7 @@ describe("content view", () => {
       <Panel
         uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
         objectType={"Set"}
+        language={""}
         closePanel={jest.fn()}
       />,
     );
@@ -244,6 +255,7 @@ describe("content view", () => {
       <Panel
         uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
         objectType={"Set"}
+        language={""}
         closePanel={jest.fn()}
       />,
     );
@@ -268,6 +280,7 @@ describe("content view", () => {
         <Panel
           uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
           objectType={"Set"}
+          language={""}
           closePanel={jest.fn()}
         />,
       );
@@ -518,6 +531,7 @@ describe("availability view", () => {
       <Panel
         uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
         objectType={"Movie"}
+        language={""}
         closePanel={jest.fn()}
       />,
     );
@@ -579,6 +593,7 @@ describe("availability view", () => {
       <Panel
         uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
         objectType={"Movie"}
+        language={""}
         closePanel={jest.fn()}
       />,
     );
@@ -600,6 +615,7 @@ describe("availability view", () => {
       <Panel
         uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
         objectType={"Movie"}
+        language={""}
         closePanel={jest.fn()}
       />,
     );
@@ -628,6 +644,7 @@ describe("availability view", () => {
       <Panel
         uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
         objectType={"Movie"}
+        language={""}
         closePanel={jest.fn()}
       />,
     );
@@ -671,6 +688,7 @@ test("closing the panel using close button", async () => {
     <Panel
       uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
       objectType={"Movie"}
+      language={""}
       closePanel={closePanel}
     />,
   );

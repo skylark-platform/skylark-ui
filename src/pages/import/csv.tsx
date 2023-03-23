@@ -295,6 +295,7 @@ export default function CSVImportPage() {
         </h2>
         <Select
           variant="primary"
+          selected={objectType}
           options={objectTypeOptions}
           placeholder="Select Skylark object"
           label="Select your Skylark object type"

@@ -1,5 +1,4 @@
 import { ComponentStory } from "@storybook/react";
-import { userEvent, waitFor, within } from "@storybook/testing-library";
 import React from "react";
 
 import { LanguageSelect } from "./languageSelect.component";
@@ -21,7 +20,7 @@ const Template: ComponentStory<typeof LanguageSelect> = (args) => {
 export const Default = Template.bind({});
 Default.args = {};
 
-export const PreselectedLanguage = Template.bind({});
-PreselectedLanguage.args = {
-  initialValue: "en-GB",
+export const SelectedLanguage = Template.bind({});
+SelectedLanguage.args = {
+  selected: "en-GB",
 };

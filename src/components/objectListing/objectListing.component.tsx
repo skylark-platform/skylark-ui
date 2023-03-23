@@ -138,7 +138,6 @@ const createColumns = (
         objectType,
         meta: { language },
       } = row.original as ParsedSkylarkObject;
-      console.log(row.original);
       return (
         <RowActions
           editRowEnabled={opts.withObjectEdit}

@@ -1,5 +1,6 @@
 import { ComponentStory } from "@storybook/react";
 import { userEvent, waitFor, within } from "@storybook/testing-library";
+import { useState } from "react";
 
 import { Select } from "./select.component";
 
@@ -13,11 +14,14 @@ const options = ["Episode", "Season", "Brand"].map((val) => ({
   value: val,
 }));
 
-const Template: ComponentStory<typeof Select> = (args) => (
-  <div className="w-64">
-    <Select {...args} />
-  </div>
-);
+const Template: ComponentStory<typeof Select> = (args) => {
+  const [selected, setSelected] = useState("");
+  return (
+    <div className="w-64">
+      <Select {...args} selected={selected} onChange={setSelected} />
+    </div>
+  );
+};
 
 export const Default = Template.bind({});
 Default.args = {

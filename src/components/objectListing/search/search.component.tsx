@@ -98,9 +98,10 @@ export const Search = ({
           </m.div>
         )}
       </AnimatePresence>
-      <div className="ml-2">
+      {/* TODO change search language (SL-2566) */}
+      {/* <div className="ml-2">
         <LanguageSelect variant="primary" />
-      </div>
+      </div> */}
     </div>
   );
 };

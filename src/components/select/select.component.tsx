@@ -1,13 +1,6 @@
 import { Combobox, Transition } from "@headlessui/react";
 import clsx from "clsx";
-import {
-  useState,
-  Fragment,
-  useEffect,
-  useCallback,
-  useRef,
-  CSSProperties,
-} from "react";
+import { useState, Fragment, useCallback, useRef, CSSProperties } from "react";
 import { GoTriangleDown } from "react-icons/go";
 import { useVirtual } from "react-virtual";
 
@@ -18,12 +11,12 @@ export interface SelectOption {
 
 export interface SelectProps {
   variant: "primary" | "pill";
+  selected: string;
   options: SelectOption[];
   label?: string;
   placeholder: string;
   className?: string;
   disabled?: boolean;
-  initialValue?: string;
   withSearch?: boolean;
   allowCustomValue?: boolean;
   rounded?: boolean;
@@ -123,13 +116,11 @@ export const Select = ({
   className,
   onChange,
   disabled,
-  initialValue,
+  selected,
   withSearch,
   rounded,
   allowCustomValue,
 }: SelectProps) => {
-  const [selected, setSelected] = useState<SelectOption | undefined>(undefined);
-
   const [query, setQuery] = useState("");
 
   const filteredOptions =
@@ -141,22 +132,13 @@ export const Select = ({
 
   const onChangeWrapper = useCallback(
     (newSelected: SelectOption) => {
-      setSelected(newSelected);
       onChange?.(newSelected.value);
     },
     [onChange],
   );
 
-  useEffect(() => {
-    if (initialValue && selected === undefined) {
-      const newValue =
-        initialValue && options.find(({ value }) => value === initialValue);
-      newValue && onChangeWrapper(newValue);
-    }
-  }, [initialValue, options, onChangeWrapper, selected]);
-
   const paddingClassName =
-    variant === "pill" ? "py-0.5 pl-3 pr-2" : "py-2 pl-3 pr-2 sm:py-3 sm:pl-6";
+    variant === "pill" ? "h-5 pl-3 pr-2" : "py-2 pl-3 pr-2 sm:py-3 sm:pl-6";
   const roundedClassName =
     rounded || variant === "pill" ? "rounded-full" : "rounded-sm";
   const selectClassName = clsx(
@@ -165,13 +147,20 @@ export const Select = ({
     roundedClassName,
   );
 
+  const selectedOption = options.find(({ value }) => value === selected);
+
   return (
     <Combobox
       disabled={disabled}
       onChange={onChangeWrapper}
-      value={selected || undefined}
+      value={selectedOption || undefined}
     >
-      <div className={clsx("relative", className)}>
+      <div
+        className={clsx(
+          "relative flex flex-col items-start justify-center",
+          className,
+        )}
+      >
         {label && (
           <Combobox.Label className="text-sm font-light md:text-base">
             {label}
@@ -207,12 +196,17 @@ export const Select = ({
             <span
               className={clsx(
                 "block truncate",
-                !selected?.label && "text-gray-300",
+                !selectedOption?.label && "text-gray-300",
               )}
             >
-              {selected?.label || placeholder || "Select option"}
+              {selectedOption?.label || placeholder || "Select option"}
             </span>
-            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+            <span
+              className={clsx(
+                "pointer-events-none absolute inset-y-0 right-0 flex items-center",
+                variant === "pill" ? "pr-2" : "pr-4",
+              )}
+            >
               <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
             </span>
           </Combobox.Button>
@@ -231,7 +225,7 @@ export const Select = ({
                 <Option
                   variant={variant}
                   option={{ value: query, label: `Use "${query}"` }}
-                  currentSelected={selected}
+                  currentSelected={selectedOption}
                 />
               ) : (
                 <div className="relative cursor-default select-none py-2 px-4 text-gray-900">
@@ -242,7 +236,7 @@ export const Select = ({
               <VirtualizedOptions
                 variant={variant}
                 options={filteredOptions ?? []}
-                currentSelected={selected}
+                currentSelected={selectedOption}
               />
             )}
           </Combobox.Options>

@@ -168,7 +168,7 @@ export const PanelHeader = ({
               label={objectType}
             />
             <LanguageSelect
-              initialValue={activeLanguage}
+              selected={activeLanguage}
               variant="pill"
               languages={
                 object.meta.availableLanguages || [object.meta.language]
