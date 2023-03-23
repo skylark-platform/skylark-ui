@@ -11,8 +11,12 @@ import {
   ParsedSkylarkObjectContent,
   ParsedSkylarkObjectMetadata,
   SkylarkObjectRelationship,
+  SkylarkGraphQLObject,
+  ParsedSkylarkObject,
+  SkylarkGraphQLObjectImage,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
+import { hasProperty, isObject } from "src/lib/utils";
 
 import { getObjectAvailabilityStatus } from "./availability";
 
@@ -173,4 +177,56 @@ export const parseObjectContent = (
   return {
     objects: normalisedContentObjects || [],
   };
+};
+
+export const parseSkylarkObject = (
+  object: SkylarkGraphQLObject,
+): ParsedSkylarkObject => {
+  // TODO split into Language and Global
+  const metadata: ParsedSkylarkObject["metadata"] = {
+    ...Object.keys(object).reduce((prev, key) => {
+      return {
+        ...prev,
+        ...(!isObject(object[key]) ? { [key]: object[key] } : {}),
+      };
+    }, {}),
+    uid: object.uid,
+    external_id: object.external_id || "",
+  };
+  const availability = parseObjectAvailability(object?.availability);
+
+  const images = hasProperty(object, "images")
+    ? parseObjectRelationship<SkylarkGraphQLObjectImage>(object.images)
+    : undefined;
+
+  const content = hasProperty(object, "content")
+    ? parseObjectContent(object.content)
+    : undefined;
+
+  const relationships = Object.keys(object)
+    ?.filter((relation) => isObject(object[relation]))
+    .map((relation) => {
+      const relationship = object[relation] as SkylarkGraphQLObjectRelationship;
+      console.log(relationship);
+      return relation;
+    });
+
+  return (
+    object && {
+      objectType: object.__typename,
+      uid: object.uid,
+      config: {
+        colour: object._config?.colour,
+        primaryField: object._config?.primary_field,
+      },
+      meta: {
+        availableLanguages: object._meta?.available_languages,
+      },
+      metadata,
+      availability,
+      images,
+      relationships,
+      content,
+    }
+  );
 };

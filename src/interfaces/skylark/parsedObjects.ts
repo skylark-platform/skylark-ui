@@ -76,3 +76,9 @@ export interface ParsedSkylarkObject {
   relationships: string[];
   content?: ParsedSkylarkObjectContent;
 }
+
+export interface ParsedSkylarkObjectRelationships {
+  relationshipName: string;
+  nextToken?: string | null;
+  objects: ParsedSkylarkObject[];
+}

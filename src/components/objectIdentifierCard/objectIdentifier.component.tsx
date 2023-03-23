@@ -10,7 +10,7 @@ export const ObjectIdentifierCard = ({
   contentObject,
 }: ObjectIdentifierCardProps) => {
   return (
-    <>
+    <div className="m-1 flex space-x-2 p-2">
       <Pill
         label={contentObject.objectType as string}
         bgColor={contentObject.config.colour}
@@ -19,6 +19,6 @@ export const ObjectIdentifierCard = ({
       <div className="flex flex-1 text-sm">
         <p>{getObjectDisplayName(contentObject)}</p>
       </div>
-    </>
+    </div>
   );
 };
