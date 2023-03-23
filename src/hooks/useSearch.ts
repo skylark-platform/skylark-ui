@@ -4,7 +4,6 @@ import { useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import {
-  ParsedSkylarkObject,
   SkylarkGraphQLObject,
   GQLSkylarkSearchResponse,
 } from "src/interfaces/skylark";
@@ -68,9 +67,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
         removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>,
       ) || [];
 
-    const parsedObjects = normalisedObjects.map(
-      (obj): ParsedSkylarkObject => parseSkylarkObject(obj),
-    );
+    const parsedObjects = normalisedObjects.map(parseSkylarkObject);
 
     return parsedObjects;
   }, [searchResponse?.pages]);

@@ -70,9 +70,9 @@ export const Panel = ({
       [
         PanelTab.Metadata,
         objectType === BuiltInSkylarkObjectType.Set && PanelTab.Content,
+        PanelTab.Relationships,
         data?.images && PanelTab.Imagery,
         PanelTab.Availability,
-        PanelTab.Relationships,
       ].filter((tab) => !!tab) as string[],
     [data?.images, objectType],
   );

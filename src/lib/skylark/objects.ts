@@ -49,7 +49,7 @@ const getMutationInfo = (
   const argName = foundCreateInput?.name || "";
   const inputFields = foundCreateInput?.type.inputFields;
   const inputs = parseObjectInputFields(inputFields);
-  const relationships = parseObjectRelationships(inputFields); //INMPORTANT TO FOLLOW
+  const relationships = parseObjectRelationships(inputFields);
   return {
     argName,
     inputs,

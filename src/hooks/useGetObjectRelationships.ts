@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
 
+import { QueryKeys } from "src/enums/graphql";
 import {
   GQLSkylarkErrorResponse,
   GQLSkylarkGetObjectRelationshipsResponse,
@@ -16,7 +17,6 @@ import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectRelationshipsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
-import { createGetObjectKeyPrefix } from "./useGetObject";
 import {
   useAllObjectsMeta,
   useSkylarkObjectOperations,
@@ -30,7 +30,15 @@ const getFieldsFromObjectType = (
   return object?.fields || [];
 };
 
-export const useObjectRelationships = (
+export const createGetObjectRelationshipsKeyPrefix = ({
+  objectType,
+  uid,
+}: {
+  objectType: string;
+  uid: string;
+}) => [QueryKeys.GetObjectRelationships, objectType, uid];
+
+export const useGetObjectRelationships = (
   objectType: SkylarkObjectType,
   uid: string,
 ): { data: ParsedSkylarkObjectRelationships[] | undefined } => {
@@ -54,7 +62,7 @@ export const useObjectRelationships = (
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>
   >({
     queryKey: [
-      ...createGetObjectKeyPrefix({ objectType, uid }),
+      ...createGetObjectRelationshipsKeyPrefix({ objectType, uid }),
       query,
       variables,
     ],
