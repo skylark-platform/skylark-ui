@@ -27,6 +27,13 @@ const common = {
   objectMeta: {
     _meta: {
       available_languages: true,
+      language_data: {
+        language: true,
+        version: true,
+      },
+      global_data: {
+        version: true,
+      },
     },
   },
 };
@@ -161,10 +168,13 @@ export const createGetObjectAvailabilityQueryName = (objectType: string) =>
 export const createGetObjectQuery = (
   object: SkylarkObjectMeta | null,
   contentTypesToRequest: SkylarkObjectMeta[],
+  language?: string | null,
 ) => {
   if (!object || !object.operations.get) {
     return null;
   }
+
+  const argLanguage = language ? { language } : {};
 
   const query = {
     query: {
@@ -178,9 +188,11 @@ export const createGetObjectQuery = (
         __aliasFor: object.operations.get.name,
         __args: {
           ...common.args,
+          ...argLanguage, // TODO move language to variable when BE supports sending null without error
           uid: new VariableType("uid"),
           external_id: new VariableType("externalId"),
         },
+        __typename: true,
         ...common.objectConfig,
         ...common.objectMeta,
         ...generateFieldsToReturn(object.fields),

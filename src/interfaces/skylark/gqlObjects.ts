@@ -10,6 +10,13 @@ export interface SkylarkGraphQLObjectConfig {
 
 export interface SkylarkGraphQLObjectMeta {
   available_languages: string[];
+  language_data: {
+    language: string;
+    version: number;
+  };
+  global_data: {
+    version: number;
+  };
 }
 
 export interface SkylarkGraphQLAvailabilityDimensionValue {

@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
-import { useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { GrGraphQl } from "react-icons/gr";
 import { toast } from "react-toastify";
 
@@ -11,19 +11,21 @@ import {
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
 import { Edit, Expand, Trash, MoreVertical } from "src/components/icons";
+import { LanguageSelect } from "src/components/languageSelect/languageSelect.component";
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { Pill } from "src/components/pill";
 import { Toast } from "src/components/toast/toast.component";
 import { useDeleteObject } from "src/hooks/useDeleteObject";
-import { SkylarkObjectType } from "src/interfaces/skylark";
+import { ParsedSkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
+import { getObjectDisplayName } from "src/lib/utils";
 
 interface PanelHeaderProps {
-  title: string;
+  objectUid: string;
+  objectType: SkylarkObjectType;
+  object: ParsedSkylarkObject | null;
+  activeLanguage: string;
   currentTab: string;
   tabsWithEditMode: string[];
-  objectType: SkylarkObjectType;
-  objectUid: string;
-  pillColor?: string;
   graphQLQuery: DocumentNode | null;
   graphQLVariables?: object;
   inEditMode: boolean;
@@ -31,15 +33,16 @@ interface PanelHeaderProps {
   toggleEditMode: () => void;
   closePanel?: () => void;
   save: () => void;
+  setActiveLanguage: Dispatch<SetStateAction<string>>;
 }
 
 export const PanelHeader = ({
-  title,
-  objectType,
   objectUid,
+  objectType,
+  object,
+  activeLanguage,
   currentTab,
   tabsWithEditMode,
-  pillColor,
   graphQLQuery,
   graphQLVariables,
   inEditMode,
@@ -47,7 +50,9 @@ export const PanelHeader = ({
   toggleEditMode,
   closePanel,
   save,
+  setActiveLanguage,
 }: PanelHeaderProps) => {
+  const title = object ? getObjectDisplayName(object) : "";
   const [showGraphQLModal, setGraphQLModalOpen] = useState(false);
 
   const { mutate: deleteObjectMutation } = useDeleteObject({
@@ -96,7 +101,7 @@ export const PanelHeader = ({
       className="relative p-4 pb-2 md:p-8 md:py-6"
     >
       <div className="flex flex-row pb-2">
-        <div className="flex flex-grow items-center space-x-3">
+        <div className="flex flex-grow items-center space-x-2">
           <Button
             Icon={<Expand className="stroke-gray-300" />}
             disabled
@@ -105,10 +110,10 @@ export const PanelHeader = ({
           />
           <DropdownMenu options={objectMenuOptions} align="left">
             <DropdownMenuButton
-              className="focus:outline-none focus-visible:ring-2 group-hover:text-black"
+              className="flex focus:outline-none focus-visible:ring-2 group-hover:text-black"
               aria-label="Open Panel Menu"
             >
-              <MoreVertical className="h-5 w-5" />
+              <MoreVertical className="h-6 w-6" />
             </DropdownMenuButton>
           </DropdownMenu>
 
@@ -151,15 +156,27 @@ export const PanelHeader = ({
           </Button>
         )}
       </div>
-      <div className="flex flex-row items-center space-x-2 pb-2">
-        <Pill
-          bgColor={pillColor}
-          className="bg-brand-primary"
-          label={objectType}
-        />
+      <div className="flex flex-col items-start pb-2">
         <h1 className="flex-grow text-lg font-bold uppercase md:text-xl">
           {title}
         </h1>
+        {object && (
+          <div className="mt-2 flex items-center justify-center gap-2">
+            <Pill
+              bgColor={object.config.colour}
+              className="w-20 bg-brand-primary"
+              label={objectType}
+            />
+            <LanguageSelect
+              initialValue={activeLanguage}
+              variant="pill"
+              languages={
+                object.meta.availableLanguages || [object.meta.language]
+              }
+              onChange={(val) => setActiveLanguage(val)}
+            />
+          </div>
+        )}
         <div className="flex flex-row items-end justify-end space-x-2">
           {inEditMode && (
             <div className="absolute left-1/2 -bottom-16 -translate-x-1/2 md:-bottom-18">

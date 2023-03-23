@@ -83,7 +83,15 @@ export const getObjectOperations = (
     !updateMutation ||
     !deleteMutation
   ) {
-    throw new Error("Skylark ObjectType is missing expected operation");
+    const missingOperation =
+      (!getQuery && "getQuery") ||
+      (!listQuery && "listQuery") ||
+      (!createMutation && "createMutation") ||
+      (!updateMutation && "updateMutation") ||
+      (!deleteMutation && "deleteMutation");
+    throw new Error(
+      `Skylark ObjectType "${objectType}" is missing expected operation "${missingOperation}"`,
+    );
   }
 
   const objectFields = getObjectFieldsFromGetQuery(getQuery);

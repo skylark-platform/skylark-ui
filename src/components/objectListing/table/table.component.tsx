@@ -24,13 +24,17 @@ export interface TableProps {
   totalRows: number;
   withDraggableRow?: boolean;
   isLoadingMore?: boolean;
-  setPanelObject?: (obj: { uid: string; objectType: string }) => void;
+  setPanelObject?: (obj: {
+    uid: string;
+    objectType: string;
+    language: string;
+  }) => void;
 }
 
 export interface TableRowProps {
   row: Row<ParsedSkylarkObject>;
   virtualRowSize: number;
-  setPanelObject?: (obj: { uid: string; objectType: string }) => void;
+  setPanelObject?: TableProps["setPanelObject"];
   tableMeta: TableMeta<object> | undefined;
   withCheckbox?: boolean;
   withDraggableRow?: boolean;
@@ -201,7 +205,11 @@ const TableRow = ({
   withDraggableRow,
   virtualRowSize,
 }: TableRowProps) => {
-  const { uid, objectType } = row.original;
+  const {
+    uid,
+    objectType,
+    meta: { language },
+  } = row.original;
   const { attributes, listeners, setNodeRef } = useDraggable({
     id: uid,
     data: {
@@ -217,7 +225,7 @@ const TableRow = ({
       key={row.id}
       className={clsx("align-middle outline-none", rowClassName)}
       tabIndex={-1}
-      onDoubleClick={() => setPanelObject?.({ uid, objectType })}
+      onDoubleClick={() => setPanelObject?.({ uid, objectType, language })}
       style={{
         height: `${virtualRowSize}px`,
       }}

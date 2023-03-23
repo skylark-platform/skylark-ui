@@ -23,6 +23,10 @@ import {
   useSkylarkObjectOperations,
 } from "./useSkylarkObjectTypes";
 
+interface GetObjectOptions {
+  language?: string | null;
+}
+
 export const createGetObjectKeyPrefix = ({
   objectType,
   uid,
@@ -31,11 +35,21 @@ export const createGetObjectKeyPrefix = ({
   uid: string;
 }) => [QueryKeys.GetObject, objectType, uid];
 
-export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
+export const useGetObject = (
+  objectType: SkylarkObjectType,
+  uid: string,
+  opts?: GetObjectOptions,
+) => {
+  const { language }: GetObjectOptions = opts || { language: null };
+
   const { objectOperations } = useSkylarkObjectOperations(objectType);
   const { objects: searchableObjects } = useAllObjectsMeta();
 
-  const query = createGetObjectQuery(objectOperations, searchableObjects);
+  const query = createGetObjectQuery(
+    objectOperations,
+    searchableObjects,
+    language,
+  );
   const variables = { uid };
 
   const { data, error, ...rest } = useQuery<
@@ -89,7 +103,12 @@ export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
       primaryField: data.getObject._config?.primary_field,
     },
     meta: {
-      availableLanguages: data.getObject._meta?.available_languages,
+      language: data.getObject._meta?.language_data.language || "",
+      availableLanguages: data.getObject._meta?.available_languages || [],
+      versions: {
+        language: data.getObject._meta?.language_data.version,
+        global: data.getObject._meta?.global_data.version,
+      },
     },
     metadata,
     availability,

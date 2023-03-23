@@ -3,6 +3,7 @@ import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useEffect, useRef, useState } from "react";
 
+import { LanguageSelect } from "src/components/languageSelect/languageSelect.component";
 import { SearchFilter } from "src/components/objectListing/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
 import { SkylarkObjectType } from "src/interfaces/skylark";
@@ -69,7 +70,7 @@ export const Search = ({
   };
 
   return (
-    <div className="relative w-full" ref={filtersDivRef}>
+    <div className="relative flex w-full" ref={filtersDivRef}>
       <SearchInput
         className={className}
         onQueryChange={onQueryChange}
@@ -97,6 +98,9 @@ export const Search = ({
           </m.div>
         )}
       </AnimatePresence>
+      <div className="ml-2">
+        <LanguageSelect variant="primary" />
+      </div>
     </div>
   );
 };

@@ -40,20 +40,18 @@ export interface ObjectListProps {
   withObjectSelect?: boolean;
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
-  onInfoClick?: (obj: { uid: string; objectType: string }) => void;
+  onInfoClick?: (obj: {
+    uid: string;
+    objectType: string;
+    language: string;
+  }) => void;
   isDragging?: boolean;
 }
 
 const createColumns = (
   columns: string[],
   opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
-  setPanelObject?: ({
-    objectType,
-    uid,
-  }: {
-    objectType: string;
-    uid: string;
-  }) => void,
+  setPanelObject?: ObjectListProps["onInfoClick"],
 ) => {
   const objectTypeColumn = columnHelper.accessor(
     OBJECT_LIST_TABLE.columnIds.objectType,
@@ -135,16 +133,18 @@ const createColumns = (
   const actionColumn = columnHelper.display({
     id: OBJECT_LIST_TABLE.columnIds.actions,
     cell: ({ table, row }) => {
-      const { uid, __typename: objectType } = row.original as {
-        uid: string;
-        __typename: string;
-      };
+      const {
+        uid,
+        objectType,
+        meta: { language },
+      } = row.original as ParsedSkylarkObject;
+      console.log(row.original);
       return (
         <RowActions
           editRowEnabled={opts.withObjectEdit}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() => setPanelObject?.({ objectType, uid })}
+          onInfoClick={() => setPanelObject?.({ objectType, uid, language })}
           onEditSaveClick={() => console.log(row)}
           onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
         />

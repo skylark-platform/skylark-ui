@@ -80,7 +80,12 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
           primaryField: obj._config?.primary_field,
         },
         meta: {
-          availableLanguages: obj._meta?.available_languages,
+          language: obj._meta?.language_data.language || "",
+          availableLanguages: obj._meta?.available_languages || [],
+          versions: {
+            language: obj._meta?.language_data.version,
+            global: obj._meta?.global_data.version,
+          },
         },
         uid: obj.uid,
         objectType: obj.__typename,

@@ -5,6 +5,10 @@ export enum BuiltInSkylarkObjectType {
   Set = "Set",
 }
 
+export enum BuiltInSkylarkFields {
+  Content = "content", // "Set like" content
+}
+
 export type SkylarkObjectType = string | BuiltInSkylarkObjectType;
 export type SkylarkObjectTypes = SkylarkObjectType[];
 export type SkylarkObjectMetadataField =
