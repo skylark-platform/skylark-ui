@@ -1,9 +1,15 @@
 import { useState } from "react";
 
+import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { Pill } from "src/components/pill";
 import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
-import { useObjectRelationships } from "src/hooks/useObjectRelationship";
 import {
+  parseNEW,
+  useObjectRelationships,
+} from "src/hooks/useObjectRelationship";
+import {
+  ParsedSkylarkObject,
+  SkylarkGraphQLObject,
   SkylarkGraphQLObjectRelationship,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -22,7 +28,8 @@ export const PanelRelationships = ({
     [relation: string]: boolean;
   }>({});
 
-  console.log("party data ~~", data);
+  console.log(data);
+  // <ObjectIdentifierCard contentObject={obj} />
 
   return (
     <div className="overflow-anywhere h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20">
@@ -45,24 +52,25 @@ export const PanelRelationships = ({
                       if (index > 2 && !expandStatus[relation]) {
                         return;
                       }
-
-                      const primaryKey =
-                        [
-                          obj?._config?.primary_field || "",
-                          ...DISPLAY_NAME_PRIORITY,
-                        ].find((field) => !!obj[field]) || "";
+                      const po = parseNEW(obj);
+                      console.log({ po });
+                      /*
+                      const parsedObject: ParsedSkylarkObject = {
+                        objectType: obj.__typename,
+                        uid: obj.uid,
+                        config: {
+                          colour: obj._config?.colour,
+                          primaryField: obj._config?.primary_field,
+                        },
+                        meta: {
+                          availableLanguages: obj._meta?.available_languages,
+                        },
+                      };
+*/
 
                       return (
-                        <div
-                          key={obj.uid}
-                          className="m-1 transition duration-700 ease-in-out"
-                        >
-                          <Pill
-                            label={obj?.__typename}
-                            bgColor={obj?._config?.colour}
-                            className="mr-2"
-                          />
-                          {obj[primaryKey]}
+                        <div key={obj.uid} className="m-1 flex space-x-2 ">
+                          <ObjectIdentifierCard contentObject={po} />
                         </div>
                       );
                     })

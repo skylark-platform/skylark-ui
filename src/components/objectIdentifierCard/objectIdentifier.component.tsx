@@ -12,7 +12,7 @@ export const ObjectIdentifierCard = ({
   return (
     <>
       <Pill
-        label={contentObject.metadata.__typename as string}
+        label={contentObject.objectType as string}
         bgColor={contentObject.config.colour}
         className="w-20"
       />
