@@ -79,6 +79,7 @@ const VirtualizedOptions = ({
   return (
     <div
       ref={parentRef}
+      data-cy="select-options"
       className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
     >
       <div
@@ -219,7 +220,7 @@ export const Select = ({
           leaveTo="opacity-0"
           afterLeave={() => setQuery("")}
         >
-          <Combobox.Options data-cy="select-options">
+          <Combobox.Options>
             {filteredOptions.length === 0 && query !== "" ? (
               withSearch && allowCustomValue ? (
                 <VirtualizedOptions
