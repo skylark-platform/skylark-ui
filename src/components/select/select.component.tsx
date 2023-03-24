@@ -2,6 +2,7 @@ import { Combobox, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import { useState, Fragment, useCallback, useRef, CSSProperties } from "react";
 import { GoTriangleDown } from "react-icons/go";
+import { GrClose } from "react-icons/gr";
 import { useVirtual } from "react-virtual";
 
 export interface SelectOption {
@@ -21,6 +22,7 @@ export interface SelectProps {
   allowCustomValue?: boolean;
   rounded?: boolean;
   onChange?: (value: string) => void;
+  onValueClear?: () => void;
 }
 
 export const Option = ({
@@ -121,6 +123,7 @@ export const Select = ({
   withSearch,
   rounded,
   allowCustomValue,
+  onValueClear,
 }: SelectProps) => {
   const [query, setQuery] = useState("");
 
@@ -150,11 +153,13 @@ export const Select = ({
 
   const selectedOption = options.find(({ value }) => value === selected);
 
+  const showClearValueButton = onValueClear && selected;
+
   return (
     <Combobox
       disabled={disabled}
       onChange={onChangeWrapper}
-      value={selectedOption || undefined}
+      value={selectedOption || ""}
     >
       <div
         className={clsx(
@@ -174,20 +179,25 @@ export const Select = ({
                 "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0",
                 paddingClassName,
                 roundedClassName,
+                showClearValueButton ? "pr-12" : "pr-8",
               )}
               displayValue={(option: SelectOption) => option.value}
               onChange={(event) => setQuery(event.target.value)}
               placeholder={placeholder || "Select option"}
             />
-            <Combobox.Button
-              data-cy="select"
-              className={clsx(
-                "absolute inset-y-0 right-0 flex items-center ",
-                variant === "pill" ? "px-2" : "pl-2 pr-4",
+            <span className="absolute inset-y-0 right-0 flex items-center">
+              {showClearValueButton && (
+                <button onClick={onValueClear}>
+                  <GrClose className="text-xs" />
+                </button>
               )}
-            >
-              <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
-            </Combobox.Button>
+              <Combobox.Button
+                data-cy="select"
+                className={clsx(variant === "pill" ? "px-2" : "pl-1 pr-4")}
+              >
+                <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
+              </Combobox.Button>
+            </span>
           </div>
         ) : (
           <Combobox.Button
@@ -229,8 +239,10 @@ export const Select = ({
                   currentSelected={selectedOption}
                 />
               ) : (
-                <div className="relative top-2 cursor-default select-none bg-white py-2 px-4 text-sm text-gray-900">
-                  Nothing found.
+                <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="relative cursor-default select-none bg-white py-2 px-4 text-sm text-gray-900">
+                    Nothing found.
+                  </div>
                 </div>
               )
             ) : (

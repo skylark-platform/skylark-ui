@@ -59,6 +59,7 @@ export const SearchFilter = ({
   const makeFiltersActive = () => {
     onFilterSave(
       {
+        ...activeFilters,
         objectTypes: updatedObjectTypes,
       },
       convertCheckedColumnsToVisibilityState(updatedVisibleColumns, columns),

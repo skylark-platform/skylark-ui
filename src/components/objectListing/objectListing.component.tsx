@@ -27,9 +27,9 @@ import { Search } from "./search";
 import { Table, TableCell } from "./table";
 
 const hardcodedColumns = [
+  OBJECT_LIST_TABLE.columnIds.translation,
   OBJECT_LIST_TABLE.columnIds.availability,
   OBJECT_LIST_TABLE.columnIds.images,
-  OBJECT_LIST_TABLE.columnIds.translations,
 ];
 const orderedKeys = ["uid", "external_id", "data_source_id"];
 
@@ -88,10 +88,10 @@ const createColumns = (
     },
   );
 
-  const languagesColumn = columnHelper.accessor(
-    OBJECT_LIST_TABLE.columnIds.translations,
+  const translationColumn = columnHelper.accessor(
+    OBJECT_LIST_TABLE.columnIds.translation,
     {
-      header: formatObjectField("Translations"),
+      header: formatObjectField("Translation"),
       cell: (props) => <TableCell {...props} />,
     },
   );
@@ -154,9 +154,9 @@ const createColumns = (
   const orderedColumnArray = [
     objectTypeColumn,
     displayNameColumn,
+    translationColumn,
     // imagesColumn,
     availabilityColumn,
-    languagesColumn,
     ...createdColumns,
   ];
   if (opts.withObjectSelect) {
@@ -181,6 +181,7 @@ export const ObjectList = ({
   const { objectTypes } = useSkylarkObjectTypes();
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     objectTypes: null,
+    language: null,
   });
 
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -221,9 +222,9 @@ export const ObjectList = ({
   );
 
   const [rowInEditMode, setRowInEditMode] = useState("");
-  const [columnVisibility, setColumnVisibility] = useState<
-    VisibilityState | undefined
-  >(undefined);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    Object.fromEntries(sortedHeaders.map((header) => [header, true])),
+  );
 
   const formattedSearchData = useMemo(() => {
     const searchDataWithDisplayField = searchData?.map((obj) => {
@@ -232,8 +233,7 @@ export const ObjectList = ({
         // When the object type is an image, we want to display its preview in the images tab
         images: obj.objectType === "Image" ? [obj.metadata] : obj.images,
         [OBJECT_LIST_TABLE.columnIds.displayField]: getObjectDisplayName(obj),
-        [OBJECT_LIST_TABLE.columnIds.translations]:
-          obj.meta.availableLanguages?.join(", "),
+        [OBJECT_LIST_TABLE.columnIds.translation]: obj.meta.language,
       };
     });
 
@@ -356,13 +356,7 @@ export const ObjectList = ({
             onQueryChange={setSearchQuery}
             activeFilters={searchFilters}
             columns={sortedHeaders}
-            visibleColumns={
-              columnVisibility !== undefined
-                ? Object.keys(columnVisibility).filter(
-                    (col) => !!columnVisibility[col],
-                  )
-                : sortedHeaders
-            }
+            visibleColumns={columnVisibility}
             onFilterChange={onFilterChangeWrapper}
           />
         </div>

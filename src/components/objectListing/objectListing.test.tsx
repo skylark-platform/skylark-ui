@@ -56,10 +56,10 @@ test("renders search results", async () => {
   );
 
   expect(
-    screen.getByText(
+    screen.queryAllByText(
       GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid as string,
     ),
-  ).toBeInTheDocument();
+  ).toHaveLength(2);
 });
 
 test("opens filters and deselects all object types", async () => {

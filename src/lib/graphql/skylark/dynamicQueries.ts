@@ -339,6 +339,7 @@ export const createSearchObjectsQuery = (
         queryString: "String!",
         offset: "Int",
         limit: "Int",
+        language: "String",
       },
       search: {
         __args: {
@@ -347,6 +348,7 @@ export const createSearchObjectsQuery = (
           offset: new VariableType("offset"),
           limit: new VariableType("limit"),
           // language: null, TODO disable language searching when language filter is added
+          language: new VariableType("language"),
         },
         __typename: true,
         objects: {

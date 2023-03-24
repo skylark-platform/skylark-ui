@@ -52,7 +52,7 @@ export const PanelHeader = ({
   save,
   setActiveLanguage,
 }: PanelHeaderProps) => {
-  const title = object ? getObjectDisplayName(object) : "";
+  const title = getObjectDisplayName(object);
   const [showGraphQLModal, setGraphQLModalOpen] = useState(false);
 
   const { mutate: deleteObjectMutation } = useDeleteObject({

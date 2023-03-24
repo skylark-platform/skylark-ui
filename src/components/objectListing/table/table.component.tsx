@@ -94,6 +94,9 @@ const customColumnStyling: Record<
       cell: "[&>div]:flex [&>div]:overflow-hidden [&>div]:h-7 [&>div]:md:h-8 pb-0 pt-0.5 md:py-0.5 [&>div]:mr-2 [&>div>img]:mr-0.5 [&>div>img]:h-full",
     },
   },
+  [OBJECT_LIST_TABLE.columnIds.translation]: {
+    width: "min-w-28 max-w-28 md:min-w-32 md:max-w-32",
+  },
 };
 const columnsWithCustomStyling = Object.keys(customColumnStyling);
 
