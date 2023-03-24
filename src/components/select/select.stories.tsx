@@ -1,5 +1,6 @@
 import { ComponentStory } from "@storybook/react";
 import { userEvent, waitFor, within } from "@storybook/testing-library";
+import clsx from "clsx";
 import { useState } from "react";
 
 import { Select } from "./select.component";
@@ -15,10 +16,9 @@ const options = ["Episode", "Season", "Brand"].map((val) => ({
 }));
 
 const Template: ComponentStory<typeof Select> = (args) => {
-  const [selected, setSelected] = useState("");
   return (
-    <div className="w-64">
-      <Select {...args} selected={selected} onChange={setSelected} />
+    <div className={clsx(args.variant === "pill" ? "w-28" : "w-96")}>
+      <Select {...args} onChange={(selected) => console.log(selected)} />
     </div>
   );
 };
@@ -28,10 +28,22 @@ Default.args = {
   options,
 };
 
+export const WithSelected = Template.bind({});
+WithSelected.args = {
+  options,
+  selected: options[0].value,
+};
+
 export const WithLabel = Template.bind({});
 WithLabel.args = {
   label: "Select Object Type",
   options,
+};
+
+export const Rounded = Template.bind({});
+Rounded.args = {
+  options,
+  rounded: true,
 };
 
 export const WithSearch = Template.bind({});
@@ -40,11 +52,10 @@ WithSearch.args = {
   withSearch: true,
 };
 
-export const WithSearchCustomValue = Template.bind({});
-WithSearchCustomValue.args = {
+export const Pill = Template.bind({});
+Pill.args = {
   options,
-  withSearch: true,
-  allowCustomValue: true,
+  variant: "pill",
 };
 
 export const Open = Template.bind({});
@@ -75,6 +86,20 @@ OpenWithSearch.play = async ({ canvasElement }) => {
 
   await waitFor(async () => {
     await userEvent.hover(canvas.getByText("Season"));
+  });
+};
+
+export const OpenWithSearchNothingFound = Template.bind({});
+OpenWithSearchNothingFound.args = {
+  options,
+  withSearch: true,
+};
+OpenWithSearchNothingFound.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  await waitFor(async () => {
+    const textInput = canvas.getByRole("combobox");
+    await userEvent.type(textInput, "custominput");
   });
 };
 

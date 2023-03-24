@@ -3,7 +3,6 @@ import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useEffect, useRef, useState } from "react";
 
-import { LanguageSelect } from "src/components/languageSelect/languageSelect.component";
 import { SearchFilter } from "src/components/objectListing/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
 import { SkylarkObjectType } from "src/interfaces/skylark";

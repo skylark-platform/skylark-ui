@@ -1,44 +1,44 @@
 {
   "data": {
     "getObject": {
-      "_config": {
-        "primary_field": "title",
-        "colour": "#ff7ba8",
-        "__typename": "ObjectConfig"
+      "__typename": "Episode",
+      "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+      "_meta": {
+        "available_languages": ["en-GB", "pt-PT"],
+        "language_data": { "language": "en-GB", "version": 3 },
+        "global_data": { "version": 6 }
       },
-      "uid": "01GR0BV2FYEV312PVT43Y81JWE",
+      "uid": "01GW73VJ7YG1VSKTG812QQ6TP7",
       "external_id": "recAZhG0fPFgamb8I",
       "slug": "winter-is-coming",
-      "title": "GOT S01E1 - Winter is Coming",
-      "synopsis_short": null,
-      "synopsis_medium": "Series Premiere. Eddard Stark is torn between his family and an old friend when asked to serve at the side of King Robert Baratheon; Viserys plans to wed his sister to a nomadic warlord in exchange for an army.",
-      "synopsis_long": "North of the Seven Kingdoms of Westeros, Night's Watch soldiers are attacked by supernatural White Walkers. One soldier escapes but is captured at Castle Winterfell. Eddard \"Ned\" Stark, Warden of the North, executes him for desertion. Later, six orphaned dire wolf pups are found and one given to each Stark sibling, including Ned's bastard son, Jon Snow. In King's Landing, the Seven Kingdoms capital, Jon Arryn, the Hand of the King, dies suddenly. King Robert Baratheon, Ned's old friend, travels to Winterfell to recruit Ned and propose a marriage between his heir Joffrey and Ned's daughter, Sansa. Lysa Arryn, Jon's widow, sends her sister (Ned's wife), Catelyn, a letter claiming the Lannisters, Queen Cersei's family, murdered Arryn. Catelyn believes the Lannisters are now plotting against King Robert. Ned's young son, Brandon, climbs a tall tower and witnesses Cersei and her twin brother, Jaime Lannister, inside having sex. To hide their incest, Jaime pushes Bran from the high window. Across the Narrow Sea in Essos, exiled Prince Viserys Targaryen forces his sister, Daenerys, to marry the Dothraki warlord, Drogo, in exchange for an army to conquer Westeros and reclaim the Iron Throne. Robert Baratheon became king after Jaime Lannister killed \"Mad\" King Aerys Targaryen, earning Jaime the nickname, \"The King Slayer\". The ancient Targaryens once commanded dragons, and Daenerys is given three fossilized dragon eggs as a wedding gift.",
-      "title_short": "Winter is Coming",
-      "title_medium": null,
-      "title_long": null,
-      "release_date": "2011-04-17",
       "episode_number": 1,
+      "release_date": "2011-04-17",
+      "synopsis_long": "North of the Seven Kingdoms of Westeros, Night's Watch soldiers are attacked by supernatural White Walkers. One soldier escapes but is captured at Castle Winterfell. Eddard \"Ned\" Stark, Warden of the North, executes him for desertion. Later, six orphaned dire wolf pups are found and one given to each Stark sibling, including Ned's bastard son, Jon Snow. In King's Landing, the Seven Kingdoms capital, Jon Arryn, the Hand of the King, dies suddenly. King Robert Baratheon, Ned's old friend, travels to Winterfell to recruit Ned and propose a marriage between his heir Joffrey and Ned's daughter, Sansa. Lysa Arryn, Jon's widow, sends her sister (Ned's wife), Catelyn, a letter claiming the Lannisters, Queen Cersei's family, murdered Arryn. Catelyn believes the Lannisters are now plotting against King Robert. Ned's young son, Brandon, climbs a tall tower and witnesses Cersei and her twin brother, Jaime Lannister, inside having sex. To hide their incest, Jaime pushes Bran from the high window. Across the Narrow Sea in Essos, exiled Prince Viserys Targaryen forces his sister, Daenerys, to marry the Dothraki warlord, Drogo, in exchange for an army to conquer Westeros and reclaim the Iron Throne. Robert Baratheon became king after Jaime Lannister killed \"Mad\" King Aerys Targaryen, earning Jaime the nickname, \"The King Slayer\". The ancient Targaryens once commanded dragons, and Daenerys is given three fossilized dragon eggs as a wedding gift.",
+      "synopsis_medium": "Series Premiere. Eddard Stark is torn between his family and an old friend when asked to serve at the side of King Robert Baratheon; Viserys plans to wed his sister to a nomadic warlord in exchange for an army.",
+      "synopsis_short": null,
+      "title": "GOT S01E1 - Winter is Coming",
+      "title_long": null,
+      "title_medium": null,
+      "title_short": "Winter is Coming",
       "availability": {
         "next_token": null,
         "objects": [
           {
-            "uid": "01GR0BK6VZH7WRNCN1D8P0JTYE",
+            "uid": "01GW73QT9BMXZ8P3Z0M1W981AM",
             "external_id": "recXNjJNyc6nKQIYa",
             "title": "Always - All devices, all customer types",
             "slug": "always-all-devices-all-customer-types",
             "start": "2022-01-01T00:00:00+00:00",
             "end": "2038-01-19T03:14:07+00:00",
-            "timezone": "+00:00",
-            "__typename": "Availability"
+            "timezone": "+00:00"
           }
-        ],
-        "__typename": "AvailabilityListing"
+        ]
       },
       "images": {
         "next_token": null,
         "objects": [
           {
-            "uid": "01GR0BKD5JA4EQ8X69469Z1DKE",
+            "uid": "01GW73QZWK1ZM5DF6EXV3T0FK5",
             "external_id": "recbXlWg7DJA1ZNO2",
             "slug": null,
             "title": "GOT - S1 - 1.jpg ",
@@ -46,16 +46,13 @@
             "type": "THUMBNAIL",
             "url": "https://dl.airtable.com/.attachments/c8b23d45c55cf09081954dd208dcce4b/80b72296/GOT-S1-1.jpg",
             "external_url": "https://dl.airtable.com/.attachments/c8b23d45c55cf09081954dd208dcce4b/80b72296/GOT-S1-1.jpg",
-            "upload_url": "https://obj-reg-storage-saas-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/qfmk74pkejb3ldjxbwbsk4ldju/01GR0BKD5JA4EQ8X69469Z1DKE/01GR18G7XN56FBRGGH2GH9WJZY?AWSAccessKeyId=ASIAZOW2GFFBELOYS5FU&Signature=yqyy%2B3vFLdJHLk%2BmVrCHyDJF5LQ%3D&content-type=application%2Foctet&x-amz-meta-account_id=qfmk74pkejb3ldjxbwbsk4ldju&x-amz-meta-uid=01GR0BKD5JA4EQ8X69469Z1DKE&x-amz-security-token=IQoJb3JpZ2luX2VjEBQaCWV1LXdlc3QtMSJHMEUCIHKpP1%2BNKMtOe4M8eiz2sRLmL0vk8QyL%2B11P3qBTwPvkAiEAp5LZjPRYp2ZJ9PoBl19jON55I7Yy3MWRm5yC8Ur4VzcqrAMIjf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2NTAwNzEzODY0MzQiDAGF%2BtNxI%2FZUEfZbMCqAA9KvuBC12FF92SKqt6JjTbfgHH0N%2FP3ziX3F20Qnum1kokV8UjTFyzeuzeViTXUvRwJPxpnyhS%2B3Zr6bbJw%2F1%2BPH7ZsTNNcgmA6ErAU7mi%2Bt0KSKiFlthz7XqhFRbtt3gI84WkvQ%2BheMM1nT9rWkG0bRhudlhSBsgVPRQ1gmY5h9ZyRLkBOuXuBbIHjfC4uM4N2UAflLH1Mt3FoLnbkqzLTyVRaHq%2B%2FZnwkSxvC%2Bdws540UnpVbHSg2gHUjOz99DVcOK9laxSswx95rOZrUwzq%2B%2BZgtXkqUiyD4hqUMBrrLmsM3omlDd%2Bx%2BS9WsBVOWuP0ubqiif0%2F%2F7AYxOMhHWzSuLuVBoZdRm%2BmblXzkWNor2VweGJU7AFl3oa9W3sadZvnCoNVDr56IxK4UVKvNDKteN3ZlHBvcn%2BxUSjrM9d3iF9%2FFDq0QaOjZi4DmLXEB11n9ycwLQCgnr6aWJTCV8a6Y3%2BYcGeFjb1L%2FETOlK0Pz1DyIZFDUcjVP7jwjIQOZwfTDx3t6eBjqdAZwo8vtwzC%2BP4uYoyTx4x27T2f6XAMZEQC7I0FfA6ukfvl60HX1FuJ%2FXEGp9%2FQ4VkMNFhYVtKC8oH5eC1MZL9cnm9Kg7wxaxSsLuWtVv%2F12sKLS%2FvTW2hrLC55TmyyAKwC27w4Y%2Fox8iNKtq%2BlRDX2d1TArnNLLAWl4%2BP7qDwuzP7v6MGKiSszMV9ijOE0x0DBnrUfOR%2BPF0q8y2VAA%3D&Expires=1675083320",
+            "upload_url": "https://obj-reg-storage-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/d4p2ttso5nbetajnli7z2gxtx4/01GW73QZWK1ZM5DF6EXV3T0FK5/01GW7R9CA98FXPXCJ9M2G64NEK?AWSAccessKeyId=ASIAZOW2GFFBP73D4PG4&Signature=znqW0BdgGtMcbAFmzWBTgXYhgxI%3D&content-type=application%2Foctet&x-amz-meta-account_id=d4p2ttso5nbetajnli7z2gxtx4&x-amz-meta-uid=01GW73QZWK1ZM5DF6EXV3T0FK5&x-amz-security-token=IQoJb3JpZ2luX2VjEPn%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCWV1LXdlc3QtMSJHMEUCIQChoNRu%2BAgUI1r%2Bocrtn7KhsnLL5JyPnheGiR20BE%2FwCQIgH0Svnvw9bhDqtDodgf1MF9oAQ28HNvkz4LM7GKIxLEUqsAMIwv%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARABGgw2NTAwNzEzODY0MzQiDBYLiLQ8dlRJTFgeyiqEA9gorHM8F1QyRxXL3XmuEl7xkIT5qI8t0Acer84J23h%2BA9UQN6BpfTm6dhUfEpasA1fPHXOxc4DCpRj7Ievb4Wq7%2Bo4gVp5SC%2BVkmNZL4znpiohhwB%2Bq1M2mzgOFUkrz0XG%2F%2F2iiW0wgVulDcUjEn8940EC2vGKCLbpcv0jH1FrTIQDZCHUb67KjPbV81YkRtFSHV9VpsHoq99mV3RdHPxZdXtHPQrLL4Myd2AYaT6xeHH8im9sE0KeqmQLlh%2FpDWtJnsmZN7hD7Kw%2FdrOGvDRs5X6uD5q4KD5WHDkcHDiSwlyeDnrcsigKenS8TVE%2FjddUTwKRDHCNHUewMtBVVQRxhPs1qUU%2BfOVHVRVti0QwRXHAk4q%2BR9jXrf79mtqtYtFYXJOVailIATe1BCwr3YBxkc%2FEL1nvlqfEYC%2BvhbHjBh3kGn6nrrZXUcsOr8uhGnk1c9iwWkA%2FFy04mSUZqqP1tX%2F5h%2Foh9mwLQDzgkmBsmJk%2F1NAd9YFpD8yAVHQDrUd3xZcow1IjyoAY6nQHshhay%2F%2F7JWfA4oTS8%2BjU52jcdIm01jtWIwZ4kgW%2Fc1CSbSZaH%2BjgqGmYejnbW1A4BpBDzIfjfZlQuDuiSWWmjPhJSl%2FrKOyYbDDrfQHdTzUtbDHtC5vJx2oSKjNpm1C7TIcQVgbIOtbwMQ087%2BufcCbiaM8UK6reNea1GSJuBLXSUc2Dcw4LGuFWoBfL9migVEXEvd5C%2BS3o4AF5w&Expires=1679596167",
             "download_from_url": null,
             "file_name": null,
-            "content_type": null,
-            "__typename": "Image"
+            "content_type": null
           }
-        ],
-        "__typename": "ImageListing"
-      },
-      "__typename": "Episode"
+        ]
+      }
     }
   }
 }

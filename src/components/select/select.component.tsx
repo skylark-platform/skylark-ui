@@ -222,13 +222,13 @@ export const Select = ({
           <Combobox.Options data-cy="select-options">
             {filteredOptions.length === 0 && query !== "" ? (
               withSearch && allowCustomValue ? (
-                <Option
+                <VirtualizedOptions
                   variant={variant}
-                  option={{ value: query, label: `Use "${query}"` }}
+                  options={[{ value: query, label: `Use "${query}"` }]}
                   currentSelected={selectedOption}
                 />
               ) : (
-                <div className="relative cursor-default select-none py-2 px-4 text-gray-900">
+                <div className="relative top-2 cursor-default select-none bg-white py-2 px-4 text-sm text-gray-900">
                   Nothing found.
                 </div>
               )
