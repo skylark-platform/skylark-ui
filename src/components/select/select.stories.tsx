@@ -1,7 +1,6 @@
 import { ComponentStory } from "@storybook/react";
 import { userEvent, waitFor, within } from "@storybook/testing-library";
 import clsx from "clsx";
-import { useState } from "react";
 
 import { Select } from "./select.component";
 
