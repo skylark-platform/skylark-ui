@@ -22,6 +22,20 @@ test("renders an unselected Select", async () => {
   expect(screen.getByRole("button")).toHaveTextContent("Object Type");
 });
 
+test("renders a Select with label", async () => {
+  render(
+    <Select
+      variant="primary"
+      options={options}
+      selected=""
+      placeholder="Object Type"
+      label="This is the label"
+    />,
+  );
+
+  expect(screen.getByText("This is the label")).toBeInTheDocument();
+});
+
 test("renders a selected Select", async () => {
   render(
     <Select
@@ -89,7 +103,31 @@ test("searches for Episode", async () => {
   expect(onChange).toHaveBeenCalledWith("Episode");
 });
 
-test("adds a custom value if not found", async () => {
+test("shows not found when not found", async () => {
+  const onChange = jest.fn();
+
+  render(
+    <Select
+      variant="primary"
+      options={options}
+      selected=""
+      placeholder="Object Type"
+      onChange={onChange}
+      withSearch
+    />,
+  );
+
+  expect(screen.getByRole("button")).toHaveTextContent("");
+  await fireEvent.change(screen.getByRole("combobox"), {
+    target: { value: "Custom Value" },
+  });
+
+  const gotOptions = screen.queryAllByRole("option");
+  expect(gotOptions.length).toBe(0);
+  expect(screen.getByText("Nothing found.")).toBeInTheDocument();
+});
+
+test("adds a custom value when allowCustomValue is true and the option is not found", async () => {
   const onChange = jest.fn();
 
   render(
