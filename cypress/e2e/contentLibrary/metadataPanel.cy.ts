@@ -26,7 +26,7 @@ describe("Content Library - Metadata Panel", () => {
       if (hasOperationName(req, "GET_Episode")) {
         if (hasMatchingVariable(req, "language", "pt-PT")) {
           req.reply({
-            fixture: "./skylark/queries/getObject/gots01e01pt-PT.json",
+            fixture: "./skylark/queries/getObject/gots01e01ptPT.json",
           });
         } else {
           req.reply({
