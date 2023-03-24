@@ -5,149 +5,64 @@
       "objects": [
         {
           "__typename": "Movie",
-          "_config": {
-            "primary_field": "title",
-            "colour": "#009688",
-            "__typename": "ObjectConfig"
+          "_config": { "primary_field": "title", "colour": "#009688" },
+          "_meta": {
+            "available_languages": ["en-GB"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 1 }
           },
-          "uid": "01GW73TVN86FDTKHFY1BX7WY0M",
+          "uid": "01GW9GX64KQ03Q8S6AYF43GRCJ",
           "external_id": "recudCnvsnLP4PEeJ",
           "__Movie__slug": "all-availabilities-test-movie",
-          "__Movie__title": "All Avail Test Movie",
-          "__Movie__synopsis_short": null,
-          "__Movie__synopsis_medium": null,
           "__Movie__synopsis_long": null,
-          "__Movie__title_short": "All Availabilities Test Movie",
-          "__Movie__title_medium": null,
+          "__Movie__synopsis_medium": null,
+          "__Movie__synopsis_short": null,
+          "__Movie__title": "All Avail Test Movie",
           "__Movie__title_long": "All Availabilities Test Movie (for dimension testing)",
+          "__Movie__title_medium": null,
+          "__Movie__title_short": "All Availabilities Test Movie",
           "__Movie__release_date": "2023-01-09",
           "__Movie__year_of_release": null,
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GR0BK6NSZCSHWZF555T3KFX5",
-                "external_id": "recMdBZyVPsIGqAYq",
-                "title": "Premium",
-                "slug": "premium",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00",
-                "__typename": "Availability"
-              },
-              {
-                "uid": "01GR0BK6RK7TNBN21666HAMFGE",
+                "uid": "01GW9GVHTSXES55MZQCJSB0QGY",
                 "external_id": "recN2Jf4j9UCblsIc",
                 "title": "Active in the past",
                 "slug": "active-in-the-past",
                 "start": "2000-01-01T15:15:00+00:00",
                 "end": "2020-01-01T15:15:00+00:00",
-                "timezone": "+00:00",
-                "__typename": "Availability"
+                "timezone": "+00:00"
               },
               {
-                "uid": "01GR0BK6SV4XXG7Y36320TCEM4",
+                "uid": "01GW9GVHYD7JAG30Z7KEH2G20C",
                 "external_id": "recQzQ8ZUyh6VzVAw",
                 "title": "Active Next Sunday",
                 "slug": "active-next-sunday",
-                "start": "2023-02-05T00:00:00+00:00",
+                "start": "2023-03-26T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00",
-                "__typename": "Availability"
+                "timezone": "+00:00"
               },
               {
-                "uid": "01GR0BK6TX1C954GB43P4PQX8K",
+                "uid": "01GW9GVHZD6BZPRGQVPHPAXSWS",
+                "external_id": "recMdBZyVPsIGqAYq",
+                "title": "Premium",
+                "slug": "premium",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              },
+              {
+                "uid": "01GW9GVJ1MFMG5ZEGS43E6Y7VD",
                 "external_id": "recX0Ztue3iBQR7rl",
                 "title": "Active Until Next Sunday",
                 "slug": "active-until-next-sunday",
                 "start": "2000-01-01T00:00:00+00:00",
-                "end": "2023-02-05T00:00:00+00:00",
-                "timezone": "+00:00",
-                "__typename": "Availability"
+                "end": "2023-03-26T00:00:00+00:00",
+                "timezone": "+00:00"
               }
-            ],
-            "__typename": "AvailabilityListing"
-          },
-          "images": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GR0BKYEWCHC142STPAPW2PJQ",
-                "external_id": "recd3FVWnC5FTlRxP",
-                "slug": null,
-                "title": "image.png ",
-                "description": null,
-                "type": "THUMBNAIL",
-                "url": "https://dl.airtable.com/.attachments/646584eabba853e783d4f90e2a82779c/89097c39/image.png",
-                "external_url": "https://dl.airtable.com/.attachments/646584eabba853e783d4f90e2a82779c/89097c39/image.png",
-                "upload_url": "https://obj-reg-storage-saas-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/qfmk74pkejb3ldjxbwbsk4ldju/01GR0BKYEWCHC142STPAPW2PJQ/01GR189V92X09FTAWEM75B9P7K?AWSAccessKeyId=ASIAZOW2GFFBAXNFUPZZ&Signature=GZOplkRxyVPT8gClwVLO81pO%2B1k%3D&content-type=application%2Foctet&x-amz-meta-account_id=qfmk74pkejb3ldjxbwbsk4ldju&x-amz-meta-uid=01GR0BKYEWCHC142STPAPW2PJQ&x-amz-security-token=IQoJb3JpZ2luX2VjEBQaCWV1LXdlc3QtMSJGMEQCIE2NcpWppLxoTuYCvu9m2b6q7HWaEAXdxkAiXR98y9XrAiAwCfl2QVR%2BGfKjvpCGuR2gDAi05MHbxrSRnXlynzXfRyqsAwiN%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDY1MDA3MTM4NjQzNCIMUh%2B209gtKUkG3%2B3nKoADSs%2FDjCut0ymDJqKJoHGzcXzJvdQebGQe9NmE2U%2FeYnZWs1ejIxBK1AJKDfyjycycEK2xc9NNWdrWhxvLbmnM3QigmqrIIIzlbsdtz%2FunL2sDHm44pgxJdvqJqvCGwhJ9%2BB%2FH%2FeB5Fu79MGQ8XutpetbpR%2Fu%2B2yd%2BuJMiN689qM7M8vN3B6wt1bHWYPeKe1TY4a9LXOwHduq8adE4bANV5WP76xgJbWda26MZm6Pvtj5KSaotqTU%2BdW8%2Falqw%2Blhf0WMCM7Wv%2BOZ2HEU2b3GVAInkNsjQpR7izbBkiOolcJP5ymbOMJH2UQBLYnOXiC%2BfTQg3qtNKGdBRwdlYapMD5o9i7h%2FQ1oDzQCSOrjY%2FuuJEIdyJNnHwQN0A7iPKZcenDM3LFmweBopYMnT12%2B09IyKajvJsMEuBNtMsSjsYaIcSbqtRrIY%2BcC2%2BiXaGmSIXXIQElevObSo7YPkH%2BO84hPOjItSIBSGH16fwMGf18laGFjjgHADx2swMsaVD4Cv%2FMNbe3p4GOp4BtV0%2FtOS4MR1EAvYkbubi8MELhsILXxb7cUsPZweJqa368fZwjnVFutYe3%2BkrQAirClX7AFfN7mN6QoTrqknnrXExaYN8V6gS2IxMAOptTWfLVl0QXYpqOLmFPikwcKzwWNY%2BtERs0ZLclueZo5rD6ow4Zbpd9QmU1W1GJB6XLa3V4LnUKXdKB8z7MHYJyXMvPYJy9rPLNQ7F60VUgmw%3D&Expires=1675083111",
-                "download_from_url": null,
-                "file_name": null,
-                "content_type": null,
-                "__typename": "Image"
-              },
-              {
-                "uid": "01GR0BKCFB9AJTQ44G5QCZ5HN0",
-                "external_id": "recXu2dIa7f2XAgnd",
-                "slug": null,
-                "title": "better-call-saul-season-6-episode-1-bob-odenkirk.jpeg",
-                "description": null,
-                "type": "THUMBNAIL",
-                "url": "https://dl.airtable.com/.attachments/67ec153eaafed50286e7006dda551e1e/01677c26/better-call-saul-season-6-episode-1-bob-odenkirk.jpeg",
-                "external_url": "https://dl.airtable.com/.attachments/67ec153eaafed50286e7006dda551e1e/01677c26/better-call-saul-season-6-episode-1-bob-odenkirk.jpeg",
-                "upload_url": "https://obj-reg-storage-saas-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/qfmk74pkejb3ldjxbwbsk4ldju/01GR0BKCFB9AJTQ44G5QCZ5HN0/01GR189V8KA4ZGGGSKA81KFND9?AWSAccessKeyId=ASIAZOW2GFFBHUDXGU5D&Signature=FkmZDyN8Z9Z1mp9%2B1yulCWrmQcU%3D&content-type=application%2Foctet&x-amz-meta-account_id=qfmk74pkejb3ldjxbwbsk4ldju&x-amz-meta-uid=01GR0BKCFB9AJTQ44G5QCZ5HN0&x-amz-security-token=IQoJb3JpZ2luX2VjEBQaCWV1LXdlc3QtMSJGMEQCICnad1rc%2FW65L3av8iIOuRsB6dqjgk5%2FIfvhugADF3eaAiB11Jt6iGM1htUpIgF2uXWxxgxH8TuTSqpq79u2BsWM%2BiqsAwiN%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDY1MDA3MTM4NjQzNCIMNDMP5K9ckDbeXMvuKoADpSzzv%2F6ho%2BlTJxqSwci3medlic26dRpSOeaWkHOFvdU%2FT5dwnLaqSpuj6ToXrJvDjsECzZziXWH3mSawDqDLLMjjB18BtLnt9elGgblBu%2B9mFY0iNo2p5qhbJ7%2B3y9l6le%2FKxIgV5qiQc7ZfGYv3Ze2G8NEJNekA1rMe63xgplWuMoBGHIZKXXiH9ldZAOMuGl1ITzdZgl9y%2BC9R18nMMxxLCJS0sjwnbhztIp43qKH2qHoPvL3yXy%2BEvWMO8X%2F4idyj1DkC9Kfn3KBLTzUfRM0PvLIXANJSSGQnPtfexOhNmNP39NLauO22XL35GpV52Jw7fAjKeJoN3pKDjgGN3BKNqw1dGOFcDMMJ03GcYS%2BWQ8nuRkVKwSab%2FvJdUKVsU%2BGzk2bE4m1UhRLrvrdx1ByHndNpeZKAJAevXUw5mePcnuzaaMKdczulCaGqv4VgK7dHBJMBbOyJiJ6XFx%2F7YLJNJa%2Fuok1pVLXmuisYrL0D%2By%2F0kwqj%2Bh3EtLVbQFQfMNbe3p4GOp4BPp7aSbSAIDNBcY%2FP95hs%2BO8xH8ad%2FkXBnk2rzc20aH9hI53ioh6jmi%2FuVXj19RJxyUUFn5vOEG1c0Z4bxbCTgVskEITbAyU5GtNoxZpdYgSUf26LcDLU1ceZ9dVqpGY0igEP9L%2FeGVwIid%2Fng5mDPiykqphXNf4ZxexjSGxYcj2wf4Ewy2t%2FBjrKYIwj071S4MrP5CyddB%2BIYS83MSU%3D&Expires=1675083111",
-                "download_from_url": null,
-                "file_name": null,
-                "content_type": null,
-                "__typename": "Image"
-              },
-              {
-                "uid": "01GR0BKCJ2N9MSK4C7C7SCC0J1",
-                "external_id": "rec1hMnFA1x4ZBNta",
-                "slug": null,
-                "title": "Better-Call-Saul-Season-6-Lalo-Salamanca",
-                "description": null,
-                "type": "THUMBNAIL",
-                "url": "https://dl.airtable.com/.attachments/7fad203e1c23d2379d277517b51cb705/d1c00b51/Better-Call-Saul-Season-6-Lalo-Salamanca1.webp",
-                "external_url": "https://dl.airtable.com/.attachments/7fad203e1c23d2379d277517b51cb705/d1c00b51/Better-Call-Saul-Season-6-Lalo-Salamanca1.webp",
-                "upload_url": "https://obj-reg-storage-saas-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/qfmk74pkejb3ldjxbwbsk4ldju/01GR0BKCJ2N9MSK4C7C7SCC0J1/01GR189V9XX22QSCM70PY9C8T5?AWSAccessKeyId=ASIAZOW2GFFBFWPZ4CHS&Signature=%2F1dohgsIcAvkuKdTjGRnzotAyBQ%3D&content-type=application%2Foctet&x-amz-meta-account_id=qfmk74pkejb3ldjxbwbsk4ldju&x-amz-meta-uid=01GR0BKCJ2N9MSK4C7C7SCC0J1&x-amz-security-token=IQoJb3JpZ2luX2VjEBQaCWV1LXdlc3QtMSJHMEUCIGXXlm1Pdv3U4c6LTwEJb3CMMkfTHczqm4rh2eGXqnkOAiEA%2FdMCOTvCTF1L8mlDs3I8i1QDAEuay6CDCfARzwo4DbMqrAMIjf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2NTAwNzEzODY0MzQiDJ9QzeRjlN%2BaogNqUyqAAxECJAEku0Ma0FLm05FF83qqApbbpSewG8CUsL1dR7bXJRcmMRd0pOm5Ocba7sKL0r%2BXD1MA7P%2FFB6bPNqQ9XOl65DJG9LtEX6A3QvSLyf9gRjX4LAx%2FAl%2FV9ut%2BAEwi9%2FtvUHrwN5C22Adm3dbGsrFEEVzyd%2BWvkPPkO9JYQLgQnAtgaG4CUqc4ZrlGlHT8T0wUVt%2FHPBIGR4uGsgdHo9zNwzvm9tZbtnVF0UFtAsJAZ1lmPnsQUkNwfjgqi6iSrjlEecLqF8jopsHnpMzxfAMttl9m7ftsgTVfXt%2Fz1Pr5QoNoTxTzWdBgmU9L9ghmvLtXVc05Erstlze1ivH0hQ9MLRzMQGLus4%2Fv%2BKJH1fXE3yMjpU263C4ySzoGJnoHf5QMln9EioM0jDaARJ5GnBEr8fKAGJfivGzXUTHG9XwxX7cNUeAX54n2CUmOoHM5WYJXz%2FBhaKKeVGGffHCgydIIdqtkdQ8M7flPXmR1WQNWkG88Sda54AdZ7cIDw77QrjDW3t6eBjqdARKPE5nWq%2Bmr%2BGSPPuo6Zp1nGhOiaBVagZp%2BdUc8fohWSmEPLsp%2FgkI51LR2mUShJMjErultXLM5hcDNgYzKoWgXRLnQ1eId8k9jWARupaxOXb2omW9SUl0qHdOCAMlm0%2BpVpjk3hEfhtAP0Pze3mnmp7pPvWwgGrPlFM5IWzi%2BBOZRjy5ozELtSyD0F8OMGMmrQaAgCnNwY2uc%2ByKg%3D&Expires=1675083111",
-                "download_from_url": null,
-                "file_name": null,
-                "content_type": null,
-                "__typename": "Image"
-              },
-              {
-                "uid": "01GR0BKD564METT46PC3RFM8XZ",
-                "external_id": "recLxAdkNPyfrhDTn",
-                "slug": null,
-                "title": "kenobix.jpeg ",
-                "description": null,
-                "type": "MAIN",
-                "url": "https://dl.airtable.com/.attachments/dac9c2da03e1153e729fd5e55708f270/fcb85a23/kenobix.jpeg",
-                "external_url": "https://dl.airtable.com/.attachments/dac9c2da03e1153e729fd5e55708f270/fcb85a23/kenobix.jpeg",
-                "upload_url": "https://obj-reg-storage-saas-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/qfmk74pkejb3ldjxbwbsk4ldju/01GR0BKD564METT46PC3RFM8XZ/01GR189V53MZRSFRHJDPHVE92J?AWSAccessKeyId=ASIAZOW2GFFBNU2B5HM2&Signature=qYWNS47qNWQT9dqZcyQxfR5C3bg%3D&content-type=application%2Foctet&x-amz-meta-account_id=qfmk74pkejb3ldjxbwbsk4ldju&x-amz-meta-uid=01GR0BKD564METT46PC3RFM8XZ&x-amz-security-token=IQoJb3JpZ2luX2VjEBQaCWV1LXdlc3QtMSJHMEUCIDDX0zGqAoPBdUTKeRZx66ldBuPNpYhKiRw1m4mbEvihAiEA74QDdzJD9FEO0Vfhsy86XQJtAJH1m6bKu5ZdriK3pGoqrAMIjf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2NTAwNzEzODY0MzQiDCiZuWFit%2FGlTNFliSqAA%2By7%2FLROgwrzafeWTO2zboU4D4CIvyiRcBmBfhG3uPh5Joe6NXPx6s9i591GCFHLl5smqwVzWTWGp8A1tXY3orDRAe0LZpr5TZ9Hg19aQnCf%2BoeHo27BeR0cQ66KEg3vHzIRk52T9CyqkqIs%2BblYhbvtIVl56ne8cd2pC%2BMkX6LVosJyEbLy5ZODDzlZ4oL4z9hRbyzXi9t1wgLUsfCvfShDwq3GuXZBmwlHmbFk10K7lvVahMfUgH1IgincE%2BVPAJccmaG6fxFoB34MuloKG9825WJi2HM29SSs83LP4VggmgmVfor1YoPJ13KxbFIrw4FuvFEVwLIMdlhhlEfky2Vd8S%2FJsHFMYTOiBimWuTpacCpKsO6rlBM4BX2fhGnZY0%2BD0EAKJCQvPv%2FhZLuMMQFk2q76Wwu6eoeA2A03tOjcQOL3kp5k8zJLKJl7dEH6iiaRXdyH8rO0Vzr9odjO7qPOwC%2BgCiye4YX%2F3pv9DA0PQsqD6%2BFnCrBtH3WeF8XgXDDV3t6eBjqdAc5BwDhbC8PpTJSbGDTq3xIXPa64BbW2FeV5zwplQroxwBn98r%2Fib9jg2QcHRmKCG6FexQo6Qp7sTmRUkT5czZDEi1J8TwqKfXZ6oZ91mE%2FTc%2BKKUDuxzo0iuUHggOMQM5hDNVhmRtN3u8wzKEGeCHxjyqyt3J%2BDMB3fHAafYneN5MrvVX4zdkb4CI6PdJsLI%2FxW8U1KRpj%2Fq5x6lqQ%3D&Expires=1675083111",
-                "download_from_url": null,
-                "file_name": null,
-                "content_type": null,
-                "__typename": "Image"
-              },
-              {
-                "uid": "01GR0BKDHFWMTD8C99VYMYWRJK",
-                "external_id": "recBJFq5fxmDpP0Zu",
-                "slug": null,
-                "title": "hd-obi-wan-kenobi-wallpaper-whatspaper-10.jpeg ",
-                "description": null,
-                "type": "MAIN",
-                "url": "https://dl.airtable.com/.attachments/829f3cd5baa6efa6aa3ef23aa9992c7a/2f115b2a/hd-obi-wan-kenobi-wallpaper-whatspaper-10.jpeg",
-                "external_url": "https://dl.airtable.com/.attachments/829f3cd5baa6efa6aa3ef23aa9992c7a/2f115b2a/hd-obi-wan-kenobi-wallpaper-whatspaper-10.jpeg",
-                "upload_url": "https://obj-reg-storage-saas-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/qfmk74pkejb3ldjxbwbsk4ldju/01GR0BKDHFWMTD8C99VYMYWRJK/01GR189VC26V41MM1DAJZRZPA4?AWSAccessKeyId=ASIAZOW2GFFBOTCHE27F&Signature=rlGf9VRBhMYQUyJIw6vZlKOL5HI%3D&content-type=application%2Foctet&x-amz-meta-account_id=qfmk74pkejb3ldjxbwbsk4ldju&x-amz-meta-uid=01GR0BKDHFWMTD8C99VYMYWRJK&x-amz-security-token=IQoJb3JpZ2luX2VjEBQaCWV1LXdlc3QtMSJGMEQCIALRWVgDj%2BcqgLAIACAlxN4DynOsuC%2FQ8Vs86wkBboXbAiBaFM3bNR%2FXevnzsfmXegJdAIwNmqvADKJqLSGMEF%2B82iqsAwiN%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDY1MDA3MTM4NjQzNCIMGtzIf2n7VNVsGJhcKoADOGbpzwiUg3KAuyvXVlcA%2F%2F34L7CEfF%2BGuoEq2glNJj4Kynd8fzGdeUJM%2FZqNFG3QGyyclwaCFCX9HpCyxY%2B%2FpSDikH1NAzGpfPtgkiHDqXSAP0AbDJ7IoLb2ftzo3mYKT4kvDHd%2BsxqKNnrl%2FBdqsDQnKfhYuaDl4JYJmKOyagFoNudUihUP4AvwGrsAWjHwQ6u8U2Q%2Fgv0ohCvkxnrRsSesfzXzp7BnW0DQBROjkofRiUcpcNtOkSv4GalpgSS7skF9SVJ9qfHb%2Ba5pIL0jxao6oHZViSw1XnNsvl2swPCI6lY7gVrXMw4VjsPIynMjTRk4ipp%2F4YuwZfXPnILb%2FVRh0VTLOO8Qj7iPblbMetgJE7krtxGMR59bXhtEMAIkRpJT6kN%2Bq%2BPa0exH4kjvOpl11KRwQ1bAfCjBQHldbmiPQkFpBE6pIITkMKzJ%2BY8aeZvR1JM1FSC0jQWvOg9hipv41Hy8op%2FNlOzMHUGWSE1X4TuCH5MTssTcTYP8QOdxMNbe3p4GOp4B5f4KZnNp7jRg1e4NePNQLe0PyiDNU2ZIf28dNFqZvb7Jb%2FwdygvvCA%2F0fkyB%2BPbG0fmeIummj2tLwcs3AmAGlmjjakT0%2BX6sGpeudrBfYMIS8b1fF6A1wJCPhsNSB7%2FX2nyvPX7BUI8n5Mt4Y%2BNb4%2Bai5H0t58twlzWXzgI4OS%2FhzjsThW%2F%2F9q6%2FGN1xNiLUuGyzWT%2B7adjPI4SKNrA%3D&Expires=1675083111",
-                "download_from_url": null,
-                "file_name": null,
-                "content_type": null,
-                "__typename": "Image"
-              }
-            ],
-            "__typename": "ImageListing"
+            ]
           }
         }
       ]

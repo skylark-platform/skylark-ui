@@ -48,9 +48,9 @@ export const useGetObject = (
   const query = createGetObjectQuery(
     objectOperations,
     searchableObjects,
-    language,
+    !!language,
   );
-  const variables = { uid };
+  const variables = { uid, language };
 
   const { data, error, ...rest } = useQuery<
     GQLSkylarkGetObjectResponse,

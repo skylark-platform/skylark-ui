@@ -2,6 +2,8 @@ import { graphql } from "msw";
 
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
 import GQLSkylarkGetObjectImageQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gotImage.json";
+import GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gotS01e01pt-PT.json";
+import GQLSkylarkGetObjectGOTS01E01QueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01.json";
 import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
 import GQLSkylarkGetObjectAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/allAvailTestMovieAvailability.json";
 import { server } from "src/__tests__/mocks/server";
@@ -177,6 +179,72 @@ test("renders an image and the original image size when the object type is an Im
       GQLSkylarkGetObjectImageQueryFixture.data.getObject.title,
     ),
   ).toBeInTheDocument();
+});
+describe("multiple language versions", () => {
+  test("renders the Portuguese GOT episode", async () => {
+    render(
+      <Panel
+        uid={GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.uid}
+        objectType={"Episode"}
+        language={"pt-PT"}
+        closePanel={jest.fn()}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+    );
+    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
+
+    expect(
+      screen.getByText(
+        GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data.getObject.title_short,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  test("changes the panel language using the dropdown when more than one is available", async () => {
+    render(
+      <Panel
+        uid={GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.uid}
+        objectType={"Episode"}
+        language={"en-GB"}
+        closePanel={jest.fn()}
+      />,
+    );
+
+    // Arrange
+    await waitFor(() =>
+      expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+    );
+    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
+
+    expect(
+      screen.getByText(
+        GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.title_short,
+      ),
+    ).toBeInTheDocument();
+
+    // Act
+    const dropdown = screen.getByText(
+      GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject._meta
+        .language_data.language,
+    );
+    await fireEvent.click(dropdown);
+    await fireEvent.click(screen.getByText("pt-PT"));
+
+    // Assert
+    await waitFor(() =>
+      expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+    );
+    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
+
+    expect(
+      screen.getByText(
+        GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data.getObject.title_short,
+      ),
+    ).toBeInTheDocument();
+  });
 });
 
 describe("imagery view", () => {

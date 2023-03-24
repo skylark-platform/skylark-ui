@@ -168,19 +168,23 @@ export const createGetObjectAvailabilityQueryName = (objectType: string) =>
 export const createGetObjectQuery = (
   object: SkylarkObjectMeta | null,
   contentTypesToRequest: SkylarkObjectMeta[],
-  language?: string | null,
+  addLanguageVariable?: boolean,
 ) => {
   if (!object || !object.operations.get) {
     return null;
   }
 
-  const argLanguage = language ? { language } : {};
+  const argLanguage = addLanguageVariable
+    ? { language: new VariableType("language") }
+    : {};
+  const variableLanguage = addLanguageVariable ? { language: "String" } : {};
 
   const query = {
     query: {
       __name: createGetObjectQueryName(object.name),
       __variables: {
         ...common.variables,
+        ...variableLanguage, // TODO always send language variable when BE supports sending null without error
         uid: "String",
         externalId: "String",
       },
@@ -188,7 +192,7 @@ export const createGetObjectQuery = (
         __aliasFor: object.operations.get.name,
         __args: {
           ...common.args,
-          ...argLanguage, // TODO move language to variable when BE supports sending null without error
+          ...argLanguage, // TODO always send language variable when BE supports sending null without error
           uid: new VariableType("uid"),
           external_id: new VariableType("externalId"),
         },
