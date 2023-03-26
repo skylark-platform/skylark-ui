@@ -155,3 +155,23 @@ test("adds a custom value when allowCustomValue is true and the option is not fo
 
   expect(onChange).toHaveBeenCalledWith("Custom Value");
 });
+
+test("clears the value", () => {
+  const onValueClear = jest.fn();
+
+  render(
+    <Select
+      variant="primary"
+      options={options}
+      selected={options[0].label}
+      placeholder="Object Type"
+      withSearch
+      allowCustomValue
+      onValueClear={onValueClear}
+    />,
+  );
+
+  fireEvent.click(screen.getByTestId("select-clear-value"));
+
+  expect(onValueClear).toHaveBeenCalled();
+});

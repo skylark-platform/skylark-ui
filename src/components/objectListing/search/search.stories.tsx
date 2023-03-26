@@ -64,7 +64,18 @@ WithFiltersOpen.args = {
 WithFiltersOpen.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
-  const filtersButton = canvas.getByRole("button");
+  const filtersButton = canvas.getByLabelText("open-search-filters");
 
   await userEvent.click(filtersButton);
+};
+
+export const WithLanguageOpen = Template.bind({});
+WithLanguageOpen.args = {
+  ...Default.args,
+};
+WithLanguageOpen.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  const combobox = canvas.getByRole("combobox");
+  await userEvent.type(combobox, "en-");
 };

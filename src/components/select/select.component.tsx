@@ -81,7 +81,7 @@ const VirtualizedOptions = ({
   return (
     <div
       ref={parentRef}
-      data-cy="select-options"
+      data-testid="select-options"
       className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
     >
       <div
@@ -187,7 +187,7 @@ export const Select = ({
             />
             <span className="absolute inset-y-0 right-0 flex items-center">
               {showClearValueButton && (
-                <button onClick={onValueClear}>
+                <button onClick={onValueClear} data-testid="select-clear-value">
                   <GrClose className="text-xs" />
                 </button>
               )}
