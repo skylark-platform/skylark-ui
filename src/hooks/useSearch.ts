@@ -69,47 +69,6 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
         removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>,
       ) || [];
 
-    // const parsedObjects = normalisedObjects.map((obj): ParsedSkylarkObject => {
-    //   const imagesRelationship = searchableObjects.find(
-    //     ({ name }) => name === obj.__typename,
-    //   );
-    //   const images =
-    //     imagesRelationship?.images?.relationshipNames.map(
-    //       (imageField): ParsedSkylarkObjectImageRelationship => {
-    //         const parsedImages =
-    //           hasProperty(obj, imageField) &&
-    //           parseObjectRelationship<SkylarkGraphQLObjectImage>(
-    //             obj[imageField] as SkylarkGraphQLObjectRelationship,
-    //           );
-    //         return {
-    //           relationshipName: imageField,
-    //           objects: parsedImages || [],
-    //         };
-    //       },
-    //     ) || [];
-
-    //   return {
-    //     config: {
-    //       colour: obj._config?.colour,
-    //       primaryField: obj._config?.primary_field,
-    //     },
-    //     meta: {
-    //       language: obj._meta?.language_data.language || "",
-    //       availableLanguages: obj._meta?.available_languages || [],
-    //       versions: {
-    //         language: obj._meta?.language_data.version,
-    //         global: obj._meta?.global_data.version,
-    //       },
-    //     },
-    //     uid: obj.uid,
-    //     objectType: obj.__typename,
-    //     // TODO filter out any values in obj that are relationships (not metadata types)
-    //     metadata: obj as ParsedSkylarkObjectMetadata,
-    //     availability: parseObjectAvailability(obj.availability),
-    //     images,
-    //     relationships: [] as string[],
-    //   };
-    // });
     const parsedObjects = normalisedObjects.map((obj) => {
       const objectMeta = searchableObjects.find(
         ({ name }) => name === obj.__typename,
