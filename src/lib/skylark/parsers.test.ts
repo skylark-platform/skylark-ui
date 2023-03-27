@@ -312,6 +312,13 @@ describe("parseSkylarkObject", () => {
       },
       _meta: {
         available_languages: ["en-GB", "pt-PT"],
+        language_data: {
+          language: "pt-PT",
+          version: 1,
+        },
+        global_data: {
+          version: 2,
+        },
       },
       uid: "uid123",
       external_id: "",
@@ -344,7 +351,12 @@ describe("parseSkylarkObject", () => {
         primaryField: "title",
       },
       meta: {
+        language: "pt-PT",
         availableLanguages: ["en-GB", "pt-PT"],
+        versions: {
+          language: 1,
+          global: 2,
+        },
       },
       metadata: {
         uid: "uid123",
