@@ -6,11 +6,9 @@ import { useGetObject } from "src/hooks/useGetObject";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
 import {
   ParsedSkylarkObjectContentObject,
-  BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
   AddedSkylarkObjectContentObject,
 } from "src/interfaces/skylark";
-import { getObjectDisplayName } from "src/lib/utils";
 
 import {
   PanelAvailability,
@@ -22,9 +20,10 @@ import { PanelContent } from "./panelSections/panelContent.component";
 import { PanelRelationships } from "./panelSections/panelRelationships.component";
 
 interface PanelProps {
-  objectType: string;
   closePanel?: () => void;
+  objectType: string;
   uid: string;
+  language: string;
   showDropArea?: boolean;
   droppedObject?: ParsedSkylarkObject;
   clearDroppedObject?: () => void;
@@ -53,12 +52,23 @@ export const Panel = ({
   closePanel,
   objectType,
   uid,
+  language,
   showDropArea,
   droppedObject,
   clearDroppedObject,
 }: PanelProps) => {
-  const { data, isLoading, query, variables, isError, isNotFound, error } =
-    useGetObject(objectType, uid);
+  const [activeLanguage, setActiveLanguage] = useState<string>(language);
+
+  const {
+    data,
+    objectMeta,
+    isLoading,
+    query,
+    variables,
+    isError,
+    isNotFound,
+    error,
+  } = useGetObject(objectType, uid, { language: activeLanguage });
 
   const [inEditMode, setEditMode] = useState(false);
   const [contentObjects, setContentObjects] = useState<
@@ -69,22 +79,23 @@ export const Panel = ({
     () =>
       [
         PanelTab.Metadata,
-        objectType === BuiltInSkylarkObjectType.Set && PanelTab.Content,
+        objectMeta?.hasContent && PanelTab.Content,
         PanelTab.Relationships,
         data?.images && PanelTab.Imagery,
         PanelTab.Availability,
       ].filter((tab) => !!tab) as string[],
-    [data?.images, objectType],
+    [data?.images, objectMeta?.hasContent],
   );
 
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
 
   useEffect(() => {
     // Reset selected tab when object changes
+    setEditMode(false);
+    setActiveLanguage(language);
     setSelectedTab(PanelTab.Metadata);
     setContentObjects(null);
-    setEditMode(false);
-  }, [uid]);
+  }, [uid, language]);
 
   useEffect(() => {
     if (
@@ -142,16 +153,37 @@ export const Panel = ({
 
   return (
     <section className="mx-auto flex h-full w-full flex-col">
+      <PanelHeader
+        objectUid={uid}
+        objectType={objectType}
+        object={data || null}
+        activeLanguage={activeLanguage}
+        graphQLQuery={query}
+        graphQLVariables={variables}
+        currentTab={selectedTab}
+        tabsWithEditMode={[PanelTab.Content]}
+        closePanel={closePanel}
+        inEditMode={inEditMode}
+        save={saveActiveTabChanges}
+        isSaving={updatingObjectContents}
+        toggleEditMode={() => {
+          setEditMode(!inEditMode);
+          if (inEditMode) {
+            setContentObjects(null);
+          }
+        }}
+        setActiveLanguage={setActiveLanguage}
+      />
       {isLoading && (
         <div
           data-testid="loading"
-          className="flex h-full w-full items-center justify-center pt-10"
+          className="flex h-4/5 w-full items-center justify-center pb-10"
         >
           <Spinner className="h-16 w-16 animate-spin" />
         </div>
       )}
       {!isLoading && isError && (
-        <div className="flex h-full w-full items-center justify-center pt-10">
+        <div className="flex h-4/5 w-full items-center justify-center pb-10">
           {isNotFound ? (
             <p>{`${objectType} ${uid} not found`}</p>
           ) : (
@@ -161,26 +193,6 @@ export const Panel = ({
       )}
       {!isLoading && !isError && data && (
         <>
-          <PanelHeader
-            title={getObjectDisplayName(data)}
-            objectType={objectType}
-            objectUid={uid}
-            pillColor={data.config.colour}
-            graphQLQuery={query}
-            graphQLVariables={variables}
-            currentTab={selectedTab}
-            tabsWithEditMode={[PanelTab.Content]}
-            closePanel={closePanel}
-            inEditMode={inEditMode}
-            save={saveActiveTabChanges}
-            isSaving={updatingObjectContents}
-            toggleEditMode={() => {
-              setEditMode(!inEditMode);
-              if (inEditMode) {
-                setContentObjects(null);
-              }
-            }}
-          />
           <Tabs
             tabs={tabs}
             selectedTab={selectedTab}

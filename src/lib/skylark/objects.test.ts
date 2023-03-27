@@ -80,7 +80,9 @@ describe("getObjectOperations", () => {
         "NonExistantObject",
         GQLSkylarkSchemaQueryFixture.data.__schema,
       ),
-    ).toThrow("Skylark ObjectType is missing expected operation");
+    ).toThrow(
+      'Skylark ObjectType "NonExistantObject" is missing expected operations "getQuery, listQuery, createMutation, updateMutation, deleteMutation"',
+    );
   });
 });
 

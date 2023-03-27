@@ -147,6 +147,11 @@ describe("getObjectDisplayName", () => {
     const got = getObjectDisplayName(object);
     expect(got).toEqual("xxx");
   });
+
+  test("returns empty string when object is null", () => {
+    const got = getObjectDisplayName(null);
+    expect(got).toEqual("");
+  });
 });
 
 describe("createAccountIdentifier", () => {

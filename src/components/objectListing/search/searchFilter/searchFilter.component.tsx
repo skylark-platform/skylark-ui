@@ -54,11 +54,10 @@ export const SearchFilter = ({
   const [updatedVisibleColumns, updateVisibleColumns] =
     useState<string[]>(visibleColumns);
 
-  // TODO we only need one call back here really (not onFilterSave, closeFilterDiv and setColumnVisibility)
-
   const makeFiltersActive = () => {
     onFilterSave(
       {
+        ...activeFilters,
         objectTypes: updatedObjectTypes,
       },
       convertCheckedColumnsToVisibilityState(updatedVisibleColumns, columns),

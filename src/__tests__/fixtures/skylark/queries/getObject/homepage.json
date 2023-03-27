@@ -1,10 +1,16 @@
 {
   "data": {
     "getObject": {
-      "_config": null,
-      "uid": "01GQ5ETJA6G0BE673C1MY1BNVR",
+      "__typename": "Set",
+      "_config": { "primary_field": "title", "colour": "#000000" },
+      "_meta": {
+        "available_languages": ["en-GB", "pt-PT"],
+        "language_data": { "language": "en-GB", "version": 1 },
+        "global_data": { "version": 2 }
+      },
+      "uid": "01GWFN6TZB88AS04PG9755CV2S",
       "slug": "media-reference-homepage",
-      "external_id": "ingestor_set_media_reference_homepage",
+      "external_id": "streamtv_homepage",
       "type": "PAGE",
       "title": "Homepage",
       "synopsis_short": null,
@@ -19,76 +25,70 @@
         "next_token": null,
         "objects": [
           {
-            "uid": "01GQ5EPGMN7N1TG31RHHA44FRK",
+            "uid": "01GWFMZW9J6TV2A1XG3H1GN02H",
             "external_id": "recXNjJNyc6nKQIYa",
             "title": "Always - All devices, all customer types",
             "slug": "always-all-devices-all-customer-types",
             "start": "2022-01-01T00:00:00+00:00",
             "end": "2038-01-19T03:14:07+00:00",
-            "timezone": "+00:00",
-            "__typename": "Availability"
+            "timezone": "+00:00"
           }
-        ],
-        "__typename": "AvailabilityListing"
+        ]
       },
       "images": {
         "next_token": null,
         "objects": [
           {
-            "uid": "01GQ5EPNJG6JGWNCM67BA25N59",
-            "external_id": "recgkAKiElyJeSpvy",
-            "slug": null,
-            "title": "StreamTVLoadingScreen.png ",
-            "description": null,
-            "type": "MAIN",
-            "url": "https://dl.airtable.com/.attachments/caec77d4d303b706499172d09d6389c7/b6497292/StreamTVLoadingScreen.png",
-            "external_url": "https://dl.airtable.com/.attachments/caec77d4d303b706499172d09d6389c7/b6497292/StreamTVLoadingScreen.png",
-            "upload_url": "https://obj-reg-storage-beta-1-base-eu-west-1-storage.s3.amazonaws.com/media/images/qekbvd6cwben5d3jyjejzhy24m/01GQ5EPNJG6JGWNCM67BA25N59/01GRRPC59657V6QXP558W1C23R?AWSAccessKeyId=ASIAQIVXPCFNQF2YPNYZ&Signature=MDLip6LOUIft%2BZIRWGBEb%2BawvSQ%3D&content-type=application%2Foctet&x-amz-meta-account_id=qekbvd6cwben5d3jyjejzhy24m&x-amz-meta-uid=01GQ5EPNJG6JGWNCM67BA25N59&x-amz-security-token=IQoJb3JpZ2luX2VjEO%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCWV1LXdlc3QtMSJHMEUCIDDcOBgjHuxcWR2IdLiONK8GtoSSb8IFW9Hwm%2FmyX8uPAiEAi8zedZI3rR4fqhmrI2FIZUx9sVKINVyyTE2MId4X7vYquwMIdxAAGgwwMTg2MzgzNzczMDciDDrR3R1PxY4sVatN3iqYAzC%2BZQ1atsE9gytc1Gq1Iq8ZFGPojN9cke%2FAf%2BLqPK6%2F9E8pEEVE1ouSQDRoNMtPo3u7uw%2FO0KKr4cGlMnQR5VFdWoByb%2BmZHbBH2Ax9%2Fo0ApMoIFKYzy3GjPCk%2BiBuBw8AqEK2HFFQYKVb8r0ijOCAXlnPkdmzTylDuzLIweWWXl92RrMtstxQvo11%2F%2Bywx23%2BCBKbZGVjNEdOPPr5v63b4vBi7JyGoss0zgo%2Fwz5ljdJlt3Cbn1bkNx9cmfGTrXawWcsBHuD%2Ft7BjyEdOTJMdfaed7K5A9ZTJyPtm7qFYqo%2FLNc16rkG9dYxsuCQQ566bTg%2BwfusVORzWsdVLjLo1PsfD%2FK%2F3QMcRTOATCIALstp%2BTsdtkqreX7LBKKMQoBheewhxo%2BI4iH%2FeAc3TOnstA%2Fh6HRmufx9M11eU2zOgebJUxRlkxO4H6xxa6dcLUx6L29LtQOq12JAf8GolazaPwTWqnnaaf3bajuH9X9WHGi%2FJZNV24%2BgXTNzBwaE0v8jgy%2Fy54ngKGtBiFZIypc7HWCubNm6F%2F4zCd346fBjqeAYiKXiZ6aYW2f3mVX2cSVU3TwD8I%2BPcvTY6Opy68owhB4OYfmtX9VcvlRZPlgYNSwU8Tnx3Lgy3CKP8nF03GOS4hfTG1GsTe0m%2BRC3O5t8NahYhRSgBS0xUDwFX2SaWd8zr4fUZ65GHxumXTie5GJAOktDoLB6ihH5%2FiJOYq0oCFIEg4n6HJ4sIP%2BYOLKodPJN0KDwmMwatvSKbfEcdf&Expires=1675869619",
-            "download_from_url": null,
-            "file_name": null,
-            "content_type": null,
-            "__typename": "Image"
-          },
-          {
-            "uid": "01GQ5EPQ2EJB22RYS1AVG7NQDG",
+            "uid": "01GWFN04Q433WH8KACX2Q6JWEP",
             "external_id": "recBiJpHfAYK1sPiI",
             "slug": null,
-            "title": "HomepageAfterCarousel.png ",
+            "title": "HomepageAfterCarousel.png",
             "description": null,
             "type": "MAIN",
             "url": "https://dl.airtable.com/.attachments/ec508b5317f19fee0c50ed9238d23588/02a5d627/HomepageAfterCarousel.png",
             "external_url": "https://dl.airtable.com/.attachments/ec508b5317f19fee0c50ed9238d23588/02a5d627/HomepageAfterCarousel.png",
-            "upload_url": "https://obj-reg-storage-beta-1-base-eu-west-1-storage.s3.amazonaws.com/media/images/qekbvd6cwben5d3jyjejzhy24m/01GQ5EPQ2EJB22RYS1AVG7NQDG/01GRRPC599FCT2Y8JC9A7JPQ8V?AWSAccessKeyId=ASIAQIVXPCFN7QH5FDIL&Signature=qBZQpVV9S0R8CREx%2FK5AG4MAyzM%3D&content-type=application%2Foctet&x-amz-meta-account_id=qekbvd6cwben5d3jyjejzhy24m&x-amz-meta-uid=01GQ5EPQ2EJB22RYS1AVG7NQDG&x-amz-security-token=IQoJb3JpZ2luX2VjEO%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCWV1LXdlc3QtMSJGMEQCIH0Fi92l1hQwvIp1JQcSR%2F827m%2F449SPlANOLUEGzOT8AiBcfSFJQWDAySQH0WCHEN74TE4Xf6TlOYFVWf325LrHJyq7Awh3EAAaDDAxODYzODM3NzMwNyIMcr5iNlG0pSCqVmp4KpgD%2FPn9MVVcGbXstHdzQJ%2F4%2FH9IXYb%2FB%2BunMQscPo1YJGkUYgI%2BRNDhcixZpNImXhP69LOzN2S0ugV0XFBzjfbQPLVqugAsQ7QvHmyHnnNJV2lyVFq08ONXR28iM6dF70GONvtvZLn%2Fqw3VVUqZpD3YdNL2bJkzXwTa%2FkNyCcqr3DiQyXI6%2BKz0yblwK3M6OQYkLqK79DFA1WsMGcpNDo%2BsLrmqwQ2FBITFXIYXMQRdBIK5XRvRyOHMhUfkPsy4sKvwppHMxU9A4P9e1Shv4wypvnEl9zMLWkvUvQbRbb1ty%2BTqz9t34VnbndrIeJ%2BEWiaO9qfUFYL1uOigZfXspJLMTTdoMTsOBhyyfpzGaw1C0afHmbDhrubte601C4mgcx88uWMh%2F9nDdJA4LZxYFEXRoRbzteqPXp2VVPwtlpQF585zhs1Pp0%2Ft%2FXz0zRqtP7pFHVtmQkO1DaGCS2ETPPhE2Ymxh6Bj60xjHcTE4bR4Gm4Km5drykhQNwZ7M7cc8ok20kn4Nti4VBcVhJIds4IF6HzwlL9XXqlvMJ3fjp8GOp8Bdz8ndfYu%2BEi4c%2BWLkUGxwE65%2FOPgrcuaGtGxK%2FrHPP92T%2BPg7BUc7iabpiVGhbVgUpnwPT8BW7yY0rb7FrAheA5K0yFf1Km%2BLXW71wlejAkw0MdzwJTeCd7uk4PHiRXjE8DFXgf3qOjDmBtXN5ygdD%2BQsUXBi53%2FAyliHmdBhqTwr9EaeouII0X%2BTU%2BrWHaM9ukZr5CcNr4FsDP7%2BtS1&Expires=1675869619",
+            "upload_url": "https://obj-reg-storage-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/je3wfx2br5dpxidrerysirxkru/01GWFN04Q433WH8KACX2Q6JWEP/01GWG45N58JWAN8S0WPH9NQNQV?AWSAccessKeyId=ASIAZOW2GFFBORB4X56E&Signature=qDrkxT4ZatT28ooVc2m7AWERPOc%3D&content-type=application%2Foctet&x-amz-meta-account_id=je3wfx2br5dpxidrerysirxkru&x-amz-meta-uid=01GWFN04Q433WH8KACX2Q6JWEP&x-amz-security-token=IQoJb3JpZ2luX2VjEEgaCWV1LXdlc3QtMSJIMEYCIQDBHfdmL6B42lTGsIVP1JwDXWF43MaD5Mu2AFi0lSOZKQIhAIjs4FFDlH%2BV59PoDYbYfLVIERZ1MqAW0wls1dIo%2BfTqKqcDCCEQARoMNjUwMDcxMzg2NDM0IgwhW7zesIMoT5esixgqhAOkl5Rxp%2BPSTxTt%2Bg45w7hm7blL4YBS4ZNUvUNtLxEuvToqxXXOTiL%2B%2BJ9XnmNrAd8Xdcfqtyh6%2BQIM9VYeOhKMLVZdaUUrQrzycaBg5Bdd8tS%2BiJPqRAB8wM%2BkFYyG9APbVb8IuoiVqs049zhrPshR0jgOV7KEdIc7hiB3e8Z4H4JiB2irWBglaq7pxZXfKivBOv2dVTse4La%2BsbjOkPEluMKScnLfFg6GfJk%2B91P4bB6Cqzz9kIGBJ%2FBGM5bvRPWCowMXrdsJbbiKb3Bxz1tyMA1sL1EkqGEY2rvqphFNMHw41qCJcP6j7JqWn99o%2FF3708k8gYFuxGFQhsvmhDxxjLPerYDvOh4cazNd20006my89wwzF9QIDoTHKSwwVe4wLXOoVtiuluhPsiTwGdQ%2BU6CJ%2Fgbx8qZzDWIX4nB1LeUb2WEbTgCZAtCsZlMOzC3HFstGQjN3sAwRqno8%2F9Sjgg1tF4H8uHsh6wPURI0%2BOnP%2BbP25sVhRt7r0b%2B5tUS7KAyaiMOKpg6EGOpwBRdpuv4JFEQ733CeChrWhnGOR6v%2B%2BqHj2fVKApILeSYpn2eyD4PCGi2cSAFvdVXwesLjvCCdczCk9IVX7bP5yCcCMvF820sLTRkF3C%2FazD13XAN3%2FZnXZqPFFgbi65UpAMHMvgobzqaxvXe%2FSVvxXzsnvcNqskq%2BdMzGHmCrx%2BsYH%2BwKf5sOwIRste7EU6hnuCF3E7wdmnepZyN3a&Expires=1679877063",
             "download_from_url": null,
             "file_name": null,
-            "content_type": null,
-            "__typename": "Image"
+            "content_type": null
           },
           {
-            "uid": "01GQ5EPPRBGEX74KAPGZ3RS8FJ",
+            "uid": "01GWFN02WRA6CP4084WBYTYHAV",
             "external_id": "reckauU2wr4Jmo3BD",
             "slug": null,
-            "title": "TopOfHomepage.png ",
+            "title": "TopOfHomepage.png",
             "description": null,
             "type": "MAIN",
             "url": "https://dl.airtable.com/.attachments/9d126fbf6638187bdf6fa5f7749ffeca/eb24fc2d/TopOfHomepage.png",
             "external_url": "https://dl.airtable.com/.attachments/9d126fbf6638187bdf6fa5f7749ffeca/eb24fc2d/TopOfHomepage.png",
-            "upload_url": "https://obj-reg-storage-beta-1-base-eu-west-1-storage.s3.amazonaws.com/media/images/qekbvd6cwben5d3jyjejzhy24m/01GQ5EPPRBGEX74KAPGZ3RS8FJ/01GRRPC592DY8VDWRXJN6PSSDS?AWSAccessKeyId=ASIAQIVXPCFN4R7K2DBM&Signature=VM%2BSnlFy7WlHSyJGJcjEuZLWwGY%3D&content-type=application%2Foctet&x-amz-meta-account_id=qekbvd6cwben5d3jyjejzhy24m&x-amz-meta-uid=01GQ5EPPRBGEX74KAPGZ3RS8FJ&x-amz-security-token=IQoJb3JpZ2luX2VjEO%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCWV1LXdlc3QtMSJGMEQCIBNRa6MdUjzH3DE8D%2BFPbPbG6dsCXK6y33az9RdXcKH7AiBVkw6NmkaCA8m9kza6hknO1wG%2F0xC%2FaU17EIfLgIQ6tSq7Awh3EAAaDDAxODYzODM3NzMwNyIMsBcNK4esjR7WSo4nKpgD6lO%2B%2BxWTKhghOJZTueL1y1FaOGo20G%2By%2F%2FvotwP1u8lb9ogBUhqPEy8zw6Ofpa6baZU%2F4b%2FbHhCLdvogGjhZyt8eWw0YMv6iOeGqGCemcr20edIY4mhX%2FQgjlmJkgSp35Fm0mpghSsdsj5Zow9dSFzmA0UQPfEdl1ZKiFXJv93xYNi7veKB%2FabLeNkUskmS5KAj7FxIId3dG0h%2FDMKwbpDzaC%2FstyKXfl1wNM6w6rdempxwnj%2BAwolGCGL0LEvOkkLvRIKPY49L5sN%2FNjvNv8BzpFmHrhgd8RqBvtB4UswSbFqtVJzp5XasgCS2JcmvYRgdcc%2ByNNrhMaQFVMU5wUJjU6eEkfnCYQ1CJxtAn5ELBiuPygbFJUo2S%2B1FG5H3EtroQ8neoRsATcg8NmgUOPCcApN6e8huWpJLqWgGZyuEiS1Ipb43JYOxjpvTw592Y%2BeJnoI1iX75l5SBxhibzk0AoAJVvy8AZK9cjtguto76AfEm4nQw2hdmuV4WKIf8zcl4H86sAh8205VVI1%2Fecexv4saNbIC3RMJjfjp8GOp8B2e5Z9hULXPAGkMNupzGzYmgSP8Eaf1Shbrjdwd%2B8LC%2FZ4OrSCwMizQOKR7IfMH%2FUIe6n%2Bv%2FFpZcjXW94F1nQdpvdbZTCN2wU9PdwsCw%2Fi2MsU3oRyLcJrdbiSjVY0bgV7%2BIdWlmUnXrVqX7nPfTAOpHvjjK0WtDuwrrXamVrz%2F2ojVyY9%2F53tMjflSmQdhMhoiV6yK7vJlQQVNL6hCM7&Expires=1675869619",
+            "upload_url": "https://obj-reg-storage-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/je3wfx2br5dpxidrerysirxkru/01GWFN02WRA6CP4084WBYTYHAV/01GWG45N5A3TMC8F33FT3TNX3S?AWSAccessKeyId=ASIAZOW2GFFBEV3VIBHS&Signature=54l7XxPFBgLwcNtJ0UG11%2BeF%2Fe4%3D&content-type=application%2Foctet&x-amz-meta-account_id=je3wfx2br5dpxidrerysirxkru&x-amz-meta-uid=01GWFN02WRA6CP4084WBYTYHAV&x-amz-security-token=IQoJb3JpZ2luX2VjEEgaCWV1LXdlc3QtMSJGMEQCIAatP0jUX3Edp8Ocw5iNcS6XeUtpMFhP6Ckef8KTotCoAiBFnZvX8n45ewV57CLAyGOu9%2Fs06ECaNFMOleakYR77uCqnAwghEAEaDDY1MDA3MTM4NjQzNCIMGXIwzgPtk5oe6tSIKoQDvF6DpQ6Y%2BuhhKMAyyOLKLHbP0dOm1aJl%2B%2BCcS78sZgJ9e08g20x6XlucY3blfqFTVGVvzHItU5azdibUTvr5ynX2p%2BdYt6zg4IU95LTHQuF0In1SgyxbTN4CfKbuvxRAnvPJ6aOlIHO4Xcpzt%2FDgcTVCdVVLyaacmps6I6xjOkwfj%2Bs80VzY6TBPTdH9zA%2B0eOIuiOS1Oem17g7vdEcncwIep9vIlG%2BLqRjYol7qeuHGpnLwgKePhs3edXL5SoQREhCG1pjvwhPdTBXWDzSwa4ylasxoS35pMg0Jpj4%2FN3crwSXBUswV40mInb44bNB%2F13ksYc0oA2%2BynGjVTdDAdwgq2X4cU5MWPfhsrO7NAtg7laiGJX%2BHtT%2FtweHCMiTP3haU11WiUIaNKAMOyqXuhecxKDEkSmtwH6O7PyUrKKim2NDrbhK2WOdvhBHdAP3axplO%2Bz3m5DtF37yJwBYiLAvHLZDo1mrUTmtc32KLhsNPtHShoWdAXiHIQkcVjZj8t9xydDDiqYOhBjqeARFRAyTwQ8Ezx9cbGhSosfbYoZM950IEF0sgOLbdBcqKrX94IzaSc19mYrZM1ZDLh1X0qoxaM4DyS9o9%2B4zYMIhWmoScRbYY3LcwN1tUccqIW5lP7rkecLNWQ2Q1vgRqRkm6OhceBGgEzTRLwlehbRK2%2FI3RTQ6slAWKz6FG%2BnFTKhgD3QyssbGmVyDE%2FNvZl%2Fk2%2FsV%2FyGAieAima3pa&Expires=1679877063",
             "download_from_url": null,
             "file_name": null,
-            "content_type": null,
-            "__typename": "Image"
+            "content_type": null
+          },
+          {
+            "uid": "01GWFN01RB27M3ZQS705PFZCEZ",
+            "external_id": "recgkAKiElyJeSpvy",
+            "slug": null,
+            "title": "StreamTVLoadingScreen.png",
+            "description": null,
+            "type": "MAIN",
+            "url": "https://dl.airtable.com/.attachments/caec77d4d303b706499172d09d6389c7/b6497292/StreamTVLoadingScreen.png",
+            "external_url": "https://dl.airtable.com/.attachments/caec77d4d303b706499172d09d6389c7/b6497292/StreamTVLoadingScreen.png",
+            "upload_url": "https://obj-reg-storage-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/je3wfx2br5dpxidrerysirxkru/01GWFN01RB27M3ZQS705PFZCEZ/01GWG45N5CSKANB4FQHQ69XKGD?AWSAccessKeyId=ASIAZOW2GFFBM45WICPX&Signature=XurOyMGERUr9Ds9BFi3DkWtb%2F6I%3D&content-type=application%2Foctet&x-amz-meta-account_id=je3wfx2br5dpxidrerysirxkru&x-amz-meta-uid=01GWFN01RB27M3ZQS705PFZCEZ&x-amz-security-token=IQoJb3JpZ2luX2VjEEgaCWV1LXdlc3QtMSJHMEUCIQDZUDKlYnAZdNtBlrh%2F32xBzbSniJE2D7i9WUm3oL0lrgIgImD1lBz2DT%2FedG0MzRR84mJjkE8zJjmDCCJ98DFhqpEqpwMIIBABGgw2NTAwNzEzODY0MzQiDHBZnQrPlLQIG%2FB7XiqEA88w%2BsWWXbmjEE9JEaEQo94vgpV5ALo0JGqV1aAcEhnTYPEGS1YYUAdID%2BwVrLhkjdeuf%2Fsa9vBaZwJylNZMsJOLajK7REBOmStTZHVfR9cicHRCEXcxb9yE2USveUw5tT6HhkULO7B7iEwTPhPDv8W3zUre9j7SHz8TQaZrZ5FHBzxuhNy1vAJ23d2C4NWzGxR0arcVLyHqEMKk8syP2yIGd73MXI2GmbL9M31PX2EkcjmvQ%2Fsn%2B8D8%2FW%2BVQkHNZI%2BU7nsrXYpg1qkho5jYreyE%2B3iRma5pSzqmxHouG8WZNJHfDP6RuO9zaPjz42ZuTAfjtiBqa52mMsWjjXsldw1FN6ZaYZlfwcceiM7c0hbQwzbIhrZ6VAAKimdmau23bu6xbMQVcrwogmjQU%2FdNDQLmFXZd%2F7ioWnLYQ2zKyqc56LnNHHFrcVVq62M3Ud0cbAVcUYSj7P846mxg0Fs%2FRziVEgMMRS0cCe60NYBJh1XIAG5skfgJ4DH7GM0IOoCDCKPOc9QwwaKDoQY6nQGnCQsgG8%2BTFz1dLtQj6j2lBfXfJiwXd8mjmLunV9mHv75GcgX1XiNUeL4wojRML9wYeF0EEwA2x72%2B6tbs9AhVVUPJ2YuT3dl0F%2BpbkKVxfyWCAkOt3komy7J2sW9SnR6A8AUmgCNtXwOqUl%2FsfIqA3pfo7GOHGMI75kjmp%2Be2spB7sy4InSKbyz%2F2tBgDk%2FFqB3Y569OVlopotDTW&Expires=1679877063",
+            "download_from_url": null,
+            "file_name": null,
+            "content_type": null
           }
-        ],
-        "__typename": "ImageListing"
+        ]
       },
       "content": {
         "objects": [
           {
             "object": {
               "__typename": "Set",
-              "_config": null,
-              "uid": "01GQ5ET9M2HPCBRDVJZDG78N0N",
+              "_config": { "primary_field": "title", "colour": "#000000" },
+              "uid": "01GWFN6GT8GBJYWGJYTKM2N4YP",
               "__Set__slug": "media-reference-home-page-hero",
               "external_id": null,
               "__Set__type": "SLIDER",
@@ -102,16 +102,15 @@
               "__Set__release_date": null,
               "__Set__description": null
             },
-            "position": 1,
-            "__typename": "SetContent"
+            "position": 1
           },
           {
             "object": {
               "__typename": "Set",
-              "_config": null,
-              "uid": "01GQ5ET5MTYQH0XVRBDSGF0YKZ",
+              "_config": { "primary_field": "title", "colour": "#000000" },
+              "uid": "01GWFN6CTC1A6S3QCKSSVR1Z6N",
               "__Set__slug": "spotlight-movies",
-              "external_id": "ingestor_set_spotlight_movies",
+              "external_id": "streamtv_spotlight_movies",
               "__Set__type": "RAIL",
               "__Set__title": "Spotlight movies",
               "__Set__synopsis_short": null,
@@ -123,16 +122,15 @@
               "__Set__release_date": null,
               "__Set__description": null
             },
-            "position": 2,
-            "__typename": "SetContent"
+            "position": 2
           },
           {
             "object": {
               "__typename": "Set",
-              "_config": null,
-              "uid": "01GQ5ET43129MBHTKRB0T2VDFZ",
+              "_config": { "primary_field": "title", "colour": "#000000" },
+              "uid": "01GWFN6B81WFCQ1JENHY0DWBPW",
               "__Set__slug": "new-tv-releases",
-              "external_id": "ingestor_set_new_tv_releases",
+              "external_id": "streamtv_new_tv_releases",
               "__Set__type": "RAIL",
               "__Set__title": "New TV Releases",
               "__Set__synopsis_short": null,
@@ -144,56 +142,53 @@
               "__Set__release_date": null,
               "__Set__description": null
             },
-            "position": 3,
-            "__typename": "SetContent"
+            "position": 3
           },
           {
             "object": {
               "__typename": "Season",
-              "_config": null,
-              "uid": "01GQ5ERDSXQJR64RW75Z5WRVTE",
+              "_config": { "primary_field": "title", "colour": "#9c27b0" },
+              "uid": "01GWFN541WREVQ64RJKQ8B0B7P",
               "external_id": "recNWXkYGdriyverR",
               "__Season__slug": "got-s01",
-              "__Season__title": "GOT S01",
-              "__Season__synopsis_short": null,
-              "__Season__synopsis_medium": "In the mythical continent of Westeros, several powerful families fight for control of the Seven Kingdoms. As conflict erupts in the kingdoms of men, an ancient enemy rises once again to threaten them all. Meanwhile, the last heirs of a recently usurped dynasty plot to take back their homeland from across the Narrow Sea.",
               "__Season__synopsis_long": null,
-              "__Season__title_short": "GOT Season 1",
-              "__Season__title_medium": "Game of Thrones - Season 1",
+              "__Season__synopsis_medium": "In the mythical continent of Westeros, several powerful families fight for control of the Seven Kingdoms. As conflict erupts in the kingdoms of men, an ancient enemy rises once again to threaten them all. Meanwhile, the last heirs of a recently usurped dynasty plot to take back their homeland from across the Narrow Sea.",
+              "__Season__synopsis_short": null,
+              "__Season__title": "GOT S01",
               "__Season__title_long": null,
+              "__Season__title_medium": "Game of Thrones - Season 1",
+              "__Season__title_short": "GOT Season 1",
+              "__Season__number_of_episodes": null,
               "__Season__release_date": "2011-04-17",
-              "__Season__season_number": 1,
-              "__Season__number_of_episodes": null
+              "__Season__season_number": 1
             },
-            "position": 4,
-            "__typename": "SetContent"
+            "position": 4
           },
           {
             "object": {
               "__typename": "Season",
-              "_config": null,
-              "uid": "01GQ5ERBTR34XQQ67152ZSJ0W2",
+              "_config": { "primary_field": "title", "colour": "#9c27b0" },
+              "uid": "01GWFN51TKSPB8V6VE93K5WCSB",
               "external_id": "rec6brp07XJZ5iFla",
               "__Season__slug": "got-s02",
-              "__Season__title": "GOT S02",
-              "__Season__synopsis_short": null,
-              "__Season__synopsis_medium": null,
               "__Season__synopsis_long": null,
-              "__Season__title_short": "GOT Season 2",
-              "__Season__title_medium": "Game of Thrones - Season 2",
+              "__Season__synopsis_medium": null,
+              "__Season__synopsis_short": null,
+              "__Season__title": "GOT S02",
               "__Season__title_long": null,
+              "__Season__title_medium": "Game of Thrones - Season 2",
+              "__Season__title_short": "GOT Season 2",
+              "__Season__number_of_episodes": null,
               "__Season__release_date": "2012-04-01",
-              "__Season__season_number": 2,
-              "__Season__number_of_episodes": null
+              "__Season__season_number": 2
             },
-            "position": 5,
-            "__typename": "SetContent"
+            "position": 5
           },
           {
             "object": {
               "__typename": "Set",
-              "_config": null,
-              "uid": "01GQ5ETGYTRSZRKBY41C76MMT4",
+              "_config": { "primary_field": "title", "colour": "#000000" },
+              "uid": "01GWFN6S1H2HE47RV5FQ2ZQ3HZ",
               "__Set__slug": "discover-collection",
               "external_id": null,
               "__Set__type": "COLLECTION",
@@ -207,13 +202,10 @@
               "__Set__release_date": null,
               "__Set__description": null
             },
-            "position": 6,
-            "__typename": "SetContent"
+            "position": 6
           }
-        ],
-        "__typename": "MetadataListing"
-      },
-      "__typename": "Set"
+        ]
+      }
     }
   }
 }

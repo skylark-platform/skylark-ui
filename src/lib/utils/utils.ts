@@ -29,7 +29,10 @@ export const getPrimaryKeyField = (object: ParsedSkylarkObject) =>
     (field) => !!object.metadata[field],
   );
 
-export const getObjectDisplayName = (object: ParsedSkylarkObject): string => {
+export const getObjectDisplayName = (
+  object: ParsedSkylarkObject | null,
+): string => {
+  if (!object) return "";
   const primaryKeyField = getPrimaryKeyField(object);
   const displayName = primaryKeyField && object.metadata[primaryKeyField];
   return (displayName as string) || object.uid;

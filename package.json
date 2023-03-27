@@ -28,7 +28,7 @@
     "@fontsource/inter": "^4.5.14",
     "@fontsource/work-sans": "^4.5.12",
     "@graphiql/plugin-explorer": "^0.1.12",
-    "@headlessui/react": "^1.7.4",
+    "@headlessui/react": "^1.7.13",
     "@headlessui/tailwindcss": "^0.1.2",
     "@radix-ui/react-avatar": "^1.0.1",
     "@radix-ui/react-checkbox": "^1.0.1",

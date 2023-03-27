@@ -18,23 +18,25 @@ import { useAllObjectsMeta } from "./useSkylarkObjectTypes";
 
 export interface SearchFilters {
   objectTypes: string[] | null;
+  language: string | null;
 }
 
 export const SEARCH_PAGE_SIZE = 50;
 
 export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta();
+  const { objectTypes, language } = filters;
 
   const query = useMemo(
-    () =>
-      createSearchObjectsQuery(searchableObjects, filters.objectTypes || []),
-    [searchableObjects, filters.objectTypes],
+    () => createSearchObjectsQuery(searchableObjects, objectTypes || []),
+    [searchableObjects, objectTypes],
   );
 
   const variables = {
     queryString,
     limit: SEARCH_PAGE_SIZE,
     offset: 0,
+    language,
   };
 
   const { data: searchResponse, ...rest } =

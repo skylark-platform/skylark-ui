@@ -17,7 +17,7 @@ test("renders with all checkboxes checked", async () => {
   render(
     <SearchFilter
       objectTypes={objectTypes}
-      activeFilters={{ objectTypes }}
+      activeFilters={{ objectTypes, language: "" }}
       columns={columns}
       visibleColumns={columns}
       onFilterSave={jest.fn()}
@@ -38,7 +38,7 @@ test("calls onFilterSave when apply is clicked", async () => {
   render(
     <SearchFilter
       objectTypes={objectTypes}
-      activeFilters={{ objectTypes }}
+      activeFilters={{ objectTypes, language: "" }}
       columns={columns}
       visibleColumns={columns}
       onFilterSave={onFilterSave}
@@ -51,7 +51,7 @@ test("calls onFilterSave when apply is clicked", async () => {
   fireEvent.click(screen.getByText("Apply"));
 
   expect(onFilterSave).toHaveBeenCalledWith(
-    { objectTypes },
+    { objectTypes, language: "" },
     { external_id: true, slug: true, uid: true },
   );
 });
@@ -62,7 +62,7 @@ test("when reset is clicked, all filters are returned to all options checked wit
   render(
     <SearchFilter
       objectTypes={objectTypes}
-      activeFilters={{ objectTypes: [] }}
+      activeFilters={{ objectTypes: [], language: "" }}
       columns={columns}
       visibleColumns={[]}
       onFilterSave={onFilterSave}

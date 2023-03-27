@@ -4,6 +4,7 @@ import {
   SkylarkObjectMeta,
   SkylarkObjectOperations,
   BuiltInSkylarkObjectType,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
@@ -23,7 +24,7 @@ const getObjectFieldsFromGetQuery = (
 };
 
 const objectHasRelationship = (
-  relationship: "availability" | "images",
+  relationship: "images" | SkylarkSystemField,
   getQuery: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"][0],
 ) => {
   if (!getQuery || !getQuery.type || !getQuery.type.fields) {
@@ -83,10 +84,27 @@ export const getObjectOperations = (
     !updateMutation ||
     !deleteMutation
   ) {
-    throw new Error("Skylark ObjectType is missing expected operation");
+    const missingOperations = [
+      !getQuery && "getQuery",
+      !listQuery && "listQuery",
+      !createMutation && "createMutation",
+      !updateMutation && "updateMutation",
+      !deleteMutation && "deleteMutation",
+    ]
+      .filter((str) => str)
+      .join(", ");
+    throw new Error(
+      `Skylark ObjectType "${objectType}" is missing expected operations "${missingOperations}"`,
+    );
   }
 
   const objectFields = getObjectFieldsFromGetQuery(getQuery);
+
+  const hasContent = objectHasRelationship(
+    SkylarkSystemField.Content,
+    getQuery,
+  );
+
   const hasImages = objectHasRelationship("images", getQuery);
   const images = hasImages
     ? getObjectOperations(BuiltInSkylarkObjectType.Image, {
@@ -95,7 +113,10 @@ export const getObjectOperations = (
       })
     : null;
 
-  const hasAvailability = objectHasRelationship("availability", getQuery);
+  const hasAvailability = objectHasRelationship(
+    SkylarkSystemField.Availability,
+    getQuery,
+  );
   const availability = hasAvailability
     ? getObjectOperations(BuiltInSkylarkObjectType.Availability, {
         queryType,
@@ -147,6 +168,7 @@ export const getObjectOperations = (
     operations,
     availability,
     relationships,
+    hasContent,
   };
 };
 

@@ -16,6 +16,10 @@ import {
   useSkylarkObjectOperations,
 } from "./useSkylarkObjectTypes";
 
+interface GetObjectOptions {
+  language?: string | null;
+}
+
 export const createGetObjectKeyPrefix = ({
   objectType,
   uid,
@@ -24,12 +28,22 @@ export const createGetObjectKeyPrefix = ({
   uid: string;
 }) => [QueryKeys.GetObject, objectType, uid];
 
-export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
+export const useGetObject = (
+  objectType: SkylarkObjectType,
+  uid: string,
+  opts?: GetObjectOptions,
+) => {
+  const { language }: GetObjectOptions = opts || { language: null };
+
   const { objectOperations } = useSkylarkObjectOperations(objectType);
   const { objects: searchableObjects } = useAllObjectsMeta();
 
-  const query = createGetObjectQuery(objectOperations, searchableObjects);
-  const variables = { uid };
+  const query = createGetObjectQuery(
+    objectOperations,
+    searchableObjects,
+    !!language,
+  );
+  const variables = { uid, language };
 
   const { data, error, ...rest } = useQuery<
     GQLSkylarkGetObjectResponse,
@@ -50,6 +64,7 @@ export const useGetObject = (objectType: SkylarkObjectType, uid: string) => {
     ...rest,
     error,
     data: parsedObject,
+    objectMeta: objectOperations,
     isLoading: rest.isLoading || !query,
     isNotFound:
       error?.response.errors?.[0]?.errorType === QueryErrorMessages.NotFound,

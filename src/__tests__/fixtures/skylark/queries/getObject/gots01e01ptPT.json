@@ -1,0 +1,58 @@
+{
+  "data": {
+    "getObject": {
+      "__typename": "Episode",
+      "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+      "_meta": {
+        "available_languages": ["en-GB", "pt-PT"],
+        "language_data": { "language": "pt-PT", "version": 1 },
+        "global_data": { "version": 2 }
+      },
+      "uid": "01GWFN5AR4MZJRFATS1XQY3B1F",
+      "external_id": null,
+      "slug": null,
+      "synopsis_long": "Ao norte dos Sete Reinos de Westeros, os soldados da Patrulha da Noite são atacados por Caminhantes Brancos sobrenaturais. Um soldado escapa, mas é capturado no Castelo Winterfell. Eddard \"Ned\" Stark, Guardião do Norte, o executa por deserção. Mais tarde, seis filhotes de lobos órfãos são encontrados e um dado a cada irmão Stark, incluindo o filho bastardo de Ned, Jon Snow. Em Porto Real, a capital dos Sete Reinos, Jon Arryn, a Mão do Rei, morre repentinamente. Rei Robert Baratheon, velho amigo de Ned, viaja para Winterfell para recrutar Ned e propor um casamento entre seu herdeiro Joffrey e a filha de Ned, Sansa. Lysa Arryn, a viúva de Jon, envia a sua irmã (esposa de Ned), Catelyn, uma carta alegando que os Lannisters, a família da rainha Cersei, assassinaram Arryn. Catelyn acredita que os Lannisters estão tramando contra o Rei Robert. O filho mais novo de Ned, Brandon, sobe em uma torre alta e testemunha Cersei e seu irmão gêmeo, Jaime Lannister, fazendo sexo. Para esconder seu incesto, Jaime empurra Bran da janela alta. Do outro lado do Mar Estreito em Essos, o príncipe exilado Viserys Targaryen força sua irmã, Daenerys, a se casar com o senhor da guerra Dothraki, Drogo, em troca de um exército para conquistar Westeros e recuperar o Trono de Ferro. Robert Baratheon tornou-se rei depois que Jaime Lannister matou o rei \"louco\" Aerys Targaryen, ganhando a Jaime o apelido de \"O Matador de Reis\". Os antigos Targaryens já comandaram dragões, e Daenerys recebe três ovos de dragão fossilizados como presente de casamento.\n",
+      "synopsis_medium": "Estreia da Série. Eddard Stark está dividido entre sua família e um velho amigo quando solicitado a servir ao lado do rei Robert Baratheon; Viserys planeja casar sua irmã com um senhor da guerra nômade em troca de um exército.\n",
+      "synopsis_short": null,
+      "title": "GOT S01E1 - Winter is Coming",
+      "title_long": null,
+      "title_medium": null,
+      "title_short": "O Inverno Está Chegando",
+      "episode_number": null,
+      "release_date": "2011-10-17",
+      "availability": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01GWFMZW9J6TV2A1XG3H1GN02H",
+            "external_id": "recXNjJNyc6nKQIYa",
+            "title": "Always - All devices, all customer types",
+            "slug": "always-all-devices-all-customer-types",
+            "start": "2022-01-01T00:00:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "+00:00"
+          }
+        ]
+      },
+      "images": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01GWFN0MTBSSEZDM7VF963EWJH",
+            "external_id": "recbXlWg7DJA1ZNO2",
+            "slug": null,
+            "title": "GOT - S1 - 1.jpg",
+            "description": null,
+            "type": "THUMBNAIL",
+            "url": "https://dl.airtable.com/.attachments/c8b23d45c55cf09081954dd208dcce4b/80b72296/GOT-S1-1.jpg",
+            "external_url": "https://dl.airtable.com/.attachments/c8b23d45c55cf09081954dd208dcce4b/80b72296/GOT-S1-1.jpg",
+            "upload_url": "https://obj-reg-storage-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/je3wfx2br5dpxidrerysirxkru/01GWFN0MTBSSEZDM7VF963EWJH/01GWG46568J0J85K7P08ADHTNR?AWSAccessKeyId=ASIAZOW2GFFBEV3VIBHS&Signature=6yGuNNmQ%2B6Sn4be5spO0zTZYcPA%3D&content-type=application%2Foctet&x-amz-meta-account_id=je3wfx2br5dpxidrerysirxkru&x-amz-meta-uid=01GWFN0MTBSSEZDM7VF963EWJH&x-amz-security-token=IQoJb3JpZ2luX2VjEEgaCWV1LXdlc3QtMSJGMEQCIAatP0jUX3Edp8Ocw5iNcS6XeUtpMFhP6Ckef8KTotCoAiBFnZvX8n45ewV57CLAyGOu9%2Fs06ECaNFMOleakYR77uCqnAwghEAEaDDY1MDA3MTM4NjQzNCIMGXIwzgPtk5oe6tSIKoQDvF6DpQ6Y%2BuhhKMAyyOLKLHbP0dOm1aJl%2B%2BCcS78sZgJ9e08g20x6XlucY3blfqFTVGVvzHItU5azdibUTvr5ynX2p%2BdYt6zg4IU95LTHQuF0In1SgyxbTN4CfKbuvxRAnvPJ6aOlIHO4Xcpzt%2FDgcTVCdVVLyaacmps6I6xjOkwfj%2Bs80VzY6TBPTdH9zA%2B0eOIuiOS1Oem17g7vdEcncwIep9vIlG%2BLqRjYol7qeuHGpnLwgKePhs3edXL5SoQREhCG1pjvwhPdTBXWDzSwa4ylasxoS35pMg0Jpj4%2FN3crwSXBUswV40mInb44bNB%2F13ksYc0oA2%2BynGjVTdDAdwgq2X4cU5MWPfhsrO7NAtg7laiGJX%2BHtT%2FtweHCMiTP3haU11WiUIaNKAMOyqXuhecxKDEkSmtwH6O7PyUrKKim2NDrbhK2WOdvhBHdAP3axplO%2Bz3m5DtF37yJwBYiLAvHLZDo1mrUTmtc32KLhsNPtHShoWdAXiHIQkcVjZj8t9xydDDiqYOhBjqeARFRAyTwQ8Ezx9cbGhSosfbYoZM950IEF0sgOLbdBcqKrX94IzaSc19mYrZM1ZDLh1X0qoxaM4DyS9o9%2B4zYMIhWmoScRbYY3LcwN1tUccqIW5lP7rkecLNWQ2Q1vgRqRkm6OhceBGgEzTRLwlehbRK2%2FI3RTQ6slAWKz6FG%2BnFTKhgD3QyssbGmVyDE%2FNvZl%2Fk2%2FsV%2FyGAieAima3pa&Expires=1679877079",
+            "download_from_url": null,
+            "file_name": null,
+            "content_type": null
+          }
+        ]
+      }
+    }
+  }
+}

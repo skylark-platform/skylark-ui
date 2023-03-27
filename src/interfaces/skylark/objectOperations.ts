@@ -2,7 +2,11 @@ export enum BuiltInSkylarkObjectType {
   Availability = "Availability",
   Image = "Image",
   Asset = "Asset",
-  Set = "Set",
+}
+
+export enum SkylarkSystemField {
+  Availability = "availability",
+  Content = "content", // "Set like" content
 }
 
 export type SkylarkObjectType = string | BuiltInSkylarkObjectType;
@@ -76,4 +80,5 @@ export interface SkylarkObjectMeta extends SkylarkObjectFields {
   images: SkylarkObjectMeta | null;
   operations: SkylarkObjectOperations;
   relationships: SkylarkObjectRelationship[];
+  hasContent: boolean;
 }

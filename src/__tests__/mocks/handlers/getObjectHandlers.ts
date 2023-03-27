@@ -2,6 +2,8 @@ import { graphql } from "msw";
 
 import GQLSkylarkGetMovieQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
 import GQLSkylarkGetObjectImageQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gotImage.json";
+import GQLSkylarkGetObjectGOTS01E01QueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01.json";
+import GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01ptPT.json";
 import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots04.json";
 import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
 import GQLSkylarkGetMovieQueryAvailabilityFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/allAvailTestMovieAvailability.json";
@@ -53,6 +55,23 @@ export const getObjectHandlers = [
         return res(
           ctx.data(GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data),
         );
+      }
+    },
+  ),
+
+  graphql.query(
+    createGetObjectQueryName("Episode"),
+    ({ variables }, res, ctx) => {
+      if (
+        variables.uid ===
+        GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.uid
+      ) {
+        if (variables.language === "pt-PT") {
+          return res(
+            ctx.data(GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data),
+          );
+        }
+        return res(ctx.data(GQLSkylarkGetObjectGOTS01E01QueryFixture.data));
       }
     },
   ),

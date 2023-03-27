@@ -27,6 +27,14 @@ beforeEach(() => {
     disconnect: () => null,
   });
   window.IntersectionObserver = mockIntersectionObserver;
+
+  const mockResizeObserver = jest.fn();
+  mockResizeObserver.mockReturnValue({
+    observe: () => null,
+    unobserve: () => null,
+    disconnect: () => null,
+  });
+  global.ResizeObserver = mockResizeObserver;
 });
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests.
