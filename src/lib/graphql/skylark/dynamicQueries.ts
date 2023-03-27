@@ -88,16 +88,18 @@ const generateRelationshipsToReturn = (
     };
   }
 
-  if (!isSearch && object.images) {
-    relationshipsToReturn.images = {
-      __args: {
-        limit: isSearch ? 5 : 50, // max
-      },
-      next_token: true,
-      objects: {
-        ...generateFieldsToReturn(object.images?.fields),
-      },
-    };
+  if (!isSearch && object.images && object.images.objectMeta?.fields) {
+    object.images.relationshipNames.forEach((relationshipName) => {
+      relationshipsToReturn[relationshipName] = {
+        __args: {
+          limit: isSearch ? 5 : 50, // max
+        },
+        next_token: true,
+        objects: {
+          ...generateFieldsToReturn(object.images?.objectMeta.fields || []),
+        },
+      };
+    });
   }
 
   return relationshipsToReturn;

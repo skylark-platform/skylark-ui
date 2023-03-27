@@ -6,11 +6,9 @@ import { useGetObject } from "src/hooks/useGetObject";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
 import {
   ParsedSkylarkObjectContentObject,
-  BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
   AddedSkylarkObjectContentObject,
 } from "src/interfaces/skylark";
-import { getObjectDisplayName } from "src/lib/utils";
 
 import {
   PanelAvailability,
@@ -80,10 +78,10 @@ export const Panel = ({
       [
         PanelTab.Metadata,
         objectMeta?.hasContent && PanelTab.Content,
-        data?.images && PanelTab.Imagery,
+        objectMeta?.images && PanelTab.Imagery,
         PanelTab.Availability,
       ].filter((tab) => !!tab) as string[],
-    [data?.images, objectMeta?.hasContent],
+    [objectMeta?.hasContent, objectMeta?.images],
   );
 
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);

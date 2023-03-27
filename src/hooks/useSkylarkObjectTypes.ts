@@ -1,4 +1,5 @@
 import { UseQueryResult } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import { SkylarkObjectType } from "src/interfaces/skylark";
 import {
@@ -16,9 +17,11 @@ export const useSkylarkObjectTypes = (): Omit<UseQueryResult, "data"> & {
 } => {
   const { data, ...rest } = useSkylarkSchemaInterfaceType("Metadata");
 
-  const objectTypes = data
-    ? data?.possibleTypes.map(({ name }) => name) || []
-    : undefined;
+  const objectTypes = useMemo(
+    () =>
+      data ? data?.possibleTypes.map(({ name }) => name) || [] : undefined,
+    [data],
+  );
 
   return {
     objectTypes,
@@ -47,16 +50,21 @@ export const useAllObjectsMeta = () => {
 
   const { objectTypes } = useSkylarkObjectTypes();
 
-  if (!schemaResponse || !objectTypes || objectTypes.length === 0) {
-    return { objects: [], allFieldNames: [], ...rest };
-  }
+  const { objects, allFieldNames } = useMemo(() => {
+    const objects =
+      schemaResponse && objectTypes
+        ? getAllObjectsMeta(schemaResponse.__schema, objectTypes)
+        : [];
+    const allFieldNames = objects
+      .flatMap(({ fields }) => fields)
+      .map(({ name }) => name)
+      .filter((name, index, self) => self.indexOf(name) === index);
 
-  const objects = getAllObjectsMeta(schemaResponse.__schema, objectTypes);
-
-  const allFieldNames = objects
-    .flatMap(({ fields }) => fields)
-    .map(({ name }) => name)
-    .filter((name, index, self) => self.indexOf(name) === index);
+    return {
+      objects,
+      allFieldNames,
+    };
+  }, [objectTypes, schemaResponse]);
 
   return {
     objects,

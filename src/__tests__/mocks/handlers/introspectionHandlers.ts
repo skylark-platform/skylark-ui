@@ -12,4 +12,18 @@ export const introspectionHandlers = [
   graphql.query(SKYLARK_SCHEMA_INTROSPECTION_QUERY_NAME, (req, res, ctx) => {
     return res(ctx.data(GQLSkylarkIntrospectionQueryFixture.data));
   }),
+
+  graphql.query("GET_SKYLARK_OBJECT_TYPES", (req, res, ctx) => {
+    const objectTypes =
+      GQLSkylarkIntrospectionQueryFixture.data.__schema.types.find((type) => {
+        return type.kind === "INTERFACE" && type.name === "Metadata";
+      });
+    return res(
+      ctx.data({
+        __type: {
+          possibleTypes: objectTypes?.possibleTypes || [],
+        },
+      }),
+    );
+  }),
 ];

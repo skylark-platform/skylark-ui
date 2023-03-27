@@ -9,6 +9,8 @@ import {
   SkylarkGraphQLObject,
   ParsedSkylarkObjectMetadata,
   GQLSkylarkSearchResponse,
+  ParsedSkylarkObjectImageRelationship,
+  SkylarkGraphQLObjectRelationship,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
@@ -19,6 +21,7 @@ import {
   parseObjectAvailability,
   parseObjectRelationship,
 } from "src/lib/skylark/parsers";
+import { hasProperty } from "src/lib/utils";
 
 import { useAllObjectsMeta } from "./useSkylarkObjectTypes";
 
@@ -76,6 +79,24 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
       ) || [];
 
     const parsedObjects = normalisedObjects.map((obj): ParsedSkylarkObject => {
+      const imagesRelationship = searchableObjects.find(
+        ({ name }) => name === obj.__typename,
+      );
+      const images =
+        imagesRelationship?.images?.relationshipNames.map(
+          (imageField): ParsedSkylarkObjectImageRelationship => {
+            const parsedImages =
+              hasProperty(obj, imageField) &&
+              parseObjectRelationship<SkylarkGraphQLObjectImage>(
+                obj[imageField] as SkylarkGraphQLObjectRelationship,
+              );
+            return {
+              relationshipName: imageField,
+              objects: parsedImages || [],
+            };
+          },
+        ) || [];
+
       return {
         config: {
           colour: obj._config?.colour,
@@ -94,13 +115,13 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
         // TODO filter out any values in obj that are relationships (not metadata types)
         metadata: obj as ParsedSkylarkObjectMetadata,
         availability: parseObjectAvailability(obj.availability),
-        images: parseObjectRelationship<SkylarkGraphQLObjectImage>(obj.images),
+        images,
         relationships: [] as string[],
       };
     });
 
     return parsedObjects;
-  }, [searchResponse?.pages]);
+  }, [searchResponse?.pages, searchableObjects]);
 
   return {
     ...rest,

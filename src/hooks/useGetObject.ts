@@ -7,6 +7,8 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectType,
   GQLSkylarkErrorResponse,
+  SkylarkGraphQLObjectRelationship,
+  ParsedSkylarkObjectImageRelationship,
 } from "src/interfaces/skylark";
 import { GQLSkylarkGetObjectResponse } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -84,11 +86,20 @@ export const useGetObject = (
   const availability = parseObjectAvailability(data?.getObject.availability);
 
   const images =
-    data?.getObject && hasProperty(data?.getObject, "images")
-      ? parseObjectRelationship<SkylarkGraphQLObjectImage>(
-          data?.getObject.images,
-        )
-      : undefined;
+    objectOperations?.images?.relationshipNames.map(
+      (imageField): ParsedSkylarkObjectImageRelationship => {
+        const parsedImages =
+          data?.getObject &&
+          hasProperty(data?.getObject, imageField) &&
+          parseObjectRelationship<SkylarkGraphQLObjectImage>(
+            data?.getObject[imageField] as SkylarkGraphQLObjectRelationship,
+          );
+        return {
+          relationshipName: imageField,
+          objects: parsedImages || [],
+        };
+      },
+    ) || [];
 
   const content =
     data?.getObject && hasProperty(data.getObject, "content")

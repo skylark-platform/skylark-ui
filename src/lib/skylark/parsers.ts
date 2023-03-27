@@ -11,8 +11,11 @@ import {
   ParsedSkylarkObjectContent,
   ParsedSkylarkObjectMetadata,
   SkylarkObjectRelationship,
+  SkylarkGraphQLObject,
+  ParsedSkylarkObjectImageRelationship,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
+import { isObject } from "src/lib/utils";
 
 import { getObjectAvailabilityStatus } from "./availability";
 

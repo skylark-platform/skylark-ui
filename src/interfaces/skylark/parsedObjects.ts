@@ -70,6 +70,11 @@ export interface ParsedSkylarkObjectMeta {
   };
 }
 
+export interface ParsedSkylarkObjectImageRelationship {
+  relationshipName: string;
+  objects: SkylarkGraphQLObjectImage[];
+}
+
 export interface ParsedSkylarkObject {
   objectType: SkylarkObjectType;
   uid: SkylarkUID;
@@ -77,7 +82,7 @@ export interface ParsedSkylarkObject {
   meta: ParsedSkylarkObjectMeta;
   metadata: ParsedSkylarkObjectMetadata;
   availability: ParsedSkylarkObjectAvailability;
-  images?: SkylarkGraphQLObjectImage[];
+  images: ParsedSkylarkObjectImageRelationship[];
   relationships: string[];
   content?: ParsedSkylarkObjectContent;
 }

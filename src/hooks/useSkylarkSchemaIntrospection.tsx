@@ -17,6 +17,8 @@ export const useSkylarkSchema = () => {
   return useQuery<GQLSkylarkSchemaQueriesMutations>({
     queryKey: [QueryKeys.Schema, GET_SKYLARK_SCHEMA],
     queryFn: async () => skylarkRequest(GET_SKYLARK_SCHEMA),
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 };
 
