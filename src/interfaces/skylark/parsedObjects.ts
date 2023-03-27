@@ -73,7 +73,6 @@ export interface ParsedSkylarkObject {
   metadata: ParsedSkylarkObjectMetadata;
   availability: ParsedSkylarkObjectAvailability;
   images?: SkylarkGraphQLObjectImage[];
-  relationships: string[];
   content?: ParsedSkylarkObjectContent;
 }
 

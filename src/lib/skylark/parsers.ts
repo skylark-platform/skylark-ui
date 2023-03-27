@@ -182,7 +182,6 @@ export const parseObjectContent = (
 export const parseSkylarkObject = (
   object: SkylarkGraphQLObject,
 ): ParsedSkylarkObject => {
-  console.log(object);
   // TODO split into Language and Global
   const metadata: ParsedSkylarkObject["metadata"] = {
     ...Object.keys(object).reduce((prev, key) => {
@@ -204,31 +203,6 @@ export const parseSkylarkObject = (
     ? parseObjectContent(object.content)
     : undefined;
 
-  const relationships = Object.keys(object)
-    ?.filter((relation) => isObject(object[relation]))
-    .map((relation) => {
-      const relationship = object[relation] as SkylarkGraphQLObjectRelationship;
-      console.log(relationship);
-      return relation;
-    });
-
-  console.log("", {
-    objectType: object.__typename,
-    uid: object.uid,
-    config: {
-      colour: object._config?.colour,
-      primaryField: object._config?.primary_field,
-    },
-    meta: {
-      availableLanguages: object._meta?.available_languages,
-    },
-    metadata,
-    availability,
-    images,
-    relationships,
-    content,
-  });
-
   return (
     object && {
       objectType: object.__typename,
@@ -243,7 +217,7 @@ export const parseSkylarkObject = (
       metadata,
       availability,
       images,
-      relationships,
+
       content,
     }
   );

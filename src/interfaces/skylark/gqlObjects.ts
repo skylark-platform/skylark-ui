@@ -47,7 +47,7 @@ export interface SkylarkGraphQLAvailability {
 }
 
 export interface SkylarkGraphQLObjectRelationship {
-  nextToken?: NextToken;
+  next_token?: NextToken;
   objects: object[]; // TODO make this a Record like SkylarkGraphQLObject
 }
 

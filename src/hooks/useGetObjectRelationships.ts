@@ -84,7 +84,7 @@ export const useGetObjectRelationships = (
 
         return {
           relationshipName: relation,
-          nextToken: relationship?.nextToken,
+          nextToken: relationship?.next_token,
           objects: parsedObjects,
         };
       })

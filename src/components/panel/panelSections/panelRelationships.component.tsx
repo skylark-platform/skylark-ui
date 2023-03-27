@@ -53,6 +53,7 @@ export const PanelRelationships = ({
                 {relationship && objects.length > 3 && (
                   <div className="mt-2 border-t-[1px] pt-1 pb-3 text-center text-manatee-500">
                     <span
+                      data-testid={`expand-relationship-${relationshipName}`}
                       onClick={() =>
                         setExpandedRelationships({
                           [relationshipName]: !isExpanded,

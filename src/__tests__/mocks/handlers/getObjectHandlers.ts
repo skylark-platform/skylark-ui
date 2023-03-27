@@ -2,11 +2,14 @@ import { graphql } from "msw";
 
 import GQLSkylarkGetMovieQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
 import GQLSkylarkGetObjectImageQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gotImage.json";
+import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots04.json";
 import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
 import GQLSkylarkGetMovieQueryAvailabilityFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/allAvailTestMovieAvailability.json";
+import GQLSkylarkGetSeasonRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/gots04relationships.json";
 import {
   createGetObjectAvailabilityQueryName,
   createGetObjectQueryName,
+  createGetObjectRelationshipsQueryName,
 } from "src/lib/graphql/skylark/dynamicQueries";
 
 export const getObjectHandlers = [
@@ -39,6 +42,20 @@ export const getObjectHandlers = [
       return res(ctx.data(GQLSkylarkGetSetWithContentQueryFixture.data));
     }
   }),
+
+  graphql.query(
+    createGetObjectQueryName("Season"),
+    ({ variables }, res, ctx) => {
+      if (
+        variables.uid ===
+        GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.uid
+      ) {
+        return res(
+          ctx.data(GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data),
+        );
+      }
+    },
+  ),
 ];
 
 export const getObjectAvailabilityHandlers = [
@@ -48,6 +65,15 @@ export const getObjectAvailabilityHandlers = [
       if (variables.uid === GQLSkylarkGetMovieQueryFixture.data.getObject.uid) {
         return res(ctx.data(GQLSkylarkGetMovieQueryAvailabilityFixture.data));
       }
+    },
+  ),
+];
+
+export const getObjectRelationshipsHandlers = [
+  graphql.query(
+    createGetObjectRelationshipsQueryName("Season"),
+    (_, res, ctx) => {
+      return res(ctx.data(GQLSkylarkGetSeasonRelationshipsQueryFixture.data));
     },
   ),
 ];
