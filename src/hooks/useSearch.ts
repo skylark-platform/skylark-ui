@@ -4,10 +4,7 @@ import { useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import {
-  SkylarkGraphQLObjectImage,
-  ParsedSkylarkObject,
   SkylarkGraphQLObject,
-  ParsedSkylarkObjectMetadata,
   GQLSkylarkSearchResponse,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -15,10 +12,7 @@ import {
   createSearchObjectsQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
-import {
-  parseObjectAvailability,
-  parseObjectRelationship,
-} from "src/lib/skylark/parsers";
+import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 import { useAllObjectsMeta } from "./useSkylarkObjectTypes";
 
@@ -75,29 +69,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
         removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>,
       ) || [];
 
-    const parsedObjects = normalisedObjects.map((obj): ParsedSkylarkObject => {
-      return {
-        config: {
-          colour: obj._config?.colour,
-          primaryField: obj._config?.primary_field,
-        },
-        meta: {
-          language: obj._meta?.language_data.language || "",
-          availableLanguages: obj._meta?.available_languages || [],
-          versions: {
-            language: obj._meta?.language_data.version,
-            global: obj._meta?.global_data.version,
-          },
-        },
-        uid: obj.uid,
-        objectType: obj.__typename,
-        // TODO filter out any values in obj that are relationships (not metadata types)
-        metadata: obj as ParsedSkylarkObjectMetadata,
-        availability: parseObjectAvailability(obj.availability),
-        images: parseObjectRelationship<SkylarkGraphQLObjectImage>(obj.images),
-        relationships: [] as string[],
-      };
-    });
+    const parsedObjects = normalisedObjects.map(parseSkylarkObject);
 
     return parsedObjects;
   }, [searchResponse?.pages]);

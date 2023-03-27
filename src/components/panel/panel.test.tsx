@@ -4,6 +4,7 @@ import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/quer
 import GQLSkylarkGetObjectImageQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gotImage.json";
 import GQLSkylarkGetObjectGOTS01E01QueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01.json";
 import GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01ptPT.json";
+import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots04.json";
 import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
 import GQLSkylarkGetObjectAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/allAvailTestMovieAvailability.json";
 import { server } from "src/__tests__/mocks/server";
@@ -289,6 +290,42 @@ describe("imagery view", () => {
     expect(image).toHaveAttribute(
       "src",
       GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].url,
+    );
+  });
+});
+
+describe("relationships view", () => {
+  test("render the panel", async () => {
+    render(
+      <Panel
+        uid={
+          GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.uid
+        }
+        objectType={"Season"}
+        language={""}
+        closePanel={jest.fn()}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText("Relationships")).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByText("Relationships"));
+
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
+
+    expect(
+      screen.getByTestId("expand-relationship-episodes"),
+    ).toHaveTextContent("Show more");
+
+    fireEvent.click(screen.getByTestId("expand-relationship-episodes"));
+
+    expect(
+      screen.getByTestId("expand-relationship-episodes"),
+    ).toHaveTextContent("Show less");
+
+    await waitFor(() =>
+      expect(screen.getAllByText("Episode")).toHaveLength(10),
     );
   });
 });

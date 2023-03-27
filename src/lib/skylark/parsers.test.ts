@@ -1,10 +1,15 @@
 import { GQLInputField, GQLType } from "src/interfaces/graphql/introspection";
-import { SkylarkGraphQLObject } from "src/interfaces/skylark";
+import {
+  AvailabilityStatus,
+  ParsedSkylarkObject,
+  SkylarkGraphQLObject,
+} from "src/interfaces/skylark";
 
 import {
   parseObjectContent,
   parseObjectInputFields,
   parseObjectRelationships,
+  parseSkylarkObject,
 } from "./parsers";
 
 const defaultType: GQLType = {
@@ -294,5 +299,89 @@ describe("parseObjectContent", () => {
         },
       ],
     });
+  });
+});
+
+describe("parseSkylarkObject", () => {
+  it("should parse skylark object", () => {
+    const skylarkObject: SkylarkGraphQLObject = {
+      __typename: "Season",
+      _config: {
+        primary_field: "title",
+        colour: "#9c27b0",
+      },
+      _meta: {
+        available_languages: ["en-GB", "pt-PT"],
+        language_data: {
+          language: "pt-PT",
+          version: 1,
+        },
+        global_data: {
+          version: 2,
+        },
+      },
+      uid: "uid123",
+      external_id: "",
+      slug: "uid123-s02",
+      synopsis_long: null,
+      synopsis_medium: null,
+      synopsis_short: null,
+      title: "GOT S02",
+      title_long: null,
+      title_medium: "Game of Thrones - Season 2",
+      title_short: "GOT Season 2",
+      number_of_episodes: null,
+      release_date: "2012-04-01",
+      season_number: 2,
+      availability: {
+        next_token: null,
+        objects: [],
+      },
+      images: {
+        next_token: null,
+        objects: [],
+      },
+    };
+
+    const expectedParsedObject: ParsedSkylarkObject = {
+      objectType: "Season",
+      uid: "uid123",
+      config: {
+        colour: "#9c27b0",
+        primaryField: "title",
+      },
+      meta: {
+        language: "pt-PT",
+        availableLanguages: ["en-GB", "pt-PT"],
+        versions: {
+          language: 1,
+          global: 2,
+        },
+      },
+      metadata: {
+        uid: "uid123",
+        __typename: "Season",
+        external_id: "",
+        number_of_episodes: null,
+        release_date: "2012-04-01",
+        season_number: 2,
+        slug: "uid123-s02",
+        synopsis_long: null,
+        synopsis_medium: null,
+        synopsis_short: null,
+        title: "GOT S02",
+        title_long: null,
+        title_medium: "Game of Thrones - Season 2",
+        title_short: "GOT Season 2",
+      },
+      availability: {
+        status: AvailabilityStatus.Unavailable,
+        objects: [],
+      },
+      images: [],
+      content: undefined,
+    };
+
+    expect(parseSkylarkObject(skylarkObject)).toEqual(expectedParsedObject);
   });
 });
