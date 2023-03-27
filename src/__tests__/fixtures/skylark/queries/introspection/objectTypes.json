@@ -1,0 +1,23 @@
+{
+  "data": {
+    "__type": {
+      "possibleTypes": [
+        { "name": "Set" },
+        { "name": "Asset" },
+        { "name": "Brand" },
+        { "name": "Credit" },
+        { "name": "Episode" },
+        { "name": "Genre" },
+        { "name": "Image" },
+        { "name": "Movie" },
+        { "name": "Rating" },
+        { "name": "ParentalGuidance" },
+        { "name": "Season" },
+        { "name": "Tag" },
+        { "name": "Person" },
+        { "name": "Theme" },
+        { "name": "Role" }
+      ]
+    }
+  }
+}
