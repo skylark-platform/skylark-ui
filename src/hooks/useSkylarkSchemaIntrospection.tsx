@@ -26,6 +26,8 @@ export const useSkylarkSchemaIntrospection = () => {
   const { data, ...rest } = useQuery<IntrospectionQuery>({
     queryKey: [QueryKeys.Schema, SKYLARK_SCHEMA_INTROSPECTION_QUERY],
     queryFn: async () => skylarkRequest(SKYLARK_SCHEMA_INTROSPECTION_QUERY),
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
   return {
