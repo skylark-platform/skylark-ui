@@ -22,6 +22,7 @@ export const ContentLibrary = () => {
   const [activePanelObject, setActivePanelObject] = useState<{
     objectType: string;
     uid: string;
+    language: string;
   } | null>(null);
   const [draggedObject, setDraggedObject] = useState<
     ParsedSkylarkObject | undefined
@@ -151,6 +152,7 @@ export const ContentLibrary = () => {
               closePanel={() => setActivePanelObject(null)}
               uid={activePanelObject.uid}
               objectType={activePanelObject.objectType}
+              language={activePanelObject.language}
               showDropArea={!!draggedObject}
               droppedObject={droppedObject}
               clearDroppedObject={() => setDroppedObject(undefined)}

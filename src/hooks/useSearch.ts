@@ -24,23 +24,25 @@ import { useAllObjectsMeta } from "./useSkylarkObjectTypes";
 
 export interface SearchFilters {
   objectTypes: string[] | null;
+  language: string | null;
 }
 
 export const SEARCH_PAGE_SIZE = 50;
 
 export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta();
+  const { objectTypes, language } = filters;
 
   const query = useMemo(
-    () =>
-      createSearchObjectsQuery(searchableObjects, filters.objectTypes || []),
-    [searchableObjects, filters.objectTypes],
+    () => createSearchObjectsQuery(searchableObjects, objectTypes || []),
+    [searchableObjects, objectTypes],
   );
 
   const variables = {
     queryString,
     limit: SEARCH_PAGE_SIZE,
     offset: 0,
+    language,
   };
 
   const { data: searchResponse, ...rest } =
@@ -80,7 +82,12 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
           primaryField: obj._config?.primary_field,
         },
         meta: {
-          availableLanguages: obj._meta?.available_languages,
+          language: obj._meta?.language_data.language || "",
+          availableLanguages: obj._meta?.available_languages || [],
+          versions: {
+            language: obj._meta?.language_data.version,
+            global: obj._meta?.global_data.version,
+          },
         },
         uid: obj.uid,
         objectType: obj.__typename,

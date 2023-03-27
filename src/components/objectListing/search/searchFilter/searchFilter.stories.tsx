@@ -47,6 +47,7 @@ export const Default = Template.bind({});
 Default.args = {
   activeFilters: {
     objectTypes,
+    language: "",
   },
   objectTypes,
   columns,
@@ -58,6 +59,7 @@ export const WithNoFiltersSelected = Template.bind({});
 WithNoFiltersSelected.args = {
   activeFilters: {
     objectTypes: [],
+    language: "",
   },
   objectTypes,
   columns,

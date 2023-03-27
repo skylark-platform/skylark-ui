@@ -6,7 +6,6 @@ import {
 } from "json-to-graphql-query";
 
 import {
-  BuiltInSkylarkObjectType,
   SkylarkGraphQLObject,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
@@ -27,6 +26,13 @@ const common = {
   objectMeta: {
     _meta: {
       available_languages: true,
+      language_data: {
+        language: true,
+        version: true,
+      },
+      global_data: {
+        version: true,
+      },
     },
   },
 };
@@ -101,12 +107,7 @@ export const generateContentsToReturn = (
   object: SkylarkObjectMeta | null,
   objectsToRequest: SkylarkObjectMeta[],
 ) => {
-  // Only Set has contents
-  if (
-    !object ||
-    object.name !== BuiltInSkylarkObjectType.Set ||
-    objectsToRequest.length === 0
-  ) {
+  if (!object || !object.hasContent || objectsToRequest.length === 0) {
     return {};
   }
 
@@ -161,16 +162,23 @@ export const createGetObjectAvailabilityQueryName = (objectType: string) =>
 export const createGetObjectQuery = (
   object: SkylarkObjectMeta | null,
   contentTypesToRequest: SkylarkObjectMeta[],
+  addLanguageVariable?: boolean,
 ) => {
   if (!object || !object.operations.get) {
     return null;
   }
+
+  const argLanguage = addLanguageVariable
+    ? { language: new VariableType("language") }
+    : {};
+  const variableLanguage = addLanguageVariable ? { language: "String" } : {};
 
   const query = {
     query: {
       __name: createGetObjectQueryName(object.name),
       __variables: {
         ...common.variables,
+        ...variableLanguage, // TODO always send language variable when BE supports sending null without error
         uid: "String",
         externalId: "String",
       },
@@ -178,9 +186,11 @@ export const createGetObjectQuery = (
         __aliasFor: object.operations.get.name,
         __args: {
           ...common.args,
+          ...argLanguage, // TODO always send language variable when BE supports sending null without error
           uid: new VariableType("uid"),
           external_id: new VariableType("externalId"),
         },
+        __typename: true,
         ...common.objectConfig,
         ...common.objectMeta,
         ...generateFieldsToReturn(object.fields),
@@ -323,6 +333,7 @@ export const createSearchObjectsQuery = (
         queryString: "String!",
         offset: "Int",
         limit: "Int",
+        language: "String",
       },
       search: {
         __args: {
@@ -331,6 +342,7 @@ export const createSearchObjectsQuery = (
           offset: new VariableType("offset"),
           limit: new VariableType("limit"),
           // language: null, TODO disable language searching when language filter is added
+          language: new VariableType("language"),
         },
         __typename: true,
         objects: {

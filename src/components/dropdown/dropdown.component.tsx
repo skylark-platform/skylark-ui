@@ -4,7 +4,7 @@ import { Fragment } from "react";
 
 import { Link } from "src/components/navigation/links";
 
-interface DropdownMenuOption {
+export interface DropdownMenuOption {
   id: string;
   text: string;
   Icon?: JSX.Element;

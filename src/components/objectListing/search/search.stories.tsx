@@ -1,5 +1,6 @@
 import { ComponentStory } from "@storybook/react";
 import { userEvent, within } from "@storybook/testing-library";
+import { VisibilityState } from "@tanstack/react-table";
 
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
@@ -35,6 +36,9 @@ const columns = [
   "synopsis_medium",
   "synopsis_long",
 ];
+const visibleColumns: VisibilityState = Object.fromEntries(
+  columns.map((column) => [column, true]),
+);
 
 const Template: ComponentStory<typeof Search> = (args) => {
   return <Search {...args} />;
@@ -45,10 +49,11 @@ Default.args = {
   className: "w-[600px]",
   activeFilters: {
     objectTypes,
+    language: "",
   },
   objectTypes,
   columns,
-  visibleColumns: columns,
+  visibleColumns,
   graphqlQuery,
 };
 
@@ -59,7 +64,18 @@ WithFiltersOpen.args = {
 WithFiltersOpen.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
-  const filtersButton = canvas.getByRole("button");
+  const filtersButton = canvas.getByLabelText("open-search-filters");
 
   await userEvent.click(filtersButton);
+};
+
+export const WithLanguageOpen = Template.bind({});
+WithLanguageOpen.args = {
+  ...Default.args,
+};
+WithLanguageOpen.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  const combobox = canvas.getByRole("combobox");
+  await userEvent.type(combobox, "en-");
 };
