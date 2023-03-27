@@ -86,6 +86,7 @@ describe("createSearchObjectsQuery", () => {
           availability: null,
           operations: {} as SkylarkObjectOperations,
           relationships: [],
+          hasContent: false,
         },
         {
           name: "Brand",
@@ -107,6 +108,7 @@ describe("createSearchObjectsQuery", () => {
           availability: null,
           operations: {} as SkylarkObjectOperations,
           relationships: [],
+          hasContent: false,
         },
       ],
       [],

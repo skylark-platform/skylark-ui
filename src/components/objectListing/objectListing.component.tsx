@@ -19,7 +19,11 @@ import {
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
-import { formatObjectField, getObjectDisplayName } from "src/lib/utils";
+import {
+  formatObjectField,
+  getObjectDisplayName,
+  hasProperty,
+} from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
 import { RowActions } from "./rowActions";
@@ -305,6 +309,24 @@ export const ObjectList = ({
       setSearchFilters({ ...searchFilters, objectTypes: objectTypes });
     }
   }, [objectTypes, searchFilters]);
+
+  useEffect(() => {
+    // Update the column visibility when new fields are added
+    if (sortedHeaders && sortedHeaders.length !== 0) {
+      const headersWithoutVisibility = sortedHeaders.filter(
+        (header) => !hasProperty(columnVisibility, header),
+      );
+      if (headersWithoutVisibility.length > 0) {
+        const newColumns = Object.fromEntries(
+          headersWithoutVisibility.map((header) => [header, true]),
+        );
+        setColumnVisibility({
+          ...columnVisibility,
+          ...newColumns,
+        });
+      }
+    }
+  }, [sortedHeaders, columnVisibility]);
 
   const onFilterChangeWrapper = (
     updatedFilters: SearchFilters,

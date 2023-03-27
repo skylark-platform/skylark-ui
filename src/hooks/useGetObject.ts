@@ -121,6 +121,7 @@ export const useGetObject = (
     ...rest,
     error,
     data: parsedObject,
+    objectMeta: objectOperations,
     isLoading: rest.isLoading || !query,
     isNotFound:
       error?.response.errors?.[0]?.errorType === QueryErrorMessages.NotFound,

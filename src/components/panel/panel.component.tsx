@@ -59,8 +59,16 @@ export const Panel = ({
 }: PanelProps) => {
   const [activeLanguage, setActiveLanguage] = useState<string>(language);
 
-  const { data, isLoading, query, variables, isError, isNotFound, error } =
-    useGetObject(objectType, uid, { language: activeLanguage });
+  const {
+    data,
+    objectMeta,
+    isLoading,
+    query,
+    variables,
+    isError,
+    isNotFound,
+    error,
+  } = useGetObject(objectType, uid, { language: activeLanguage });
 
   const [inEditMode, setEditMode] = useState(false);
   const [contentObjects, setContentObjects] = useState<
@@ -71,11 +79,11 @@ export const Panel = ({
     () =>
       [
         PanelTab.Metadata,
-        objectType === BuiltInSkylarkObjectType.Set && PanelTab.Content,
+        objectMeta?.hasContent && PanelTab.Content,
         data?.images && PanelTab.Imagery,
         PanelTab.Availability,
       ].filter((tab) => !!tab) as string[],
-    [data?.images, objectType],
+    [data?.images, objectMeta?.hasContent],
   );
 
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);

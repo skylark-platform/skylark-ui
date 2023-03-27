@@ -24,9 +24,9 @@ describe("Content Library - Search", () => {
         });
       }
       if (hasOperationName(req, "SEARCH")) {
-        if (hasMatchingVariable(req, "queryString", "GOT S01")) {
+        if (hasMatchingVariable(req, "queryString", "got winter is coming")) {
           req.reply({
-            fixture: "./skylark/queries/search/gots01.json",
+            fixture: "./skylark/queries/search/gotWinterIsComing.json",
           });
         } else if (hasMatchingVariable(req, "queryString", "Homepage")) {
           req.reply({
@@ -42,9 +42,24 @@ describe("Content Library - Search", () => {
           req.reply({
             fixture: "./skylark/queries/search/gotAssetsOnly.json",
           });
+        } else if (hasMatchingVariable(req, "language", "en-GB")) {
+          req.reply({
+            fixture: "./skylark/queries/search/gotPage1enGB.json",
+          });
         } else {
           req.reply({
             fixture: "./skylark/queries/search/gotPage1.json",
+          });
+        }
+      }
+      if (hasOperationName(req, "GET_Episode")) {
+        if (hasMatchingVariable(req, "language", "pt-PT")) {
+          req.reply({
+            fixture: "./skylark/queries/getObject/gots01e01ptPT.json",
+          });
+        } else {
+          req.reply({
+            fixture: "./skylark/queries/getObject/gots01e01.json",
           });
         }
       }
@@ -121,5 +136,51 @@ describe("Content Library - Search", () => {
     cy.percySnapshot("Homepage - filters - fields selected");
     cy.contains("Apply").should("not.be.disabled").click();
     cy.percySnapshot("Homepage - filters - fields active");
+  });
+
+  it("filters to en-GB only got content", () => {
+    cy.get('[role="combobox"]').type("en-GB");
+    cy.get("[data-testid=select-options]").within(() => {
+      cy.contains("en-GB").click();
+    });
+
+    cy.contains("pt-PT").should("not.exist");
+  });
+
+  it("searches for got winter is coming, clicks the en-GB version, then the pt-PT version", () => {
+    cy.get('input[name="search-query-input"]').type("got winter is coming");
+
+    cy.contains("tr", "GOT S01E1 - Winter");
+    cy.contains("tr", "en-GB")
+      .should(($el) => {
+        // eslint-disable-next-line jest/valid-expect
+        expect(Cypress.dom.isDetached($el)).to.eq(false);
+      })
+      .within(() => {
+        cy.get('[aria-label="object-info"]').click();
+      });
+
+    cy.get("[data-testid=panel-metadata]").within(() => {
+      cy.contains("Winter is Coming");
+    });
+
+    // Verify panel is in en-GB
+    cy.get("[data-testid=panel-header]").within(() => {
+      cy.contains("en-GB");
+    });
+
+    // Change to pt-PT and verify
+    cy.contains("tr", "pt-PT")
+      .should(($el) => {
+        // eslint-disable-next-line jest/valid-expect
+        expect(Cypress.dom.isDetached($el)).to.eq(false);
+      })
+      .within(() => {
+        cy.get('[aria-label="object-info"]').click();
+      });
+
+    cy.get("[data-testid=panel-header]").within(() => {
+      cy.contains("pt-PT");
+    });
   });
 });

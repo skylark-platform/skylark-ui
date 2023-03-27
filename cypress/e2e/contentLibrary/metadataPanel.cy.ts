@@ -51,7 +51,11 @@ describe("Content Library - Metadata Panel", () => {
         });
       }
       if (hasOperationName(req, "SEARCH")) {
-        if (hasMatchingVariable(req, "queryString", "Homepage")) {
+        if (hasMatchingVariable(req, "queryString", "got winter is coming")) {
+          req.reply({
+            fixture: "./skylark/queries/search/gotWinterIsComing.json",
+          });
+        } else if (hasMatchingVariable(req, "queryString", "Homepage")) {
           req.reply({
             fixture: "./skylark/queries/search/homepage.json",
           });
@@ -84,8 +88,7 @@ describe("Content Library - Metadata Panel", () => {
   });
 
   it("open Metadata panel", () => {
-    cy.get('input[name="search-query-input"]').type("GOT S01");
-    cy.contains("GOT S01 Trailer").should("exist");
+    cy.get('input[name="search-query-input"]').type("got winter is coming");
     cy.contains("tr", "GOT S01E1 - Winter");
     cy.contains("tr", "GOT S01E1 - Winter")
       .should(($el) => {
@@ -104,8 +107,7 @@ describe("Content Library - Metadata Panel", () => {
   });
 
   it("close Metadata panel", () => {
-    cy.get('input[name="search-query-input"]').type("GOT S01");
-    cy.contains("GOT S01 Trailer").should("exist");
+    cy.get('input[name="search-query-input"]').type("got winter is coming");
     cy.contains("tr", "GOT S01E1 - Winter");
     cy.contains("tr", "GOT S01E1 - Winter")
       .should(($el) => {
@@ -122,8 +124,7 @@ describe("Content Library - Metadata Panel", () => {
   });
 
   it("view GraphQL query", () => {
-    cy.get('input[name="search-query-input"]').type("GOT S01");
-    cy.contains("GOT S01 Trailer").should("exist");
+    cy.get('input[name="search-query-input"]').type("got winter is coming");
     cy.contains("tr", "GOT S01E1 - Winter")
       .should(($el) => {
         // eslint-disable-next-line jest/valid-expect
@@ -142,10 +143,9 @@ describe("Content Library - Metadata Panel", () => {
   });
 
   it("change language to pt-PT", () => {
-    cy.get('input[name="search-query-input"]').type("GOT S01");
-    cy.contains("GOT S01 Trailer").should("exist");
+    cy.get('input[name="search-query-input"]').type("got winter is coming");
     cy.contains("tr", "GOT S01E1 - Winter");
-    cy.contains("tr", "GOT S01E1 - Winter")
+    cy.contains("tr", "en-GB")
       .should(($el) => {
         // eslint-disable-next-line jest/valid-expect
         expect(Cypress.dom.isDetached($el)).to.eq(false);
@@ -175,8 +175,7 @@ describe("Content Library - Metadata Panel", () => {
 
   describe("Imagery tab", () => {
     it("open Imagery tab", () => {
-      cy.get('input[name="search-query-input"]').type("GOT S01");
-      cy.contains("GOT S01 Trailer").should("exist");
+      cy.get('input[name="search-query-input"]').type("got winter is coming");
       cy.contains("tr", "GOT S01E1 - Winter")
         .should(($el) => {
           // eslint-disable-next-line jest/valid-expect
