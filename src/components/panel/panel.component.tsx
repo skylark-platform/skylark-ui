@@ -17,6 +17,7 @@ import {
   PanelMetadata,
 } from "./panelSections";
 import { PanelContent } from "./panelSections/panelContent.component";
+import { PanelRelationships } from "./panelSections/panelRelationships.component";
 
 interface PanelProps {
   closePanel?: () => void;
@@ -33,6 +34,7 @@ enum PanelTab {
   Imagery = "Imagery",
   Availability = "Availability",
   Content = "Content",
+  Relationships = "Relationships",
 }
 
 function parseSkylarkObjectContent(
@@ -78,6 +80,7 @@ export const Panel = ({
       [
         PanelTab.Metadata,
         objectMeta?.hasContent && PanelTab.Content,
+        PanelTab.Relationships,
         objectMeta?.images && PanelTab.Imagery,
         PanelTab.Availability,
       ].filter((tab) => !!tab) as string[],
@@ -213,6 +216,9 @@ export const Panel = ({
               onReorder={setContentObjects}
               showDropArea={showDropArea}
             />
+          )}
+          {selectedTab === PanelTab.Relationships && (
+            <PanelRelationships objectType={objectType} uid={uid} />
           )}
         </>
       )}

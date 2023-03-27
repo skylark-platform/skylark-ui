@@ -24,6 +24,9 @@ export interface GQLSkylarkGetObjectResponse {
   getObject: SkylarkGraphQLObject;
 }
 
+export interface GQLSkylarkGetObjectRelationshipsResponse {
+  getObjectRelationships: SkylarkGraphQLObject;
+}
 export interface GQLSkylarkGetObjectAvailabilityResponse {
   getObjectAvailability: {
     availability: {

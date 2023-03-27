@@ -3,8 +3,6 @@ import { DocumentNode } from "graphql";
 
 import { QueryErrorMessages, QueryKeys } from "src/enums/graphql";
 import {
-  SkylarkGraphQLObjectImage,
-  ParsedSkylarkObject,
   SkylarkObjectType,
   GQLSkylarkErrorResponse,
   SkylarkGraphQLObjectRelationship,
@@ -13,12 +11,7 @@ import {
 import { GQLSkylarkGetObjectResponse } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
-import {
-  parseObjectAvailability,
-  parseObjectContent,
-  parseObjectRelationship,
-} from "src/lib/skylark/parsers";
-import { hasProperty, isObject } from "src/lib/utils";
+import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 import {
   useAllObjectsMeta,
@@ -68,65 +61,67 @@ export const useGetObject = (
   });
 
   // TODO split into Language and Global
-  const metadata: ParsedSkylarkObject["metadata"] = data?.getObject
-    ? {
-        ...Object.keys(data?.getObject).reduce((prev, key) => {
-          return {
-            ...prev,
-            ...(!isObject(data.getObject[key])
-              ? { [key]: data.getObject[key] }
-              : {}),
-          };
-        }, {}),
-        uid: data.getObject.uid,
-        external_id: data.getObject.external_id || "",
-      }
-    : { uid, external_id: "" };
+  // const metadata: ParsedSkylarkObject["metadata"] = data?.getObject
+  //   ? {
+  //       ...Object.keys(data?.getObject).reduce((prev, key) => {
+  //         return {
+  //           ...prev,
+  //           ...(!isObject(data.getObject[key])
+  //             ? { [key]: data.getObject[key] }
+  //             : {}),
+  //         };
+  //       }, {}),
+  //       uid: data.getObject.uid,
+  //       external_id: data.getObject.external_id || "",
+  //     }
+  //   : { uid, external_id: "" };
 
-  const availability = parseObjectAvailability(data?.getObject.availability);
+  // const availability = parseObjectAvailability(data?.getObject.availability);
 
-  const images =
-    objectOperations?.images?.relationshipNames.map(
-      (imageField): ParsedSkylarkObjectImageRelationship => {
-        const parsedImages =
-          data?.getObject &&
-          hasProperty(data?.getObject, imageField) &&
-          parseObjectRelationship<SkylarkGraphQLObjectImage>(
-            data?.getObject[imageField] as SkylarkGraphQLObjectRelationship,
-          );
-        return {
-          relationshipName: imageField,
-          objects: parsedImages || [],
-        };
-      },
-    ) || [];
+  // const images =
+  //   objectOperations?.images?.relationshipNames.map(
+  //     (imageField): ParsedSkylarkObjectImageRelationship => {
+  //       const parsedImages =
+  //         data?.getObject &&
+  //         hasProperty(data?.getObject, imageField) &&
+  //         parseObjectRelationship<SkylarkGraphQLObjectImage>(
+  //           data?.getObject[imageField] as SkylarkGraphQLObjectRelationship,
+  //         );
+  //       return {
+  //         relationshipName: imageField,
+  //         objects: parsedImages || [],
+  //       };
+  //     },
+  //   ) || [];
 
-  const content =
-    data?.getObject && hasProperty(data.getObject, "content")
-      ? parseObjectContent(data.getObject.content)
-      : undefined;
+  // const content =
+  //   data?.getObject && hasProperty(data.getObject, "content")
+  //     ? parseObjectContent(data.getObject.content)
+  //     : undefined;
 
-  const parsedObject: ParsedSkylarkObject | undefined = data?.getObject && {
-    objectType: data.getObject.__typename,
-    uid: data.getObject.uid,
-    config: {
-      colour: data.getObject._config?.colour,
-      primaryField: data.getObject._config?.primary_field,
-    },
-    meta: {
-      language: data.getObject._meta?.language_data.language || "",
-      availableLanguages: data.getObject._meta?.available_languages || [],
-      versions: {
-        language: data.getObject._meta?.language_data.version,
-        global: data.getObject._meta?.global_data.version,
-      },
-    },
-    metadata,
-    availability,
-    images,
-    relationships: [],
-    content,
-  };
+  // const parsedObject: ParsedSkylarkObject | undefined = data?.getObject && {
+  //   objectType: data.getObject.__typename,
+  //   uid: data.getObject.uid,
+  //   config: {
+  //     colour: data.getObject._config?.colour,
+  //     primaryField: data.getObject._config?.primary_field,
+  //   },
+  //   meta: {
+  //     language: data.getObject._meta?.language_data.language || "",
+  //     availableLanguages: data.getObject._meta?.available_languages || [],
+  //     versions: {
+  //       language: data.getObject._meta?.language_data.version,
+  //       global: data.getObject._meta?.global_data.version,
+  //     },
+  //   },
+  //   metadata,
+  //   availability,
+  //   images,
+  //   relationships: [],
+  //   content,
+  // };
+  const parsedObject =
+    data?.getObject && parseSkylarkObject(data?.getObject, objectOperations);
 
   return {
     ...rest,

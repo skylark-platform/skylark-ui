@@ -6,6 +6,7 @@ import {
 } from "json-to-graphql-query";
 
 import {
+  NormalizedObjectField,
   SkylarkGraphQLObject,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
@@ -160,6 +161,9 @@ export const createGetObjectQueryName = (objectType: string) =>
   `GET_${objectType}`;
 export const createGetObjectAvailabilityQueryName = (objectType: string) =>
   `GET_${objectType}_AVAILABILITY`;
+
+export const createGetObjectRelationshipsQueryName = (objectType: string) =>
+  `GET_${objectType}_RELATIONSHIPS`;
 
 export const createGetObjectQuery = (
   object: SkylarkObjectMeta | null,
@@ -357,6 +361,57 @@ export const createSearchObjectsQuery = (
             ...generateRelationshipsToReturn(object, true),
           })),
         },
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(query);
+
+  return gql(graphQLQuery);
+};
+
+export const createGetObjectRelationshipsQuery = (
+  object: SkylarkObjectMeta | null,
+  relationshipsFields: { [key: string]: NormalizedObjectField[] },
+) => {
+  if (!object || !object.operations.get) {
+    return null;
+  }
+
+  const query = {
+    query: {
+      __name: createGetObjectRelationshipsQueryName(object.name),
+      __variables: {
+        uid: "String",
+        nextToken: "String",
+        ...common.variables,
+      },
+      getObjectRelationships: {
+        __aliasFor: object.operations.get.name,
+        __args: {
+          ...common.args,
+          uid: new VariableType("uid"),
+        },
+        ...object.relationships.reduce((acc, currentValue) => {
+          return {
+            ...acc,
+            [currentValue.relationshipName]: {
+              __args: {
+                limit: 50,
+                next_token: new VariableType("nextToken"),
+              },
+              next_token: true,
+              objects: {
+                uid: true,
+                __typename: true,
+                ...generateFieldsToReturn(
+                  relationshipsFields[currentValue.objectType],
+                ),
+                ...common.objectConfig,
+              },
+            },
+          };
+        }, {}),
       },
     },
   };

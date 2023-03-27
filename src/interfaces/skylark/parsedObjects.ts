@@ -82,7 +82,12 @@ export interface ParsedSkylarkObject {
   meta: ParsedSkylarkObjectMeta;
   metadata: ParsedSkylarkObjectMetadata;
   availability: ParsedSkylarkObjectAvailability;
-  images: ParsedSkylarkObjectImageRelationship[];
-  relationships: string[];
+  images?: ParsedSkylarkObjectImageRelationship[];
   content?: ParsedSkylarkObjectContent;
+}
+
+export interface ParsedSkylarkObjectRelationships {
+  relationshipName: string;
+  nextToken?: string | null;
+  objects: ParsedSkylarkObject[];
 }
