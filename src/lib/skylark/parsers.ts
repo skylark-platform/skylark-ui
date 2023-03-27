@@ -212,7 +212,12 @@ export const parseSkylarkObject = (
         primaryField: object._config?.primary_field,
       },
       meta: {
-        availableLanguages: object._meta?.available_languages,
+        language: object._meta?.language_data.language || "",
+        availableLanguages: object._meta?.available_languages || [],
+        versions: {
+          language: object._meta?.language_data.version,
+          global: object._meta?.global_data.version,
+        },
       },
       metadata,
       availability,
