@@ -11,7 +11,7 @@ import {
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
 
-const common = {
+export const COMMON_GRAPHQL_OPTS = {
   variables: {
     ignoreAvailability: "Boolean = true",
   },
@@ -40,7 +40,7 @@ const common = {
 
 const fieldNamesToNeverAlias = ["uid", "external_id"];
 
-const generateFieldsToReturn = (
+export const generateFieldsToReturn = (
   fields: SkylarkObjectMeta["fields"],
   fieldAliasPrefix?: string,
 ) => {
@@ -125,7 +125,7 @@ export const generateContentsToReturn = (
           __on: objectsToRequest.map((object) => ({
             __typeName: object.name,
             __typename: true, // To remove the alias later
-            ...common.objectConfig,
+            ...COMMON_GRAPHQL_OPTS.objectConfig,
             ...generateFieldsToReturn(object.fields, `__${object.name}__`),
           })),
         },
@@ -183,7 +183,7 @@ export const createGetObjectQuery = (
     query: {
       __name: createGetObjectQueryName(object.name),
       __variables: {
-        ...common.variables,
+        ...COMMON_GRAPHQL_OPTS.variables,
         ...variableLanguage, // TODO always send language variable when BE supports sending null without error
         uid: "String",
         externalId: "String",
@@ -191,14 +191,14 @@ export const createGetObjectQuery = (
       getObject: {
         __aliasFor: object.operations.get.name,
         __args: {
-          ...common.args,
+          ...COMMON_GRAPHQL_OPTS.args,
           ...argLanguage, // TODO always send language variable when BE supports sending null without error
           uid: new VariableType("uid"),
           external_id: new VariableType("externalId"),
         },
         __typename: true,
-        ...common.objectConfig,
-        ...common.objectMeta,
+        ...COMMON_GRAPHQL_OPTS.objectConfig,
+        ...COMMON_GRAPHQL_OPTS.objectMeta,
         ...generateFieldsToReturn(object.fields),
         ...generateRelationshipsToReturn(object),
         ...generateContentsToReturn(object, contentTypesToRequest),
@@ -222,7 +222,7 @@ export const createGetObjectAvailabilityQuery = (
     query: {
       __name: createGetObjectAvailabilityQueryName(object.name),
       __variables: {
-        ...common.variables,
+        ...COMMON_GRAPHQL_OPTS.variables,
         uid: "String",
         externalId: "String",
         nextToken: "String",
@@ -230,7 +230,7 @@ export const createGetObjectAvailabilityQuery = (
       getObjectAvailability: {
         __aliasFor: object.operations.get.name,
         __args: {
-          ...common.args,
+          ...COMMON_GRAPHQL_OPTS.args,
           uid: new VariableType("uid"),
           external_id: new VariableType("externalId"),
         },
@@ -291,21 +291,21 @@ export const createListObjectQuery = (object: SkylarkObjectMeta | null) => {
     query: {
       __name: `LIST_${object.name}`,
       __variables: {
-        ...common.variables,
+        ...COMMON_GRAPHQL_OPTS.variables,
         nextToken: "String",
       },
       listSkylarkObjects: {
         __aliasFor: object.operations.list.name,
 
         __args: {
-          ...common.args,
+          ...COMMON_GRAPHQL_OPTS.args,
           limit: 50, // max
           next_token: new VariableType("nextToken"),
         },
         count: true,
         next_token: true,
         objects: {
-          ...common.objectConfig,
+          ...COMMON_GRAPHQL_OPTS.objectConfig,
           ...generateFieldsToReturn(object.fields),
           ...generateRelationshipsToReturn(object),
         },
@@ -335,7 +335,7 @@ export const createSearchObjectsQuery = (
     query: {
       __name: "SEARCH",
       __variables: {
-        ...common.variables,
+        ...COMMON_GRAPHQL_OPTS.variables,
         queryString: "String!",
         offset: "Int",
         limit: "Int",
@@ -343,7 +343,7 @@ export const createSearchObjectsQuery = (
       },
       search: {
         __args: {
-          ...common.args,
+          ...COMMON_GRAPHQL_OPTS.args,
           query: new VariableType("queryString"),
           offset: new VariableType("offset"),
           limit: new VariableType("limit"),
@@ -355,8 +355,8 @@ export const createSearchObjectsQuery = (
           __on: objectsToRequest.map((object) => ({
             __typeName: object.name,
             __typename: true, // To remove the alias later
-            ...common.objectConfig,
-            ...common.objectMeta,
+            ...COMMON_GRAPHQL_OPTS.objectConfig,
+            ...COMMON_GRAPHQL_OPTS.objectMeta,
             ...generateFieldsToReturn(object.fields, `__${object.name}__`),
             ...generateRelationshipsToReturn(object, true),
           })),
@@ -373,10 +373,16 @@ export const createSearchObjectsQuery = (
 export const createGetObjectRelationshipsQuery = (
   object: SkylarkObjectMeta | null,
   relationshipsFields: { [key: string]: NormalizedObjectField[] },
+  addLanguageVariable?: boolean,
 ) => {
   if (!object || !object.operations.get) {
     return null;
   }
+
+  const argLanguage = addLanguageVariable
+    ? { language: new VariableType("language") }
+    : {};
+  const variableLanguage = addLanguageVariable ? { language: "String" } : {};
 
   const query = {
     query: {
@@ -384,12 +390,14 @@ export const createGetObjectRelationshipsQuery = (
       __variables: {
         uid: "String",
         nextToken: "String",
-        ...common.variables,
+        ...COMMON_GRAPHQL_OPTS.variables,
+        ...variableLanguage, // TODO always send language variable when BE supports sending null without error
       },
       getObjectRelationships: {
         __aliasFor: object.operations.get.name,
         __args: {
-          ...common.args,
+          ...COMMON_GRAPHQL_OPTS.args,
+          ...argLanguage, // TODO always send language variable when BE supports sending null without error
           uid: new VariableType("uid"),
         },
         ...object.relationships.reduce((acc, currentValue) => {
@@ -407,7 +415,7 @@ export const createGetObjectRelationshipsQuery = (
                 ...generateFieldsToReturn(
                   relationshipsFields[currentValue.objectType],
                 ),
-                ...common.objectConfig,
+                ...COMMON_GRAPHQL_OPTS.objectConfig,
               },
             },
           };

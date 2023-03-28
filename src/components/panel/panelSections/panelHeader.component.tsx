@@ -59,13 +59,13 @@ export const PanelHeader = ({
     objectType,
     onSuccess: ({ objectType, uid }) => {
       // TODO finesse this so the toast slides in and looks better
-      toast(
-        <Toast
-          title={`${objectType} deleted`}
-          message={`${objectType} ${uid} has been deleted`}
-          type="success"
-        />,
-      );
+      // toast(
+      //   <Toast
+      //     title={`${objectType} deleted`}
+      //     message={`${objectType} ${uid} has been deleted`}
+      //     type="success"
+      //   />,
+      // );
       closePanel?.();
     },
   });
@@ -88,7 +88,7 @@ export const PanelHeader = ({
         text: `Delete ${objectType}`,
         Icon: <Trash className="w-5 fill-error stroke-error" />,
         danger: true,
-        disabled: true, // TODO finish object deletion
+        // disabled: true, // TODO finish object deletion
         onClick: () => deleteObjectMutation({ uid: objectUid }),
       },
     ],

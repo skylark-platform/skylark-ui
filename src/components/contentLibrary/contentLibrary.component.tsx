@@ -16,14 +16,14 @@ import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { ObjectList } from "src/components/objectListing";
 import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import {
+  ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
+} from "src/interfaces/skylark";
 
 export const ContentLibrary = () => {
-  const [activePanelObject, setActivePanelObject] = useState<{
-    objectType: string;
-    uid: string;
-    language: string;
-  } | null>(null);
+  const [activePanelObject, setActivePanelObject] =
+    useState<SkylarkObjectIdentifier | null>(null);
   const [draggedObject, setDraggedObject] = useState<
     ParsedSkylarkObject | undefined
   >(undefined);
@@ -128,7 +128,7 @@ export const ContentLibrary = () => {
         >
           <ObjectList
             withCreateButtons
-            onInfoClick={setActivePanelObject}
+            setPanelObject={setActivePanelObject}
             isPanelOpen={!!activePanelObject}
             isDragging={!!draggedObject}
           />

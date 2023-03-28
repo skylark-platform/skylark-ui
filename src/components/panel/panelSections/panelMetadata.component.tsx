@@ -1,14 +1,32 @@
-import { useMemo } from "react";
+import { CheckedState } from "@radix-ui/react-checkbox";
+import { useEffect, useMemo } from "react";
+import {
+  UseFormRegister,
+  FieldValues,
+  Controller,
+  Control,
+  UseFormReturn,
+} from "react-hook-form";
 
+import { Checkbox } from "src/components/checkbox";
+import { convertFieldTypeToInputType } from "src/components/panel/panelInputs";
+import { Select } from "src/components/select";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useImageSize } from "src/hooks/useImageSize";
 import {
+  NormalizedObjectField,
+  SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { formatObjectField, hasProperty } from "src/lib/utils";
 
-const orderedFields = ["uid", "external_id"];
+const systemFields: string[] = [
+  SkylarkSystemField.UID,
+  SkylarkSystemField.ExternalID,
+  SkylarkSystemField.Slug,
+];
 const objectOptions: Record<SkylarkObjectType, { fieldsToHide: string[] }> = {
   Image: {
     fieldsToHide: ["external_url", "upload_url", "download_from_url"],
@@ -17,7 +35,9 @@ const objectOptions: Record<SkylarkObjectType, { fieldsToHide: string[] }> = {
 
 interface PanelMetadataProps {
   objectType: SkylarkObjectType;
+  objectMeta: SkylarkObjectMeta;
   metadata: Record<string, SkylarkObjectMetadataField>;
+  form: UseFormReturn<Record<string, SkylarkObjectMetadataField>>;
 }
 
 const PanelMetadataProperty = ({
@@ -27,9 +47,84 @@ const PanelMetadataProperty = ({
   property: string;
   value?: JSX.Element | SkylarkObjectMetadataField;
 }) => (
-  <div>
+  <div className="mb-4">
     <h3 className="mb-2 font-bold">{formatObjectField(property)}</h3>
-    <div className="mb-4 text-base-content">{value ? value : "---"}</div>
+    <div className="text-base-content">{value ? value : "---"}</div>
+  </div>
+);
+
+const PanelMetadataInput = ({
+  property,
+  config,
+  register,
+  control,
+  value,
+}: {
+  property: string;
+  config: NormalizedObjectField;
+  register: UseFormRegister<FieldValues>;
+  control: Control<PanelMetadataProps["metadata"]>;
+  value: SkylarkObjectMetadataField;
+}) => (
+  <div className="mb-4">
+    <label className="mb-2 block font-bold" htmlFor={property}>
+      {formatObjectField(property)}
+      {config.isRequired && <span className="pl-1 text-error">*</span>}
+    </label>
+    {config.type === "enum" && (
+      <Controller
+        name={property}
+        control={control}
+        render={({ field }) => (
+          <Select
+            className="w-full"
+            variant="primary"
+            selected={(field.value as string) || ""}
+            options={
+              config.enumValues?.map((opt) => ({
+                value: opt,
+                label: opt,
+              })) || []
+            }
+            placeholder=""
+            onChange={field.onChange}
+          />
+        )}
+      />
+    )}
+    {config.type === "boolean" && (
+      <Controller
+        name={property}
+        control={control}
+        render={({ field }) => (
+          <Checkbox
+            checked={field.value as CheckedState}
+            onCheckedChange={(checked) => field.onChange(checked)}
+          />
+        )}
+      />
+    )}
+    {config.type === "string" && !systemFields.includes(property) && (
+      <textarea
+        {...register(property)}
+        rows={
+          (value &&
+            (((value as string).length > 1000 && 18) ||
+              ((value as string).length > 150 && 9) ||
+              ((value as string).length > 50 && 5))) ||
+          1
+        }
+        className="w-full rounded-sm bg-manatee-50 py-3 px-4"
+      />
+    )}
+    {(!["enum", "boolean", "string"].includes(config.type) ||
+      systemFields.includes(property)) && (
+      <input
+        {...register(property)}
+        type={convertFieldTypeToInputType(config.type)}
+        className="w-full rounded-sm bg-manatee-50 py-3 px-4"
+      />
+    )}
   </div>
 );
 
@@ -58,46 +153,88 @@ const AdditionalImageMetadata = ({
   );
 };
 
-export const PanelMetadata = ({ metadata, objectType }: PanelMetadataProps) => {
+export const PanelMetadata = ({
+  metadata,
+  objectType,
+  objectMeta,
+  form: { register, getValues, control, reset },
+}: PanelMetadataProps) => {
   const options =
     hasProperty(objectOptions, objectType) && objectOptions[objectType];
 
-  const metadataProperties = useMemo(() => {
-    const metadataArr = Object.keys(metadata);
+  // When component first loads, update the form metadata with the current values
+  useEffect(() => {
+    reset(metadata);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const metadataFields: {
+    field: string;
+    config?: NormalizedObjectField;
+  }[] = useMemo(() => {
+    const metadataArr = Object.keys(metadata).map((field) => {
+      // Use update operation fields as get doesn't always have the full types
+      const fieldConfig = objectMeta.operations.update.inputs.find(
+        ({ name }) => name === field,
+      );
+      return {
+        field,
+        config: fieldConfig,
+      };
+    });
 
     const orderedFieldsThatExist = metadataArr
-      .filter((field) => orderedFields.includes(field))
-      .sort((a, b) => orderedFields.indexOf(a) - orderedFields.indexOf(b));
+      .filter(({ field }) => systemFields.includes(field))
+      .sort(
+        ({ field: a }, { field: b }) =>
+          systemFields.indexOf(a) - systemFields.indexOf(b),
+      );
 
     const otherFields = metadataArr.filter(
-      (field) => !orderedFields.includes(field),
+      ({ field }) => !systemFields.includes(field),
     );
 
     const orderedMetadataArr = [...orderedFieldsThatExist, ...otherFields];
 
     return options
       ? orderedMetadataArr.filter(
-          (property) => !options.fieldsToHide.includes(property.toLowerCase()),
+          ({ field }) => !options.fieldsToHide.includes(field.toLowerCase()),
         )
       : orderedMetadataArr;
-  }, [metadata, options]);
+  }, [metadata, objectMeta.operations.update.inputs, options]);
 
   return (
-    <div
+    <form
       className="overflow-anywhere h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20"
       data-testid="panel-metadata"
     >
       {metadata &&
-        metadataProperties.map(
-          (property) =>
-            property !== OBJECT_LIST_TABLE.columnIds.objectType && (
-              <PanelMetadataProperty
-                key={property}
-                property={property}
-                value={metadata[property]}
+        metadataFields.map(({ field, config }) => {
+          if (field === OBJECT_LIST_TABLE.columnIds.objectType) {
+            return <></>;
+          }
+
+          if (config) {
+            return (
+              <PanelMetadataInput
+                key={field}
+                property={field}
+                config={config}
+                control={control}
+                register={register}
+                value={getValues(field)}
               />
-            ),
-        )}
+            );
+          }
+
+          return (
+            <PanelMetadataProperty
+              key={field}
+              property={field}
+              value={getValues(field)}
+            />
+          );
+        })}
 
       {objectType.toUpperCase() === "IMAGE" && (
         <AdditionalImageMetadata
@@ -105,6 +242,6 @@ export const PanelMetadata = ({ metadata, objectType }: PanelMetadataProps) => {
           alt={metadata.title as string}
         />
       )}
-    </div>
+    </form>
   );
 };

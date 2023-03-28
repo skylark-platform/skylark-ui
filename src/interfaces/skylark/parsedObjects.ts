@@ -10,6 +10,12 @@ import {
 export type SkylarkUID = string;
 export type SkylarkExternalId = string | null;
 
+export interface SkylarkObjectIdentifier {
+  uid: SkylarkUID;
+  objectType: SkylarkObjectType;
+  language: string;
+}
+
 export enum AvailabilityStatus {
   Active = "Active",
   Future = "Future",

@@ -17,6 +17,7 @@ import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectRelationshipsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
+import { GetObjectOptions } from "./useGetObject";
 import {
   useAllObjectsMeta,
   useSkylarkObjectOperations,
@@ -41,6 +42,7 @@ export const createGetObjectRelationshipsKeyPrefix = ({
 export const useGetObjectRelationships = (
   objectType: SkylarkObjectType,
   uid: string,
+  opts?: GetObjectOptions,
 ): { data: ParsedSkylarkObjectRelationships[] | undefined } => {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
   const { objects } = useAllObjectsMeta();
@@ -55,7 +57,7 @@ export const useGetObjectRelationships = (
     objectOperations,
     relationshipsFields,
   );
-  const variables = { uid, nextToken: "" };
+  const variables = { uid, nextToken: "", language: opts?.language };
 
   const { data, ...rest } = useQuery<
     GQLSkylarkGetObjectRelationshipsResponse,

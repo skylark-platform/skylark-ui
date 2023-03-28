@@ -3,6 +3,11 @@ export enum BuiltInSkylarkObjectType {
 }
 
 export enum SkylarkSystemField {
+  UID = "uid",
+  ExternalID = "external_id",
+  Slug = "slug",
+  DataSourceID = "data_source_id",
+  DataSourceFields = "data_source_fields",
   Availability = "availability",
   Content = "content", // "Set like" content
 }

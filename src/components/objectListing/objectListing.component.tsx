@@ -18,8 +18,7 @@ import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObject,
-  SkylarkGraphQLObjectImage,
-  ParsedSkylarkObjectImageRelationship,
+  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import {
   formatObjectField,
@@ -46,18 +45,14 @@ export interface ObjectListProps {
   withObjectSelect?: boolean;
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
-  onInfoClick?: (obj: {
-    uid: string;
-    objectType: string;
-    language: string;
-  }) => void;
+  setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
   isDragging?: boolean;
 }
 
 const createColumns = (
   columns: string[],
   opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
-  setPanelObject?: ObjectListProps["onInfoClick"],
+  setPanelObject?: ObjectListProps["setPanelObject"],
 ) => {
   const objectTypeColumn = columnHelper.accessor(
     OBJECT_LIST_TABLE.columnIds.objectType,
@@ -185,7 +180,7 @@ export const ObjectList = ({
   withCreateButtons,
   withObjectSelect,
   withObjectEdit,
-  onInfoClick,
+  setPanelObject,
   isDragging,
   isPanelOpen,
 }: ObjectListProps) => {
@@ -228,9 +223,9 @@ export const ObjectList = ({
       createColumns(
         sortedHeaders,
         { withObjectSelect, withObjectEdit },
-        onInfoClick,
+        setPanelObject,
       ),
-    [sortedHeaders, withObjectEdit, withObjectSelect, onInfoClick],
+    [sortedHeaders, withObjectEdit, withObjectSelect, setPanelObject],
   );
 
   const [rowInEditMode, setRowInEditMode] = useState("");
@@ -396,6 +391,10 @@ export const ObjectList = ({
               "justify-end md:w-full",
               isPanelOpen ? "pr-2 lg:w-auto lg:pr-4" : "md:w-auto",
             )}
+            onObjectCreated={(obj) => {
+              console.log("objectListing onObjectCreated", obj);
+              setPanelObject?.(obj);
+            }}
           />
         )}
       </div>
@@ -415,7 +414,7 @@ export const ObjectList = ({
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
             isLoadingMore={hasNextPage || isFetchingNextPage}
-            setPanelObject={onInfoClick}
+            setPanelObject={setPanelObject}
             withDraggableRow={!!isPanelOpen}
           />
         )}

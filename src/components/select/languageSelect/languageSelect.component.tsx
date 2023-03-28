@@ -22,9 +22,9 @@ export const LanguageSelect = ({
     options={
       languages?.map((lang) => ({ value: lang, label: lang })) || options
     }
-    className={clsx(props.variant === "pill" ? "w-20" : "w-36")}
+    className={clsx(props.variant === "pill" ? "w-20" : props.className)}
     placeholder="Language"
-    rounded
+    rounded={props.rounded === undefined ? true : props.rounded}
     withSearch={!languages || languages.length > 10}
   />
 );

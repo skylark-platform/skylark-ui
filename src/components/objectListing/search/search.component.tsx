@@ -101,6 +101,7 @@ export const Search = ({
       <div className="ml-2">
         <LanguageSelect
           variant="primary"
+          className="w-36"
           onChange={(language) =>
             onFilterChange({ ...activeFilters, language }, visibleColumns)
           }

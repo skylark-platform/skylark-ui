@@ -8,13 +8,17 @@ import { formatObjectField } from "src/lib/utils";
 interface PanelRelationshipsProps {
   objectType: SkylarkObjectType;
   uid: string;
+  language: string;
 }
 
 export const PanelRelationships = ({
   objectType,
   uid,
+  language,
 }: PanelRelationshipsProps) => {
-  const { data: relationships } = useGetObjectRelationships(objectType, uid);
+  const { data: relationships } = useGetObjectRelationships(objectType, uid, {
+    language,
+  });
   const [expandedRelationships, setExpandedRelationships] = useState<
     Record<string, boolean>
   >({});

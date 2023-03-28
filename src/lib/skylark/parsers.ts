@@ -1,3 +1,6 @@
+import dayjs from "dayjs";
+import { EnumType } from "json-to-graphql-query";
+
 import {
   GQLInputField,
   GQLScalars,
@@ -16,6 +19,7 @@ import {
   SkylarkObjectMeta,
   ParsedSkylarkObject,
   SkylarkGraphQLObjectImage,
+  SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import { hasProperty, isObject } from "src/lib/utils";
@@ -190,7 +194,9 @@ export const parseSkylarkObject = (
     ...Object.keys(object).reduce((prev, key) => {
       return {
         ...prev,
-        ...(!isObject(object[key]) ? { [key]: object[key] } : {}),
+        ...(!isObject(object[key])
+          ? { [key]: object[key] === null ? "" : object[key] }
+          : {}),
       };
     }, {}),
     uid: object.uid,
@@ -239,4 +245,89 @@ export const parseSkylarkObject = (
       content,
     }
   );
+};
+
+const validateAndParseDate = (
+  type: string,
+  value: string,
+  formats?: string[],
+) => {
+  const validFormat = formats?.find((format) => dayjs(value, format).isValid());
+  if (validFormat) {
+    return dayjs(value, validFormat);
+  }
+
+  if (!dayjs(value).isValid()) {
+    throw new Error(
+      `Value given for ${type} is an invalid format: "${value}"${
+        formats ? `. Valid formats: "${formats?.join('", "')}"` : ""
+      }`,
+    );
+  }
+  return dayjs(value);
+};
+
+export const parseInputFieldValue = (
+  value: string | number | boolean | string[],
+  type: NormalizedObjectFieldType,
+): string | number | boolean | EnumType | string[] => {
+  if (type === "enum") {
+    return new EnumType(value as string);
+  }
+  if (type === "datetime") {
+    return validateAndParseDate(type, value as string).toISOString();
+  }
+  if (type === "date") {
+    return validateAndParseDate(type, value as string, [
+      "YYYY-MM-DD",
+      "YYYY-MM-DDZ",
+      "DD/MM/YYYY",
+    ]).format("YYYY-MM-DDZ");
+  }
+  if (type === "time") {
+    return validateAndParseDate(type, value as string, [
+      "HH:mm:ss",
+      "HH:mm",
+      "HH:mm:ssZ",
+      "HH:mmZ",
+    ]).format("HH:mm:ss.SSSZ");
+  }
+  if (type === "timestamp") {
+    return validateAndParseDate(type, value as string, ["X", "x"]).unix();
+  }
+  if (type === "int") {
+    return parseInt(value as string);
+  }
+  if (type === "float") {
+    return parseFloat(value as string);
+  }
+  if (type === "json") {
+    return value;
+  }
+  return value;
+};
+
+export const parseMetadataForGraphQLRequest = (
+  metadata: Record<string, SkylarkObjectMetadataField>,
+  inputFields: NormalizedObjectField[],
+) => {
+  const keyValuePairs = Object.entries(metadata)
+    .map(([key, value]) => {
+      if (value === null || value === "") {
+        // Empty strings will not work with AWSDateTime, or AWSURL so don't send them
+        return null;
+      }
+
+      const input = inputFields.find((createInput) => createInput.name === key);
+      if (!input) {
+        return null;
+      }
+
+      const parsedFieldValue = parseInputFieldValue(value, input.type);
+      return [key, parsedFieldValue];
+    })
+    .filter((value) => value !== null) as [string, string | EnumType][];
+
+  const parsedMetadata = Object.fromEntries(keyValuePairs);
+  return parsedMetadata;
 };

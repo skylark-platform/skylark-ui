@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { useGetObject } from "src/hooks/useGetObject";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
+import { useUpdateObjectMetadata } from "src/hooks/useUpdateObjectMetadata";
 import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
   AddedSkylarkObjectContentObject,
+  SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
 
 import {
@@ -74,6 +77,9 @@ export const Panel = ({
   const [contentObjects, setContentObjects] = useState<
     AddedSkylarkObjectContentObject[] | null
   >(null);
+  const metadataForm = useForm<Record<string, SkylarkObjectMetadataField>>({
+    defaultValues: data?.metadata,
+  });
 
   const tabs = useMemo(
     () =>
@@ -96,6 +102,12 @@ export const Panel = ({
     setSelectedTab(PanelTab.Metadata);
     setContentObjects(null);
   }, [uid, language]);
+
+  useEffect(() => {
+    if (!inEditMode && metadataForm.formState.isDirty) {
+      setEditMode(true);
+    }
+  }, [inEditMode, metadataForm.formState.isDirty]);
 
   useEffect(() => {
     if (
@@ -127,6 +139,16 @@ export const Panel = ({
     droppedObject,
   ]);
 
+  const { updateObjectMetadata, isLoading: updatingObjectMetadata } =
+    useUpdateObjectMetadata({
+      objectType,
+      uid,
+      onSuccess: (updatedMetadata) => {
+        setEditMode(false);
+        metadataForm.reset(updatedMetadata);
+      },
+    });
+
   const { updateObjectContent, isLoading: updatingObjectContents } =
     useUpdateObjectContent({
       objectType,
@@ -146,6 +168,8 @@ export const Panel = ({
       contentObjects !== data?.content?.objects
     ) {
       updateObjectContent();
+    } else if (selectedTab === PanelTab.Metadata) {
+      updateObjectMetadata(metadataForm.getValues());
     } else {
       setEditMode(false);
     }
@@ -165,12 +189,13 @@ export const Panel = ({
         closePanel={closePanel}
         inEditMode={inEditMode}
         save={saveActiveTabChanges}
-        isSaving={updatingObjectContents}
+        isSaving={updatingObjectMetadata || updatingObjectContents}
         toggleEditMode={() => {
-          setEditMode(!inEditMode);
           if (inEditMode) {
+            metadataForm.reset();
             setContentObjects(null);
           }
+          setEditMode(!inEditMode);
         }}
         setActiveLanguage={setActiveLanguage}
       />
@@ -191,7 +216,7 @@ export const Panel = ({
           )}
         </div>
       )}
-      {!isLoading && !isError && data && (
+      {!isLoading && !isError && data && objectMeta && (
         <>
           <Tabs
             tabs={tabs}
@@ -200,7 +225,12 @@ export const Panel = ({
             disabled={inEditMode}
           />
           {selectedTab === PanelTab.Metadata && (
-            <PanelMetadata metadata={data.metadata} objectType={objectType} />
+            <PanelMetadata
+              metadata={data.metadata}
+              form={metadataForm}
+              objectType={objectType}
+              objectMeta={objectMeta}
+            />
           )}
           {selectedTab === PanelTab.Imagery && data.images && (
             <PanelImages images={data.images} />
@@ -218,7 +248,11 @@ export const Panel = ({
             />
           )}
           {selectedTab === PanelTab.Relationships && (
-            <PanelRelationships objectType={objectType} uid={uid} />
+            <PanelRelationships
+              objectType={objectType}
+              uid={uid}
+              language={activeLanguage}
+            />
           )}
         </>
       )}

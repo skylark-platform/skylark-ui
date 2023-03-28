@@ -19,7 +19,7 @@ test("renders search bar, filters with no objects returned", () => {
 });
 
 test("renders create button", () => {
-  render(<ObjectList withCreateButtons onInfoClick={jest.fn()} />);
+  render(<ObjectList withCreateButtons setPanelObject={jest.fn()} />);
 
   const createButton = screen.getByText("Create");
 
@@ -28,8 +28,8 @@ test("renders create button", () => {
   expect(screen.getByText("Import (CSV)")).toBeInTheDocument();
 });
 
-test("does not render info button when onInfoClick is undefined", async () => {
-  render(<ObjectList onInfoClick={undefined} />);
+test("does not render info button when setPanelObject is undefined", async () => {
+  render(<ObjectList setPanelObject={undefined} />);
 
   expect(
     await screen.queryByRole("button", {
@@ -160,7 +160,7 @@ test("clears the language filter", async () => {
 
 describe("row in edit mode", () => {
   test("save/cancel icon appears", async () => {
-    render(<ObjectList withObjectEdit onInfoClick={jest.fn()} />);
+    render(<ObjectList withObjectEdit setPanelObject={jest.fn()} />);
 
     await screen.findByText("UID"); // Search for table header
 
@@ -187,7 +187,7 @@ describe("row in edit mode", () => {
   });
 
   test("row turns into inputs", async () => {
-    render(<ObjectList withObjectEdit onInfoClick={jest.fn()} />);
+    render(<ObjectList withObjectEdit setPanelObject={jest.fn()} />);
 
     await screen.findByText("UID"); // Search for table header
 
