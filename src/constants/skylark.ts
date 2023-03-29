@@ -1,3 +1,5 @@
+import { SkylarkSystemField } from "src/interfaces/skylark";
+
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "";
 export const SKYLARK_GRAPHQL_URL = (process.env.NEXT_PUBLIC_SKYLARK_API_URL ||
   process.env.SKYLARK_API_URL) as string;
@@ -41,13 +43,16 @@ export const HREFS = {
     apiDocs: "https://docs.skylarkplatform.com/",
   },
 };
+export const SYSTEM_FIELDS: string[] = [
+  SkylarkSystemField.UID,
+  SkylarkSystemField.ExternalID,
+  SkylarkSystemField.Slug,
+];
 // Helpful way to priorise common display names when one isn't set
 export const DISPLAY_NAME_PRIORITY = [
   "title",
   "name",
-  "slug",
-  "external_id",
-  "uid",
+  ...SYSTEM_FIELDS.reverse(),
 ];
 
 export const DROPPABLE_ID = "droppable";

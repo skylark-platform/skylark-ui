@@ -11,7 +11,9 @@ import {
   ParsedSkylarkObject,
   AddedSkylarkObjectContentObject,
   SkylarkObjectMetadataField,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
+import { hasProperty } from "src/lib/utils";
 
 import {
   PanelAvailability,
@@ -79,6 +81,8 @@ export const Panel = ({
   >(null);
   const metadataForm = useForm<Record<string, SkylarkObjectMetadataField>>({
     defaultValues: data?.metadata,
+    // Can't use onSubmit because we don't have a submit button within the form
+    mode: "onTouched",
   });
 
   const tabs = useMemo(
@@ -169,7 +173,21 @@ export const Panel = ({
     ) {
       updateObjectContent();
     } else if (selectedTab === PanelTab.Metadata) {
-      updateObjectMetadata(metadataForm.getValues());
+      // Validate then make request
+      metadataForm.trigger().then((allFieldsValid) => {
+        if (allFieldsValid) {
+          const values = metadataForm.getValues();
+          if (
+            hasProperty(values, SkylarkSystemField.ExternalID) &&
+            values[SkylarkSystemField.ExternalID] ===
+              data?.metadata[SkylarkSystemField.ExternalID]
+          ) {
+            // Remove External ID when it hasn't changed
+            delete values[SkylarkSystemField.ExternalID];
+          }
+          updateObjectMetadata(values);
+        }
+      });
     } else {
       setEditMode(false);
     }

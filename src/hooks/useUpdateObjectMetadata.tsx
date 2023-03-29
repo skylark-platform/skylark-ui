@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
+import { QueryKeys } from "src/enums/graphql";
 import {
   GQLSkylarkUpdateObjectMetadataResponse,
   ParsedSkylarkObjectMetadata,
@@ -46,6 +47,9 @@ export const useUpdateObjectMetadata = ({
     onSuccess: (data, { uid }) => {
       queryClient.invalidateQueries({
         queryKey: createGetObjectKeyPrefix({ objectType, uid }),
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.Search],
       });
       const parsedObject = parseSkylarkObject(data.updateObjectMetadata);
       onSuccess(parsedObject.metadata);
