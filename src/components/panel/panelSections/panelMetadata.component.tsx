@@ -150,39 +150,41 @@ export const PanelMetadata = ({
               title: "Translatable & Global Metadata",
               metadataFields: languageGlobalMetadataFields,
             },
-          ].map(({ id, title, metadataFields }, index, original) => (
-            <div key={id} className="mb-8">
-              <PanelSectionTitle text={title} />
-              {metadataFields.map(({ field, config }) => {
-                if (field === OBJECT_LIST_TABLE.columnIds.objectType) {
-                  return <></>;
-                }
+          ].map(
+            ({ id, title, metadataFields }, index, { length: numSections }) => (
+              <div key={id} className="mb-8">
+                <PanelSectionTitle text={title} />
+                {metadataFields.map(({ field, config }) => {
+                  if (field === OBJECT_LIST_TABLE.columnIds.objectType) {
+                    return <></>;
+                  }
 
-                if (config) {
+                  if (config) {
+                    return (
+                      <SkylarkObjectFieldInput
+                        key={field}
+                        field={field}
+                        config={config}
+                        control={control}
+                        register={register}
+                        value={getValues(field)}
+                        formState={formState}
+                      />
+                    );
+                  }
+
                   return (
-                    <SkylarkObjectFieldInput
+                    <PanelMetadataProperty
                       key={field}
-                      field={field}
-                      config={config}
-                      control={control}
-                      register={register}
+                      property={field}
                       value={getValues(field)}
-                      formState={formState}
                     />
                   );
-                }
-
-                return (
-                  <PanelMetadataProperty
-                    key={field}
-                    property={field}
-                    value={getValues(field)}
-                  />
-                );
-              })}
-              {index < original.length - 1 && <PanelSeparator />}
-            </div>
-          ))}
+                })}
+                {index < numSections && <PanelSeparator />}
+              </div>
+            ),
+          )}
         </>
       )}
 
