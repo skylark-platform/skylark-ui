@@ -1,5 +1,7 @@
 export enum BuiltInSkylarkObjectType {
   Availability = "Availability",
+  SkylarkImage = "SkylarkImage",
+  BetaSkylarkImage = "Image",
 }
 
 export enum SkylarkSystemField {

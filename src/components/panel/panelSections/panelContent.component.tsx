@@ -138,13 +138,14 @@ export const PanelContent = ({
     );
 
   return (
-    <div className="h-full overflow-y-auto p-4 pt-6 text-sm md:p-8">
+    <div className="flex h-full flex-col overflow-y-auto p-4 pt-6 text-sm md:p-8">
       <PanelSectionTitle text="Content" />
       <Reorder.Group
         axis="y"
         values={objects}
         onReorder={onReorder}
         data-testid="panel-content-items"
+        className="flex-grow"
       >
         {objects?.length === 0 && <PanelEmptyDataText />}
         {objects.map((item, index) => {
