@@ -216,9 +216,9 @@ export const PanelContent = ({
         })}
       </Reorder.Group>
       {inEditMode && (
-        <span className="py-4 text-center text-sm text-manatee-600">
+        <p className="w-full py-4 text-center text-sm text-manatee-600">
           {`Drag an object from the Content Library to add to this ${objectType}'s content`}
-        </span>
+        </p>
       )}
     </div>
   );
