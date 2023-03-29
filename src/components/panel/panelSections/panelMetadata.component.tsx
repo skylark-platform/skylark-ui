@@ -10,6 +10,7 @@ import {
 import { OBJECT_LIST_TABLE, SYSTEM_FIELDS } from "src/constants/skylark";
 import { useImageSize } from "src/hooks/useImageSize";
 import {
+  BuiltInSkylarkObjectType,
   NormalizedObjectField,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
@@ -52,7 +53,7 @@ const AdditionalImageMetadata = ({
 }) => {
   const { size } = useImageSize(src);
   return (
-    <>
+    <div className="-mt-4">
       <PanelMetadataProperty
         property="Original Size"
         value={size ? `${size?.h}x${size?.w}` : ""}
@@ -64,7 +65,7 @@ const AdditionalImageMetadata = ({
           <img src={src} alt={alt} />
         }
       />
-    </>
+    </div>
   );
 };
 
@@ -188,7 +189,12 @@ export const PanelMetadata = ({
         </>
       )}
 
-      {objectType.toUpperCase() === "IMAGE" && (
+      {(
+        [
+          BuiltInSkylarkObjectType.SkylarkImage,
+          BuiltInSkylarkObjectType.BetaSkylarkImage,
+        ] as string[]
+      ).includes(objectType) && (
         <AdditionalImageMetadata
           src={metadata.url as string}
           alt={metadata.title as string}
