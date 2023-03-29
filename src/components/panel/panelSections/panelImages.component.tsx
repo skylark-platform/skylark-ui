@@ -1,3 +1,8 @@
+import {
+  PanelEmptyDataText,
+  PanelFieldTitle,
+  PanelSectionTitle,
+} from "src/components/panel/panelTypography";
 import { useImageSize } from "src/hooks/useImageSize";
 import {
   ParsedSkylarkObjectImageRelationship,
@@ -33,7 +38,7 @@ const PanelImage = ({
 }) => {
   const { size } = useImageSize(src);
   return (
-    <div className="break-words pb-4">
+    <div className="mb-4 break-words">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className="max-h-64" src={src} alt={title || alt || ""} />
       {title && <p className="mt-1">Title: {title}</p>}
@@ -54,19 +59,25 @@ export const PanelImages = ({
         return (
           <div
             key={`image-relationship-${relationshipName}`}
-            className="relative mb-4"
+            className="relative mb-8"
           >
-            <h3 className="sticky top-0 left-0 z-10 mb-3 bg-white pt-4 text-lg font-bold underline md:pt-8">
-              {formatObjectField(relationshipName)}
-            </h3>
-            {objects.length === 0 && <p>No images connected to this object.</p>}
+            <PanelSectionTitle
+              text={formatObjectField(relationshipName)}
+              sticky
+            />
+            {objects.length === 0 && (
+              <div className="mt-2">
+                <PanelEmptyDataText />
+              </div>
+            )}
             {Object.keys(imagesGroupedByType).map((type) => {
               return (
-                <div key={type} className="mb-2">
-                  <h4 className="sticky top-11 mb-1 bg-white pb-1 text-base font-semibold md:top-14">
-                    {formatObjectField(type)} (
-                    {imagesGroupedByType[type].length})
-                  </h4>
+                <div key={type} className="mb-4">
+                  <PanelFieldTitle
+                    sticky
+                    text={formatObjectField(type)}
+                    count={imagesGroupedByType[type].length}
+                  />
                   {imagesGroupedByType[type].map((image) => (
                     <PanelImage
                       key={image.uid}

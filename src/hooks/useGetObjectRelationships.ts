@@ -41,7 +41,7 @@ export const createGetObjectRelationshipsKeyPrefix = ({
 export const useGetObjectRelationships = (
   objectType: SkylarkObjectType,
   uid: string,
-): { data: ParsedSkylarkObjectRelationships[] | undefined } => {
+) => {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
   const { objects } = useAllObjectsMeta();
 
@@ -72,7 +72,7 @@ export const useGetObjectRelationships = (
 
   const unparsedData = data?.getObjectRelationships;
 
-  const parsedData: ParsedSkylarkObjectRelationships[] = unparsedData
+  const relationships: ParsedSkylarkObjectRelationships[] = unparsedData
     ? Object.keys(unparsedData)?.map((relation) => {
         const relationship = unparsedData[
           relation
@@ -90,5 +90,11 @@ export const useGetObjectRelationships = (
       })
     : [];
 
-  return { data: parsedData, ...rest };
+  return {
+    ...rest,
+    data: relationships,
+    isLoading: rest.isLoading || !query,
+    query,
+    variables,
+  };
 };

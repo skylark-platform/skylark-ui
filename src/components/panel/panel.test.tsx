@@ -708,11 +708,7 @@ describe("availability view", () => {
     );
     fireEvent.click(screen.getByText("Availability"));
 
-    await waitFor(() =>
-      expect(
-        screen.getByText("No availability assigned to this object."),
-      ).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByText("None")).toBeInTheDocument());
   });
 
   it("finds sets the status of each availability", async () => {

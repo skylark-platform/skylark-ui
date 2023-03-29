@@ -191,7 +191,7 @@ export const Panel = ({
           )}
         </div>
       )}
-      {!isLoading && !isError && data && (
+      {!isLoading && !isError && data && objectMeta && (
         <>
           <Tabs
             tabs={tabs}
@@ -200,7 +200,11 @@ export const Panel = ({
             disabled={inEditMode}
           />
           {selectedTab === PanelTab.Metadata && (
-            <PanelMetadata metadata={data.metadata} objectType={objectType} />
+            <PanelMetadata
+              metadata={data.metadata}
+              objectType={objectType}
+              objectMeta={objectMeta}
+            />
           )}
           {selectedTab === PanelTab.Imagery && data.images && (
             <PanelImages images={data.images} />
