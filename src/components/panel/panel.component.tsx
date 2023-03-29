@@ -58,6 +58,13 @@ export const Panel = ({
   clearDroppedObject,
 }: PanelProps) => {
   const [activeLanguage, setActiveLanguage] = useState<string>(language);
+  const [inEditMode, setEditMode] = useState(false);
+  const [contentObjects, setContentObjects] = useState<
+    AddedSkylarkObjectContentObject[] | null
+  >(null);
+  const [relationshipObjects, setRelationshipObjects] = useState<
+    ParsedSkylarkObject[]
+  >([]);
 
   const {
     data,
@@ -69,11 +76,6 @@ export const Panel = ({
     isNotFound,
     error,
   } = useGetObject(objectType, uid, { language: activeLanguage });
-
-  const [inEditMode, setEditMode] = useState(false);
-  const [contentObjects, setContentObjects] = useState<
-    AddedSkylarkObjectContentObject[] | null
-  >(null);
 
   const tabs = useMemo(
     () =>
@@ -98,7 +100,11 @@ export const Panel = ({
   }, [uid, language]);
 
   useEffect(() => {
-    if (
+    if (selectedTab === PanelTab.Relationships && droppedObject) {
+      setRelationshipObjects([...relationshipObjects, droppedObject]);
+      clearDroppedObject && clearDroppedObject();
+    } else if (
+      // TODO if set content
       droppedObject &&
       !contentObjects
         ?.map(({ object }) => object.uid)
@@ -125,6 +131,8 @@ export const Panel = ({
     contentObjects,
     data?.content?.objects,
     droppedObject,
+    relationshipObjects,
+    selectedTab,
   ]);
 
   const { updateObjectContent, isLoading: updatingObjectContents } =
@@ -161,7 +169,7 @@ export const Panel = ({
         graphQLQuery={query}
         graphQLVariables={variables}
         currentTab={selectedTab}
-        tabsWithEditMode={[PanelTab.Content]}
+        tabsWithEditMode={[PanelTab.Content, PanelTab.Relationships]}
         closePanel={closePanel}
         inEditMode={inEditMode}
         save={saveActiveTabChanges}
@@ -218,7 +226,12 @@ export const Panel = ({
             />
           )}
           {selectedTab === PanelTab.Relationships && (
-            <PanelRelationships objectType={objectType} uid={uid} />
+            <PanelRelationships
+              objectType={objectType}
+              uid={uid}
+              showDropArea={showDropArea}
+              newRelationships={relationshipObjects}
+            />
           )}
         </>
       )}

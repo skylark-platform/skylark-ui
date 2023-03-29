@@ -11,6 +11,7 @@ import {
   SkylarkGraphQLObject,
   SkylarkGraphQLObjectRelationship,
   SkylarkObjectMeta,
+  SkylarkObjectRelationship,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -41,8 +42,12 @@ export const createGetObjectRelationshipsKeyPrefix = ({
 export const useGetObjectRelationships = (
   objectType: SkylarkObjectType,
   uid: string,
-): { data: ParsedSkylarkObjectRelationships[] | undefined } => {
+): {
+  data: ParsedSkylarkObjectRelationships[] | undefined;
+  relationships: SkylarkObjectRelationship[] | undefined;
+} => {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
+  console.log("usefull", objectOperations?.relationships);
   const { objects } = useAllObjectsMeta();
 
   const relationshipsFields: { [key: string]: NormalizedObjectField[] } =
@@ -90,5 +95,9 @@ export const useGetObjectRelationships = (
       })
     : [];
 
-  return { data: parsedData, ...rest };
+  return {
+    data: parsedData,
+    relationships: objectOperations?.relationships,
+    ...rest,
+  };
 };
