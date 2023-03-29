@@ -4,6 +4,11 @@ import { Fragment } from "react";
 import { AvailabilityLabel } from "src/components/availability";
 import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { PanelLoading } from "src/components/panel/panelLoading";
+import {
+  PanelEmptyDataText,
+  PanelFieldTitle,
+  PanelSectionTitle,
+} from "src/components/panel/panelTypography";
 import { useGetObjectAvailability } from "src/hooks/useGetObjectAvailability";
 import {
   AvailabilityStatus,
@@ -14,6 +19,7 @@ import {
   formatReadableDate,
   getRelativeTimeFromDate,
 } from "src/lib/skylark/availability";
+import { formatObjectField } from "src/lib/utils";
 
 interface PanelAvailabilityProps {
   objectType: string;
@@ -62,9 +68,8 @@ export const PanelAvailability = ({
     useGetObjectAvailability(objectType, objectUid);
   return (
     <div className="relative flex h-full flex-col overflow-y-auto p-4 pb-12 text-sm md:p-8">
-      {!isLoading && data?.length === 0 && (
-        <p>No availability assigned to this object.</p>
-      )}
+      <PanelSectionTitle text={formatObjectField("Availability")} />
+      {!isLoading && data?.length === 0 && <PanelEmptyDataText />}
       {data?.map((obj) => {
         const { status, neverExpires } = obj;
         const availabilityInfo: {
@@ -96,9 +101,9 @@ export const PanelAvailability = ({
           >
             <div className="flex">
               <div className="flex-grow">
-                <h3 className="text-base font-bold">
-                  {obj.title || obj.slug || obj.external_id || obj.uid}
-                </h3>
+                <PanelFieldTitle
+                  text={obj.title || obj.slug || obj.external_id || obj.uid}
+                />
                 <p className="text-manatee-400">
                   {status &&
                     getRelativeTimeFromDate(

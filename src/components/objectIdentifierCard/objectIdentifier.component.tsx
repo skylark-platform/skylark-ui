@@ -1,24 +1,27 @@
+import { ReactNode } from "react";
+
 import { Pill } from "src/components/pill";
 import { ParsedSkylarkObject } from "src/interfaces/skylark/parsedObjects";
 import { getObjectDisplayName } from "src/lib/utils";
 
 interface ObjectIdentifierCardProps {
-  contentObject: ParsedSkylarkObject;
+  object: ParsedSkylarkObject;
+  children?: ReactNode;
 }
 
 export const ObjectIdentifierCard = ({
-  contentObject,
+  object,
+  children,
 }: ObjectIdentifierCardProps) => {
   return (
-    <div className="m-1 flex space-x-2 p-2">
+    <div className="flex w-full flex-grow space-x-2 py-3">
       <Pill
-        label={contentObject.objectType as string}
-        bgColor={contentObject.config.colour}
+        label={object.objectType}
+        bgColor={object.config.colour}
         className="w-20"
       />
-      <div className="flex flex-1 text-sm">
-        <p>{getObjectDisplayName(contentObject)}</p>
-      </div>
+      <p className="flex flex-grow text-sm">{getObjectDisplayName(object)}</p>
+      {children}
     </div>
   );
 };

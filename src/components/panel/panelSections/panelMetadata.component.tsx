@@ -10,6 +10,11 @@ import {
 
 import { Checkbox } from "src/components/checkbox";
 import { convertFieldTypeToInputType } from "src/components/panel/panelInputs";
+import {
+  PanelFieldTitle,
+  PanelSectionTitle,
+  PanelSeparator,
+} from "src/components/panel/panelTypography";
 import { Select } from "src/components/select";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useImageSize } from "src/hooks/useImageSize";
@@ -47,9 +52,13 @@ const PanelMetadataProperty = ({
   property: string;
   value?: JSX.Element | SkylarkObjectMetadataField;
 }) => (
-  <div className="mb-4">
-    <h3 className="mb-2 font-bold">{formatObjectField(property)}</h3>
-    <div className="text-base-content">{value ? value : "---"}</div>
+  // <div className="mb-4">
+  //   <h3 className="mb-2 font-bold">{formatObjectField(property)}</h3>
+  //   <div className="text-base-content">{value ? value : "---"}</div>
+  // </div>
+  <div>
+    <PanelFieldTitle text={formatObjectField(property)} />
+    <p className="mb-4 text-base-content">{value ? value : "---"}</p>
   </div>
 );
 
@@ -168,10 +177,19 @@ export const PanelMetadata = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const metadataFields: {
-    field: string;
-    config?: NormalizedObjectField;
-  }[] = useMemo(() => {
+  const {
+    systemMetadataFields,
+    languageGlobalMetadataFields,
+  }: {
+    systemMetadataFields: {
+      field: string;
+      config?: NormalizedObjectField;
+    }[];
+    languageGlobalMetadataFields: {
+      field: string;
+      config?: NormalizedObjectField;
+    }[];
+  } = useMemo(() => {
     const metadataArr = Object.keys(metadata).map((field) => {
       // Use update operation fields as get doesn't always have the full types
       const fieldConfig = objectMeta.operations.update.inputs.find(
@@ -183,7 +201,7 @@ export const PanelMetadata = ({
       };
     });
 
-    const orderedFieldsThatExist = metadataArr
+    const systemFieldsThatExist = metadataArr
       .filter(({ field }) => systemFields.includes(field))
       .sort(
         ({ field: a }, { field: b }) =>
@@ -194,13 +212,18 @@ export const PanelMetadata = ({
       ({ field }) => !systemFields.includes(field),
     );
 
-    const orderedMetadataArr = [...orderedFieldsThatExist, ...otherFields];
+    const fieldsToHide = options
+      ? [...options.fieldsToHide, OBJECT_LIST_TABLE.columnIds.objectType]
+      : [OBJECT_LIST_TABLE.columnIds.objectType];
 
-    return options
-      ? orderedMetadataArr.filter(
-          ({ field }) => !options.fieldsToHide.includes(field.toLowerCase()),
-        )
-      : orderedMetadataArr;
+    return {
+      systemMetadataFields: systemFieldsThatExist.filter(
+        ({ field }) => !fieldsToHide.includes(field.toLowerCase()),
+      ),
+      languageGlobalMetadataFields: otherFields.filter(
+        ({ field }) => !fieldsToHide.includes(field.toLowerCase()),
+      ),
+    };
   }, [metadata, objectMeta.operations.update.inputs, options]);
 
   return (
@@ -208,33 +231,53 @@ export const PanelMetadata = ({
       className="overflow-anywhere h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20"
       data-testid="panel-metadata"
     >
-      {metadata &&
-        metadataFields.map(({ field, config }) => {
-          if (field === OBJECT_LIST_TABLE.columnIds.objectType) {
-            return <></>;
-          }
+      {metadata && (
+        <>
+          {[
+            {
+              id: "system",
+              title: "System Metadata",
+              metadataFields: systemMetadataFields,
+            },
+            {
+              id: "languageGlobal",
+              title: "Translatable & Global Metadata",
+              metadataFields: languageGlobalMetadataFields,
+            },
+          ].map(({ id, title, metadataFields }) => (
+            <div key={id} className="mb-8">
+              <PanelSectionTitle text={title} />
+              {metadataFields.map(({ field, config }) => {
+                if (field === OBJECT_LIST_TABLE.columnIds.objectType) {
+                  return <></>;
+                }
 
-          if (config) {
-            return (
-              <PanelMetadataInput
-                key={field}
-                property={field}
-                config={config}
-                control={control}
-                register={register}
-                value={getValues(field)}
-              />
-            );
-          }
+                if (config) {
+                  return (
+                    <PanelMetadataInput
+                      key={field}
+                      property={field}
+                      config={config}
+                      control={control}
+                      register={register}
+                      value={getValues(field)}
+                    />
+                  );
+                }
 
-          return (
-            <PanelMetadataProperty
-              key={field}
-              property={field}
-              value={getValues(field)}
-            />
-          );
-        })}
+                return (
+                  <PanelMetadataProperty
+                    key={field}
+                    property={field}
+                    value={getValues(field)}
+                  />
+                );
+              })}
+              <PanelSeparator />
+            </div>
+          ))}
+        </>
+      )}
 
       {objectType.toUpperCase() === "IMAGE" && (
         <AdditionalImageMetadata
