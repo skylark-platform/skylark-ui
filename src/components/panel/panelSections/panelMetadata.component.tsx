@@ -146,22 +146,24 @@ export const PanelMetadata = ({
               title: "Translatable & Global Metadata",
               metadataFields: languageGlobalMetadataFields,
             },
-          ].map(({ id, title, metadataFields }) => (
-            <div key={id} className="mb-8">
-              <PanelSectionTitle text={title} />
-              {metadataFields.map(
-                ({ field }) =>
-                  field !== OBJECT_LIST_TABLE.columnIds.objectType && (
-                    <PanelMetadataProperty
-                      key={field}
-                      property={field}
-                      value={metadata[field]}
-                    />
-                  ),
-              )}
-              <PanelSeparator />
-            </div>
-          ))}
+          ].map(
+            ({ id, title, metadataFields }, index, { length: numSections }) => (
+              <div key={id} className="mb-8">
+                <PanelSectionTitle text={title} />
+                {metadataFields.map(
+                  ({ field }) =>
+                    field !== OBJECT_LIST_TABLE.columnIds.objectType && (
+                      <PanelMetadataProperty
+                        key={field}
+                        property={field}
+                        value={metadata[field]}
+                      />
+                    ),
+                )}
+                {index < numSections - 1 && <PanelSeparator />}
+              </div>
+            ),
+          )}
         </>
       )}
 
