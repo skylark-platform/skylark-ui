@@ -26,13 +26,13 @@ const objectOptions: {
   objectTypes: SkylarkObjectType[];
   fieldsToHide: string[];
 }[] = [
-  // {
-  //   objectTypes: [
-  //     BuiltInSkylarkObjectType.SkylarkImage,
-  //     BuiltInSkylarkObjectType.BetaSkylarkImage,
-  //   ],
-  //   fieldsToHide: ["external_url", "upload_url", "download_from_url"],
-  // },
+  {
+    objectTypes: [
+      BuiltInSkylarkObjectType.SkylarkImage,
+      BuiltInSkylarkObjectType.BetaSkylarkImage,
+    ],
+    fieldsToHide: ["external_url", "upload_url", "download_from_url"],
+  },
 ];
 
 interface PanelMetadataProps {
