@@ -255,7 +255,11 @@ export const Panel = ({
             <PanelImages images={data.images} />
           )}
           {selectedTab === PanelTab.Availability && (
-            <PanelAvailability objectType={objectType} objectUid={uid} />
+            <PanelAvailability
+              objectType={objectType}
+              objectUid={uid}
+              language={language}
+            />
           )}
           {selectedTab === PanelTab.Content && data.content && (
             <PanelContent

@@ -7,6 +7,7 @@ import { convertObjectInputToFlatfileSchema } from "./template";
 const defaultInput: NormalizedObjectField = {
   name: "Input",
   type: "string",
+  originalType: "String",
   isList: false,
   isRequired: false,
 };
@@ -29,18 +30,21 @@ test("returns all required properties", () => {
     {
       name: "uid",
       type: "string",
+      originalType: "String!",
       isList: false,
       isRequired: true,
     },
     {
       name: "episode_number",
       type: "int",
+      originalType: "Int",
       isList: false,
       isRequired: true,
     },
     {
       name: "title",
       type: "string",
+      originalType: "String",
       isList: false,
       isRequired: false,
     },

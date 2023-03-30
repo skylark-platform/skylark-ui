@@ -16,13 +16,20 @@ import {
   SkylarkObjectMetadataField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import { formatObjectField, hasProperty } from "src/lib/utils";
+import { formatObjectField } from "src/lib/utils";
 
-const objectOptions: Record<SkylarkObjectType, { fieldsToHide: string[] }> = {
-  Image: {
+const objectOptions: {
+  objectTypes: SkylarkObjectType[];
+  fieldsToHide: string[];
+}[] = [
+  {
+    objectTypes: [
+      BuiltInSkylarkObjectType.SkylarkImage,
+      BuiltInSkylarkObjectType.BetaSkylarkImage,
+    ],
     fieldsToHide: ["external_url", "upload_url", "download_from_url"],
   },
-};
+];
 
 interface PanelMetadataProps {
   objectType: SkylarkObjectType;
@@ -75,8 +82,9 @@ export const PanelMetadata = ({
   objectMeta,
   form: { register, getValues, control, reset, formState },
 }: PanelMetadataProps) => {
-  const options =
-    hasProperty(objectOptions, objectType) && objectOptions[objectType];
+  const options = objectOptions.find(({ objectTypes }) =>
+    objectTypes.includes(objectType),
+  );
 
   // When component first loads, update the form metadata with the current values
   useEffect(() => {
@@ -156,10 +164,6 @@ export const PanelMetadata = ({
               <div key={id} className="mb-8">
                 <PanelSectionTitle text={title} />
                 {metadataFields.map(({ field, config }) => {
-                  if (field === OBJECT_LIST_TABLE.columnIds.objectType) {
-                    return <></>;
-                  }
-
                   if (config) {
                     return (
                       <SkylarkObjectFieldInput

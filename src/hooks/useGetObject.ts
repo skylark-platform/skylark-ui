@@ -17,7 +17,7 @@ import {
 } from "./useSkylarkObjectTypes";
 
 export interface GetObjectOptions {
-  language?: string | null;
+  language: string | null;
 }
 
 export const createGetObjectKeyPrefix = ({

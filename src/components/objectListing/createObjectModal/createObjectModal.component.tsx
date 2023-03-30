@@ -37,7 +37,7 @@ export const CreateObjectModal = ({
     setIsOpen(false);
   };
 
-  const objectType = watch("_objectType");
+  const objectType = watch("_objectType") as string;
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 

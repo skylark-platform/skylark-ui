@@ -42,8 +42,10 @@ export const createGetObjectRelationshipsKeyPrefix = ({
 export const useGetObjectRelationships = (
   objectType: SkylarkObjectType,
   uid: string,
-  opts?: GetObjectOptions,
+  opts: GetObjectOptions,
 ) => {
+  const { language }: GetObjectOptions = opts || { language: null };
+
   const { objectOperations } = useSkylarkObjectOperations(objectType);
   const { objects } = useAllObjectsMeta();
 
@@ -56,8 +58,9 @@ export const useGetObjectRelationships = (
   const query = createGetObjectRelationshipsQuery(
     objectOperations,
     relationshipsFields,
+    !!language,
   );
-  const variables = { uid, nextToken: "", language: opts?.language };
+  const variables = { uid, nextToken: "", language };
 
   const { data, ...rest } = useQuery<
     GQLSkylarkGetObjectRelationshipsResponse,

@@ -288,6 +288,7 @@ describe("generateExampleCSV", () => {
     ];
     const inputs: NormalizedObjectField[] = types.map((type) => ({
       type,
+      originalType: "",
       name: type,
       isList: false,
       isRequired: false,

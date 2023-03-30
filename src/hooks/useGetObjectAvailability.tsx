@@ -16,6 +16,7 @@ import {
   is2038Problem,
 } from "src/lib/skylark/availability";
 
+import { GetObjectOptions } from "./useGetObject";
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const createGetObjectAvailabilityKeyPrefix = ({
@@ -29,11 +30,14 @@ export const createGetObjectAvailabilityKeyPrefix = ({
 export const useGetObjectAvailability = (
   objectType: SkylarkObjectType,
   uid: string,
+  opts: GetObjectOptions,
 ) => {
+  const { language }: GetObjectOptions = opts || { language: null };
+
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  const query = createGetObjectAvailabilityQuery(objectOperations);
-  const variables = { uid, nextToken: "" };
+  const query = createGetObjectAvailabilityQuery(objectOperations, !!language);
+  const variables = { uid, nextToken: "", language };
 
   const { data, ...rest } = useInfiniteQuery<
     GQLSkylarkGetObjectAvailabilityResponse,
