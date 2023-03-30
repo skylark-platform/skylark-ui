@@ -157,7 +157,7 @@ export const PanelHeader = ({
         )}
       </div>
       <div className="flex flex-col items-start pb-2">
-        <h1 className="truncate text-ellipsis w-full flex-grow text-lg font-bold uppercase md:text-xl">
+        <h1 className="w-full flex-grow truncate text-ellipsis text-lg font-bold uppercase md:text-xl">
           {title}
         </h1>
         {object && (
