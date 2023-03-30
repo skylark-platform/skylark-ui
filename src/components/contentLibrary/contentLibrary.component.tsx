@@ -105,8 +105,8 @@ export const ContentLibrary = () => {
     >
       <DragOverlay zIndex={100} dropAnimation={null}>
         {draggedObject ? (
-          <div className="max-w-[350px] items-center border border-manatee-400 bg-white ">
-            <ObjectIdentifierCard contentObject={draggedObject} />
+          <div className="max-w-[350px] items-center rounded-sm border border-manatee-200 bg-white px-2">
+            <ObjectIdentifierCard object={draggedObject} />
           </div>
         ) : null}
       </DragOverlay>
