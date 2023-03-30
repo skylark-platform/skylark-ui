@@ -14,7 +14,7 @@ export const ObjectIdentifierCard = ({
   children,
 }: ObjectIdentifierCardProps) => {
   return (
-    <div className="flex w-full flex-grow space-x-2 py-3">
+    <div className="flex w-full flex-grow items-center space-x-2 py-3">
       <Pill
         label={object.objectType}
         bgColor={object.config.colour}
