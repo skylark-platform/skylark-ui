@@ -47,6 +47,7 @@ export type NormalizedObjectFieldType =
 export interface NormalizedObjectField {
   name: string;
   type: NormalizedObjectFieldType;
+  originalType: string;
   enumValues?: string[];
   isList: boolean;
   isRequired: boolean;
@@ -94,4 +95,5 @@ export interface SkylarkObjectMeta extends SkylarkObjectFields {
   operations: SkylarkObjectOperations;
   relationships: SkylarkObjectRelationship[];
   hasContent: boolean;
+  hasRelationships: boolean;
 }

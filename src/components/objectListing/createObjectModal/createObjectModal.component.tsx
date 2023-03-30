@@ -1,13 +1,22 @@
 import { Dialog } from "@headlessui/react";
-import React from "react";
+import React, { Fragment } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { GrClose } from "react-icons/gr";
 
 import { Button } from "src/components/button";
+import { SkylarkObjectFieldInput } from "src/components/inputs";
+import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { LanguageSelect, Select } from "src/components/select";
 import { useCreateObject } from "src/hooks/useCreateObject";
-import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
-import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
+import {
+  useSkylarkObjectOperations,
+  useSkylarkObjectTypes,
+} from "src/hooks/useSkylarkObjectTypes";
+import {
+  SkylarkObjectIdentifier,
+  SkylarkObjectMetadataField,
+  SkylarkObjectType,
+} from "src/interfaces/skylark";
 
 interface CreateObjectModalProps {
   isOpen: boolean;
@@ -21,16 +30,16 @@ export const CreateObjectModal = ({
   onObjectCreated,
 }: CreateObjectModalProps) => {
   const { objectTypes } = useSkylarkObjectTypes();
-  const { handleSubmit, watch, control } = useForm<{
-    objectType: string;
-    language: string;
-  }>();
+  const { handleSubmit, watch, control, register, getValues, formState } =
+    useForm<Record<string, SkylarkObjectMetadataField>>();
 
   const closeModal = () => {
     setIsOpen(false);
   };
 
-  const objectType = watch("objectType");
+  const objectType = watch("_objectType");
+
+  const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const { createObject, isLoading: isCreatingObject } = useCreateObject({
     objectType,
@@ -39,8 +48,7 @@ export const CreateObjectModal = ({
     },
   });
 
-  const onSubmit = ({ language }: { objectType: string; language: string }) =>
-    createObject(language);
+  const onSubmit = ({ language }: any) => createObject(language);
 
   return (
     <Dialog
@@ -55,7 +63,7 @@ export const CreateObjectModal = ({
       />
 
       <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
-        <Dialog.Panel className="relative mx-auto max-w-lg rounded bg-white p-6 md:p-10">
+        <Dialog.Panel className="relative mx-auto h-full max-h-[90%] w-full overflow-y-auto rounded bg-white p-6 md:w-4/5 md:p-10">
           <button
             aria-label="close"
             className="absolute top-4 right-4 sm:top-9 sm:right-8"
@@ -69,30 +77,23 @@ export const CreateObjectModal = ({
             Create Object
           </Dialog.Title>
           <Dialog.Description>
-            Create a blank object and opens it in the panel
+            Select Object Type to get started.
           </Dialog.Description>
-          <div className="my-2 flex flex-col space-y-2 md:my-4">
-            <p>
-              Currently, the object will be created empty with only required
-              fields filled (if no fields are required, one will be selected at
-              random).
-            </p>
-            <p>The Panel can then be used to edit the object.</p>
-          </div>
           <form
             className="mt-8 flex w-full flex-col justify-end gap-4"
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
-              name="objectType"
+              name="_objectType"
               control={control}
               render={({ field }) => (
                 <Select
                   className="w-full"
                   variant="primary"
                   disabled={!objectTypes}
+                  label="Object Type"
                   selected={(field.value as string) || ""}
-                  placeholder="Select Skylark Object Type"
+                  placeholder="Select Object Type to get started"
                   options={
                     objectTypes?.map((opt) => ({
                       value: opt,
@@ -103,28 +104,45 @@ export const CreateObjectModal = ({
                 />
               )}
             />
-            <Controller
-              name="language"
-              control={control}
-              render={({ field }) => (
-                <LanguageSelect
-                  className="w-full"
-                  variant="primary"
-                  rounded={false}
-                  disabled={!objectTypes}
-                  selected={(field.value as string) || ""}
-                  onChange={field.onChange}
+            {objectOperations && (
+              <div>
+                <Controller
+                  name="_language"
+                  control={control}
+                  render={({ field }) => (
+                    <LanguageSelect
+                      className="w-full"
+                      variant="primary"
+                      rounded={false}
+                      disabled={!objectTypes}
+                      selected={(field.value as string) || ""}
+                      onChange={field.onChange}
+                    />
+                  )}
                 />
-              )}
-            />
-            <Button
-              variant="primary"
-              className="mt-2"
-              loading={isCreatingObject}
-              type="submit"
-            >
-              Create object
-            </Button>
+                {objectOperations?.operations.create.inputs.map((config) => (
+                  <SkylarkObjectFieldInput
+                    key={config.name}
+                    field={config.name}
+                    config={config}
+                    control={control}
+                    register={register}
+                    value={getValues(config.name)}
+                    formState={formState}
+                  />
+                ))}
+                <Button
+                  variant="primary"
+                  className="mt-2"
+                  loading={isCreatingObject}
+                  type="submit"
+                  disabled={!objectOperations}
+                  block
+                >
+                  Create object
+                </Button>
+              </div>
+            )}
           </form>
         </Dialog.Panel>
       </div>

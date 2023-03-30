@@ -24,7 +24,7 @@ export const CreateButtons = ({
   const createOptions = [
     {
       id: "create",
-      text: "Create Empty Object",
+      text: "Create Object",
       Icon: <Edit3 className="h-5" />,
       onClick: () => setCreateObjectModalOpen(true),
     },

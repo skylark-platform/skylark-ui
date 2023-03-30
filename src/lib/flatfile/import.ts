@@ -169,11 +169,11 @@ export const createFlatfileObjectsInSkylark = async (
 export const generateExampleFieldData = (
   { type, enumValues }: NormalizedObjectField,
   rowNum: number,
-): string | number | boolean | EnumType | string[] => {
+): string | number | boolean | EnumType | string[] | null => {
   const now = dayjs();
   const examples: Record<
     NormalizedObjectFieldType,
-    (string | number | boolean | EnumType | string[])[]
+    (string | number | boolean | EnumType | string[] | null)[]
   > = {
     string: ["example"],
     int: [10, -5],

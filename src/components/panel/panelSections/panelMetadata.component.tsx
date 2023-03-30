@@ -112,7 +112,7 @@ export const PanelMetadata = ({
       .filter(({ field }) => SYSTEM_FIELDS.includes(field))
       .sort(
         ({ field: a }, { field: b }) =>
-          SYSTEM_FIELDS.indexOf(a) - SYSTEM_FIELDS.indexOf(b),
+          SYSTEM_FIELDS.indexOf(b) - SYSTEM_FIELDS.indexOf(a),
       );
 
     const otherFields = metadataArr.filter(
@@ -182,7 +182,7 @@ export const PanelMetadata = ({
                     />
                   );
                 })}
-                {index < numSections && <PanelSeparator />}
+                {index < numSections - 1 && <PanelSeparator />}
               </div>
             ),
           )}

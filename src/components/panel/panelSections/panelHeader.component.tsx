@@ -23,7 +23,7 @@ interface PanelHeaderProps {
   objectUid: string;
   objectType: SkylarkObjectType;
   object: ParsedSkylarkObject | null;
-  activeLanguage: string;
+  language: string;
   currentTab: string;
   tabsWithEditMode: string[];
   graphQLQuery: DocumentNode | null;
@@ -33,14 +33,14 @@ interface PanelHeaderProps {
   toggleEditMode: () => void;
   closePanel?: () => void;
   save: () => void;
-  setActiveLanguage: Dispatch<SetStateAction<string>>;
+  setLanguage: Dispatch<SetStateAction<string>>;
 }
 
 export const PanelHeader = ({
   objectUid,
   objectType,
   object,
-  activeLanguage,
+  language,
   currentTab,
   tabsWithEditMode,
   graphQLQuery,
@@ -50,7 +50,7 @@ export const PanelHeader = ({
   toggleEditMode,
   closePanel,
   save,
-  setActiveLanguage,
+  setLanguage,
 }: PanelHeaderProps) => {
   const title = getObjectDisplayName(object);
   const [showGraphQLModal, setGraphQLModalOpen] = useState(false);
@@ -168,18 +168,18 @@ export const PanelHeader = ({
               label={objectType}
             />
             <LanguageSelect
-              selected={activeLanguage || object.meta.language}
+              selected={language || object.meta.language}
               variant="pill"
               languages={
                 object.meta.availableLanguages || [object.meta.language]
               }
-              onChange={(val) => setActiveLanguage(val)}
+              onChange={(val) => setLanguage(val)}
             />
           </div>
         )}
         <div className="flex flex-row items-end justify-end space-x-2">
           {inEditMode && (
-            <div className="absolute left-1/2 -bottom-16 -translate-x-1/2 md:-bottom-18">
+            <div className="absolute left-1/2 -bottom-16 z-10 -translate-x-1/2 md:-bottom-18">
               <PanelLabel
                 text={isSaving ? "Saving" : "Editing"}
                 loading={isSaving}

@@ -181,6 +181,8 @@ export const getObjectOperations = (
   );
   const updateMeta = getMutationInfo(updateMutation, objectType, "update");
 
+  const hasRelationships = relationships.length > 0;
+
   const operations: SkylarkObjectOperations = {
     get: {
       type: "Query",
@@ -223,6 +225,7 @@ export const getObjectOperations = (
     operations,
     availability,
     relationships,
+    hasRelationships,
     hasContent,
   };
 };

@@ -7,15 +7,17 @@ import {
   Controller,
   FieldError,
   RegisterOptions,
+  ValidationRule,
 } from "react-hook-form";
 
 import { convertFieldTypeToInputType } from "src/components/panel/panelInputs";
 import { Select } from "src/components/select";
-import { SYSTEM_FIELDS } from "src/constants/skylark";
+import { INPUT_REGEX, SYSTEM_FIELDS } from "src/constants/skylark";
 import {
   NormalizedObjectField,
   SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
+import { parseInputFieldValue } from "src/lib/skylark/parsers";
 import { formatObjectField } from "src/lib/utils";
 
 interface SkylarkObjectFieldInputProps {
@@ -137,18 +139,50 @@ export const SkylarkObjectFieldInput = (
   props: SkylarkObjectFieldInputProps,
 ) => {
   const { field, config, formState } = props;
-  const required =
-    config.isRequired || true
-      ? `${formatObjectField(field)} is required`
-      : false;
+  const required = config.isRequired
+    ? `${formatObjectField(field)} is required`
+    : false;
 
   const error = formState.errors[field];
+
+  let pattern: ValidationRule<RegExp> | undefined;
+  if (config.type === "url") {
+    pattern = {
+      value: new RegExp(INPUT_REGEX.url, "isg"),
+      message: "Value does not match URL validation",
+    };
+  } else if (config.type === "ipaddress") {
+    pattern = {
+      value: new RegExp(INPUT_REGEX.ipaddress, "isg"),
+      message: "Value does not match IP Address validation",
+    };
+  } else if (config.type === "email") {
+    pattern = {
+      value: new RegExp(INPUT_REGEX.email, "isg"),
+      message: "Value does not match Email validation",
+    };
+  }
+
+  console.log({ field, pattern, error });
 
   const inputProps: SkylarkObjectFieldInputComponentProps = {
     ...props,
     error,
     registerOptions: {
       required,
+      validate: (value) => {
+        try {
+          if (config.type === "int") {
+            return Number.isInteger(value);
+          }
+          const valid = parseInputFieldValue(value, config.type);
+          console.log("validated field", valid);
+        } catch (err) {
+          console.log("validate err", err);
+          return false;
+        }
+      },
+      pattern,
     },
   };
 
@@ -167,7 +201,11 @@ export const SkylarkObjectFieldInput = (
         }
       })()}
       {error && (
-        <span className="mt-1 block text-xs text-error">{error?.message}</span>
+        <span className="mt-1 block text-xs text-error">
+          {error?.message ||
+            (error.type === "validate" &&
+              `Value does not match field type "${config.originalType}"`)}
+        </span>
       )}
     </div>
   );

@@ -57,12 +57,12 @@ export const Panel = ({
   closePanel,
   objectType,
   uid,
-  language,
+  language: initialLanguage,
   showDropArea,
   droppedObject,
   clearDroppedObject,
 }: PanelProps) => {
-  const [activeLanguage, setActiveLanguage] = useState<string>(language);
+  const [language, setLanguage] = useState<string>(initialLanguage);
 
   const {
     data,
@@ -73,7 +73,7 @@ export const Panel = ({
     isError,
     isNotFound,
     error,
-  } = useGetObject(objectType, uid, { language: activeLanguage });
+  } = useGetObject(objectType, uid, { language });
 
   const [inEditMode, setEditMode] = useState(false);
   const [contentObjects, setContentObjects] = useState<
@@ -90,11 +90,11 @@ export const Panel = ({
       [
         PanelTab.Metadata,
         objectMeta?.hasContent && PanelTab.Content,
-        PanelTab.Relationships,
+        objectMeta?.hasRelationships && PanelTab.Relationships,
         objectMeta?.images && PanelTab.Imagery,
         PanelTab.Availability,
       ].filter((tab) => !!tab) as string[],
-    [objectMeta?.hasContent, objectMeta?.images],
+    [objectMeta?.hasContent, objectMeta?.hasRelationships, objectMeta?.images],
   );
 
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
@@ -102,10 +102,10 @@ export const Panel = ({
   useEffect(() => {
     // Reset selected tab when object changes
     setEditMode(false);
-    setActiveLanguage(language);
+    setLanguage(initialLanguage);
     setSelectedTab(PanelTab.Metadata);
     setContentObjects(null);
-  }, [uid, language]);
+  }, [uid, initialLanguage]);
 
   useEffect(() => {
     if (!inEditMode && metadataForm.formState.isDirty) {
@@ -147,6 +147,7 @@ export const Panel = ({
     useUpdateObjectMetadata({
       objectType,
       uid,
+      language,
       onSuccess: (updatedMetadata) => {
         setEditMode(false);
         metadataForm.reset(updatedMetadata);
@@ -199,7 +200,7 @@ export const Panel = ({
         objectUid={uid}
         objectType={objectType}
         object={data || null}
-        activeLanguage={activeLanguage}
+        language={language}
         graphQLQuery={query}
         graphQLVariables={variables}
         currentTab={selectedTab}
@@ -215,7 +216,7 @@ export const Panel = ({
           }
           setEditMode(!inEditMode);
         }}
-        setActiveLanguage={setActiveLanguage}
+        setLanguage={setLanguage}
       />
       {isLoading && (
         <div
@@ -269,7 +270,7 @@ export const Panel = ({
             <PanelRelationships
               objectType={objectType}
               uid={uid}
-              language={activeLanguage}
+              language={language}
             />
           )}
         </>

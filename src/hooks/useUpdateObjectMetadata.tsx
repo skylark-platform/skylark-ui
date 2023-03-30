@@ -15,13 +15,16 @@ import { parseSkylarkObject } from "src/lib/skylark/parsers";
 import { createGetObjectKeyPrefix } from "./useGetObject";
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
+// TODO SUPPORT LANGUAGE!!!
 export const useUpdateObjectMetadata = ({
   objectType,
   uid,
+  language,
   onSuccess,
 }: {
   objectType: SkylarkObjectType;
   uid: string;
+  language: string;
   onSuccess: (updatedMetadata: ParsedSkylarkObjectMetadata) => void;
 }) => {
   const queryClient = useQueryClient();

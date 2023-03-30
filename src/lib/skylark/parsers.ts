@@ -88,6 +88,7 @@ export const parseObjectInputFields = (
       return {
         name: input.name,
         type: type,
+        originalType: input.type.ofType?.name || input.type.name || "Unknown",
         enumValues,
         isList: input.type.kind === "LIST",
         isRequired: input.type.kind === "NON_NULL",
@@ -270,7 +271,10 @@ const validateAndParseDate = (
 export const parseInputFieldValue = (
   value: string | number | boolean | string[],
   type: NormalizedObjectFieldType,
-): string | number | boolean | EnumType | string[] => {
+): string | number | boolean | EnumType | string[] | null => {
+  if (value === "") {
+    return null;
+  }
   if (type === "enum") {
     return new EnumType(value as string);
   }
