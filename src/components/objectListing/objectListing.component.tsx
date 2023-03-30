@@ -27,7 +27,6 @@ import {
 } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
-import { RowActions } from "./rowActions";
 import { Search } from "./search";
 import { Table, TableCell } from "./table";
 
@@ -51,8 +50,7 @@ export interface ObjectListProps {
 
 const createColumns = (
   columns: string[],
-  opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
-  setPanelObject?: ObjectListProps["setPanelObject"],
+  opts: { withObjectSelect?: boolean },
 ) => {
   const objectTypeColumn = columnHelper.accessor(
     OBJECT_LIST_TABLE.columnIds.objectType,
@@ -139,23 +137,7 @@ const createColumns = (
 
   const actionColumn = columnHelper.display({
     id: OBJECT_LIST_TABLE.columnIds.actions,
-    cell: ({ table, row }) => {
-      const {
-        uid,
-        objectType,
-        meta: { language },
-      } = row.original as ParsedSkylarkObject;
-      return (
-        <RowActions
-          editRowEnabled={opts.withObjectEdit}
-          inEditMode={table.options.meta?.rowInEditMode === row.id}
-          onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() => setPanelObject?.({ objectType, uid, language })}
-          onEditSaveClick={() => console.log(row)}
-          onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
-        />
-      );
-    },
+    cell: (props) => <TableCell {...props} />,
   });
 
   const orderedColumnArray = [
@@ -169,9 +151,7 @@ const createColumns = (
   if (opts.withObjectSelect) {
     return [selectColumn, ...orderedColumnArray];
   }
-  if (setPanelObject) {
-    return [...orderedColumnArray, actionColumn];
-  }
+  return [...orderedColumnArray, actionColumn];
 
   return orderedColumnArray;
 };
@@ -179,7 +159,7 @@ const createColumns = (
 export const ObjectList = ({
   withCreateButtons,
   withObjectSelect,
-  withObjectEdit,
+  withObjectEdit = false,
   setPanelObject,
   isDragging,
   isPanelOpen,
@@ -219,13 +199,8 @@ export const ObjectList = ({
   }, [properties]);
 
   const parsedColumns = useMemo(
-    () =>
-      createColumns(
-        sortedHeaders,
-        { withObjectSelect, withObjectEdit },
-        setPanelObject,
-      ),
-    [sortedHeaders, withObjectEdit, withObjectSelect, setPanelObject],
+    () => createColumns(sortedHeaders, { withObjectSelect }),
+    [sortedHeaders, withObjectSelect],
   );
 
   const [rowInEditMode, setRowInEditMode] = useState("");
@@ -294,6 +269,7 @@ export const ObjectList = ({
     },
     meta: {
       rowInEditMode,
+      withObjectEdit,
       onEditClick(rowId) {
         setRowInEditMode(rowId);
       },

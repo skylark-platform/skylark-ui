@@ -143,7 +143,7 @@ export const PanelMetadata = ({
 
   return (
     <form
-      className="overflow-anywhere h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20"
+      className="h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20"
       data-testid="panel-metadata"
     >
       {metadata && (
