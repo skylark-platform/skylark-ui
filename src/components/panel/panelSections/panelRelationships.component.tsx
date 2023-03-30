@@ -5,7 +5,6 @@ import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
-  PanelFieldTitle,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
@@ -16,18 +15,20 @@ import { formatObjectField } from "src/lib/utils";
 interface PanelRelationshipsProps {
   objectType: SkylarkObjectType;
   uid: string;
+  language: string;
 }
 
 export const PanelRelationships = ({
   objectType,
   uid,
+  language,
 }: PanelRelationshipsProps) => {
   const {
     data: relationships,
     isLoading,
     query,
     variables,
-  } = useGetObjectRelationships(objectType, uid);
+  } = useGetObjectRelationships(objectType, uid, { language });
   const [expandedRelationships, setExpandedRelationships] = useState<
     Record<string, boolean>
   >({});

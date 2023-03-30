@@ -5,8 +5,6 @@ import { QueryErrorMessages, QueryKeys } from "src/enums/graphql";
 import {
   SkylarkObjectType,
   GQLSkylarkErrorResponse,
-  SkylarkGraphQLObjectRelationship,
-  ParsedSkylarkObjectImageRelationship,
 } from "src/interfaces/skylark";
 import { GQLSkylarkGetObjectResponse } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -18,8 +16,8 @@ import {
   useSkylarkObjectOperations,
 } from "./useSkylarkObjectTypes";
 
-interface GetObjectOptions {
-  language?: string | null;
+export interface GetObjectOptions {
+  language: string | null;
 }
 
 export const createGetObjectKeyPrefix = ({

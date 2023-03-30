@@ -9,6 +9,7 @@ import {
   NormalizedObjectField,
   SkylarkGraphQLObject,
   SkylarkObjectMeta,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
 
 const common = {
@@ -38,7 +39,21 @@ const common = {
   },
 };
 
-const fieldNamesToNeverAlias = ["uid", "external_id"];
+const fieldNamesToNeverAlias: string[] = [
+  SkylarkSystemField.UID,
+  SkylarkSystemField.ExternalID,
+];
+
+const getLanguageVariableAndArg = (addLanguageVariable?: boolean) => {
+  const args = addLanguageVariable
+    ? { language: new VariableType("language") }
+    : {};
+  const variables = addLanguageVariable ? { language: "String" } : {};
+  return {
+    args,
+    variables,
+  };
+};
 
 const generateFieldsToReturn = (
   fields: SkylarkObjectMeta["fields"],
@@ -174,17 +189,14 @@ export const createGetObjectQuery = (
     return null;
   }
 
-  const argLanguage = addLanguageVariable
-    ? { language: new VariableType("language") }
-    : {};
-  const variableLanguage = addLanguageVariable ? { language: "String" } : {};
+  const language = getLanguageVariableAndArg(addLanguageVariable);
 
   const query = {
     query: {
       __name: createGetObjectQueryName(object.name),
       __variables: {
         ...common.variables,
-        ...variableLanguage, // TODO always send language variable when BE supports sending null without error
+        ...language.variables, // TODO always send language variable when BE supports sending null without error
         uid: "String",
         externalId: "String",
       },
@@ -192,7 +204,7 @@ export const createGetObjectQuery = (
         __aliasFor: object.operations.get.name,
         __args: {
           ...common.args,
-          ...argLanguage, // TODO always send language variable when BE supports sending null without error
+          ...language.args, // TODO always send language variable when BE supports sending null without error
           uid: new VariableType("uid"),
           external_id: new VariableType("externalId"),
         },
@@ -213,16 +225,20 @@ export const createGetObjectQuery = (
 
 export const createGetObjectAvailabilityQuery = (
   object: SkylarkObjectMeta | null,
+  addLanguageVariable: boolean,
 ) => {
   if (!object || !object.operations.get) {
     return null;
   }
+
+  const language = getLanguageVariableAndArg(addLanguageVariable);
 
   const query = {
     query: {
       __name: createGetObjectAvailabilityQueryName(object.name),
       __variables: {
         ...common.variables,
+        ...language.variables,
         uid: "String",
         externalId: "String",
         nextToken: "String",
@@ -231,6 +247,7 @@ export const createGetObjectAvailabilityQuery = (
         __aliasFor: object.operations.get.name,
         __args: {
           ...common.args,
+          ...language.args,
           uid: new VariableType("uid"),
           external_id: new VariableType("externalId"),
         },
@@ -282,41 +299,6 @@ export const createGetObjectAvailabilityQuery = (
   return gql(graphQLQuery);
 };
 
-export const createListObjectQuery = (object: SkylarkObjectMeta | null) => {
-  if (!object || !object.operations.list) {
-    return null;
-  }
-
-  const query = {
-    query: {
-      __name: `LIST_${object.name}`,
-      __variables: {
-        ...common.variables,
-        nextToken: "String",
-      },
-      listSkylarkObjects: {
-        __aliasFor: object.operations.list.name,
-
-        __args: {
-          ...common.args,
-          limit: 50, // max
-          next_token: new VariableType("nextToken"),
-        },
-        count: true,
-        next_token: true,
-        objects: {
-          ...common.objectConfig,
-          ...generateFieldsToReturn(object.fields),
-          ...generateRelationshipsToReturn(object),
-        },
-      },
-    },
-  };
-  const graphQLQuery = jsonToGraphQLQuery(query);
-
-  return gql(graphQLQuery);
-};
-
 export const createSearchObjectsQuery = (
   objects: SkylarkObjectMeta[],
   typesToRequest: string[],
@@ -331,15 +313,17 @@ export const createSearchObjectsQuery = (
     return null;
   }
 
+  const language = getLanguageVariableAndArg(true);
+
   const query = {
     query: {
       __name: "SEARCH",
       __variables: {
         ...common.variables,
+        ...language.variables,
         queryString: "String!",
         offset: "Int",
         limit: "Int",
-        language: "String",
       },
       search: {
         __args: {
@@ -348,7 +332,7 @@ export const createSearchObjectsQuery = (
           offset: new VariableType("offset"),
           limit: new VariableType("limit"),
           // language: null, TODO disable language searching when language filter is added
-          language: new VariableType("language"),
+          ...language.args,
         },
         __typename: true,
         objects: {
@@ -373,10 +357,13 @@ export const createSearchObjectsQuery = (
 export const createGetObjectRelationshipsQuery = (
   object: SkylarkObjectMeta | null,
   relationshipsFields: { [key: string]: NormalizedObjectField[] },
+  addLanguageVariable: boolean,
 ) => {
   if (!object || !object.operations.get) {
     return null;
   }
+
+  const language = getLanguageVariableAndArg(addLanguageVariable);
 
   const query = {
     query: {
@@ -385,11 +372,13 @@ export const createGetObjectRelationshipsQuery = (
         uid: "String",
         nextToken: "String",
         ...common.variables,
+        ...language.variables,
       },
       getObjectRelationships: {
         __aliasFor: object.operations.get.name,
         __args: {
           ...common.args,
+          ...language.args,
           uid: new VariableType("uid"),
         },
         ...object.relationships.reduce((acc, currentValue) => {
