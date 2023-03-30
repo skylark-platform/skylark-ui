@@ -56,7 +56,7 @@ export interface ObjectListProps {
 
 const createColumns = (
   columns: string[],
-  opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
+  opts: { withObjectSelect?: boolean },
   setPanelObject?: ObjectListProps["onInfoClick"],
 ) => {
   const objectTypeColumn = columnHelper.accessor(
@@ -144,23 +144,7 @@ const createColumns = (
 
   const actionColumn = columnHelper.display({
     id: OBJECT_LIST_TABLE.columnIds.actions,
-    cell: ({ table, row }) => {
-      const {
-        uid,
-        objectType,
-        meta: { language },
-      } = row.original as ParsedSkylarkObject;
-      return (
-        <RowActions
-          editRowEnabled={opts.withObjectEdit}
-          inEditMode={table.options.meta?.rowInEditMode === row.id}
-          onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() => setPanelObject?.({ objectType, uid, language })}
-          onEditSaveClick={() => console.log(row)}
-          onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
-        />
-      );
-    },
+    cell: (props) => <TableCell {...props} />,
   });
 
   const orderedColumnArray = [
@@ -184,7 +168,7 @@ const createColumns = (
 export const ObjectList = ({
   withCreateButtons,
   withObjectSelect,
-  withObjectEdit,
+  withObjectEdit = false,
   onInfoClick,
   isDragging,
   isPanelOpen,
@@ -224,13 +208,8 @@ export const ObjectList = ({
   }, [properties]);
 
   const parsedColumns = useMemo(
-    () =>
-      createColumns(
-        sortedHeaders,
-        { withObjectSelect, withObjectEdit },
-        onInfoClick,
-      ),
-    [sortedHeaders, withObjectEdit, withObjectSelect, onInfoClick],
+    () => createColumns(sortedHeaders, { withObjectSelect }, onInfoClick),
+    [sortedHeaders, withObjectSelect, onInfoClick],
   );
 
   const [rowInEditMode, setRowInEditMode] = useState("");
@@ -299,6 +278,7 @@ export const ObjectList = ({
     },
     meta: {
       rowInEditMode,
+      withObjectEdit,
       onEditClick(rowId) {
         setRowInEditMode(rowId);
       },
