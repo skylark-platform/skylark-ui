@@ -22,11 +22,18 @@ const systemFields: string[] = [
   SkylarkSystemField.ExternalID,
   SkylarkSystemField.Slug,
 ];
-const objectOptions: Record<SkylarkObjectType, { fieldsToHide: string[] }> = {
-  Image: {
+const objectOptions: {
+  objectTypes: SkylarkObjectType[];
+  fieldsToHide: string[];
+}[] = [
+  {
+    objectTypes: [
+      BuiltInSkylarkObjectType.SkylarkImage,
+      BuiltInSkylarkObjectType.BetaSkylarkImage,
+    ],
     fieldsToHide: ["external_url", "upload_url", "download_from_url"],
   },
-};
+];
 
 interface PanelMetadataProps {
   objectType: SkylarkObjectType;
@@ -77,8 +84,9 @@ export const PanelMetadata = ({
   objectType,
   objectMeta,
 }: PanelMetadataProps) => {
-  const options =
-    hasProperty(objectOptions, objectType) && objectOptions[objectType];
+  const options = objectOptions.find(({ objectTypes }) =>
+    objectTypes.includes(objectType),
+  );
 
   const {
     systemMetadataFields,
