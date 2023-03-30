@@ -15,7 +15,7 @@ import {
   SkylarkObjectType,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-import { formatObjectField, hasProperty } from "src/lib/utils";
+import { formatObjectField } from "src/lib/utils";
 
 const systemFields: string[] = [
   SkylarkSystemField.UID,
@@ -139,7 +139,7 @@ export const PanelMetadata = ({
 
   return (
     <div
-      className="overflow-anywhere h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20"
+      className="h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20"
       data-testid="panel-metadata"
     >
       {metadata && (

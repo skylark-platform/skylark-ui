@@ -12,8 +12,9 @@ import { useMemo } from "react";
 import { VirtualItem } from "react-virtual";
 
 import { Spinner } from "src/components/icons";
+import { RowActions } from "src/components/objectListing/rowActions";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import { ParsedSkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
 
 import { DisplayNameTableCell } from "./cell";
 
@@ -153,10 +154,12 @@ const TableData = ({
   cell,
   withCheckbox,
   tableMeta,
+  openPanel,
 }: {
   cell: Cell<ParsedSkylarkObject, unknown>;
   withCheckbox?: boolean;
   tableMeta: TableMeta<object> | undefined;
+  openPanel: () => void;
 }) => {
   const className = useMemo(
     () =>
@@ -193,6 +196,22 @@ const TableData = ({
     );
   }
 
+  if (cell.column.id === OBJECT_LIST_TABLE.columnIds.actions) {
+    const rowInEditMode = tableMeta?.rowInEditMode === cell.row.id || false;
+    return (
+      <td key={cell.id} className={className}>
+        <RowActions
+          editRowEnabled={tableMeta?.withObjectEdit}
+          inEditMode={rowInEditMode}
+          onEditClick={() => tableMeta?.onEditClick(cell.row.id)}
+          onInfoClick={openPanel}
+          onEditSaveClick={() => console.log(cell.row)}
+          onEditCancelClick={() => tableMeta?.onEditCancelClick()}
+        />
+      </td>
+    );
+  }
+
   return (
     <td key={cell.id} className={className}>
       {children}
@@ -220,6 +239,11 @@ const TableRow = ({
     },
     disabled: !withDraggableRow,
   });
+
+  const openPanel = () => {
+    setPanelObject?.({ uid, objectType, language });
+  };
+
   return (
     <tr
       ref={setNodeRef}
@@ -228,7 +252,7 @@ const TableRow = ({
       key={row.id}
       className={clsx("align-middle outline-none", rowClassName)}
       tabIndex={-1}
-      onDoubleClick={() => setPanelObject?.({ uid, objectType, language })}
+      onDoubleClick={openPanel}
       style={{
         height: `${virtualRowSize}px`,
       }}
@@ -239,6 +263,7 @@ const TableRow = ({
           key={cell.id}
           cell={cell}
           withCheckbox={withCheckbox}
+          openPanel={openPanel}
         />
       ))}
     </tr>

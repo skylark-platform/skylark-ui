@@ -34,7 +34,7 @@ export const PanelRelationships = ({
   >({});
 
   return (
-    <div className="overflow-anywhere relative h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20">
+    <div className="relative h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20">
       <div>
         {relationships &&
           relationships.map((relationship) => {
