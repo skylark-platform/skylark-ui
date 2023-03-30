@@ -18,8 +18,14 @@ import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObject,
+  SkylarkGraphQLObjectImage,
+  ParsedSkylarkObjectImageRelationship,
 } from "src/interfaces/skylark";
-import { formatObjectField, getObjectDisplayName } from "src/lib/utils";
+import {
+  formatObjectField,
+  getObjectDisplayName,
+  hasProperty,
+} from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
 import { RowActions } from "./rowActions";
@@ -27,9 +33,9 @@ import { Search } from "./search";
 import { Table, TableCell } from "./table";
 
 const hardcodedColumns = [
+  OBJECT_LIST_TABLE.columnIds.translation,
   OBJECT_LIST_TABLE.columnIds.availability,
   OBJECT_LIST_TABLE.columnIds.images,
-  OBJECT_LIST_TABLE.columnIds.translations,
 ];
 const orderedKeys = ["uid", "external_id", "data_source_id"];
 
@@ -40,20 +46,18 @@ export interface ObjectListProps {
   withObjectSelect?: boolean;
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
-  onInfoClick?: (obj: { uid: string; objectType: string }) => void;
+  onInfoClick?: (obj: {
+    uid: string;
+    objectType: string;
+    language: string;
+  }) => void;
   isDragging?: boolean;
 }
 
 const createColumns = (
   columns: string[],
   opts: { withObjectSelect?: boolean; withObjectEdit?: boolean },
-  setPanelObject?: ({
-    objectType,
-    uid,
-  }: {
-    objectType: string;
-    uid: string;
-  }) => void,
+  setPanelObject?: ObjectListProps["onInfoClick"],
 ) => {
   const objectTypeColumn = columnHelper.accessor(
     OBJECT_LIST_TABLE.columnIds.objectType,
@@ -90,10 +94,10 @@ const createColumns = (
     },
   );
 
-  const languagesColumn = columnHelper.accessor(
-    OBJECT_LIST_TABLE.columnIds.translations,
+  const translationColumn = columnHelper.accessor(
+    OBJECT_LIST_TABLE.columnIds.translation,
     {
-      header: formatObjectField("Translations"),
+      header: formatObjectField("Translation"),
       cell: (props) => <TableCell {...props} />,
     },
   );
@@ -110,14 +114,20 @@ const createColumns = (
   // const imagesColumn = columnHelper.accessor("images", {
   //   header: formatObjectField("Images"),
   //   cell: (props) => {
-  //     const images = props.getValue<SkylarkGraphQLObjectImage[]>();
-  //     if (!images || images.length === 0) {
+  //     const imageRelationships =
+  //       props.getValue<ParsedSkylarkObjectImageRelationship[]>();
+  //     const allImages = imageRelationships.flatMap(({ objects }) => objects);
+  //     if (
+  //       !imageRelationships ||
+  //       imageRelationships.length === 0 ||
+  //       allImages.length === 0
+  //     ) {
   //       return "";
   //     }
 
   //     return (
   //       <div>
-  //         {images.map(({ uid, url, title }) => (
+  //         {allImages.map(({ uid, url, title }) => (
   //           // eslint-disable-next-line @next/next/no-img-element
   //           <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
   //         ))}
@@ -135,16 +145,17 @@ const createColumns = (
   const actionColumn = columnHelper.display({
     id: OBJECT_LIST_TABLE.columnIds.actions,
     cell: ({ table, row }) => {
-      const { uid, __typename: objectType } = row.original as {
-        uid: string;
-        __typename: string;
-      };
+      const {
+        uid,
+        objectType,
+        meta: { language },
+      } = row.original as ParsedSkylarkObject;
       return (
         <RowActions
           editRowEnabled={opts.withObjectEdit}
           inEditMode={table.options.meta?.rowInEditMode === row.id}
           onEditClick={() => table.options.meta?.onEditClick(row.id)}
-          onInfoClick={() => setPanelObject?.({ objectType, uid })}
+          onInfoClick={() => setPanelObject?.({ objectType, uid, language })}
           onEditSaveClick={() => console.log(row)}
           onEditCancelClick={() => table.options.meta?.onEditCancelClick()}
         />
@@ -155,9 +166,9 @@ const createColumns = (
   const orderedColumnArray = [
     objectTypeColumn,
     displayNameColumn,
+    translationColumn,
     // imagesColumn,
     availabilityColumn,
-    languagesColumn,
     ...createdColumns,
   ];
   if (opts.withObjectSelect) {
@@ -182,6 +193,7 @@ export const ObjectList = ({
   const { objectTypes } = useSkylarkObjectTypes();
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     objectTypes: null,
+    language: null,
   });
 
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -222,9 +234,9 @@ export const ObjectList = ({
   );
 
   const [rowInEditMode, setRowInEditMode] = useState("");
-  const [columnVisibility, setColumnVisibility] = useState<
-    VisibilityState | undefined
-  >(undefined);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    Object.fromEntries(sortedHeaders.map((header) => [header, true])),
+  );
 
   const formattedSearchData = useMemo(() => {
     const searchDataWithDisplayField = searchData?.map((obj) => {
@@ -233,8 +245,7 @@ export const ObjectList = ({
         // When the object type is an image, we want to display its preview in the images tab
         images: obj.objectType === "Image" ? [obj.metadata] : obj.images,
         [OBJECT_LIST_TABLE.columnIds.displayField]: getObjectDisplayName(obj),
-        [OBJECT_LIST_TABLE.columnIds.translations]:
-          obj.meta.availableLanguages?.join(", "),
+        [OBJECT_LIST_TABLE.columnIds.translation]: obj.meta.language,
       };
     });
 
@@ -307,6 +318,24 @@ export const ObjectList = ({
     }
   }, [objectTypes, searchFilters]);
 
+  useEffect(() => {
+    // Update the column visibility when new fields are added
+    if (sortedHeaders && sortedHeaders.length !== 0) {
+      const headersWithoutVisibility = sortedHeaders.filter(
+        (header) => !hasProperty(columnVisibility, header),
+      );
+      if (headersWithoutVisibility.length > 0) {
+        const newColumns = Object.fromEntries(
+          headersWithoutVisibility.map((header) => [header, true]),
+        );
+        setColumnVisibility({
+          ...columnVisibility,
+          ...newColumns,
+        });
+      }
+    }
+  }, [sortedHeaders, columnVisibility]);
+
   const onFilterChangeWrapper = (
     updatedFilters: SearchFilters,
     updatedColumnVisibility: VisibilityState,
@@ -357,13 +386,7 @@ export const ObjectList = ({
             onQueryChange={setSearchQuery}
             activeFilters={searchFilters}
             columns={sortedHeaders}
-            visibleColumns={
-              columnVisibility !== undefined
-                ? Object.keys(columnVisibility).filter(
-                    (col) => !!columnVisibility[col],
-                  )
-                : sortedHeaders
-            }
+            visibleColumns={columnVisibility}
             onFilterChange={onFilterChangeWrapper}
           />
         </div>

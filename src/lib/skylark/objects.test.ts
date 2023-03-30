@@ -70,8 +70,9 @@ describe("getObjectOperations", () => {
       GQLSkylarkSchemaQueryFixture.data.__schema,
     );
     expect(got.images).toBeTruthy();
-    expect(got.images?.name).toEqual("Image");
-    expect(got.images?.fields.length).toEqual(12);
+    expect(got.images?.relationshipNames).toEqual(["images"]);
+    expect(got.images?.objectMeta.name).toEqual("Image");
+    expect(got.images?.objectMeta.fields.length).toEqual(12);
   });
 
   test("throws when an operation doesn't exist for an object type", () => {
@@ -80,7 +81,9 @@ describe("getObjectOperations", () => {
         "NonExistantObject",
         GQLSkylarkSchemaQueryFixture.data.__schema,
       ),
-    ).toThrow("Skylark ObjectType is missing expected operation");
+    ).toThrow(
+      'Skylark ObjectType "NonExistantObject" is missing expected operations "getQuery, listQuery, createMutation, updateMutation, deleteMutation"',
+    );
   });
 });
 

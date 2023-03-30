@@ -62,7 +62,17 @@ export interface ParsedSkylarkObjectConfig {
 }
 
 export interface ParsedSkylarkObjectMeta {
-  availableLanguages?: string[];
+  language: string;
+  availableLanguages: string[];
+  versions?: {
+    language?: number;
+    global?: number;
+  };
+}
+
+export interface ParsedSkylarkObjectImageRelationship {
+  relationshipName: string;
+  objects: SkylarkGraphQLObjectImage[];
 }
 
 export interface ParsedSkylarkObject {
@@ -72,7 +82,12 @@ export interface ParsedSkylarkObject {
   meta: ParsedSkylarkObjectMeta;
   metadata: ParsedSkylarkObjectMetadata;
   availability: ParsedSkylarkObjectAvailability;
-  images?: SkylarkGraphQLObjectImage[];
-  relationships: string[];
+  images?: ParsedSkylarkObjectImageRelationship[];
   content?: ParsedSkylarkObjectContent;
+}
+
+export interface ParsedSkylarkObjectRelationships {
+  relationshipName: string;
+  nextToken?: string | null;
+  objects: ParsedSkylarkObject[];
 }

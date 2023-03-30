@@ -4,7 +4,7 @@ import { Panel } from "src/components/panel";
 
 const Object = () => {
   const router = useRouter();
-  const { objectType, uid } = router.query;
+  const { objectType, uid, language } = router.query;
 
   return (
     <div className="pt-nav flex w-full">
@@ -15,7 +15,11 @@ const Object = () => {
             maxHeight: `calc(100vh - 4rem)`,
           }}
         >
-          <Panel uid={uid as string} objectType={objectType as string} />
+          <Panel
+            uid={uid as string}
+            objectType={objectType as string}
+            language={(language as string) || ""}
+          />
         </div>
       )}
     </div>

@@ -3,7 +3,7 @@ import { hasOperationName } from "../support/utils/graphqlTestUtils";
 describe("Auth", () => {
   beforeEach(() => {
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "IntrospectionQuery")) {
+      if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
         req.reply({
           statusCode: 401,
         });
@@ -37,9 +37,9 @@ describe("Auth", () => {
       tokenInput.type("access-token");
 
       cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-        if (hasOperationName(req, "IntrospectionQuery")) {
+        if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
           req.reply({
-            fixture: "./skylark/queries/introspection/introspectionQuery.json",
+            fixture: "./skylark/queries/introspection/objectTypes.json",
           });
         }
       });
@@ -75,9 +75,9 @@ describe("Auth", () => {
   it("when already logged in, can open using the Connected button and close by clicking outside", () => {
     cy.login();
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "IntrospectionQuery")) {
+      if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
         req.reply({
-          fixture: "./skylark/queries/introspection/introspectionQuery.json",
+          fixture: "./skylark/queries/introspection/objectTypes.json",
         });
       }
     });

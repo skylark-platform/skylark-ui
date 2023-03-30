@@ -66,6 +66,7 @@ export const SKYLARK_SCHEMA_INTROSPECTION_QUERY_NAME = "IntrospectionQuery";
 export const SKYLARK_SCHEMA_INTROSPECTION_QUERY = getIntrospectionQuery();
 
 // The "ObjectTypes" enum is updated when an object is added or removed from Skylark
+// This is used to check the user is connected to Skylark + in tests
 export const GET_SKYLARK_OBJECT_TYPES = gql`
   query GET_SKYLARK_OBJECT_TYPES {
     __type(name: "Metadata") {

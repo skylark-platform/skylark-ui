@@ -3,12 +3,12 @@ import { InView } from "react-intersection-observer";
 import { Spinner } from "src/components/icons";
 
 interface PanelLoadingProps {
-  loadMore: () => void;
+  loadMore?: () => void;
   isLoading?: boolean;
 }
 
 export const PanelLoading = ({ loadMore, isLoading }: PanelLoadingProps) => (
-  <InView as="div" onChange={(inView) => inView && loadMore()}>
+  <InView as="div" onChange={(inView) => inView && loadMore?.()}>
     {isLoading && (
       <div
         data-chromatic="ignore"

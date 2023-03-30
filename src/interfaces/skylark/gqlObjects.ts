@@ -10,6 +10,13 @@ export interface SkylarkGraphQLObjectConfig {
 
 export interface SkylarkGraphQLObjectMeta {
   available_languages: string[];
+  language_data: {
+    language: string;
+    version: number;
+  };
+  global_data: {
+    version: number;
+  };
 }
 
 export interface SkylarkGraphQLAvailabilityDimensionValue {
@@ -47,7 +54,7 @@ export interface SkylarkGraphQLAvailability {
 }
 
 export interface SkylarkGraphQLObjectRelationship {
-  nextToken?: NextToken;
+  next_token?: NextToken;
   objects: object[]; // TODO make this a Record like SkylarkGraphQLObject
 }
 

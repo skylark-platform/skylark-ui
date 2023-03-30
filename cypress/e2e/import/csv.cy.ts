@@ -64,10 +64,10 @@ describe("Import/CSV", () => {
   it("select objectType", () => {
     cy.contains("Download Example CSV").should("have.class", "btn-disabled");
     cy.get('[data-cy="select"]').click();
-    cy.get('[data-cy="select-options"]').should("be.visible");
+    cy.get('[data-testid="select-options"]').should("be.visible");
     cy.percySnapshot("import/csv - objectType select open");
 
-    cy.get('[data-cy="select-options"]')
+    cy.get('[data-testid="select-options"]')
       .get("li > span")
       .contains("Episode")
       .click();
@@ -87,8 +87,8 @@ describe("Import/CSV", () => {
 
   it("opens and closes Flatfile", () => {
     cy.get('[data-cy="select"]').click();
-    cy.get('[data-cy="select-options"]').should("be.visible");
-    cy.get('[data-cy="select-options"]')
+    cy.get('[data-testid="select-options"]').should("be.visible");
+    cy.get('[data-testid="select-options"]')
       .get("li > span")
       .contains("Episode")
       .click();
@@ -145,8 +145,8 @@ describe("Import/CSV", () => {
 
     it("import a csv through Flatfile", { retries: 0 }, () => {
       cy.get('[data-cy="select"]').click();
-      cy.get('[data-cy="select-options"]').should("be.visible");
-      cy.get('[data-cy="select-options"]')
+      cy.get('[data-testid="select-options"]').should("be.visible");
+      cy.get('[data-testid="select-options"]')
         .get("li > span")
         .contains("Episode")
         .click();
@@ -190,8 +190,8 @@ describe("Import/CSV", () => {
       });
 
       cy.get('[data-cy="select"]').click();
-      cy.get('[data-cy="select-options"]').should("be.visible");
-      cy.get('[data-cy="select-options"]')
+      cy.get('[data-testid="select-options"]').should("be.visible");
+      cy.get('[data-testid="select-options"]')
         .get("li > span")
         .contains("Episode")
         .click();
@@ -228,8 +228,8 @@ describe("Import/CSV", () => {
 
     it("can click new import to reset the state", () => {
       cy.get('[data-cy="select"]').click();
-      cy.get('[data-cy="select-options"]').should("be.visible");
-      cy.get('[data-cy="select-options"]')
+      cy.get('[data-testid="select-options"]').should("be.visible");
+      cy.get('[data-testid="select-options"]')
         .get("li > span")
         .contains("Episode")
         .click();

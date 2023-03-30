@@ -41,6 +41,10 @@ test("open metadata panel, check information and close", async () => {
     expect(screen.getByTestId("panel-header")).toBeInTheDocument(),
   );
 
+  await waitFor(() =>
+    expect(screen.getByTestId("panel-metadata")).toBeInTheDocument(),
+  );
+
   const panelHeader = screen.getByTestId("panel-header");
   expect(
     within(panelHeader).getByText("All Avail Test Movie"),

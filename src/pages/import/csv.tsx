@@ -1,7 +1,7 @@
 import { useState, useReducer, useEffect } from "react";
 
 import { Button } from "src/components/button";
-import { Select } from "src/components/select/select.component";
+import { Select } from "src/components/select";
 import { StatusCard, statusType } from "src/components/statusCard";
 import { LOCAL_STORAGE } from "src/constants/skylark";
 import {
@@ -294,6 +294,8 @@ export default function CSVImportPage() {
           Import from CSV
         </h2>
         <Select
+          variant="primary"
+          selected={objectType}
           options={objectTypeOptions}
           placeholder="Select Skylark object"
           label="Select your Skylark object type"

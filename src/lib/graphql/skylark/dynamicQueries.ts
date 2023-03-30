@@ -6,9 +6,10 @@ import {
 } from "json-to-graphql-query";
 
 import {
-  BuiltInSkylarkObjectType,
+  NormalizedObjectField,
   SkylarkGraphQLObject,
   SkylarkObjectMeta,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
 
 const common = {
@@ -27,11 +28,32 @@ const common = {
   objectMeta: {
     _meta: {
       available_languages: true,
+      language_data: {
+        language: true,
+        version: true,
+      },
+      global_data: {
+        version: true,
+      },
     },
   },
 };
 
-const fieldNamesToNeverAlias = ["uid", "external_id"];
+const fieldNamesToNeverAlias: string[] = [
+  SkylarkSystemField.UID,
+  SkylarkSystemField.ExternalID,
+];
+
+const getLanguageVariableAndArg = (addLanguageVariable?: boolean) => {
+  const args = addLanguageVariable
+    ? { language: new VariableType("language") }
+    : {};
+  const variables = addLanguageVariable ? { language: "String" } : {};
+  return {
+    args,
+    variables,
+  };
+};
 
 const generateFieldsToReturn = (
   fields: SkylarkObjectMeta["fields"],
@@ -82,16 +104,18 @@ const generateRelationshipsToReturn = (
     };
   }
 
-  if (!isSearch && object.images) {
-    relationshipsToReturn.images = {
-      __args: {
-        limit: isSearch ? 5 : 50, // max
-      },
-      next_token: true,
-      objects: {
-        ...generateFieldsToReturn(object.images?.fields),
-      },
-    };
+  if (!isSearch && object.images && object.images.objectMeta?.fields) {
+    object.images.relationshipNames.forEach((relationshipName) => {
+      relationshipsToReturn[relationshipName] = {
+        __args: {
+          limit: isSearch ? 5 : 50, // max
+        },
+        next_token: true,
+        objects: {
+          ...generateFieldsToReturn(object.images?.objectMeta.fields || []),
+        },
+      };
+    });
   }
 
   return relationshipsToReturn;
@@ -101,12 +125,7 @@ export const generateContentsToReturn = (
   object: SkylarkObjectMeta | null,
   objectsToRequest: SkylarkObjectMeta[],
 ) => {
-  // Only Set has contents
-  if (
-    !object ||
-    object.name !== BuiltInSkylarkObjectType.Set ||
-    objectsToRequest.length === 0
-  ) {
+  if (!object || !object.hasContent || objectsToRequest.length === 0) {
     return {};
   }
 
@@ -158,19 +177,26 @@ export const createGetObjectQueryName = (objectType: string) =>
 export const createGetObjectAvailabilityQueryName = (objectType: string) =>
   `GET_${objectType}_AVAILABILITY`;
 
+export const createGetObjectRelationshipsQueryName = (objectType: string) =>
+  `GET_${objectType}_RELATIONSHIPS`;
+
 export const createGetObjectQuery = (
   object: SkylarkObjectMeta | null,
   contentTypesToRequest: SkylarkObjectMeta[],
+  addLanguageVariable?: boolean,
 ) => {
   if (!object || !object.operations.get) {
     return null;
   }
+
+  const language = getLanguageVariableAndArg(addLanguageVariable);
 
   const query = {
     query: {
       __name: createGetObjectQueryName(object.name),
       __variables: {
         ...common.variables,
+        ...language.variables, // TODO always send language variable when BE supports sending null without error
         uid: "String",
         externalId: "String",
       },
@@ -178,9 +204,11 @@ export const createGetObjectQuery = (
         __aliasFor: object.operations.get.name,
         __args: {
           ...common.args,
+          ...language.args, // TODO always send language variable when BE supports sending null without error
           uid: new VariableType("uid"),
           external_id: new VariableType("externalId"),
         },
+        __typename: true,
         ...common.objectConfig,
         ...common.objectMeta,
         ...generateFieldsToReturn(object.fields),
@@ -197,16 +225,20 @@ export const createGetObjectQuery = (
 
 export const createGetObjectAvailabilityQuery = (
   object: SkylarkObjectMeta | null,
+  addLanguageVariable: boolean,
 ) => {
   if (!object || !object.operations.get) {
     return null;
   }
+
+  const language = getLanguageVariableAndArg(addLanguageVariable);
 
   const query = {
     query: {
       __name: createGetObjectAvailabilityQueryName(object.name),
       __variables: {
         ...common.variables,
+        ...language.variables,
         uid: "String",
         externalId: "String",
         nextToken: "String",
@@ -215,6 +247,7 @@ export const createGetObjectAvailabilityQuery = (
         __aliasFor: object.operations.get.name,
         __args: {
           ...common.args,
+          ...language.args,
           uid: new VariableType("uid"),
           external_id: new VariableType("externalId"),
         },
@@ -266,41 +299,6 @@ export const createGetObjectAvailabilityQuery = (
   return gql(graphQLQuery);
 };
 
-export const createListObjectQuery = (object: SkylarkObjectMeta | null) => {
-  if (!object || !object.operations.list) {
-    return null;
-  }
-
-  const query = {
-    query: {
-      __name: `LIST_${object.name}`,
-      __variables: {
-        ...common.variables,
-        nextToken: "String",
-      },
-      listSkylarkObjects: {
-        __aliasFor: object.operations.list.name,
-
-        __args: {
-          ...common.args,
-          limit: 50, // max
-          next_token: new VariableType("nextToken"),
-        },
-        count: true,
-        next_token: true,
-        objects: {
-          ...common.objectConfig,
-          ...generateFieldsToReturn(object.fields),
-          ...generateRelationshipsToReturn(object),
-        },
-      },
-    },
-  };
-  const graphQLQuery = jsonToGraphQLQuery(query);
-
-  return gql(graphQLQuery);
-};
-
 export const createSearchObjectsQuery = (
   objects: SkylarkObjectMeta[],
   typesToRequest: string[],
@@ -315,11 +313,14 @@ export const createSearchObjectsQuery = (
     return null;
   }
 
+  const language = getLanguageVariableAndArg(true);
+
   const query = {
     query: {
       __name: "SEARCH",
       __variables: {
         ...common.variables,
+        ...language.variables,
         queryString: "String!",
         offset: "Int",
         limit: "Int",
@@ -331,6 +332,7 @@ export const createSearchObjectsQuery = (
           offset: new VariableType("offset"),
           limit: new VariableType("limit"),
           // language: null, TODO disable language searching when language filter is added
+          ...language.args,
         },
         __typename: true,
         objects: {
@@ -343,6 +345,62 @@ export const createSearchObjectsQuery = (
             ...generateRelationshipsToReturn(object, true),
           })),
         },
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(query);
+
+  return gql(graphQLQuery);
+};
+
+export const createGetObjectRelationshipsQuery = (
+  object: SkylarkObjectMeta | null,
+  relationshipsFields: { [key: string]: NormalizedObjectField[] },
+  addLanguageVariable: boolean,
+) => {
+  if (!object || !object.operations.get) {
+    return null;
+  }
+
+  const language = getLanguageVariableAndArg(addLanguageVariable);
+
+  const query = {
+    query: {
+      __name: createGetObjectRelationshipsQueryName(object.name),
+      __variables: {
+        uid: "String",
+        nextToken: "String",
+        ...common.variables,
+        ...language.variables,
+      },
+      getObjectRelationships: {
+        __aliasFor: object.operations.get.name,
+        __args: {
+          ...common.args,
+          ...language.args,
+          uid: new VariableType("uid"),
+        },
+        ...object.relationships.reduce((acc, currentValue) => {
+          return {
+            ...acc,
+            [currentValue.relationshipName]: {
+              __args: {
+                limit: 50,
+                next_token: new VariableType("nextToken"),
+              },
+              next_token: true,
+              objects: {
+                uid: true,
+                __typename: true,
+                ...generateFieldsToReturn(
+                  relationshipsFields[currentValue.objectType],
+                ),
+                ...common.objectConfig,
+              },
+            },
+          };
+        }, {}),
       },
     },
   };

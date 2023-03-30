@@ -11,8 +11,14 @@ import {
   ParsedSkylarkObjectContent,
   ParsedSkylarkObjectMetadata,
   SkylarkObjectRelationship,
+  SkylarkGraphQLObject,
+  ParsedSkylarkObjectImageRelationship,
+  SkylarkObjectMeta,
+  ParsedSkylarkObject,
+  SkylarkGraphQLObjectImage,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
+import { hasProperty, isObject } from "src/lib/utils";
 
 import { getObjectAvailabilityStatus } from "./availability";
 
@@ -173,4 +179,64 @@ export const parseObjectContent = (
   return {
     objects: normalisedContentObjects || [],
   };
+};
+
+export const parseSkylarkObject = (
+  object: SkylarkGraphQLObject,
+  objectMeta?: SkylarkObjectMeta | null,
+): ParsedSkylarkObject => {
+  // TODO split into Language and Global
+  const metadata: ParsedSkylarkObject["metadata"] = {
+    ...Object.keys(object).reduce((prev, key) => {
+      return {
+        ...prev,
+        ...(!isObject(object[key]) ? { [key]: object[key] } : {}),
+      };
+    }, {}),
+    uid: object.uid,
+    external_id: object.external_id || "",
+  };
+  const availability = parseObjectAvailability(object?.availability);
+
+  const images =
+    objectMeta?.images?.relationshipNames.map(
+      (imageField): ParsedSkylarkObjectImageRelationship => {
+        const parsedImages =
+          hasProperty(object, imageField) &&
+          parseObjectRelationship<SkylarkGraphQLObjectImage>(
+            object[imageField] as SkylarkGraphQLObjectRelationship,
+          );
+        return {
+          relationshipName: imageField,
+          objects: parsedImages || [],
+        };
+      },
+    ) || [];
+
+  const content = hasProperty(object, "content")
+    ? parseObjectContent(object.content)
+    : undefined;
+
+  return (
+    object && {
+      objectType: object.__typename,
+      uid: object.uid,
+      config: {
+        colour: object._config?.colour,
+        primaryField: object._config?.primary_field,
+      },
+      meta: {
+        language: object._meta?.language_data.language || "",
+        availableLanguages: object._meta?.available_languages || [],
+        versions: {
+          language: object._meta?.language_data.version,
+          global: object._meta?.global_data.version,
+        },
+      },
+      metadata,
+      availability,
+      images,
+      content,
+    }
+  );
 };

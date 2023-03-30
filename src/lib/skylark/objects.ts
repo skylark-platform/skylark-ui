@@ -4,6 +4,8 @@ import {
   SkylarkObjectMeta,
   SkylarkObjectOperations,
   BuiltInSkylarkObjectType,
+  SkylarkSystemField,
+  SkylarkSystemGraphQLType,
 } from "src/interfaces/skylark";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
@@ -22,8 +24,8 @@ const getObjectFieldsFromGetQuery = (
   return objectFields;
 };
 
-const objectHasRelationship = (
-  relationship: "availability" | "images",
+const objectHasRelationshipFromField = (
+  relationshipField: "images" | SkylarkSystemField,
   getQuery: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"][0],
 ) => {
   if (!getQuery || !getQuery.type || !getQuery.type.fields) {
@@ -31,8 +33,47 @@ const objectHasRelationship = (
   }
 
   return getQuery.type.fields.some(
-    (field) => field.name === relationship && field.type.kind === "OBJECT",
+    (field) => field.name === relationshipField && field.type.kind === "OBJECT",
   );
+};
+
+const objectRelationshipFieldsFromGraphQLType = (
+  type: SkylarkSystemGraphQLType,
+  getQuery: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"][0],
+): {
+  objectType: SkylarkObjectType;
+  relationshipNames: string[];
+} | null => {
+  if (!getQuery || !getQuery.type || !getQuery.type.fields) {
+    return null;
+  }
+
+  const relationships = getQuery.type.fields
+    .filter((field) => field.type.name === type && field.type.kind === "OBJECT")
+    .map((field) => {
+      // Naive implementation, just removes Listing from ImageListing
+      const objectType =
+        field.type.name?.substring(
+          0,
+          field.type.name?.lastIndexOf("Listing"),
+        ) || "";
+      return {
+        objectType,
+        relationshipName: field.name,
+      };
+    });
+
+  if (relationships.length === 0) {
+    return null;
+  }
+
+  return {
+    // For now, image's can't be inherited like sets
+    objectType: relationships[0].objectType,
+    relationshipNames: relationships.map(
+      ({ relationshipName }) => relationshipName,
+    ),
+  };
 };
 
 const getMutationInfo = (
@@ -83,21 +124,50 @@ export const getObjectOperations = (
     !updateMutation ||
     !deleteMutation
   ) {
-    throw new Error("Skylark ObjectType is missing expected operation");
+    const missingOperations = [
+      !getQuery && "getQuery",
+      !listQuery && "listQuery",
+      !createMutation && "createMutation",
+      !updateMutation && "updateMutation",
+      !deleteMutation && "deleteMutation",
+    ]
+      .filter((str) => str)
+      .join(", ");
+    throw new Error(
+      `Skylark ObjectType "${objectType}" is missing expected operations "${missingOperations}"`,
+    );
   }
 
   const objectFields = getObjectFieldsFromGetQuery(getQuery);
-  const hasImages = objectHasRelationship("images", getQuery);
-  const images = hasImages
-    ? getObjectOperations(BuiltInSkylarkObjectType.Image, {
+
+  const hasAvailability = objectHasRelationshipFromField(
+    SkylarkSystemField.Availability,
+    getQuery,
+  );
+  const availability = hasAvailability
+    ? getObjectOperations(BuiltInSkylarkObjectType.Availability, {
         queryType,
         mutationType,
       })
     : null;
 
-  const hasAvailability = objectHasRelationship("availability", getQuery);
-  const availability = hasAvailability
-    ? getObjectOperations(BuiltInSkylarkObjectType.Availability, {
+  const hasContent = objectHasRelationshipFromField(
+    SkylarkSystemField.Content,
+    getQuery,
+  );
+
+  // TODO when Beta 1 environments are turned off, remove the BetaSkylarkImageListing check
+  const imageRelationships =
+    objectRelationshipFieldsFromGraphQLType(
+      SkylarkSystemGraphQLType.SkylarkImageListing,
+      getQuery,
+    ) ||
+    objectRelationshipFieldsFromGraphQLType(
+      SkylarkSystemGraphQLType.BetaSkylarkImageListing,
+      getQuery,
+    );
+  const imageOperations = imageRelationships
+    ? getObjectOperations(imageRelationships.objectType, {
         queryType,
         mutationType,
       })
@@ -140,16 +210,21 @@ export const getObjectOperations = (
     },
   };
 
-  const object: SkylarkObjectMeta = {
+  return {
     name: objectType,
     fields: objectFields,
-    images,
+    images:
+      imageRelationships && imageOperations
+        ? {
+            objectMeta: imageOperations,
+            relationshipNames: imageRelationships.relationshipNames,
+          }
+        : null,
     operations,
     availability,
     relationships,
+    hasContent,
   };
-
-  return object;
 };
 
 export const getAllObjectsMeta = (

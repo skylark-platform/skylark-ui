@@ -22,6 +22,7 @@ export const ContentLibrary = () => {
   const [activePanelObject, setActivePanelObject] = useState<{
     objectType: string;
     uid: string;
+    language: string;
   } | null>(null);
   const [draggedObject, setDraggedObject] = useState<
     ParsedSkylarkObject | undefined
@@ -101,8 +102,8 @@ export const ContentLibrary = () => {
     >
       <DragOverlay zIndex={100} dropAnimation={null}>
         {draggedObject ? (
-          <div className="flex max-w-[350px] items-center space-x-2 border border-manatee-400 bg-white p-2">
-            <ObjectIdentifierCard contentObject={draggedObject} />
+          <div className="max-w-[350px] items-center rounded-sm border border-manatee-200 bg-white px-2">
+            <ObjectIdentifierCard object={draggedObject} />
           </div>
         ) : null}
       </DragOverlay>
@@ -151,6 +152,7 @@ export const ContentLibrary = () => {
               closePanel={() => setActivePanelObject(null)}
               uid={activePanelObject.uid}
               objectType={activePanelObject.objectType}
+              language={activePanelObject.language}
               showDropArea={!!draggedObject}
               droppedObject={droppedObject}
               clearDroppedObject={() => setDroppedObject(undefined)}

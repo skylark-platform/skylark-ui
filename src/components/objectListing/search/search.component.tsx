@@ -4,6 +4,7 @@ import { DocumentNode } from "graphql";
 import { useEffect, useRef, useState } from "react";
 
 import { SearchFilter } from "src/components/objectListing/search/searchFilter/searchFilter.component";
+import { LanguageSelect } from "src/components/select";
 import { SearchFilters } from "src/hooks/useSearch";
 import { SkylarkObjectType } from "src/interfaces/skylark";
 
@@ -14,7 +15,7 @@ interface SearchBarProps {
   activeFilters: SearchFilters;
   objectTypes: SkylarkObjectType[];
   columns: string[];
-  visibleColumns: string[];
+  visibleColumns: VisibilityState;
   className?: string;
   graphqlQuery: {
     query: DocumentNode | null;
@@ -69,7 +70,7 @@ export const Search = ({
   };
 
   return (
-    <div className="relative w-full" ref={filtersDivRef}>
+    <div className="relative flex w-full" ref={filtersDivRef}>
       <SearchInput
         className={className}
         onQueryChange={onQueryChange}
@@ -90,13 +91,25 @@ export const Search = ({
               objectTypes={objectTypes}
               activeFilters={activeFilters}
               columns={columns}
-              visibleColumns={visibleColumns}
+              visibleColumns={Object.keys(visibleColumns)}
               graphqlQuery={graphqlQuery}
               onFilterSave={onFilterSaveWrapper}
             />
           </m.div>
         )}
       </AnimatePresence>
+      <div className="ml-2">
+        <LanguageSelect
+          variant="primary"
+          onChange={(language) =>
+            onFilterChange({ ...activeFilters, language }, visibleColumns)
+          }
+          selected={activeFilters.language || ""}
+          onValueClear={() =>
+            onFilterChange({ ...activeFilters, language: null }, visibleColumns)
+          }
+        />
+      </div>
     </div>
   );
 };
