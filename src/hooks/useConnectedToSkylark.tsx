@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { LOCAL_STORAGE, REQUEST_HEADERS } from "src/constants/skylark";
 import { GQLSkylarkObjectTypesResponse } from "src/interfaces/graphql/introspection";
-import { SKYLARK_SCHEMA_INTROSPECTION_QUERY } from "src/lib/graphql/skylark/queries";
+import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
 export const useConnectedToSkylark = () => {
   const [currentCreds, setCreds] = useState<{
@@ -21,7 +21,7 @@ export const useConnectedToSkylark = () => {
   >({
     queryKey: [
       "credentialValidator",
-      SKYLARK_SCHEMA_INTROSPECTION_QUERY,
+      GET_SKYLARK_OBJECT_TYPES,
       currentCreds.uri,
       currentCreds.token,
     ],
@@ -35,7 +35,7 @@ export const useConnectedToSkylark = () => {
             currentCreds.uri ||
               localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) ||
               "",
-            SKYLARK_SCHEMA_INTROSPECTION_QUERY,
+            GET_SKYLARK_OBJECT_TYPES,
             {},
             {
               [REQUEST_HEADERS.apiKey]: token,

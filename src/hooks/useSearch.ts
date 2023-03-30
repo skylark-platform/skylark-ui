@@ -69,10 +69,15 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
         removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>,
       ) || [];
 
-    const parsedObjects = normalisedObjects.map(parseSkylarkObject);
+    const parsedObjects = normalisedObjects.map((obj) => {
+      const objectMeta = searchableObjects.find(
+        ({ name }) => name === obj.__typename,
+      );
+      return parseSkylarkObject(obj, objectMeta);
+    });
 
     return parsedObjects;
-  }, [searchResponse?.pages]);
+  }, [searchResponse?.pages, searchableObjects]);
 
   return {
     ...rest,

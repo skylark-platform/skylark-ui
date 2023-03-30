@@ -18,6 +18,8 @@ import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObject,
+  SkylarkGraphQLObjectImage,
+  ParsedSkylarkObjectImageRelationship,
 } from "src/interfaces/skylark";
 import {
   formatObjectField,
@@ -112,14 +114,20 @@ const createColumns = (
   // const imagesColumn = columnHelper.accessor("images", {
   //   header: formatObjectField("Images"),
   //   cell: (props) => {
-  //     const images = props.getValue<SkylarkGraphQLObjectImage[]>();
-  //     if (!images || images.length === 0) {
+  //     const imageRelationships =
+  //       props.getValue<ParsedSkylarkObjectImageRelationship[]>();
+  //     const allImages = imageRelationships.flatMap(({ objects }) => objects);
+  //     if (
+  //       !imageRelationships ||
+  //       imageRelationships.length === 0 ||
+  //       allImages.length === 0
+  //     ) {
   //       return "";
   //     }
 
   //     return (
   //       <div>
-  //         {images.map(({ uid, url, title }) => (
+  //         {allImages.map(({ uid, url, title }) => (
   //           // eslint-disable-next-line @next/next/no-img-element
   //           <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
   //         ))}

@@ -4,6 +4,11 @@ import { Fragment } from "react";
 import { AvailabilityLabel } from "src/components/availability";
 import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { PanelLoading } from "src/components/panel/panelLoading";
+import {
+  PanelEmptyDataText,
+  PanelFieldTitle,
+  PanelSectionTitle,
+} from "src/components/panel/panelTypography";
 import { useGetObjectAvailability } from "src/hooks/useGetObjectAvailability";
 import {
   AvailabilityStatus,
@@ -14,10 +19,12 @@ import {
   formatReadableDate,
   getRelativeTimeFromDate,
 } from "src/lib/skylark/availability";
+import { formatObjectField } from "src/lib/utils";
 
 interface PanelAvailabilityProps {
   objectType: string;
   objectUid: string;
+  language: string;
 }
 
 const sortDimensionsByTitleOrSlug = (
@@ -57,82 +64,89 @@ const AvailabilityValueGrid = ({
 export const PanelAvailability = ({
   objectType,
   objectUid,
+  language,
 }: PanelAvailabilityProps) => {
   const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
-    useGetObjectAvailability(objectType, objectUid);
+    useGetObjectAvailability(objectType, objectUid, { language });
   return (
     <div className="relative flex h-full flex-col overflow-y-auto p-4 pb-12 text-sm md:p-8">
-      {!isLoading && data?.length === 0 && (
-        <p>No availability assigned to this object.</p>
-      )}
-      {data?.map((obj) => {
-        const { status, neverExpires } = obj;
-        const availabilityInfo: {
-          key: keyof Omit<ParsedSkylarkObjectAvailabilityObject, "dimensions">;
-          label: string;
-          value: string;
-        }[] = [
-          {
-            label: "Start",
-            key: "start",
-            value: formatReadableDate(obj.start),
-          },
-          {
-            label: "End",
-            key: "end",
-            value: neverExpires ? "Never" : formatReadableDate(obj.end),
-          },
-          { label: "Timezone", key: "timezone", value: obj.timezone || "" },
-        ];
-        return (
-          <div
-            key={obj.uid}
-            className={clsx(
-              "my-2 max-w-xl border border-l-4 py-4 px-4",
-              status === AvailabilityStatus.Active && "border-l-success",
-              status === AvailabilityStatus.Expired && "border-l-error",
-              status === AvailabilityStatus.Future && "border-l-warning",
-            )}
-          >
-            <div className="flex">
-              <div className="flex-grow">
-                <h3 className="text-base font-bold">
-                  {obj.title || obj.slug || obj.external_id || obj.uid}
-                </h3>
-                <p className="text-manatee-400">
-                  {status &&
-                    getRelativeTimeFromDate(
-                      status,
-                      obj.start || "",
-                      obj.end || "",
-                    )}
-                </p>
+      {data && (
+        <>
+          <PanelSectionTitle text={formatObjectField("Availability")} />
+          {!isLoading && data?.length === 0 && <PanelEmptyDataText />}
+          {data.map((obj) => {
+            const { status, neverExpires } = obj;
+            const availabilityInfo: {
+              key: keyof Omit<
+                ParsedSkylarkObjectAvailabilityObject,
+                "dimensions"
+              >;
+              label: string;
+              value: string;
+            }[] = [
+              {
+                label: "Start",
+                key: "start",
+                value: formatReadableDate(obj.start),
+              },
+              {
+                label: "End",
+                key: "end",
+                value: neverExpires ? "Never" : formatReadableDate(obj.end),
+              },
+              { label: "Timezone", key: "timezone", value: obj.timezone || "" },
+            ];
+            return (
+              <div
+                key={obj.uid}
+                className={clsx(
+                  "my-2 max-w-xl border border-l-4 py-4 px-4",
+                  status === AvailabilityStatus.Active && "border-l-success",
+                  status === AvailabilityStatus.Expired && "border-l-error",
+                  status === AvailabilityStatus.Future && "border-l-warning",
+                )}
+              >
+                <div className="flex">
+                  <div className="flex-grow">
+                    <PanelFieldTitle
+                      text={obj.title || obj.slug || obj.external_id || obj.uid}
+                    />
+                    <p className="text-manatee-400">
+                      {status &&
+                        getRelativeTimeFromDate(
+                          status,
+                          obj.start || "",
+                          obj.end || "",
+                        )}
+                    </p>
+                  </div>
+
+                  {obj.status && <AvailabilityLabel status={obj.status} />}
+                </div>
+
+                <AvailabilityValueGrid
+                  header="Time Window"
+                  data={availabilityInfo}
+                />
+
+                <AvailabilityValueGrid
+                  header="Audience"
+                  data={obj.dimensions
+                    .sort(sortDimensionsByTitleOrSlug)
+                    .map((dimension) => ({
+                      label: dimension.title || dimension.slug,
+                      value: dimension.values.objects
+                        .map((value) => value.title || value.slug)
+                        .sort()
+                        .join(", "),
+                      key: dimension.uid,
+                    }))}
+                />
               </div>
-
-              {obj.status && <AvailabilityLabel status={obj.status} />}
-            </div>
-
-            <AvailabilityValueGrid
-              header="Time Window"
-              data={availabilityInfo}
-            />
-
-            <AvailabilityValueGrid
-              header="Audience"
-              data={obj.dimensions
-                .sort(sortDimensionsByTitleOrSlug)
-                .map((dimension) => ({
-                  label: dimension.title || dimension.slug,
-                  value: dimension.values.objects
-                    .map((value) => value.title || value.slug)
-                    .sort()
-                    .join(", "),
-                  key: dimension.uid,
-                }))}
-            />
-          </div>
-        );
-      })}
+            );
+          })}
+        </>
+      )}
       <PanelLoading
         isLoading={isLoading || hasNextPage}
         loadMore={() => fetchNextPage()}

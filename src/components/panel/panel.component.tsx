@@ -81,10 +81,10 @@ export const Panel = ({
         PanelTab.Metadata,
         objectMeta?.hasContent && PanelTab.Content,
         PanelTab.Relationships,
-        data?.images && PanelTab.Imagery,
+        objectMeta?.images && PanelTab.Imagery,
         PanelTab.Availability,
       ].filter((tab) => !!tab) as string[],
-    [data?.images, objectMeta?.hasContent],
+    [objectMeta?.hasContent, objectMeta?.images],
   );
 
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
@@ -191,7 +191,7 @@ export const Panel = ({
           )}
         </div>
       )}
-      {!isLoading && !isError && data && (
+      {!isLoading && !isError && data && objectMeta && (
         <>
           <Tabs
             tabs={tabs}
@@ -200,13 +200,21 @@ export const Panel = ({
             disabled={inEditMode}
           />
           {selectedTab === PanelTab.Metadata && (
-            <PanelMetadata metadata={data.metadata} objectType={objectType} />
+            <PanelMetadata
+              metadata={data.metadata}
+              objectType={objectType}
+              objectMeta={objectMeta}
+            />
           )}
           {selectedTab === PanelTab.Imagery && data.images && (
             <PanelImages images={data.images} />
           )}
           {selectedTab === PanelTab.Availability && (
-            <PanelAvailability objectType={objectType} objectUid={uid} />
+            <PanelAvailability
+              objectType={objectType}
+              objectUid={uid}
+              language={activeLanguage}
+            />
           )}
           {selectedTab === PanelTab.Content && data.content && (
             <PanelContent
@@ -218,7 +226,11 @@ export const Panel = ({
             />
           )}
           {selectedTab === PanelTab.Relationships && (
-            <PanelRelationships objectType={objectType} uid={uid} />
+            <PanelRelationships
+              objectType={objectType}
+              uid={uid}
+              language={activeLanguage}
+            />
           )}
         </>
       )}

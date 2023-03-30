@@ -8,7 +8,7 @@ import {
   waitFor,
 } from "src/__tests__/utils/test-utils";
 import { LOCAL_STORAGE } from "src/constants/skylark";
-import { SKYLARK_SCHEMA_INTROSPECTION_QUERY_NAME } from "src/lib/graphql/skylark/queries";
+import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
 import { AddAuthTokenModal } from "./betaReleaseAuthModal.component";
 
@@ -99,7 +99,7 @@ test("clicks the copy buttons", () => {
 
 test("changes input to red when they are invalid", async () => {
   server.use(
-    graphql.query(SKYLARK_SCHEMA_INTROSPECTION_QUERY_NAME, (req, res, ctx) => {
+    graphql.query(GET_SKYLARK_OBJECT_TYPES, (req, res, ctx) => {
       return res(
         ctx.errors([
           {

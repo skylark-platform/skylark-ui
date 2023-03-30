@@ -16,8 +16,8 @@ import {
   useSkylarkObjectOperations,
 } from "./useSkylarkObjectTypes";
 
-interface GetObjectOptions {
-  language?: string | null;
+export interface GetObjectOptions {
+  language: string | null;
 }
 
 export const createGetObjectKeyPrefix = ({
@@ -58,7 +58,8 @@ export const useGetObject = (
     enabled: query !== null,
   });
 
-  const parsedObject = data?.getObject && parseSkylarkObject(data?.getObject);
+  const parsedObject =
+    data?.getObject && parseSkylarkObject(data?.getObject, objectOperations);
 
   return {
     ...rest,

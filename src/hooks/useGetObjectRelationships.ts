@@ -17,6 +17,7 @@ import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectRelationshipsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
+import { GetObjectOptions } from "./useGetObject";
 import {
   useAllObjectsMeta,
   useSkylarkObjectOperations,
@@ -41,7 +42,10 @@ export const createGetObjectRelationshipsKeyPrefix = ({
 export const useGetObjectRelationships = (
   objectType: SkylarkObjectType,
   uid: string,
-): { data: ParsedSkylarkObjectRelationships[] | undefined } => {
+  opts: GetObjectOptions,
+) => {
+  const { language }: GetObjectOptions = opts || { language: null };
+
   const { objectOperations } = useSkylarkObjectOperations(objectType);
   const { objects } = useAllObjectsMeta();
 
@@ -54,8 +58,9 @@ export const useGetObjectRelationships = (
   const query = createGetObjectRelationshipsQuery(
     objectOperations,
     relationshipsFields,
+    !!language,
   );
-  const variables = { uid, nextToken: "" };
+  const variables = { uid, nextToken: "", language };
 
   const { data, ...rest } = useQuery<
     GQLSkylarkGetObjectRelationshipsResponse,
@@ -72,7 +77,7 @@ export const useGetObjectRelationships = (
 
   const unparsedData = data?.getObjectRelationships;
 
-  const parsedData: ParsedSkylarkObjectRelationships[] = unparsedData
+  const relationships: ParsedSkylarkObjectRelationships[] = unparsedData
     ? Object.keys(unparsedData)?.map((relation) => {
         const relationship = unparsedData[
           relation
@@ -90,5 +95,11 @@ export const useGetObjectRelationships = (
       })
     : [];
 
-  return { data: parsedData, ...rest };
+  return {
+    ...rest,
+    data: relationships,
+    isLoading: rest.isLoading || !query,
+    query,
+    variables,
+  };
 };

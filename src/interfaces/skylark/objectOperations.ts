@@ -1,12 +1,22 @@
 export enum BuiltInSkylarkObjectType {
   Availability = "Availability",
-  Image = "Image",
-  Asset = "Asset",
+  SkylarkImage = "SkylarkImage",
+  BetaSkylarkImage = "Image",
 }
 
 export enum SkylarkSystemField {
+  UID = "uid",
+  ExternalID = "external_id",
+  Slug = "slug",
+  DataSourceID = "data_source_id",
+  DataSourceFields = "data_source_fields",
   Availability = "availability",
   Content = "content", // "Set like" content
+}
+
+export enum SkylarkSystemGraphQLType {
+  SkylarkImageListing = "SkylarkImageListing",
+  BetaSkylarkImageListing = "ImageListing", // Remove after beta 1 envs are turned off
 }
 
 export type SkylarkObjectType = string | BuiltInSkylarkObjectType;
@@ -77,7 +87,10 @@ export interface SkylarkObjectRelationship {
 
 export interface SkylarkObjectMeta extends SkylarkObjectFields {
   availability: SkylarkObjectMeta | null;
-  images: SkylarkObjectMeta | null;
+  images: {
+    objectMeta: SkylarkObjectMeta;
+    relationshipNames: string[];
+  } | null;
   operations: SkylarkObjectOperations;
   relationships: SkylarkObjectRelationship[];
   hasContent: boolean;

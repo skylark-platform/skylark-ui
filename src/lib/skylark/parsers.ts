@@ -12,6 +12,8 @@ import {
   ParsedSkylarkObjectMetadata,
   SkylarkObjectRelationship,
   SkylarkGraphQLObject,
+  ParsedSkylarkObjectImageRelationship,
+  SkylarkObjectMeta,
   ParsedSkylarkObject,
   SkylarkGraphQLObjectImage,
 } from "src/interfaces/skylark";
@@ -181,6 +183,7 @@ export const parseObjectContent = (
 
 export const parseSkylarkObject = (
   object: SkylarkGraphQLObject,
+  objectMeta?: SkylarkObjectMeta | null,
 ): ParsedSkylarkObject => {
   // TODO split into Language and Global
   const metadata: ParsedSkylarkObject["metadata"] = {
@@ -195,9 +198,20 @@ export const parseSkylarkObject = (
   };
   const availability = parseObjectAvailability(object?.availability);
 
-  const images = hasProperty(object, "images")
-    ? parseObjectRelationship<SkylarkGraphQLObjectImage>(object.images)
-    : undefined;
+  const images =
+    objectMeta?.images?.relationshipNames.map(
+      (imageField): ParsedSkylarkObjectImageRelationship => {
+        const parsedImages =
+          hasProperty(object, imageField) &&
+          parseObjectRelationship<SkylarkGraphQLObjectImage>(
+            object[imageField] as SkylarkGraphQLObjectRelationship,
+          );
+        return {
+          relationshipName: imageField,
+          objects: parsedImages || [],
+        };
+      },
+    ) || [];
 
   const content = hasProperty(object, "content")
     ? parseObjectContent(object.content)
@@ -222,7 +236,6 @@ export const parseSkylarkObject = (
       metadata,
       availability,
       images,
-
       content,
     }
   );
