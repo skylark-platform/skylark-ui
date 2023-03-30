@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
+import { Trash } from "src/components/icons";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { Toast } from "src/components/toast/toast.component";
 import { DROPPABLE_RELATIONSHIPS_ID } from "src/constants/skylark";
@@ -76,7 +77,7 @@ export const PanelRelationships = ({
           "m-4 mt-10 flex h-72 items-center justify-center border-2 border-dotted text-center text-manatee-400",
         )}
       >
-        <span>{`Drop object here to add to the ${objectType}'s content`}</span>
+        <span>{`Drop object here to add as relationship of ${objectType}  `}</span>
       </div>
     );
 
@@ -102,7 +103,19 @@ export const PanelRelationships = ({
                 <div className="transition duration-300 ease-in-out">
                   <>
                     {nr[relationshipName]?.map((obj) => (
-                      <ObjectIdentifierCard key={obj.uid} contentObject={obj} />
+                      <div className="flex bg-green-100" key={obj.uid}>
+                        <ObjectIdentifierCard
+                          key={obj.uid}
+                          contentObject={obj}
+                        />
+                        <button onClick={() => console.log(obj.uid)}>
+                          <Trash
+                            className={clsx(
+                              "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
+                            )}
+                          />
+                        </button>
+                      </div>
                     ))}
                     {relationship && displayList?.length > 0 ? (
                       displayList?.map((obj) => (
