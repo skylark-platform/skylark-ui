@@ -1,6 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
+import { QueryKeys } from "src/enums/graphql";
 import {
   GQLSkylarkUpdateObjectMetadataResponse,
   SkylarkObjectIdentifier,
@@ -19,6 +20,8 @@ export const useCreateObject = ({
   objectType: SkylarkObjectType;
   onSuccess: ({ uid, objectType, language }: SkylarkObjectIdentifier) => void;
 }) => {
+  const queryClient = useQueryClient();
+
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const { mutate, ...rest } = useMutation({
@@ -39,6 +42,9 @@ export const useCreateObject = ({
       );
     },
     onSuccess: (data, { language }) => {
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.Search],
+      });
       onSuccess({
         objectType,
         uid: data.createObject.uid,

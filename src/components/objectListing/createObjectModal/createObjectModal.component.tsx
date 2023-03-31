@@ -127,7 +127,7 @@ export const CreateObjectModal = ({
                     control={control}
                     render={({ field }) => (
                       <LanguageSelect
-                        className="mb-10 w-full"
+                        className="w-full"
                         variant="primary"
                         label="Object Language"
                         labelVariant="form"
@@ -139,40 +139,41 @@ export const CreateObjectModal = ({
                     )}
                   />
                 )}
-                {[
-                  {
-                    id: "system",
-                    title: "System Metadata",
-                    metadataFields: systemMetadataFields,
-                  },
-                  {
-                    id: "languageGlobal",
-                    title: "Translatable & Global Metadata",
-                    metadataFields: languageGlobalMetadataFields,
-                  },
-                ].map(({ id, title, metadataFields }) => (
-                  <div key={id} className="mb-8">
-                    <h3 className="mb-2 text-base font-bold underline">
-                      {title}
-                    </h3>
-                    {metadataFields.map(({ field, config }) => {
-                      if (config) {
-                        return (
-                          <SkylarkObjectFieldInput
-                            key={field}
-                            field={field}
-                            config={config}
-                            control={control}
-                            register={register}
-                            value={getValues(field)}
-                            formState={formState}
-                          />
-                        );
-                      }
-                    })}
-                  </div>
-                ))}
-
+                <div className="mb-10">
+                  {[
+                    {
+                      id: "system",
+                      title: "System Metadata",
+                      metadataFields: systemMetadataFields,
+                    },
+                    {
+                      id: "languageGlobal",
+                      title: "Translatable & Global Metadata",
+                      metadataFields: languageGlobalMetadataFields,
+                    },
+                  ].map(({ id, title, metadataFields }) => (
+                    <div key={id} className="mb-8">
+                      <h3 className="mb-2 text-base font-bold underline">
+                        {title}
+                      </h3>
+                      {metadataFields.map(({ field, config }) => {
+                        if (config) {
+                          return (
+                            <SkylarkObjectFieldInput
+                              key={field}
+                              field={field}
+                              config={config}
+                              control={control}
+                              register={register}
+                              value={getValues(field)}
+                              formState={formState}
+                            />
+                          );
+                        }
+                      })}
+                    </div>
+                  ))}
+                </div>
                 <Button
                   variant="primary"
                   className="mt-4"
