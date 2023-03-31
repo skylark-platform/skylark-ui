@@ -12,6 +12,7 @@ import {
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
+import { Pill } from "src/components/pill";
 import { Toast } from "src/components/toast/toast.component";
 import { DROPPABLE_RELATIONSHIPS_ID } from "src/constants/skylark";
 import { useGetObjectRelationships } from "src/hooks/useGetObjectRelationships";
@@ -36,7 +37,7 @@ const parse = (
 ): { [k: string]: ParsedSkylarkObject[] } => {
   return objects.reduce((acc: { [k: string]: ParsedSkylarkObject[] }, cv) => {
     console.log("relationships", relationships, cv.objectType);
-    const key = relationships.find(
+    const key: string | undefined = relationships.find(
       (relationship) => relationship.objectType === cv.objectType,
     )?.relationshipName;
     console.log("sdas", key);
@@ -118,17 +119,28 @@ export const PanelRelationships = ({
 
                 <div className="transition duration-300 ease-in-out">
                   <>
-                    {nr[relationshipName]?.map((obj) => (
-                      <div className="flex bg-green-100" key={obj.uid}>
-                        <ObjectIdentifierCard key={obj.uid} object={obj} />
-                        <button onClick={() => console.log(obj.uid)}>
-                          <Trash
-                            className={clsx(
-                              "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
-                            )}
+                    {nr[relationshipName]?.map((obj, index) => (
+                      <>
+                        <div className="flex" key={obj.uid}>
+                          <ObjectIdentifierCard key={obj.uid} object={obj} />
+                          <Pill
+                            label={"new"}
+                            bgColor={"green"}
+                            className="w-20"
                           />
-                        </button>
-                      </div>
+
+                          <button onClick={() => console.log(obj.uid)}>
+                            <Trash
+                              className={clsx(
+                                "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
+                              )}
+                            />
+                          </button>
+                        </div>
+                        {index < nr[relationshipName].length - 1 && (
+                          <PanelSeparator />
+                        )}
+                      </>
                     ))}
                     {relationship && displayList?.length > 0 ? (
                       displayList?.map((obj, index) => (

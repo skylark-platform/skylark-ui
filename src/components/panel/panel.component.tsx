@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
+import { Toast } from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/useGetObject";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
 import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
   AddedSkylarkObjectContentObject,
+  SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 
 import {
@@ -47,6 +50,33 @@ function parseSkylarkObjectContent(
     position: 1,
   };
 }
+
+const parse = (
+  objects: ParsedSkylarkObject[],
+  relationships: SkylarkObjectRelationship[],
+): { [k: string]: ParsedSkylarkObject[] } => {
+  return objects.reduce((acc: { [k: string]: ParsedSkylarkObject[] }, cv) => {
+    console.log("relationships", relationships, cv.objectType);
+    const key: string | undefined = relationships.find(
+      (relationship) => relationship.objectType === cv.objectType,
+    )?.relationshipName;
+    console.log("sdas", key);
+
+    if (key) {
+      const current = acc[key] || [];
+      return { ...acc, [key]: [...current, cv] };
+    } else {
+      toast(
+        <Toast
+          title={`Error`}
+          message={`Can't add ${cv.objectType} to this object relationship`}
+          type="error"
+        />,
+      );
+    }
+    return acc;
+  }, {});
+};
 
 export const Panel = ({
   closePanel,
