@@ -94,8 +94,6 @@ export const parseObjectInputFields = (
         enumValues = input.type.enumValues?.map((val) => val.name);
       }
 
-      if (input.name === "requiredstring") console.log(input);
-
       return {
         name: input.name,
         type: type,
@@ -353,16 +351,28 @@ export const parseMetadataForHTMLForm = (
 ) => {
   const keyValuePairs = Object.entries(metadata).map(([key, value]) => {
     const input = inputFields.find((createInput) => createInput.name === key);
-    if (
-      input &&
-      convertFieldTypeToHTMLInputType(input.type) === "datetime-local"
-    ) {
-      // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local
-      const validDateTimeLocal = dayjs(`${value}`).format(
-        "YYYY-MM-DDTHH:mm:ss.SSS",
-      );
-      console.log("converting", key, value, validDateTimeLocal);
-      return [key, validDateTimeLocal];
+    if (input) {
+      if (convertFieldTypeToHTMLInputType(input.type) === "datetime-local") {
+        // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local
+        const validDateTimeLocal = dayjs(`${value}`).format(
+          "YYYY-MM-DDTHH:mm:ss.SSS",
+        );
+        return [key, validDateTimeLocal];
+      }
+
+      if (input && convertFieldTypeToHTMLInputType(input.type) === "date") {
+        const validDate = dayjs(`${value}`, "YYYY-MM-DD+Z").format(
+          "YYYY-MM-DD",
+        );
+        return [key, validDate];
+      }
+
+      if (input && convertFieldTypeToHTMLInputType(input.type) === "time") {
+        const validTime = dayjs(`${value}`, "HH:mm:ss.SSS+Z").format(
+          "HH:mm:ss.SSS",
+        );
+        return [key, validTime];
+      }
     }
 
     return [key, value];

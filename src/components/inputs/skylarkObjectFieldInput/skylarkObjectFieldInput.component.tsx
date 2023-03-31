@@ -1,4 +1,4 @@
-import { Checkbox, CheckedState } from "@radix-ui/react-checkbox";
+import { CheckedState } from "@radix-ui/react-checkbox";
 import {
   UseFormRegister,
   FieldValues,
@@ -10,6 +10,7 @@ import {
   ValidationRule,
 } from "react-hook-form";
 
+import { Checkbox } from "src/components/checkbox";
 import { Select } from "src/components/select";
 import { INPUT_REGEX, SYSTEM_FIELDS } from "src/constants/skylark";
 import {
@@ -172,8 +173,6 @@ export const SkylarkObjectFieldInput = (
     };
   }
 
-  // console.log({ field, pattern, value: props.value, error });
-
   const inputProps: SkylarkObjectFieldInputComponentProps = {
     ...props,
     error,
@@ -181,13 +180,11 @@ export const SkylarkObjectFieldInput = (
       required,
       validate: (value) => {
         try {
-          if (config.type === "int") {
+          if (config.type === "int" && !Number.isNaN(value)) {
             return Number.isInteger(value);
           }
-          const valid = parseInputFieldValue(value, config.type);
-          console.log("validated field", valid);
+          parseInputFieldValue(value, config.type);
         } catch (err) {
-          console.log("validate err", err);
           return false;
         }
       },

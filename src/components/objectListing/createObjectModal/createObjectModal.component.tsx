@@ -50,8 +50,6 @@ export const CreateObjectModal = ({
     },
   });
 
-  console.log({ objectOperations });
-
   const onSubmit = ({
     _language,
     ...metadata
@@ -123,22 +121,24 @@ export const CreateObjectModal = ({
             />
             {objectOperations && (
               <div>
-                <Controller
-                  name="_language"
-                  control={control}
-                  render={({ field }) => (
-                    <LanguageSelect
-                      className="mb-10 w-full"
-                      variant="primary"
-                      label="Object Language"
-                      labelVariant="form"
-                      rounded={false}
-                      disabled={!objectTypes}
-                      selected={(field.value as string) || ""}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
+                {objectOperations.isTranslatable && (
+                  <Controller
+                    name="_language"
+                    control={control}
+                    render={({ field }) => (
+                      <LanguageSelect
+                        className="mb-10 w-full"
+                        variant="primary"
+                        label="Object Language"
+                        labelVariant="form"
+                        rounded={false}
+                        disabled={!objectTypes}
+                        selected={(field.value as string) || ""}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                )}
                 {[
                   {
                     id: "system",

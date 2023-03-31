@@ -368,7 +368,6 @@ export const ObjectList = ({
               isPanelOpen ? "pr-2 lg:w-auto lg:pr-4" : "md:w-auto",
             )}
             onObjectCreated={(obj) => {
-              console.log("objectListing onObjectCreated", obj);
               setPanelObject?.(obj);
             }}
           />

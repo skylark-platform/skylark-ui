@@ -53,9 +53,9 @@ const getLanguageVariableAndArg = (shouldAdd: boolean) => {
 
 const getIgnoreAvailabilityVariableAndArg = (shouldAdd: boolean) => {
   const args = shouldAdd
-    ? { language: new VariableType("ignoreAvailability") }
+    ? { ignore_availability: new VariableType("ignoreAvailability") }
     : {};
-  const variables = shouldAdd ? { language: "Boolean = true" } : {};
+  const variables = shouldAdd ? { ignoreAvailability: "Boolean = true" } : {};
   return {
     args,
     variables,
