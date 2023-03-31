@@ -73,6 +73,8 @@ describe("createSearchObjectsQuery", () => {
           relationships: [],
           hasContent: false,
           hasRelationships: false,
+          hasAvailability: true,
+          isTranslatable: true,
         },
         {
           name: "Brand",
@@ -98,6 +100,8 @@ describe("createSearchObjectsQuery", () => {
           relationships: [],
           hasContent: false,
           hasRelationships: false,
+          hasAvailability: true,
+          isTranslatable: true,
         },
       ],
       [],

@@ -21,7 +21,7 @@ import {
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 
-const INITIAL_PANEL_PERCENTAGE = 80;
+const INITIAL_PANEL_PERCENTAGE = 70;
 const MINIMUM_SIZES = {
   objectListing: 425,
   panel: 450,

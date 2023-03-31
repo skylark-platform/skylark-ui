@@ -5,6 +5,8 @@ import { GoTriangleDown } from "react-icons/go";
 import { GrClose } from "react-icons/gr";
 import { useVirtual } from "react-virtual";
 
+import { formatObjectField } from "src/lib/utils";
+
 export interface SelectOption {
   label: string;
   value: string;
@@ -15,6 +17,7 @@ export interface SelectProps {
   selected: string;
   options: SelectOption[];
   label?: string;
+  labelVariant?: "default" | "form";
   placeholder: string;
   className?: string;
   disabled?: boolean;
@@ -115,6 +118,7 @@ export const Select = ({
   variant,
   options,
   label,
+  labelVariant = "default",
   placeholder,
   className,
   onChange,
@@ -168,8 +172,13 @@ export const Select = ({
         )}
       >
         {label && (
-          <Combobox.Label className="text-sm font-light md:text-base">
-            {label}
+          <Combobox.Label
+            className={clsx(
+              labelVariant === "default" && "text-sm font-light md:text-base",
+              labelVariant === "form" && "block text-sm font-bold",
+            )}
+          >
+            {labelVariant === "form" ? formatObjectField(label) : label}
           </Combobox.Label>
         )}
         {withSearch ? (

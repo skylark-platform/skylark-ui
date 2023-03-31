@@ -1,4 +1,6 @@
 import dayjs from "dayjs";
+import advancedFormat from "dayjs/plugin/advancedFormat";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import { EnumType } from "json-to-graphql-query";
 
 import {
@@ -22,9 +24,16 @@ import {
   SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
-import { hasProperty, isObject } from "src/lib/utils";
+import {
+  convertFieldTypeToHTMLInputType,
+  hasProperty,
+  isObject,
+} from "src/lib/utils";
 
 import { getObjectAvailabilityStatus } from "./availability";
+
+dayjs.extend(customParseFormat);
+dayjs.extend(advancedFormat);
 
 const parseObjectInputType = (
   name?: GQLScalars | string | null,
@@ -84,6 +93,8 @@ export const parseObjectInputFields = (
         type = "enum";
         enumValues = input.type.enumValues?.map((val) => val.name);
       }
+
+      if (input.name === "requiredstring") console.log(input);
 
       return {
         name: input.name,
@@ -333,5 +344,30 @@ export const parseMetadataForGraphQLRequest = (
     .filter((value) => value !== null) as [string, string | EnumType][];
 
   const parsedMetadata = Object.fromEntries(keyValuePairs);
+  return parsedMetadata;
+};
+
+export const parseMetadataForHTMLForm = (
+  metadata: Record<string, SkylarkObjectMetadataField>,
+  inputFields: NormalizedObjectField[],
+) => {
+  const keyValuePairs = Object.entries(metadata).map(([key, value]) => {
+    const input = inputFields.find((createInput) => createInput.name === key);
+    if (
+      input &&
+      convertFieldTypeToHTMLInputType(input.type) === "datetime-local"
+    ) {
+      // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local
+      const validDateTimeLocal = dayjs(`${value}`).format(
+        "YYYY-MM-DDTHH:mm:ss.SSS",
+      );
+      console.log("converting", key, value, validDateTimeLocal);
+      return [key, validDateTimeLocal];
+    }
+
+    return [key, value];
+  });
+  const parsedMetadata: Record<string, SkylarkObjectMetadataField> =
+    Object.fromEntries(keyValuePairs);
   return parsedMetadata;
 };

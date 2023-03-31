@@ -1,7 +1,5 @@
 import { ITheme } from "@flatfile/sdk/dist/types";
 import dayjs from "dayjs";
-import advancedFormat from "dayjs/plugin/advancedFormat";
-import customParseFormat from "dayjs/plugin/customParseFormat";
 import { GraphQLClient } from "graphql-request";
 import { EnumType, jsonToGraphQLQuery } from "json-to-graphql-query";
 
@@ -25,9 +23,6 @@ import {
   parseMetadataForGraphQLRequest,
 } from "src/lib/skylark/parsers";
 import { hasProperty } from "src/lib/utils";
-
-dayjs.extend(customParseFormat);
-dayjs.extend(advancedFormat);
 
 const chunkArray = <T>(arr: T[], chunkSize: number) => {
   const chunkedArray: T[][] = [];

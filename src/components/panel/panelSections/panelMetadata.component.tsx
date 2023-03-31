@@ -16,6 +16,8 @@ import {
   SkylarkObjectMetadataField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
+import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
+import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import { formatObjectField } from "src/lib/utils";
 
 const objectOptions: {
@@ -88,58 +90,23 @@ export const PanelMetadata = ({
 
   // When component first loads, update the form metadata with the current values
   useEffect(() => {
-    reset(metadata);
+    reset(parseMetadataForHTMLForm(metadata, objectMeta?.fields));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const {
-    systemMetadataFields,
-    languageGlobalMetadataFields,
-  }: {
-    systemMetadataFields: {
-      field: string;
-      config?: NormalizedObjectField;
-    }[];
-    languageGlobalMetadataFields: {
-      field: string;
-      config?: NormalizedObjectField;
-    }[];
-  } = useMemo(() => {
-    const metadataArr = Object.keys(metadata).map((field) => {
-      // Use update operation fields as get doesn't always have the full types
-      const fieldConfig = objectMeta.operations.update.inputs.find(
-        ({ name }) => name === field,
-      );
-      return {
-        field,
-        config: fieldConfig,
-      };
-    });
-
-    const systemFieldsThatExist = metadataArr
-      .filter(({ field }) => SYSTEM_FIELDS.includes(field))
-      .sort(
-        ({ field: a }, { field: b }) =>
-          SYSTEM_FIELDS.indexOf(b) - SYSTEM_FIELDS.indexOf(a),
-      );
-
-    const otherFields = metadataArr.filter(
-      ({ field }) => !SYSTEM_FIELDS.includes(field),
-    );
-
-    const fieldsToHide = options
-      ? [...options.fieldsToHide, OBJECT_LIST_TABLE.columnIds.objectType]
-      : [OBJECT_LIST_TABLE.columnIds.objectType];
-
-    return {
-      systemMetadataFields: systemFieldsThatExist.filter(
-        ({ field }) => !fieldsToHide.includes(field.toLowerCase()),
+  const { systemMetadataFields, languageGlobalMetadataFields } = useMemo(
+    () =>
+      splitMetadataIntoSystemTranslatableGlobal(
+        Object.keys(metadata),
+        objectMeta.operations.update.inputs,
+        options,
       ),
-      languageGlobalMetadataFields: otherFields.filter(
-        ({ field }) => !fieldsToHide.includes(field.toLowerCase()),
-      ),
-    };
-  }, [metadata, objectMeta.operations.update.inputs, options]);
+    [metadata, objectMeta.operations.update.inputs, options],
+  );
+
+  const requiredFields = objectMeta.operations.create.inputs
+    .filter(({ isRequired }) => isRequired)
+    .map(({ name }) => name);
 
   return (
     <form
@@ -174,6 +141,7 @@ export const PanelMetadata = ({
                         register={register}
                         value={getValues(field)}
                         formState={formState}
+                        additionalRequiredFields={requiredFields}
                       />
                     );
                   }

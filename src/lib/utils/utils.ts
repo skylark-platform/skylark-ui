@@ -1,7 +1,17 @@
+import { HTMLInputTypeAttribute } from "react";
 import { sentenceCase } from "sentence-case";
 
-import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import {
+  DISPLAY_NAME_PRIORITY,
+  OBJECT_LIST_TABLE,
+  SYSTEM_FIELDS,
+} from "src/constants/skylark";
+import {
+  NormalizedObjectFieldType,
+  ParsedSkylarkObject,
+  SkylarkObjectMeta,
+  SkylarkObjectMetadataField,
+} from "src/interfaces/skylark";
 
 export const hasProperty = <T, K extends PropertyKey>(
   object: T,
@@ -47,4 +57,31 @@ export const createAccountIdentifier = (uri: string) => {
     .replaceAll(".", "-")
     .replaceAll("_", "-")
     .replaceAll(" ", "-");
+};
+
+export const convertFieldTypeToHTMLInputType = (
+  objectFieldType: NormalizedObjectFieldType,
+): HTMLInputTypeAttribute => {
+  switch (objectFieldType) {
+    case "boolean":
+      return "checkbox";
+    case "datetime":
+    case "timestamp":
+      return "datetime-local";
+    case "time":
+      return "time";
+    case "date":
+      return "date";
+    case "email":
+      return "email";
+    case "phone":
+      return "tel";
+    case "float":
+    case "int":
+      return "number";
+    case "url":
+      return "url";
+    default:
+      return "text";
+  }
 };

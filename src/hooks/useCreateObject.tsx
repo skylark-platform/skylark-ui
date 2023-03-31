@@ -4,6 +4,7 @@ import { RequestDocument } from "graphql-request";
 import {
   GQLSkylarkUpdateObjectMetadataResponse,
   SkylarkObjectIdentifier,
+  SkylarkObjectMetadataField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -21,9 +22,17 @@ export const useCreateObject = ({
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const { mutate, ...rest } = useMutation({
-    mutationFn: ({ language }: { language: string }) => {
-      const updateObjectMetadataMutation =
-        createCreateObjectMutation(objectOperations);
+    mutationFn: ({
+      language,
+      metadata,
+    }: {
+      language: string;
+      metadata: Record<string, SkylarkObjectMetadataField>;
+    }) => {
+      const updateObjectMetadataMutation = createCreateObjectMutation(
+        objectOperations,
+        metadata,
+      );
       return skylarkRequest<GQLSkylarkUpdateObjectMetadataResponse>(
         updateObjectMetadataMutation as RequestDocument,
         { language },
@@ -38,7 +47,10 @@ export const useCreateObject = ({
     },
   });
 
-  const createObject = (language: string) => mutate({ language });
+  const createObject = (
+    language: string,
+    metadata: Record<string, SkylarkObjectMetadataField>,
+  ) => mutate({ language, metadata });
 
   return {
     createObject,

@@ -30,6 +30,7 @@ interface PanelHeaderProps {
   graphQLVariables?: object;
   inEditMode: boolean;
   isSaving?: boolean;
+  isTranslatable?: boolean;
   toggleEditMode: () => void;
   closePanel?: () => void;
   save: () => void;
@@ -47,6 +48,7 @@ export const PanelHeader = ({
   graphQLVariables,
   inEditMode,
   isSaving,
+  isTranslatable,
   toggleEditMode,
   closePanel,
   save,
@@ -167,14 +169,16 @@ export const PanelHeader = ({
               className="w-20 bg-brand-primary"
               label={objectType}
             />
-            <LanguageSelect
-              selected={language || object.meta.language}
-              variant="pill"
-              languages={
-                object.meta.availableLanguages || [object.meta.language]
-              }
-              onChange={(val) => setLanguage(val)}
-            />
+            {isTranslatable && (
+              <LanguageSelect
+                selected={language || object.meta.language}
+                variant="pill"
+                languages={
+                  object.meta.availableLanguages || [object.meta.language]
+                }
+                onChange={(val) => setLanguage(val)}
+              />
+            )}
           </div>
         )}
         <div className="flex flex-row items-end justify-end space-x-2">

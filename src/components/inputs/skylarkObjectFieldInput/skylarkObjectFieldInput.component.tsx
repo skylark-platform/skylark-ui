@@ -10,7 +10,6 @@ import {
   ValidationRule,
 } from "react-hook-form";
 
-import { convertFieldTypeToInputType } from "src/components/panel/panelInputs";
 import { Select } from "src/components/select";
 import { INPUT_REGEX, SYSTEM_FIELDS } from "src/constants/skylark";
 import {
@@ -18,7 +17,10 @@ import {
   SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
 import { parseInputFieldValue } from "src/lib/skylark/parsers";
-import { formatObjectField } from "src/lib/utils";
+import {
+  formatObjectField,
+  convertFieldTypeToHTMLInputType,
+} from "src/lib/utils";
 
 interface SkylarkObjectFieldInputProps {
   field: string;
@@ -27,6 +29,7 @@ interface SkylarkObjectFieldInputProps {
   control: Control<Record<string, SkylarkObjectMetadataField>>;
   value: SkylarkObjectMetadataField;
   formState: FormState<Record<string, SkylarkObjectMetadataField>>;
+  additionalRequiredFields?: string[];
 }
 
 interface SkylarkObjectFieldInputComponentProps
@@ -123,9 +126,14 @@ const SkylarkObjectFieldInputGeneric = ({
   registerOptions,
 }: SkylarkObjectFieldInputComponentProps) => (
   <input
-    {...register(field, registerOptions)}
+    {...register(field, {
+      valueAsNumber: (config.type === "int" || config.type === "float") as
+        | false
+        | undefined,
+      ...registerOptions,
+    })}
     aria-invalid={error ? "true" : "false"}
-    type={convertFieldTypeToInputType(config.type)}
+    type={convertFieldTypeToHTMLInputType(config.type)}
     step={
       (config.type === "int" && "1") ||
       (config.type === "float" && "any") ||
@@ -138,10 +146,11 @@ const SkylarkObjectFieldInputGeneric = ({
 export const SkylarkObjectFieldInput = (
   props: SkylarkObjectFieldInputProps,
 ) => {
-  const { field, config, formState } = props;
-  const required = config.isRequired
-    ? `${formatObjectField(field)} is required`
-    : false;
+  const { field, config, formState, additionalRequiredFields } = props;
+  const required =
+    config.isRequired || additionalRequiredFields?.includes(config.name)
+      ? `${formatObjectField(field)} is required`
+      : false;
 
   const error = formState.errors[field];
 
@@ -163,7 +172,7 @@ export const SkylarkObjectFieldInput = (
     };
   }
 
-  console.log({ field, pattern, error });
+  // console.log({ field, pattern, value: props.value, error });
 
   const inputProps: SkylarkObjectFieldInputComponentProps = {
     ...props,

@@ -13,10 +13,12 @@ import {
   useSkylarkObjectTypes,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
+  NormalizedObjectField,
   SkylarkObjectIdentifier,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
+import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
 
 interface CreateObjectModalProps {
   isOpen: boolean;
@@ -48,7 +50,21 @@ export const CreateObjectModal = ({
     },
   });
 
-  const onSubmit = ({ language }: any) => createObject(language);
+  console.log({ objectOperations });
+
+  const onSubmit = ({
+    _language,
+    ...metadata
+  }: Record<string, SkylarkObjectMetadataField>) =>
+    createObject(_language as string, metadata);
+
+  const { systemMetadataFields, languageGlobalMetadataFields } =
+    objectOperations
+      ? splitMetadataIntoSystemTranslatableGlobal(
+          objectOperations.operations.create.inputs.map(({ name }) => name),
+          objectOperations.operations.create.inputs,
+        )
+      : { systemMetadataFields: [], languageGlobalMetadataFields: [] };
 
   return (
     <Dialog
@@ -63,7 +79,7 @@ export const CreateObjectModal = ({
       />
 
       <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
-        <Dialog.Panel className="relative mx-auto h-full max-h-[90%] w-full overflow-y-auto rounded bg-white p-6 md:w-4/5 md:p-10">
+        <Dialog.Panel className="relative mx-auto h-full max-h-[90%] w-full max-w-3xl overflow-y-auto rounded bg-white p-6 md:w-4/5 md:p-10">
           <button
             aria-label="close"
             className="absolute top-4 right-4 sm:top-9 sm:right-8"
@@ -92,6 +108,7 @@ export const CreateObjectModal = ({
                   variant="primary"
                   disabled={!objectTypes}
                   label="Object Type"
+                  labelVariant="form"
                   selected={(field.value as string) || ""}
                   placeholder="Select Object Type to get started"
                   options={
@@ -111,8 +128,10 @@ export const CreateObjectModal = ({
                   control={control}
                   render={({ field }) => (
                     <LanguageSelect
-                      className="w-full"
+                      className="mb-10 w-full"
                       variant="primary"
+                      label="Object Language"
+                      labelVariant="form"
                       rounded={false}
                       disabled={!objectTypes}
                       selected={(field.value as string) || ""}
@@ -120,20 +139,43 @@ export const CreateObjectModal = ({
                     />
                   )}
                 />
-                {objectOperations?.operations.create.inputs.map((config) => (
-                  <SkylarkObjectFieldInput
-                    key={config.name}
-                    field={config.name}
-                    config={config}
-                    control={control}
-                    register={register}
-                    value={getValues(config.name)}
-                    formState={formState}
-                  />
+                {[
+                  {
+                    id: "system",
+                    title: "System Metadata",
+                    metadataFields: systemMetadataFields,
+                  },
+                  {
+                    id: "languageGlobal",
+                    title: "Translatable & Global Metadata",
+                    metadataFields: languageGlobalMetadataFields,
+                  },
+                ].map(({ id, title, metadataFields }) => (
+                  <div key={id} className="mb-8">
+                    <h3 className="mb-2 text-base font-bold underline">
+                      {title}
+                    </h3>
+                    {metadataFields.map(({ field, config }) => {
+                      if (config) {
+                        return (
+                          <SkylarkObjectFieldInput
+                            key={field}
+                            field={field}
+                            config={config}
+                            control={control}
+                            register={register}
+                            value={getValues(field)}
+                            formState={formState}
+                          />
+                        );
+                      }
+                    })}
+                  </div>
                 ))}
+
                 <Button
                   variant="primary"
-                  className="mt-2"
+                  className="mt-4"
                   loading={isCreatingObject}
                   type="submit"
                   disabled={!objectOperations}

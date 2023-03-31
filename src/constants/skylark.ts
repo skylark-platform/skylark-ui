@@ -47,6 +47,8 @@ export const SYSTEM_FIELDS: string[] = [
   SkylarkSystemField.UID,
   SkylarkSystemField.ExternalID,
   SkylarkSystemField.Slug,
+  SkylarkSystemField.DataSourceID,
+  SkylarkSystemField.DataSourceFields,
 ];
 // Helpful way to priorise common display names when one isn't set
 export const DISPLAY_NAME_PRIORITY = [

@@ -13,6 +13,7 @@ import {
   SkylarkObjectMetadataField,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
+import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import { hasProperty } from "src/lib/utils";
 
 import {
@@ -80,7 +81,6 @@ export const Panel = ({
     AddedSkylarkObjectContentObject[] | null
   >(null);
   const metadataForm = useForm<Record<string, SkylarkObjectMetadataField>>({
-    defaultValues: data?.metadata,
     // Can't use onSubmit because we don't have a submit button within the form
     mode: "onTouched",
   });
@@ -92,9 +92,14 @@ export const Panel = ({
         objectMeta?.hasContent && PanelTab.Content,
         objectMeta?.hasRelationships && PanelTab.Relationships,
         objectMeta?.images && PanelTab.Imagery,
-        PanelTab.Availability,
+        objectMeta?.hasAvailability && PanelTab.Availability,
       ].filter((tab) => !!tab) as string[],
-    [objectMeta?.hasContent, objectMeta?.hasRelationships, objectMeta?.images],
+    [
+      objectMeta?.hasAvailability,
+      objectMeta?.hasContent,
+      objectMeta?.hasRelationships,
+      objectMeta?.images,
+    ],
   );
 
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
@@ -209,6 +214,7 @@ export const Panel = ({
         inEditMode={inEditMode}
         save={saveActiveTabChanges}
         isSaving={updatingObjectMetadata || updatingObjectContents}
+        isTranslatable={objectMeta?.isTranslatable}
         toggleEditMode={() => {
           if (inEditMode) {
             metadataForm.reset();

@@ -13,9 +13,9 @@ import { generateExampleFieldData } from "src/lib/flatfile";
 import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
 
 import {
-  COMMON_GRAPHQL_OPTS,
   generateContentsToReturn,
   generateFieldsToReturn,
+  generateVariablesAndArgs,
 } from "./dynamicQueries";
 
 interface SetContentOperation {
@@ -32,16 +32,20 @@ export const createDeleteObjectMutation = (
     return null;
   }
 
+  const common = generateVariablesAndArgs(object.name, "Mutation", true);
+
   const mutation = {
     mutation: {
       __name: `DELETE_${object.name}`,
       __variables: {
         uid: "String!",
+        ...common.variables,
       },
       deleteObject: {
         __aliasFor: object.operations.delete.name,
         __args: {
           uid: new VariableType("uid"),
+          ...common.args,
         },
         uid: true,
       },
@@ -55,49 +59,30 @@ export const createDeleteObjectMutation = (
 
 export const createCreateObjectMutation = (
   objectMeta: SkylarkObjectMeta | null,
+  metadata: Record<string, SkylarkObjectMetadataField>,
 ) => {
   if (!objectMeta || !objectMeta.operations.update) {
     return null;
   }
 
-  // Until we support adding values in create, prefill any required fields - never prefill external_id
-  const ignoredSystemFields: string[] = [
-    SkylarkSystemField.ExternalID,
-    SkylarkSystemField.DataSourceID,
-    SkylarkSystemField.DataSourceFields,
-  ];
-  const inputs = objectMeta.operations.create.inputs.filter(
-    ({ name }) => !ignoredSystemFields.includes(name),
+  const parsedMetadata = parseMetadataForGraphQLRequest(
+    metadata,
+    objectMeta.operations.update.inputs,
   );
-  const requiredInputs = inputs.filter(({ isRequired }) => isRequired);
-  const inputsThatNeedExampleData =
-    requiredInputs.length > 0 ? requiredInputs : [inputs[0]];
 
-  const exampleData = inputsThatNeedExampleData.map((field) => {
-    const exampleFieldData = generateExampleFieldData(field, 0);
-    return [field.name, exampleFieldData];
-  });
-  const exampleDataObject = Object.fromEntries(exampleData);
-  console.log({
-    inputs,
-    inputsThatNeedExampleData,
-    exampleData,
-    exampleDataObject,
-  });
+  const common = generateVariablesAndArgs(objectMeta.name, "Mutation", true);
 
   const mutation = {
     mutation: {
       __name: `CREATE_OBJECT_${objectMeta.name}`,
-      __variables: {
-        language: "String",
-      },
+      __variables: common.variables,
       createObject: {
         __aliasFor: objectMeta.operations.create.name,
         __args: {
-          language: new VariableType("language"),
-          [objectMeta.operations.create.argName]: exampleDataObject,
+          ...common.args,
+          [objectMeta.operations.create.argName]: parsedMetadata,
         },
-        ...COMMON_GRAPHQL_OPTS.objectMeta,
+        ...common.fields,
         uid: true,
       },
     },
@@ -116,6 +101,8 @@ export const createUpdateObjectMetadataMutation = (
     return null;
   }
 
+  const common = generateVariablesAndArgs(objectMeta.name, "Mutation", true);
+
   const parsedMetadata = parseMetadataForGraphQLRequest(
     metadata,
     objectMeta.operations.update.inputs,
@@ -125,15 +112,15 @@ export const createUpdateObjectMetadataMutation = (
     mutation: {
       __name: `UPDATE_OBJECT_METADATA_${objectMeta.name}`,
       __variables: {
+        ...common.variables,
         uid: "String!",
       },
       updateObjectMetadata: {
         __aliasFor: objectMeta.operations.update.name,
         __args: {
+          ...common.args,
           uid: new VariableType("uid"),
-          [objectMeta.operations.update.argName]: {
-            ...parsedMetadata,
-          },
+          [objectMeta.operations.update.argName]: parsedMetadata,
         },
         uid: true,
         ...generateFieldsToReturn(objectMeta.fields),

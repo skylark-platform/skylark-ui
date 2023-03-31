@@ -96,4 +96,6 @@ export interface SkylarkObjectMeta extends SkylarkObjectFields {
   relationships: SkylarkObjectRelationship[];
   hasContent: boolean;
   hasRelationships: boolean;
+  hasAvailability: boolean;
+  isTranslatable: boolean;
 }

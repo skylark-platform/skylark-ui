@@ -44,7 +44,7 @@ export const useUpdateObjectMetadata = ({
       );
       return skylarkRequest<GQLSkylarkUpdateObjectMetadataResponse>(
         updateObjectMetadataMutation as RequestDocument,
-        { uid },
+        { uid, language },
       );
     },
     onSuccess: (data, { uid }) => {

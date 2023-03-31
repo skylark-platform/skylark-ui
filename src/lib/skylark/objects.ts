@@ -1,3 +1,4 @@
+import { OBJECT_LIST_TABLE, SYSTEM_FIELDS } from "src/constants/skylark";
 import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import {
   SkylarkObjectType,
@@ -6,6 +7,8 @@ import {
   BuiltInSkylarkObjectType,
   SkylarkSystemField,
   SkylarkSystemGraphQLType,
+  SkylarkObjectMetadataField,
+  NormalizedObjectField,
 } from "src/interfaces/skylark";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
@@ -79,16 +82,23 @@ const objectRelationshipFieldsFromGraphQLType = (
 const getMutationInfo = (
   mutation: GQLSkylarkSchemaQueriesMutations["__schema"]["mutationType"]["fields"][0],
   objectType: string,
-  operation: "create" | "update",
 ) => {
-  // On create it will be like EpisodeCreateInput but on update EpisodeInput
-  const foundCreateInput = mutation.args.find(
-    (arg) =>
-      arg.type.name ===
-      `${objectType}${operation === "create" ? "Create" : ""}Input`,
+  const validOperationInterfaces = [
+    `${objectType}CreateInput`,
+    `${objectType}Input`,
+  ];
+
+  const foundCreateInput = mutation.args.find((arg) =>
+    arg.type.kind === "NON_NULL"
+      ? validOperationInterfaces.includes(arg.type.ofType?.name || "")
+      : validOperationInterfaces.includes(arg.type.name || ""),
   );
+
   const argName = foundCreateInput?.name || "";
-  const inputFields = foundCreateInput?.type.inputFields;
+  const inputFields =
+    foundCreateInput?.type.kind === "NON_NULL"
+      ? foundCreateInput.type.ofType?.inputFields
+      : foundCreateInput?.type.inputFields;
   const inputs = parseObjectInputFields(inputFields);
   const relationships = parseObjectRelationships(inputFields);
   return {
@@ -177,9 +187,8 @@ export const getObjectOperations = (
   const { relationships, ...createMeta } = getMutationInfo(
     createMutation,
     objectType,
-    "create",
   );
-  const updateMeta = getMutationInfo(updateMutation, objectType, "update");
+  const updateMeta = getMutationInfo(updateMutation, objectType);
 
   const hasRelationships = relationships.length > 0;
 
@@ -227,6 +236,8 @@ export const getObjectOperations = (
     relationships,
     hasRelationships,
     hasContent,
+    hasAvailability: !!availability,
+    isTranslatable: objectType !== BuiltInSkylarkObjectType.Availability,
   };
 };
 
@@ -239,4 +250,55 @@ export const getAllObjectsMeta = (
   });
 
   return objectOperations;
+};
+
+export const splitMetadataIntoSystemTranslatableGlobal = (
+  allMetadataFields: string[],
+  inputFields: NormalizedObjectField[],
+  options?: {
+    objectTypes: string[];
+    fieldsToHide: string[];
+  },
+): {
+  systemMetadataFields: {
+    field: string;
+    config?: NormalizedObjectField;
+  }[];
+  languageGlobalMetadataFields: {
+    field: string;
+    config?: NormalizedObjectField;
+  }[];
+} => {
+  const metadataArr = allMetadataFields.map((field) => {
+    // Use update operation fields as get doesn't always have the full types
+    const fieldConfig = inputFields.find(({ name }) => name === field);
+    return {
+      field,
+      config: fieldConfig,
+    };
+  });
+
+  const systemFieldsThatExist = metadataArr
+    .filter(({ field }) => SYSTEM_FIELDS.includes(field))
+    .sort(
+      ({ field: a }, { field: b }) =>
+        SYSTEM_FIELDS.indexOf(b) - SYSTEM_FIELDS.indexOf(a),
+    );
+
+  const otherFields = metadataArr.filter(
+    ({ field }) => !SYSTEM_FIELDS.includes(field),
+  );
+
+  const fieldsToHide = options
+    ? [...options.fieldsToHide, OBJECT_LIST_TABLE.columnIds.objectType]
+    : [OBJECT_LIST_TABLE.columnIds.objectType];
+
+  return {
+    systemMetadataFields: systemFieldsThatExist.filter(
+      ({ field }) => !fieldsToHide.includes(field.toLowerCase()),
+    ),
+    languageGlobalMetadataFields: otherFields.filter(
+      ({ field }) => !fieldsToHide.includes(field.toLowerCase()),
+    ),
+  };
 };
