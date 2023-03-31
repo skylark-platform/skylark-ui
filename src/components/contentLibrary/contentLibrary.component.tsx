@@ -41,7 +41,11 @@ export const ContentLibrary = () => {
 
   const objectListingWidth = useMotionValue<number | undefined>(undefined);
   const panelWidth = useTransform(objectListingWidth, (width) =>
-    width === undefined ? undefined : windowSize - width,
+    width === undefined
+      ? undefined
+      : windowSize < MINIMUM_SIZES.panel
+      ? windowSize
+      : windowSize - width,
   );
   const lastPanelWidth = useMotionValue<number | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -140,7 +144,7 @@ export const ContentLibrary = () => {
         className="flex h-screen w-full flex-row overflow-x-hidden"
         ref={containerRef}
         style={{
-          maxHeight: `calc(100vh - 5rem)`,
+          maxHeight: `calc(100vh - 4rem)`,
         }}
       >
         <m.div
@@ -148,9 +152,7 @@ export const ContentLibrary = () => {
             "w-full max-w-full pt-6 pl-2 md:pl-6 lg:pl-10",
             activePanelObject && "md:w-1/2 lg:w-5/12 xl:w-3/5",
           )}
-          style={{
-            width: objectListingWidth,
-          }}
+          style={{ width: activePanelObject ? objectListingWidth : "100%" }}
         >
           <ObjectList
             withCreateButtons
@@ -159,11 +161,10 @@ export const ContentLibrary = () => {
             isDragging={!!draggedObject}
           />
         </m.div>
-
         {activePanelObject && (
           <m.div
             className="fixed z-50 flex h-full w-full grow flex-row bg-white md:relative md:z-auto"
-            style={{ width: panelWidth }}
+            style={{ width: activePanelObject ? panelWidth : 0 }}
           >
             <m.div
               data-testid="drag-bar"

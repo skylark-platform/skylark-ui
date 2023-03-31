@@ -13,6 +13,7 @@ import {
   useSkylarkObjectTypes,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
+  BuiltInSkylarkObjectType,
   NormalizedObjectField,
   SkylarkObjectIdentifier,
   SkylarkObjectMetadataField,
@@ -61,6 +62,10 @@ export const CreateObjectModal = ({
       ? splitMetadataIntoSystemTranslatableGlobal(
           objectOperations.operations.create.inputs.map(({ name }) => name),
           objectOperations.operations.create.inputs,
+          {
+            objectTypes: [BuiltInSkylarkObjectType.Availability],
+            fieldsToHide: ["dimensions"],
+          },
         )
       : { systemMetadataFields: [], languageGlobalMetadataFields: [] };
 

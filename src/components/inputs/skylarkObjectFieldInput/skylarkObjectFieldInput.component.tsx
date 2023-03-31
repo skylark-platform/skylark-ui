@@ -210,7 +210,7 @@ export const SkylarkObjectFieldInput = (
         <span className="mt-1 block text-xs text-error">
           {error?.message ||
             (error.type === "validate" &&
-              `Value does not match field type "${config.originalType}"`)}
+              `Value is not valid for type "${config.originalType}"`)}
         </span>
       )}
     </div>
