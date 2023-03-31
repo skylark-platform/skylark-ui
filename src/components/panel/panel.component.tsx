@@ -190,7 +190,7 @@ export const Panel = ({
   };
 
   return (
-    <section className="mx-auto flex h-full w-full flex-col">
+    <section className="mx-auto flex h-full w-full flex-col break-words">
       <PanelHeader
         objectUid={uid}
         objectType={objectType}

@@ -22,9 +22,6 @@
 }
 
 @layer utilities {
-  .overflow-anywhere {
-    overflow-wrap: anywhere;
-  }
 }
 
 /* Overrides for GraphiQL Explorer */
