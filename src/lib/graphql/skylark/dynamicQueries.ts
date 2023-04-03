@@ -79,7 +79,9 @@ export const generateVariablesAndArgs = (
     return {
       variables: {},
       args: {},
-      fields: {},
+      fields: {
+        ...commonGraphQLOpts.objectConfig,
+      },
     };
   }
 
