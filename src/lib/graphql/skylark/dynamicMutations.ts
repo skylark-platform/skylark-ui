@@ -2,6 +2,7 @@ import { gql } from "graphql-tag";
 import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 
 import {
+  ParsedSkylarkObject,
   ParsedSkylarkObjectContentObject,
   SkylarkObjectMeta,
   SkylarkObjectType,
@@ -149,6 +150,73 @@ export const createUpdateObjectContentMutation = (
       },
     },
   };
+
+  const graphQLQuery = jsonToGraphQLQuery(mutation);
+
+  return gql(graphQLQuery);
+};
+
+export const createUpdateObjectRelationshipsMutation = (
+  object: SkylarkObjectMeta | null,
+  relationships: ParsedSkylarkObject[],
+) => {
+  if (!object || !object.operations.update || relationships.length === 0) {
+    return null;
+  }
+
+  const relationshipsParsed = relationships.reduce(
+    (prev, { objectType, uid }) => {
+      const updatedOperations = prev[objectType] || {
+        link: [],
+        unlink: [],
+        reposition: [],
+      };
+
+      return {
+        ...prev,
+        [objectType]: updatedOperations,
+      };
+    },
+    {} as Record<
+      string,
+      {
+        link: { uid: string; position: number }[];
+        unlink: string[];
+        reposition: { uid: string; position: number }[];
+      }
+    >,
+  );
+
+  console.log("||| - - ", object);
+  console.log("||| - - #2", relationships);
+
+  const mutation = {
+    mutation: {
+      __name: `UPDATE_OBJECT_CONTENT_${object.name}`,
+      __variables: {
+        uid: "String!",
+      },
+      updateObjectContent: {
+        __aliasFor: object.operations.update.name,
+        __args: {
+          uid: new VariableType("uid"),
+          [object.name.toLowerCase()]: {
+            relationships: {
+              //TODO
+              assets: {
+                link: ["01GWSDP0ZD11Z8JS624VAAMN5Q"],
+              },
+            },
+          },
+        },
+        uid: true,
+
+        // TODO ...generateContentsToReturn(object, contentTypesToRequest),
+      },
+    },
+  };
+
+  console.log(mutation);
 
   const graphQLQuery = jsonToGraphQLQuery(mutation);
 

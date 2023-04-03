@@ -43,7 +43,7 @@ export const Toast = ({
         type === "error" && "bg-error text-error-content",
       )}
     >
-      <p className="mb-1 text-base">{title}</p>
+      x<p className="mb-1 text-base">{title}</p>
       {message && <p className="text-xs font-light">{message}</p>}
     </div>
   );

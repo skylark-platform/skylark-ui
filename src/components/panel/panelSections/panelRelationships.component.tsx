@@ -40,19 +40,11 @@ const parse = (
     const key: string | undefined = relationships.find(
       (relationship) => relationship.objectType === cv.objectType,
     )?.relationshipName;
-    console.log("sdas", key);
 
+    // at this point i already know that is a valid relationship
     if (key) {
       const current = acc[key] || [];
       return { ...acc, [key]: [...current, cv] };
-    } else {
-      toast(
-        <Toast
-          title={`Error`}
-          message={`Can't add ${cv.objectType} to this object relationship`}
-          type="error"
-        />,
-      );
     }
     return acc;
   }, {});

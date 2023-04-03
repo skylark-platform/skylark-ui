@@ -6,6 +6,7 @@ import { Tabs } from "src/components/tabs/tabs.component";
 import { Toast } from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/useGetObject";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
+import { useUpdateObjectRelationships } from "src/hooks/useUpdateObjectRelationships";
 import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
@@ -50,33 +51,6 @@ function parseSkylarkObjectContent(
     position: 1,
   };
 }
-
-const parse = (
-  objects: ParsedSkylarkObject[],
-  relationships: SkylarkObjectRelationship[],
-): { [k: string]: ParsedSkylarkObject[] } => {
-  return objects.reduce((acc: { [k: string]: ParsedSkylarkObject[] }, cv) => {
-    console.log("relationships", relationships, cv.objectType);
-    const key: string | undefined = relationships.find(
-      (relationship) => relationship.objectType === cv.objectType,
-    )?.relationshipName;
-    console.log("sdas", key);
-
-    if (key) {
-      const current = acc[key] || [];
-      return { ...acc, [key]: [...current, cv] };
-    } else {
-      toast(
-        <Toast
-          title={`Error`}
-          message={`Can't add ${cv.objectType} to this object relationship`}
-          type="error"
-        />,
-      );
-    }
-    return acc;
-  }, {});
-};
 
 export const Panel = ({
   closePanel,
@@ -130,8 +104,23 @@ export const Panel = ({
   }, [uid, language]);
 
   useEffect(() => {
+    const relationships = objectMeta?.relationships || [];
     if (selectedTab === PanelTab.Relationships && droppedObject) {
-      setRelationshipObjects([...relationshipObjects, droppedObject]);
+      const relationshipName = relationships.find(
+        (relationship) => relationship.objectType === droppedObject.objectType,
+      )?.relationshipName;
+      if (relationshipName) {
+        setRelationshipObjects([...relationshipObjects, droppedObject]);
+      } else {
+        // setRelationshipObjects(relationshipObjects.filter())
+        toast(
+          <Toast
+            title={`Error`}
+            message={`Can't add ${droppedObject.objectType} to this object relationship`}
+            type="error"
+          />,
+        );
+      }
       clearDroppedObject && clearDroppedObject();
     } else if (
       // TODO if set content
@@ -161,9 +150,21 @@ export const Panel = ({
     contentObjects,
     data?.content?.objects,
     droppedObject,
+    objectMeta?.relationships,
     relationshipObjects,
     selectedTab,
   ]);
+
+  const { updateObjectRelationships, isLoading: updatingObjectRelationships } =
+    useUpdateObjectRelationships({
+      objectType,
+      uid,
+      relationships: relationshipObjects,
+      onSuccess: (updatedObject) => {
+        setEditMode(false);
+        // TODO setContentObjects(updatedObject.objects);
+      },
+    });
 
   const { updateObjectContent, isLoading: updatingObjectContents } =
     useUpdateObjectContent({
@@ -184,6 +185,9 @@ export const Panel = ({
       contentObjects !== data?.content?.objects
     ) {
       updateObjectContent();
+    } else if (selectedTab === PanelTab.Relationships && relationshipObjects) {
+      console.log("going to save");
+      updateObjectRelationships();
     } else {
       setEditMode(false);
     }
