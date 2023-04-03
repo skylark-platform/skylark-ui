@@ -11,9 +11,9 @@ import {
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
 import { Edit, Expand, Trash, MoreVertical } from "src/components/icons";
+import { LanguageSelect } from "src/components/inputs/select";
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { Pill } from "src/components/pill";
-import { LanguageSelect } from "src/components/select";
 import { Toast } from "src/components/toast/toast.component";
 import { useDeleteObject } from "src/hooks/useDeleteObject";
 import { ParsedSkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";

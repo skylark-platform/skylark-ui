@@ -5,8 +5,8 @@ import { GrClose } from "react-icons/gr";
 
 import { Button } from "src/components/button";
 import { SkylarkObjectFieldInput } from "src/components/inputs";
+import { LanguageSelect, Select } from "src/components/inputs/select";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
-import { LanguageSelect, Select } from "src/components/select";
 import { useCreateObject } from "src/hooks/useCreateObject";
 import {
   useSkylarkObjectOperations,
@@ -144,7 +144,7 @@ export const CreateObjectModal = ({
                     )}
                   />
                 )}
-                <div className="mb-10">
+                <div className="mt-10">
                   {[
                     {
                       id: "system",

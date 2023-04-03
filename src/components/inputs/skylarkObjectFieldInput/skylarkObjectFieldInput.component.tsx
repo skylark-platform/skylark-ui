@@ -10,8 +10,8 @@ import {
   ValidationRule,
 } from "react-hook-form";
 
-import { Checkbox } from "src/components/checkbox";
-import { Select } from "src/components/select";
+import { Checkbox } from "src/components/inputs/checkbox";
+import { Select } from "src/components/inputs/select";
 import { INPUT_REGEX, SYSTEM_FIELDS } from "src/constants/skylark";
 import {
   NormalizedObjectField,

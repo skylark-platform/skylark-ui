@@ -2,7 +2,7 @@ import { CheckedState } from "@radix-ui/react-checkbox";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 
-import { Checkbox } from "src/components/checkbox";
+import { Checkbox } from "src/components/inputs/checkbox";
 
 interface CheckboxGridProps {
   label: string;
@@ -87,7 +87,7 @@ export const CheckboxGrid = ({
           <Checkbox
             label={option}
             key={option}
-            name={option}
+            name={`${label}-${option}`}
             checked={checkboxOptions[option]}
             onCheckedChange={(checkedState) =>
               handleChange(option, checkedState)

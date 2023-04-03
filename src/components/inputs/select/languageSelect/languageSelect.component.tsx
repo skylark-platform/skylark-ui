@@ -1,6 +1,10 @@
 import clsx from "clsx";
 
-import { Select, SelectOption, SelectProps } from "src/components/select";
+import {
+  Select,
+  SelectOption,
+  SelectProps,
+} from "src/components/inputs/select";
 
 // Downloaded from https://datahub.io/core/language-codes "ietf-language-tags"
 import IetfLanguageTags from "./ietf-language-tags.json";

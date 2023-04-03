@@ -9,8 +9,8 @@ import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useVirtual } from "react-virtual";
 
 import { AvailabilityLabel } from "src/components/availability";
-import { Checkbox } from "src/components/checkbox";
 import { Spinner } from "src/components/icons";
+import { Checkbox } from "src/components/inputs/checkbox";
 import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
