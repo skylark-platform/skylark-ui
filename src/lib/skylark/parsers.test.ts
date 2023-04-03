@@ -1,11 +1,16 @@
+import { EnumType } from "json-to-graphql-query";
+
 import { GQLInputField, GQLType } from "src/interfaces/graphql/introspection";
 import {
   AvailabilityStatus,
+  NormalizedObjectFieldType,
   ParsedSkylarkObject,
   SkylarkGraphQLObject,
+  SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
 
 import {
+  parseInputFieldValue,
   parseObjectContent,
   parseObjectInputFields,
   parseObjectRelationships,
@@ -132,6 +137,7 @@ describe("parseObjectInputFields", () => {
         isRequired: false,
         name: "Test",
         type: "boolean",
+        originalType: "Boolean",
       },
     ]);
   });
@@ -142,7 +148,7 @@ describe("parseObjectInputFields", () => {
       type: {
         ...defaultType,
         kind: "NON_NULL",
-        name: "String",
+        name: "String!",
       },
     };
 
@@ -154,6 +160,7 @@ describe("parseObjectInputFields", () => {
         isRequired: true,
         name: "Test",
         type: "string",
+        originalType: "String!",
       },
     ]);
   });
@@ -176,11 +183,12 @@ describe("parseObjectInputFields", () => {
         isRequired: false,
         name: "Test",
         type: "string",
+        originalType: "String",
       },
     ]);
   });
 
-  test("parsers an enum input", () => {
+  test("parses an enum input", () => {
     const fields: GQLInputField = {
       name: "Test",
       type: {
@@ -199,6 +207,7 @@ describe("parseObjectInputFields", () => {
         isRequired: false,
         name: "Test",
         type: "enum",
+        originalType: "String",
       },
     ]);
   });
@@ -268,7 +277,7 @@ describe("parseObjectContent", () => {
       {
         position: 2,
         object: {
-          __typename: "Set",
+          __typename: "SkylarkSet",
           uid: "set_1",
         } as SkylarkGraphQLObject,
       },
@@ -383,5 +392,106 @@ describe("parseSkylarkObject", () => {
     };
 
     expect(parseSkylarkObject(skylarkObject)).toEqual(expectedParsedObject);
+  });
+});
+
+describe("parseInputFieldValue", () => {
+  const tests: {
+    input: string | number | boolean | string[];
+    type: NormalizedObjectFieldType;
+    want: SkylarkObjectMetadataField | EnumType;
+  }[] = [
+    {
+      input: "",
+      type: "string",
+      want: null,
+    },
+    {
+      input: "Value1",
+      type: "enum",
+      want: new EnumType("Value1"),
+    },
+    {
+      input: "2020-03-12T16:30:00",
+      type: "datetime",
+      want: "2020-03-12T16:30:00.000Z",
+    },
+    {
+      input: "2020-03-12",
+      type: "date",
+      want: "2020-03-12+00:00",
+    },
+    {
+      input: "2020-03-12+00:00",
+      type: "date",
+      want: "2020-03-12+00:00",
+    },
+    {
+      input: "2020/03/12",
+      type: "date",
+      want: "2020-03-12+00:00",
+    },
+    {
+      input: "12:30:31",
+      type: "time",
+      want: "12:30:31.000+01:00",
+    },
+    {
+      input: "12:30",
+      type: "time",
+      want: "12:30:00.000+01:00",
+    },
+    {
+      input: "12:30:31+00:00",
+      type: "time",
+      want: "12:30:31.000+01:00",
+    },
+    {
+      input: "12:30+00:00",
+      type: "time",
+      want: "12:30:00.000+01:00",
+    },
+    {
+      input: "1410715640579",
+      type: "timestamp",
+      want: 1410715640579,
+    },
+    {
+      input: "1410715640.579",
+      type: "timestamp",
+      want: 1410715640,
+    },
+    {
+      input: "1",
+      type: "int",
+      want: 1,
+    },
+    {
+      input: "1.1",
+      type: "int",
+      want: 1,
+    },
+    {
+      input: "1.1",
+      type: "float",
+      want: 1.1,
+    },
+    {
+      input: "{}",
+      type: "json",
+      want: "{}",
+    },
+    {
+      input: "other",
+      type: "email",
+      want: "other",
+    },
+  ];
+
+  tests.forEach(({ input, type, want }) => {
+    it(`returns ${want} when input is ${input} and type is ${type}`, () => {
+      const got = parseInputFieldValue(input, type);
+      expect(got).toEqual(want);
+    });
   });
 });

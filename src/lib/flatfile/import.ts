@@ -161,7 +161,7 @@ export const createFlatfileObjectsInSkylark = async (
   };
 };
 
-export const generateExampleFieldData = (
+const generateExampleFieldData = (
   { type, enumValues }: NormalizedObjectField,
   rowNum: number,
 ): string | number | boolean | EnumType | string[] | null => {

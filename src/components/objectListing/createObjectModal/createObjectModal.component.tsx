@@ -6,7 +6,6 @@ import { GrClose } from "react-icons/gr";
 import { Button } from "src/components/button";
 import { SkylarkObjectFieldInput } from "src/components/inputs";
 import { LanguageSelect, Select } from "src/components/inputs/select";
-import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { useCreateObject } from "src/hooks/useCreateObject";
 import {
   useSkylarkObjectOperations,
@@ -14,10 +13,8 @@ import {
 } from "src/hooks/useSkylarkObjectTypes";
 import {
   BuiltInSkylarkObjectType,
-  NormalizedObjectField,
   SkylarkObjectIdentifier,
   SkylarkObjectMetadataField,
-  SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
 
@@ -64,7 +61,7 @@ export const CreateObjectModal = ({
           objectOperations.operations.create.inputs,
           {
             objectTypes: [BuiltInSkylarkObjectType.Availability],
-            fieldsToHide: ["dimensions"],
+            hiddenFields: ["dimensions"],
           },
         )
       : { systemMetadataFields: [], languageGlobalMetadataFields: [] };

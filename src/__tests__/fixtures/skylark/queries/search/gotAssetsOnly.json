@@ -4,258 +4,293 @@
       "__typename": "SearchResultListing",
       "objects": [
         {
-          "__typename": "Asset",
-          "_config": {
-            "primary_field": "title",
-            "colour": "#9e9e9e",
-            "__typename": "ObjectConfig"
+          "__typename": "SkylarkAsset",
+          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "pt-PT", "version": 1 },
+            "global_data": { "version": 1 }
           },
-          "uid": "01GR0BVFJ41R9B14P9Q3RAMRVQ",
-          "external_id": "rectpBijSVmb35vSg",
-          "__Asset__slug": "got-s01-trailer",
-          "__Asset__title": "GOT S01 Trailer",
-          "__Asset__type": null,
-          "__Asset__url": "https://dl.airtable.com/.attachments/c9e53e0098a2ffcb6ab34a3a79cbd8d7/3576707a/S01_trailer.mp4",
+          "uid": "01GX396W0CDP6C463AGQK5YQ3P",
+          "external_id": null,
+          "__SkylarkAsset__slug": null,
+          "__SkylarkAsset__title": "GOT S5 Trailer",
+          "__SkylarkAsset__type": null,
+          "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/63e4dee1362f76cbd52511170035a69f/acc4b121/S05_trailer.mp4",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GR0BK6VZH7WRNCN1D8P0JTYE",
+                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00",
-                "__typename": "Availability"
+                "timezone": "+00:00"
               }
-            ],
-            "__typename": "AvailabilityListing"
-          },
-          "images": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GR0BKD5JA4EQ8X69469Z1DKE",
-                "external_id": "recbXlWg7DJA1ZNO2",
-                "slug": null,
-                "title": "GOT - S1 - 1.jpg ",
-                "description": null,
-                "type": "THUMBNAIL",
-                "url": "https://dl.airtable.com/.attachments/c8b23d45c55cf09081954dd208dcce4b/80b72296/GOT-S1-1.jpg",
-                "external_url": "https://dl.airtable.com/.attachments/c8b23d45c55cf09081954dd208dcce4b/80b72296/GOT-S1-1.jpg",
-                "upload_url": "https://obj-reg-storage-saas-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/qfmk74pkejb3ldjxbwbsk4ldju/01GR0BKD5JA4EQ8X69469Z1DKE/01GR18BDSATSXPBFK6WAYYM7E2?AWSAccessKeyId=ASIAZOW2GFFBMV5TXJWS&Signature=AwyhjDtlURfdFZj6kvTRxfeyXpc%3D&content-type=application%2Foctet&x-amz-meta-account_id=qfmk74pkejb3ldjxbwbsk4ldju&x-amz-meta-uid=01GR0BKD5JA4EQ8X69469Z1DKE&x-amz-security-token=IQoJb3JpZ2luX2VjEBQaCWV1LXdlc3QtMSJGMEQCIDns7jJmnNWvJfsRd9FiTwPYrP1RWNlDrQLHAzl709maAiBSREdu7UhUXAg%2FiBJefY0N6%2FDWCtKoyeLrlZCNOVzEhSqsAwiN%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDY1MDA3MTM4NjQzNCIMBH7%2FPCR5zLrmWv5WKoADYFJl9ly2spJKkkWyuT2axgXQw79e1QORx1nibzqsX1ZXU5JMwKCBY0ZHWKXbEdKog3zD5etvjlIrrX8B3YKwE57kGQjJ%2BCGa7QIIJ%2BUWHtrh5XI%2FJmG2OsjKJ4KRBxGAsNCXof%2BkKsorz%2Bp0KZjks2VWrSwoL%2BZWP02kpxAlrzGUEj5OntMnx6nLlPCrpDlZhHxBzIo1V7fl%2F0pE9cRmL%2Bz3J98AA0WcLwmUJTVnVwSFsEtRn3fqt3bVmeKFpOcjIZ0T0GZyU3CJHdKT4pnCZ%2BNtASFJ0n5VDmSyH278dWp%2B8BppeKIn4RYUytSV9u1r3%2BYllh8GArP%2BVQTjKXVWSrDciq%2FcvHY4v73diPEwJe2FSqhLkDg57P7w%2BWORHEUu6bs5CesjxwAjeyN%2F%2FUmjKicwc6yu6HQcRD0c0OU38uQNi4j5U0X24W6eEytscTf00OWgftWFsd23EwQg%2FlfyQeqsArrSPMsHSMdKcnxqjaxzubCYzMnULTnXg0%2BjVQ5gMPLe3p4GOp4BPsXZBfzAbKqXlMT19jBRlNiYJ94LNi1nz1QlG9bvj8pycBsAajZ4xafTxGoAokbz24bhtS2W3VmeRH%2FPzffvvikdCpSN98G0FEPqJG3kqu0%2BHv3dOd6v%2Fib3ze8WyHX%2Fo2nTN2Ju%2FIBTIZ1KCr4%2BkrVkSv0Zcf5ttwGWfKgb3oAD8N6o%2BnyiG%2FpcmdRy9bL8K4vgs8jBsFwsHJqy7o4%3D&Expires=1675083163",
-                "download_from_url": null,
-                "file_name": null,
-                "content_type": null,
-                "__typename": "Image"
-              }
-            ],
-            "__typename": "ImageListing"
+            ]
           }
         },
         {
-          "__typename": "Asset",
-          "_config": {
-            "primary_field": "title",
-            "colour": "#9e9e9e",
-            "__typename": "ObjectConfig"
+          "__typename": "SkylarkAsset",
+          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 1 }
           },
-          "uid": "01GR0BVECV9W1XDM1XM1ASV2V7",
+          "uid": "01GX396W0CDP6C463AGQK5YQ3P",
           "external_id": "recnRK3p6qLWrVsMu",
-          "__Asset__slug": "got-s05-trailer",
-          "__Asset__title": "GOT S05 Trailer",
-          "__Asset__type": null,
-          "__Asset__url": "https://dl.airtable.com/.attachments/63e4dee1362f76cbd52511170035a69f/acc4b121/S05_trailer.mp4",
+          "__SkylarkAsset__slug": "got-s05-trailer",
+          "__SkylarkAsset__title": "GOT S05 Trailer",
+          "__SkylarkAsset__type": null,
+          "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/63e4dee1362f76cbd52511170035a69f/acc4b121/S05_trailer.mp4",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GR0BK6VZH7WRNCN1D8P0JTYE",
+                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00",
-                "__typename": "Availability"
+                "timezone": "+00:00"
               }
-            ],
-            "__typename": "AvailabilityListing"
-          },
-          "images": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GR0BKD6GQNMC52H5R4R113C1",
-                "external_id": "recAOHQ1cIXhHFNCz",
-                "slug": null,
-                "title": "GOT - S5 - 1.jpg ",
-                "description": null,
-                "type": "THUMBNAIL",
-                "url": "https://dl.airtable.com/.attachments/ee29386ac3fc77cb2935e0959810276b/69e0dc31/GOT-S5-1.jpg",
-                "external_url": "https://dl.airtable.com/.attachments/ee29386ac3fc77cb2935e0959810276b/69e0dc31/GOT-S5-1.jpg",
-                "upload_url": "https://obj-reg-storage-saas-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/qfmk74pkejb3ldjxbwbsk4ldju/01GR0BKD6GQNMC52H5R4R113C1/01GR18BDSAX7XRA3GXZWGWW008?AWSAccessKeyId=ASIAZOW2GFFBPNFB5MQE&Signature=IgRcx%2BYYVTEzI0oi%2F%2FZgBGny0PM%3D&content-type=application%2Foctet&x-amz-meta-account_id=qfmk74pkejb3ldjxbwbsk4ldju&x-amz-meta-uid=01GR0BKD6GQNMC52H5R4R113C1&x-amz-security-token=IQoJb3JpZ2luX2VjEBQaCWV1LXdlc3QtMSJGMEQCIG51JsKcc9eZA0F86nm9FCBLvTjl6fjerhQmPr%2FB9%2FfVAiBxFx4ePEC51Q1lDZGtXlmrHxcE2zYOpT5YgwxmXvXfMiqsAwiN%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDY1MDA3MTM4NjQzNCIMkts%2FDVRIEJBzb4TnKoADHuOZ6Z8rgdoR6L9WHWkmBYvvKnS6fEWk%2B92fjoTaTU3TKJAh95ABDqhxM0B4ATtzmqRRdYpMo2Sauvj%2B4iYcnYGTcP1GvUaIbYktjzy9wUUlX%2FVI6GCK1KL21l6j3026UK0aH1Vc2InDhuKSxMT6wbVacPBlviYjaGY6g%2FNJdxvnKlgFwPp2WER2OMqwZUZWK4jGOGieVj%2B1jLeTS%2BaeZANAZu0c5hSZJ8L1KyQCSjwuB8JJQ8xn6GzPC9TiRtI1YDcAH3o%2ByZy9gMufOlGc3TNhpstVaLAkbABqw7JlEPb9ji530rZwCFwbssEGSbwuRmOR%2BJPx3YzkuxKs0bqcFM0UQkV9D6WfcLmlNO1aoJLKZL3%2FdD8Nl%2BxWOkMWBJasS%2B5XfrkTWtPh31KRLGtbFYRKEqMs3x2acYRRZbNuczbab%2FbecSDILQyzpXnBQTQzxTvKmrsk%2F%2FWBurOvS0k%2FDWEfS6kAZvi3eKMLLSvJHj3gOSD%2FXZ%2FMqB0vziWnRmVlMPLe3p4GOp4B1D3%2F1BGAOHstdScd2gh6GMemMgDpRuEmrNk9Mq2NhAvoXVf%2B5lAM%2BnoiAeMHGQQS2XjidMZheRH7uAjc%2BYH%2BKmGK78eIdp6EY%2FsWsig7XKrdCTLGCim21u7TsguAw4gA8quHx6ltilxTvaZbToFiD62vFy8En8jQ%2Bqnbsw1rjjuXWfF4s0QOBPcCDVB5%2FQWV9HS7cLLuDAcYstUtAHw%3D&Expires=1675083163",
-                "download_from_url": null,
-                "file_name": null,
-                "content_type": null,
-                "__typename": "Image"
-              }
-            ],
-            "__typename": "ImageListing"
+            ]
           }
         },
         {
-          "__typename": "Asset",
-          "_config": {
-            "primary_field": "title",
-            "colour": "#9e9e9e",
-            "__typename": "ObjectConfig"
+          "__typename": "SkylarkAsset",
+          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "pt-PT", "version": 1 },
+            "global_data": { "version": 1 }
           },
-          "uid": "01GR0BVCAV36HX0QZDZWEETJGH",
-          "external_id": "recYsOkOs6WcsHNB1",
-          "__Asset__slug": "got-s03-trailer",
-          "__Asset__title": "GOT S03 Trailer",
-          "__Asset__type": null,
-          "__Asset__url": "https://dl.airtable.com/.attachments/96690ff8004897fed2326601b088fc5b/34f559ba/S03_trailer.mp4",
+          "uid": "01GX396V4HC1TKAJMQ5BKQZZPN",
+          "external_id": null,
+          "__SkylarkAsset__slug": null,
+          "__SkylarkAsset__title": "GOT S4 Trailer",
+          "__SkylarkAsset__type": null,
+          "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/38fcf3531443f4c6b2bfe6c25b2fdbbb/b521d6bd/S04_trailer.mp4",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GR0BK6VZH7WRNCN1D8P0JTYE",
+                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00",
-                "__typename": "Availability"
+                "timezone": "+00:00"
               }
-            ],
-            "__typename": "AvailabilityListing"
-          },
-          "images": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GR0BKD7VF1GVV93MMMEQERAD",
-                "external_id": "recFC060MdeXJEmEg",
-                "slug": null,
-                "title": "GOT - S3 - 1.jpg ",
-                "description": null,
-                "type": "THUMBNAIL",
-                "url": "https://dl.airtable.com/.attachments/c3d99b1ef47ff6b150590f59e868463c/648db995/GOT-S3-1.jpg",
-                "external_url": "https://dl.airtable.com/.attachments/c3d99b1ef47ff6b150590f59e868463c/648db995/GOT-S3-1.jpg",
-                "upload_url": "https://obj-reg-storage-saas-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/qfmk74pkejb3ldjxbwbsk4ldju/01GR0BKD7VF1GVV93MMMEQERAD/01GR18BDSA3JFSFX7GQSDTB45S?AWSAccessKeyId=ASIAZOW2GFFBHFRSYYP3&Signature=O%2FiNNSMYYrPtAWFeHrSPAwh%2BbhA%3D&content-type=application%2Foctet&x-amz-meta-account_id=qfmk74pkejb3ldjxbwbsk4ldju&x-amz-meta-uid=01GR0BKD7VF1GVV93MMMEQERAD&x-amz-security-token=IQoJb3JpZ2luX2VjEBQaCWV1LXdlc3QtMSJHMEUCIQDOSjKhJVI0Gft%2FX%2BFUyUO3HY6OCKFAoC2L77EfB0GZ6QIgJAOXdTSoHveKcJGRw1BcFguZY6L%2BtQCYOjfwXYp21IwqrAMIjf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2NTAwNzEzODY0MzQiDHQZpSinZzOpwFWn8yqAAxaji2UjUVvG6PPhF3EEW2z9HLvEW0avVTLa2tQ1dQ%2FZUJ%2F8qfJlzs9pOk97A0x63gOS3mBxx5ElnTE9pRI%2BSG38pBtYHoqGAelOdWytKVh%2BUGpli%2FMVnla%2FuUB%2BpFm3kXYQon46M3ON6hEBifsnyWfMCXttT5nSjuZ9Lq1o3sG8arMZHtJ0%2FuAV7PxcV38JBQnL31vZetKinlHCzXDqtZ3QlCN2XOj7E8Dc3HcWmhf7UO%2Frn8Wx0fV4BHMIczguIfCkLHO72saDzULmh%2B29QVHK0%2FK901B1PMnrBVVhHGhMA5rDSF6iT4jxfjEhUCInk7wrBiY%2FOvB6ay6XeidSVA5ujZDEPX2jcpd4GMi63G1WmVuIHfxkex46LoqUuOF0cd%2F%2ByXT3Y%2ByVBdDvOPd%2Fur71Z4wcdGV426gzsaEEac%2Faz1H05qETBe9oRj4o5U3kRTYNdJ4xeWU4lLJpvf4QA4Kk18g2yxpYuVF6C3rBP56JP20X0M%2BpoiMAeXte9bKFoTDx3t6eBjqdATZZySatY4I7zTIMwSf%2BbsfH%2F6FGsMIrcbjZ7l71xAvupt%2BPxwvfL1p%2B%2B0jsyf8jhG60FyqcT8yFa8pbsr%2Bxa5neUJgHPzmgWeHOVehmFhRwMsqUD2hkqvjrv4gTEhnKtU6wLB1wcRHTjBl6CCOLjPew3Tg2TjSa%2BV1t%2F9RsxK26ZfArbum6i9x0GhlYAdZP3tyQWglXHgrc0H2TyHA%3D&Expires=1675083163",
-                "download_from_url": null,
-                "file_name": null,
-                "content_type": null,
-                "__typename": "Image"
-              }
-            ],
-            "__typename": "ImageListing"
+            ]
           }
         },
         {
-          "__typename": "Asset",
-          "_config": {
-            "primary_field": "title",
-            "colour": "#9e9e9e",
-            "__typename": "ObjectConfig"
+          "__typename": "SkylarkAsset",
+          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 1 }
           },
-          "uid": "01GR0BVBY4FZA796GHM8XR5S52",
-          "external_id": "rec2OnQzhSJ4BPMfC",
-          "__Asset__slug": "got-s02-trailer",
-          "__Asset__title": "GOT S02 Trailer",
-          "__Asset__type": null,
-          "__Asset__url": "https://dl.airtable.com/.attachments/65af7b331593deb9a59494403387c7d4/7e8cc908/S02_trailer.mp4",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GR0BK6VZH7WRNCN1D8P0JTYE",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00",
-                "__typename": "Availability"
-              }
-            ],
-            "__typename": "AvailabilityListing"
-          },
-          "images": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GR0BKZGCPZ61TCBN77T92Y9J",
-                "external_id": "recgF2QpunH9RRC60",
-                "slug": null,
-                "title": "GOT - S2 - 10.jpg ",
-                "description": null,
-                "type": "THUMBNAIL",
-                "url": "https://dl.airtable.com/.attachments/ce178d79217d15f7518d9829c0fcf9b3/1be9b2d0/GOT-S2-10.jpg",
-                "external_url": "https://dl.airtable.com/.attachments/ce178d79217d15f7518d9829c0fcf9b3/1be9b2d0/GOT-S2-10.jpg",
-                "upload_url": "https://obj-reg-storage-saas-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/qfmk74pkejb3ldjxbwbsk4ldju/01GR0BKZGCPZ61TCBN77T92Y9J/01GR18BDSCJ4F1Z3RZVP6K4VST?AWSAccessKeyId=ASIAZOW2GFFBIOCWWTEP&Signature=K%2FuERfCXlbP3%2Bg2HTx0P%2FlxoUck%3D&content-type=application%2Foctet&x-amz-meta-account_id=qfmk74pkejb3ldjxbwbsk4ldju&x-amz-meta-uid=01GR0BKZGCPZ61TCBN77T92Y9J&x-amz-security-token=IQoJb3JpZ2luX2VjEBQaCWV1LXdlc3QtMSJIMEYCIQC5rRWnycKmtGrqKIiqrlXiQb%2F2LVAbfeiFBhteWc5l0gIhAMpi5LlqkpI73BmvyUX75svsxau67GOcpRv6sKAmNC6nKqwDCI3%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMNjUwMDcxMzg2NDM0IgxnHA8MN8lCKQrdGJkqgAP9IkOKNMbZvhV6r%2FfoRcJUpraguVJLPj0%2BXGO%2BJdLvMcXvqcVnIq9a%2BCzG4KugBkTuKLiLC%2BPiEF3OrqZsa5C0ghtuS7jNJV1VNHVag7TAG6G3epx5XYXLTs32z6Dip6uUaiMYCBgO3Vk11S7F4xq8eQ3Mx5QyDXywYXEvtO6uxXmP%2FWKg8wEku4PLdgzmfv78BpWIAP%2FFqsgVw7GAT6aVRL%2BbhTTW%2FH3q9b1zN%2FQhG5mFLdmdwR%2BohQWM3R8RYdpuXtaEW0%2BEHXqLId3kTvb8NiycbzEM21aGm4jb498LNaGupcb7ibKc8Nv8D4DjAg6feXdtx2q58cr3E4LCDOy%2BkAQ2D%2BNPOJKg4oKnvhQ3gjgXrYwmSN60mPrc78xFPePvYVf5%2B8gZk7CiErLuR4OwYfSNRZ1wJiwdlHJI59QJgSpbypVEANcBCvCaxVpTAJIh5AysIHrrmcVxvq9fyNx0hlDTD%2B4blVMHVkcFSp5zkxFrMvO8AV1AnK3Se4rgbJIw8d7engY6nAFf1C2suE4tjj57eAxU6dLgnekg2JkuBclfgDyP%2BgMfTMWi71GLUVy5HeYPhIKK2rHkbS%2FsWNnrgFFswm6VA2pXpuTRuuNpUY0ncjQa0ndKnJ%2Fm8cjkvqlDiabSycDTmcqfMWtfB1MVa2joakxAbShNJFjqaq6k%2BUv8tLaBFWKOScuEZjsf4qROm8d%2Fp%2Bq65QeAdHzpopstODPbtNI%3D&Expires=1675083163",
-                "download_from_url": null,
-                "file_name": null,
-                "content_type": null,
-                "__typename": "Image"
-              }
-            ],
-            "__typename": "ImageListing"
-          }
-        },
-        {
-          "__typename": "Asset",
-          "_config": {
-            "primary_field": "title",
-            "colour": "#9e9e9e",
-            "__typename": "ObjectConfig"
-          },
-          "uid": "01GR0BVBY0G3J6V2017643KWET",
+          "uid": "01GX396V4HC1TKAJMQ5BKQZZPN",
           "external_id": "recxS5dem2efX4LZ8",
-          "__Asset__slug": "got-s04-trailer",
-          "__Asset__title": "GOT S04 Trailer",
-          "__Asset__type": null,
-          "__Asset__url": "https://dl.airtable.com/.attachments/38fcf3531443f4c6b2bfe6c25b2fdbbb/b521d6bd/S04_trailer.mp4",
+          "__SkylarkAsset__slug": "got-s04-trailer",
+          "__SkylarkAsset__title": "GOT S04 Trailer",
+          "__SkylarkAsset__type": null,
+          "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/38fcf3531443f4c6b2bfe6c25b2fdbbb/b521d6bd/S04_trailer.mp4",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GR0BK6VZH7WRNCN1D8P0JTYE",
+                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00",
-                "__typename": "Availability"
+                "timezone": "+00:00"
               }
-            ],
-            "__typename": "AvailabilityListing"
+            ]
+          }
+        },
+        {
+          "__typename": "SkylarkAsset",
+          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "pt-PT", "version": 1 },
+            "global_data": { "version": 1 }
           },
-          "images": {
+          "uid": "01GX396V13XBFXY3HG4DFY7A33",
+          "external_id": null,
+          "__SkylarkAsset__slug": null,
+          "__SkylarkAsset__title": "GOT S3 Trailer",
+          "__SkylarkAsset__type": null,
+          "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/96690ff8004897fed2326601b088fc5b/34f559ba/S03_trailer.mp4",
+          "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GR0BKDEYBJ1G3MMHNV71AKHV",
-                "external_id": "recG48rTZCPlW1l19",
-                "slug": null,
-                "title": "GOT - S4 - 1.jpg ",
-                "description": null,
-                "type": "THUMBNAIL",
-                "url": "https://dl.airtable.com/.attachments/777fef933dd3373f4291f2215fa48cc4/3c6ff093/GOT-S4-1.jpg",
-                "external_url": "https://dl.airtable.com/.attachments/777fef933dd3373f4291f2215fa48cc4/3c6ff093/GOT-S4-1.jpg",
-                "upload_url": "https://obj-reg-storage-saas-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/qfmk74pkejb3ldjxbwbsk4ldju/01GR0BKDEYBJ1G3MMHNV71AKHV/01GR18BDSB9N0CRGJ71MS7A352?AWSAccessKeyId=ASIAZOW2GFFBBOU6WUWC&Signature=SUnjkpsc6VQ%2BaJv7%2B5S1cGAPuKs%3D&content-type=application%2Foctet&x-amz-meta-account_id=qfmk74pkejb3ldjxbwbsk4ldju&x-amz-meta-uid=01GR0BKDEYBJ1G3MMHNV71AKHV&x-amz-security-token=IQoJb3JpZ2luX2VjEBQaCWV1LXdlc3QtMSJHMEUCIFYkifR8F3YAbGrGYkwo3s0jGMFsSeL3CGGa3LmJLYN8AiEA6%2FEKZeIP3Rh0mu2kZHg6laAn62LMf4xWWFuij17L9R8qrAMIjf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2NTAwNzEzODY0MzQiDP%2BVr91Hih5QDxd9kiqAA7%2FVSkK%2BgkPKw3dIM0RDX1EnJnPOqmZB%2B88%2B0RUfi%2BpDEzdvRyv9auXg1uO2554gqYX%2FokU4OsK0ezOGa1rx0d%2BokbJpUP36J3ABCzNZM2S8aIxj6o73DRS1ZoyZFgobOGQIaWKhHHlK12MdIni6WEpEBejICxeLunCdhhuC8WKhS%2BywsufLEYVYdx2rskBHtnoP8NhQGn%2BmJT6Q2BdbdstUiwTtHBaUeBH%2BOywvj2RR%2Bgvq3FM3DEx5KxWD9hAaHnlaR%2FnZcyGdBAYvd13Fkt%2FY%2B8cOqffweJLB1MtxUuRmfNR98FZQOv6zEjLSNe9ItPJUaYcjjywlDb3h2Vuy1m6btv7dCYwkEEj%2FBso%2BzLWxUMYaDKf13KlUVp%2FKL%2FxgxQjmYEtP0LWIhaVG7gApc7Y2VavnFL97UHMclUxXblmBRp%2BOlIjJi8kHomU6s6sHbRiIWc6L40zoWTKWHYPm%2BXgqUGQ1jCgwAYEWHSn2BmSEX0CkT2rAVsqUU%2FSBsb%2FWbDDx3t6eBjqdAVKF%2BpeR6%2F9aNezVQ77hJwrUCqGgYOTy8ztk2Dq44NZIn33Jelz4uDr40cFNIQ879b1R4DhESzi42aV9RVffU%2BkTkywD6Sot%2BbQKojz9F3d57WJlLS0SZoq4HJhGfFCMUU81Mjf%2Fhe6gNHNaex%2BwQwkfjwu%2FPqzWZQeCnuC2yniv7Vb%2BKT4yZt37Vf%2Fb0SheunFBae9aNoUgj4BfG90%3D&Expires=1675083163",
-                "download_from_url": null,
-                "file_name": null,
-                "content_type": null,
-                "__typename": "Image"
+                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
               }
-            ],
-            "__typename": "ImageListing"
+            ]
+          }
+        },
+        {
+          "__typename": "SkylarkAsset",
+          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 1 }
+          },
+          "uid": "01GX396V13XBFXY3HG4DFY7A33",
+          "external_id": "recYsOkOs6WcsHNB1",
+          "__SkylarkAsset__slug": "got-s03-trailer",
+          "__SkylarkAsset__title": "GOT S03 Trailer",
+          "__SkylarkAsset__type": null,
+          "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/96690ff8004897fed2326601b088fc5b/34f559ba/S03_trailer.mp4",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "SkylarkAsset",
+          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "pt-PT", "version": 1 },
+            "global_data": { "version": 1 }
+          },
+          "uid": "01GX396T45KXWN2NNNDADR3CG9",
+          "external_id": null,
+          "__SkylarkAsset__slug": null,
+          "__SkylarkAsset__title": "GOT S1 Trailer",
+          "__SkylarkAsset__type": null,
+          "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/c9e53e0098a2ffcb6ab34a3a79cbd8d7/3576707a/S01_trailer.mp4",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "SkylarkAsset",
+          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 1 }
+          },
+          "uid": "01GX396T45KXWN2NNNDADR3CG9",
+          "external_id": "rectpBijSVmb35vSg",
+          "__SkylarkAsset__slug": "got-s01-trailer",
+          "__SkylarkAsset__title": "GOT S01 Trailer",
+          "__SkylarkAsset__type": null,
+          "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/c9e53e0098a2ffcb6ab34a3a79cbd8d7/3576707a/S01_trailer.mp4",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "SkylarkAsset",
+          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "pt-PT", "version": 1 },
+            "global_data": { "version": 1 }
+          },
+          "uid": "01GX396T44TBG7KR55K3HT2P08",
+          "external_id": null,
+          "__SkylarkAsset__slug": null,
+          "__SkylarkAsset__title": "GOT S2 Trailer",
+          "__SkylarkAsset__type": null,
+          "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/65af7b331593deb9a59494403387c7d4/7e8cc908/S02_trailer.mp4",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "SkylarkAsset",
+          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 1 }
+          },
+          "uid": "01GX396T44TBG7KR55K3HT2P08",
+          "external_id": "rec2OnQzhSJ4BPMfC",
+          "__SkylarkAsset__slug": "got-s02-trailer",
+          "__SkylarkAsset__title": "GOT S02 Trailer",
+          "__SkylarkAsset__type": null,
+          "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/65af7b331593deb9a59494403387c7d4/7e8cc908/S02_trailer.mp4",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
           }
         }
       ]

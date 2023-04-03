@@ -1,15 +1,13 @@
 import { gql } from "graphql-tag";
 import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 
+import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
-  NormalizedObjectFieldType,
   ParsedSkylarkObjectContentObject,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
-  SkylarkSystemField,
 } from "src/interfaces/skylark";
-import { generateExampleFieldData } from "src/lib/flatfile";
 import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
 
 import {
@@ -103,8 +101,20 @@ export const createUpdateObjectMetadataMutation = (
 
   const common = generateVariablesAndArgs(objectMeta.name, "Mutation", true);
 
+  const options = OBJECT_OPTIONS.find(({ objectTypes }) =>
+    objectTypes.includes(objectMeta.name),
+  );
+
+  const metadataWithHiddenFieldsRemoved = options
+    ? Object.fromEntries(
+        Object.entries(metadata).filter(
+          ([key]) => !options?.hiddenFields.includes(key),
+        ),
+      )
+    : metadata;
+
   const parsedMetadata = parseMetadataForGraphQLRequest(
-    metadata,
+    metadataWithHiddenFieldsRemoved,
     objectMeta.operations.update.inputs,
   );
 

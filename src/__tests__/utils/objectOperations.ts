@@ -21,13 +21,13 @@ export const movieObjectOperations = getObjectOperations(
 );
 
 export const setObjectOperations = getObjectOperations(
-  "Set",
+  "SkylarkSet",
   GQLSkylarkSchemaQueryFixture.data
     .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
 );
 
 export const imageObjectOperations = getObjectOperations(
-  "Image",
+  "SkylarkImage",
   GQLSkylarkSchemaQueryFixture.data
     .__schema as unknown as GQLSkylarkSchemaQueriesMutations["__schema"],
 );

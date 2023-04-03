@@ -1,4 +1,8 @@
-import { SkylarkSystemField } from "src/interfaces/skylark";
+import {
+  BuiltInSkylarkObjectType,
+  SkylarkObjectType,
+  SkylarkSystemField,
+} from "src/interfaces/skylark";
 
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "";
 export const SKYLARK_GRAPHQL_URL = (process.env.NEXT_PUBLIC_SKYLARK_API_URL ||
@@ -73,3 +77,16 @@ export const INPUT_REGEX: Record<string, string | RegExp> = {
   email:
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
 };
+
+export const OBJECT_OPTIONS: {
+  objectTypes: SkylarkObjectType[];
+  hiddenFields: string[];
+}[] = [
+  {
+    objectTypes: [
+      BuiltInSkylarkObjectType.SkylarkImage,
+      BuiltInSkylarkObjectType.BetaSkylarkImage,
+    ],
+    hiddenFields: ["external_url", "upload_url", "download_from_url"],
+  },
+];

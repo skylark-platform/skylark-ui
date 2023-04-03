@@ -53,10 +53,11 @@ test("renders the panel in the default view", async () => {
   await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
 
   expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
-  expect(
-    screen.getByText("All Availabilities Test Movie (for dimension testing)"),
-  ).toBeInTheDocument();
-  expect(screen.getAllByText("All Avail Test Movie")).toHaveLength(2);
+  await waitFor(() =>
+    expect(screen.getByLabelText("Title long")).toHaveValue(
+      "All Availabilities Test Movie (for dimension testing)",
+    ),
+  );
 });
 
 test("renders object not found when the object doesn't exist", async () => {
@@ -143,9 +144,11 @@ test("renders the objects primaryField and colour in the header when given", asy
   await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
 
   expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
-  expect(
-    screen.getByText("All Availabilities Test Movie (for dimension testing)"),
-  ).toBeInTheDocument();
+  await waitFor(() =>
+    expect(screen.getByLabelText("Title long")).toHaveValue(
+      "All Availabilities Test Movie (for dimension testing)",
+    ),
+  );
   const panelHeader = within(screen.getByTestId("panel-header"));
   expect(
     panelHeader.getByText(withPrimaryFieldMock.getObject.release_date),
@@ -162,7 +165,7 @@ test("renders an image and the original image size when the object type is an Im
   render(
     <Panel
       uid={GQLSkylarkGetObjectImageQueryFixture.data.getObject.uid}
-      objectType={"Image"}
+      objectType={"SkylarkImage"}
       language={""}
       closePanel={jest.fn()}
     />,
@@ -185,7 +188,7 @@ describe("multiple language versions", () => {
   test("renders the Portuguese GOT episode", async () => {
     render(
       <Panel
-        uid={GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.uid}
+        uid={GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data.getObject.uid}
         objectType={"Episode"}
         language={"pt-PT"}
         closePanel={jest.fn()}
@@ -195,13 +198,15 @@ describe("multiple language versions", () => {
     await waitFor(() =>
       expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
     );
-    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("Title short")).toBeInTheDocument(),
+    );
 
-    expect(
-      screen.getByText(
+    await waitFor(() =>
+      expect(screen.getByLabelText("Title short")).toHaveValue(
         GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data.getObject.title_short,
       ),
-    ).toBeInTheDocument();
+    );
   });
 
   test("changes the panel language using the dropdown when more than one is available", async () => {
@@ -218,13 +223,14 @@ describe("multiple language versions", () => {
     await waitFor(() =>
       expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
     );
-    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
-
-    expect(
-      screen.getByText(
+    await waitFor(() =>
+      expect(screen.getByText("Title short")).toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(screen.getByLabelText("Title short")).toHaveValue(
         GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.title_short,
       ),
-    ).toBeInTheDocument();
+    );
 
     // Act
     const dropdown = screen.getByText(
@@ -238,13 +244,16 @@ describe("multiple language versions", () => {
     await waitFor(() =>
       expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
     );
-    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
 
-    expect(
-      screen.getByText(
+    await waitFor(() =>
+      expect(screen.getByText("Title short")).toBeInTheDocument(),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByLabelText("Title short")).toHaveValue(
         GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data.getObject.title_short,
       ),
-    ).toBeInTheDocument();
+    );
   });
 });
 
@@ -335,7 +344,7 @@ describe("content view", () => {
     render(
       <Panel
         uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
-        objectType={"Set"}
+        objectType={"SkylarkSet"}
         language={""}
         closePanel={jest.fn()}
       />,
@@ -350,7 +359,7 @@ describe("content view", () => {
     expect(
       screen.getByText(
         GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[0].object?.__Season__title as string,
+          .objects[0].object?.__SkylarkSet__title as string,
       ),
     ).toBeInTheDocument();
   });
@@ -359,7 +368,7 @@ describe("content view", () => {
     render(
       <Panel
         uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
-        objectType={"Set"}
+        objectType={"SkylarkSet"}
         language={""}
         closePanel={jest.fn()}
       />,
@@ -384,7 +393,7 @@ describe("content view", () => {
       render(
         <Panel
           uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
-          objectType={"Set"}
+          objectType={"SkylarkSet"}
           language={""}
           closePanel={jest.fn()}
         />,
@@ -406,7 +415,7 @@ describe("content view", () => {
       expect(
         screen.getByText(
           GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-            .objects[0].object.__Season__title as string,
+            .objects[0].object.__SkylarkSet__title as string,
         ),
       ).toBeInTheDocument();
     };
@@ -427,19 +436,19 @@ describe("content view", () => {
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
         GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[0].object.__Season__title as string,
+          .objects[0].object.__SkylarkSet__title as string,
       );
       expect(
         screen.getByTestId("panel-object-content-item-2"),
       ).toHaveTextContent(
         GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[1].object.__Season__title as string,
+          .objects[1].object.__SkylarkSet__title as string,
       );
       expect(
         screen.getByTestId("panel-object-content-item-3"),
       ).toHaveTextContent(
         GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[2].object.__Season__title as string,
+          .objects[2].object.__SkylarkSet__title as string,
       );
 
       expect(screen.getByDisplayValue("1")).toBeInTheDocument();
@@ -453,19 +462,19 @@ describe("content view", () => {
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
         GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[1].object.__Season__title as string,
+          .objects[1].object.__SkylarkSet__title as string,
       );
       expect(
         screen.getByTestId("panel-object-content-item-2"),
       ).toHaveTextContent(
         GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[2].object.__Season__title as string,
+          .objects[2].object.__SkylarkSet__title as string,
       );
       expect(
         screen.getByTestId("panel-object-content-item-3"),
       ).toHaveTextContent(
         GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[0].object.__Season__title as string,
+          .objects[0].object.__SkylarkSet__title as string,
       );
     });
 
@@ -496,7 +505,7 @@ describe("content view", () => {
       ).toHaveTextContent(
         GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[
           maxPosition - 1
-        ].object.__Set__title as string,
+        ].object.__SkylarkSet__title as string,
       );
 
       const input = screen.getByDisplayValue(maxPosition);
@@ -510,7 +519,7 @@ describe("content view", () => {
       ).toHaveTextContent(
         GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[
           maxPosition - 1
-        ].object.__Set__title as string,
+        ].object.__SkylarkSet__title as string,
       );
     });
 
@@ -522,7 +531,7 @@ describe("content view", () => {
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
         GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[0].object.__Season__title as string,
+          .objects[0].object.__SkylarkSet__title as string,
       );
 
       const input = screen.getByDisplayValue(1);
@@ -535,7 +544,7 @@ describe("content view", () => {
       ).toHaveTextContent(
         `${
           GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-            .objects[0].object.__Season__title as string
+            .objects[0].object.__SkylarkSet__title as string
         }1`,
       );
     });
@@ -548,7 +557,7 @@ describe("content view", () => {
         screen.getByTestId("panel-object-content-item-2"),
       ).toHaveTextContent(
         GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[1].object.__Season__title as string,
+          .objects[1].object.__SkylarkSet__title as string,
       );
 
       const input = screen.getByDisplayValue(1);
@@ -561,7 +570,7 @@ describe("content view", () => {
         screen.getByTestId("panel-object-content-item-2"),
       ).toHaveTextContent(
         GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[1].object.__Season__title as string,
+          .objects[1].object.__SkylarkSet__title as string,
       );
     });
 
@@ -580,7 +589,7 @@ describe("content view", () => {
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
         GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[0].object.__Season__title as string,
+          .objects[0].object.__SkylarkSet__title as string,
       );
 
       const removeButton = screen.getByTestId(
@@ -595,7 +604,7 @@ describe("content view", () => {
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
         GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[1].object.__Season__title as string,
+          .objects[1].object.__SkylarkSet__title as string,
       );
     });
 

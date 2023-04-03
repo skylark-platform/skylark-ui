@@ -13,6 +13,7 @@ export interface SelectOption {
 }
 
 export interface SelectProps {
+  id?: string;
   variant: "primary" | "pill";
   selected: string;
   options: SelectOption[];
@@ -115,6 +116,7 @@ const VirtualizedOptions = ({
 };
 
 export const Select = ({
+  id,
   variant,
   options,
   label,

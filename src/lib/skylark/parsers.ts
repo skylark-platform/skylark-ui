@@ -205,7 +205,7 @@ export const parseSkylarkObject = (
       return {
         ...prev,
         ...(!isObject(object[key])
-          ? { [key]: object[key] === null ? "" : object[key] }
+          ? { [key]: object[key] === null ? null : object[key] }
           : {}),
       };
     }, {}),

@@ -39,6 +39,9 @@ interface SkylarkObjectFieldInputComponentProps
   registerOptions?: RegisterOptions<FieldValues, string>;
 }
 
+const createHtmlForId = (field: SkylarkObjectFieldInputProps["field"]) =>
+  `skylark-object-field-input-${field}`;
+
 const SkylarkObjectFieldInputLabel = ({
   field,
   isRequired,
@@ -46,7 +49,7 @@ const SkylarkObjectFieldInputLabel = ({
   field: SkylarkObjectFieldInputProps["field"];
   isRequired?: boolean;
 }) => (
-  <label className="mb-2 block font-bold" htmlFor={field}>
+  <label className="mb-2 block font-bold" htmlFor={createHtmlForId(field)}>
     {formatObjectField(field)}
     {isRequired && <span className="pl-0.5 text-error">*</span>}
   </label>
@@ -72,7 +75,7 @@ const SkylarkObjectFieldInputEnum = ({
             label: opt,
           })) || []
         }
-        placeholder=""
+        placeholder={`Select ${formatObjectField(field.name)}`}
         onChange={field.onChange}
         aria-invalid={error ? "true" : "false"}
       />
@@ -93,6 +96,7 @@ const SkylarkObjectFieldInputBoolean = ({
         checked={field.value as CheckedState}
         onCheckedChange={(checked) => field.onChange(checked)}
         aria-invalid={error ? "true" : "false"}
+        id={createHtmlForId(field.name)}
       />
     )}
   />
@@ -108,6 +112,7 @@ const SkylarkObjectFieldInputTextArea = ({
   <textarea
     {...register(field, registerOptions)}
     aria-invalid={error ? "true" : "false"}
+    id={createHtmlForId(field)}
     rows={
       (value &&
         (((value as string).length > 1000 && 18) ||
@@ -133,6 +138,7 @@ const SkylarkObjectFieldInputGeneric = ({
         | undefined,
       ...registerOptions,
     })}
+    id={createHtmlForId(field)}
     aria-invalid={error ? "true" : "false"}
     type={convertFieldTypeToHTMLInputType(config.type)}
     step={
@@ -180,8 +186,13 @@ export const SkylarkObjectFieldInput = (
       required,
       validate: (value) => {
         try {
-          if (config.type === "int" && !Number.isNaN(value)) {
-            return Number.isInteger(value);
+          if (config.type === "int" || config.type === "float") {
+            if (
+              Number.isNaN(value) ||
+              (config.type === "int" && !Number.isInteger(value))
+            ) {
+              return false;
+            }
           }
           parseInputFieldValue(value, config.type);
         } catch (err) {
@@ -193,7 +204,7 @@ export const SkylarkObjectFieldInput = (
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 text-sm">
       <SkylarkObjectFieldInputLabel field={field} isRequired={!!required} />
       {(() => {
         if (config.type === "enum") {

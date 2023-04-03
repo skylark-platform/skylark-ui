@@ -7,7 +7,11 @@ import {
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
-import { OBJECT_LIST_TABLE, SYSTEM_FIELDS } from "src/constants/skylark";
+import {
+  OBJECT_LIST_TABLE,
+  OBJECT_OPTIONS,
+  SYSTEM_FIELDS,
+} from "src/constants/skylark";
 import { useImageSize } from "src/hooks/useImageSize";
 import {
   BuiltInSkylarkObjectType,
@@ -19,19 +23,6 @@ import {
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import { formatObjectField } from "src/lib/utils";
-
-const objectOptions: {
-  objectTypes: SkylarkObjectType[];
-  fieldsToHide: string[];
-}[] = [
-  {
-    objectTypes: [
-      BuiltInSkylarkObjectType.SkylarkImage,
-      BuiltInSkylarkObjectType.BetaSkylarkImage,
-    ],
-    fieldsToHide: ["external_url", "upload_url", "download_from_url"],
-  },
-];
 
 interface PanelMetadataProps {
   objectType: SkylarkObjectType;
@@ -84,7 +75,7 @@ export const PanelMetadata = ({
   objectMeta,
   form: { register, getValues, control, reset, formState },
 }: PanelMetadataProps) => {
-  const options = objectOptions.find(({ objectTypes }) =>
+  const options = OBJECT_OPTIONS.find(({ objectTypes }) =>
     objectTypes.includes(objectType),
   );
 

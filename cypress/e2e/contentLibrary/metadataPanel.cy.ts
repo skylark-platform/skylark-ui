@@ -34,7 +34,7 @@ describe("Content Library - Metadata Panel", () => {
           });
         }
       }
-      if (hasOperationName(req, "GET_Set")) {
+      if (hasOperationName(req, "GET_SkylarkSet")) {
         req.reply({
           fixture: "./skylark/queries/getObject/homepage.json",
         });

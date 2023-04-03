@@ -257,7 +257,7 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
   inputFields: NormalizedObjectField[],
   options?: {
     objectTypes: string[];
-    fieldsToHide: string[];
+    hiddenFields: string[];
   },
 ): {
   systemMetadataFields: {
@@ -290,7 +290,7 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
   );
 
   const fieldsToHide = options
-    ? [...options.fieldsToHide, OBJECT_LIST_TABLE.columnIds.objectType]
+    ? [...options.hiddenFields, OBJECT_LIST_TABLE.columnIds.objectType]
     : [OBJECT_LIST_TABLE.columnIds.objectType];
 
   return {

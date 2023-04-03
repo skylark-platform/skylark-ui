@@ -19,6 +19,7 @@ import {
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
+  BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import {
   formatObjectField,
@@ -213,7 +214,14 @@ export const ObjectList = ({
       return {
         ...obj,
         // When the object type is an image, we want to display its preview in the images tab
-        images: obj.objectType === "Image" ? [obj.metadata] : obj.images,
+        images: (
+          [
+            BuiltInSkylarkObjectType.SkylarkImage,
+            BuiltInSkylarkObjectType.BetaSkylarkImage,
+          ] as string[]
+        ).includes(obj.objectType)
+          ? [obj.metadata]
+          : obj.images,
         [OBJECT_LIST_TABLE.columnIds.displayField]: getObjectDisplayName(obj),
         [OBJECT_LIST_TABLE.columnIds.translation]: obj.meta.language,
       };
