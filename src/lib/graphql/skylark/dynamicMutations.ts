@@ -58,6 +58,7 @@ export const createDeleteObjectMutation = (
 export const createCreateObjectMutation = (
   objectMeta: SkylarkObjectMeta | null,
   metadata: Record<string, SkylarkObjectMetadataField>,
+  addLanguageVariable = false,
 ) => {
   if (!objectMeta || !objectMeta.operations.update) {
     return null;
@@ -68,7 +69,11 @@ export const createCreateObjectMutation = (
     objectMeta.operations.update.inputs,
   );
 
-  const common = generateVariablesAndArgs(objectMeta.name, "Mutation", true);
+  const common = generateVariablesAndArgs(
+    objectMeta.name,
+    "Mutation",
+    addLanguageVariable,
+  );
 
   const mutation = {
     mutation: {
@@ -94,12 +99,17 @@ export const createCreateObjectMutation = (
 export const createUpdateObjectMetadataMutation = (
   objectMeta: SkylarkObjectMeta | null,
   metadata: Record<string, SkylarkObjectMetadataField>,
+  addLanguageVariable = false,
 ) => {
   if (!objectMeta || !objectMeta.operations.update) {
     return null;
   }
 
-  const common = generateVariablesAndArgs(objectMeta.name, "Mutation", true);
+  const common = generateVariablesAndArgs(
+    objectMeta.name,
+    "Mutation",
+    addLanguageVariable,
+  );
 
   const options = OBJECT_OPTIONS.find(({ objectTypes }) =>
     objectTypes.includes(objectMeta.name),

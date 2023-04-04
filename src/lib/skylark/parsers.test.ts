@@ -8,6 +8,7 @@ import {
   ParsedSkylarkObject,
   SkylarkGraphQLObject,
   SkylarkObjectMetadataField,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
 
 import {
@@ -546,6 +547,13 @@ describe("parseMetadataForGraphQLRequest", () => {
       isRequired: false,
     },
     {
+      name: SkylarkSystemField.ExternalID,
+      type: "string",
+      originalType: "String",
+      isList: false,
+      isRequired: false,
+    },
+    {
       name: "date",
       type: "date",
       originalType: "AWSDate",
@@ -561,11 +569,12 @@ describe("parseMetadataForGraphQLRequest", () => {
     },
   ];
 
-  test("returns empty object values when either null or empty string is given unless if type is a string", () => {
+  test("returns empty object values when either null or empty string is given unless if type is a string and not a system field", () => {
     const metadata: Record<string, SkylarkObjectMetadataField> = {
       title: "",
       date: "",
       int: null,
+      [SkylarkSystemField.ExternalID]: "",
     };
     const got = parseMetadataForGraphQLRequest(metadata, inputFields);
     expect(got).toEqual({

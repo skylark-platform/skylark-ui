@@ -3,6 +3,7 @@ import advancedFormat from "dayjs/plugin/advancedFormat";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { EnumType } from "json-to-graphql-query";
 
+import { SYSTEM_FIELDS } from "src/constants/skylark";
 import {
   GQLInputField,
   GQLScalars,
@@ -333,7 +334,11 @@ export const parseMetadataForGraphQLRequest = (
         return undefined;
       }
 
-      if (value === null || (value === "" && input.type !== "string")) {
+      // Empty strings are allowed unless its a system field
+      const emptyStringAllowed =
+        input.type === "string" && !SYSTEM_FIELDS.includes(key);
+
+      if (value === null || (value === "" && !emptyStringAllowed)) {
         // Empty strings will not work with AWSDateTime, or AWSURL so don't send them
         return undefined;
       }

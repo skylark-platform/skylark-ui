@@ -41,6 +41,7 @@ export const useUpdateObjectMetadata = ({
       const updateObjectMetadataMutation = createUpdateObjectMetadataMutation(
         objectOperations,
         metadata,
+        !!language,
       );
       return skylarkRequest<GQLSkylarkUpdateObjectMetadataResponse>(
         updateObjectMetadataMutation as RequestDocument,
