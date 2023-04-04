@@ -1,7 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { Trash } from "src/components/icons";
@@ -13,8 +12,7 @@ import {
   PanelSeparator,
 } from "src/components/panel/panelTypography";
 import { Pill } from "src/components/pill";
-import { Toast } from "src/components/toast/toast.component";
-import { DROPPABLE_RELATIONSHIPS_ID } from "src/constants/skylark";
+import { DROPPABLE_ID } from "src/constants/skylark";
 import { useGetObjectRelationships } from "src/hooks/useGetObjectRelationships";
 import {
   ParsedSkylarkObject,
@@ -26,21 +24,20 @@ import { formatObjectField } from "src/lib/utils";
 
 interface PanelRelationshipsProps {
   objectType: SkylarkObjectType;
-  inEditMode: boolean;
-  relationshipsToRemove: { [key: string]: string[] } | null;
-  setRelationshipsToRemove: (uids: { [key: string]: string[] }) => void;
   uid: string;
+  newRelationshipObjects: ParsedSkylarkObject[];
+  removedRelationshipObjects: { [key: string]: string[] } | null;
+  setRemovedRelationshipObjects: (uids: { [key: string]: string[] }) => void;
+  inEditMode: boolean;
   showDropArea?: boolean;
-  newRelationships: ParsedSkylarkObject[];
   language: string;
 }
 
-const parse = (
+const groupObjectsByRelationship = (
   objects: ParsedSkylarkObject[],
   relationships: SkylarkObjectRelationship[],
 ): { [k: string]: ParsedSkylarkObject[] } => {
   return objects.reduce((acc: { [k: string]: ParsedSkylarkObject[] }, cv) => {
-    console.log("relationships", relationships, cv.objectType);
     const key: string | undefined = relationships.find(
       (relationship) => relationship.objectType === cv.objectType,
     )?.relationshipName;
@@ -58,11 +55,11 @@ export const PanelRelationships = ({
   objectType,
   uid,
   inEditMode,
-  relationshipsToRemove,
-  setRelationshipsToRemove,
+  removedRelationshipObjects,
+  setRemovedRelationshipObjects,
   language,
   showDropArea,
-  newRelationships,
+  newRelationshipObjects,
 }: PanelRelationshipsProps) => {
   const {
     data: relationshipsData,
@@ -72,62 +69,65 @@ export const PanelRelationships = ({
     variables,
   } = useGetObjectRelationships(objectType, uid, { language });
 
-  const [updatedRelationship, updateR] = useState<
+  // this is used for display only
+  const [updatedRelationshipObjects, setUpdatedRelationshipObjects] = useState<
     ParsedSkylarkObjectRelationships[] | null
   >(null);
 
-  console.log("updated from server", relationshipsData);
-
-  console.log("updated", updatedRelationship);
-
   useEffect(() => {
-    console.log("updated useeffect", updatedRelationship);
-    if (updatedRelationship === null && relationshipsData) {
-      updateR(relationshipsData);
+    if (updatedRelationshipObjects === null && relationshipsData) {
+      setUpdatedRelationshipObjects(relationshipsData);
     }
-  }, [relationshipsData, updatedRelationship]);
+  }, [relationshipsData, updatedRelationshipObjects]);
 
-  // only removes from saved relations
-  const removeItem = (removeUid: string) => {
-    // remove
-    if (updatedRelationship) {
-      const updatedr = updatedRelationship.map((relationship) => {
-        const { objects, relationshipName } = relationship;
+  // handle remove from saved/current objects
+  const removeRelationshipObject = (removeUid: string) => {
+    if (updatedRelationshipObjects) {
+      const filteredUpdatedRelationshipObjects = updatedRelationshipObjects.map(
+        (currentRelationship) => {
+          const { objects, relationshipName } = currentRelationship;
 
-        const itemToRemove = objects.find((obj) => obj.uid == removeUid);
-        if (itemToRemove) {
-          console.log("this is nice ", relationshipName);
-          console.log("this is nice state", relationshipsToRemove);
-          if (relationshipsToRemove && relationshipsToRemove[relationshipName])
-            setRelationshipsToRemove({
-              ...relationshipsToRemove,
-              [relationshipName]: [
-                ...relationshipsToRemove[relationshipName],
-                removeUid,
-              ],
-            });
-          else if (relationshipsToRemove) {
-            setRelationshipsToRemove({
-              ...relationshipsToRemove,
-              [relationshipName]: [removeUid],
-            });
-          } else {
-            setRelationshipsToRemove({
-              [relationshipName]: [removeUid],
-            });
+          const itemToRemove = objects.find((obj) => obj.uid == removeUid);
+          if (itemToRemove) {
+            const test = groupObjectsByRelationship(
+              [itemToRemove],
+              relationships,
+            );
+            console.log("a big test", test);
+
+            if (
+              removedRelationshipObjects &&
+              removedRelationshipObjects[relationshipName]
+            )
+              setRemovedRelationshipObjects({
+                ...removedRelationshipObjects,
+                [relationshipName]: [
+                  ...removedRelationshipObjects[relationshipName],
+                  removeUid,
+                ],
+              });
+            else if (removedRelationshipObjects) {
+              setRemovedRelationshipObjects({
+                ...removedRelationshipObjects,
+                [relationshipName]: [removeUid],
+              });
+            } else {
+              setRemovedRelationshipObjects({
+                [relationshipName]: [removeUid],
+              });
+            }
+
+            //filters current object
+            const o = objects.filter((obj) => obj.uid !== removeUid);
+            return { ...currentRelationship, objects: o };
           }
 
-          //filters current object
-          const o = objects.filter((obj) => obj.uid !== removeUid);
-          return { ...relationship, objects: o };
-        }
-
-        return relationship;
-      });
-      console.log("updated - going to", updatedr);
+          return currentRelationship;
+        },
+      );
 
       //hides the relationship from the state array (this is used to ui only)
-      updateR(updatedr);
+      setUpdatedRelationshipObjects(filteredUpdatedRelationshipObjects);
     }
   };
 
@@ -135,12 +135,15 @@ export const PanelRelationships = ({
     Record<string, boolean>
   >({});
   const { isOver, setNodeRef } = useDroppable({
-    id: DROPPABLE_RELATIONSHIPS_ID,
+    id: DROPPABLE_ID,
   });
 
-  console.log("nr", newRelationships);
-  const nr = parse(newRelationships, relationships);
-  console.log("nr parsed", nr);
+  console.log("newRelationshipObjects", newRelationshipObjects);
+  const groupedNewRelationshipObjects = groupObjectsByRelationship(
+    newRelationshipObjects,
+    relationships,
+  );
+  console.log("nr parsed", groupedNewRelationshipObjects);
 
   if (showDropArea)
     return (
@@ -158,8 +161,8 @@ export const PanelRelationships = ({
   return (
     <div className="relative h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20">
       <div>
-        {updatedRelationship &&
-          updatedRelationship.map((relationship) => {
+        {updatedRelationshipObjects &&
+          updatedRelationshipObjects.map((relationship) => {
             const { relationshipName, objects } = relationship;
             const isExpanded = expandedRelationships[relationshipName];
 
@@ -177,29 +180,32 @@ export const PanelRelationships = ({
 
                 <div className="transition duration-300 ease-in-out">
                   <>
-                    {nr[relationshipName]?.map((obj, index) => (
-                      <>
-                        <div className="flex" key={obj.uid}>
-                          <ObjectIdentifierCard key={obj.uid} object={obj} />
-                          <Pill
-                            label={"new"}
-                            bgColor={"green"}
-                            className="w-20"
-                          />
-
-                          <button onClick={() => console.log(obj.uid)}>
-                            <Trash
-                              className={clsx(
-                                "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
-                              )}
+                    {groupedNewRelationshipObjects[relationshipName]?.map(
+                      (obj, index) => (
+                        <>
+                          <div className="flex" key={obj.uid}>
+                            <ObjectIdentifierCard key={obj.uid} object={obj} />
+                            <Pill
+                              label={"new"}
+                              bgColor={"green"}
+                              className="w-20"
                             />
-                          </button>
-                        </div>
-                        {index < nr[relationshipName].length - 1 && (
-                          <PanelSeparator />
-                        )}
-                      </>
-                    ))}
+
+                            <button onClick={() => console.log(obj.uid)}>
+                              <Trash
+                                className={clsx(
+                                  "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
+                                )}
+                              />
+                            </button>
+                          </div>
+                          {index <
+                            groupedNewRelationshipObjects[relationshipName]
+                              .length -
+                              1 && <PanelSeparator />}
+                        </>
+                      ),
+                    )}
                     {relationship && displayList?.length > 0 ? (
                       displayList?.map((obj, index) => (
                         <>
@@ -209,7 +215,7 @@ export const PanelRelationships = ({
                             data-testid={`panel-object-content-item-${
                               index + 1
                             }-remove`}
-                            onClick={() => removeItem(obj.uid)}
+                            onClick={() => removeRelationshipObject(obj.uid)}
                           >
                             <Trash
                               className={clsx(

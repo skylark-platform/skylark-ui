@@ -48,7 +48,6 @@ export const useGetObjectRelationships = (
   const { language }: GetObjectOptions = opts || { language: null };
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
-  console.log("usefull", objectOperations?.relationships);
   const { objects } = useAllObjectsMeta();
 
   const relationshipsFields: { [key: string]: NormalizedObjectField[] } =

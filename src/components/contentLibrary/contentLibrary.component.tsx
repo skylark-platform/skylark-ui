@@ -15,10 +15,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { ObjectList } from "src/components/objectListing";
 import { Panel } from "src/components/panel";
-import {
-  DROPPABLE_ID,
-  DROPPABLE_RELATIONSHIPS_ID,
-} from "src/constants/skylark";
+import { DROPPABLE_ID } from "src/constants/skylark";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 const INITIAL_PANEL_PERCENTAGE = 80;
@@ -214,10 +211,12 @@ export const ContentLibrary = () => {
     if (event.over && event.over.id === DROPPABLE_ID) {
       setDroppedObject(draggedObject);
     }
+    /*
     if (event.over && event.over.id === DROPPABLE_RELATIONSHIPS_ID) {
       console.log("easy biz");
       setDroppedObject(draggedObject);
     }
+    */
     setDraggedObject(undefined);
   }
 };

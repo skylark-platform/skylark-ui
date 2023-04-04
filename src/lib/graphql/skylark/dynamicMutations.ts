@@ -158,30 +158,31 @@ export const createUpdateObjectContentMutation = (
 
 export const createUpdateObjectRelationshipsMutation = (
   object: SkylarkObjectMeta | null,
-  relationships: ParsedSkylarkObject[],
-  relationshipsToRemove: { [key: string]: string[] } | null,
+  newRelationshipObjects: ParsedSkylarkObject[],
+  removedRelationshipObjects: { [key: string]: string[] } | null,
 ) => {
-  if (!object || !object.operations.update || relationships.length === 0) {
+  if (
+    !object ||
+    !object.operations.update ||
+    newRelationshipObjects.length === 0
+  ) {
     return null;
   }
 
-  const linkRelationships = relationships.map(
+  const linkRelationships = newRelationshipObjects.map(
     (relationship) => relationship.uid,
   );
 
-  const parsedRelationsToremove = relationshipsToRemove
-    ? Object.keys(relationshipsToRemove).reduce((acc, cv) => {
-        console.log(cv);
-        const unlink = { [cv]: { unlink: relationshipsToRemove[cv] } };
+  const parsedRelationsToremove = removedRelationshipObjects
+    ? Object.keys(removedRelationshipObjects).reduce((acc, cv) => {
+        const unlink = { [cv]: { unlink: removedRelationshipObjects[cv] } };
         return { ...acc, ...unlink };
       }, {})
     : {};
 
-  console.log("||| - - ", object);
-  console.log("||| - - #2", relationships);
   console.log(
     "want to remove this",
-    relationshipsToRemove,
+    removedRelationshipObjects,
     parsedRelationsToremove,
   );
 
@@ -211,8 +212,6 @@ export const createUpdateObjectRelationshipsMutation = (
       },
     },
   };
-
-  console.log(mutation);
 
   const graphQLQuery = jsonToGraphQLQuery(mutation);
 

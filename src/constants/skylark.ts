@@ -51,4 +51,4 @@ export const DISPLAY_NAME_PRIORITY = [
 ];
 
 export const DROPPABLE_ID = "droppable";
-export const DROPPABLE_RELATIONSHIPS_ID = "droppable-relationships";
+// export const DROPPABLE_RELATIONSHIPS_ID = "droppable-relationships";

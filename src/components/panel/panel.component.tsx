@@ -11,7 +11,6 @@ import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
   AddedSkylarkObjectContentObject,
-  SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 
 import {
@@ -66,11 +65,11 @@ export const Panel = ({
   const [contentObjects, setContentObjects] = useState<
     AddedSkylarkObjectContentObject[] | null
   >(null);
-  const [relationshipObjects, setRelationshipObjects] = useState<
+  const [newRelationshipObjects, setNewRelationshipObjects] = useState<
     ParsedSkylarkObject[]
   >([]);
-  const [relationshipsToRemove, setRelationshipsToRemove] = useState<{
-    [key: string]: string[];
+  const [removedRelationshipObjects, setRemovedRelationshipObjects] = useState<{
+    [relationship: string]: string[];
   } | null>(null);
 
   const {
@@ -113,7 +112,7 @@ export const Panel = ({
         (relationship) => relationship.objectType === droppedObject.objectType,
       )?.relationshipName;
       if (relationshipName) {
-        setRelationshipObjects([...relationshipObjects, droppedObject]);
+        setNewRelationshipObjects([...newRelationshipObjects, droppedObject]);
       } else {
         // setRelationshipObjects(relationshipObjects.filter())
         toast(
@@ -154,19 +153,21 @@ export const Panel = ({
     data?.content?.objects,
     droppedObject,
     objectMeta?.relationships,
-    relationshipObjects,
+    newRelationshipObjects,
     selectedTab,
   ]);
 
-  const { updateObjectRelationships, isLoading: updatingObjectRelationships } =
+  const { updateObjectRelationships, isLoading: updatingRelationshipObjects } =
     useUpdateObjectRelationships({
       objectType,
       uid,
-      relationships: relationshipObjects,
-      relationshipsToRemove: relationshipsToRemove,
+      newRelationshipObjects: newRelationshipObjects,
+      removedRelationshipObjects: removedRelationshipObjects,
       onSuccess: (updatedObject) => {
+        console.warn("updatedObject in his glory", updatedObject);
         setEditMode(false);
-        // TODO setContentObjects(updatedObject.objects);
+        setRemovedRelationshipObjects(null);
+        setNewRelationshipObjects([]);
       },
     });
 
@@ -189,8 +190,10 @@ export const Panel = ({
       contentObjects !== data?.content?.objects
     ) {
       updateObjectContent();
-    } else if (selectedTab === PanelTab.Relationships && relationshipObjects) {
-      console.log("going to save", relationshipsToRemove);
+    } else if (
+      selectedTab === PanelTab.Relationships &&
+      (newRelationshipObjects || removedRelationshipObjects)
+    ) {
       updateObjectRelationships();
     } else {
       setEditMode(false);
@@ -211,7 +214,7 @@ export const Panel = ({
         closePanel={closePanel}
         inEditMode={inEditMode}
         save={saveActiveTabChanges}
-        isSaving={updatingObjectContents}
+        isSaving={updatingObjectContents || updatingRelationshipObjects}
         toggleEditMode={() => {
           setEditMode(!inEditMode);
           if (inEditMode) {
@@ -273,13 +276,13 @@ export const Panel = ({
           )}
           {selectedTab === PanelTab.Relationships && (
             <PanelRelationships
-              relationshipsToRemove={relationshipsToRemove}
-              setRelationshipsToRemove={setRelationshipsToRemove}
-              inEditMode={inEditMode}
               objectType={objectType}
               uid={uid}
+              removedRelationshipObjects={removedRelationshipObjects}
+              setRemovedRelationshipObjects={setRemovedRelationshipObjects}
+              newRelationshipObjects={newRelationshipObjects}
+              inEditMode={inEditMode}
               showDropArea={showDropArea}
-              newRelationships={relationshipObjects}
               language={activeLanguage}
             />
           )}

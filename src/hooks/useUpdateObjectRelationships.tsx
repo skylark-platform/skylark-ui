@@ -5,37 +5,28 @@ import {
   GQLSkylarkUpdateObjectContentResponse,
   ParsedSkylarkObject,
   ParsedSkylarkObjectContent,
-  ParsedSkylarkObjectContentObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import {
-  createUpdateObjectContentMutation,
-  createUpdateObjectRelationshipsMutation,
-} from "src/lib/graphql/skylark/dynamicMutations";
+import { createUpdateObjectRelationshipsMutation } from "src/lib/graphql/skylark/dynamicMutations";
 import { parseObjectContent } from "src/lib/skylark/parsers";
 
 import { createGetObjectKeyPrefix } from "./useGetObject";
-import {
-  useAllObjectsMeta,
-  useSkylarkObjectOperations,
-} from "./useSkylarkObjectTypes";
+import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const useUpdateObjectRelationships = ({
   objectType,
   uid,
-  relationships,
-  relationshipsToRemove,
+  newRelationshipObjects,
+  removedRelationshipObjects,
   onSuccess,
 }: {
   objectType: SkylarkObjectType;
   uid: string;
-  relationships: ParsedSkylarkObject[];
-  relationshipsToRemove: { [key: string]: string[] } | null;
+  newRelationshipObjects: ParsedSkylarkObject[];
+  removedRelationshipObjects: { [key: string]: string[] } | null;
   onSuccess: (updatedContent: ParsedSkylarkObjectContent) => void;
 }) => {
-  console.log("to remove", relationshipsToRemove);
-  console.log("to objectType", objectType);
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
@@ -44,8 +35,8 @@ export const useUpdateObjectRelationships = ({
   const updateObjectRelationshipsMutation =
     createUpdateObjectRelationshipsMutation(
       objectOperations,
-      relationships,
-      relationshipsToRemove,
+      newRelationshipObjects,
+      removedRelationshipObjects,
     );
 
   const { mutate, ...rest } = useMutation({
