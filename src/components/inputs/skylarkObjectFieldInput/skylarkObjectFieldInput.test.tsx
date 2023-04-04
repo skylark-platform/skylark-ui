@@ -297,4 +297,20 @@ describe("renders inputs", () => {
       });
     },
   );
+
+  test("renders an enum type when it doesn't have any enumValues", () => {
+    const { field } = testFieldConfigs.enum;
+    render(
+      <WrappedSkylarkObjectFieldInput
+        config={{
+          ...field,
+          type: "enum",
+          enumValues: undefined,
+        }}
+      />,
+    );
+
+    const input = screen.getByText(`Select ${formatObjectField("enumfield")}`);
+    expect(input).toBeInTheDocument();
+  });
 });

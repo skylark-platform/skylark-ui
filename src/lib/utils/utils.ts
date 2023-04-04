@@ -63,8 +63,6 @@ export const convertFieldTypeToHTMLInputType = (
   objectFieldType: NormalizedObjectFieldType,
 ): HTMLInputTypeAttribute => {
   switch (objectFieldType) {
-    case "boolean":
-      return "checkbox";
     case "datetime":
     case "timestamp":
       return "datetime-local";

@@ -18,14 +18,35 @@ test("renders search bar, filters with no objects returned", () => {
   expect(screen.getByText("Filters")).toBeInTheDocument();
 });
 
-test("renders create button", () => {
-  render(<ObjectList withCreateButtons setPanelObject={jest.fn()} />);
+describe("create button", () => {
+  test("renders create button", () => {
+    render(<ObjectList withCreateButtons setPanelObject={jest.fn()} />);
 
-  const createButton = screen.getByText("Create");
+    const createButton = screen.getByText("Create");
 
-  fireEvent.click(createButton);
+    fireEvent.click(createButton);
 
-  expect(screen.getByText("Import (CSV)")).toBeInTheDocument();
+    const csvImportButton = screen.getByText("Import (CSV)");
+    expect(csvImportButton).toBeInTheDocument();
+    expect(csvImportButton.closest("a")).toHaveAttribute("href", "import/csv");
+  });
+
+  test("opens the create object modal", async () => {
+    render(<ObjectList withCreateButtons setPanelObject={jest.fn()} />);
+
+    const createButton = screen.getByText("Create");
+
+    fireEvent.click(createButton);
+
+    const createObjectButton = screen.getByText("Create Object");
+    expect(createObjectButton).toBeInTheDocument();
+
+    fireEvent.click(createObjectButton);
+
+    await waitFor(() =>
+      expect(screen.getByTestId("create-object-modal")).toBeInTheDocument(),
+    );
+  });
 });
 
 test("does not render info button when setPanelObject is undefined", async () => {

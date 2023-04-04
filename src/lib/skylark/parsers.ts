@@ -283,7 +283,7 @@ export const parseInputFieldValue = (
   value: string | number | boolean | string[],
   type: NormalizedObjectFieldType,
 ): string | number | boolean | EnumType | string[] | null => {
-  if (value === "") {
+  if (value === "" && type !== "string") {
     return null;
   }
   if (type === "enum") {
@@ -333,18 +333,15 @@ export const parseMetadataForGraphQLRequest = (
         return undefined;
       }
 
-      if (value === null || value === "") {
+      if (value === null || (value === "" && input.type !== "string")) {
         // Empty strings will not work with AWSDateTime, or AWSURL so don't send them
-        return [key, null];
+        return undefined;
       }
 
       const parsedFieldValue = parseInputFieldValue(value, input.type);
       return [key, parsedFieldValue];
     })
-    .filter((value) => value !== undefined) as [
-    string,
-    string | EnumType | null,
-  ][];
+    .filter((value) => value !== undefined) as [string, string | EnumType][];
 
   const parsedMetadata = Object.fromEntries(keyValuePairs);
   return parsedMetadata;

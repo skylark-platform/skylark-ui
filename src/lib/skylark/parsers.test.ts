@@ -439,6 +439,11 @@ describe("parseInputFieldValue", () => {
     {
       input: "",
       type: "string",
+      want: "",
+    },
+    {
+      input: "",
+      type: "date",
       want: null,
     },
     {
@@ -556,15 +561,15 @@ describe("parseMetadataForGraphQLRequest", () => {
     },
   ];
 
-  test("returns metadata with null values when either null or empty string is given", () => {
+  test("returns empty object values when either null or empty string is given unless if type is a string", () => {
     const metadata: Record<string, SkylarkObjectMetadataField> = {
       title: "",
-      date: null,
+      date: "",
+      int: null,
     };
     const got = parseMetadataForGraphQLRequest(metadata, inputFields);
     expect(got).toEqual({
-      title: null,
-      date: null,
+      title: "",
     });
   });
 

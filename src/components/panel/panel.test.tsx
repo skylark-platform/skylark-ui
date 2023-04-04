@@ -1,4 +1,3 @@
-import userEvent from "@testing-library/user-event";
 import { graphql } from "msw";
 
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";

@@ -94,7 +94,7 @@ const SkylarkObjectFieldInputBoolean = ({
     render={({ field }) => (
       <Checkbox
         checked={field.value as CheckedState}
-        onCheckedChange={(checked) => field.onChange(checked)}
+        onCheckedChange={field.onChange}
         aria-invalid={error ? "true" : "false"}
         id={createHtmlForId(field.name)}
       />
@@ -133,9 +133,9 @@ const SkylarkObjectFieldInputGeneric = ({
 }: SkylarkObjectFieldInputComponentProps) => (
   <input
     {...register(field, {
-      valueAsNumber: (config.type === "int" || config.type === "float") as
-        | false
-        | undefined,
+      // valueAsNumber: (config.type === "int" || config.type === "float") as
+      //   | false
+      //   | undefined,
       ...registerOptions,
     })}
     id={createHtmlForId(field)}
@@ -186,10 +186,15 @@ export const SkylarkObjectFieldInput = (
       required,
       validate: (value) => {
         try {
-          if (config.type === "int" || config.type === "float") {
+          if (
+            (config.type === "int" || config.type === "float") &&
+            value !== ""
+          ) {
             if (
               Number.isNaN(value) ||
-              (config.type === "int" && !Number.isInteger(value))
+              (config.type === "int" &&
+                (Number.isNaN(parseInt(value)) || !Number.isInteger(value))) ||
+              (config.type === "float" && Number.isNaN(parseFloat(value)))
             ) {
               return false;
             }

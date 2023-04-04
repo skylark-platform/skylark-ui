@@ -1,5 +1,5 @@
 import { Dialog } from "@headlessui/react";
-import React, { Fragment } from "react";
+import React, { useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { GrClose } from "react-icons/gr";
 
@@ -12,32 +12,57 @@ import {
   useSkylarkObjectTypes,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
-  BuiltInSkylarkObjectType,
   SkylarkObjectIdentifier,
   SkylarkObjectMetadataField,
+  SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
 
 interface CreateObjectModalProps {
   isOpen: boolean;
+  objectType?: SkylarkObjectType;
   setIsOpen: (b: boolean) => void;
   onObjectCreated: (o: SkylarkObjectIdentifier) => void;
 }
 
+const objectTypeKey = "__objectType";
+
+const formHasObjectPropertyValues = (values: object) => {
+  const fieldWithValues = Object.entries(values).filter(
+    ([key, value]) => !key.startsWith("_") && value !== "",
+  );
+
+  return fieldWithValues.length > 0;
+};
+
 export const CreateObjectModal = ({
   isOpen,
+  objectType: defaultObjectType,
   setIsOpen,
   onObjectCreated,
 }: CreateObjectModalProps) => {
   const { objectTypes } = useSkylarkObjectTypes();
-  const { handleSubmit, watch, control, register, getValues, formState } =
-    useForm<Record<string, SkylarkObjectMetadataField>>();
+  const {
+    handleSubmit,
+    watch,
+    control,
+    register,
+    getValues,
+    formState,
+    reset,
+  } = useForm<Record<string, SkylarkObjectMetadataField>>({
+    defaultValues: {
+      [objectTypeKey]: defaultObjectType,
+    },
+  });
 
   const closeModal = () => {
+    reset({});
     setIsOpen(false);
   };
 
-  const objectType = watch("_objectType") as string;
+  const objectType = watch(objectTypeKey) as string;
+  const values = watch();
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
@@ -45,6 +70,7 @@ export const CreateObjectModal = ({
     objectType,
     onSuccess: (object) => {
       onObjectCreated?.(object);
+      closeModal();
     },
   });
 
@@ -62,11 +88,14 @@ export const CreateObjectModal = ({
         )
       : { systemMetadataFields: [], languageGlobalMetadataFields: [] };
 
+  const objectTypeSelectRef = useRef(null);
   return (
     <Dialog
       open={isOpen}
       onClose={closeModal}
       className="font-body relative z-50"
+      data-testid="create-object-modal"
+      initialFocus={objectTypeSelectRef}
     >
       <div
         className="fixed inset-0 bg-black/40"
@@ -96,7 +125,7 @@ export const CreateObjectModal = ({
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
-              name="_objectType"
+              name={objectTypeKey}
               control={control}
               render={({ field }) => (
                 <Select
@@ -113,6 +142,7 @@ export const CreateObjectModal = ({
                       label: opt,
                     })) || []
                   }
+                  ref={objectTypeSelectRef}
                   onChange={field.onChange}
                 />
               )}
@@ -172,16 +202,32 @@ export const CreateObjectModal = ({
                     </div>
                   ))}
                 </div>
-                <Button
-                  variant="primary"
-                  className="mt-4"
-                  loading={isCreatingObject}
-                  type="submit"
-                  disabled={!objectOperations}
-                  block
-                >
-                  Create object
-                </Button>
+                <div className="flex justify-end space-x-2">
+                  <Button
+                    variant="primary"
+                    className="mt-4"
+                    loading={isCreatingObject}
+                    type="submit"
+                    disabled={
+                      !objectOperations || !formHasObjectPropertyValues(values)
+                    }
+                    success
+                  >
+                    {isCreatingObject
+                      ? `Creating ${objectType}`
+                      : `Create ${objectType || "object"}`}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="mt-4"
+                    type="button"
+                    danger
+                    disabled={isCreatingObject}
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </div>
             )}
           </form>
