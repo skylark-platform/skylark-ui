@@ -159,7 +159,7 @@ export const createUpdateObjectContentMutation = (
 export const createUpdateObjectRelationshipsMutation = (
   object: SkylarkObjectMeta | null,
   relationships: ParsedSkylarkObject[],
-  relationshipsToRemove: any,
+  relationshipsToRemove: { [key: string]: string[] } | null,
 ) => {
   if (!object || !object.operations.update || relationships.length === 0) {
     return null;
@@ -169,31 +169,21 @@ export const createUpdateObjectRelationshipsMutation = (
     (relationship) => relationship.uid,
   );
 
-  const relationshipsParsed = relationships.reduce(
-    (prev, { objectType, uid }) => {
-      const updatedOperations = prev[objectType] || {
-        link: [],
-        unlink: [],
-        reposition: [],
-      };
-
-      return {
-        ...prev,
-        [objectType]: updatedOperations,
-      };
-    },
-    {} as Record<
-      string,
-      {
-        link: { uid: string; position: number }[];
-        unlink: string[];
-        reposition: { uid: string; position: number }[];
-      }
-    >,
-  );
+  const parsedRelationsToremove = relationshipsToRemove
+    ? Object.keys(relationshipsToRemove).reduce((acc, cv) => {
+        console.log(cv);
+        const unlink = { [cv]: { unlink: relationshipsToRemove[cv] } };
+        return { ...acc, ...unlink };
+      }, {})
+    : {};
 
   console.log("||| - - ", object);
   console.log("||| - - #2", relationships);
+  console.log(
+    "want to remove this",
+    relationshipsToRemove,
+    parsedRelationsToremove,
+  );
 
   const mutation = {
     mutation: {
@@ -211,6 +201,7 @@ export const createUpdateObjectRelationshipsMutation = (
               assets: {
                 link: linkRelationships,
               },
+              ...parsedRelationsToremove,
             },
           },
         },

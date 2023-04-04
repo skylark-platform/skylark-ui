@@ -31,12 +31,15 @@ export const useUpdateObjectRelationships = ({
   objectType: SkylarkObjectType;
   uid: string;
   relationships: ParsedSkylarkObject[];
-  relationshipsToRemove: any;
+  relationshipsToRemove: { [key: string]: string[] } | null;
   onSuccess: (updatedContent: ParsedSkylarkObjectContent) => void;
 }) => {
+  console.log("to remove", relationshipsToRemove);
+  console.log("to objectType", objectType);
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
-  const { objects } = useAllObjectsMeta();
+
+  console.warn("useUpdateObjectRelationships start #");
 
   const updateObjectRelationshipsMutation =
     createUpdateObjectRelationshipsMutation(

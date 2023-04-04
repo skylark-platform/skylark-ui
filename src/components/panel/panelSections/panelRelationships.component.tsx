@@ -27,8 +27,8 @@ import { formatObjectField } from "src/lib/utils";
 interface PanelRelationshipsProps {
   objectType: SkylarkObjectType;
   inEditMode: boolean;
-  updateRelationships: (objs: ParsedSkylarkObject[]) => void;
-  setRelationshipsToRemove: (objs: ParsedSkylarkObject[]) => void;
+  relationshipsToRemove: { [key: string]: string[] } | null;
+  setRelationshipsToRemove: (uids: { [key: string]: string[] }) => void;
   uid: string;
   showDropArea?: boolean;
   newRelationships: ParsedSkylarkObject[];
@@ -58,7 +58,7 @@ export const PanelRelationships = ({
   objectType,
   uid,
   inEditMode,
-  updateRelationships,
+  relationshipsToRemove,
   setRelationshipsToRemove,
   language,
   showDropArea,
@@ -87,21 +87,48 @@ export const PanelRelationships = ({
     }
   }, [relationshipsData, updatedRelationship]);
 
+  // only removes from saved relations
   const removeItem = (removeUid: string) => {
+    // remove
     if (updatedRelationship) {
-      const updatedr = updatedRelationship.map(({ objects, ...rest }) => {
-        const o = objects.filter((obj) => obj.uid !== removeUid);
-        return { objects: o, ...rest };
+      const updatedr = updatedRelationship.map((relationship) => {
+        const { objects, relationshipName } = relationship;
+
+        const itemToRemove = objects.find((obj) => obj.uid == removeUid);
+        if (itemToRemove) {
+          console.log("this is nice ", relationshipName);
+          console.log("this is nice state", relationshipsToRemove);
+          if (relationshipsToRemove && relationshipsToRemove[relationshipName])
+            setRelationshipsToRemove({
+              ...relationshipsToRemove,
+              [relationshipName]: [
+                ...relationshipsToRemove[relationshipName],
+                removeUid,
+              ],
+            });
+          else if (relationshipsToRemove) {
+            setRelationshipsToRemove({
+              ...relationshipsToRemove,
+              [relationshipName]: [removeUid],
+            });
+          } else {
+            setRelationshipsToRemove({
+              [relationshipName]: [removeUid],
+            });
+          }
+
+          //filters current object
+          const o = objects.filter((obj) => obj.uid !== removeUid);
+          return { ...relationship, objects: o };
+        }
+
+        return relationship;
       });
       console.log("updated - going to", updatedr);
 
+      //hides the relationship from the state array (this is used to ui only)
       updateR(updatedr);
     }
-
-    /*const filtered = relationships.filter(
-      ({ objects }) => objects.find({ uid } => removeUid === uid)?.uid,
-    );*/
-    // onReorder(filtered);
   };
 
   const [expandedRelationships, setExpandedRelationships] = useState<
