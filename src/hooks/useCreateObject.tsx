@@ -42,8 +42,8 @@ export const useCreateObject = ({
         { language },
       );
     },
-    onSuccess: (data, { language }) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (data, { language }) => {
+      await queryClient.invalidateQueries({
         queryKey: [QueryKeys.Search],
       });
       onSuccess({
@@ -51,6 +51,18 @@ export const useCreateObject = ({
         uid: data.createObject.uid,
         language,
       });
+
+      void queryClient.refetchQueries({
+        queryKey: [QueryKeys.Search],
+        type: "active",
+      });
+      // Sometimes the object isn't immediately available in search so try again after 5 seconds
+      setTimeout(() => {
+        void queryClient.refetchQueries({
+          queryKey: [QueryKeys.Search],
+          type: "active",
+        });
+      }, 5000);
     },
   });
 
