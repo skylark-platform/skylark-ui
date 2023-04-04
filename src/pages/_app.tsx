@@ -9,6 +9,8 @@ import { LazyMotion } from "framer-motion";
 import PlausibleProvider from "next-plausible";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 import { Navigation } from "src/components/navigation";
 import { ToastContainer } from "src/components/toast/toast.component";
@@ -23,13 +25,22 @@ const loadFramerMotionFeatures = () =>
 
 export default function App({ Component, pageProps }: AppProps) {
   const queryClient = createSkylarkReactQueryClient();
+  const router = useRouter();
+
+  useEffect(() => {
+    const isBetaClosedPage = router.asPath === "/beta/closed";
+
+    if (router && !isBetaClosedPage) {
+      router.push("/beta/closed");
+    }
+  }, [router]);
 
   return (
     <PlausibleProvider domain={APP_URL} enabled={!!APP_URL}>
       <QueryClientProvider client={queryClient}>
         <ToastContainer />
         <Head>
-          <title>Skylark</title>
+          <title>Skylark Beta</title>
           <meta
             name="viewport"
             content="initial-scale=1.0, width=device-width"
@@ -53,8 +64,9 @@ export default function App({ Component, pageProps }: AppProps) {
           />
           <link href="/favicons/site.webmanifest" rel="manifest" />
           <link href="/favicons/favicon.ico" rel="icon" />
+          <meta name="description" content="The Skylark Beta has now ended." />
         </Head>
-        <Navigation />
+        {/* <Navigation /> */}
         <LazyMotion features={loadFramerMotionFeatures} strict>
           <Component {...pageProps} />
         </LazyMotion>
