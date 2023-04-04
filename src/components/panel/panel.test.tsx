@@ -1,3 +1,4 @@
+import userEvent from "@testing-library/user-event";
 import { graphql } from "msw";
 
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
@@ -29,231 +30,446 @@ import { formatObjectField } from "src/lib/utils";
 
 import { Panel } from "./panel.component";
 
-test("renders the panel in the default view", async () => {
-  render(
-    <Panel
-      uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-      objectType={"Movie"}
-      language={""}
-      closePanel={jest.fn()}
-    />,
-  );
-
-  await waitFor(() =>
-    expect(screen.queryByTestId("loading")).toBeInTheDocument(),
-  );
-  await waitFor(
-    () => expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
-    // First load can be a bit slow due to the number of requests it makes. In production these requests are client side cached
-    { timeout: 2000 },
-  );
-  await waitFor(() =>
-    expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
-  );
-  await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
-
-  expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
-  await waitFor(() =>
-    expect(screen.getByLabelText("Title long")).toHaveValue(
-      "All Availabilities Test Movie (for dimension testing)",
-    ),
-  );
-});
-
-test("renders object not found when the object doesn't exist", async () => {
-  server.use(
-    graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
-      return res(
-        ctx.errors([
-          { errorType: QueryErrorMessages.NotFound, message: "Not found" },
-        ]),
-      );
-    }),
-  );
-
-  render(
-    <Panel
-      uid="nonexistant"
-      objectType={"Movie"}
-      language={""}
-      closePanel={jest.fn()}
-    />,
-  );
-
-  await waitFor(() =>
-    expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
-  );
-
-  expect(screen.getByText("Movie nonexistant not found")).toBeInTheDocument();
-});
-
-test("renders an error message when an unknown error occurs", async () => {
-  server.use(
-    graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
-      return res(ctx.errors([{ message: "Something went wrong" }]));
-    }),
-  );
-
-  render(
-    <Panel
-      uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-      objectType={"Movie"}
-      language={""}
-      closePanel={jest.fn()}
-    />,
-  );
-
-  await waitFor(() =>
-    expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
-  );
-
-  expect(screen.getByText("Something went wrong")).toBeInTheDocument();
-});
-
-test("renders the objects primaryField and colour in the header when given", async () => {
-  const withPrimaryFieldMock = {
-    getObject: {
-      ...GQLSkylarkGetObjectQueryFixture.data.getObject,
-      uid: "withPrimaryField",
-      _config: {
-        ...GQLSkylarkGetObjectQueryFixture.data.getObject._config,
-        primary_field: "release_date",
-        colour: "rgb(123, 123, 123)",
-      },
-    },
-  };
-
-  server.use(
-    graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
-      return res(ctx.data(withPrimaryFieldMock));
-    }),
-  );
-
-  render(
-    <Panel
-      uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-      objectType={"Movie"}
-      language={""}
-      closePanel={jest.fn()}
-    />,
-  );
-
-  await waitFor(() =>
-    expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
-  );
-  await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
-
-  expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
-  await waitFor(() =>
-    expect(screen.getByLabelText("Title long")).toHaveValue(
-      "All Availabilities Test Movie (for dimension testing)",
-    ),
-  );
-  const panelHeader = within(screen.getByTestId("panel-header"));
-  expect(
-    panelHeader.getByText(withPrimaryFieldMock.getObject.release_date),
-  ).toBeInTheDocument();
-
-  expect(
-    panelHeader
-      .getByText(withPrimaryFieldMock.getObject.__typename)
-      .closest("div"),
-  ).toHaveAttribute("style", "background-color: rgb(123, 123, 123);");
-});
-
-test("renders an image and the original image size when the object type is an Image", async () => {
-  render(
-    <Panel
-      uid={GQLSkylarkGetObjectImageQueryFixture.data.getObject.uid}
-      objectType={"SkylarkImage"}
-      language={""}
-      closePanel={jest.fn()}
-    />,
-  );
-
-  await waitFor(() =>
-    expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
-  );
-  await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
-
-  expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
-  expect(screen.getByText("Original size")).toBeInTheDocument();
-  expect(
-    screen.getByAltText(
-      GQLSkylarkGetObjectImageQueryFixture.data.getObject.title,
-    ),
-  ).toBeInTheDocument();
-});
-describe("multiple language versions", () => {
-  test("renders the Portuguese GOT episode", async () => {
+describe("metadata view", () => {
+  test("renders the panel in the default view", async () => {
     render(
       <Panel
-        uid={GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data.getObject.uid}
-        objectType={"Episode"}
-        language={"pt-PT"}
+        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
+        objectType={"Movie"}
+        language={""}
         closePanel={jest.fn()}
       />,
     );
 
     await waitFor(() =>
+      expect(screen.queryByTestId("loading")).toBeInTheDocument(),
+    );
+    await waitFor(
+      () => expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+      // First load can be a bit slow due to the number of requests it makes. In production these requests are client side cached
+      { timeout: 2000 },
+    );
+    await waitFor(() =>
       expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
     );
-    await waitFor(() =>
-      expect(screen.getByText("Title short")).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
 
+    expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
     await waitFor(() =>
-      expect(screen.getByLabelText("Title short")).toHaveValue(
-        GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data.getObject.title_short,
+      expect(screen.getByLabelText("Title long")).toHaveValue(
+        "All Availabilities Test Movie (for dimension testing)",
       ),
     );
   });
 
-  test("changes the panel language using the dropdown when more than one is available", async () => {
+  test("renders object not found when the object doesn't exist", async () => {
+    server.use(
+      graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
+        return res(
+          ctx.errors([
+            { errorType: QueryErrorMessages.NotFound, message: "Not found" },
+          ]),
+        );
+      }),
+    );
+
     render(
       <Panel
-        uid={GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.uid}
-        objectType={"Episode"}
-        language={"en-GB"}
+        uid="nonexistant"
+        objectType={"Movie"}
+        language={""}
         closePanel={jest.fn()}
       />,
     );
 
-    // Arrange
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    expect(screen.getByText("Movie nonexistant not found")).toBeInTheDocument();
+  });
+
+  test("renders an error message when an unknown error occurs", async () => {
+    server.use(
+      graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
+        return res(ctx.errors([{ message: "Something went wrong" }]));
+      }),
+    );
+
+    render(
+      <Panel
+        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
+        objectType={"Movie"}
+        language={""}
+        closePanel={jest.fn()}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+  });
+
+  test("renders the objects primaryField and colour in the header when given", async () => {
+    const withPrimaryFieldMock = {
+      getObject: {
+        ...GQLSkylarkGetObjectQueryFixture.data.getObject,
+        uid: "withPrimaryField",
+        _config: {
+          ...GQLSkylarkGetObjectQueryFixture.data.getObject._config,
+          primary_field: "release_date",
+          colour: "rgb(123, 123, 123)",
+        },
+      },
+    };
+
+    server.use(
+      graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
+        return res(ctx.data(withPrimaryFieldMock));
+      }),
+    );
+
+    render(
+      <Panel
+        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
+        objectType={"Movie"}
+        language={""}
+        closePanel={jest.fn()}
+      />,
+    );
+
     await waitFor(() =>
       expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
     );
+    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
+
+    expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
     await waitFor(() =>
-      expect(screen.getByText("Title short")).toBeInTheDocument(),
-    );
-    await waitFor(() =>
-      expect(screen.getByLabelText("Title short")).toHaveValue(
-        GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.title_short,
+      expect(screen.getByLabelText("Title long")).toHaveValue(
+        "All Availabilities Test Movie (for dimension testing)",
       ),
     );
+    const panelHeader = within(screen.getByTestId("panel-header"));
+    expect(
+      panelHeader.getByText(withPrimaryFieldMock.getObject.release_date),
+    ).toBeInTheDocument();
 
-    // Act
-    const dropdown = screen.getByText(
-      GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject._meta
-        .language_data.language,
+    expect(
+      panelHeader
+        .getByText(withPrimaryFieldMock.getObject.__typename)
+        .closest("div"),
+    ).toHaveAttribute("style", "background-color: rgb(123, 123, 123);");
+  });
+
+  test("renders an image and the original image size when the object type is an Image", async () => {
+    render(
+      <Panel
+        uid={GQLSkylarkGetObjectImageQueryFixture.data.getObject.uid}
+        objectType={"SkylarkImage"}
+        language={""}
+        closePanel={jest.fn()}
+      />,
     );
-    await fireEvent.click(dropdown);
-    await fireEvent.click(screen.getByText("pt-PT"));
 
-    // Assert
     await waitFor(() =>
       expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
     );
+    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
 
-    await waitFor(() =>
-      expect(screen.getByText("Title short")).toBeInTheDocument(),
-    );
-
-    await waitFor(() =>
-      expect(screen.getByLabelText("Title short")).toHaveValue(
-        GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data.getObject.title_short,
+    expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
+    expect(screen.getByText("Original size")).toBeInTheDocument();
+    expect(
+      screen.getByAltText(
+        GQLSkylarkGetObjectImageQueryFixture.data.getObject.title,
       ),
-    );
+    ).toBeInTheDocument();
+  });
+
+  describe("multiple language versions", () => {
+    test("renders the Portuguese GOT episode", async () => {
+      render(
+        <Panel
+          uid={GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data.getObject.uid}
+          objectType={"Episode"}
+          language={"pt-PT"}
+          closePanel={jest.fn()}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+      );
+      await waitFor(() =>
+        expect(screen.getByText("Title short")).toBeInTheDocument(),
+      );
+
+      await waitFor(() =>
+        expect(screen.getByLabelText("Title short")).toHaveValue(
+          GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data.getObject
+            .title_short,
+        ),
+      );
+    });
+
+    test("changes the panel language using the dropdown when more than one is available", async () => {
+      render(
+        <Panel
+          uid={GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.uid}
+          objectType={"Episode"}
+          language={"en-GB"}
+          closePanel={jest.fn()}
+        />,
+      );
+
+      // Arrange
+      await waitFor(() =>
+        expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+      );
+      await waitFor(() =>
+        expect(screen.getByText("Title short")).toBeInTheDocument(),
+      );
+      await waitFor(() =>
+        expect(screen.getByLabelText("Title short")).toHaveValue(
+          GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.title_short,
+        ),
+      );
+
+      // Act
+      const dropdown = screen.getByText(
+        GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject._meta
+          .language_data.language,
+      );
+      await fireEvent.click(dropdown);
+      await fireEvent.click(screen.getByText("pt-PT"));
+
+      // Assert
+      await waitFor(() =>
+        expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+      );
+
+      await waitFor(() =>
+        expect(screen.getByText("Title short")).toBeInTheDocument(),
+      );
+
+      await waitFor(() =>
+        expect(screen.getByLabelText("Title short")).toHaveValue(
+          GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data.getObject
+            .title_short,
+        ),
+      );
+    });
+  });
+
+  describe("metadata view - edit", () => {
+    test("switch into edit mode using the edit metadata button", async () => {
+      render(
+        <Panel
+          uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
+          objectType={"SkylarkSet"}
+          language={""}
+          closePanel={jest.fn()}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+      );
+
+      fireEvent.click(screen.getByText("Edit Metadata"));
+
+      await waitFor(() =>
+        expect(screen.getByText("Editing")).toBeInTheDocument(),
+      );
+    });
+
+    test("switch into edit mode by changing an input field", async () => {
+      const { user } = render(
+        <Panel
+          uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
+          objectType={"SkylarkSet"}
+          language={""}
+          closePanel={jest.fn()}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(screen.getByLabelText("Title short")).toBeInTheDocument(),
+      );
+
+      const input = screen.getByLabelText("Title short");
+
+      await user.type(input, "changed");
+
+      await waitFor(() =>
+        expect(screen.getByText("Editing")).toBeInTheDocument(),
+      );
+    });
+
+    test("edits and cancels to revert a field to its initial value", async () => {
+      const { user } = render(
+        <Panel
+          uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
+          objectType={"SkylarkSet"}
+          language={
+            GQLSkylarkGetSetWithContentQueryFixture.data.getObject._meta
+              .language_data.language
+          }
+          closePanel={jest.fn()}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(screen.getByLabelText("Title short")).toBeInTheDocument(),
+      );
+
+      const input = screen.getByLabelText("Title short");
+
+      await waitFor(() => {
+        expect(input).toHaveValue(
+          GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title_short,
+        );
+      });
+
+      await user.clear(input);
+      await user.type(input, "changed");
+
+      await waitFor(() =>
+        expect(screen.getByText("Editing")).toBeInTheDocument(),
+      );
+
+      expect(input).toHaveValue("changed");
+
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      expect(input).toHaveValue(
+        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title_short,
+      );
+    });
+
+    test("edits and saves", async () => {
+      // server.use(
+      //   graphql.query("UPDATE_OBJECT_METADATA_SkylarkSet", (req, res, ctx) => {
+      //     return res(
+      //       ctx.errors([
+      //         { errorType: QueryErrorMessages.NotFound, message: "Not found" },
+      //       ]),
+      //     );
+      //   }),
+      // );
+      const changedValue = "this has changed";
+
+      server.use(
+        graphql.mutation(
+          "UPDATE_OBJECT_METADATA_SkylarkSet",
+          (req, res, ctx) => {
+            return res(
+              ctx.data({
+                updateObjectMetadata: {
+                  ...GQLSkylarkGetSetWithContentQueryFixture.data.getObject,
+                  title_short: changedValue,
+                },
+              }),
+            );
+          },
+        ),
+      );
+
+      const { user } = render(
+        <Panel
+          uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
+          objectType={"SkylarkSet"}
+          language={
+            GQLSkylarkGetSetWithContentQueryFixture.data.getObject._meta
+              .language_data.language
+          }
+          closePanel={jest.fn()}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(screen.getByLabelText("Title short")).toBeInTheDocument(),
+      );
+
+      const input = screen.getByLabelText("Title short");
+
+      await waitFor(() => {
+        expect(input).toHaveValue(
+          GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title_short,
+        );
+      });
+
+      await user.clear(input);
+      await user.type(input, changedValue);
+
+      await waitFor(() =>
+        expect(screen.getByText("Editing")).toBeInTheDocument(),
+      );
+
+      const saveButton = screen.getByText("Save");
+      fireEvent.click(saveButton);
+
+      await waitFor(() =>
+        expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+      );
+
+      expect(input).toHaveValue(changedValue);
+    });
+
+    test("does not exit edit mode when the update mutation fails", async () => {
+      server.use(
+        graphql.mutation(
+          "UPDATE_OBJECT_METADATA_SkylarkSet",
+          (req, res, ctx) => {
+            return res(
+              ctx.errors([{ errorType: "error", message: "invalid input" }]),
+            );
+          },
+        ),
+      );
+
+      const { user } = render(
+        <Panel
+          uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
+          objectType={"SkylarkSet"}
+          language={
+            GQLSkylarkGetSetWithContentQueryFixture.data.getObject._meta
+              .language_data.language
+          }
+          closePanel={jest.fn()}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(screen.getByLabelText("Title short")).toBeInTheDocument(),
+      );
+
+      const input = screen.getByLabelText("Title short");
+
+      await waitFor(() => {
+        expect(input).toHaveValue(
+          GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title_short,
+        );
+      });
+
+      await user.clear(input);
+      await user.type(input, "changed");
+
+      await waitFor(() =>
+        expect(screen.getByText("Editing")).toBeInTheDocument(),
+      );
+
+      const saveButton = screen.getByText("Save");
+      fireEvent.click(saveButton);
+
+      await waitFor(() => expect(screen.getByText("Save")).toBeInTheDocument());
+
+      await waitFor(() =>
+        expect(screen.queryAllByText("Edit Metadata")).toHaveLength(0),
+      );
+    });
   });
 });
 
@@ -388,7 +604,7 @@ describe("content view", () => {
     );
   });
 
-  describe("content view - edit view", () => {
+  describe("content view - edit", () => {
     const renderAndSwitchToEditView = async () => {
       render(
         <Panel

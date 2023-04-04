@@ -59,10 +59,6 @@ export const CreateObjectModal = ({
       ? splitMetadataIntoSystemTranslatableGlobal(
           objectOperations.operations.create.inputs.map(({ name }) => name),
           objectOperations.operations.create.inputs,
-          {
-            objectTypes: [BuiltInSkylarkObjectType.Availability],
-            hiddenFields: ["dimensions"],
-          },
         )
       : { systemMetadataFields: [], languageGlobalMetadataFields: [] };
 

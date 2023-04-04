@@ -99,8 +99,10 @@ const getMutationInfo = (
     foundCreateInput?.type.kind === "NON_NULL"
       ? foundCreateInput.type.ofType?.inputFields
       : foundCreateInput?.type.inputFields;
+
   const inputs = parseObjectInputFields(inputFields);
   const relationships = parseObjectRelationships(inputFields);
+
   return {
     argName,
     inputs,

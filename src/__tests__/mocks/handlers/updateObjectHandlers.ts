@@ -11,4 +11,13 @@ export const updateObjectHandlers = [
       }),
     );
   }),
+
+  graphql.mutation("UPDATE_OBJECT_METADATA_SkylarkSet", (req, res, ctx) => {
+    return res(
+      ctx.data({
+        updateObjectMetadata:
+          GQLSkylarkGetSetWithContentQueryFixture.data.getObject,
+      }),
+    );
+  }),
 ];

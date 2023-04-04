@@ -125,13 +125,6 @@ test("opens the modal and switches to the variables tab", async () => {
 });
 
 test("copies the active tab to the clipboard", async () => {
-  Object.assign(navigator, {
-    clipboard: {
-      writeText: () => {
-        return;
-      },
-    },
-  });
   jest.spyOn(navigator.clipboard, "writeText");
 
   render(

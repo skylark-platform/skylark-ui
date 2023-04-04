@@ -6,6 +6,8 @@ import { EnumType } from "json-to-graphql-query";
 import {
   GQLInputField,
   GQLScalars,
+  GQLTypeKind,
+  GQLTypeName,
 } from "src/interfaces/graphql/introspection";
 import {
   NormalizedObjectFieldType,
@@ -77,12 +79,10 @@ export const parseObjectInputFields = (
     return [];
   }
 
-  // We handle relationships and availability separately
-  // TODO uses more than name strings to ignore these (incase the user has a name clash)
-  const inputsToIgnore = ["relationships", "availability"];
+  const typesToIgnore: GQLTypeKind[] = ["INPUT_OBJECT", "OBJECT"];
 
   const parsedInputs = inputFields
-    .filter(({ name }) => !inputsToIgnore.includes(name))
+    .filter(({ type }) => type.kind && !typesToIgnore.includes(type.kind))
     .map((input): NormalizedObjectField => {
       let type: NormalizedObjectFieldType = parseObjectInputType(
         input.type.ofType?.name || input.type.name,
@@ -97,7 +97,9 @@ export const parseObjectInputFields = (
       return {
         name: input.name,
         type: type,
-        originalType: input.type.ofType?.name || input.type.name || "Unknown",
+        originalType: (input.type.ofType?.name ||
+          input.type.name ||
+          "Unknown") as GQLScalars,
         enumValues,
         isList: input.type.kind === "LIST",
         isRequired: input.type.kind === "NON_NULL",
@@ -326,25 +328,29 @@ export const parseMetadataForGraphQLRequest = (
 ) => {
   const keyValuePairs = Object.entries(metadata)
     .map(([key, value]) => {
-      if (value === null || value === "") {
-        // Empty strings will not work with AWSDateTime, or AWSURL so don't send them
-        return null;
-      }
-
       const input = inputFields.find((createInput) => createInput.name === key);
       if (!input) {
-        return null;
+        return undefined;
+      }
+
+      if (value === null || value === "") {
+        // Empty strings will not work with AWSDateTime, or AWSURL so don't send them
+        return [key, null];
       }
 
       const parsedFieldValue = parseInputFieldValue(value, input.type);
       return [key, parsedFieldValue];
     })
-    .filter((value) => value !== null) as [string, string | EnumType][];
+    .filter((value) => value !== undefined) as [
+    string,
+    string | EnumType | null,
+  ][];
 
   const parsedMetadata = Object.fromEntries(keyValuePairs);
   return parsedMetadata;
 };
 
+// Parses an object's metadata so it works with a HTML Form Input
 export const parseMetadataForHTMLForm = (
   metadata: Record<string, SkylarkObjectMetadataField>,
   inputFields: NormalizedObjectField[],
@@ -360,14 +366,14 @@ export const parseMetadataForHTMLForm = (
         return [key, validDateTimeLocal];
       }
 
-      if (input && convertFieldTypeToHTMLInputType(input.type) === "date") {
+      if (convertFieldTypeToHTMLInputType(input.type) === "date") {
         const validDate = dayjs(`${value}`, "YYYY-MM-DD+Z").format(
           "YYYY-MM-DD",
         );
         return [key, validDate];
       }
 
-      if (input && convertFieldTypeToHTMLInputType(input.type) === "time") {
+      if (convertFieldTypeToHTMLInputType(input.type) === "time") {
         const validTime = dayjs(`${value}`, "HH:mm:ss.SSS+Z").format(
           "HH:mm:ss.SSS",
         );

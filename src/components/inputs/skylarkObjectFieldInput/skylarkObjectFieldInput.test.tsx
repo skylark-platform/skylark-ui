@@ -193,7 +193,7 @@ const testFieldConfigs: Record<
   enum: {
     field: {
       name: "enumfield",
-      originalType: "Enum",
+      originalType: "String",
       enumValues: ["value1", "value2"],
       isRequired: false,
       isList: false,
@@ -228,7 +228,7 @@ describe("renders inputs", () => {
                 config={{
                   ...config,
                   isRequired: true,
-                  originalType: `${config.originalType}!`,
+                  originalType: config.originalType,
                 }}
               />,
             );

@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, RenderOptions } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { LazyMotion, domMax } from "framer-motion";
 import PlausibleProvider from "next-plausible";
 import { ReactElement, ReactNode } from "react";
@@ -31,7 +32,10 @@ const AllTheProviders = ({ children }: { children: ReactNode }) => {
 const customRender = (
   ui: ReactElement,
   options?: Omit<RenderOptions, "wrapper">,
-) => render(ui, { wrapper: AllTheProviders, ...options });
+) => ({
+  user: userEvent.setup(),
+  ...render(ui, { wrapper: AllTheProviders, ...options }),
+});
 
 // re-export everything
 export * from "@testing-library/react";

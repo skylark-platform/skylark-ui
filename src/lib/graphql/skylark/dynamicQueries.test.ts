@@ -54,7 +54,7 @@ describe("createSearchObjectsQuery", () => {
             {
               name: "title",
               type: "string",
-              originalType: "String!",
+              originalType: "String",
               isList: false,
               isRequired: true,
             },
@@ -82,7 +82,7 @@ describe("createSearchObjectsQuery", () => {
             {
               name: "title",
               type: "string",
-              originalType: "String!",
+              originalType: "String",
               isList: false,
               isRequired: true,
             },

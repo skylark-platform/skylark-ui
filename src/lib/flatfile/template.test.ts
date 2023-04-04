@@ -30,7 +30,7 @@ test("returns all required properties", () => {
     {
       name: "uid",
       type: "string",
-      originalType: "String!",
+      originalType: "String",
       isList: false,
       isRequired: true,
     },

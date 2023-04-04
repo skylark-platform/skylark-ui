@@ -3,6 +3,7 @@ import { EnumType } from "json-to-graphql-query";
 import { GQLInputField, GQLType } from "src/interfaces/graphql/introspection";
 import {
   AvailabilityStatus,
+  NormalizedObjectField,
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
   SkylarkGraphQLObject,
@@ -11,6 +12,8 @@ import {
 
 import {
   parseInputFieldValue,
+  parseMetadataForGraphQLRequest,
+  parseMetadataForHTMLForm,
   parseObjectContent,
   parseObjectInputFields,
   parseObjectRelationships,
@@ -211,6 +214,38 @@ describe("parseObjectInputFields", () => {
       },
     ]);
   });
+
+  test("ignores an INPUT_OBJECT and OBJECT", () => {
+    const fields: GQLInputField[] = [
+      {
+        name: "availability",
+        type: {
+          __typename: "",
+          kind: "INPUT_OBJECT",
+          name: "AvailabilityInput",
+          enumValues: null,
+          fields: [],
+          inputFields: [],
+          ofType: null,
+        },
+      },
+      {
+        name: "relationships",
+        type: {
+          __typename: "",
+          kind: "OBJECT",
+          name: "Relationships",
+          enumValues: null,
+          fields: [],
+          inputFields: [],
+          ofType: null,
+        },
+      },
+    ];
+
+    const got = parseObjectInputFields(fields);
+    expect(got).toEqual([]);
+  });
 });
 
 describe("parseObjectRelationships", () => {
@@ -312,7 +347,7 @@ describe("parseObjectContent", () => {
 });
 
 describe("parseSkylarkObject", () => {
-  it("should parse skylark object", () => {
+  test("should parse skylark object", () => {
     const skylarkObject: SkylarkGraphQLObject = {
       __typename: "Season",
       _config: {
@@ -489,9 +524,151 @@ describe("parseInputFieldValue", () => {
   ];
 
   tests.forEach(({ input, type, want }) => {
-    it(`returns ${want} when input is ${input} and type is ${type}`, () => {
+    test(`returns ${want} when input is ${input} and type is ${type}`, () => {
       const got = parseInputFieldValue(input, type);
       expect(got).toEqual(want);
+    });
+  });
+});
+
+describe("parseMetadataForGraphQLRequest", () => {
+  const inputFields: NormalizedObjectField[] = [
+    {
+      name: "title",
+      type: "string",
+      originalType: "String",
+      isList: false,
+      isRequired: false,
+    },
+    {
+      name: "date",
+      type: "date",
+      originalType: "AWSDate",
+      isList: false,
+      isRequired: false,
+    },
+    {
+      name: "int",
+      type: "int",
+      originalType: "Int",
+      isList: false,
+      isRequired: false,
+    },
+  ];
+
+  test("returns metadata with null values when either null or empty string is given", () => {
+    const metadata: Record<string, SkylarkObjectMetadataField> = {
+      title: "",
+      date: null,
+    };
+    const got = parseMetadataForGraphQLRequest(metadata, inputFields);
+    expect(got).toEqual({
+      title: null,
+      date: null,
+    });
+  });
+
+  test("returns metadata with formatted values", () => {
+    const metadata: Record<string, SkylarkObjectMetadataField> = {
+      title: "string",
+      date: "2020-11-03",
+      int: 2.5,
+    };
+    const got = parseMetadataForGraphQLRequest(metadata, inputFields);
+    expect(got).toEqual({
+      title: "string",
+      date: "2020-11-03+00:00",
+      int: 2,
+    });
+  });
+
+  test("removes any values from metadata if they are not a valid inputField", () => {
+    const metadata: Record<string, SkylarkObjectMetadataField> = {
+      title: "string",
+      date: "2020-11-03",
+      int: 2.5,
+      invalid: true,
+    };
+    const got = parseMetadataForGraphQLRequest(metadata, inputFields);
+    expect(got).toEqual({
+      title: "string",
+      date: "2020-11-03+00:00",
+      int: 2,
+    });
+  });
+
+  describe("parseMetadataForHTMLForm", () => {
+    const inputFields: NormalizedObjectField[] = [
+      {
+        name: "title",
+        type: "string",
+        originalType: "String",
+        isList: false,
+        isRequired: false,
+      },
+      {
+        name: "date",
+        type: "date",
+        originalType: "AWSDate",
+        isList: false,
+        isRequired: false,
+      },
+      {
+        name: "datetime",
+        type: "datetime",
+        originalType: "AWSDateTime",
+        isList: false,
+        isRequired: false,
+      },
+      {
+        name: "time",
+        type: "time",
+        originalType: "AWSTime",
+        isList: false,
+        isRequired: false,
+      },
+    ];
+
+    test("returns a string without any formatting", () => {
+      const metadata: Record<string, SkylarkObjectMetadataField> = {
+        title: "string",
+        any: "string",
+      };
+      const got = parseMetadataForHTMLForm(metadata, inputFields);
+      expect(got).toEqual({
+        title: "string",
+        any: "string",
+      });
+    });
+
+    test("reformats a date input", () => {
+      const metadata: Record<string, SkylarkObjectMetadataField> = {
+        date: "2020-11-20+00:00",
+      };
+      const got = parseMetadataForHTMLForm(metadata, inputFields);
+      expect(got).toEqual({
+        date: "2020-11-20",
+      });
+    });
+
+    test("reformats a time input", () => {
+      const metadata: Record<string, SkylarkObjectMetadataField> = {
+        time: "16:30:00.000+00:00",
+      };
+      const got = parseMetadataForHTMLForm(metadata, inputFields);
+      expect(got).toEqual({
+        time: "16:30:00.000",
+      });
+    });
+
+    test("reformats a datetime input", () => {
+      const metadata: Record<string, SkylarkObjectMetadataField> = {
+        datetime: "2020-11-20T16:30:00.000+00:00",
+      };
+      const got = parseMetadataForHTMLForm(metadata, inputFields);
+      expect(got).toEqual({
+        datetime: "2020-11-20T16:30:00.000",
+      });
     });
   });
 });

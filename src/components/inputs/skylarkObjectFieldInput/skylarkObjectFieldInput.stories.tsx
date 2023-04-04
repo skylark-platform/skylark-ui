@@ -175,7 +175,7 @@ Enum.args = {
   config: {
     type: "enum",
     name: "enumfield",
-    originalType: "Enum",
+    originalType: "String",
     enumValues: ["value1", "value2"],
     isRequired: false,
     isList: false,

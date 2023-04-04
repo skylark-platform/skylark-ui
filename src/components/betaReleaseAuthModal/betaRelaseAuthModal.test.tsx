@@ -63,13 +63,6 @@ test("renders and close with close button", () => {
 
 test("clicks the copy buttons", () => {
   const setIsOpen = jest.fn();
-  Object.assign(navigator, {
-    clipboard: {
-      writeText: () => {
-        return;
-      },
-    },
-  });
 
   jest.spyOn(navigator.clipboard, "writeText");
 
