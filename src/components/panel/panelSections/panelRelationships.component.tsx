@@ -1,6 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
@@ -18,6 +18,7 @@ import { DROPPABLE_RELATIONSHIPS_ID } from "src/constants/skylark";
 import { useGetObjectRelationships } from "src/hooks/useGetObjectRelationships";
 import {
   ParsedSkylarkObject,
+  ParsedSkylarkObjectRelationships,
   SkylarkObjectRelationship,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -25,6 +26,9 @@ import { formatObjectField } from "src/lib/utils";
 
 interface PanelRelationshipsProps {
   objectType: SkylarkObjectType;
+  inEditMode: boolean;
+  updateRelationships: (objs: ParsedSkylarkObject[]) => void;
+  setRelationshipsToRemove: (objs: ParsedSkylarkObject[]) => void;
   uid: string;
   showDropArea?: boolean;
   newRelationships: ParsedSkylarkObject[];
@@ -53,6 +57,9 @@ const parse = (
 export const PanelRelationships = ({
   objectType,
   uid,
+  inEditMode,
+  updateRelationships,
+  setRelationshipsToRemove,
   language,
   showDropArea,
   newRelationships,
@@ -64,6 +71,38 @@ export const PanelRelationships = ({
     query,
     variables,
   } = useGetObjectRelationships(objectType, uid, { language });
+
+  const [updatedRelationship, updateR] = useState<
+    ParsedSkylarkObjectRelationships[] | null
+  >(null);
+
+  console.log("updated from server", relationshipsData);
+
+  console.log("updated", updatedRelationship);
+
+  useEffect(() => {
+    console.log("updated useeffect", updatedRelationship);
+    if (updatedRelationship === null && relationshipsData) {
+      updateR(relationshipsData);
+    }
+  }, [relationshipsData, updatedRelationship]);
+
+  const removeItem = (removeUid: string) => {
+    if (updatedRelationship) {
+      const updatedr = updatedRelationship.map(({ objects, ...rest }) => {
+        const o = objects.filter((obj) => obj.uid !== removeUid);
+        return { objects: o, ...rest };
+      });
+      console.log("updated - going to", updatedr);
+
+      updateR(updatedr);
+    }
+
+    /*const filtered = relationships.filter(
+      ({ objects }) => objects.find({ uid } => removeUid === uid)?.uid,
+    );*/
+    // onReorder(filtered);
+  };
 
   const [expandedRelationships, setExpandedRelationships] = useState<
     Record<string, boolean>
@@ -92,8 +131,8 @@ export const PanelRelationships = ({
   return (
     <div className="relative h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20">
       <div>
-        {relationshipsData &&
-          relationshipsData.map((relationship) => {
+        {updatedRelationship &&
+          updatedRelationship.map((relationship) => {
             const { relationshipName, objects } = relationship;
             const isExpanded = expandedRelationships[relationshipName];
 
@@ -138,6 +177,20 @@ export const PanelRelationships = ({
                       displayList?.map((obj, index) => (
                         <>
                           <ObjectIdentifierCard key={obj.uid} object={obj} />
+                          <button
+                            disabled={!inEditMode}
+                            data-testid={`panel-object-content-item-${
+                              index + 1
+                            }-remove`}
+                            onClick={() => removeItem(obj.uid)}
+                          >
+                            <Trash
+                              className={clsx(
+                                "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
+                                inEditMode ? "w-6" : "w-0",
+                              )}
+                            />
+                          </button>
                           {index < displayList.length - 1 && <PanelSeparator />}
                         </>
                       ))

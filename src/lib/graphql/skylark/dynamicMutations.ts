@@ -159,10 +159,15 @@ export const createUpdateObjectContentMutation = (
 export const createUpdateObjectRelationshipsMutation = (
   object: SkylarkObjectMeta | null,
   relationships: ParsedSkylarkObject[],
+  relationshipsToRemove: any,
 ) => {
   if (!object || !object.operations.update || relationships.length === 0) {
     return null;
   }
+
+  const linkRelationships = relationships.map(
+    (relationship) => relationship.uid,
+  );
 
   const relationshipsParsed = relationships.reduce(
     (prev, { objectType, uid }) => {
@@ -204,7 +209,7 @@ export const createUpdateObjectRelationshipsMutation = (
             relationships: {
               //TODO
               assets: {
-                link: ["01GWSDP0ZD11Z8JS624VAAMN5Q"],
+                link: linkRelationships,
               },
             },
           },

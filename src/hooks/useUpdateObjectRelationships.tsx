@@ -25,11 +25,13 @@ export const useUpdateObjectRelationships = ({
   objectType,
   uid,
   relationships,
+  relationshipsToRemove,
   onSuccess,
 }: {
   objectType: SkylarkObjectType;
   uid: string;
   relationships: ParsedSkylarkObject[];
+  relationshipsToRemove: any;
   onSuccess: (updatedContent: ParsedSkylarkObjectContent) => void;
 }) => {
   const queryClient = useQueryClient();
@@ -37,7 +39,11 @@ export const useUpdateObjectRelationships = ({
   const { objects } = useAllObjectsMeta();
 
   const updateObjectRelationshipsMutation =
-    createUpdateObjectRelationshipsMutation(objectOperations, relationships);
+    createUpdateObjectRelationshipsMutation(
+      objectOperations,
+      relationships,
+      relationshipsToRemove,
+    );
 
   const { mutate, ...rest } = useMutation({
     mutationFn: ({ uid }: { uid: string }) => {

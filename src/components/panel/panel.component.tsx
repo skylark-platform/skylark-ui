@@ -69,6 +69,9 @@ export const Panel = ({
   const [relationshipObjects, setRelationshipObjects] = useState<
     ParsedSkylarkObject[]
   >([]);
+  const [relationshipsToRemove, setRelationshipsToRemove] = useState<
+    ParsedSkylarkObject[]
+  >([]);
 
   const {
     data,
@@ -160,6 +163,7 @@ export const Panel = ({
       objectType,
       uid,
       relationships: relationshipObjects,
+      relationshipsToRemove: [],
       onSuccess: (updatedObject) => {
         setEditMode(false);
         // TODO setContentObjects(updatedObject.objects);
@@ -269,7 +273,10 @@ export const Panel = ({
           )}
           {selectedTab === PanelTab.Relationships && (
             <PanelRelationships
+              setRelationshipsToRemove={setRelationshipsToRemove}
+              inEditMode={inEditMode}
               objectType={objectType}
+              updateRelationships={setRelationshipObjects}
               uid={uid}
               showDropArea={showDropArea}
               newRelationships={relationshipObjects}
