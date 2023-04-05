@@ -18,11 +18,6 @@ describe("Content Library - Search", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
-      if (hasOperationName(req, "GET_SKYLARK_SCHEMA")) {
-        req.reply({
-          fixture: "./skylark/queries/introspection/schema.json",
-        });
-      }
       if (hasOperationName(req, "SEARCH")) {
         if (hasMatchingVariable(req, "queryString", "got winter is coming")) {
           req.reply({

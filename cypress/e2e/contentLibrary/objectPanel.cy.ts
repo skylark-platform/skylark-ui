@@ -18,11 +18,6 @@ describe("Content Library - Object Panel", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
-      if (hasOperationName(req, "GET_SKYLARK_SCHEMA")) {
-        req.reply({
-          fixture: "./skylark/queries/introspection/schema.json",
-        });
-      }
       if (hasOperationName(req, "GET_Episode")) {
         if (hasMatchingVariable(req, "language", "pt-PT")) {
           req.reply({

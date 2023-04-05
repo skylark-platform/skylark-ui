@@ -146,7 +146,7 @@ function reducer(
 }
 
 export default function CSVImportPage() {
-  const { objectTypes } = useSkylarkObjectTypes();
+  const { objectTypes } = useSkylarkObjectTypes(true);
   const [objectType, setObjectType] = useState("");
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 

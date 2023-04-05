@@ -1,11 +1,14 @@
-import GQLSkylarkSchemaQueryFixtureJSON from "src/__tests__/fixtures/skylark/queries/introspection/schema.json";
-import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
+import { IntrospectionSchema } from "graphql";
+
+import GQLSkylarkSchemaQueryFixtureJSON from "src/__tests__/fixtures/skylark/queries/introspection/introspectionQuery.json";
 
 import { getAllObjectsMeta, getObjectOperations } from "./objects";
 
 const GQLSkylarkSchemaQueryFixture =
   GQLSkylarkSchemaQueryFixtureJSON as unknown as {
-    data: GQLSkylarkSchemaQueriesMutations;
+    data: {
+      __schema: IntrospectionSchema;
+    };
   };
 
 describe("getObjectOperations", () => {

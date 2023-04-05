@@ -166,7 +166,7 @@ export const ObjectList = ({
   isPanelOpen,
 }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const { objectTypes } = useSkylarkObjectTypes();
+  const { objectTypes } = useSkylarkObjectTypes(true);
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     objectTypes: null,
     language: null,

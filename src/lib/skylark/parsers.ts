@@ -1,15 +1,20 @@
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import {
+  IntrospectionEnumType,
+  IntrospectionField,
+  IntrospectionInputType,
+  IntrospectionInputValue,
+  IntrospectionListTypeRef,
+  IntrospectionNamedTypeRef,
+  IntrospectionNonNullTypeRef,
+  IntrospectionScalarType,
+} from "graphql";
 import { EnumType } from "json-to-graphql-query";
 
 import { SYSTEM_FIELDS } from "src/constants/skylark";
-import {
-  GQLInputField,
-  GQLScalars,
-  GQLTypeKind,
-  GQLTypeName,
-} from "src/interfaces/graphql/introspection";
+import { GQLScalars } from "src/interfaces/graphql/introspection";
 import {
   NormalizedObjectFieldType,
   NormalizedObjectField,
@@ -74,33 +79,41 @@ const parseObjectInputType = (
 };
 
 export const parseObjectInputFields = (
-  inputFields?: GQLInputField[],
+  introspectionFields?: readonly (
+    | IntrospectionField
+    | IntrospectionInputValue
+  )[],
 ): NormalizedObjectField[] => {
-  if (!inputFields) {
+  if (!introspectionFields) {
     return [];
   }
 
-  const typesToIgnore: GQLTypeKind[] = ["INPUT_OBJECT", "OBJECT"];
+  const typesToIgnore = ["INPUT_OBJECT", "OBJECT"];
 
-  const parsedInputs = inputFields
-    .filter(({ type }) => type.kind && !typesToIgnore.includes(type.kind))
+  const parsedInputs = introspectionFields
+    ?.filter(({ type }) => type.kind && !typesToIgnore.includes(type.kind))
     .map((input): NormalizedObjectField => {
-      let type: NormalizedObjectFieldType = parseObjectInputType(
-        input.type.ofType?.name || input.type.name,
-      );
+      const typeName =
+        (
+          input.type as
+            | IntrospectionNonNullTypeRef<IntrospectionScalarType>
+            | IntrospectionListTypeRef<IntrospectionScalarType>
+        ).ofType?.name || (input.type as IntrospectionScalarType).name;
+
+      let type: NormalizedObjectFieldType = parseObjectInputType(typeName);
       let enumValues;
 
       if (input.type.kind === "ENUM") {
         type = "enum";
-        enumValues = input.type.enumValues?.map((val) => val.name);
+        enumValues = (input.type as IntrospectionEnumType).enumValues?.map(
+          (val) => val.name,
+        );
       }
 
       return {
         name: input.name,
         type: type,
-        originalType: (input.type.ofType?.name ||
-          input.type.name ||
-          "Unknown") as GQLScalars,
+        originalType: (typeName || "Unknown") as GQLScalars,
         enumValues,
         isList: input.type.kind === "LIST",
         isRequired: input.type.kind === "NON_NULL",
@@ -110,27 +123,21 @@ export const parseObjectInputFields = (
   return parsedInputs;
 };
 
-// TODO convert from "credits" to the Object type like "Credit" or "episodes" -> "Episode"
 export const parseObjectRelationships = (
-  inputFields?: GQLInputField[],
+  relationshipInputFields?: readonly IntrospectionInputValue[],
 ): SkylarkObjectRelationship[] => {
-  const relationshipsInput = inputFields?.find(
-    (input) => input.name === "relationships",
-  );
-
-  if (
-    !relationshipsInput?.type.inputFields ||
-    relationshipsInput.type.inputFields.length === 0
-  ) {
+  if (!relationshipInputFields) {
     return [];
   }
 
   // Relationship input format is `${objectType}RelationshipInput`, we just need the objectType
   const relationshipInputPostfix = "RelationshipInput";
-  const potentialRelationships = relationshipsInput.type.inputFields.map(
-    ({ name, type: { name: objectTypeWithRelationshipInput } }) => ({
+  const potentialRelationships = relationshipInputFields.map(
+    ({ name, type }) => ({
       name,
-      objectTypeWithRelationshipInput,
+      objectTypeWithRelationshipInput: (
+        type as IntrospectionNamedTypeRef<IntrospectionInputType>
+      ).name,
     }),
   );
 

@@ -106,7 +106,7 @@ export const PanelHeader = ({
         <div className="flex flex-grow items-center space-x-2">
           <Button
             Icon={<Expand className="stroke-gray-300" />}
-            disabled
+            // disabled
             variant="ghost"
             href={`/object/${objectType}/${objectUid}`}
           />

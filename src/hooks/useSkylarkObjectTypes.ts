@@ -8,15 +8,21 @@ import {
 } from "src/lib/skylark/objects";
 
 import {
-  useSkylarkSchema,
   useSkylarkSchemaInterfaceType,
+  useSkylarkSchemaIntrospection,
 } from "./useSkylarkSchemaIntrospection";
 
-export const useSkylarkObjectTypes = (): Omit<UseQueryResult, "data"> & {
+export const useSkylarkObjectTypes = (
+  searchable: boolean,
+): Omit<UseQueryResult, "data"> & {
   objectTypes: string[] | undefined;
 } => {
-  // Newer Skylark's have a VisibleObject Interface which contains Availability
-  const { data, ...rest } = useSkylarkSchemaInterfaceType("VisibleObject");
+  // Newer Skylark's have a VisibleObject Interface which contains all items that appear in Search, whereas Metadata can all be added into Sets
+  const { data, ...rest } = useSkylarkSchemaInterfaceType(
+    searchable ? "VisibleObject" : "Metadata",
+  );
+
+  // TODO remove when beta is switched off
   const { data: legacyMetadataData } =
     useSkylarkSchemaInterfaceType("Metadata");
 
@@ -38,13 +44,13 @@ export const useSkylarkObjectTypes = (): Omit<UseQueryResult, "data"> & {
 
 // Returns the operations for a given object (createEpisode etc for Episode)
 export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
-  const { data, ...rest } = useSkylarkSchema();
+  const { data, ...rest } = useSkylarkSchemaIntrospection();
 
   if (!data || !objectType) {
     return { objectOperations: null, ...rest };
   }
 
-  const objectOperations = getObjectOperations(objectType, data.__schema);
+  const objectOperations = getObjectOperations(objectType, data);
 
   return {
     objectOperations,
@@ -52,15 +58,15 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
   };
 };
 
-export const useAllObjectsMeta = () => {
-  const { data: schemaResponse, ...rest } = useSkylarkSchema();
+export const useAllObjectsMeta = (searchable: boolean) => {
+  const { data: schemaResponse, ...rest } = useSkylarkSchemaIntrospection();
 
-  const { objectTypes } = useSkylarkObjectTypes();
+  const { objectTypes } = useSkylarkObjectTypes(searchable);
 
   const { objects, allFieldNames } = useMemo(() => {
     const objects =
       schemaResponse && objectTypes
-        ? getAllObjectsMeta(schemaResponse.__schema, objectTypes)
+        ? getAllObjectsMeta(schemaResponse, objectTypes)
         : [];
     const allFieldNames = objects
       .flatMap(({ fields }) => fields)

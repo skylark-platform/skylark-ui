@@ -1,5 +1,17 @@
+import {
+  IntrospectionField,
+  IntrospectionInputObjectType,
+  IntrospectionInputValue,
+  IntrospectionListTypeRef,
+  IntrospectionNamedTypeRef,
+  IntrospectionNonNullTypeRef,
+  IntrospectionObjectType,
+  IntrospectionOutputType,
+  IntrospectionQuery,
+  IntrospectionScalarType,
+} from "graphql";
+
 import { OBJECT_LIST_TABLE, SYSTEM_FIELDS } from "src/constants/skylark";
-import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import {
   SkylarkObjectType,
   SkylarkObjectMeta,
@@ -7,59 +19,99 @@ import {
   BuiltInSkylarkObjectType,
   SkylarkSystemField,
   SkylarkSystemGraphQLType,
-  SkylarkObjectMetadataField,
   NormalizedObjectField,
+  SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
 
-const getObjectFieldsFromGetQuery = (
-  getQuery: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"][0],
-) => {
-  if (!getQuery || !getQuery.type || !getQuery.type.fields) {
+const getObjectInterfaceFromIntrospectionField = (
+  schemaTypes: IntrospectionQuery["__schema"]["types"],
+  introspectionField?: IntrospectionField,
+): IntrospectionObjectType | undefined => {
+  const objectInterfaceName = (
+    introspectionField?.type as
+      | IntrospectionNamedTypeRef<IntrospectionOutputType>
+      | undefined
+  )?.name;
+
+  const objectInterface = objectInterfaceName
+    ? schemaTypes.find(({ name }) => name === objectInterfaceName)
+    : undefined;
+  return objectInterface as IntrospectionObjectType | undefined;
+};
+
+const getInputObjectInterfaceFromIntrospectionField = (
+  mutation: IntrospectionField,
+  objectType: string,
+): IntrospectionInputValue | undefined => {
+  const validOperationInterfaces = [
+    `${objectType}CreateInput`,
+    `${objectType}Input`,
+  ];
+
+  const foundCreateInput = mutation.args.find((arg) => {
+    const typeName =
+      (
+        arg.type as
+          | IntrospectionNonNullTypeRef<IntrospectionScalarType>
+          | IntrospectionListTypeRef<IntrospectionScalarType>
+      ).ofType?.name || (arg.type as IntrospectionScalarType).name;
+
+    return validOperationInterfaces.includes(typeName);
+  });
+
+  return foundCreateInput;
+};
+
+const getObjectFields = (objectInterface?: IntrospectionObjectType) => {
+  if (!objectInterface) {
     return [];
   }
 
   const objectFields = parseObjectInputFields(
-    getQuery.type.fields.filter((field) => field.type.kind !== "OBJECT"),
+    objectInterface.fields.filter((field) => field.type.kind !== "OBJECT"),
   );
 
   return objectFields;
 };
 
-const objectHasRelationshipFromField = (
+const objectHasRelationshipFromInterface = (
   relationshipField: "images" | SkylarkSystemField,
-  getQuery: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"][0],
+  objectInterface?: IntrospectionObjectType,
 ) => {
-  if (!getQuery || !getQuery.type || !getQuery.type.fields) {
+  if (!objectInterface) {
     return false;
   }
 
-  return getQuery.type.fields.some(
+  return objectInterface.fields.some(
     (field) => field.name === relationshipField && field.type.kind === "OBJECT",
   );
 };
 
 const objectRelationshipFieldsFromGraphQLType = (
   type: SkylarkSystemGraphQLType,
-  getQuery: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"][0],
+  objectInterface?: IntrospectionObjectType,
 ): {
   objectType: SkylarkObjectType;
   relationshipNames: string[];
 } | null => {
-  if (!getQuery || !getQuery.type || !getQuery.type.fields) {
+  if (!objectInterface) {
     return null;
   }
 
-  const relationships = getQuery.type.fields
-    .filter((field) => field.type.name === type && field.type.kind === "OBJECT")
+  const relationships = objectInterface.fields
+    .filter(
+      (field) =>
+        (field.type as IntrospectionObjectType).name === type &&
+        field.type.kind === "OBJECT",
+    )
     .map((field) => {
       // Naive implementation, just removes Listing from ImageListing
+      const typeName = (field.type as IntrospectionObjectType | undefined)
+        ?.name;
       const objectType =
-        field.type.name?.substring(
-          0,
-          field.type.name?.lastIndexOf("Listing"),
-        ) || "";
+        typeName?.substring(0, typeName?.lastIndexOf("Listing")) || "";
       return {
         objectType,
         relationshipName: field.name,
@@ -79,29 +131,61 @@ const objectRelationshipFieldsFromGraphQLType = (
   };
 };
 
-const getMutationInfo = (
-  mutation: GQLSkylarkSchemaQueriesMutations["__schema"]["mutationType"]["fields"][0],
-  objectType: string,
-) => {
-  const validOperationInterfaces = [
-    `${objectType}CreateInput`,
-    `${objectType}Input`,
-  ];
-
-  const foundCreateInput = mutation.args.find((arg) =>
-    arg.type.kind === "NON_NULL"
-      ? validOperationInterfaces.includes(arg.type.ofType?.name || "")
-      : validOperationInterfaces.includes(arg.type.name || ""),
+const getObjectRelationshipsFromInputFields = (
+  schemaTypes: IntrospectionQuery["__schema"]["types"],
+  inputFields?: readonly IntrospectionInputValue[],
+): SkylarkObjectRelationship[] => {
+  const relationshipsInput = inputFields?.find(
+    (input) => input.name === "relationships",
   );
 
-  const argName = foundCreateInput?.name || "";
-  const inputFields =
-    foundCreateInput?.type.kind === "NON_NULL"
-      ? foundCreateInput.type.ofType?.inputFields
-      : foundCreateInput?.type.inputFields;
+  if (!relationshipsInput) {
+    return [];
+  }
+
+  const relationshipsTypeName =
+    (
+      relationshipsInput?.type as
+        | IntrospectionNonNullTypeRef<IntrospectionScalarType>
+        | IntrospectionListTypeRef<IntrospectionScalarType>
+    ).ofType?.name || (relationshipsInput.type as IntrospectionScalarType).name;
+
+  const relationshipsInterface = schemaTypes.find(
+    ({ name, kind }) =>
+      name === relationshipsTypeName && kind === "INPUT_OBJECT",
+  ) as IntrospectionInputObjectType | undefined;
+
+  const relationships = parseObjectRelationships(
+    relationshipsInterface?.inputFields,
+  );
+
+  return relationships;
+};
+
+const getMutationInfo = (
+  schemaTypes: IntrospectionQuery["__schema"]["types"],
+  inputObject?: IntrospectionInputValue,
+) => {
+  const argName = inputObject?.name || "";
+
+  const inputInterfaceName =
+    (
+      inputObject?.type as
+        | IntrospectionNonNullTypeRef<IntrospectionScalarType>
+        | IntrospectionListTypeRef<IntrospectionScalarType>
+    ).ofType?.name || (inputObject?.type as IntrospectionScalarType).name;
+
+  const inputInterface = schemaTypes.find(
+    ({ name, kind }) => name === inputInterfaceName && kind === "INPUT_OBJECT",
+  ) as IntrospectionInputObjectType | undefined;
+
+  const inputFields = inputInterface?.inputFields;
 
   const inputs = parseObjectInputFields(inputFields);
-  const relationships = parseObjectRelationships(inputFields);
+  const relationships = getObjectRelationshipsFromInputFields(
+    schemaTypes,
+    inputFields,
+  );
 
   return {
     argName,
@@ -112,13 +196,36 @@ const getMutationInfo = (
 
 export const getObjectOperations = (
   objectType: SkylarkObjectType,
-  { queryType, mutationType }: GQLSkylarkSchemaQueriesMutations["__schema"],
+  schema: IntrospectionQuery["__schema"],
 ): SkylarkObjectMeta => {
-  const queries = queryType.fields;
-  const getQuery = queries.find((query) => query.name === `get${objectType}`);
-  const listQuery = queries.find((query) => query.name === `list${objectType}`);
+  const queries = (
+    schema.types.find(
+      ({ name, kind }) => name === schema.queryType.name && kind === "OBJECT",
+    ) as IntrospectionObjectType | undefined
+  )?.fields;
 
-  const mutations = mutationType.fields;
+  const mutations = (
+    schema.types.find(
+      ({ name, kind }) =>
+        name === schema.mutationType?.name && kind === "OBJECT",
+    ) as IntrospectionObjectType | undefined
+  )?.fields;
+
+  if (!queries || !mutations) {
+    throw new Error(
+      `Schema: Unable to locate "${
+        queries ? "Queries" : "Mutations"
+      }" in the Introspection response`,
+    );
+  }
+
+  const getQuery = queries.find(
+    (query) => query.name === `get${objectType}`,
+  ) as IntrospectionField | undefined;
+  const listQuery = queries.find(
+    (query) => query.name === `list${objectType}`,
+  ) as IntrospectionField | undefined;
+
   const createMutation = mutations.find(
     (mutation) => mutation.name === `create${objectType}`,
   );
@@ -150,47 +257,50 @@ export const getObjectOperations = (
     );
   }
 
-  const objectFields = getObjectFieldsFromGetQuery(getQuery);
-
-  const hasAvailability = objectHasRelationshipFromField(
-    SkylarkSystemField.Availability,
+  const getObjectInterface = getObjectInterfaceFromIntrospectionField(
+    schema.types,
     getQuery,
   );
+  const createInputObjectInterface =
+    getInputObjectInterfaceFromIntrospectionField(createMutation, objectType);
+  const updateInputObjectInterface =
+    getInputObjectInterfaceFromIntrospectionField(updateMutation, objectType);
+
+  const objectFields = getObjectFields(getObjectInterface);
+
+  const hasAvailability = objectHasRelationshipFromInterface(
+    SkylarkSystemField.Availability,
+    getObjectInterface,
+  );
   const availability = hasAvailability
-    ? getObjectOperations(BuiltInSkylarkObjectType.Availability, {
-        queryType,
-        mutationType,
-      })
+    ? getObjectOperations(BuiltInSkylarkObjectType.Availability, schema)
     : null;
 
-  const hasContent = objectHasRelationshipFromField(
+  const hasContent = objectHasRelationshipFromInterface(
     SkylarkSystemField.Content,
-    getQuery,
+    getObjectInterface,
   );
 
   // TODO when Beta 1 environments are turned off, remove the BetaSkylarkImageListing check
   const imageRelationships =
     objectRelationshipFieldsFromGraphQLType(
       SkylarkSystemGraphQLType.SkylarkImageListing,
-      getQuery,
+      getObjectInterface,
     ) ||
     objectRelationshipFieldsFromGraphQLType(
       SkylarkSystemGraphQLType.BetaSkylarkImageListing,
-      getQuery,
+      getObjectInterface,
     );
   const imageOperations = imageRelationships
-    ? getObjectOperations(imageRelationships.objectType, {
-        queryType,
-        mutationType,
-      })
+    ? getObjectOperations(imageRelationships.objectType, schema)
     : null;
 
   // Parse the relationships out of the create mutation as it has a relationships parameter
   const { relationships, ...createMeta } = getMutationInfo(
-    createMutation,
-    objectType,
+    schema.types,
+    createInputObjectInterface,
   );
-  const updateMeta = getMutationInfo(updateMutation, objectType);
+  const updateMeta = getMutationInfo(schema.types, updateInputObjectInterface);
 
   const hasRelationships = relationships.length > 0;
 
@@ -223,7 +333,7 @@ export const getObjectOperations = (
     },
   };
 
-  return {
+  const objectMeta: SkylarkObjectMeta = {
     name: objectType,
     fields: objectFields,
     images:
@@ -238,13 +348,15 @@ export const getObjectOperations = (
     relationships,
     hasRelationships,
     hasContent,
-    hasAvailability: !!availability,
+    hasAvailability,
     isTranslatable: objectType !== BuiltInSkylarkObjectType.Availability,
   };
+
+  return objectMeta;
 };
 
 export const getAllObjectsMeta = (
-  schema: GQLSkylarkSchemaQueriesMutations["__schema"],
+  schema: IntrospectionQuery["__schema"],
   objects: string[],
 ) => {
   const objectOperations = objects.map((objectType) => {

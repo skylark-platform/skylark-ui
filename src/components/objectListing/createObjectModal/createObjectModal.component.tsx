@@ -41,7 +41,7 @@ export const CreateObjectModal = ({
   setIsOpen,
   onObjectCreated,
 }: CreateObjectModalProps) => {
-  const { objectTypes } = useSkylarkObjectTypes();
+  const { objectTypes } = useSkylarkObjectTypes(true);
   const {
     handleSubmit,
     watch,

@@ -1,8 +1,4 @@
-import {
-  hasMatchingQuery,
-  hasMatchingVariable,
-  hasOperationName,
-} from "../../support/utils/graphqlTestUtils";
+import { hasOperationName } from "../../support/utils/graphqlTestUtils";
 
 describe("Content Library - Metadata Panel", () => {
   beforeEach(() => {
@@ -13,11 +9,6 @@ describe("Content Library - Metadata Panel", () => {
         req.alias = "introspectionQuery";
         req.reply({
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
-        });
-      }
-      if (hasOperationName(req, "GET_SKYLARK_SCHEMA")) {
-        req.reply({
-          fixture: "./skylark/queries/introspection/schema.json",
         });
       }
       if (hasOperationName(req, "GET_Episode")) {

@@ -36,11 +36,11 @@ export const useGetObject = (
   const { language }: GetObjectOptions = opts || { language: null };
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
-  const { objects: searchableObjects } = useAllObjectsMeta();
+  const { objects: contentObjects } = useAllObjectsMeta(false);
 
   const query = createGetObjectQuery(
     objectOperations,
-    searchableObjects,
+    contentObjects,
     !!language,
   );
   const variables = { uid, language };

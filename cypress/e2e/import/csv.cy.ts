@@ -16,11 +16,6 @@ describe("Import/CSV", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
-      if (hasOperationName(req, "GET_SKYLARK_SCHEMA")) {
-        req.reply({
-          fixture: "./skylark/queries/introspection/schema.json",
-        });
-      }
       if (operationNameStartsWith(req, "createEpisode_")) {
         req.reply({
           fixture: "./skylark/mutations/import/csvImportEpisodeCreation.json",

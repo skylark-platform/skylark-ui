@@ -1,6 +1,6 @@
+import { IntrospectionField, IntrospectionInputValue } from "graphql";
 import { EnumType } from "json-to-graphql-query";
 
-import { GQLInputField, GQLType } from "src/interfaces/graphql/introspection";
 import {
   AvailabilityStatus,
   NormalizedObjectField,
@@ -21,7 +21,7 @@ import {
   parseSkylarkObject,
 } from "./parsers";
 
-const defaultType: GQLType = {
+const defaultType = {
   __typename: "",
   kind: "SCALAR",
   name: "String",
@@ -100,7 +100,7 @@ describe("parseObjectInputFields", () => {
       },
     ].forEach(({ input, want }) =>
       test(`parses a ${input} to be a ${want}`, () => {
-        const fields: GQLInputField = {
+        const fields = {
           name: "Test",
           type: {
             ...defaultType,
@@ -108,7 +108,9 @@ describe("parseObjectInputFields", () => {
           },
         };
 
-        const [{ type: got }] = parseObjectInputFields([fields]);
+        const [{ type: got }] = parseObjectInputFields([
+          fields,
+        ] as unknown as IntrospectionField[]);
         expect(got).toEqual(want);
       }),
     );
@@ -120,7 +122,7 @@ describe("parseObjectInputFields", () => {
   });
 
   test("parses the type from the ofType field when it is given", () => {
-    const fields: GQLInputField = {
+    const fields = {
       name: "Test",
       type: {
         ...defaultType,
@@ -133,7 +135,9 @@ describe("parseObjectInputFields", () => {
       },
     };
 
-    const got = parseObjectInputFields([fields]);
+    const got = parseObjectInputFields([
+      fields,
+    ] as unknown as IntrospectionField[]);
     expect(got).toEqual([
       {
         enumValues: undefined,
@@ -147,16 +151,18 @@ describe("parseObjectInputFields", () => {
   });
 
   test("marks the field as required when the kind is NON_NULL", () => {
-    const fields: GQLInputField = {
+    const fields = {
       name: "Test",
       type: {
         ...defaultType,
         kind: "NON_NULL",
-        name: "String!",
+        name: "String",
       },
     };
 
-    const got = parseObjectInputFields([fields]);
+    const got = parseObjectInputFields([
+      fields,
+    ] as unknown as IntrospectionField[]);
     expect(got).toEqual([
       {
         enumValues: undefined,
@@ -164,13 +170,13 @@ describe("parseObjectInputFields", () => {
         isRequired: true,
         name: "Test",
         type: "string",
-        originalType: "String!",
+        originalType: "String",
       },
     ]);
   });
 
   test("marks the field as a list when the kind is LIST", () => {
-    const fields: GQLInputField = {
+    const fields = {
       name: "Test",
       type: {
         ...defaultType,
@@ -179,7 +185,9 @@ describe("parseObjectInputFields", () => {
       },
     };
 
-    const got = parseObjectInputFields([fields]);
+    const got = parseObjectInputFields([
+      fields,
+    ] as unknown as IntrospectionField[]);
     expect(got).toEqual([
       {
         enumValues: undefined,
@@ -193,7 +201,7 @@ describe("parseObjectInputFields", () => {
   });
 
   test("parses an enum input", () => {
-    const fields: GQLInputField = {
+    const fields = {
       name: "Test",
       type: {
         ...defaultType,
@@ -203,7 +211,9 @@ describe("parseObjectInputFields", () => {
       },
     };
 
-    const got = parseObjectInputFields([fields]);
+    const got = parseObjectInputFields([
+      fields,
+    ] as unknown as IntrospectionField[]);
     expect(got).toEqual([
       {
         enumValues: ["ENUM1", "ENUM2"],
@@ -217,11 +227,10 @@ describe("parseObjectInputFields", () => {
   });
 
   test("ignores an INPUT_OBJECT and OBJECT", () => {
-    const fields: GQLInputField[] = [
+    const fields = [
       {
         name: "availability",
         type: {
-          __typename: "",
           kind: "INPUT_OBJECT",
           name: "AvailabilityInput",
           enumValues: null,
@@ -233,7 +242,6 @@ describe("parseObjectInputFields", () => {
       {
         name: "relationships",
         type: {
-          __typename: "",
           kind: "OBJECT",
           name: "Relationships",
           enumValues: null,
@@ -244,41 +252,37 @@ describe("parseObjectInputFields", () => {
       },
     ];
 
-    const got = parseObjectInputFields(fields);
+    const got = parseObjectInputFields(
+      fields as unknown as IntrospectionField[],
+    );
     expect(got).toEqual([]);
   });
 });
 
 describe("parseObjectRelationships", () => {
   test("returns the names of the relationships", () => {
-    const fields: GQLInputField[] = [
+    const inputFields = [
       {
-        name: "relationships",
+        name: "episodes",
         type: {
           ...defaultType,
-          inputFields: [
-            {
-              name: "episodes",
-              type: {
-                ...defaultType,
-                name: "EpisodeRelationshipInput",
-                kind: "INPUT_OBJECT",
-              },
-            },
-            {
-              name: "brands",
-              type: {
-                ...defaultType,
-                name: "BrandRelationshipInput",
-                kind: "INPUT_OBJECT",
-              },
-            },
-          ],
+          name: "EpisodeRelationshipInput",
+          kind: "INPUT_OBJECT",
+        },
+      },
+      {
+        name: "brands",
+        type: {
+          ...defaultType,
+          name: "BrandRelationshipInput",
+          kind: "INPUT_OBJECT",
         },
       },
     ];
 
-    const got = parseObjectRelationships(fields);
+    const got = parseObjectRelationships(
+      inputFields as unknown as IntrospectionInputValue[],
+    );
     expect(got).toEqual([
       { objectType: "Episode", relationshipName: "episodes" },
       { objectType: "Brand", relationshipName: "brands" },
