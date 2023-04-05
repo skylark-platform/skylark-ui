@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
@@ -20,6 +21,7 @@ import { ParsedSkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
 import { getObjectDisplayName } from "src/lib/utils";
 
 interface PanelHeaderProps {
+  isPage?: boolean;
   objectUid: string;
   objectType: SkylarkObjectType;
   object: ParsedSkylarkObject | null;
@@ -38,6 +40,7 @@ interface PanelHeaderProps {
 }
 
 export const PanelHeader = ({
+  isPage,
   objectUid,
   objectType,
   object,
@@ -100,16 +103,23 @@ export const PanelHeader = ({
   return (
     <div
       data-testid="panel-header"
-      className="relative p-4 pb-2 md:p-8 md:py-6"
+      className={clsx(
+        "relative flex flex-col p-4 pb-2 md:p-8",
+        isPage
+          ? "md:flex-row-reverse md:justify-between md:py-8 md:pt-12"
+          : "md:py-6",
+      )}
     >
       <div className="flex flex-row pb-2">
         <div className="flex flex-grow items-center space-x-2">
-          <Button
-            Icon={<Expand className="stroke-gray-300" />}
-            // disabled
-            variant="ghost"
-            href={`/object/${objectType}/${objectUid}`}
-          />
+          {!isPage && (
+            <Button
+              Icon={<Expand className="stroke-gray-300" />}
+              // disabled
+              variant="ghost"
+              href={`/object/${objectType}/${objectUid}`}
+            />
+          )}
           <DropdownMenu options={objectMenuOptions} align="left">
             <DropdownMenuButton
               className="flex focus:outline-none focus-visible:ring-2 group-hover:text-black"

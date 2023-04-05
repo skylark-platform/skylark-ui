@@ -10,6 +10,8 @@ import {
 } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
+import { PanelSectionLayout } from "./panelSectionLayout.component";
+
 const groupImagesByType = (images: SkylarkGraphQLObjectImage[]) => {
   return images.reduce(
     (acc: { [key: string]: SkylarkGraphQLObjectImage[] }, currentValue) => {
@@ -49,11 +51,22 @@ const PanelImage = ({
 
 export const PanelImages = ({
   images,
+  isPage,
 }: {
+  isPage?: boolean;
   images: ParsedSkylarkObjectImageRelationship[];
 }) => {
   return (
-    <div className="h-full overflow-y-auto px-4 pb-32 text-sm md:px-8">
+    // TODO try with an object that actually has images, likely need to add a sticky variant of the layout
+    // <div className="h-full overflow-y-auto px-4 pb-32 text-sm md:px-8">
+    <PanelSectionLayout
+      sections={images.map(({ relationshipName }) => ({
+        id: `image-panel-${relationshipName}`,
+        title: formatObjectField(relationshipName),
+      }))}
+      isPage={isPage}
+      withStickyHeaders
+    >
       {images.map(({ relationshipName, objects }) => {
         const imagesGroupedByType = groupImagesByType(objects);
         return (
@@ -63,6 +76,7 @@ export const PanelImages = ({
           >
             <PanelSectionTitle
               text={formatObjectField(relationshipName)}
+              id={`image-panel-${relationshipName}`}
               sticky
             />
             {objects.length === 0 && (
@@ -91,6 +105,6 @@ export const PanelImages = ({
           </div>
         );
       })}
-    </div>
+    </PanelSectionLayout>
   );
 };

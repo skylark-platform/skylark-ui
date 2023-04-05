@@ -27,6 +27,7 @@ import { PanelContent } from "./panelSections/panelContent.component";
 import { PanelRelationships } from "./panelSections/panelRelationships.component";
 
 interface PanelProps {
+  isPage?: boolean;
   closePanel?: () => void;
   objectType: string;
   uid: string;
@@ -56,6 +57,7 @@ function parseSkylarkObjectContent(
 }
 
 export const Panel = ({
+  isPage,
   closePanel,
   objectType,
   uid,
@@ -210,6 +212,7 @@ export const Panel = ({
   return (
     <section className="mx-auto flex h-full w-full flex-col break-words">
       <PanelHeader
+        isPage={isPage}
         objectUid={uid}
         objectType={objectType}
         object={data || null}
@@ -259,6 +262,7 @@ export const Panel = ({
           />
           {selectedTab === PanelTab.Metadata && (
             <PanelMetadata
+              isPage={isPage}
               uid={uid}
               language={language}
               metadata={data.metadata}
@@ -268,10 +272,11 @@ export const Panel = ({
             />
           )}
           {selectedTab === PanelTab.Imagery && data.images && (
-            <PanelImages images={data.images} />
+            <PanelImages isPage={isPage} images={data.images} />
           )}
           {selectedTab === PanelTab.Availability && (
             <PanelAvailability
+              isPage={isPage}
               objectType={objectType}
               objectUid={uid}
               language={language}
@@ -279,6 +284,7 @@ export const Panel = ({
           )}
           {selectedTab === PanelTab.Content && data.content && (
             <PanelContent
+              isPage={isPage}
               objects={contentObjects || data?.content?.objects}
               inEditMode={inEditMode}
               objectType={objectType}
@@ -288,6 +294,7 @@ export const Panel = ({
           )}
           {selectedTab === PanelTab.Relationships && (
             <PanelRelationships
+              isPage={isPage}
               objectType={objectType}
               uid={uid}
               language={language}

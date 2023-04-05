@@ -21,7 +21,10 @@ import {
 } from "src/lib/skylark/availability";
 import { formatObjectField } from "src/lib/utils";
 
+import { PanelSectionLayout } from "./panelSectionLayout.component";
+
 interface PanelAvailabilityProps {
+  isPage?: boolean;
   objectType: string;
   objectUid: string;
   language: string;
@@ -62,6 +65,7 @@ const AvailabilityValueGrid = ({
 };
 
 export const PanelAvailability = ({
+  isPage,
   objectType,
   objectUid,
   language,
@@ -69,10 +73,16 @@ export const PanelAvailability = ({
   const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
     useGetObjectAvailability(objectType, objectUid, { language });
   return (
-    <div className="relative flex h-full flex-col overflow-y-auto p-4 pb-12 text-sm md:p-8">
+    <PanelSectionLayout
+      sections={[{ id: "availability-panel-title", title: "Availability" }]}
+      isPage={isPage}
+    >
       {data && (
         <>
-          <PanelSectionTitle text={formatObjectField("Availability")} />
+          <PanelSectionTitle
+            text={formatObjectField("Availability")}
+            id={"availability-panel-title"}
+          />
           {!isLoading && data?.length === 0 && <PanelEmptyDataText />}
           {data.map((obj) => {
             const { status, neverExpires } = obj;
@@ -157,6 +167,6 @@ export const PanelAvailability = ({
         variables={variables}
         buttonClassName="absolute right-2 top-0"
       />
-    </div>
+    </PanelSectionLayout>
   );
 };

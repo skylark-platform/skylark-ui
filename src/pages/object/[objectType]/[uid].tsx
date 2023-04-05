@@ -16,6 +16,7 @@ const Object = () => {
           }}
         >
           <Panel
+            isPage
             uid={uid as string}
             objectType={objectType as string}
             language={(language as string) || ""}

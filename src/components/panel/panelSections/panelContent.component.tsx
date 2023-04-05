@@ -17,7 +17,10 @@ import {
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
 
+import { PanelSectionLayout } from "./panelSectionLayout.component";
+
 interface PanelContentProps {
+  isPage?: boolean;
   objects: AddedSkylarkObjectContentObject[];
   objectType: string;
   onReorder: (objs: ParsedSkylarkObjectContentObject[]) => void;
@@ -91,6 +94,7 @@ export const PanelContentItemOrderInput = ({
 };
 
 export const PanelContent = ({
+  isPage,
   objects,
   inEditMode,
   objectType,
@@ -138,8 +142,13 @@ export const PanelContent = ({
     );
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto p-4 pt-6 text-sm md:p-8">
-      <PanelSectionTitle text="Content" />
+    <PanelSectionLayout
+      sections={[{ id: "content-panel-title", title: "Content" }]}
+      isPage={isPage}
+    >
+      {/* TODO before deleting check on a set with content */}
+      {/* <div className="flex h-full flex-col overflow-y-auto p-4 pt-6 text-sm md:p-8"> */}
+      <PanelSectionTitle text="Content" id="content-panel-title" />
       <Reorder.Group
         axis="y"
         values={objects}
@@ -221,6 +230,7 @@ export const PanelContent = ({
           {`Drag an object from the Content Library to add to this ${objectType}'s content`}
         </p>
       )}
-    </div>
+      {/* </div> */}
+    </PanelSectionLayout>
   );
 };
