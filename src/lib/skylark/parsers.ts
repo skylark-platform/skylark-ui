@@ -250,6 +250,7 @@ export const parseSkylarkObject = (
       config: {
         colour: object._config?.colour,
         primaryField: object._config?.primary_field,
+        objectTypeDisplayName: object._config?.display_name,
       },
       meta: {
         language: object._meta?.language_data.language || "",

@@ -65,6 +65,7 @@ export type ParsedSkylarkObjectMetadata = {
 export interface ParsedSkylarkObjectConfig {
   colour?: string;
   primaryField?: string;
+  objectTypeDisplayName?: string;
 }
 
 export interface ParsedSkylarkObjectMeta {

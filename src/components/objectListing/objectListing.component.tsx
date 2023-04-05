@@ -61,7 +61,7 @@ const createColumns = (
         const original = row.original as ParsedSkylarkObject;
         return (
           <Pill
-            label={original.objectType}
+            label={original.config.objectTypeDisplayName || original.objectType}
             bgColor={original.config.colour}
             className="w-full bg-brand-primary"
           />

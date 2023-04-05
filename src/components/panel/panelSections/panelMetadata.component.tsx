@@ -89,14 +89,24 @@ export const PanelMetadata = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid, language]);
 
-  const { systemMetadataFields, languageGlobalMetadataFields } = useMemo(
+  const {
+    systemMetadataFields,
+    translatableMetadataFields,
+    globalMetadataFields,
+  } = useMemo(
     () =>
       splitMetadataIntoSystemTranslatableGlobal(
         Object.keys(metadata),
         objectMeta.operations.update.inputs,
+        objectMeta.fieldConfig,
         options,
       ),
-    [metadata, objectMeta.operations.update.inputs, options],
+    [
+      metadata,
+      objectMeta.fieldConfig,
+      objectMeta.operations.update.inputs,
+      options,
+    ],
   );
 
   const requiredFields = objectMeta.operations.create.inputs
@@ -117,42 +127,53 @@ export const PanelMetadata = ({
               metadataFields: systemMetadataFields,
             },
             {
-              id: "languageGlobal",
-              title: "Translatable & Global Metadata",
-              metadataFields: languageGlobalMetadataFields,
+              id: "translatable",
+              title: "Translatable Metadata",
+              metadataFields: translatableMetadataFields,
             },
-          ].map(
-            ({ id, title, metadataFields }, index, { length: numSections }) => (
-              <div key={id} className="mb-8">
-                <PanelSectionTitle text={title} />
-                {metadataFields.map(({ field, config }) => {
-                  if (config) {
+            {
+              id: "global",
+              title: "Global Metadata",
+              metadataFields: globalMetadataFields,
+            },
+          ]
+            .filter(({ metadataFields }) => metadataFields.length > 0)
+            .map(
+              (
+                { id, title, metadataFields },
+                index,
+                { length: numSections },
+              ) => (
+                <div key={id} className="mb-8">
+                  <PanelSectionTitle text={title} />
+                  {metadataFields.map(({ field, config }) => {
+                    if (config) {
+                      return (
+                        <SkylarkObjectFieldInput
+                          key={field}
+                          field={field}
+                          config={config}
+                          control={control}
+                          register={register}
+                          value={getValues(field)}
+                          formState={formState}
+                          additionalRequiredFields={requiredFields}
+                        />
+                      );
+                    }
+
                     return (
-                      <SkylarkObjectFieldInput
+                      <PanelMetadataProperty
                         key={field}
-                        field={field}
-                        config={config}
-                        control={control}
-                        register={register}
+                        property={field}
                         value={getValues(field)}
-                        formState={formState}
-                        additionalRequiredFields={requiredFields}
                       />
                     );
-                  }
-
-                  return (
-                    <PanelMetadataProperty
-                      key={field}
-                      property={field}
-                      value={getValues(field)}
-                    />
-                  );
-                })}
-                {index < numSections - 1 && <PanelSeparator />}
-              </div>
-            ),
-          )}
+                  })}
+                  {index < numSections - 1 && <PanelSeparator />}
+                </div>
+              ),
+            )}
         </>
       )}
 

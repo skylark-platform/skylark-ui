@@ -26,6 +26,7 @@ const commonGraphQLOpts = {
     _config: {
       primary_field: true,
       colour: true,
+      display_name: true,
     },
   },
   objectMeta: {

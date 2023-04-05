@@ -80,13 +80,21 @@ export const CreateObjectModal = ({
   }: Record<string, SkylarkObjectMetadataField>) =>
     createObject(_language as string, metadata);
 
-  const { systemMetadataFields, languageGlobalMetadataFields } =
-    objectOperations
-      ? splitMetadataIntoSystemTranslatableGlobal(
-          objectOperations.operations.create.inputs.map(({ name }) => name),
-          objectOperations.operations.create.inputs,
-        )
-      : { systemMetadataFields: [], languageGlobalMetadataFields: [] };
+  const {
+    systemMetadataFields,
+    globalMetadataFields,
+    translatableMetadataFields,
+  } = objectOperations
+    ? splitMetadataIntoSystemTranslatableGlobal(
+        objectOperations.operations.create.inputs.map(({ name }) => name),
+        objectOperations.operations.create.inputs,
+        objectOperations.fieldConfig,
+      )
+    : {
+        systemMetadataFields: [],
+        globalMetadataFields: [],
+        translatableMetadataFields: [],
+      };
 
   const objectTypeSelectRef = useRef(null);
   return (
@@ -115,7 +123,7 @@ export const CreateObjectModal = ({
           </button>
 
           <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">
-            Create Object
+            {`Create ${objectType || "object"}`}
           </Dialog.Title>
           <Dialog.Description>
             Select Object Type to get started.
@@ -175,32 +183,39 @@ export const CreateObjectModal = ({
                       metadataFields: systemMetadataFields,
                     },
                     {
-                      id: "languageGlobal",
-                      title: "Translatable & Global Metadata",
-                      metadataFields: languageGlobalMetadataFields,
+                      id: "translatable",
+                      title: "Translatable Metadata",
+                      metadataFields: translatableMetadataFields,
                     },
-                  ].map(({ id, title, metadataFields }) => (
-                    <div key={id} className="mb-8">
-                      <h3 className="mb-2 text-base font-bold underline">
-                        {title}
-                      </h3>
-                      {metadataFields.map(({ field, config }) => {
-                        if (config) {
-                          return (
-                            <SkylarkObjectFieldInput
-                              key={field}
-                              field={field}
-                              config={config}
-                              control={control}
-                              register={register}
-                              value={getValues(field)}
-                              formState={formState}
-                            />
-                          );
-                        }
-                      })}
-                    </div>
-                  ))}
+                    {
+                      id: "global",
+                      title: "Global Metadata",
+                      metadataFields: globalMetadataFields,
+                    },
+                  ]
+                    .filter(({ metadataFields }) => metadataFields.length > 0)
+                    .map(({ id, title, metadataFields }) => (
+                      <div key={id} className="mb-8">
+                        <h3 className="mb-2 text-base font-bold underline">
+                          {title}
+                        </h3>
+                        {metadataFields.map(({ field, config }) => {
+                          if (config) {
+                            return (
+                              <SkylarkObjectFieldInput
+                                key={field}
+                                field={field}
+                                config={config}
+                                control={control}
+                                register={register}
+                                value={getValues(field)}
+                                formState={formState}
+                              />
+                            );
+                          }
+                        })}
+                      </div>
+                    ))}
                 </div>
                 <div className="flex justify-end space-x-2">
                   <Button

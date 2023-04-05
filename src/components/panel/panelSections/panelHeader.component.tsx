@@ -167,7 +167,7 @@ export const PanelHeader = ({
             <Pill
               bgColor={object.config.colour}
               className="w-20 bg-brand-primary"
-              label={objectType}
+              label={object.config.objectTypeDisplayName || objectType}
             />
             {isTranslatable && (
               <LanguageSelect
