@@ -22,7 +22,7 @@ export interface SelectOption {
 
 export interface SelectProps {
   variant: "primary" | "pill";
-  selected: string;
+  selected?: string;
   options: SelectOption[];
   label?: string;
   labelVariant?: "default" | "form";
@@ -166,11 +166,12 @@ export const Select = forwardRef(
       roundedClassName,
     );
 
-    const selectedOption =
-      options.find(({ value }) => value === selected) ||
-      options.find(
-        ({ value }) => value.toLowerCase() === selected.toLowerCase(),
-      );
+    const selectedOption = selected
+      ? options.find(({ value }) => value === selected) ||
+        options.find(
+          ({ value }) => value.toLowerCase() === selected.toLowerCase(),
+        )
+      : undefined;
 
     const showClearValueButton = onValueClear && selected;
 
