@@ -12,6 +12,7 @@ import {
   AddedSkylarkObjectContentObject,
   SkylarkObjectMetadataField,
   SkylarkSystemField,
+  SkylarkObjectMeta,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import { hasProperty } from "src/lib/utils";
@@ -84,6 +85,7 @@ export const Panel = ({
     // Can't use onSubmit because we don't have a submit button within the form
     mode: "onTouched",
   });
+  const { reset: resetMetadataForm } = metadataForm;
 
   const tabs = useMemo(
     () =>
@@ -110,7 +112,8 @@ export const Panel = ({
     setLanguage(initialLanguage);
     setSelectedTab(PanelTab.Metadata);
     setContentObjects(null);
-  }, [uid, initialLanguage]);
+    resetMetadataForm();
+  }, [uid, initialLanguage, resetMetadataForm]);
 
   useEffect(() => {
     if (!inEditMode && metadataForm.formState.isDirty) {
@@ -155,7 +158,12 @@ export const Panel = ({
       language,
       onSuccess: (updatedMetadata) => {
         setEditMode(false);
-        metadataForm.reset(updatedMetadata);
+        resetMetadataForm(
+          parseMetadataForHTMLForm(
+            updatedMetadata,
+            (objectMeta as SkylarkObjectMeta).fields,
+          ),
+        );
       },
     });
 
@@ -251,6 +259,8 @@ export const Panel = ({
           />
           {selectedTab === PanelTab.Metadata && (
             <PanelMetadata
+              uid={uid}
+              language={language}
               metadata={data.metadata}
               form={metadataForm}
               objectType={objectType}

@@ -25,6 +25,8 @@ import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import { formatObjectField } from "src/lib/utils";
 
 interface PanelMetadataProps {
+  uid: string;
+  language: string;
   objectType: SkylarkObjectType;
   objectMeta: SkylarkObjectMeta;
   metadata: Record<string, SkylarkObjectMetadataField>;
@@ -70,6 +72,8 @@ const AdditionalImageMetadata = ({
 };
 
 export const PanelMetadata = ({
+  uid,
+  language,
   metadata,
   objectType,
   objectMeta,
@@ -83,7 +87,7 @@ export const PanelMetadata = ({
   useEffect(() => {
     reset(parseMetadataForHTMLForm(metadata, objectMeta?.fields));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [uid, language]);
 
   const { systemMetadataFields, languageGlobalMetadataFields } = useMemo(
     () =>

@@ -133,9 +133,6 @@ const SkylarkObjectFieldInputGeneric = ({
 }: SkylarkObjectFieldInputComponentProps) => (
   <input
     {...register(field, {
-      // valueAsNumber: (config.type === "int" || config.type === "float") as
-      //   | false
-      //   | undefined,
       ...registerOptions,
     })}
     id={createHtmlForId(field)}
@@ -186,16 +183,21 @@ export const SkylarkObjectFieldInput = (
       required,
       validate: (value) => {
         try {
-          if (
-            (config.type === "int" || config.type === "float") &&
-            value !== ""
-          ) {
-            if (
+          // If empty don't validate
+          console.log({ config, value, invalidDate: value === "Invalid Date" });
+          if (value === "" || value === "Invalid Date") {
+            return true;
+          }
+          if (config.type === "int" || config.type === "float") {
+            const intValue = parseInt(value);
+            const floatValue = parseFloat(value);
+            const isNaN =
               Number.isNaN(value) ||
-              (config.type === "int" &&
-                (Number.isNaN(parseInt(value)) || !Number.isInteger(value))) ||
-              (config.type === "float" && Number.isNaN(parseFloat(value)))
-            ) {
+              Number.isNaN(intValue) ||
+              Number.isNaN(floatValue);
+            const isFloat = !Number.isInteger(floatValue);
+
+            if (isNaN || (config.type === "int" && isFloat)) {
               return false;
             }
           }

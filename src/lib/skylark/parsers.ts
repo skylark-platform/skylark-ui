@@ -337,8 +337,17 @@ export const parseMetadataForGraphQLRequest = (
       // Empty strings are allowed unless its a system field
       const emptyStringAllowed =
         input.type === "string" && !SYSTEM_FIELDS.includes(key);
+      const isInvalidDate =
+        ["date", "datetime", "time", "timestamp"].includes(input.type) &&
+        value === "Invalid Date";
 
-      if (value === null || (value === "" && !emptyStringAllowed)) {
+      console.log({ input, value, isInvalidDate });
+
+      if (
+        value === null ||
+        (value === "" && !emptyStringAllowed) ||
+        isInvalidDate
+      ) {
         // Empty strings will not work with AWSDateTime, or AWSURL so don't send them
         return undefined;
       }
