@@ -50,7 +50,7 @@ const AdditionalImageMetadata = ({
   src,
   alt,
 }: {
-  src: string;
+  src: string | null;
   alt: string;
 }) => {
   const { size } = useImageSize(src);
@@ -64,7 +64,7 @@ const AdditionalImageMetadata = ({
         property="Rendered image"
         value={
           /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={src} alt={alt} />
+          src ? <img src={src} alt={alt} /> : undefined
         }
       />
     </div>
@@ -163,7 +163,7 @@ export const PanelMetadata = ({
         ] as string[]
       ).includes(objectType) && (
         <AdditionalImageMetadata
-          src={metadata.url as string}
+          src={metadata.url as string | null}
           alt={metadata.title as string}
         />
       )}
