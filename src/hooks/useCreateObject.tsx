@@ -1,4 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
 import { QueryKeys } from "src/enums/graphql";
@@ -12,6 +16,20 @@ import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createCreateObjectMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
+
+export const refetchSearchQueriesAfterUpdate = (queryClient: QueryClient) => {
+  void queryClient.refetchQueries({
+    queryKey: [QueryKeys.Search],
+    type: "active",
+  });
+  // Sometimes the object isn't immediately available in search so try again after 5 seconds
+  setTimeout(() => {
+    void queryClient.refetchQueries({
+      queryKey: [QueryKeys.Search],
+      type: "active",
+    });
+  }, 3000);
+};
 
 export const useCreateObject = ({
   objectType,
@@ -43,26 +61,12 @@ export const useCreateObject = ({
       );
     },
     onSuccess: async (data, { language }) => {
-      await queryClient.invalidateQueries({
-        queryKey: [QueryKeys.Search],
-      });
       onSuccess({
         objectType,
         uid: data.createObject.uid,
         language,
       });
-
-      void queryClient.refetchQueries({
-        queryKey: [QueryKeys.Search],
-        type: "active",
-      });
-      // Sometimes the object isn't immediately available in search so try again after 5 seconds
-      setTimeout(() => {
-        void queryClient.refetchQueries({
-          queryKey: [QueryKeys.Search],
-          type: "active",
-        });
-      }, 5000);
+      refetchSearchQueriesAfterUpdate(queryClient);
     },
   });
 

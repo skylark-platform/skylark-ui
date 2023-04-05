@@ -184,8 +184,10 @@ export const SkylarkObjectFieldInput = (
       validate: (value) => {
         try {
           // If empty don't validate
-          console.log({ config, value, invalidDate: value === "Invalid Date" });
-          if (value === "" || value === "Invalid Date") {
+          const isInvalidDate =
+            ["date", "datetime", "time", "timestamp"].includes(config.type) &&
+            value === "Invalid Date";
+          if (value === "" || isInvalidDate) {
             return true;
           }
           if (config.type === "int" || config.type === "float") {

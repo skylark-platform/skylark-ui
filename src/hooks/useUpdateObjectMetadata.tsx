@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
-import { QueryKeys } from "src/enums/graphql";
 import {
   GQLSkylarkUpdateObjectMetadataResponse,
   ParsedSkylarkObjectMetadata,
@@ -12,10 +11,10 @@ import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectMetadataMutation } from "src/lib/graphql/skylark/dynamicMutations";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
+import { refetchSearchQueriesAfterUpdate } from "./useCreateObject";
 import { createGetObjectKeyPrefix } from "./useGetObject";
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
-// TODO SUPPORT LANGUAGE!!!
 export const useUpdateObjectMetadata = ({
   objectType,
   uid,
@@ -52,11 +51,9 @@ export const useUpdateObjectMetadata = ({
       queryClient.invalidateQueries({
         queryKey: createGetObjectKeyPrefix({ objectType, uid }),
       });
-      queryClient.invalidateQueries({
-        queryKey: [QueryKeys.Search],
-      });
       const parsedObject = parseSkylarkObject(data.updateObjectMetadata);
       onSuccess(parsedObject.metadata);
+      refetchSearchQueriesAfterUpdate(queryClient);
     },
   });
 

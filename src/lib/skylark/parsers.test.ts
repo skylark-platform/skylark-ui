@@ -684,5 +684,15 @@ describe("parseMetadataForGraphQLRequest", () => {
         datetime: "2020-11-20T16:30:00.000",
       });
     });
+
+    test("reformats a null to an empty string", () => {
+      const metadata: Record<string, SkylarkObjectMetadataField> = {
+        title: null,
+      };
+      const got = parseMetadataForHTMLForm(metadata, inputFields);
+      expect(got).toEqual({
+        title: "",
+      });
+    });
   });
 });

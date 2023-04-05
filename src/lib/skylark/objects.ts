@@ -291,9 +291,14 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
     ({ field }) => !SYSTEM_FIELDS.includes(field),
   );
 
+  const defaultFieldsToHide = [
+    OBJECT_LIST_TABLE.columnIds.objectType,
+    SkylarkSystemField.DataSourceID,
+    SkylarkSystemField.DataSourceFields,
+  ];
   const fieldsToHide = options
-    ? [...options.hiddenFields, OBJECT_LIST_TABLE.columnIds.objectType]
-    : [OBJECT_LIST_TABLE.columnIds.objectType];
+    ? [...options.hiddenFields, ...defaultFieldsToHide]
+    : defaultFieldsToHide;
 
   return {
     systemMetadataFields: systemFieldsThatExist.filter(

@@ -8,11 +8,8 @@ import { useDebounce } from "use-debounce";
 
 import { Button } from "src/components/button";
 import { TextInput } from "src/components/inputs/textInput";
-import {
-  LOCAL_STORAGE,
-  SAAS_API_ENDPOINT,
-  SAAS_API_KEY,
-} from "src/constants/skylark";
+import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { SAAS_API_ENDPOINT, SAAS_API_KEY } from "src/constants/skylark";
 import { QueryKeys } from "src/enums/graphql";
 import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
 

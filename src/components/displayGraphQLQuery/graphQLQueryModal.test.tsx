@@ -1,7 +1,8 @@
 import { print } from "graphql";
 
 import { fireEvent, render, screen } from "src/__tests__/utils/test-utils";
-import { HREFS, LOCAL_STORAGE } from "src/constants/skylark";
+import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { HREFS } from "src/constants/skylark";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
 import { DisplayGraphQLQuery } from "./graphQLQueryModal.component";

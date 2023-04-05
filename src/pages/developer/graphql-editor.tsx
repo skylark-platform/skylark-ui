@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { DEFAULT_QUERY } from "src/components/graphiqlEditor/graphiqlEditor.component";
 import { Spinner } from "src/components/icons";
-import { LOCAL_STORAGE } from "src/constants/skylark";
+import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
 
 const DynamicGraphiQLEditor = dynamic(

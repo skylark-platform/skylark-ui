@@ -4,7 +4,7 @@ import "@testing-library/jest-dom";
 import "whatwg-fetch";
 
 import { server } from "./src/__tests__/mocks/server";
-import { LOCAL_STORAGE } from "./src/constants/skylark";
+import { LOCAL_STORAGE } from "./src/constants/localStorage";
 
 // Establish API mocking before all tests.
 beforeAll(() => {

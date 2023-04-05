@@ -341,8 +341,6 @@ export const parseMetadataForGraphQLRequest = (
         ["date", "datetime", "time", "timestamp"].includes(input.type) &&
         value === "Invalid Date";
 
-      console.log({ input, value, isInvalidDate });
-
       if (
         value === null ||
         (value === "" && !emptyStringAllowed) ||

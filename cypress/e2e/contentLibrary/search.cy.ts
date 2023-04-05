@@ -109,7 +109,7 @@ describe("Content Library - Search", () => {
 
     cy.contains("Toggle all").click();
     cy.contains("Apply").should("be.disabled");
-    cy.get("#checkbox-asset").click();
+    cy.get("#checkbox-object-type-skylarkasset").click();
     cy.percySnapshot("Homepage - filters - object types selected");
     cy.contains("Apply").should("not.be.disabled").click();
   });
@@ -131,7 +131,7 @@ describe("Content Library - Search", () => {
       "synopsis_short",
       "synopsis_long",
     ].forEach((field) => {
-      columnsFilters.get(`#checkbox-${field}`).click();
+      columnsFilters.get(`#checkbox-columns-${field}`).click();
     });
     cy.percySnapshot("Homepage - filters - fields selected");
     cy.contains("Apply").should("not.be.disabled").click();
@@ -161,7 +161,7 @@ describe("Content Library - Search", () => {
       });
 
     cy.get("[data-testid=panel-metadata]").within(() => {
-      cy.contains("Winter is Coming");
+      cy.getByLabel("Slug").should("have.value", "winter-is-coming");
     });
 
     // Verify panel is in en-GB

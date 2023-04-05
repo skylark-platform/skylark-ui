@@ -75,7 +75,7 @@ describe("Content Library - Metadata Panel", () => {
           });
         }
       }
-      if (hasOperationName(req, "UPDATE_OBJECT_CONTENT_Set")) {
+      if (hasOperationName(req, "UPDATE_OBJECT_CONTENT_SkylarkSet")) {
         req.alias = "updateHomepageSetContent";
         req.reply({
           fixture: "./skylark/mutations/updateHomepageSetContent.json",
@@ -157,7 +157,7 @@ describe("Content Library - Metadata Panel", () => {
     cy.contains("Metadata");
 
     cy.get("[data-testid=panel-metadata]").within(() => {
-      cy.contains("Winter is Coming");
+      cy.getByLabel("Slug").should("have.value", "winter-is-coming");
     });
 
     // Change language
@@ -167,7 +167,10 @@ describe("Content Library - Metadata Panel", () => {
     });
 
     cy.get("[data-testid=panel-metadata]").within(() => {
-      cy.contains("O Inverno Está Chegando");
+      cy.getByLabel("Title short").should(
+        "have.value",
+        "O Inverno Está Chegando",
+      );
     });
 
     cy.percySnapshot("Homepage - metadata panel - fields - pt-PT");
