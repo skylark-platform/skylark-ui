@@ -33,7 +33,7 @@ interface PanelRelationshipsProps {
   language: string;
 }
 
-const groupObjectsByRelationship = (
+export const groupObjectsByRelationship = (
   objects: ParsedSkylarkObject[],
   relationships: SkylarkObjectRelationship[],
 ): { [k: string]: ParsedSkylarkObject[] } => {
@@ -54,12 +54,12 @@ const groupObjectsByRelationship = (
 export const PanelRelationships = ({
   objectType,
   uid,
-  inEditMode,
+  newRelationshipObjects,
   removedRelationshipObjects,
   setRemovedRelationshipObjects,
+  inEditMode,
   language,
   showDropArea,
-  newRelationshipObjects,
 }: PanelRelationshipsProps) => {
   const {
     data: relationshipsData,
@@ -209,21 +209,24 @@ export const PanelRelationships = ({
                     {relationship && displayList?.length > 0 ? (
                       displayList?.map((obj, index) => (
                         <>
-                          <ObjectIdentifierCard key={obj.uid} object={obj} />
-                          <button
-                            disabled={!inEditMode}
-                            data-testid={`panel-object-content-item-${
-                              index + 1
-                            }-remove`}
-                            onClick={() => removeRelationshipObject(obj.uid)}
-                          >
-                            <Trash
-                              className={clsx(
-                                "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
-                                inEditMode ? "w-6" : "w-0",
-                              )}
-                            />
-                          </button>
+                          <div className="flex">
+                            <ObjectIdentifierCard key={obj.uid} object={obj} />
+                            <button
+                              disabled={!inEditMode}
+                              data-testid={`panel-object-content-item-${
+                                index + 1
+                              }-remove`}
+                              onClick={() => removeRelationshipObject(obj.uid)}
+                            >
+                              <Trash
+                                className={clsx(
+                                  "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
+                                  inEditMode ? "w-6" : "w-0",
+                                )}
+                              />
+                            </button>
+                          </div>
+
                           {index < displayList.length - 1 && <PanelSeparator />}
                         </>
                       ))

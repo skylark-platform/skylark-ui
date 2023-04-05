@@ -36,7 +36,7 @@ export const useUpdateObjectRelationships = ({
     createUpdateObjectRelationshipsMutation(
       objectOperations,
       newRelationshipObjects,
-      removedRelationshipObjects,
+      removedRelationshipObjects || {},
     );
 
   const { mutate, ...rest } = useMutation({
