@@ -527,6 +527,16 @@ describe("parseInputFieldValue", () => {
       type: "email",
       want: "other",
     },
+    {
+      input: false,
+      type: "boolean",
+      want: false,
+    },
+    {
+      input: undefined as unknown as string | number | boolean | string[],
+      type: "boolean",
+      want: null,
+    },
   ];
 
   tests.forEach(({ input, type, want }) => {

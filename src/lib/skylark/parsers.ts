@@ -284,7 +284,7 @@ export const parseInputFieldValue = (
   value: string | number | boolean | string[],
   type: NormalizedObjectFieldType,
 ): string | number | boolean | EnumType | string[] | null => {
-  if (value === "" && type !== "string") {
+  if (value === undefined || (value === "" && type !== "string")) {
     return null;
   }
   if (type === "enum") {
@@ -319,6 +319,9 @@ export const parseInputFieldValue = (
   }
   if (type === "json") {
     return value;
+  }
+  if (type === "boolean") {
+    return !!value;
   }
   return value;
 };
