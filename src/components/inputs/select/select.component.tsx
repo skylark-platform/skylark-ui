@@ -166,7 +166,11 @@ export const Select = forwardRef(
       roundedClassName,
     );
 
-    const selectedOption = options.find(({ value }) => value === selected);
+    const selectedOption =
+      options.find(({ value }) => value === selected) ||
+      options.find(
+        ({ value }) => value.toLowerCase() === selected.toLowerCase(),
+      );
 
     const showClearValueButton = onValueClear && selected;
 
