@@ -392,7 +392,7 @@ export const parseMetadataForHTMLForm = (
       }
     }
 
-    return [key, value];
+    return [key, value === null ? "" : value];
   });
   const parsedMetadata: Record<string, SkylarkObjectMetadataField> =
     Object.fromEntries(keyValuePairs);
