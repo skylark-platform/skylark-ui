@@ -34,7 +34,7 @@
         ],
         "__typename": "AvailabilityListing"
       },
-      "__typename": "Image"
+      "__typename": "SkylarkImage"
     }
   }
 }

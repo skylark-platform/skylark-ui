@@ -11,14 +11,14 @@ export const SKYLARK_OBJECT_FIELDS_FIXTURE = [
 
 export const SKYLARK_OBJECT_TYPES_FIXTURE = [
   "Episode",
-  "Image",
+  "SkylarkImage",
   "Credit",
   "Person",
-  "Set",
-  "Asset",
+  "SkylarkSet",
+  "SkylarkAsset",
   "ParentalGuidance",
   "Rating",
-  "Tag",
+  "SkylarkTag",
   "Theme",
   "Genre",
   "Movie",

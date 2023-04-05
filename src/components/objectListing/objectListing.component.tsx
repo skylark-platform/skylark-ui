@@ -9,8 +9,8 @@ import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useVirtual } from "react-virtual";
 
 import { AvailabilityLabel } from "src/components/availability";
-import { Checkbox } from "src/components/checkbox";
 import { Spinner } from "src/components/icons";
+import { Checkbox } from "src/components/inputs/checkbox";
 import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
@@ -18,8 +18,8 @@ import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObject,
-  SkylarkGraphQLObjectImage,
-  ParsedSkylarkObjectImageRelationship,
+  SkylarkObjectIdentifier,
+  BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import {
   formatObjectField,
@@ -28,7 +28,6 @@ import {
 } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
-import { RowActions } from "./rowActions";
 import { Search } from "./search";
 import { Table, TableCell } from "./table";
 
@@ -46,18 +45,13 @@ export interface ObjectListProps {
   withObjectSelect?: boolean;
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
-  onInfoClick?: (obj: {
-    uid: string;
-    objectType: string;
-    language: string;
-  }) => void;
+  setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
   isDragging?: boolean;
 }
 
 const createColumns = (
   columns: string[],
   opts: { withObjectSelect?: boolean },
-  setPanelObject?: ObjectListProps["onInfoClick"],
 ) => {
   const objectTypeColumn = columnHelper.accessor(
     OBJECT_LIST_TABLE.columnIds.objectType,
@@ -158,9 +152,7 @@ const createColumns = (
   if (opts.withObjectSelect) {
     return [selectColumn, ...orderedColumnArray];
   }
-  if (setPanelObject) {
-    return [...orderedColumnArray, actionColumn];
-  }
+  return [...orderedColumnArray, actionColumn];
 
   return orderedColumnArray;
 };
@@ -169,7 +161,7 @@ export const ObjectList = ({
   withCreateButtons,
   withObjectSelect,
   withObjectEdit = false,
-  onInfoClick,
+  setPanelObject,
   isDragging,
   isPanelOpen,
 }: ObjectListProps) => {
@@ -208,8 +200,8 @@ export const ObjectList = ({
   }, [properties]);
 
   const parsedColumns = useMemo(
-    () => createColumns(sortedHeaders, { withObjectSelect }, onInfoClick),
-    [sortedHeaders, withObjectSelect, onInfoClick],
+    () => createColumns(sortedHeaders, { withObjectSelect }),
+    [sortedHeaders, withObjectSelect],
   );
 
   const [rowInEditMode, setRowInEditMode] = useState("");
@@ -222,7 +214,14 @@ export const ObjectList = ({
       return {
         ...obj,
         // When the object type is an image, we want to display its preview in the images tab
-        images: obj.objectType === "Image" ? [obj.metadata] : obj.images,
+        images: (
+          [
+            BuiltInSkylarkObjectType.SkylarkImage,
+            BuiltInSkylarkObjectType.BetaSkylarkImage,
+          ] as string[]
+        ).includes(obj.objectType)
+          ? [obj.metadata]
+          : obj.images,
         [OBJECT_LIST_TABLE.columnIds.displayField]: getObjectDisplayName(obj),
         [OBJECT_LIST_TABLE.columnIds.translation]: obj.meta.language,
       };
@@ -376,6 +375,9 @@ export const ObjectList = ({
               "justify-end md:w-full",
               isPanelOpen ? "pr-2 lg:w-auto lg:pr-4" : "md:w-auto",
             )}
+            onObjectCreated={(obj) => {
+              setPanelObject?.(obj);
+            }}
           />
         )}
       </div>
@@ -395,7 +397,7 @@ export const ObjectList = ({
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
             isLoadingMore={hasNextPage || isFetchingNextPage}
-            setPanelObject={onInfoClick}
+            setPanelObject={setPanelObject}
             withDraggableRow={!!isPanelOpen}
           />
         )}

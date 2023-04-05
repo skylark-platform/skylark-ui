@@ -4,6 +4,7 @@ import { graphql } from "msw";
 import { server } from "src/__tests__/mocks/server";
 import { TEMPLATE_FIELDS_TO_IGNORE } from "src/constants/flatfile";
 import { FlatfileRow } from "src/interfaces/flatfile/responses";
+import { GQLScalars } from "src/interfaces/graphql/introspection";
 import {
   NormalizedObjectField,
   NormalizedObjectFieldType,
@@ -288,6 +289,7 @@ describe("generateExampleCSV", () => {
     ];
     const inputs: NormalizedObjectField[] = types.map((type) => ({
       type,
+      originalType: "" as GQLScalars,
       name: type,
       isList: false,
       isRequired: false,

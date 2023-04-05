@@ -321,7 +321,7 @@
         "objects": [
           {
             "uid": "01GWFN0P1HG6YFM96TRZB0BZDJ",
-            "__typename": "Image",
+            "__typename": "SkylarkImage",
             "external_id": "recehX8tJ07frgIst",
             "slug": null,
             "title": "Hero - GOT - s04.jpg",

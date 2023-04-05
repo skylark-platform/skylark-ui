@@ -1,11 +1,8 @@
 import { QueryClient } from "@tanstack/react-query";
 import { GraphQLClient, RequestDocument, request } from "graphql-request";
 
-import {
-  SAAS_API_ENDPOINT,
-  LOCAL_STORAGE,
-  REQUEST_HEADERS,
-} from "src/constants/skylark";
+import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { SAAS_API_ENDPOINT, REQUEST_HEADERS } from "src/constants/skylark";
 
 export const createSkylarkClient = (uri: string, token: string) =>
   new GraphQLClient(uri, {

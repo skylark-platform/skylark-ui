@@ -5,6 +5,46 @@
         "name": "Query",
         "fields": [
           {
+            "name": "getAccount",
+            "type": {
+              "name": "accountDetails",
+              "fields": [
+                {
+                  "name": "skylark_version",
+                  "type": { "name": "String", "kind": "SCALAR", "ofType": null }
+                },
+                {
+                  "name": "account_id",
+                  "type": { "name": "String", "kind": "SCALAR", "ofType": null }
+                }
+              ]
+            }
+          },
+          {
+            "name": "getUser",
+            "type": {
+              "name": "userDetails",
+              "fields": [
+                {
+                  "name": "role",
+                  "type": { "name": "String", "kind": "SCALAR", "ofType": null }
+                },
+                {
+                  "name": "permissions",
+                  "type": {
+                    "name": null,
+                    "kind": "LIST",
+                    "ofType": { "name": "String", "kind": "SCALAR" }
+                  }
+                },
+                {
+                  "name": "account",
+                  "type": { "name": "String", "kind": "SCALAR", "ofType": null }
+                }
+              ]
+            }
+          },
+          {
             "name": "search",
             "type": {
               "name": "SearchResultListing",
@@ -29,6 +69,10 @@
             "type": {
               "name": "ObjectConfig",
               "fields": [
+                {
+                  "name": "display_name",
+                  "type": { "name": "String", "kind": "SCALAR", "ofType": null }
+                },
                 {
                   "name": "primary_field",
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
@@ -69,14 +113,14 @@
             }
           },
           {
-            "name": "getImage",
+            "name": "getSkylarkImage",
             "type": {
-              "name": "Image",
+              "name": "SkylarkImage",
               "fields": [
                 {
                   "name": "_meta",
                   "type": {
-                    "name": "_ImageMeta",
+                    "name": "_SkylarkImageMeta",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -142,23 +186,7 @@
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
                 {
-                  "name": "assets",
-                  "type": {
-                    "name": "AssetListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
                   "name": "content_of",
-                  "type": {
-                    "name": "SetListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
-                  "name": "sets",
                   "type": {
                     "name": "SetListing",
                     "kind": "OBJECT",
@@ -230,6 +258,30 @@
                   }
                 },
                 {
+                  "name": "assets",
+                  "type": {
+                    "name": "SkylarkAssetListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
+                  "name": "sets",
+                  "type": {
+                    "name": "SkylarkSetListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
+                  "name": "tags",
+                  "type": {
+                    "name": "SkylarkTagListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
                   "name": "themes",
                   "type": {
                     "name": "ThemeListing",
@@ -241,16 +293,16 @@
             }
           },
           {
-            "name": "listImage",
+            "name": "listSkylarkImage",
             "type": {
-              "name": "ImageListing",
+              "name": "SkylarkImageListing",
               "fields": [
                 {
                   "name": "objects",
                   "type": {
                     "name": null,
                     "kind": "LIST",
-                    "ofType": { "name": "Image", "kind": "OBJECT" }
+                    "ofType": { "name": "SkylarkImage", "kind": "OBJECT" }
                   }
                 },
                 {
@@ -265,14 +317,14 @@
             }
           },
           {
-            "name": "getAsset",
+            "name": "getSkylarkAsset",
             "type": {
-              "name": "Asset",
+              "name": "SkylarkAsset",
               "fields": [
                 {
                   "name": "_meta",
                   "type": {
-                    "name": "_AssetMeta",
+                    "name": "_SkylarkAssetMeta",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -314,31 +366,7 @@
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
                 {
-                  "name": "images",
-                  "type": {
-                    "name": "ImageListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
-                  "name": "tags",
-                  "type": {
-                    "name": "TagListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
                   "name": "content_of",
-                  "type": {
-                    "name": "SetListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
-                  "name": "sets",
                   "type": {
                     "name": "SetListing",
                     "kind": "OBJECT",
@@ -392,21 +420,45 @@
                     "kind": "OBJECT",
                     "ofType": null
                   }
+                },
+                {
+                  "name": "images",
+                  "type": {
+                    "name": "SkylarkImageListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
+                  "name": "sets",
+                  "type": {
+                    "name": "SkylarkSetListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
+                  "name": "tags",
+                  "type": {
+                    "name": "SkylarkTagListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
                 }
               ]
             }
           },
           {
-            "name": "listAsset",
+            "name": "listSkylarkAsset",
             "type": {
-              "name": "AssetListing",
+              "name": "SkylarkAssetListing",
               "fields": [
                 {
                   "name": "objects",
                   "type": {
                     "name": null,
                     "kind": "LIST",
-                    "ofType": { "name": "Asset", "kind": "OBJECT" }
+                    "ofType": { "name": "SkylarkAsset", "kind": "OBJECT" }
                   }
                 },
                 {
@@ -421,14 +473,14 @@
             }
           },
           {
-            "name": "getTag",
+            "name": "getSkylarkTag",
             "type": {
-              "name": "Tag",
+              "name": "SkylarkTag",
               "fields": [
                 {
                   "name": "_meta",
                   "type": {
-                    "name": "_TagMeta",
+                    "name": "_SkylarkTagMeta",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -466,23 +518,7 @@
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
                 {
-                  "name": "assets",
-                  "type": {
-                    "name": "AssetListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
                   "name": "content_of",
-                  "type": {
-                    "name": "SetListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
-                  "name": "sets",
                   "type": {
                     "name": "SetListing",
                     "kind": "OBJECT",
@@ -536,21 +572,45 @@
                     "kind": "OBJECT",
                     "ofType": null
                   }
+                },
+                {
+                  "name": "assets",
+                  "type": {
+                    "name": "SkylarkAssetListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
+                  "name": "images",
+                  "type": {
+                    "name": "SkylarkImageListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
+                  "name": "sets",
+                  "type": {
+                    "name": "SkylarkSetListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
                 }
               ]
             }
           },
           {
-            "name": "listTag",
+            "name": "listSkylarkTag",
             "type": {
-              "name": "TagListing",
+              "name": "SkylarkTagListing",
               "fields": [
                 {
                   "name": "objects",
                   "type": {
                     "name": null,
                     "kind": "LIST",
-                    "ofType": { "name": "Tag", "kind": "OBJECT" }
+                    "ofType": { "name": "SkylarkTag", "kind": "OBJECT" }
                   }
                 },
                 {
@@ -565,14 +625,14 @@
             }
           },
           {
-            "name": "getSet",
+            "name": "getSkylarkSet",
             "type": {
-              "name": "Set",
+              "name": "SkylarkSet",
               "fields": [
                 {
                   "name": "_meta",
                   "type": {
-                    "name": "_SetMeta",
+                    "name": "_SkylarkSetMeta",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -642,30 +702,6 @@
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
                 {
-                  "name": "images",
-                  "type": {
-                    "name": "ImageListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
-                  "name": "tags",
-                  "type": {
-                    "name": "TagListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
-                  "name": "assets",
-                  "type": {
-                    "name": "AssetListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
                   "name": "content",
                   "type": {
                     "name": "MetadataListing",
@@ -714,6 +750,30 @@
                   }
                 },
                 {
+                  "name": "assets",
+                  "type": {
+                    "name": "SkylarkAssetListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
+                  "name": "images",
+                  "type": {
+                    "name": "SkylarkImageListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
+                  "name": "tags",
+                  "type": {
+                    "name": "SkylarkTagListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
                   "name": "themes",
                   "type": {
                     "name": "ThemeListing",
@@ -725,16 +785,16 @@
             }
           },
           {
-            "name": "listSet",
+            "name": "listSkylarkSet",
             "type": {
-              "name": "SetListing",
+              "name": "SkylarkSetListing",
               "fields": [
                 {
                   "name": "objects",
                   "type": {
                     "name": null,
                     "kind": "LIST",
-                    "ofType": { "name": "Set", "kind": "OBJECT" }
+                    "ofType": { "name": "SkylarkSet", "kind": "OBJECT" }
                   }
                 },
                 {
@@ -1053,14 +1113,6 @@
                   }
                 },
                 {
-                  "name": "release_date",
-                  "type": {
-                    "name": "AWSDate",
-                    "kind": "SCALAR",
-                    "ofType": null
-                  }
-                },
-                {
                   "name": "synopsis_long",
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
@@ -1089,9 +1141,17 @@
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
                 {
+                  "name": "release_date",
+                  "type": {
+                    "name": "AWSDate",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                {
                   "name": "assets",
                   "type": {
-                    "name": "AssetListing",
+                    "name": "SkylarkAssetListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -1123,7 +1183,7 @@
                 {
                   "name": "images",
                   "type": {
-                    "name": "ImageListing",
+                    "name": "SkylarkImageListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -1155,7 +1215,7 @@
                 {
                   "name": "tags",
                   "type": {
-                    "name": "TagListing",
+                    "name": "SkylarkTagListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -1265,30 +1325,6 @@
                   }
                 },
                 {
-                  "name": "people",
-                  "type": {
-                    "name": "PersonListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
-                  "name": "roles",
-                  "type": {
-                    "name": "RoleListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
-                  "name": "sets",
-                  "type": {
-                    "name": "SetListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
                   "name": "episodes",
                   "type": {
                     "name": "EpisodeListing",
@@ -1305,9 +1341,33 @@
                   }
                 },
                 {
+                  "name": "people",
+                  "type": {
+                    "name": "PersonListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
+                  "name": "roles",
+                  "type": {
+                    "name": "RoleListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
                   "name": "seasons",
                   "type": {
                     "name": "SeasonListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
+                  "name": "sets",
+                  "type": {
+                    "name": "SkylarkSetListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -1393,18 +1453,6 @@
                   }
                 },
                 {
-                  "name": "episode_number",
-                  "type": { "name": "Int", "kind": "SCALAR", "ofType": null }
-                },
-                {
-                  "name": "release_date",
-                  "type": {
-                    "name": "AWSDate",
-                    "kind": "SCALAR",
-                    "ofType": null
-                  }
-                },
-                {
                   "name": "synopsis_long",
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
@@ -1433,6 +1481,18 @@
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
                 {
+                  "name": "episode_number",
+                  "type": { "name": "Int", "kind": "SCALAR", "ofType": null }
+                },
+                {
+                  "name": "release_date",
+                  "type": {
+                    "name": "AWSDate",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                {
                   "name": "brands",
                   "type": {
                     "name": "BrandListing",
@@ -1441,17 +1501,17 @@
                   }
                 },
                 {
-                  "name": "assets",
+                  "name": "credits",
                   "type": {
-                    "name": "AssetListing",
+                    "name": "CreditListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
                 },
                 {
-                  "name": "credits",
+                  "name": "assets",
                   "type": {
-                    "name": "CreditListing",
+                    "name": "SkylarkAssetListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -1467,7 +1527,7 @@
                 {
                   "name": "images",
                   "type": {
-                    "name": "ImageListing",
+                    "name": "SkylarkImageListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -1491,7 +1551,7 @@
                 {
                   "name": "tags",
                   "type": {
-                    "name": "TagListing",
+                    "name": "SkylarkTagListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -1611,15 +1671,7 @@
                 {
                   "name": "images",
                   "type": {
-                    "name": "ImageListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
-                  "name": "sets",
-                  "type": {
-                    "name": "SetListing",
+                    "name": "SkylarkImageListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -1644,6 +1696,14 @@
                   "name": "seasons",
                   "type": {
                     "name": "SeasonListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
+                  "name": "sets",
+                  "type": {
+                    "name": "SkylarkSetListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -1729,14 +1789,6 @@
                   }
                 },
                 {
-                  "name": "release_date",
-                  "type": {
-                    "name": "AWSDate",
-                    "kind": "SCALAR",
-                    "ofType": null
-                  }
-                },
-                {
                   "name": "synopsis_long",
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
@@ -1765,6 +1817,14 @@
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
                 {
+                  "name": "release_date",
+                  "type": {
+                    "name": "AWSDate",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                {
                   "name": "year_of_release",
                   "type": { "name": "Int", "kind": "SCALAR", "ofType": null }
                 },
@@ -1772,14 +1832,6 @@
                   "name": "brands",
                   "type": {
                     "name": "BrandListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
-                  "name": "assets",
-                  "type": {
-                    "name": "AssetListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -1801,9 +1853,17 @@
                   }
                 },
                 {
+                  "name": "assets",
+                  "type": {
+                    "name": "SkylarkAssetListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
                   "name": "images",
                   "type": {
-                    "name": "ImageListing",
+                    "name": "SkylarkImageListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -1819,7 +1879,7 @@
                 {
                   "name": "tags",
                   "type": {
-                    "name": "TagListing",
+                    "name": "SkylarkTagListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -2025,14 +2085,6 @@
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
                 {
-                  "name": "date_of_birth",
-                  "type": {
-                    "name": "AWSDate",
-                    "kind": "SCALAR",
-                    "ofType": null
-                  }
-                },
-                {
                   "name": "genre",
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
@@ -2047,6 +2099,14 @@
                 {
                   "name": "place_of_birth",
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
+                },
+                {
+                  "name": "date_of_birth",
+                  "type": {
+                    "name": "AWSDate",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
                 },
                 {
                   "name": "credits",
@@ -2067,7 +2127,7 @@
                 {
                   "name": "images",
                   "type": {
-                    "name": "ImageListing",
+                    "name": "SkylarkImageListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -2075,7 +2135,7 @@
                 {
                   "name": "tags",
                   "type": {
-                    "name": "TagListing",
+                    "name": "SkylarkTagListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -2173,11 +2233,11 @@
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
                 {
-                  "name": "schema",
+                  "name": "title",
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
                 {
-                  "name": "title",
+                  "name": "schema",
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
                 {
@@ -2219,7 +2279,7 @@
                 {
                   "name": "assets",
                   "type": {
-                    "name": "AssetListing",
+                    "name": "SkylarkAssetListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -2227,15 +2287,7 @@
                 {
                   "name": "images",
                   "type": {
-                    "name": "ImageListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
-                  "name": "sets",
-                  "type": {
-                    "name": "SetListing",
+                    "name": "SkylarkImageListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -2244,6 +2296,14 @@
                   "name": "seasons",
                   "type": {
                     "name": "SeasonListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
+                  "name": "sets",
+                  "type": {
+                    "name": "SkylarkSetListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -2421,22 +2481,6 @@
                   }
                 },
                 {
-                  "name": "number_of_episodes",
-                  "type": { "name": "Int", "kind": "SCALAR", "ofType": null }
-                },
-                {
-                  "name": "release_date",
-                  "type": {
-                    "name": "AWSDate",
-                    "kind": "SCALAR",
-                    "ofType": null
-                  }
-                },
-                {
-                  "name": "season_number",
-                  "type": { "name": "Int", "kind": "SCALAR", "ofType": null }
-                },
-                {
                   "name": "synopsis_long",
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
@@ -2465,25 +2509,25 @@
                   "type": { "name": "String", "kind": "SCALAR", "ofType": null }
                 },
                 {
+                  "name": "number_of_episodes",
+                  "type": { "name": "Int", "kind": "SCALAR", "ofType": null }
+                },
+                {
+                  "name": "release_date",
+                  "type": {
+                    "name": "AWSDate",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                {
+                  "name": "season_number",
+                  "type": { "name": "Int", "kind": "SCALAR", "ofType": null }
+                },
+                {
                   "name": "brands",
                   "type": {
                     "name": "BrandListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
-                  "name": "episodes",
-                  "type": {
-                    "name": "EpisodeListing",
-                    "kind": "OBJECT",
-                    "ofType": null
-                  }
-                },
-                {
-                  "name": "assets",
-                  "type": {
-                    "name": "AssetListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -2497,17 +2541,17 @@
                   }
                 },
                 {
-                  "name": "genres",
+                  "name": "episodes",
                   "type": {
-                    "name": "GenreListing",
+                    "name": "EpisodeListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
                 },
                 {
-                  "name": "images",
+                  "name": "genres",
                   "type": {
-                    "name": "ImageListing",
+                    "name": "GenreListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -2521,9 +2565,25 @@
                   }
                 },
                 {
+                  "name": "assets",
+                  "type": {
+                    "name": "SkylarkAssetListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
+                  "name": "images",
+                  "type": {
+                    "name": "SkylarkImageListing",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                },
+                {
                   "name": "tags",
                   "type": {
-                    "name": "TagListing",
+                    "name": "SkylarkTagListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -2667,7 +2727,7 @@
                 {
                   "name": "images",
                   "type": {
-                    "name": "ImageListing",
+                    "name": "SkylarkImageListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -2675,7 +2735,7 @@
                 {
                   "name": "sets",
                   "type": {
-                    "name": "SetListing",
+                    "name": "SkylarkSetListing",
                     "kind": "OBJECT",
                     "ofType": null
                   }
@@ -2720,6 +2780,11 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "ObjectTypes",
+                    "kind": "ENUM",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -2728,7 +2793,18 @@
                 "type": {
                   "name": "ObjectConfigInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
+                    {
+                      "name": "display_name",
+                      "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
                     {
                       "name": "primary_field",
                       "type": {
@@ -2759,11 +2835,72 @@
             "args": [
               {
                 "name": "version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "objects",
-                "type": { "name": null, "kind": "LIST", "inputFields": null }
+                "type": {
+                  "name": null,
+                  "kind": "LIST",
+                  "ofType": {
+                    "name": "CreateObjectInput",
+                    "kind": "INPUT_OBJECT",
+                    "inputFields": [
+                      {
+                        "name": "name",
+                        "type": {
+                          "name": null,
+                          "kind": "NON_NULL",
+                          "enumValues": null,
+                          "ofType": { "name": "String", "kind": "SCALAR" },
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "fields",
+                        "type": {
+                          "name": null,
+                          "kind": "LIST",
+                          "enumValues": null,
+                          "ofType": {
+                            "name": "EditFieldInput",
+                            "kind": "INPUT_OBJECT"
+                          },
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "relationships",
+                        "type": {
+                          "name": null,
+                          "kind": "LIST",
+                          "enumValues": null,
+                          "ofType": {
+                            "name": "EditFixedObjectRelationshipInput",
+                            "kind": "INPUT_OBJECT"
+                          },
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "is_set",
+                        "type": {
+                          "name": "Boolean",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      }
+                    ]
+                  },
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -2775,18 +2912,33 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "ObjectTypes",
+                    "kind": "ENUM",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
               {
                 "name": "version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "fields",
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": null,
+                    "kind": "LIST",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               }
@@ -2797,11 +2949,59 @@
             "args": [
               {
                 "name": "version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "enums",
-                "type": { "name": null, "kind": "LIST", "inputFields": null }
+                "type": {
+                  "name": null,
+                  "kind": "LIST",
+                  "ofType": {
+                    "name": "EditEnumInput",
+                    "kind": "INPUT_OBJECT",
+                    "inputFields": [
+                      {
+                        "name": "name",
+                        "type": {
+                          "name": null,
+                          "kind": "NON_NULL",
+                          "enumValues": null,
+                          "ofType": { "name": "String", "kind": "SCALAR" },
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "operation",
+                        "type": {
+                          "name": null,
+                          "kind": "NON_NULL",
+                          "enumValues": null,
+                          "ofType": {
+                            "name": "ConfigurationOperations",
+                            "kind": "ENUM"
+                          },
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "values",
+                        "type": {
+                          "name": null,
+                          "kind": "LIST",
+                          "enumValues": null,
+                          "ofType": { "name": "String", "kind": "SCALAR" },
+                          "inputFields": null
+                        }
+                      }
+                    ]
+                  },
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -2810,11 +3010,79 @@
             "args": [
               {
                 "name": "version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "relationships",
-                "type": { "name": null, "kind": "LIST", "inputFields": null }
+                "type": {
+                  "name": null,
+                  "kind": "LIST",
+                  "ofType": {
+                    "name": "EditRelationshipInput",
+                    "kind": "INPUT_OBJECT",
+                    "inputFields": [
+                      {
+                        "name": "operation",
+                        "type": {
+                          "name": null,
+                          "kind": "NON_NULL",
+                          "enumValues": null,
+                          "ofType": {
+                            "name": "ConfigurationOperations",
+                            "kind": "ENUM"
+                          },
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "from_class",
+                        "type": {
+                          "name": null,
+                          "kind": "NON_NULL",
+                          "enumValues": null,
+                          "ofType": { "name": "ObjectTypes", "kind": "ENUM" },
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "to_class",
+                        "type": {
+                          "name": null,
+                          "kind": "NON_NULL",
+                          "enumValues": null,
+                          "ofType": { "name": "ObjectTypes", "kind": "ENUM" },
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "relationship_name",
+                        "type": {
+                          "name": null,
+                          "kind": "NON_NULL",
+                          "enumValues": null,
+                          "ofType": { "name": "String", "kind": "SCALAR" },
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "reverse_relationship_name",
+                        "type": {
+                          "name": null,
+                          "kind": "NON_NULL",
+                          "enumValues": null,
+                          "ofType": { "name": "String", "kind": "SCALAR" },
+                          "inputFields": null
+                        }
+                      }
+                    ]
+                  },
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -2823,7 +3091,12 @@
             "args": [
               {
                 "name": "version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -2835,19 +3108,25 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": null,
+                    "kind": "LIST",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               }
             ]
           },
           {
-            "name": "createSet",
+            "name": "createSkylarkSet",
             "args": [
               {
-                "name": "set",
+                "name": "skylark_set",
                 "type": {
-                  "name": "SetCreateInput",
+                  "name": "SkylarkSetCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -2995,66 +3274,6 @@
                       }
                     },
                     {
-                      "name": "relationships",
-                      "type": {
-                        "name": "SetRelationships",
-                        "kind": "INPUT_OBJECT",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": [
-                          {
-                            "name": "images",
-                            "type": {
-                              "name": "ImageRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "tags",
-                            "type": {
-                              "name": "TagRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "assets",
-                            "type": {
-                              "name": "AssetRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "credits",
-                            "type": {
-                              "name": "CreditRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "genres",
-                            "type": {
-                              "name": "GenreRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "ratings",
-                            "type": {
-                              "name": "RatingRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "themes",
-                            "type": {
-                              "name": "ThemeRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
                       "name": "content",
                       "type": {
                         "name": "SetContentRelationships",
@@ -3063,30 +3282,30 @@
                         "ofType": null,
                         "inputFields": [
                           {
-                            "name": "Set",
+                            "name": "SkylarkSet",
                             "type": {
-                              "name": "SubsetInput",
+                              "name": "SubSkylarkSetInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
                           {
-                            "name": "Image",
+                            "name": "SkylarkImage",
                             "type": {
-                              "name": "ImageSetInput",
+                              "name": "SkylarkImageSetInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
                           {
-                            "name": "Asset",
+                            "name": "SkylarkAsset",
                             "type": {
-                              "name": "AssetSetInput",
+                              "name": "SkylarkAssetSetInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
                           {
-                            "name": "Tag",
+                            "name": "SkylarkTag",
                             "type": {
-                              "name": "TagSetInput",
+                              "name": "SkylarkTagSetInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -3192,6 +3411,66 @@
                           }
                         ]
                       }
+                    },
+                    {
+                      "name": "relationships",
+                      "type": {
+                        "name": "SkylarkSetRelationships",
+                        "kind": "INPUT_OBJECT",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": [
+                          {
+                            "name": "credits",
+                            "type": {
+                              "name": "CreditRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "genres",
+                            "type": {
+                              "name": "GenreRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "ratings",
+                            "type": {
+                              "name": "RatingRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "assets",
+                            "type": {
+                              "name": "SkylarkAssetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "images",
+                            "type": {
+                              "name": "SkylarkImageRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "tags",
+                            "type": {
+                              "name": "SkylarkTagRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "themes",
+                            "type": {
+                              "name": "ThemeRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          }
+                        ]
+                      }
                     }
                   ]
                 }
@@ -3201,19 +3480,21 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
             ]
           },
           {
-            "name": "updateSet",
+            "name": "updateSkylarkSet",
             "args": [
               {
                 "name": "uid",
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -3222,6 +3503,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -3230,22 +3512,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
-                "name": "set",
+                "name": "skylark_set",
                 "type": {
-                  "name": "SetInput",
+                  "name": "SkylarkSetInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -3393,66 +3687,6 @@
                       }
                     },
                     {
-                      "name": "relationships",
-                      "type": {
-                        "name": "SetRelationships",
-                        "kind": "INPUT_OBJECT",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": [
-                          {
-                            "name": "images",
-                            "type": {
-                              "name": "ImageRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "tags",
-                            "type": {
-                              "name": "TagRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "assets",
-                            "type": {
-                              "name": "AssetRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "credits",
-                            "type": {
-                              "name": "CreditRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "genres",
-                            "type": {
-                              "name": "GenreRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "ratings",
-                            "type": {
-                              "name": "RatingRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "themes",
-                            "type": {
-                              "name": "ThemeRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
                       "name": "content",
                       "type": {
                         "name": "SetContentRelationships",
@@ -3461,30 +3695,30 @@
                         "ofType": null,
                         "inputFields": [
                           {
-                            "name": "Set",
+                            "name": "SkylarkSet",
                             "type": {
-                              "name": "SubsetInput",
+                              "name": "SubSkylarkSetInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
                           {
-                            "name": "Image",
+                            "name": "SkylarkImage",
                             "type": {
-                              "name": "ImageSetInput",
+                              "name": "SkylarkImageSetInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
                           {
-                            "name": "Asset",
+                            "name": "SkylarkAsset",
                             "type": {
-                              "name": "AssetSetInput",
+                              "name": "SkylarkAssetSetInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
                           {
-                            "name": "Tag",
+                            "name": "SkylarkTag",
                             "type": {
-                              "name": "TagSetInput",
+                              "name": "SkylarkTagSetInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -3590,6 +3824,66 @@
                           }
                         ]
                       }
+                    },
+                    {
+                      "name": "relationships",
+                      "type": {
+                        "name": "SkylarkSetRelationships",
+                        "kind": "INPUT_OBJECT",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": [
+                          {
+                            "name": "credits",
+                            "type": {
+                              "name": "CreditRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "genres",
+                            "type": {
+                              "name": "GenreRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "ratings",
+                            "type": {
+                              "name": "RatingRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "assets",
+                            "type": {
+                              "name": "SkylarkAssetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "images",
+                            "type": {
+                              "name": "SkylarkImageRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "tags",
+                            "type": {
+                              "name": "SkylarkTagRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "themes",
+                            "type": {
+                              "name": "ThemeRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          }
+                        ]
+                      }
                     }
                   ]
                 }
@@ -3597,13 +3891,14 @@
             ]
           },
           {
-            "name": "deleteSet",
+            "name": "deleteSkylarkSet",
             "args": [
               {
                 "name": "uid",
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -3612,6 +3907,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -3620,27 +3916,39 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
           {
-            "name": "createImage",
+            "name": "createSkylarkImage",
             "args": [
               {
-                "name": "image",
+                "name": "skylark_image",
                 "type": {
-                  "name": "ImageCreateInput",
+                  "name": "SkylarkImageCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -3790,25 +4098,11 @@
                     {
                       "name": "relationships",
                       "type": {
-                        "name": "ImageRelationships",
+                        "name": "SkylarkImageRelationships",
                         "kind": "INPUT_OBJECT",
                         "enumValues": null,
                         "ofType": null,
                         "inputFields": [
-                          {
-                            "name": "sets",
-                            "type": {
-                              "name": "SetRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "assets",
-                            "type": {
-                              "name": "AssetRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
                           {
                             "name": "brands",
                             "type": {
@@ -3859,6 +4153,27 @@
                             }
                           },
                           {
+                            "name": "assets",
+                            "type": {
+                              "name": "SkylarkAssetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "sets",
+                            "type": {
+                              "name": "SkylarkSetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "tags",
+                            "type": {
+                              "name": "SkylarkTagRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
                             "name": "themes",
                             "type": {
                               "name": "ThemeRelationshipInput",
@@ -3876,19 +4191,21 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
             ]
           },
           {
-            "name": "updateImage",
+            "name": "updateSkylarkImage",
             "args": [
               {
                 "name": "uid",
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -3897,6 +4214,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -3905,22 +4223,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
-                "name": "image",
+                "name": "skylark_image",
                 "type": {
-                  "name": "ImageInput",
+                  "name": "SkylarkImageInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -4070,25 +4400,11 @@
                     {
                       "name": "relationships",
                       "type": {
-                        "name": "ImageRelationships",
+                        "name": "SkylarkImageRelationships",
                         "kind": "INPUT_OBJECT",
                         "enumValues": null,
                         "ofType": null,
                         "inputFields": [
-                          {
-                            "name": "sets",
-                            "type": {
-                              "name": "SetRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "assets",
-                            "type": {
-                              "name": "AssetRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
                           {
                             "name": "brands",
                             "type": {
@@ -4139,6 +4455,27 @@
                             }
                           },
                           {
+                            "name": "assets",
+                            "type": {
+                              "name": "SkylarkAssetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "sets",
+                            "type": {
+                              "name": "SkylarkSetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "tags",
+                            "type": {
+                              "name": "SkylarkTagRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
                             "name": "themes",
                             "type": {
                               "name": "ThemeRelationshipInput",
@@ -4154,13 +4491,18 @@
             ]
           },
           {
-            "name": "deleteImage",
+            "name": "deleteSkylarkImage",
             "args": [
               {
                 "name": "uid",
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -4169,6 +4511,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -4177,27 +4520,39 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
           {
-            "name": "createAsset",
+            "name": "createSkylarkAsset",
             "args": [
               {
-                "name": "asset",
+                "name": "skylark_asset",
                 "type": {
-                  "name": "AssetCreateInput",
+                  "name": "SkylarkAssetCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -4273,27 +4628,36 @@
                       }
                     },
                     {
-                      "name": "relationships",
+                      "name": "availability",
                       "type": {
-                        "name": "AssetRelationships",
+                        "name": "AssignAvailabilityInput",
                         "kind": "INPUT_OBJECT",
                         "enumValues": null,
                         "ofType": null,
                         "inputFields": [
                           {
-                            "name": "images",
-                            "type": {
-                              "name": "ImageRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
+                            "name": "create",
+                            "type": { "name": null, "kind": "LIST" }
                           },
                           {
-                            "name": "tags",
-                            "type": {
-                              "name": "TagRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
+                            "name": "link",
+                            "type": { "name": null, "kind": "LIST" }
                           },
+                          {
+                            "name": "unlink",
+                            "type": { "name": null, "kind": "LIST" }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "name": "relationships",
+                      "type": {
+                        "name": "SkylarkAssetRelationships",
+                        "kind": "INPUT_OBJECT",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": [
                           {
                             "name": "brands",
                             "type": {
@@ -4328,29 +4692,27 @@
                               "name": "SeasonRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "name": "availability",
-                      "type": {
-                        "name": "AssignAvailabilityInput",
-                        "kind": "INPUT_OBJECT",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": [
-                          {
-                            "name": "create",
-                            "type": { "name": null, "kind": "LIST" }
                           },
                           {
-                            "name": "link",
-                            "type": { "name": null, "kind": "LIST" }
+                            "name": "images",
+                            "type": {
+                              "name": "SkylarkImageRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
                           },
                           {
-                            "name": "unlink",
-                            "type": { "name": null, "kind": "LIST" }
+                            "name": "sets",
+                            "type": {
+                              "name": "SkylarkSetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "tags",
+                            "type": {
+                              "name": "SkylarkTagRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
                           }
                         ]
                       }
@@ -4363,19 +4725,21 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
             ]
           },
           {
-            "name": "updateAsset",
+            "name": "updateSkylarkAsset",
             "args": [
               {
                 "name": "uid",
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -4384,6 +4748,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -4392,22 +4757,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
-                "name": "asset",
+                "name": "skylark_asset",
                 "type": {
-                  "name": "AssetInput",
+                  "name": "SkylarkAssetInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -4483,27 +4860,36 @@
                       }
                     },
                     {
-                      "name": "relationships",
+                      "name": "availability",
                       "type": {
-                        "name": "AssetRelationships",
+                        "name": "AssignAvailabilityInput",
                         "kind": "INPUT_OBJECT",
                         "enumValues": null,
                         "ofType": null,
                         "inputFields": [
                           {
-                            "name": "images",
-                            "type": {
-                              "name": "ImageRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
+                            "name": "create",
+                            "type": { "name": null, "kind": "LIST" }
                           },
                           {
-                            "name": "tags",
-                            "type": {
-                              "name": "TagRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
+                            "name": "link",
+                            "type": { "name": null, "kind": "LIST" }
                           },
+                          {
+                            "name": "unlink",
+                            "type": { "name": null, "kind": "LIST" }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "name": "relationships",
+                      "type": {
+                        "name": "SkylarkAssetRelationships",
+                        "kind": "INPUT_OBJECT",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": [
                           {
                             "name": "brands",
                             "type": {
@@ -4538,29 +4924,27 @@
                               "name": "SeasonRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "name": "availability",
-                      "type": {
-                        "name": "AssignAvailabilityInput",
-                        "kind": "INPUT_OBJECT",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": [
-                          {
-                            "name": "create",
-                            "type": { "name": null, "kind": "LIST" }
                           },
                           {
-                            "name": "link",
-                            "type": { "name": null, "kind": "LIST" }
+                            "name": "images",
+                            "type": {
+                              "name": "SkylarkImageRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
                           },
                           {
-                            "name": "unlink",
-                            "type": { "name": null, "kind": "LIST" }
+                            "name": "sets",
+                            "type": {
+                              "name": "SkylarkSetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "tags",
+                            "type": {
+                              "name": "SkylarkTagRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
                           }
                         ]
                       }
@@ -4571,13 +4955,18 @@
             ]
           },
           {
-            "name": "deleteAsset",
+            "name": "deleteSkylarkAsset",
             "args": [
               {
                 "name": "uid",
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -4586,6 +4975,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -4594,27 +4984,39 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
           {
-            "name": "createTag",
+            "name": "createSkylarkTag",
             "args": [
               {
-                "name": "tag",
+                "name": "skylark_tag",
                 "type": {
-                  "name": "TagCreateInput",
+                  "name": "SkylarkTagCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -4702,7 +5104,7 @@
                     {
                       "name": "relationships",
                       "type": {
-                        "name": "TagRelationships",
+                        "name": "SkylarkTagRelationships",
                         "kind": "INPUT_OBJECT",
                         "enumValues": null,
                         "ofType": null,
@@ -4741,6 +5143,27 @@
                               "name": "SeasonRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
+                          },
+                          {
+                            "name": "assets",
+                            "type": {
+                              "name": "SkylarkAssetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "images",
+                            "type": {
+                              "name": "SkylarkImageRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "sets",
+                            "type": {
+                              "name": "SkylarkSetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
                           }
                         ]
                       }
@@ -4753,19 +5176,21 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
             ]
           },
           {
-            "name": "updateTag",
+            "name": "updateSkylarkTag",
             "args": [
               {
                 "name": "uid",
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -4774,6 +5199,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -4782,22 +5208,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
-                "name": "tag",
+                "name": "skylark_tag",
                 "type": {
-                  "name": "TagInput",
+                  "name": "SkylarkTagInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -4885,7 +5323,7 @@
                     {
                       "name": "relationships",
                       "type": {
-                        "name": "TagRelationships",
+                        "name": "SkylarkTagRelationships",
                         "kind": "INPUT_OBJECT",
                         "enumValues": null,
                         "ofType": null,
@@ -4924,6 +5362,27 @@
                               "name": "SeasonRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
+                          },
+                          {
+                            "name": "assets",
+                            "type": {
+                              "name": "SkylarkAssetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "images",
+                            "type": {
+                              "name": "SkylarkImageRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "sets",
+                            "type": {
+                              "name": "SkylarkSetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
                           }
                         ]
                       }
@@ -4934,13 +5393,18 @@
             ]
           },
           {
-            "name": "deleteTag",
+            "name": "deleteSkylarkTag",
             "args": [
               {
                 "name": "uid",
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -4949,6 +5413,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -4957,16 +5422,27 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -4978,6 +5454,81 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "AvailabilityInput",
+                    "kind": "INPUT_OBJECT",
+                    "inputFields": [
+                      {
+                        "name": "external_id",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "title",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "slug",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "start",
+                        "type": {
+                          "name": "AWSDateTime",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "end",
+                        "type": {
+                          "name": "AWSDateTime",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "dimensions",
+                        "type": {
+                          "name": "AssignDimensionGroupInput",
+                          "kind": "INPUT_OBJECT",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": [
+                            {
+                              "name": "link",
+                              "type": { "name": null, "kind": "LIST" }
+                            },
+                            {
+                              "name": "unlink",
+                              "type": { "name": null, "kind": "LIST" }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
                   "inputFields": null
                 }
               }
@@ -4991,6 +5542,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -4999,6 +5551,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5007,6 +5560,81 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "AvailabilityInput",
+                    "kind": "INPUT_OBJECT",
+                    "inputFields": [
+                      {
+                        "name": "external_id",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "title",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "slug",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "start",
+                        "type": {
+                          "name": "AWSDateTime",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "end",
+                        "type": {
+                          "name": "AWSDateTime",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "dimensions",
+                        "type": {
+                          "name": "AssignDimensionGroupInput",
+                          "kind": "INPUT_OBJECT",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": [
+                            {
+                              "name": "link",
+                              "type": { "name": null, "kind": "LIST" }
+                            },
+                            {
+                              "name": "unlink",
+                              "type": { "name": null, "kind": "LIST" }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
                   "inputFields": null
                 }
               }
@@ -5020,6 +5648,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5028,6 +5657,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
@@ -5041,6 +5671,52 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "DimensionInput",
+                    "kind": "INPUT_OBJECT",
+                    "inputFields": [
+                      {
+                        "name": "external_id",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "slug",
+                        "type": {
+                          "name": null,
+                          "kind": "NON_NULL",
+                          "enumValues": null,
+                          "ofType": { "name": "String", "kind": "SCALAR" },
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "title",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "description",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      }
+                    ]
+                  },
                   "inputFields": null
                 }
               }
@@ -5054,6 +5730,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5062,6 +5739,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5070,6 +5748,42 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "UpdateDimensionInput",
+                    "kind": "INPUT_OBJECT",
+                    "inputFields": [
+                      {
+                        "name": "external_id",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "title",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "description",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      }
+                    ]
+                  },
                   "inputFields": null
                 }
               }
@@ -5083,6 +5797,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5091,6 +5806,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
@@ -5104,6 +5820,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5112,6 +5829,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5120,6 +5838,52 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "DimensionInput",
+                    "kind": "INPUT_OBJECT",
+                    "inputFields": [
+                      {
+                        "name": "external_id",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "slug",
+                        "type": {
+                          "name": null,
+                          "kind": "NON_NULL",
+                          "enumValues": null,
+                          "ofType": { "name": "String", "kind": "SCALAR" },
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "title",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "description",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      }
+                    ]
+                  },
                   "inputFields": null
                 }
               }
@@ -5133,6 +5897,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5141,6 +5906,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5149,6 +5915,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5157,6 +5924,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5165,6 +5933,42 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "UpdateDimensionInput",
+                    "kind": "INPUT_OBJECT",
+                    "inputFields": [
+                      {
+                        "name": "external_id",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "title",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      },
+                      {
+                        "name": "description",
+                        "type": {
+                          "name": "String",
+                          "kind": "SCALAR",
+                          "enumValues": null,
+                          "ofType": null,
+                          "inputFields": null
+                        }
+                      }
+                    ]
+                  },
                   "inputFields": null
                 }
               }
@@ -5178,6 +5982,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5186,6 +5991,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5194,6 +6000,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5202,6 +6009,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
@@ -5215,6 +6023,7 @@
                 "type": {
                   "name": "BrandCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -5277,16 +6086,6 @@
                             "type": { "name": null, "kind": "LIST" }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "name": "release_date",
-                      "type": {
-                        "name": "AWSDate",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
                       }
                     },
                     {
@@ -5360,6 +6159,16 @@
                       }
                     },
                     {
+                      "name": "release_date",
+                      "type": {
+                        "name": "AWSDate",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
                       "name": "relationships",
                       "type": {
                         "name": "BrandRelationships",
@@ -5370,7 +6179,7 @@
                           {
                             "name": "assets",
                             "type": {
-                              "name": "AssetRelationshipInput",
+                              "name": "SkylarkAssetRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -5398,7 +6207,7 @@
                           {
                             "name": "images",
                             "type": {
-                              "name": "ImageRelationshipInput",
+                              "name": "SkylarkImageRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -5426,7 +6235,7 @@
                           {
                             "name": "tags",
                             "type": {
-                              "name": "TagRelationshipInput",
+                              "name": "SkylarkTagRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -5448,6 +6257,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
@@ -5461,6 +6271,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5469,6 +6280,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5477,22 +6289,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "brand",
                 "type": {
                   "name": "BrandInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -5555,16 +6379,6 @@
                             "type": { "name": null, "kind": "LIST" }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "name": "release_date",
-                      "type": {
-                        "name": "AWSDate",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
                       }
                     },
                     {
@@ -5638,6 +6452,16 @@
                       }
                     },
                     {
+                      "name": "release_date",
+                      "type": {
+                        "name": "AWSDate",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
                       "name": "relationships",
                       "type": {
                         "name": "BrandRelationships",
@@ -5648,7 +6472,7 @@
                           {
                             "name": "assets",
                             "type": {
-                              "name": "AssetRelationshipInput",
+                              "name": "SkylarkAssetRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -5676,7 +6500,7 @@
                           {
                             "name": "images",
                             "type": {
-                              "name": "ImageRelationshipInput",
+                              "name": "SkylarkImageRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -5704,7 +6528,7 @@
                           {
                             "name": "tags",
                             "type": {
-                              "name": "TagRelationshipInput",
+                              "name": "SkylarkTagRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -5731,6 +6555,11 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -5739,6 +6568,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5747,16 +6577,27 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -5768,6 +6609,7 @@
                 "type": {
                   "name": "CreditCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -5868,27 +6710,6 @@
                             }
                           },
                           {
-                            "name": "people",
-                            "type": {
-                              "name": "PersonRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "roles",
-                            "type": {
-                              "name": "RoleRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "sets",
-                            "type": {
-                              "name": "SetRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
                             "name": "episodes",
                             "type": {
                               "name": "EpisodeRelationshipInput",
@@ -5903,9 +6724,30 @@
                             }
                           },
                           {
+                            "name": "people",
+                            "type": {
+                              "name": "PersonRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "roles",
+                            "type": {
+                              "name": "RoleRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
                             "name": "seasons",
                             "type": {
                               "name": "SeasonRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "sets",
+                            "type": {
+                              "name": "SkylarkSetRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           }
@@ -5920,6 +6762,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
@@ -5933,6 +6776,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5941,6 +6785,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -5949,22 +6794,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "credit",
                 "type": {
                   "name": "CreditInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -6065,27 +6922,6 @@
                             }
                           },
                           {
-                            "name": "people",
-                            "type": {
-                              "name": "PersonRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "roles",
-                            "type": {
-                              "name": "RoleRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "sets",
-                            "type": {
-                              "name": "SetRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
                             "name": "episodes",
                             "type": {
                               "name": "EpisodeRelationshipInput",
@@ -6100,9 +6936,30 @@
                             }
                           },
                           {
+                            "name": "people",
+                            "type": {
+                              "name": "PersonRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "roles",
+                            "type": {
+                              "name": "RoleRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
                             "name": "seasons",
                             "type": {
                               "name": "SeasonRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "sets",
+                            "type": {
+                              "name": "SkylarkSetRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           }
@@ -6122,6 +6979,11 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -6130,6 +6992,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -6138,16 +7001,27 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -6159,6 +7033,7 @@
                 "type": {
                   "name": "EpisodeCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -6221,26 +7096,6 @@
                             "type": { "name": null, "kind": "LIST" }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "name": "episode_number",
-                      "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
-                      }
-                    },
-                    {
-                      "name": "release_date",
-                      "type": {
-                        "name": "AWSDate",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
                       }
                     },
                     {
@@ -6314,6 +7169,26 @@
                       }
                     },
                     {
+                      "name": "episode_number",
+                      "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
+                      "name": "release_date",
+                      "type": {
+                        "name": "AWSDate",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
                       "name": "relationships",
                       "type": {
                         "name": "EpisodeRelationships",
@@ -6329,16 +7204,16 @@
                             }
                           },
                           {
-                            "name": "assets",
+                            "name": "credits",
                             "type": {
-                              "name": "AssetRelationshipInput",
+                              "name": "CreditRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
                           {
-                            "name": "credits",
+                            "name": "assets",
                             "type": {
-                              "name": "CreditRelationshipInput",
+                              "name": "SkylarkAssetRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -6352,7 +7227,7 @@
                           {
                             "name": "images",
                             "type": {
-                              "name": "ImageRelationshipInput",
+                              "name": "SkylarkImageRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -6373,7 +7248,7 @@
                           {
                             "name": "tags",
                             "type": {
-                              "name": "TagRelationshipInput",
+                              "name": "SkylarkTagRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -6395,6 +7270,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
@@ -6408,6 +7284,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -6416,6 +7293,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -6424,22 +7302,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "episode",
                 "type": {
                   "name": "EpisodeInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -6502,26 +7392,6 @@
                             "type": { "name": null, "kind": "LIST" }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "name": "episode_number",
-                      "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
-                      }
-                    },
-                    {
-                      "name": "release_date",
-                      "type": {
-                        "name": "AWSDate",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
                       }
                     },
                     {
@@ -6595,6 +7465,26 @@
                       }
                     },
                     {
+                      "name": "episode_number",
+                      "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
+                      "name": "release_date",
+                      "type": {
+                        "name": "AWSDate",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
                       "name": "relationships",
                       "type": {
                         "name": "EpisodeRelationships",
@@ -6610,16 +7500,16 @@
                             }
                           },
                           {
-                            "name": "assets",
+                            "name": "credits",
                             "type": {
-                              "name": "AssetRelationshipInput",
+                              "name": "CreditRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
                           {
-                            "name": "credits",
+                            "name": "assets",
                             "type": {
-                              "name": "CreditRelationshipInput",
+                              "name": "SkylarkAssetRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -6633,7 +7523,7 @@
                           {
                             "name": "images",
                             "type": {
-                              "name": "ImageRelationshipInput",
+                              "name": "SkylarkImageRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -6654,7 +7544,7 @@
                           {
                             "name": "tags",
                             "type": {
-                              "name": "TagRelationshipInput",
+                              "name": "SkylarkTagRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -6681,6 +7571,11 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -6689,6 +7584,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -6697,16 +7593,27 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -6718,6 +7625,7 @@
                 "type": {
                   "name": "GenreCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -6827,14 +7735,7 @@
                           {
                             "name": "images",
                             "type": {
-                              "name": "ImageRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "sets",
-                            "type": {
-                              "name": "SetRelationshipInput",
+                              "name": "SkylarkImageRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -6856,6 +7757,13 @@
                             "name": "seasons",
                             "type": {
                               "name": "SeasonRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "sets",
+                            "type": {
+                              "name": "SkylarkSetRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           }
@@ -6870,6 +7778,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
@@ -6883,6 +7792,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -6891,6 +7801,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -6899,22 +7810,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "genre",
                 "type": {
                   "name": "GenreInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -7024,14 +7947,7 @@
                           {
                             "name": "images",
                             "type": {
-                              "name": "ImageRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "sets",
-                            "type": {
-                              "name": "SetRelationshipInput",
+                              "name": "SkylarkImageRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -7053,6 +7969,13 @@
                             "name": "seasons",
                             "type": {
                               "name": "SeasonRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "sets",
+                            "type": {
+                              "name": "SkylarkSetRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           }
@@ -7072,6 +7995,11 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -7080,6 +8008,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -7088,16 +8017,27 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -7109,6 +8049,7 @@
                 "type": {
                   "name": "MovieCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -7171,16 +8112,6 @@
                             "type": { "name": null, "kind": "LIST" }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "name": "release_date",
-                      "type": {
-                        "name": "AWSDate",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
                       }
                     },
                     {
@@ -7254,6 +8185,16 @@
                       }
                     },
                     {
+                      "name": "release_date",
+                      "type": {
+                        "name": "AWSDate",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
                       "name": "year_of_release",
                       "type": {
                         "name": "Int",
@@ -7279,13 +8220,6 @@
                             }
                           },
                           {
-                            "name": "assets",
-                            "type": {
-                              "name": "AssetRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
                             "name": "credits",
                             "type": {
                               "name": "CreditRelationshipInput",
@@ -7300,9 +8234,16 @@
                             }
                           },
                           {
+                            "name": "assets",
+                            "type": {
+                              "name": "SkylarkAssetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
                             "name": "images",
                             "type": {
-                              "name": "ImageRelationshipInput",
+                              "name": "SkylarkImageRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -7316,7 +8257,7 @@
                           {
                             "name": "tags",
                             "type": {
-                              "name": "TagRelationshipInput",
+                              "name": "SkylarkTagRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -7338,6 +8279,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
@@ -7351,6 +8293,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -7359,6 +8302,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -7367,22 +8311,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "movie",
                 "type": {
                   "name": "MovieInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -7445,16 +8401,6 @@
                             "type": { "name": null, "kind": "LIST" }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "name": "release_date",
-                      "type": {
-                        "name": "AWSDate",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
                       }
                     },
                     {
@@ -7528,6 +8474,16 @@
                       }
                     },
                     {
+                      "name": "release_date",
+                      "type": {
+                        "name": "AWSDate",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
                       "name": "year_of_release",
                       "type": {
                         "name": "Int",
@@ -7553,13 +8509,6 @@
                             }
                           },
                           {
-                            "name": "assets",
-                            "type": {
-                              "name": "AssetRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
                             "name": "credits",
                             "type": {
                               "name": "CreditRelationshipInput",
@@ -7574,9 +8523,16 @@
                             }
                           },
                           {
+                            "name": "assets",
+                            "type": {
+                              "name": "SkylarkAssetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
                             "name": "images",
                             "type": {
-                              "name": "ImageRelationshipInput",
+                              "name": "SkylarkImageRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -7590,7 +8546,7 @@
                           {
                             "name": "tags",
                             "type": {
-                              "name": "TagRelationshipInput",
+                              "name": "SkylarkTagRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -7617,6 +8573,11 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -7625,6 +8586,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -7633,16 +8595,27 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -7654,6 +8627,7 @@
                 "type": {
                   "name": "ParentalGuidanceCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -7754,6 +8728,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
@@ -7767,6 +8742,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -7775,6 +8751,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -7783,22 +8760,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "parental_guidance",
                 "type": {
                   "name": "ParentalGuidanceInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -7904,6 +8893,11 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -7912,6 +8906,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -7920,16 +8915,27 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -7941,6 +8947,7 @@
                 "type": {
                   "name": "PersonCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -8056,16 +9063,6 @@
                       }
                     },
                     {
-                      "name": "date_of_birth",
-                      "type": {
-                        "name": "AWSDate",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
-                      }
-                    },
-                    {
                       "name": "genre",
                       "type": {
                         "name": "String",
@@ -8106,6 +9103,16 @@
                       }
                     },
                     {
+                      "name": "date_of_birth",
+                      "type": {
+                        "name": "AWSDate",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
                       "name": "relationships",
                       "type": {
                         "name": "PersonRelationships",
@@ -8130,14 +9137,14 @@
                           {
                             "name": "images",
                             "type": {
-                              "name": "ImageRelationshipInput",
+                              "name": "SkylarkImageRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
                           {
                             "name": "tags",
                             "type": {
-                              "name": "TagRelationshipInput",
+                              "name": "SkylarkTagRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -8159,6 +9166,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
@@ -8172,6 +9180,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -8180,6 +9189,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -8188,22 +9198,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "person",
                 "type": {
                   "name": "PersonInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -8319,16 +9341,6 @@
                       }
                     },
                     {
-                      "name": "date_of_birth",
-                      "type": {
-                        "name": "AWSDate",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
-                      }
-                    },
-                    {
                       "name": "genre",
                       "type": {
                         "name": "String",
@@ -8369,6 +9381,16 @@
                       }
                     },
                     {
+                      "name": "date_of_birth",
+                      "type": {
+                        "name": "AWSDate",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
                       "name": "relationships",
                       "type": {
                         "name": "PersonRelationships",
@@ -8393,14 +9415,14 @@
                           {
                             "name": "images",
                             "type": {
-                              "name": "ImageRelationshipInput",
+                              "name": "SkylarkImageRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
                           {
                             "name": "tags",
                             "type": {
-                              "name": "TagRelationshipInput",
+                              "name": "SkylarkTagRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -8427,6 +9449,11 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -8435,6 +9462,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -8443,16 +9471,27 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -8464,6 +9503,7 @@
                 "type": {
                   "name": "RatingCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -8539,7 +9579,7 @@
                       }
                     },
                     {
-                      "name": "schema",
+                      "name": "title",
                       "type": {
                         "name": "String",
                         "kind": "SCALAR",
@@ -8549,7 +9589,7 @@
                       }
                     },
                     {
-                      "name": "title",
+                      "name": "schema",
                       "type": {
                         "name": "String",
                         "kind": "SCALAR",
@@ -8607,21 +9647,14 @@
                           {
                             "name": "assets",
                             "type": {
-                              "name": "AssetRelationshipInput",
+                              "name": "SkylarkAssetRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
                           {
                             "name": "images",
                             "type": {
-                              "name": "ImageRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "sets",
-                            "type": {
-                              "name": "SetRelationshipInput",
+                              "name": "SkylarkImageRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -8629,6 +9662,13 @@
                             "name": "seasons",
                             "type": {
                               "name": "SeasonRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "sets",
+                            "type": {
+                              "name": "SkylarkSetRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           }
@@ -8643,6 +9683,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
@@ -8656,6 +9697,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -8664,6 +9706,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -8672,22 +9715,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "rating",
                 "type": {
                   "name": "RatingInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -8763,7 +9818,7 @@
                       }
                     },
                     {
-                      "name": "schema",
+                      "name": "title",
                       "type": {
                         "name": "String",
                         "kind": "SCALAR",
@@ -8773,7 +9828,7 @@
                       }
                     },
                     {
-                      "name": "title",
+                      "name": "schema",
                       "type": {
                         "name": "String",
                         "kind": "SCALAR",
@@ -8831,21 +9886,14 @@
                           {
                             "name": "assets",
                             "type": {
-                              "name": "AssetRelationshipInput",
+                              "name": "SkylarkAssetRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
                           {
                             "name": "images",
                             "type": {
-                              "name": "ImageRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "sets",
-                            "type": {
-                              "name": "SetRelationshipInput",
+                              "name": "SkylarkImageRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -8853,6 +9901,13 @@
                             "name": "seasons",
                             "type": {
                               "name": "SeasonRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "sets",
+                            "type": {
+                              "name": "SkylarkSetRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           }
@@ -8872,6 +9927,11 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -8880,6 +9940,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -8888,16 +9949,27 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -8909,6 +9981,7 @@
                 "type": {
                   "name": "RoleCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -9009,6 +10082,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
@@ -9022,6 +10096,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -9030,6 +10105,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -9038,22 +10114,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "role",
                 "type": {
                   "name": "RoleInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -9159,6 +10247,11 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -9167,6 +10260,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -9175,16 +10269,27 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -9196,6 +10301,7 @@
                 "type": {
                   "name": "SeasonCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -9258,36 +10364,6 @@
                             "type": { "name": null, "kind": "LIST" }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "name": "number_of_episodes",
-                      "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
-                      }
-                    },
-                    {
-                      "name": "release_date",
-                      "type": {
-                        "name": "AWSDate",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
-                      }
-                    },
-                    {
-                      "name": "season_number",
-                      "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
                       }
                     },
                     {
@@ -9361,6 +10437,36 @@
                       }
                     },
                     {
+                      "name": "number_of_episodes",
+                      "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
+                      "name": "release_date",
+                      "type": {
+                        "name": "AWSDate",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
+                      "name": "season_number",
+                      "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
                       "name": "relationships",
                       "type": {
                         "name": "SeasonRelationships",
@@ -9376,23 +10482,16 @@
                             }
                           },
                           {
-                            "name": "episodes",
-                            "type": {
-                              "name": "EpisodeRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "assets",
-                            "type": {
-                              "name": "AssetRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
                             "name": "credits",
                             "type": {
                               "name": "CreditRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "episodes",
+                            "type": {
+                              "name": "EpisodeRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -9404,13 +10503,6 @@
                             }
                           },
                           {
-                            "name": "images",
-                            "type": {
-                              "name": "ImageRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
                             "name": "ratings",
                             "type": {
                               "name": "RatingRelationshipInput",
@@ -9418,9 +10510,23 @@
                             }
                           },
                           {
+                            "name": "assets",
+                            "type": {
+                              "name": "SkylarkAssetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "images",
+                            "type": {
+                              "name": "SkylarkImageRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
                             "name": "tags",
                             "type": {
-                              "name": "TagRelationshipInput",
+                              "name": "SkylarkTagRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -9442,6 +10548,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
@@ -9455,6 +10562,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -9463,6 +10571,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -9471,22 +10580,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "season",
                 "type": {
                   "name": "SeasonInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -9549,36 +10670,6 @@
                             "type": { "name": null, "kind": "LIST" }
                           }
                         ]
-                      }
-                    },
-                    {
-                      "name": "number_of_episodes",
-                      "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
-                      }
-                    },
-                    {
-                      "name": "release_date",
-                      "type": {
-                        "name": "AWSDate",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
-                      }
-                    },
-                    {
-                      "name": "season_number",
-                      "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "enumValues": null,
-                        "ofType": null,
-                        "inputFields": null
                       }
                     },
                     {
@@ -9652,6 +10743,36 @@
                       }
                     },
                     {
+                      "name": "number_of_episodes",
+                      "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
+                      "name": "release_date",
+                      "type": {
+                        "name": "AWSDate",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
+                      "name": "season_number",
+                      "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "enumValues": null,
+                        "ofType": null,
+                        "inputFields": null
+                      }
+                    },
+                    {
                       "name": "relationships",
                       "type": {
                         "name": "SeasonRelationships",
@@ -9667,23 +10788,16 @@
                             }
                           },
                           {
-                            "name": "episodes",
-                            "type": {
-                              "name": "EpisodeRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
-                            "name": "assets",
-                            "type": {
-                              "name": "AssetRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
                             "name": "credits",
                             "type": {
                               "name": "CreditRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "episodes",
+                            "type": {
+                              "name": "EpisodeRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -9695,13 +10809,6 @@
                             }
                           },
                           {
-                            "name": "images",
-                            "type": {
-                              "name": "ImageRelationshipInput",
-                              "kind": "INPUT_OBJECT"
-                            }
-                          },
-                          {
                             "name": "ratings",
                             "type": {
                               "name": "RatingRelationshipInput",
@@ -9709,9 +10816,23 @@
                             }
                           },
                           {
+                            "name": "assets",
+                            "type": {
+                              "name": "SkylarkAssetRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
+                            "name": "images",
+                            "type": {
+                              "name": "SkylarkImageRelationshipInput",
+                              "kind": "INPUT_OBJECT"
+                            }
+                          },
+                          {
                             "name": "tags",
                             "type": {
-                              "name": "TagRelationshipInput",
+                              "name": "SkylarkTagRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
@@ -9738,6 +10859,11 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -9746,6 +10872,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -9754,16 +10881,27 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           },
@@ -9775,6 +10913,7 @@
                 "type": {
                   "name": "ThemeCreateInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -9905,14 +11044,14 @@
                           {
                             "name": "images",
                             "type": {
-                              "name": "ImageRelationshipInput",
+                              "name": "SkylarkImageRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
                           {
                             "name": "sets",
                             "type": {
-                              "name": "SetRelationshipInput",
+                              "name": "SkylarkSetRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           }
@@ -9927,6 +11066,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               }
@@ -9940,6 +11080,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -9948,6 +11089,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -9956,22 +11098,34 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "theme",
                 "type": {
                   "name": "ThemeInput",
                   "kind": "INPUT_OBJECT",
+                  "ofType": null,
                   "inputFields": [
                     {
                       "name": "data_source_id",
@@ -10102,14 +11256,14 @@
                           {
                             "name": "images",
                             "type": {
-                              "name": "ImageRelationshipInput",
+                              "name": "SkylarkImageRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           },
                           {
                             "name": "sets",
                             "type": {
-                              "name": "SetRelationshipInput",
+                              "name": "SkylarkSetRelationshipInput",
                               "kind": "INPUT_OBJECT"
                             }
                           }
@@ -10129,6 +11283,11 @@
                 "type": {
                   "name": null,
                   "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "inputFields": null
+                  },
                   "inputFields": null
                 }
               },
@@ -10137,6 +11296,7 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
@@ -10145,16 +11305,27 @@
                 "type": {
                   "name": "String",
                   "kind": "SCALAR",
+                  "ofType": null,
                   "inputFields": null
                 }
               },
               {
                 "name": "language_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               },
               {
                 "name": "global_version",
-                "type": { "name": "Int", "kind": "SCALAR", "inputFields": null }
+                "type": {
+                  "name": "Int",
+                  "kind": "SCALAR",
+                  "ofType": null,
+                  "inputFields": null
+                }
               }
             ]
           }

@@ -42,6 +42,14 @@ export interface GQLSkylarkSearchResponse {
   };
 }
 
+export interface GQLSkylarkUpdateObjectMetadataResponse {
+  createObject: SkylarkGraphQLObject;
+}
+
+export interface GQLSkylarkUpdateObjectMetadataResponse {
+  updateObjectMetadata: SkylarkGraphQLObject;
+}
+
 export interface GQLSkylarkUpdateObjectContentResponse {
   updateObjectContent: {
     content: SkylarkGraphQLObjectContent;

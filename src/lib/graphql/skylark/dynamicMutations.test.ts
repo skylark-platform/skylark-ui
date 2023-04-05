@@ -24,7 +24,7 @@ describe("createDeleteObjectMutation", () => {
     const got = createDeleteObjectMutation(episodeObjectOperations);
 
     expect(got?.loc?.source.body).toEqual(
-      "mutation DELETE_Episode ($uid: String!) { deleteObject: deleteEpisode (uid: $uid) { uid } }",
+      "mutation DELETE_Episode ($uid: String!, $language: String) { deleteObject: deleteEpisode (uid: $uid, language: $language) { uid } }",
     );
   });
 });

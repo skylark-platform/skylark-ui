@@ -11,9 +11,9 @@ import {
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
 import { Edit, Expand, Trash, MoreVertical } from "src/components/icons";
+import { LanguageSelect } from "src/components/inputs/select";
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { Pill } from "src/components/pill";
-import { LanguageSelect } from "src/components/select";
 import { Toast } from "src/components/toast/toast.component";
 import { useDeleteObject } from "src/hooks/useDeleteObject";
 import { ParsedSkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
@@ -23,34 +23,36 @@ interface PanelHeaderProps {
   objectUid: string;
   objectType: SkylarkObjectType;
   object: ParsedSkylarkObject | null;
-  activeLanguage: string;
+  language: string;
   currentTab: string;
   tabsWithEditMode: string[];
   graphQLQuery: DocumentNode | null;
   graphQLVariables?: object;
   inEditMode: boolean;
   isSaving?: boolean;
+  isTranslatable?: boolean;
   toggleEditMode: () => void;
   closePanel?: () => void;
   save: () => void;
-  setActiveLanguage: Dispatch<SetStateAction<string>>;
+  setLanguage: Dispatch<SetStateAction<string>>;
 }
 
 export const PanelHeader = ({
   objectUid,
   objectType,
   object,
-  activeLanguage,
+  language,
   currentTab,
   tabsWithEditMode,
   graphQLQuery,
   graphQLVariables,
   inEditMode,
   isSaving,
+  isTranslatable,
   toggleEditMode,
   closePanel,
   save,
-  setActiveLanguage,
+  setLanguage,
 }: PanelHeaderProps) => {
   const title = getObjectDisplayName(object);
   const [showGraphQLModal, setGraphQLModalOpen] = useState(false);
@@ -59,13 +61,13 @@ export const PanelHeader = ({
     objectType,
     onSuccess: ({ objectType, uid }) => {
       // TODO finesse this so the toast slides in and looks better
-      toast(
-        <Toast
-          title={`${objectType} deleted`}
-          message={`${objectType} ${uid} has been deleted`}
-          type="success"
-        />,
-      );
+      // toast(
+      //   <Toast
+      //     title={`${objectType} deleted`}
+      //     message={`${objectType} ${uid} has been deleted`}
+      //     type="success"
+      //   />,
+      // );
       closePanel?.();
     },
   });
@@ -88,7 +90,7 @@ export const PanelHeader = ({
         text: `Delete ${objectType}`,
         Icon: <Trash className="w-5 fill-error stroke-error" />,
         danger: true,
-        disabled: true, // TODO finish object deletion
+        // disabled: true, // TODO finish object deletion
         onClick: () => deleteObjectMutation({ uid: objectUid }),
       },
     ],
@@ -167,19 +169,21 @@ export const PanelHeader = ({
               className="w-20 bg-brand-primary"
               label={objectType}
             />
-            <LanguageSelect
-              selected={activeLanguage || object.meta.language}
-              variant="pill"
-              languages={
-                object.meta.availableLanguages || [object.meta.language]
-              }
-              onChange={(val) => setActiveLanguage(val)}
-            />
+            {isTranslatable && (
+              <LanguageSelect
+                selected={language || object.meta.language}
+                variant="pill"
+                languages={
+                  object.meta.availableLanguages || [object.meta.language]
+                }
+                onChange={(val) => setLanguage(val)}
+              />
+            )}
           </div>
         )}
         <div className="flex flex-row items-end justify-end space-x-2">
           {inEditMode && (
-            <div className="absolute left-1/2 -bottom-16 -translate-x-1/2 md:-bottom-18">
+            <div className="absolute left-1/2 -bottom-16 z-10 -translate-x-1/2 md:-bottom-18">
               <PanelLabel
                 text={isSaving ? "Saving" : "Editing"}
                 loading={isSaving}

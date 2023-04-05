@@ -1,7 +1,5 @@
 import { ITheme } from "@flatfile/sdk/dist/types";
 import dayjs from "dayjs";
-import advancedFormat from "dayjs/plugin/advancedFormat";
-import customParseFormat from "dayjs/plugin/customParseFormat";
 import { GraphQLClient } from "graphql-request";
 import { EnumType, jsonToGraphQLQuery } from "json-to-graphql-query";
 
@@ -20,10 +18,11 @@ import {
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
 import { getSkylarkObjectOperations } from "src/lib/skylark/introspection/introspection";
+import {
+  parseInputFieldValue,
+  parseMetadataForGraphQLRequest,
+} from "src/lib/skylark/parsers";
 import { hasProperty } from "src/lib/utils";
-
-dayjs.extend(customParseFormat);
-dayjs.extend(advancedFormat);
 
 const chunkArray = <T>(arr: T[], chunkSize: number) => {
   const chunkedArray: T[][] = [];
@@ -33,26 +32,6 @@ const chunkArray = <T>(arr: T[], chunkSize: number) => {
   }
 
   return chunkedArray;
-};
-
-const validateAndParseDate = (
-  type: string,
-  value: string,
-  formats?: string[],
-) => {
-  const validFormat = formats?.find((format) => dayjs(value, format).isValid());
-  if (validFormat) {
-    return dayjs(value, validFormat);
-  }
-
-  if (!dayjs(value).isValid()) {
-    throw new Error(
-      `Value given for ${type} is an invalid format: "${value}"${
-        formats ? `. Valid formats: "${formats?.join('", "')}"` : ""
-      }`,
-    );
-  }
-  return dayjs(value);
 };
 
 export const openFlatfileImportClient = async (
@@ -77,46 +56,6 @@ export const openFlatfileImportClient = async (
       onComplete(payload.batchId);
     },
   });
-};
-
-const parseCSVInputFieldValue = (
-  value: string | number | boolean,
-  type: NormalizedObjectFieldType,
-): string | number | boolean | EnumType => {
-  if (type === "enum") {
-    return new EnumType(value as string);
-  }
-  if (type === "datetime") {
-    return validateAndParseDate(type, value as string).toISOString();
-  }
-  if (type === "date") {
-    return validateAndParseDate(type, value as string, [
-      "YYYY-MM-DD",
-      "YYYY-MM-DDZ",
-      "DD/MM/YYYY",
-    ]).format("YYYY-MM-DDZ");
-  }
-  if (type === "time") {
-    return validateAndParseDate(type, value as string, [
-      "HH:mm:ss",
-      "HH:mm",
-      "HH:mm:ssZ",
-      "HH:mmZ",
-    ]).format("HH:mm:ss.SSSZ");
-  }
-  if (type === "timestamp") {
-    return validateAndParseDate(type, value as string, ["X", "x"]).unix();
-  }
-  if (type === "int") {
-    return parseInt(value as string);
-  }
-  if (type === "float") {
-    return parseFloat(value as string);
-  }
-  if (type === "json") {
-    return value;
-  }
-  return value;
 };
 
 export const createFlatfileObjectsInSkylark = async (
@@ -152,32 +91,10 @@ export const createFlatfileObjectsInSkylark = async (
       }> => {
         const operations = flatfileRows.reduce(
           (previousOperations, { id, data }) => {
-            const keyValuePairs = Object.entries(data)
-              .map(([key, value]) => {
-                if (value === null || value === "") {
-                  // Empty strings will not work with AWSDateTime, or AWSURL so don't send them
-                  return null;
-                }
-
-                const input = skylarkObjectOperations.create.inputs.find(
-                  (createInput) => createInput.name === key,
-                );
-                if (!input) {
-                  return null;
-                }
-
-                const parsedFieldValue = parseCSVInputFieldValue(
-                  value,
-                  input.type,
-                );
-                return [key, parsedFieldValue];
-              })
-              .filter((value) => value !== null) as [
-              string,
-              string | EnumType,
-            ][];
-
-            const parsedData = Object.fromEntries(keyValuePairs);
+            const parsedData = parseMetadataForGraphQLRequest(
+              data,
+              skylarkObjectOperations.create.inputs,
+            );
 
             const operation = {
               __aliasFor: skylarkObjectOperations.create.name,
@@ -244,14 +161,14 @@ export const createFlatfileObjectsInSkylark = async (
   };
 };
 
-const getExampleData = (
+const generateExampleFieldData = (
   { type, enumValues }: NormalizedObjectField,
   rowNum: number,
-): string | number | boolean | EnumType => {
+): string | number | boolean | EnumType | string[] | null => {
   const now = dayjs();
   const examples: Record<
     NormalizedObjectFieldType,
-    (string | number | boolean | EnumType)[]
+    (string | number | boolean | EnumType | string[] | null)[]
   > = {
     string: ["example"],
     int: [10, -5],
@@ -260,21 +177,21 @@ const getExampleData = (
     enum: enumValues as string[],
     url: ["http://example.com", "https://example.com"],
     date: [
-      parseCSVInputFieldValue(now.format("YYYY-MM-DD"), type),
-      parseCSVInputFieldValue("2011-02-02", type),
+      parseInputFieldValue(now.format("YYYY-MM-DD"), type),
+      parseInputFieldValue("2011-02-02", type),
     ],
     datetime: [
-      parseCSVInputFieldValue(now.toISOString(), type),
-      parseCSVInputFieldValue("2023-03-06T11:12:05Z", type),
+      parseInputFieldValue(now.toISOString(), type),
+      parseInputFieldValue("2023-03-06T11:12:05Z", type),
     ],
     time: [
-      parseCSVInputFieldValue(now.format("HH:mm:ss"), "time"),
+      parseInputFieldValue(now.format("HH:mm:ss"), "time"),
       "14:04",
       "10:30:11",
     ],
     timestamp: [
-      parseCSVInputFieldValue(now.unix(), type),
-      parseCSVInputFieldValue("1678101125", type),
+      parseInputFieldValue(now.unix(), type),
+      parseInputFieldValue("1678101125", type),
     ],
     email: ["customer@email.com", "mail@email.co.uk"],
     ipaddress: ["0.0.0.0", "9.255.255.255", "21DA:D3:0:2F3B:2AA:FF:FE28:9C5A"],
@@ -312,7 +229,7 @@ export const generateExampleCSV = (
     exampleRows[exampleRows.length - 1] !== ""
   ) {
     const examples = inputs.map((input) =>
-      getExampleData(input, exampleRowNum),
+      generateExampleFieldData(input, exampleRowNum),
     );
     exampleRowNum += 1;
     exampleRows.push(examples.join(","));

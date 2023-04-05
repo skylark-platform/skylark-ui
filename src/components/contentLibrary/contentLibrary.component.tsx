@@ -16,20 +16,20 @@ import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { ObjectList } from "src/components/objectListing";
 import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import {
+  ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
+} from "src/interfaces/skylark";
 
-const INITIAL_PANEL_PERCENTAGE = 80;
+const INITIAL_PANEL_PERCENTAGE = 70;
 const MINIMUM_SIZES = {
   objectListing: 425,
   panel: 450,
 };
 
 export const ContentLibrary = () => {
-  const [activePanelObject, setActivePanelObject] = useState<{
-    objectType: string;
-    uid: string;
-    language: string;
-  } | null>(null);
+  const [activePanelObject, setActivePanelObject] =
+    useState<SkylarkObjectIdentifier | null>(null);
   const [draggedObject, setDraggedObject] = useState<
     ParsedSkylarkObject | undefined
   >(undefined);
@@ -41,7 +41,11 @@ export const ContentLibrary = () => {
 
   const objectListingWidth = useMotionValue<number | undefined>(undefined);
   const panelWidth = useTransform(objectListingWidth, (width) =>
-    width === undefined ? undefined : windowSize - width,
+    width === undefined
+      ? undefined
+      : windowSize < MINIMUM_SIZES.panel
+      ? windowSize
+      : windowSize - width,
   );
   const lastPanelWidth = useMotionValue<number | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -140,7 +144,7 @@ export const ContentLibrary = () => {
         className="flex h-screen w-full flex-row overflow-x-hidden"
         ref={containerRef}
         style={{
-          maxHeight: `calc(100vh - 5rem)`,
+          maxHeight: `calc(100vh - 4rem)`,
         }}
       >
         <m.div
@@ -148,22 +152,19 @@ export const ContentLibrary = () => {
             "w-full max-w-full pt-6 pl-2 md:pl-6 lg:pl-10",
             activePanelObject && "md:w-1/2 lg:w-5/12 xl:w-3/5",
           )}
-          style={{
-            width: objectListingWidth,
-          }}
+          style={{ width: activePanelObject ? objectListingWidth : "100%" }}
         >
           <ObjectList
             withCreateButtons
-            onInfoClick={setActivePanelObject}
+            setPanelObject={setActivePanelObject}
             isPanelOpen={!!activePanelObject}
             isDragging={!!draggedObject}
           />
         </m.div>
-
         {activePanelObject && (
           <m.div
             className="fixed z-50 flex h-full w-full grow flex-row bg-white md:relative md:z-auto"
-            style={{ width: panelWidth }}
+            style={{ width: activePanelObject ? panelWidth : 0 }}
           >
             <m.div
               data-testid="drag-bar"

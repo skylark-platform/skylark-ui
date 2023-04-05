@@ -11,7 +11,7 @@
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 1 }
           },
-          "uid": "01GWFN4NT34CKMBZAAFFZC5X87",
+          "uid": "01GX395WRJPA7HJMK1Q8JWFZ10",
           "external_id": "recudCnvsnLP4PEeJ",
           "__Movie__slug": "all-availabilities-test-movie",
           "__Movie__synopsis_long": null,
@@ -27,7 +27,7 @@
             "next_token": null,
             "objects": [
               {
-                "uid": "01GW9GVHTSXES55MZQCJSB0QGY",
+                "uid": "01GX394VMFPGT9EG3QNF4CQ1ZQ",
                 "external_id": "recN2Jf4j9UCblsIc",
                 "title": "Active in the past",
                 "slug": "active-in-the-past",
@@ -36,16 +36,16 @@
                 "timezone": "+00:00"
               },
               {
-                "uid": "01GW9GVHYD7JAG30Z7KEH2G20C",
+                "uid": "01GX394VRHRQ14MBX0TKA2ZTHZ",
                 "external_id": "recQzQ8ZUyh6VzVAw",
                 "title": "Active Next Sunday",
                 "slug": "active-next-sunday",
-                "start": "2023-03-26T00:00:00+00:00",
+                "start": "2023-04-09T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
                 "timezone": "+00:00"
               },
               {
-                "uid": "01GW9GVHZD6BZPRGQVPHPAXSWS",
+                "uid": "01GX394VTDB5QWAZTA44D6NKT9",
                 "external_id": "recMdBZyVPsIGqAYq",
                 "title": "Premium",
                 "slug": "premium",
@@ -54,12 +54,12 @@
                 "timezone": "+00:00"
               },
               {
-                "uid": "01GW9GVJ1MFMG5ZEGS43E6Y7VD",
+                "uid": "01GX394VVFM076523DTVBGMYCP",
                 "external_id": "recX0Ztue3iBQR7rl",
                 "title": "Active Until Next Sunday",
                 "slug": "active-until-next-sunday",
                 "start": "2000-01-01T00:00:00+00:00",
-                "end": "2023-03-26T00:00:00+00:00",
+                "end": "2023-04-09T00:00:00+00:00",
                 "timezone": "+00:00"
               }
             ]

@@ -25,7 +25,7 @@ export const getObjectHandlers = [
   ),
 
   graphql.query(
-    createGetObjectQueryName("Image"),
+    createGetObjectQueryName("SkylarkImage"),
     ({ variables }, res, ctx) => {
       if (
         variables.uid ===
@@ -36,14 +36,17 @@ export const getObjectHandlers = [
     },
   ),
 
-  graphql.query(createGetObjectQueryName("Set"), ({ variables }, res, ctx) => {
-    if (
-      variables.uid ===
-      GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid
-    ) {
-      return res(ctx.data(GQLSkylarkGetSetWithContentQueryFixture.data));
-    }
-  }),
+  graphql.query(
+    createGetObjectQueryName("SkylarkSet"),
+    ({ variables }, res, ctx) => {
+      if (
+        variables.uid ===
+        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid
+      ) {
+        return res(ctx.data(GQLSkylarkGetSetWithContentQueryFixture.data));
+      }
+    },
+  ),
 
   graphql.query(
     createGetObjectQueryName("Season"),

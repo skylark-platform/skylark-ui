@@ -15,13 +15,20 @@ import {
 export const useSkylarkObjectTypes = (): Omit<UseQueryResult, "data"> & {
   objectTypes: string[] | undefined;
 } => {
-  const { data, ...rest } = useSkylarkSchemaInterfaceType("Metadata");
+  // Newer Skylark's have a VisibleObject Interface which contains Availability
+  const { data, ...rest } = useSkylarkSchemaInterfaceType("VisibleObject");
+  const { data: legacyMetadataData } =
+    useSkylarkSchemaInterfaceType("Metadata");
 
-  const objectTypes = useMemo(
-    () =>
-      data ? data?.possibleTypes.map(({ name }) => name) || [] : undefined,
-    [data],
-  );
+  const objectTypes = useMemo(() => {
+    const objectTypes = data
+      ? data?.possibleTypes.map(({ name }) => name) || []
+      : undefined;
+    const legacyMetadata = legacyMetadataData
+      ? legacyMetadataData?.possibleTypes.map(({ name }) => name) || []
+      : undefined;
+    return (objectTypes || legacyMetadata)?.sort();
+  }, [data, legacyMetadataData]);
 
   return {
     objectTypes,

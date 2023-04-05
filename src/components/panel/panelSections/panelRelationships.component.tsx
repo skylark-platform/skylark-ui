@@ -28,7 +28,9 @@ export const PanelRelationships = ({
     isLoading,
     query,
     variables,
-  } = useGetObjectRelationships(objectType, uid, { language });
+  } = useGetObjectRelationships(objectType, uid, {
+    language,
+  });
   const [expandedRelationships, setExpandedRelationships] = useState<
     Record<string, boolean>
   >({});

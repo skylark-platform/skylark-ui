@@ -53,7 +53,7 @@ describe("Import/CSV", () => {
 
   it("visit import/csv page", () => {
     cy.get("button").contains("Import").should("be.disabled");
-    cy.get('[data-cy="status-card"]').should("have.length", "4");
+    cy.get('[data-testid="status-card"]').should("have.length", "4");
     cy.get("a").contains("Start curating").should("have.class", "btn-disabled");
     cy.get(".btn-outline")
       .contains("New import")
@@ -63,7 +63,7 @@ describe("Import/CSV", () => {
 
   it("select objectType", () => {
     cy.contains("Download Example CSV").should("have.class", "btn-disabled");
-    cy.get('[data-cy="select"]').click();
+    cy.get('[data-testid="select"]').click();
     cy.get('[data-testid="select-options"]').should("be.visible");
     cy.percySnapshot("import/csv - objectType select open");
 
@@ -73,7 +73,7 @@ describe("Import/CSV", () => {
       .click();
 
     cy.get("button").contains("Import").should("not.disabled");
-    cy.get('[data-cy="status-card"]')
+    cy.get('[data-testid="status-card"]')
       .first()
       .should("have.class", "border-t-success");
     cy.get(".border-t-manatee-500").should("have.length", "3");
@@ -86,7 +86,7 @@ describe("Import/CSV", () => {
   });
 
   it("opens and closes Flatfile", () => {
-    cy.get('[data-cy="select"]').click();
+    cy.get('[data-testid="select"]').click();
     cy.get('[data-testid="select-options"]').should("be.visible");
     cy.get('[data-testid="select-options"]')
       .get("li > span")
@@ -101,7 +101,7 @@ describe("Import/CSV", () => {
     cy.get(".flatfile-close").click();
 
     cy.get(".flatfile-sdk iframe").should("not.exist");
-    cy.get('[data-cy="status-card"]')
+    cy.get('[data-testid="status-card"]')
       .first()
       .should("have.class", "border-t-success");
     cy.get(".border-t-manatee-500").should("have.length", "3");
@@ -144,7 +144,7 @@ describe("Import/CSV", () => {
     });
 
     it("import a csv through Flatfile", { retries: 0 }, () => {
-      cy.get('[data-cy="select"]').click();
+      cy.get('[data-testid="select"]').click();
       cy.get('[data-testid="select-options"]').should("be.visible");
       cy.get('[data-testid="select-options"]')
         .get("li > span")
@@ -156,7 +156,7 @@ describe("Import/CSV", () => {
 
       cy.wait("@getImportedObjects");
 
-      cy.get('[data-cy="status-card"].border-t-success', {
+      cy.get('[data-testid="status-card"].border-t-success', {
         timeout: 10000,
       }).should("have.length", 4);
 
@@ -168,7 +168,7 @@ describe("Import/CSV", () => {
         .should("not.have.class", "btn-disabled");
 
       cy.get("button").contains("Import").should("be.disabled");
-      cy.get('[data-cy="select"]').should("be.disabled");
+      cy.get('[data-testid="select"]').should("be.disabled");
 
       cy.get("a")
         .contains("Start curating")
@@ -189,7 +189,7 @@ describe("Import/CSV", () => {
         }
       });
 
-      cy.get('[data-cy="select"]').click();
+      cy.get('[data-testid="select"]').click();
       cy.get('[data-testid="select-options"]').should("be.visible");
       cy.get('[data-testid="select-options"]')
         .get("li > span")
@@ -201,10 +201,10 @@ describe("Import/CSV", () => {
 
       cy.wait("@getImportedObjects");
 
-      cy.get('[data-cy="status-card"].border-t-success', {
+      cy.get('[data-testid="status-card"].border-t-success', {
         timeout: 10000,
       }).should("have.length", 3);
-      cy.get('[data-cy="status-card"]')
+      cy.get('[data-testid="status-card"]')
         .last()
         .should("have.class", "border-t-error");
 
@@ -219,7 +219,7 @@ describe("Import/CSV", () => {
         .should("not.have.class", "btn-disabled");
 
       cy.get("button").contains("Import").should("be.disabled");
-      cy.get('[data-cy="select"]').should("be.disabled");
+      cy.get('[data-testid="select"]').should("be.disabled");
 
       cy.percySnapshot(
         "import/csv - import failed (skylark object creation error)",
@@ -227,7 +227,7 @@ describe("Import/CSV", () => {
     });
 
     it("can click new import to reset the state", () => {
-      cy.get('[data-cy="select"]').click();
+      cy.get('[data-testid="select"]').click();
       cy.get('[data-testid="select-options"]').should("be.visible");
       cy.get('[data-testid="select-options"]')
         .get("li > span")
@@ -239,7 +239,7 @@ describe("Import/CSV", () => {
 
       cy.get(".btn-outline").contains("New import").click();
       cy.get("button").contains("Import").should("not.disabled");
-      cy.get('[data-cy="status-card"]')
+      cy.get('[data-testid="status-card"]')
         .first()
         .should("have.class", "border-t-success");
       cy.get(".border-t-manatee-500").should("have.length", "3");

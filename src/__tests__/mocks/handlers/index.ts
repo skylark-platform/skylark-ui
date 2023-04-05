@@ -1,3 +1,4 @@
+import { createObjectHandlers } from "./createObjectHandlers";
 import { flatfileHandlers } from "./flatfile";
 import {
   getObjectAvailabilityHandlers,
@@ -13,6 +14,7 @@ export const handlers = [
   ...getObjectHandlers,
   ...getObjectAvailabilityHandlers,
   ...getObjectRelationshipsHandlers,
+  ...createObjectHandlers,
   ...updateObjectHandlers,
   ...searchHandlers,
   ...flatfileHandlers,

@@ -1,9 +1,9 @@
 import { useState, useReducer, useEffect } from "react";
 
 import { Button } from "src/components/button";
-import { Select } from "src/components/select";
+import { Select } from "src/components/inputs/select";
 import { StatusCard, statusType } from "src/components/statusCard";
-import { LOCAL_STORAGE } from "src/constants/skylark";
+import { LOCAL_STORAGE } from "src/constants/localStorage";
 import {
   useSkylarkObjectOperations,
   useSkylarkObjectTypes,

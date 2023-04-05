@@ -1,11 +1,17 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { UseFormReturn } from "react-hook-form";
 
+import { SkylarkObjectFieldInput } from "src/components/inputs/skylarkObjectFieldInput";
 import {
   PanelFieldTitle,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
-import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import {
+  OBJECT_LIST_TABLE,
+  OBJECT_OPTIONS,
+  SYSTEM_FIELDS,
+} from "src/constants/skylark";
 import { useImageSize } from "src/hooks/useImageSize";
 import {
   BuiltInSkylarkObjectType,
@@ -13,32 +19,18 @@ import {
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
-  SkylarkSystemField,
 } from "src/interfaces/skylark";
+import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
+import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import { formatObjectField } from "src/lib/utils";
 
-const systemFields: string[] = [
-  SkylarkSystemField.UID,
-  SkylarkSystemField.ExternalID,
-  SkylarkSystemField.Slug,
-];
-const objectOptions: {
-  objectTypes: SkylarkObjectType[];
-  fieldsToHide: string[];
-}[] = [
-  {
-    objectTypes: [
-      BuiltInSkylarkObjectType.SkylarkImage,
-      BuiltInSkylarkObjectType.BetaSkylarkImage,
-    ],
-    fieldsToHide: ["external_url", "upload_url", "download_from_url"],
-  },
-];
-
 interface PanelMetadataProps {
+  uid: string;
+  language: string;
   objectType: SkylarkObjectType;
   objectMeta: SkylarkObjectMeta;
   metadata: Record<string, SkylarkObjectMetadataField>;
+  form: UseFormReturn<Record<string, SkylarkObjectMetadataField>>;
 }
 
 const PanelMetadataProperty = ({
@@ -58,7 +50,7 @@ const AdditionalImageMetadata = ({
   src,
   alt,
 }: {
-  src: string;
+  src: string | null;
   alt: string;
 }) => {
   const { size } = useImageSize(src);
@@ -72,7 +64,7 @@ const AdditionalImageMetadata = ({
         property="Rendered image"
         value={
           /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={src} alt={alt} />
+          src ? <img src={src} alt={alt} /> : undefined
         }
       />
     </div>
@@ -80,65 +72,39 @@ const AdditionalImageMetadata = ({
 };
 
 export const PanelMetadata = ({
+  uid,
+  language,
   metadata,
   objectType,
   objectMeta,
+  form: { register, getValues, control, reset, formState },
 }: PanelMetadataProps) => {
-  const options = objectOptions.find(({ objectTypes }) =>
+  const options = OBJECT_OPTIONS.find(({ objectTypes }) =>
     objectTypes.includes(objectType),
   );
 
-  const {
-    systemMetadataFields,
-    languageGlobalMetadataFields,
-  }: {
-    systemMetadataFields: {
-      field: string;
-      config?: NormalizedObjectField;
-    }[];
-    languageGlobalMetadataFields: {
-      field: string;
-      config?: NormalizedObjectField;
-    }[];
-  } = useMemo(() => {
-    const metadataArr = Object.keys(metadata).map((field) => {
-      // Use update operation fields as get doesn't always have the full types
-      const fieldConfig = objectMeta.operations.update.inputs.find(
-        ({ name }) => name === field,
-      );
-      return {
-        field,
-        config: fieldConfig,
-      };
-    });
+  // When component first loads, update the form metadata with the current values
+  useEffect(() => {
+    reset(parseMetadataForHTMLForm(metadata, objectMeta?.fields));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uid, language]);
 
-    const systemFieldsThatExist = metadataArr
-      .filter(({ field }) => systemFields.includes(field))
-      .sort(
-        ({ field: a }, { field: b }) =>
-          systemFields.indexOf(a) - systemFields.indexOf(b),
-      );
-
-    const otherFields = metadataArr.filter(
-      ({ field }) => !systemFields.includes(field),
-    );
-
-    const fieldsToHide = options
-      ? [...options.fieldsToHide, OBJECT_LIST_TABLE.columnIds.objectType]
-      : [OBJECT_LIST_TABLE.columnIds.objectType];
-
-    return {
-      systemMetadataFields: systemFieldsThatExist.filter(
-        ({ field }) => !fieldsToHide.includes(field.toLowerCase()),
+  const { systemMetadataFields, languageGlobalMetadataFields } = useMemo(
+    () =>
+      splitMetadataIntoSystemTranslatableGlobal(
+        Object.keys(metadata),
+        objectMeta.operations.update.inputs,
+        options,
       ),
-      languageGlobalMetadataFields: otherFields.filter(
-        ({ field }) => !fieldsToHide.includes(field.toLowerCase()),
-      ),
-    };
-  }, [metadata, objectMeta.operations.update.inputs, options]);
+    [metadata, objectMeta.operations.update.inputs, options],
+  );
+
+  const requiredFields = objectMeta.operations.create.inputs
+    .filter(({ isRequired }) => isRequired)
+    .map(({ name }) => name);
 
   return (
-    <div
+    <form
       className="h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20"
       data-testid="panel-metadata"
     >
@@ -159,16 +125,30 @@ export const PanelMetadata = ({
             ({ id, title, metadataFields }, index, { length: numSections }) => (
               <div key={id} className="mb-8">
                 <PanelSectionTitle text={title} />
-                {metadataFields.map(
-                  ({ field }) =>
-                    field !== OBJECT_LIST_TABLE.columnIds.objectType && (
-                      <PanelMetadataProperty
+                {metadataFields.map(({ field, config }) => {
+                  if (config) {
+                    return (
+                      <SkylarkObjectFieldInput
                         key={field}
-                        property={field}
-                        value={metadata[field]}
+                        field={field}
+                        config={config}
+                        control={control}
+                        register={register}
+                        value={getValues(field)}
+                        formState={formState}
+                        additionalRequiredFields={requiredFields}
                       />
-                    ),
-                )}
+                    );
+                  }
+
+                  return (
+                    <PanelMetadataProperty
+                      key={field}
+                      property={field}
+                      value={getValues(field)}
+                    />
+                  );
+                })}
                 {index < numSections - 1 && <PanelSeparator />}
               </div>
             ),
@@ -183,10 +163,10 @@ export const PanelMetadata = ({
         ] as string[]
       ).includes(objectType) && (
         <AdditionalImageMetadata
-          src={metadata.url as string}
+          src={metadata.url as string | null}
           alt={metadata.title as string}
         />
       )}
-    </div>
+    </form>
   );
 };

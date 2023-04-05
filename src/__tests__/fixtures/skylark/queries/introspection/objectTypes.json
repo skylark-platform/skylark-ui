@@ -2,19 +2,19 @@
   "data": {
     "__type": {
       "possibleTypes": [
-        { "name": "Set" },
-        { "name": "Asset" },
+        { "name": "SkylarkImage" },
         { "name": "Brand" },
-        { "name": "Credit" },
+        { "name": "SkylarkAsset" },
         { "name": "Episode" },
-        { "name": "Genre" },
-        { "name": "Image" },
+        { "name": "Credit" },
         { "name": "Movie" },
+        { "name": "Genre" },
+        { "name": "Person" },
+        { "name": "SkylarkTag" },
+        { "name": "Season" },
         { "name": "Rating" },
         { "name": "ParentalGuidance" },
-        { "name": "Season" },
-        { "name": "Tag" },
-        { "name": "Person" },
+        { "name": "SkylarkSet" },
         { "name": "Theme" },
         { "name": "Role" }
       ]

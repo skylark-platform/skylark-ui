@@ -28,7 +28,7 @@ export interface GQLType {
   enumValues: { name: string }[] | null;
   fields: GQLInputField[];
   inputFields: GQLInputField[];
-  ofType: Pick<GQLType, "name" | "kind"> | null;
+  ofType: Pick<GQLType, "name" | "kind" | "inputFields"> | null;
 }
 
 export interface GQLInputValue {

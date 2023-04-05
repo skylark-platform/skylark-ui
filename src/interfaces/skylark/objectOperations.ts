@@ -1,3 +1,5 @@
+import { GQLScalars } from "src/interfaces/graphql/introspection";
+
 export enum BuiltInSkylarkObjectType {
   Availability = "Availability",
   SkylarkImage = "SkylarkImage",
@@ -47,6 +49,7 @@ export type NormalizedObjectFieldType =
 export interface NormalizedObjectField {
   name: string;
   type: NormalizedObjectFieldType;
+  originalType: GQLScalars;
   enumValues?: string[];
   isList: boolean;
   isRequired: boolean;
@@ -94,4 +97,7 @@ export interface SkylarkObjectMeta extends SkylarkObjectFields {
   operations: SkylarkObjectOperations;
   relationships: SkylarkObjectRelationship[];
   hasContent: boolean;
+  hasRelationships: boolean;
+  hasAvailability: boolean;
+  isTranslatable: boolean;
 }
