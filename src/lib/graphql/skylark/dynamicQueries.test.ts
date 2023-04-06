@@ -66,6 +66,10 @@ describe("createSearchObjectsQuery", () => {
               isRequired: false,
             },
           ],
+          fieldConfig: {
+            translatable: ["title"],
+            global: ["episode_number"],
+          },
           // TODO use real images, availability and operations
           images: null,
           availability: null,

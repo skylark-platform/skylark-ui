@@ -1,4 +1,8 @@
-import { IntrospectionField, IntrospectionInputValue } from "graphql";
+import {
+  IntrospectionEnumValue,
+  IntrospectionField,
+  IntrospectionInputValue,
+} from "graphql";
 import { EnumType } from "json-to-graphql-query";
 
 import {
@@ -108,17 +112,13 @@ describe("parseObjectInputFields", () => {
           },
         };
 
-        const [{ type: got }] = parseObjectInputFields([
-          fields,
-        ] as unknown as IntrospectionField[]);
+        const [{ type: got }] = parseObjectInputFields(
+          [fields] as unknown as IntrospectionField[],
+          {},
+        );
         expect(got).toEqual(want);
       }),
     );
-  });
-
-  test("returns an empty array when inputFields is undefined", () => {
-    const got = parseObjectInputFields(undefined);
-    expect(got).toEqual([]);
   });
 
   test("parses the type from the ofType field when it is given", () => {
@@ -135,9 +135,10 @@ describe("parseObjectInputFields", () => {
       },
     };
 
-    const got = parseObjectInputFields([
-      fields,
-    ] as unknown as IntrospectionField[]);
+    const got = parseObjectInputFields(
+      [fields] as unknown as IntrospectionField[],
+      {},
+    );
     expect(got).toEqual([
       {
         enumValues: undefined,
@@ -160,9 +161,10 @@ describe("parseObjectInputFields", () => {
       },
     };
 
-    const got = parseObjectInputFields([
-      fields,
-    ] as unknown as IntrospectionField[]);
+    const got = parseObjectInputFields(
+      [fields] as unknown as IntrospectionField[],
+      {},
+    );
     expect(got).toEqual([
       {
         enumValues: undefined,
@@ -185,9 +187,10 @@ describe("parseObjectInputFields", () => {
       },
     };
 
-    const got = parseObjectInputFields([
-      fields,
-    ] as unknown as IntrospectionField[]);
+    const got = parseObjectInputFields(
+      [fields] as unknown as IntrospectionField[],
+      {},
+    );
     expect(got).toEqual([
       {
         enumValues: undefined,
@@ -206,14 +209,23 @@ describe("parseObjectInputFields", () => {
       type: {
         ...defaultType,
         kind: "ENUM",
-        name: "String",
-        enumValues: [{ name: "ENUM1" }, { name: "ENUM2" }],
+        name: "MyCustomEnum",
       },
     };
 
-    const got = parseObjectInputFields([
-      fields,
-    ] as unknown as IntrospectionField[]);
+    const got = parseObjectInputFields(
+      [fields] as unknown as IntrospectionField[],
+      {
+        MyCustomEnum: {
+          name: "MyCustomEnum",
+          kind: "ENUM",
+          enumValues: [
+            { name: "ENUM1" },
+            { name: "ENUM2" },
+          ] as IntrospectionEnumValue[],
+        },
+      },
+    );
     expect(got).toEqual([
       {
         enumValues: ["ENUM1", "ENUM2"],
@@ -221,7 +233,7 @@ describe("parseObjectInputFields", () => {
         isRequired: false,
         name: "Test",
         type: "enum",
-        originalType: "String",
+        originalType: "MyCustomEnum",
       },
     ]);
   });
@@ -254,6 +266,7 @@ describe("parseObjectInputFields", () => {
 
     const got = parseObjectInputFields(
       fields as unknown as IntrospectionField[],
+      {},
     );
     expect(got).toEqual([]);
   });
@@ -358,6 +371,7 @@ describe("parseSkylarkObject", () => {
       _config: {
         primary_field: "title",
         colour: "#9c27b0",
+        display_name: "SpecialSeason",
       },
       _meta: {
         available_languages: ["en-GB", "pt-PT"],
@@ -398,6 +412,7 @@ describe("parseSkylarkObject", () => {
       config: {
         colour: "#9c27b0",
         primaryField: "title",
+        objectTypeDisplayName: "SpecialSeason",
       },
       meta: {
         language: "pt-PT",
