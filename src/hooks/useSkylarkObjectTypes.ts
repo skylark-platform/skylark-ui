@@ -1,7 +1,14 @@
-import { UseQueryResult } from "@tanstack/react-query";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { DocumentNode } from "graphql";
 import { useMemo } from "react";
 
-import { SkylarkObjectType } from "src/interfaces/skylark";
+import { QueryKeys } from "src/enums/graphql";
+import {
+  GQLSkylarkObjectTypesWithConfig,
+  SkylarkObjectType,
+} from "src/interfaces/skylark";
+import { skylarkRequest } from "src/lib/graphql/skylark/client";
+import { createGetAllObjectsConfigQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   getObjectOperations,
   getAllObjectsMeta,
@@ -40,6 +47,28 @@ export const useSkylarkObjectTypes = (
   return {
     objectTypes,
     ...rest,
+  };
+};
+
+export const useSkylarkObjectTypesWithConfig = () => {
+  const { objectTypes } = useSkylarkObjectTypes(true);
+
+  const query = createGetAllObjectsConfigQuery(objectTypes);
+
+  const { data, ...rest } = useQuery<GQLSkylarkObjectTypesWithConfig>({
+    queryKey: [QueryKeys.ObjectTypesConfig, query],
+    queryFn: async () => skylarkRequest(query as DocumentNode),
+    enabled: query !== null,
+  });
+
+  const objectTypesWithConfig = objectTypes?.map((objectType) => ({
+    objectType,
+    config: data?.[objectType],
+  }));
+
+  return {
+    ...rest,
+    objectTypesWithConfig,
   };
 };
 

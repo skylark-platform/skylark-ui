@@ -8,6 +8,7 @@ import {
   CSSProperties,
   forwardRef,
   Ref,
+  ReactNode,
 } from "react";
 import { GoTriangleDown } from "react-icons/go";
 import { GrClose } from "react-icons/gr";
@@ -16,7 +17,7 @@ import { useVirtual } from "react-virtual";
 import { formatObjectField } from "src/lib/utils";
 
 export interface SelectOption {
-  label: string;
+  label: string | ReactNode;
   value: string;
 }
 
