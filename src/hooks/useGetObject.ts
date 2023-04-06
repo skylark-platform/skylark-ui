@@ -71,9 +71,10 @@ export const useGetObject = (
     isLoading: (rest.isLoading || !query) && !isObjectMetaError,
     isNotFound:
       error?.response.errors?.[0]?.errorType === QueryErrorMessages.NotFound,
-    isObjectTypeNotFound: hasProperty(objectMetaError, "code")
-      ? objectMetaError.code === ErrorCodes.NotFound
-      : false,
+    isObjectTypeNotFound:
+      objectMetaError && hasProperty(objectMetaError, "code")
+        ? objectMetaError.code === ErrorCodes.NotFound
+        : false,
     isError: rest.isError || isObjectMetaError,
     query,
     variables,

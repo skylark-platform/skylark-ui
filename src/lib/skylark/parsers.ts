@@ -79,10 +79,11 @@ const parseObjectInputType = (
 };
 
 export const parseObjectInputFields = (
-  introspectionFields?: readonly (
+  introspectionFields: readonly (
     | IntrospectionField
     | IntrospectionInputValue
   )[],
+  enums: Record<string, IntrospectionEnumType>,
 ): NormalizedObjectField[] => {
   if (!introspectionFields) {
     return [];
@@ -105,9 +106,9 @@ export const parseObjectInputFields = (
 
       if (input.type.kind === "ENUM") {
         type = "enum";
-        enumValues = (input.type as IntrospectionEnumType).enumValues?.map(
-          (val) => val.name,
-        );
+        enumValues = hasProperty(enums, typeName)
+          ? enums[typeName].enumValues.map(({ name }) => name)
+          : [];
       }
 
       return {

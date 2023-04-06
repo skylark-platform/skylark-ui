@@ -1,4 +1,5 @@
 import {
+  IntrospectionEnumType,
   IntrospectionField,
   IntrospectionInputObjectType,
   IntrospectionInputValue,
@@ -74,6 +75,7 @@ const getInputObjectInterfaceFromIntrospectionField = (
 };
 
 const getObjectFields = (
+  enums: Record<string, IntrospectionEnumType>,
   objectInterface?: IntrospectionObjectType,
 ): NormalizedObjectField[] => {
   if (!objectInterface) {
@@ -82,6 +84,7 @@ const getObjectFields = (
 
   const objectFields = parseObjectInputFields(
     objectInterface.fields.filter((field) => field.type.kind !== "OBJECT"),
+    enums,
   );
 
   return objectFields;
@@ -212,6 +215,7 @@ const getObjectRelationshipsFromInputFields = (
 
 const getMutationInfo = (
   schemaTypes: IntrospectionQuery["__schema"]["types"],
+  enums: Record<string, IntrospectionEnumType>,
   inputObject?: IntrospectionInputValue,
 ) => {
   const argName = inputObject?.name || "";
@@ -229,7 +233,7 @@ const getMutationInfo = (
 
   const inputFields = inputInterface?.inputFields;
 
-  const inputs = parseObjectInputFields(inputFields);
+  const inputs = inputFields ? parseObjectInputFields(inputFields, enums) : [];
   const relationships = getObjectRelationshipsFromInputFields(
     schemaTypes,
     inputFields,
@@ -268,6 +272,21 @@ export const getObjectOperations = (
         name === schema.mutationType?.name && kind === "OBJECT",
     ) as IntrospectionObjectType | undefined
   )?.fields;
+
+  const enums: Record<string, IntrospectionEnumType> = schema.types.reduce(
+    (prev, potentialEnumInterface) => {
+      if (potentialEnumInterface.kind !== "ENUM") {
+        return prev;
+      }
+
+      const enumInterface = potentialEnumInterface as IntrospectionEnumType;
+      return {
+        ...prev,
+        [enumInterface.name]: enumInterface,
+      };
+    },
+    {},
+  );
 
   if (!queries || !mutations) {
     throw new ObjectError(
@@ -326,7 +345,7 @@ export const getObjectOperations = (
   const updateInputObjectInterface =
     getInputObjectInterfaceFromIntrospectionField(updateMutation, objectType);
 
-  const objectFields = getObjectFields(getObjectInterface);
+  const objectFields = getObjectFields(enums, getObjectInterface);
   const fieldConfig = getGlobalAndTranslatableFields(
     schema.types,
     objectType,
@@ -363,9 +382,14 @@ export const getObjectOperations = (
   // Parse the relationships out of the create mutation as it has a relationships parameter
   const { relationships, ...createMeta } = getMutationInfo(
     schema.types,
+    enums,
     createInputObjectInterface,
   );
-  const updateMeta = getMutationInfo(schema.types, updateInputObjectInterface);
+  const updateMeta = getMutationInfo(
+    schema.types,
+    enums,
+    updateInputObjectInterface,
+  );
 
   const hasRelationships = relationships.length > 0;
 

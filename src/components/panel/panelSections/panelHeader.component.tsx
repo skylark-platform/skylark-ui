@@ -104,7 +104,7 @@ export const PanelHeader = ({
     <div
       data-testid="panel-header"
       className={clsx(
-        "relative flex flex-col p-4 pb-2 md:p-8",
+        "relative mx-auto flex w-full max-w-7xl flex-col p-4 pb-2 md:p-8",
         isPage
           ? "md:flex-row-reverse md:justify-between md:py-8 md:pt-12"
           : "md:py-6",

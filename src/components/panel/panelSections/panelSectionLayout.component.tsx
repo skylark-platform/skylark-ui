@@ -24,7 +24,7 @@ export const PanelSectionLayout = ({
 }: PanelSectionLayoutProps) => (
   <div
     className={clsx(
-      "flex-grow overflow-y-hidden text-sm",
+      "mx-auto w-full max-w-7xl flex-grow overflow-y-hidden text-sm ",
       isPage && "sm:grid sm:grid-cols-[1fr_3fr]",
     )}
   >

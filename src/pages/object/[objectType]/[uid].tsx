@@ -10,7 +10,7 @@ const Object = () => {
     <div className="pt-nav flex w-full">
       {objectType && uid && (
         <div
-          className="relative mx-auto w-full max-w-7xl"
+          className="relative mx-auto w-full"
           style={{
             maxHeight: `calc(100vh - 4rem)`,
           }}
