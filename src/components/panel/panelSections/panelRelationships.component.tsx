@@ -11,7 +11,6 @@ import {
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
-import { Pill } from "src/components/pill";
 import { DROPPABLE_ID } from "src/constants/skylark";
 import { useGetObjectRelationships } from "src/hooks/useGetObjectRelationships";
 import {
@@ -81,7 +80,17 @@ export const PanelRelationships = ({
   }, [relationshipsData, updatedRelationshipObjects]);
 
   // handle remove from saved/current objects
-  const removeRelationshipObject = (removeUid: string) => {
+  const removeRelationshipObject = (
+    removeUid: string,
+    isNewObject?: boolean,
+  ) => {
+    if (isNewObject) {
+      newRelationshipObjects.filter(({ uid }) => {
+        uid === removeUid;
+      });
+      // set(newRelationshipObjects.filter(({uid})=>{uid === removeUid}))
+    }
+
     if (updatedRelationshipObjects) {
       const filteredUpdatedRelationshipObjects = updatedRelationshipObjects.map(
         (currentRelationship) => {
@@ -183,19 +192,19 @@ export const PanelRelationships = ({
                     {groupedNewRelationshipObjects[relationshipName]?.map(
                       (obj, index) => (
                         <>
-                          <div className="flex" key={obj.uid}>
+                          <div className="flex items-center" key={obj.uid}>
                             <ObjectIdentifierCard key={obj.uid} object={obj} />
-                            <Pill
-                              label={"new"}
-                              bgColor={"green"}
-                              className="w-20"
+                            <span
+                              className={
+                                "flex h-6 min-w-6 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
+                              }
                             />
 
                             <button onClick={() => console.log(obj.uid)}>
                               <Trash
-                                className={clsx(
-                                  "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
-                                )}
+                                className={
+                                  "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error"
+                                }
                               />
                             </button>
                           </div>

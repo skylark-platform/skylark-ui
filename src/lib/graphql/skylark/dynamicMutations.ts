@@ -183,19 +183,19 @@ export const createUpdateObjectRelationshipsMutation = (
       Object.keys(groupedNewRelationshipObjects).includes(relationshipName),
   );
 
-  const linkRelationships = newRelationshipObjects.map(
-    (relationship) => relationship.uid,
-  );
-
   const parsedRelationsToUpdate = relationshipsWithChanges.reduce(
     (acc, { relationshipName }) => {
       const update = {
         [relationshipName]: {
           // at this point one of them can be undefined. TODO
-          unlink: removedRelationshipObjects[relationshipName],
-          link: groupedNewRelationshipObjects[relationshipName]?.map(
-            (obj) => obj.uid,
-          ),
+          ...(removedRelationshipObjects[relationshipName] && {
+            unlink: removedRelationshipObjects[relationshipName],
+          }),
+          ...(groupedNewRelationshipObjects[relationshipName] && {
+            link: groupedNewRelationshipObjects[relationshipName]?.map(
+              (obj) => obj.uid,
+            ),
+          }),
         },
       };
       return { ...acc, ...update };
@@ -231,9 +231,7 @@ export const createUpdateObjectRelationshipsMutation = (
           [object.name.toLowerCase()]: {
             relationships: {
               //TODO
-              assets: {
-                link: linkRelationships,
-              },
+
               ...parsedRelationsToremove,
             },
           },

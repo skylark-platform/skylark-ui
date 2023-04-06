@@ -111,8 +111,28 @@ export const Panel = ({
       const relationshipName = relationships.find(
         (relationship) => relationship.objectType === droppedObject.objectType,
       )?.relationshipName;
+      // checks if is a valid relationship
       if (relationshipName) {
-        setNewRelationshipObjects([...newRelationshipObjects, droppedObject]);
+        // if its already added we shouldn't add
+        const isAlreadyAdded = !!newRelationshipObjects.find(
+          ({ uid }) => droppedObject.uid === uid,
+        );
+        if (isAlreadyAdded) {
+          toast(
+            <Toast
+              title={`Error`}
+              message={`This ${droppedObject.objectType} is already added`}
+              type="warning"
+            />,
+          );
+        } else if (false) {
+          // we need to check if is a current relationship already
+          //TODO
+          // if is a removed one, we should unremove it
+          // TODO
+        } else {
+          setNewRelationshipObjects([...newRelationshipObjects, droppedObject]);
+        }
       } else {
         // setRelationshipObjects(relationshipObjects.filter())
         toast(
@@ -125,7 +145,7 @@ export const Panel = ({
       }
       clearDroppedObject && clearDroppedObject();
     } else if (
-      // TODO if set content
+      // TODO ad if set content
       droppedObject &&
       !contentObjects
         ?.map(({ object }) => object.uid)

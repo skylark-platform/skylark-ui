@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { GrClose } from "react-icons/gr";
 import {
   ToastContainer as ReactToastifyContainer,
   ToastContentProps,
@@ -32,10 +33,11 @@ export const Toast = ({
   type: propType,
 }: ToastProps) => {
   const type = propType || toastProps?.type;
+
   return (
     <div
       className={clsx(
-        "min-h-16 h-full rounded-lg p-3 font-sans text-white",
+        "min-h-16 relative h-full rounded-lg p-3 font-sans text-white",
         (type === "default" || !type) && "bg-brand-primary",
         type === "info" && "bg-info text-info-content",
         type === "success" && "bg-success text-success-content",
@@ -43,7 +45,13 @@ export const Toast = ({
         type === "error" && "bg-error text-error-content",
       )}
     >
-      x<p className="mb-1 text-base">{title}</p>
+      <button
+        onClick={() => toastProps?.deleteToast()}
+        className="absolute top-1 right-2"
+      >
+        <GrClose className="text-sm" />
+      </button>
+      <p className="mb-1 text-base">{title}</p>
       {message && <p className="text-xs font-light">{message}</p>}
     </div>
   );
