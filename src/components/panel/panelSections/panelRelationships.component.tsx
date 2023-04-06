@@ -25,6 +25,7 @@ interface PanelRelationshipsProps {
   objectType: SkylarkObjectType;
   uid: string;
   newRelationshipObjects: ParsedSkylarkObject[];
+  setNewRelationshipObjects: (objs: ParsedSkylarkObject[]) => void;
   removedRelationshipObjects: { [key: string]: string[] } | null;
   setRemovedRelationshipObjects: (uids: { [key: string]: string[] }) => void;
   inEditMode: boolean;
@@ -41,7 +42,7 @@ export const groupObjectsByRelationship = (
       (relationship) => relationship.objectType === cv.objectType,
     )?.relationshipName;
 
-    // at this point i already know that is a valid relationship
+    // at this point i already know that is a valid relationship anw
     if (key) {
       const current = acc[key] || [];
       return { ...acc, [key]: [...current, cv] };
@@ -50,10 +51,16 @@ export const groupObjectsByRelationship = (
   }, {});
 };
 
+const isDuplicate = (
+  findUid: string,
+  relationshipObjects: ParsedSkylarkObject[],
+) => !!relationshipObjects.find(({ uid }) => uid === findUid);
+
 export const PanelRelationships = ({
   objectType,
   uid,
   newRelationshipObjects,
+  setNewRelationshipObjects,
   removedRelationshipObjects,
   setRemovedRelationshipObjects,
   inEditMode,
@@ -88,7 +95,11 @@ export const PanelRelationships = ({
       newRelationshipObjects.filter(({ uid }) => {
         uid === removeUid;
       });
-      // set(newRelationshipObjects.filter(({uid})=>{uid === removeUid}))
+      setNewRelationshipObjects(
+        newRelationshipObjects.filter(({ uid }) => {
+          uid === removeUid;
+        }),
+      );
     }
 
     if (updatedRelationshipObjects) {
@@ -147,12 +158,10 @@ export const PanelRelationships = ({
     id: DROPPABLE_ID,
   });
 
-  console.log("newRelationshipObjects", newRelationshipObjects);
   const groupedNewRelationshipObjects = groupObjectsByRelationship(
     newRelationshipObjects,
     relationships,
   );
-  console.log("nr parsed", groupedNewRelationshipObjects);
 
   if (showDropArea)
     return (
@@ -190,30 +199,38 @@ export const PanelRelationships = ({
                 <div className="transition duration-300 ease-in-out">
                   <>
                     {groupedNewRelationshipObjects[relationshipName]?.map(
-                      (obj, index) => (
-                        <>
-                          <div className="flex items-center" key={obj.uid}>
-                            <ObjectIdentifierCard key={obj.uid} object={obj} />
-                            <span
-                              className={
-                                "flex h-6 min-w-6 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
-                              }
-                            />
-
-                            <button onClick={() => console.log(obj.uid)}>
-                              <Trash
+                      (obj, index) =>
+                        !isDuplicate(obj.uid, displayList) && (
+                          <>
+                            <div className="flex items-center" key={obj.uid}>
+                              <ObjectIdentifierCard
+                                key={obj.uid}
+                                object={obj}
+                              />
+                              <span
                                 className={
-                                  "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error"
+                                  "flex h-6 min-w-6 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
                                 }
                               />
-                            </button>
-                          </div>
-                          {index <
-                            groupedNewRelationshipObjects[relationshipName]
-                              .length -
-                              1 && <PanelSeparator />}
-                        </>
-                      ),
+
+                              <button
+                                onClick={() =>
+                                  removeRelationshipObject(obj.uid, true)
+                                }
+                              >
+                                <Trash
+                                  className={
+                                    "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error"
+                                  }
+                                />
+                              </button>
+                            </div>
+                            {index <
+                              groupedNewRelationshipObjects[relationshipName]
+                                .length -
+                                1 && <PanelSeparator />}
+                          </>
+                        ),
                     )}
                     {relationship && displayList?.length > 0 ? (
                       displayList?.map((obj, index) => (

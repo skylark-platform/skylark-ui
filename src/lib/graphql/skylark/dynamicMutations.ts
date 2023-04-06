@@ -203,21 +203,6 @@ export const createUpdateObjectRelationshipsMutation = (
     {},
   );
 
-  console.log(" %%%%% parsedRelationsToUpdate", parsedRelationsToUpdate);
-
-  const parsedRelationsToremove = Object.keys(
-    removedRelationshipObjects,
-  ).reduce((acc, cv) => {
-    const unlink = { [cv]: { unlink: removedRelationshipObjects[cv] } };
-    return { ...acc, ...unlink };
-  }, {});
-
-  console.log(
-    "want to remove this",
-    removedRelationshipObjects,
-    parsedRelationsToremove,
-  );
-
   const mutation = {
     mutation: {
       __name: `UPDATE_OBJECT_CONTENT_${object.name}`,
@@ -230,9 +215,7 @@ export const createUpdateObjectRelationshipsMutation = (
           uid: new VariableType("uid"),
           [object.name.toLowerCase()]: {
             relationships: {
-              //TODO
-
-              ...parsedRelationsToremove,
+              ...parsedRelationsToUpdate,
             },
           },
         },

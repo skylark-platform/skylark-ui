@@ -126,10 +126,8 @@ export const Panel = ({
             />,
           );
         } else if (false) {
-          // we need to check if is a current relationship already
-          //TODO
-          // if is a removed one, we should unremove it
-          // TODO
+          // check if is a current relationship already is done on panelrelationship component, not showing toast tho
+          // TODO if is a removed one, we should unremove it?
         } else {
           setNewRelationshipObjects([...newRelationshipObjects, droppedObject]);
         }
@@ -184,7 +182,7 @@ export const Panel = ({
       newRelationshipObjects: newRelationshipObjects,
       removedRelationshipObjects: removedRelationshipObjects,
       onSuccess: (updatedObject) => {
-        console.warn("updatedObject in his glory", updatedObject);
+        console.log("updatedObject in his glory", updatedObject);
         setEditMode(false);
         setRemovedRelationshipObjects(null);
         setNewRelationshipObjects([]);
@@ -301,6 +299,7 @@ export const Panel = ({
               removedRelationshipObjects={removedRelationshipObjects}
               setRemovedRelationshipObjects={setRemovedRelationshipObjects}
               newRelationshipObjects={newRelationshipObjects}
+              setNewRelationshipObjects={setNewRelationshipObjects}
               inEditMode={inEditMode}
               showDropArea={showDropArea}
               language={activeLanguage}
