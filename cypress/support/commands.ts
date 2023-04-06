@@ -1,7 +1,7 @@
 import "@percy/cypress";
 import "cypress-iframe";
 
-import { LOCAL_STORAGE } from "../../src/constants/skylark";
+import { LOCAL_STORAGE } from "../../src/constants/localStorage";
 
 /// <reference types="cypress" />
 // ***********************************************
@@ -28,12 +28,24 @@ Cypress.Commands.add("clickOutside", () => {
   cy.get("body").click(0, 0); //0,0 here are the x and y coordinates
 });
 
+Cypress.Commands.add("getByLabel", (label) => {
+  // you can disable individual command logging
+  // by passing {log: false} option
+  cy.log("**getByLabel**");
+  cy.contains("label", label)
+    .invoke("attr", "for")
+    .then((id) => {
+      cy.get("#" + id);
+    });
+});
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       login(): Chainable<void>;
       clickOutside(): Chainable<void>;
+      getByLabel(l: string): Chainable<void>;
     }
   }
 }

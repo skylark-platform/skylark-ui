@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 import { Spinner } from "src/components/icons";
@@ -6,12 +7,18 @@ import { Tabs } from "src/components/tabs/tabs.component";
 import { Toast } from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/useGetObject";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
+import { useUpdateObjectMetadata } from "src/hooks/useUpdateObjectMetadata";
 import { useUpdateObjectRelationships } from "src/hooks/useUpdateObjectRelationships";
 import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
   AddedSkylarkObjectContentObject,
+  SkylarkObjectMetadataField,
+  SkylarkSystemField,
+  SkylarkObjectMeta,
 } from "src/interfaces/skylark";
+import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
+import { hasProperty } from "src/lib/utils";
 
 import {
   PanelAvailability,
@@ -55,12 +62,13 @@ export const Panel = ({
   closePanel,
   objectType,
   uid,
-  language,
+  language: initialLanguage,
   showDropArea,
   droppedObject,
   clearDroppedObject,
 }: PanelProps) => {
-  const [activeLanguage, setActiveLanguage] = useState<string>(language);
+  const [language, setLanguage] = useState<string>(initialLanguage);
+
   const [inEditMode, setEditMode] = useState(false);
   const [contentObjects, setContentObjects] = useState<
     AddedSkylarkObjectContentObject[] | null
@@ -81,18 +89,29 @@ export const Panel = ({
     isError,
     isNotFound,
     error,
-  } = useGetObject(objectType, uid, { language: activeLanguage });
+  } = useGetObject(objectType, uid, { language });
+
+  const metadataForm = useForm<Record<string, SkylarkObjectMetadataField>>({
+    // Can't use onSubmit because we don't have a submit button within the form
+    mode: "onTouched",
+  });
+  const { reset: resetMetadataForm } = metadataForm;
 
   const tabs = useMemo(
     () =>
       [
         PanelTab.Metadata,
         objectMeta?.hasContent && PanelTab.Content,
-        PanelTab.Relationships,
+        objectMeta?.hasRelationships && PanelTab.Relationships,
         objectMeta?.images && PanelTab.Imagery,
-        PanelTab.Availability,
+        objectMeta?.hasAvailability && PanelTab.Availability,
       ].filter((tab) => !!tab) as string[],
-    [objectMeta?.hasContent, objectMeta?.images],
+    [
+      objectMeta?.hasAvailability,
+      objectMeta?.hasContent,
+      objectMeta?.hasRelationships,
+      objectMeta?.images,
+    ],
   );
 
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
@@ -100,10 +119,17 @@ export const Panel = ({
   useEffect(() => {
     // Reset selected tab when object changes
     setEditMode(false);
-    setActiveLanguage(language);
+    setLanguage(initialLanguage);
     setSelectedTab(PanelTab.Metadata);
     setContentObjects(null);
-  }, [uid, language]);
+    resetMetadataForm();
+  }, [uid, initialLanguage, resetMetadataForm]);
+
+  useEffect(() => {
+    if (!inEditMode && metadataForm.formState.isDirty) {
+      setEditMode(true);
+    }
+  }, [inEditMode, metadataForm.formState.isDirty]);
 
   useEffect(() => {
     const relationships = objectMeta?.relationships || [];
@@ -189,6 +215,22 @@ export const Panel = ({
       },
     });
 
+  const { updateObjectMetadata, isLoading: updatingObjectMetadata } =
+    useUpdateObjectMetadata({
+      objectType,
+      uid,
+      language,
+      onSuccess: (updatedMetadata) => {
+        setEditMode(false);
+        resetMetadataForm(
+          parseMetadataForHTMLForm(
+            updatedMetadata,
+            (objectMeta as SkylarkObjectMeta).fields,
+          ),
+        );
+      },
+    });
+
   const { updateObjectContent, isLoading: updatingObjectContents } =
     useUpdateObjectContent({
       objectType,
@@ -213,6 +255,22 @@ export const Panel = ({
       (newRelationshipObjects || removedRelationshipObjects)
     ) {
       updateObjectRelationships();
+    } else if (selectedTab === PanelTab.Metadata) {
+      // Validate then make request
+      metadataForm.trigger().then((allFieldsValid) => {
+        if (allFieldsValid) {
+          const values = metadataForm.getValues();
+          if (
+            hasProperty(values, SkylarkSystemField.ExternalID) &&
+            values[SkylarkSystemField.ExternalID] ===
+              data?.metadata[SkylarkSystemField.ExternalID]
+          ) {
+            // Remove External ID when it hasn't changed
+            delete values[SkylarkSystemField.ExternalID];
+          }
+          updateObjectMetadata(values);
+        }
+      });
     } else {
       setEditMode(false);
     }
@@ -224,22 +282,29 @@ export const Panel = ({
         objectUid={uid}
         objectType={objectType}
         object={data || null}
-        activeLanguage={activeLanguage}
+        language={language}
         graphQLQuery={query}
         graphQLVariables={variables}
         currentTab={selectedTab}
-        tabsWithEditMode={[PanelTab.Content, PanelTab.Relationships]}
+        tabsWithEditMode={[
+          PanelTab.Metadata,
+          PanelTab.Content,
+          PanelTab.Relationships,
+        ]}
         closePanel={closePanel}
         inEditMode={inEditMode}
         save={saveActiveTabChanges}
         isSaving={updatingObjectContents || updatingRelationshipObjects}
+        // isSaving={updatingObjectMetadata || updatingObjectContents}
+        isTranslatable={objectMeta?.isTranslatable}
         toggleEditMode={() => {
-          setEditMode(!inEditMode);
           if (inEditMode) {
+            metadataForm.reset();
             setContentObjects(null);
           }
+          setEditMode(!inEditMode);
         }}
-        setActiveLanguage={setActiveLanguage}
+        setLanguage={setLanguage}
       />
       {isLoading && (
         <div
@@ -268,7 +333,10 @@ export const Panel = ({
           />
           {selectedTab === PanelTab.Metadata && (
             <PanelMetadata
+              uid={uid}
+              language={language}
               metadata={data.metadata}
+              form={metadataForm}
               objectType={objectType}
               objectMeta={objectMeta}
             />
@@ -280,7 +348,7 @@ export const Panel = ({
             <PanelAvailability
               objectType={objectType}
               objectUid={uid}
-              language={activeLanguage}
+              language={language}
             />
           )}
           {selectedTab === PanelTab.Content && data.content && (
@@ -302,7 +370,7 @@ export const Panel = ({
               setNewRelationshipObjects={setNewRelationshipObjects}
               inEditMode={inEditMode}
               showDropArea={showDropArea}
-              language={activeLanguage}
+              language={language}
             />
           )}
         </>

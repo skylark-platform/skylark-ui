@@ -3,7 +3,7 @@ import { ComponentStory } from "@storybook/react";
 import { Checkbox } from "./checkbox.component";
 
 export default {
-  title: "Components/Checkbox",
+  title: "Components/Inputs/Checkbox",
   component: Checkbox,
 };
 

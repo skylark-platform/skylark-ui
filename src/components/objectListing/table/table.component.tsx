@@ -14,7 +14,10 @@ import { VirtualItem } from "react-virtual";
 import { Spinner } from "src/components/icons";
 import { RowActions } from "src/components/objectListing/rowActions";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { ParsedSkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
+import {
+  ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
+} from "src/interfaces/skylark";
 
 import { DisplayNameTableCell } from "./cell";
 
@@ -25,11 +28,7 @@ export interface TableProps {
   totalRows: number;
   withDraggableRow?: boolean;
   isLoadingMore?: boolean;
-  setPanelObject?: (obj: {
-    uid: string;
-    objectType: string;
-    language: string;
-  }) => void;
+  setPanelObject?: (o: SkylarkObjectIdentifier) => void;
 }
 
 export interface TableRowProps {

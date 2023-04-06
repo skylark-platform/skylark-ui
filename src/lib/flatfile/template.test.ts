@@ -1,7 +1,5 @@
-import {
-  TEMPLATE_FIELDS_TO_IGNORE,
-  TEMPLATE_REGEX,
-} from "src/constants/flatfile";
+import { TEMPLATE_FIELDS_TO_IGNORE } from "src/constants/flatfile";
+import { INPUT_REGEX } from "src/constants/skylark";
 import { NormalizedObjectField } from "src/interfaces/skylark";
 
 import { convertObjectInputToFlatfileSchema } from "./template";
@@ -9,6 +7,7 @@ import { convertObjectInputToFlatfileSchema } from "./template";
 const defaultInput: NormalizedObjectField = {
   name: "Input",
   type: "string",
+  originalType: "String",
   isList: false,
   isRequired: false,
 };
@@ -31,18 +30,21 @@ test("returns all required properties", () => {
     {
       name: "uid",
       type: "string",
+      originalType: "String",
       isList: false,
       isRequired: true,
     },
     {
       name: "episode_number",
       type: "int",
+      originalType: "Int",
       isList: false,
       isRequired: true,
     },
     {
       name: "title",
       type: "string",
+      originalType: "String",
       isList: false,
       isRequired: false,
     },
@@ -232,7 +234,7 @@ describe("input type parsing", () => {
         label: input.name,
         type: "string",
         regexp: {
-          pattern: TEMPLATE_REGEX.ipaddress,
+          pattern: INPUT_REGEX.ipaddress,
           flags: "isg",
           ignoreBlanks: true,
         },
@@ -253,7 +255,7 @@ describe("input type parsing", () => {
         label: input.name,
         type: "string",
         regexp: {
-          pattern: TEMPLATE_REGEX.url,
+          pattern: INPUT_REGEX.url,
           flags: "isg",
           ignoreBlanks: true,
         },

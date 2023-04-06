@@ -5,7 +5,7 @@ import React from "react";
 import { LanguageSelect } from "./languageSelect.component";
 
 export default {
-  title: "Components/Select/LanguageSelect",
+  title: "Components/Inputs/Select/LanguageSelect",
   component: LanguageSelect,
   argTypes: {},
 };

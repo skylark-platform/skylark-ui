@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-import { LOCAL_STORAGE } from "src/constants/skylark";
+import { LOCAL_STORAGE } from "src/constants/localStorage";
 
 export default function BetaConnect() {
   const { query, push: navigateTo } = useRouter();

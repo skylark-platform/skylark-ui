@@ -8,7 +8,8 @@ import { GrClose, GrCopy, GrGraphQl } from "react-icons/gr";
 import { Button } from "src/components/button";
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
-import { HREFS, LOCAL_STORAGE } from "src/constants/skylark";
+import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { HREFS } from "src/constants/skylark";
 
 interface GraphiQLTabStateTab {
   hash: null;

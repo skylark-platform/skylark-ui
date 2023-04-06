@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { Select } from "./select.component";
 
 export default {
-  title: "Components/Select",
+  title: "Components/Inputs/Select",
   component: Select,
 };
 
@@ -36,6 +36,13 @@ WithSelected.args = {
 export const WithLabel = Template.bind({});
 WithLabel.args = {
   label: "Select Object Type",
+  options,
+};
+
+export const WithFormLabel = Template.bind({});
+WithFormLabel.args = {
+  label: "Select Object Type",
+  labelVariant: "form",
   options,
 };
 

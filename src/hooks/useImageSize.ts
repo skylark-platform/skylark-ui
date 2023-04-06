@@ -6,15 +6,16 @@ const getImgSize = (url: string, cb: CallableFunction) => {
   img.src = url;
 };
 
-export const useImageSize = (src: string) => {
+export const useImageSize = (src: string | null) => {
   const [size, setSize] = useState<{ w: number; h: number } | null>(null);
 
-  getImgSize(src, (img: HTMLImageElement) => {
-    setSize({
-      w: img.naturalWidth,
-      h: img.naturalHeight,
+  src &&
+    getImgSize(src, (img: HTMLImageElement) => {
+      setSize({
+        w: img.naturalWidth,
+        h: img.naturalHeight,
+      });
     });
-  });
 
   return { size };
 };

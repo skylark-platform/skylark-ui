@@ -6,19 +6,22 @@ import {
 } from "json-to-graphql-query";
 
 import {
+  BuiltInSkylarkObjectType,
   NormalizedObjectField,
   SkylarkGraphQLObject,
   SkylarkObjectMeta,
+  SkylarkObjectType,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 
-const common = {
-  variables: {
-    ignoreAvailability: "Boolean = true",
-  },
-  args: {
-    ignore_availability: new VariableType("ignoreAvailability"),
-  },
+const fieldNamesToNeverAlias: string[] = [
+  SkylarkSystemField.UID,
+  SkylarkSystemField.ExternalID,
+];
+
+const commonGraphQLOpts = {
+  variables: {},
+  args: {},
   objectConfig: {
     _config: {
       primary_field: true,
@@ -39,23 +42,68 @@ const common = {
   },
 };
 
-const fieldNamesToNeverAlias: string[] = [
-  SkylarkSystemField.UID,
-  SkylarkSystemField.ExternalID,
-];
-
-const getLanguageVariableAndArg = (addLanguageVariable?: boolean) => {
-  const args = addLanguageVariable
-    ? { language: new VariableType("language") }
-    : {};
-  const variables = addLanguageVariable ? { language: "String" } : {};
+const getLanguageVariableAndArg = (shouldAdd: boolean) => {
+  const args = shouldAdd ? { language: new VariableType("language") } : {};
+  const variables = shouldAdd ? { language: "String" } : {};
   return {
     args,
     variables,
   };
 };
 
-const generateFieldsToReturn = (
+const getIgnoreAvailabilityVariableAndArg = (shouldAdd: boolean) => {
+  const args = shouldAdd
+    ? { ignore_availability: new VariableType("ignoreAvailability") }
+    : {};
+  const variables = shouldAdd ? { ignoreAvailability: "Boolean = true" } : {};
+  return {
+    args,
+    variables,
+  };
+};
+
+export const generateVariablesAndArgs = (
+  objectType: SkylarkObjectType | "search",
+  operationType: "Query" | "Mutation",
+  addLanguageVariable = false,
+): {
+  variables: object;
+  args: object;
+  fields: object;
+} => {
+  const language = getLanguageVariableAndArg(addLanguageVariable);
+  const ignoreAvailability = getIgnoreAvailabilityVariableAndArg(
+    operationType === "Query",
+  );
+  if (objectType === BuiltInSkylarkObjectType.Availability) {
+    return {
+      variables: {},
+      args: {},
+      fields: {
+        ...commonGraphQLOpts.objectConfig,
+      },
+    };
+  }
+
+  return {
+    variables: {
+      ...commonGraphQLOpts.variables,
+      ...ignoreAvailability.variables,
+      ...language.variables,
+    },
+    args: {
+      ...commonGraphQLOpts.args,
+      ...ignoreAvailability.args,
+      ...language.args,
+    },
+    fields: {
+      ...commonGraphQLOpts.objectConfig,
+      ...commonGraphQLOpts.objectMeta,
+    },
+  };
+};
+
+export const generateFieldsToReturn = (
   fields: SkylarkObjectMeta["fields"],
   fieldAliasPrefix?: string,
 ) => {
@@ -140,7 +188,7 @@ export const generateContentsToReturn = (
           __on: objectsToRequest.map((object) => ({
             __typeName: object.name,
             __typename: true, // To remove the alias later
-            ...common.objectConfig,
+            ...commonGraphQLOpts.objectConfig,
             ...generateFieldsToReturn(object.fields, `__${object.name}__`),
           })),
         },
@@ -188,15 +236,17 @@ export const createGetObjectQuery = (
   if (!object || !object.operations.get) {
     return null;
   }
-
-  const language = getLanguageVariableAndArg(addLanguageVariable);
+  const common = generateVariablesAndArgs(
+    object.name,
+    "Query",
+    addLanguageVariable,
+  );
 
   const query = {
     query: {
       __name: createGetObjectQueryName(object.name),
       __variables: {
         ...common.variables,
-        ...language.variables, // TODO always send language variable when BE supports sending null without error
         uid: "String",
         externalId: "String",
       },
@@ -204,13 +254,11 @@ export const createGetObjectQuery = (
         __aliasFor: object.operations.get.name,
         __args: {
           ...common.args,
-          ...language.args, // TODO always send language variable when BE supports sending null without error
           uid: new VariableType("uid"),
           external_id: new VariableType("externalId"),
         },
         __typename: true,
-        ...common.objectConfig,
-        ...common.objectMeta,
+        ...common.fields,
         ...generateFieldsToReturn(object.fields),
         ...generateRelationshipsToReturn(object),
         ...generateContentsToReturn(object, contentTypesToRequest),
@@ -231,14 +279,17 @@ export const createGetObjectAvailabilityQuery = (
     return null;
   }
 
-  const language = getLanguageVariableAndArg(addLanguageVariable);
+  const common = generateVariablesAndArgs(
+    object.name,
+    "Query",
+    addLanguageVariable,
+  );
 
   const query = {
     query: {
       __name: createGetObjectAvailabilityQueryName(object.name),
       __variables: {
         ...common.variables,
-        ...language.variables,
         uid: "String",
         externalId: "String",
         nextToken: "String",
@@ -247,7 +298,6 @@ export const createGetObjectAvailabilityQuery = (
         __aliasFor: object.operations.get.name,
         __args: {
           ...common.args,
-          ...language.args,
           uid: new VariableType("uid"),
           external_id: new VariableType("externalId"),
         },
@@ -313,37 +363,37 @@ export const createSearchObjectsQuery = (
     return null;
   }
 
-  const language = getLanguageVariableAndArg(true);
+  const { args, variables } = generateVariablesAndArgs("search", "Query", true);
 
   const query = {
     query: {
       __name: "SEARCH",
       __variables: {
-        ...common.variables,
-        ...language.variables,
+        ...variables,
         queryString: "String!",
         offset: "Int",
         limit: "Int",
       },
       search: {
         __args: {
-          ...common.args,
+          ...args,
           query: new VariableType("queryString"),
           offset: new VariableType("offset"),
           limit: new VariableType("limit"),
           // language: null, TODO disable language searching when language filter is added
-          ...language.args,
         },
         __typename: true,
         objects: {
-          __on: objectsToRequest.map((object) => ({
-            __typeName: object.name,
-            __typename: true, // To remove the alias later
-            ...common.objectConfig,
-            ...common.objectMeta,
-            ...generateFieldsToReturn(object.fields, `__${object.name}__`),
-            ...generateRelationshipsToReturn(object, true),
-          })),
+          __on: objectsToRequest.map((object) => {
+            const common = generateVariablesAndArgs(object.name, "Query");
+            return {
+              __typeName: object.name,
+              __typename: true, // To remove the alias later
+              ...common.fields,
+              ...generateFieldsToReturn(object.fields, `__${object.name}__`),
+              ...generateRelationshipsToReturn(object, true),
+            };
+          }),
         },
       },
     },
@@ -363,7 +413,11 @@ export const createGetObjectRelationshipsQuery = (
     return null;
   }
 
-  const language = getLanguageVariableAndArg(addLanguageVariable);
+  const common = generateVariablesAndArgs(
+    object.name,
+    "Query",
+    addLanguageVariable,
+  );
 
   const query = {
     query: {
@@ -372,16 +426,18 @@ export const createGetObjectRelationshipsQuery = (
         uid: "String",
         nextToken: "String",
         ...common.variables,
-        ...language.variables,
       },
       getObjectRelationships: {
         __aliasFor: object.operations.get.name,
         __args: {
           ...common.args,
-          ...language.args,
           uid: new VariableType("uid"),
         },
         ...object.relationships.reduce((acc, currentValue) => {
+          const common = generateVariablesAndArgs(
+            currentValue.objectType,
+            "Query",
+          );
           return {
             ...acc,
             [currentValue.relationshipName]: {
@@ -396,7 +452,7 @@ export const createGetObjectRelationshipsQuery = (
                 ...generateFieldsToReturn(
                   relationshipsFields[currentValue.objectType],
                 ),
-                ...common.objectConfig,
+                ...common.fields,
               },
             },
           };

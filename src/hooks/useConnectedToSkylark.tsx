@@ -2,7 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import request from "graphql-request";
 import { useEffect, useState } from "react";
 
-import { LOCAL_STORAGE, REQUEST_HEADERS } from "src/constants/skylark";
+import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { REQUEST_HEADERS } from "src/constants/skylark";
 import { GQLSkylarkObjectTypesResponse } from "src/interfaces/graphql/introspection";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 

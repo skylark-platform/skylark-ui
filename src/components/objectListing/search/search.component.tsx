@@ -3,8 +3,8 @@ import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useEffect, useRef, useState } from "react";
 
+import { LanguageSelect } from "src/components/inputs/select";
 import { SearchFilter } from "src/components/objectListing/search/searchFilter/searchFilter.component";
-import { LanguageSelect } from "src/components/select";
 import { SearchFilters } from "src/hooks/useSearch";
 import { SkylarkObjectType } from "src/interfaces/skylark";
 
@@ -91,7 +91,9 @@ export const Search = ({
               objectTypes={objectTypes}
               activeFilters={activeFilters}
               columns={columns}
-              visibleColumns={Object.keys(visibleColumns)}
+              visibleColumns={Object.keys(visibleColumns).filter(
+                (column) => visibleColumns[column],
+              )}
               graphqlQuery={graphqlQuery}
               onFilterSave={onFilterSaveWrapper}
             />
@@ -101,6 +103,7 @@ export const Search = ({
       <div className="ml-2">
         <LanguageSelect
           variant="primary"
+          className="w-36"
           onChange={(language) =>
             onFilterChange({ ...activeFilters, language }, visibleColumns)
           }

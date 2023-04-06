@@ -33,6 +33,31 @@ export const GET_SKYLARK_SCHEMA = gql`
             type {
               name
               kind
+              ofType {
+                name
+                kind
+                inputFields {
+                  name
+                  type {
+                    name
+                    kind
+                    enumValues {
+                      name
+                    }
+                    ofType {
+                      name
+                      kind
+                    }
+                    inputFields {
+                      name
+                      type {
+                        name
+                        kind
+                      }
+                    }
+                  }
+                }
+              }
               inputFields {
                 name
                 type {

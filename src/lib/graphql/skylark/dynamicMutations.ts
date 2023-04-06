@@ -2,14 +2,21 @@ import { gql } from "graphql-tag";
 import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 
 import { groupObjectsByRelationship } from "src/components/panel/panelSections/panelRelationships.component";
+import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
   ParsedSkylarkObject,
   ParsedSkylarkObjectContentObject,
   SkylarkObjectMeta,
+  SkylarkObjectMetadataField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
+import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
 
-import { generateContentsToReturn } from "./dynamicQueries";
+import {
+  generateContentsToReturn,
+  generateFieldsToReturn,
+  generateVariablesAndArgs,
+} from "./dynamicQueries";
 
 interface SetContentOperation {
   operation: "link" | "unlink" | "reposition";
@@ -25,18 +32,120 @@ export const createDeleteObjectMutation = (
     return null;
   }
 
+  const common = generateVariablesAndArgs(object.name, "Mutation", true);
+
   const mutation = {
     mutation: {
       __name: `DELETE_${object.name}`,
       __variables: {
         uid: "String!",
+        ...common.variables,
       },
       deleteObject: {
         __aliasFor: object.operations.delete.name,
         __args: {
           uid: new VariableType("uid"),
+          ...common.args,
         },
         uid: true,
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(mutation);
+
+  return gql(graphQLQuery);
+};
+
+export const createCreateObjectMutation = (
+  objectMeta: SkylarkObjectMeta | null,
+  metadata: Record<string, SkylarkObjectMetadataField>,
+  addLanguageVariable = false,
+) => {
+  if (!objectMeta || !objectMeta.operations.update) {
+    return null;
+  }
+
+  const parsedMetadata = parseMetadataForGraphQLRequest(
+    metadata,
+    objectMeta.operations.update.inputs,
+  );
+
+  const common = generateVariablesAndArgs(
+    objectMeta.name,
+    "Mutation",
+    addLanguageVariable,
+  );
+
+  const mutation = {
+    mutation: {
+      __name: `CREATE_OBJECT_${objectMeta.name}`,
+      __variables: common.variables,
+      createObject: {
+        __aliasFor: objectMeta.operations.create.name,
+        __args: {
+          ...common.args,
+          [objectMeta.operations.create.argName]: parsedMetadata,
+        },
+        ...common.fields,
+        uid: true,
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(mutation);
+
+  return gql(graphQLQuery);
+};
+
+export const createUpdateObjectMetadataMutation = (
+  objectMeta: SkylarkObjectMeta | null,
+  metadata: Record<string, SkylarkObjectMetadataField>,
+  addLanguageVariable = false,
+) => {
+  if (!objectMeta || !objectMeta.operations.update) {
+    return null;
+  }
+
+  const common = generateVariablesAndArgs(
+    objectMeta.name,
+    "Mutation",
+    addLanguageVariable,
+  );
+
+  const options = OBJECT_OPTIONS.find(({ objectTypes }) =>
+    objectTypes.includes(objectMeta.name),
+  );
+
+  const metadataWithHiddenFieldsRemoved = options
+    ? Object.fromEntries(
+        Object.entries(metadata).filter(
+          ([key]) => !options?.hiddenFields.includes(key),
+        ),
+      )
+    : metadata;
+
+  const parsedMetadata = parseMetadataForGraphQLRequest(
+    metadataWithHiddenFieldsRemoved,
+    objectMeta.operations.update.inputs,
+  );
+
+  const mutation = {
+    mutation: {
+      __name: `UPDATE_OBJECT_METADATA_${objectMeta.name}`,
+      __variables: {
+        ...common.variables,
+        uid: "String!",
+      },
+      updateObjectMetadata: {
+        __aliasFor: objectMeta.operations.update.name,
+        __args: {
+          ...common.args,
+          uid: new VariableType("uid"),
+          [objectMeta.operations.update.argName]: parsedMetadata,
+        },
+        uid: true,
+        ...generateFieldsToReturn(objectMeta.fields),
       },
     },
   };

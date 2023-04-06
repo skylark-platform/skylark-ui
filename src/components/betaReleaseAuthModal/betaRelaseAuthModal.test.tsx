@@ -7,7 +7,7 @@ import {
   screen,
   waitFor,
 } from "src/__tests__/utils/test-utils";
-import { LOCAL_STORAGE } from "src/constants/skylark";
+import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
 import { AddAuthTokenModal } from "./betaReleaseAuthModal.component";
@@ -63,13 +63,6 @@ test("renders and close with close button", () => {
 
 test("clicks the copy buttons", () => {
   const setIsOpen = jest.fn();
-  Object.assign(navigator, {
-    clipboard: {
-      writeText: () => {
-        return;
-      },
-    },
-  });
 
   jest.spyOn(navigator.clipboard, "writeText");
 

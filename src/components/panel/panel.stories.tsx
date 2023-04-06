@@ -46,7 +46,7 @@ Imagery.play = async ({ canvasElement }) => {
 export const Content = Template.bind({});
 Content.parameters = Default.parameters;
 Content.args = {
-  objectType: "Set",
+  objectType: "SkylarkSet",
   uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
 };
 Content.play = async ({ canvasElement }) => {
@@ -63,7 +63,7 @@ Content.play = async ({ canvasElement }) => {
 export const ContentEditing = Template.bind({});
 ContentEditing.parameters = Default.parameters;
 ContentEditing.args = {
-  objectType: "Set",
+  objectType: "SkylarkSet",
   uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
 };
 ContentEditing.play = async ({ canvasElement }) => {

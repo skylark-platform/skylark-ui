@@ -15,7 +15,7 @@ const graphqlQuery = {
 };
 
 const objectTypes = [
-  "Sets",
+  "Set",
   "Brand",
   "Season",
   "Episode",

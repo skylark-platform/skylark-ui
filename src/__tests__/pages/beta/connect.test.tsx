@@ -1,5 +1,5 @@
 import { render, screen } from "src/__tests__/utils/test-utils";
-import { LOCAL_STORAGE } from "src/constants/skylark";
+import { LOCAL_STORAGE } from "src/constants/localStorage";
 import ConnectPage from "src/pages/beta/connect";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
