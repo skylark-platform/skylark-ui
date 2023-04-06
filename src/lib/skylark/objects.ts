@@ -12,6 +12,7 @@ import {
 } from "graphql";
 
 import { OBJECT_LIST_TABLE, SYSTEM_FIELDS } from "src/constants/skylark";
+import { ErrorCodes } from "src/interfaces/errors";
 import {
   SkylarkObjectType,
   SkylarkObjectMeta,
@@ -22,6 +23,7 @@ import {
   NormalizedObjectField,
   SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
+import { ObjectError } from "src/lib/utils/errors";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
 
@@ -244,6 +246,16 @@ export const getObjectOperations = (
   objectType: SkylarkObjectType,
   schema: IntrospectionQuery["__schema"],
 ): SkylarkObjectMeta => {
+  const objectTypeExists = schema.types.find(
+    ({ name, kind }) => name === objectType && kind === "OBJECT",
+  );
+  if (!objectTypeExists) {
+    throw new ObjectError(
+      ErrorCodes.NotFound,
+      `Schema: Object "${objectType}" not found`,
+    );
+  }
+
   const queries = (
     schema.types.find(
       ({ name, kind }) => name === schema.queryType.name && kind === "OBJECT",
@@ -258,7 +270,8 @@ export const getObjectOperations = (
   )?.fields;
 
   if (!queries || !mutations) {
-    throw new Error(
+    throw new ObjectError(
+      ErrorCodes.NotFound,
       `Schema: Unable to locate "${
         queries ? "Queries" : "Mutations"
       }" in the Introspection response`,
@@ -298,8 +311,9 @@ export const getObjectOperations = (
     ]
       .filter((str) => str)
       .join(", ");
-    throw new Error(
-      `Skylark ObjectType "${objectType}" is missing expected operations "${missingOperations}"`,
+    throw new ObjectError(
+      ErrorCodes.NotFound,
+      `Schema: Skylark ObjectType "${objectType}" is missing expected operations "${missingOperations}"`,
     );
   }
 

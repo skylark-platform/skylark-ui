@@ -76,6 +76,7 @@ export const Panel = ({
     variables,
     isError,
     isNotFound,
+    isObjectTypeNotFound,
     error,
   } = useGetObject(objectType, uid, { language });
 
@@ -245,9 +246,11 @@ export const Panel = ({
       )}
       {!isLoading && isError && (
         <div className="flex h-4/5 w-full items-center justify-center pb-10">
-          {isNotFound ? (
-            <p>{`${objectType} ${uid} not found`}</p>
-          ) : (
+          {isObjectTypeNotFound && (
+            <p>{`Object Type "${objectType}" not found`}</p>
+          )}
+          {isNotFound && <p>{`${objectType} "${uid}" not found`}</p>}
+          {!isNotFound && !isObjectTypeNotFound && (
             <p>{error?.response.errors[0].message}</p>
           )}
         </div>
@@ -258,7 +261,7 @@ export const Panel = ({
             tabs={tabs}
             selectedTab={selectedTab}
             onChange={setSelectedTab}
-            disabled={inEditMode}
+            disabled={inEditMode || isLoading || isError}
           />
           {selectedTab === PanelTab.Metadata && (
             <PanelMetadata

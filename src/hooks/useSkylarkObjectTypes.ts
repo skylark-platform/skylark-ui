@@ -6,6 +6,7 @@ import {
   getObjectOperations,
   getAllObjectsMeta,
 } from "src/lib/skylark/objects";
+import { ObjectError } from "src/lib/utils/errors";
 
 import {
   useSkylarkSchemaInterfaceType,
@@ -46,16 +47,24 @@ export const useSkylarkObjectTypes = (
 export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
   const { data, ...rest } = useSkylarkSchemaIntrospection();
 
-  if (!data || !objectType) {
+  if (!data || !objectType || rest.isError) {
     return { objectOperations: null, ...rest };
   }
 
-  const objectOperations = getObjectOperations(objectType, data);
-
-  return {
-    objectOperations,
-    ...rest,
-  };
+  try {
+    const objectOperations = getObjectOperations(objectType, data);
+    return {
+      objectOperations,
+      ...rest,
+    };
+  } catch (err) {
+    return {
+      objectOperations: null,
+      ...rest,
+      isError: true,
+      error: err as ObjectError | unknown,
+    };
+  }
 };
 
 export const useAllObjectsMeta = (searchable: boolean) => {
