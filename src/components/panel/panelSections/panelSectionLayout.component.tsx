@@ -29,7 +29,10 @@ export const PanelSectionLayout = ({
     )}
   >
     {isPage && (
-      <div className="pointer hidden flex-col p-4 text-left text-sm font-semibold sm:flex md:p-8">
+      <div
+        className="pointer hidden flex-col p-4 text-left text-sm font-semibold sm:flex md:p-8"
+        data-testid="panel-page-side-navigation"
+      >
         {sections.map(({ id, title }) => (
           <button
             key={`panel-section-scroll-button-${id}`}

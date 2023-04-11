@@ -120,6 +120,39 @@ describe("metadata view", () => {
     expect(screen.getByText("Global Metadata")).toBeInTheDocument();
   });
 
+  test("renders the side menu when isPage is true", async () => {
+    render(
+      <Panel
+        isPage
+        object={movieObject}
+        closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByTestId("panel-page-side-navigation"),
+      ).toBeInTheDocument(),
+    );
+
+    const withinPanelPageSideNavigation = within(
+      screen.getByTestId("panel-page-side-navigation"),
+    );
+    expect(
+      withinPanelPageSideNavigation.getByText("System Metadata"),
+    ).toBeInTheDocument();
+    expect(
+      withinPanelPageSideNavigation.getByText("Translatable Metadata"),
+    ).toBeInTheDocument();
+    expect(
+      withinPanelPageSideNavigation.getByText("Global Metadata"),
+    ).toBeInTheDocument();
+  });
+
   test("renders object not found when the object doesn't exist", async () => {
     server.use(
       graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {

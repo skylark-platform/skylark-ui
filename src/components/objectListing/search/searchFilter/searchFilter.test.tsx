@@ -38,7 +38,7 @@ test("renders with all checkboxes checked", async () => {
   });
 });
 
-test("calls onFilterSave when apply is clicked", async () => {
+test("changes checkboxes and calls onFilterSave when apply is clicked", async () => {
   const onFilterSave = jest.fn();
 
   render(
@@ -54,11 +54,14 @@ test("calls onFilterSave when apply is clicked", async () => {
 
   await screen.findAllByRole("checkbox");
 
+  fireEvent.click(screen.getByRole("checkbox", { name: "Season" }));
+  fireEvent.click(screen.getByRole("checkbox", { name: "slug" }));
+
   fireEvent.click(screen.getByText("Apply"));
 
   expect(onFilterSave).toHaveBeenCalledWith(
-    { objectTypes, language: "" },
-    { external_id: true, slug: true, uid: true },
+    { objectTypes: ["Brand", "Episode"], language: "" },
+    { external_id: true, slug: false, uid: true },
   );
 });
 
