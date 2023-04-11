@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+  ReducerAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
 
 import { Spinner } from "src/components/icons";
@@ -13,6 +20,7 @@ import {
   SkylarkObjectMetadataField,
   SkylarkSystemField,
   SkylarkObjectMeta,
+  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import { hasProperty } from "src/lib/utils";
@@ -29,12 +37,12 @@ import { PanelRelationships } from "./panelSections/panelRelationships.component
 interface PanelProps {
   isPage?: boolean;
   closePanel?: () => void;
-  objectType: string;
-  uid: string;
-  language: string;
+  object: SkylarkObjectIdentifier;
   showDropArea?: boolean;
   droppedObject?: ParsedSkylarkObject;
   clearDroppedObject?: () => void;
+  setPanelObject: (o: SkylarkObjectIdentifier) => void;
+  navigateToPreviousPanelObject?: () => void;
 }
 
 enum PanelTab {
@@ -50,6 +58,7 @@ function parseSkylarkObjectContent(
 ): ParsedSkylarkObjectContentObject {
   return {
     config: skylarkObject.config,
+    meta: skylarkObject.meta,
     object: skylarkObject.metadata,
     objectType: skylarkObject.objectType,
     position: 1,
@@ -58,16 +67,15 @@ function parseSkylarkObjectContent(
 
 export const Panel = ({
   isPage,
+  object,
   closePanel,
-  objectType,
-  uid,
-  language: initialLanguage,
   showDropArea,
   droppedObject,
   clearDroppedObject,
+  setPanelObject,
+  navigateToPreviousPanelObject,
 }: PanelProps) => {
-  const [language, setLanguage] = useState<string>(initialLanguage);
-
+  const { uid, objectType, language } = object;
   const {
     data,
     objectMeta,
@@ -110,13 +118,11 @@ export const Panel = ({
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
 
   useEffect(() => {
-    // Reset selected tab when object changes
     setEditMode(false);
-    setLanguage(initialLanguage);
     setSelectedTab(PanelTab.Metadata);
     setContentObjects(null);
     resetMetadataForm();
-  }, [uid, initialLanguage, resetMetadataForm]);
+  }, [uid, objectType, language, resetMetadataForm]);
 
   useEffect(() => {
     if (!inEditMode && metadataForm.formState.isDirty) {
@@ -234,7 +240,10 @@ export const Panel = ({
           }
           setEditMode(!inEditMode);
         }}
-        setLanguage={setLanguage}
+        setLanguage={(newLanguage) =>
+          setPanelObject({ uid, objectType, language: newLanguage })
+        }
+        navigateToPreviousPanelObject={navigateToPreviousPanelObject}
       />
       {isLoading && (
         <div
@@ -279,7 +288,12 @@ export const Panel = ({
             />
           )}
           {selectedTab === PanelTab.Imagery && data.images && (
-            <PanelImages isPage={isPage} images={data.images} />
+            <PanelImages
+              isPage={isPage}
+              images={data.images}
+              setPanelObject={setPanelObject}
+              language={language}
+            />
           )}
           {selectedTab === PanelTab.Availability && (
             <PanelAvailability
@@ -287,6 +301,7 @@ export const Panel = ({
               objectType={objectType}
               objectUid={uid}
               language={language}
+              setPanelObject={setPanelObject}
             />
           )}
           {selectedTab === PanelTab.Content && data.content && (
@@ -297,6 +312,7 @@ export const Panel = ({
               objectType={objectType}
               onReorder={setContentObjects}
               showDropArea={showDropArea}
+              setPanelObject={setPanelObject}
             />
           )}
           {selectedTab === PanelTab.Relationships && (
@@ -305,6 +321,7 @@ export const Panel = ({
               objectType={objectType}
               uid={uid}
               language={language}
+              setPanelObject={setPanelObject}
             />
           )}
         </>

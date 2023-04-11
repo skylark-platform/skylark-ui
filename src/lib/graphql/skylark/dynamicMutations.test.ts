@@ -5,6 +5,8 @@ import {
 } from "src/__tests__/utils/objectOperations";
 import {
   ParsedSkylarkObjectConfig,
+  ParsedSkylarkObjectContent,
+  ParsedSkylarkObjectContentObject,
   ParsedSkylarkObjectMetadata,
 } from "src/interfaces/skylark";
 
@@ -48,27 +50,34 @@ describe("createUpdateSetContentPositionMutation", () => {
   });
 
   test("returns expected GraphQL update mutation when no items are reordered", () => {
-    const content: {
-      objectType: string;
-      config: ParsedSkylarkObjectConfig;
-      object: ParsedSkylarkObjectMetadata;
-      position: number;
-    }[] = [
+    const content: ParsedSkylarkObjectContentObject[] = [
       {
         objectType: "Episode",
         config: {},
+        meta: {
+          language: "en-GB",
+          availableLanguages: ["en-GB"],
+        },
         position: 1,
         object: { uid: "episode_1", external_id: "" },
       },
       {
         objectType: "Episode",
         config: {},
+        meta: {
+          language: "en-GB",
+          availableLanguages: ["en-GB"],
+        },
         position: 2,
         object: { uid: "episode_2", external_id: "" },
       },
       {
         objectType: "Movie",
         config: {},
+        meta: {
+          language: "en-GB",
+          availableLanguages: ["en-GB"],
+        },
         position: 3,
         object: { uid: "movie_1", external_id: "" },
       },
@@ -87,27 +96,34 @@ describe("createUpdateSetContentPositionMutation", () => {
   });
 
   test("returns expected GraphQL update mutation when items are reordered", () => {
-    const content: {
-      objectType: string;
-      config: ParsedSkylarkObjectConfig;
-      object: ParsedSkylarkObjectMetadata;
-      position: number;
-    }[] = [
+    const content: ParsedSkylarkObjectContentObject[] = [
       {
         objectType: "Episode",
         config: {},
+        meta: {
+          language: "en-GB",
+          availableLanguages: ["en-GB"],
+        },
         position: 1,
         object: { uid: "episode_1", external_id: "" },
       },
       {
         objectType: "Episode",
         config: {},
+        meta: {
+          language: "en-GB",
+          availableLanguages: ["en-GB"],
+        },
         position: 2,
         object: { uid: "episode_2", external_id: "" },
       },
       {
         objectType: "Movie",
         config: {},
+        meta: {
+          language: "en-GB",
+          availableLanguages: ["en-GB"],
+        },
         position: 3,
         object: { uid: "movie_1", external_id: "" },
       },
@@ -128,27 +144,34 @@ describe("createUpdateSetContentPositionMutation", () => {
   });
 
   test("returns expected GraphQL update mutation when an item is removed", () => {
-    const content: {
-      objectType: string;
-      config: ParsedSkylarkObjectConfig;
-      object: ParsedSkylarkObjectMetadata;
-      position: number;
-    }[] = [
+    const content: ParsedSkylarkObjectContentObject[] = [
       {
         objectType: "Episode",
         config: {},
+        meta: {
+          language: "en-GB",
+          availableLanguages: ["en-GB"],
+        },
         position: 1,
         object: { uid: "episode_1", external_id: "" },
       },
       {
         objectType: "Episode",
         config: {},
+        meta: {
+          language: "en-GB",
+          availableLanguages: ["en-GB"],
+        },
         position: 2,
         object: { uid: "episode_2", external_id: "" },
       },
       {
         objectType: "Movie",
         config: {},
+        meta: {
+          language: "en-GB",
+          availableLanguages: ["en-GB"],
+        },
         position: 3,
         object: { uid: "movie_1", external_id: "" },
       },

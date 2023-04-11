@@ -1,3 +1,4 @@
+import { OpenObjectButton } from "src/components/button";
 import {
   PanelEmptyDataText,
   PanelFieldTitle,
@@ -5,8 +6,10 @@ import {
 } from "src/components/panel/panelTypography";
 import { useImageSize } from "src/hooks/useImageSize";
 import {
+  BuiltInSkylarkObjectType,
   ParsedSkylarkObjectImageRelationship,
   SkylarkGraphQLObjectImage,
+  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
@@ -33,18 +36,27 @@ const PanelImage = ({
   src,
   alt,
   title,
+  object,
+  setPanelObject,
 }: {
   src: string;
   title?: string;
   alt?: string;
+  object: SkylarkObjectIdentifier;
+  setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }) => {
   const { size } = useImageSize(src);
   return (
     <div className="mb-4 break-words">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className="max-h-64" src={src} alt={title || alt || ""} />
-      {title && <p className="mt-1">Title: {title}</p>}
-      <p>Original size: {size ? `${size.h}x${size.w}` : ""}</p>
+      <div className="flex">
+        <div className="mr-2 flex grow flex-col">
+          {title && <p className="mt-1">Title: {title}</p>}
+          <p>Original size: {size ? `${size.h}x${size.w}` : ""}</p>
+        </div>
+        <OpenObjectButton onClick={() => setPanelObject(object)} />
+      </div>
     </div>
   );
 };
@@ -52,9 +64,13 @@ const PanelImage = ({
 export const PanelImages = ({
   images,
   isPage,
+  language,
+  setPanelObject,
 }: {
   isPage?: boolean;
   images: ParsedSkylarkObjectImageRelationship[];
+  language: string;
+  setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }) => {
   return (
     // TODO try with an object that actually has images, likely need to add a sticky variant of the layout
@@ -97,6 +113,12 @@ export const PanelImages = ({
                       key={image.uid}
                       src={image.url}
                       title={image.title}
+                      object={{
+                        uid: image.uid,
+                        objectType: BuiltInSkylarkObjectType.SkylarkImage,
+                        language,
+                      }}
+                      setPanelObject={setPanelObject}
                     />
                   ))}
                 </div>

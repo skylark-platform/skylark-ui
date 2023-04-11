@@ -17,6 +17,7 @@ export interface ButtonProps {
   href?: string;
   downloadName?: string;
   type?: "button" | "submit" | "reset";
+  newTab?: boolean;
 }
 
 export const Button = ({
@@ -33,6 +34,7 @@ export const Button = ({
   href,
   downloadName,
   type,
+  newTab,
 }: ButtonProps) => {
   const iconOnly = Icon && !children;
 
@@ -62,7 +64,11 @@ export const Button = ({
   if (href) {
     return (
       <Link legacyBehavior href={href}>
-        <a className={combinedClassName} download={downloadName}>
+        <a
+          className={combinedClassName}
+          download={downloadName}
+          target={newTab ? "_blank" : undefined}
+        >
           {Icon}
           {children}
         </a>

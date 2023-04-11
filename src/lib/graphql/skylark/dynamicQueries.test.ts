@@ -98,6 +98,10 @@ describe("createSearchObjectsQuery", () => {
               isRequired: false,
             },
           ],
+          fieldConfig: {
+            translatable: ["title", "synopsis"],
+            global: [],
+          },
           images: null,
           availability: null,
           operations: {} as SkylarkObjectOperations,

@@ -1,17 +1,23 @@
 import { ReactNode } from "react";
 
+import { OpenObjectButton } from "src/components/button";
 import { Pill } from "src/components/pill";
-import { ParsedSkylarkObject } from "src/interfaces/skylark/parsedObjects";
+import {
+  ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
+} from "src/interfaces/skylark/parsedObjects";
 import { getObjectDisplayName } from "src/lib/utils";
 
 interface ObjectIdentifierCardProps {
   object: ParsedSkylarkObject;
   children?: ReactNode;
+  onForwardClick?: (o: SkylarkObjectIdentifier) => void;
 }
 
 export const ObjectIdentifierCard = ({
   object,
   children,
+  onForwardClick,
 }: ObjectIdentifierCardProps) => {
   return (
     <div className="flex w-full flex-grow items-center space-x-2 py-3">
@@ -22,6 +28,17 @@ export const ObjectIdentifierCard = ({
       />
       <p className="flex flex-grow text-sm">{getObjectDisplayName(object)}</p>
       {children}
+      {onForwardClick && (
+        <OpenObjectButton
+          onClick={() =>
+            onForwardClick({
+              uid: object.uid,
+              objectType: object.objectType,
+              language: object?.meta?.language || "",
+            })
+          }
+        />
+      )}
     </div>
   );
 };

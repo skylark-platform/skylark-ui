@@ -193,8 +193,17 @@ export const parseObjectContent = (
         objectType: object.__typename,
         position,
         config: {
-          primaryField: object._config?.primary_field,
           colour: object._config?.colour,
+          primaryField: object._config?.primary_field,
+          objectTypeDisplayName: object._config?.display_name,
+        },
+        meta: {
+          language: object._meta?.language_data.language || "",
+          availableLanguages: object._meta?.available_languages || [],
+          versions: {
+            language: object._meta?.language_data.version,
+            global: object._meta?.global_data.version,
+          },
         },
         object: normalisedObject,
       };

@@ -9,7 +9,10 @@ import {
   PanelSeparator,
 } from "src/components/panel/panelTypography";
 import { useGetObjectRelationships } from "src/hooks/useGetObjectRelationships";
-import { SkylarkObjectType } from "src/interfaces/skylark";
+import {
+  SkylarkObjectIdentifier,
+  SkylarkObjectType,
+} from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
@@ -19,6 +22,7 @@ interface PanelRelationshipsProps {
   objectType: SkylarkObjectType;
   uid: string;
   language: string;
+  setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }
 
 export const PanelRelationships = ({
@@ -26,6 +30,7 @@ export const PanelRelationships = ({
   objectType,
   uid,
   language,
+  setPanelObject,
 }: PanelRelationshipsProps) => {
   const {
     data: relationships,
@@ -40,7 +45,6 @@ export const PanelRelationships = ({
   >({});
 
   return (
-    // <div className="relative h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20">
     <PanelSectionLayout
       sections={relationships.map(({ relationshipName }) => ({
         id: `relationship-panel-${relationshipName}`,
@@ -71,7 +75,11 @@ export const PanelRelationships = ({
                   {relationship && displayList?.length > 0 ? (
                     displayList?.map((obj, index) => (
                       <>
-                        <ObjectIdentifierCard key={obj.uid} object={obj} />
+                        <ObjectIdentifierCard
+                          key={obj.uid}
+                          object={obj}
+                          onForwardClick={setPanelObject}
+                        />
                         {index < displayList.length - 1 && <PanelSeparator />}
                       </>
                     ))

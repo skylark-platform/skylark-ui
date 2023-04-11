@@ -16,7 +16,10 @@ import {
   within,
 } from "src/__tests__/utils/test-utils";
 import { QueryErrorMessages } from "src/enums/graphql";
-import { AvailabilityStatus } from "src/interfaces/skylark";
+import {
+  AvailabilityStatus,
+  SkylarkObjectIdentifier,
+} from "src/interfaces/skylark";
 import {
   createGetObjectAvailabilityQueryName,
   createGetObjectQueryName,
@@ -29,14 +32,49 @@ import { formatObjectField } from "src/lib/utils";
 
 import { Panel } from "./panel.component";
 
+const movieObject: SkylarkObjectIdentifier = {
+  uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
+  objectType: "Movie",
+  language: "",
+};
+
+const imageObject: SkylarkObjectIdentifier = {
+  uid: GQLSkylarkGetObjectImageQueryFixture.data.getObject.uid,
+  objectType: "SkylarkImage",
+  language: "",
+};
+
+const episodeObjectEnGB: SkylarkObjectIdentifier = {
+  uid: GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.uid,
+  objectType: "Episode",
+  language: "en-GB",
+};
+
+const episodeObjectPtPT: SkylarkObjectIdentifier = {
+  uid: GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data.getObject.uid,
+  objectType: "Episode",
+  language: "pt-PT",
+};
+
+const setObjectWithContent: SkylarkObjectIdentifier = {
+  uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
+  objectType: "SkylarkSet",
+  language: "",
+};
+
+const seasonWithRelationships: SkylarkObjectIdentifier = {
+  uid: GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.uid,
+  objectType: "Season",
+  language: "",
+};
+
 describe("metadata view", () => {
   test("renders the panel in the default view", async () => {
     render(
       <Panel
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        objectType={"Movie"}
-        language={""}
+        object={movieObject}
         closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
       />,
     );
 
@@ -74,10 +112,9 @@ describe("metadata view", () => {
 
     render(
       <Panel
-        uid="nonexistant"
-        objectType={"Movie"}
-        language={""}
+        object={{ ...movieObject, uid: "nonexistant" }}
         closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
       />,
     );
 
@@ -97,10 +134,9 @@ describe("metadata view", () => {
 
     render(
       <Panel
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        objectType={"Movie"}
-        language={""}
+        object={movieObject}
         closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
       />,
     );
 
@@ -132,10 +168,9 @@ describe("metadata view", () => {
 
     render(
       <Panel
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        objectType={"Movie"}
-        language={""}
+        object={movieObject}
         closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
       />,
     );
 
@@ -165,10 +200,9 @@ describe("metadata view", () => {
   test("renders an image and the original image size when the object type is an Image", async () => {
     render(
       <Panel
-        uid={GQLSkylarkGetObjectImageQueryFixture.data.getObject.uid}
-        objectType={"SkylarkImage"}
-        language={""}
+        object={imageObject}
         closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
       />,
     );
 
@@ -190,10 +224,9 @@ describe("metadata view", () => {
     test("renders the Portuguese GOT episode", async () => {
       render(
         <Panel
-          uid={GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data.getObject.uid}
-          objectType={"Episode"}
-          language={"pt-PT"}
+          object={episodeObjectPtPT}
           closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
         />,
       );
 
@@ -215,10 +248,9 @@ describe("metadata view", () => {
     test("changes the panel language using the dropdown when more than one is available", async () => {
       render(
         <Panel
-          uid={GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.uid}
-          objectType={"Episode"}
-          language={"en-GB"}
+          object={episodeObjectEnGB}
           closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
         />,
       );
 
@@ -265,10 +297,9 @@ describe("metadata view", () => {
     test("switch into edit mode using the edit metadata button", async () => {
       render(
         <Panel
-          uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
-          objectType={"SkylarkSet"}
-          language={""}
+          object={setObjectWithContent}
           closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
         />,
       );
 
@@ -286,10 +317,9 @@ describe("metadata view", () => {
     test("switch into edit mode by changing an input field", async () => {
       const { user } = render(
         <Panel
-          uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
-          objectType={"SkylarkSet"}
-          language={""}
+          object={setObjectWithContent}
           closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
         />,
       );
 
@@ -309,13 +339,9 @@ describe("metadata view", () => {
     test("edits and cancels to revert a field to its initial value", async () => {
       const { user } = render(
         <Panel
-          uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
-          objectType={"SkylarkSet"}
-          language={
-            GQLSkylarkGetSetWithContentQueryFixture.data.getObject._meta
-              .language_data.language
-          }
+          object={setObjectWithContent}
           closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
         />,
       );
 
@@ -378,13 +404,9 @@ describe("metadata view", () => {
 
       const { user } = render(
         <Panel
-          uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
-          objectType={"SkylarkSet"}
-          language={
-            GQLSkylarkGetSetWithContentQueryFixture.data.getObject._meta
-              .language_data.language
-          }
+          object={setObjectWithContent}
           closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
         />,
       );
 
@@ -431,13 +453,9 @@ describe("metadata view", () => {
 
       const { user } = render(
         <Panel
-          uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
-          objectType={"SkylarkSet"}
-          language={
-            GQLSkylarkGetSetWithContentQueryFixture.data.getObject._meta
-              .language_data.language
-          }
+          object={setObjectWithContent}
           closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
         />,
       );
 
@@ -476,10 +494,9 @@ describe("imagery view", () => {
   test("renders the panel", async () => {
     render(
       <Panel
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        objectType={"Movie"}
-        language={""}
+        object={movieObject}
         closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
       />,
     );
 
@@ -522,12 +539,9 @@ describe("relationships view", () => {
   test("render the panel", async () => {
     render(
       <Panel
-        uid={
-          GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.uid
-        }
-        objectType={"Season"}
-        language={""}
+        object={seasonWithRelationships}
         closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
       />,
     );
 
@@ -558,10 +572,9 @@ describe("content view", () => {
   test("render the panel", async () => {
     render(
       <Panel
-        uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
-        objectType={"SkylarkSet"}
-        language={""}
+        object={setObjectWithContent}
         closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
       />,
     );
 
@@ -582,10 +595,9 @@ describe("content view", () => {
   test("edit view", async () => {
     render(
       <Panel
-        uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
-        objectType={"SkylarkSet"}
-        language={""}
+        object={setObjectWithContent}
         closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
       />,
     );
 
@@ -607,10 +619,9 @@ describe("content view", () => {
     const renderAndSwitchToEditView = async () => {
       render(
         <Panel
-          uid={GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid}
-          objectType={"SkylarkSet"}
-          language={""}
+          object={setObjectWithContent}
           closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
         />,
       );
 
@@ -858,10 +869,9 @@ describe("availability view", () => {
   test("render the panel", async () => {
     render(
       <Panel
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        objectType={"Movie"}
-        language={""}
+        object={movieObject}
         closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
       />,
     );
 
@@ -920,10 +930,9 @@ describe("availability view", () => {
 
     render(
       <Panel
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        objectType={"Movie"}
-        language={""}
+        object={movieObject}
         closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
       />,
     );
 
@@ -938,10 +947,9 @@ describe("availability view", () => {
   it("finds sets the status of each availability", async () => {
     render(
       <Panel
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        objectType={"Movie"}
-        language={""}
+        object={movieObject}
         closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
       />,
     );
 
@@ -967,10 +975,9 @@ describe("availability view", () => {
   it("converts start and end date to readable formats", async () => {
     render(
       <Panel
-        uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-        objectType={"Movie"}
-        language={""}
+        object={movieObject}
         closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
       />,
     );
 
@@ -1011,10 +1018,9 @@ test("closing the panel using close button", async () => {
   const closePanel = jest.fn();
   render(
     <Panel
-      uid={GQLSkylarkGetObjectQueryFixture.data.getObject.uid}
-      objectType={"Movie"}
-      language={""}
-      closePanel={closePanel}
+      object={movieObject}
+      closePanel={jest.fn()}
+      setPanelObject={jest.fn()}
     />,
   );
 

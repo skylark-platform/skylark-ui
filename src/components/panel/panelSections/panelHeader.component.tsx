@@ -11,7 +11,14 @@ import {
   DropdownMenu,
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
-import { Edit, Expand, Trash, MoreVertical } from "src/components/icons";
+import {
+  Edit,
+  Expand,
+  Trash,
+  MoreVertical,
+  ArrowLeft,
+  ExternalLink,
+} from "src/components/icons";
 import { LanguageSelect } from "src/components/inputs/select";
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { Pill } from "src/components/pill";
@@ -36,7 +43,8 @@ interface PanelHeaderProps {
   toggleEditMode: () => void;
   closePanel?: () => void;
   save: () => void;
-  setLanguage: Dispatch<SetStateAction<string>>;
+  setLanguage: (l: string) => void;
+  navigateToPreviousPanelObject?: () => void;
 }
 
 export const PanelHeader = ({
@@ -56,6 +64,7 @@ export const PanelHeader = ({
   closePanel,
   save,
   setLanguage,
+  navigateToPreviousPanelObject,
 }: PanelHeaderProps) => {
   const title = getObjectDisplayName(object);
   const [showGraphQLModal, setGraphQLModalOpen] = useState(false);
@@ -114,10 +123,19 @@ export const PanelHeader = ({
         <div className="flex flex-grow items-center space-x-2">
           {!isPage && (
             <Button
-              Icon={<Expand className="stroke-gray-300" />}
-              // disabled
+              Icon={<ArrowLeft />}
+              variant="ghost"
+              disabled={!navigateToPreviousPanelObject}
+              onClick={navigateToPreviousPanelObject}
+            />
+          )}
+          {!isPage && (
+            <Button
+              Icon={<ExternalLink className="text-gray-300" />}
+              disabled
               variant="ghost"
               href={`/object/${objectType}/${objectUid}`}
+              newTab
             />
           )}
           <DropdownMenu options={objectMenuOptions} align="left">

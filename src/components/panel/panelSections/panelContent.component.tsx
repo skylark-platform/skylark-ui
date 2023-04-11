@@ -15,6 +15,7 @@ import {
   ParsedSkylarkObjectContentObject,
   AddedSkylarkObjectContentObject,
   ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
@@ -26,6 +27,7 @@ interface PanelContentProps {
   onReorder: (objs: ParsedSkylarkObjectContentObject[]) => void;
   inEditMode?: boolean;
   showDropArea?: boolean;
+  setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }
 
 export const PanelContentItemOrderInput = ({
@@ -100,6 +102,7 @@ export const PanelContent = ({
   objectType,
   onReorder,
   showDropArea,
+  setPanelObject,
 }: PanelContentProps) => {
   const removeItem = (uid: string) => {
     const filtered = objects.filter(({ object }) => uid !== object.uid);
@@ -158,7 +161,7 @@ export const PanelContent = ({
       >
         {objects?.length === 0 && <PanelEmptyDataText />}
         {objects.map((item, index) => {
-          const { object, config, position, isNewObject } = item;
+          const { object, config, meta, position, isNewObject } = item;
 
           return (
             <Reorder.Item
@@ -178,8 +181,10 @@ export const PanelContent = ({
                     uid: object.uid,
                     metadata: object,
                     config,
+                    meta,
                   } as ParsedSkylarkObject
                 }
+                onForwardClick={setPanelObject}
               >
                 <div className="flex">
                   <span
@@ -207,11 +212,12 @@ export const PanelContent = ({
                     data-testid={`panel-object-content-item-${
                       index + 1
                     }-remove`}
+                    className={clsx(!inEditMode && "w-0")}
                     onClick={() => removeItem(object.uid)}
                   >
                     <Trash
                       className={clsx(
-                        "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
+                        "ml-2 flex h-6 text-manatee-300 transition-all hover:text-error",
                         inEditMode ? "w-6" : "w-0",
                       )}
                     />

@@ -81,7 +81,7 @@ export const generateVariablesAndArgs = (
       variables: {},
       args: {},
       fields: {
-        ...commonGraphQLOpts.objectConfig,
+        // ...commonGraphQLOpts.objectConfig,
       },
     };
   }
@@ -190,6 +190,7 @@ export const generateContentsToReturn = (
             __typeName: object.name,
             __typename: true, // To remove the alias later
             ...commonGraphQLOpts.objectConfig,
+            ...commonGraphQLOpts.objectMeta,
             ...generateFieldsToReturn(object.fields, `__${object.name}__`),
           })),
         },

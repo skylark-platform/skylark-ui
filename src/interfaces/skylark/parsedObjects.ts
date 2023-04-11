@@ -44,6 +44,7 @@ export interface ParsedSkylarkObjectAvailability {
 export interface ParsedSkylarkObjectContentObject {
   objectType: SkylarkObjectType;
   config: ParsedSkylarkObjectConfig;
+  meta: ParsedSkylarkObjectMeta;
   object: ParsedSkylarkObjectMetadata;
   position: number;
 }

@@ -23,8 +23,11 @@ const Template: ComponentStory<typeof Panel> = (args) => {
 
 export const Default = Template.bind({});
 Default.args = {
-  objectType: "Movie",
-  uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
+  object: {
+    uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
+    objectType: "Movie",
+    language: "",
+  },
 };
 
 export const Imagery = Template.bind({});
@@ -46,8 +49,11 @@ Imagery.play = async ({ canvasElement }) => {
 export const Content = Template.bind({});
 Content.parameters = Default.parameters;
 Content.args = {
-  objectType: "SkylarkSet",
-  uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
+  object: {
+    objectType: "SkylarkSet",
+    uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
+    language: "",
+  },
 };
 Content.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
@@ -63,8 +69,11 @@ Content.play = async ({ canvasElement }) => {
 export const ContentEditing = Template.bind({});
 ContentEditing.parameters = Default.parameters;
 ContentEditing.args = {
-  objectType: "SkylarkSet",
-  uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
+  object: {
+    objectType: "SkylarkSet",
+    uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
+    language: "",
+  },
 };
 ContentEditing.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
