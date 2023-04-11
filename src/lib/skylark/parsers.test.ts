@@ -325,6 +325,16 @@ describe("parseObjectContent", () => {
             colour: "black",
             primary_field: "uid",
           },
+          _meta: {
+            language_data: {
+              language: "en-GB",
+              version: 2,
+            },
+            available_languages: ["en-GB", "pt-PT"],
+            global_data: {
+              version: 1,
+            },
+          },
         } as SkylarkGraphQLObject,
       },
       {
@@ -332,6 +342,21 @@ describe("parseObjectContent", () => {
         object: {
           __typename: "SkylarkSet",
           uid: "set_1",
+          _config: {
+            colour: "black",
+            primary_field: "uid",
+            display_name: "Set",
+          },
+          _meta: {
+            language_data: {
+              language: "en-GB",
+              version: 1,
+            },
+            available_languages: ["en-GB"],
+            global_data: {
+              version: 2,
+            },
+          },
         } as SkylarkGraphQLObject,
       },
     ];
@@ -345,6 +370,15 @@ describe("parseObjectContent", () => {
           config: {
             colour: "black",
             primaryField: "uid",
+            objectTypeDisplayName: undefined,
+          },
+          meta: {
+            availableLanguages: ["en-GB", "pt-PT"],
+            language: "en-GB",
+            versions: {
+              global: 1,
+              language: 2,
+            },
           },
           object: objects[0].object,
           objectType: objects[0].object.__typename,
@@ -352,8 +386,17 @@ describe("parseObjectContent", () => {
         },
         {
           config: {
-            colour: undefined,
-            primaryField: undefined,
+            colour: "black",
+            primaryField: "uid",
+            objectTypeDisplayName: "Set",
+          },
+          meta: {
+            availableLanguages: ["en-GB"],
+            language: "en-GB",
+            versions: {
+              global: 2,
+              language: 1,
+            },
           },
           object: objects[1].object,
           objectType: objects[1].object.__typename,
