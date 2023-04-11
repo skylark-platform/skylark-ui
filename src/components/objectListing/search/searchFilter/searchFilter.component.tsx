@@ -90,10 +90,16 @@ export const SearchFilter = ({
           label="Object type"
           withToggleAll
           options={createCheckboxOptions(
-            objectTypesWithConfig?.map(({ objectType, config }) => ({
-              label: config?.display_name || objectType,
-              value: objectType,
-            })) || [],
+            objectTypesWithConfig
+              ?.map(({ objectType, config }) => ({
+                label: config?.display_name || objectType,
+                value: objectType,
+              }))
+              .sort(({ label: labelA }, { label: labelB }) =>
+                labelA
+                  .toLocaleUpperCase()
+                  .localeCompare(labelB.toLocaleUpperCase()),
+              ) || [],
             updatedObjectTypes,
           )}
           onChange={(optionsState) => {
