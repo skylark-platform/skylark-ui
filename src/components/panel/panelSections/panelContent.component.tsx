@@ -149,8 +149,6 @@ export const PanelContent = ({
       sections={[{ id: "content-panel-title", title: "Content" }]}
       isPage={isPage}
     >
-      {/* TODO before deleting check on a set with content */}
-      {/* <div className="flex h-full flex-col overflow-y-auto p-4 pt-6 text-sm md:p-8"> */}
       <PanelSectionTitle text="Content" id="content-panel-title" />
       <Reorder.Group
         axis="y"
@@ -236,7 +234,6 @@ export const PanelContent = ({
           {`Drag an object from the Content Library to add to this ${objectType}'s content`}
         </p>
       )}
-      {/* </div> */}
     </PanelSectionLayout>
   );
 };

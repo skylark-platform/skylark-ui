@@ -8,11 +8,18 @@ import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixt
 import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
 import GQLSkylarkGetMovieQueryAvailabilityFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/allAvailTestMovieAvailability.json";
 import GQLSkylarkGetSeasonRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/gots04relationships.json";
+import GQLSkylarkGetObjectsConfigFixture from "src/__tests__/fixtures/skylark/queries/getObjectsConfig/allObjectsConfig.json";
 import {
   createGetObjectAvailabilityQueryName,
   createGetObjectQueryName,
   createGetObjectRelationshipsQueryName,
 } from "src/lib/graphql/skylark/dynamicQueries";
+
+export const getObjectsConfigHandlers = [
+  graphql.query("GET_OBJECTS_CONFIG", (req, res, ctx) => {
+    return res(ctx.data(GQLSkylarkGetObjectsConfigFixture.data));
+  }),
+];
 
 export const getObjectHandlers = [
   graphql.query(
