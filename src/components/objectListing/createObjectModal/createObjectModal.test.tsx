@@ -33,7 +33,7 @@ test("selects an Object Type and see's input fields appear", async () => {
   );
 
   expect(screen.queryAllByText("External id")).toHaveLength(0);
-  expect(screen.queryAllByText("Create object")).toHaveLength(1);
+  expect(screen.queryAllByText("Create Object")).toHaveLength(1);
   expect(screen.queryAllByText("Create Episode")).toHaveLength(0);
 
   user.click(screen.getByTestId("select"));
@@ -46,7 +46,7 @@ test("selects an Object Type and see's input fields appear", async () => {
   );
 
   expect(screen.queryAllByText("Create Episode")).toHaveLength(2);
-  expect(screen.queryAllByText("Create object")).toHaveLength(0);
+  expect(screen.queryAllByText("Create Object")).toHaveLength(0);
 });
 
 test("cancels and closes the modal", async () => {

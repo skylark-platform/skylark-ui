@@ -119,7 +119,7 @@ export const CreateObjectModal = ({
           </button>
 
           <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">
-            {`Create ${objectTypeDisplayName || "object"}`}
+            {`Create ${objectTypeDisplayName || "Object"}`}
           </Dialog.Title>
           <Dialog.Description>
             Select Object Type to get started.
@@ -211,7 +211,7 @@ export const CreateObjectModal = ({
                   >
                     {isCreatingObject
                       ? `Creating ${objectTypeDisplayName}`
-                      : `Create ${objectTypeDisplayName || "object"}`}
+                      : `Create ${objectTypeDisplayName || "Object"}`}
                   </Button>
                   <Button
                     variant="outline"
