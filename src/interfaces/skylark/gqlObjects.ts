@@ -63,6 +63,7 @@ export interface SkylarkGraphQLObjectRelationship {
 }
 
 export interface SkylarkGraphQLObjectImage {
+  _meta?: SkylarkGraphQLObjectMeta;
   uid: SkylarkUID;
   external_id: SkylarkExternalId;
   title: string;

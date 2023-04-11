@@ -114,7 +114,7 @@ export const PanelImages = ({
                       object={{
                         uid: image.uid,
                         objectType: BuiltInSkylarkObjectType.SkylarkImage,
-                        language,
+                        language: image._meta?.language_data.language || "",
                       }}
                       setPanelObject={setPanelObject}
                     />

@@ -161,6 +161,7 @@ const generateRelationshipsToReturn = (
         },
         next_token: true,
         objects: {
+          ...commonGraphQLOpts.objectMeta,
           ...generateFieldsToReturn(object.images?.objectMeta.fields || []),
         },
       };

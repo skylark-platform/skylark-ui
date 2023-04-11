@@ -88,17 +88,24 @@ export const CheckboxGrid = ({
         />
       )}
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
-        {checkboxState.map(({ option, state }) => (
-          <Checkbox
-            label={option.label}
-            key={option.value}
-            name={`${label}-${option.value}`}
-            checked={state}
-            onCheckedChange={(checkedState) =>
-              handleChange(option, checkedState)
-            }
-          />
-        ))}
+        {checkboxState
+          .sort(
+            ({ option: { label: labelA } }, { option: { label: labelB } }) =>
+              labelA
+                .toLocaleUpperCase()
+                .localeCompare(labelB.toLocaleUpperCase()),
+          )
+          .map(({ option, state }) => (
+            <Checkbox
+              label={option.label}
+              key={option.value}
+              name={`${label}-${option.value}`}
+              checked={state}
+              onCheckedChange={(checkedState) =>
+                handleChange(option, checkedState)
+              }
+            />
+          ))}
       </div>
     </section>
   );
