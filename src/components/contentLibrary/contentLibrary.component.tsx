@@ -212,12 +212,6 @@ export const ContentLibrary = () => {
     if (event.over && event.over.id === DROPPABLE_ID) {
       setDroppedObject(draggedObject);
     }
-    /*
-    if (event.over && event.over.id === DROPPABLE_RELATIONSHIPS_ID) {
-      console.log("easy biz");
-      setDroppedObject(draggedObject);
-    }
-    */
     setDraggedObject(undefined);
   }
 };

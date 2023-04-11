@@ -11,7 +11,6 @@ import {
   SkylarkGraphQLObject,
   SkylarkGraphQLObjectRelationship,
   SkylarkObjectMeta,
-  SkylarkObjectRelationship,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";

@@ -16,6 +16,7 @@ import {
   SkylarkObjectMetadataField,
   SkylarkSystemField,
   SkylarkObjectMeta,
+  ParsedSkylarkObjectRelationships,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import { hasProperty } from "src/lib/utils";
@@ -73,12 +74,14 @@ export const Panel = ({
   const [contentObjects, setContentObjects] = useState<
     AddedSkylarkObjectContentObject[] | null
   >(null);
-  const [newRelationshipObjects, setNewRelationshipObjects] = useState<
-    ParsedSkylarkObject[]
-  >([]);
-  const [removedRelationshipObjects, setRemovedRelationshipObjects] = useState<{
-    [relationship: string]: string[];
-  } | null>(null);
+
+  const [
+    { updatedRelationshipObjects, originalRelationshipObjects },
+    setRelationshipObjects,
+  ] = useState<{
+    originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
+    updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
+  }>({ originalRelationshipObjects: null, updatedRelationshipObjects: null });
 
   const {
     data,
@@ -122,6 +125,10 @@ export const Panel = ({
     setLanguage(initialLanguage);
     setSelectedTab(PanelTab.Metadata);
     setContentObjects(null);
+    setRelationshipObjects({
+      originalRelationshipObjects: null,
+      updatedRelationshipObjects: null,
+    });
     resetMetadataForm();
   }, [uid, initialLanguage, resetMetadataForm]);
 
@@ -134,42 +141,59 @@ export const Panel = ({
   useEffect(() => {
     const relationships = objectMeta?.relationships || [];
     if (selectedTab === PanelTab.Relationships && droppedObject) {
-      const relationshipName = relationships.find(
+      const droppedObjectRelationshipName = relationships.find(
         (relationship) => relationship.objectType === droppedObject.objectType,
       )?.relationshipName;
-      // checks if is a valid relationship
-      if (relationshipName) {
-        // if its already added we shouldn't add
-        const isAlreadyAdded = !!newRelationshipObjects.find(
+
+      if (droppedObjectRelationshipName) {
+        const droppedObjectRelationshipObjects =
+          updatedRelationshipObjects?.find(
+            (relationship) =>
+              relationship.relationshipName === droppedObjectRelationshipName,
+          );
+
+        const isAlreadyAdded = !!droppedObjectRelationshipObjects?.objects.find(
           ({ uid }) => droppedObject.uid === uid,
         );
+
         if (isAlreadyAdded) {
           toast(
             <Toast
-              title={`Error`}
-              message={`This ${droppedObject.objectType} is already added`}
+              title={"Relationship already exists"}
+              message={`The ${droppedObject.objectType} is already linked`}
               type="warning"
             />,
           );
-        } else if (false) {
-          // check if is a current relationship already is done on panelrelationship component, not showing toast tho
-          // TODO if is a removed one, we should unremove it?
         } else {
-          setNewRelationshipObjects([...newRelationshipObjects, droppedObject]);
+          updatedRelationshipObjects &&
+            setRelationshipObjects({
+              updatedRelationshipObjects: updatedRelationshipObjects?.map(
+                (relationship) => {
+                  const { objects, relationshipName } = relationship;
+                  if (relationshipName === droppedObjectRelationshipName) {
+                    return {
+                      ...relationship,
+                      objects: [...objects, droppedObject],
+                    };
+                  } else return relationship;
+                },
+              ),
+              originalRelationshipObjects: originalRelationshipObjects,
+            });
         }
       } else {
-        // setRelationshipObjects(relationshipObjects.filter())
         toast(
           <Toast
-            title={`Error`}
-            message={`Can't add ${droppedObject.objectType} to this object relationship`}
+            title={"Invalid relationship"}
+            message={`${droppedObject.objectType} cannot link to ${objectType}`}
             type="error"
           />,
         );
       }
+      setEditMode(true);
       clearDroppedObject && clearDroppedObject();
     } else if (
-      // TODO ad if set content
+      selectedTab === PanelTab.Content &&
       droppedObject &&
       !contentObjects
         ?.map(({ object }) => object.uid)
@@ -196,22 +220,25 @@ export const Panel = ({
     contentObjects,
     data?.content?.objects,
     droppedObject,
-    objectMeta?.relationships,
-    newRelationshipObjects,
     selectedTab,
+    objectMeta?.relationships,
+    updatedRelationshipObjects,
+    originalRelationshipObjects,
+    objectType,
   ]);
 
   const { updateObjectRelationships, isLoading: updatingRelationshipObjects } =
     useUpdateObjectRelationships({
       objectType,
       uid,
-      newRelationshipObjects: newRelationshipObjects,
-      removedRelationshipObjects: removedRelationshipObjects,
-      onSuccess: (updatedObject) => {
-        console.log("updatedObject in his glory", updatedObject);
+      updatedRelationshipObjects,
+      originalRelationshipObjects,
+      onSuccess: () => {
         setEditMode(false);
-        setRemovedRelationshipObjects(null);
-        setNewRelationshipObjects([]);
+        setRelationshipObjects({
+          originalRelationshipObjects: null,
+          updatedRelationshipObjects: null,
+        });
       },
     });
 
@@ -252,7 +279,7 @@ export const Panel = ({
       updateObjectContent();
     } else if (
       selectedTab === PanelTab.Relationships &&
-      (newRelationshipObjects || removedRelationshipObjects)
+      updatedRelationshipObjects
     ) {
       updateObjectRelationships();
     } else if (selectedTab === PanelTab.Metadata) {
@@ -294,13 +321,20 @@ export const Panel = ({
         closePanel={closePanel}
         inEditMode={inEditMode}
         save={saveActiveTabChanges}
-        isSaving={updatingObjectContents || updatingRelationshipObjects}
-        // isSaving={updatingObjectMetadata || updatingObjectContents}
+        isSaving={
+          updatingObjectContents ||
+          updatingRelationshipObjects ||
+          updatingObjectMetadata
+        }
         isTranslatable={objectMeta?.isTranslatable}
         toggleEditMode={() => {
           if (inEditMode) {
             metadataForm.reset();
             setContentObjects(null);
+            setRelationshipObjects({
+              updatedRelationshipObjects: null,
+              originalRelationshipObjects: null,
+            });
           }
           setEditMode(!inEditMode);
         }}
@@ -364,10 +398,9 @@ export const Panel = ({
             <PanelRelationships
               objectType={objectType}
               uid={uid}
-              removedRelationshipObjects={removedRelationshipObjects}
-              setRemovedRelationshipObjects={setRemovedRelationshipObjects}
-              newRelationshipObjects={newRelationshipObjects}
-              setNewRelationshipObjects={setNewRelationshipObjects}
+              updatedRelationshipObjects={updatedRelationshipObjects}
+              originalRelationshipObjects={originalRelationshipObjects}
+              setRelationshipObjects={setRelationshipObjects}
               inEditMode={inEditMode}
               showDropArea={showDropArea}
               language={language}

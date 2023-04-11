@@ -3,40 +3,36 @@ import { RequestDocument } from "graphql-request";
 
 import {
   GQLSkylarkUpdateObjectContentResponse,
-  ParsedSkylarkObject,
-  ParsedSkylarkObjectContent,
+  ParsedSkylarkObjectRelationships,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectRelationshipsMutation } from "src/lib/graphql/skylark/dynamicMutations";
-import { parseObjectContent } from "src/lib/skylark/parsers";
 
-import { createGetObjectKeyPrefix } from "./useGetObject";
+import { createGetObjectRelationshipsKeyPrefix } from "./useGetObjectRelationships";
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const useUpdateObjectRelationships = ({
   objectType,
   uid,
-  newRelationshipObjects,
-  removedRelationshipObjects,
+  updatedRelationshipObjects,
+  originalRelationshipObjects,
   onSuccess,
 }: {
   objectType: SkylarkObjectType;
   uid: string;
-  newRelationshipObjects: ParsedSkylarkObject[];
-  removedRelationshipObjects: { [key: string]: string[] } | null;
-  onSuccess: (updatedContent: ParsedSkylarkObjectContent) => void;
+  updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
+  originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
+  onSuccess: () => void;
 }) => {
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  console.warn("useUpdateObjectRelationships start #");
-
   const updateObjectRelationshipsMutation =
     createUpdateObjectRelationshipsMutation(
       objectOperations,
-      newRelationshipObjects,
-      removedRelationshipObjects || {},
+      updatedRelationshipObjects,
+      originalRelationshipObjects,
     );
 
   const { mutate, ...rest } = useMutation({
@@ -46,14 +42,12 @@ export const useUpdateObjectRelationships = ({
         { uid },
       );
     },
-    onSuccess: (data, { uid }) => {
-      queryClient.invalidateQueries({
-        queryKey: createGetObjectKeyPrefix({ objectType, uid }),
+    onSuccess: async (_, { uid }) => {
+      await queryClient.refetchQueries({
+        queryKey: createGetObjectRelationshipsKeyPrefix({ objectType, uid }),
       });
-      const parsedObjectContent = parseObjectContent(
-        data.updateObjectContent.content,
-      );
-      onSuccess(parsedObjectContent);
+
+      onSuccess();
     },
   });
 

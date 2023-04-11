@@ -1,13 +1,13 @@
 import { gql } from "graphql-tag";
 import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 
-import { groupObjectsByRelationship } from "src/components/panel/panelSections/panelRelationships.component";
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
-  ParsedSkylarkObject,
   ParsedSkylarkObjectContentObject,
+  ParsedSkylarkObjectRelationships,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
+  SkylarkObjectRelationship,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
@@ -266,55 +266,82 @@ export const createUpdateObjectContentMutation = (
   return gql(graphQLQuery);
 };
 
+const getNewObjects = (
+  relationship: SkylarkObjectRelationship,
+  updatedRelationshipObjects: ParsedSkylarkObjectRelationships[],
+  originalRelationshipObjects: ParsedSkylarkObjectRelationships[],
+) => {
+  const updatedObjects: string[] =
+    updatedRelationshipObjects
+      .find(
+        ({ relationshipName }) =>
+          relationshipName === relationship.relationshipName,
+      )
+      ?.objects.map(({ uid }) => uid) || [];
+
+  const originalObjects: string[] =
+    originalRelationshipObjects
+      .find(
+        ({ relationshipName }) =>
+          relationshipName === relationship.relationshipName,
+      )
+      ?.objects.map(({ uid }) => uid) || [];
+
+  const uidsToLink = updatedObjects.filter(
+    (uid) => !originalObjects.includes(uid),
+  );
+  const uidsToUnlink = originalObjects.filter(
+    (uid) => !updatedObjects.includes(uid),
+  );
+
+  return { relationship, uidsToLink, uidsToUnlink };
+};
+
 export const createUpdateObjectRelationshipsMutation = (
   object: SkylarkObjectMeta | null,
-  newRelationshipObjects: ParsedSkylarkObject[],
-  removedRelationshipObjects: { [key: string]: string[] },
+  updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null,
+  originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null,
 ) => {
   if (
     !object ||
     !object.operations.update ||
-    newRelationshipObjects.length === 0
+    !updatedRelationshipObjects ||
+    !originalRelationshipObjects
   ) {
     return null;
   }
 
   const relationships = object?.relationships || [];
+  const objectsToLinkAndUnlink = relationships
+    .map((relationship) =>
+      getNewObjects(
+        relationship,
+        updatedRelationshipObjects,
+        originalRelationshipObjects,
+      ),
+    )
+    .filter(
+      ({ uidsToLink, uidsToUnlink }) =>
+        uidsToLink.length > 0 || uidsToUnlink.length > 0,
+    );
 
-  const groupedNewRelationshipObjects = groupObjectsByRelationship(
-    newRelationshipObjects,
-    relationships,
-  );
-
-  const relationshipsWithChanges = relationships.filter(
-    ({ relationshipName }) =>
-      Object.keys(removedRelationshipObjects).includes(relationshipName) ||
-      Object.keys(groupedNewRelationshipObjects).includes(relationshipName),
-  );
-
-  const parsedRelationsToUpdate = relationshipsWithChanges.reduce(
-    (acc, { relationshipName }) => {
-      const update = {
-        [relationshipName]: {
-          // at this point one of them can be undefined. TODO
-          ...(removedRelationshipObjects[relationshipName] && {
-            unlink: removedRelationshipObjects[relationshipName],
-          }),
-          ...(groupedNewRelationshipObjects[relationshipName] && {
-            link: groupedNewRelationshipObjects[relationshipName]?.map(
-              (obj) => obj.uid,
-            ),
-          }),
+  const parsedRelationsToUpdate = objectsToLinkAndUnlink.reduce(
+    (acc, { relationship, uidsToLink, uidsToUnlink }) => {
+      // at this point one of them can be undefined. TODO
+      return {
+        ...acc,
+        [relationship.relationshipName]: {
+          link: uidsToLink,
+          unlink: uidsToUnlink,
         },
       };
-      return { ...acc, ...update };
     },
     {},
   );
 
   const mutation = {
     mutation: {
-      __name: `UPDATE_OBJECT_CONTENT_${object.name}`,
+      __name: `UPDATE_OBJECT_RELATIONSHIPS_${object.name}`,
       __variables: {
         uid: "String!",
       },
@@ -329,8 +356,6 @@ export const createUpdateObjectRelationshipsMutation = (
           },
         },
         uid: true,
-
-        // TODO ...generateContentsToReturn(object, contentTypesToRequest),
       },
     },
   };
