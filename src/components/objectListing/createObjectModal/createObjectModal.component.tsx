@@ -180,9 +180,9 @@ export const CreateObjectModal = ({
                         <h3 className="mb-2 text-base font-bold underline">
                           {title}
                         </h3>
-                        {metadataFields.map(({ field, config }) => {
-                          if (config) {
-                            return (
+                        {metadataFields.map(
+                          ({ field, config }) =>
+                            config && (
                               <SkylarkObjectFieldInput
                                 key={field}
                                 field={field}
@@ -192,9 +192,8 @@ export const CreateObjectModal = ({
                                 value={getValues(field)}
                                 formState={formState}
                               />
-                            );
-                          }
-                        })}
+                            ),
+                        )}
                       </div>
                     ))}
                 </div>

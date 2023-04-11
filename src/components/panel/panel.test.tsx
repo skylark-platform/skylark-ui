@@ -100,6 +100,26 @@ describe("metadata view", () => {
     );
   });
 
+  test("renders three sections system, translatable, global", async () => {
+    render(
+      <Panel
+        object={movieObject}
+        closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+    );
+    expect(screen.getByText("System Metadata")).toBeInTheDocument();
+    expect(screen.getByText("Translatable Metadata")).toBeInTheDocument();
+    expect(screen.getByText("Global Metadata")).toBeInTheDocument();
+  });
+
   test("renders object not found when the object doesn't exist", async () => {
     server.use(
       graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
@@ -125,6 +145,24 @@ describe("metadata view", () => {
 
     expect(
       screen.getByText('Movie "nonexistant" not found'),
+    ).toBeInTheDocument();
+  });
+
+  test("renders object type not found when the object type isn't found in the schema", async () => {
+    render(
+      <Panel
+        object={{ uid: "123", objectType: "nonexistant", language: "" }}
+        closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    expect(
+      screen.getByText('Object Type "nonexistant" not found'),
     ).toBeInTheDocument();
   });
 
@@ -382,15 +420,6 @@ describe("metadata view", () => {
     });
 
     test("edits and saves", async () => {
-      // server.use(
-      //   graphql.query("UPDATE_OBJECT_METADATA_SkylarkSet", (req, res, ctx) => {
-      //     return res(
-      //       ctx.errors([
-      //         { errorType: QueryErrorMessages.NotFound, message: "Not found" },
-      //       ]),
-      //     );
-      //   }),
-      // );
       const changedValue = "this has changed";
 
       server.use(
@@ -540,6 +569,35 @@ describe("imagery view", () => {
       GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].url,
     );
   });
+
+  test("calls setPanelObject with the selected image info when the OpenObjectButton is clicked", async () => {
+    const setPanelObject = jest.fn();
+    render(
+      <Panel
+        object={movieObject}
+        closePanel={jest.fn()}
+        setPanelObject={setPanelObject}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText("Imagery")).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByText("Imagery"));
+
+    expect(screen.getAllByText("All Avail Test Movie")).toHaveLength(1);
+
+    const firstOpenObjectButton = screen.getAllByRole("button", {
+      name: /Open Object/i,
+    })[0];
+    fireEvent.click(firstOpenObjectButton);
+
+    expect(setPanelObject).toHaveBeenCalledWith({
+      objectType: "SkylarkImage",
+      uid: GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].uid,
+      language: "",
+    });
+  });
 });
 
 describe("relationships view", () => {
@@ -572,6 +630,35 @@ describe("relationships view", () => {
     await waitFor(() =>
       expect(screen.getAllByText("Episode")).toHaveLength(10),
     );
+  });
+
+  test("calls setPanelObject with the selected relationship info when the OpenObjectButton is clicked", async () => {
+    const setPanelObject = jest.fn();
+    render(
+      <Panel
+        object={seasonWithRelationships}
+        closePanel={jest.fn()}
+        setPanelObject={setPanelObject}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText("Relationships")).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByText("Relationships"));
+
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
+
+    const firstOpenObjectButton = screen.getAllByRole("button", {
+      name: /Open Object/i,
+    })[0];
+    fireEvent.click(firstOpenObjectButton);
+
+    expect(setPanelObject).toHaveBeenCalledWith({
+      objectType: "Brand",
+      uid: "01GWFN4R99SNF3QTAZ7JTZCTZ6",
+      language: "",
+    });
   });
 });
 
@@ -620,6 +707,38 @@ describe("content view", () => {
     await waitFor(() =>
       expect(screen.getByText("Editing")).toBeInTheDocument(),
     );
+  });
+
+  test("calls setPanelObject with the selected content info when the OpenObjectButton is clicked", async () => {
+    const setPanelObject = jest.fn();
+    render(
+      <Panel
+        object={setObjectWithContent}
+        closePanel={jest.fn()}
+        setPanelObject={setPanelObject}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText("Content")).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByText("Content"));
+
+    expect(screen.getAllByText("Homepage")).toHaveLength(1);
+
+    const firstOpenObjectButton = screen.getAllByRole("button", {
+      name: /Open Object/i,
+    })[0];
+    fireEvent.click(firstOpenObjectButton);
+
+    expect(setPanelObject).toHaveBeenCalledWith({
+      objectType:
+        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
+          .objects[0].object.__typename,
+      uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
+        .objects[0].object.uid,
+      language: "",
+    });
   });
 
   describe("content view - edit", () => {
@@ -1018,6 +1137,43 @@ describe("availability view", () => {
         getRelativeTimeFromDate(AvailabilityStatus.Expired, start, end),
       ),
     ).toBeInTheDocument();
+  });
+
+  test("calls setPanelObject with the selected availability info when the OpenObjectButton is clicked", async () => {
+    const setPanelObject = jest.fn();
+    render(
+      <Panel
+        object={movieObject}
+        closePanel={jest.fn()}
+        setPanelObject={setPanelObject}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText("Availability")).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByText("Availability"));
+
+    const numberOfAvailabilityInFixture =
+      GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
+        .availability.objects.length;
+    await waitFor(() =>
+      expect(screen.queryAllByText("Time Window")).toHaveLength(
+        numberOfAvailabilityInFixture,
+      ),
+    );
+
+    const firstOpenObjectButton = screen.getAllByRole("button", {
+      name: /Open Object/i,
+    })[0];
+    fireEvent.click(firstOpenObjectButton);
+
+    expect(setPanelObject).toHaveBeenCalledWith({
+      objectType: "Availability",
+      uid: GQLSkylarkGetObjectAvailabilityQueryFixture.data
+        .getObjectAvailability.availability.objects[0].uid,
+      language: "",
+    });
   });
 });
 

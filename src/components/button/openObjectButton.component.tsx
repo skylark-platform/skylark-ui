@@ -8,6 +8,7 @@ export const OpenObjectButton = ({ onClick }: GetOpenButtonProps) => (
   <button
     className="text-manatee-500 transition-colors hover:text-brand-primary"
     onClick={onClick}
+    aria-label="Open Object"
   >
     <ArrowRight />
   </button>

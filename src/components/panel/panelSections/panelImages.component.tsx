@@ -73,8 +73,6 @@ export const PanelImages = ({
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }) => {
   return (
-    // TODO try with an object that actually has images, likely need to add a sticky variant of the layout
-    // <div className="h-full overflow-y-auto px-4 pb-32 text-sm md:px-8">
     <PanelSectionLayout
       sections={images.map(({ relationshipName }) => ({
         id: `image-panel-${relationshipName}`,
