@@ -173,7 +173,7 @@ export const Panel = ({
                   if (relationshipName === droppedObjectRelationshipName) {
                     return {
                       ...relationship,
-                      objects: [...objects, droppedObject],
+                      objects: [droppedObject, ...objects],
                     };
                   } else return relationship;
                 },

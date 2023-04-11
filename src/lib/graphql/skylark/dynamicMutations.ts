@@ -7,10 +7,12 @@ import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
-  SkylarkObjectRelationship,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
+import {
+  parseMetadataForGraphQLRequest,
+  parseUpdatedRelationshipObjects,
+} from "src/lib/skylark/parsers";
 
 import {
   generateContentsToReturn,
@@ -266,37 +268,6 @@ export const createUpdateObjectContentMutation = (
   return gql(graphQLQuery);
 };
 
-const getNewObjects = (
-  relationship: SkylarkObjectRelationship,
-  updatedRelationshipObjects: ParsedSkylarkObjectRelationships[],
-  originalRelationshipObjects: ParsedSkylarkObjectRelationships[],
-) => {
-  const updatedObjects: string[] =
-    updatedRelationshipObjects
-      .find(
-        ({ relationshipName }) =>
-          relationshipName === relationship.relationshipName,
-      )
-      ?.objects.map(({ uid }) => uid) || [];
-
-  const originalObjects: string[] =
-    originalRelationshipObjects
-      .find(
-        ({ relationshipName }) =>
-          relationshipName === relationship.relationshipName,
-      )
-      ?.objects.map(({ uid }) => uid) || [];
-
-  const uidsToLink = updatedObjects.filter(
-    (uid) => !originalObjects.includes(uid),
-  );
-  const uidsToUnlink = originalObjects.filter(
-    (uid) => !updatedObjects.includes(uid),
-  );
-
-  return { relationship, uidsToLink, uidsToUnlink };
-};
-
 export const createUpdateObjectRelationshipsMutation = (
   object: SkylarkObjectMeta | null,
   updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null,
@@ -314,7 +285,7 @@ export const createUpdateObjectRelationshipsMutation = (
   const relationships = object?.relationships || [];
   const objectsToLinkAndUnlink = relationships
     .map((relationship) =>
-      getNewObjects(
+      parseUpdatedRelationshipObjects(
         relationship,
         updatedRelationshipObjects,
         originalRelationshipObjects,
@@ -327,7 +298,6 @@ export const createUpdateObjectRelationshipsMutation = (
 
   const parsedRelationsToUpdate = objectsToLinkAndUnlink.reduce(
     (acc, { relationship, uidsToLink, uidsToUnlink }) => {
-      // at this point one of them can be undefined. TODO
       return {
         ...acc,
         [relationship.relationshipName]: {

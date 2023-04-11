@@ -17,6 +17,7 @@ import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
+import { parseUpdatedRelationshipObjects } from "src/lib/skylark/parsers";
 import { formatObjectField } from "src/lib/utils";
 
 interface PanelRelationshipsProps {
@@ -45,7 +46,7 @@ export const PanelRelationships = ({
 }: PanelRelationshipsProps) => {
   const {
     data: relationshipsData,
-
+    relationships = [],
     isLoading,
     query,
     variables,
@@ -115,31 +116,57 @@ export const PanelRelationships = ({
 
               <div className="transition duration-300 ease-in-out">
                 {relationship && displayList?.length > 0 ? (
-                  displayList?.map((obj, index) => (
-                    <>
-                      <div className="flex">
-                        <ObjectIdentifierCard key={obj.uid} object={obj} />
-                        <button
-                          disabled={!inEditMode}
-                          data-testid={`panel-object-content-item-${
-                            index + 1
-                          }-remove`}
-                          onClick={() =>
-                            removeRelationshipObject(obj.uid, relationshipName)
-                          }
-                        >
-                          <Trash
-                            className={clsx(
-                              "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
-                              inEditMode ? "w-6" : "w-0",
-                            )}
-                          />
-                        </button>
-                      </div>
+                  displayList?.map((obj, index) => {
+                    const relationshipObject = relationships.find(
+                      (relationship) =>
+                        relationship.relationshipName === relationshipName,
+                    );
 
-                      {index < displayList.length - 1 && <PanelSeparator />}
-                    </>
-                  ))
+                    const newUids =
+                      relationshipObject &&
+                      originalRelationshipObjects &&
+                      parseUpdatedRelationshipObjects(
+                        relationshipObject,
+                        updatedRelationshipObjects,
+                        originalRelationshipObjects,
+                      ).uidsToLink;
+
+                    return (
+                      <>
+                        <div className="flex items-center ">
+                          <ObjectIdentifierCard key={obj.uid} object={obj} />
+                          {inEditMode && newUids?.includes(obj.uid) && (
+                            <span
+                              className={
+                                "flex h-6 min-w-6 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
+                              }
+                            />
+                          )}
+                          <button
+                            disabled={!inEditMode}
+                            data-testid={`panel-object-content-item-${
+                              index + 1
+                            }-remove`}
+                            onClick={() =>
+                              removeRelationshipObject(
+                                obj.uid,
+                                relationshipName,
+                              )
+                            }
+                          >
+                            <Trash
+                              className={clsx(
+                                "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
+                                inEditMode ? "w-6" : "w-0",
+                              )}
+                            />
+                          </button>
+                        </div>
+
+                        {index < displayList.length - 1 && <PanelSeparator />}
+                      </>
+                    );
+                  })
                 ) : (
                   <PanelEmptyDataText />
                 )}
