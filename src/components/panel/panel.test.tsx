@@ -1,4 +1,5 @@
 import { graphql } from "msw";
+import { useState } from "react";
 
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
 import GQLSkylarkGetObjectImageQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gotImage.json";
@@ -122,7 +123,9 @@ describe("metadata view", () => {
       expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
     );
 
-    expect(screen.getByText("Movie nonexistant not found")).toBeInTheDocument();
+    expect(
+      screen.getByText('Movie "nonexistant" not found'),
+    ).toBeInTheDocument();
   });
 
   test("renders an error message when an unknown error occurs", async () => {
@@ -246,13 +249,17 @@ describe("metadata view", () => {
     });
 
     test("changes the panel language using the dropdown when more than one is available", async () => {
-      render(
-        <Panel
-          object={episodeObjectEnGB}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
-        />,
-      );
+      const SetObjectWrapper = () => {
+        const [object, setObject] = useState(episodeObjectEnGB);
+        return (
+          <Panel
+            object={object}
+            closePanel={jest.fn()}
+            setPanelObject={setObject}
+          />
+        );
+      };
+      render(<SetObjectWrapper />);
 
       // Arrange
       await waitFor(() =>
@@ -1019,7 +1026,7 @@ test("closing the panel using close button", async () => {
   render(
     <Panel
       object={movieObject}
-      closePanel={jest.fn()}
+      closePanel={closePanel}
       setPanelObject={jest.fn()}
     />,
   );

@@ -3,12 +3,7 @@ import {
   setObjectOperations,
   movieObjectOperations,
 } from "src/__tests__/utils/objectOperations";
-import {
-  ParsedSkylarkObjectConfig,
-  ParsedSkylarkObjectContent,
-  ParsedSkylarkObjectContentObject,
-  ParsedSkylarkObjectMetadata,
-} from "src/interfaces/skylark";
+import { ParsedSkylarkObjectContentObject } from "src/interfaces/skylark";
 
 import {
   createDeleteObjectMutation,
