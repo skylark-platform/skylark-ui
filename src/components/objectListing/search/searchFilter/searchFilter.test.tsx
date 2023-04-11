@@ -6,6 +6,12 @@ import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 import { SearchFilter } from "./searchFilter.component";
 
 const objectTypes = ["Brand", "Season", "Episode"];
+
+const objectTypesWithConfig = objectTypes.map((objectType) => ({
+  objectType,
+  config: undefined,
+}));
+
 const columns = ["uid", "external_id", "slug"];
 
 const graphqlQuery = {
@@ -16,7 +22,7 @@ const graphqlQuery = {
 test("renders with all checkboxes checked", async () => {
   render(
     <SearchFilter
-      objectTypes={objectTypes}
+      objectTypesWithConfig={objectTypesWithConfig}
       activeFilters={{ objectTypes, language: "" }}
       columns={columns}
       visibleColumns={columns}
@@ -37,7 +43,7 @@ test("calls onFilterSave when apply is clicked", async () => {
 
   render(
     <SearchFilter
-      objectTypes={objectTypes}
+      objectTypesWithConfig={objectTypesWithConfig}
       activeFilters={{ objectTypes, language: "" }}
       columns={columns}
       visibleColumns={columns}
@@ -61,7 +67,7 @@ test("when reset is clicked, all filters are returned to all options checked wit
 
   render(
     <SearchFilter
-      objectTypes={objectTypes}
+      objectTypesWithConfig={objectTypesWithConfig}
       activeFilters={{ objectTypes: [], language: "" }}
       columns={columns}
       visibleColumns={[]}

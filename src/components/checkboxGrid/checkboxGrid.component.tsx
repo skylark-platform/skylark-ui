@@ -4,25 +4,34 @@ import { useEffect, useState } from "react";
 
 import { Checkbox } from "src/components/inputs/checkbox";
 
+export type CheckboxOption = {
+  label: string;
+  value: string;
+};
+
+export type CheckboxOptionState = {
+  option: CheckboxOption;
+  state: CheckedState;
+};
+
 interface CheckboxGridProps {
   label: string;
-  options: {
-    [option: string]: CheckedState;
-  };
+  options: CheckboxOptionState[];
   className?: string;
   withToggleAll?: boolean;
-  onChange: (checkedOptions: string[]) => void;
+  onChange: (optionsState: CheckboxOptionState[]) => void;
 }
 
 export const createCheckboxOptions = (
-  options: string[],
+  options: CheckboxOption[],
   activeOptions: string[],
-): { [option: string]: CheckedState } => {
-  const obj = options.reduce(
-    (prev, option) => ({ ...prev, [option]: activeOptions.includes(option) }),
-    {},
+): CheckboxOptionState[] => {
+  return options.map(
+    (option): CheckboxOptionState => ({
+      option,
+      state: activeOptions.includes(option.value),
+    }),
   );
-  return obj;
 };
 
 export const CheckboxGrid = ({
@@ -32,37 +41,33 @@ export const CheckboxGrid = ({
   withToggleAll,
   onChange,
 }: CheckboxGridProps) => {
-  const [checkboxOptions, setCheckboxOptions] = useState(options);
+  const [checkboxState, setCheckboxState] = useState(options);
 
-  const allOptionsChecked = Object.values(checkboxOptions).every(
-    (val) => !!val,
+  const allOptionsChecked = checkboxState.every(
+    (option) => option.state === true,
   );
 
-  const handleChange = (option: string, checkedState: CheckedState) => {
-    const updatedOptions = { ...checkboxOptions, [option]: checkedState };
-    setCheckboxOptions(updatedOptions);
-    const optsArr = Object.keys(updatedOptions).filter(
-      (option) => !!updatedOptions[option],
+  const handleChange = (option: CheckboxOption, checkedState: CheckedState) => {
+    const newCheckedOptions = checkboxState.map((state) =>
+      option.value === state.option.value
+        ? { option, state: checkedState }
+        : state,
     );
-    onChange(optsArr);
+    setCheckboxState(newCheckedOptions);
+    onChange(newCheckedOptions);
   };
 
   const handleToggleAll = () => {
-    const strOptions = Object.keys(checkboxOptions);
-    const updatedOptions = createCheckboxOptions(
-      strOptions,
-      allOptionsChecked ? [] : strOptions,
-    );
-    setCheckboxOptions(updatedOptions);
-
-    const optsArr = Object.keys(updatedOptions).filter(
-      (option) => !!updatedOptions[option],
-    );
-    onChange(optsArr);
+    const newCheckedOptions = checkboxState.map(({ option }) => ({
+      option,
+      state: !allOptionsChecked,
+    }));
+    setCheckboxState(newCheckedOptions);
+    onChange(newCheckedOptions);
   };
 
   useEffect(() => {
-    setCheckboxOptions(options);
+    setCheckboxState(options);
   }, [options]);
 
   return (
@@ -83,12 +88,12 @@ export const CheckboxGrid = ({
         />
       )}
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
-        {Object.keys(checkboxOptions).map((option) => (
+        {checkboxState.map(({ option, state }) => (
           <Checkbox
-            label={option}
-            key={option}
-            name={`${label}-${option}`}
-            checked={checkboxOptions[option]}
+            label={option.label}
+            key={option.value}
+            name={`${label}-${option.value}`}
+            checked={state}
             onCheckedChange={(checkedState) =>
               handleChange(option, checkedState)
             }

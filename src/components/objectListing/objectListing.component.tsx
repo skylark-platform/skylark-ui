@@ -356,7 +356,6 @@ export const ObjectList = ({
           )}
         >
           <Search
-            objectTypes={objectTypes || []}
             searchQuery={searchQuery}
             graphqlQuery={{
               query: graphqlSearchQuery,
