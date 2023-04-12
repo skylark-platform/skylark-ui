@@ -8,6 +8,7 @@ import GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture from "src/__tests__/fixtures
 import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots04.json";
 import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
 import GQLSkylarkGetObjectAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/allAvailTestMovieAvailability.json";
+import GQLSkylarkGetSeasonRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/gots04relationships.json";
 import { server } from "src/__tests__/mocks/server";
 import {
   render,
@@ -665,6 +666,29 @@ describe("relationships view", () => {
     );
   });
 
+  test("edit view", async () => {
+    render(
+      <Panel
+        object={seasonWithRelationships}
+        closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText("Relationships")).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByText("Relationships"));
+
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
+
+    fireEvent.click(screen.getByText("Edit Relationships"));
+
+    await waitFor(() =>
+      expect(screen.getByText("Editing")).toBeInTheDocument(),
+    );
+  });
+
   test("calls setPanelObject with the selected relationship info when the OpenObjectButton is clicked", async () => {
     const setPanelObject = jest.fn();
     render(
@@ -691,6 +715,85 @@ describe("relationships view", () => {
       objectType: "Brand",
       uid: "01GWFN4R99SNF3QTAZ7JTZCTZ6",
       language: "",
+    });
+  });
+
+  describe("relationships view - edit", () => {
+    const renderAndSwitchToEditView = async () => {
+      render(
+        <Panel
+          object={seasonWithRelationships}
+          closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(screen.getByText("Relationships")).toBeInTheDocument(),
+      );
+      fireEvent.click(screen.getByText("Relationships"));
+
+      await waitFor(() =>
+        expect(screen.getAllByText("Episode")).toHaveLength(3),
+      );
+
+      fireEvent.click(screen.getByText("Edit Relationships"));
+
+      await waitFor(() =>
+        expect(screen.getByText("Editing")).toBeInTheDocument(),
+      );
+    };
+
+    test("cancel/exit edit view", async () => {
+      await renderAndSwitchToEditView();
+
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      expect(screen.queryByText("Editing")).not.toBeInTheDocument();
+    });
+
+    test("removes an item from the relationship list", async () => {
+      await renderAndSwitchToEditView();
+
+      expect(
+        screen.getByTestId("panel-relationship-episodes-item-1"),
+      ).toHaveTextContent(
+        GQLSkylarkGetSeasonRelationshipsQueryFixture.data.getObjectRelationships
+          .episodes.objects[0].title as string,
+      );
+
+      const removeButton = screen.getByTestId(
+        "panel-relationship-episodes-item-1-remove",
+      );
+      fireEvent.click(removeButton);
+
+      expect(
+        screen.getByTestId("panel-relationship-episodes-item-1"),
+      ).toHaveTextContent(
+        GQLSkylarkGetSeasonRelationshipsQueryFixture.data.getObjectRelationships
+          .episodes.objects[1].title as string,
+      );
+    });
+
+    test("removes an item and saves", async () => {
+      await renderAndSwitchToEditView();
+
+      const removeButton = screen.getByTestId(
+        "panel-relationship-episodes-item-1-remove",
+      );
+      fireEvent.click(removeButton);
+
+      const saveButton = screen.getByText("Save");
+      fireEvent.click(saveButton);
+
+      await waitFor(() =>
+        expect(screen.queryByText("Editing")).not.toBeInTheDocument(),
+      );
+
+      await waitFor(() =>
+        expect(screen.getByText("Edit Relationships")).toBeInTheDocument(),
+      );
     });
   });
 });

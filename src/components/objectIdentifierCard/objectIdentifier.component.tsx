@@ -12,11 +12,13 @@ interface ObjectIdentifierCardProps {
   object: ParsedSkylarkObject;
   children?: ReactNode;
   onForwardClick?: (o: SkylarkObjectIdentifier) => void;
+  disableForwardClick?: boolean;
 }
 
 export const ObjectIdentifierCard = ({
   object,
   children,
+  disableForwardClick,
   onForwardClick,
 }: ObjectIdentifierCardProps) => {
   return (
@@ -30,6 +32,7 @@ export const ObjectIdentifierCard = ({
       {children}
       {onForwardClick && (
         <OpenObjectButton
+          disabled={disableForwardClick}
           onClick={() =>
             onForwardClick({
               uid: object.uid,

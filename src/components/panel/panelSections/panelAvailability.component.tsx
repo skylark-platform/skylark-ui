@@ -31,6 +31,7 @@ interface PanelAvailabilityProps {
   objectType: string;
   objectUid: string;
   language: string;
+  inEditMode: boolean;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }
 
@@ -73,6 +74,7 @@ export const PanelAvailability = ({
   objectType,
   objectUid,
   language,
+  inEditMode,
   setPanelObject,
 }: PanelAvailabilityProps) => {
   const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
@@ -146,6 +148,7 @@ export const PanelAvailability = ({
                           language: "",
                         })
                       }
+                      disabled={inEditMode}
                     />
                   </div>
                 </div>

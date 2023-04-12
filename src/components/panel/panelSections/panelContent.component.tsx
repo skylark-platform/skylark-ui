@@ -183,6 +183,7 @@ export const PanelContent = ({
                   } as ParsedSkylarkObject
                 }
                 onForwardClick={setPanelObject}
+                disableForwardClick={inEditMode}
               >
                 <div className="flex">
                   <span

@@ -77,7 +77,7 @@ export const useGetObjectRelationships = (
 
   const unparsedData = data?.getObjectRelationships;
 
-  const relationships: ParsedSkylarkObjectRelationships[] = unparsedData
+  const relationships: ParsedSkylarkObjectRelationships[] | null = unparsedData
     ? Object.keys(unparsedData)?.map((relation) => {
         const relationship = unparsedData[
           relation
@@ -93,11 +93,12 @@ export const useGetObjectRelationships = (
           objects: parsedObjects,
         };
       })
-    : [];
+    : null;
 
   return {
     ...rest,
     data: relationships,
+    relationships: objectOperations?.relationships,
     isLoading: rest.isLoading || !query,
     query,
     variables,
