@@ -8,7 +8,6 @@ import {
   GQLInputField,
   GQLScalars,
   GQLTypeKind,
-  GQLTypeName,
 } from "src/interfaces/graphql/introspection";
 import {
   NormalizedObjectFieldType,

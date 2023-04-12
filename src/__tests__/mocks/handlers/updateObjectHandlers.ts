@@ -20,4 +20,14 @@ export const updateObjectHandlers = [
       }),
     );
   }),
+
+  graphql.mutation("UPDATE_OBJECT_RELATIONSHIPS_Season", (req, res, ctx) => {
+    return res(
+      ctx.data({
+        updateRelationships: {
+          uid: "01GXSR23WH5DHGTXVHXW1TMGBJ",
+        },
+      }),
+    );
+  }),
 ];

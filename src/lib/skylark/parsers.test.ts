@@ -709,3 +709,134 @@ describe("parseMetadataForGraphQLRequest", () => {
     });
   });
 });
+
+describe("parseUpdatedRelationshipObjects", () => {
+  const relationship: SkylarkObjectRelationship = {
+    relationshipName: "Seasons",
+    objectType: "season",
+  };
+
+  const expectedParsedObject: ParsedSkylarkObject = {
+    objectType: "Season",
+    uid: "uid123",
+    config: {
+      colour: "#9c27b0",
+      primaryField: "title",
+    },
+    meta: {
+      language: "pt-PT",
+      availableLanguages: ["en-GB", "pt-PT"],
+      versions: {
+        language: 1,
+        global: 2,
+      },
+    },
+    metadata: {
+      uid: "uid123",
+      __typename: "Season",
+      external_id: "",
+      number_of_episodes: null,
+      release_date: "2012-04-01",
+      season_number: 2,
+      slug: "uid123-s02",
+      synopsis_long: null,
+      synopsis_medium: null,
+      synopsis_short: null,
+      title: "GOT S02",
+      title_long: null,
+      title_medium: "Game of Thrones - Season 2",
+      title_short: "GOT Season 2",
+    },
+    availability: {
+      status: AvailabilityStatus.Unavailable,
+      objects: [],
+    },
+    images: [],
+    content: undefined,
+  };
+
+  const updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] = [
+    {
+      relationshipName: "Seasons",
+      objects: [expectedParsedObject],
+    },
+  ];
+  const originalRelationshipObjects: ParsedSkylarkObjectRelationships[] = [
+    {
+      relationshipName: "Seasons",
+      objects: [expectedParsedObject],
+    },
+  ];
+
+  test("returns the correct linked and unlinked uids", () => {
+    const result = parseUpdatedRelationshipObjects(
+      relationship,
+      updatedRelationshipObjects,
+      originalRelationshipObjects,
+    );
+    expect(result).toEqual({
+      relationship: relationship,
+      uidsToLink: [],
+      uidsToUnlink: [],
+    });
+  });
+
+  test("returns the correct linked and unlinked uids when original objects is empty", () => {
+    const originalRelationshipObjects: ParsedSkylarkObjectRelationships[] = [];
+    const result = parseUpdatedRelationshipObjects(
+      relationship,
+      updatedRelationshipObjects,
+      originalRelationshipObjects,
+    );
+    expect(result).toEqual({
+      relationship: relationship,
+      uidsToLink: ["uid123"],
+      uidsToUnlink: [],
+    });
+  });
+
+  test("returns the correct linked and unlinked uids when updated objects is empty", () => {
+    const updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] = [];
+    const result = parseUpdatedRelationshipObjects(
+      relationship,
+      updatedRelationshipObjects,
+      originalRelationshipObjects,
+    );
+    expect(result).toEqual({
+      relationship: relationship,
+      uidsToLink: [],
+      uidsToUnlink: ["uid123"],
+    });
+  });
+
+  test("returns the correct linked and unlinked uids when both original and updated objects are empty", () => {
+    const updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] = [];
+    const originalRelationshipObjects: ParsedSkylarkObjectRelationships[] = [];
+    const result = parseUpdatedRelationshipObjects(
+      relationship,
+      updatedRelationshipObjects,
+      originalRelationshipObjects,
+    );
+    expect(result).toEqual({
+      relationship: relationship,
+      uidsToLink: [],
+      uidsToUnlink: [],
+    });
+  });
+
+  test("returns the correct linked and unlinked uids when relationshipName is not found", () => {
+    const result = parseUpdatedRelationshipObjects(
+      { relationshipName: "invalid-relationship", objectType: "season" },
+      updatedRelationshipObjects,
+      originalRelationshipObjects,
+    );
+    expect(result).toEqual({
+      relationship: {
+        relationshipName: "invalid-relationship",
+        objectType: "season",
+      },
+      uidsToLink: [],
+      uidsToUnlink: [],
+    });
+  });
+});

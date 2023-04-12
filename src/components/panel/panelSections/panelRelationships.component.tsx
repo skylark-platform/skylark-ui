@@ -133,7 +133,12 @@ export const PanelRelationships = ({
 
                     return (
                       <>
-                        <div className="flex items-center ">
+                        <div
+                          className="flex items-center "
+                          data-testid={`panel-relationship-${relationshipName}-item-${
+                            index + 1
+                          }`}
+                        >
                           <ObjectIdentifierCard key={obj.uid} object={obj} />
                           {inEditMode && newUids?.includes(obj.uid) && (
                             <span
@@ -144,7 +149,7 @@ export const PanelRelationships = ({
                           )}
                           <button
                             disabled={!inEditMode}
-                            data-testid={`panel-relationship-item-${
+                            data-testid={`panel-relationship-${relationshipName}-item-${
                               index + 1
                             }-remove`}
                             onClick={() =>
