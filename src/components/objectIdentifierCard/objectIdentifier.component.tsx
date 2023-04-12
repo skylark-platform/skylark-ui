@@ -1,6 +1,8 @@
+import clsx from "clsx";
 import { ReactNode } from "react";
 
 import { OpenObjectButton } from "src/components/button";
+import { Trash } from "src/components/icons";
 import { Pill } from "src/components/pill";
 import {
   ParsedSkylarkObject,
@@ -11,15 +13,19 @@ import { getObjectDisplayName } from "src/lib/utils";
 interface ObjectIdentifierCardProps {
   object: ParsedSkylarkObject;
   children?: ReactNode;
-  onForwardClick?: (o: SkylarkObjectIdentifier) => void;
   disableForwardClick?: boolean;
+  disableDeleteClick?: boolean;
+  onForwardClick?: (o: SkylarkObjectIdentifier) => void;
+  onDeleteClick?: () => void;
 }
 
 export const ObjectIdentifierCard = ({
   object,
   children,
   disableForwardClick,
+  disableDeleteClick,
   onForwardClick,
+  onDeleteClick,
 }: ObjectIdentifierCardProps) => {
   return (
     <div className="flex w-full flex-grow items-center space-x-2 py-3">
@@ -30,6 +36,24 @@ export const ObjectIdentifierCard = ({
       />
       <p className="flex flex-grow text-sm">{getObjectDisplayName(object)}</p>
       {children}
+      {onDeleteClick && (
+        <button
+          disabled={disableDeleteClick}
+          data-testid="object-identifier-delete"
+          className={clsx(
+            "transition-width",
+            !disableDeleteClick ? "w-6 pl-1" : "w-0",
+          )}
+          onClick={onDeleteClick}
+        >
+          <Trash
+            className={clsx(
+              "flex h-6 text-manatee-300 transition-all hover:text-error",
+              !disableDeleteClick ? "w-6" : "w-0",
+            )}
+          />
+        </button>
+      )}
       {onForwardClick && (
         <OpenObjectButton
           disabled={disableForwardClick}

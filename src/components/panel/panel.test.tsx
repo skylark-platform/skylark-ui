@@ -819,8 +819,11 @@ describe("relationships view", () => {
           .episodes.objects[0].title as string,
       );
 
-      const removeButton = screen.getByTestId(
-        "panel-relationship-episodes-item-1-remove",
+      const withinPanelObjectRelationshipItem1 = within(
+        screen.getByTestId("panel-relationship-episodes-item-1"),
+      );
+      const removeButton = withinPanelObjectRelationshipItem1.getByTestId(
+        "object-identifier-delete",
       );
       fireEvent.click(removeButton);
 
@@ -835,8 +838,11 @@ describe("relationships view", () => {
     test("removes an item and saves", async () => {
       await renderAndSwitchToEditView();
 
-      const removeButton = screen.getByTestId(
-        "panel-relationship-episodes-item-1-remove",
+      const withinPanelObjectRelationshipItem1 = within(
+        screen.getByTestId("panel-relationship-episodes-item-1"),
+      );
+      const removeButton = withinPanelObjectRelationshipItem1.getByTestId(
+        "object-identifier-delete",
       );
       fireEvent.click(removeButton);
 
@@ -1160,7 +1166,7 @@ describe("content view", () => {
         screen.getByTestId("panel-object-content-item-1"),
       );
       const removeButton = withinPanelObjectContentItem1.getByTestId(
-        "panel-object-content-item-remove",
+        "object-identifier-delete",
       );
       fireEvent.click(removeButton);
 
@@ -1182,7 +1188,7 @@ describe("content view", () => {
         screen.getByTestId("panel-object-content-item-1"),
       );
       const removeButton = withinPanelObjectContentItem1.getByTestId(
-        "panel-object-content-item-remove",
+        "object-identifier-delete",
       );
       fireEvent.click(removeButton);
 

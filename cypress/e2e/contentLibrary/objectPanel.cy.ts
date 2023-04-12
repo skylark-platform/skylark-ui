@@ -445,7 +445,7 @@ describe("Content Library - Object Panel", () => {
         .parent()
         .parent()
         .within(() => {
-          cy.get("[data-testid=panel-object-content-item-remove]").click();
+          cy.get("[data-testid=object-identifier-delete]").click();
         });
       cy.contains("Discover Collection").should("not.exist");
 
@@ -514,7 +514,7 @@ describe("Content Library - Object Panel", () => {
         .parent()
         .parent()
         .within(() => {
-          cy.get("[data-testid=panel-object-content-item-remove]").click();
+          cy.get("[data-testid=object-identifier-delete]").click();
         });
 
       // Reorder

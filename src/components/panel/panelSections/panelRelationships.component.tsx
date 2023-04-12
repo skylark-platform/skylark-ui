@@ -157,7 +157,14 @@ export const PanelRelationships = ({
                           <ObjectIdentifierCard
                             key={obj.uid}
                             object={obj}
+                            disableDeleteClick={!inEditMode}
                             disableForwardClick={inEditMode}
+                            onDeleteClick={() =>
+                              removeRelationshipObject(
+                                obj.uid,
+                                relationshipName,
+                              )
+                            }
                             onForwardClick={setPanelObject}
                           >
                             {inEditMode && newUids?.includes(obj.uid) && (
@@ -167,25 +174,6 @@ export const PanelRelationships = ({
                                 }
                               />
                             )}
-                            <button
-                              disabled={!inEditMode}
-                              data-testid={`panel-relationship-${relationshipName}-item-${
-                                index + 1
-                              }-remove`}
-                              onClick={() =>
-                                removeRelationshipObject(
-                                  obj.uid,
-                                  relationshipName,
-                                )
-                              }
-                            >
-                              <Trash
-                                className={clsx(
-                                  "ml-2 flex h-6 text-manatee-300 transition-all hover:text-error",
-                                  inEditMode ? "w-6" : "w-0",
-                                )}
-                              />
-                            </button>
                           </ObjectIdentifierCard>
                         </div>
 

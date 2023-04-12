@@ -14,6 +14,7 @@ interface PanelSectionLayoutProps {
 }
 
 const scrollToSection = (id: string) =>
+  // Smooth scrolling breaks Cypress tests, we might want to refactor this to be global if we add another smooth scroll
   document?.getElementById(id)?.scrollIntoView({
     behavior:
       typeof window === "undefined" || hasProperty(window, "Cypress")
