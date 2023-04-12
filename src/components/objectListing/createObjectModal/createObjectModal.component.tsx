@@ -1,17 +1,15 @@
 import { Dialog } from "@headlessui/react";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { GrClose } from "react-icons/gr";
 
 import { Button } from "src/components/button";
 import { SkylarkObjectFieldInput } from "src/components/inputs";
-import { LanguageSelect, Select } from "src/components/inputs/select";
+import { LanguageSelect, ObjectTypeSelect } from "src/components/inputs/select";
 import { useCreateObject } from "src/hooks/useCreateObject";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
-  useSkylarkObjectOperations,
-  useSkylarkObjectTypes,
-} from "src/hooks/useSkylarkObjectTypes";
-import {
+  SkylarkGraphQLObjectConfig,
   SkylarkObjectIdentifier,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
@@ -24,8 +22,6 @@ interface CreateObjectModalProps {
   setIsOpen: (b: boolean) => void;
   onObjectCreated: (o: SkylarkObjectIdentifier) => void;
 }
-
-const objectTypeKey = "__objectType";
 
 const formHasObjectPropertyValues = (values: object) => {
   const fieldWithValues = Object.entries(values).filter(
@@ -41,7 +37,6 @@ export const CreateObjectModal = ({
   setIsOpen,
   onObjectCreated,
 }: CreateObjectModalProps) => {
-  const { objectTypes } = useSkylarkObjectTypes();
   const {
     handleSubmit,
     watch,
@@ -50,18 +45,19 @@ export const CreateObjectModal = ({
     getValues,
     formState,
     reset,
-  } = useForm<Record<string, SkylarkObjectMetadataField>>({
-    defaultValues: {
-      [objectTypeKey]: defaultObjectType,
-    },
-  });
+  } = useForm<Record<string, SkylarkObjectMetadataField>>();
+  const [{ objectType, config: objectTypeConfig }, setObjectTypeWithConfig] =
+    useState<{ objectType: string; config?: SkylarkGraphQLObjectConfig }>({
+      objectType: defaultObjectType || "",
+    });
+
+  const objectTypeDisplayName = objectTypeConfig?.display_name || objectType;
 
   const closeModal = () => {
     reset({});
     setIsOpen(false);
   };
 
-  const objectType = watch(objectTypeKey) as string;
   const values = watch();
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
@@ -80,13 +76,21 @@ export const CreateObjectModal = ({
   }: Record<string, SkylarkObjectMetadataField>) =>
     createObject(_language as string, metadata);
 
-  const { systemMetadataFields, languageGlobalMetadataFields } =
-    objectOperations
-      ? splitMetadataIntoSystemTranslatableGlobal(
-          objectOperations.operations.create.inputs.map(({ name }) => name),
-          objectOperations.operations.create.inputs,
-        )
-      : { systemMetadataFields: [], languageGlobalMetadataFields: [] };
+  const {
+    systemMetadataFields,
+    globalMetadataFields,
+    translatableMetadataFields,
+  } = objectOperations
+    ? splitMetadataIntoSystemTranslatableGlobal(
+        objectOperations.operations.create.inputs.map(({ name }) => name),
+        objectOperations.operations.create.inputs,
+        objectOperations.fieldConfig,
+      )
+    : {
+        systemMetadataFields: [],
+        globalMetadataFields: [],
+        translatableMetadataFields: [],
+      };
 
   const objectTypeSelectRef = useRef(null);
   return (
@@ -115,7 +119,7 @@ export const CreateObjectModal = ({
           </button>
 
           <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">
-            Create Object
+            {`Create ${objectTypeDisplayName || "Object"}`}
           </Dialog.Title>
           <Dialog.Description>
             Select Object Type to get started.
@@ -124,28 +128,14 @@ export const CreateObjectModal = ({
             className="mt-8 flex w-full flex-col justify-end gap-4"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <Controller
-              name={objectTypeKey}
-              control={control}
-              render={({ field }) => (
-                <Select
-                  className="w-full"
-                  variant="primary"
-                  disabled={!objectTypes}
-                  label="Object Type"
-                  labelVariant="form"
-                  selected={(field.value as string) || ""}
-                  placeholder="Select Object Type to get started"
-                  options={
-                    objectTypes?.map((opt) => ({
-                      value: opt,
-                      label: opt,
-                    })) || []
-                  }
-                  ref={objectTypeSelectRef}
-                  onChange={field.onChange}
-                />
-              )}
+            <ObjectTypeSelect
+              className="w-full"
+              variant="primary"
+              label="Object Type"
+              labelVariant="form"
+              placeholder="Select Object Type to get started"
+              selected={objectType}
+              onChange={setObjectTypeWithConfig}
             />
             {objectOperations && (
               <div>
@@ -160,7 +150,6 @@ export const CreateObjectModal = ({
                         label="Object Language"
                         labelVariant="form"
                         rounded={false}
-                        disabled={!objectTypes}
                         selected={(field.value as string) || ""}
                         onChange={field.onChange}
                       />
@@ -175,32 +164,38 @@ export const CreateObjectModal = ({
                       metadataFields: systemMetadataFields,
                     },
                     {
-                      id: "languageGlobal",
-                      title: "Translatable & Global Metadata",
-                      metadataFields: languageGlobalMetadataFields,
+                      id: "translatable",
+                      title: "Translatable Metadata",
+                      metadataFields: translatableMetadataFields,
                     },
-                  ].map(({ id, title, metadataFields }) => (
-                    <div key={id} className="mb-8">
-                      <h3 className="mb-2 text-base font-bold underline">
-                        {title}
-                      </h3>
-                      {metadataFields.map(({ field, config }) => {
-                        if (config) {
-                          return (
-                            <SkylarkObjectFieldInput
-                              key={field}
-                              field={field}
-                              config={config}
-                              control={control}
-                              register={register}
-                              value={getValues(field)}
-                              formState={formState}
-                            />
-                          );
-                        }
-                      })}
-                    </div>
-                  ))}
+                    {
+                      id: "global",
+                      title: "Global Metadata",
+                      metadataFields: globalMetadataFields,
+                    },
+                  ]
+                    .filter(({ metadataFields }) => metadataFields.length > 0)
+                    .map(({ id, title, metadataFields }) => (
+                      <div key={id} className="mb-8">
+                        <h3 className="mb-2 text-base font-bold underline">
+                          {title}
+                        </h3>
+                        {metadataFields.map(
+                          ({ field, config }) =>
+                            config && (
+                              <SkylarkObjectFieldInput
+                                key={field}
+                                field={field}
+                                config={config}
+                                control={control}
+                                register={register}
+                                value={getValues(field)}
+                                formState={formState}
+                              />
+                            ),
+                        )}
+                      </div>
+                    ))}
                 </div>
                 <div className="flex justify-end space-x-2">
                   <Button
@@ -214,8 +209,8 @@ export const CreateObjectModal = ({
                     success
                   >
                     {isCreatingObject
-                      ? `Creating ${objectType}`
-                      : `Create ${objectType || "object"}`}
+                      ? `Creating ${objectTypeDisplayName}`
+                      : `Create ${objectTypeDisplayName || "Object"}`}
                   </Button>
                   <Button
                     variant="outline"

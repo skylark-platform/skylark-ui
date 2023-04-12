@@ -61,7 +61,7 @@ const createColumns = (
         const original = row.original as ParsedSkylarkObject;
         return (
           <Pill
-            label={original.objectType}
+            label={original.config.objectTypeDisplayName || original.objectType}
             bgColor={original.config.colour}
             className="w-full bg-brand-primary"
           />
@@ -166,7 +166,7 @@ export const ObjectList = ({
   isPanelOpen,
 }: ObjectListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const { objectTypes } = useSkylarkObjectTypes();
+  const { objectTypes } = useSkylarkObjectTypes(true);
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     objectTypes: null,
     language: null,
@@ -356,7 +356,6 @@ export const ObjectList = ({
           )}
         >
           <Search
-            objectTypes={objectTypes || []}
             searchQuery={searchQuery}
             graphqlQuery={{
               query: graphqlSearchQuery,

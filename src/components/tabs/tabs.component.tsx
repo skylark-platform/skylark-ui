@@ -9,7 +9,7 @@ interface TabProps {
 }
 
 export const Tabs = ({ tabs, selectedTab, disabled, onChange }: TabProps) => (
-  <ul className="flex w-full items-center justify-start border-b-2 border-gray-200 px-2 text-sm font-medium md:px-4">
+  <ul className="flex w-full items-center justify-start px-2 pb-[2px] text-sm font-medium md:px-4">
     {tabs.map((tab) => {
       return (
         <li key={`tab-${tab}`} className="px-2 md:px-3">

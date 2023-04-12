@@ -1,13 +1,10 @@
 import { useState, useReducer, useEffect } from "react";
 
 import { Button } from "src/components/button";
-import { Select } from "src/components/inputs/select";
+import { ObjectTypeSelect } from "src/components/inputs/select";
 import { StatusCard, statusType } from "src/components/statusCard";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
-import {
-  useSkylarkObjectOperations,
-  useSkylarkObjectTypes,
-} from "src/hooks/useSkylarkObjectTypes";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   ApiRouteFlatfileImportRequestBody,
   ApiRouteFlatfileImportResponse,
@@ -15,7 +12,10 @@ import {
 } from "src/interfaces/apiRoutes";
 import { FlatfileRow } from "src/interfaces/flatfile/responses";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
-import { NormalizedObjectField } from "src/interfaces/skylark";
+import {
+  NormalizedObjectField,
+  SkylarkGraphQLObjectConfig,
+} from "src/interfaces/skylark";
 import {
   createFlatfileObjectsInSkylark,
   generateExampleCSV,
@@ -146,8 +146,13 @@ function reducer(
 }
 
 export default function CSVImportPage() {
-  const { objectTypes } = useSkylarkObjectTypes();
-  const [objectType, setObjectType] = useState("");
+  const [{ objectType, config: objectTypeConfig }, setObjectTypeWithConfig] =
+    useState<{ objectType: string; config?: SkylarkGraphQLObjectConfig }>({
+      objectType: "",
+    });
+
+  const objectTypeDisplayName = objectTypeConfig?.display_name || objectType;
+
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -280,11 +285,6 @@ export default function CSVImportPage() {
     };
   }, [state.import]);
 
-  const objectTypeOptions =
-    objectTypes
-      ?.sort()
-      .map((objectType) => ({ label: objectType, value: objectType })) || [];
-
   const exampleCSV = generateExampleCSV(objectOperations);
 
   return (
@@ -293,14 +293,13 @@ export default function CSVImportPage() {
         <h2 className="font-heading text-2xl font-bold md:text-3xl">
           Import from CSV
         </h2>
-        <Select
+        <ObjectTypeSelect
           variant="primary"
           selected={objectType}
-          options={objectTypeOptions}
           placeholder="Select Skylark object"
           label="Select your Skylark object type"
           onChange={(value) => {
-            setObjectType(value as string);
+            setObjectTypeWithConfig(value);
             dispatch({ stage: "select", status: statusType.success });
           }}
           disabled={state.prep !== statusType.pending}
@@ -323,7 +322,9 @@ export default function CSVImportPage() {
             "data:text/plain;charset=utf-8," +
             encodeURIComponent(exampleCSV as string)
           }
-          downloadName={`${objectType}_example.csv`}
+          downloadName={`${objectTypeDisplayName
+            .split(" ")
+            .join("_")}_example.csv`}
           disabled={
             !exampleCSV ||
             !objectType ||
@@ -345,7 +346,7 @@ export default function CSVImportPage() {
                 key={copyCard.title}
                 title={copyCard.title}
                 description={copyCard.messages[status]
-                  .replace("{objectType}", objectType)
+                  .replace("{objectType}", objectTypeDisplayName)
                   .replace(
                     "{totalImportedToFlatfile}",
                     totalImportedToFlatfile.toString(),
@@ -358,7 +359,7 @@ export default function CSVImportPage() {
           })}
           <div className="flex w-full flex-row justify-end space-x-2">
             <Button
-              href={`/?objectType=${objectType}`}
+              href={`/`}
               variant="primary"
               disabled={state.create !== statusType.success}
             >

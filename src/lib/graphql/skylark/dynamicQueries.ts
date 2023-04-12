@@ -26,6 +26,7 @@ const commonGraphQLOpts = {
     _config: {
       primary_field: true,
       colour: true,
+      display_name: true,
     },
   },
   objectMeta: {
@@ -80,7 +81,7 @@ export const generateVariablesAndArgs = (
       variables: {},
       args: {},
       fields: {
-        ...commonGraphQLOpts.objectConfig,
+        // ...commonGraphQLOpts.objectConfig,
       },
     };
   }
@@ -160,6 +161,7 @@ const generateRelationshipsToReturn = (
         },
         next_token: true,
         objects: {
+          ...commonGraphQLOpts.objectMeta,
           ...generateFieldsToReturn(object.images?.objectMeta.fields || []),
         },
       };
@@ -189,6 +191,7 @@ export const generateContentsToReturn = (
             __typeName: object.name,
             __typename: true, // To remove the alias later
             ...commonGraphQLOpts.objectConfig,
+            ...commonGraphQLOpts.objectMeta,
             ...generateFieldsToReturn(object.fields, `__${object.name}__`),
           })),
         },
@@ -224,7 +227,6 @@ export const createGetObjectQueryName = (objectType: string) =>
   `GET_${objectType}`;
 export const createGetObjectAvailabilityQueryName = (objectType: string) =>
   `GET_${objectType}_AVAILABILITY`;
-
 export const createGetObjectRelationshipsQueryName = (objectType: string) =>
   `GET_${objectType}_RELATIONSHIPS`;
 
@@ -462,6 +464,36 @@ export const createGetObjectRelationshipsQuery = (
   };
 
   const graphQLQuery = jsonToGraphQLQuery(query);
+
+  return gql(graphQLQuery);
+};
+
+export const createGetAllObjectsConfigQuery = (
+  objectTypes?: SkylarkObjectType[],
+) => {
+  if (!objectTypes) {
+    return null;
+  }
+
+  const query = {
+    query: {
+      __name: "GET_OBJECTS_CONFIG",
+      ...objectTypes.reduce((acc, objectType) => {
+        return {
+          ...acc,
+          [objectType]: {
+            __aliasFor: "getObjectConfiguration",
+            __args: {
+              object: new EnumType(objectType),
+            },
+            ...commonGraphQLOpts.objectConfig._config,
+          },
+        };
+      }, {}),
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(query, { pretty: true });
 
   return gql(graphQLQuery);
 };

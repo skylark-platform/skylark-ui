@@ -1,0 +1,79 @@
+{
+  "data": {
+    "Brand": {
+      "primary_field": "title",
+      "colour": "#673ab7",
+      "display_name": null
+    },
+    "Credit": {
+      "primary_field": "slug",
+      "colour": "#ff5722",
+      "display_name": null
+    },
+    "Episode": {
+      "primary_field": "title",
+      "colour": "#ff7ba8",
+      "display_name": null
+    },
+    "Genre": {
+      "primary_field": "name",
+      "colour": "#8bc34a",
+      "display_name": null
+    },
+    "Movie": {
+      "primary_field": "title",
+      "colour": "#009688",
+      "display_name": null
+    },
+    "ParentalGuidance": {
+      "primary_field": "slug",
+      "colour": "#03a9f4",
+      "display_name": null
+    },
+    "Person": {
+      "primary_field": "name",
+      "colour": "#ff9800",
+      "display_name": null
+    },
+    "Rating": {
+      "primary_field": "title",
+      "colour": "#00bcd4",
+      "display_name": null
+    },
+    "Role": {
+      "primary_field": "title",
+      "colour": "#ffc107",
+      "display_name": null
+    },
+    "Season": {
+      "primary_field": "title",
+      "colour": "#9c27b0",
+      "display_name": null
+    },
+    "SkylarkAsset": {
+      "primary_field": "title",
+      "colour": "#9e9e9e",
+      "display_name": "Asset"
+    },
+    "SkylarkImage": {
+      "primary_field": "title",
+      "colour": "#607d8b",
+      "display_name": "Image"
+    },
+    "SkylarkSet": {
+      "primary_field": "title",
+      "colour": "#000000",
+      "display_name": "Set"
+    },
+    "SkylarkTag": {
+      "primary_field": "name",
+      "colour": "#4caf50",
+      "display_name": "Tag"
+    },
+    "Theme": {
+      "primary_field": "name",
+      "colour": "#cddc39",
+      "display_name": null
+    }
+  }
+}

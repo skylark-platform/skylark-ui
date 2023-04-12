@@ -18,9 +18,10 @@ describe("Content Library - Search", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
-      if (hasOperationName(req, "GET_SKYLARK_SCHEMA")) {
+      if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
+        req.alias = "introspectionQuery";
         req.reply({
-          fixture: "./skylark/queries/introspection/schema.json",
+          fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
         });
       }
       if (hasOperationName(req, "SEARCH")) {
@@ -102,6 +103,16 @@ describe("Content Library - Search", () => {
     cy.percySnapshot("Homepage - got search data");
   });
 
+  it("displays an objects display_name in the object type filter", () => {
+    cy.contains("Asset").should("exist");
+    cy.contains("Filters").click();
+
+    cy.get("[data-testid=checkbox-grid-object-type]").within(() => {
+      cy.contains("Set");
+      cy.contains("SkylarkSet").should("not.exist");
+    });
+  });
+
   it("filters for only Assets", () => {
     cy.contains("Asset").should("exist");
     cy.contains("Filters").click();
@@ -118,7 +129,7 @@ describe("Content Library - Search", () => {
     cy.contains("Asset").should("exist");
     cy.contains("Filters").click();
 
-    const columnsFilters = cy.get("[data-testid=checkbox-grid-Columns]");
+    const columnsFilters = cy.get("[data-testid=checkbox-grid-columns]");
 
     columnsFilters.contains("Toggle all").click();
     cy.contains("Apply").should("be.disabled");

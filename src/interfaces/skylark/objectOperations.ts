@@ -81,6 +81,10 @@ export interface SkylarkObjectOperations {
 export interface SkylarkObjectFields {
   name: SkylarkObjectType;
   fields: NormalizedObjectField[];
+  fieldConfig: {
+    global: string[];
+    translatable: string[];
+  };
 }
 
 export interface SkylarkObjectRelationship {

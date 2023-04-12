@@ -32,7 +32,7 @@ export const useUpdateObjectContent = ({
 }) => {
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
-  const { objects } = useAllObjectsMeta();
+  const { objects } = useAllObjectsMeta(false);
 
   const updateObjectContentMutation = createUpdateObjectContentMutation(
     objectOperations,

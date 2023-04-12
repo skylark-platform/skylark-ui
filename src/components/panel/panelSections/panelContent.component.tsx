@@ -15,14 +15,19 @@ import {
   ParsedSkylarkObjectContentObject,
   AddedSkylarkObjectContentObject,
   ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 
+import { PanelSectionLayout } from "./panelSectionLayout.component";
+
 interface PanelContentProps {
+  isPage?: boolean;
   objects: AddedSkylarkObjectContentObject[];
   objectType: string;
   onReorder: (objs: ParsedSkylarkObjectContentObject[]) => void;
   inEditMode?: boolean;
   showDropArea?: boolean;
+  setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }
 
 export const PanelContentItemOrderInput = ({
@@ -91,11 +96,13 @@ export const PanelContentItemOrderInput = ({
 };
 
 export const PanelContent = ({
+  isPage,
   objects,
   inEditMode,
   objectType,
   onReorder,
   showDropArea,
+  setPanelObject,
 }: PanelContentProps) => {
   const removeItem = (uid: string) => {
     const filtered = objects.filter(({ object }) => uid !== object.uid);
@@ -138,8 +145,11 @@ export const PanelContent = ({
     );
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto p-4 pt-6 text-sm md:p-8">
-      <PanelSectionTitle text="Content" />
+    <PanelSectionLayout
+      sections={[{ id: "content-panel-title", title: "Content" }]}
+      isPage={isPage}
+    >
+      <PanelSectionTitle text="Content" id="content-panel-title" />
       <Reorder.Group
         axis="y"
         values={objects}
@@ -149,7 +159,7 @@ export const PanelContent = ({
       >
         {objects?.length === 0 && <PanelEmptyDataText />}
         {objects.map((item, index) => {
-          const { object, config, position, isNewObject } = item;
+          const { object, config, meta, position, isNewObject } = item;
 
           return (
             <Reorder.Item
@@ -169,8 +179,10 @@ export const PanelContent = ({
                     uid: object.uid,
                     metadata: object,
                     config,
+                    meta,
                   } as ParsedSkylarkObject
                 }
+                onForwardClick={setPanelObject}
               >
                 <div className="flex">
                   <span
@@ -195,14 +207,13 @@ export const PanelContent = ({
                   />
                   <button
                     disabled={!inEditMode}
-                    data-testid={`panel-object-content-item-${
-                      index + 1
-                    }-remove`}
+                    data-testid="panel-object-content-item-remove"
+                    className={clsx(!inEditMode && "w-0")}
                     onClick={() => removeItem(object.uid)}
                   >
                     <Trash
                       className={clsx(
-                        "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
+                        "ml-2 flex h-6 text-manatee-300 transition-all hover:text-error",
                         inEditMode ? "w-6" : "w-0",
                       )}
                     />
@@ -218,9 +229,9 @@ export const PanelContent = ({
       </Reorder.Group>
       {inEditMode && (
         <p className="w-full py-4 text-center text-sm text-manatee-600">
-          {`Drag an object from the Content Library to add to this ${objectType}'s content`}
+          {`Drag an object from the Content Library to add as content`}
         </p>
       )}
-    </div>
+    </PanelSectionLayout>
   );
 };

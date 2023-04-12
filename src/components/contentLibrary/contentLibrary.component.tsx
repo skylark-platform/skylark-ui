@@ -16,10 +16,8 @@ import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { ObjectList } from "src/components/objectListing";
 import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
-import {
-  ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
-} from "src/interfaces/skylark";
+import { usePanelObjectState } from "src/hooks/usePanelObjectState";
+import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 const INITIAL_PANEL_PERCENTAGE = 70;
 const MINIMUM_SIZES = {
@@ -28,8 +26,13 @@ const MINIMUM_SIZES = {
 };
 
 export const ContentLibrary = () => {
-  const [activePanelObject, setActivePanelObject] =
-    useState<SkylarkObjectIdentifier | null>(null);
+  const {
+    activePanelObject,
+    setPanelObject,
+    navigateToPreviousPanelObject,
+    resetPanelObjectState,
+  } = usePanelObjectState();
+
   const [draggedObject, setDraggedObject] = useState<
     ParsedSkylarkObject | undefined
   >(undefined);
@@ -52,7 +55,7 @@ export const ContentLibrary = () => {
 
   const closePanel = () => {
     lastPanelWidth.set(panelWidth.get());
-    setActivePanelObject(null);
+    resetPanelObjectState();
   };
 
   useEffect(() => {
@@ -156,7 +159,7 @@ export const ContentLibrary = () => {
         >
           <ObjectList
             withCreateButtons
-            setPanelObject={setActivePanelObject}
+            setPanelObject={setPanelObject}
             isPanelOpen={!!activePanelObject}
             isDragging={!!draggedObject}
           />
@@ -189,12 +192,12 @@ export const ContentLibrary = () => {
             </m.div>
             <div className="w-full overflow-x-scroll">
               <Panel
+                object={activePanelObject}
                 closePanel={closePanel}
-                uid={activePanelObject.uid}
-                objectType={activePanelObject.objectType}
-                language={activePanelObject.language}
                 showDropArea={!!draggedObject}
                 droppedObject={droppedObject}
+                setPanelObject={setPanelObject}
+                navigateToPreviousPanelObject={navigateToPreviousPanelObject}
                 clearDroppedObject={() => setDroppedObject(undefined)}
               />
             </div>

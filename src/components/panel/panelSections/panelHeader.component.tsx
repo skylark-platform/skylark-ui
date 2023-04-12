@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
@@ -10,7 +11,14 @@ import {
   DropdownMenu,
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
-import { Edit, Expand, Trash, MoreVertical } from "src/components/icons";
+import {
+  Edit,
+  Expand,
+  Trash,
+  MoreVertical,
+  ArrowLeft,
+  ExternalLink,
+} from "src/components/icons";
 import { LanguageSelect } from "src/components/inputs/select";
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { Pill } from "src/components/pill";
@@ -20,6 +28,7 @@ import { ParsedSkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
 import { getObjectDisplayName } from "src/lib/utils";
 
 interface PanelHeaderProps {
+  isPage?: boolean;
   objectUid: string;
   objectType: SkylarkObjectType;
   object: ParsedSkylarkObject | null;
@@ -34,10 +43,12 @@ interface PanelHeaderProps {
   toggleEditMode: () => void;
   closePanel?: () => void;
   save: () => void;
-  setLanguage: Dispatch<SetStateAction<string>>;
+  setLanguage: (l: string) => void;
+  navigateToPreviousPanelObject?: () => void;
 }
 
 export const PanelHeader = ({
+  isPage,
   objectUid,
   objectType,
   object,
@@ -53,6 +64,7 @@ export const PanelHeader = ({
   closePanel,
   save,
   setLanguage,
+  navigateToPreviousPanelObject,
 }: PanelHeaderProps) => {
   const title = getObjectDisplayName(object);
   const [showGraphQLModal, setGraphQLModalOpen] = useState(false);
@@ -100,16 +112,33 @@ export const PanelHeader = ({
   return (
     <div
       data-testid="panel-header"
-      className="relative p-4 pb-2 md:p-8 md:py-6"
+      className={clsx(
+        "relative mx-auto flex w-full max-w-7xl flex-col p-4 pb-2 md:p-8",
+        isPage
+          ? "md:flex-row-reverse md:justify-between md:py-8 md:pt-12"
+          : "md:py-6",
+      )}
     >
       <div className="flex flex-row pb-2">
         <div className="flex flex-grow items-center space-x-2">
-          <Button
-            Icon={<Expand className="stroke-gray-300" />}
-            disabled
-            variant="ghost"
-            href={`/object/${objectType}/${objectUid}`}
-          />
+          {!isPage && (
+            <Button
+              Icon={<ArrowLeft />}
+              variant="ghost"
+              disabled={!navigateToPreviousPanelObject}
+              onClick={navigateToPreviousPanelObject}
+              aria-label="Open Previous Object"
+            />
+          )}
+          {!isPage && (
+            <Button
+              Icon={<ExternalLink className="text-gray-300" />}
+              disabled
+              variant="ghost"
+              href={`/object/${objectType}/${objectUid}`}
+              newTab
+            />
+          )}
           <DropdownMenu options={objectMenuOptions} align="left">
             <DropdownMenuButton
               className="flex focus:outline-none focus-visible:ring-2 group-hover:text-black"
@@ -167,7 +196,7 @@ export const PanelHeader = ({
             <Pill
               bgColor={object.config.colour}
               className="w-20 bg-brand-primary"
-              label={objectType}
+              label={object.config.objectTypeDisplayName || objectType}
             />
             {isTranslatable && (
               <LanguageSelect

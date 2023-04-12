@@ -51,7 +51,6 @@ Default.args = {
     objectTypes,
     language: "",
   },
-  objectTypes,
   columns,
   visibleColumns,
   graphqlQuery,

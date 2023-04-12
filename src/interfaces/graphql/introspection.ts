@@ -21,84 +21,11 @@ export type GQLTypeKind =
   | "INPUT_OBJECT"
   | "OBJECT";
 
-export interface GQLType {
-  __typename: string;
-  kind: GQLTypeKind | null;
-  name: GQLTypeName | null;
-  enumValues: { name: string }[] | null;
-  fields: GQLInputField[];
-  inputFields: GQLInputField[];
-  ofType: Pick<GQLType, "name" | "kind" | "inputFields"> | null;
-}
-
-export interface GQLInputValue {
-  name: string;
-  type: Pick<GQLType, "name" | "kind" | "inputFields">;
-}
-
-export interface GQLInputField {
-  name: string;
-  type: GQLType;
-}
-
-export interface GQLQueryList {
-  name: string;
-  type: {
-    name: string;
-    kind: GQLTypeKind | null;
-    description: string | null;
-    fields: { name: string }[] | null;
-    ofType: string;
-  };
-}
-[];
-
-export interface GQLMutationsList {
-  name: string;
-  args: GQLInputValue[];
-  type: {
-    name: string;
-    kind: GQLTypeKind | null;
-    description: string | null;
-    fields: { name: string }[] | null;
-    ofType: string;
-  };
-}
-[];
-
 export interface GQLSkylarkObjectTypesResponse {
   __type: {
     name: "Metadata";
     possibleTypes: {
       name: string;
     }[];
-  };
-}
-
-export interface GQLSkylarkSchemaQueriesMutations {
-  __schema: {
-    queryType: {
-      name: "Query";
-      fields: {
-        name: string; // "getEpisode"
-        type: {
-          name: string; // Episode
-          fields: {
-            name: string; // assets OR title
-            type: GQLType;
-          }[];
-        };
-      }[];
-    };
-    mutationType: {
-      name: "Mutation";
-      fields: {
-        name: string;
-        args: {
-          name: string;
-          type: GQLType;
-        }[];
-      }[];
-    };
   };
 }

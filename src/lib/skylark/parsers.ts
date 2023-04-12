@@ -1,15 +1,20 @@
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import {
+  IntrospectionEnumType,
+  IntrospectionField,
+  IntrospectionInputType,
+  IntrospectionInputValue,
+  IntrospectionListTypeRef,
+  IntrospectionNamedTypeRef,
+  IntrospectionNonNullTypeRef,
+  IntrospectionScalarType,
+} from "graphql";
 import { EnumType } from "json-to-graphql-query";
 
 import { SYSTEM_FIELDS } from "src/constants/skylark";
-import {
-  GQLInputField,
-  GQLScalars,
-  GQLTypeKind,
-  GQLTypeName,
-} from "src/interfaces/graphql/introspection";
+import { GQLScalars } from "src/interfaces/graphql/introspection";
 import {
   NormalizedObjectFieldType,
   NormalizedObjectField,
@@ -74,33 +79,42 @@ const parseObjectInputType = (
 };
 
 export const parseObjectInputFields = (
-  inputFields?: GQLInputField[],
+  introspectionFields: readonly (
+    | IntrospectionField
+    | IntrospectionInputValue
+  )[],
+  enums: Record<string, IntrospectionEnumType>,
 ): NormalizedObjectField[] => {
-  if (!inputFields) {
+  if (!introspectionFields) {
     return [];
   }
 
-  const typesToIgnore: GQLTypeKind[] = ["INPUT_OBJECT", "OBJECT"];
+  const typesToIgnore = ["INPUT_OBJECT", "OBJECT"];
 
-  const parsedInputs = inputFields
-    .filter(({ type }) => type.kind && !typesToIgnore.includes(type.kind))
+  const parsedInputs = introspectionFields
+    ?.filter(({ type }) => type.kind && !typesToIgnore.includes(type.kind))
     .map((input): NormalizedObjectField => {
-      let type: NormalizedObjectFieldType = parseObjectInputType(
-        input.type.ofType?.name || input.type.name,
-      );
+      const typeName =
+        (
+          input.type as
+            | IntrospectionNonNullTypeRef<IntrospectionScalarType>
+            | IntrospectionListTypeRef<IntrospectionScalarType>
+        ).ofType?.name || (input.type as IntrospectionScalarType).name;
+
+      let type: NormalizedObjectFieldType = parseObjectInputType(typeName);
       let enumValues;
 
       if (input.type.kind === "ENUM") {
         type = "enum";
-        enumValues = input.type.enumValues?.map((val) => val.name);
+        enumValues = hasProperty(enums, typeName)
+          ? enums[typeName].enumValues.map(({ name }) => name)
+          : [];
       }
 
       return {
         name: input.name,
         type: type,
-        originalType: (input.type.ofType?.name ||
-          input.type.name ||
-          "Unknown") as GQLScalars,
+        originalType: (typeName || "Unknown") as GQLScalars,
         enumValues,
         isList: input.type.kind === "LIST",
         isRequired: input.type.kind === "NON_NULL",
@@ -110,27 +124,21 @@ export const parseObjectInputFields = (
   return parsedInputs;
 };
 
-// TODO convert from "credits" to the Object type like "Credit" or "episodes" -> "Episode"
 export const parseObjectRelationships = (
-  inputFields?: GQLInputField[],
+  relationshipInputFields?: readonly IntrospectionInputValue[],
 ): SkylarkObjectRelationship[] => {
-  const relationshipsInput = inputFields?.find(
-    (input) => input.name === "relationships",
-  );
-
-  if (
-    !relationshipsInput?.type.inputFields ||
-    relationshipsInput.type.inputFields.length === 0
-  ) {
+  if (!relationshipInputFields) {
     return [];
   }
 
   // Relationship input format is `${objectType}RelationshipInput`, we just need the objectType
   const relationshipInputPostfix = "RelationshipInput";
-  const potentialRelationships = relationshipsInput.type.inputFields.map(
-    ({ name, type: { name: objectTypeWithRelationshipInput } }) => ({
+  const potentialRelationships = relationshipInputFields.map(
+    ({ name, type }) => ({
       name,
-      objectTypeWithRelationshipInput,
+      objectTypeWithRelationshipInput: (
+        type as IntrospectionNamedTypeRef<IntrospectionInputType>
+      ).name,
     }),
   );
 
@@ -185,8 +193,17 @@ export const parseObjectContent = (
         objectType: object.__typename,
         position,
         config: {
-          primaryField: object._config?.primary_field,
           colour: object._config?.colour,
+          primaryField: object._config?.primary_field,
+          objectTypeDisplayName: object._config?.display_name,
+        },
+        meta: {
+          language: object._meta?.language_data.language || "",
+          availableLanguages: object._meta?.available_languages || [],
+          versions: {
+            language: object._meta?.language_data.version,
+            global: object._meta?.global_data.version,
+          },
         },
         object: normalisedObject,
       };
@@ -243,6 +260,7 @@ export const parseSkylarkObject = (
       config: {
         colour: object._config?.colour,
         primaryField: object._config?.primary_field,
+        objectTypeDisplayName: object._config?.display_name,
       },
       meta: {
         language: object._meta?.language_data.language || "",

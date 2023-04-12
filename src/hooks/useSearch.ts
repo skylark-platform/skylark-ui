@@ -24,7 +24,7 @@ export interface SearchFilters {
 export const SEARCH_PAGE_SIZE = 50;
 
 export const useSearch = (queryString: string, filters: SearchFilters) => {
-  const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta();
+  const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta(true);
   const { objectTypes, language } = filters;
 
   const query = useMemo(

@@ -2,19 +2,22 @@ import clsx from "clsx";
 
 interface PanelHeaderProps {
   text: string;
+  id?: string;
   count?: string | number;
   sticky?: boolean;
 }
 
 export const PanelSectionTitle = ({
   text,
+  id,
   count,
   sticky,
 }: PanelHeaderProps) => (
   <h3
+    id={id}
     className={clsx(
-      "bg-white pb-0.5 text-base font-semibold underline",
-      sticky ? "sticky top-0 pt-4 pb-2 md:pt-8" : "mb-2",
+      "bg-white pb-1 text-base font-semibold underline md:pb-2 md:text-lg",
+      sticky ? "sticky top-0 z-[2] pt-4 pb-2 md:pt-8" : "mb-2",
     )}
   >
     {count !== undefined ? `${text} (${count})` : text}

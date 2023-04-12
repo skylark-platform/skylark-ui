@@ -24,6 +24,11 @@ const objectTypes = [
   "Genre",
 ];
 
+const objectTypesWithConfig = objectTypes.map((objectType) => ({
+  objectType,
+  config: undefined,
+}));
+
 const columns = [
   "uid",
   "title",
@@ -49,7 +54,7 @@ Default.args = {
     objectTypes,
     language: "",
   },
-  objectTypes,
+  objectTypesWithConfig,
   columns,
   visibleColumns: columns,
   graphqlQuery,
@@ -61,7 +66,7 @@ WithNoFiltersSelected.args = {
     objectTypes: [],
     language: "",
   },
-  objectTypes,
+  objectTypesWithConfig,
   columns,
   visibleColumns: [],
   graphqlQuery,
