@@ -1,4 +1,7 @@
-import { SkylarkObjectMetadataField } from "./objectOperations";
+import {
+  SkylarkObjectMetadataField,
+  SkylarkSystemField,
+} from "./objectOperations";
 import { SkylarkExternalId, SkylarkUID } from "./parsedObjects";
 
 export type NextToken = string | null;
@@ -6,6 +9,7 @@ export type NextToken = string | null;
 export interface SkylarkGraphQLObjectConfig {
   colour: string;
   primary_field: string;
+  display_name: string;
 }
 
 export interface SkylarkGraphQLObjectMeta {
@@ -59,6 +63,7 @@ export interface SkylarkGraphQLObjectRelationship {
 }
 
 export interface SkylarkGraphQLObjectImage {
+  _meta?: SkylarkGraphQLObjectMeta;
   uid: SkylarkUID;
   external_id: SkylarkExternalId;
   title: string;
@@ -78,8 +83,11 @@ export interface SkylarkGraphQLObjectContent {
 
 export type SkylarkGraphQLObject = {
   __typename: string;
-  uid: SkylarkUID;
-  external_id: SkylarkExternalId;
+  [SkylarkSystemField.UID]: SkylarkUID;
+  [SkylarkSystemField.ExternalID]: SkylarkExternalId;
+  [SkylarkSystemField.Slug]?: string | null;
+  [SkylarkSystemField.DataSourceID]?: string | null;
+  [SkylarkSystemField.DataSourceFields]?: string | string[] | null;
   availability?: SkylarkGraphQLObjectRelationship;
   images?: SkylarkGraphQLObjectRelationship;
   _config?: SkylarkGraphQLObjectConfig;

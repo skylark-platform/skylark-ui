@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { Fragment } from "react";
 
 import { AvailabilityLabel } from "src/components/availability";
+import { OpenObjectButton } from "src/components/button";
 import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
@@ -14,6 +15,8 @@ import {
   AvailabilityStatus,
   SkylarkGraphQLAvailabilityDimension,
   ParsedSkylarkObjectAvailabilityObject,
+  SkylarkObjectIdentifier,
+  BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import {
   formatReadableDate,
@@ -21,10 +24,14 @@ import {
 } from "src/lib/skylark/availability";
 import { formatObjectField } from "src/lib/utils";
 
+import { PanelSectionLayout } from "./panelSectionLayout.component";
+
 interface PanelAvailabilityProps {
+  isPage?: boolean;
   objectType: string;
   objectUid: string;
   language: string;
+  setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }
 
 const sortDimensionsByTitleOrSlug = (
@@ -62,17 +69,25 @@ const AvailabilityValueGrid = ({
 };
 
 export const PanelAvailability = ({
+  isPage,
   objectType,
   objectUid,
   language,
+  setPanelObject,
 }: PanelAvailabilityProps) => {
   const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
     useGetObjectAvailability(objectType, objectUid, { language });
   return (
-    <div className="relative flex h-full flex-col overflow-y-auto p-4 pb-12 text-sm md:p-8">
+    <PanelSectionLayout
+      sections={[{ id: "availability-panel-title", title: "Availability" }]}
+      isPage={isPage}
+    >
       {data && (
         <>
-          <PanelSectionTitle text={formatObjectField("Availability")} />
+          <PanelSectionTitle
+            text={formatObjectField("Availability")}
+            id={"availability-panel-title"}
+          />
           {!isLoading && data?.length === 0 && <PanelEmptyDataText />}
           {data.map((obj) => {
             const { status, neverExpires } = obj;
@@ -106,7 +121,7 @@ export const PanelAvailability = ({
                   status === AvailabilityStatus.Future && "border-l-warning",
                 )}
               >
-                <div className="flex">
+                <div className="flex items-start">
                   <div className="flex-grow">
                     <PanelFieldTitle
                       text={obj.title || obj.slug || obj.external_id || obj.uid}
@@ -121,7 +136,18 @@ export const PanelAvailability = ({
                     </p>
                   </div>
 
-                  {obj.status && <AvailabilityLabel status={obj.status} />}
+                  <div className="flex items-center justify-center space-x-2">
+                    {obj.status && <AvailabilityLabel status={obj.status} />}
+                    <OpenObjectButton
+                      onClick={() =>
+                        setPanelObject({
+                          uid: obj.uid,
+                          objectType: BuiltInSkylarkObjectType.Availability,
+                          language: "",
+                        })
+                      }
+                    />
+                  </div>
                 </div>
 
                 <AvailabilityValueGrid
@@ -157,6 +183,6 @@ export const PanelAvailability = ({
         variables={variables}
         buttonClassName="absolute right-2 top-0"
       />
-    </div>
+    </PanelSectionLayout>
   );
 };

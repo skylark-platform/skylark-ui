@@ -1,16 +1,10 @@
 import { HTMLInputTypeAttribute } from "react";
 import { sentenceCase } from "sentence-case";
 
-import {
-  DISPLAY_NAME_PRIORITY,
-  OBJECT_LIST_TABLE,
-  SYSTEM_FIELDS,
-} from "src/constants/skylark";
+import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
 import {
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
-  SkylarkObjectMeta,
-  SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
 
 export const hasProperty = <T, K extends PropertyKey>(

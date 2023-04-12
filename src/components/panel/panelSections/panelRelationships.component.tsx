@@ -16,11 +16,15 @@ import { useGetObjectRelationships } from "src/hooks/useGetObjectRelationships";
 import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectType,
+  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import { parseUpdatedRelationshipObjects } from "src/lib/skylark/parsers";
 import { formatObjectField } from "src/lib/utils";
 
+import { PanelSectionLayout } from "./panelSectionLayout.component";
+
 interface PanelRelationshipsProps {
+  isPage?: boolean;
   objectType: SkylarkObjectType;
   uid: string;
   updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
@@ -32,9 +36,11 @@ interface PanelRelationshipsProps {
   inEditMode: boolean;
   showDropArea?: boolean;
   language: string;
+  setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }
 
 export const PanelRelationships = ({
+  isPage,
   objectType,
   uid,
   updatedRelationshipObjects,
@@ -43,6 +49,7 @@ export const PanelRelationships = ({
   inEditMode,
   language,
   showDropArea,
+  setPanelObject,
 }: PanelRelationshipsProps) => {
   const {
     data: relationshipsData,
@@ -99,7 +106,13 @@ export const PanelRelationships = ({
     );
 
   return (
-    <div className="relative h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20">
+    <PanelSectionLayout
+      sections={relationships.map(({ relationshipName }) => ({
+        id: `relationship-panel-${relationshipName}`,
+        title: formatObjectField(relationshipName),
+      }))}
+      isPage={isPage}
+    >
       <div>
         {updatedRelationshipObjects?.map((relationship) => {
           const { relationshipName, objects } = relationship;
@@ -113,6 +126,7 @@ export const PanelRelationships = ({
               <PanelSectionTitle
                 text={formatObjectField(relationshipName)}
                 count={(objects.length >= 50 ? "50+" : objects.length) || 0}
+                id={`relationship-panel-${relationshipName}`}
               />
 
               <div className="transition duration-300 ease-in-out">
@@ -140,7 +154,11 @@ export const PanelRelationships = ({
                             index + 1
                           }`}
                         >
-                          <ObjectIdentifierCard key={obj.uid} object={obj} />
+                          <ObjectIdentifierCard
+                            key={obj.uid}
+                            object={obj}
+                            onForwardClick={setPanelObject}
+                          />
                           {inEditMode && newUids?.includes(obj.uid) && (
                             <span
                               className={
@@ -205,6 +223,6 @@ export const PanelRelationships = ({
         variables={variables}
         buttonClassName="absolute right-2 top-0"
       />
-    </div>
+    </PanelSectionLayout>
   );
 };

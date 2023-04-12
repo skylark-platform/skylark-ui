@@ -2,8 +2,10 @@ import {
   NextToken,
   SkylarkGraphQLAvailability,
   SkylarkGraphQLObject,
+  SkylarkGraphQLObjectConfig,
   SkylarkGraphQLObjectContent,
 } from "./gqlObjects";
+import { SkylarkObjectType } from "./objectOperations";
 
 export interface GQLSkylarkError<T> {
   data: T | null;
@@ -61,3 +63,7 @@ export interface GQLSkylarkUpdateRelationshipsResponse {
     uid: string;
   };
 }
+export type GQLSkylarkObjectTypesWithConfig = Record<
+  SkylarkObjectType,
+  SkylarkGraphQLObjectConfig
+>;

@@ -17,6 +17,7 @@ import {
   SkylarkSystemField,
   SkylarkObjectMeta,
   ParsedSkylarkObjectRelationships,
+  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import { hasProperty } from "src/lib/utils";
@@ -31,13 +32,14 @@ import { PanelContent } from "./panelSections/panelContent.component";
 import { PanelRelationships } from "./panelSections/panelRelationships.component";
 
 interface PanelProps {
+  isPage?: boolean;
   closePanel?: () => void;
-  objectType: string;
-  uid: string;
-  language: string;
+  object: SkylarkObjectIdentifier;
   showDropArea?: boolean;
   droppedObject?: ParsedSkylarkObject;
   clearDroppedObject?: () => void;
+  setPanelObject: (o: SkylarkObjectIdentifier) => void;
+  navigateToPreviousPanelObject?: () => void;
 }
 
 enum PanelTab {
@@ -53,6 +55,7 @@ function parseSkylarkObjectContent(
 ): ParsedSkylarkObjectContentObject {
   return {
     config: skylarkObject.config,
+    meta: skylarkObject.meta,
     object: skylarkObject.metadata,
     objectType: skylarkObject.objectType,
     position: 1,
@@ -60,16 +63,15 @@ function parseSkylarkObjectContent(
 }
 
 export const Panel = ({
+  isPage,
+  object,
   closePanel,
-  objectType,
-  uid,
-  language: initialLanguage,
   showDropArea,
   droppedObject,
   clearDroppedObject,
+  setPanelObject,
+  navigateToPreviousPanelObject,
 }: PanelProps) => {
-  const [language, setLanguage] = useState<string>(initialLanguage);
-
   const [inEditMode, setEditMode] = useState(false);
   const [contentObjects, setContentObjects] = useState<
     AddedSkylarkObjectContentObject[] | null
@@ -83,6 +85,7 @@ export const Panel = ({
     updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
   }>({ originalRelationshipObjects: null, updatedRelationshipObjects: null });
 
+  const { uid, objectType, language } = object;
   const {
     data,
     objectMeta,
@@ -91,6 +94,7 @@ export const Panel = ({
     variables,
     isError,
     isNotFound,
+    isObjectTypeNotFound,
     error,
   } = useGetObject(objectType, uid, { language });
 
@@ -120,9 +124,7 @@ export const Panel = ({
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
 
   useEffect(() => {
-    // Reset selected tab when object changes
     setEditMode(false);
-    setLanguage(initialLanguage);
     setSelectedTab(PanelTab.Metadata);
     setContentObjects(null);
     setRelationshipObjects({
@@ -130,7 +132,7 @@ export const Panel = ({
       updatedRelationshipObjects: null,
     });
     resetMetadataForm();
-  }, [uid, initialLanguage, resetMetadataForm]);
+  }, [uid, objectType, language, resetMetadataForm]);
 
   useEffect(() => {
     if (!inEditMode && metadataForm.formState.isDirty) {
@@ -311,8 +313,12 @@ export const Panel = ({
   };
 
   return (
-    <section className="mx-auto flex h-full w-full flex-col break-words">
+    <section
+      className="mx-auto flex h-full w-full flex-col break-words"
+      data-cy={`panel-for-${objectType}-${uid}`}
+    >
       <PanelHeader
+        isPage={isPage}
         objectUid={uid}
         objectType={objectType}
         object={data || null}
@@ -346,7 +352,10 @@ export const Panel = ({
           }
           setEditMode(!inEditMode);
         }}
-        setLanguage={setLanguage}
+        setLanguage={(newLanguage) =>
+          setPanelObject({ uid, objectType, language: newLanguage })
+        }
+        navigateToPreviousPanelObject={navigateToPreviousPanelObject}
       />
       {isLoading && (
         <div
@@ -358,23 +367,30 @@ export const Panel = ({
       )}
       {!isLoading && isError && (
         <div className="flex h-4/5 w-full items-center justify-center pb-10">
-          {isNotFound ? (
-            <p>{`${objectType} ${uid} not found`}</p>
-          ) : (
-            <p>{error?.response.errors[0].message}</p>
+          {isObjectTypeNotFound && (
+            <p>{`Object Type "${objectType}" not found`}</p>
+          )}
+          {isNotFound && <p>{`${objectType} "${uid}" not found`}</p>}
+          {!isNotFound && !isObjectTypeNotFound && (
+            <p>{error?.response?.errors[0].message}</p>
           )}
         </div>
       )}
       {!isLoading && !isError && data && objectMeta && (
         <>
-          <Tabs
-            tabs={tabs}
-            selectedTab={selectedTab}
-            onChange={setSelectedTab}
-            disabled={inEditMode}
-          />
+          <div className="border-b-2 border-gray-200">
+            <div className="mx-auto w-full max-w-7xl flex-none overflow-x-auto">
+              <Tabs
+                tabs={tabs}
+                selectedTab={selectedTab}
+                onChange={setSelectedTab}
+                disabled={inEditMode || isLoading || isError}
+              />
+            </div>
+          </div>
           {selectedTab === PanelTab.Metadata && (
             <PanelMetadata
+              isPage={isPage}
               uid={uid}
               language={language}
               metadata={data.metadata}
@@ -384,26 +400,36 @@ export const Panel = ({
             />
           )}
           {selectedTab === PanelTab.Imagery && data.images && (
-            <PanelImages images={data.images} />
+            <PanelImages
+              isPage={isPage}
+              images={data.images}
+              setPanelObject={setPanelObject}
+              language={language}
+            />
           )}
           {selectedTab === PanelTab.Availability && (
             <PanelAvailability
+              isPage={isPage}
               objectType={objectType}
               objectUid={uid}
               language={language}
+              setPanelObject={setPanelObject}
             />
           )}
           {selectedTab === PanelTab.Content && data.content && (
             <PanelContent
+              isPage={isPage}
               objects={contentObjects || data?.content?.objects}
               inEditMode={inEditMode}
               objectType={objectType}
               onReorder={setContentObjects}
               showDropArea={showDropArea}
+              setPanelObject={setPanelObject}
             />
           )}
           {selectedTab === PanelTab.Relationships && (
             <PanelRelationships
+              isPage={isPage}
               objectType={objectType}
               uid={uid}
               updatedRelationshipObjects={updatedRelationshipObjects}
@@ -412,6 +438,7 @@ export const Panel = ({
               inEditMode={inEditMode}
               showDropArea={showDropArea}
               language={language}
+              setPanelObject={setPanelObject}
             />
           )}
         </>

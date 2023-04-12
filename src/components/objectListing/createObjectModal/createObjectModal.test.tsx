@@ -33,6 +33,8 @@ test("selects an Object Type and see's input fields appear", async () => {
   );
 
   expect(screen.queryAllByText("External id")).toHaveLength(0);
+  expect(screen.queryAllByText("Create Object")).toHaveLength(1);
+  expect(screen.queryAllByText("Create Episode")).toHaveLength(0);
 
   user.click(screen.getByTestId("select"));
 
@@ -42,6 +44,9 @@ test("selects an Object Type and see's input fields appear", async () => {
   await waitFor(() =>
     expect(screen.queryAllByText("External id")).toHaveLength(1),
   );
+
+  expect(screen.queryAllByText("Create Episode")).toHaveLength(2);
+  expect(screen.queryAllByText("Create Object")).toHaveLength(0);
 });
 
 test("cancels and closes the modal", async () => {
@@ -101,7 +106,7 @@ test("adds a field value and saves", async () => {
     expect(screen.queryAllByText("External id")).toHaveLength(1),
   );
 
-  const createButton = screen.getByText("Create Episode");
+  const createButton = screen.getByRole("button", { name: "Create Episode" });
   expect(createButton).toBeDisabled();
 
   await user.type(screen.getByLabelText("External id"), "my-external-id");

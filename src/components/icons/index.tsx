@@ -15,3 +15,5 @@ export * from "./cog.component";
 export * from "./plus.component";
 export * from "./more.component";
 export * from "./upload.component";
+export * from "./arrows.component";
+export * from "./externalLink.component";

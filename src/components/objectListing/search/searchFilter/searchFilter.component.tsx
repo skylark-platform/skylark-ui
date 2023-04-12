@@ -9,11 +9,14 @@ import {
 } from "src/components/checkboxGrid/checkboxGrid.component";
 import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { SearchFilters } from "src/hooks/useSearch";
-import { SkylarkObjectType } from "src/interfaces/skylark";
+import { SkylarkGraphQLObjectConfig } from "src/interfaces/skylark";
 
 interface SearchFilterProps {
   activeFilters: SearchFilters;
-  objectTypes: SkylarkObjectType[];
+  objectTypesWithConfig: {
+    objectType: string;
+    config?: SkylarkGraphQLObjectConfig;
+  }[];
   columns: string[];
   visibleColumns: string[];
   graphqlQuery: {
@@ -42,7 +45,7 @@ const convertCheckedColumnsToVisibilityState = (
 
 export const SearchFilter = ({
   activeFilters,
-  objectTypes,
+  objectTypesWithConfig,
   columns,
   visibleColumns,
   graphqlQuery,
@@ -65,7 +68,10 @@ export const SearchFilter = ({
   };
 
   const resetAllFilters = () => {
-    updateObjectTypes(objectTypes);
+    objectTypesWithConfig &&
+      updateObjectTypes(
+        objectTypesWithConfig.map(({ objectType }) => objectType),
+      );
     updateVisibleColumns(columns);
   };
 
@@ -84,16 +90,40 @@ export const SearchFilter = ({
           label="Object type"
           withToggleAll
           options={createCheckboxOptions(
-            objectTypes.sort(),
+            objectTypesWithConfig
+              ?.map(({ objectType, config }) => ({
+                label: config?.display_name || objectType,
+                value: objectType,
+              }))
+              .sort(({ label: labelA }, { label: labelB }) =>
+                labelA
+                  .toLocaleUpperCase()
+                  .localeCompare(labelB.toLocaleUpperCase()),
+              ) || [],
             updatedObjectTypes,
           )}
-          onChange={updateObjectTypes}
+          onChange={(optionsState) => {
+            updateObjectTypes(
+              optionsState
+                .filter(({ state }) => state === true)
+                .map(({ option }) => option.value),
+            );
+          }}
         />
         <CheckboxGrid
           label="Columns"
           withToggleAll
-          options={createCheckboxOptions(columns, updatedVisibleColumns)}
-          onChange={updateVisibleColumns}
+          options={createCheckboxOptions(
+            columns.map((column) => ({ label: column, value: column })),
+            updatedVisibleColumns,
+          )}
+          onChange={(optionsState) => {
+            updateVisibleColumns(
+              optionsState
+                .filter(({ state }) => state === true)
+                .map(({ option }) => option.value),
+            );
+          }}
         />
       </div>
       <div className="flex w-full justify-end space-x-4 px-4 pt-2">

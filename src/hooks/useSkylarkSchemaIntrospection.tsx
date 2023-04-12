@@ -6,28 +6,13 @@ import {
 } from "graphql";
 
 import { QueryKeys } from "src/enums/graphql";
-import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import {
-  GET_SKYLARK_SCHEMA,
-  SKYLARK_SCHEMA_INTROSPECTION_QUERY,
-} from "src/lib/graphql/skylark/queries";
-
-export const useSkylarkSchema = () => {
-  return useQuery<GQLSkylarkSchemaQueriesMutations>({
-    queryKey: [QueryKeys.Schema, GET_SKYLARK_SCHEMA],
-    queryFn: async () => skylarkRequest(GET_SKYLARK_SCHEMA),
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-  });
-};
+import { SKYLARK_SCHEMA_INTROSPECTION_QUERY } from "src/lib/graphql/skylark/queries";
 
 export const useSkylarkSchemaIntrospection = () => {
   const { data, ...rest } = useQuery<IntrospectionQuery>({
     queryKey: [QueryKeys.Schema, SKYLARK_SCHEMA_INTROSPECTION_QUERY],
     queryFn: async () => skylarkRequest(SKYLARK_SCHEMA_INTROSPECTION_QUERY),
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
   return {

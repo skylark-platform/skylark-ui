@@ -1,5 +1,19 @@
+import {
+  IntrospectionEnumType,
+  IntrospectionField,
+  IntrospectionInputObjectType,
+  IntrospectionInputValue,
+  IntrospectionListTypeRef,
+  IntrospectionNamedTypeRef,
+  IntrospectionNonNullTypeRef,
+  IntrospectionObjectType,
+  IntrospectionOutputType,
+  IntrospectionQuery,
+  IntrospectionScalarType,
+} from "graphql";
+
 import { OBJECT_LIST_TABLE, SYSTEM_FIELDS } from "src/constants/skylark";
-import { GQLSkylarkSchemaQueriesMutations } from "src/interfaces/graphql/introspection";
+import { ErrorCodes } from "src/interfaces/errors";
 import {
   SkylarkObjectType,
   SkylarkObjectMeta,
@@ -7,59 +21,148 @@ import {
   BuiltInSkylarkObjectType,
   SkylarkSystemField,
   SkylarkSystemGraphQLType,
-  SkylarkObjectMetadataField,
   NormalizedObjectField,
+  SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
+import { ObjectError } from "src/lib/utils/errors";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
 
-const getObjectFieldsFromGetQuery = (
-  getQuery: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"][0],
+const getObjectInterface = (
+  schemaTypes: IntrospectionQuery["__schema"]["types"],
+  interfaceName?: string,
 ) => {
-  if (!getQuery || !getQuery.type || !getQuery.type.fields) {
+  const objectInterface = interfaceName
+    ? schemaTypes.find(({ name }) => name === interfaceName)
+    : undefined;
+  return objectInterface as IntrospectionObjectType | undefined;
+};
+
+const getObjectInterfaceFromIntrospectionField = (
+  schemaTypes: IntrospectionQuery["__schema"]["types"],
+  introspectionField?: IntrospectionField,
+): IntrospectionObjectType | undefined => {
+  const objectInterfaceName = (
+    introspectionField?.type as
+      | IntrospectionNamedTypeRef<IntrospectionOutputType>
+      | undefined
+  )?.name;
+
+  return getObjectInterface(schemaTypes, objectInterfaceName);
+};
+
+const getInputObjectInterfaceFromIntrospectionField = (
+  mutation: IntrospectionField,
+  objectType: string,
+): IntrospectionInputValue | undefined => {
+  const validOperationInterfaces = [
+    `${objectType}CreateInput`,
+    `${objectType}Input`,
+  ];
+
+  const foundCreateInput = mutation.args.find((arg) => {
+    const typeName =
+      (
+        arg.type as
+          | IntrospectionNonNullTypeRef<IntrospectionScalarType>
+          | IntrospectionListTypeRef<IntrospectionScalarType>
+      ).ofType?.name || (arg.type as IntrospectionScalarType).name;
+
+    return validOperationInterfaces.includes(typeName);
+  });
+
+  return foundCreateInput;
+};
+
+const getObjectFields = (
+  enums: Record<string, IntrospectionEnumType>,
+  objectInterface?: IntrospectionObjectType,
+): NormalizedObjectField[] => {
+  if (!objectInterface) {
     return [];
   }
 
   const objectFields = parseObjectInputFields(
-    getQuery.type.fields.filter((field) => field.type.kind !== "OBJECT"),
+    objectInterface.fields.filter((field) => field.type.kind !== "OBJECT"),
+    enums,
   );
 
   return objectFields;
 };
 
-const objectHasRelationshipFromField = (
+const getGlobalAndTranslatableFields = (
+  schemaTypes: IntrospectionQuery["__schema"]["types"],
+  objectType: string,
+  objectFields: NormalizedObjectField[],
+): { global: string[]; translatable: string[] } => {
+  const globalInterfaceName = `_${objectType}Global`;
+  const languageInterfaceName = `_${objectType}Language`;
+
+  const globalInterface = getObjectInterface(schemaTypes, globalInterfaceName);
+  const languageInterface = getObjectInterface(
+    schemaTypes,
+    languageInterfaceName,
+  );
+
+  const objectFieldNames = objectFields.map(({ name }) => name);
+
+  if (!globalInterface || !languageInterface) {
+    // If for some reason one interface isn't found, return all fields as global fields
+    return {
+      global: objectFieldNames,
+      translatable: [],
+    };
+  }
+
+  const globalFields = globalInterface.fields
+    .filter(({ name }) => objectFieldNames.includes(name))
+    .map(({ name }) => name);
+  const translatableFields = languageInterface.fields
+    .filter(({ name }) => objectFieldNames.includes(name))
+    .map(({ name }) => name);
+
+  return {
+    global: globalFields,
+    translatable: translatableFields,
+  };
+};
+
+const objectHasRelationshipFromInterface = (
   relationshipField: "images" | SkylarkSystemField,
-  getQuery: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"][0],
+  objectInterface?: IntrospectionObjectType,
 ) => {
-  if (!getQuery || !getQuery.type || !getQuery.type.fields) {
+  if (!objectInterface) {
     return false;
   }
 
-  return getQuery.type.fields.some(
+  return objectInterface.fields.some(
     (field) => field.name === relationshipField && field.type.kind === "OBJECT",
   );
 };
 
 const objectRelationshipFieldsFromGraphQLType = (
   type: SkylarkSystemGraphQLType,
-  getQuery: GQLSkylarkSchemaQueriesMutations["__schema"]["queryType"]["fields"][0],
+  objectInterface?: IntrospectionObjectType,
 ): {
   objectType: SkylarkObjectType;
   relationshipNames: string[];
 } | null => {
-  if (!getQuery || !getQuery.type || !getQuery.type.fields) {
+  if (!objectInterface) {
     return null;
   }
 
-  const relationships = getQuery.type.fields
-    .filter((field) => field.type.name === type && field.type.kind === "OBJECT")
+  const relationships = objectInterface.fields
+    .filter(
+      (field) =>
+        (field.type as IntrospectionObjectType).name === type &&
+        field.type.kind === "OBJECT",
+    )
     .map((field) => {
       // Naive implementation, just removes Listing from ImageListing
+      const typeName = (field.type as IntrospectionObjectType | undefined)
+        ?.name;
       const objectType =
-        field.type.name?.substring(
-          0,
-          field.type.name?.lastIndexOf("Listing"),
-        ) || "";
+        typeName?.substring(0, typeName?.lastIndexOf("Listing")) || "";
       return {
         objectType,
         relationshipName: field.name,
@@ -79,29 +182,62 @@ const objectRelationshipFieldsFromGraphQLType = (
   };
 };
 
-const getMutationInfo = (
-  mutation: GQLSkylarkSchemaQueriesMutations["__schema"]["mutationType"]["fields"][0],
-  objectType: string,
-) => {
-  const validOperationInterfaces = [
-    `${objectType}CreateInput`,
-    `${objectType}Input`,
-  ];
-
-  const foundCreateInput = mutation.args.find((arg) =>
-    arg.type.kind === "NON_NULL"
-      ? validOperationInterfaces.includes(arg.type.ofType?.name || "")
-      : validOperationInterfaces.includes(arg.type.name || ""),
+const getObjectRelationshipsFromInputFields = (
+  schemaTypes: IntrospectionQuery["__schema"]["types"],
+  inputFields?: readonly IntrospectionInputValue[],
+): SkylarkObjectRelationship[] => {
+  const relationshipsInput = inputFields?.find(
+    (input) => input.name === "relationships",
   );
 
-  const argName = foundCreateInput?.name || "";
-  const inputFields =
-    foundCreateInput?.type.kind === "NON_NULL"
-      ? foundCreateInput.type.ofType?.inputFields
-      : foundCreateInput?.type.inputFields;
+  if (!relationshipsInput) {
+    return [];
+  }
 
-  const inputs = parseObjectInputFields(inputFields);
-  const relationships = parseObjectRelationships(inputFields);
+  const relationshipsTypeName =
+    (
+      relationshipsInput?.type as
+        | IntrospectionNonNullTypeRef<IntrospectionScalarType>
+        | IntrospectionListTypeRef<IntrospectionScalarType>
+    ).ofType?.name || (relationshipsInput.type as IntrospectionScalarType).name;
+
+  const relationshipsInterface = schemaTypes.find(
+    ({ name, kind }) =>
+      name === relationshipsTypeName && kind === "INPUT_OBJECT",
+  ) as IntrospectionInputObjectType | undefined;
+
+  const relationships = parseObjectRelationships(
+    relationshipsInterface?.inputFields,
+  );
+
+  return relationships;
+};
+
+const getMutationInfo = (
+  schemaTypes: IntrospectionQuery["__schema"]["types"],
+  enums: Record<string, IntrospectionEnumType>,
+  inputObject?: IntrospectionInputValue,
+) => {
+  const argName = inputObject?.name || "";
+
+  const inputInterfaceName =
+    (
+      inputObject?.type as
+        | IntrospectionNonNullTypeRef<IntrospectionScalarType>
+        | IntrospectionListTypeRef<IntrospectionScalarType>
+    ).ofType?.name || (inputObject?.type as IntrospectionScalarType).name;
+
+  const inputInterface = schemaTypes.find(
+    ({ name, kind }) => name === inputInterfaceName && kind === "INPUT_OBJECT",
+  ) as IntrospectionInputObjectType | undefined;
+
+  const inputFields = inputInterface?.inputFields;
+
+  const inputs = inputFields ? parseObjectInputFields(inputFields, enums) : [];
+  const relationships = getObjectRelationshipsFromInputFields(
+    schemaTypes,
+    inputFields,
+  );
 
   return {
     argName,
@@ -112,13 +248,62 @@ const getMutationInfo = (
 
 export const getObjectOperations = (
   objectType: SkylarkObjectType,
-  { queryType, mutationType }: GQLSkylarkSchemaQueriesMutations["__schema"],
+  schema: IntrospectionQuery["__schema"],
 ): SkylarkObjectMeta => {
-  const queries = queryType.fields;
-  const getQuery = queries.find((query) => query.name === `get${objectType}`);
-  const listQuery = queries.find((query) => query.name === `list${objectType}`);
+  const objectTypeExists = schema.types.find(
+    ({ name, kind }) => name === objectType && kind === "OBJECT",
+  );
+  if (!objectTypeExists) {
+    throw new ObjectError(
+      ErrorCodes.NotFound,
+      `Schema: Object "${objectType}" not found`,
+    );
+  }
 
-  const mutations = mutationType.fields;
+  const queries = (
+    schema.types.find(
+      ({ name, kind }) => name === schema.queryType.name && kind === "OBJECT",
+    ) as IntrospectionObjectType | undefined
+  )?.fields;
+
+  const mutations = (
+    schema.types.find(
+      ({ name, kind }) =>
+        name === schema.mutationType?.name && kind === "OBJECT",
+    ) as IntrospectionObjectType | undefined
+  )?.fields;
+
+  const enums: Record<string, IntrospectionEnumType> = schema.types.reduce(
+    (prev, potentialEnumInterface) => {
+      if (potentialEnumInterface.kind !== "ENUM") {
+        return prev;
+      }
+
+      const enumInterface = potentialEnumInterface as IntrospectionEnumType;
+      return {
+        ...prev,
+        [enumInterface.name]: enumInterface,
+      };
+    },
+    {},
+  );
+
+  if (!queries || !mutations) {
+    throw new ObjectError(
+      ErrorCodes.NotFound,
+      `Schema: Unable to locate "${
+        queries ? "Queries" : "Mutations"
+      }" in the Introspection response`,
+    );
+  }
+
+  const getQuery = queries.find(
+    (query) => query.name === `get${objectType}`,
+  ) as IntrospectionField | undefined;
+  const listQuery = queries.find(
+    (query) => query.name === `list${objectType}`,
+  ) as IntrospectionField | undefined;
+
   const createMutation = mutations.find(
     (mutation) => mutation.name === `create${objectType}`,
   );
@@ -145,52 +330,66 @@ export const getObjectOperations = (
     ]
       .filter((str) => str)
       .join(", ");
-    throw new Error(
-      `Skylark ObjectType "${objectType}" is missing expected operations "${missingOperations}"`,
+    throw new ObjectError(
+      ErrorCodes.NotFound,
+      `Schema: Skylark ObjectType "${objectType}" is missing expected operations "${missingOperations}"`,
     );
   }
 
-  const objectFields = getObjectFieldsFromGetQuery(getQuery);
-
-  const hasAvailability = objectHasRelationshipFromField(
-    SkylarkSystemField.Availability,
+  const getObjectInterface = getObjectInterfaceFromIntrospectionField(
+    schema.types,
     getQuery,
   );
+  const createInputObjectInterface =
+    getInputObjectInterfaceFromIntrospectionField(createMutation, objectType);
+  const updateInputObjectInterface =
+    getInputObjectInterfaceFromIntrospectionField(updateMutation, objectType);
+
+  const objectFields = getObjectFields(enums, getObjectInterface);
+  const fieldConfig = getGlobalAndTranslatableFields(
+    schema.types,
+    objectType,
+    objectFields,
+  );
+
+  const hasAvailability = objectHasRelationshipFromInterface(
+    SkylarkSystemField.Availability,
+    getObjectInterface,
+  );
   const availability = hasAvailability
-    ? getObjectOperations(BuiltInSkylarkObjectType.Availability, {
-        queryType,
-        mutationType,
-      })
+    ? getObjectOperations(BuiltInSkylarkObjectType.Availability, schema)
     : null;
 
-  const hasContent = objectHasRelationshipFromField(
+  const hasContent = objectHasRelationshipFromInterface(
     SkylarkSystemField.Content,
-    getQuery,
+    getObjectInterface,
   );
 
   // TODO when Beta 1 environments are turned off, remove the BetaSkylarkImageListing check
   const imageRelationships =
     objectRelationshipFieldsFromGraphQLType(
       SkylarkSystemGraphQLType.SkylarkImageListing,
-      getQuery,
+      getObjectInterface,
     ) ||
     objectRelationshipFieldsFromGraphQLType(
       SkylarkSystemGraphQLType.BetaSkylarkImageListing,
-      getQuery,
+      getObjectInterface,
     );
   const imageOperations = imageRelationships
-    ? getObjectOperations(imageRelationships.objectType, {
-        queryType,
-        mutationType,
-      })
+    ? getObjectOperations(imageRelationships.objectType, schema)
     : null;
 
   // Parse the relationships out of the create mutation as it has a relationships parameter
   const { relationships, ...createMeta } = getMutationInfo(
-    createMutation,
-    objectType,
+    schema.types,
+    enums,
+    createInputObjectInterface,
   );
-  const updateMeta = getMutationInfo(updateMutation, objectType);
+  const updateMeta = getMutationInfo(
+    schema.types,
+    enums,
+    updateInputObjectInterface,
+  );
 
   const hasRelationships = relationships.length > 0;
 
@@ -223,9 +422,10 @@ export const getObjectOperations = (
     },
   };
 
-  return {
+  const objectMeta: SkylarkObjectMeta = {
     name: objectType,
     fields: objectFields,
+    fieldConfig,
     images:
       imageRelationships && imageOperations
         ? {
@@ -238,13 +438,15 @@ export const getObjectOperations = (
     relationships,
     hasRelationships,
     hasContent,
-    hasAvailability: !!availability,
+    hasAvailability,
     isTranslatable: objectType !== BuiltInSkylarkObjectType.Availability,
   };
+
+  return objectMeta;
 };
 
 export const getAllObjectsMeta = (
-  schema: GQLSkylarkSchemaQueriesMutations["__schema"],
+  schema: IntrospectionQuery["__schema"],
   objects: string[],
 ) => {
   const objectOperations = objects.map((objectType) => {
@@ -257,6 +459,7 @@ export const getAllObjectsMeta = (
 export const splitMetadataIntoSystemTranslatableGlobal = (
   allMetadataFields: string[],
   inputFields: NormalizedObjectField[],
+  fieldConfig: SkylarkObjectMeta["fieldConfig"],
   options?: {
     objectTypes: string[];
     hiddenFields: string[];
@@ -266,7 +469,11 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
     field: string;
     config?: NormalizedObjectField;
   }[];
-  languageGlobalMetadataFields: {
+  globalMetadataFields: {
+    field: string;
+    config?: NormalizedObjectField;
+  }[];
+  translatableMetadataFields: {
     field: string;
     config?: NormalizedObjectField;
   }[];
@@ -280,17 +487,6 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
     };
   });
 
-  const systemFieldsThatExist = metadataArr
-    .filter(({ field }) => SYSTEM_FIELDS.includes(field))
-    .sort(
-      ({ field: a }, { field: b }) =>
-        SYSTEM_FIELDS.indexOf(b) - SYSTEM_FIELDS.indexOf(a),
-    );
-
-  const otherFields = metadataArr.filter(
-    ({ field }) => !SYSTEM_FIELDS.includes(field),
-  );
-
   const defaultFieldsToHide = [
     OBJECT_LIST_TABLE.columnIds.objectType,
     SkylarkSystemField.DataSourceID,
@@ -300,12 +496,31 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
     ? [...options.hiddenFields, ...defaultFieldsToHide]
     : defaultFieldsToHide;
 
+  const metadataArrWithHiddenFieldsRemoved = metadataArr.filter(
+    ({ field }) => !fieldsToHide.includes(field.toLowerCase()),
+  );
+
+  const systemMetadataFields = metadataArrWithHiddenFieldsRemoved
+    .filter(({ field }) => SYSTEM_FIELDS.includes(field))
+    .sort(
+      ({ field: a }, { field: b }) =>
+        SYSTEM_FIELDS.indexOf(b) - SYSTEM_FIELDS.indexOf(a),
+    );
+
+  const otherFields = metadataArrWithHiddenFieldsRemoved.filter(
+    ({ field }) => !SYSTEM_FIELDS.includes(field),
+  );
+
+  const globalMetadataFields = otherFields.filter(({ field }) =>
+    fieldConfig.global.includes(field),
+  );
+  const translatableMetadataFields = otherFields.filter(({ field }) =>
+    fieldConfig.translatable.includes(field),
+  );
+
   return {
-    systemMetadataFields: systemFieldsThatExist.filter(
-      ({ field }) => !fieldsToHide.includes(field.toLowerCase()),
-    ),
-    languageGlobalMetadataFields: otherFields.filter(
-      ({ field }) => !fieldsToHide.includes(field.toLowerCase()),
-    ),
+    systemMetadataFields,
+    globalMetadataFields,
+    translatableMetadataFields,
   };
 };

@@ -6,14 +6,13 @@ import { useEffect, useRef, useState } from "react";
 import { LanguageSelect } from "src/components/inputs/select";
 import { SearchFilter } from "src/components/objectListing/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
-import { SkylarkObjectType } from "src/interfaces/skylark";
+import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 
 import { SearchInput } from "./searchInput/searchInput.component";
 
 interface SearchBarProps {
   searchQuery: string;
   activeFilters: SearchFilters;
-  objectTypes: SkylarkObjectType[];
   columns: string[];
   visibleColumns: VisibilityState;
   className?: string;
@@ -27,7 +26,6 @@ interface SearchBarProps {
 
 export const Search = ({
   className,
-  objectTypes,
   columns,
   visibleColumns,
   searchQuery,
@@ -37,6 +35,8 @@ export const Search = ({
   onFilterChange,
 }: SearchBarProps) => {
   const [isFilterOpen, setFilterOpen] = useState(false);
+
+  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
 
   const filtersDivRef = useRef<HTMLDivElement>(null);
 
@@ -88,13 +88,13 @@ export const Search = ({
             className="absolute top-10 left-0 z-50 w-full md:top-14 md:w-auto"
           >
             <SearchFilter
-              objectTypes={objectTypes}
               activeFilters={activeFilters}
               columns={columns}
               visibleColumns={Object.keys(visibleColumns).filter(
                 (column) => visibleColumns[column],
               )}
               graphqlQuery={graphqlQuery}
+              objectTypesWithConfig={objectTypesWithConfig || []}
               onFilterSave={onFilterSaveWrapper}
             />
           </m.div>

@@ -1,6 +1,10 @@
+import {
+  IntrospectionEnumValue,
+  IntrospectionField,
+  IntrospectionInputValue,
+} from "graphql";
 import { EnumType } from "json-to-graphql-query";
 
-import { GQLInputField, GQLType } from "src/interfaces/graphql/introspection";
 import {
   AvailabilityStatus,
   NormalizedObjectField,
@@ -24,7 +28,7 @@ import {
   parseUpdatedRelationshipObjects,
 } from "./parsers";
 
-const defaultType: GQLType = {
+const defaultType = {
   __typename: "",
   kind: "SCALAR",
   name: "String",
@@ -103,7 +107,7 @@ describe("parseObjectInputFields", () => {
       },
     ].forEach(({ input, want }) =>
       test(`parses a ${input} to be a ${want}`, () => {
-        const fields: GQLInputField = {
+        const fields = {
           name: "Test",
           type: {
             ...defaultType,
@@ -111,19 +115,17 @@ describe("parseObjectInputFields", () => {
           },
         };
 
-        const [{ type: got }] = parseObjectInputFields([fields]);
+        const [{ type: got }] = parseObjectInputFields(
+          [fields] as unknown as IntrospectionField[],
+          {},
+        );
         expect(got).toEqual(want);
       }),
     );
   });
 
-  test("returns an empty array when inputFields is undefined", () => {
-    const got = parseObjectInputFields(undefined);
-    expect(got).toEqual([]);
-  });
-
   test("parses the type from the ofType field when it is given", () => {
-    const fields: GQLInputField = {
+    const fields = {
       name: "Test",
       type: {
         ...defaultType,
@@ -136,7 +138,10 @@ describe("parseObjectInputFields", () => {
       },
     };
 
-    const got = parseObjectInputFields([fields]);
+    const got = parseObjectInputFields(
+      [fields] as unknown as IntrospectionField[],
+      {},
+    );
     expect(got).toEqual([
       {
         enumValues: undefined,
@@ -150,16 +155,19 @@ describe("parseObjectInputFields", () => {
   });
 
   test("marks the field as required when the kind is NON_NULL", () => {
-    const fields: GQLInputField = {
+    const fields = {
       name: "Test",
       type: {
         ...defaultType,
         kind: "NON_NULL",
-        name: "String!",
+        name: "String",
       },
     };
 
-    const got = parseObjectInputFields([fields]);
+    const got = parseObjectInputFields(
+      [fields] as unknown as IntrospectionField[],
+      {},
+    );
     expect(got).toEqual([
       {
         enumValues: undefined,
@@ -167,13 +175,13 @@ describe("parseObjectInputFields", () => {
         isRequired: true,
         name: "Test",
         type: "string",
-        originalType: "String!",
+        originalType: "String",
       },
     ]);
   });
 
   test("marks the field as a list when the kind is LIST", () => {
-    const fields: GQLInputField = {
+    const fields = {
       name: "Test",
       type: {
         ...defaultType,
@@ -182,7 +190,10 @@ describe("parseObjectInputFields", () => {
       },
     };
 
-    const got = parseObjectInputFields([fields]);
+    const got = parseObjectInputFields(
+      [fields] as unknown as IntrospectionField[],
+      {},
+    );
     expect(got).toEqual([
       {
         enumValues: undefined,
@@ -196,17 +207,28 @@ describe("parseObjectInputFields", () => {
   });
 
   test("parses an enum input", () => {
-    const fields: GQLInputField = {
+    const fields = {
       name: "Test",
       type: {
         ...defaultType,
         kind: "ENUM",
-        name: "String",
-        enumValues: [{ name: "ENUM1" }, { name: "ENUM2" }],
+        name: "MyCustomEnum",
       },
     };
 
-    const got = parseObjectInputFields([fields]);
+    const got = parseObjectInputFields(
+      [fields] as unknown as IntrospectionField[],
+      {
+        MyCustomEnum: {
+          name: "MyCustomEnum",
+          kind: "ENUM",
+          enumValues: [
+            { name: "ENUM1" },
+            { name: "ENUM2" },
+          ] as IntrospectionEnumValue[],
+        },
+      },
+    );
     expect(got).toEqual([
       {
         enumValues: ["ENUM1", "ENUM2"],
@@ -214,17 +236,16 @@ describe("parseObjectInputFields", () => {
         isRequired: false,
         name: "Test",
         type: "enum",
-        originalType: "String",
+        originalType: "MyCustomEnum",
       },
     ]);
   });
 
   test("ignores an INPUT_OBJECT and OBJECT", () => {
-    const fields: GQLInputField[] = [
+    const fields = [
       {
         name: "availability",
         type: {
-          __typename: "",
           kind: "INPUT_OBJECT",
           name: "AvailabilityInput",
           enumValues: null,
@@ -236,7 +257,6 @@ describe("parseObjectInputFields", () => {
       {
         name: "relationships",
         type: {
-          __typename: "",
           kind: "OBJECT",
           name: "Relationships",
           enumValues: null,
@@ -247,41 +267,38 @@ describe("parseObjectInputFields", () => {
       },
     ];
 
-    const got = parseObjectInputFields(fields);
+    const got = parseObjectInputFields(
+      fields as unknown as IntrospectionField[],
+      {},
+    );
     expect(got).toEqual([]);
   });
 });
 
 describe("parseObjectRelationships", () => {
   test("returns the names of the relationships", () => {
-    const fields: GQLInputField[] = [
+    const inputFields = [
       {
-        name: "relationships",
+        name: "episodes",
         type: {
           ...defaultType,
-          inputFields: [
-            {
-              name: "episodes",
-              type: {
-                ...defaultType,
-                name: "EpisodeRelationshipInput",
-                kind: "INPUT_OBJECT",
-              },
-            },
-            {
-              name: "brands",
-              type: {
-                ...defaultType,
-                name: "BrandRelationshipInput",
-                kind: "INPUT_OBJECT",
-              },
-            },
-          ],
+          name: "EpisodeRelationshipInput",
+          kind: "INPUT_OBJECT",
+        },
+      },
+      {
+        name: "brands",
+        type: {
+          ...defaultType,
+          name: "BrandRelationshipInput",
+          kind: "INPUT_OBJECT",
         },
       },
     ];
 
-    const got = parseObjectRelationships(fields);
+    const got = parseObjectRelationships(
+      inputFields as unknown as IntrospectionInputValue[],
+    );
     expect(got).toEqual([
       { objectType: "Episode", relationshipName: "episodes" },
       { objectType: "Brand", relationshipName: "brands" },
@@ -311,6 +328,16 @@ describe("parseObjectContent", () => {
             colour: "black",
             primary_field: "uid",
           },
+          _meta: {
+            language_data: {
+              language: "en-GB",
+              version: 2,
+            },
+            available_languages: ["en-GB", "pt-PT"],
+            global_data: {
+              version: 1,
+            },
+          },
         } as SkylarkGraphQLObject,
       },
       {
@@ -318,6 +345,21 @@ describe("parseObjectContent", () => {
         object: {
           __typename: "SkylarkSet",
           uid: "set_1",
+          _config: {
+            colour: "black",
+            primary_field: "uid",
+            display_name: "Set",
+          },
+          _meta: {
+            language_data: {
+              language: "en-GB",
+              version: 1,
+            },
+            available_languages: ["en-GB"],
+            global_data: {
+              version: 2,
+            },
+          },
         } as SkylarkGraphQLObject,
       },
     ];
@@ -331,6 +373,15 @@ describe("parseObjectContent", () => {
           config: {
             colour: "black",
             primaryField: "uid",
+            objectTypeDisplayName: undefined,
+          },
+          meta: {
+            availableLanguages: ["en-GB", "pt-PT"],
+            language: "en-GB",
+            versions: {
+              global: 1,
+              language: 2,
+            },
           },
           object: objects[0].object,
           objectType: objects[0].object.__typename,
@@ -338,8 +389,17 @@ describe("parseObjectContent", () => {
         },
         {
           config: {
-            colour: undefined,
-            primaryField: undefined,
+            colour: "black",
+            primaryField: "uid",
+            objectTypeDisplayName: "Set",
+          },
+          meta: {
+            availableLanguages: ["en-GB"],
+            language: "en-GB",
+            versions: {
+              global: 2,
+              language: 1,
+            },
           },
           object: objects[1].object,
           objectType: objects[1].object.__typename,
@@ -357,6 +417,7 @@ describe("parseSkylarkObject", () => {
       _config: {
         primary_field: "title",
         colour: "#9c27b0",
+        display_name: "SpecialSeason",
       },
       _meta: {
         available_languages: ["en-GB", "pt-PT"],
@@ -397,6 +458,7 @@ describe("parseSkylarkObject", () => {
       config: {
         colour: "#9c27b0",
         primaryField: "title",
+        objectTypeDisplayName: "SpecialSeason",
       },
       meta: {
         language: "pt-PT",

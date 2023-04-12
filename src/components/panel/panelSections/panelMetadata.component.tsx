@@ -7,15 +7,10 @@ import {
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
-import {
-  OBJECT_LIST_TABLE,
-  OBJECT_OPTIONS,
-  SYSTEM_FIELDS,
-} from "src/constants/skylark";
+import { OBJECT_OPTIONS } from "src/constants/skylark";
 import { useImageSize } from "src/hooks/useImageSize";
 import {
   BuiltInSkylarkObjectType,
-  NormalizedObjectField,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
@@ -24,7 +19,10 @@ import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objec
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import { formatObjectField } from "src/lib/utils";
 
+import { PanelSectionLayout } from "./panelSectionLayout.component";
+
 interface PanelMetadataProps {
+  isPage?: boolean;
   uid: string;
   language: string;
   objectType: SkylarkObjectType;
@@ -72,6 +70,7 @@ const AdditionalImageMetadata = ({
 };
 
 export const PanelMetadata = ({
+  isPage,
   uid,
   language,
   metadata,
@@ -89,84 +88,106 @@ export const PanelMetadata = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid, language]);
 
-  const { systemMetadataFields, languageGlobalMetadataFields } = useMemo(
+  const {
+    systemMetadataFields,
+    translatableMetadataFields,
+    globalMetadataFields,
+  } = useMemo(
     () =>
       splitMetadataIntoSystemTranslatableGlobal(
         Object.keys(metadata),
         objectMeta.operations.update.inputs,
+        objectMeta.fieldConfig,
         options,
       ),
-    [metadata, objectMeta.operations.update.inputs, options],
+    [
+      metadata,
+      objectMeta.fieldConfig,
+      objectMeta.operations.update.inputs,
+      options,
+    ],
   );
 
   const requiredFields = objectMeta.operations.create.inputs
     .filter(({ isRequired }) => isRequired)
     .map(({ name }) => name);
 
+  const sections = [
+    {
+      id: "system",
+      title: "System Metadata",
+      metadataFields: systemMetadataFields,
+    },
+    {
+      id: "translatable",
+      title: "Translatable Metadata",
+      metadataFields: translatableMetadataFields,
+    },
+    {
+      id: "global",
+      title: "Global Metadata",
+      metadataFields: globalMetadataFields,
+    },
+  ].filter(({ metadataFields }) => metadataFields.length > 0);
+
+  const sideBarSections = sections.map(({ id, title }) => ({ id, title }));
+
   return (
-    <form
-      className="h-full overflow-y-auto p-4 pb-12 text-sm md:p-8 md:pb-20"
-      data-testid="panel-metadata"
-    >
-      {metadata && (
-        <>
-          {[
-            {
-              id: "system",
-              title: "System Metadata",
-              metadataFields: systemMetadataFields,
-            },
-            {
-              id: "languageGlobal",
-              title: "Translatable & Global Metadata",
-              metadataFields: languageGlobalMetadataFields,
-            },
-          ].map(
-            ({ id, title, metadataFields }, index, { length: numSections }) => (
-              <div key={id} className="mb-8">
-                <PanelSectionTitle text={title} />
-                {metadataFields.map(({ field, config }) => {
-                  if (config) {
+    <PanelSectionLayout sections={sideBarSections} isPage={isPage}>
+      <form className="h-full" data-testid="panel-metadata">
+        {metadata && (
+          <>
+            {sections.map(
+              (
+                { id, title, metadataFields },
+                index,
+                { length: numSections },
+              ) => (
+                <div key={id} className="mb-8 md:mb-10">
+                  <PanelSectionTitle id={id} text={title} />
+                  {metadataFields.map(({ field, config }) => {
+                    if (config) {
+                      return (
+                        <SkylarkObjectFieldInput
+                          key={field}
+                          field={field}
+                          config={config}
+                          control={control}
+                          register={register}
+                          value={getValues(field)}
+                          formState={formState}
+                          additionalRequiredFields={requiredFields}
+                        />
+                      );
+                    }
+
                     return (
-                      <SkylarkObjectFieldInput
+                      <PanelMetadataProperty
                         key={field}
-                        field={field}
-                        config={config}
-                        control={control}
-                        register={register}
+                        property={field}
                         value={getValues(field)}
-                        formState={formState}
-                        additionalRequiredFields={requiredFields}
                       />
                     );
-                  }
+                  })}
+                  {index < numSections - 1 && <PanelSeparator />}
+                </div>
+              ),
+            )}
+          </>
+        )}
 
-                  return (
-                    <PanelMetadataProperty
-                      key={field}
-                      property={field}
-                      value={getValues(field)}
-                    />
-                  );
-                })}
-                {index < numSections - 1 && <PanelSeparator />}
-              </div>
-            ),
-          )}
-        </>
-      )}
-
-      {(
-        [
-          BuiltInSkylarkObjectType.SkylarkImage,
-          BuiltInSkylarkObjectType.BetaSkylarkImage,
-        ] as string[]
-      ).includes(objectType) && (
-        <AdditionalImageMetadata
-          src={metadata.url as string | null}
-          alt={metadata.title as string}
-        />
-      )}
-    </form>
+        {(
+          [
+            BuiltInSkylarkObjectType.SkylarkImage,
+            BuiltInSkylarkObjectType.BetaSkylarkImage,
+          ] as string[]
+        ).includes(objectType) && (
+          <AdditionalImageMetadata
+            src={metadata.url as string | null}
+            alt={metadata.title as string}
+          />
+        )}
+      </form>
+    </PanelSectionLayout>
   );
 };

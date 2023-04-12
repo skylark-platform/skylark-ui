@@ -47,8 +47,8 @@ export const DropdownMenu = ({
         <Menu.Items
           className={clsx(
             "absolute z-50 mx-auto mt-2 w-56 select-none divide-y divide-manatee-100 rounded-sm bg-white shadow-lg ring-1 ring-manatee-700 ring-opacity-5 focus:outline-none",
-            align === "left" && "-left-4",
-            align === "right" && "right-0 origin-top-right",
+            align === "left" && "-left-4 origin-top-left",
+            align === "right" && "-right-4 origin-top-right",
             mobileAlign === "center" &&
               "max-md:left-1/2 max-md:origin-center max-md:-translate-x-1/2",
           )}

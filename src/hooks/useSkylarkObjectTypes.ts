@@ -1,22 +1,36 @@
-import { UseQueryResult } from "@tanstack/react-query";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { DocumentNode } from "graphql";
 import { useMemo } from "react";
 
-import { SkylarkObjectType } from "src/interfaces/skylark";
+import { QueryKeys } from "src/enums/graphql";
+import {
+  GQLSkylarkObjectTypesWithConfig,
+  SkylarkObjectType,
+} from "src/interfaces/skylark";
+import { skylarkRequest } from "src/lib/graphql/skylark/client";
+import { createGetAllObjectsConfigQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   getObjectOperations,
   getAllObjectsMeta,
 } from "src/lib/skylark/objects";
+import { ObjectError } from "src/lib/utils/errors";
 
 import {
-  useSkylarkSchema,
   useSkylarkSchemaInterfaceType,
+  useSkylarkSchemaIntrospection,
 } from "./useSkylarkSchemaIntrospection";
 
-export const useSkylarkObjectTypes = (): Omit<UseQueryResult, "data"> & {
+export const useSkylarkObjectTypes = (
+  searchable: boolean,
+): Omit<UseQueryResult, "data"> & {
   objectTypes: string[] | undefined;
 } => {
-  // Newer Skylark's have a VisibleObject Interface which contains Availability
-  const { data, ...rest } = useSkylarkSchemaInterfaceType("VisibleObject");
+  // Newer Skylark's have a VisibleObject Interface which contains all items that appear in Search, whereas Metadata can all be added into Sets
+  const { data, ...rest } = useSkylarkSchemaInterfaceType(
+    searchable ? "VisibleObject" : "Metadata",
+  );
+
+  // TODO remove when beta is switched off
   const { data: legacyMetadataData } =
     useSkylarkSchemaInterfaceType("Metadata");
 
@@ -36,31 +50,61 @@ export const useSkylarkObjectTypes = (): Omit<UseQueryResult, "data"> & {
   };
 };
 
-// Returns the operations for a given object (createEpisode etc for Episode)
-export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
-  const { data, ...rest } = useSkylarkSchema();
+export const useSkylarkObjectTypesWithConfig = () => {
+  const { objectTypes } = useSkylarkObjectTypes(true);
 
-  if (!data || !objectType) {
-    return { objectOperations: null, ...rest };
-  }
+  const query = createGetAllObjectsConfigQuery(objectTypes);
 
-  const objectOperations = getObjectOperations(objectType, data.__schema);
+  const { data, ...rest } = useQuery<GQLSkylarkObjectTypesWithConfig>({
+    queryKey: [QueryKeys.ObjectTypesConfig, query],
+    queryFn: async () => skylarkRequest(query as DocumentNode),
+    enabled: query !== null,
+  });
+
+  const objectTypesWithConfig = objectTypes?.map((objectType) => ({
+    objectType,
+    config: data?.[objectType],
+  }));
 
   return {
-    objectOperations,
     ...rest,
+    objectTypesWithConfig,
   };
 };
 
-export const useAllObjectsMeta = () => {
-  const { data: schemaResponse, ...rest } = useSkylarkSchema();
+// Returns the operations for a given object (createEpisode etc for Episode)
+export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
+  const { data, ...rest } = useSkylarkSchemaIntrospection();
 
-  const { objectTypes } = useSkylarkObjectTypes();
+  if (!data || !objectType || rest.isError) {
+    return { objectOperations: null, ...rest };
+  }
+
+  try {
+    const objectOperations = getObjectOperations(objectType, data);
+    return {
+      objectOperations,
+      ...rest,
+    };
+  } catch (err) {
+    return {
+      objectOperations: null,
+      ...rest,
+      isError: true,
+      error: err as ObjectError | unknown,
+    };
+  }
+};
+
+export const useAllObjectsMeta = (searchable: boolean) => {
+  const { data: schemaResponse, ...rest } = useSkylarkSchemaIntrospection();
+
+  const { objectTypes } = useSkylarkObjectTypes(searchable);
 
   const { objects, allFieldNames } = useMemo(() => {
     const objects =
       schemaResponse && objectTypes
-        ? getAllObjectsMeta(schemaResponse.__schema, objectTypes)
+        ? getAllObjectsMeta(schemaResponse, objectTypes)
         : [];
     const allFieldNames = objects
       .flatMap(({ fields }) => fields)
