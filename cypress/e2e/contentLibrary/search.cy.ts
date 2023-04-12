@@ -129,7 +129,7 @@ describe("Content Library - Search", () => {
     cy.contains("Asset").should("exist");
     cy.contains("Filters").click();
 
-    const columnsFilters = cy.get("[data-testid=checkbox-grid-Columns]");
+    const columnsFilters = cy.get("[data-testid=checkbox-grid-columns]");
 
     columnsFilters.contains("Toggle all").click();
     cy.contains("Apply").should("be.disabled");

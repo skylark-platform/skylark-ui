@@ -35,6 +35,13 @@ Default.args = {
   options,
 };
 
+export const WithLabel = Template.bind({});
+WithLabel.args = {
+  className: "w-96",
+  label: "Checkbox Grid",
+  options,
+};
+
 export const WithToggleAll = Template.bind({});
 WithToggleAll.args = {
   className: "w-96",

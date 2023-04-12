@@ -15,7 +15,7 @@ export type CheckboxOptionState = {
 };
 
 interface CheckboxGridProps {
-  label: string;
+  label?: string;
   options: CheckboxOptionState[];
   className?: string;
   withToggleAll?: boolean;
@@ -73,7 +73,7 @@ export const CheckboxGrid = ({
   return (
     <section
       className={clsx("flex flex-col text-xs", className)}
-      data-testid={`checkbox-grid-${label.split(" ").join("-").toLowerCase()}`}
+      data-testid={`checkbox-grid-${label?.split(" ").join("-").toLowerCase()}`}
     >
       <h4 className="mb-2 select-none font-semibold text-manatee-600">
         {label}
