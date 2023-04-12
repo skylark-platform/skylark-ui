@@ -58,6 +58,11 @@ export interface GQLSkylarkUpdateObjectContentResponse {
   };
 }
 
+export interface GQLSkylarkUpdateRelationshipsResponse {
+  updateRelationships: {
+    uid: string;
+  };
+}
 export type GQLSkylarkObjectTypesWithConfig = Record<
   SkylarkObjectType,
   SkylarkGraphQLObjectConfig

@@ -26,7 +26,10 @@ import { Skeleton } from "src/components/skeleton";
 import { Toast } from "src/components/toast/toast.component";
 import { useDeleteObject } from "src/hooks/useDeleteObject";
 import { ParsedSkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
-import { getObjectDisplayName } from "src/lib/utils";
+import {
+  getObjectDisplayName,
+  getObjectTypeDisplayNameFromParsedObject,
+} from "src/lib/utils";
 
 interface PanelHeaderProps {
   isPage?: boolean;
@@ -73,14 +76,21 @@ export const PanelHeader = ({
   const { mutate: deleteObjectMutation } = useDeleteObject({
     objectType,
     onSuccess: ({ objectType, uid }) => {
-      // TODO finesse this so the toast slides in and looks better
-      // toast(
-      //   <Toast
-      //     title={`${objectType} deleted`}
-      //     message={`${objectType} ${uid} has been deleted`}
-      //     type="success"
-      //   />,
-      // );
+      toast(
+        <Toast
+          title={`${
+            object
+              ? getObjectTypeDisplayNameFromParsedObject(object)
+              : objectType
+          } deleted`}
+          message={`${
+            object
+              ? getObjectTypeDisplayNameFromParsedObject(object)
+              : objectType
+          } "${object ? getObjectDisplayName(object) : uid}" has been deleted`}
+          type="success"
+        />,
+      );
       closePanel?.();
     },
   });
@@ -126,7 +136,7 @@ export const PanelHeader = ({
             <Button
               Icon={<ArrowLeft />}
               variant="ghost"
-              disabled={!navigateToPreviousPanelObject}
+              disabled={!navigateToPreviousPanelObject || inEditMode}
               onClick={navigateToPreviousPanelObject}
               aria-label="Open Previous Object"
             />

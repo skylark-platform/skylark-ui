@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
+import { Toast } from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/useGetObject";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
 import { useUpdateObjectMetadata } from "src/hooks/useUpdateObjectMetadata";
+import { useUpdateObjectRelationships } from "src/hooks/useUpdateObjectRelationships";
 import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
@@ -13,10 +16,15 @@ import {
   SkylarkObjectMetadataField,
   SkylarkSystemField,
   SkylarkObjectMeta,
+  ParsedSkylarkObjectRelationships,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
-import { hasProperty } from "src/lib/utils";
+import {
+  getObjectDisplayName,
+  getObjectTypeDisplayNameFromParsedObject,
+  hasProperty,
+} from "src/lib/utils";
 
 import {
   PanelAvailability,
@@ -68,6 +76,19 @@ export const Panel = ({
   setPanelObject,
   navigateToPreviousPanelObject,
 }: PanelProps) => {
+  const [inEditMode, setEditMode] = useState(false);
+  const [contentObjects, setContentObjects] = useState<
+    AddedSkylarkObjectContentObject[] | null
+  >(null);
+
+  const [
+    { updatedRelationshipObjects, originalRelationshipObjects },
+    setRelationshipObjects,
+  ] = useState<{
+    originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
+    updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
+  }>({ originalRelationshipObjects: null, updatedRelationshipObjects: null });
+
   const { uid, objectType, language } = object;
   const {
     data,
@@ -81,10 +102,6 @@ export const Panel = ({
     error,
   } = useGetObject(objectType, uid, { language });
 
-  const [inEditMode, setEditMode] = useState(false);
-  const [contentObjects, setContentObjects] = useState<
-    AddedSkylarkObjectContentObject[] | null
-  >(null);
   const metadataForm = useForm<Record<string, SkylarkObjectMetadataField>>({
     // Can't use onSubmit because we don't have a submit button within the form
     mode: "onTouched",
@@ -114,6 +131,10 @@ export const Panel = ({
     setEditMode(false);
     setSelectedTab(PanelTab.Metadata);
     setContentObjects(null);
+    setRelationshipObjects({
+      originalRelationshipObjects: null,
+      updatedRelationshipObjects: null,
+    });
     resetMetadataForm();
   }, [uid, objectType, language, resetMetadataForm]);
 
@@ -124,34 +145,122 @@ export const Panel = ({
   }, [inEditMode, metadataForm.formState.isDirty]);
 
   useEffect(() => {
-    if (
-      droppedObject &&
-      !contentObjects
-        ?.map(({ object }) => object.uid)
-        .includes(droppedObject.uid) &&
-      !data?.content?.objects
-        ?.map(({ object }) => object.uid)
-        .includes(droppedObject.uid)
-    ) {
-      const parseDroppedObject = parseSkylarkObjectContent(droppedObject);
-      setContentObjects([
-        ...(contentObjects || data?.content?.objects || []),
-        {
-          ...parseDroppedObject,
-          position:
-            (contentObjects?.length || data?.content?.objects.length || 0) + 1,
-          isNewObject: true,
-        },
-      ]);
-      setEditMode(true);
-      clearDroppedObject && clearDroppedObject();
+    if (droppedObject) {
+      if (selectedTab === PanelTab.Relationships) {
+        const relationships = objectMeta?.relationships || [];
+        const droppedObjectRelationshipName = relationships.find(
+          (relationship) =>
+            relationship.objectType === droppedObject.objectType,
+        )?.relationshipName;
+
+        if (droppedObjectRelationshipName) {
+          const droppedObjectRelationshipObjects =
+            updatedRelationshipObjects?.find(
+              (relationship) =>
+                relationship.relationshipName === droppedObjectRelationshipName,
+            );
+
+          const isAlreadyAdded =
+            !!droppedObjectRelationshipObjects?.objects.find(
+              ({ uid }) => droppedObject.uid === uid,
+            );
+
+          if (isAlreadyAdded) {
+            toast(
+              <Toast
+                title={"Relationship exists"}
+                message={`${getObjectTypeDisplayNameFromParsedObject(
+                  droppedObject,
+                )} "${getObjectDisplayName(droppedObject)}" is already linked`}
+                type="warning"
+              />,
+            );
+          } else {
+            updatedRelationshipObjects &&
+              setRelationshipObjects({
+                updatedRelationshipObjects: updatedRelationshipObjects?.map(
+                  (relationship) => {
+                    const { objects, relationshipName } = relationship;
+                    if (relationshipName === droppedObjectRelationshipName) {
+                      return {
+                        ...relationship,
+                        objects: [droppedObject, ...objects],
+                      };
+                    } else return relationship;
+                  },
+                ),
+                originalRelationshipObjects,
+              });
+          }
+        } else {
+          toast(
+            <Toast
+              title={"Invalid relationship"}
+              message={`${getObjectTypeDisplayNameFromParsedObject(
+                droppedObject,
+              )} is not configured to link to ${
+                data
+                  ? getObjectTypeDisplayNameFromParsedObject(data)
+                  : objectType
+              }`}
+              type="error"
+            />,
+          );
+        }
+        setEditMode(true);
+        clearDroppedObject?.();
+      } else if (
+        selectedTab === PanelTab.Content &&
+        !contentObjects
+          ?.map(({ object }) => object.uid)
+          .includes(droppedObject.uid) &&
+        !data?.content?.objects
+          ?.map(({ object }) => object.uid)
+          .includes(droppedObject.uid)
+      ) {
+        const parseDroppedObject = parseSkylarkObjectContent(droppedObject);
+        setContentObjects([
+          ...(contentObjects || data?.content?.objects || []),
+          {
+            ...parseDroppedObject,
+            position:
+              (contentObjects?.length || data?.content?.objects.length || 0) +
+              1,
+            isNewObject: true,
+          },
+        ]);
+
+        setEditMode(true);
+        clearDroppedObject && clearDroppedObject();
+      }
     }
   }, [
     clearDroppedObject,
     contentObjects,
     data?.content?.objects,
     droppedObject,
+    selectedTab,
+    objectMeta?.relationships,
+    updatedRelationshipObjects,
+    originalRelationshipObjects,
+    objectType,
+    data,
   ]);
+
+  const { updateObjectRelationships, isLoading: updatingRelationshipObjects } =
+    useUpdateObjectRelationships({
+      objectType,
+      uid,
+      updatedRelationshipObjects,
+      originalRelationshipObjects,
+      onSuccess: () => {
+        setEditMode(false);
+        setRelationshipObjects({
+          originalRelationshipObjects: null,
+          updatedRelationshipObjects: null,
+        });
+      },
+    });
 
   const { updateObjectMetadata, isLoading: updatingObjectMetadata } =
     useUpdateObjectMetadata({
@@ -188,6 +297,11 @@ export const Panel = ({
       contentObjects !== data?.content?.objects
     ) {
       updateObjectContent();
+    } else if (
+      selectedTab === PanelTab.Relationships &&
+      updatedRelationshipObjects
+    ) {
+      updateObjectRelationships();
     } else if (selectedTab === PanelTab.Metadata) {
       // Validate then make request
       metadataForm.trigger().then((allFieldsValid) => {
@@ -223,16 +337,29 @@ export const Panel = ({
         graphQLQuery={query}
         graphQLVariables={variables}
         currentTab={selectedTab}
-        tabsWithEditMode={[PanelTab.Metadata, PanelTab.Content]}
+        tabsWithEditMode={[
+          PanelTab.Metadata,
+          PanelTab.Content,
+          PanelTab.Relationships,
+        ]}
         closePanel={closePanel}
         inEditMode={inEditMode}
         save={saveActiveTabChanges}
-        isSaving={updatingObjectMetadata || updatingObjectContents}
+        isSaving={
+          updatingObjectContents ||
+          updatingRelationshipObjects ||
+          updatingObjectMetadata
+        }
         isTranslatable={objectMeta?.isTranslatable}
         toggleEditMode={() => {
           if (inEditMode) {
             metadataForm.reset();
             setContentObjects(null);
+            setRelationshipObjects({
+              updatedRelationshipObjects: null,
+              originalRelationshipObjects: null,
+            });
+            clearDroppedObject?.();
           }
           setEditMode(!inEditMode);
         }}
@@ -288,7 +415,7 @@ export const Panel = ({
               isPage={isPage}
               images={data.images}
               setPanelObject={setPanelObject}
-              language={language}
+              inEditMode={inEditMode}
             />
           )}
           {selectedTab === PanelTab.Availability && (
@@ -298,6 +425,7 @@ export const Panel = ({
               objectUid={uid}
               language={language}
               setPanelObject={setPanelObject}
+              inEditMode={inEditMode}
             />
           )}
           {selectedTab === PanelTab.Content && data.content && (
@@ -316,6 +444,11 @@ export const Panel = ({
               isPage={isPage}
               objectType={objectType}
               uid={uid}
+              updatedRelationshipObjects={updatedRelationshipObjects}
+              originalRelationshipObjects={originalRelationshipObjects}
+              setRelationshipObjects={setRelationshipObjects}
+              inEditMode={inEditMode}
+              showDropArea={showDropArea}
               language={language}
               setPanelObject={setPanelObject}
             />

@@ -42,6 +42,13 @@ export const getObjectDisplayName = (
   return (displayName as string) || object.uid;
 };
 
+export const getObjectTypeDisplayNameFromParsedObject = (
+  object: ParsedSkylarkObject | null,
+): string => {
+  if (!object) return "";
+  return object?.config?.objectTypeDisplayName || object.objectType;
+};
+
 // Creates an Account Identifier (used in Flatfile template)
 // Will change when we have proper auth / teams / accounts
 export const createAccountIdentifier = (uri: string) => {

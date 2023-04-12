@@ -4,11 +4,15 @@ import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
   ParsedSkylarkObjectContentObject,
+  ParsedSkylarkObjectRelationships,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
+import {
+  parseMetadataForGraphQLRequest,
+  parseUpdatedRelationshipObjects,
+} from "src/lib/skylark/parsers";
 
 import {
   generateContentsToReturn,
@@ -255,6 +259,73 @@ export const createUpdateObjectContentMutation = (
         },
         uid: true,
         ...generateContentsToReturn(object, contentTypesToRequest),
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(mutation);
+
+  return gql(graphQLQuery);
+};
+
+export const createUpdateObjectRelationshipsMutation = (
+  object: SkylarkObjectMeta | null,
+  updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null,
+  originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null,
+) => {
+  if (
+    !object ||
+    !object.operations.update ||
+    !updatedRelationshipObjects ||
+    !originalRelationshipObjects
+  ) {
+    return null;
+  }
+
+  const relationships = object?.relationships || [];
+  const objectsToLinkAndUnlink = relationships
+    .map((relationship) =>
+      parseUpdatedRelationshipObjects(
+        relationship,
+        updatedRelationshipObjects,
+        originalRelationshipObjects,
+      ),
+    )
+    .filter(
+      ({ uidsToLink, uidsToUnlink }) =>
+        uidsToLink.length > 0 || uidsToUnlink.length > 0,
+    );
+
+  const parsedRelationsToUpdate = objectsToLinkAndUnlink.reduce(
+    (acc, { relationship, uidsToLink, uidsToUnlink }) => {
+      return {
+        ...acc,
+        [relationship.relationshipName]: {
+          link: uidsToLink,
+          unlink: uidsToUnlink,
+        },
+      };
+    },
+    {},
+  );
+
+  const mutation = {
+    mutation: {
+      __name: `UPDATE_OBJECT_RELATIONSHIPS_${object.name}`,
+      __variables: {
+        uid: "String!",
+      },
+      updateRelationships: {
+        __aliasFor: object.operations.update.name,
+        __args: {
+          uid: new VariableType("uid"),
+          [object.operations.update.argName]: {
+            relationships: {
+              ...parsedRelationsToUpdate,
+            },
+          },
+        },
+        uid: true,
       },
     },
   };

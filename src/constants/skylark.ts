@@ -49,6 +49,7 @@ export const DISPLAY_NAME_PRIORITY = [
 ];
 
 export const DROPPABLE_ID = "droppable";
+
 export const INPUT_REGEX: Record<string, string | RegExp> = {
   // Skylark uses built in Appsync GraphQL Scalars from: https://docs.aws.amazon.com/appsync/latest/devguide/scalars.html
   // These regex's validate Flatfile inputs to ensure they match the GraphQL formats so we don't cause API errors

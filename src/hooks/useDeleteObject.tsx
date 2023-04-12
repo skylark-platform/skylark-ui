@@ -6,6 +6,7 @@ import { SkylarkObjectType } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createDeleteObjectMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
+import { refetchSearchQueriesAfterUpdate } from "./useCreateObject";
 import { createGetObjectKeyPrefix } from "./useGetObject";
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
@@ -31,6 +32,7 @@ export const useDeleteObject = ({
       queryClient.invalidateQueries({
         queryKey: createGetObjectKeyPrefix({ objectType, uid }),
       });
+      refetchSearchQueriesAfterUpdate(queryClient);
       onSuccess({ objectType, uid });
     },
   });

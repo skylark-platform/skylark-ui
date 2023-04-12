@@ -30,6 +30,7 @@ import {
   ParsedSkylarkObject,
   SkylarkGraphQLObjectImage,
   SkylarkObjectMetadataField,
+  ParsedSkylarkObjectRelationships,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -416,4 +417,35 @@ export const parseMetadataForHTMLForm = (
   const parsedMetadata: Record<string, SkylarkObjectMetadataField> =
     Object.fromEntries(keyValuePairs);
   return parsedMetadata;
+};
+
+export const parseUpdatedRelationshipObjects = (
+  relationship: SkylarkObjectRelationship,
+  updatedRelationshipObjects: ParsedSkylarkObjectRelationships[],
+  originalRelationshipObjects: ParsedSkylarkObjectRelationships[],
+) => {
+  const updatedObjects: string[] =
+    updatedRelationshipObjects
+      .find(
+        ({ relationshipName }) =>
+          relationshipName === relationship?.relationshipName,
+      )
+      ?.objects.map(({ uid }) => uid) || [];
+
+  const originalObjects: string[] =
+    originalRelationshipObjects
+      .find(
+        ({ relationshipName }) =>
+          relationshipName === relationship?.relationshipName,
+      )
+      ?.objects.map(({ uid }) => uid) || [];
+
+  const uidsToLink = updatedObjects.filter(
+    (uid) => !originalObjects.includes(uid),
+  );
+  const uidsToUnlink = originalObjects.filter(
+    (uid) => !updatedObjects.includes(uid),
+  );
+
+  return { relationship, uidsToLink, uidsToUnlink };
 };

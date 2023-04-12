@@ -37,12 +37,14 @@ export const Cross = ({ className }: IconProps) => {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        stroke="currentColor"
       />
       <path
         d="M6 6L18 18"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        stroke="currentColor"
       />
     </IconBase>
   );
