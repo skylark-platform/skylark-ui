@@ -195,7 +195,7 @@ export const Panel = ({
           );
         }
         setEditMode(true);
-        clearDroppedObject && clearDroppedObject();
+        clearDroppedObject?.();
       } else if (
         selectedTab === PanelTab.Content &&
         !contentObjects
@@ -216,6 +216,7 @@ export const Panel = ({
             isNewObject: true,
           },
         ]);
+
         setEditMode(true);
         clearDroppedObject && clearDroppedObject();
       }
@@ -340,6 +341,7 @@ export const Panel = ({
               updatedRelationshipObjects: null,
               originalRelationshipObjects: null,
             });
+            clearDroppedObject?.();
           }
           setEditMode(!inEditMode);
         }}
