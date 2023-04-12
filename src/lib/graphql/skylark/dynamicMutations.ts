@@ -319,7 +319,7 @@ export const createUpdateObjectRelationshipsMutation = (
         __aliasFor: object.operations.update.name,
         __args: {
           uid: new VariableType("uid"),
-          [object.name.toLowerCase()]: {
+          [object.operations.update.argName]: {
             relationships: {
               ...parsedRelationsToUpdate,
             },
