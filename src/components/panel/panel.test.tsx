@@ -684,9 +684,6 @@ describe("relationships view", () => {
       ).toBeInTheDocument(),
     );
 
-    await waitFor(() =>
-      expect(screen.getByText("Relationships")).toBeInTheDocument(),
-    );
     fireEvent.click(screen.getByText("Relationships"));
 
     await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
@@ -716,8 +713,13 @@ describe("relationships view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("Relationships")).toBeInTheDocument(),
+      expect(
+        screen.getByText(
+          GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
+
     fireEvent.click(screen.getByText("Relationships"));
 
     await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
@@ -777,8 +779,14 @@ describe("relationships view", () => {
       );
 
       await waitFor(() =>
-        expect(screen.getByText("Relationships")).toBeInTheDocument(),
+        expect(
+          screen.getByText(
+            GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject
+              .title,
+          ),
+        ).toBeInTheDocument(),
       );
+
       fireEvent.click(screen.getByText("Relationships"));
 
       await waitFor(() =>

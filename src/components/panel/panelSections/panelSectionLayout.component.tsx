@@ -1,6 +1,8 @@
 import clsx from "clsx";
 import { ReactNode } from "react";
 
+import { hasProperty } from "src/lib/utils";
+
 interface PanelSectionLayoutProps {
   isPage?: boolean;
   sections: {
@@ -13,7 +15,10 @@ interface PanelSectionLayoutProps {
 
 const scrollToSection = (id: string) =>
   document?.getElementById(id)?.scrollIntoView({
-    behavior: "smooth",
+    behavior:
+      typeof window === "undefined" || hasProperty(window, "Cypress")
+        ? "auto"
+        : "smooth",
   });
 
 export const PanelSectionLayout = ({

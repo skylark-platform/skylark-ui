@@ -12,7 +12,6 @@ describe("Content Library - Metadata Panel", () => {
         });
       }
       if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
-        req.alias = "introspectionQuery";
         req.reply({
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
         });

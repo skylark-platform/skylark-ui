@@ -18,6 +18,11 @@ describe("Content Library - Object Panel", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
+      if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
+        req.reply({
+          fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
+        });
+      }
       if (hasOperationName(req, "GET_Episode")) {
         if (hasMatchingVariable(req, "language", "pt-PT")) {
           req.reply({
@@ -308,7 +313,7 @@ describe("Content Library - Object Panel", () => {
       cy.get(`[data-cy=panel-for-SkylarkImage-01GX3951J632PXW580CXHCH9QZ]`);
     });
 
-    it("navigates to the set content using the object button", () => {
+    it("navigates to the image using the object button", () => {
       cy.fixture("./skylark/queries/getObject/gots01e01.json").then(
         (objectJson) => {
           const episodeUid = objectJson.data.getObject.uid;

@@ -14,11 +14,7 @@ export default {
 };
 
 const Template: ComponentStory<typeof Panel> = (args) => {
-  return (
-    <div className="flex flex-row space-x-2">
-      <Panel {...args} closePanel={() => alert("Close clicked")} />
-    </div>
-  );
+  return <Panel {...args} closePanel={() => alert("Close clicked")} />;
 };
 
 export const Default = Template.bind({});
@@ -28,6 +24,16 @@ Default.args = {
     objectType: "Movie",
     language: "",
   },
+};
+
+export const PageView = Template.bind({});
+PageView.args = {
+  object: {
+    uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
+    objectType: "Movie",
+    language: "",
+  },
+  isPage: true,
 };
 
 export const Imagery = Template.bind({});

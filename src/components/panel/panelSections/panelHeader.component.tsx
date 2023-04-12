@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { GrGraphQl } from "react-icons/gr";
 import { toast } from "react-toastify";
 
@@ -13,7 +13,6 @@ import {
 } from "src/components/dropdown/dropdown.component";
 import {
   Edit,
-  Expand,
   Trash,
   MoreVertical,
   ArrowLeft,
@@ -191,7 +190,7 @@ export const PanelHeader = ({
           )}
         </div>
 
-        {closePanel && (
+        {!isPage && closePanel && (
           <Button variant="ghost" onClick={closePanel}>
             Close
           </Button>
