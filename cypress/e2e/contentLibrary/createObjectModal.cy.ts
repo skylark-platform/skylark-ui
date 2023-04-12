@@ -11,6 +11,12 @@ describe("Content Library - Metadata Panel", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
+      if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
+        req.alias = "introspectionQuery";
+        req.reply({
+          fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
+        });
+      }
       if (hasOperationName(req, "GET_Episode")) {
         req.reply({
           fixture: "./skylark/queries/getObject/gots01e01.json",
@@ -67,6 +73,21 @@ describe("Content Library - Metadata Panel", () => {
     openModal();
 
     cy.percySnapshot("Homepage - create object modal");
+  });
+
+  it("displays an objects display_name in a select", () => {
+    openModal();
+
+    cy.get("[data-testid=create-object-modal]").within(() => {
+      cy.get("[data-testid=select]").click();
+      cy.get("[data-testid=select-options]").scrollTo("bottom");
+      cy.get("[data-testid=select-options]").within(() => {
+        cy.contains("Set");
+        cy.contains("(SkylarkSet)");
+      });
+
+      cy.percySnapshot("Homepage - create object modal - object type select");
+    });
   });
 
   it("selects an object type", () => {

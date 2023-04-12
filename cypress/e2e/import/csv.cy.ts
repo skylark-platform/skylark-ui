@@ -16,6 +16,12 @@ describe("Import/CSV", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
+      if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
+        req.alias = "introspectionQuery";
+        req.reply({
+          fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
+        });
+      }
       if (operationNameStartsWith(req, "createEpisode_")) {
         req.reply({
           fixture: "./skylark/mutations/import/csvImportEpisodeCreation.json",
@@ -54,6 +60,17 @@ describe("Import/CSV", () => {
       .contains("New import")
       .should("have.class", "btn-disabled");
     cy.percySnapshot("import/csv");
+  });
+
+  it("displays an objects display_name in a select", () => {
+    cy.get("[data-testid=select]").click();
+    cy.get("[data-testid=select-options]").scrollTo("bottom");
+    cy.get("[data-testid=select-options]").within(() => {
+      cy.contains("Set");
+      cy.contains("(SkylarkSet)");
+    });
+
+    cy.percySnapshot("import/csv - objectType select");
   });
 
   it("select objectType", () => {

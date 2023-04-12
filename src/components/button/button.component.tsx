@@ -35,6 +35,7 @@ export const Button = ({
   downloadName,
   type,
   newTab,
+  ...props
 }: ButtonProps) => {
   const iconOnly = Icon && !children;
 
@@ -68,6 +69,7 @@ export const Button = ({
           className={combinedClassName}
           download={downloadName}
           target={newTab ? "_blank" : undefined}
+          {...props}
         >
           {Icon}
           {children}
@@ -81,6 +83,7 @@ export const Button = ({
       disabled={disabled}
       onClick={onClick}
       type={type || "button"}
+      {...props}
     >
       {loading && (
         <CgSpinner className="mr-1 animate-spin-fast text-base md:text-lg" />

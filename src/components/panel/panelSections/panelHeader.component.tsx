@@ -127,6 +127,7 @@ export const PanelHeader = ({
               variant="ghost"
               disabled={!navigateToPreviousPanelObject}
               onClick={navigateToPreviousPanelObject}
+              aria-label="Open Previous Object"
             />
           )}
           {!isPage && (

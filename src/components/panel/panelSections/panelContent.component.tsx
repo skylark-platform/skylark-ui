@@ -207,9 +207,7 @@ export const PanelContent = ({
                   />
                   <button
                     disabled={!inEditMode}
-                    data-testid={`panel-object-content-item-${
-                      index + 1
-                    }-remove`}
+                    data-testid="panel-object-content-item-remove"
                     className={clsx(!inEditMode && "w-0")}
                     onClick={() => removeItem(object.uid)}
                   >
@@ -231,7 +229,7 @@ export const PanelContent = ({
       </Reorder.Group>
       {inEditMode && (
         <p className="w-full py-4 text-center text-sm text-manatee-600">
-          {`Drag an object from the Content Library to add to this ${objectType}'s content`}
+          {`Drag an object from the Content Library to add as content`}
         </p>
       )}
     </PanelSectionLayout>

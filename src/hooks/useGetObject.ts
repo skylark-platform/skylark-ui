@@ -70,7 +70,7 @@ export const useGetObject = (
     objectMeta,
     isLoading: (rest.isLoading || !query) && !isObjectMetaError,
     isNotFound:
-      error?.response.errors?.[0]?.errorType === QueryErrorMessages.NotFound,
+      error?.response?.errors?.[0]?.errorType === QueryErrorMessages.NotFound,
     isObjectTypeNotFound:
       objectMetaError && hasProperty(objectMetaError, "code")
         ? objectMetaError.code === ErrorCodes.NotFound

@@ -288,6 +288,60 @@ describe("Content Library - Object Panel", () => {
 
       cy.percySnapshot("Homepage - object panel - imagery");
     });
+
+    it("navigates to the image object using the object button", () => {
+      cy.get('input[name="search-query-input"]').type("got winter is coming");
+      cy.contains("tr", "GOT S01E1 - Winter")
+        .should(($el) => {
+          // eslint-disable-next-line jest/valid-expect
+          expect(Cypress.dom.isDetached($el)).to.eq(false);
+        })
+        .within(() => {
+          cy.get('[aria-label="object-info"]').click();
+        });
+
+      cy.contains("button", "Imagery").click();
+
+      cy.get('[aria-label="Open Object"]').click();
+
+      // Only check the panel object type and uid so we don't have to mock the response
+      cy.get(`[data-cy=panel-for-SkylarkImage-01GX3951J632PXW580CXHCH9QZ]`);
+    });
+
+    it("navigates to the set content using the object button", () => {
+      cy.fixture("./skylark/queries/getObject/gots01e01.json").then(
+        (objectJson) => {
+          const episodeUid = objectJson.data.getObject.uid;
+          const episodeObjectType = objectJson.data.getObject.__typename;
+          const firstImageUid = objectJson.data.getObject.images.objects[0].uid;
+
+          cy.get('input[name="search-query-input"]').type(
+            "got winter is coming",
+          );
+          cy.contains("tr", "GOT S01E1 - Winter")
+            .should(($el) => {
+              // eslint-disable-next-line jest/valid-expect
+              expect(Cypress.dom.isDetached($el)).to.eq(false);
+            })
+            .within(() => {
+              cy.get('[aria-label="object-info"]').click();
+            });
+
+          cy.contains("button", "Imagery").click();
+
+          cy.get(`[data-cy=panel-for-${episodeObjectType}-${episodeUid}]`);
+
+          cy.get('[aria-label="Open Object"]').first().click();
+
+          // Only check the panel object type and uid so we don't have to mock the response
+          cy.get(`[data-cy=panel-for-SkylarkImage-${firstImageUid}]`);
+
+          // Check back button returns to the original object
+          cy.get('[aria-label="Open Previous Object"]').click();
+          cy.get(`[data-cy=panel-for-${episodeObjectType}-${episodeUid}]`);
+        },
+      );
+    });
   });
 
   describe("Content tab", () => {
@@ -305,6 +359,43 @@ describe("Content Library - Object Panel", () => {
       cy.contains("button", "Content").click();
 
       cy.percySnapshot("Homepage - object panel - content");
+    });
+
+    it("navigates to the set content using the object button", () => {
+      cy.fixture("./skylark/queries/getObject/homepage.json").then(
+        (homepageJson) => {
+          const homepageUid = homepageJson.data.getObject.uid;
+          const homepageObjectType = homepageJson.data.getObject.__typename;
+          const firstSetContentItemUid =
+            homepageJson.data.getObject.content.objects[0].object.uid;
+          const firstSetContentItemObjectType =
+            homepageJson.data.getObject.content.objects[0].object.__typename;
+
+          cy.get('input[name="search-query-input"]').type("Homepage");
+          cy.contains("Homepage").should("exist");
+          cy.contains("tr", "Homepage")
+            .should(($el) => {
+              // eslint-disable-next-line jest/valid-expect
+              expect(Cypress.dom.isDetached($el)).to.eq(false);
+            })
+            .within(() => {
+              cy.get('[aria-label="object-info"]').click();
+            });
+          cy.contains("button", "Content").click();
+          cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
+
+          cy.get('[aria-label="Open Object"]').first().click();
+
+          // Only check the panel object type and uid so we don't have to mock the response
+          cy.get(
+            `[data-cy=panel-for-${firstSetContentItemObjectType}-${firstSetContentItemUid}]`,
+          );
+
+          // Check back button returns to the original object
+          cy.get('[aria-label="Open Previous Object"]').click();
+          cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
+        },
+      );
     });
 
     it("Reorder, remove and cancel", () => {
@@ -349,7 +440,7 @@ describe("Content Library - Object Panel", () => {
         .parent()
         .parent()
         .within(() => {
-          cy.get("svg").click();
+          cy.get("[data-testid=panel-object-content-item-remove]").click();
         });
       cy.contains("Discover Collection").should("not.exist");
 
@@ -418,7 +509,7 @@ describe("Content Library - Object Panel", () => {
         .parent()
         .parent()
         .within(() => {
-          cy.get("svg").click();
+          cy.get("[data-testid=panel-object-content-item-remove]").click();
         });
 
       // Reorder
@@ -485,6 +576,47 @@ describe("Content Library - Object Panel", () => {
       cy.contains("Audience");
 
       cy.percySnapshot("Homepage - object panel - availability");
+    });
+
+    it("navigates to the availability using the object button", () => {
+      cy.fixture("./skylark/queries/getObject/allAvailTestMovie.json").then(
+        (objectJson) => {
+          cy.fixture(
+            "./skylark/queries/getObjectAvailability/allAvailTestMovieAvailability.json",
+          ).then((availabilityJson) => {
+            const objectUid = objectJson.data.getObject.uid;
+            const objectType = objectJson.data.getObject.__typename;
+
+            cy.get('input[name="search-query-input"]').type(
+              "all avail test movie",
+            );
+            cy.contains("All Avail Test Movie").should("exist");
+            cy.contains("tr", "All Avail Test Movie")
+              .should(($el) => {
+                // eslint-disable-next-line jest/valid-expect
+                expect(Cypress.dom.isDetached($el)).to.eq(false);
+              })
+              .within(() => {
+                cy.get('[aria-label="object-info"]').click();
+              });
+
+            cy.contains("button", "Availability").click();
+
+            cy.get(`[data-cy=panel-for-${objectType}-${objectUid}]`);
+
+            cy.get('[aria-label="Open Object"]').first().click();
+
+            // Only check the panel object type and uid so we don't have to mock the response
+            cy.get(
+              `[data-cy=panel-for-Availability-${availabilityJson.data.getObjectAvailability.availability.objects[0].uid}]`,
+            );
+
+            // Check back button returns to the original object
+            cy.get('[aria-label="Open Previous Object"]').click();
+            cy.get(`[data-cy=panel-for-${objectType}-${objectUid}]`);
+          });
+        },
+      );
     });
   });
 });

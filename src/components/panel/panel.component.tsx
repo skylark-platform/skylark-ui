@@ -1,11 +1,4 @@
-import {
-  ReducerAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Spinner } from "src/components/icons";
@@ -217,7 +210,10 @@ export const Panel = ({
   };
 
   return (
-    <section className="mx-auto flex h-full w-full flex-col break-words">
+    <section
+      className="mx-auto flex h-full w-full flex-col break-words"
+      data-cy={`panel-for-${objectType}-${uid}`}
+    >
       <PanelHeader
         isPage={isPage}
         objectUid={uid}
@@ -260,7 +256,7 @@ export const Panel = ({
           )}
           {isNotFound && <p>{`${objectType} "${uid}" not found`}</p>}
           {!isNotFound && !isObjectTypeNotFound && (
-            <p>{error?.response.errors[0].message}</p>
+            <p>{error?.response?.errors[0].message}</p>
           )}
         </div>
       )}

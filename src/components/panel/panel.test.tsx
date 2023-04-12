@@ -977,8 +977,11 @@ describe("content view", () => {
           .objects[0].object.__SkylarkSet__title as string,
       );
 
-      const removeButton = screen.getByTestId(
-        "panel-object-content-item-1-remove",
+      const withinPanelObjectContentItem1 = within(
+        screen.getByTestId("panel-object-content-item-1"),
+      );
+      const removeButton = withinPanelObjectContentItem1.getByTestId(
+        "panel-object-content-item-remove",
       );
       fireEvent.click(removeButton);
 
@@ -996,8 +999,11 @@ describe("content view", () => {
     test("moves an item, removes an item and saves", async () => {
       await renderAndSwitchToEditView();
 
-      const removeButton = screen.getByTestId(
-        "panel-object-content-item-1-remove",
+      const withinPanelObjectContentItem1 = within(
+        screen.getByTestId("panel-object-content-item-1"),
+      );
+      const removeButton = withinPanelObjectContentItem1.getByTestId(
+        "panel-object-content-item-remove",
       );
       fireEvent.click(removeButton);
 

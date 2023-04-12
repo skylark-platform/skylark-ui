@@ -214,8 +214,6 @@ export const Select = forwardRef(
 
     const showClearValueButton = onValueClear && selected;
 
-    console.log("fff", filteredOptions.length);
-
     return (
       <Combobox
         disabled={disabled}

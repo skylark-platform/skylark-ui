@@ -18,6 +18,12 @@ describe("Content Library - Search", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
+      if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
+        req.alias = "introspectionQuery";
+        req.reply({
+          fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
+        });
+      }
       if (hasOperationName(req, "SEARCH")) {
         if (hasMatchingVariable(req, "queryString", "got winter is coming")) {
           req.reply({
@@ -95,6 +101,16 @@ describe("Content Library - Search", () => {
     cy.contains("GOT S02").should("not.exist");
     cy.contains("GOT S01 Trailer").should("exist");
     cy.percySnapshot("Homepage - got search data");
+  });
+
+  it("displays an objects display_name in the object type filter", () => {
+    cy.contains("Asset").should("exist");
+    cy.contains("Filters").click();
+
+    cy.get("[data-testid=checkbox-grid-object-type]").within(() => {
+      cy.contains("Set");
+      cy.contains("SkylarkSet").should("not.exist");
+    });
   });
 
   it("filters for only Assets", () => {
