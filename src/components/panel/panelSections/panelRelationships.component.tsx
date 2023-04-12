@@ -181,7 +181,7 @@ export const PanelRelationships = ({
                             >
                               <Trash
                                 className={clsx(
-                                  "ml-2 flex h-6 w-6 text-manatee-300 transition-all hover:text-error",
+                                  "ml-2 flex h-6 text-manatee-300 transition-all hover:text-error",
                                   inEditMode ? "w-6" : "w-0",
                                 )}
                               />
