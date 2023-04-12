@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
 import {
-  GQLSkylarkUpdateObjectContentResponse,
+  GQLSkylarkUpdateRelationshipsResponse,
   ParsedSkylarkObjectRelationships,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -37,7 +37,7 @@ export const useUpdateObjectRelationships = ({
 
   const { mutate, ...rest } = useMutation({
     mutationFn: ({ uid }: { uid: string }) => {
-      return skylarkRequest<GQLSkylarkUpdateObjectContentResponse>(
+      return skylarkRequest<GQLSkylarkUpdateRelationshipsResponse>(
         updateObjectRelationshipsMutation as RequestDocument,
         { uid },
       );

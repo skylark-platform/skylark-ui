@@ -74,7 +74,7 @@ export const PanelRelationships = ({
           } else return currentRelationship;
         },
       ),
-      originalRelationshipObjects: originalRelationshipObjects,
+      originalRelationshipObjects,
     });
 
   const [expandedRelationships, setExpandedRelationships] = useState<
@@ -144,7 +144,7 @@ export const PanelRelationships = ({
                           )}
                           <button
                             disabled={!inEditMode}
-                            data-testid={`panel-object-content-item-${
+                            data-testid={`panel-relationship-item-${
                               index + 1
                             }-remove`}
                             onClick={() =>

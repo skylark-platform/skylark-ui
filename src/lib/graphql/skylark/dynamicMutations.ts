@@ -315,7 +315,7 @@ export const createUpdateObjectRelationshipsMutation = (
       __variables: {
         uid: "String!",
       },
-      updateObjectContent: {
+      updateRelationships: {
         __aliasFor: object.operations.update.name,
         __args: {
           uid: new VariableType("uid"),

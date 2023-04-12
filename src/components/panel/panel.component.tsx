@@ -139,81 +139,86 @@ export const Panel = ({
   }, [inEditMode, metadataForm.formState.isDirty]);
 
   useEffect(() => {
-    const relationships = objectMeta?.relationships || [];
-    if (selectedTab === PanelTab.Relationships && droppedObject) {
-      const droppedObjectRelationshipName = relationships.find(
-        (relationship) => relationship.objectType === droppedObject.objectType,
-      )?.relationshipName;
+    if (droppedObject) {
+      if (selectedTab === PanelTab.Relationships) {
+        const relationships = objectMeta?.relationships || [];
+        const droppedObjectRelationshipName = relationships.find(
+          (relationship) =>
+            relationship.objectType === droppedObject.objectType,
+        )?.relationshipName;
 
-      if (droppedObjectRelationshipName) {
-        const droppedObjectRelationshipObjects =
-          updatedRelationshipObjects?.find(
-            (relationship) =>
-              relationship.relationshipName === droppedObjectRelationshipName,
-          );
+        if (droppedObjectRelationshipName) {
+          const droppedObjectRelationshipObjects =
+            updatedRelationshipObjects?.find(
+              (relationship) =>
+                relationship.relationshipName === droppedObjectRelationshipName,
+            );
 
-        const isAlreadyAdded = !!droppedObjectRelationshipObjects?.objects.find(
-          ({ uid }) => droppedObject.uid === uid,
-        );
+          const isAlreadyAdded =
+            !!droppedObjectRelationshipObjects?.objects.find(
+              ({ uid }) => droppedObject.uid === uid,
+            );
 
-        if (isAlreadyAdded) {
+          if (isAlreadyAdded) {
+            toast(
+              <Toast
+                title={"Relationship already exists"}
+                message={`The ${droppedObject.objectType} is already linked`}
+                type="warning"
+              />,
+            );
+            return;
+          } else {
+            updatedRelationshipObjects &&
+              setRelationshipObjects({
+                updatedRelationshipObjects: updatedRelationshipObjects?.map(
+                  (relationship) => {
+                    const { objects, relationshipName } = relationship;
+                    if (relationshipName === droppedObjectRelationshipName) {
+                      return {
+                        ...relationship,
+                        objects: [droppedObject, ...objects],
+                      };
+                    } else return relationship;
+                  },
+                ),
+                originalRelationshipObjects,
+              });
+          }
+        } else {
           toast(
             <Toast
-              title={"Relationship already exists"}
-              message={`The ${droppedObject.objectType} is already linked`}
-              type="warning"
+              title={"Invalid relationship"}
+              message={`${droppedObject.objectType} cannot link to ${objectType}`}
+              type="error"
             />,
           );
-        } else {
-          updatedRelationshipObjects &&
-            setRelationshipObjects({
-              updatedRelationshipObjects: updatedRelationshipObjects?.map(
-                (relationship) => {
-                  const { objects, relationshipName } = relationship;
-                  if (relationshipName === droppedObjectRelationshipName) {
-                    return {
-                      ...relationship,
-                      objects: [droppedObject, ...objects],
-                    };
-                  } else return relationship;
-                },
-              ),
-              originalRelationshipObjects: originalRelationshipObjects,
-            });
         }
-      } else {
-        toast(
-          <Toast
-            title={"Invalid relationship"}
-            message={`${droppedObject.objectType} cannot link to ${objectType}`}
-            type="error"
-          />,
-        );
+        setEditMode(true);
+        clearDroppedObject && clearDroppedObject();
+      } else if (
+        selectedTab === PanelTab.Content &&
+        !contentObjects
+          ?.map(({ object }) => object.uid)
+          .includes(droppedObject.uid) &&
+        !data?.content?.objects
+          ?.map(({ object }) => object.uid)
+          .includes(droppedObject.uid)
+      ) {
+        const parseDroppedObject = parseSkylarkObjectContent(droppedObject);
+        setContentObjects([
+          ...(contentObjects || data?.content?.objects || []),
+          {
+            ...parseDroppedObject,
+            position:
+              (contentObjects?.length || data?.content?.objects.length || 0) +
+              1,
+            isNewObject: true,
+          },
+        ]);
+        setEditMode(true);
+        clearDroppedObject && clearDroppedObject();
       }
-      setEditMode(true);
-      clearDroppedObject && clearDroppedObject();
-    } else if (
-      selectedTab === PanelTab.Content &&
-      droppedObject &&
-      !contentObjects
-        ?.map(({ object }) => object.uid)
-        .includes(droppedObject.uid) &&
-      !data?.content?.objects
-        ?.map(({ object }) => object.uid)
-        .includes(droppedObject.uid)
-    ) {
-      const parseDroppedObject = parseSkylarkObjectContent(droppedObject);
-      setContentObjects([
-        ...(contentObjects || data?.content?.objects || []),
-        {
-          ...parseDroppedObject,
-          position:
-            (contentObjects?.length || data?.content?.objects.length || 0) + 1,
-          isNewObject: true,
-        },
-      ]);
-      setEditMode(true);
-      clearDroppedObject && clearDroppedObject();
     }
   }, [
     clearDroppedObject,

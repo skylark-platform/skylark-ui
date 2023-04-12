@@ -6,8 +6,10 @@ import {
   NormalizedObjectField,
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
+  ParsedSkylarkObjectRelationships,
   SkylarkGraphQLObject,
   SkylarkObjectMetadataField,
+  SkylarkObjectRelationship,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 
@@ -19,6 +21,7 @@ import {
   parseObjectInputFields,
   parseObjectRelationships,
   parseSkylarkObject,
+  parseUpdatedRelationshipObjects,
 } from "./parsers";
 
 const defaultType: GQLType = {

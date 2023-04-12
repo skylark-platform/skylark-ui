@@ -47,7 +47,7 @@ export const Toast = ({
     >
       <button
         onClick={() => toastProps?.deleteToast()}
-        className="absolute top-1 right-2"
+        className="absolute top-2 right-2"
       >
         <GrClose className="text-sm" />
       </button>

@@ -55,3 +55,9 @@ export interface GQLSkylarkUpdateObjectContentResponse {
     content: SkylarkGraphQLObjectContent;
   };
 }
+
+export interface GQLSkylarkUpdateRelationshipsResponse {
+  updateRelationships: {
+    uid: string;
+  };
+}
