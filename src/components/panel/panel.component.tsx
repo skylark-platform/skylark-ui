@@ -241,6 +241,16 @@ export const Panel = ({
         }
         navigateToPreviousPanelObject={navigateToPreviousPanelObject}
       />
+      <div className="border-b-2 border-gray-200">
+        <div className="mx-auto w-full max-w-7xl flex-none overflow-x-auto">
+          <Tabs
+            tabs={tabs}
+            selectedTab={selectedTab}
+            onChange={setSelectedTab}
+            disabled={inEditMode || isLoading || isError}
+          />
+        </div>
+      </div>
       {isLoading && (
         <div
           data-testid="loading"
@@ -262,16 +272,6 @@ export const Panel = ({
       )}
       {!isLoading && !isError && data && objectMeta && (
         <>
-          <div className="border-b-2 border-gray-200">
-            <div className="mx-auto w-full max-w-7xl flex-none overflow-x-auto">
-              <Tabs
-                tabs={tabs}
-                selectedTab={selectedTab}
-                onChange={setSelectedTab}
-                disabled={inEditMode || isLoading || isError}
-              />
-            </div>
-          </div>
           {selectedTab === PanelTab.Metadata && (
             <PanelMetadata
               isPage={isPage}

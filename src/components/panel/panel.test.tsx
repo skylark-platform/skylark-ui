@@ -153,6 +153,30 @@ describe("metadata view", () => {
     ).toBeInTheDocument();
   });
 
+  test("hides the previous object and external open object buttons when isPage is true", async () => {
+    render(
+      <Panel
+        isPage
+        object={movieObject}
+        closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    expect(
+      screen.queryAllByRole("button", {
+        name: /Open Previous Object/i,
+      }),
+    ).toHaveLength(0);
+
+    const panelHeader = within(screen.getByTestId("panel-header"));
+    expect(panelHeader.queryAllByRole("link")).toHaveLength(0);
+  });
+
   test("renders object not found when the object doesn't exist", async () => {
     server.use(
       graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
@@ -570,6 +594,10 @@ describe("imagery view", () => {
     );
 
     await waitFor(() =>
+      expect(screen.getByText("All Avail Test Movie")).toBeInTheDocument(),
+    );
+
+    await waitFor(() =>
       expect(screen.getByText("Imagery")).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Imagery"));
@@ -614,6 +642,10 @@ describe("imagery view", () => {
     );
 
     await waitFor(() =>
+      expect(screen.getByText("All Avail Test Movie")).toBeInTheDocument(),
+    );
+
+    await waitFor(() =>
       expect(screen.getByText("Imagery")).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Imagery"));
@@ -641,6 +673,14 @@ describe("relationships view", () => {
         closePanel={jest.fn()}
         setPanelObject={jest.fn()}
       />,
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
 
     await waitFor(() =>
@@ -676,6 +716,14 @@ describe("relationships view", () => {
     );
 
     await waitFor(() =>
+      expect(
+        screen.getByText(
+          GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
+    );
+
+    await waitFor(() =>
       expect(screen.getByText("Relationships")).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Relationships"));
@@ -706,8 +754,13 @@ describe("content view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("Content")).toBeInTheDocument(),
+      expect(
+        screen.getByText(
+          GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
+
     fireEvent.click(screen.getByText("Content"));
 
     expect(screen.getAllByText("Homepage")).toHaveLength(1);
@@ -729,8 +782,13 @@ describe("content view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("Content")).toBeInTheDocument(),
+      expect(
+        screen.getByText(
+          GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
+
     fireEvent.click(screen.getByText("Content"));
 
     expect(screen.getAllByText("Homepage")).toHaveLength(1);
@@ -753,7 +811,11 @@ describe("content view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("Content")).toBeInTheDocument(),
+      expect(
+        screen.getByText(
+          GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Content"));
 
@@ -785,11 +847,17 @@ describe("content view", () => {
       );
 
       await waitFor(() =>
-        expect(screen.getByText("Content")).toBeInTheDocument(),
+        expect(
+          screen.getByText(
+            GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title,
+          ),
+        ).toBeInTheDocument(),
       );
       fireEvent.click(screen.getByText("Content"));
 
-      expect(screen.getAllByText("Homepage")).toHaveLength(1);
+      await waitFor(() =>
+        expect(screen.getAllByText("Homepage")).toHaveLength(1),
+      );
 
       fireEvent.click(screen.getByText("Edit Content"));
 

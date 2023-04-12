@@ -22,6 +22,7 @@ import {
 import { LanguageSelect } from "src/components/inputs/select";
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { Pill } from "src/components/pill";
+import { Skeleton } from "src/components/skeleton";
 import { Toast } from "src/components/toast/toast.component";
 import { useDeleteObject } from "src/hooks/useDeleteObject";
 import { ParsedSkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
@@ -132,8 +133,7 @@ export const PanelHeader = ({
           )}
           {!isPage && (
             <Button
-              Icon={<ExternalLink className="text-gray-300" />}
-              disabled
+              Icon={<ExternalLink />}
               variant="ghost"
               href={`/object/${objectType}/${objectUid}`}
               newTab
@@ -188,28 +188,37 @@ export const PanelHeader = ({
         )}
       </div>
       <div className="flex flex-col items-start pb-2">
-        <h1 className="w-full flex-grow truncate text-ellipsis text-lg font-bold uppercase md:text-xl">
-          {title}
-        </h1>
-        {object && (
-          <div className="mt-2 flex items-center justify-center gap-2">
-            <Pill
-              bgColor={object.config.colour}
-              className="w-20 bg-brand-primary"
-              label={object.config.objectTypeDisplayName || objectType}
-            />
-            {isTranslatable && (
-              <LanguageSelect
-                selected={language || object.meta.language}
-                variant="pill"
-                languages={
-                  object.meta.availableLanguages || [object.meta.language]
-                }
-                onChange={(val) => setLanguage(val)}
-              />
-            )}
-          </div>
+        {title ? (
+          <h1 className="h-6 w-full flex-grow truncate text-ellipsis text-lg font-bold uppercase md:text-xl">
+            {title}
+          </h1>
+        ) : (
+          <Skeleton className="h-6 w-80" />
         )}
+
+        <div className="mt-2 flex h-5 items-center justify-center gap-2">
+          {object ? (
+            <>
+              <Pill
+                bgColor={object.config.colour}
+                className="w-20 bg-brand-primary"
+                label={object.config.objectTypeDisplayName || objectType}
+              />
+              {isTranslatable && (
+                <LanguageSelect
+                  selected={language || object.meta.language}
+                  variant="pill"
+                  languages={
+                    object.meta.availableLanguages || [object.meta.language]
+                  }
+                  onChange={(val) => setLanguage(val)}
+                />
+              )}
+            </>
+          ) : (
+            <Skeleton className="h-4 w-48" />
+          )}
+        </div>
         <div className="flex flex-row items-end justify-end space-x-2">
           {inEditMode && (
             <div className="absolute left-1/2 -bottom-16 z-10 -translate-x-1/2 md:-bottom-18">
