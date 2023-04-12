@@ -52,7 +52,7 @@ export const ObjectTypeSelect = forwardRef(
     return (
       <Select
         {...props}
-        disabled={!objectTypesWithConfig}
+        disabled={!objectTypesWithConfig || props.disabled}
         placeholder={props.placeholder || "Object Type"}
         options={options}
         ref={ref}

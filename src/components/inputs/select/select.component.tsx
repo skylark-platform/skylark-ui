@@ -1,6 +1,6 @@
 import { Combobox, Transition } from "@headlessui/react";
 import clsx from "clsx";
-import {
+import React, {
   useState,
   Fragment,
   useCallback,
@@ -37,16 +37,22 @@ export interface SelectProps {
   onValueClear?: () => void;
 }
 
+const getOptionHeight = (variant: SelectProps["variant"]) => {
+  return variant === "pill" ? 30 : 40;
+};
+
 export const Option = ({
   variant,
   option,
   currentSelected,
   style,
+  className,
 }: {
   variant: SelectProps["variant"];
   option: SelectOption;
   currentSelected?: SelectOption;
   style?: CSSProperties;
+  className?: string;
 }) => (
   <Combobox.Option
     key={option.value}
@@ -56,6 +62,7 @@ export const Option = ({
         variant === "pill" ? "px-2" : "px-4 pl-6",
         (active || currentSelected?.value === option.value) &&
           "bg-ultramarine-50",
+        className,
       )
     }
     value={option}
@@ -72,6 +79,41 @@ export const Option = ({
   </Combobox.Option>
 );
 
+const OptionsContainer = forwardRef(
+  ({ children }: { children: ReactNode }, ref: Ref<HTMLDivElement>) => (
+    <div
+      ref={ref}
+      data-testid="select-options"
+      className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+    >
+      {children}
+    </div>
+  ),
+);
+OptionsContainer.displayName = "OptionsContainer";
+
+const Options = ({
+  variant,
+  options,
+  currentSelected,
+}: {
+  variant: SelectProps["variant"];
+  options: SelectOption[];
+  currentSelected?: SelectOption;
+}) => (
+  <OptionsContainer>
+    {options.map((option) => (
+      <Option
+        key={option.value}
+        currentSelected={currentSelected}
+        variant={variant}
+        option={option}
+        style={{ height: getOptionHeight(variant) }}
+      />
+    ))}
+  </OptionsContainer>
+);
+
 const VirtualizedOptions = ({
   variant,
   options,
@@ -86,16 +128,12 @@ const VirtualizedOptions = ({
   const rowVirtualizer = useVirtual({
     parentRef,
     size: options.length,
-    estimateSize: useCallback(() => (variant === "pill" ? 30 : 40), [variant]),
+    estimateSize: useCallback(() => getOptionHeight(variant), [variant]),
     overscan: 5,
   });
 
   return (
-    <div
-      ref={parentRef}
-      data-testid="select-options"
-      className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-    >
+    <OptionsContainer ref={parentRef}>
       <div
         style={{
           height: `${rowVirtualizer.totalSize}px`,
@@ -119,7 +157,7 @@ const VirtualizedOptions = ({
           />
         ))}
       </div>
-    </div>
+    </OptionsContainer>
   );
 };
 
@@ -175,6 +213,8 @@ export const Select = forwardRef(
       : undefined;
 
     const showClearValueButton = onValueClear && selected;
+
+    console.log("fff", filteredOptions.length);
 
     return (
       <Combobox
@@ -268,7 +308,7 @@ export const Select = forwardRef(
             <Combobox.Options>
               {filteredOptions.length === 0 && query !== "" ? (
                 withSearch && allowCustomValue ? (
-                  <VirtualizedOptions
+                  <Options
                     variant={variant}
                     options={[{ value: query, label: `Use "${query}"` }]}
                     currentSelected={selectedOption}
@@ -280,8 +320,14 @@ export const Select = forwardRef(
                     </div>
                   </div>
                 )
-              ) : (
+              ) : options.length > 40 ? (
                 <VirtualizedOptions
+                  variant={variant}
+                  options={filteredOptions ?? []}
+                  currentSelected={selectedOption}
+                />
+              ) : (
+                <Options
                   variant={variant}
                   options={filteredOptions ?? []}
                   currentSelected={selectedOption}
