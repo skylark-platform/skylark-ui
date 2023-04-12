@@ -84,6 +84,8 @@ ContentEditing.args = {
 ContentEditing.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
+  await canvas.findByText("System Metadata");
+
   await canvas.findByRole("button", { name: /Content/i });
   const tabButton = canvas.getByRole("button", { name: /Content/i });
 
