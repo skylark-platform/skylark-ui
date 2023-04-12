@@ -37,12 +37,14 @@ const PanelImage = ({
   alt,
   title,
   object,
+  inEditMode,
   setPanelObject,
 }: {
   src: string;
   title?: string;
   alt?: string;
   object: SkylarkObjectIdentifier;
+  inEditMode: boolean;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }) => {
   const { size } = useImageSize(src);
@@ -55,7 +57,10 @@ const PanelImage = ({
           {title && <p className="mt-1">Title: {title}</p>}
           <p>Original size: {size ? `${size.h}x${size.w}` : ""}</p>
         </div>
-        <OpenObjectButton onClick={() => setPanelObject(object)} />
+        <OpenObjectButton
+          disabled={inEditMode}
+          onClick={() => setPanelObject(object)}
+        />
       </div>
     </div>
   );
@@ -64,12 +69,12 @@ const PanelImage = ({
 export const PanelImages = ({
   images,
   isPage,
-  language,
+  inEditMode,
   setPanelObject,
 }: {
   isPage?: boolean;
   images: ParsedSkylarkObjectImageRelationship[];
-  language: string;
+  inEditMode: boolean;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }) => {
   return (
@@ -116,6 +121,7 @@ export const PanelImages = ({
                         objectType: BuiltInSkylarkObjectType.SkylarkImage,
                         language: image._meta?.language_data.language || "",
                       }}
+                      inEditMode={inEditMode}
                       setPanelObject={setPanelObject}
                     />
                   ))}

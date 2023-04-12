@@ -20,7 +20,11 @@ import {
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
-import { hasProperty } from "src/lib/utils";
+import {
+  getObjectDisplayName,
+  getObjectTypeDisplayNameFromParsedObject,
+  hasProperty,
+} from "src/lib/utils";
 
 import {
   PanelAvailability,
@@ -164,8 +168,10 @@ export const Panel = ({
           if (isAlreadyAdded) {
             toast(
               <Toast
-                title={"Relationship already exists"}
-                message={`The ${droppedObject.objectType} is already linked`}
+                title={"Relationship exists"}
+                message={`${getObjectTypeDisplayNameFromParsedObject(
+                  droppedObject,
+                )} "${getObjectDisplayName(droppedObject)}" is already linked`}
                 type="warning"
               />,
             );
@@ -190,7 +196,13 @@ export const Panel = ({
           toast(
             <Toast
               title={"Invalid relationship"}
-              message={`${droppedObject.objectType} cannot link to ${objectType}`}
+              message={`${getObjectTypeDisplayNameFromParsedObject(
+                droppedObject,
+              )} is not configured to link to ${
+                data
+                  ? getObjectTypeDisplayNameFromParsedObject(data)
+                  : objectType
+              }`}
               type="error"
             />,
           );
@@ -232,6 +244,7 @@ export const Panel = ({
     updatedRelationshipObjects,
     originalRelationshipObjects,
     objectType,
+    data,
   ]);
 
   const { updateObjectRelationships, isLoading: updatingRelationshipObjects } =
@@ -402,7 +415,7 @@ export const Panel = ({
               isPage={isPage}
               images={data.images}
               setPanelObject={setPanelObject}
-              language={language}
+              inEditMode={inEditMode}
             />
           )}
           {selectedTab === PanelTab.Availability && (
@@ -412,6 +425,7 @@ export const Panel = ({
               objectUid={uid}
               language={language}
               setPanelObject={setPanelObject}
+              inEditMode={inEditMode}
             />
           )}
           {selectedTab === PanelTab.Content && data.content && (

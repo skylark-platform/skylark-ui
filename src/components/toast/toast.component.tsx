@@ -1,10 +1,11 @@
 import clsx from "clsx";
-import { GrClose } from "react-icons/gr";
 import {
   ToastContainer as ReactToastifyContainer,
   ToastContentProps,
   TypeOptions,
 } from "react-toastify";
+
+import { Cross } from "src/components/icons";
 
 export interface ToastProps extends Partial<ToastContentProps> {
   title: string;
@@ -21,7 +22,7 @@ export const ToastContainer = () => (
     closeButton={false}
     bodyClassName="p-0 bg-none"
     toastClassName="p-0 my-2 md:my-4 min-h-6 rounded-lg bg-none"
-    className={"fixed right-0 top-20 z-[100] w-full p-2 md:w-80 lg:w-96"}
+    className={"fixed right-0 top-20 z-[200] w-full pr-8 md:w-80 lg:w-96"}
     icon={false}
   />
 );
@@ -37,7 +38,7 @@ export const Toast = ({
   return (
     <div
       className={clsx(
-        "min-h-16 relative h-full rounded-lg p-3 font-sans text-white",
+        "min-h-16 relative h-full rounded-lg px-6 py-4 font-sans text-white",
         (type === "default" || !type) && "bg-brand-primary",
         type === "info" && "bg-info text-info-content",
         type === "success" && "bg-success text-success-content",
@@ -45,14 +46,17 @@ export const Toast = ({
         type === "error" && "bg-error text-error-content",
       )}
     >
-      <button
-        onClick={() => toastProps?.deleteToast()}
-        className="absolute top-2 right-2"
-      >
-        <GrClose className="text-sm" />
-      </button>
-      <p className="mb-1 text-base">{title}</p>
-      {message && <p className="text-xs font-light">{message}</p>}
+      <div className="flex flex-row">
+        <h4 className="flex-grow pr-2 text-base font-medium md:text-base">
+          {title}
+        </h4>
+        <button onClick={() => toastProps?.deleteToast()}>
+          <Cross />
+        </button>
+      </div>
+      {message && (
+        <p className="mt-2 text-xs font-light md:text-sm">{message}</p>
+      )}
     </div>
   );
 };
