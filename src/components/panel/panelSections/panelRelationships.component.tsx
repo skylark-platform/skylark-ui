@@ -1,6 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { Trash } from "src/components/icons";
@@ -68,9 +68,10 @@ export const PanelRelationships = ({
         (currentRelationship) => {
           const { objects, relationshipName } = currentRelationship;
           if (relationshipName === relationship) {
-            //filters current object
-            const o = objects.filter((obj) => obj.uid !== removeUid);
-            return { ...currentRelationship, objects: o };
+            const filteredObjects = objects.filter(
+              (obj) => obj.uid !== removeUid,
+            );
+            return { ...currentRelationship, objects: filteredObjects };
           } else return currentRelationship;
         },
       ),
@@ -132,7 +133,7 @@ export const PanelRelationships = ({
                       ).uidsToLink;
 
                     return (
-                      <>
+                      <Fragment key={obj.uid}>
                         <div
                           className="flex items-center "
                           data-testid={`panel-relationship-${relationshipName}-item-${
@@ -169,7 +170,7 @@ export const PanelRelationships = ({
                         </div>
 
                         {index < displayList.length - 1 && <PanelSeparator />}
-                      </>
+                      </Fragment>
                     );
                   })
                 ) : (

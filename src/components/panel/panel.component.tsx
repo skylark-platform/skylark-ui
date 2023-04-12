@@ -159,6 +159,8 @@ export const Panel = ({
               ({ uid }) => droppedObject.uid === uid,
             );
 
+          console.log({ isAlreadyAdded, droppedObject });
+
           if (isAlreadyAdded) {
             toast(
               <Toast
@@ -167,7 +169,6 @@ export const Panel = ({
                 type="warning"
               />,
             );
-            return;
           } else {
             updatedRelationshipObjects &&
               setRelationshipObjects({
