@@ -101,7 +101,7 @@ export const PanelRelationships = ({
           "m-4 mt-10 flex h-72 items-center justify-center border-2 border-dotted text-center text-manatee-400",
         )}
       >
-        <span>{`Drop object here to add as relationship of ${objectType}  `}</span>
+        <span>{`Drag an object from the Content Library to add as a relationship`}</span>
       </div>
     );
 
