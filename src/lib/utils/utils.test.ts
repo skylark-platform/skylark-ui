@@ -157,10 +157,10 @@ describe("getObjectDisplayName", () => {
 describe("createAccountIdentifier", () => {
   test("creates an account identifier using a GraphQL URI", async () => {
     const got = createAccountIdentifier(
-      "https://api.saas-sl-develop-10.skylark-dev.skylarkplatform.io/graphql",
+      "https://api.saas-sl-develop-10.skylark-dev.skylarkplatform.com/graphql",
     );
     expect(got).toEqual(
-      "api-saas-sl-develop-10-skylark-dev-skylarkplatform-io",
+      "api-saas-sl-develop-10-skylark-dev-skylarkplatform-com",
     );
   });
 });
