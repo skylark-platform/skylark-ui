@@ -36,10 +36,27 @@ const Template: ComponentStory<typeof ObjectIdentifierCard> = (args) => {
 export const Default = Template.bind({});
 Default.args = {
   object,
+  onDeleteClick: undefined,
+  onForwardClick: undefined,
 };
 
-export const WithForwardClickArrow = Template.bind({});
-WithForwardClickArrow.args = {
+export const WithForwardArrow = Template.bind({});
+WithForwardArrow.args = {
+  object,
+  onDeleteClick: undefined,
+  onForwardClick: () => console.log("clicked"),
+};
+
+export const WithDeleteIcon = Template.bind({});
+WithDeleteIcon.args = {
+  object,
+  onForwardClick: undefined,
+  onDeleteClick: () => console.log("clicked"),
+};
+
+export const WithAllIcons = Template.bind({});
+WithAllIcons.args = {
   object,
   onForwardClick: () => console.log("clicked"),
+  onDeleteClick: () => console.log("clicked"),
 };
