@@ -33,6 +33,7 @@ import {
   PanelMetadata,
 } from "./panelSections";
 import { PanelContent } from "./panelSections/panelContent.component";
+import { PanelContentOf } from "./panelSections/panelContentOf.component";
 import { PanelRelationships } from "./panelSections/panelRelationships.component";
 
 interface PanelProps {
@@ -52,6 +53,7 @@ enum PanelTab {
   Availability = "Availability",
   Content = "Content",
   Relationships = "Relationships",
+  ContentOf = "Content Of",
 }
 
 function parseSkylarkObjectContent(
@@ -116,10 +118,12 @@ export const Panel = ({
         objectMeta?.hasRelationships && PanelTab.Relationships,
         objectMeta?.images && PanelTab.Imagery,
         objectMeta?.hasAvailability && PanelTab.Availability,
+        objectMeta?.hasContentOf && PanelTab.ContentOf,
       ].filter((tab) => !!tab) as string[],
     [
       objectMeta?.hasAvailability,
       objectMeta?.hasContent,
+      objectMeta?.hasContentOf,
       objectMeta?.hasRelationships,
       objectMeta?.images,
     ],
@@ -449,6 +453,16 @@ export const Panel = ({
               setRelationshipObjects={setRelationshipObjects}
               inEditMode={inEditMode}
               showDropArea={showDropArea}
+              language={language}
+              setPanelObject={setPanelObject}
+            />
+          )}
+          {selectedTab === PanelTab.ContentOf && (
+            <PanelContentOf
+              isPage={isPage}
+              objectType={objectType}
+              uid={uid}
+              inEditMode={inEditMode}
               language={language}
               setPanelObject={setPanelObject}
             />

@@ -5,6 +5,7 @@ export enum QueryKeys {
   GetObject = "getObject",
   GetObjectAvailability = "getObjectAvailability",
   GetObjectRelationships = "getObjectRelationships",
+  GetObjectContentOf = "getObjectContentOf",
 }
 
 export enum QueryErrorMessages {

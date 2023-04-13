@@ -38,6 +38,16 @@ export interface GQLSkylarkGetObjectAvailabilityResponse {
   };
 }
 
+export interface GQLSkylarkGetObjectContentOfResponse {
+  getObjectContentOf: {
+    content_of: {
+      next_token: string | null;
+      count: number;
+      objects: SkylarkGraphQLObject[];
+    };
+  };
+}
+
 export interface GQLSkylarkSearchResponse {
   search: {
     objects: (SkylarkGraphQLObject | null)[];

@@ -229,6 +229,8 @@ export const createGetObjectAvailabilityQueryName = (objectType: string) =>
   `GET_${objectType}_AVAILABILITY`;
 export const createGetObjectRelationshipsQueryName = (objectType: string) =>
   `GET_${objectType}_RELATIONSHIPS`;
+export const createGetObjectContentOfQueryName = (objectType: string) =>
+  `GET_${objectType}_CONTENT_OF`;
 
 export const createGetObjectQuery = (
   object: SkylarkObjectMeta | null,
@@ -382,7 +384,6 @@ export const createSearchObjectsQuery = (
           query: new VariableType("queryString"),
           offset: new VariableType("offset"),
           limit: new VariableType("limit"),
-          // language: null, TODO disable language searching when language filter is added
         },
         __typename: true,
         objects: {
@@ -494,6 +495,60 @@ export const createGetAllObjectsConfigQuery = (
   };
 
   const graphQLQuery = jsonToGraphQLQuery(query, { pretty: true });
+
+  return gql(graphQLQuery);
+};
+
+export const createGetObjectContentOfQuery = (
+  object: SkylarkObjectMeta | null,
+  // setObjectTypes: string[],
+  setObjects: SkylarkObjectMeta[],
+  // typesToRequest: string[],
+) => {
+  if (!object || !object.operations.get) {
+    return null;
+  }
+
+  const common = generateVariablesAndArgs(object.name, "Query", false);
+
+  const query = {
+    query: {
+      __name: createGetObjectContentOfQueryName(object.name),
+      __variables: {
+        uid: "String!",
+        nextToken: "String",
+        ...common.variables,
+      },
+      getObjectContentOf: {
+        __aliasFor: object.operations.get.name,
+        __args: {
+          uid: new VariableType("uid"),
+          ...common.args,
+        },
+        content_of: {
+          __args: {
+            limit: 50, // TODO should this be less?
+            next_token: new VariableType("nextToken"),
+          },
+          next_token: true,
+          count: true,
+          objects: {
+            __on: setObjects.map((object) => {
+              const common = generateVariablesAndArgs(object.name, "Query");
+              return {
+                __typeName: object.name,
+                __typename: true, // To remove the alias later
+                ...common.fields,
+                ...generateFieldsToReturn(object.fields, `__${object.name}__`),
+              };
+            }),
+          },
+        },
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(query);
 
   return gql(graphQLQuery);
 };
