@@ -178,6 +178,7 @@ export const ObjectList = ({
     data: searchData,
     error: searchError,
     isLoading: searchLoading,
+    totalHits,
     properties,
     query: graphqlSearchQuery,
     variables: graphqlSearchQueryVariables,
@@ -337,8 +338,8 @@ export const ObjectList = ({
   return (
     <div
       className={clsx(
-        "flex h-full flex-col space-y-4",
-        isPanelOpen ? "lg:space-y-8" : "md:space-y-8",
+        "flex h-full flex-col space-y-2",
+        isPanelOpen ? "lg:space-y-4" : "md:space-y-4",
       )}
     >
       <div
@@ -349,10 +350,8 @@ export const ObjectList = ({
       >
         <div
           className={clsx(
-            "flex w-full flex-1 flex-row items-center justify-center space-x-0.5 md:space-x-1",
-            withCreateButtons &&
-              !isPanelOpen &&
-              "md:max-w-[50%] xl:max-w-[33%]",
+            "flex w-full flex-1 flex-col items-center justify-start space-x-0.5 md:space-x-1",
+            withCreateButtons && "md:max-w-[50vw] xl:max-w-[33vw]",
           )}
         >
           <Search
@@ -367,6 +366,11 @@ export const ObjectList = ({
             visibleColumns={columnVisibility}
             onFilterChange={onFilterChangeWrapper}
           />
+          <div className="mt-2 flex w-full justify-start pl-3 md:pl-7">
+            <p className="text-xs font-medium text-manatee-400">
+              {searchLoading ? "Loading..." : `${totalHits} results`}
+            </p>
+          </div>
         </div>
         {withCreateButtons && (
           <CreateButtons

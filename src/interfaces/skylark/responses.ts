@@ -40,6 +40,7 @@ export interface GQLSkylarkGetObjectAvailabilityResponse {
 
 export interface GQLSkylarkSearchResponse {
   search: {
+    total_count?: number;
     objects: (SkylarkGraphQLObject | null)[];
   };
 }
