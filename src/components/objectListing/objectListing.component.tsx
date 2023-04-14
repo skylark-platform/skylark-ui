@@ -349,10 +349,7 @@ export const ObjectList = ({
       >
         <div
           className={clsx(
-            "flex w-full flex-1 flex-row items-center justify-center space-x-0.5 md:space-x-1",
-            withCreateButtons &&
-              !isPanelOpen &&
-              "md:max-w-[50%] xl:max-w-[33%]",
+            "flex w-full flex-1 flex-row items-center justify-center space-x-0.5 md:max-w-[50vw] md:space-x-1 xl:max-w-[33vw]",
           )}
         >
           <Search
