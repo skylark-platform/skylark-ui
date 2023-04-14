@@ -2,8 +2,8 @@ import { ComponentStory } from "@storybook/react";
 import { userEvent, waitFor, within } from "@storybook/testing-library";
 import React from "react";
 
-import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
-import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
+import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
+import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
 
 import { Panel } from "./panel.component";
 
@@ -51,7 +51,7 @@ Content.parameters = Default.parameters;
 Content.args = {
   object: {
     objectType: "SkylarkSet",
-    uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
+    uid: GQLSkylarkGetHomepageSetQueryFixture.data.getObject.uid,
     language: "",
   },
 };
@@ -71,7 +71,7 @@ ContentEditing.parameters = Default.parameters;
 ContentEditing.args = {
   object: {
     objectType: "SkylarkSet",
-    uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
+    uid: GQLSkylarkGetHomepageSetQueryFixture.data.getObject.uid,
     language: "",
   },
 };

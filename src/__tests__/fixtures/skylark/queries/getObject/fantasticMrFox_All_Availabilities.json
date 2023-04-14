@@ -1,0 +1,92 @@
+{
+  "data": {
+    "getObject": {
+      "__typename": "Movie",
+      "_config": {
+        "primary_field": "title",
+        "colour": "#009688",
+        "display_name": "Movie"
+      },
+      "_meta": {
+        "available_languages": ["en-GB"],
+        "language_data": { "language": "en-GB", "version": 1 },
+        "global_data": { "version": 1 }
+      },
+      "uid": "01GXZP1QDFQNTEGD9ASQMFXZC5",
+      "external_id": "recudCnvsnLP4PEeJ",
+      "slug": "fantastic-mr-fox",
+      "synopsis": "Mr Fox, a family man, goes back to his ways of stealing, unable to resist his animal instincts. However, he finds himself trapped when three farmers decide to kill him and his kind.\n\nThis test movie is configured with an expired, active and future availability.",
+      "synopsis_short": "Mr Fox, a family man, goes back to his ways of stealing, unable to resist his animal instincts. However, he finds himself trapped when three farmers decide to kill him and his kind.",
+      "title": "Fantastic Mr Fox (All Availabilities)",
+      "title_short": "Fantastic Mr Fox (All)",
+      "title_sort": null,
+      "release_date": "2009-11-23",
+      "year_of_release": null,
+      "availability": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01GXZNX7PPNAXGQ3YMPAX1XPPS",
+            "external_id": "recN2Jf4j9UCblsIc",
+            "title": "Active in the past",
+            "slug": "active-in-the-past",
+            "start": "2000-01-01T15:15:00+00:00",
+            "end": "2020-01-01T15:15:00+00:00",
+            "timezone": "+00:00"
+          },
+          {
+            "uid": "01GXZNX7S47WSMS5AJCNWB3KP5",
+            "external_id": "recMdBZyVPsIGqAYq",
+            "title": "Premium",
+            "slug": "premium",
+            "start": "2022-01-01T00:00:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "+00:00"
+          },
+          {
+            "uid": "01GXZNX7T6HJE1XKPQGN4K6G27",
+            "external_id": "recQzQ8ZUyh6VzVAw",
+            "title": "Active Next Sunday",
+            "slug": "active-next-sunday",
+            "start": "2023-04-16T00:00:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "+00:00"
+          },
+          {
+            "uid": "01GXZNX7WJZ8F9A100PSF9F0NR",
+            "external_id": "recX0Ztue3iBQR7rl",
+            "title": "Active Until Next Sunday",
+            "slug": "active-until-next-sunday",
+            "start": "2000-01-01T00:00:00+00:00",
+            "end": "2023-04-16T00:00:00+00:00",
+            "timezone": "+00:00"
+          }
+        ]
+      },
+      "images": {
+        "next_token": null,
+        "objects": [
+          {
+            "_meta": {
+              "available_languages": ["en-GB"],
+              "language_data": { "language": "en-GB", "version": 2 },
+              "global_data": { "version": 2 }
+            },
+            "uid": "01GXZNXKKARTPGTCVDTBAT1CH7",
+            "external_id": "recRH4TzBhGsnXfDg",
+            "slug": null,
+            "title": "wes_mrfox.jpeg",
+            "description": null,
+            "type": "THUMBNAIL",
+            "url": "https://dl.airtable.com/.attachments/049af3da40927919a12f156b62991b08/ecaf9964/wes_mrfox.jpeg",
+            "external_url": "https://dl.airtable.com/.attachments/049af3da40927919a12f156b62991b08/ecaf9964/wes_mrfox.jpeg",
+            "upload_url": "https://obj-reg-storage-sl-develop-eu-west-1-storage.s3.amazonaws.com/media/skylarkimages/vrdlihwc4ves3ihxxzrykjpvvm/01GXZNXKKARTPGTCVDTBAT1CH7/01GXZPZ12M1AP2S3EQE0VB6GED?AWSAccessKeyId=ASIA4YDX3EVVJDKKOUVJ&Signature=knjAp4fFQFjCMbbIsSTtrQVX7xg%3D&content-type=application%2Foctet&x-amz-meta-account_id=vrdlihwc4ves3ihxxzrykjpvvm&x-amz-meta-uid=01GXZNXKKARTPGTCVDTBAT1CH7&x-amz-security-token=IQoJb3JpZ2luX2VjEAMaCWV1LXdlc3QtMSJHMEUCIQDP6tYrQVW83ZbrCMUy6Nc%2FzUlSkfolHcq%2BgDl1aszJiQIgAl0JpHzIIov7mVa5G2J44Xt1BMUvYiGCsoa1HMZQ7%2FoqtAMI7P%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw4NzY0MjQ2Njg1MjIiDC%2B6tMR6aKM06H%2BLMCqIA0n0vGef%2Bw%2BelFnkho%2BK6hwzv6%2BzNAGlAq5ouKJZHnl8tsICFGfZ8BqQrEWG4Myz0NZXTFT6b%2BeaZT4k0jQy8dj6jmrWZ2BR5F1VFFq1kUkPuLXvPvSPr%2B6gFp3pfhVbZRkX5DsniK81OUVgHHOLnD3ATqs466Gse4UAENysa7GBSX8DMBfNAqENlNB0HepmlHYA3Klr0EKL%2BIr1BUfm68JUhhBdx9hBW7jwECI0wCzRblMeuv03wLVaqjtaZjmYifV3fgV3BF09g38wrc2hlskpMakRZRvRB6NtwbdyrTVD%2FS413LJcJ7S1%2FkIlsQuuHYIHqm5oYbR9chBo3PmgdBMvnD4HFGKqbzPIo4kUEu3oMKisP37A8FlnrZCn56HhK09t1j%2F8yKaRXyOLY3WFZv4CeBsx1qzPFbPcbcNyYH4LkrC4jsyfU4nRkeEeQZr5qmi%2Ff4PMnUXkW%2BTJvd3nUdKqRwidbvuraz32rVYgGyLX8nnD%2FiIypusc3z799Efe0TKiPq34twqlMO%2Fj5KEGOp0BanIhdABW%2Be577gTraPNfURF4hsMusUo4fM1QAsmDKXWSujesq40T3InF2ZLS0UE3YrvD5da32klO1pGdldqjWYkq3DLSUm59s5N2zlCMyBOav5wJ4JO6yFSmYPD0ttcjebV9pcn1JoovGSyMyymMnvplUv86OK9t8hCezCpCs1wrAcie%2FLhM6gMTldxKzAAZHojphp6Z05z2tcX6Iw%3D%3D&Expires=1681473827",
+            "download_from_url": null,
+            "file_name": null,
+            "content_type": null
+          }
+        ]
+      }
+    }
+  }
+}

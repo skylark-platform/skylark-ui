@@ -2,26 +2,34 @@
   "data": {
     "search": {
       "__typename": "SearchResultListing",
+      "total_count": 179,
       "objects": [
         {
           "__typename": "SkylarkAsset",
-          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#9e9e9e",
+            "display_name": "Assetˢˡ"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 1 }
           },
-          "uid": "01GX396W0CDP6C463AGQK5YQ3P",
+          "uid": "01GXZP2TTD80EEZK15W4WF6P9Z",
           "external_id": null,
           "__SkylarkAsset__slug": null,
           "__SkylarkAsset__title": "GOT S5 Trailer",
           "__SkylarkAsset__type": null,
+          "__SkylarkAsset__release_date": "2015-04-12",
           "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/63e4dee1362f76cbd52511170035a69f/acc4b121/S05_trailer.mp4",
+          "__SkylarkAsset__ingest_file": null,
+          "__SkylarkAsset__duration": null,
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -34,23 +42,30 @@
         },
         {
           "__typename": "SkylarkAsset",
-          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#9e9e9e",
+            "display_name": "Assetˢˡ"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 1 }
           },
-          "uid": "01GX396W0CDP6C463AGQK5YQ3P",
+          "uid": "01GXZP2TTD80EEZK15W4WF6P9Z",
           "external_id": "recnRK3p6qLWrVsMu",
           "__SkylarkAsset__slug": "got-s05-trailer",
           "__SkylarkAsset__title": "GOT S05 Trailer",
           "__SkylarkAsset__type": null,
+          "__SkylarkAsset__release_date": "2015-04-12",
           "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/63e4dee1362f76cbd52511170035a69f/acc4b121/S05_trailer.mp4",
+          "__SkylarkAsset__ingest_file": null,
+          "__SkylarkAsset__duration": null,
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -63,23 +78,30 @@
         },
         {
           "__typename": "SkylarkAsset",
-          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#9e9e9e",
+            "display_name": "Assetˢˡ"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 1 }
           },
-          "uid": "01GX396V4HC1TKAJMQ5BKQZZPN",
+          "uid": "01GXZP2T3NMVWTZE2QADQRXJX8",
           "external_id": null,
           "__SkylarkAsset__slug": null,
           "__SkylarkAsset__title": "GOT S4 Trailer",
           "__SkylarkAsset__type": null,
+          "__SkylarkAsset__release_date": "2014-04-07",
           "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/38fcf3531443f4c6b2bfe6c25b2fdbbb/b521d6bd/S04_trailer.mp4",
+          "__SkylarkAsset__ingest_file": null,
+          "__SkylarkAsset__duration": null,
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -92,23 +114,30 @@
         },
         {
           "__typename": "SkylarkAsset",
-          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#9e9e9e",
+            "display_name": "Assetˢˡ"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 1 }
           },
-          "uid": "01GX396V4HC1TKAJMQ5BKQZZPN",
+          "uid": "01GXZP2T3NMVWTZE2QADQRXJX8",
           "external_id": "recxS5dem2efX4LZ8",
           "__SkylarkAsset__slug": "got-s04-trailer",
           "__SkylarkAsset__title": "GOT S04 Trailer",
           "__SkylarkAsset__type": null,
+          "__SkylarkAsset__release_date": "2014-04-06",
           "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/38fcf3531443f4c6b2bfe6c25b2fdbbb/b521d6bd/S04_trailer.mp4",
+          "__SkylarkAsset__ingest_file": null,
+          "__SkylarkAsset__duration": null,
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -121,23 +150,30 @@
         },
         {
           "__typename": "SkylarkAsset",
-          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#9e9e9e",
+            "display_name": "Assetˢˡ"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 1 }
           },
-          "uid": "01GX396V13XBFXY3HG4DFY7A33",
+          "uid": "01GXZP2STGQ5RGXYFYPP1K0KRG",
           "external_id": null,
           "__SkylarkAsset__slug": null,
           "__SkylarkAsset__title": "GOT S3 Trailer",
           "__SkylarkAsset__type": null,
+          "__SkylarkAsset__release_date": "2013-04-08",
           "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/96690ff8004897fed2326601b088fc5b/34f559ba/S03_trailer.mp4",
+          "__SkylarkAsset__ingest_file": null,
+          "__SkylarkAsset__duration": null,
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -150,23 +186,30 @@
         },
         {
           "__typename": "SkylarkAsset",
-          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#9e9e9e",
+            "display_name": "Assetˢˡ"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 1 }
           },
-          "uid": "01GX396V13XBFXY3HG4DFY7A33",
+          "uid": "01GXZP2STGQ5RGXYFYPP1K0KRG",
           "external_id": "recYsOkOs6WcsHNB1",
           "__SkylarkAsset__slug": "got-s03-trailer",
           "__SkylarkAsset__title": "GOT S03 Trailer",
           "__SkylarkAsset__type": null,
+          "__SkylarkAsset__release_date": "2013-03-31",
           "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/96690ff8004897fed2326601b088fc5b/34f559ba/S03_trailer.mp4",
+          "__SkylarkAsset__ingest_file": null,
+          "__SkylarkAsset__duration": null,
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -179,23 +222,30 @@
         },
         {
           "__typename": "SkylarkAsset",
-          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#9e9e9e",
+            "display_name": "Assetˢˡ"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 1 }
           },
-          "uid": "01GX396T45KXWN2NNNDADR3CG9",
+          "uid": "01GXZP2RZX5ZGT276TA8SJHAY1",
           "external_id": null,
           "__SkylarkAsset__slug": null,
           "__SkylarkAsset__title": "GOT S1 Trailer",
           "__SkylarkAsset__type": null,
+          "__SkylarkAsset__release_date": "2011-10-17",
           "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/c9e53e0098a2ffcb6ab34a3a79cbd8d7/3576707a/S01_trailer.mp4",
+          "__SkylarkAsset__ingest_file": null,
+          "__SkylarkAsset__duration": null,
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -208,23 +258,30 @@
         },
         {
           "__typename": "SkylarkAsset",
-          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#9e9e9e",
+            "display_name": "Assetˢˡ"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 1 }
           },
-          "uid": "01GX396T45KXWN2NNNDADR3CG9",
+          "uid": "01GXZP2RZX5ZGT276TA8SJHAY1",
           "external_id": "rectpBijSVmb35vSg",
           "__SkylarkAsset__slug": "got-s01-trailer",
           "__SkylarkAsset__title": "GOT S01 Trailer",
           "__SkylarkAsset__type": null,
+          "__SkylarkAsset__release_date": "2011-04-17",
           "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/c9e53e0098a2ffcb6ab34a3a79cbd8d7/3576707a/S01_trailer.mp4",
+          "__SkylarkAsset__ingest_file": null,
+          "__SkylarkAsset__duration": null,
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -237,23 +294,30 @@
         },
         {
           "__typename": "SkylarkAsset",
-          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#9e9e9e",
+            "display_name": "Assetˢˡ"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 1 }
           },
-          "uid": "01GX396T44TBG7KR55K3HT2P08",
+          "uid": "01GXZP2RYARPM4XZPBT8GVPZGF",
           "external_id": null,
           "__SkylarkAsset__slug": null,
           "__SkylarkAsset__title": "GOT S2 Trailer",
           "__SkylarkAsset__type": null,
+          "__SkylarkAsset__release_date": "2012-04-23",
           "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/65af7b331593deb9a59494403387c7d4/7e8cc908/S02_trailer.mp4",
+          "__SkylarkAsset__ingest_file": null,
+          "__SkylarkAsset__duration": null,
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -266,23 +330,30 @@
         },
         {
           "__typename": "SkylarkAsset",
-          "_config": { "primary_field": "title", "colour": "#9e9e9e" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#9e9e9e",
+            "display_name": "Assetˢˡ"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 1 }
           },
-          "uid": "01GX396T44TBG7KR55K3HT2P08",
+          "uid": "01GXZP2RYARPM4XZPBT8GVPZGF",
           "external_id": "rec2OnQzhSJ4BPMfC",
           "__SkylarkAsset__slug": "got-s02-trailer",
           "__SkylarkAsset__title": "GOT S02 Trailer",
           "__SkylarkAsset__type": null,
+          "__SkylarkAsset__release_date": "2012-04-01",
           "__SkylarkAsset__url": "https://dl.airtable.com/.attachments/65af7b331593deb9a59494403387c7d4/7e8cc908/S02_trailer.mp4",
+          "__SkylarkAsset__ingest_file": null,
+          "__SkylarkAsset__duration": null,
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -295,169 +366,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396NW5RQC6RQQ8MWPCBVFJ",
+          "uid": "01GXZP2NSAK9YMFP0C0BBGSQW0",
           "external_id": null,
           "__Episode__slug": null,
-          "__Episode__synopsis_long": null,
-          "__Episode__synopsis_medium": null,
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S05E1 - The Wars to Come",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "As Guerras Que Virão",
-          "__Episode__episode_number": null,
-          "__Episode__release_date": "2015-04-12",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "en-GB", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01GX396NW5RQC6RQQ8MWPCBVFJ",
-          "external_id": "recQAtLae30aEn8EG",
-          "__Episode__slug": "the-wars-to-come",
-          "__Episode__synopsis_long": "In a flashback, a witch foretells a teenage Cersei that she will one day be a queen until a younger and more beautiful queen usurps her. The witch also predicts Cersei will have three children and her king husband will have twenty. In the present, Tywin is buried, and Lancel Lannister returns, now a devoted convert of a fanatical religious cult called the \"Sparrows\". In Pentos on Essos, a despondent Tyrion accompanies Varys to Meereen to meet Daenerys, who Varys believes may be worthy of the Iron Throne. In Meereen, the insurgent \"Sons of the Harpy\" murder an Unsullied. Daenerys angrily resists restoring old local traditions, including reopening the fighting pits. Missandei asks Grey Worm about why some Unsullied visit brothels. Daenerys visits her two confined dragons, who act aggressively toward her. In the Vale, Littlefinger puts Robin in House Royce's care when he and Sansa depart. At the Wall, Stannis Baratheon seeks to recruit the Wildlings in his war against Roose Bolton, offering citizenship and land as a reward. Jon is unable to persuade Mance Rayder to \"bend the knee\" to Stannis. As Mance is burned alive, Jon ends his agony with an arrow to the heart.",
-          "__Episode__synopsis_medium": "Cersei and Jaime adjust to a world without Tywin. Tyrion and Varys arrive at Pentos. In Meereen, a new enemy emerges. Jon is caught between two kings.",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S05E1 - The Wars to Come",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "The Wars to Come",
-          "__Episode__episode_number": 1,
-          "__Episode__release_date": "2015-04-12",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "pt-PT", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01GX396N2CQGAFYRRSZYZ224MC",
-          "external_id": null,
-          "__Episode__slug": null,
-          "__Episode__synopsis_long": "Em Porto Real, Tywin coage Olenna a um acordo para casar Cersei com Loras. Cersei admite a Tyrion que Joffrey tentou matá-lo durante o cerco. Tyrion informa Shae e Sansa sobre seu noivado e Sansa. Mindinho diz a Varys que descobriu que Ros era a informante de Varys e que Joffrey a matou. Nas Terras Fluviais, Melisandre compra Gendry da Irmandade e prediz Arya que ela matará muitas pessoas com olhos castanhos, olhos verdes e olhos azuis; ela promete que eles vão se encontrar novamente. Tendo se casado com Talisa, Robb faz um novo acordo com Walder Frey, dando-lhe Harrenhal e fazendo com que seu tio, Edmure Tully, se case com uma filha ou neta de Frey. Roose Bolton planeja enviar Jaime para Porto Real, mas se recusa a permitir que Brienne o acompanhe. Em um local desconhecido, o homem misterioso continua torturando Theon. No Norte, surge a tensão entre Osha e Meera. Além da Muralha, Sam continua seu vôo com Gilly, enquanto Jon e Ygritte escalam a Muralha com outros dois Selvagens.\n",
-          "__Episode__synopsis_medium": "Jon e os selvagens escalam a Muralha. A Irmandade vende Gendry para Melisandre. Robb faz o que pode para reconquistar os Freys. Tyrion conta a Sansa sobre o noivado.\n",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S03E6 - The Climb",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "A Escalada",
-          "__Episode__episode_number": null,
-          "__Episode__release_date": "2013-05-13",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "en-GB", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01GX396N2CQGAFYRRSZYZ224MC",
-          "external_id": "recFDglLkhclp0OkU",
-          "__Episode__slug": "the-climb",
-          "__Episode__synopsis_long": "In King's Landing, Tywin coerces Olenna into an agreement to marry Cersei to Loras. Cersei admits to Tyrion that Joffrey tried to have him killed during the siege. Tyrion informs Shae and Sansa about his and Sansa's betrothal. Littlefinger tells Varys that he discovered Ros was Varys' informant and that Joffrey killed her. In the Riverlands, Melisandre buys Gendry from the Brotherhood, and foretells Arya that she will kill many people with brown eyes, green eyes, and blue eyes; she promises they will meet again. Having married Talisa, Robb strikes a new agreement with Walder Frey by giving him Harrenhal and having his uncle, Edmure Tully, marry a Frey daughter or granddaughter. Roose Bolton plans to send Jaime to King's Landing, but refuses to allow Brienne to accompany him. At an unknown location, the mysterious man continues torturing Theon. In the North, tension arises between Osha and Meera. Beyond the Wall, Sam continues his flight with Gilly, while Jon and Ygritte scale the Wall with two other Wildlings.",
-          "__Episode__synopsis_medium": "Jon and the wildlings scale the Wall. The Brotherhood sells Gendry to Melisandre. Robb does what he can to win back the Freys. Tyrion tells Sansa about their engagement.",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S03E6 - The Climb",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "The Climb",
-          "__Episode__episode_number": 6,
-          "__Episode__release_date": "2013-05-05",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "pt-PT", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01GX396MXBBKHMSGNFJ894HP90",
-          "external_id": null,
-          "__Episode__slug": null,
-          "__Episode__synopsis_long": "Catelyn tenta unir os irmãos Baratheon contra os Lannisters, mas Stannis exige a lealdade de Renly a ele como rei. Mindinho visita Catelyn e se oferece para trocar Jaime por suas filhas. Davos testemunha Melisandre dando à luz uma criatura das sombras. Joffrey abusa publicamente de Sansa como vingança pelas vitórias de Robb até que Tyrion intervém. O anão envia duas prostitutas ao jovem rei para acalmar seus ânimos, mas Joffrey faz uma delas bater na outra brutalmente, ameaçando Tyrion de não interferir em seus negócios. Tyrion libera Pycelle e o dispensa do Pequeno Conselho. Quando Tyrion descobre o relacionamento incestuoso de Cersei com seu primo, Lancel, ele chantageia Lancel para espionar Cersei, ameaçando revelar o relacionamento a Joffrey. Arya e Gendry são levados para o castelo de Harrenhal como cativos. Os prisioneiros são sistematicamente torturados até a morte até que Tywin chegue e exija que sejam usados ​​como mão de obra. Reconhecendo que Arya é uma garota, ele a torna sua serva sem saber sua verdadeira identidade. Depois de uma jornada exaustiva pelo deserto, Daenerys chega à próspera cidade de Qarth. Daxos, um membro do Conselho dos Treze, convence seus colegas vereadores a permitir que Daenerys e sua comitiva entrem na cidade.\n",
-          "__Episode__synopsis_medium": "Lord Baelish chega ao acampamento de Renly pouco antes de enfrentar Stannis. Daenerys e sua companhia são recebidos na cidade de Qarth. Arya, Gendry e Torta Quente se encontram presos em Harrenhal.\n",
-          "__Episode__synopsis_short": null,
+          "__Episode__synopsis": "Catelyn tenta unir os irmãos Baratheon contra os Lannisters, mas Stannis exige a lealdade de Renly a ele como rei. Mindinho visita Catelyn e se oferece para trocar Jaime por suas filhas. Davos testemunha Melisandre dando à luz uma criatura das sombras. Joffrey abusa publicamente de Sansa como vingança pelas vitórias de Robb até que Tyrion intervém. O anão envia duas prostitutas ao jovem rei para acalmar seus ânimos, mas Joffrey faz uma delas bater na outra brutalmente, ameaçando Tyrion de não interferir em seus negócios. Tyrion libera Pycelle e o dispensa do Pequeno Conselho. Quando Tyrion descobre o relacionamento incestuoso de Cersei com seu primo, Lancel, ele chantageia Lancel para espionar Cersei, ameaçando revelar o relacionamento a Joffrey. Arya e Gendry são levados para o castelo de Harrenhal como cativos. Os prisioneiros são sistematicamente torturados até a morte até que Tywin chegue e exija que sejam usados ​​como mão de obra. Reconhecendo que Arya é uma garota, ele a torna sua serva sem saber sua verdadeira identidade. Depois de uma jornada exaustiva pelo deserto, Daenerys chega à próspera cidade de Qarth. Daxos, um membro do Conselho dos Treze, convence seus colegas vereadores a permitir que Daenerys e sua comitiva entrem na cidade.\n",
+          "__Episode__synopsis_short": "Lord Baelish chega ao acampamento de Renly pouco antes de enfrentar Stannis. Daenerys e sua companhia são recebidos na cidade de Qarth. Arya, Gendry e Torta Quente se encontram presos em Harrenhal.\n",
           "__Episode__title": "GOT S02E4 - Garden of Bones",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
           "__Episode__title_short": "O Jardim dos Ossos",
-          "__Episode__episode_number": null,
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 4,
           "__Episode__release_date": "2012-05-14",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -470,29 +403,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396MXBBKHMSGNFJ894HP90",
+          "uid": "01GXZP2NSAK9YMFP0C0BBGSQW0",
           "external_id": "recMCp8xi67s6Ti1d",
           "__Episode__slug": "garden-of-bones",
-          "__Episode__synopsis_long": "Catelyn attempts to unite the Baratheon brothers against the Lannisters, but Stannis demands Renly's loyalty to him as king. Littlefinger visits Catelyn and offers to trade Jaime for her daughters. Davos witnesses Melisandre giving birth to a shadow creature. Joffrey publicly abuses Sansa as revenge for Robb's victories until Tyrion intervenes. The dwarf sends two prostitutes to the young King to calm his tempers, but Joffrey makes one of them beat the other brutally, thus threatening Tyrion not to interfere with his business. Tyrion releases Pycelle and dismisses him from the Small Council. When Tyrion discovers Cersei's incestuous relationship with their cousin, Lancel, he blackmails Lancel into spying on Cersei, threatening to reveal the relationship to Joffrey. Arya and Gendry are taken to Harrenhal castle as captives. Prisoners are systematically tortured to death until Tywin arrives and demands they be used as labor. Recognizing Arya is a girl, he makes her his servant without knowing her true identity. After an exhausting journey through the desert, Daenerys arrives at the prosperous city of Qarth. Daxos, a member of the Council of Thirteen, persuades fellow councilmen to allow Daenerys and her retinue to enter the city.",
-          "__Episode__synopsis_medium": "Lord Baelish arrives at Renly's camp just before he faces off against Stannis. Daenerys and her company are welcomed into the city of Qarth. Arya, Gendry, and Hot Pie find themselves imprisoned at Harrenhal.",
-          "__Episode__synopsis_short": null,
+          "__Episode__synopsis": "Catelyn attempts to unite the Baratheon brothers against the Lannisters, but Stannis demands Renly's loyalty to him as king. Littlefinger visits Catelyn and offers to trade Jaime for her daughters. Davos witnesses Melisandre giving birth to a shadow creature. Joffrey publicly abuses Sansa as revenge for Robb's victories until Tyrion intervenes. The dwarf sends two prostitutes to the young King to calm his tempers, but Joffrey makes one of them beat the other brutally, thus threatening Tyrion not to interfere with his business. Tyrion releases Pycelle and dismisses him from the Small Council. When Tyrion discovers Cersei's incestuous relationship with their cousin, Lancel, he blackmails Lancel into spying on Cersei, threatening to reveal the relationship to Joffrey. Arya and Gendry are taken to Harrenhal castle as captives. Prisoners are systematically tortured to death until Tywin arrives and demands they be used as labor. Recognizing Arya is a girl, he makes her his servant without knowing her true identity. After an exhausting journey through the desert, Daenerys arrives at the prosperous city of Qarth. Daxos, a member of the Council of Thirteen, persuades fellow councilmen to allow Daenerys and her retinue to enter the city.",
+          "__Episode__synopsis_short": "Lord Baelish arrives at Renly's camp just before he faces off against Stannis. Daenerys and her company are welcomed into the city of Qarth. Arya, Gendry, and Hot Pie find themselves imprisoned at Harrenhal.",
           "__Episode__title": "GOT S02E4 - Garden of Bones",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
           "__Episode__title_short": "Garden of Bones",
+          "__Episode__title_sort": null,
           "__Episode__episode_number": 4,
           "__Episode__release_date": "2012-04-22",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -505,29 +440,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396MPGTJ7MMDT9X1GRDFRR",
+          "uid": "01GXZP2N2FFD66578CAE19Q5XG",
           "external_id": null,
           "__Episode__slug": null,
-          "__Episode__synopsis_long": "Roose Bolton retorna ao Forte do Pavor com sua noiva, uma das filhas de Walder Frey. Ele castiga Ramsay por torturar e castrar Theon, desvalorizando-o como refém. Theon, que se degenerou em uma persona subserviente chamada 'Reek', revela que Bran e Rickon Stark estão vivos e ameaçam a legitimidade de Roose como Protetor do Norte. Roose ordena que Ramsay recupere os territórios sob ocupação Ironborn, prometendo uma recompensa se ele conseguir. Em Pedra do Dragão, Melisandre sacrifica três pessoas, incluindo o cunhado de Stannis, queimando-os até a morte como um tributo ao Senhor da Luz, encantando a Rainha Selyse e nojento Sor Davos e a Princesa Shireen. Para proteger Shae de sua família, Tyrion consegue mandá-la para Pentos em Essos, deixando-a angustiada. Bronn treina Jaime na esgrima com a mão esquerda. Rei Joffrey e Margaery Tyrell estão casados. Durante a festa do Casamento Real, Joffrey humilha Tyrion e insulta Sansa pouco antes de Joffrey sucumbir fatalmente ao vinho envenenado. Uma Cersei perturbada prende Tyrion por seu assassinato, enquanto Sor Dontos, um ex-cavaleiro, convence Sansa a deixar o banquete com ele para sua proteção.\n",
-          "__Episode__synopsis_medium": "O casamento de Joffrey e Margaery chegou. Tyrion termina com Shae. Ramsay tenta provar seu valor para seu pai. Bran e companhia encontram uma árvore Weirwood.\n",
+          "__Episode__synopsis": null,
           "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S04E2 - The Lion and the Rose",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "O Leão e a Rosa",
-          "__Episode__episode_number": null,
-          "__Episode__release_date": "2014-04-15",
+          "__Episode__title": "GOT S05E4 - Sons of the Harpy",
+          "__Episode__title_short": "Os Filhos da Harpia",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 4,
+          "__Episode__release_date": "2015-05-03",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -540,29 +477,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396MPGTJ7MMDT9X1GRDFRR",
-          "external_id": "recaSCa9GhoQBiqYt",
-          "__Episode__slug": "the-lion-and-the-rose",
-          "__Episode__synopsis_long": "Roose Bolton returns to the Dreadfort with his bride, one of Walder Frey's daughters. He chastises Ramsay for torturing and castrating Theon, devaluing him as a hostage. Theon, who has degenerated into a subservient persona called 'Reek', discloses that Bran and Rickon Stark are alive and threaten Roose's legitimacy as Warden of the North. Roose orders Ramsay to reclaim the territories under Ironborn occupation, promising a reward if he succeeds. In Dragonstone, Melisandre sacrifices three people, including Stannis' brother-in-law, burning them to death as a tribute to the Lord of Light, delighting Queen Selyse and disgusting Ser Davos and Princess Shireen. To protect Shae from his family, Tyrion arranges to send her to Pentos on Essos, leaving her distressed. Bronn coaches Jaime in left-handed swordplay. King Joffrey and Margaery Tyrell are wed. During the Royal Wedding feast, Joffrey humiliates Tyrion and taunts Sansa just before Joffrey fatally succumbs to poisoned wine. A distraught Cersei has Tyrion arrested for his murder, while Ser Dontos, a former knight, persuades Sansa to leave the feast with him for her protection.",
-          "__Episode__synopsis_medium": "Joffrey and Margaery's wedding has come. Tyrion breaks up with Shae. Ramsay tries to prove his worth to his father. Bran and company find a Weirwood tree.",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S04E2 - The Lion and the Rose",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "The Lion and the Rose",
-          "__Episode__episode_number": 2,
-          "__Episode__release_date": "2014-04-13",
+          "uid": "01GXZP2N2FFD66578CAE19Q5XG",
+          "external_id": "recHtB06zkWwrH94R",
+          "__Episode__slug": "sons-of-the-harpy",
+          "__Episode__synopsis": "Cersei authorizes arming the Sparrows as the Faith Militant, who then arrest Loras Tyrell for homosexuality. Queen Margaery is enraged, but Tommen proves too weak to countermand them. Melisandre attempts to seduce Jon as a means to convince him to accompany Stannis to Winterfell. In Winterfell, before Littlefinger heads to King's Landing, he dispels Sansa's misgivings about marrying Ramsay, promising that Stannis will defeat the Boltons and rescue her, and even if not, she can manipulate Ramsay. Bronn and Jaime secretly land in Dorne to retrieve Myrcella; hearing this, Ellaria and her Sand Snakes plot to avenge Oberyn's death by abducting Myrcella. Jorah intends to redeem himself to Daenerys by presenting Tyrion as a prisoner. In Meereen, Loraq again appeals to Daenerys to reopen the fighting pits, a local tradition; the Sons of the Harpy ambush an Unsullied patrol inside the citadel, critically wounding Grey Worm and killing Ser Barristan Selmy.",
+          "__Episode__synopsis_short": "Jorah Mormont sets sail alongside his prisoner, Tyrion. Cersei makes a move against the Tyrells. Jaime and Bronn sneak into Dorne. Ellaria and the Sand Snakes make their plans. Melisandre tempts Jon. The Harpies attack.",
+          "__Episode__title": "GOT S05E4 - Sons of the Harpy",
+          "__Episode__title_short": "Sons of the Harpy",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 4,
+          "__Episode__release_date": "2015-05-03",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -575,29 +514,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396MJTE16N2DXWPB0FEB9N",
+          "uid": "01GXZP2N0WQ13RECPN7CSYPSGA",
           "external_id": null,
           "__Episode__slug": null,
-          "__Episode__synopsis_long": "Em Essos, Davos e Stannis se encontram com o Banco de Ferro para garantir um empréstimo para Stannis. Davos reencontra Salladhor Saan e seus piratas. Em Meereen, Daenerys se adapta ao seu novo papel como rainha, ouvindo os intermináveis ​​pedidos de seus súditos, incluindo o nobre Hizdahr zo Loraq, que deseja recuperar o corpo de seu pai crucificado, e um camponês cujas cabras foram mortas pelos dragões cada vez mais incontroláveis ​​de Daenerys. No Forte do Pavor, Yara lidera uma missão para resgatar Theon, que, emocionalmente quebrado, se recusa a sair, forçando Yara a abandoná-lo. Ramsay recompensa a obediência de Theon e, planejando tomar Fosso Cailin, encarrega \"Reek\" de se passar por \"Theon Greyjoy\". Em Porto Real, Tywin coloca uma recompensa pela cabeça do Cão de Caça e instrui Varys a continuar espionando Daenerys. Tyrion é julgado pelo assassinato de Joffrey. Todas as testemunhas testemunham contra ele, incluindo Sor Meryn Trant, Grande Meistre Pycelle, Cersei e Varys, que dão depoimentos convincentes, embora circunstanciais. Para o choque de Tyrion, Shae testemunha falsamente contra ele. Tyrion proclama sua inocência e exige um julgamento por combate.\n",
-          "__Episode__synopsis_medium": "O julgamento de Tyrion chegou. Yara e suas tropas invadem o Forte do Pavor para libertar Theon. Daenerys conhece Hizdar zo Loraq. Stannis faz um acordo com o Banco de Ferro de Bravos.\n",
-          "__Episode__synopsis_short": null,
+          "__Episode__synopsis": "Em Essos, Davos e Stannis se encontram com o Banco de Ferro para garantir um empréstimo para Stannis. Davos reencontra Salladhor Saan e seus piratas. Em Meereen, Daenerys se adapta ao seu novo papel como rainha, ouvindo os intermináveis ​​pedidos de seus súditos, incluindo o nobre Hizdahr zo Loraq, que deseja recuperar o corpo de seu pai crucificado, e um camponês cujas cabras foram mortas pelos dragões cada vez mais incontroláveis ​​de Daenerys. No Forte do Pavor, Yara lidera uma missão para resgatar Theon, que, emocionalmente quebrado, se recusa a sair, forçando Yara a abandoná-lo. Ramsay recompensa a obediência de Theon e, planejando tomar Fosso Cailin, encarrega \"Reek\" de se passar por \"Theon Greyjoy\". Em Porto Real, Tywin coloca uma recompensa pela cabeça do Cão de Caça e instrui Varys a continuar espionando Daenerys. Tyrion é julgado pelo assassinato de Joffrey. Todas as testemunhas testemunham contra ele, incluindo Sor Meryn Trant, Grande Meistre Pycelle, Cersei e Varys, que dão depoimentos convincentes, embora circunstanciais. Para o choque de Tyrion, Shae testemunha falsamente contra ele. Tyrion proclama sua inocência e exige um julgamento por combate.\n",
+          "__Episode__synopsis_short": "O julgamento de Tyrion chegou. Yara e suas tropas invadem o Forte do Pavor para libertar Theon. Daenerys conhece Hizdar zo Loraq. Stannis faz um acordo com o Banco de Ferro de Bravos.\n",
           "__Episode__title": "GOT S04E6 - The Laws of Gods and Men",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
           "__Episode__title_short": "As Leis dos Deuses e dos Homens",
-          "__Episode__episode_number": null,
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 6,
           "__Episode__release_date": "2014-05-13",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -610,29 +551,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396MJTE16N2DXWPB0FEB9N",
+          "uid": "01GXZP2N0WQ13RECPN7CSYPSGA",
           "external_id": "recmUQEYjyFQBlkBY",
           "__Episode__slug": "the-laws-of-gods-and-men",
-          "__Episode__synopsis_long": "In Essos, Davos and Stannis meet with the Iron Bank to secure a loan for Stannis. Davos re-engages Salladhor Saan and his pirates. In Meereen, Daenerys adapts to her new role as queen, hearing her subjects' endless requests, including nobleman Hizdahr zo Loraq who wishes to reclaim his crucified father's body, and a peasant man whose goats were killed by Daenerys' increasingly uncontrollable dragons. In the Dreadfort, Yara leads a mission to rescue Theon, who, emotionally broken, refuses to leave, forcing Yara to abandon him. Ramsay rewards Theon's obedience and, planning to take Moat Cailin, tasks \"Reek\" to impersonate \"Theon Greyjoy\". In King's Landing, Tywin puts a bounty on the Hound's head and instructs Varys to continue spying on Daenerys. Tyrion is tried for Joffrey's murder. All the witnesses testify against him, including Ser Meryn Trant, Grand Maester Pycelle, Cersei, and Varys, who give compelling, though circumstantial, testimony. To Tyrion's shock, Shae falsely testifies against him. Tyrion proclaims his innocence and demands a trial by combat.",
-          "__Episode__synopsis_medium": "Tyrion's trial has come. Yara and her troops storm the Dreadfort to free Theon. Daenerys meets Hizdar zo Loraq. Stannis makes a deal with the Iron Bank of Braavos.",
-          "__Episode__synopsis_short": null,
+          "__Episode__synopsis": "In Essos, Davos and Stannis meet with the Iron Bank to secure a loan for Stannis. Davos re-engages Salladhor Saan and his pirates. In Meereen, Daenerys adapts to her new role as queen, hearing her subjects' endless requests, including nobleman Hizdahr zo Loraq who wishes to reclaim his crucified father's body, and a peasant man whose goats were killed by Daenerys' increasingly uncontrollable dragons. In the Dreadfort, Yara leads a mission to rescue Theon, who, emotionally broken, refuses to leave, forcing Yara to abandon him. Ramsay rewards Theon's obedience and, planning to take Moat Cailin, tasks \"Reek\" to impersonate \"Theon Greyjoy\". In King's Landing, Tywin puts a bounty on the Hound's head and instructs Varys to continue spying on Daenerys. Tyrion is tried for Joffrey's murder. All the witnesses testify against him, including Ser Meryn Trant, Grand Maester Pycelle, Cersei, and Varys, who give compelling, though circumstantial, testimony. To Tyrion's shock, Shae falsely testifies against him. Tyrion proclaims his innocence and demands a trial by combat.",
+          "__Episode__synopsis_short": "Tyrion's trial has come. Yara and her troops storm the Dreadfort to free Theon. Daenerys meets Hizdar zo Loraq. Stannis makes a deal with the Iron Bank of Braavos.",
           "__Episode__title": "GOT S04E6 - The Laws of Gods and Men",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
           "__Episode__title_short": "The Laws of Gods and Men",
+          "__Episode__title_sort": null,
           "__Episode__episode_number": 6,
           "__Episode__release_date": "2014-05-11",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -645,29 +588,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396MD6HCG68ZQ97C46TM3Y",
+          "uid": "01GXZP2MVDCGK7CVZGZPT612FM",
           "external_id": null,
           "__Episode__slug": null,
-          "__Episode__synopsis_long": null,
-          "__Episode__synopsis_medium": null,
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S05E4 - Sons of the Harpy",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "Os Filhos da Harpia",
-          "__Episode__episode_number": null,
-          "__Episode__release_date": "2015-05-03",
+          "__Episode__synopsis": "Em Porto Real, Tywin coage Olenna a um acordo para casar Cersei com Loras. Cersei admite a Tyrion que Joffrey tentou matá-lo durante o cerco. Tyrion informa Shae e Sansa sobre seu noivado e Sansa. Mindinho diz a Varys que descobriu que Ros era a informante de Varys e que Joffrey a matou. Nas Terras Fluviais, Melisandre compra Gendry da Irmandade e prediz Arya que ela matará muitas pessoas com olhos castanhos, olhos verdes e olhos azuis; ela promete que eles vão se encontrar novamente. Tendo se casado com Talisa, Robb faz um novo acordo com Walder Frey, dando-lhe Harrenhal e fazendo com que seu tio, Edmure Tully, se case com uma filha ou neta de Frey. Roose Bolton planeja enviar Jaime para Porto Real, mas se recusa a permitir que Brienne o acompanhe. Em um local desconhecido, o homem misterioso continua torturando Theon. No Norte, surge a tensão entre Osha e Meera. Além da Muralha, Sam continua seu vôo com Gilly, enquanto Jon e Ygritte escalam a Muralha com outros dois Selvagens.\n",
+          "__Episode__synopsis_short": "Jon e os selvagens escalam a Muralha. A Irmandade vende Gendry para Melisandre. Robb faz o que pode para reconquistar os Freys. Tyrion conta a Sansa sobre o noivado.\n",
+          "__Episode__title": "GOT S03E6 - The Climb",
+          "__Episode__title_short": "A Escalada",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 6,
+          "__Episode__release_date": "2013-05-13",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -680,29 +625,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396MD6HCG68ZQ97C46TM3Y",
-          "external_id": "recHtB06zkWwrH94R",
-          "__Episode__slug": "sons-of-the-harpy",
-          "__Episode__synopsis_long": "Cersei authorizes arming the Sparrows as the Faith Militant, who then arrest Loras Tyrell for homosexuality. Queen Margaery is enraged, but Tommen proves too weak to countermand them. Melisandre attempts to seduce Jon as a means to convince him to accompany Stannis to Winterfell. In Winterfell, before Littlefinger heads to King's Landing, he dispels Sansa's misgivings about marrying Ramsay, promising that Stannis will defeat the Boltons and rescue her, and even if not, she can manipulate Ramsay. Bronn and Jaime secretly land in Dorne to retrieve Myrcella; hearing this, Ellaria and her Sand Snakes plot to avenge Oberyn's death by abducting Myrcella. Jorah intends to redeem himself to Daenerys by presenting Tyrion as a prisoner. In Meereen, Loraq again appeals to Daenerys to reopen the fighting pits, a local tradition; the Sons of the Harpy ambush an Unsullied patrol inside the citadel, critically wounding Grey Worm and killing Ser Barristan Selmy.",
-          "__Episode__synopsis_medium": "Jorah Mormont sets sail alongside his prisoner, Tyrion. Cersei makes a move against the Tyrells. Jaime and Bronn sneak into Dorne. Ellaria and the Sand Snakes make their plans. Melisandre tempts Jon. The Harpies attack.",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S05E4 - Sons of the Harpy",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "Sons of the Harpy",
-          "__Episode__episode_number": 4,
-          "__Episode__release_date": "2015-05-03",
+          "uid": "01GXZP2MVDCGK7CVZGZPT612FM",
+          "external_id": "recFDglLkhclp0OkU",
+          "__Episode__slug": "the-climb",
+          "__Episode__synopsis": "In King's Landing, Tywin coerces Olenna into an agreement to marry Cersei to Loras. Cersei admits to Tyrion that Joffrey tried to have him killed during the siege. Tyrion informs Shae and Sansa about his and Sansa's betrothal. Littlefinger tells Varys that he discovered Ros was Varys' informant and that Joffrey killed her. In the Riverlands, Melisandre buys Gendry from the Brotherhood, and foretells Arya that she will kill many people with brown eyes, green eyes, and blue eyes; she promises they will meet again. Having married Talisa, Robb strikes a new agreement with Walder Frey by giving him Harrenhal and having his uncle, Edmure Tully, marry a Frey daughter or granddaughter. Roose Bolton plans to send Jaime to King's Landing, but refuses to allow Brienne to accompany him. At an unknown location, the mysterious man continues torturing Theon. In the North, tension arises between Osha and Meera. Beyond the Wall, Sam continues his flight with Gilly, while Jon and Ygritte scale the Wall with two other Wildlings.",
+          "__Episode__synopsis_short": "Jon and the wildlings scale the Wall. The Brotherhood sells Gendry to Melisandre. Robb does what he can to win back the Freys. Tyrion tells Sansa about their engagement.",
+          "__Episode__title": "GOT S03E6 - The Climb",
+          "__Episode__title_short": "The Climb",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 6,
+          "__Episode__release_date": "2013-05-05",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -715,29 +662,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396M9WRNRSCX7Z6RAG89NN",
+          "uid": "01GXZP2MQKN47GHT7G4R22H861",
           "external_id": null,
           "__Episode__slug": null,
-          "__Episode__synopsis_long": "O espião eunuco do rei Robert, Varys, descobriu que Daenerys Targaryen está grávida. Ned rejeita o plano de Robert de assassiná-la, considerando que Daenerys não é uma ameaça. Ele renuncia em protesto como Mão de Robert, irritando o rei. Catelyn e seu prisioneiro, Tyrion, chegam à fortaleza de sua irmã Lysa Arryn no Ninho da Águia. As notícias da captura de Tyrion chegam a Porto Real, onde Jaime Lannister, irmão gêmeo da rainha, exige respostas de Ned. Um Jaime vingativo ordena que os homens de Ned sejam mortos e luta contra Ned até que o homem de Jaime esfaqueia Ned na perna por trás, deixando-o ferido.\n",
-          "__Episode__synopsis_medium": "Catelyn capturou Tyrion e planeja trazê-lo para sua irmã, Lysa Arryn, no Vale, para ser julgado por seus supostos crimes contra Bran. Robert planeja matar Daenerys, mas Eddard se recusa a fazer parte disso e desiste.\n",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S01E5 - The Wolf and the Lion",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "O Lobo e o Leão",
-          "__Episode__episode_number": null,
-          "__Episode__release_date": "2011-11-14",
+          "__Episode__synopsis": "Roose Bolton retorna ao Forte do Pavor com sua noiva, uma das filhas de Walder Frey. Ele castiga Ramsay por torturar e castrar Theon, desvalorizando-o como refém. Theon, que se degenerou em uma persona subserviente chamada 'Reek', revela que Bran e Rickon Stark estão vivos e ameaçam a legitimidade de Roose como Protetor do Norte. Roose ordena que Ramsay recupere os territórios sob ocupação Ironborn, prometendo uma recompensa se ele conseguir. Em Pedra do Dragão, Melisandre sacrifica três pessoas, incluindo o cunhado de Stannis, queimando-os até a morte como um tributo ao Senhor da Luz, encantando a Rainha Selyse e nojento Sor Davos e a Princesa Shireen. Para proteger Shae de sua família, Tyrion consegue mandá-la para Pentos em Essos, deixando-a angustiada. Bronn treina Jaime na esgrima com a mão esquerda. Rei Joffrey e Margaery Tyrell estão casados. Durante a festa do Casamento Real, Joffrey humilha Tyrion e insulta Sansa pouco antes de Joffrey sucumbir fatalmente ao vinho envenenado. Uma Cersei perturbada prende Tyrion por seu assassinato, enquanto Sor Dontos, um ex-cavaleiro, convence Sansa a deixar o banquete com ele para sua proteção.\n",
+          "__Episode__synopsis_short": "O casamento de Joffrey e Margaery chegou. Tyrion termina com Shae. Ramsay tenta provar seu valor para seu pai. Bran e companhia encontram uma árvore Weirwood.\n",
+          "__Episode__title": "GOT S04E2 - The Lion and the Rose",
+          "__Episode__title_short": "O Leão e a Rosa",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 2,
+          "__Episode__release_date": "2014-04-15",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -750,29 +699,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396M9WRNRSCX7Z6RAG89NN",
-          "external_id": "recpGTVyxYBZ3Mh8D",
-          "__Episode__slug": "the-wolf-and-the-lion",
-          "__Episode__synopsis_long": "King Robert's eunuch spy, Varys, has uncovered that Daenerys Targaryen is pregnant. Ned rejects Robert's plan to assassinate her, considering Daenerys a non-threat. He resigns in protest as Robert's Hand, angering the king. Catelyn and her prisoner, Tyrion, arrive at her sister Lysa Arryn's fortress home in the Eyrie. News of Tyrion's capture reaches King's Landing where Jaime Lannister, the Queen's twin brother, demands answers from Ned. A vengeful Jaime orders Ned's men killed and fights Ned until Jaime's man stabs Ned in the leg from behind, leaving him wounded.",
-          "__Episode__synopsis_medium": "Catelyn has captured Tyrion and plans to bring him to her sister, Lysa Arryn, at the Vale, to be tried for his, supposed, crimes against Bran. Robert plans to have Daenerys killed, but Eddard refuses to be a part of it and quits.",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S01E5 - The Wolf and the Lion",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "The Wolf and the Lion",
-          "__Episode__episode_number": 5,
-          "__Episode__release_date": "2011-05-15",
+          "uid": "01GXZP2MQKN47GHT7G4R22H861",
+          "external_id": "recaSCa9GhoQBiqYt",
+          "__Episode__slug": "the-lion-and-the-rose",
+          "__Episode__synopsis": "Roose Bolton returns to the Dreadfort with his bride, one of Walder Frey's daughters. He chastises Ramsay for torturing and castrating Theon, devaluing him as a hostage. Theon, who has degenerated into a subservient persona called 'Reek', discloses that Bran and Rickon Stark are alive and threaten Roose's legitimacy as Warden of the North. Roose orders Ramsay to reclaim the territories under Ironborn occupation, promising a reward if he succeeds. In Dragonstone, Melisandre sacrifices three people, including Stannis' brother-in-law, burning them to death as a tribute to the Lord of Light, delighting Queen Selyse and disgusting Ser Davos and Princess Shireen. To protect Shae from his family, Tyrion arranges to send her to Pentos on Essos, leaving her distressed. Bronn coaches Jaime in left-handed swordplay. King Joffrey and Margaery Tyrell are wed. During the Royal Wedding feast, Joffrey humiliates Tyrion and taunts Sansa just before Joffrey fatally succumbs to poisoned wine. A distraught Cersei has Tyrion arrested for his murder, while Ser Dontos, a former knight, persuades Sansa to leave the feast with him for her protection.",
+          "__Episode__synopsis_short": "Joffrey and Margaery's wedding has come. Tyrion breaks up with Shae. Ramsay tries to prove his worth to his father. Bran and company find a Weirwood tree.",
+          "__Episode__title": "GOT S04E2 - The Lion and the Rose",
+          "__Episode__title_short": "The Lion and the Rose",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 2,
+          "__Episode__release_date": "2014-04-13",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -785,29 +736,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396M7X44943AGXNQNG210Y",
+          "uid": "01GXZP2MQFJT4MJS88FS8QFYQF",
           "external_id": null,
           "__Episode__slug": null,
-          "__Episode__synopsis_long": "Daenerys captura facilmente Meereen, auxiliada por uma revolta de escravos. Buscando justiça para 163 crianças escravas mortas, ela prega 163 senhores nos mesmos postes da estrada. No mar, Mindinho revela sua cumplicidade na morte de Joffrey para Sansa. Antes de sair de Porto Real, Olenna sugere a Margaery que ela envenenou Joffrey. Ela pede que Margaery se case com Tommen antes que Cersei possa colocá-lo contra ela. Jaime acredita que Tyrion é inocente, mas Cersei está convencida de que ele é culpado e também ordena que Jaime localize e mate Sansa como cúmplice. Jaime, em vez disso, envia Brienne para encontrar e proteger Sansa, apresentando-lhe uma nova armadura, sua espada valiriana, que ela chama de Guardiã do Juramento, cavalos e um escudeiro, Podrick Payne, ex-servo de Tyrion. No Norte, na esperança de eliminar Jon, Alliser Thorne e Janos Slynt concordam em permitir que Jon lidere a expedição contra os amotinados. Sem que Jon saiba, os amotinados capturaram Bran e seus companheiros. Mais ao norte, um White Walker leva o último filho recém-nascido de Craster para um local de ritual secreto onde ele é transformado em um Walker.\n",
-          "__Episode__synopsis_medium": "Jaime confia uma tarefa a Brienne. Daenerys liberta Meereen. Jon recebe permissão para liderar um grupo de Vigilantes da Noite para a Fortaleza de Craster. Bran e companhia são feitos reféns.\n",
-          "__Episode__synopsis_short": null,
+          "__Episode__synopsis": "Daenerys captura facilmente Meereen, auxiliada por uma revolta de escravos. Buscando justiça para 163 crianças escravas mortas, ela prega 163 senhores nos mesmos postes da estrada. No mar, Mindinho revela sua cumplicidade na morte de Joffrey para Sansa. Antes de sair de Porto Real, Olenna sugere a Margaery que ela envenenou Joffrey. Ela pede que Margaery se case com Tommen antes que Cersei possa colocá-lo contra ela. Jaime acredita que Tyrion é inocente, mas Cersei está convencida de que ele é culpado e também ordena que Jaime localize e mate Sansa como cúmplice. Jaime, em vez disso, envia Brienne para encontrar e proteger Sansa, apresentando-lhe uma nova armadura, sua espada valiriana, que ela chama de Guardiã do Juramento, cavalos e um escudeiro, Podrick Payne, ex-servo de Tyrion. No Norte, na esperança de eliminar Jon, Alliser Thorne e Janos Slynt concordam em permitir que Jon lidere a expedição contra os amotinados. Sem que Jon saiba, os amotinados capturaram Bran e seus companheiros. Mais ao norte, um White Walker leva o último filho recém-nascido de Craster para um local de ritual secreto onde ele é transformado em um Walker.\n",
+          "__Episode__synopsis_short": "Jaime confia uma tarefa a Brienne. Daenerys liberta Meereen. Jon recebe permissão para liderar um grupo de Vigilantes da Noite para a Fortaleza de Craster. Bran e companhia são feitos reféns.\n",
           "__Episode__title": "GOT S04E4 - Oathkeeper",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
           "__Episode__title_short": "Cumpridora de Promessas",
-          "__Episode__episode_number": null,
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 4,
           "__Episode__release_date": "2014-04-29",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -820,29 +773,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396M7X44943AGXNQNG210Y",
+          "uid": "01GXZP2MQFJT4MJS88FS8QFYQF",
           "external_id": "rec30vCuxl6LXTS5M",
           "__Episode__slug": "oathkeeper",
-          "__Episode__synopsis_long": "Daenerys easily captures Meereen, assisted by a slave revolt. Seeking justice for 163 slain slave children, she nails 163 masters to the same road posts. At sea, Littlefinger reveals his complicity in Joffrey's death to Sansa. Before leaving King's Landing, Olenna implies to Margaery that she poisoned Joffrey. She urges Margaery to marry Tommen before Cersei can turn him against her. Jaime believes Tyrion is innocent, but Cersei is adamant he is guilty and also orders Jaime to locate and kill Sansa as an accomplice. Jaime instead sends Brienne to find and protect Sansa, presenting her with new armor, his Valyrian sword, which she names Oath Keeper, horses and a squire, Podrick Payne, Tyrion's former servant. In the North, hoping to eliminate Jon, Alliser Thorne and Janos Slynt agree to allow Jon to lead the expedition against the mutineers. Unknown to Jon, the mutineers have captured Bran and his companions. Further north, a White Walker takes Craster's last newborn son to a secret ritual site where he is transformed into a Walker.",
-          "__Episode__synopsis_medium": "Jaime entrusts a task to Brienne. Daenerys frees Meereen. Jon is given permission to lead a group of Night's Watchmen to Craster's Keep. Bran and company are taken hostage.",
-          "__Episode__synopsis_short": null,
+          "__Episode__synopsis": "Daenerys easily captures Meereen, assisted by a slave revolt. Seeking justice for 163 slain slave children, she nails 163 masters to the same road posts. At sea, Littlefinger reveals his complicity in Joffrey's death to Sansa. Before leaving King's Landing, Olenna implies to Margaery that she poisoned Joffrey. She urges Margaery to marry Tommen before Cersei can turn him against her. Jaime believes Tyrion is innocent, but Cersei is adamant he is guilty and also orders Jaime to locate and kill Sansa as an accomplice. Jaime instead sends Brienne to find and protect Sansa, presenting her with new armor, his Valyrian sword, which she names Oath Keeper, horses and a squire, Podrick Payne, Tyrion's former servant. In the North, hoping to eliminate Jon, Alliser Thorne and Janos Slynt agree to allow Jon to lead the expedition against the mutineers. Unknown to Jon, the mutineers have captured Bran and his companions. Further north, a White Walker takes Craster's last newborn son to a secret ritual site where he is transformed into a Walker.",
+          "__Episode__synopsis_short": "Jaime entrusts a task to Brienne. Daenerys frees Meereen. Jon is given permission to lead a group of Night's Watchmen to Craster's Keep. Bran and company are taken hostage.",
           "__Episode__title": "GOT S04E4 - Oathkeeper",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
           "__Episode__title_short": "Oathkeeper",
+          "__Episode__title_sort": null,
           "__Episode__episode_number": 4,
           "__Episode__release_date": "2014-04-27",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -855,204 +810,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396M3C40W446A8DXPBJZAQ",
+          "uid": "01GXZP2MK9GYRV1MW2GVXV5689",
           "external_id": null,
           "__Episode__slug": null,
-          "__Episode__synopsis_long": "A Patrulha da Noite se prepara para a batalha. Gilly e Little Sam escapam de Mole's Town e chegam a Castle Black, onde Sam os esconde. Os Selvagens atacam de ambos os lados da muralha. O exército de Tormund irrompe do sul e enfrenta a Patrulha da Noite. Um gigante invade o túnel em Castelo Negro, mas é morto por Grenn e outros cinco, ao custo de suas próprias vidas. Alliser Thorne se junta à luta na parte sul, deixando o incompetente Janos Slynt comandando a Muralha. Slynt deixa Jon no comando e, quando a maré vira na Muralha, Jon se junta à luta abaixo. Depois de ver Jon matar Styr, Ygritte aponta seu arco para ele, mas hesita, e é fatalmente baleada por Olly. Ajudado por Fantasma, o lobo gigante de Jon, a Patrulha da Noite protege a fortaleza interna de Castelo Negro e um Tormund ferido é preso. Os escaladores de parede são obliterados por uma enorme foice balançando. Os Selvagens se retiram para a noite. Jon vai além da Muralha para encontrar e matar Mance Rayder, acreditando que o exército selvagem se fragmentará sem seu comando.\n",
-          "__Episode__synopsis_medium": "A batalha entre a Patrulha da Noite e os selvagens chegou.\n",
+          "__Episode__synopsis": null,
           "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S04E9 - The Watchers on the Wall",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "Os Patrulheiros da Muralha",
-          "__Episode__episode_number": null,
-          "__Episode__release_date": "2014-06-10",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "en-GB", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01GX396M3C40W446A8DXPBJZAQ",
-          "external_id": "recOt471r2NHxD9nl",
-          "__Episode__slug": "the-watchers-on-the-wall",
-          "__Episode__synopsis_long": "The Night's Watch prepares for the battle. Gilly and Little Sam escape Mole's Town and arrive at Castle Black, where Sam hides them. The Wildlings attack from both sides of the wall. Tormund's army breaks through from the south and engages the Night's Watch. A giant breaches the tunnel into Castle Black but is killed by Grenn and five others, at the cost of their own lives. Alliser Thorne joins the fight in the southern part, leaving the incompetent Janos Slynt commanding the Wall. Slynt leaves Jon in charge, and as the tide turns at the Wall, Jon joins the fight below. After seeing Jon kill Styr, Ygritte aims her bow at him but hesitates, then is fatally shot by Olly. Assisted by Ghost, Jon's direwolf, the Night's Watch secure Castle Black's inner keep, and a wounded Tormund is arrested. The wall climbers are obliterated by a massive swinging scythe. The Wildlings retreat for the night. Jon goes beyond the Wall to find and kill Mance Rayder, believing that the Wildling army will fragment without his command.",
-          "__Episode__synopsis_medium": "The battle between the Night's Watch and the wildlings has come.",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S04E9 - The Watchers on the Wall",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "The Watchers on the Wall",
-          "__Episode__episode_number": 9,
-          "__Episode__release_date": "2014-06-08",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "pt-PT", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01GX396KCZA7MTTWGP0FNV5E1P",
-          "external_id": null,
-          "__Episode__slug": null,
-          "__Episode__synopsis_long": "Ned, a nova Mão do Rei, viaja para Porto Real acompanhado por suas filhas, Sansa e Arya. Catelyn permanece em Winterfell para cuidar do ainda inconsciente Bran. Um assassino ataca Bran, mas Catelyn o afasta e o lobo gigante de Bran, Summer, o mata. Catelyn suspeita que os Lannisters estavam por trás do ataque. O filho ilegítimo de Ned, Jon, segue para o norte com seu tio, Benjen Stark, para se juntar à Patrulha da Noite, os protetores da Muralha, uma enorme estrutura de gelo que mantém as tribos Selvagens e os míticos Caminhantes Brancos da civilizada Westeros. Antes de partir, Jon deu a Arya uma espada fina que ela chama de \"Agulha\". O irmão mais novo da Rainha Cersei, Tyrion Lannister, um anão também conhecido como \"O Diabrete\", acompanha Jon à Muralha. Em Porto Real, o príncipe Joffrey ameaça o jovem amigo plebeu de Arya, depois de matá-lo. Nymeria, o lobo gigante de Arya, a defende, mordendo Joffrey. Cersei exige que Robert mate o lobo, mas Arya libera Nymeria na natureza. A loba gigante de Sansa, Lady, é morta. Em Winterfell, Brandon acorda, sem se lembrar de nada sobre sua queda. Enquanto isso, Daenerys faz amizade com Sor Jorah Mormont, um cavaleiro desgraçado, enquanto ela se concentra em aprender a agradar Drogo.\n",
-          "__Episode__synopsis_medium": "Enquanto Bran se recupera da queda, Ned leva apenas suas filhas para Porto Real. Jon Snow vai com seu tio Benjen à Muralha. Tyrion se junta a eles.\n",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S01E2 - The Kingsroad",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "A Estrada do Rei",
-          "__Episode__episode_number": null,
-          "__Episode__release_date": "2011-10-24",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "en-GB", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01GX396KCZA7MTTWGP0FNV5E1P",
-          "external_id": "recEmpXHOvkhtX9YY",
-          "__Episode__slug": "the-kingsroad",
-          "__Episode__synopsis_long": "Ned, the new Hand of the King, travels to King's Landing accompanied by his daughters, Sansa and Arya. Catelyn remains at Winterfell to care for the still unconscious Bran. An assassin attacks Bran, but Catelyn fends him off and Bran's direwolf, Summer, kills him. Catelyn suspects the Lannisters were behind the attack. Ned's illegitimate son, Jon, heads north with his uncle, Benjen Stark, to join the Night's Watch, the protectors of the Wall, a massive ice structure that keeps the Wildling tribes and the mythical White Walkers from civilized Westeros. Before departing, Jon gave tomboy Arya a thin sword she names, \"Needle\". Queen Cersei's younger brother, Tyrion Lannister, a dwarf also known as \"The Imp,\" accompanies Jon to the Wall. In King's Landing, Prince Joffrey threatens Arya's young commoner friend, later having him killed. Nymeria, Arya's direwolf, defends her, biting Joffrey. Cersei demands that Robert have the wolf killed, but Arya releases Nymeria to the wild. Sansa's direwolf, Lady, is killed instead. In Winterfell, Brandon awakens, remembering nothing about his fall. Meanwhile, Daenerys is befriended by Ser Jorah Mormont, a disgraced knight, while she focuses on learning how to please Drogo.",
-          "__Episode__synopsis_medium": "While Bran recovers from his fall, Ned takes only his daughters to King's Landing. Jon Snow goes with his uncle Benjen to the Wall. Tyrion joins them.",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S01E2 - The Kingsroad",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "The Kingsroad",
-          "__Episode__episode_number": 2,
-          "__Episode__release_date": "2011-04-24",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "pt-PT", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01GX396K748CNWK78APR9SDZMG",
-          "external_id": null,
-          "__Episode__slug": null,
-          "__Episode__synopsis_long": "Tywin supervisiona o reforjamento de Gelo, a espada de aço valiriano ancestral da Casa Stark, em duas novas. Um é para Jaime, que lamenta a perda de sua mão de espada e o amor de Cersei, e o outro é um presente de casamento para o Rei Joffrey, que Joffrey chama de Lamento da Viúva. O príncipe Oberyn Martell, representando seu irmão enfermo, o príncipe Doran de Dorne, chega a Porto Real para participar do casamento real. Ele e sua amante, Ellaria Sand, são recebidos por Tyrion. Oberyn secretamente busca vingança contra os Lannister e Gregor Clegane pelo estupro e assassinato de sua irmã, Elia, esposa do infiel Príncipe Rhaegar Targaryen. No Norte, Styr e os canibais Thenns reforçam Tormund, Ygritte e os outros Selvagens. Meistre Aemon absolve Jon depois que ele explica suas ações enquanto estava com os Selvagens e revela que seu exército de 100.000 planeja atacar Castelo Negro. Nas Terras Fluviais, o Cão de Caça e Arya vão para o Ninho da Águia, onde o Cão de Caça pretende resgatar Arya para sua tia Lysa, a viúva de Jon Arryn. Ao longo do caminho, Arya recupera sua espada, Needle, de Polliver, matando-o. Em Essos, Daenerys marcha seu exército em direção a Meereen, a última das três grandes cidades escravas; ela teme estar perdendo o controle sobre seus dragões em crescimento, agora do tamanho de cavalos.\n",
-          "__Episode__synopsis_medium": "Tyrion recebe um convidado em Porto Real. Em Castelo Negro, Jon é julgado. Daenerys é apontada para Meereen, a mãe de todas as cidades escravas. Arya encontra um velho inimigo.\n",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S04E1 - Two Swords",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "Duas Espadas",
-          "__Episode__episode_number": null,
-          "__Episode__release_date": "2014-04-07",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "en-GB", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01GX396K748CNWK78APR9SDZMG",
-          "external_id": "recaLYyR0ol4saNJN",
-          "__Episode__slug": "two-swords",
-          "__Episode__synopsis_long": "Tywin oversees the reforging of Ice, House Stark's ancestral Valyrian steel sword, into two new ones. One is for Jaime, who grieves the loss of his sword hand and Cersei's love, and the other is a wedding present for King Joffrey, which Joffrey names Widow's Wail. Prince Oberyn Martell, representing his infirmed brother, Prince Doran of Dorne, arrives in King's Landing to attend the royal wedding. He and his paramour, Ellaria Sand, are greeted by Tyrion. Oberyn secretly seeks revenge against the Lannisters and Gregor Clegane for the rape and murder of his sister, Elia, wife of the unfaithful Prince Rhaegar Targaryen. In the North, Styr and the cannibalistic Thenns reinforce Tormund, Ygritte and the other Wildlings. Maester Aemon absolves Jon after he explains his actions while with the Wildlings and reveals that their army of 100,000 plans to attack Castle Black. In the Riverlands, the Hound and Arya head to the Eyrie where the Hound intends to ransom Arya to her Aunt Lysa, Jon Arryn's widow. Along the way, Arya reclaims her sword, Needle, from Polliver, killing him. In Essos, Daenerys marches her army towards Meereen, the last of the three great slave cities; she fears she is losing control over her growing dragons, now horse-sized.",
-          "__Episode__synopsis_medium": "Tyrion welcomes a guest to King's Landing. At Castle Black, Jon stands trial. Daenerys is pointed to Meereen, the mother of all slave cities. Arya runs into an old enemy.",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S04E1 - Two Swords",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "Two Swords",
+          "__Episode__title": "GOT S05E1 - The Wars to Come",
+          "__Episode__title_short": "As Guerras Que Virão",
+          "__Episode__title_sort": null,
           "__Episode__episode_number": 1,
-          "__Episode__release_date": "2014-04-06",
+          "__Episode__release_date": "2015-04-12",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -1065,64 +847,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "pt-PT", "version": 1 },
-            "global_data": { "version": 2 }
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
           },
-          "uid": "01GX396K5Z8RW9K4K94295577H",
-          "external_id": null,
-          "__Episode__slug": null,
-          "__Episode__synopsis_long": "Catelyn chega ao acampamento de Renly para negociar uma aliança. A guerreira, Brienne de Tarth, ganha o direito de se juntar à guarda do rei de Renly através do combate. Renly se casou recentemente com Margaery Tyrell, irmã de Loras. Renly evita consumar o casamento dele e de Margaery devido à sua homossexualidade e relacionamento sexual com Loras. Nas Ilhas de Ferro, Balon planeja um ataque ao Norte, liderado por Yara. Depois de queimar sua carta para Robb alertando sobre o ataque iminente de Balon, Theon afirma sua fidelidade à Casa Greyjoy em uma cerimônia à base de água. Em Porto Real, Tyrion aprisiona Pycelle depois de determinar que ele é o informante de Cersei. Tyrion nomeia sua amante, Shae, como serva de Sansa, tanto para proteger Shae quanto para vigiar Sansa. Além da Muralha, Craster exige que os Vigilantes da Noite saiam. Jon descobre que Jeor Mormont sempre soube e ignorou os crimes incestuosos de Craster em troca do descanso de seus homens em sua fortaleza. No caminho para a muralha, os recrutas da Patrulha da Noite são atacados por soldados Lannister em busca de Gendry. Yoren é morto, e Arya e Gendry são feitos prisioneiros. Para proteger Gendry, Arya afirma falsamente que um menino que os guardas mataram era Gendry.\n",
-          "__Episode__synopsis_medium": "Tyrion tenta ver em quem pode confiar no Pequeno Conselho. Catelyn visita Renly para tentar convencê-lo a se juntar a Robb na guerra. Theon deve decidir se sua lealdade está com sua própria família ou com Robb.\n",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S02E3 - What is Dead May Never Die",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "O Que Está Morto Não Pode Morrer",
-          "__Episode__episode_number": null,
-          "__Episode__release_date": "2012-05-07",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396K5Z8RW9K4K94295577H",
-          "external_id": "recmNdA48wFhPKxkj",
-          "__Episode__slug": "what-is-dead-may-never-die",
-          "__Episode__synopsis_long": "Catelyn arrives at Renly's camp to negotiate an alliance. The female warrior, Brienne of Tarth, wins the right to join Renly's king's guard through combat. Renly has recently wed Margaery Tyrell, Loras's sister. Renly avoids consummating his and Margaery's marriage due to his homosexuality and sexual relationship with Loras. In the Iron Islands, Balon plans an attack on the North, led by Yara. After burning his letter to Robb warning of Balon's impending attack, Theon affirms his allegiance to House Greyjoy in a water-based ceremony. In King's Landing, Tyrion imprisons Pycelle after determining he is Cersei's informant. Tyrion appoints his lover, Shae, as Sansa's handmaiden, both to protect Shae and watch Sansa. Beyond the Wall, Craster demands the Night's Watchmen leave. Jon discovers that Jeor Mormont has always known about and ignored Craster's incestuous crimes in exchange for his men's respite at his keep. On the road to the wall, the Night's Watch recruits are attacked by Lannister soldiers searching for Gendry. Yoren is killed, and Arya and Gendry are taken prisoner. To protect Gendry, Arya falsely states that a boy the guards have killed was Gendry.",
-          "__Episode__synopsis_medium": "Tyrion tries to see who he can trust in the Small Council. Catelyn visits Renly to try and persuade him to join Robb in the war. Theon must decide if his loyalties lie with his own family or with Robb.",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S02E3 - What is Dead May Never Die",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "What is Dead May Never Die",
-          "__Episode__episode_number": 3,
-          "__Episode__release_date": "2012-04-15",
+          "uid": "01GXZP2MK9GYRV1MW2GVXV5689",
+          "external_id": "recQAtLae30aEn8EG",
+          "__Episode__slug": "the-wars-to-come",
+          "__Episode__synopsis": "In a flashback, a witch foretells a teenage Cersei that she will one day be a queen until a younger and more beautiful queen usurps her. The witch also predicts Cersei will have three children and her king husband will have twenty. In the present, Tywin is buried, and Lancel Lannister returns, now a devoted convert of a fanatical religious cult called the \"Sparrows\". In Pentos on Essos, a despondent Tyrion accompanies Varys to Meereen to meet Daenerys, who Varys believes may be worthy of the Iron Throne. In Meereen, the insurgent \"Sons of the Harpy\" murder an Unsullied. Daenerys angrily resists restoring old local traditions, including reopening the fighting pits. Missandei asks Grey Worm about why some Unsullied visit brothels. Daenerys visits her two confined dragons, who act aggressively toward her. In the Vale, Littlefinger puts Robin in House Royce's care when he and Sansa depart. At the Wall, Stannis Baratheon seeks to recruit the Wildlings in his war against Roose Bolton, offering citizenship and land as a reward. Jon is unable to persuade Mance Rayder to \"bend the knee\" to Stannis. As Mance is burned alive, Jon ends his agony with an arrow to the heart.",
+          "__Episode__synopsis_short": "Cersei and Jaime adjust to a world without Tywin. Tyrion and Varys arrive at Pentos. In Meereen, a new enemy emerges. Jon is caught between two kings.",
+          "__Episode__title": "GOT S05E1 - The Wars to Come",
+          "__Episode__title_short": "The Wars to Come",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 1,
+          "__Episode__release_date": "2015-04-12",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -1135,29 +884,105 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396K0GDE010AK46T2KFSNN",
+          "uid": "01GXZP2M4KQ5GNAVGQSXG608ES",
           "external_id": null,
           "__Episode__slug": null,
-          "__Episode__synopsis_long": "Joffrey deixa Sansa de lado para se casar com Margaery Tyrell e aliar-se à família Tyrell. Tyrion teme pela segurança dele e de Shae depois que Tywin é nomeado Mão do Rei. Melisandre dá a Stannis uma nova esperança. Brienne mata soldados Stark depois que eles reconhecem Jaime. Catelyn não consegue dissuadir Robb de se casar com Talisa, quebrando sua promessa de se casar com a filha de Walder Frey. Em Qarth, dentro da Casa dos Imortais, Daenerys entra em um simulacro de uma sala destruída do Trono de Ferro e se reúne com o que parece ser Khal Drogo e seu filho recém-nascido. Sabendo que é irreal, ela sai e recupera com sucesso seus dragões, que queimam fatalmente Pree, que tenta aprisioná-la. Ela sela Daxos e seu servo traidor dentro de seu cofre vazio e reivindica seus outros bens, com os quais Jorah pagará por um pequeno navio. Em Winterfell, Theon quer que seus homens lutem contra o exército de Robb, mas eles o deixam inconsciente e vão embora; Winterfell é incendiado. Fatalmente ferido Meistre Luwin convence Osha a fugir com Brandon e Rickon para a Muralha para a proteção de Jon. Depois que Arya, Torta Quente e Gendry escapam de Harrenhal, H'ghar dá a Arya uma moeda não monetária que ele diz que pode ser usada para encontrá-lo em Bravos. Antes dela, ele magicamente muda seu rosto. Ao norte da Muralha, Halfhand força Jon a matá-lo para provar sua lealdade aos Wildlings. Um exército de Caminhantes Brancos e homens mortos cerca o Punho dos Primeiros Homens; Sam se esconde, observando horrorizado enquanto eles passam.\n",
-          "__Episode__synopsis_medium": "Joffrey coloca Sansa de lado por Margaery Tyrell. Robb se casa com Talisa Maegyr. Jon se prepara para conhecer Mance Rayder. Arya se despede de Jaqen H'ghar. Daenerys tenta resgatar seus dragões.\n",
-          "__Episode__synopsis_short": null,
+          "__Episode__synopsis": "O espião eunuco do rei Robert, Varys, descobriu que Daenerys Targaryen está grávida. Ned rejeita o plano de Robert de assassiná-la, considerando que Daenerys não é uma ameaça. Ele renuncia em protesto como Mão de Robert, irritando o rei. Catelyn e seu prisioneiro, Tyrion, chegam à fortaleza de sua irmã Lysa Arryn no Ninho da Águia. As notícias da captura de Tyrion chegam a Porto Real, onde Jaime Lannister, irmão gêmeo da rainha, exige respostas de Ned. Um Jaime vingativo ordena que os homens de Ned sejam mortos e luta contra Ned até que o homem de Jaime esfaqueia Ned na perna por trás, deixando-o ferido.\n",
+          "__Episode__synopsis_short": "Catelyn capturou Tyrion e planeja trazê-lo para sua irmã, Lysa Arryn, no Vale, para ser julgado por seus supostos crimes contra Bran. Robert planeja matar Daenerys, mas Eddard se recusa a fazer parte disso e desiste.\n",
+          "__Episode__title": "GOT S01E5 - The Wolf and the Lion",
+          "__Episode__title_short": "O Lobo e o Leão",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 5,
+          "__Episode__release_date": "2011-11-14",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2M4KQ5GNAVGQSXG608ES",
+          "external_id": "recpGTVyxYBZ3Mh8D",
+          "__Episode__slug": "the-wolf-and-the-lion",
+          "__Episode__synopsis": "King Robert's eunuch spy, Varys, has uncovered that Daenerys Targaryen is pregnant. Ned rejects Robert's plan to assassinate her, considering Daenerys a non-threat. He resigns in protest as Robert's Hand, angering the king. Catelyn and her prisoner, Tyrion, arrive at her sister Lysa Arryn's fortress home in the Eyrie. News of Tyrion's capture reaches King's Landing where Jaime Lannister, the Queen's twin brother, demands answers from Ned. A vengeful Jaime orders Ned's men killed and fights Ned until Jaime's man stabs Ned in the leg from behind, leaving him wounded.",
+          "__Episode__synopsis_short": "Catelyn has captured Tyrion and plans to bring him to her sister, Lysa Arryn, at the Vale, to be tried for his, supposed, crimes against Bran. Robert plans to have Daenerys killed, but Eddard refuses to be a part of it and quits.",
+          "__Episode__title": "GOT S01E5 - The Wolf and the Lion",
+          "__Episode__title_short": "The Wolf and the Lion",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 5,
+          "__Episode__release_date": "2011-05-15",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "pt-PT", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2KD683PMMABPC7XM4DNJ",
+          "external_id": null,
+          "__Episode__slug": null,
+          "__Episode__synopsis": "Joffrey deixa Sansa de lado para se casar com Margaery Tyrell e aliar-se à família Tyrell. Tyrion teme pela segurança dele e de Shae depois que Tywin é nomeado Mão do Rei. Melisandre dá a Stannis uma nova esperança. Brienne mata soldados Stark depois que eles reconhecem Jaime. Catelyn não consegue dissuadir Robb de se casar com Talisa, quebrando sua promessa de se casar com a filha de Walder Frey. Em Qarth, dentro da Casa dos Imortais, Daenerys entra em um simulacro de uma sala destruída do Trono de Ferro e se reúne com o que parece ser Khal Drogo e seu filho recém-nascido. Sabendo que é irreal, ela sai e recupera com sucesso seus dragões, que queimam fatalmente Pree, que tenta aprisioná-la. Ela sela Daxos e seu servo traidor dentro de seu cofre vazio e reivindica seus outros bens, com os quais Jorah pagará por um pequeno navio. Em Winterfell, Theon quer que seus homens lutem contra o exército de Robb, mas eles o deixam inconsciente e vão embora; Winterfell é incendiado. Fatalmente ferido Meistre Luwin convence Osha a fugir com Brandon e Rickon para a Muralha para a proteção de Jon. Depois que Arya, Torta Quente e Gendry escapam de Harrenhal, H'ghar dá a Arya uma moeda não monetária que ele diz que pode ser usada para encontrá-lo em Bravos. Antes dela, ele magicamente muda seu rosto. Ao norte da Muralha, Halfhand força Jon a matá-lo para provar sua lealdade aos Wildlings. Um exército de Caminhantes Brancos e homens mortos cerca o Punho dos Primeiros Homens; Sam se esconde, observando horrorizado enquanto eles passam.\n",
+          "__Episode__synopsis_short": "Joffrey coloca Sansa de lado por Margaery Tyrell. Robb se casa com Talisa Maegyr. Jon se prepara para conhecer Mance Rayder. Arya se despede de Jaqen H'ghar. Daenerys tenta resgatar seus dragões.\n",
           "__Episode__title": "GOT S02E10 - Valar Morghulis",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
           "__Episode__title_short": "Valar Morghulis",
-          "__Episode__episode_number": null,
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 10,
           "__Episode__release_date": "2012-06-25",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -1170,29 +995,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396K0GDE010AK46T2KFSNN",
+          "uid": "01GXZP2KD683PMMABPC7XM4DNJ",
           "external_id": "recztuAAYstMYYODD",
           "__Episode__slug": "valar-morghulis",
-          "__Episode__synopsis_long": "Joffrey sets Sansa aside to marry Margaery Tyrell and ally with the Tyrell family. Tyrion fears for his and Shae's safety after Tywin is named Hand of the King. Melisandre gives Stannis a new hope. Brienne kills Stark soldiers after they recognize Jaime. Catelyn fails to dissuade Robb from marrying Talisa, breaking his promise to wed Walder Frey's daughter. In Qarth, inside the House of the Undying, Daenerys enters a simulacrum of a destroyed Iron Throne room, then is reunited with what appears to be Khal Drogo and their infant son. Knowing it is unreal, she leaves and successfully retrieves her dragons, who fatally burn Pree, who tries to imprison her. She seals Daxos and her traitorous servant inside his empty vault and claims his other possessions, with which Jorah will pay for a small ship. In Winterfell, Theon wants his men to fight Robb's army, but they knock him unconscious and leave; Winterfell is torched. Fatally wounded Maester Luwin convinces Osha to escape with Brandon and Rickon to the Wall for Jon's protection. After Arya, Hot Pie, and Gendry escape Harrenhal, H'ghar gives Arya a non-monetary coin he says can be used to find him in Braavos. Before her, he magically changes his face. North of the Wall, Halfhand forces Jon to kill him to prove his loyalty to the Wildlings. An army of White Walkers and dead men surrounds the Fist of the First Men; Sam hides, watching in horror as they pass.",
-          "__Episode__synopsis_medium": "Joffrey puts Sansa aside for Margaery Tyrell. Robb marries Talisa Maegyr. Jon prepares to meet Mance Rayder. Arya says farewell to Jaqen H'ghar. Daenerys tries to rescue her dragons.",
-          "__Episode__synopsis_short": null,
+          "__Episode__synopsis": "Joffrey sets Sansa aside to marry Margaery Tyrell and ally with the Tyrell family. Tyrion fears for his and Shae's safety after Tywin is named Hand of the King. Melisandre gives Stannis a new hope. Brienne kills Stark soldiers after they recognize Jaime. Catelyn fails to dissuade Robb from marrying Talisa, breaking his promise to wed Walder Frey's daughter. In Qarth, inside the House of the Undying, Daenerys enters a simulacrum of a destroyed Iron Throne room, then is reunited with what appears to be Khal Drogo and their infant son. Knowing it is unreal, she leaves and successfully retrieves her dragons, who fatally burn Pree, who tries to imprison her. She seals Daxos and her traitorous servant inside his empty vault and claims his other possessions, with which Jorah will pay for a small ship. In Winterfell, Theon wants his men to fight Robb's army, but they knock him unconscious and leave; Winterfell is torched. Fatally wounded Maester Luwin convinces Osha to escape with Brandon and Rickon to the Wall for Jon's protection. After Arya, Hot Pie, and Gendry escape Harrenhal, H'ghar gives Arya a non-monetary coin he says can be used to find him in Braavos. Before her, he magically changes his face. North of the Wall, Halfhand forces Jon to kill him to prove his loyalty to the Wildlings. An army of White Walkers and dead men surrounds the Fist of the First Men; Sam hides, watching in horror as they pass.",
+          "__Episode__synopsis_short": "Joffrey puts Sansa aside for Margaery Tyrell. Robb marries Talisa Maegyr. Jon prepares to meet Mance Rayder. Arya says farewell to Jaqen H'ghar. Daenerys tries to rescue her dragons.",
           "__Episode__title": "GOT S02E10 - Valar Morghulis",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
           "__Episode__title_short": "Valar Morghulis",
+          "__Episode__title_sort": null,
           "__Episode__episode_number": 10,
           "__Episode__release_date": "2012-06-03",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -1205,29 +1032,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396JYSP1RCPGVXBZCC6216",
+          "uid": "01GXZP2KCDKTFA8F3R9815BA3Q",
           "external_id": null,
           "__Episode__slug": null,
-          "__Episode__synopsis_long": "Ned participa do Pequeno Conselho do Rei e descobre que Westeros foi mal administrado e está profundamente endividado. Catelyn viaja para Porto Real para avisar secretamente seu marido sobre a tentativa de assassinato, mas ela é interceptada por seu amigo de infância, o conselheiro Petyr \"Mindinho\" Baelish. Bran descobre que nunca mais vai andar e continua incapaz de se lembrar dos eventos que levaram à sua queda. Jon luta para se adaptar à vida na Muralha. A outrora elite Patrulha da Noite agora recruta muitos criminosos de baixo nascimento e/ou condenados que não se impressionam com a linhagem de Jon. O Senhor Comandante Mormont pede a Tyrion que implore ao Rei que envie mais recrutas para a Patrulha da Noite. Daenerys, agora grávida, enfrenta seu irmão, Viserys, ameaçando-o se ele abusar dela novamente.\n",
-          "__Episode__synopsis_medium": "Jon começa seu treinamento com a Patrulha da Noite; Ned confronta seu passado e futuro em Porto Real; Daenerys se vê em desacordo com Viserys.\n",
-          "__Episode__synopsis_short": null,
+          "__Episode__synopsis": "Ned participa do Pequeno Conselho do Rei e descobre que Westeros foi mal administrado e está profundamente endividado. Catelyn viaja para Porto Real para avisar secretamente seu marido sobre a tentativa de assassinato, mas ela é interceptada por seu amigo de infância, o conselheiro Petyr \"Mindinho\" Baelish. Bran descobre que nunca mais vai andar e continua incapaz de se lembrar dos eventos que levaram à sua queda. Jon luta para se adaptar à vida na Muralha. A outrora elite Patrulha da Noite agora recruta muitos criminosos de baixo nascimento e/ou condenados que não se impressionam com a linhagem de Jon. O Senhor Comandante Mormont pede a Tyrion que implore ao Rei que envie mais recrutas para a Patrulha da Noite. Daenerys, agora grávida, enfrenta seu irmão, Viserys, ameaçando-o se ele abusar dela novamente.\n",
+          "__Episode__synopsis_short": "Jon começa seu treinamento com a Patrulha da Noite; Ned confronta seu passado e futuro em Porto Real; Daenerys se vê em desacordo com Viserys.\n",
           "__Episode__title": "GOT S01E3 - Lord Snow",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
           "__Episode__title_short": "Lorde Snow",
-          "__Episode__episode_number": null,
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 3,
           "__Episode__release_date": "2011-10-31",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -1240,29 +1069,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396JYSP1RCPGVXBZCC6216",
+          "uid": "01GXZP2KCDKTFA8F3R9815BA3Q",
           "external_id": "recHQulT7mlIQ4E6Q",
           "__Episode__slug": "lord-snow",
-          "__Episode__synopsis_long": "Ned attends the King's Small Council and learns Westeros has been poorly managed and is deeply in debt. Catelyn travels to King's Landing to covertly warn her husband about the assassination attempt, but she is intercepted by her childhood friend, Councillor Petyr \"Littlefinger\" Baelish. Bran learns he will never walk again and remains unable to remember the events leading to his fall. Jon struggles to adapt to life on the Wall. The once elite Night's Watch now recruits many low-born and/or convicted criminals who are unimpressed by Jon's bloodline. Lord Commander Mormont asks Tyrion to plead with the King to send more recruits to the Night's Watch. Daenerys, now pregnant, stands up to her brother, Viserys, threatening him if he ever abuses her again.",
-          "__Episode__synopsis_medium": "Jon begins his training with the Night's Watch; Ned confronts his past and future at King's Landing; Daenerys finds herself at odds with Viserys.",
-          "__Episode__synopsis_short": null,
+          "__Episode__synopsis": "Ned attends the King's Small Council and learns Westeros has been poorly managed and is deeply in debt. Catelyn travels to King's Landing to covertly warn her husband about the assassination attempt, but she is intercepted by her childhood friend, Councillor Petyr \"Littlefinger\" Baelish. Bran learns he will never walk again and remains unable to remember the events leading to his fall. Jon struggles to adapt to life on the Wall. The once elite Night's Watch now recruits many low-born and/or convicted criminals who are unimpressed by Jon's bloodline. Lord Commander Mormont asks Tyrion to plead with the King to send more recruits to the Night's Watch. Daenerys, now pregnant, stands up to her brother, Viserys, threatening him if he ever abuses her again.",
+          "__Episode__synopsis_short": "Jon begins his training with the Night's Watch; Ned confronts his past and future at King's Landing; Daenerys finds herself at odds with Viserys.",
           "__Episode__title": "GOT S01E3 - Lord Snow",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
           "__Episode__title_short": "Lord Snow",
+          "__Episode__title_sort": null,
           "__Episode__episode_number": 3,
           "__Episode__release_date": "2011-05-01",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -1275,29 +1106,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396JY38K4GX5ZZJDWTBS8K",
+          "uid": "01GXZP2KC0AJVMFCYEKW05EX6X",
           "external_id": null,
           "__Episode__slug": null,
-          "__Episode__synopsis_long": "Arya escapa da Fortaleza Vermelha depois que Syrio Forel, seu mestre de espadas bravosiano, afasta os guardas enviados para prendê-la, enquanto Sansa é capturada. Robb ouve a notícia e prepara os exércitos do Norte para lutar contra os Lannisters, deixando Bran para trás para governar Winterfell. Lysa se recusa a lutar contra os Lannisters, e Catelyn sai para se juntar ao acampamento de Robb. Tyrion e Bronn estão cercados por Shagga, líder da tribo Stone Crows. Tyrion os convence a escoltá-lo até seu pai Tywin Lannister, que os pagará. No acampamento, Tywin pede a Shagga para ajudá-los a enfrentar os Starks em troca de um pagamento ainda maior. Na Muralha, alguns corpos afetados pelos Caminhantes Brancos são encontrados. Um desperta como um wight e ataca o Comandante Mormont, mas Jon o mata. Em Essos, os soldados de Drogo começam a atacar assentamentos próximos, escravizando os moradores locais para vendê-los e arrecadar dinheiro para comprar navios para cruzar o Mar Estreito. Drogo é ferido em uma luta. Joffrey nomeia seu avô, Tywin, como Mão do Rei. Sansa implora a Joffrey que mostre misericórdia a Ned. Joffrey concorda se Ned reconhecer publicamente a reivindicação de Joffrey ao trono e admitir ter cometido traição.\n",
-          "__Episode__synopsis_medium": "Os Lannisters pressionam sua vantagem sobre os Starks; Robb reúne os aliados do norte de seu pai e segue para o sul para a guerra; Os Caminhantes Brancos atacam a Muralha; Tyrion volta para seu pai com alguns novos amigos.\n",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S01E8 - The Pointy End",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "A Ponta Afiada",
-          "__Episode__episode_number": null,
-          "__Episode__release_date": "2011-12-05",
+          "__Episode__synopsis": "Catelyn chega ao acampamento de Renly para negociar uma aliança. A guerreira, Brienne de Tarth, ganha o direito de se juntar à guarda do rei de Renly através do combate. Renly se casou recentemente com Margaery Tyrell, irmã de Loras. Renly evita consumar o casamento dele e de Margaery devido à sua homossexualidade e relacionamento sexual com Loras. Nas Ilhas de Ferro, Balon planeja um ataque ao Norte, liderado por Yara. Depois de queimar sua carta para Robb alertando sobre o ataque iminente de Balon, Theon afirma sua fidelidade à Casa Greyjoy em uma cerimônia à base de água. Em Porto Real, Tyrion aprisiona Pycelle depois de determinar que ele é o informante de Cersei. Tyrion nomeia sua amante, Shae, como serva de Sansa, tanto para proteger Shae quanto para vigiar Sansa. Além da Muralha, Craster exige que os Vigilantes da Noite saiam. Jon descobre que Jeor Mormont sempre soube e ignorou os crimes incestuosos de Craster em troca do descanso de seus homens em sua fortaleza. No caminho para a muralha, os recrutas da Patrulha da Noite são atacados por soldados Lannister em busca de Gendry. Yoren é morto, e Arya e Gendry são feitos prisioneiros. Para proteger Gendry, Arya afirma falsamente que um menino que os guardas mataram era Gendry.\n",
+          "__Episode__synopsis_short": "Tyrion tenta ver em quem pode confiar no Pequeno Conselho. Catelyn visita Renly para tentar convencê-lo a se juntar a Robb na guerra. Theon deve decidir se sua lealdade está com sua própria família ou com Robb.\n",
+          "__Episode__title": "GOT S02E3 - What is Dead May Never Die",
+          "__Episode__title_short": "O Que Está Morto Não Pode Morrer",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 3,
+          "__Episode__release_date": "2012-05-07",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -1310,29 +1143,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396JY38K4GX5ZZJDWTBS8K",
-          "external_id": "recnvvY6sDyxxbxCI",
-          "__Episode__slug": "the-pointy-end",
-          "__Episode__synopsis_long": "Arya escapes the Red Keep after Syrio Forel, her Braavosian sword master, fends off guards sent to arrest her, while Sansa is captured. Robb hears the news and prepares the Northern armies to fight the Lannisters, leaving Bran behind to rule Winterfell. Lysa refuses to fight the Lannisters, and Catelyn leaves to join Robb's camp. Tyrion and Bronn are surrounded by Shagga, leader of the Stone Crows tribe. Tyrion convinces them to escort him to his father Tywin Lannister, who will pay them. At the camp, Tywin asks Shagga to help them confront the Starks in exchange for even greater payment. At the Wall, some bodies affected by the White Walkers are found. One awakens as a wight and attack Commander Mormont, but Jon kills it. In Essos, Drogo's soldiers begin attacking nearby settlements, enslaving locals in order to sell them to raise money to buy ships to cross the Narrow Sea. Drogo is wounded in a fight. Joffrey appoints his grandfather, Tywin, as Hand of the King. Sansa begs Joffrey to show Ned mercy. Joffrey agrees if Ned publicly recognizes Joffrey's claim to the throne and admits to committing treason.",
-          "__Episode__synopsis_medium": "The Lannisters press their advantage over the Starks; Robb rallies his father's northern allies and heads south to war; The White Walkers attack the Wall; Tyrion returns to his father with some new friends.",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S01E8 - The Pointy End",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "The Pointy End",
-          "__Episode__episode_number": 8,
-          "__Episode__release_date": "2011-06-05",
+          "uid": "01GXZP2KC0AJVMFCYEKW05EX6X",
+          "external_id": "recmNdA48wFhPKxkj",
+          "__Episode__slug": "what-is-dead-may-never-die",
+          "__Episode__synopsis": "Catelyn arrives at Renly's camp to negotiate an alliance. The female warrior, Brienne of Tarth, wins the right to join Renly's king's guard through combat. Renly has recently wed Margaery Tyrell, Loras's sister. Renly avoids consummating his and Margaery's marriage due to his homosexuality and sexual relationship with Loras. In the Iron Islands, Balon plans an attack on the North, led by Yara. After burning his letter to Robb warning of Balon's impending attack, Theon affirms his allegiance to House Greyjoy in a water-based ceremony. In King's Landing, Tyrion imprisons Pycelle after determining he is Cersei's informant. Tyrion appoints his lover, Shae, as Sansa's handmaiden, both to protect Shae and watch Sansa. Beyond the Wall, Craster demands the Night's Watchmen leave. Jon discovers that Jeor Mormont has always known about and ignored Craster's incestuous crimes in exchange for his men's respite at his keep. On the road to the wall, the Night's Watch recruits are attacked by Lannister soldiers searching for Gendry. Yoren is killed, and Arya and Gendry are taken prisoner. To protect Gendry, Arya falsely states that a boy the guards have killed was Gendry.",
+          "__Episode__synopsis_short": "Tyrion tries to see who he can trust in the Small Council. Catelyn visits Renly to try and persuade him to join Robb in the war. Theon must decide if his loyalties lie with his own family or with Robb.",
+          "__Episode__title": "GOT S02E3 - What is Dead May Never Die",
+          "__Episode__title_short": "What is Dead May Never Die",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 3,
+          "__Episode__release_date": "2012-04-15",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -1345,204 +1180,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396JPT08NYZY5M6SAWKB0X",
+          "uid": "01GXZP2K6VA63537FGDVTXVMPK",
           "external_id": null,
           "__Episode__slug": null,
-          "__Episode__synopsis_long": "Rei Robert renomeia Ned como Mão e o encarrega de administrar os assuntos até que Robert retorne da caça. Aldeões de Correrrio chegam com notícias de atrocidades cometidas por invasores, que Ned deduz que foram liderados por Sor Gregor Clegane, um retentor dos Lannister. Ned condena Sor Gregor à morte e convoca Tywin Lannister para um julgamento. Ned decide enviar Sansa (agora reconciliada com Joffrey) e Arya de volta a Winterfell. Ned descobriu que Joffrey e seus dois irmãos não são filhos biológicos de Robert, e foram pais de Jaime Lannister. Bran, enquanto testa sua nova sela, é atacado por Wildings desonestos. Robb, o filho mais velho de Ned, e Theon, o prisioneiro cativo de Ned, cujo pai, o rei Balon, era um rebelde caído, o resgatam, e a mulher Wilding, Osha, é escravizada. No Vale, Tyrion exige um julgamento por combate. Lysa escolhe Sor Vardis como seu campeão. O mercenário Bronn se oferece como campeão de Tyrion. Ele derrota Vardis e obtém a libertação de Tyrion. Enquanto isso, Viserys fica impaciente e irritado esperando que Drogo cumpra sua promessa, e ele ameaça matar o filho ainda não nascido de Daenerys. Drogo mata Viserys derramando ouro derretido em sua cabeça.\n",
-          "__Episode__synopsis_medium": "Enquanto se recupera de sua batalha com Jaime, Eddard é forçado a governar o reino enquanto Robert vai caçar. Tyrion exige um julgamento por combate por sua liberdade. Viserys está perdendo a paciência com Drogo.\n",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S01E6 - A Golden Crown",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "Uma Coroa Dourada",
-          "__Episode__episode_number": null,
-          "__Episode__release_date": "2011-11-21",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "en-GB", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01GX396JPT08NYZY5M6SAWKB0X",
-          "external_id": "recLcK3EHRE7McVUL",
-          "__Episode__slug": "a-golden-crown",
-          "__Episode__synopsis_long": "King Robert reappoints Ned as Hand and tasks him with running affairs until Robert returns from hunting. Villagers from Riverrun arrive with news of atrocities committed by raiders, who Ned deduces were led by Ser Gregor Clegane, a Lannister retainer. Ned sentences Ser Gregor to death and summons Tywin Lannister to a trial. Ned decides to send Sansa (now reconciled with Joffrey) and Arya back to Winterfell. Ned has discovered that Joffrey and his two siblings are not Robert's biological children, and were fathered by Jaime Lannister. Bran, while testing his new saddle, is attacked by rogue Wildings. Robb, Ned's oldest son, and Theon, Ned's captive ward, whose father, King Balon, was a fallen rebel, rescue him, and the woman Wilding, Osha, is enslaved. In the Vale, Tyrion demands a trial by combat. Lysa chooses Ser Vardis as her champion. The sellsword Bronn volunteers as Tyrion's champion. He defeats Vardis and obtains Tyrion's release. Meanwhile, Viserys grows impatient and angry waiting for Drogo to fulfill his promise, and he threatens to kill Daenerys' unborn child. Drogo kills Viserys by pouring molten gold on his head.",
-          "__Episode__synopsis_medium": "While recovering from his battle with Jaime, Eddard is forced to run the kingdom while Robert goes hunting. Tyrion demands a trial by combat for his freedom. Viserys is losing his patience with Drogo.",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S01E6 - A Golden Crown",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "A Golden Crown",
-          "__Episode__episode_number": 6,
-          "__Episode__release_date": "2011-05-22",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "pt-PT", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01GX396JJ2KMBTWF7ME8AHMCKG",
-          "external_id": null,
-          "__Episode__slug": null,
-          "__Episode__synopsis_long": "Em Harrenhal, Jaqen H'ghar, um dos três prisioneiros enjaulados que Arya salvou anteriormente, promete matar quaisquer três pessoas que ela escolher para pagar sua dívida com ela. Sua primeira escolha é o Cócegas, o homem que tortura mortalmente os cativos. Renly é morto pelo assassino sombrio de Melisandre. Lady Brienne é acusada do assassinato e Catelyn a força a fugir do acampamento. Excluindo os Tyrells, as forças de Renly se juntam a Stannis. Brienne jura fidelidade por toda a vida a Catelyn e protegerá suas filhas. Theon parte de Pyke e, contra as ordens de Yara, pretende provar que é um verdadeiro Ironborn capturando Winterfell durante a ausência de Robb. Lancel conta a Tyrion sobre o incêndio florestal, uma substância explosiva produzida em massa escondida nas masmorras da cidade e destinada a destruir a frota e o exército de Stannis durante o cerco iminente. Tyrion então assume o controle do esquema. No norte, a Patrulha da Noite chega a uma antiga fortaleza chamada Punho dos Primeiros Homens. Jeor Mormont permite que Jon se junte à equipe liderada por um veterano chamado Halfhand, para matar o líder inimigo. Em Qarth, Daxos propõe casamento a Daenerys em troca de fornecer a ela sua riqueza para conquistar os Sete Reinos. Sor Jorah a convence a ganhar o apoio do povo Westerosi.\n",
-          "__Episode__synopsis_medium": "Tyrion investiga uma arma secreta que o Rei Joffrey planeja usar contra Stannis. Enquanto isso, como um símbolo para salvar sua vida, Jaqen H'ghar se oferece para matar três pessoas que Arya escolhe.\n",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S02E5 - The Ghost of Hareenhal",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "O Fantasma de Harrenhal",
-          "__Episode__episode_number": null,
-          "__Episode__release_date": "2012-05-21",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "en-GB", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01GX396JJ2KMBTWF7ME8AHMCKG",
-          "external_id": "recAYiQiD18vJanKa",
-          "__Episode__slug": "the-ghost-of-hareenhal",
-          "__Episode__synopsis_long": "At Harrenhal, Jaqen H'ghar, one of three caged prisoners Arya previously saved, pledges to kill any three people she chooses to repay his debt to her. Her first choice is the Tickler, the man who mortally tortures the captives. Renly is killed by Melisandre's shadowy assassin. Lady Brienne is accused of the murder and Catelyn forces her to flee the camp. Excluding the Tyrells, Renly's forces join Stannis. Brienne swears life-long fealty to Catelyn and will protect her daughters. Theon sails from Pyke, and against Yara's orders, intends to prove he is a true Ironborn by capturing Winterfell during Robb's absence. Lancel tells Tyrion about wildfire, a mass-produced explosive substance hidden in the city's dungeons and intended to destroy Stannis' fleet and army during the impending siege. Tyrion then takes control of the scheme. In the north, the Night's Watch arrives at an ancient fortress called the Fist of the First Men. Jeor Mormont allows Jon to join the team led by a veteran named Halfhand, to kill the enemy leader. In Qarth, Daxos proposes marriage to Daenerys in exchange for providing her his wealth to conquer the Seven Kingdoms. Ser Jorah convinces her to instead gain the Westerosi peoples' support.",
-          "__Episode__synopsis_medium": "Tyrion investigates a secret weapon that King Joffrey plans to use against Stannis. Meanwhile, as a token for saving his life, Jaqen H'ghar offers to kill three people that Arya chooses.",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S02E5 - The Ghost of Hareenhal",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "The Ghost of Hareenhal",
-          "__Episode__episode_number": 5,
-          "__Episode__release_date": "2012-04-29",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "pt-PT", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01GX396JF8BEFHZMZMTMNF8VA5",
-          "external_id": null,
-          "__Episode__slug": null,
-          "__Episode__synopsis_long": null,
-          "__Episode__synopsis_medium": null,
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S05E2 - The House of Black and White",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "A Casa do Preto e Branco",
-          "__Episode__episode_number": null,
-          "__Episode__release_date": "2015-04-19",
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "en-GB", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01GX396JF8BEFHZMZMTMNF8VA5",
-          "external_id": "rectUh4c2a2oQ6OHF",
-          "__Episode__slug": "the-house-of-black-and-white",
-          "__Episode__synopsis_long": "Arya arrives in Braavos and is accepted into the \"House of Black and White\" by Jaqen H'ghar, who calls himself and his colleagues, \"no one\". Jaime recruits Bronn to travel to Dorne with him to retrieve Jaime's niece/daughter Myrcella, who is now betrothed to Trystane Martell, Prince Doran's son. Podrick recognises Littlefinger and Sansa in a tavern; Brienne offers Sansa her protection but is rebuffed. Littlefinger insists Brienne come with them, but she refuses and escapes with Podrick, then secretly follows Sansa. Stannis offers Jon legitimacy and lordship of Winterfell if he leaves the Night's Watch and supports him, but Jon keeps his vow to the Night's Watch; Samwell nominates Jon as Lord Commander against Alliser Thorne; Maester Aemon casts his ballot for Jon, breaking a tie vote. Daenerys incites a riot by executing a former slave who murdered a Sons of the Harpy prisoner prior to his trial. Drogon reappears, but soon leaves.",
-          "__Episode__synopsis_medium": "Arya arrives in Braavos. Jaime takes on a secret mission. Ellaria Sand seeks revenge for Oberyn's death. Stannis makes Jon a generous offer as the Night's Watch elects a new Lord Commander. Daenerys is faced with a difficult decision.",
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S05E2 - The House of Black and White",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "The House of Black and White",
+          "__Episode__synopsis": "Ned, a nova Mão do Rei, viaja para Porto Real acompanhado por suas filhas, Sansa e Arya. Catelyn permanece em Winterfell para cuidar do ainda inconsciente Bran. Um assassino ataca Bran, mas Catelyn o afasta e o lobo gigante de Bran, Summer, o mata. Catelyn suspeita que os Lannisters estavam por trás do ataque. O filho ilegítimo de Ned, Jon, segue para o norte com seu tio, Benjen Stark, para se juntar à Patrulha da Noite, os protetores da Muralha, uma enorme estrutura de gelo que mantém as tribos Selvagens e os míticos Caminhantes Brancos da civilizada Westeros. Antes de partir, Jon deu a Arya uma espada fina que ela chama de \"Agulha\". O irmão mais novo da Rainha Cersei, Tyrion Lannister, um anão também conhecido como \"O Diabrete\", acompanha Jon à Muralha. Em Porto Real, o príncipe Joffrey ameaça o jovem amigo plebeu de Arya, depois de matá-lo. Nymeria, o lobo gigante de Arya, a defende, mordendo Joffrey. Cersei exige que Robert mate o lobo, mas Arya libera Nymeria na natureza. A loba gigante de Sansa, Lady, é morta. Em Winterfell, Brandon acorda, sem se lembrar de nada sobre sua queda. Enquanto isso, Daenerys faz amizade com Sor Jorah Mormont, um cavaleiro desgraçado, enquanto ela se concentra em aprender a agradar Drogo.\n",
+          "__Episode__synopsis_short": "Enquanto Bran se recupera da queda, Ned leva apenas suas filhas para Porto Real. Jon Snow vai com seu tio Benjen à Muralha. Tyrion se junta a eles.\n",
+          "__Episode__title": "GOT S01E2 - The Kingsroad",
+          "__Episode__title_short": "A Estrada do Rei",
+          "__Episode__title_sort": null,
           "__Episode__episode_number": 2,
-          "__Episode__release_date": "2015-04-19",
+          "__Episode__release_date": "2011-10-24",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -1555,29 +1217,216 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2K6VA63537FGDVTXVMPK",
+          "external_id": "recEmpXHOvkhtX9YY",
+          "__Episode__slug": "the-kingsroad",
+          "__Episode__synopsis": "Ned, the new Hand of the King, travels to King's Landing accompanied by his daughters, Sansa and Arya. Catelyn remains at Winterfell to care for the still unconscious Bran. An assassin attacks Bran, but Catelyn fends him off and Bran's direwolf, Summer, kills him. Catelyn suspects the Lannisters were behind the attack. Ned's illegitimate son, Jon, heads north with his uncle, Benjen Stark, to join the Night's Watch, the protectors of the Wall, a massive ice structure that keeps the Wildling tribes and the mythical White Walkers from civilized Westeros. Before departing, Jon gave tomboy Arya a thin sword she names, \"Needle\". Queen Cersei's younger brother, Tyrion Lannister, a dwarf also known as \"The Imp,\" accompanies Jon to the Wall. In King's Landing, Prince Joffrey threatens Arya's young commoner friend, later having him killed. Nymeria, Arya's direwolf, defends her, biting Joffrey. Cersei demands that Robert have the wolf killed, but Arya releases Nymeria to the wild. Sansa's direwolf, Lady, is killed instead. In Winterfell, Brandon awakens, remembering nothing about his fall. Meanwhile, Daenerys is befriended by Ser Jorah Mormont, a disgraced knight, while she focuses on learning how to please Drogo.",
+          "__Episode__synopsis_short": "While Bran recovers from his fall, Ned takes only his daughters to King's Landing. Jon Snow goes with his uncle Benjen to the Wall. Tyrion joins them.",
+          "__Episode__title": "GOT S01E2 - The Kingsroad",
+          "__Episode__title_short": "The Kingsroad",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 2,
+          "__Episode__release_date": "2011-04-24",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396JBA5M0QQJJZ9WY42HQK",
+          "uid": "01GXZP2K57QA5NAS4ATGAW8CFK",
           "external_id": null,
           "__Episode__slug": null,
-          "__Episode__synopsis_long": "Em Porto Real, Tyrion se torna a Mão do Rei, para desgosto de Cersei. Em Pedra do Dragão, Stannis proclama fidelidade ao Deus da Luz da sacerdotisa Melisandre e reivindica o Trono de Ferro, tendo revelado a bastardia de Joffrey. Joffrey ordena que os filhos bastardos do Rei Robert sejam mortos. Um deles, Gendry, junto com Arya disfarçada, escaparam da cidade e estão sendo levados para Castelo Negro. Tendo conquistado três vitórias, Robb Stark, que agora é proclamado Rei do Norte, oferece paz aos Lannister em troca da independência do Norte e do retorno seguro de Sansa e Arya. Ele envia Theon para ganhar o apoio de Balon Greyjoy, e Catelyn para buscar uma aliança com Renly Baratheon, que também reivindica a coroa. Além da Muralha, a Patrulha da Noite se abriga com Craster e suas filhas/esposas. Em Essos, enquanto seu povo morre lentamente no Deserto Vermelho, Daenerys despacha três cavaleiros para realizar o reconhecimento.\n",
-          "__Episode__synopsis_medium": "Tyrion chega a Porto Real para ocupar o lugar de seu pai como Mão do Rei. Stannis Baratheon planeja tomar o Trono de Ferro para si. Robb tenta decidir seu próximo passo na guerra. A Patrulha da Noite chega à casa de Craster.\n",
-          "__Episode__synopsis_short": null,
+          "__Episode__synopsis": "Tywin supervisiona o reforjamento de Gelo, a espada de aço valiriano ancestral da Casa Stark, em duas novas. Um é para Jaime, que lamenta a perda de sua mão de espada e o amor de Cersei, e o outro é um presente de casamento para o Rei Joffrey, que Joffrey chama de Lamento da Viúva. O príncipe Oberyn Martell, representando seu irmão enfermo, o príncipe Doran de Dorne, chega a Porto Real para participar do casamento real. Ele e sua amante, Ellaria Sand, são recebidos por Tyrion. Oberyn secretamente busca vingança contra os Lannister e Gregor Clegane pelo estupro e assassinato de sua irmã, Elia, esposa do infiel Príncipe Rhaegar Targaryen. No Norte, Styr e os canibais Thenns reforçam Tormund, Ygritte e os outros Selvagens. Meistre Aemon absolve Jon depois que ele explica suas ações enquanto estava com os Selvagens e revela que seu exército de 100.000 planeja atacar Castelo Negro. Nas Terras Fluviais, o Cão de Caça e Arya vão para o Ninho da Águia, onde o Cão de Caça pretende resgatar Arya para sua tia Lysa, a viúva de Jon Arryn. Ao longo do caminho, Arya recupera sua espada, Needle, de Polliver, matando-o. Em Essos, Daenerys marcha seu exército em direção a Meereen, a última das três grandes cidades escravas; ela teme estar perdendo o controle sobre seus dragões em crescimento, agora do tamanho de cavalos.\n",
+          "__Episode__synopsis_short": "Tyrion recebe um convidado em Porto Real. Em Castelo Negro, Jon é julgado. Daenerys é apontada para Meereen, a mãe de todas as cidades escravas. Arya encontra um velho inimigo.\n",
+          "__Episode__title": "GOT S04E1 - Two Swords",
+          "__Episode__title_short": "Duas Espadas",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 1,
+          "__Episode__release_date": "2014-04-07",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2K57QA5NAS4ATGAW8CFK",
+          "external_id": "recaLYyR0ol4saNJN",
+          "__Episode__slug": "two-swords",
+          "__Episode__synopsis": "Tywin oversees the reforging of Ice, House Stark's ancestral Valyrian steel sword, into two new ones. One is for Jaime, who grieves the loss of his sword hand and Cersei's love, and the other is a wedding present for King Joffrey, which Joffrey names Widow's Wail. Prince Oberyn Martell, representing his infirmed brother, Prince Doran of Dorne, arrives in King's Landing to attend the royal wedding. He and his paramour, Ellaria Sand, are greeted by Tyrion. Oberyn secretly seeks revenge against the Lannisters and Gregor Clegane for the rape and murder of his sister, Elia, wife of the unfaithful Prince Rhaegar Targaryen. In the North, Styr and the cannibalistic Thenns reinforce Tormund, Ygritte and the other Wildlings. Maester Aemon absolves Jon after he explains his actions while with the Wildlings and reveals that their army of 100,000 plans to attack Castle Black. In the Riverlands, the Hound and Arya head to the Eyrie where the Hound intends to ransom Arya to her Aunt Lysa, Jon Arryn's widow. Along the way, Arya reclaims her sword, Needle, from Polliver, killing him. In Essos, Daenerys marches her army towards Meereen, the last of the three great slave cities; she fears she is losing control over her growing dragons, now horse-sized.",
+          "__Episode__synopsis_short": "Tyrion welcomes a guest to King's Landing. At Castle Black, Jon stands trial. Daenerys is pointed to Meereen, the mother of all slave cities. Arya runs into an old enemy.",
+          "__Episode__title": "GOT S04E1 - Two Swords",
+          "__Episode__title_short": "Two Swords",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 1,
+          "__Episode__release_date": "2014-04-06",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "pt-PT", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2K10HASNM46P02ZBGC1H",
+          "external_id": null,
+          "__Episode__slug": null,
+          "__Episode__synopsis": "A Patrulha da Noite se prepara para a batalha. Gilly e Little Sam escapam de Mole's Town e chegam a Castle Black, onde Sam os esconde. Os Selvagens atacam de ambos os lados da muralha. O exército de Tormund irrompe do sul e enfrenta a Patrulha da Noite. Um gigante invade o túnel em Castelo Negro, mas é morto por Grenn e outros cinco, ao custo de suas próprias vidas. Alliser Thorne se junta à luta na parte sul, deixando o incompetente Janos Slynt comandando a Muralha. Slynt deixa Jon no comando e, quando a maré vira na Muralha, Jon se junta à luta abaixo. Depois de ver Jon matar Styr, Ygritte aponta seu arco para ele, mas hesita, e é fatalmente baleada por Olly. Ajudado por Fantasma, o lobo gigante de Jon, a Patrulha da Noite protege a fortaleza interna de Castelo Negro e um Tormund ferido é preso. Os escaladores de parede são obliterados por uma enorme foice balançando. Os Selvagens se retiram para a noite. Jon vai além da Muralha para encontrar e matar Mance Rayder, acreditando que o exército selvagem se fragmentará sem seu comando.\n",
+          "__Episode__synopsis_short": "A batalha entre a Patrulha da Noite e os selvagens chegou.\n",
+          "__Episode__title": "GOT S04E9 - The Watchers on the Wall",
+          "__Episode__title_short": "Os Patrulheiros da Muralha",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 9,
+          "__Episode__release_date": "2014-06-10",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2K10HASNM46P02ZBGC1H",
+          "external_id": "recOt471r2NHxD9nl",
+          "__Episode__slug": "the-watchers-on-the-wall",
+          "__Episode__synopsis": "The Night's Watch prepares for the battle. Gilly and Little Sam escape Mole's Town and arrive at Castle Black, where Sam hides them. The Wildlings attack from both sides of the wall. Tormund's army breaks through from the south and engages the Night's Watch. A giant breaches the tunnel into Castle Black but is killed by Grenn and five others, at the cost of their own lives. Alliser Thorne joins the fight in the southern part, leaving the incompetent Janos Slynt commanding the Wall. Slynt leaves Jon in charge, and as the tide turns at the Wall, Jon joins the fight below. After seeing Jon kill Styr, Ygritte aims her bow at him but hesitates, then is fatally shot by Olly. Assisted by Ghost, Jon's direwolf, the Night's Watch secure Castle Black's inner keep, and a wounded Tormund is arrested. The wall climbers are obliterated by a massive swinging scythe. The Wildlings retreat for the night. Jon goes beyond the Wall to find and kill Mance Rayder, believing that the Wildling army will fragment without his command.",
+          "__Episode__synopsis_short": "The battle between the Night's Watch and the wildlings has come.",
+          "__Episode__title": "GOT S04E9 - The Watchers on the Wall",
+          "__Episode__title_short": "The Watchers on the Wall",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 9,
+          "__Episode__release_date": "2014-06-08",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "pt-PT", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2JZ6J9H0KY37RH58Z4MD",
+          "external_id": null,
+          "__Episode__slug": null,
+          "__Episode__synopsis": "Em Porto Real, Tyrion se torna a Mão do Rei, para desgosto de Cersei. Em Pedra do Dragão, Stannis proclama fidelidade ao Deus da Luz da sacerdotisa Melisandre e reivindica o Trono de Ferro, tendo revelado a bastardia de Joffrey. Joffrey ordena que os filhos bastardos do Rei Robert sejam mortos. Um deles, Gendry, junto com Arya disfarçada, escaparam da cidade e estão sendo levados para Castelo Negro. Tendo conquistado três vitórias, Robb Stark, que agora é proclamado Rei do Norte, oferece paz aos Lannister em troca da independência do Norte e do retorno seguro de Sansa e Arya. Ele envia Theon para ganhar o apoio de Balon Greyjoy, e Catelyn para buscar uma aliança com Renly Baratheon, que também reivindica a coroa. Além da Muralha, a Patrulha da Noite se abriga com Craster e suas filhas/esposas. Em Essos, enquanto seu povo morre lentamente no Deserto Vermelho, Daenerys despacha três cavaleiros para realizar o reconhecimento.\n",
+          "__Episode__synopsis_short": "Tyrion chega a Porto Real para ocupar o lugar de seu pai como Mão do Rei. Stannis Baratheon planeja tomar o Trono de Ferro para si. Robb tenta decidir seu próximo passo na guerra. A Patrulha da Noite chega à casa de Craster.\n",
           "__Episode__title": "GOT S02E1 - The North Remembers",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
           "__Episode__title_short": "O Norte Se Lembra",
-          "__Episode__episode_number": null,
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 1,
           "__Episode__release_date": "2012-04-23",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -1590,29 +1439,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396JBA5M0QQJJZ9WY42HQK",
+          "uid": "01GXZP2JZ6J9H0KY37RH58Z4MD",
           "external_id": "rec928urGQvJT2kfO",
           "__Episode__slug": "the-north-remembers",
-          "__Episode__synopsis_long": "In King's Landing, Tyrion becomes acting Hand of the King, much to Cersei's dismay. At Dragonstone, Stannis proclaims allegiance to the priestess Melisandre's God of Light and claims the Iron Throne, having revealed Joffrey's bastardy. Joffrey orders King Robert's bastard sons slaughtered. One, Gendry, along with the disguised Arya, have escaped the city and are being taken to Castle Black. Having won three victories, Robb Stark, who is now proclaimed as the King of the North, offers the Lannisters peace in exchange for the North's independence and Sansa's and Arya's safe return. He sends Theon to gain Balon Greyjoy's support, and Catelyn to seek an alliance with Renly Baratheon, who also claims the crown. Beyond the Wall, the Night's Watch shelters with Craster and his daughters/wives. In Essos, as her people slowly die in the Red Waste, Daenerys dispatches three riders to conduct reconnaissance.",
-          "__Episode__synopsis_medium": "Tyrion arrives at King's Landing to take his father's place as Hand of the King. Stannis Baratheon plans to take the Iron Throne for his own. Robb tries to decide his next move in the war. The Night's Watch arrive at the house of Craster.",
-          "__Episode__synopsis_short": null,
+          "__Episode__synopsis": "In King's Landing, Tyrion becomes acting Hand of the King, much to Cersei's dismay. At Dragonstone, Stannis proclaims allegiance to the priestess Melisandre's God of Light and claims the Iron Throne, having revealed Joffrey's bastardy. Joffrey orders King Robert's bastard sons slaughtered. One, Gendry, along with the disguised Arya, have escaped the city and are being taken to Castle Black. Having won three victories, Robb Stark, who is now proclaimed as the King of the North, offers the Lannisters peace in exchange for the North's independence and Sansa's and Arya's safe return. He sends Theon to gain Balon Greyjoy's support, and Catelyn to seek an alliance with Renly Baratheon, who also claims the crown. Beyond the Wall, the Night's Watch shelters with Craster and his daughters/wives. In Essos, as her people slowly die in the Red Waste, Daenerys dispatches three riders to conduct reconnaissance.",
+          "__Episode__synopsis_short": "Tyrion arrives at King's Landing to take his father's place as Hand of the King. Stannis Baratheon plans to take the Iron Throne for his own. Robb tries to decide his next move in the war. The Night's Watch arrive at the house of Craster.",
           "__Episode__title": "GOT S02E1 - The North Remembers",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
           "__Episode__title_short": "The North Remembers",
+          "__Episode__title_sort": null,
           "__Episode__episode_number": 1,
           "__Episode__release_date": "2012-04-01",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -1625,29 +1476,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396JB1ATPNQKZYCA392FRR",
+          "uid": "01GXZP2JV8RRKM76XE32A3W396",
           "external_id": null,
           "__Episode__slug": null,
-          "__Episode__synopsis_long": null,
-          "__Episode__synopsis_medium": null,
-          "__Episode__synopsis_short": null,
-          "__Episode__title": "GOT S05E5 - Kill the Boy",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "Mate o Garoto",
-          "__Episode__episode_number": null,
-          "__Episode__release_date": "2015-05-10",
+          "__Episode__synopsis": "Arya escapa da Fortaleza Vermelha depois que Syrio Forel, seu mestre de espadas bravosiano, afasta os guardas enviados para prendê-la, enquanto Sansa é capturada. Robb ouve a notícia e prepara os exércitos do Norte para lutar contra os Lannisters, deixando Bran para trás para governar Winterfell. Lysa se recusa a lutar contra os Lannisters, e Catelyn sai para se juntar ao acampamento de Robb. Tyrion e Bronn estão cercados por Shagga, líder da tribo Stone Crows. Tyrion os convence a escoltá-lo até seu pai Tywin Lannister, que os pagará. No acampamento, Tywin pede a Shagga para ajudá-los a enfrentar os Starks em troca de um pagamento ainda maior. Na Muralha, alguns corpos afetados pelos Caminhantes Brancos são encontrados. Um desperta como um wight e ataca o Comandante Mormont, mas Jon o mata. Em Essos, os soldados de Drogo começam a atacar assentamentos próximos, escravizando os moradores locais para vendê-los e arrecadar dinheiro para comprar navios para cruzar o Mar Estreito. Drogo é ferido em uma luta. Joffrey nomeia seu avô, Tywin, como Mão do Rei. Sansa implora a Joffrey que mostre misericórdia a Ned. Joffrey concorda se Ned reconhecer publicamente a reivindicação de Joffrey ao trono e admitir ter cometido traição.\n",
+          "__Episode__synopsis_short": "Os Lannisters pressionam sua vantagem sobre os Starks; Robb reúne os aliados do norte de seu pai e segue para o sul para a guerra; Os Caminhantes Brancos atacam a Muralha; Tyrion volta para seu pai com alguns novos amigos.\n",
+          "__Episode__title": "GOT S01E8 - The Pointy End",
+          "__Episode__title_short": "A Ponta Afiada",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 8,
+          "__Episode__release_date": "2011-12-05",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -1660,29 +1513,327 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396JB1ATPNQKZYCA392FRR",
-          "external_id": "recdpXcf6x7y30CTE",
-          "__Episode__slug": "kill-the-boy",
-          "__Episode__synopsis_long": "Brienne and Podrick arrive at an inn near Winterfell and smuggle a message to Sansa, offering her help if it is needed. Sansa discovers Theon is at Winterfell, and Ramsay forces him to apologize to her for supposedly killing her younger brothers. At the Wall, Tormund Giantsbane agrees to an alliance with the Night's Watch in return for the Wildlings to settle south of the Wall. Jon and Tormund travel to Hardhome to persuade the Wildlings. Stannis's army leaves for Winterfell, taking his family and Melisandre with them. In Meereen, as Grey Worm recuperates, he and Misandei develop romantic feelings. Daenerys feeds one Meereen nobleman to her dragons, Viserion and Rhaegal, and imprisons the others. She later agrees to reopen the fighting pits and weds Loraq to facilitate peace. At sea, Tyrion and Jorah sail through Valyria, seeing Drogon flying overhead. They are attacked by stone men and escape, but Jorah is infected with greyscale.",
-          "__Episode__synopsis_medium": "Daenerys arrests the heads of Meereen's great families. Jon makes a difficult decision. Theon is forced to face Sansa. Stannis rides south. Tyrion and Jorah enter the ruins of Old Valyria.",
+          "uid": "01GXZP2JV8RRKM76XE32A3W396",
+          "external_id": "recnvvY6sDyxxbxCI",
+          "__Episode__slug": "the-pointy-end",
+          "__Episode__synopsis": "Arya escapes the Red Keep after Syrio Forel, her Braavosian sword master, fends off guards sent to arrest her, while Sansa is captured. Robb hears the news and prepares the Northern armies to fight the Lannisters, leaving Bran behind to rule Winterfell. Lysa refuses to fight the Lannisters, and Catelyn leaves to join Robb's camp. Tyrion and Bronn are surrounded by Shagga, leader of the Stone Crows tribe. Tyrion convinces them to escort him to his father Tywin Lannister, who will pay them. At the camp, Tywin asks Shagga to help them confront the Starks in exchange for even greater payment. At the Wall, some bodies affected by the White Walkers are found. One awakens as a wight and attack Commander Mormont, but Jon kills it. In Essos, Drogo's soldiers begin attacking nearby settlements, enslaving locals in order to sell them to raise money to buy ships to cross the Narrow Sea. Drogo is wounded in a fight. Joffrey appoints his grandfather, Tywin, as Hand of the King. Sansa begs Joffrey to show Ned mercy. Joffrey agrees if Ned publicly recognizes Joffrey's claim to the throne and admits to committing treason.",
+          "__Episode__synopsis_short": "The Lannisters press their advantage over the Starks; Robb rallies his father's northern allies and heads south to war; The White Walkers attack the Wall; Tyrion returns to his father with some new friends.",
+          "__Episode__title": "GOT S01E8 - The Pointy End",
+          "__Episode__title_short": "The Pointy End",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 8,
+          "__Episode__release_date": "2011-06-05",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "pt-PT", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2JND9YYAXMS0J1YFTBPG",
+          "external_id": null,
+          "__Episode__slug": null,
+          "__Episode__synopsis": null,
           "__Episode__synopsis_short": null,
           "__Episode__title": "GOT S05E5 - Kill the Boy",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
-          "__Episode__title_short": "Kill the Boy",
+          "__Episode__title_short": "Mate o Garoto",
+          "__Episode__title_sort": null,
           "__Episode__episode_number": 5,
           "__Episode__release_date": "2015-05-10",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2JND9YYAXMS0J1YFTBPG",
+          "external_id": "recdpXcf6x7y30CTE",
+          "__Episode__slug": "kill-the-boy",
+          "__Episode__synopsis": "Brienne and Podrick arrive at an inn near Winterfell and smuggle a message to Sansa, offering her help if it is needed. Sansa discovers Theon is at Winterfell, and Ramsay forces him to apologize to her for supposedly killing her younger brothers. At the Wall, Tormund Giantsbane agrees to an alliance with the Night's Watch in return for the Wildlings to settle south of the Wall. Jon and Tormund travel to Hardhome to persuade the Wildlings. Stannis's army leaves for Winterfell, taking his family and Melisandre with them. In Meereen, as Grey Worm recuperates, he and Misandei develop romantic feelings. Daenerys feeds one Meereen nobleman to her dragons, Viserion and Rhaegal, and imprisons the others. She later agrees to reopen the fighting pits and weds Loraq to facilitate peace. At sea, Tyrion and Jorah sail through Valyria, seeing Drogon flying overhead. They are attacked by stone men and escape, but Jorah is infected with greyscale.",
+          "__Episode__synopsis_short": "Daenerys arrests the heads of Meereen's great families. Jon makes a difficult decision. Theon is forced to face Sansa. Stannis rides south. Tyrion and Jorah enter the ruins of Old Valyria.",
+          "__Episode__title": "GOT S05E5 - Kill the Boy",
+          "__Episode__title_short": "Kill the Boy",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 5,
+          "__Episode__release_date": "2015-05-10",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "pt-PT", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2JH20NKYGP0RD2259H2H",
+          "external_id": null,
+          "__Episode__slug": null,
+          "__Episode__synopsis": "Rei Robert renomeia Ned como Mão e o encarrega de administrar os assuntos até que Robert retorne da caça. Aldeões de Correrrio chegam com notícias de atrocidades cometidas por invasores, que Ned deduz que foram liderados por Sor Gregor Clegane, um retentor dos Lannister. Ned condena Sor Gregor à morte e convoca Tywin Lannister para um julgamento. Ned decide enviar Sansa (agora reconciliada com Joffrey) e Arya de volta a Winterfell. Ned descobriu que Joffrey e seus dois irmãos não são filhos biológicos de Robert, e foram pais de Jaime Lannister. Bran, enquanto testa sua nova sela, é atacado por Wildings desonestos. Robb, o filho mais velho de Ned, e Theon, o prisioneiro cativo de Ned, cujo pai, o rei Balon, era um rebelde caído, o resgatam, e a mulher Wilding, Osha, é escravizada. No Vale, Tyrion exige um julgamento por combate. Lysa escolhe Sor Vardis como seu campeão. O mercenário Bronn se oferece como campeão de Tyrion. Ele derrota Vardis e obtém a libertação de Tyrion. Enquanto isso, Viserys fica impaciente e irritado esperando que Drogo cumpra sua promessa, e ele ameaça matar o filho ainda não nascido de Daenerys. Drogo mata Viserys derramando ouro derretido em sua cabeça.\n",
+          "__Episode__synopsis_short": "Enquanto se recupera de sua batalha com Jaime, Eddard é forçado a governar o reino enquanto Robert vai caçar. Tyrion exige um julgamento por combate por sua liberdade. Viserys está perdendo a paciência com Drogo.\n",
+          "__Episode__title": "GOT S01E6 - A Golden Crown",
+          "__Episode__title_short": "Uma Coroa Dourada",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 6,
+          "__Episode__release_date": "2011-11-21",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2JH20NKYGP0RD2259H2H",
+          "external_id": "recLcK3EHRE7McVUL",
+          "__Episode__slug": "a-golden-crown",
+          "__Episode__synopsis": "King Robert reappoints Ned as Hand and tasks him with running affairs until Robert returns from hunting. Villagers from Riverrun arrive with news of atrocities committed by raiders, who Ned deduces were led by Ser Gregor Clegane, a Lannister retainer. Ned sentences Ser Gregor to death and summons Tywin Lannister to a trial. Ned decides to send Sansa (now reconciled with Joffrey) and Arya back to Winterfell. Ned has discovered that Joffrey and his two siblings are not Robert's biological children, and were fathered by Jaime Lannister. Bran, while testing his new saddle, is attacked by rogue Wildings. Robb, Ned's oldest son, and Theon, Ned's captive ward, whose father, King Balon, was a fallen rebel, rescue him, and the woman Wilding, Osha, is enslaved. In the Vale, Tyrion demands a trial by combat. Lysa chooses Ser Vardis as her champion. The sellsword Bronn volunteers as Tyrion's champion. He defeats Vardis and obtains Tyrion's release. Meanwhile, Viserys grows impatient and angry waiting for Drogo to fulfill his promise, and he threatens to kill Daenerys' unborn child. Drogo kills Viserys by pouring molten gold on his head.",
+          "__Episode__synopsis_short": "While recovering from his battle with Jaime, Eddard is forced to run the kingdom while Robert goes hunting. Tyrion demands a trial by combat for his freedom. Viserys is losing his patience with Drogo.",
+          "__Episode__title": "GOT S01E6 - A Golden Crown",
+          "__Episode__title_short": "A Golden Crown",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 6,
+          "__Episode__release_date": "2011-05-22",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "pt-PT", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2JGTF1TD779ZFFSS7RP9",
+          "external_id": null,
+          "__Episode__slug": null,
+          "__Episode__synopsis": "Em Harrenhal, Jaqen H'ghar, um dos três prisioneiros enjaulados que Arya salvou anteriormente, promete matar quaisquer três pessoas que ela escolher para pagar sua dívida com ela. Sua primeira escolha é o Cócegas, o homem que tortura mortalmente os cativos. Renly é morto pelo assassino sombrio de Melisandre. Lady Brienne é acusada do assassinato e Catelyn a força a fugir do acampamento. Excluindo os Tyrells, as forças de Renly se juntam a Stannis. Brienne jura fidelidade por toda a vida a Catelyn e protegerá suas filhas. Theon parte de Pyke e, contra as ordens de Yara, pretende provar que é um verdadeiro Ironborn capturando Winterfell durante a ausência de Robb. Lancel conta a Tyrion sobre o incêndio florestal, uma substância explosiva produzida em massa escondida nas masmorras da cidade e destinada a destruir a frota e o exército de Stannis durante o cerco iminente. Tyrion então assume o controle do esquema. No norte, a Patrulha da Noite chega a uma antiga fortaleza chamada Punho dos Primeiros Homens. Jeor Mormont permite que Jon se junte à equipe liderada por um veterano chamado Halfhand, para matar o líder inimigo. Em Qarth, Daxos propõe casamento a Daenerys em troca de fornecer a ela sua riqueza para conquistar os Sete Reinos. Sor Jorah a convence a ganhar o apoio do povo Westerosi.\n",
+          "__Episode__synopsis_short": "Tyrion investiga uma arma secreta que o Rei Joffrey planeja usar contra Stannis. Enquanto isso, como um símbolo para salvar sua vida, Jaqen H'ghar se oferece para matar três pessoas que Arya escolhe.\n",
+          "__Episode__title": "GOT S02E5 - The Ghost of Hareenhal",
+          "__Episode__title_short": "O Fantasma de Harrenhal",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 5,
+          "__Episode__release_date": "2012-05-21",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2JGTF1TD779ZFFSS7RP9",
+          "external_id": "recAYiQiD18vJanKa",
+          "__Episode__slug": "the-ghost-of-hareenhal",
+          "__Episode__synopsis": "At Harrenhal, Jaqen H'ghar, one of three caged prisoners Arya previously saved, pledges to kill any three people she chooses to repay his debt to her. Her first choice is the Tickler, the man who mortally tortures the captives. Renly is killed by Melisandre's shadowy assassin. Lady Brienne is accused of the murder and Catelyn forces her to flee the camp. Excluding the Tyrells, Renly's forces join Stannis. Brienne swears life-long fealty to Catelyn and will protect her daughters. Theon sails from Pyke, and against Yara's orders, intends to prove he is a true Ironborn by capturing Winterfell during Robb's absence. Lancel tells Tyrion about wildfire, a mass-produced explosive substance hidden in the city's dungeons and intended to destroy Stannis' fleet and army during the impending siege. Tyrion then takes control of the scheme. In the north, the Night's Watch arrives at an ancient fortress called the Fist of the First Men. Jeor Mormont allows Jon to join the team led by a veteran named Halfhand, to kill the enemy leader. In Qarth, Daxos proposes marriage to Daenerys in exchange for providing her his wealth to conquer the Seven Kingdoms. Ser Jorah convinces her to instead gain the Westerosi peoples' support.",
+          "__Episode__synopsis_short": "Tyrion investigates a secret weapon that King Joffrey plans to use against Stannis. Meanwhile, as a token for saving his life, Jaqen H'ghar offers to kill three people that Arya chooses.",
+          "__Episode__title": "GOT S02E5 - The Ghost of Hareenhal",
+          "__Episode__title_short": "The Ghost of Hareenhal",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 5,
+          "__Episode__release_date": "2012-04-29",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "pt-PT", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2JCGD6VNN6RYASBEN3HN",
+          "external_id": null,
+          "__Episode__slug": null,
+          "__Episode__synopsis": null,
+          "__Episode__synopsis_short": null,
+          "__Episode__title": "GOT S05E6 - Unbowed, Unbent, Unbroken",
+          "__Episode__title_short": "Não Rebaixados, Não Curvados, Não Quebrados",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 6,
+          "__Episode__release_date": "2015-05-17",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 2 }
+          },
+          "uid": "01GXZP2JCGD6VNN6RYASBEN3HN",
+          "external_id": "recCdZkbOue62q5cJ",
+          "__Episode__slug": "unbowed-unbent-unbroken",
+          "__Episode__synopsis": "H'ghar takes Arya to a chamber filled with the faces of dead people. Jaime and Bronn reach the Water Gardens and find Myrcella with Trystane. The Sand Snakes attack them but Dornish guards arrive and arrest everyone. Jorah and Tyrion are captured by pirates. They narrowly escape slavery when Tyrion manages to talk their way to the fighting pits of Meereen. Littlefinger informs Cersei that Roose Bolton intends to marry Sansa to Ramsay. He offers to lead the knights of the Vale to Winterfell to defeat whichever weakened side wins the conflict between Roose and Stannis. If successful, Littlefinger will be named Warden of the North. Olenna Tyrell arrives in King's Landing and warns Cersei that imprisoning Loras has jeopardized their alliance. At Loras' inquest, Loras and Margaery both deny his homosexuality. The male prostitute, Olyvar, contradicts their testimony and Margaery is arrested for lying to the gods. Tommen is uncertain and ineffective. At Winterfell, Sansa weds Ramsay. On their wedding night, Ramsay rapes her in front of Theon.",
+          "__Episode__synopsis_short": "Arya is put to the test. Tyrion and Jorah are captured by slavers. Loras Tyrell is judged by the Sparrows. Jaime and Bronn face the Sand Snakes. Sansa marries Ramsay Bolton.",
+          "__Episode__title": "GOT S05E6 - Unbowed, Unbent, Unbroken",
+          "__Episode__title_short": "Unbowed, Unbent, Unbroken",
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 6,
+          "__Episode__release_date": "2015-05-17",
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",

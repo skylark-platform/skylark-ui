@@ -37,7 +37,8 @@ describe("Content Library - Search", () => {
           hasMatchingVariable(req, "queryString", "all avail test movie")
         ) {
           req.reply({
-            fixture: "./skylark/queries/search/allMediaTestMovieOnly.json",
+            fixture:
+              "./skylark/queries/search/fantasticMrFox_All_Availabilities.json",
           });
         } else if (hasMatchingQuery(req, assetOnlyQuery)) {
           req.reply({

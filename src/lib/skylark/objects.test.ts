@@ -20,7 +20,7 @@ describe("getObjectOperations", () => {
     expect(got.name).toEqual("SkylarkAsset");
 
     // Check fields
-    expect(got.fields.length).toBe(6);
+    expect(got.fields.length).toBe(9);
     expect(got.fields).toContainEqual({
       enumValues: undefined,
       isList: false,
@@ -38,8 +38,8 @@ describe("getObjectOperations", () => {
       originalType: "String",
     });
     expect(got.fieldConfig).toEqual({
-      global: ["url"],
-      translatable: ["title", "slug", "type"],
+      global: ["type", "url", "ingest_file"],
+      translatable: ["title", "slug", "duration", "release_date"],
     });
     expect(got.isTranslatable).toBeTruthy();
 
@@ -69,8 +69,24 @@ describe("getObjectOperations", () => {
         relationshipName: "seasons",
       },
       {
+        objectType: "SkylarkAudioTrack",
+        relationshipName: "audio_tracks",
+      },
+      {
+        objectType: "SkylarkDRMProvider",
+        relationshipName: "drm_providers",
+      },
+      {
         objectType: "SkylarkImage",
         relationshipName: "images",
+      },
+      {
+        objectType: "SkylarkPlaybackDetail",
+        relationshipName: "playback_details",
+      },
+      {
+        objectType: "SkylarkPlaybackProvider",
+        relationshipName: "playback_providers",
       },
       {
         objectType: "SkylarkSet",
@@ -79,6 +95,14 @@ describe("getObjectOperations", () => {
       {
         objectType: "SkylarkTag",
         relationshipName: "tags",
+      },
+      {
+        objectType: "SkylarkTextTrack",
+        relationshipName: "text_tracks",
+      },
+      {
+        objectType: "SkylarkVideoTrack",
+        relationshipName: "video_tracks",
       },
     ]);
     expect(got.images?.relationshipNames).toEqual(["images"]);
@@ -113,7 +137,7 @@ describe("getObjectOperations", () => {
     expect(got.name).toEqual("SkylarkSet");
 
     // Check fields
-    expect(got.fields.length).toBe(13);
+    expect(got.fields.length).toBe(11);
     expect(got.fields).toContainEqual({
       enumValues: undefined,
       isList: false,
@@ -133,16 +157,14 @@ describe("getObjectOperations", () => {
     expect(got.fieldConfig).toEqual({
       global: ["type"],
       translatable: [
-        "title",
         "slug",
-        "synopsis_short",
-        "synopsis_medium",
-        "synopsis_long",
+        "title",
         "title_short",
-        "title_medium",
-        "title_long",
-        "description",
+        "title_sort",
+        "synopsis",
+        "synopsis_short",
         "release_date",
+        "description",
       ],
     });
     expect(got.isTranslatable).toBeTruthy();
@@ -217,7 +239,7 @@ describe("getObjectOperations", () => {
     expect(got.fields).toContainEqual({
       enumValues: undefined,
       isList: false,
-      isRequired: false,
+      isRequired: true,
       name: "uid",
       type: "string",
       originalType: "String",
@@ -322,6 +344,6 @@ describe("getAllObjectsMeta", () => {
     ]);
     expect(got.length).toEqual(1);
     expect(got[0].name).toEqual("Episode");
-    expect(got[0].fields.length).toEqual(12);
+    expect(got[0].fields.length).toEqual(10);
   });
 });
