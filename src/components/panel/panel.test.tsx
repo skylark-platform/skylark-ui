@@ -718,8 +718,8 @@ describe("relationships view", () => {
 
     expect(setPanelObject).toHaveBeenCalledWith({
       objectType: "Brand",
-      uid: "01GWFN4R99SNF3QTAZ7JTZCTZ6",
-      language: "",
+      uid: "01GXZP1T4QA54SWSD0N6ABTNEY",
+      language: "en-GB",
     });
   });
 
