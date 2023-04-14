@@ -24,7 +24,11 @@ export const Navigation = () => {
   const [customerIdentifier, setCustomerIdentifier] = useState("");
 
   useEffect(() => {
-    if (uri && uri.includes("skylarkplatform.io")) {
+    if (
+      uri &&
+      (uri.includes("skylarkplatform.io") ||
+        uri.includes("skylarkplatform.com"))
+    ) {
       const urlId = uri.split(".")[1];
       setCustomerIdentifier(urlId);
     } else {
