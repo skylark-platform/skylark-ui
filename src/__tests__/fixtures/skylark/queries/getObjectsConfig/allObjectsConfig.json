@@ -1,79 +1,94 @@
 {
   "data": {
+    "Availability": {
+      "primary_field": "title",
+      "colour": "#9E9E9E",
+      "display_name": "Availability"
+    },
     "Brand": {
       "primary_field": "title",
       "colour": "#673ab7",
-      "display_name": null
+      "display_name": "Brand"
     },
     "Credit": {
       "primary_field": "slug",
       "colour": "#ff5722",
-      "display_name": null
+      "display_name": "Credit"
     },
     "Episode": {
       "primary_field": "title",
       "colour": "#ff7ba8",
-      "display_name": null
+      "display_name": "Episode"
     },
     "Genre": {
       "primary_field": "name",
       "colour": "#8bc34a",
-      "display_name": null
+      "display_name": "Genre"
     },
     "Movie": {
       "primary_field": "title",
       "colour": "#009688",
-      "display_name": null
+      "display_name": "Movie"
     },
     "ParentalGuidance": {
       "primary_field": "slug",
       "colour": "#03a9f4",
-      "display_name": null
+      "display_name": "ParentalGuidance"
     },
     "Person": {
       "primary_field": "name",
       "colour": "#ff9800",
-      "display_name": null
+      "display_name": "Person"
     },
     "Rating": {
       "primary_field": "title",
       "colour": "#00bcd4",
-      "display_name": null
+      "display_name": "Rating"
     },
     "Role": {
       "primary_field": "title",
       "colour": "#ffc107",
-      "display_name": null
+      "display_name": "Role"
     },
     "Season": {
       "primary_field": "title",
       "colour": "#9c27b0",
-      "display_name": null
+      "display_name": "Season"
     },
     "SkylarkAsset": {
       "primary_field": "title",
       "colour": "#9e9e9e",
-      "display_name": "Asset"
+      "display_name": "Assetˢˡ"
+    },
+    "SkylarkChannel": {
+      "primary_field": "name",
+      "colour": "#C94C4C",
+      "display_name": "Channelˢˡ"
+    },
+    "SkylarkEPGProgramme": {
+      "primary_field": "name",
+      "colour": "#EF6C00",
+      "display_name": "EPG Programmeˢˡ"
     },
     "SkylarkImage": {
       "primary_field": "title",
       "colour": "#607d8b",
-      "display_name": "Image"
+      "display_name": "Imageˢˡ"
     },
     "SkylarkSet": {
       "primary_field": "title",
       "colour": "#000000",
-      "display_name": "Set"
+      "display_name": "Setˢˡ"
     },
     "SkylarkTag": {
       "primary_field": "name",
       "colour": "#4caf50",
-      "display_name": "Tag"
+      "display_name": "Tagˢˡ"
     },
     "Theme": {
       "primary_field": "name",
       "colour": "#cddc39",
-      "display_name": null
+      "display_name": "Theme"
     }
   }
 }

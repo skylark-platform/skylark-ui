@@ -82,6 +82,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
   return {
     ...rest,
     data,
+    totalHits: searchResponse?.pages[0].search?.total_count,
     properties: allFieldNames,
     query,
     variables,

@@ -37,7 +37,8 @@ describe("Content Library - Search", () => {
           hasMatchingVariable(req, "queryString", "all avail test movie")
         ) {
           req.reply({
-            fixture: "./skylark/queries/search/allMediaTestMovieOnly.json",
+            fixture:
+              "./skylark/queries/search/fantasticMrFox_All_Availabilities.json",
           });
         } else if (hasMatchingQuery(req, assetOnlyQuery)) {
           req.reply({
@@ -125,7 +126,7 @@ describe("Content Library - Search", () => {
     cy.contains("Apply").should("not.be.disabled").click();
   });
 
-  it("filters for only title, uid, external_id, title_short, title_long fields", () => {
+  it("filters for only title, uid, external_id, title_short fields", () => {
     cy.contains("Asset").should("exist");
     cy.contains("Filters").click();
 
@@ -138,9 +139,8 @@ describe("Content Library - Search", () => {
       "uid",
       "external_id",
       "title_short",
-      "title_long",
+      "synopsis",
       "synopsis_short",
-      "synopsis_long",
     ].forEach((field) => {
       columnsFilters.get(`#checkbox-columns-${field}`).click();
     });

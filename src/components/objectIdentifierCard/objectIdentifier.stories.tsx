@@ -1,7 +1,6 @@
 import { ComponentStory } from "@storybook/react";
 import React from "react";
 
-import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 import { ObjectIdentifierCard } from "./objectIdentifier.component";

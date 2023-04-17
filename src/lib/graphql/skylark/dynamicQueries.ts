@@ -384,6 +384,7 @@ export const createSearchObjectsQuery = (
           limit: new VariableType("limit"),
         },
         __typename: true,
+        total_count: true,
         objects: {
           __on: objectsToRequest.map((object) => {
             const common = generateVariablesAndArgs(object.name, "Query");

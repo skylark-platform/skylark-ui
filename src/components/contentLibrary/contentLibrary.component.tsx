@@ -172,7 +172,7 @@ export const ContentLibrary = () => {
             <m.div
               data-testid="drag-bar"
               key={windowSize}
-              className="hidden w-3 cursor-col-resize items-center bg-manatee-100 lg:flex "
+              className="hidden w-3 cursor-col-resize items-center bg-manatee-100 md:flex"
               onDrag={handleDrag}
               onDragStart={() => {
                 if (containerRef.current) {
