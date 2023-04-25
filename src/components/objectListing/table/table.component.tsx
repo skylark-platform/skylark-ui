@@ -245,6 +245,7 @@ const TableRow = ({
 
   return (
     <tr
+      data-cy="draggable-item"
       ref={setNodeRef}
       {...listeners}
       {...attributes}
