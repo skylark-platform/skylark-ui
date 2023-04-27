@@ -3,6 +3,7 @@ import {
   useSensor,
   useSensors,
   PointerSensor,
+  MouseSensor,
   DragOverlay,
   getClientRect,
   DragEndEvent,
@@ -116,6 +117,7 @@ export const ContentLibrary = () => {
     };
   };
 
+  /*
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -124,7 +126,9 @@ export const ContentLibrary = () => {
       },
     }),
   );
+*/
 
+  const sensors = useSensors(useSensor(MouseSensor));
   return (
     <DndContext
       onDragStart={handleDragStart}
