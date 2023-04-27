@@ -16,18 +16,35 @@ export const GET_SKYLARK_OBJECT_TYPES = gql`
   }
 `;
 
-// Retrieve global and language fields for an object so the UI can separate them
-// For example, for an Episode we would use variables { globalType: "_EpisodeGlobal", languageType: "_EpisodeLanguage" }
-export const GET_OBJECT_GLOBAL_LANGUAGE_FIELDS = gql`
-  query ($globalType: String!, $languageType: String!) {
-    global: __type(name: $globalType) {
-      fields {
-        name
+export const LIST_AVAILABILITY_DIMENSIONS = gql`
+  query LIST_AVAILABILITY_DIMENSIONS($nextToken: String) {
+    listDimensions(next_token: $nextToken, limit: 50) {
+      objects {
+        uid
+        external_id
+        title
+        slug
+        description
       }
+      count
+      next_token
     }
-    language: __type(name: $languageType) {
-      fields {
-        name
+  }
+`;
+
+export const LIST_AVAILABILITY_DIMENSION_VALUES = gql`
+  query LIST_AVAILABILITY_DIMENSION_VALUES($uid: String!, $nextToken: String) {
+    getDimension(dimension_id: $uid) {
+      uid
+      values(next_token: $nextToken, limit: 50) {
+        objects {
+          description
+          external_id
+          slug
+          title
+          uid
+        }
+        next_token
       }
     }
   }

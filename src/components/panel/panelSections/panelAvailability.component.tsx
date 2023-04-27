@@ -13,7 +13,7 @@ import {
 import { useGetObjectAvailability } from "src/hooks/useGetObjectAvailability";
 import {
   AvailabilityStatus,
-  SkylarkGraphQLAvailabilityDimension,
+  SkylarkGraphQLAvailabilityDimensionWithValues,
   ParsedSkylarkObjectAvailabilityObject,
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,
@@ -36,8 +36,8 @@ interface PanelAvailabilityProps {
 }
 
 const sortDimensionsByTitleOrSlug = (
-  a: SkylarkGraphQLAvailabilityDimension,
-  b: SkylarkGraphQLAvailabilityDimension,
+  a: SkylarkGraphQLAvailabilityDimensionWithValues,
+  b: SkylarkGraphQLAvailabilityDimensionWithValues,
 ): number =>
   (a.title || a.slug) > (b.title || b.slug)
     ? 1

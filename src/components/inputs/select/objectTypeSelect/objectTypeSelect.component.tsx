@@ -57,6 +57,7 @@ export const ObjectTypeSelect = forwardRef(
         options={options}
         ref={ref}
         onChange={onChangeWrapper}
+        withSearch
       />
     );
   },

@@ -4,10 +4,7 @@ import {
 } from "src/__tests__/utils/objectOperations";
 import { SkylarkObjectOperations } from "src/interfaces/skylark";
 
-import {
-  createGetObjectQuery,
-  createSearchObjectsQuery,
-} from "./dynamicQueries";
+import { createGetObjectQuery, createSearchObjectsQuery } from ".";
 
 describe("createGetObjectQuery", () => {
   test("returns null when the object doesn't have a get operation", () => {
