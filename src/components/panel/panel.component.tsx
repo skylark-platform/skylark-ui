@@ -218,17 +218,27 @@ export const Panel = ({
           ?.map(({ object }) => object.uid)
           .includes(droppedObject.uid)
       ) {
-        const parseDroppedObject = parseSkylarkObjectContent(droppedObject);
-        setContentObjects([
-          ...(contentObjects || data?.content?.objects || []),
-          {
-            ...parseDroppedObject,
-            position:
-              (contentObjects?.length || data?.content?.objects.length || 0) +
-              1,
-            isNewObject: true,
-          },
-        ]);
+        if (object.uid === droppedObject.uid) {
+          toast(
+            <Toast
+              title={"Invalid Object"}
+              message={"Unable to add a Set to its own Set Content"}
+              type="warning"
+            />,
+          );
+        } else {
+          const parseDroppedObject = parseSkylarkObjectContent(droppedObject);
+          setContentObjects([
+            ...(contentObjects || data?.content?.objects || []),
+            {
+              ...parseDroppedObject,
+              position:
+                (contentObjects?.length || data?.content?.objects.length || 0) +
+                1,
+              isNewObject: true,
+            },
+          ]);
+        }
 
         setEditMode(true);
         clearDroppedObject && clearDroppedObject();
@@ -245,6 +255,7 @@ export const Panel = ({
     originalRelationshipObjects,
     objectType,
     data,
+    object.uid,
   ]);
 
   const { updateObjectRelationships, isLoading: updatingRelationshipObjects } =
@@ -291,6 +302,7 @@ export const Panel = ({
     });
 
   const saveActiveTabChanges = () => {
+    console.log({ contentObjects });
     if (
       selectedTab === PanelTab.Content &&
       contentObjects &&
