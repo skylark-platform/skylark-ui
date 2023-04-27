@@ -302,7 +302,6 @@ export const Panel = ({
     });
 
   const saveActiveTabChanges = () => {
-    console.log({ contentObjects });
     if (
       selectedTab === PanelTab.Content &&
       contentObjects &&
