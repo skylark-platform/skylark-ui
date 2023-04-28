@@ -2,44 +2,49 @@ import gql from "graphql-tag";
 import { VariableType, jsonToGraphQLQuery } from "json-to-graphql-query";
 
 import { SkylarkGraphQLAvailabilityDimension } from "src/interfaces/skylark";
+import { hasProperty } from "src/lib/utils";
 
-const createDimensionValueNextTokenVariableName = (
-  uid: SkylarkGraphQLAvailabilityDimension["uid"],
-) => `nextToken_${uid}`;
+interface DimensionWithNextToken {
+  dimension: SkylarkGraphQLAvailabilityDimension;
+  nextToken: string;
+}
 
-export const createGetDimensionValueNextTokenVariables = (
-  values: { dimensionUid: string; value: string | null }[],
-) => {
-  const variables = values.reduce(
-    (acc, { dimensionUid, value }) => ({
-      ...acc,
-      [createDimensionValueNextTokenVariableName(dimensionUid)]: value,
-    }),
-    {},
-  );
-  return variables;
-};
+export const createGetAvailabilityDimensionValuesQueryAlias = ({
+  uid,
+}: SkylarkGraphQLAvailabilityDimension) => `dimension_${uid}`;
 
 export const createGetAvailabilityDimensionValues = (
   dimensions?: SkylarkGraphQLAvailabilityDimension[],
+  nextTokens?: Record<string, string>,
 ) => {
   if (!dimensions) {
     return null;
   }
 
-  const variables = createGetDimensionValueNextTokenVariables(
-    dimensions.map(({ uid }) => ({ dimensionUid: uid, value: "String" })),
-  );
+  const dimensionsWithNextTokens: DimensionWithNextToken[] = dimensions
+    .map(
+      (dimension) =>
+        nextTokens &&
+        hasProperty(nextTokens, dimension.uid) && {
+          dimension,
+          nextToken: nextTokens[dimension.uid],
+        },
+    )
+    .filter(
+      (item): item is DimensionWithNextToken => !!(item && item.nextToken),
+    );
+
+  const dimensionsToCreate =
+    dimensionsWithNextTokens.length > 0
+      ? dimensionsWithNextTokens
+      : dimensions.map((dimension) => ({ dimension, nextToken: "" }));
 
   const query = {
     query: {
       __name: "LIST_AVAILABILITY_DIMENSION_VALUES",
-      __variables: variables,
-      ...dimensions.reduce((acc, dimension) => {
-        const queryAlias = `dimension_${dimension.uid}`;
-        const nextTokenVariableName = createDimensionValueNextTokenVariableName(
-          dimension.uid,
-        );
+      ...dimensionsToCreate.reduce((acc, { dimension, nextToken }) => {
+        const queryAlias =
+          createGetAvailabilityDimensionValuesQueryAlias(dimension);
         return {
           ...acc,
           [queryAlias]: {
@@ -50,7 +55,7 @@ export const createGetAvailabilityDimensionValues = (
             uid: true,
             values: {
               __args: {
-                next_token: new VariableType(nextTokenVariableName),
+                next_token: nextToken || null,
                 limit: 50, // max
               },
               next_token: true,

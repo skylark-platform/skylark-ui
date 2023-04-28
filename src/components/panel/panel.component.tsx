@@ -18,6 +18,7 @@ import {
   SkylarkObjectMeta,
   ParsedSkylarkObjectRelationships,
   SkylarkObjectIdentifier,
+  BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
@@ -50,6 +51,7 @@ enum PanelTab {
   Metadata = "Metadata",
   Imagery = "Imagery",
   Availability = "Availability",
+  AvailabilityDimensions = "AvailabilityDimensions",
   Content = "Content",
   Relationships = "Relationships",
 }

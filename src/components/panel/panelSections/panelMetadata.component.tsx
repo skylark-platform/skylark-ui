@@ -19,6 +19,11 @@ import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objec
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import { formatObjectField } from "src/lib/utils";
 
+import {
+  AdditionalImageMetadata,
+  AvailabilityDimensions,
+  PanelMetadataProperty,
+} from "./panelMetadataAdditionalSections";
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
 interface PanelMetadataProps {
@@ -30,44 +35,6 @@ interface PanelMetadataProps {
   metadata: Record<string, SkylarkObjectMetadataField>;
   form: UseFormReturn<Record<string, SkylarkObjectMetadataField>>;
 }
-
-const PanelMetadataProperty = ({
-  property,
-  value,
-}: {
-  property: string;
-  value?: JSX.Element | SkylarkObjectMetadataField;
-}) => (
-  <div>
-    <PanelFieldTitle text={formatObjectField(property)} />
-    <p className="mb-4 text-base-content">{value ? value : "---"}</p>
-  </div>
-);
-
-const AdditionalImageMetadata = ({
-  src,
-  alt,
-}: {
-  src: string | null;
-  alt: string;
-}) => {
-  const { size } = useImageSize(src);
-  return (
-    <div className="-mt-4">
-      <PanelMetadataProperty
-        property="Original Size"
-        value={size ? `${size?.h}x${size?.w}` : ""}
-      />
-      <PanelMetadataProperty
-        property="Rendered image"
-        value={
-          /* eslint-disable-next-line @next/next/no-img-element */
-          src ? <img src={src} alt={alt} /> : undefined
-        }
-      />
-    </div>
-  );
-};
 
 export const PanelMetadata = ({
   isPage,
@@ -186,6 +153,10 @@ export const PanelMetadata = ({
             src={metadata.url as string | null}
             alt={metadata.title as string}
           />
+        )}
+
+        {objectType === BuiltInSkylarkObjectType.Availability && (
+          <AvailabilityDimensions uid={uid} />
         )}
       </form>
     </PanelSectionLayout>

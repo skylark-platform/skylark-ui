@@ -11,7 +11,7 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
   createGetAvailabilityDimensionValues,
-  createGetDimensionValueNextTokenVariables,
+  createGetAvailabilityDimensionValuesQueryAlias,
 } from "src/lib/graphql/skylark/dynamicQueries";
 import { hasProperty } from "src/lib/utils";
 
@@ -26,33 +26,32 @@ const getNextPageParam = (
     (entry) => !!entry.values.next_token,
   );
 
-  const variables = createGetDimensionValueNextTokenVariables(
-    entriesWithNextToken.map(({ uid, values }) => ({
-      dimensionUid: uid,
-      value: values.next_token,
-    })),
+  const nextTokens = entriesWithNextToken.reduce(
+    (acc, { uid, values }) => ({
+      ...acc,
+      [uid]: values.next_token,
+    }),
+    {},
   );
 
-  return entriesWithNextToken.length > 0 ? variables : undefined;
+  return entriesWithNextToken.length > 0 ? nextTokens : undefined;
 };
 
 export const useAvailabilityDimensionsWithValues = () => {
   const { dimensions: dimensionsWithoutValues } = useAvailabilityDimensions();
 
-  const query = useMemo(
-    () => createGetAvailabilityDimensionValues(dimensionsWithoutValues),
-    [dimensionsWithoutValues],
-  );
-
-  const enabled = !!(dimensionsWithoutValues && query);
-
   const { data, fetchNextPage, hasNextPage, ...rest } =
     useInfiniteQuery<GQLSkylarkListAvailabilityDimensionValuesResponse>({
-      queryKey: [QueryKeys.AvailabilityDimensions, query],
-      queryFn: async ({ pageParam: variables }) =>
-        skylarkRequest(query as DocumentNode, variables),
+      queryKey: [QueryKeys.AvailabilityDimensions, dimensionsWithoutValues],
+      queryFn: async ({ pageParam: nextTokens }) => {
+        const query = createGetAvailabilityDimensionValues(
+          dimensionsWithoutValues,
+          nextTokens,
+        );
+        return skylarkRequest(query as DocumentNode);
+      },
       getNextPageParam,
-      enabled,
+      enabled: !!dimensionsWithoutValues,
     });
 
   // This if statement ensures that all data is fetched
@@ -70,13 +69,16 @@ export const useAvailabilityDimensionsWithValues = () => {
     if (data && !hasNextPage) {
       return dimensionsWithoutValues.map(
         (dimension): ParsedSkylarkDimensionsWithValues => {
-          const dimensionValuePages = data.pages.map(
-            (page) =>
-              hasProperty(page, `dimension_${dimension.uid}`) &&
+          const dimensionValuePages = data.pages.map((page) => {
+            const queryAlias =
+              createGetAvailabilityDimensionValuesQueryAlias(dimension);
+            return (
+              hasProperty(page, queryAlias) &&
               (page[
-                `dimension_${dimension.uid}`
-              ] as SkylarkGraphQLAvailabilityDimensionWithValues),
-          );
+                queryAlias
+              ] as SkylarkGraphQLAvailabilityDimensionWithValues)
+            );
+          });
 
           const flattenedValues = dimensionValuePages
             .flatMap((page) => (page ? page.values.objects : undefined))

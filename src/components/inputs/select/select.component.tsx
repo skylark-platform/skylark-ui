@@ -33,9 +33,15 @@ export interface SelectProps {
   withSearch?: boolean;
   allowCustomValue?: boolean;
   rounded?: boolean;
+  withBasicSort?: boolean;
   onChange?: (value: string) => void;
   onValueClear?: () => void;
 }
+
+const sortOptions = (
+  { label: labelA, value: valueA }: SelectOption,
+  { label: labelB, value: valueB }: SelectOption,
+): number => ((labelA || valueA) > (labelB || valueB) ? 1 : -1);
 
 const getOptionHeight = (variant: SelectProps["variant"]) => {
   return variant === "pill" ? 30 : 40;
@@ -165,7 +171,7 @@ export const Select = forwardRef(
   (props: SelectProps, ref: Ref<HTMLButtonElement | HTMLInputElement>) => {
     const {
       variant,
-      options,
+      options: unsortedOptions,
       label,
       labelVariant = "default",
       placeholder,
@@ -177,15 +183,29 @@ export const Select = forwardRef(
       rounded,
       allowCustomValue,
       onValueClear,
+      withBasicSort,
     } = props;
 
     const [query, setQuery] = useState("");
+
+    const options = withBasicSort
+      ? unsortedOptions.sort(sortOptions)
+      : unsortedOptions;
 
     const filteredOptions =
       query === ""
         ? options
         : options.filter((option) => {
-            return option.value.toLowerCase().includes(query.toLowerCase());
+            const lwrQuery = query.toLocaleLowerCase();
+            const lwrValue = option.value.toLocaleLowerCase();
+            const sanitisedLabel =
+              typeof option.label === "string" || option.label instanceof String
+                ? option.label.toLocaleLowerCase()
+                : undefined;
+            return (
+              lwrValue.includes(lwrQuery) ||
+              (sanitisedLabel && sanitisedLabel.includes(lwrQuery))
+            );
           });
 
     const onChangeWrapper = useCallback(
@@ -237,7 +257,11 @@ export const Select = forwardRef(
             </Combobox.Label>
           )}
           {withSearch ? (
-            <div className={clsx(selectClassName, label && "mt-2")}>
+            <Combobox.Button
+              data-testid="select"
+              as="div"
+              className={clsx(selectClassName, label && "mt-2")}
+            >
               <Combobox.Input
                 className={clsx(
                   "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0",
@@ -259,14 +283,16 @@ export const Select = forwardRef(
                     <GrClose className="text-xs" />
                   </button>
                 )}
-                <Combobox.Button
-                  data-testid="select"
-                  className={clsx(variant === "pill" ? "px-2" : "pl-1 pr-4")}
+                <button
+                  className={clsx(
+                    "h-full",
+                    variant === "pill" ? "mx-2" : "ml-1 mr-4",
+                  )}
                 >
                   <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
-                </Combobox.Button>
+                </button>
               </span>
-            </div>
+            </Combobox.Button>
           ) : (
             <Combobox.Button
               data-testid="select"
@@ -297,7 +323,8 @@ export const Select = forwardRef(
           )}
 
           <Transition
-            as={Fragment}
+            as="div"
+            className="z-50"
             leave="transition ease-in duration-50"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
