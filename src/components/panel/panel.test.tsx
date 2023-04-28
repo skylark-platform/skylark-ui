@@ -877,9 +877,7 @@ describe("content view", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText(
-          GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title,
-        ),
+        screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
       ).toBeInTheDocument(),
     );
 
@@ -905,9 +903,7 @@ describe("content view", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText(
-          GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title,
-        ),
+        screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
       ).toBeInTheDocument(),
     );
 
@@ -934,9 +930,7 @@ describe("content view", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText(
-          GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title,
-        ),
+        screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
       ).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Content"));
@@ -971,7 +965,7 @@ describe("content view", () => {
       await waitFor(() =>
         expect(
           screen.getByText(
-            GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title,
+            GQLSkylarkGetObjectQueryFixture.data.getObject.title,
           ),
         ).toBeInTheDocument(),
       );

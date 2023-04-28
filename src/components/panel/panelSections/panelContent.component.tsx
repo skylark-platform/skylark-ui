@@ -217,7 +217,7 @@ export const PanelContent = ({
           );
         })}
       </Reorder.Group>
-      {inEditMode && (
+      {inEditMode && !isPage && (
         <p className="w-full py-4 text-center text-sm text-manatee-600">
           {"Drag an object from the Content Library to add as content"}
         </p>

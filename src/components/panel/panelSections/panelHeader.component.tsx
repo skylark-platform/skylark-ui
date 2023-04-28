@@ -144,7 +144,7 @@ export const PanelHeader = ({
             <Button
               Icon={<ExternalLink />}
               variant="ghost"
-              href={`/object/${objectType}/${objectUid}`}
+              href={`/object/${objectType}/${objectUid}?language=${language}`}
               newTab
             />
           )}

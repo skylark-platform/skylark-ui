@@ -3,7 +3,6 @@ import clsx from "clsx";
 import { Fragment, useEffect, useState } from "react";
 
 import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
-import { Trash } from "src/components/icons";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
@@ -213,7 +212,7 @@ export const PanelRelationships = ({
         variables={variables}
         buttonClassName="absolute right-2 top-0"
       />
-      {inEditMode && (
+      {inEditMode && !isPage && (
         <p className="w-full py-4 text-center text-sm text-manatee-600">
           {"Drag an object from the Content Library to add as relationship"}
         </p>
