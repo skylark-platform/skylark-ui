@@ -26,10 +26,12 @@ export interface GetObjectOptions {
 export const createGetObjectKeyPrefix = ({
   objectType,
   uid,
+  language,
 }: {
   objectType: string;
   uid: string;
-}) => [QueryKeys.GetObject, objectType, uid];
+  language?: string | null;
+}) => [QueryKeys.GetObject, { objectType, uid }, { language }];
 
 export const useGetObject = (
   objectType: SkylarkObjectType,
@@ -52,11 +54,8 @@ export const useGetObject = (
     GQLSkylarkGetObjectResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>
   >({
-    queryKey: [
-      ...createGetObjectKeyPrefix({ objectType, uid }),
-      query,
-      variables,
-    ],
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: createGetObjectKeyPrefix({ objectType, uid, language }),
     queryFn: async () => skylarkRequest(query as DocumentNode, variables),
     enabled: query !== null,
   });

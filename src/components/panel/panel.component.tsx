@@ -147,10 +147,14 @@ export const Panel = ({
 
   useEffect(() => {
     // Switches into edit mode when the metadata form is changed
-    if (!inEditMode && metadataForm.formState.isDirty) {
+    if (
+      !inEditMode &&
+      metadataForm.formState.isDirty &&
+      !metadataForm.formState.isSubmitted
+    ) {
       setEditMode(true);
     }
-  }, [inEditMode, metadataForm.formState.isDirty]);
+  }, [inEditMode, metadataForm.formState]);
 
   useEffect(() => {
     // Updates the form values when metadata is updated in Skylark
@@ -158,14 +162,17 @@ export const Panel = ({
     const dataAndFormAreEqual =
       formParsedMetadata && isObjectsDeepEqual(formParsedMetadata, formValues);
 
-    const metadataInEditMode = metadataForm.formState.isDirty || inEditMode;
+    const metadataInEditMode =
+      inEditMode || (metadataForm.formState.isDirty && !inEditMode);
 
-    if (
-      !metadataInEditMode &&
-      !metadataForm.formState.isSubmitted &&
-      formParsedMetadata &&
-      !dataAndFormAreEqual
-    ) {
+    console.log({
+      state: metadataForm.formState.isSubmitted,
+      isDirty: metadataForm.formState.isDirty,
+      inEditMode,
+      metadataInEditMode,
+    });
+    if (!metadataInEditMode && formParsedMetadata && !dataAndFormAreEqual) {
+      console.log("FORM RESET", { formParsedMetadata });
       resetMetadataForm(formParsedMetadata);
     }
   }, [inEditMode, metadataForm, resetMetadataForm, formParsedMetadata]);
@@ -291,16 +298,9 @@ export const Panel = ({
       objectType,
       uid,
       language,
-      onSuccess: (updatedMetadata) => {
+      onSuccess: () => {
         setEditMode(false);
-        const updatedParsedMetadata = parseMetadataForHTMLForm(
-          updatedMetadata,
-          (objectMeta as SkylarkObjectMeta).fields,
-        );
-        resetMetadataForm(updatedParsedMetadata, {
-          // keepIsSubmitted stops the panel flashing back to the old value
-          keepIsSubmitted: true,
-        });
+        resetMetadataForm({ keepValues: true });
       },
     });
 

@@ -37,7 +37,7 @@ export const createGetObjectRelationshipsKeyPrefix = ({
 }: {
   objectType: string;
   uid: string;
-}) => [QueryKeys.GetObjectRelationships, objectType, uid];
+}) => [QueryKeys.GetObjectRelationships, { objectType, uid }];
 
 export const useGetObjectRelationships = (
   objectType: SkylarkObjectType,

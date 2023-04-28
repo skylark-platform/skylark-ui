@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
 import {
+  GQLSkylarkGetObjectResponse,
   GQLSkylarkUpdateObjectMetadataResponse,
   ParsedSkylarkObjectMetadata,
   SkylarkObjectMetadataField,
@@ -9,7 +10,6 @@ import {
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectMetadataMutation } from "src/lib/graphql/skylark/dynamicMutations";
-import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 import { refetchSearchQueriesAfterUpdate } from "./useCreateObject";
 import { createGetObjectKeyPrefix } from "./useGetObject";
@@ -24,7 +24,7 @@ export const useUpdateObjectMetadata = ({
   objectType: SkylarkObjectType;
   uid: string;
   language: string;
-  onSuccess: (updatedMetadata: ParsedSkylarkObjectMetadata) => void;
+  onSuccess: () => void;
 }) => {
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
@@ -48,11 +48,15 @@ export const useUpdateObjectMetadata = ({
       );
     },
     onSuccess: (data, { uid }) => {
-      queryClient.invalidateQueries({
-        queryKey: createGetObjectKeyPrefix({ objectType, uid }),
-      });
-      const parsedObject = parseSkylarkObject(data.updateObjectMetadata);
-      onSuccess(parsedObject.metadata);
+      // Update get query with updated data
+      queryClient.setQueryData<GQLSkylarkGetObjectResponse>(
+        createGetObjectKeyPrefix({ objectType, uid, language }),
+        {
+          // TODO prefill with old getObject data
+          getObject: data.updateObjectMetadata,
+        },
+      );
+      onSuccess();
       refetchSearchQueriesAfterUpdate(queryClient);
     },
   });
