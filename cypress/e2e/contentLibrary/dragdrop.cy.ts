@@ -114,24 +114,8 @@ describe("Content Library - Object Panel", () => {
     cy.wait("@introspectionQuery");
   });
 
-  describe("Content tab", () => {
-    it("Open", () => {
-      cy.get('input[name="search-query-input"]').type("Homepage");
-      cy.contains("Homepage").should("exist");
-      cy.contains("tr", "Homepage")
-        .should(($el) => {
-          // eslint-disable-next-line jest/valid-expect
-          expect(Cypress.dom.isDetached($el)).to.eq(false);
-        })
-        .within(() => {
-          cy.get('[aria-label="object-info"]').click();
-        });
-      cy.contains("button", "Content").click();
-
-      cy.percySnapshot("Homepage - object panel - content");
-    });
-
-    it("navigates to the set content using the object button", () => {
+  describe("Drag & Drop", () => {
+    it("navigates to the set content using the object button and drag an object", () => {
       cy.fixture("./skylark/queries/getObject/homepage.json").then(
         (homepageJson) => {
           const homepageUid = homepageJson.data.getObject.uid;
@@ -150,20 +134,97 @@ describe("Content Library - Object Panel", () => {
           cy.contains("button", "Content").click();
           cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
-          const deltaX = 100;
-          const deltaY = 200;
-          const delay = 250;
+          const deltaX = 500;
+          const deltaY = 500;
+          const delay = 500;
+
+          // cy.get(`[data-cy="draggable-item"`)
+
+          cy.get("[data-cy=drop-area]").should("not.exist");
 
           cy.get(`[data-cy="draggable-item"`)
             .last()
-            .mouseMoveBy(deltaX, deltaY, { delay: delay })
-            .wait(delay);
+            .trigger("mousedown", {
+              button: 0,
+              release: false,
+              force: true,
+            })
+            .wait(delay, { log: Boolean(delay) })
+            .then(() => {
+              cy.get("[data-cy=drop-area]").should("exist");
+            })
+            .trigger("mousemove", {
+              force: true,
+              clientX: deltaX,
+              clientY: deltaY,
+            })
+            .wait(100)
+            .trigger("mouseup", { force: true })
+            .wait(250)
+            .then(() => {
+              cy.contains("button", "Content").should("exist");
+              cy.get("input.bg-success")
+                .should("exist")
+                .should("have.length", 1);
+            });
         },
       );
     });
 
-    describe("Basic setup", () => {
-      // it("Move item", () => {});
+    it("Drag & Drop with relationship tab", () => {
+      cy.fixture("./skylark/queries/getObject/homepage.json").then(
+        (homepageJson) => {
+          const homepageUid = homepageJson.data.getObject.uid;
+          const homepageObjectType = homepageJson.data.getObject.__typename;
+
+          cy.get('input[name="search-query-input"]').type("Homepage");
+          cy.contains("Homepage").should("exist");
+          cy.contains("tr", "Homepage")
+            .should(($el) => {
+              // eslint-disable-next-line jest/valid-expect
+              expect(Cypress.dom.isDetached($el)).to.eq(false);
+            })
+            .within(() => {
+              cy.get('[aria-label="object-info"]').click();
+            });
+          cy.contains("button", "Relationships").click();
+          cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
+
+          const deltaX = 500;
+          const deltaY = 500;
+          const delay = 500;
+
+          // cy.get(`[data-cy="draggable-item"`)
+
+          cy.get("[data-cy=drop-area]").should("not.exist");
+
+          cy.get(`[data-cy="draggable-item"`)
+            .last()
+            .trigger("mousedown", {
+              button: 0,
+              release: false,
+              force: true,
+            })
+            .wait(delay, { log: Boolean(delay) })
+            .then(() => {
+              cy.get("[data-cy=drop-area]").should("exist");
+            })
+            .trigger("mousemove", {
+              force: true,
+              clientX: deltaX,
+              clientY: deltaY,
+            })
+            .wait(100)
+            .trigger("mouseup", { force: true })
+            .wait(250)
+            .then(() => {
+              cy.contains("button", "Content").should("exist");
+              cy.get("input.bg-success")
+                .should("exist")
+                .should("have.length", 1);
+            });
+        },
+      );
     });
   });
 });
