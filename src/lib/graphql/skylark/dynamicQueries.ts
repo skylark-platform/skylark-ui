@@ -81,7 +81,7 @@ export const generateVariablesAndArgs = (
       variables: {},
       args: {},
       fields: {
-        // ...commonGraphQLOpts.objectConfig,
+        ...commonGraphQLOpts.objectConfig,
       },
     };
   }
@@ -382,9 +382,9 @@ export const createSearchObjectsQuery = (
           query: new VariableType("queryString"),
           offset: new VariableType("offset"),
           limit: new VariableType("limit"),
-          // language: null, TODO disable language searching when language filter is added
         },
         __typename: true,
+        total_count: true,
         objects: {
           __on: objectsToRequest.map((object) => {
             const common = generateVariablesAndArgs(object.name, "Query");

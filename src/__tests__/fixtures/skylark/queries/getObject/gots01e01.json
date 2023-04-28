@@ -2,29 +2,31 @@
   "data": {
     "getObject": {
       "__typename": "Episode",
-      "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+      "_config": {
+        "primary_field": "title",
+        "colour": "#ff7ba8",
+        "display_name": "Episode"
+      },
       "_meta": {
         "available_languages": ["en-GB", "pt-PT"],
         "language_data": { "language": "en-GB", "version": 1 },
         "global_data": { "version": 2 }
       },
-      "uid": "01GX396FF5MFFZ5N8YYPAM4W03",
+      "uid": "01GXZP2FCCXY3KX6E3E8MJ2T6F",
       "external_id": "recAZhG0fPFgamb8I",
       "slug": "winter-is-coming",
-      "synopsis_long": "North of the Seven Kingdoms of Westeros, Night's Watch soldiers are attacked by supernatural White Walkers. One soldier escapes but is captured at Castle Winterfell. Eddard \"Ned\" Stark, Warden of the North, executes him for desertion. Later, six orphaned dire wolf pups are found and one given to each Stark sibling, including Ned's bastard son, Jon Snow. In King's Landing, the Seven Kingdoms capital, Jon Arryn, the Hand of the King, dies suddenly. King Robert Baratheon, Ned's old friend, travels to Winterfell to recruit Ned and propose a marriage between his heir Joffrey and Ned's daughter, Sansa. Lysa Arryn, Jon's widow, sends her sister (Ned's wife), Catelyn, a letter claiming the Lannisters, Queen Cersei's family, murdered Arryn. Catelyn believes the Lannisters are now plotting against King Robert. Ned's young son, Brandon, climbs a tall tower and witnesses Cersei and her twin brother, Jaime Lannister, inside having sex. To hide their incest, Jaime pushes Bran from the high window. Across the Narrow Sea in Essos, exiled Prince Viserys Targaryen forces his sister, Daenerys, to marry the Dothraki warlord, Drogo, in exchange for an army to conquer Westeros and reclaim the Iron Throne. Robert Baratheon became king after Jaime Lannister killed \"Mad\" King Aerys Targaryen, earning Jaime the nickname, \"The King Slayer\". The ancient Targaryens once commanded dragons, and Daenerys is given three fossilized dragon eggs as a wedding gift.",
-      "synopsis_medium": "Series Premiere. Eddard Stark is torn between his family and an old friend when asked to serve at the side of King Robert Baratheon; Viserys plans to wed his sister to a nomadic warlord in exchange for an army.",
-      "synopsis_short": null,
+      "synopsis": "North of the Seven Kingdoms of Westeros, Night's Watch soldiers are attacked by supernatural White Walkers. One soldier escapes but is captured at Castle Winterfell. Eddard \"Ned\" Stark, Warden of the North, executes him for desertion. Later, six orphaned dire wolf pups are found and one given to each Stark sibling, including Ned's bastard son, Jon Snow. In King's Landing, the Seven Kingdoms capital, Jon Arryn, the Hand of the King, dies suddenly. King Robert Baratheon, Ned's old friend, travels to Winterfell to recruit Ned and propose a marriage between his heir Joffrey and Ned's daughter, Sansa. Lysa Arryn, Jon's widow, sends her sister (Ned's wife), Catelyn, a letter claiming the Lannisters, Queen Cersei's family, murdered Arryn. Catelyn believes the Lannisters are now plotting against King Robert. Ned's young son, Brandon, climbs a tall tower and witnesses Cersei and her twin brother, Jaime Lannister, inside having sex. To hide their incest, Jaime pushes Bran from the high window. Across the Narrow Sea in Essos, exiled Prince Viserys Targaryen forces his sister, Daenerys, to marry the Dothraki warlord, Drogo, in exchange for an army to conquer Westeros and reclaim the Iron Throne. Robert Baratheon became king after Jaime Lannister killed \"Mad\" King Aerys Targaryen, earning Jaime the nickname, \"The King Slayer\". The ancient Targaryens once commanded dragons, and Daenerys is given three fossilized dragon eggs as a wedding gift.",
+      "synopsis_short": "Series Premiere. Eddard Stark is torn between his family and an old friend when asked to serve at the side of King Robert Baratheon; Viserys plans to wed his sister to a nomadic warlord in exchange for an army.",
       "title": "GOT S01E1 - Winter is Coming",
-      "title_long": null,
-      "title_medium": null,
       "title_short": "Winter is Coming",
+      "title_sort": null,
       "episode_number": 1,
       "release_date": "2011-04-17",
       "availability": {
         "next_token": null,
         "objects": [
           {
-            "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+            "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
             "external_id": "recXNjJNyc6nKQIYa",
             "title": "Always - All devices, all customer types",
             "slug": "always-all-devices-all-customer-types",
@@ -38,7 +40,12 @@
         "next_token": null,
         "objects": [
           {
-            "uid": "01GX3951J632PXW580CXHCH9QZ",
+            "_meta": {
+              "available_languages": ["en-GB"],
+              "language_data": { "language": "en-GB", "version": 2 },
+              "global_data": { "version": 2 }
+            },
+            "uid": "01GXZNXWYGGFA5JJQF8ARBS40M",
             "external_id": "recbXlWg7DJA1ZNO2",
             "slug": null,
             "title": "GOT - S1 - 1.jpg",
@@ -46,7 +53,7 @@
             "type": "THUMBNAIL",
             "url": "https://dl.airtable.com/.attachments/c8b23d45c55cf09081954dd208dcce4b/80b72296/GOT-S1-1.jpg",
             "external_url": "https://dl.airtable.com/.attachments/c8b23d45c55cf09081954dd208dcce4b/80b72296/GOT-S1-1.jpg",
-            "upload_url": "https://obj-reg-storage-beta-2-base-eu-west-1-storage.s3.amazonaws.com/media/skylarkimages/dvi5bethk5hzfioyt352lkt7ma/01GX3951J632PXW580CXHCH9QZ/01GX3Y0SVCWA1QBT03M3QDNCYT?AWSAccessKeyId=ASIAQIVXPCFNQPDGCH7O&Signature=rU2M3O68TX3ALPNoqOLvzf%2F2RGE%3D&content-type=application%2Foctet&x-amz-meta-account_id=dvi5bethk5hzfioyt352lkt7ma&x-amz-meta-uid=01GX3951J632PXW580CXHCH9QZ&x-amz-security-token=IQoJb3JpZ2luX2VjEAAaCWV1LXdlc3QtMSJIMEYCIQCmID9jXCZUtSvCEONZhFfdYsXAABsrsB2PV84dZed%2BYwIhAJew%2BW7QveK%2FivbwBPKGuVZtI%2BFUYuY%2Blqg9AMEHZqU1KrYDCNn%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMMDE4NjM4Mzc3MzA3IgzDclVkOnSi7va9qywqigO5bfrqvyV87uj7AFAc8hPKC9OOPuyxBdSCgv9nVy6ZBCYaD2t2%2F6HG1IO%2FNeNE7cUboDgHSGwVlEqhny%2BFNsYiW4GuYtHJRiVWI4TRD9S%2F3CTUzY1cyxGb9RNm2W4v1mFLWcE3Czi64Ljv%2FVpw8oeDzO%2FjlmtfWJGz9CwQhuQqyXK162o9UaW%2BUZjvI9HKsugv5E5Ngu2MRXPELOMBgdU8WjWJUOI0V96Ao6ZfvbCs%2FGWa4AuHPzbXriB6DMs3gMo5L05azcJp%2FAzhgDALMmlx%2Bo5F961DEjmIWDrzUsHjfOuY9SRXTmKJLhtCxA%2FZghDnY%2F6A6cnAlEAvJnHsSp84TX%2BsxQ3m%2BEiq8cB9T%2BJtGE5lQTlZRVHJfiwXtE8VjreL%2BpyHLvXE%2BMi4KgWgUnUSRx%2FuvdK8EAiGXQRY%2FTWZrizU9o1kH5Ug2Hh8S7hfaaR63%2FnQGIhObZRujv23JiO7Zx7u5EqtG%2Bgv41muNX2fPpJG0yRRYRekFLLWBkEG5%2FtdtRKyLJQagz7LMJrzq6EGOpwBlUV3IY4WbpeAxCb3Cl2q3xWWKNpwNk5OLp3N%2FNthCrZLqLTizgMWr%2FHcJxZ7J%2FiiFYqzFAEAP%2BE%2BwrU9PhxoB2cjnYuK9LzDEQALjTtc3V9HrwCXRcjkmSC8aMqVqi8KoOol8M5PUVS4FJpPnsMlaFljq9RN8Fe8INWXcEXlVzHdCAJG5%2F44cc5eu5DemvwZrSzNelL83fJI8fQU&Expires=1680541701",
+            "upload_url": "https://obj-reg-storage-sl-develop-eu-west-1-storage.s3.amazonaws.com/media/skylarkimages/vrdlihwc4ves3ihxxzrykjpvvm/01GXZNXWYGGFA5JJQF8ARBS40M/01GY0SPCGE507F4719R1XMNGZN?AWSAccessKeyId=ASIA4YDX3EVVNPTV74EF&Signature=4ZP3vZb5hv89HSj8xE%2FjAAyktsU%3D&content-type=application%2Foctet&x-amz-meta-account_id=vrdlihwc4ves3ihxxzrykjpvvm&x-amz-meta-uid=01GXZNXWYGGFA5JJQF8ARBS40M&x-amz-security-token=IQoJb3JpZ2luX2VjEA0aCWV1LXdlc3QtMSJGMEQCIC7T0eNvAbq0yrE7fCcMIF7QtPoQykMMGLmUzmq15nHTAiBmIuXf41tPqHAwbPoOx9HxikP5Vh%2FD5UmFY2hjNbRdSCq0Awj2%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDg3NjQyNDY2ODUyMiIM3QXYi6yYsLD3O7WgKogDZhewoVbxesFf6Hc8CamtriHgJai2BcM6AjqEFaN4J6N2ck3mJrLZMVtmLNkwIM9syGlLeSYa9VCYCCKhm%2BMBMan7qePu6jGFbGhSus1MwAptmY7KV8Vh%2BdCMBUy8UxL1VxxfQ6mksNZAr608RRITjh1d%2FP9gFgr1NU3%2Fszff%2FNgYb%2Fq588yKuK0KUNo7g6UWlKaq0UMjRIlTe0GjUFH6l7wsUZ1wlfv209O1L9awChF8mL9oE%2BvwQOUxz2uIGOfEfJntB6cym%2FCknG0UCKPSoaJTwli50slgD4w8pWW1YMn7t6lulH9q438FbiYz8tgIeP8VedxELb6uQXJB%2B%2BjPZRWtsyWUEfKDuU9PZgKh9BI%2BdJATivm3EyOMKAEjY6dmvZD7vqFtPXPdANP2PoTtpay4E3utRqSCMaYD3caKrwAIWA1wCmq0iNkcwN7Jc%2BNBDcl7JuiB0gpOAZ0ShFG9UWX3Gu1s5Ynf0IY8rFILUP%2FFRH2YHY9uW0p64FHIW2RrWlmOgXPTTjEwzILnoQY6ngFvXzCq88G%2BHoGvXjy9O%2BDItv90bBJDktXdAqOjr8AMptt8RApzmchgUu5dsNdWjEjQcGRaAWArZUSa54gvoAa31%2Fz7JY9LYWgVM0GlQnQBkgq%2FisvOeEF6YXqwHzkHDi6Iz2NGvlchriPh%2FzH94HgrY5AhXTlT9QfG5fDVby1cW1pMZY2Pb%2BhrandtBQRtnxm%2Frknm97IYh1UMiKaEgw%3D%3D&Expires=1681510244",
             "download_from_url": null,
             "file_name": null,
             "content_type": null

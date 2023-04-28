@@ -283,13 +283,14 @@ const validateAndParseDate = (
   type: string,
   value: string,
   formats?: string[],
+  ignoreError?: boolean,
 ) => {
   const validFormat = formats?.find((format) => dayjs(value, format).isValid());
   if (validFormat) {
     return dayjs(value, validFormat);
   }
 
-  if (!dayjs(value).isValid()) {
+  if (!ignoreError && !dayjs(value).isValid()) {
     throw new Error(
       `Value given for ${type} is an invalid format: "${value}"${
         formats ? `. Valid formats: "${formats?.join('", "')}"` : ""
@@ -398,16 +399,22 @@ export const parseMetadataForHTMLForm = (
       }
 
       if (convertFieldTypeToHTMLInputType(input.type) === "date") {
-        const validDate = dayjs(`${value}`, "YYYY-MM-DD+Z").format(
-          "YYYY-MM-DD",
-        );
+        const validDate = validateAndParseDate(
+          input.type,
+          `${value}`,
+          ["YYYY-MM-DD", "YYYY-MM-DD+Z"],
+          true,
+        ).format("YYYY-MM-DD");
         return [key, validDate];
       }
 
       if (convertFieldTypeToHTMLInputType(input.type) === "time") {
-        const validTime = dayjs(`${value}`, "HH:mm:ss.SSS+Z").format(
-          "HH:mm:ss.SSS",
-        );
+        const validTime = validateAndParseDate(
+          input.type,
+          `${value}`,
+          ["HH:mm:ss", "HH:mm:ss.SSS", "HH:mm:ss.SSS+Z"],
+          true,
+        ).format("HH:mm:ss.SSS");
         return [key, validTime];
       }
     }

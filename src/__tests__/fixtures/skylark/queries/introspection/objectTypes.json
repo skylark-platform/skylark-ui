@@ -16,6 +16,8 @@
         { "name": "ParentalGuidance" },
         { "name": "SkylarkSet" },
         { "name": "Theme" },
+        { "name": "SkylarkChannel" },
+        { "name": "SkylarkEPGProgramme" },
         { "name": "Role" }
       ]
     }

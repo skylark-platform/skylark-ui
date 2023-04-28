@@ -41,13 +41,14 @@ describe("Content Library - Object Panel", () => {
       }
       if (hasOperationName(req, "GET_Movie")) {
         req.reply({
-          fixture: "./skylark/queries/getObject/allAvailTestMovie.json",
+          fixture:
+            "./skylark/queries/getObject/fantasticMrFox_All_Availabilities.json",
         });
       }
       if (hasOperationName(req, "GET_Movie_AVAILABILITY")) {
         req.reply({
           fixture:
-            "./skylark/queries/getObjectAvailability/allAvailTestMovieAvailability.json",
+            "./skylark/queries/getObjectAvailability/fantasticMrFox_All_Availabilities.json",
         });
       }
       if (hasOperationName(req, "SEARCH")) {
@@ -63,7 +64,8 @@ describe("Content Library - Object Panel", () => {
           hasMatchingVariable(req, "queryString", "all avail test movie")
         ) {
           req.reply({
-            fixture: "./skylark/queries/search/allMediaTestMovieOnly.json",
+            fixture:
+              "./skylark/queries/search/fantasticMrFox_All_Availabilities.json",
           });
         } else if (hasMatchingQuery(req, assetOnlyQuery)) {
           req.reply({
@@ -310,7 +312,7 @@ describe("Content Library - Object Panel", () => {
       cy.get('[aria-label="Open Object"]').click();
 
       // Only check the panel object type and uid so we don't have to mock the response
-      cy.get(`[data-cy=panel-for-SkylarkImage-01GX3951J632PXW580CXHCH9QZ]`);
+      cy.get(`[data-cy=panel-for-SkylarkImage-01GXZNXWYGGFA5JJQF8ARBS40M]`);
     });
 
     it("navigates to the image using the object button", () => {
@@ -433,8 +435,8 @@ describe("Content Library - Object Panel", () => {
           "Home page hero",
           "Spotlight movies",
           "New TV Releases",
-          "GOT S01",
-          "GOT S02",
+          "GOT Season 1",
+          "GOT Season 2",
           "Discover Collection",
         ]);
 
@@ -467,8 +469,8 @@ describe("Content Library - Object Panel", () => {
         .should("deep.eq", [
           "Spotlight movies",
           "New TV Releases",
-          "GOT S01",
-          "GOT S02",
+          "GOT Season 1",
+          "GOT Season 2",
           "Home page hero",
         ]);
 
@@ -487,8 +489,8 @@ describe("Content Library - Object Panel", () => {
           "Home page hero",
           "Spotlight movies",
           "New TV Releases",
-          "GOT S01",
-          "GOT S02",
+          "GOT Season 1",
+          "GOT Season 2",
           "Discover Collection",
         ]);
     });
@@ -534,8 +536,8 @@ describe("Content Library - Object Panel", () => {
         .should("deep.eq", [
           "Spotlight movies",
           "New TV Releases",
-          "GOT S01",
-          "GOT S02",
+          "GOT Season 1",
+          "GOT Season 2",
           "Home page hero",
         ]);
 
@@ -554,8 +556,8 @@ describe("Content Library - Object Panel", () => {
         .should("deep.eq", [
           "Spotlight movies",
           "New TV Releases",
-          "GOT S01",
-          "GOT S02",
+          "GOT Season 1",
+          "GOT Season 2",
           "Home page hero",
         ]);
     });
@@ -564,8 +566,8 @@ describe("Content Library - Object Panel", () => {
   describe("Availability tab", () => {
     it("open Availability tab", () => {
       cy.get('input[name="search-query-input"]').type("all avail test movie");
-      cy.contains("All Avail Test Movie").should("exist");
-      cy.contains("tr", "All Avail Test Movie")
+      cy.contains("Fantastic Mr Fox (All Availabilities)").should("exist");
+      cy.contains("tr", "Fantastic Mr Fox (All Availabilities)")
         .should(($el) => {
           // eslint-disable-next-line jest/valid-expect
           expect(Cypress.dom.isDetached($el)).to.eq(false);
@@ -584,44 +586,44 @@ describe("Content Library - Object Panel", () => {
     });
 
     it("navigates to the availability using the object button", () => {
-      cy.fixture("./skylark/queries/getObject/allAvailTestMovie.json").then(
-        (objectJson) => {
-          cy.fixture(
-            "./skylark/queries/getObjectAvailability/allAvailTestMovieAvailability.json",
-          ).then((availabilityJson) => {
-            const objectUid = objectJson.data.getObject.uid;
-            const objectType = objectJson.data.getObject.__typename;
+      cy.fixture(
+        "./skylark/queries/getObject/fantasticMrFox_All_Availabilities.json",
+      ).then((objectJson) => {
+        cy.fixture(
+          "./skylark/queries/getObjectAvailability/fantasticMrFox_All_Availabilities.json",
+        ).then((availabilityJson) => {
+          const objectUid = objectJson.data.getObject.uid;
+          const objectType = objectJson.data.getObject.__typename;
 
-            cy.get('input[name="search-query-input"]').type(
-              "all avail test movie",
-            );
-            cy.contains("All Avail Test Movie").should("exist");
-            cy.contains("tr", "All Avail Test Movie")
-              .should(($el) => {
-                // eslint-disable-next-line jest/valid-expect
-                expect(Cypress.dom.isDetached($el)).to.eq(false);
-              })
-              .within(() => {
-                cy.get('[aria-label="object-info"]').click();
-              });
+          cy.get('input[name="search-query-input"]').type(
+            "all avail test movie",
+          );
+          cy.contains("Fantastic Mr Fox (All Availabilities)").should("exist");
+          cy.contains("tr", "Fantastic Mr Fox (All Availabilities)")
+            .should(($el) => {
+              // eslint-disable-next-line jest/valid-expect
+              expect(Cypress.dom.isDetached($el)).to.eq(false);
+            })
+            .within(() => {
+              cy.get('[aria-label="object-info"]').click();
+            });
 
-            cy.contains("button", "Availability").click();
+          cy.contains("button", "Availability").click();
 
-            cy.get(`[data-cy=panel-for-${objectType}-${objectUid}]`);
+          cy.get(`[data-cy=panel-for-${objectType}-${objectUid}]`);
 
-            cy.get('[aria-label="Open Object"]').first().click();
+          cy.get('[aria-label="Open Object"]').first().click();
 
-            // Only check the panel object type and uid so we don't have to mock the response
-            cy.get(
-              `[data-cy=panel-for-Availability-${availabilityJson.data.getObjectAvailability.availability.objects[0].uid}]`,
-            );
+          // Only check the panel object type and uid so we don't have to mock the response
+          cy.get(
+            `[data-cy=panel-for-Availability-${availabilityJson.data.getObjectAvailability.availability.objects[0].uid}]`,
+          );
 
-            // Check back button returns to the original object
-            cy.get('[aria-label="Open Previous Object"]').click();
-            cy.get(`[data-cy=panel-for-${objectType}-${objectUid}]`);
-          });
-        },
-      );
+          // Check back button returns to the original object
+          cy.get('[aria-label="Open Previous Object"]').click();
+          cy.get(`[data-cy=panel-for-${objectType}-${objectUid}]`);
+        });
+      });
     });
   });
 });
