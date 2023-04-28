@@ -12,6 +12,26 @@ import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
 
 import Logo from "public/images/skylark.png";
 
+const getCustomerIdentifier = (uri: string) => {
+  const isIo = uri.includes("skylarkplatform.io");
+  const isCom = uri.includes("skylarkplatform.com");
+  const isValid = isIo || isCom;
+
+  if (!isValid) {
+    return "";
+  }
+
+  const path = uri.split(
+    isCom ? "skylarkplatform.com" : "skylarkplatform.io",
+  )[1];
+  const splitPath = path.split("/").filter((p) => p);
+  if (splitPath[0] !== "graphql") {
+    return splitPath[0];
+  }
+
+  return uri.split(".")[1];
+};
+
 export const Navigation = () => {
   const [open, setOpen] = useState(false);
 
@@ -24,15 +44,8 @@ export const Navigation = () => {
   const [customerIdentifier, setCustomerIdentifier] = useState("");
 
   useEffect(() => {
-    if (
-      uri &&
-      (uri.includes("skylarkplatform.io") ||
-        uri.includes("skylarkplatform.com"))
-    ) {
-      const urlId = uri.split(".")[1];
-      setCustomerIdentifier(urlId);
-    } else {
-      setCustomerIdentifier("");
+    if (uri) {
+      setCustomerIdentifier(getCustomerIdentifier(uri));
     }
   }, [uri]);
 

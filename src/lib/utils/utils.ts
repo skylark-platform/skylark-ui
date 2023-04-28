@@ -84,3 +84,29 @@ export const convertFieldTypeToHTMLInputType = (
       return "text";
   }
 };
+
+export const isObjectsDeepEqual = (
+  obj1: Record<string, unknown>,
+  obj2: Record<string, unknown>,
+) => {
+  const objKeys1 = Object.keys(obj1);
+
+  if (objKeys1.length !== Object.keys(obj2).length) {
+    return false;
+  }
+
+  for (const key of objKeys1) {
+    const value1 = obj1[key];
+    const value2 = obj2[key];
+
+    const isObjects = isObject(value1) && isObject(value2);
+
+    if (
+      (isObjects && !isObjectsDeepEqual(value1, value2)) ||
+      (!isObjects && value1 !== value2)
+    ) {
+      return false;
+    }
+  }
+  return true;
+};

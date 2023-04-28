@@ -21,6 +21,7 @@ import {
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
+  isObjectsDeepEqual,
   getObjectDisplayName,
   getObjectTypeDisplayNameFromParsedObject,
   hasProperty,
@@ -128,6 +129,7 @@ export const Panel = ({
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
 
   useEffect(() => {
+    // Resets any edited data when the panel object changes
     setEditMode(false);
     setSelectedTab(PanelTab.Metadata);
     setContentObjects(null);
@@ -139,10 +141,24 @@ export const Panel = ({
   }, [uid, objectType, language, resetMetadataForm]);
 
   useEffect(() => {
+    // Switches into edit mode when the metadata form is changed
     if (!inEditMode && metadataForm.formState.isDirty) {
       setEditMode(true);
     }
   }, [inEditMode, metadataForm.formState.isDirty]);
+
+  useEffect(() => {
+    // Updates the form values when metadata is updated in Skylark
+    const dataAndFormAreEqual =
+      data?.metadata &&
+      isObjectsDeepEqual(data?.metadata, metadataForm.getValues());
+
+    const metadataInEditMode = metadataForm.formState.isDirty || inEditMode;
+
+    if (!metadataInEditMode && data?.metadata && !dataAndFormAreEqual) {
+      resetMetadataForm(data.metadata);
+    }
+  }, [data?.metadata, inEditMode, metadataForm, resetMetadataForm]);
 
   useEffect(() => {
     if (droppedObject) {

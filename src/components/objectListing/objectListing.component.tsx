@@ -238,6 +238,7 @@ export const ObjectList = ({
 
     return searchDataWithTopLevelMetadata;
   }, [searchData]);
+
   const fetchMoreOnBottomReached = useCallback(
     (containerRefElement?: HTMLDivElement | null) => {
       if (containerRefElement) {

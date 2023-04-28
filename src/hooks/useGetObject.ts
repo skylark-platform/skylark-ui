@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
+import { useMemo } from "react";
 
 import { QueryErrorMessages, QueryKeys } from "src/enums/graphql";
 import { ErrorCodes } from "src/interfaces/errors";
@@ -60,8 +61,10 @@ export const useGetObject = (
     enabled: query !== null,
   });
 
-  const parsedObject =
-    data?.getObject && parseSkylarkObject(data?.getObject, objectMeta);
+  const parsedObject = useMemo(
+    () => data?.getObject && parseSkylarkObject(data?.getObject, objectMeta),
+    [data?.getObject, objectMeta],
+  );
 
   return {
     ...rest,
