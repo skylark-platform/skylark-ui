@@ -225,6 +225,11 @@ export const PanelRelationships = ({
         variables={variables}
         buttonClassName="absolute right-2 top-0"
       />
+      {inEditMode && (
+        <p className="w-full py-4 text-center text-sm text-manatee-600">
+          {"Drag an object from the Content Library to add as relationship"}
+        </p>
+      )}
     </PanelSectionLayout>
   );
 };

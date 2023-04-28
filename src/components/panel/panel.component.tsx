@@ -208,7 +208,6 @@ export const Panel = ({
           );
         }
         setEditMode(true);
-        clearDroppedObject?.();
       } else if (
         selectedTab === PanelTab.Content &&
         !contentObjects
@@ -229,10 +228,9 @@ export const Panel = ({
             isNewObject: true,
           },
         ]);
-
         setEditMode(true);
-        clearDroppedObject && clearDroppedObject();
       }
+      clearDroppedObject?.();
     }
   }, [
     clearDroppedObject,
