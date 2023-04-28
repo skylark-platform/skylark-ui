@@ -220,6 +220,7 @@ export const PanelHeader = ({
               {isTranslatable && (
                 <LanguageSelect
                   selected={language || object.meta.language}
+                  disabled={inEditMode}
                   variant="pill"
                   languages={
                     object.meta.availableLanguages || [object.meta.language]
