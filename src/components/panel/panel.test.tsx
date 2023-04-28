@@ -596,7 +596,9 @@ describe("imagery view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("All Avail Test Movie")).toBeInTheDocument(),
+      expect(
+        screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
+      ).toBeInTheDocument(),
     );
 
     await waitFor(() =>
@@ -646,7 +648,9 @@ describe("imagery view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("All Avail Test Movie")).toBeInTheDocument(),
+      expect(
+        screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
+      ).toBeInTheDocument(),
     );
 
     await waitFor(() =>
@@ -877,7 +881,9 @@ describe("content view", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
+        screen.getByText(
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title,
+        ),
       ).toBeInTheDocument(),
     );
 
@@ -903,7 +909,9 @@ describe("content view", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
+        screen.getByText(
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title,
+        ),
       ).toBeInTheDocument(),
     );
 
@@ -930,7 +938,9 @@ describe("content view", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
+        screen.getByText(
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title,
+        ),
       ).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Content"));
@@ -965,7 +975,7 @@ describe("content view", () => {
       await waitFor(() =>
         expect(
           screen.getByText(
-            GQLSkylarkGetObjectQueryFixture.data.getObject.title,
+            GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title,
           ),
         ).toBeInTheDocument(),
       );

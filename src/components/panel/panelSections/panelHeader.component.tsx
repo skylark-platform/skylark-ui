@@ -109,10 +109,10 @@ export const PanelHeader = ({
       },
       {
         id: "delete-object",
-        text: `Delete ${objectType}`,
+        text: `Delete`,
         Icon: <Trash className="w-5 fill-error stroke-error" />,
         danger: true,
-        // disabled: true, // TODO finish object deletion
+        disabled: true, // TODO finish object deletion
         onClick: () => deleteObjectMutation({ uid: objectUid }),
       },
     ],
@@ -144,7 +144,11 @@ export const PanelHeader = ({
             <Button
               Icon={<ExternalLink />}
               variant="ghost"
-              href={`/object/${objectType}/${objectUid}?language=${language}`}
+              href={
+                language
+                  ? `/object/${objectType}/${objectUid}?language=${language}`
+                  : `/object/${objectType}/${objectUid}`
+              }
               newTab
             />
           )}
@@ -230,7 +234,12 @@ export const PanelHeader = ({
         </div>
         <div className="flex flex-row items-end justify-end space-x-2">
           {inEditMode && (
-            <div className="absolute left-1/2 -bottom-16 z-10 -translate-x-1/2 md:-bottom-18">
+            <div
+              className={clsx(
+                "absolute left-1/2 -bottom-16 z-10 -translate-x-1/2",
+                isPage ? "md:fixed md:top-24 md:bottom-auto" : " md:-bottom-18",
+              )}
+            >
               <PanelLabel
                 text={isSaving ? "Saving" : "Editing"}
                 loading={isSaving}

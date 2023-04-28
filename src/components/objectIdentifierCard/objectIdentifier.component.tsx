@@ -27,7 +27,6 @@ export const ObjectIdentifierCard = ({
   onForwardClick,
   onDeleteClick,
 }: ObjectIdentifierCardProps) => {
-  console.log({ onDeleteClick });
   return (
     <div className="flex w-full flex-grow items-center space-x-2 py-3">
       <Pill
