@@ -386,7 +386,7 @@ export const parseMetadataForGraphQLRequest = (
 export const parseMetadataForHTMLForm = (
   metadata: Record<string, SkylarkObjectMetadataField>,
   inputFields: NormalizedObjectField[],
-) => {
+): Record<string, SkylarkObjectMetadataField> => {
   const keyValuePairs = Object.entries(metadata).map(([key, value]) => {
     const input = inputFields.find((createInput) => createInput.name === key);
     if (input) {

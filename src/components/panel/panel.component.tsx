@@ -102,6 +102,11 @@ export const Panel = ({
     isObjectTypeNotFound,
     error,
   } = useGetObject(objectType, uid, { language });
+  const formParsedMetadata =
+    (data &&
+      objectMeta &&
+      parseMetadataForHTMLForm(data.metadata, objectMeta.fields)) ||
+    null;
 
   const metadataForm = useForm<Record<string, SkylarkObjectMetadataField>>({
     // Can't use onSubmit because we don't have a submit button within the form
@@ -149,16 +154,21 @@ export const Panel = ({
 
   useEffect(() => {
     // Updates the form values when metadata is updated in Skylark
+    const formValues = metadataForm.getValues();
     const dataAndFormAreEqual =
-      data?.metadata &&
-      isObjectsDeepEqual(data?.metadata, metadataForm.getValues());
+      formParsedMetadata && isObjectsDeepEqual(formParsedMetadata, formValues);
 
     const metadataInEditMode = metadataForm.formState.isDirty || inEditMode;
 
-    if (!metadataInEditMode && data?.metadata && !dataAndFormAreEqual) {
-      resetMetadataForm(data.metadata);
+    if (
+      !metadataInEditMode &&
+      !metadataForm.formState.isSubmitted &&
+      formParsedMetadata &&
+      !dataAndFormAreEqual
+    ) {
+      resetMetadataForm(formParsedMetadata);
     }
-  }, [data?.metadata, inEditMode, metadataForm, resetMetadataForm]);
+  }, [inEditMode, metadataForm, resetMetadataForm, formParsedMetadata]);
 
   useEffect(() => {
     if (droppedObject) {
@@ -283,12 +293,14 @@ export const Panel = ({
       language,
       onSuccess: (updatedMetadata) => {
         setEditMode(false);
-        resetMetadataForm(
-          parseMetadataForHTMLForm(
-            updatedMetadata,
-            (objectMeta as SkylarkObjectMeta).fields,
-          ),
+        const updatedParsedMetadata = parseMetadataForHTMLForm(
+          updatedMetadata,
+          (objectMeta as SkylarkObjectMeta).fields,
         );
+        resetMetadataForm(updatedParsedMetadata, {
+          // keepIsSubmitted stops the panel flashing back to the old value
+          keepIsSubmitted: true,
+        });
       },
     });
 
@@ -317,21 +329,17 @@ export const Panel = ({
     ) {
       updateObjectRelationships();
     } else if (selectedTab === PanelTab.Metadata) {
-      // Validate then make request
-      metadataForm.trigger().then((allFieldsValid) => {
-        if (allFieldsValid) {
-          const values = metadataForm.getValues();
-          if (
-            hasProperty(values, SkylarkSystemField.ExternalID) &&
-            values[SkylarkSystemField.ExternalID] ===
-              data?.metadata[SkylarkSystemField.ExternalID]
-          ) {
-            // Remove External ID when it hasn't changed
-            delete values[SkylarkSystemField.ExternalID];
-          }
-          updateObjectMetadata(values);
+      metadataForm.handleSubmit((values) => {
+        if (
+          hasProperty(values, SkylarkSystemField.ExternalID) &&
+          values[SkylarkSystemField.ExternalID] ===
+            data?.metadata[SkylarkSystemField.ExternalID]
+        ) {
+          // Remove External ID when it hasn't changed
+          delete values[SkylarkSystemField.ExternalID];
         }
-      });
+        updateObjectMetadata(values);
+      })();
     } else {
       setEditMode(false);
     }
@@ -395,7 +403,7 @@ export const Panel = ({
       {isLoading && (
         <div
           data-testid="loading"
-          className="flex h-4/5 w-full items-center justify-center pb-10"
+          className="mt-20 flex w-full items-center justify-center pb-10"
         >
           <Spinner className="h-16 w-16 animate-spin" />
         </div>
@@ -413,12 +421,12 @@ export const Panel = ({
       )}
       {!isLoading && !isError && data && objectMeta && (
         <>
-          {selectedTab === PanelTab.Metadata && (
+          {selectedTab === PanelTab.Metadata && formParsedMetadata && (
             <PanelMetadata
               isPage={isPage}
               uid={uid}
               language={language}
-              metadata={data.metadata}
+              metadata={formParsedMetadata}
               form={metadataForm}
               objectType={objectType}
               objectMeta={objectMeta}
