@@ -33,6 +33,7 @@ import {
   PanelImages,
   PanelMetadata,
 } from "./panelSections";
+import { PanelAvailabilityDimensions } from "./panelSections/panelAvailabilityDimensions.component";
 import { PanelContent } from "./panelSections/panelContent.component";
 import { PanelRelationships } from "./panelSections/panelRelationships.component";
 
@@ -51,7 +52,7 @@ enum PanelTab {
   Metadata = "Metadata",
   Imagery = "Imagery",
   Availability = "Availability",
-  AvailabilityDimensions = "AvailabilityDimensions",
+  AvailabilityDimensions = "Dimensions",
   Content = "Content",
   Relationships = "Relationships",
 }
@@ -118,12 +119,15 @@ export const Panel = ({
         objectMeta?.hasRelationships && PanelTab.Relationships,
         objectMeta?.images && PanelTab.Imagery,
         objectMeta?.hasAvailability && PanelTab.Availability,
+        objectMeta?.name === BuiltInSkylarkObjectType.Availability &&
+          PanelTab.AvailabilityDimensions,
       ].filter((tab) => !!tab) as string[],
     [
       objectMeta?.hasAvailability,
       objectMeta?.hasContent,
       objectMeta?.hasRelationships,
       objectMeta?.images,
+      objectMeta?.name,
     ],
   );
 
@@ -462,6 +466,14 @@ export const Panel = ({
               showDropArea={showDropArea}
               language={language}
               setPanelObject={setPanelObject}
+            />
+          )}
+          {selectedTab === PanelTab.AvailabilityDimensions && (
+            <PanelAvailabilityDimensions
+              isPage={isPage}
+              objectType={objectType}
+              uid={uid}
+              inEditMode={inEditMode}
             />
           )}
         </>

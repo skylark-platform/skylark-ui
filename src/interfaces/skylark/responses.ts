@@ -88,3 +88,7 @@ export type GQLSkylarkListAvailabilityDimensionValuesResponse = Record<
     };
   }
 >;
+
+export interface GQLSkylarkGetAvailabilityDimensions {
+  getAvailability: SkylarkGraphQLAvailability;
+}

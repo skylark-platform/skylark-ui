@@ -143,7 +143,6 @@ export const PanelHeader = ({
           {!isPage && (
             <Button
               Icon={<ExternalLink className="text-gray-300" />}
-              disabled
               variant="ghost"
               href={`/object/${objectType}/${objectUid}`}
               newTab

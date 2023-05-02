@@ -24,8 +24,14 @@ export const PanelSectionTitle = ({
   </h3>
 );
 
-export const PanelFieldTitle = ({ text, count, sticky }: PanelHeaderProps) => (
+export const PanelFieldTitle = ({
+  text,
+  id,
+  count,
+  sticky,
+}: PanelHeaderProps) => (
   <h4
+    id={id}
     className={clsx(
       "mb-1 bg-white pb-0.5 text-sm font-bold",
       sticky && "sticky top-12 pt-2 md:top-[3.6rem]",

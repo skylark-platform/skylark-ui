@@ -3,12 +3,10 @@ import { UseFormReturn } from "react-hook-form";
 
 import { SkylarkObjectFieldInput } from "src/components/inputs/skylarkObjectFieldInput";
 import {
-  PanelFieldTitle,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
 import { OBJECT_OPTIONS } from "src/constants/skylark";
-import { useImageSize } from "src/hooks/useImageSize";
 import {
   BuiltInSkylarkObjectType,
   SkylarkObjectMeta,
@@ -17,11 +15,9 @@ import {
 } from "src/interfaces/skylark";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
-import { formatObjectField } from "src/lib/utils";
 
 import {
   AdditionalImageMetadata,
-  AvailabilityDimensions,
   PanelMetadataProperty,
 } from "./panelMetadataAdditionalSections";
 import { PanelSectionLayout } from "./panelSectionLayout.component";
@@ -153,10 +149,6 @@ export const PanelMetadata = ({
             src={metadata.url as string | null}
             alt={metadata.title as string}
           />
-        )}
-
-        {objectType === BuiltInSkylarkObjectType.Availability && (
-          <AvailabilityDimensions uid={uid} />
         )}
       </form>
     </PanelSectionLayout>
