@@ -165,14 +165,7 @@ export const Panel = ({
     const metadataInEditMode =
       inEditMode || (metadataForm.formState.isDirty && !inEditMode);
 
-    console.log({
-      state: metadataForm.formState.isSubmitted,
-      isDirty: metadataForm.formState.isDirty,
-      inEditMode,
-      metadataInEditMode,
-    });
     if (!metadataInEditMode && formParsedMetadata && !dataAndFormAreEqual) {
-      console.log("FORM RESET", { formParsedMetadata });
       resetMetadataForm(formParsedMetadata);
     }
   }, [inEditMode, metadataForm, resetMetadataForm, formParsedMetadata]);
@@ -286,10 +279,6 @@ export const Panel = ({
       originalRelationshipObjects,
       onSuccess: () => {
         setEditMode(false);
-        setRelationshipObjects({
-          originalRelationshipObjects: null,
-          updatedRelationshipObjects: null,
-        });
       },
     });
 
@@ -378,8 +367,8 @@ export const Panel = ({
             metadataForm.reset();
             setContentObjects(null);
             setRelationshipObjects({
-              updatedRelationshipObjects: null,
-              originalRelationshipObjects: null,
+              updatedRelationshipObjects: originalRelationshipObjects,
+              originalRelationshipObjects: originalRelationshipObjects,
             });
             clearDroppedObject?.();
           }
@@ -467,7 +456,6 @@ export const Panel = ({
               objectType={objectType}
               uid={uid}
               updatedRelationshipObjects={updatedRelationshipObjects}
-              originalRelationshipObjects={originalRelationshipObjects}
               setRelationshipObjects={setRelationshipObjects}
               inEditMode={inEditMode}
               showDropArea={showDropArea}

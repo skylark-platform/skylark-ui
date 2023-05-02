@@ -51,10 +51,12 @@ export const useUpdateObjectMetadata = ({
       // Update get query with updated data
       queryClient.setQueryData<GQLSkylarkGetObjectResponse>(
         createGetObjectKeyPrefix({ objectType, uid, language }),
-        {
-          // TODO prefill with old getObject data
-          getObject: data.updateObjectMetadata,
-        },
+        (oldData) => ({
+          getObject: {
+            ...oldData?.getObject,
+            ...data.updateObjectMetadata,
+          },
+        }),
       );
       onSuccess();
       refetchSearchQueriesAfterUpdate(queryClient);

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
+import { useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import {
@@ -66,39 +67,40 @@ export const useGetObjectRelationships = (
     GQLSkylarkGetObjectRelationshipsResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>
   >({
-    queryKey: [
-      ...createGetObjectRelationshipsKeyPrefix({ objectType, uid }),
-      query,
-      variables,
-    ],
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: createGetObjectRelationshipsKeyPrefix({ objectType, uid }),
     queryFn: async () => skylarkRequest(query as DocumentNode, variables),
     enabled: query !== null,
   });
 
   const unparsedData = data?.getObjectRelationships;
 
-  const relationships: ParsedSkylarkObjectRelationships[] | null = unparsedData
-    ? Object.keys(unparsedData)?.map((relation) => {
-        const relationship = unparsedData[
-          relation
-        ] as SkylarkGraphQLObjectRelationship;
+  const relationships: ParsedSkylarkObjectRelationships[] | null = useMemo(
+    () =>
+      unparsedData
+        ? Object.keys(unparsedData)?.map((relation) => {
+            const relationship = unparsedData[
+              relation
+            ] as SkylarkGraphQLObjectRelationship;
 
-        const parsedObjects = relationship.objects.map((relatedObject) =>
-          parseSkylarkObject(relatedObject as SkylarkGraphQLObject),
-        );
+            const parsedObjects = relationship.objects.map((relatedObject) =>
+              parseSkylarkObject(relatedObject as SkylarkGraphQLObject),
+            );
 
-        return {
-          relationshipName: relation,
-          nextToken: relationship?.next_token,
-          objects: parsedObjects,
-        };
-      })
-    : null;
+            return {
+              relationshipName: relation,
+              nextToken: relationship?.next_token,
+              objects: parsedObjects,
+            };
+          })
+        : null,
+    [unparsedData],
+  );
 
   return {
     ...rest,
-    data: relationships,
-    relationships: objectOperations?.relationships,
+    relationships,
+    objectRelationships: objectOperations?.relationships,
     isLoading: rest.isLoading || !query,
     query,
     variables,

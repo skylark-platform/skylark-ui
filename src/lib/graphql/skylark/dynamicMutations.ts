@@ -150,8 +150,6 @@ export const createUpdateObjectMetadataMutation = (
         __typename: true,
         ...common.fields,
         ...generateFieldsToReturn(objectMeta.fields),
-        ...generateRelationshipsToReturn(objectMeta),
-        ...generateContentsToReturn(objectMeta, []),
       },
     },
   };
@@ -319,7 +317,7 @@ export const createUpdateObjectRelationshipsMutation = (
       __variables: {
         uid: "String!",
       },
-      updateRelationships: {
+      updateObjectRelationships: {
         __aliasFor: object.operations.update.name,
         __args: {
           uid: new VariableType("uid"),
