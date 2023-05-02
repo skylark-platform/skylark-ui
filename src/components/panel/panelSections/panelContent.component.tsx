@@ -214,7 +214,7 @@ export const PanelContent = ({
                   >
                     <Trash
                       className={clsx(
-                        "ml-2 flex h-6 text-manatee-300 transition-all hover:text-error",
+                        "ml-2 flex h-6 text-manatee-500 transition-all hover:text-error",
                         inEditMode ? "w-6" : "w-0",
                       )}
                     />
@@ -230,7 +230,7 @@ export const PanelContent = ({
       </Reorder.Group>
       {inEditMode && (
         <p className="w-full py-4 text-center text-sm text-manatee-600">
-          {`Drag an object from the Content Library to add as content`}
+          {"Drag an object from the Content Library to add as content"}
         </p>
       )}
     </PanelSectionLayout>
