@@ -48,7 +48,7 @@ export const ObjectIdentifierCard = ({
         >
           <Trash
             className={clsx(
-              "flex h-6 text-manatee-300 transition-all hover:text-error",
+              "flex h-6 text-manatee-500 transition-all hover:text-error",
               !disableDeleteClick ? "w-6" : "w-0",
             )}
           />
