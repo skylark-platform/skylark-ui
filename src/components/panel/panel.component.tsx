@@ -92,6 +92,12 @@ export const Panel = ({
     updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
   }>({ originalRelationshipObjects: null, updatedRelationshipObjects: null });
 
+  const [availabilityDimensionValues, setAvailabilityDimensionValues] =
+    useState<{
+      original: Record<string, string[]> | null;
+      updated: Record<string, string[]> | null;
+    }>({ original: null, updated: null });
+
   const { uid, objectType, language } = object;
   const {
     data,
@@ -356,6 +362,7 @@ export const Panel = ({
           PanelTab.Metadata,
           PanelTab.Content,
           PanelTab.Relationships,
+          PanelTab.AvailabilityDimensions,
         ]}
         closePanel={closePanel}
         inEditMode={inEditMode}
@@ -373,6 +380,10 @@ export const Panel = ({
             setRelationshipObjects({
               updatedRelationshipObjects: null,
               originalRelationshipObjects: null,
+            });
+            setAvailabilityDimensionValues({
+              original: availabilityDimensionValues.original,
+              updated: availabilityDimensionValues.original,
             });
             clearDroppedObject?.();
           }
@@ -474,6 +485,13 @@ export const Panel = ({
               objectType={objectType}
               uid={uid}
               inEditMode={inEditMode}
+              availabilityDimensionValues={availabilityDimensionValues?.updated}
+              setAvailabilityDimensionValues={(values, toggleEditMode) => {
+                setAvailabilityDimensionValues(values);
+                if (toggleEditMode) {
+                  setEditMode(true);
+                }
+              }}
             />
           )}
         </>

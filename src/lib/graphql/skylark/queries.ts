@@ -59,10 +59,12 @@ export const GET_AVAILABILITY_DIMENSIONS = gql`
         objects {
           uid
           title
+          slug
           values(limit: 50) {
             objects {
               uid
               title
+              slug
             }
           }
         }

@@ -35,7 +35,7 @@ export interface SelectProps {
   options: SelectOption[];
   label?: string;
   labelVariant?: "default" | "form";
-  placeholder: string;
+  placeholder?: string;
   className?: string;
   disabled?: boolean;
   onChange?: (values: string[]) => void;
@@ -73,25 +73,20 @@ export const MultiSelect = forwardRef(
 
     const onChangeWrapper = useCallback(
       (newSelected: SelectOption[]) => {
-        console.log({ newSelected });
+        setQuery("");
         onChange?.(newSelected.map(({ value }) => value));
       },
       [onChange],
     );
 
     const paddingClassName = "py-2 pl-3 pr-2 sm:py-3 sm:pl-6";
-    const paddingClassNameWithSelected =
-      "pt-2 pb-0.5 pl-3 pr-2 sm:pt-3 pb-1 sm:pl-6";
     const selectClassName = clsx(
-      "relative w-full cursor-default bg-manatee-50 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 disabled:text-manatee-500",
-      "text-sm",
+      "relative w-full cursor-default bg-manatee-50 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 disabled:text-manatee-500 text-sm flex",
     );
 
     const selectedOptions = options.filter(({ value }) =>
       selected?.includes(value),
     );
-
-    const hasSelected = selectedOptions && selectedOptions.length > 0;
 
     const deselectOption = (value: SelectOption["value"]) => {
       onChangeWrapper(
@@ -113,42 +108,41 @@ export const MultiSelect = forwardRef(
           )}
         >
           {label && <SelectLabel label={label} labelVariant={labelVariant} />}
-          <Combobox.Button
-            data-testid="select"
-            as="div"
-            className={clsx(selectClassName, label && "mt-2")}
-          >
-            <Combobox.Input
-              className={clsx(
-                "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:outline-none focus:ring-0",
-                hasSelected ? paddingClassNameWithSelected : paddingClassName,
-              )}
-              displayValue={(option: SelectOption) =>
-                option.label || option.value
-              }
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder={placeholder || "Select option"}
-              ref={ref as Ref<HTMLInputElement> | undefined}
-            />
-            {selectedOptions && selectedOptions.length > 0 && (
-              <div className="mx-5 pb-2">
-                {selectedOptions.map(({ label, value }) => (
-                  <Pill
-                    key={value}
-                    label={label || value}
-                    className="mx-0.5"
-                    onDelete={() => deselectOption(value)}
-                  />
-                ))}
-              </div>
+          <div
+            className={clsx(
+              selectClassName,
+              label && "mt-2",
+              paddingClassName,
+              "flex-wrap gap-2",
             )}
-            <span className="absolute inset-y-0 right-0 flex items-center">
-              <button className={clsx("h-full", "ml-1 mr-4")}>
-                <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
-              </button>
-            </span>
-          </Combobox.Button>
-
+          >
+            {selectedOptions.map(({ label, value }) => (
+              <Pill
+                key={value}
+                label={label || value}
+                className="my-auto"
+                onDelete={() => deselectOption(value)}
+              />
+            ))}
+            <Combobox.Button
+              data-testid="select"
+              as="div"
+              className="flex min-w-[6rem] flex-1"
+            >
+              <Combobox.Input
+                className={clsx(
+                  "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:outline-none focus:ring-0",
+                )}
+                displayValue={(option: SelectOption) =>
+                  option.label || option.value
+                }
+                onChange={(event) => setQuery(event.target.value)}
+                value={query}
+                placeholder={placeholder}
+                ref={ref as Ref<HTMLInputElement> | undefined}
+              />
+            </Combobox.Button>
+          </div>
           <Transition
             as="div"
             className="z-50"
@@ -158,15 +152,16 @@ export const MultiSelect = forwardRef(
             afterLeave={() => setQuery("")}
           >
             <Combobox.Options>
-              {filteredOptions.length === 0 && query !== "" ? (
+              {filteredOptions.length === 0 ? (
                 <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <div className="relative cursor-default select-none bg-white py-2 px-4 text-sm text-gray-900">
                     Nothing found.
                   </div>
                 </div>
               ) : (
+                // TODO Virtualise
                 <SelectOptionsContainer>
-                  {options.map((option) => (
+                  {filteredOptions.map((option) => (
                     <SelectOptionComponent
                       key={option.value}
                       isSelected={selected?.includes(option.value)}
