@@ -67,8 +67,6 @@ describe("Drag and Drop - Content and Relationship tab", () => {
           const deltaY = 500;
           const delay = 500;
 
-          // cy.get(`[data-cy="draggable-item"`)
-
           cy.get("[data-cy=drop-area]").should("not.exist");
 
           cy.get(`[data-cy="draggable-item"`)
