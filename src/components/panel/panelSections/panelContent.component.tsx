@@ -135,6 +135,7 @@ export const PanelContent = ({
     return (
       <div
         ref={setNodeRef}
+        data-cy={"drop-area"}
         className={clsx(
           isOver && "border-primary text-primary",
           "m-4 mt-10 flex h-72 items-center justify-center border-2 border-dotted text-center text-manatee-400",
@@ -166,6 +167,7 @@ export const PanelContent = ({
               key={`panel-content-item-${object.uid}`}
               value={item}
               data-testid={`panel-object-content-item-${index + 1}`}
+              data-cy={"panel-object-content-item"}
               className={clsx(
                 "my-0 flex flex-col items-center justify-center",
                 inEditMode && "cursor-pointer",

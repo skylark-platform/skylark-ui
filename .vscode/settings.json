@@ -3,5 +3,11 @@
     "source.fixAll.eslint": true
   },
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    ".*ClassName*",
+    ".*ClassNames*"
+  ]
 }
