@@ -102,10 +102,14 @@ export const parseObjectInputFields = (
             | IntrospectionListTypeRef<IntrospectionScalarType>
         ).ofType?.name || (input.type as IntrospectionScalarType).name;
 
+      const kind =
+        (input.type as IntrospectionNonNullTypeRef | IntrospectionListTypeRef)
+          .ofType?.kind || input.type.kind;
+
       let type: NormalizedObjectFieldType = parseObjectInputType(typeName);
       let enumValues;
 
-      if (input.type.kind === "ENUM") {
+      if (kind === "ENUM") {
         type = "enum";
         enumValues = hasProperty(enums, typeName)
           ? enums[typeName].enumValues.map(({ name }) => name)
