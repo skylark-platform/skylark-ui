@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -6,6 +7,7 @@ import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { Toast } from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/useGetObject";
+import { useGetObjectAvailability } from "src/hooks/useGetObjectAvailability";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
 import { useUpdateObjectMetadata } from "src/hooks/useUpdateObjectMetadata";
 import { useUpdateObjectRelationships } from "src/hooks/useUpdateObjectRelationships";
@@ -18,7 +20,12 @@ import {
   SkylarkObjectMeta,
   ParsedSkylarkObjectRelationships,
   SkylarkObjectIdentifier,
+  ParsedSkylarkObjectAvailabilityObject,
 } from "src/interfaces/skylark";
+import {
+  getSingleAvailabilityStatus,
+  is2038Problem,
+} from "src/lib/skylark/availability";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
   getObjectDisplayName,
@@ -40,7 +47,7 @@ interface PanelProps {
   closePanel?: () => void;
   object: SkylarkObjectIdentifier;
   showDropArea?: boolean;
-  droppedObject?: ParsedSkylarkObject;
+  droppedObject?: unknown;
   clearDroppedObject?: () => void;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
   navigateToPreviousPanelObject?: () => void;
@@ -80,7 +87,6 @@ export const Panel = ({
   const [contentObjects, setContentObjects] = useState<
     AddedSkylarkObjectContentObject[] | null
   >(null);
-
   const [
     { updatedRelationshipObjects, originalRelationshipObjects },
     setRelationshipObjects,
@@ -88,6 +94,9 @@ export const Panel = ({
     originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
     updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
   }>({ originalRelationshipObjects: null, updatedRelationshipObjects: null });
+  const [availability, setAvailability] = useState<
+    ParsedSkylarkObjectAvailabilityObject[] | null
+  >(null);
 
   const { uid, objectType, language } = object;
   const {
@@ -239,6 +248,34 @@ export const Panel = ({
           ]);
         }
         setEditMode(true);
+      } else if (selectedTab === PanelTab.Availability) {
+        console.log({ droppedObject });
+        if (droppedObject) {
+          const t = droppedObject;
+
+          const now = dayjs();
+          const { start, end } = t;
+          const neverExpires = !!(end && is2038Problem(end));
+          const status = getSingleAvailabilityStatus(
+            now,
+            start || "",
+            end || "",
+          );
+
+          const x = {
+            ...droppedObject,
+            title: t.title || "",
+            slug: t.slug || "",
+            start: start || "",
+            end: end || "",
+            timezone: t.timezone || "",
+            dimensions: [], // TODO
+            status,
+            neverExpires,
+          };
+
+          setAvailability([t]);
+        }
       }
       clearDroppedObject?.();
     }
@@ -435,6 +472,9 @@ export const Panel = ({
               language={language}
               setPanelObject={setPanelObject}
               inEditMode={inEditMode}
+              showDropArea={showDropArea}
+              setAvailability={setAvailability}
+              availability={availability}
             />
           )}
           {selectedTab === PanelTab.Content && data.content && (
