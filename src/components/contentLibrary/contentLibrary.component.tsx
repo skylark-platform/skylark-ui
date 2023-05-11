@@ -2,7 +2,7 @@ import {
   DndContext,
   useSensor,
   useSensors,
-  PointerSensor,
+  MouseSensor,
   DragOverlay,
   getClientRect,
   DragEndEvent,
@@ -117,7 +117,7 @@ export const ContentLibrary = () => {
   };
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: {
         delay: 150,
         tolerance: 5,
