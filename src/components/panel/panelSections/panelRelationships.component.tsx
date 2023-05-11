@@ -56,8 +56,6 @@ export const PanelRelationships = ({
     variables,
   } = useGetObjectRelationships(objectType, uid, { language });
 
-  console.log({ relationships });
-
   useEffect(() => {
     if (!inEditMode) {
       setRelationshipObjects({
