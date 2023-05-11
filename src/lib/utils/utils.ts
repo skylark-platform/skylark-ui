@@ -113,7 +113,9 @@ export const isObjectsDeepEqual = (
       return isArraysEqual(value1, value2);
     }
 
-    return value1 !== value2;
+    if (value1 !== value2) {
+      return false;
+    }
   }
   return true;
 };
