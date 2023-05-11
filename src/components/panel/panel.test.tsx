@@ -771,8 +771,8 @@ describe("relationships view", () => {
     fireEvent.click(firstOpenObjectButton);
 
     expect(setPanelObject).toHaveBeenCalledWith({
-      objectType: "Episode",
-      uid: "01GXZP2MQKN47GHT7G4R22H861",
+      objectType: "Brand",
+      uid: "01GXZP1T4QA54SWSD0N6ABTNEY",
       language: "en-GB",
     });
   });

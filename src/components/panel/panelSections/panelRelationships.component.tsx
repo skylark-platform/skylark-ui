@@ -108,13 +108,11 @@ export const PanelRelationships = ({
   const relationshipNames = objectRelationships.map(
     ({ relationshipName }) => relationshipName,
   );
-  const orderedRelationshipObjects = updatedRelationshipObjects
-    ?.sort(
-      (a, b) =>
-        relationshipNames.indexOf(a.relationshipName) -
-        relationshipNames.indexOf(b.relationshipName),
-    )
-    .sort((a, b) => b.objects.length - a.objects.length);
+  const orderedRelationshipObjects = updatedRelationshipObjects?.sort(
+    (a, b) =>
+      relationshipNames.indexOf(a.relationshipName) -
+      relationshipNames.indexOf(b.relationshipName),
+  );
 
   return (
     <PanelSectionLayout
