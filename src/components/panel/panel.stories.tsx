@@ -14,11 +14,7 @@ export default {
 };
 
 const Template: ComponentStory<typeof Panel> = (args) => {
-  return (
-    <div className="flex flex-row space-x-2">
-      <Panel {...args} closePanel={() => alert("Close clicked")} />
-    </div>
-  );
+  return <Panel {...args} closePanel={() => alert("Close clicked")} />;
 };
 
 export const Default = Template.bind({});
@@ -30,6 +26,16 @@ Default.args = {
   },
 };
 
+export const PageView = Template.bind({});
+PageView.args = {
+  object: {
+    uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
+    objectType: "Movie",
+    language: "",
+  },
+  isPage: true,
+};
+
 export const Imagery = Template.bind({});
 Imagery.parameters = Default.parameters;
 Imagery.args = {
@@ -37,6 +43,8 @@ Imagery.args = {
 };
 Imagery.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
+
+  await canvas.findByText("System Metadata");
 
   await canvas.findByRole("button", { name: /Imagery/i });
   const tabButton = canvas.getByRole("button", { name: /Imagery/i });
@@ -58,6 +66,8 @@ Content.args = {
 Content.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
+  await canvas.findByText("System Metadata");
+
   await canvas.findByRole("button", { name: /Content/i });
   const tabButton = canvas.getByRole("button", { name: /Content/i });
 
@@ -77,6 +87,8 @@ ContentEditing.args = {
 };
 ContentEditing.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
+
+  await canvas.findByText("System Metadata");
 
   await canvas.findByRole("button", { name: /Content/i });
   const tabButton = canvas.getByRole("button", { name: /Content/i });
@@ -100,6 +112,8 @@ Availability.args = {
 };
 Availability.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
+
+  await canvas.findByText("System Metadata");
 
   await canvas.findByRole("button", { name: /Availability/i });
   const imageryButton = canvas.getByRole("button", { name: /Availability/i });

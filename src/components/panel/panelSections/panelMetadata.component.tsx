@@ -16,7 +16,6 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
-import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import { formatObjectField } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
@@ -84,7 +83,7 @@ export const PanelMetadata = ({
 
   // When component first loads, update the form metadata with the current values
   useEffect(() => {
-    reset(parseMetadataForHTMLForm(metadata, objectMeta?.fields));
+    reset(metadata);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid, language]);
 

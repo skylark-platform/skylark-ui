@@ -21,6 +21,7 @@ import {
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
+  isObjectsDeepEqual,
   getObjectDisplayName,
   getObjectTypeDisplayNameFromParsedObject,
   hasProperty,
@@ -101,6 +102,11 @@ export const Panel = ({
     isObjectTypeNotFound,
     error,
   } = useGetObject(objectType, uid, { language });
+  const formParsedMetadata =
+    (data &&
+      objectMeta &&
+      parseMetadataForHTMLForm(data.metadata, objectMeta.fields)) ||
+    null;
 
   const metadataForm = useForm<Record<string, SkylarkObjectMetadataField>>({
     // Can't use onSubmit because we don't have a submit button within the form
@@ -128,6 +134,7 @@ export const Panel = ({
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
 
   useEffect(() => {
+    // Resets any edited data when the panel object changes
     setEditMode(false);
     setSelectedTab(PanelTab.Metadata);
     setContentObjects(null);
@@ -139,10 +146,29 @@ export const Panel = ({
   }, [uid, objectType, language, resetMetadataForm]);
 
   useEffect(() => {
-    if (!inEditMode && metadataForm.formState.isDirty) {
+    // Switches into edit mode when the metadata form is changed
+    if (
+      !inEditMode &&
+      metadataForm.formState.isDirty &&
+      !metadataForm.formState.isSubmitted
+    ) {
       setEditMode(true);
     }
-  }, [inEditMode, metadataForm.formState.isDirty]);
+  }, [inEditMode, metadataForm.formState]);
+
+  useEffect(() => {
+    // Updates the form values when metadata is updated in Skylark
+    const formValues = metadataForm.getValues();
+    const dataAndFormAreEqual =
+      formParsedMetadata && isObjectsDeepEqual(formParsedMetadata, formValues);
+
+    const metadataInEditMode =
+      inEditMode || (metadataForm.formState.isDirty && !inEditMode);
+
+    if (!metadataInEditMode && formParsedMetadata && !dataAndFormAreEqual) {
+      resetMetadataForm(formParsedMetadata);
+    }
+  }, [inEditMode, metadataForm, resetMetadataForm, formParsedMetadata]);
 
   useEffect(() => {
     if (droppedObject) {
@@ -264,10 +290,6 @@ export const Panel = ({
       originalRelationshipObjects,
       onSuccess: () => {
         setEditMode(false);
-        setRelationshipObjects({
-          originalRelationshipObjects: null,
-          updatedRelationshipObjects: null,
-        });
       },
     });
 
@@ -276,14 +298,9 @@ export const Panel = ({
       objectType,
       uid,
       language,
-      onSuccess: (updatedMetadata) => {
+      onSuccess: () => {
         setEditMode(false);
-        resetMetadataForm(
-          parseMetadataForHTMLForm(
-            updatedMetadata,
-            (objectMeta as SkylarkObjectMeta).fields,
-          ),
-        );
+        resetMetadataForm({ keepValues: true });
       },
     });
 
@@ -312,21 +329,17 @@ export const Panel = ({
     ) {
       updateObjectRelationships();
     } else if (selectedTab === PanelTab.Metadata) {
-      // Validate then make request
-      metadataForm.trigger().then((allFieldsValid) => {
-        if (allFieldsValid) {
-          const values = metadataForm.getValues();
-          if (
-            hasProperty(values, SkylarkSystemField.ExternalID) &&
-            values[SkylarkSystemField.ExternalID] ===
-              data?.metadata[SkylarkSystemField.ExternalID]
-          ) {
-            // Remove External ID when it hasn't changed
-            delete values[SkylarkSystemField.ExternalID];
-          }
-          updateObjectMetadata(values);
+      metadataForm.handleSubmit((values) => {
+        if (
+          hasProperty(values, SkylarkSystemField.ExternalID) &&
+          values[SkylarkSystemField.ExternalID] ===
+            data?.metadata[SkylarkSystemField.ExternalID]
+        ) {
+          // Remove External ID when it hasn't changed
+          delete values[SkylarkSystemField.ExternalID];
         }
-      });
+        updateObjectMetadata(values);
+      })();
     } else {
       setEditMode(false);
     }
@@ -365,8 +378,8 @@ export const Panel = ({
             metadataForm.reset();
             setContentObjects(null);
             setRelationshipObjects({
-              updatedRelationshipObjects: null,
-              originalRelationshipObjects: null,
+              updatedRelationshipObjects: originalRelationshipObjects,
+              originalRelationshipObjects: originalRelationshipObjects,
             });
             clearDroppedObject?.();
           }
@@ -377,10 +390,20 @@ export const Panel = ({
         }
         navigateToPreviousPanelObject={navigateToPreviousPanelObject}
       />
+      <div className="border-b-2 border-gray-200">
+        <div className="mx-auto w-full max-w-7xl flex-none overflow-x-auto">
+          <Tabs
+            tabs={tabs}
+            selectedTab={selectedTab}
+            onChange={setSelectedTab}
+            disabled={inEditMode || isLoading || isError}
+          />
+        </div>
+      </div>
       {isLoading && (
         <div
           data-testid="loading"
-          className="flex h-4/5 w-full items-center justify-center pb-10"
+          className="mt-20 flex w-full items-center justify-center pb-10"
         >
           <Spinner className="h-16 w-16 animate-spin" />
         </div>
@@ -398,22 +421,12 @@ export const Panel = ({
       )}
       {!isLoading && !isError && data && objectMeta && (
         <>
-          <div className="border-b-2 border-gray-200">
-            <div className="mx-auto w-full max-w-7xl flex-none overflow-x-auto">
-              <Tabs
-                tabs={tabs}
-                selectedTab={selectedTab}
-                onChange={setSelectedTab}
-                disabled={inEditMode || isLoading || isError}
-              />
-            </div>
-          </div>
-          {selectedTab === PanelTab.Metadata && (
+          {selectedTab === PanelTab.Metadata && formParsedMetadata && (
             <PanelMetadata
               isPage={isPage}
               uid={uid}
               language={language}
-              metadata={data.metadata}
+              metadata={formParsedMetadata}
               form={metadataForm}
               objectType={objectType}
               objectMeta={objectMeta}
@@ -454,7 +467,6 @@ export const Panel = ({
               objectType={objectType}
               uid={uid}
               updatedRelationshipObjects={updatedRelationshipObjects}
-              originalRelationshipObjects={originalRelationshipObjects}
               setRelationshipObjects={setRelationshipObjects}
               inEditMode={inEditMode}
               showDropArea={showDropArea}

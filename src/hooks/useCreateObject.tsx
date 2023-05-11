@@ -7,7 +7,7 @@ import { RequestDocument } from "graphql-request";
 
 import { QueryKeys } from "src/enums/graphql";
 import {
-  GQLSkylarkUpdateObjectMetadataResponse,
+  GQLSkylarkCreateObjectMetadataResponse,
   SkylarkObjectIdentifier,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
@@ -50,13 +50,13 @@ export const useCreateObject = ({
       language: string;
       metadata: Record<string, SkylarkObjectMetadataField>;
     }) => {
-      const updateObjectMetadataMutation = createCreateObjectMutation(
+      const createObjectMetadataMutation = createCreateObjectMutation(
         objectOperations,
         metadata,
         !!language,
       );
-      return skylarkRequest<GQLSkylarkUpdateObjectMetadataResponse>(
-        updateObjectMetadataMutation as RequestDocument,
+      return skylarkRequest<GQLSkylarkCreateObjectMetadataResponse>(
+        createObjectMetadataMutation as RequestDocument,
         { language },
       );
     },

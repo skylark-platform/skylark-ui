@@ -131,7 +131,7 @@ export const generateFieldsToReturn = (
   return fieldsToReturn;
 };
 
-const generateRelationshipsToReturn = (
+export const generateRelationshipsToReturn = (
   object: SkylarkObjectMeta | null,
   isSearch?: boolean,
 ): object => {
