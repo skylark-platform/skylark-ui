@@ -17,6 +17,7 @@ import {
 import {
   generateContentsToReturn,
   generateFieldsToReturn,
+  generateRelationshipsToReturn,
   generateVariablesAndArgs,
 } from "./dynamicQueries";
 
@@ -146,7 +147,8 @@ export const createUpdateObjectMetadataMutation = (
           uid: new VariableType("uid"),
           [objectMeta.operations.update.argName]: parsedMetadata,
         },
-        uid: true,
+        __typename: true,
+        ...common.fields,
         ...generateFieldsToReturn(objectMeta.fields),
       },
     },
@@ -315,7 +317,7 @@ export const createUpdateObjectRelationshipsMutation = (
       __variables: {
         uid: "String!",
       },
-      updateRelationships: {
+      updateObjectRelationships: {
         __aliasFor: object.operations.update.name,
         __args: {
           uid: new VariableType("uid"),

@@ -155,6 +155,30 @@ describe("metadata view", () => {
     ).toBeInTheDocument();
   });
 
+  test("hides the previous object and external open object buttons when isPage is true", async () => {
+    render(
+      <Panel
+        isPage
+        object={movieObject}
+        closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    expect(
+      screen.queryAllByRole("button", {
+        name: /Open Previous Object/i,
+      }),
+    ).toHaveLength(0);
+
+    const panelHeader = within(screen.getByTestId("panel-header"));
+    expect(panelHeader.queryAllByRole("link")).toHaveLength(0);
+  });
+
   test("renders object not found when the object doesn't exist", async () => {
     server.use(
       graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
@@ -572,6 +596,12 @@ describe("imagery view", () => {
     );
 
     await waitFor(() =>
+      expect(
+        screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
+      ).toBeInTheDocument(),
+    );
+
+    await waitFor(() =>
       expect(screen.getByText("Imagery")).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Imagery"));
@@ -618,6 +648,12 @@ describe("imagery view", () => {
     );
 
     await waitFor(() =>
+      expect(
+        screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
+      ).toBeInTheDocument(),
+    );
+
+    await waitFor(() =>
       expect(screen.getByText("Imagery")).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Imagery"));
@@ -650,8 +686,13 @@ describe("relationships view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("Relationships")).toBeInTheDocument(),
+      expect(
+        screen.getByText(
+          GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
+
     fireEvent.click(screen.getByText("Relationships"));
 
     await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
@@ -681,8 +722,13 @@ describe("relationships view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("Relationships")).toBeInTheDocument(),
+      expect(
+        screen.getByText(
+          GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
+
     fireEvent.click(screen.getByText("Relationships"));
 
     await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
@@ -702,6 +748,14 @@ describe("relationships view", () => {
         closePanel={jest.fn()}
         setPanelObject={setPanelObject}
       />,
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
 
     await waitFor(() =>
@@ -734,8 +788,14 @@ describe("relationships view", () => {
       );
 
       await waitFor(() =>
-        expect(screen.getByText("Relationships")).toBeInTheDocument(),
+        expect(
+          screen.getByText(
+            GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject
+              .title,
+          ),
+        ).toBeInTheDocument(),
       );
+
       fireEvent.click(screen.getByText("Relationships"));
 
       await waitFor(() =>
@@ -768,8 +828,11 @@ describe("relationships view", () => {
           .episodes.objects[0].title as string,
       );
 
-      const removeButton = screen.getByTestId(
-        "panel-relationship-episodes-item-1-remove",
+      const withinPanelObjectRelationshipItem1 = within(
+        screen.getByTestId("panel-relationship-episodes-item-1"),
+      );
+      const removeButton = withinPanelObjectRelationshipItem1.getByTestId(
+        "object-identifier-delete",
       );
       fireEvent.click(removeButton);
 
@@ -784,8 +847,11 @@ describe("relationships view", () => {
     test("removes an item and saves", async () => {
       await renderAndSwitchToEditView();
 
-      const removeButton = screen.getByTestId(
-        "panel-relationship-episodes-item-1-remove",
+      const withinPanelObjectRelationshipItem1 = within(
+        screen.getByTestId("panel-relationship-episodes-item-1"),
+      );
+      const removeButton = withinPanelObjectRelationshipItem1.getByTestId(
+        "object-identifier-delete",
       );
       fireEvent.click(removeButton);
 
@@ -814,8 +880,13 @@ describe("content view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("Content")).toBeInTheDocument(),
+      expect(
+        screen.getByText(
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
+
     fireEvent.click(screen.getByText("Content"));
 
     expect(screen.getAllByText("Homepage")).toHaveLength(1);
@@ -837,8 +908,13 @@ describe("content view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("Content")).toBeInTheDocument(),
+      expect(
+        screen.getByText(
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
+
     fireEvent.click(screen.getByText("Content"));
 
     expect(screen.getAllByText("Homepage")).toHaveLength(1);
@@ -861,7 +937,11 @@ describe("content view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("Content")).toBeInTheDocument(),
+      expect(
+        screen.getByText(
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Content"));
 
@@ -893,11 +973,17 @@ describe("content view", () => {
       );
 
       await waitFor(() =>
-        expect(screen.getByText("Content")).toBeInTheDocument(),
+        expect(
+          screen.getByText(
+            GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title,
+          ),
+        ).toBeInTheDocument(),
       );
       fireEvent.click(screen.getByText("Content"));
 
-      expect(screen.getAllByText("Homepage")).toHaveLength(1);
+      await waitFor(() =>
+        expect(screen.getAllByText("Homepage")).toHaveLength(1),
+      );
 
       fireEvent.click(screen.getByText("Edit Content"));
 
@@ -1089,7 +1175,7 @@ describe("content view", () => {
         screen.getByTestId("panel-object-content-item-1"),
       );
       const removeButton = withinPanelObjectContentItem1.getByTestId(
-        "panel-object-content-item-remove",
+        "object-identifier-delete",
       );
       fireEvent.click(removeButton);
 
@@ -1111,7 +1197,7 @@ describe("content view", () => {
         screen.getByTestId("panel-object-content-item-1"),
       );
       const removeButton = withinPanelObjectContentItem1.getByTestId(
-        "panel-object-content-item-remove",
+        "object-identifier-delete",
       );
       fireEvent.click(removeButton);
 

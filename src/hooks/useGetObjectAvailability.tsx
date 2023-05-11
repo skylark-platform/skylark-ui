@@ -25,7 +25,7 @@ export const createGetObjectAvailabilityKeyPrefix = ({
 }: {
   objectType: string;
   uid: string;
-}) => [QueryKeys.GetObjectAvailability, objectType, uid];
+}) => [QueryKeys.GetObjectAvailability, { objectType, uid }];
 
 export const useGetObjectAvailability = (
   objectType: SkylarkObjectType,

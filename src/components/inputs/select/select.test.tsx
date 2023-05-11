@@ -85,7 +85,7 @@ test("searches for Episode", async () => {
       selected=""
       placeholder="Object Type"
       onChange={onChange}
-      withSearch
+      searchable
     />,
   );
 
@@ -113,7 +113,7 @@ test("shows not found when not found", async () => {
       selected=""
       placeholder="Object Type"
       onChange={onChange}
-      withSearch
+      searchable
     />,
   );
 
@@ -137,7 +137,7 @@ test("adds a custom value when allowCustomValue is true and the option is not fo
       selected=""
       placeholder="Object Type"
       onChange={onChange}
-      withSearch
+      searchable
       allowCustomValue
     />,
   );
@@ -165,7 +165,7 @@ test("clears the value", () => {
       options={options}
       selected={options[0].label}
       placeholder="Object Type"
-      withSearch
+      searchable
       allowCustomValue
       onValueClear={onValueClear}
     />,

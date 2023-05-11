@@ -241,6 +241,46 @@ describe("parseObjectInputFields", () => {
     ]);
   });
 
+  test("parses a required enum input", () => {
+    const fields = {
+      name: "Test",
+      type: {
+        ...defaultType,
+        kind: "NON_NULL",
+        name: null,
+        ofType: {
+          ...defaultType,
+          kind: "ENUM",
+          name: "MyCustomEnum",
+        },
+      },
+    };
+
+    const got = parseObjectInputFields(
+      [fields] as unknown as IntrospectionField[],
+      {
+        MyCustomEnum: {
+          name: "MyCustomEnum",
+          kind: "ENUM",
+          enumValues: [
+            { name: "ENUM1" },
+            { name: "ENUM2" },
+          ] as IntrospectionEnumValue[],
+        },
+      },
+    );
+    expect(got).toEqual([
+      {
+        enumValues: ["ENUM1", "ENUM2"],
+        isList: false,
+        isRequired: true,
+        name: "Test",
+        type: "enum",
+        originalType: "MyCustomEnum",
+      },
+    ]);
+  });
+
   test("ignores an INPUT_OBJECT and OBJECT", () => {
     const fields = [
       {

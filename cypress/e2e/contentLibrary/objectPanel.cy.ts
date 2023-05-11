@@ -18,6 +18,11 @@ describe("Content Library - Object Panel", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
+      if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
+        req.reply({
+          fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
+        });
+      }
       if (hasOperationName(req, "GET_Episode")) {
         if (hasMatchingVariable(req, "language", "pt-PT")) {
           req.reply({
@@ -442,7 +447,7 @@ describe("Content Library - Object Panel", () => {
         .parent()
         .parent()
         .within(() => {
-          cy.get("[data-testid=panel-object-content-item-remove]").click();
+          cy.get("[data-testid=object-identifier-delete]").click();
         });
       cy.contains("Discover Collection").should("not.exist");
 
@@ -511,7 +516,7 @@ describe("Content Library - Object Panel", () => {
         .parent()
         .parent()
         .within(() => {
-          cy.get("[data-testid=panel-object-content-item-remove]").click();
+          cy.get("[data-testid=object-identifier-delete]").click();
         });
 
       // Reorder

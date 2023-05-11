@@ -30,7 +30,7 @@ export interface SelectProps {
   placeholder: string;
   className?: string;
   disabled?: boolean;
-  withSearch?: boolean;
+  searchable?: boolean;
   allowCustomValue?: boolean;
   rounded?: boolean;
   withBasicSort?: boolean;
@@ -202,7 +202,7 @@ export const Select = forwardRef(
       onChange,
       disabled,
       selected,
-      withSearch,
+      searchable = true,
       rounded,
       allowCustomValue,
       onValueClear,
@@ -267,7 +267,7 @@ export const Select = forwardRef(
           )}
         >
           {label && <SelectLabel label={label} labelVariant={labelVariant} />}
-          {withSearch ? (
+          {searchable ? (
             <Combobox.Button
               data-testid="select"
               as="div"
@@ -345,7 +345,7 @@ export const Select = forwardRef(
           >
             <Combobox.Options>
               {filteredOptions.length === 0 && query !== "" ? (
-                withSearch && allowCustomValue ? (
+                searchable && allowCustomValue ? (
                   <Options
                     variant={variant}
                     options={[{ value: query, label: `Use "${query}"` }]}
