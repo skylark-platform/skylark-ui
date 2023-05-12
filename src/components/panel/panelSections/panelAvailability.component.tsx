@@ -85,7 +85,7 @@ export const PanelAvailability = ({
       isPage={isPage}
     >
       {data && (
-        <>
+        <div data-testid="panel-availability">
           <PanelSectionTitle
             text={formatObjectField("Availability")}
             id={"availability-panel-title"}
@@ -174,7 +174,7 @@ export const PanelAvailability = ({
               </div>
             );
           })}
-        </>
+        </div>
       )}
       <PanelLoading
         isLoading={isLoading || hasNextPage}

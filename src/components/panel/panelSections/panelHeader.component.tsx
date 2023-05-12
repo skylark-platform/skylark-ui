@@ -5,6 +5,10 @@ import { useMemo, useState } from "react";
 import { GrGraphQl } from "react-icons/gr";
 import { toast } from "react-toastify";
 
+import {
+  AvailabilityLabel,
+  AvailabilityLabelPill,
+} from "src/components/availability";
 import { Button } from "src/components/button";
 import { DisplayGraphQLQueryModal } from "src/components/displayGraphQLQuery";
 import {
@@ -24,7 +28,11 @@ import { Pill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
 import { Toast } from "src/components/toast/toast.component";
 import { useDeleteObject } from "src/hooks/useDeleteObject";
-import { ParsedSkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
+import {
+  AvailabilityStatus,
+  ParsedSkylarkObject,
+  SkylarkObjectType,
+} from "src/interfaces/skylark";
 import {
   getObjectDisplayName,
   getObjectTypeDisplayNameFromParsedObject,
@@ -43,6 +51,7 @@ interface PanelHeaderProps {
   inEditMode: boolean;
   isSaving?: boolean;
   isTranslatable?: boolean;
+  availabilityStatus?: AvailabilityStatus | null;
   toggleEditMode: () => void;
   closePanel?: () => void;
   save: () => void;
@@ -63,6 +72,7 @@ export const PanelHeader = ({
   inEditMode,
   isSaving,
   isTranslatable,
+  availabilityStatus,
   toggleEditMode,
   closePanel,
   save,
@@ -217,6 +227,9 @@ export const PanelHeader = ({
                 className="w-20 bg-brand-primary"
                 label={object.config.objectTypeDisplayName || objectType}
               />
+              {availabilityStatus && (
+                <AvailabilityLabelPill status={availabilityStatus} />
+              )}
               {isTranslatable && (
                 <LanguageSelect
                   selected={language || object.meta.language}

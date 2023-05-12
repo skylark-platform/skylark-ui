@@ -1,5 +1,6 @@
 import clsx from "clsx";
 
+import { Pill } from "src/components/pill";
 import { AvailabilityStatus } from "src/interfaces/skylark";
 
 interface AvailabilityLabelProps {
@@ -18,4 +19,17 @@ export const AvailabilityLabel = ({ status }: AvailabilityLabelProps) => (
   >
     {status}
   </span>
+);
+
+export const AvailabilityLabelPill = ({ status }: AvailabilityLabelProps) => (
+  <Pill
+    className={clsx(
+      "uppercase",
+      status === AvailabilityStatus.Active && "bg-success",
+      status === AvailabilityStatus.Future && "bg-warning",
+      status === AvailabilityStatus.Unavailable && "bg-manatee-400",
+      status === AvailabilityStatus.Expired && "bg-error",
+    )}
+    label={status}
+  />
 );

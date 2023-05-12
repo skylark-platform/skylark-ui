@@ -422,6 +422,7 @@ describe("parseObjectContent", () => {
               global: 1,
               language: 2,
             },
+            availabilityStatus: null,
           },
           object: objects[0].object,
           objectType: objects[0].object.__typename,
@@ -440,6 +441,7 @@ describe("parseObjectContent", () => {
               global: 2,
               language: 1,
             },
+            availabilityStatus: null,
           },
           object: objects[1].object,
           objectType: objects[1].object.__typename,
@@ -507,6 +509,7 @@ describe("parseSkylarkObject", () => {
           language: 1,
           global: 2,
         },
+        availabilityStatus: AvailabilityStatus.Unavailable,
       },
       metadata: {
         uid: "uid123",
@@ -832,6 +835,7 @@ describe("parseUpdatedRelationshipObjects", () => {
         language: 1,
         global: 2,
       },
+      availabilityStatus: AvailabilityStatus.Unavailable,
     },
     metadata: {
       uid: "uid123",

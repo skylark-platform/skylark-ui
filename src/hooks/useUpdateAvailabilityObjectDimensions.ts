@@ -9,7 +9,10 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynamicMutations";
+import {
+  createUpdateAvailabilityDimensionsMutation,
+  createUpdateObjectContentMutation,
+} from "src/lib/graphql/skylark/dynamicMutations";
 import { parseObjectContent } from "src/lib/skylark/parsers";
 
 import { createGetAvailabilityObjectDimensionsKeyPrefix } from "./availability/useAvailabilityObjectDimensions";
@@ -26,36 +29,42 @@ export const useUpdateAvailabilityObjectDimensions = ({
   onSuccess,
 }: {
   uid: string;
-  originalAvailabilityDimensions: Record<string, string[]>;
-  updatedAvailabilityDimensions: Record<string, string[]>;
+  originalAvailabilityDimensions: Record<string, string[]> | null;
+  updatedAvailabilityDimensions: Record<string, string[]> | null;
   onSuccess: () => void;
 }) => {
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(
     BuiltInSkylarkObjectType.Availability,
   );
-  const { objects } = useAllObjectsMeta(false);
 
-  // const { mutate, ...rest } = useMutation({
-  //   mutationFn: ({ uid }: { uid: string }) => {
-  //     return skylarkRequest<GQLSkylarkUpdateObjectContentResponse>(
-  //       updateObjectContentMutation as RequestDocument,
-  //       { uid },
-  //     );
-  //   },
-  //   onSuccess: (data, { uid }) => {
-  //     queryClient.invalidateQueries({
-  //       queryKey: createGetAvailabilityObjectDimensionsKeyPrefix({ uid }),
-  //     });
+  const updateAvailabilityObjectDimensionsMutation =
+    createUpdateAvailabilityDimensionsMutation(
+      objectOperations,
+      originalAvailabilityDimensions,
+      updatedAvailabilityDimensions,
+    );
 
-  //     onSuccess();
-  //   },
-  // });
+  const { mutate, ...rest } = useMutation({
+    mutationFn: ({ uid }: { uid: string }) => {
+      return skylarkRequest<GQLSkylarkUpdateObjectContentResponse>(
+        updateAvailabilityObjectDimensionsMutation as RequestDocument,
+        { uid },
+      );
+    },
+    onSuccess: async (data, { uid }) => {
+      await queryClient.refetchQueries({
+        queryKey: createGetAvailabilityObjectDimensionsKeyPrefix({ uid }),
+      });
 
-  // const updateObjectContent = () => mutate({ uid });
+      onSuccess();
+    },
+  });
 
-  // return {
-  //   updateObjectContent,
-  //   ...rest,
-  // };
+  const updateAvailabilityObjectDimensions = () => mutate({ uid });
+
+  return {
+    updateAvailabilityObjectDimensions,
+    ...rest,
+  };
 };

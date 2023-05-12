@@ -32,7 +32,7 @@ interface PanelRelationshipsProps {
 
 const parseDimensionsAndValues = (
   data: SkylarkGraphQLAvailabilityDimensionWithValues[],
-) => {
+): Record<string, string[]> => {
   // Dimensions use slugs not uids
   const entries = data.map((dimension): [string, string[]] => {
     const valueSlugs = dimension.values.objects.map(({ slug }) => slug);
@@ -87,8 +87,6 @@ export const PanelAvailabilityDimensions = ({
     availabilityDimensionValues,
     setAvailabilityDimensionValues,
   ]);
-
-  console.log({ availabilityDimensionValues });
 
   return (
     <PanelSectionLayout

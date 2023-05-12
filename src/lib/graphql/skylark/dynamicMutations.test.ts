@@ -3,7 +3,10 @@ import {
   setObjectOperations,
   movieObjectOperations,
 } from "src/__tests__/utils/objectOperations";
-import { ParsedSkylarkObjectContentObject } from "src/interfaces/skylark";
+import {
+  AvailabilityStatus,
+  ParsedSkylarkObjectContentObject,
+} from "src/interfaces/skylark";
 
 import {
   createDeleteObjectMutation,
@@ -52,6 +55,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 1,
         object: { uid: "episode_1", external_id: "" },
@@ -62,6 +66,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 2,
         object: { uid: "episode_2", external_id: "" },
@@ -72,6 +77,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 3,
         object: { uid: "movie_1", external_id: "" },
@@ -98,6 +104,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 1,
         object: { uid: "episode_1", external_id: "" },
@@ -108,6 +115,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 2,
         object: { uid: "episode_2", external_id: "" },
@@ -118,6 +126,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 3,
         object: { uid: "movie_1", external_id: "" },
@@ -146,6 +155,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 1,
         object: { uid: "episode_1", external_id: "" },
@@ -156,6 +166,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 2,
         object: { uid: "episode_2", external_id: "" },
@@ -166,6 +177,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 3,
         object: { uid: "movie_1", external_id: "" },

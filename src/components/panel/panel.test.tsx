@@ -1305,7 +1305,7 @@ describe("availability view", () => {
     await waitFor(() => expect(screen.getByText("None")).toBeInTheDocument());
   });
 
-  it("finds sets the status of each availability", async () => {
+  it("finds the status of each availability", async () => {
     render(
       <Panel
         object={movieObject}
@@ -1328,9 +1328,12 @@ describe("availability view", () => {
       ),
     );
 
-    expect(screen.queryAllByText("Expired")).toHaveLength(1);
-    expect(screen.queryAllByText("Future")).toHaveLength(1);
-    expect(screen.queryAllByText("Active")).toHaveLength(2);
+    const withinAvailabilityTab = within(
+      screen.getByTestId("panel-availability"),
+    );
+    expect(withinAvailabilityTab.queryAllByText("Expired")).toHaveLength(1);
+    expect(withinAvailabilityTab.queryAllByText("Future")).toHaveLength(1);
+    expect(withinAvailabilityTab.queryAllByText("Active")).toHaveLength(2);
   });
 
   it("converts start and end date to readable formats", async () => {

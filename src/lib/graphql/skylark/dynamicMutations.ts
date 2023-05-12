@@ -3,6 +3,7 @@ import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
+  BuiltInSkylarkObjectType,
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObjectRelationships,
   SkylarkObjectMeta,
@@ -13,6 +14,7 @@ import {
   parseMetadataForGraphQLRequest,
   parseUpdatedRelationshipObjects,
 } from "src/lib/skylark/parsers";
+import { hasProperty } from "src/lib/utils";
 
 import {
   generateContentsToReturn,
@@ -324,6 +326,129 @@ export const createUpdateObjectRelationshipsMutation = (
           [object.operations.update.argName]: {
             relationships: {
               ...parsedRelationsToUpdate,
+            },
+          },
+        },
+        uid: true,
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(mutation);
+
+  return gql(graphQLQuery);
+};
+
+export const createUpdateAvailabilityDimensionsMutation = (
+  objectMeta: SkylarkObjectMeta | null,
+  originalAvailabilityDimensionValues: Record<string, string[]> | null,
+  updatedAvailabilityDimensionValues: Record<string, string[]> | null,
+) => {
+  if (
+    !objectMeta ||
+    objectMeta.name !== BuiltInSkylarkObjectType.Availability ||
+    !objectMeta.operations.update ||
+    !updatedAvailabilityDimensionValues ||
+    !originalAvailabilityDimensionValues
+  ) {
+    return null;
+  }
+
+  const dimensionSlugs = [
+    ...new Set([
+      ...Object.keys(originalAvailabilityDimensionValues),
+      ...Object.keys(updatedAvailabilityDimensionValues),
+    ]),
+  ];
+
+  const parsedDimensionsForRequest: {
+    link: {
+      dimension_slug: string;
+      value_slugs: string[];
+    }[];
+    unlink: {
+      dimension_slug: string;
+      value_slugs: string[];
+    }[];
+  } = dimensionSlugs.reduce(
+    (acc, dimensionSlug) => {
+      const originalDimensionValues =
+        hasProperty(originalAvailabilityDimensionValues, dimensionSlug) &&
+        originalAvailabilityDimensionValues[dimensionSlug];
+
+      const updatedDimensionValues =
+        hasProperty(updatedAvailabilityDimensionValues, dimensionSlug) &&
+        updatedAvailabilityDimensionValues[dimensionSlug];
+
+      if (!updatedDimensionValues) {
+        return acc;
+      }
+
+      if (!originalDimensionValues) {
+        return {
+          ...acc,
+          link: [
+            ...acc.link,
+            {
+              dimension_slug: dimensionSlug,
+              value_slugs: updatedDimensionValues,
+            },
+          ],
+        };
+      }
+
+      const valuesToLink: string[] = !originalDimensionValues
+        ? updatedDimensionValues
+        : updatedDimensionValues.filter(
+            (value) => !originalDimensionValues.includes(value),
+          );
+
+      const valuesToUnlink: string[] = originalDimensionValues.filter(
+        (value) => !updatedDimensionValues.includes(value),
+      );
+
+      return {
+        link:
+          valuesToLink.length === 0
+            ? acc.link
+            : [
+                ...acc.link,
+                {
+                  dimension_slug: dimensionSlug,
+                  value_slugs: valuesToLink,
+                },
+              ],
+        unlink:
+          valuesToUnlink.length === 0
+            ? acc.unlink
+            : [
+                ...acc.unlink,
+                {
+                  dimension_slug: dimensionSlug,
+                  value_slugs: valuesToUnlink,
+                },
+              ],
+      };
+    },
+    {
+      link: [] as { dimension_slug: string; value_slugs: string[] }[],
+      unlink: [] as { dimension_slug: string; value_slugs: string[] }[],
+    },
+  );
+
+  const mutation = {
+    mutation: {
+      __name: `UPDATE_AVAILABILITY_DIMENSIONS`,
+      __variables: {
+        uid: "String!",
+      },
+      updateObjectRelationships: {
+        __aliasFor: objectMeta.operations.update.name,
+        __args: {
+          uid: new VariableType("uid"),
+          [objectMeta.operations.update.argName]: {
+            dimensions: {
+              ...parsedDimensionsForRequest,
             },
           },
         },

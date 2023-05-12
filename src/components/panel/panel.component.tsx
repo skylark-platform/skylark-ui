@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -6,6 +7,7 @@ import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { Toast } from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/useGetObject";
+import { useUpdateAvailabilityObjectDimensions } from "src/hooks/useUpdateAvailabilityObjectDimensions";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
 import { useUpdateObjectMetadata } from "src/hooks/useUpdateObjectMetadata";
 import { useUpdateObjectRelationships } from "src/hooks/useUpdateObjectRelationships";
@@ -15,11 +17,16 @@ import {
   AddedSkylarkObjectContentObject,
   SkylarkObjectMetadataField,
   SkylarkSystemField,
-  SkylarkObjectMeta,
   ParsedSkylarkObjectRelationships,
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,
+  ParsedSkylarkObjectAvailabilityObject,
 } from "src/interfaces/skylark";
+import {
+  getAvailabilityStatusForAvailabilityObject,
+  getObjectAvailabilityStatus,
+  getSingleAvailabilityStatus,
+} from "src/lib/skylark/availability";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
   isObjectsDeepEqual,
@@ -328,6 +335,18 @@ export const Panel = ({
       },
     });
 
+  const {
+    updateAvailabilityObjectDimensions,
+    isLoading: updatingAvailabilityObjectDimensions,
+  } = useUpdateAvailabilityObjectDimensions({
+    uid,
+    originalAvailabilityDimensions: availabilityDimensionValues.original,
+    updatedAvailabilityDimensions: availabilityDimensionValues.updated,
+    onSuccess: () => {
+      setEditMode(false);
+    },
+  });
+
   const saveActiveTabChanges = () => {
     if (
       selectedTab === PanelTab.Content &&
@@ -340,6 +359,11 @@ export const Panel = ({
       updatedRelationshipObjects
     ) {
       updateObjectRelationships();
+    } else if (
+      selectedTab === PanelTab.AvailabilityDimensions &&
+      availabilityDimensionValues.updated
+    ) {
+      updateAvailabilityObjectDimensions();
     } else if (selectedTab === PanelTab.Metadata) {
       metadataForm.handleSubmit((values) => {
         if (
@@ -383,9 +407,11 @@ export const Panel = ({
         isSaving={
           updatingObjectContents ||
           updatingRelationshipObjects ||
-          updatingObjectMetadata
+          updatingObjectMetadata ||
+          updatingAvailabilityObjectDimensions
         }
         isTranslatable={objectMeta?.isTranslatable}
+        availabilityStatus={data?.meta.availabilityStatus}
         toggleEditMode={() => {
           if (inEditMode) {
             metadataForm.reset();

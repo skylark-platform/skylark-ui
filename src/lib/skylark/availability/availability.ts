@@ -5,7 +5,9 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import {
   ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
+  ParsedSkylarkObjectMetadata,
 } from "src/interfaces/skylark";
+import { hasProperty } from "src/lib/utils";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
@@ -22,6 +24,21 @@ export const getSingleAvailabilityStatus = (
   return now.isBefore(start)
     ? AvailabilityStatus.Future
     : AvailabilityStatus.Active;
+};
+
+export const getAvailabilityStatusForAvailabilityObject = (
+  metadata: ParsedSkylarkObjectMetadata,
+): ParsedSkylarkObjectAvailability["status"] => {
+  const start = hasProperty(metadata, "start")
+    ? (metadata.start as string)
+    : "";
+  const end = hasProperty(metadata, "end") ? (metadata.end as string) : "";
+
+  if (!start && !end) {
+    return AvailabilityStatus.Unavailable;
+  }
+
+  return getSingleAvailabilityStatus(dayjs(), start, end);
 };
 
 export const getObjectAvailabilityStatus = (

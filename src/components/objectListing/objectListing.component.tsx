@@ -1,4 +1,5 @@
 import {
+  ColumnDef,
   createColumnHelper,
   getCoreRowModel,
   useReactTable,
@@ -96,10 +97,11 @@ const createColumns = (
     },
   );
 
-  const availabilityColumn = columnHelper.accessor("availability", {
+  const availabilityColumn = columnHelper.accessor("meta.availabilityStatus", {
     header: formatObjectField("Availability"),
     cell: (props) => {
-      const { status } = props.getValue<ParsedSkylarkObjectAvailability>();
+      const status =
+        props.getValue<ParsedSkylarkObjectAvailability["status"]>();
       return status && <AvailabilityLabel status={status} />;
     },
   });
@@ -272,7 +274,9 @@ export const ObjectList = ({
   const table = useReactTable({
     debugAll: false,
     data: formattedSearchData || [],
-    columns: searchData ? parsedColumns : [],
+    columns: searchData
+      ? (parsedColumns as ColumnDef<object, ParsedSkylarkObject>[])
+      : [],
     getCoreRowModel: getCoreRowModel(),
     state: {
       columnVisibility,

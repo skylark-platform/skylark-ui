@@ -16,6 +16,7 @@ test("renders an unselected Select", async () => {
       options={options}
       selected=""
       placeholder="Object Type"
+      searchable={false}
     />,
   );
 
@@ -30,6 +31,7 @@ test("renders a Select with label", async () => {
       selected=""
       placeholder="Object Type"
       label="This is the label"
+      searchable={false}
     />,
   );
 
@@ -43,6 +45,7 @@ test("renders a selected Select", async () => {
       options={options}
       selected="Episode"
       placeholder="Object Type"
+      searchable={false}
     />,
   );
 
@@ -59,6 +62,7 @@ test("calls onChange when a new item is selected", async () => {
       selected=""
       placeholder="Object Type"
       onChange={onChange}
+      searchable={false}
     />,
   );
 
