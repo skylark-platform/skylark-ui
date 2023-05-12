@@ -202,9 +202,11 @@ describe("metadata view", () => {
       expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
     );
 
-    expect(
-      screen.getByText('Movie "nonexistant" not found'),
-    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        screen.getByText('Movie "nonexistant" not found'),
+      ).toBeInTheDocument(),
+    );
   });
 
   test("renders object type not found when the object type isn't found in the schema", async () => {
@@ -244,7 +246,9 @@ describe("metadata view", () => {
       expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
     );
 
-    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText("Something went wrong")).toBeInTheDocument(),
+    );
   });
 
   test("renders the objects primaryField and colour in the header when given", async () => {
@@ -313,11 +317,14 @@ describe("metadata view", () => {
 
     expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
     expect(screen.getByText("Original size")).toBeInTheDocument();
-    expect(
-      screen.getByAltText(
-        GQLSkylarkGetObjectImageQueryFixture.data.getObject.title,
-      ),
-    ).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(
+        screen.getByAltText(
+          GQLSkylarkGetObjectImageQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
+    );
   });
 
   describe("multiple language versions", () => {

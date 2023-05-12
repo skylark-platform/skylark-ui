@@ -2,10 +2,12 @@ import { useEffect, useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
 
 import { SkylarkObjectFieldInput } from "src/components/inputs/skylarkObjectFieldInput";
+import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
+import { Skeleton } from "src/components/skeleton";
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
   BuiltInSkylarkObjectType,
@@ -23,16 +25,18 @@ import { PanelSectionLayout } from "./panelSectionLayout.component";
 
 interface PanelMetadataProps {
   isPage?: boolean;
+  isLoading?: boolean;
   uid: string;
   language: string;
   objectType: SkylarkObjectType;
-  objectMeta: SkylarkObjectMeta;
-  metadata: Record<string, SkylarkObjectMetadataField>;
+  objectMeta: SkylarkObjectMeta | null;
+  metadata: Record<string, SkylarkObjectMetadataField> | null;
   form: UseFormReturn<Record<string, SkylarkObjectMetadataField>>;
 }
 
 export const PanelMetadata = ({
   isPage,
+  isLoading,
   uid,
   language,
   metadata,
@@ -46,7 +50,7 @@ export const PanelMetadata = ({
 
   // When component first loads, update the form metadata with the current values
   useEffect(() => {
-    reset(metadata);
+    reset({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid, language]);
 
@@ -56,21 +60,22 @@ export const PanelMetadata = ({
     globalMetadataFields,
   } = useMemo(
     () =>
-      splitMetadataIntoSystemTranslatableGlobal(
-        Object.keys(metadata),
-        objectMeta.operations.update.inputs,
-        objectMeta.fieldConfig,
-        options,
-      ),
-    [
-      metadata,
-      objectMeta.fieldConfig,
-      objectMeta.operations.update.inputs,
-      options,
-    ],
+      objectMeta
+        ? splitMetadataIntoSystemTranslatableGlobal(
+            objectMeta.fields.map(({ name }) => name),
+            objectMeta.operations.update.inputs,
+            objectMeta.fieldConfig,
+            options,
+          )
+        : {
+            systemMetadataFields: [],
+            translatableMetadataFields: [],
+            globalMetadataFields: [],
+          },
+    [objectMeta, options],
   );
 
-  const requiredFields = objectMeta.operations.create.inputs
+  const requiredFields = objectMeta?.operations.create.inputs
     .filter(({ isRequired }) => isRequired)
     .map(({ name }) => name);
 
@@ -96,46 +101,44 @@ export const PanelMetadata = ({
 
   return (
     <PanelSectionLayout sections={sideBarSections} isPage={isPage}>
-      <form className="h-full" data-testid="panel-metadata">
-        {metadata && (
-          <>
-            {sections.map(
-              (
-                { id, title, metadataFields },
-                index,
-                { length: numSections },
-              ) => (
-                <div key={id} className="mb-8 md:mb-10">
-                  <PanelSectionTitle id={id} text={title} />
-                  {metadataFields.map(({ field, config }) => {
-                    if (config) {
-                      return (
-                        <SkylarkObjectFieldInput
-                          key={field}
-                          field={field}
-                          config={config}
-                          control={control}
-                          register={register}
-                          value={getValues(field)}
-                          formState={formState}
-                          additionalRequiredFields={requiredFields}
-                        />
-                      );
-                    }
+      <form
+        className="h-full"
+        data-testid="panel-metadata"
+        data-loading={isLoading}
+      >
+        {sections.map(
+          ({ id, title, metadataFields }, index, { length: numSections }) => (
+            <div key={id} className="mb-8 md:mb-10">
+              <PanelSectionTitle id={id} text={title} />
+              {metadataFields.map(({ field, config }) => {
+                if (config) {
+                  return (
+                    <SkylarkObjectFieldInput
+                      isLoading={isLoading}
+                      key={field}
+                      field={field}
+                      config={config}
+                      control={control}
+                      register={register}
+                      value={getValues(field)}
+                      formState={formState}
+                      additionalRequiredFields={requiredFields}
+                    />
+                  );
+                }
 
-                    return (
-                      <PanelMetadataProperty
-                        key={field}
-                        property={field}
-                        value={getValues(field)}
-                      />
-                    );
-                  })}
-                  {index < numSections - 1 && <PanelSeparator />}
-                </div>
-              ),
-            )}
-          </>
+                return (
+                  <PanelMetadataProperty
+                    key={field}
+                    property={field}
+                    value={getValues(field)}
+                    isLoading={isLoading}
+                  />
+                );
+              })}
+              {index < numSections - 1 && <PanelSeparator />}
+            </div>
+          ),
         )}
 
         {(
@@ -145,11 +148,20 @@ export const PanelMetadata = ({
           ] as string[]
         ).includes(objectType) && (
           <AdditionalImageMetadata
-            src={metadata.url as string | null}
-            alt={metadata.title as string}
+            src={metadata?.url as string | null}
+            alt={metadata?.title as string}
           />
         )}
       </form>
+      <PanelLoading isLoading={!objectMeta}>
+        <Skeleton className="mb-6 h-8 w-64" />
+        <Skeleton className="mb-2 h-5 w-48" />
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="mb-2 mt-6 h-5 w-48" />
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="mb-2 mt-6 h-5 w-48" />
+        <Skeleton className="h-20 w-full" />
+      </PanelLoading>
     </PanelSectionLayout>
   );
 };

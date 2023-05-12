@@ -13,7 +13,7 @@ export const Pill = ({ label, bgColor, className, onDelete }: PillProps) => (
   <div
     // TODO determine text colour based on background
     className={clsx(
-      `badge whitespace-nowrap border-none bg-brand-primary px-2 text-xs text-white`,
+      `badge whitespace-nowrap border-none px-2 text-xs text-white`,
       className,
     )}
     style={bgColor ? { backgroundColor: bgColor } : undefined}

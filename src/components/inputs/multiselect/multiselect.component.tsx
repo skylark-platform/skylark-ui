@@ -120,7 +120,7 @@ export const MultiSelect = forwardRef(
               <Pill
                 key={value}
                 label={label || value}
-                className="my-auto"
+                className="my-auto bg-brand-primary"
                 onDelete={() => deselectOption(value)}
               />
             ))}

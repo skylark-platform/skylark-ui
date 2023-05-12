@@ -1,9 +1,5 @@
-import { Select, SelectOption } from "src/components/inputs/select";
-import {
-  PanelFieldTitle,
-  PanelSectionTitle,
-} from "src/components/panel/panelTypography";
-import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
+import { PanelFieldTitle } from "src/components/panel/panelTypography";
+import { Skeleton } from "src/components/skeleton";
 import { useImageSize } from "src/hooks/useImageSize";
 import { SkylarkObjectMetadataField } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
@@ -11,13 +7,19 @@ import { formatObjectField } from "src/lib/utils";
 export const PanelMetadataProperty = ({
   property,
   value,
+  isLoading,
 }: {
   property: string;
   value?: JSX.Element | SkylarkObjectMetadataField;
+  isLoading?: boolean;
 }) => (
   <div>
     <PanelFieldTitle text={formatObjectField(property)} />
-    <p className="mb-4 text-base-content">{value ? value : "---"}</p>
+    {isLoading ? (
+      <Skeleton className="mb-4 h-5 w-full" />
+    ) : (
+      <p className="mb-4 text-base-content">{value ? value : "---"}</p>
+    )}
   </div>
 );
 

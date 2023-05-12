@@ -243,7 +243,7 @@ export const PanelHeader = ({
               )}
             </>
           ) : (
-            <Skeleton className="h-4 w-48" />
+            <Skeleton className="h-4 w-48 rounded-full" />
           )}
         </div>
         <div className="flex flex-row items-end justify-end space-x-2">

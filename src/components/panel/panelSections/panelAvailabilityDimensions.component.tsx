@@ -5,6 +5,7 @@ import { MultiSelect } from "src/components/inputs/multiselect/multiselect.compo
 import { SelectOption, Select } from "src/components/inputs/select";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import { PanelFieldTitle } from "src/components/panel/panelTypography";
+import { Skeleton } from "src/components/skeleton";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { useAvailabilityObjectDimensions } from "src/hooks/availability/useAvailabilityObjectDimensions";
 import {
@@ -58,9 +59,6 @@ export const PanelAvailabilityDimensions = ({
     isLoading: getObjectLoading,
   } = useAvailabilityObjectDimensions(uid);
 
-  const isLoading =
-    dimensionsLoading || getObjectLoading || !availabilityDimensionValues;
-
   useEffect(() => {
     if (data && !inEditMode) {
       const selectedDimensionValues = parseDimensionsAndValues(data);
@@ -96,7 +94,7 @@ export const PanelAvailabilityDimensions = ({
       }))}
       isPage={isPage}
     >
-      {!isLoading &&
+      {!dimensionsLoading &&
         dimensions?.map((dimension) => {
           const options: SelectOption[] = dimension.values
             .map(
@@ -131,26 +129,32 @@ export const PanelAvailabilityDimensions = ({
                 text={title}
                 id={`dimensions-panel-${dimension.uid}`}
               />
-              <MultiSelect
-                options={options}
-                selected={values}
-                onChange={onChangeWrapper}
-              />
+              {getObjectLoading || !availabilityDimensionValues ? (
+                <Skeleton className="h-20 w-full" />
+              ) : (
+                <MultiSelect
+                  options={options}
+                  selected={values}
+                  onChange={onChangeWrapper}
+                />
+              )}
             </div>
           );
         })}
-      <PanelLoading isLoading={isLoading} />
+      <PanelLoading isLoading={dimensionsLoading}>
+        <Skeleton className="mb-2 h-5 w-48" />
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="mb-2 mt-6 h-5 w-48" />
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="mb-2 mt-6 h-5 w-48" />
+        <Skeleton className="h-20 w-full" />
+      </PanelLoading>
       <DisplayGraphQLQuery
         label="Get Dimensions"
         query={query}
         variables={variables}
         buttonClassName="absolute right-2 top-0"
       />
-      {inEditMode && (
-        <p className="w-full py-4 text-center text-sm text-manatee-600">
-          {"Drag an object from the Content Library to add as relationship"}
-        </p>
-      )}
     </PanelSectionLayout>
   );
 };

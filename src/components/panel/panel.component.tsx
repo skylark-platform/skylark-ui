@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 import { Spinner } from "src/components/icons";
+import { Skeleton } from "src/components/skeleton";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { Toast } from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/useGetObject";
@@ -443,14 +444,6 @@ export const Panel = ({
           />
         </div>
       </div>
-      {isLoading && (
-        <div
-          data-testid="loading"
-          className="mt-20 flex w-full items-center justify-center pb-10"
-        >
-          <Spinner className="h-16 w-16 animate-spin" />
-        </div>
-      )}
       {!isLoading && isError && (
         <div className="flex h-4/5 w-full items-center justify-center pb-10">
           {isObjectTypeNotFound && (
@@ -462,11 +455,12 @@ export const Panel = ({
           )}
         </div>
       )}
-      {!isLoading && !isError && data && objectMeta && (
+      {!isError && (
         <>
-          {selectedTab === PanelTab.Metadata && formParsedMetadata && (
+          {selectedTab === PanelTab.Metadata && (
             <PanelMetadata
               isPage={isPage}
+              isLoading={isLoading}
               uid={uid}
               language={language}
               metadata={formParsedMetadata}
@@ -475,7 +469,7 @@ export const Panel = ({
               objectMeta={objectMeta}
             />
           )}
-          {selectedTab === PanelTab.Imagery && data.images && (
+          {selectedTab === PanelTab.Imagery && data?.images && (
             <PanelImages
               isPage={isPage}
               images={data.images}
@@ -493,7 +487,7 @@ export const Panel = ({
               inEditMode={inEditMode}
             />
           )}
-          {selectedTab === PanelTab.Content && data.content && (
+          {selectedTab === PanelTab.Content && data?.content && (
             <PanelContent
               isPage={isPage}
               objects={contentObjects || data?.content?.objects}
