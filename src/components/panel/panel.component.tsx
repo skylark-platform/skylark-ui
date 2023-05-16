@@ -47,7 +47,7 @@ interface PanelProps {
   closePanel?: () => void;
   object: SkylarkObjectIdentifier;
   showDropArea?: boolean;
-  droppedObject?: unknown;
+  droppedObject?: ParsedSkylarkObject;
   clearDroppedObject?: () => void;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
   navigateToPreviousPanelObject?: () => void;
@@ -95,7 +95,7 @@ export const Panel = ({
     updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
   }>({ originalRelationshipObjects: null, updatedRelationshipObjects: null });
   const [availability, setAvailability] = useState<
-    ParsedSkylarkObjectAvailabilityObject[] | null
+    ParsedSkylarkObject[] | null
   >(null);
 
   const { uid, objectType, language } = object;
@@ -251,7 +251,8 @@ export const Panel = ({
       } else if (selectedTab === PanelTab.Availability) {
         console.log({ droppedObject });
         if (droppedObject) {
-          const t = droppedObject;
+          /*
+          const t = droppedObject as ParsedSkylarkObjectAvailabilityObject;
 
           const now = dayjs();
           const { start, end } = t;
@@ -273,8 +274,8 @@ export const Panel = ({
             status,
             neverExpires,
           };
-
-          setAvailability([t]);
+*/
+          setAvailability([droppedObject]);
         }
       }
       clearDroppedObject?.();

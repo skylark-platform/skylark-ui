@@ -36,12 +36,12 @@ export const ContentLibrary = () => {
     resetPanelObjectState,
   } = usePanelObjectState();
 
-  const [draggedObject, setDraggedObject] = useState<unknown | undefined>(
-    undefined,
-  );
-  const [droppedObject, setDroppedObject] = useState<unknown | undefined>(
-    undefined,
-  );
+  const [draggedObject, setDraggedObject] = useState<
+    ParsedSkylarkObject | undefined
+  >(undefined);
+  const [droppedObject, setDroppedObject] = useState<
+    ParsedSkylarkObject | undefined
+  >(undefined);
   const [windowSize, setWindowSize] = useState(0);
   const mousePosition = useRef(0);
 
