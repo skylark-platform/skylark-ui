@@ -1,6 +1,7 @@
 import { graphql } from "msw";
 import { useState } from "react";
 
+import GQLSkylarkGetAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allDevicesAllCustomersAvailability.json";
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetObjectImageQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gotImage.json";
 import GQLSkylarkGetObjectGOTS01E01QueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01.json";
@@ -9,6 +10,7 @@ import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixt
 import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
 import GQLSkylarkGetObjectAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetSeasonRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/gots04relationships.json";
+import GQLSkylarkListAvailabilityDimensionsQueryFixture from "src/__tests__/fixtures/skylark/queries/listDimensions.json";
 import { server } from "src/__tests__/mocks/server";
 import {
   render,
@@ -20,6 +22,7 @@ import {
 import { QueryErrorMessages } from "src/enums/graphql";
 import {
   AvailabilityStatus,
+  BuiltInSkylarkObjectType,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import {
@@ -69,6 +72,12 @@ const seasonWithRelationships: SkylarkObjectIdentifier = {
   uid: GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.uid,
   objectType: "Season",
   language: "en-GB",
+};
+
+const availabilityObject: SkylarkObjectIdentifier = {
+  uid: GQLSkylarkGetAvailabilityQueryFixture.data.getObject.uid,
+  objectType: BuiltInSkylarkObjectType.Availability,
+  language: "",
 };
 
 describe("metadata view", () => {
@@ -1418,6 +1427,150 @@ describe("availability view", () => {
       uid: GQLSkylarkGetObjectAvailabilityQueryFixture.data
         .getObjectAvailability.availability.objects[0].uid,
       language: "",
+    });
+  });
+});
+
+describe("availabity dimensions view", () => {
+  test("render the panel and all dimensions", async () => {
+    render(
+      <Panel
+        object={availabilityObject}
+        closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
+      />,
+    );
+
+    expect(screen.queryAllByText("Device type")).toHaveLength(0);
+
+    await waitFor(() =>
+      expect(screen.getByText("Dimensions")).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByText("Dimensions"));
+
+    await waitFor(() =>
+      expect(screen.getByText("Device type")).toBeInTheDocument(),
+    );
+
+    GQLSkylarkListAvailabilityDimensionsQueryFixture.data.listDimensions.objects.forEach(
+      ({ title }) => {
+        expect(screen.getByText(formatObjectField(title))).toBeInTheDocument();
+      },
+    );
+
+    // Check availability pill in header
+    expect(
+      within(screen.getByTestId("panel-header")).getByText("Active"),
+    ).toBeInTheDocument();
+  });
+
+  test("displays the current selected dimensions", async () => {
+    render(
+      <Panel
+        object={availabilityObject}
+        closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
+      />,
+    );
+
+    expect(screen.queryAllByText("Device type")).toHaveLength(0);
+
+    await waitFor(() =>
+      expect(screen.getByText("Dimensions")).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByText("Dimensions"));
+
+    await waitFor(() =>
+      expect(screen.getByText("Premium")).toBeInTheDocument(),
+    );
+
+    expect(screen.getByText("Standard")).toBeInTheDocument();
+    expect(screen.queryByText("HYBRID")).not.toBeInTheDocument();
+  });
+
+  describe("dimensions view - edit", () => {
+    test("selects a new value", async () => {
+      render(
+        <Panel
+          object={availabilityObject}
+          closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
+        />,
+      );
+
+      expect(screen.queryAllByText("Device type")).toHaveLength(0);
+
+      await waitFor(() =>
+        expect(screen.getByText("Dimensions")).toBeInTheDocument(),
+      );
+      fireEvent.click(screen.getByText("Dimensions"));
+
+      await waitFor(() =>
+        expect(screen.getByText("Premium")).toBeInTheDocument(),
+      );
+
+      const displayDiv = screen.getByText("Premium").parentElement
+        ?.parentElement as HTMLDivElement;
+      const wrapper = displayDiv?.parentElement as HTMLDivElement;
+      fireEvent.click(wrapper);
+
+      const combobox = within(wrapper).getByRole("combobox");
+      fireEvent.click(combobox);
+
+      expect(screen.queryAllByText("Standard")).toHaveLength(2);
+
+      // Select new option
+      expect(screen.queryByText("HYBRID")).toBeInTheDocument();
+      expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(0);
+      fireEvent.click(screen.getByText("HYBRID"));
+
+      // Check Pill is added
+      expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(1);
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      // Cancel
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      await waitFor(() =>
+        expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(0),
+      );
+    });
+
+    test("removes a value", async () => {
+      render(
+        <Panel
+          object={availabilityObject}
+          closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
+        />,
+      );
+
+      expect(screen.queryAllByText("Device type")).toHaveLength(0);
+
+      await waitFor(() =>
+        expect(screen.getByText("Dimensions")).toBeInTheDocument(),
+      );
+      fireEvent.click(screen.getByText("Dimensions"));
+
+      await waitFor(() =>
+        expect(screen.getByText("Premium")).toBeInTheDocument(),
+      );
+
+      const deselectButton = within(
+        screen.getByText("Premium").parentElement as HTMLDivElement,
+      ).getByRole("button");
+      fireEvent.click(deselectButton);
+
+      // Check Pill is added
+      expect(screen.queryAllByText("Premium")).toHaveLength(0);
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      // Cancel
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      expect(screen.queryAllByText("Premium")).toHaveLength(1);
     });
   });
 });

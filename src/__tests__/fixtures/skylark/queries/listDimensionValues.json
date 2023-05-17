@@ -1,0 +1,624 @@
+{
+  "data": {
+    "dimension_01H0EQ3JEF85TDY2HQBVEWPE3G": {
+      "uid": "01H0EQ3JEF85TDY2HQBVEWPE3G",
+      "values": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01H0EQ3RSNZ420CZPGYDG6GCNH",
+            "title": "Affiliate 2",
+            "external_id": "rec4B1MrjUfkEvjr5",
+            "slug": "affiliate-2",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RVWK1ABPPDVFJTNHTK3",
+            "title": "Affiliate 1",
+            "external_id": "reciYVJ1UVURNndIm",
+            "slug": "affiliate-1",
+            "description": null
+          }
+        ]
+      }
+    },
+    "dimension_01H0EQ3JGK82CS46X89343SA27": {
+      "uid": "01H0EQ3JGK82CS46X89343SA27",
+      "values": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01H0EQ3RHZ7Y2AX1CTDFQTEMVP",
+            "title": "TVOD",
+            "external_id": "rec4VuxS9fnyg4wqh",
+            "slug": "tvod",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RMS04ZJRGR36GTM4F75",
+            "title": "AVOD",
+            "external_id": "rec5WdnyVU4SGmHRU",
+            "slug": "avod",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RPD2W65K2CW2KHBC9ND",
+            "title": "Premium",
+            "external_id": "recD4WfhAYw4gFnJh",
+            "slug": "premium",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3SD1TAKBZRD97EY765RJ",
+            "title": "Standard",
+            "external_id": "recXQtdEI4DpFkw76",
+            "slug": "standard",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3SFMAZBBP2D8JYRCFTMV",
+            "title": "SVOD",
+            "external_id": "recfFVBgODbx7I2hm",
+            "slug": "svod",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3SH9B1P69FB5MWXWP745",
+            "title": "HYBRID",
+            "external_id": "recxZAUEjZs7J3IOn",
+            "slug": "hybrid",
+            "description": null
+          }
+        ]
+      }
+    },
+    "dimension_01H0EQ3JHWPEV6JX4FXVWX95HZ": {
+      "uid": "01H0EQ3JHWPEV6JX4FXVWX95HZ",
+      "values": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01H0EQ3RFP7S6MC91CHNYAQRV0",
+            "title": "Smart TV",
+            "external_id": "recJfrJTddtzCzsuz",
+            "slug": "smart-tv",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RGXF5Y4V7CTNAK1PRZ2",
+            "title": "Streaming Stick",
+            "external_id": "rec1Ti0eqm4Yiwvzt",
+            "slug": "streaming-stick",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RJBR3FYP4CSQKVASANS",
+            "title": "Smartwatch",
+            "external_id": "recN4ga4xQtE7FZmo",
+            "slug": "smartwatch",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RKEJZXBJYQRAGCQHCRC",
+            "title": "SmartPhone",
+            "external_id": "rec50TFQHwT76pY2K",
+            "slug": "smartphone",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RM2YV5S1QC3H3XF96WY",
+            "title": "PC",
+            "external_id": "recPOR7ivzMd90XLe",
+            "slug": "pc",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RN1E1YRP9MFK9T35RDV",
+            "title": "Console",
+            "external_id": "recC5jtn3BZ4Rq0ew",
+            "slug": "console",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RRMCRK1P9EKG2YBWWR5",
+            "title": "VR Headset",
+            "external_id": "recZv2NUYO93GVyqh",
+            "slug": "vr-headset",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RV4D3F1S09AZDQFWBV0",
+            "title": "Tablet",
+            "external_id": "recpr9W0fxZjJisdL",
+            "slug": "tablet",
+            "description": null
+          }
+        ]
+      }
+    },
+    "dimension_01H0EQ3JHE7QFZGDPD02EQEBY3": {
+      "uid": "01H0EQ3JHE7QFZGDPD02EQEBY3",
+      "values": { "next_token": null, "objects": [] }
+    },
+    "dimension_01H0EQ3JFBNHZQNNP21E5DB0C0": {
+      "uid": "01H0EQ3JFBNHZQNNP21E5DB0C0",
+      "values": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01H0EQ3RCCT8W09GTNHY92XBHG",
+            "title": "Costa Rica",
+            "external_id": "recC401ktTVOnpOlM",
+            "slug": "costa-rica",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RCWKGJ598QFH8CEBYK9",
+            "title": "Venezuela",
+            "external_id": "rec33Uo1vm2hkKz49",
+            "slug": "venezuela",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RDZF5TZM2DSH7WTB3B5",
+            "title": "Russia",
+            "external_id": "rec6qd0eYWZMuo8wz",
+            "slug": "russia",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RE7VY52PDMAYCA3778S",
+            "title": "Solomon Islands",
+            "external_id": "recAxhLgA2JNhrgh4",
+            "slug": "solomon-islands",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3REJNAQV882N63PWPCMP",
+            "title": "Malaysia",
+            "external_id": "recCEkAAM9N3UL1KQ",
+            "slug": "malaysia",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RENF7PF054MYFD3757H",
+            "title": "Bolivia",
+            "external_id": "recebpJPpeAxr8LJ3",
+            "slug": "bolivia",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RERFV2BV4HSQZ46TGWE",
+            "title": "Chad",
+            "external_id": "recPHR8x53QESdzKu",
+            "slug": "chad",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RETZ8V8HVTNCB0XB0SF",
+            "title": "Vietnam",
+            "external_id": "recFR2YykcCUijZAK",
+            "slug": "vietnam",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RF5PQY855MWNZDFEBB3",
+            "title": "Germany",
+            "external_id": "rec3H48L9F788ZFkN",
+            "slug": "germany",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RF81XK8221SN3S5SW7S",
+            "title": "Syria",
+            "external_id": "recQOZRCFZ2d1vyu6",
+            "slug": "syria",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RF9EA8E8Q6ADEW43X5S",
+            "title": "Austria",
+            "external_id": "rec5gKkRb89ByA63P",
+            "slug": "austria",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RFCDXD25MEYJ0FS9DAF",
+            "title": "Dominica",
+            "external_id": "recxYaPtaQUHreRxE",
+            "slug": "dominica",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RFDF35TJ0R97T0VMHT6",
+            "title": "Brazil",
+            "external_id": "recODJVyR9rfCBLDp",
+            "slug": "brazil",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RFM5XBDYVNPW1QJA8CH",
+            "title": "Albania",
+            "external_id": "recNrvzzXDMcotqJN",
+            "slug": "albania",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RG3ZJY17WF12T4F0VNJ",
+            "title": "South Sudan",
+            "external_id": "recjHJYsNOPfoLF15",
+            "slug": "south-sudan",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RG6DV6KRJWA8SFT5JK9",
+            "title": "Democratic Republic of the Congo",
+            "external_id": "recCIRo3FAn1cBL3p",
+            "slug": "democratic-republic-of-the-congo",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RGDFY1FEVESDGNWQN76",
+            "title": "Burkina Faso",
+            "external_id": "rece7BSEwb5KaLmVp",
+            "slug": "burkina-faso",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RGFMXHDRVMZGK3566T4",
+            "title": "Fiji",
+            "external_id": "recSzGMXn5TpBnIbH",
+            "slug": "fiji",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RGFYSRB9C8145AER00A",
+            "title": "Namibia",
+            "external_id": "recWCZnyI7iqRx7Px",
+            "slug": "namibia",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RGHNRAG0AAF2YR1BFWG",
+            "title": "Saint Vincent and the Grenadines",
+            "external_id": "rec3NrUu4VCHQVb97",
+            "slug": "saint-vincent-and-the-grenadines",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RGJBTK6BKJFXJ0RXREB",
+            "title": "Chile",
+            "external_id": "recBITplxj8fX42kA",
+            "slug": "chile",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RGKBQNPT1JMRKEMTY2K",
+            "title": "Liberia",
+            "external_id": "recFu2uYgMTbMX1ei",
+            "slug": "liberia",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RGKC75FA956GX5B4EBV",
+            "title": "Kazakhstan",
+            "external_id": "recUcWUBNBr5HUB9H",
+            "slug": "kazakhstan",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RGPT5MPPBV71XB85XNC",
+            "title": "Romania",
+            "external_id": "recqI8kZfFSSNHuVU",
+            "slug": "romania",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RGR4WE6THN03353DYXS",
+            "title": "Saint Kitts and Nevis",
+            "external_id": "rec0zzDxFmCIRHAiS",
+            "slug": "saint-kitts-and-nevis",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RGYP1PXMGGVP3Z44M6S",
+            "title": "Zambia",
+            "external_id": "recKjd0d7ZyOswKH2",
+            "slug": "zambia",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RGZP4W63YZWTNT47HTG",
+            "title": "Georgia",
+            "external_id": "recMN02IfVJzPV9sS",
+            "slug": "georgia",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RH0S6TH2JTXFHZ1DSMW",
+            "title": "Saudi Arabia",
+            "external_id": "recRjLDyce1tdCekJ",
+            "slug": "saudi-arabia",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RH123D4S0AVM9REFDJ6",
+            "title": "Jordan",
+            "external_id": "recFi4gfhkFyUfnTS",
+            "slug": "jordan",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RH13M5K9DF6F6ZBFJ2F",
+            "title": "United Kingdom",
+            "external_id": "rec6zloNTp0I0Ydjc",
+            "slug": "united-kingdom",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RH1PY0PCK7ZJ6BWCZZX",
+            "title": "Gabon",
+            "external_id": "recfEo34viKk8mpcJ",
+            "slug": "gabon",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RH2YV8M5Z3B349MBX1B",
+            "title": "Iran",
+            "external_id": "recugCdnvsYYB9dC3",
+            "slug": "iran",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RH75CDXFMSC2BPF9MPT",
+            "title": "Monaco",
+            "external_id": "rec0PHbkU5xHuzv3H",
+            "slug": "monaco",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RH7Z7AMWRZ6J03RP318",
+            "title": "Canada",
+            "external_id": "recE6mAm555b2Ti8P",
+            "slug": "canada",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RH92XNDGBJNYZ3301TH",
+            "title": "Ghana",
+            "external_id": "recPNXHdv3bTEEJZn",
+            "slug": "ghana",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RHBV1730J3APHGY9MMF",
+            "title": "Hungary",
+            "external_id": "recGjv9mqrwVCrBWu",
+            "slug": "hungary",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RHD8RNF8JTYANEBVA5W",
+            "title": "Greece",
+            "external_id": "recJrx4XCBAaCifUE",
+            "slug": "greece",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RHEJ3H9FFPVGNVBJCAA",
+            "title": "Italy",
+            "external_id": "recLCUifhiXdkKV4M",
+            "slug": "italy",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RHGAYMA3117N0FR0XTM",
+            "title": "Senegal",
+            "external_id": "recZ4N6VViIYBBS0G",
+            "slug": "senegal",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RHMGTHSZR0QPRV2G8CH",
+            "title": "Afghanistan",
+            "external_id": "recmiPbuQ0uqcF8TP",
+            "slug": "afghanistan",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RHNGMGZZMD23ADV102N",
+            "title": "Czechia",
+            "external_id": "rec63EVELFsmzXxOA",
+            "slug": "czechia",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RHQJACGF6K7NNAR6654",
+            "title": "Antigua and Barbuda",
+            "external_id": "recQPamDaL5qFIqQU",
+            "slug": "antigua-and-barbuda",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RHXF7DAHJGBRERV4G9A",
+            "title": "Turkmenistan",
+            "external_id": "recP50Aa1hy9oWojk",
+            "slug": "turkmenistan",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RHZ6KMX2VFVFERH45NS",
+            "title": "Qatar",
+            "external_id": "recwM5oX4AtDZZE6C",
+            "slug": "qatar",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RJ0K7VKTXW96NW11MM2",
+            "title": "France",
+            "external_id": "rec3RliarlFSLrlJ0",
+            "slug": "france",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RJ4KDTYWFZVTG6XX459",
+            "title": "Barbados",
+            "external_id": "recO05f3iaxD2lmCb",
+            "slug": "barbados",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RJ4TRNVWHMH373GN49C",
+            "title": "Bangladesh",
+            "external_id": "rec1L2cBPn7UV6G22",
+            "slug": "bangladesh",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RJ5DPACGSABPC14KDGY",
+            "title": "United Arab Emirates",
+            "external_id": "recyHGHiUus6EbbP8",
+            "slug": "united-arab-emirates",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RJ5PA8CYTQTZR58EGQ3",
+            "title": "Israel",
+            "external_id": "recQ7PUPYNKjVEIAW",
+            "slug": "israel",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RJ6W5T1M7WBX0ZZ6ZDH",
+            "title": "Ireland",
+            "external_id": "recBJX1l7rqhO0Tw5",
+            "slug": "ireland",
+            "description": null
+          }
+        ]
+      }
+    },
+    "dimension_01H0EQ3JJH21MSXNK31DB08KES": {
+      "uid": "01H0EQ3JJH21MSXNK31DB08KES",
+      "values": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01H0EQ3RH2T2Y1F3E2JMC56ME5",
+            "title": "Android",
+            "external_id": "recnhdLB3chgbGfBZ",
+            "slug": "android",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RH4X7Q7H66CSH7S6AKW",
+            "title": "Linux",
+            "external_id": "rec1DqEm3Z1ItmSO5",
+            "slug": "linux",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RKHK8RZKHNM7T585G6K",
+            "title": "Windows",
+            "external_id": "recpVAGTr9xWR9VYq",
+            "slug": "windows",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RKNWKMVEMZ14SKVXQ2W",
+            "title": "MacOS",
+            "external_id": "rec5b5ZPbrCKobnwk",
+            "slug": "macos",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RMVFZBEA3HAWDPGZ924",
+            "title": "Chrome OS",
+            "external_id": "recsFGORDS2M9JF7l",
+            "slug": "chrome-os",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RNGDHVDM19JQS8YP3XV",
+            "title": "iOS",
+            "external_id": "recRSh7ULdAGYRzPd",
+            "slug": "ios",
+            "description": null
+          }
+        ]
+      }
+    },
+    "dimension_01H0EQ3JCRYZ4SVZ1EJPW5BZS9": {
+      "uid": "01H0EQ3JCRYZ4SVZ1EJPW5BZS9",
+      "values": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01H0EQ3RJBP2QV4QW03XCMX0HC",
+            "title": "Africa",
+            "external_id": "rec56wZIzjCxT9RJ0",
+            "slug": "africa",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RNEWT2FBHXRVENY3WQE",
+            "title": "Europe",
+            "external_id": "rec91RQH79i9AO3Qf",
+            "slug": "europe",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RQ541V4EDVMYAYSDHZ8",
+            "title": "Oceania",
+            "external_id": "recMYb0iBwVqWOlpH",
+            "slug": "oceania",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3S72VR4DMY7DPH5YMNY6",
+            "title": "Asia",
+            "external_id": "recaJIUEeVUsZEWZ1",
+            "slug": "asia",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3SAFY1JFVPBC1J692BAB",
+            "title": "North America",
+            "external_id": "reclbGDlUj4Ap84cZ",
+            "slug": "north-america",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3SBZHTMC9SZ866V3D5DP",
+            "title": "South-America",
+            "external_id": "recvDgNm3onTOeA2S",
+            "slug": "south-america",
+            "description": null
+          }
+        ]
+      }
+    },
+    "dimension_01H0EQ3JESJNGCGWGNVC537C1V": {
+      "uid": "01H0EQ3JESJNGCGWGNVC537C1V",
+      "values": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01H0EQ3RJJDDZGYKA3RY6BXEG1",
+            "title": "Linear",
+            "external_id": "recRuxPfp4nWYUX71",
+            "slug": "linear",
+            "description": null
+          },
+          {
+            "uid": "01H0EQ3RNAX5D74V26VZJWVKZ3",
+            "title": "VoD",
+            "external_id": "recbQTHPcceBI3bn4",
+            "slug": "vod",
+            "description": null
+          }
+        ]
+      }
+    }
+  }
+}

@@ -386,6 +386,7 @@ export const Panel = ({
     <section
       className="mx-auto flex h-full w-full flex-col break-words"
       data-cy={`panel-for-${objectType}-${uid}`}
+      data-testid="panel"
     >
       <PanelHeader
         isPage={isPage}
@@ -440,7 +441,7 @@ export const Panel = ({
             tabs={tabs}
             selectedTab={selectedTab}
             onChange={setSelectedTab}
-            disabled={inEditMode || isLoading || isError}
+            disabled={tabs.length === 0 || inEditMode || isError}
           />
         </div>
       </div>

@@ -1,29 +1,14 @@
 import { Combobox, Transition } from "@headlessui/react";
 import clsx from "clsx";
-import React, {
-  useState,
-  useCallback,
-  useRef,
-  CSSProperties,
-  forwardRef,
-  Ref,
-  ReactNode,
-  Fragment,
-} from "react";
-import { GoTriangleDown } from "react-icons/go";
-import { GrClose } from "react-icons/gr";
-import { useVirtual } from "react-virtual";
-import { Options } from "sentence-case";
+import React, { useState, useCallback, forwardRef, Ref } from "react";
 
 import {
   SelectLabel,
   SelectOptionComponent,
   SelectOptionsContainer,
   sortSelectOptions,
-  VirtualizedOptions,
 } from "src/components/inputs/select";
 import { Pill } from "src/components/pill";
-import { formatObjectField } from "src/lib/utils";
 
 export interface SelectOption {
   label: string;
@@ -125,7 +110,7 @@ export const MultiSelect = forwardRef(
               />
             ))}
             <Combobox.Button
-              data-testid="select"
+              data-testid="multiselect-input"
               as="div"
               className="flex min-w-[6rem] flex-1"
             >

@@ -1,0 +1,50 @@
+{
+  "data": {
+    "getAvailability": {
+      "title": "Always - All devices, all customer types",
+      "dimensions": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01H0EQ3JGK82CS46X89343SA27",
+            "title": "Customer Type",
+            "slug": "customer-types",
+            "values": {
+              "objects": [
+                {
+                  "uid": "01H0EQ3SD1TAKBZRD97EY765RJ",
+                  "title": "Standard",
+                  "slug": "standard"
+                },
+                {
+                  "uid": "01H0EQ3RPD2W65K2CW2KHBC9ND",
+                  "title": "Premium",
+                  "slug": "premium"
+                }
+              ]
+            }
+          },
+          {
+            "uid": "01H0EQ3JHWPEV6JX4FXVWX95HZ",
+            "title": "Device Type",
+            "slug": "device-types",
+            "values": {
+              "objects": [
+                {
+                  "uid": "01H0EQ3RKEJZXBJYQRAGCQHCRC",
+                  "title": "SmartPhone",
+                  "slug": "smartphone"
+                },
+                {
+                  "uid": "01H0EQ3RM2YV5S1QC3H3XF96WY",
+                  "title": "PC",
+                  "slug": "pc"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
