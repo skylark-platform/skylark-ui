@@ -3,6 +3,7 @@ import {
   Edit,
   CheckSquare,
   CrossSquare,
+  Trash,
 } from "src/components/icons";
 
 interface RowActionsProps {
@@ -22,7 +23,7 @@ export const RowActions = ({
   onEditSaveClick,
   onEditCancelClick,
 }: RowActionsProps) => (
-  <div className="flex w-full items-center justify-center space-x-2 pl-4 pr-3 text-center">
+  <div className="hidden h-full w-full items-center justify-center space-x-2 bg-inherit pl-4 pr-3 text-center group-hover/row:flex">
     {inEditMode && editRowEnabled ? (
       <>
         <button onClick={onEditSaveClick} aria-label="object-edit-save">
@@ -36,6 +37,12 @@ export const RowActions = ({
       <>
         <button onClick={onInfoClick} aria-label="object-info">
           <InfoCircle className="h-5 stroke-brand-primary transition-colors hover:stroke-brand-primary/60" />
+        </button>
+        <button
+          onClick={() => console.log("onDeleteClick")}
+          aria-label="object-delete"
+        >
+          <Trash className="h-5 text-error transition-colors hover:text-error/60" />
         </button>
         {editRowEnabled && (
           <button onClick={onEditClick} aria-label="object-edit">

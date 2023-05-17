@@ -13,6 +13,7 @@ import { VirtualItem } from "react-virtual";
 
 import { Spinner } from "src/components/icons";
 import { RowActions } from "src/components/objectListing/rowActions";
+import { Skeleton } from "src/components/skeleton";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import {
   ParsedSkylarkObject,
@@ -43,7 +44,7 @@ export interface TableRowProps {
 const headAndDataClassNames =
   "overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm text-base-content";
 const lastHeadAndDataClassNames =
-  "last:sticky last:right-0 last:pl-0 last:bg-white last:z-10 last:min-w-0 last:border-l-0";
+  "last:sticky last:right-0 last:pl-0 last:h-full last:z-10 last:min-w-0 last:border-l-0";
 const headerLeftLineStyling =
   "[&>span]:border-l [&>span]:pl-2 [&>span]:first:border-l-0 [&>span]:first:pl-0 [&>span]:last:border-l-0 [&>span]:last:pl-0";
 const rowClassName =
@@ -252,7 +253,7 @@ const TableRow = ({
       key={row.id}
       className={clsx("align-middle outline-none", rowClassName)}
       tabIndex={-1}
-      onDoubleClick={openPanel}
+      onClick={openPanel}
       style={{
         height: `${virtualRowSize}px`,
       }}
@@ -290,7 +291,7 @@ export const Table = ({
   const headers = table.getHeaderGroups()[0].headers;
 
   return (
-    <table className="relative w-full bg-white">
+    <table className="relative mb-10 w-full bg-white">
       <thead>
         <tr className="sticky top-0 z-30 bg-white">
           {headers.map((header) => (
@@ -328,18 +329,21 @@ export const Table = ({
             <td style={{ height: `${paddingBottom}px` }} />
           </tr>
         )}
-        {totalRows > 0 && isLoadingMore && (
-          <tr>
-            <td colSpan={headers.length}>
-              <div
-                data-chromatic="ignore"
-                className="sticky left-0 right-0 bottom-2 flex h-32 w-screen items-center justify-center"
-              >
-                <Spinner className="-z-10 h-8 w-8 animate-spin md:h-10 md:w-10" />
-              </div>
-            </td>
-          </tr>
-        )}
+        {totalRows > 0 &&
+          isLoadingMore &&
+          [...Array(8)].map((e, i) => (
+            <tr key={i} className="h-10">
+              {headers.map(({ id }, headerI) => (
+                <td key={id} className="h-full">
+                  <div className="flex h-full w-full items-center justify-start">
+                    <Skeleton
+                      className={clsx("h-5 w-[90%]", headerI > 1 && "ml-1")}
+                    />
+                  </div>
+                </td>
+              ))}
+            </tr>
+          ))}
       </tbody>
     </table>
   );
