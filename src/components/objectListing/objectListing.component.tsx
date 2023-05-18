@@ -36,7 +36,7 @@ const hardcodedColumns = [
   OBJECT_LIST_TABLE.columnIds.availability,
   OBJECT_LIST_TABLE.columnIds.images,
 ];
-const orderedKeys = ["uid", "external_id", "data_source_id"];
+const orderedKeys = ["uid", "external_id", "data_source_id", "type"];
 
 const columnHelper = createColumnHelper<object>();
 

@@ -11,7 +11,6 @@ import clsx from "clsx";
 import { useMemo } from "react";
 import { VirtualItem } from "react-virtual";
 
-import { Spinner } from "src/components/icons";
 import { RowActions } from "src/components/objectListing/rowActions";
 import { Skeleton } from "src/components/skeleton";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
