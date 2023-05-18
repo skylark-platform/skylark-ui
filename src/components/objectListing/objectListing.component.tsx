@@ -60,11 +60,15 @@ const createColumns = (
       cell: ({ row }) => {
         const original = row.original as ParsedSkylarkObject;
         return (
-          <Pill
-            label={original.config.objectTypeDisplayName || original.objectType}
-            bgColor={original.config.colour}
-            className="w-full bg-brand-primary"
-          />
+          <div className="flex h-full items-center">
+            <Pill
+              label={
+                original.config.objectTypeDisplayName || original.objectType
+              }
+              bgColor={original.config.colour}
+              className="w-full bg-brand-primary"
+            />
+          </div>
         );
       },
     },
@@ -388,7 +392,7 @@ export const ObjectList = ({
       <div
         className={clsx(
           isDragging ? "overflow-hidden" : "overflow-x-auto",
-          "relative mb-6 flex w-full flex-auto flex-grow flex-col overscroll-none",
+          "relative mb-6 flex w-full flex-auto flex-grow flex-col overscroll-none md:-ml-4",
         )}
         ref={tableContainerRef}
         data-testid="table-container"

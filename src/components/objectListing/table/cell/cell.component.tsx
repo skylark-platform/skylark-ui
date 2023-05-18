@@ -20,11 +20,15 @@ export const DisplayNameTableCell = ({
   return (
     <td key={id} className={`${className} overflow-visible`}>
       <div
-        className={`absolute z-30 -ml-2.5 -mt-[0.6rem] hidden h-full items-center bg-white sm:flex ${rowGroupClassName}`}
+        className={`absolute z-30 -ml-11 -mt-[0.6rem] hidden h-full items-center bg-white px-1 sm:flex ${rowGroupClassName}`}
       >
         <div
-          className="h-6 w-2.5 border-l-4 border-l-brand-primary"
-          style={{ borderLeftColor: colour }}
+          className={clsx(
+            "h-6 w-2.5 border-r-4 border-r-brand-primary pl-8",
+            "relative before:left-3 before:top-0 before:hidden before:h-full before:w-5 before:bg-inherit before:opacity-0 before:group-hover/row:opacity-60 md:before:absolute md:before:block",
+            "before:bg-[url('https://www.gstatic.com/images/icons/material/system_gm/1x/drag_indicator_black_20dp.png')] before:bg-center before:bg-no-repeat",
+          )}
+          style={{ borderRightColor: colour }}
         />
       </div>
       <div className="w-full overflow-hidden text-ellipsis">{children}</div>

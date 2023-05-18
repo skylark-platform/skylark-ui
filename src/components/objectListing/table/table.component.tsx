@@ -73,7 +73,7 @@ const customColumnStyling: Record<
     width: "min-w-44 max-w-44 md:min-w-52 md:max-w-52",
     className: {
       all: "sm:sticky bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-0",
-      withoutCheckbox: "left-2",
+      withoutCheckbox: "left-6",
       withCheckbox: "left-10",
     },
   },
@@ -168,7 +168,7 @@ const TableData = ({
         headAndDataClassNames,
         lastHeadAndDataClassNames,
         rowGroupClassName,
-        "border-l border-transparent p-2 last:pr-0",
+        "border-l border-transparent p-2 last:pr-0 h-full",
       ),
     [cell.column.id, withCheckbox],
   );
@@ -251,7 +251,12 @@ const TableRow = ({
       {...listeners}
       {...attributes}
       key={row.id}
-      className={clsx("align-middle outline-none", rowClassName)}
+      className={clsx(
+        "align-middle outline-none",
+        rowClassName,
+        "relative before:-left-4 before:top-0 before:hidden before:h-full before:w-5 before:bg-inherit before:opacity-0 before:hover:opacity-60 md:before:absolute md:before:block",
+        "before:bg-[url('https://www.gstatic.com/images/icons/material/system_gm/1x/drag_indicator_black_20dp.png')] before:bg-center before:bg-no-repeat",
+      )}
       tabIndex={-1}
       onClick={openPanel}
       style={{
@@ -291,7 +296,7 @@ export const Table = ({
   const headers = table.getHeaderGroups()[0].headers;
 
   return (
-    <table className="relative mb-10 w-full bg-white">
+    <table className="relative mb-10 w-full bg-white md:ml-4">
       <thead>
         <tr className="sticky top-0 z-30 bg-white">
           {headers.map((header) => (
