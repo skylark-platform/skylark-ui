@@ -2,12 +2,19 @@ import { CellContext } from "@tanstack/react-table";
 import clsx from "clsx";
 import { ReactNode, useEffect, useState } from "react";
 
+export const getCellWidths = (width: number) => ({
+  width,
+  minWidth: width,
+  maxWidth: width,
+});
+
 interface DisplayNameTableCellProps {
   id: string;
   colour?: string;
   className: string;
   rowGroupClassName: string;
   children: ReactNode | JSX.Element;
+  width: number;
 }
 
 export const DisplayNameTableCell = ({
@@ -16,9 +23,14 @@ export const DisplayNameTableCell = ({
   className,
   rowGroupClassName,
   children,
+  width,
 }: DisplayNameTableCellProps) => {
   return (
-    <td key={id} className={`${className} overflow-visible`}>
+    <td
+      key={id}
+      className={`${className} overflow-visible`}
+      style={{ ...getCellWidths(width) }}
+    >
       <div
         className={`absolute z-30 -ml-11 -mt-[0.6rem] hidden h-full items-center bg-white px-1 sm:flex ${rowGroupClassName}`}
       >

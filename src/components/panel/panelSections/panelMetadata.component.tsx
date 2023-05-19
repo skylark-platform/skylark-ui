@@ -1,6 +1,8 @@
 import { useEffect, useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
+import { GrCopy } from "react-icons/gr";
 
+import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 import { SkylarkObjectFieldInput } from "src/components/inputs/skylarkObjectFieldInput";
 import {
   PanelFieldTitle,
@@ -39,7 +41,16 @@ const PanelMetadataProperty = ({
 }) => (
   <div>
     <PanelFieldTitle text={formatObjectField(property)} />
-    <p className="mb-4 text-base-content">{value ? value : "---"}</p>
+    <p className="relative mb-4 flex text-base-content">
+      {value ? (
+        <>
+          {value}
+          <CopyToClipboard value={value} />
+        </>
+      ) : (
+        "---"
+      )}
+    </p>
   </div>
 );
 
