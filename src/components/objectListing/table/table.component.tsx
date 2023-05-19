@@ -146,7 +146,7 @@ const TableHeader = ({
         <div
           onMouseDown={header.getResizeHandler()}
           onTouchStart={header.getResizeHandler()}
-          className="h-inherit w-1 cursor-col-resize bg-manatee-200"
+          className="h-inherit w-0.5 cursor-col-resize bg-manatee-200"
         ></div>
       </div>
     </th>
