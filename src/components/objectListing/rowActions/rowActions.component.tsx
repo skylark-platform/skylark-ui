@@ -49,6 +49,7 @@ export const RowActions = ({
             pathname: `/object/${objectType}/${uid}`,
             query: { language },
           }}
+          onClick={(e) => e.stopPropagation()}
           rel="noopener noreferrer"
           target="_blank"
         >
