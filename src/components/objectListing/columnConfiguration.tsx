@@ -15,6 +15,18 @@ import { TableCell } from "./table";
 
 const columnHelper = createColumnHelper<object>();
 
+// Issues with Safari means its safe to allow the drag icon have it's own column than use a pseudo field
+const dragIconColumn = columnHelper.accessor(
+  OBJECT_LIST_TABLE.columnIds.dragIcon,
+  {
+    header: "",
+    size: 20,
+    cell: () => (
+      <span className="block h-full w-5 bg-inherit bg-[url('/icons/drag_indicator_black.png')] bg-center bg-no-repeat opacity-0 group-hover/row:opacity-60" />
+    ),
+  },
+);
+
 const objectTypeColumn = columnHelper.accessor(
   OBJECT_LIST_TABLE.columnIds.objectType,
   {
@@ -96,6 +108,7 @@ const selectColumn = columnHelper.display({
 
 const actionColumn = columnHelper.display({
   id: OBJECT_LIST_TABLE.columnIds.actions,
+  size: 100,
   cell: (props) => <TableCell {...props} />,
 });
 
@@ -116,6 +129,7 @@ export const createObjectListingColumns = (
     );
 
   const orderedColumnArray = [
+    dragIconColumn,
     objectTypeColumn,
     displayNameColumn,
     translationColumn,

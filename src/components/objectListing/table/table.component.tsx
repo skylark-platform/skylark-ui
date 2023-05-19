@@ -71,11 +71,18 @@ const customColumnStyling: Record<
       withCheckbox: "left-10",
     },
   },
+  [OBJECT_LIST_TABLE.columnIds.dragIcon]: {
+    className: {
+      all: "px-0 hidden md:table-cell",
+      cell: "",
+      header: "",
+    },
+  },
   [OBJECT_LIST_TABLE.columnIds.objectType]: {
     className: {
-      all: "px-0 pr-3",
-      cell: "absolute z-20 bg-white",
-      header: "sm:sticky bg-white w-10 -left-px h-5",
+      all: "px-0",
+      cell: "absolute z-20 bg-white pr-2",
+      header: "sm:sticky bg-white w-10 -left-px h-5 pr-1",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.checkbox]: {
@@ -148,14 +155,18 @@ const TableHeader = ({
 
 const TableData = ({
   cell,
+  height,
   withCheckbox,
   tableMeta,
   openPanel,
+  object,
 }: {
   cell: Cell<ParsedSkylarkObject, unknown>;
+  height: number;
   withCheckbox?: boolean;
   tableMeta: TableMeta<object> | undefined;
   openPanel: () => void;
+  object: SkylarkObjectIdentifier;
 }) => {
   const className = useMemo(
     () =>
@@ -164,7 +175,7 @@ const TableData = ({
         headAndDataClassNames,
         lastHeadAndDataClassNames,
         rowGroupClassName,
-        "border-l border-transparent py-2 last:pr-0 h-full",
+        "border-l border-transparent last:pr-0",
       ),
     [cell.column.id, withCheckbox],
   );
@@ -187,6 +198,7 @@ const TableData = ({
         rowGroupClassName={rowGroupClassName}
         colour={cell.row.original.config?.colour}
         width={cell.column.getSize()}
+        height={height}
       >
         {children}
       </DisplayNameTableCell>
@@ -196,8 +208,9 @@ const TableData = ({
   if (cell.column.id === OBJECT_LIST_TABLE.columnIds.actions) {
     const rowInEditMode = tableMeta?.rowInEditMode === cell.row.id || false;
     return (
-      <td key={cell.id} className={className}>
+      <td key={cell.id} className={className} style={{ height }}>
         <RowActions
+          object={object}
           editRowEnabled={tableMeta?.withObjectEdit}
           inEditMode={rowInEditMode}
           onEditClick={() => tableMeta?.onEditClick(cell.row.id)}
@@ -213,7 +226,7 @@ const TableData = ({
     <td
       key={cell.id}
       className={className}
-      style={{ ...getCellWidths(cell.column.getSize()) }}
+      style={{ ...getCellWidths(cell.column.getSize()), height }}
     >
       {children}
     </td>
@@ -252,16 +265,11 @@ const TableRow = ({
       {...listeners}
       {...attributes}
       key={row.id}
-      className={clsx(
-        "align-middle outline-none",
-        rowClassName,
-        "relative before:-left-4 before:top-0 before:hidden before:h-full before:w-5 before:bg-inherit before:opacity-0 before:hover:opacity-60 md:before:absolute md:before:block",
-        "before:bg-[url('https://www.gstatic.com/images/icons/material/system_gm/1x/drag_indicator_black_20dp.png')] before:bg-center before:bg-no-repeat",
-      )}
+      className={clsx("relative align-middle outline-none", rowClassName)}
       tabIndex={-1}
       onClick={openPanel}
       style={{
-        height: `${virtualRowSize}px`,
+        height: virtualRowSize,
       }}
     >
       {row.getVisibleCells().map((cell) => (
@@ -271,6 +279,8 @@ const TableRow = ({
           cell={cell}
           withCheckbox={withCheckbox}
           openPanel={openPanel}
+          height={virtualRowSize}
+          object={{ uid, objectType, language }}
         />
       ))}
     </tr>
@@ -298,7 +308,7 @@ export const Table = ({
 
   return (
     <table
-      className="relative mb-10 bg-white md:ml-4"
+      className="relative mb-10 bg-white"
       width={table.getCenterTotalSize()}
     >
       <thead>
@@ -343,7 +353,11 @@ export const Table = ({
           [...Array(8)].map((e, i) => (
             <tr key={i} className="h-10">
               {headers.map(({ id }, headerI) => (
-                <td key={id} className="h-full">
+                <td
+                  key={id}
+                  className="h-10"
+                  style={{ height: virtualRows[0].size }}
+                >
                   <div className="flex h-full w-full items-center justify-start">
                     <Skeleton
                       className={clsx("h-5 w-[90%]", headerI > 1 && "ml-1")}
