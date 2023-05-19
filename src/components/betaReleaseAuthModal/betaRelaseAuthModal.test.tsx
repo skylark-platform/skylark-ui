@@ -79,10 +79,12 @@ test("clicks the copy buttons", () => {
     target: { value: "http://invalidgraphqlurl.com" },
   });
   fireEvent.change(tokenInput, {
-    target: { value: "http://invalidgraphqlurl.com" },
+    target: { value: "token" },
   });
 
-  const copyToken = screen.getByLabelText("Copy API Key to clipboard");
+  const copyToken = screen.getByLabelText(
+    "Copy http://invalidgraphqlurl.com to clipboard",
+  );
   fireEvent.click(copyToken);
 
   expect(navigator.clipboard.writeText).toHaveBeenCalledWith(

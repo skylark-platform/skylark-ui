@@ -121,15 +121,7 @@ describe("Content Library - Object Panel", () => {
 
   it("open Panel", () => {
     cy.get('input[name="search-query-input"]').type("got winter is coming");
-    cy.contains("tr", "GOT S01E1 - Winter");
-    cy.contains("tr", "GOT S01E1 - Winter")
-      .should(($el) => {
-        // eslint-disable-next-line jest/valid-expect
-        expect(Cypress.dom.isDetached($el)).to.eq(false);
-      })
-      .within(() => {
-        cy.get('[aria-label="object-info"]').click();
-      });
+    cy.openContentLibraryObjectPanelByText("GOT S01E1 - Winter");
 
     cy.contains("Metadata");
     cy.contains(
@@ -140,15 +132,7 @@ describe("Content Library - Object Panel", () => {
 
   it("close Panel", () => {
     cy.get('input[name="search-query-input"]').type("got winter is coming");
-    cy.contains("tr", "GOT S01E1 - Winter");
-    cy.contains("tr", "GOT S01E1 - Winter")
-      .should(($el) => {
-        // eslint-disable-next-line jest/valid-expect
-        expect(Cypress.dom.isDetached($el)).to.eq(false);
-      })
-      .within(() => {
-        cy.get('[aria-label="object-info"]').click();
-      });
+    cy.openContentLibraryObjectPanelByText("GOT S01E1 - Winter");
 
     cy.contains("Edit Metadata").should("exist");
     cy.get("button").contains("Close").click();
@@ -157,14 +141,8 @@ describe("Content Library - Object Panel", () => {
 
   it("view GraphQL query", () => {
     cy.get('input[name="search-query-input"]').type("got winter is coming");
-    cy.contains("tr", "GOT S01E1 - Winter")
-      .should(($el) => {
-        // eslint-disable-next-line jest/valid-expect
-        expect(Cypress.dom.isDetached($el)).to.eq(false);
-      })
-      .within(() => {
-        cy.get('[aria-label="object-info"]').click();
-      });
+    cy.openContentLibraryObjectPanelByText("GOT S01E1 - Winter");
+
     cy.contains("Metadata");
     cy.get("[data-testid=panel-header]").within(() => {
       cy.get('[aria-label="Open Panel Menu"]').click();
@@ -178,14 +156,7 @@ describe("Content Library - Object Panel", () => {
     it("change language to pt-PT", () => {
       cy.get('input[name="search-query-input"]').type("got winter is coming");
       cy.contains("tr", "GOT S01E1 - Winter");
-      cy.contains("tr", "en-GB")
-        .should(($el) => {
-          // eslint-disable-next-line jest/valid-expect
-          expect(Cypress.dom.isDetached($el)).to.eq(false);
-        })
-        .within(() => {
-          cy.get('[aria-label="object-info"]').click();
-        });
+      cy.openContentLibraryObjectPanelByText("en-GB");
 
       cy.contains("Metadata");
 
@@ -212,14 +183,7 @@ describe("Content Library - Object Panel", () => {
     it("edit metadata and cancel", () => {
       cy.get('input[name="search-query-input"]').type("got winter is coming");
       cy.contains("tr", "GOT S01E1 - Winter");
-      cy.contains("tr", "en-GB")
-        .should(($el) => {
-          // eslint-disable-next-line jest/valid-expect
-          expect(Cypress.dom.isDetached($el)).to.eq(false);
-        })
-        .within(() => {
-          cy.get('[aria-label="object-info"]').click();
-        });
+      cy.openContentLibraryObjectPanelByText("en-GB");
 
       cy.contains("Metadata");
       cy.contains("button", "Edit Metadata").should("not.be.disabled");
@@ -245,14 +209,7 @@ describe("Content Library - Object Panel", () => {
     it("edit metadata and save", () => {
       cy.get('input[name="search-query-input"]').type("got winter is coming");
       cy.contains("tr", "GOT S01E1 - Winter");
-      cy.contains("tr", "en-GB")
-        .should(($el) => {
-          // eslint-disable-next-line jest/valid-expect
-          expect(Cypress.dom.isDetached($el)).to.eq(false);
-        })
-        .within(() => {
-          cy.get('[aria-label="object-info"]').click();
-        });
+      cy.openContentLibraryObjectPanelByText("en-GB");
 
       cy.contains("Metadata");
       cy.contains("button", "Edit Metadata").should("not.be.disabled");
@@ -272,14 +229,7 @@ describe("Content Library - Object Panel", () => {
   describe("Imagery tab", () => {
     it("open Imagery tab", () => {
       cy.get('input[name="search-query-input"]').type("got winter is coming");
-      cy.contains("tr", "GOT S01E1 - Winter")
-        .should(($el) => {
-          // eslint-disable-next-line jest/valid-expect
-          expect(Cypress.dom.isDetached($el)).to.eq(false);
-        })
-        .within(() => {
-          cy.get('[aria-label="object-info"]').click();
-        });
+      cy.openContentLibraryObjectPanelByText("GOT S01E1 - Winter");
 
       cy.contains("button", "Imagery").click();
 
@@ -298,14 +248,7 @@ describe("Content Library - Object Panel", () => {
 
     it("navigates to the image object using the object button", () => {
       cy.get('input[name="search-query-input"]').type("got winter is coming");
-      cy.contains("tr", "GOT S01E1 - Winter")
-        .should(($el) => {
-          // eslint-disable-next-line jest/valid-expect
-          expect(Cypress.dom.isDetached($el)).to.eq(false);
-        })
-        .within(() => {
-          cy.get('[aria-label="object-info"]').click();
-        });
+      cy.openContentLibraryObjectPanelByText("GOT S01E1 - Winter");
 
       cy.contains("button", "Imagery").click();
 
@@ -325,14 +268,7 @@ describe("Content Library - Object Panel", () => {
           cy.get('input[name="search-query-input"]').type(
             "got winter is coming",
           );
-          cy.contains("tr", "GOT S01E1 - Winter")
-            .should(($el) => {
-              // eslint-disable-next-line jest/valid-expect
-              expect(Cypress.dom.isDetached($el)).to.eq(false);
-            })
-            .within(() => {
-              cy.get('[aria-label="object-info"]').click();
-            });
+          cy.openContentLibraryObjectPanelByText("GOT S01E1 - Winter");
 
           cy.contains("button", "Imagery").click();
 
@@ -355,14 +291,7 @@ describe("Content Library - Object Panel", () => {
     it("Open", () => {
       cy.get('input[name="search-query-input"]').type("Homepage");
       cy.contains("Homepage").should("exist");
-      cy.contains("tr", "Homepage")
-        .should(($el) => {
-          // eslint-disable-next-line jest/valid-expect
-          expect(Cypress.dom.isDetached($el)).to.eq(false);
-        })
-        .within(() => {
-          cy.get('[aria-label="object-info"]').click();
-        });
+      cy.openContentLibraryObjectPanelByText("Homepage");
       cy.contains("button", "Content").click();
 
       cy.percySnapshot("Homepage - object panel - content");
@@ -380,14 +309,8 @@ describe("Content Library - Object Panel", () => {
 
           cy.get('input[name="search-query-input"]').type("Homepage");
           cy.contains("Homepage").should("exist");
-          cy.contains("tr", "Homepage")
-            .should(($el) => {
-              // eslint-disable-next-line jest/valid-expect
-              expect(Cypress.dom.isDetached($el)).to.eq(false);
-            })
-            .within(() => {
-              cy.get('[aria-label="object-info"]').click();
-            });
+          cy.openContentLibraryObjectPanelByText("Homepage");
+
           cy.contains("button", "Content").click();
           cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
@@ -408,14 +331,8 @@ describe("Content Library - Object Panel", () => {
     it("Reorder, remove and cancel", () => {
       cy.get('input[name="search-query-input"]').type("Homepage");
       cy.contains("Homepage").should("exist");
-      cy.contains("tr", "Homepage")
-        .should(($el) => {
-          // eslint-disable-next-line jest/valid-expect
-          expect(Cypress.dom.isDetached($el)).to.eq(false);
-        })
-        .within(() => {
-          cy.get('[aria-label="object-info"]').click();
-        });
+      cy.openContentLibraryObjectPanelByText("Homepage");
+
       cy.contains("button", "Content").click();
 
       // Test switching to edit mode
@@ -498,14 +415,8 @@ describe("Content Library - Object Panel", () => {
     it("Reorder, remove and save", () => {
       cy.get('input[name="search-query-input"]').type("Homepage");
       cy.contains("Homepage").should("exist");
-      cy.contains("tr", "Homepage")
-        .should(($el) => {
-          // eslint-disable-next-line jest/valid-expect
-          expect(Cypress.dom.isDetached($el)).to.eq(false);
-        })
-        .within(() => {
-          cy.get('[aria-label="object-info"]').click();
-        });
+      cy.openContentLibraryObjectPanelByText("Homepage");
+
       cy.contains("button", "Content").click();
 
       // Test switching to edit mode
@@ -567,14 +478,9 @@ describe("Content Library - Object Panel", () => {
     it("open Availability tab", () => {
       cy.get('input[name="search-query-input"]').type("all avail test movie");
       cy.contains("Fantastic Mr Fox (All Availabilities)").should("exist");
-      cy.contains("tr", "Fantastic Mr Fox (All Availabilities)")
-        .should(($el) => {
-          // eslint-disable-next-line jest/valid-expect
-          expect(Cypress.dom.isDetached($el)).to.eq(false);
-        })
-        .within(() => {
-          cy.get('[aria-label="object-info"]').click();
-        });
+      cy.openContentLibraryObjectPanelByText(
+        "Fantastic Mr Fox (All Availabilities)",
+      );
 
       cy.contains("button", "Availability").click();
 
@@ -599,14 +505,9 @@ describe("Content Library - Object Panel", () => {
             "all avail test movie",
           );
           cy.contains("Fantastic Mr Fox (All Availabilities)").should("exist");
-          cy.contains("tr", "Fantastic Mr Fox (All Availabilities)")
-            .should(($el) => {
-              // eslint-disable-next-line jest/valid-expect
-              expect(Cypress.dom.isDetached($el)).to.eq(false);
-            })
-            .within(() => {
-              cy.get('[aria-label="object-info"]').click();
-            });
+          cy.openContentLibraryObjectPanelByText(
+            "Fantastic Mr Fox (All Availabilities)",
+          );
 
           cy.contains("button", "Availability").click();
 

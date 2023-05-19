@@ -1,5 +1,4 @@
 import {
-  createColumnHelper,
   getCoreRowModel,
   useReactTable,
   VisibilityState,
@@ -8,37 +7,27 @@ import clsx from "clsx";
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useVirtual } from "react-virtual";
 
-import { AvailabilityLabel } from "src/components/availability";
 import { Spinner } from "src/components/icons";
-import { Checkbox } from "src/components/inputs/checkbox";
-import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ParsedSkylarkObjectAvailability,
-  ParsedSkylarkObject,
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
-import {
-  formatObjectField,
-  getObjectDisplayName,
-  hasProperty,
-} from "src/lib/utils";
+import { getObjectDisplayName, hasProperty } from "src/lib/utils";
 
+import { createObjectListingColumns } from "./columnConfiguration";
 import { CreateButtons } from "./createButtons";
 import { Search } from "./search";
-import { Table, TableCell } from "./table";
+import { Table } from "./table";
 
 const hardcodedColumns = [
   OBJECT_LIST_TABLE.columnIds.translation,
   OBJECT_LIST_TABLE.columnIds.availability,
   OBJECT_LIST_TABLE.columnIds.images,
 ];
-const orderedKeys = ["uid", "external_id", "data_source_id"];
-
-const columnHelper = createColumnHelper<object>();
+const orderedKeys = ["uid", "external_id", "data_source_id", "type"];
 
 export interface ObjectListProps {
   withCreateButtons?: boolean;
@@ -48,114 +37,6 @@ export interface ObjectListProps {
   setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
   isDragging?: boolean;
 }
-
-const createColumns = (
-  columns: string[],
-  opts: { withObjectSelect?: boolean },
-) => {
-  const objectTypeColumn = columnHelper.accessor(
-    OBJECT_LIST_TABLE.columnIds.objectType,
-    {
-      header: "",
-      cell: ({ row }) => {
-        const original = row.original as ParsedSkylarkObject;
-        return (
-          <Pill
-            label={original.config.objectTypeDisplayName || original.objectType}
-            bgColor={original.config.colour}
-            className="w-full bg-brand-primary"
-          />
-        );
-      },
-    },
-  );
-
-  const createdColumns = columns
-    .filter((column) => !hardcodedColumns.includes(column))
-    .map((column) =>
-      columnHelper.accessor(column, {
-        id: column,
-        header: formatObjectField(column),
-        cell: (props) => <TableCell {...props} />,
-      }),
-    );
-
-  const displayNameColumn = columnHelper.accessor(
-    OBJECT_LIST_TABLE.columnIds.displayField,
-    {
-      header: formatObjectField("Display Field"),
-      cell: (props) => <TableCell {...props} />,
-    },
-  );
-
-  const translationColumn = columnHelper.accessor(
-    OBJECT_LIST_TABLE.columnIds.translation,
-    {
-      header: formatObjectField("Translation"),
-      cell: (props) => <TableCell {...props} />,
-    },
-  );
-
-  const availabilityColumn = columnHelper.accessor("availability", {
-    header: formatObjectField("Availability"),
-    cell: (props) => {
-      const { status } = props.getValue<ParsedSkylarkObjectAvailability>();
-      return status && <AvailabilityLabel status={status} />;
-    },
-  });
-
-  // TODO only add/create this column if the schema has images. Or always created it but hide it when it doesn't have images
-  // const imagesColumn = columnHelper.accessor("images", {
-  //   header: formatObjectField("Images"),
-  //   cell: (props) => {
-  //     const imageRelationships =
-  //       props.getValue<ParsedSkylarkObjectImageRelationship[]>();
-  //     const allImages = imageRelationships.flatMap(({ objects }) => objects);
-  //     if (
-  //       !imageRelationships ||
-  //       imageRelationships.length === 0 ||
-  //       allImages.length === 0
-  //     ) {
-  //       return "";
-  //     }
-
-  //     return (
-  //       <div>
-  //         {allImages.map(({ uid, url, title }) => (
-  //           // eslint-disable-next-line @next/next/no-img-element
-  //           <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
-  //         ))}
-  //       </div>
-  //     );
-  //   },
-  // });
-
-  const selectColumn = columnHelper.display({
-    id: OBJECT_LIST_TABLE.columnIds.checkbox,
-    header: () => <Checkbox aria-label="toggle-select-all-objects" />,
-    cell: () => <Checkbox />,
-  });
-
-  const actionColumn = columnHelper.display({
-    id: OBJECT_LIST_TABLE.columnIds.actions,
-    cell: (props) => <TableCell {...props} />,
-  });
-
-  const orderedColumnArray = [
-    objectTypeColumn,
-    displayNameColumn,
-    translationColumn,
-    // imagesColumn,
-    availabilityColumn,
-    ...createdColumns,
-  ];
-  if (opts.withObjectSelect) {
-    return [selectColumn, ...orderedColumnArray];
-  }
-  return [...orderedColumnArray, actionColumn];
-
-  return orderedColumnArray;
-};
 
 export const ObjectList = ({
   withCreateButtons,
@@ -201,7 +82,10 @@ export const ObjectList = ({
   }, [properties]);
 
   const parsedColumns = useMemo(
-    () => createColumns(sortedHeaders, { withObjectSelect }),
+    () =>
+      createObjectListingColumns(sortedHeaders, hardcodedColumns, {
+        withObjectSelect,
+      }),
     [sortedHeaders, withObjectSelect],
   );
 
@@ -274,6 +158,7 @@ export const ObjectList = ({
     data: formattedSearchData || [],
     columns: searchData ? parsedColumns : [],
     getCoreRowModel: getCoreRowModel(),
+    columnResizeMode: "onChange",
     state: {
       columnVisibility,
     },
@@ -332,7 +217,7 @@ export const ObjectList = ({
     parentRef: tableContainerRef,
     size: rows.length,
     estimateSize: useCallback(() => 40, []),
-    overscan: 40,
+    overscan: 20,
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
 
@@ -388,7 +273,7 @@ export const ObjectList = ({
       <div
         className={clsx(
           isDragging ? "overflow-hidden" : "overflow-x-auto",
-          "relative mb-6 flex w-full flex-auto flex-grow flex-col overscroll-none",
+          "relative mb-6 flex w-full flex-auto flex-grow flex-col overscroll-none md:-ml-4",
         )}
         ref={tableContainerRef}
         data-testid="table-container"

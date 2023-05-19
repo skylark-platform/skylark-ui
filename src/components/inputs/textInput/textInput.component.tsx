@@ -1,6 +1,8 @@
 import clsx from "clsx";
 import { GrCopy } from "react-icons/gr";
 
+import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
+
 interface TextInputProps {
   value: string;
   onChange: (str: string) => void;
@@ -35,13 +37,7 @@ export const TextInput = ({
       onChange={(e) => onChange(e.target.value)}
     />
     {withCopy && (
-      <GrCopy
-        aria-label={`Copy ${label} to clipboard`}
-        onClick={() => {
-          navigator.clipboard.writeText(value);
-        }}
-        className="absolute right-3 top-9 cursor-pointer text-lg"
-      />
+      <CopyToClipboard value={value} className="absolute right-3 top-9" />
     )}
   </div>
 );

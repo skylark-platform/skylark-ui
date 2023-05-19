@@ -15,7 +15,6 @@ import {
   AddedSkylarkObjectContentObject,
   SkylarkObjectMetadataField,
   SkylarkSystemField,
-  SkylarkObjectMeta,
   ParsedSkylarkObjectRelationships,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";

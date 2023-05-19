@@ -162,14 +162,7 @@ describe("Content Library - Search", () => {
     cy.get('input[name="search-query-input"]').type("got winter is coming");
 
     cy.contains("tr", "GOT S01E1 - Winter");
-    cy.contains("tr", "en-GB")
-      .should(($el) => {
-        // eslint-disable-next-line jest/valid-expect
-        expect(Cypress.dom.isDetached($el)).to.eq(false);
-      })
-      .within(() => {
-        cy.get('[aria-label="object-info"]').click();
-      });
+    cy.openContentLibraryObjectPanelByText("en-GB");
 
     cy.get("[data-testid=panel-metadata]").within(() => {
       cy.getByLabel("Slug").should("have.value", "winter-is-coming");
@@ -181,14 +174,7 @@ describe("Content Library - Search", () => {
     });
 
     // Change to pt-PT and verify
-    cy.contains("tr", "pt-PT")
-      .should(($el) => {
-        // eslint-disable-next-line jest/valid-expect
-        expect(Cypress.dom.isDetached($el)).to.eq(false);
-      })
-      .within(() => {
-        cy.get('[aria-label="object-info"]').click();
-      });
+    cy.openContentLibraryObjectPanelByText("pt-PT");
 
     cy.get("[data-testid=panel-header]").within(() => {
       cy.contains("pt-PT");

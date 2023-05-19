@@ -1,11 +1,17 @@
+import Link from "next/link";
+
 import {
   InfoCircle,
   Edit,
   CheckSquare,
   CrossSquare,
+  Trash,
+  ExternalLink,
 } from "src/components/icons";
+import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 
 interface RowActionsProps {
+  object: SkylarkObjectIdentifier;
   editRowEnabled?: boolean;
   inEditMode?: boolean;
   onInfoClick: () => void;
@@ -15,6 +21,7 @@ interface RowActionsProps {
 }
 
 export const RowActions = ({
+  object: { uid, objectType, language },
   editRowEnabled,
   inEditMode,
   onInfoClick,
@@ -22,7 +29,7 @@ export const RowActions = ({
   onEditSaveClick,
   onEditCancelClick,
 }: RowActionsProps) => (
-  <div className="flex w-full items-center justify-center space-x-2 pl-4 pr-3 text-center">
+  <div className="hidden h-full w-full items-center justify-center space-x-2 bg-inherit pl-4 pr-3 text-center group-hover/row:flex">
     {inEditMode && editRowEnabled ? (
       <>
         <button onClick={onEditSaveClick} aria-label="object-edit-save">
@@ -37,6 +44,17 @@ export const RowActions = ({
         <button onClick={onInfoClick} aria-label="object-info">
           <InfoCircle className="h-5 stroke-brand-primary transition-colors hover:stroke-brand-primary/60" />
         </button>
+        <Link
+          href={{
+            pathname: `/object/${objectType}/${uid}`,
+            query: { language },
+          }}
+          onClick={(e) => e.stopPropagation()}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <ExternalLink className="h-5 transition-colors hover:text-brand-primary" />
+        </Link>
         {editRowEnabled && (
           <button onClick={onEditClick} aria-label="object-edit">
             <Edit className="h-5 stroke-brand-primary transition-colors hover:stroke-brand-primary/60" />

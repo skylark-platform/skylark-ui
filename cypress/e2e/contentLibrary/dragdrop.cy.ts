@@ -52,20 +52,12 @@ describe("Drag and Drop - Content and Relationship tab", () => {
 
           cy.get('input[name="search-query-input"]').type("Homepage");
           cy.contains("Homepage").should("exist");
-          cy.contains("tr", "Homepage")
-            .should(($el) => {
-              // eslint-disable-next-line jest/valid-expect
-              expect(Cypress.dom.isDetached($el)).to.eq(false);
-            })
-            .within(() => {
-              cy.get('[aria-label="object-info"]').click();
-            });
+          cy.openContentLibraryObjectPanelByText("Homepage");
           cy.contains("button", "Content").click();
           cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
           const deltaX = 500;
           const deltaY = 500;
-          const delay = 500;
 
           cy.get("[data-cy=drop-area]").should("not.exist");
 
@@ -76,14 +68,19 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               release: false,
               force: true,
             })
-            .wait(delay, { log: Boolean(delay) })
-            .then(() => {
-              cy.get("[data-cy=drop-area]").should("exist");
+            .trigger("mousemove", {
+              force: true,
+              clientX: 20,
+              clientY: 20,
             })
+            .wait(500)
             .trigger("mousemove", {
               force: true,
               clientX: deltaX,
               clientY: deltaY,
+            })
+            .then(() => {
+              cy.get("[data-cy=drop-area]").should("exist");
             })
             .wait(100)
             .trigger("mouseup", { force: true })
@@ -106,20 +103,12 @@ describe("Drag and Drop - Content and Relationship tab", () => {
 
           cy.get('input[name="search-query-input"]').type("Homepage");
           cy.contains("Homepage").should("exist");
-          cy.contains("tr", "Homepage")
-            .should(($el) => {
-              // eslint-disable-next-line jest/valid-expect
-              expect(Cypress.dom.isDetached($el)).to.eq(false);
-            })
-            .within(() => {
-              cy.get('[aria-label="object-info"]').click();
-            });
+          cy.openContentLibraryObjectPanelByText("Homepage");
           cy.contains("button", "Relationships").click();
           cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
           const deltaX = 500;
           const deltaY = 500;
-          const delay = 500;
 
           cy.get("[data-cy=drop-area]").should("not.exist");
 
@@ -130,10 +119,15 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               release: false,
               force: true,
             })
-            .wait(delay, { log: Boolean(delay) })
+            .trigger("mousemove", {
+              force: true,
+              clientX: 20,
+              clientY: 20,
+            })
             .then(() => {
               cy.get("[data-cy=drop-area]").should("exist");
             })
+            .wait(500)
             .trigger("mousemove", {
               force: true,
               clientX: deltaX,
@@ -155,10 +149,15 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               release: false,
               force: true,
             })
-            .wait(delay, { log: Boolean(delay) })
+            .trigger("mousemove", {
+              force: true,
+              clientX: 20,
+              clientY: 20,
+            })
             .then(() => {
               cy.get("[data-cy=drop-area]").should("exist");
             })
+            .wait(500)
             .trigger("mousemove", {
               force: true,
               clientX: deltaX,

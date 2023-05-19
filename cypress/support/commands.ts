@@ -39,6 +39,17 @@ Cypress.Commands.add("getByLabel", (label) => {
     });
 });
 
+Cypress.Commands.add("openContentLibraryObjectPanelByText", (text) => {
+  cy.contains("tr", text)
+    .should(($el) => {
+      // eslint-disable-next-line jest/valid-expect
+      expect(Cypress.dom.isDetached($el)).to.eq(false);
+    })
+    .within(() => {
+      cy.get('[aria-label="object-info"]').click({ force: true });
+    });
+});
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
@@ -46,6 +57,7 @@ declare global {
       login(): Chainable<void>;
       clickOutside(): Chainable<void>;
       getByLabel(l: string): Chainable<void>;
+      openContentLibraryObjectPanelByText(t: string): Chainable<void>;
     }
   }
 }
