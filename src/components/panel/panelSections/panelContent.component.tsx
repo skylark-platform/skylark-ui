@@ -3,7 +3,6 @@ import clsx from "clsx";
 import { Reorder } from "framer-motion";
 import { useEffect, useState } from "react";
 
-import { Trash } from "src/components/icons";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import {
   PanelEmptyDataText,
@@ -203,8 +202,8 @@ export const PanelContent = ({
                   <PanelContentItemOrderInput
                     disabled={!inEditMode}
                     position={index + 1}
-                    hasMoved={position !== index + 1}
-                    isNewObject={isNewObject}
+                    hasMoved={!!inEditMode && position !== index + 1}
+                    isNewObject={inEditMode && isNewObject}
                     onBlur={(updatedPosition: number) =>
                       handleManualOrderChange(index, updatedPosition)
                     }

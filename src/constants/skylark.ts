@@ -17,6 +17,7 @@ export const REQUEST_HEADERS = {
 };
 export const OBJECT_LIST_TABLE = {
   columnIds: {
+    dragIcon: "drag-icon",
     objectType: "__typename",
     displayField: "skylark-ui-display-field",
     checkbox: "skylark-ui-select",

@@ -1,3 +1,4 @@
+import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 import { PanelFieldTitle } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
 import { useImageSize } from "src/hooks/useImageSize";
@@ -18,7 +19,16 @@ export const PanelMetadataProperty = ({
     {isLoading ? (
       <Skeleton className="mb-4 h-5 w-full" />
     ) : (
-      <p className="mb-4 text-base-content">{value ? value : "---"}</p>
+      <p className="relative mb-4 flex text-base-content">
+        {value ? (
+          <>
+            {value}
+            <CopyToClipboard value={value} />
+          </>
+        ) : (
+          "---"
+        )}
+      </p>
     )}
   </div>
 );

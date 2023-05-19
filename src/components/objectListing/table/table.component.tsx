@@ -11,15 +11,15 @@ import clsx from "clsx";
 import { useMemo } from "react";
 import { VirtualItem } from "react-virtual";
 
-import { Spinner } from "src/components/icons";
 import { RowActions } from "src/components/objectListing/rowActions";
+import { Skeleton } from "src/components/skeleton";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 
-import { DisplayNameTableCell } from "./cell";
+import { DisplayNameTableCell, getCellWidths } from "./cell";
 
 export interface TableProps {
   table: ReactTable<object>;
@@ -43,9 +43,7 @@ export interface TableRowProps {
 const headAndDataClassNames =
   "overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm text-base-content";
 const lastHeadAndDataClassNames =
-  "last:sticky last:right-0 last:pl-0 last:bg-white last:z-10 last:min-w-0 last:border-l-0";
-const headerLeftLineStyling =
-  "[&>span]:border-l [&>span]:pl-2 [&>span]:first:border-l-0 [&>span]:first:pl-0 [&>span]:last:border-l-0 [&>span]:last:pl-0";
+  "last:sticky last:right-0 last:pl-0 last:h-full last:z-10 last:min-w-0 last:border-l-0";
 const rowClassName =
   "group/row hover:bg-manatee-50 hover:border-manatee-50 focus:bg-manatee-200 focus:border-manatee-200";
 const rowGroupClassName =
@@ -54,7 +52,6 @@ const rowGroupClassName =
 const customColumnStyling: Record<
   string,
   {
-    width: string;
     className?: {
       all?: string;
       header?: string;
@@ -65,37 +62,36 @@ const customColumnStyling: Record<
   }
 > = {
   default: {
-    width: "min-w-48 max-w-48",
-    className: { all: "pr-1" },
+    className: { all: "pr-1 pl-px" },
   },
   [OBJECT_LIST_TABLE.columnIds.displayField]: {
-    width: "min-w-44 max-w-44 md:min-w-52 md:max-w-52",
     className: {
-      all: "sm:sticky bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-0",
-      withoutCheckbox: "left-2",
+      all: "sm:sticky bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-1",
+      withoutCheckbox: "left-6",
       withCheckbox: "left-10",
     },
   },
-  [OBJECT_LIST_TABLE.columnIds.objectType]: {
-    width: "min-w-20 max-w-20 md:min-w-24 md:max-w-24",
+  [OBJECT_LIST_TABLE.columnIds.dragIcon]: {
     className: {
-      all: "px-0 pr-3",
-      cell: "absolute z-20 bg-white",
-      header: "sm:sticky bg-white w-10 -left-px",
+      all: "px-0 hidden md:table-cell",
+      cell: "",
+      header: "",
+    },
+  },
+  [OBJECT_LIST_TABLE.columnIds.objectType]: {
+    className: {
+      all: "px-0",
+      cell: "absolute z-20 bg-white pr-2",
+      header: "sm:sticky bg-white w-10 -left-px h-5 pr-1",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.checkbox]: {
-    width: "min-w-8 max-w-8",
     className: { all: "pr-4 pl-0 sticky -left-px bg-white absolute z-[41]" },
   },
   images: {
-    width: "min-w-24 max-w-24",
     className: {
       cell: "[&>div]:flex [&>div]:overflow-hidden [&>div]:h-7 [&>div]:md:h-8 pb-0 pt-0.5 md:py-0.5 [&>div]:mr-2 [&>div>img]:mr-0.5 [&>div>img]:h-full",
     },
-  },
-  [OBJECT_LIST_TABLE.columnIds.translation]: {
-    width: "min-w-28 max-w-28 md:min-w-32 md:max-w-32",
   },
 };
 const columnsWithCustomStyling = Object.keys(customColumnStyling);
@@ -110,9 +106,7 @@ const columnStyles = (
     : customColumnStyling.default;
 
   const typeSpecificClassName = colStyles?.className?.[type] || "";
-  return `${colStyles.className?.all || ""} ${typeSpecificClassName} ${
-    colStyles.width
-  } ${
+  return `${colStyles.className?.all || ""} ${typeSpecificClassName}  ${
     withCheckbox
       ? colStyles.className?.withCheckbox
       : colStyles.className?.withoutCheckbox
@@ -132,33 +126,47 @@ const TableHeader = ({
         columnStyles(header.id, "header", withCheckbox),
         headAndDataClassNames,
         lastHeadAndDataClassNames,
-        headerLeftLineStyling,
         "p-0 pb-2 text-left font-semibold text-opacity-30 last:-z-10",
       ),
     [header.id, withCheckbox],
   );
 
   return (
-    <th key={header.id} className={className}>
-      <span>
-        {header.isPlaceholder
-          ? null
-          : flexRender(header.column.columnDef.header, header.getContext())}
-      </span>
+    <th
+      key={header.id}
+      className={className}
+      style={{ ...getCellWidths(header.getSize()) }}
+    >
+      <div className="flex h-full select-none">
+        <div className="flex-grow">
+          {header.isPlaceholder
+            ? null
+            : flexRender(header.column.columnDef.header, header.getContext())}
+        </div>
+        <div
+          onMouseDown={header.getResizeHandler()}
+          onTouchStart={header.getResizeHandler()}
+          className="h-inherit w-0.5 cursor-col-resize bg-manatee-200"
+        ></div>
+      </div>
     </th>
   );
 };
 
 const TableData = ({
   cell,
+  height,
   withCheckbox,
   tableMeta,
   openPanel,
+  object,
 }: {
   cell: Cell<ParsedSkylarkObject, unknown>;
+  height: number;
   withCheckbox?: boolean;
   tableMeta: TableMeta<object> | undefined;
   openPanel: () => void;
+  object: SkylarkObjectIdentifier;
 }) => {
   const className = useMemo(
     () =>
@@ -167,7 +175,7 @@ const TableData = ({
         headAndDataClassNames,
         lastHeadAndDataClassNames,
         rowGroupClassName,
-        "border-l border-transparent p-2 last:pr-0",
+        "border-l border-transparent last:pr-0",
       ),
     [cell.column.id, withCheckbox],
   );
@@ -189,6 +197,8 @@ const TableData = ({
         className={className}
         rowGroupClassName={rowGroupClassName}
         colour={cell.row.original.config?.colour}
+        width={cell.column.getSize()}
+        height={height}
       >
         {children}
       </DisplayNameTableCell>
@@ -198,8 +208,9 @@ const TableData = ({
   if (cell.column.id === OBJECT_LIST_TABLE.columnIds.actions) {
     const rowInEditMode = tableMeta?.rowInEditMode === cell.row.id || false;
     return (
-      <td key={cell.id} className={className}>
+      <td key={cell.id} className={className} style={{ height }}>
         <RowActions
+          object={object}
           editRowEnabled={tableMeta?.withObjectEdit}
           inEditMode={rowInEditMode}
           onEditClick={() => tableMeta?.onEditClick(cell.row.id)}
@@ -212,7 +223,11 @@ const TableData = ({
   }
 
   return (
-    <td key={cell.id} className={className}>
+    <td
+      key={cell.id}
+      className={className}
+      style={{ ...getCellWidths(cell.column.getSize()), height }}
+    >
       {children}
     </td>
   );
@@ -250,11 +265,11 @@ const TableRow = ({
       {...listeners}
       {...attributes}
       key={row.id}
-      className={clsx("align-middle outline-none", rowClassName)}
+      className={clsx("relative align-middle outline-none", rowClassName)}
       tabIndex={-1}
-      onDoubleClick={openPanel}
+      onClick={openPanel}
       style={{
-        height: `${virtualRowSize}px`,
+        height: virtualRowSize,
       }}
     >
       {row.getVisibleCells().map((cell) => (
@@ -264,6 +279,8 @@ const TableRow = ({
           cell={cell}
           withCheckbox={withCheckbox}
           openPanel={openPanel}
+          height={virtualRowSize}
+          object={{ uid, objectType, language }}
         />
       ))}
     </tr>
@@ -290,7 +307,10 @@ export const Table = ({
   const headers = table.getHeaderGroups()[0].headers;
 
   return (
-    <table className="relative w-full bg-white">
+    <table
+      className="relative mb-10 bg-white"
+      width={table.getCenterTotalSize()}
+    >
       <thead>
         <tr className="sticky top-0 z-30 bg-white">
           {headers.map((header) => (
@@ -328,18 +348,25 @@ export const Table = ({
             <td style={{ height: `${paddingBottom}px` }} />
           </tr>
         )}
-        {totalRows > 0 && isLoadingMore && (
-          <tr>
-            <td colSpan={headers.length}>
-              <div
-                data-chromatic="ignore"
-                className="sticky left-0 right-0 bottom-2 flex h-32 w-screen items-center justify-center"
-              >
-                <Spinner className="-z-10 h-8 w-8 animate-spin md:h-10 md:w-10" />
-              </div>
-            </td>
-          </tr>
-        )}
+        {totalRows > 0 &&
+          isLoadingMore &&
+          [...Array(8)].map((e, i) => (
+            <tr key={i} className="h-10">
+              {headers.map(({ id }, headerI) => (
+                <td
+                  key={id}
+                  className="h-10"
+                  style={{ height: virtualRows[0].size }}
+                >
+                  <div className="flex h-full w-full items-center justify-start">
+                    <Skeleton
+                      className={clsx("h-5 w-[90%]", headerI > 1 && "ml-1")}
+                    />
+                  </div>
+                </td>
+              ))}
+            </tr>
+          ))}
       </tbody>
     </table>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
 
+import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 import { SkylarkObjectFieldInput } from "src/components/inputs/skylarkObjectFieldInput";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {

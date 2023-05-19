@@ -5,10 +5,7 @@ import { useMemo, useState } from "react";
 import { GrGraphQl } from "react-icons/gr";
 import { toast } from "react-toastify";
 
-import {
-  AvailabilityLabel,
-  AvailabilityLabelPill,
-} from "src/components/availability";
+import { AvailabilityLabelPill } from "src/components/availability";
 import { Button } from "src/components/button";
 import { DisplayGraphQLQueryModal } from "src/components/displayGraphQLQuery";
 import {
@@ -243,7 +240,11 @@ export const PanelHeader = ({
               )}
             </>
           ) : (
-            <Skeleton className="h-4 w-48 rounded-full" />
+            <>
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-20" />
+            </>
           )}
         </div>
         <div className="flex flex-row items-end justify-end space-x-2">
