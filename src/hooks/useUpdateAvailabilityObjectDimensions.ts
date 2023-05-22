@@ -1,26 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
-import {
-  BuiltInSkylarkObjectType,
-  GQLSkylarkUpdateObjectContentResponse,
-  ParsedSkylarkObjectContent,
-  ParsedSkylarkObjectContentObject,
-  SkylarkObjectType,
-} from "src/interfaces/skylark";
+import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import {
-  createUpdateAvailabilityDimensionsMutation,
-  createUpdateObjectContentMutation,
-} from "src/lib/graphql/skylark/dynamicMutations";
-import { parseObjectContent } from "src/lib/skylark/parsers";
+import { createUpdateAvailabilityDimensionsMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
 import { createGetAvailabilityObjectDimensionsKeyPrefix } from "./availability/useAvailabilityObjectDimensions";
-import { createGetObjectKeyPrefix } from "./useGetObject";
-import {
-  useAllObjectsMeta,
-  useSkylarkObjectOperations,
-} from "./useSkylarkObjectTypes";
+import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const useUpdateAvailabilityObjectDimensions = ({
   uid,
@@ -47,12 +33,12 @@ export const useUpdateAvailabilityObjectDimensions = ({
 
   const { mutate, ...rest } = useMutation({
     mutationFn: ({ uid }: { uid: string }) => {
-      return skylarkRequest<GQLSkylarkUpdateObjectContentResponse>(
+      return skylarkRequest(
         updateAvailabilityObjectDimensionsMutation as RequestDocument,
         { uid },
       );
     },
-    onSuccess: async (data, { uid }) => {
+    onSuccess: async (_, { uid }) => {
       await queryClient.refetchQueries({
         queryKey: createGetAvailabilityObjectDimensionsKeyPrefix({ uid }),
       });

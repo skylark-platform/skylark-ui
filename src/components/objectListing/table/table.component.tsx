@@ -352,16 +352,14 @@ export const Table = ({
           isLoadingMore &&
           [...Array(8)].map((e, i) => (
             <tr key={i} className="h-10">
-              {headers.map(({ id }, headerI) => (
+              {headers.map(({ id }) => (
                 <td
                   key={id}
                   className="h-10"
                   style={{ height: virtualRows[0].size }}
                 >
                   <div className="flex h-full w-full items-center justify-start">
-                    <Skeleton
-                      className={clsx("h-5 w-[90%]", headerI > 1 && "ml-1")}
-                    />
+                    <Skeleton className={clsx("h-5 w-[95%]")} />
                   </div>
                 </td>
               ))}
