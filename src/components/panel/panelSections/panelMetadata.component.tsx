@@ -38,22 +38,14 @@ interface PanelMetadataProps {
 export const PanelMetadata = ({
   isPage,
   isLoading,
-  uid,
-  language,
   metadata,
   objectType,
   objectMeta,
-  form: { register, getValues, control, reset, formState },
+  form: { register, getValues, control, formState },
 }: PanelMetadataProps) => {
   const options = OBJECT_OPTIONS.find(({ objectTypes }) =>
     objectTypes.includes(objectType),
   );
-
-  // When component first loads, update the form metadata with the current values
-  useEffect(() => {
-    reset({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uid, language]);
 
   const {
     systemMetadataFields,

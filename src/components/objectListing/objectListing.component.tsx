@@ -36,6 +36,7 @@ export interface ObjectListProps {
   withObjectSelect?: boolean;
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
+  panelObject?: SkylarkObjectIdentifier | null;
   setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
   isDragging?: boolean;
 }
@@ -44,6 +45,7 @@ export const ObjectList = ({
   withCreateButtons,
   withObjectSelect,
   withObjectEdit = false,
+  panelObject,
   setPanelObject,
   isDragging,
   isPanelOpen,
@@ -290,6 +292,7 @@ export const ObjectList = ({
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
             isLoadingMore={hasNextPage || isFetchingNextPage}
+            activeObject={panelObject || undefined}
             setPanelObject={setPanelObject}
             withDraggableRow={!!isPanelOpen}
           />

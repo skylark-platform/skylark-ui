@@ -219,7 +219,7 @@ export const SkylarkObjectFieldInput = (
     <div className="mb-4 text-sm">
       <SkylarkObjectFieldInputLabel field={field} isRequired={!!required} />
       {isLoading ? (
-        <Skeleton className="h-14 w-full" />
+        <Skeleton className="h-11 w-full" />
       ) : (
         (() => {
           if (config.type === "enum") {
