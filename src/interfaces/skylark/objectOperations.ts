@@ -14,6 +14,7 @@ export enum SkylarkSystemField {
   DataSourceFields = "data_source_fields",
   Availability = "availability",
   Content = "content", // "Set like" content
+  Type = "type",
 }
 
 export enum SkylarkSystemGraphQLType {

@@ -1,10 +1,7 @@
-import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
-import { Spinner } from "src/components/icons";
-import { Skeleton } from "src/components/skeleton";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { Toast } from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/useGetObject";
@@ -21,13 +18,7 @@ import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,
-  ParsedSkylarkObjectAvailabilityObject,
 } from "src/interfaces/skylark";
-import {
-  getAvailabilityStatusForAvailabilityObject,
-  getObjectAvailabilityStatus,
-  getSingleAvailabilityStatus,
-} from "src/lib/skylark/availability";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
   isObjectsDeepEqual,
@@ -414,6 +405,7 @@ export const Panel = ({
         }
         isTranslatable={objectMeta?.isTranslatable}
         availabilityStatus={data?.meta.availabilityStatus}
+        metadataType={data?.metadata.type as string | undefined}
         toggleEditMode={() => {
           if (inEditMode) {
             metadataForm.reset();

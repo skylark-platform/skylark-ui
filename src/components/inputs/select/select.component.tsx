@@ -43,7 +43,7 @@ export const sortSelectOptions = (
   { label: labelB, value: valueB }: SelectOption,
 ): number => ((labelA || valueA) > (labelB || valueB) ? 1 : -1);
 
-const getOptionHeight = (variant: SelectProps["variant"]) => {
+export const getSelectOptionHeight = (variant: SelectProps["variant"]) => {
   return variant === "pill" ? 30 : 40;
 };
 
@@ -92,7 +92,7 @@ export const SelectOptionComponent = ({
     value={option}
     style={{
       ...style,
-      height: style?.height || getOptionHeight(variant),
+      height: style?.height || getSelectOptionHeight(variant),
     }}
   >
     {withCheckbox && <Checkbox checked={isSelected} className="mr-2" />}
@@ -155,7 +155,7 @@ export const VirtualizedOptions = ({
   const rowVirtualizer = useVirtual({
     parentRef,
     size: options.length,
-    estimateSize: useCallback(() => getOptionHeight(variant), [variant]),
+    estimateSize: useCallback(() => getSelectOptionHeight(variant), [variant]),
     overscan: 5,
   });
 

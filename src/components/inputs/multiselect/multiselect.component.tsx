@@ -1,21 +1,19 @@
 import { Combobox, Transition } from "@headlessui/react";
 import clsx from "clsx";
-import React, { useState, useCallback, forwardRef, Ref } from "react";
+import React, { useState, useCallback, forwardRef, Ref, useRef } from "react";
+import { useVirtual } from "react-virtual";
 
 import {
+  getSelectOptionHeight,
   SelectLabel,
+  SelectOption,
   SelectOptionComponent,
   SelectOptionsContainer,
   sortSelectOptions,
 } from "src/components/inputs/select";
 import { Pill } from "src/components/pill";
 
-export interface SelectOption {
-  label: string;
-  value: string;
-}
-
-export interface SelectProps {
+export interface MultiSelectProps {
   selected?: string[];
   options: SelectOption[];
   label?: string;
@@ -26,8 +24,55 @@ export interface SelectProps {
   onChange?: (values: string[]) => void;
 }
 
+const VirtualizedOptions = ({
+  options,
+  selected,
+}: {
+  options: SelectOption[];
+  selected?: string[];
+}) => {
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const variant = "primary";
+
+  const rowVirtualizer = useVirtual({
+    parentRef,
+    size: options.length,
+    estimateSize: useCallback(() => getSelectOptionHeight(variant), []),
+    overscan: 5,
+  });
+
+  return (
+    <SelectOptionsContainer ref={parentRef}>
+      <div
+        style={{
+          height: `${rowVirtualizer.totalSize}px`,
+        }}
+        className="relative w-full"
+      >
+        {rowVirtualizer.virtualItems.map((virtualRow) => (
+          <SelectOptionComponent
+            key={virtualRow.index}
+            isSelected={selected?.includes(options?.[virtualRow.index].value)}
+            variant={variant}
+            option={options?.[virtualRow.index]}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: `${virtualRow.size}px`,
+              transform: `translateY(${virtualRow.start}px)`,
+            }}
+          />
+        ))}
+      </div>
+    </SelectOptionsContainer>
+  );
+};
+
 export const MultiSelect = forwardRef(
-  (props: SelectProps, ref: Ref<HTMLButtonElement | HTMLInputElement>) => {
+  (props: MultiSelectProps, ref: Ref<HTMLButtonElement | HTMLInputElement>) => {
     const {
       options: unsortedOptions,
       label,
@@ -143,8 +188,12 @@ export const MultiSelect = forwardRef(
                     Nothing found.
                   </div>
                 </div>
+              ) : options.length > 40 ? (
+                <VirtualizedOptions
+                  options={filteredOptions ?? []}
+                  selected={selected}
+                />
               ) : (
-                // TODO Virtualise
                 <SelectOptionsContainer>
                   {filteredOptions.map((option) => (
                     <SelectOptionComponent
