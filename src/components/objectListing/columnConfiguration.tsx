@@ -65,11 +65,11 @@ const translationColumn = columnHelper.accessor(
   },
 );
 
-const availabilityColumn = columnHelper.accessor("availability", {
+const availabilityColumn = columnHelper.accessor("meta.availabilityStatus", {
   header: formatObjectField("Availability"),
   size: 120,
   cell: (props) => {
-    const { status } = props.getValue<ParsedSkylarkObjectAvailability>();
+    const status = props.getValue<ParsedSkylarkObjectAvailability["status"]>();
     return status && <AvailabilityLabel status={status} />;
   },
 });

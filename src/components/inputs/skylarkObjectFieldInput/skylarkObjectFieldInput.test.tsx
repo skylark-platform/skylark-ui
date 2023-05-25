@@ -279,18 +279,9 @@ describe("renders inputs", () => {
           test("renders a select for an enum", async () => {
             render(<WrappedSkylarkObjectFieldInput config={config} />);
 
-            const input = screen.getByText(
+            const input = screen.getByPlaceholderText(
               `Select ${formatObjectField("enumfield")}`,
             );
-            expect(input).toBeInTheDocument();
-          });
-
-          test("renders the selected value", async () => {
-            render(
-              <WrappedSkylarkObjectFieldInput config={config} value={value} />,
-            );
-
-            const input = screen.getByText(`${value}`);
             expect(input).toBeInTheDocument();
           });
         }
@@ -310,7 +301,9 @@ describe("renders inputs", () => {
       />,
     );
 
-    const input = screen.getByText(`Select ${formatObjectField("enumfield")}`);
+    const input = screen.getByPlaceholderText(
+      `Select ${formatObjectField("enumfield")}`,
+    );
     expect(input).toBeInTheDocument();
   });
 });

@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
-import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { Toast } from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/useGetObject";
+import { useUpdateAvailabilityObjectDimensions } from "src/hooks/useUpdateAvailabilityObjectDimensions";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
 import { useUpdateObjectMetadata } from "src/hooks/useUpdateObjectMetadata";
 import { useUpdateObjectRelationships } from "src/hooks/useUpdateObjectRelationships";
@@ -17,6 +17,7 @@ import {
   SkylarkSystemField,
   ParsedSkylarkObjectRelationships,
   SkylarkObjectIdentifier,
+  BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
@@ -32,6 +33,7 @@ import {
   PanelImages,
   PanelMetadata,
 } from "./panelSections";
+import { PanelAvailabilityDimensions } from "./panelSections/panelAvailabilityDimensions.component";
 import { PanelContent } from "./panelSections/panelContent.component";
 import { PanelRelationships } from "./panelSections/panelRelationships.component";
 
@@ -50,6 +52,7 @@ enum PanelTab {
   Metadata = "Metadata",
   Imagery = "Imagery",
   Availability = "Availability",
+  AvailabilityDimensions = "Dimensions",
   Content = "Content",
   Relationships = "Relationships",
 }
@@ -89,6 +92,12 @@ export const Panel = ({
     updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
   }>({ originalRelationshipObjects: null, updatedRelationshipObjects: null });
 
+  const [availabilityDimensionValues, setAvailabilityDimensionValues] =
+    useState<{
+      original: Record<string, string[]> | null;
+      updated: Record<string, string[]> | null;
+    }>({ original: null, updated: null });
+
   const { uid, objectType, language } = object;
   const {
     data,
@@ -121,12 +130,15 @@ export const Panel = ({
         objectMeta?.hasRelationships && PanelTab.Relationships,
         objectMeta?.images && PanelTab.Imagery,
         objectMeta?.hasAvailability && PanelTab.Availability,
+        objectMeta?.name === BuiltInSkylarkObjectType.Availability &&
+          PanelTab.AvailabilityDimensions,
       ].filter((tab) => !!tab) as string[],
     [
       objectMeta?.hasAvailability,
       objectMeta?.hasContent,
       objectMeta?.hasRelationships,
       objectMeta?.images,
+      objectMeta?.name,
     ],
   );
 
@@ -315,6 +327,18 @@ export const Panel = ({
       },
     });
 
+  const {
+    updateAvailabilityObjectDimensions,
+    isLoading: updatingAvailabilityObjectDimensions,
+  } = useUpdateAvailabilityObjectDimensions({
+    uid,
+    originalAvailabilityDimensions: availabilityDimensionValues.original,
+    updatedAvailabilityDimensions: availabilityDimensionValues.updated,
+    onSuccess: () => {
+      setEditMode(false);
+    },
+  });
+
   const saveActiveTabChanges = () => {
     if (
       selectedTab === PanelTab.Content &&
@@ -327,6 +351,11 @@ export const Panel = ({
       updatedRelationshipObjects
     ) {
       updateObjectRelationships();
+    } else if (
+      selectedTab === PanelTab.AvailabilityDimensions &&
+      availabilityDimensionValues.updated
+    ) {
+      updateAvailabilityObjectDimensions();
     } else if (selectedTab === PanelTab.Metadata) {
       metadataForm.handleSubmit((values) => {
         if (
@@ -348,6 +377,7 @@ export const Panel = ({
     <section
       className="mx-auto flex h-full w-full flex-col break-words"
       data-cy={`panel-for-${objectType}-${uid}`}
+      data-testid="panel"
     >
       <PanelHeader
         isPage={isPage}
@@ -362,6 +392,7 @@ export const Panel = ({
           PanelTab.Metadata,
           PanelTab.Content,
           PanelTab.Relationships,
+          PanelTab.AvailabilityDimensions,
         ]}
         closePanel={closePanel}
         inEditMode={inEditMode}
@@ -369,9 +400,11 @@ export const Panel = ({
         isSaving={
           updatingObjectContents ||
           updatingRelationshipObjects ||
-          updatingObjectMetadata
+          updatingObjectMetadata ||
+          updatingAvailabilityObjectDimensions
         }
         isTranslatable={objectMeta?.isTranslatable}
+        availabilityStatus={data?.meta.availabilityStatus}
         toggleEditMode={() => {
           if (inEditMode) {
             metadataForm.reset();
@@ -379,6 +412,10 @@ export const Panel = ({
             setRelationshipObjects({
               updatedRelationshipObjects: originalRelationshipObjects,
               originalRelationshipObjects: originalRelationshipObjects,
+            });
+            setAvailabilityDimensionValues({
+              original: availabilityDimensionValues.original,
+              updated: availabilityDimensionValues.original,
             });
             clearDroppedObject?.();
           }
@@ -395,18 +432,10 @@ export const Panel = ({
             tabs={tabs}
             selectedTab={selectedTab}
             onChange={setSelectedTab}
-            disabled={inEditMode || isLoading || isError}
+            disabled={tabs.length === 0 || inEditMode || isError}
           />
         </div>
       </div>
-      {isLoading && (
-        <div
-          data-testid="loading"
-          className="mt-20 flex w-full items-center justify-center pb-10"
-        >
-          <Spinner className="h-16 w-16 animate-spin" />
-        </div>
-      )}
       {!isLoading && isError && (
         <div className="flex h-4/5 w-full items-center justify-center pb-10">
           {isObjectTypeNotFound && (
@@ -418,11 +447,12 @@ export const Panel = ({
           )}
         </div>
       )}
-      {!isLoading && !isError && data && objectMeta && (
+      {!isError && (
         <>
-          {selectedTab === PanelTab.Metadata && formParsedMetadata && (
+          {selectedTab === PanelTab.Metadata && (
             <PanelMetadata
               isPage={isPage}
+              isLoading={isLoading}
               uid={uid}
               language={language}
               metadata={formParsedMetadata}
@@ -431,7 +461,7 @@ export const Panel = ({
               objectMeta={objectMeta}
             />
           )}
-          {selectedTab === PanelTab.Imagery && data.images && (
+          {selectedTab === PanelTab.Imagery && data?.images && (
             <PanelImages
               isPage={isPage}
               images={data.images}
@@ -449,7 +479,7 @@ export const Panel = ({
               inEditMode={inEditMode}
             />
           )}
-          {selectedTab === PanelTab.Content && data.content && (
+          {selectedTab === PanelTab.Content && data?.content && (
             <PanelContent
               isPage={isPage}
               objects={contentObjects || data?.content?.objects}
@@ -471,6 +501,21 @@ export const Panel = ({
               showDropArea={showDropArea}
               language={language}
               setPanelObject={setPanelObject}
+            />
+          )}
+          {selectedTab === PanelTab.AvailabilityDimensions && (
+            <PanelAvailabilityDimensions
+              isPage={isPage}
+              objectType={objectType}
+              uid={uid}
+              inEditMode={inEditMode}
+              availabilityDimensionValues={availabilityDimensionValues?.updated}
+              setAvailabilityDimensionValues={(values, toggleEditMode) => {
+                setAvailabilityDimensionValues(values);
+                if (toggleEditMode) {
+                  setEditMode(true);
+                }
+              }}
             />
           )}
         </>

@@ -1,7 +1,6 @@
 // Most of the Object Page functionality should be tested by the contentLibrary/panel tests
 // These tests should only check functionality that is different
 import {
-  hasMatchingQuery,
   hasMatchingVariable,
   hasOperationName,
 } from "../support/utils/graphqlTestUtils";
@@ -58,15 +57,15 @@ describe("Object Page", () => {
       cy.percySnapshot("Object page - metadata");
     });
 
-    it("scrolls to Global Metadata using the side navigation", () => {
+    it("scrolls to Translatable Metadata using the side navigation", () => {
       cy.get("[data-testid=panel-metadata]").within(() => {
-        cy.contains("Global Metadata").should("not.be.visible");
+        cy.contains("Translatable Metadata").should("not.be.visible");
       });
 
-      cy.contains("button", "Global Metadata").click();
+      cy.contains("button", "Translatable Metadata").click();
 
       cy.get("[data-testid=panel-metadata]").within(() => {
-        cy.contains("Global Metadata").should("be.visible");
+        cy.contains("Translatable Metadata").should("be.visible");
       });
     });
 

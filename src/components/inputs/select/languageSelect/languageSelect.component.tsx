@@ -29,6 +29,6 @@ export const LanguageSelect = ({
     className={clsx(props.variant === "pill" ? "w-28" : props.className)}
     placeholder="Language"
     rounded={props.rounded === undefined ? true : props.rounded}
-    withSearch={!languages || languages.length > 10}
+    searchable={props.variant !== "pill"}
   />
 );

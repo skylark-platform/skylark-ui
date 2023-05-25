@@ -30,4 +30,14 @@ export const updateObjectHandlers = [
       }),
     );
   }),
+
+  graphql.mutation("UPDATE_AVAILABILITY_DIMENSIONS", (req, res, ctx) => {
+    return res(
+      ctx.data({
+        updateAvailabilityDimensions: {
+          uid: "01GXSR23WH5DHGTXVHXW1TMGBJ",
+        },
+      }),
+    );
+  }),
 ];

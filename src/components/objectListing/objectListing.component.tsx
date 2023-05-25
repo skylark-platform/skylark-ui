@@ -1,4 +1,5 @@
 import {
+  ColumnDef,
   getCoreRowModel,
   useReactTable,
   VisibilityState,
@@ -14,6 +15,7 @@ import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,
+  ParsedSkylarkObject,
 } from "src/interfaces/skylark";
 import { getObjectDisplayName, hasProperty } from "src/lib/utils";
 
@@ -34,6 +36,7 @@ export interface ObjectListProps {
   withObjectSelect?: boolean;
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
+  panelObject?: SkylarkObjectIdentifier | null;
   setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
   isDragging?: boolean;
 }
@@ -42,6 +45,7 @@ export const ObjectList = ({
   withCreateButtons,
   withObjectSelect,
   withObjectEdit = false,
+  panelObject,
   setPanelObject,
   isDragging,
   isPanelOpen,
@@ -156,7 +160,9 @@ export const ObjectList = ({
   const table = useReactTable({
     debugAll: false,
     data: formattedSearchData || [],
-    columns: searchData ? parsedColumns : [],
+    columns: searchData
+      ? (parsedColumns as ColumnDef<object, ParsedSkylarkObject>[])
+      : [],
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: "onChange",
     state: {
@@ -286,6 +292,7 @@ export const ObjectList = ({
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
             isLoadingMore={hasNextPage || isFetchingNextPage}
+            activeObject={panelObject || undefined}
             setPanelObject={setPanelObject}
             withDraggableRow={!!isPanelOpen}
           />

@@ -168,6 +168,7 @@ export const ContentLibrary = () => {
         >
           <ObjectList
             withCreateButtons
+            panelObject={activePanelObject}
             setPanelObject={setPanelObject}
             isPanelOpen={!!activePanelObject}
             isDragging={!!draggedObject}

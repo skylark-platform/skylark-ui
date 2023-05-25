@@ -7,6 +7,7 @@ import {
   getPrimaryKeyField,
   hasProperty,
   isObject,
+  isObjectsDeepEqual,
   pause,
 } from "./utils";
 
@@ -162,5 +163,45 @@ describe("createAccountIdentifier", () => {
     expect(got).toEqual(
       "api-saas-sl-develop-10-skylark-dev-skylarkplatform-com",
     );
+  });
+});
+
+describe("isObjectsDeepEqual", () => {
+  test("marks two empty objects as the same", () => {
+    const got = isObjectsDeepEqual({}, {});
+    expect(got).toEqual(true);
+  });
+
+  test("objects with different numbers of keys are different", () => {
+    const got = isObjectsDeepEqual(
+      { key1: "true" },
+      { key2: true, key3: true },
+    );
+    expect(got).toEqual(false);
+  });
+
+  test("objects with different values are different", () => {
+    const got = isObjectsDeepEqual({ key1: "true" }, { key1: "false" });
+    expect(got).toEqual(false);
+  });
+
+  test("objects with arrays as values are different", () => {
+    const got = isObjectsDeepEqual({ key1: [1, 2, 3] }, { key1: [2, 3, 4] });
+    expect(got).toEqual(false);
+  });
+
+  test("objects with arrays of different lengths as values are different", () => {
+    const got = isObjectsDeepEqual({ key1: [1, 2, 3] }, { key1: [2] });
+    expect(got).toEqual(false);
+  });
+
+  test("objects with arrays as values are same", () => {
+    const got = isObjectsDeepEqual({ key1: [1, 2, 3] }, { key1: [1, 2, 3] });
+    expect(got).toEqual(true);
+  });
+
+  test("objects with arrays in different orders as values are different", () => {
+    const got = isObjectsDeepEqual({ key1: [1, 2, 3] }, { key1: [2, 3, 1] });
+    expect(got).toEqual(false);
   });
 });

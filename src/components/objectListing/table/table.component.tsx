@@ -18,6 +18,7 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
+import { hasProperty } from "src/lib/utils";
 
 import { DisplayNameTableCell, getCellWidths } from "./cell";
 
@@ -28,12 +29,14 @@ export interface TableProps {
   totalRows: number;
   withDraggableRow?: boolean;
   isLoadingMore?: boolean;
+  activeObject?: SkylarkObjectIdentifier;
   setPanelObject?: (o: SkylarkObjectIdentifier) => void;
 }
 
 export interface TableRowProps {
   row: Row<ParsedSkylarkObject>;
   virtualRowSize: number;
+  activeObject: TableProps["activeObject"];
   setPanelObject?: TableProps["setPanelObject"];
   tableMeta: TableMeta<object> | undefined;
   withCheckbox?: boolean;
@@ -41,13 +44,13 @@ export interface TableRowProps {
 }
 
 const headAndDataClassNames =
-  "overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm text-base-content";
+  "overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm text-base-content bg-white";
 const lastHeadAndDataClassNames =
   "last:sticky last:right-0 last:pl-0 last:h-full last:z-10 last:min-w-0 last:border-l-0";
-const rowClassName =
-  "group/row hover:bg-manatee-50 hover:border-manatee-50 focus:bg-manatee-200 focus:border-manatee-200";
+const rowClassName = "group/row hover:bg-manatee-50 hover:border-manatee-50 ";
+const activeRowClassName = "bg-manatee-200 border-manatee-200";
 const rowGroupClassName =
-  "group-hover/row:bg-manatee-50 group-hover/row:border-manatee-50 group-focus/row:bg-manatee-200 group-focus/row:border-manatee-200";
+  "group-hover/row:bg-manatee-50 group-hover/row:border-manatee-50";
 
 const customColumnStyling: Record<
   string,
@@ -66,7 +69,7 @@ const customColumnStyling: Record<
   },
   [OBJECT_LIST_TABLE.columnIds.displayField]: {
     className: {
-      all: "sm:sticky bg-white z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-1",
+      all: "sm:sticky z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-1",
       withoutCheckbox: "left-6",
       withCheckbox: "left-10",
     },
@@ -81,12 +84,12 @@ const customColumnStyling: Record<
   [OBJECT_LIST_TABLE.columnIds.objectType]: {
     className: {
       all: "px-0",
-      cell: "absolute z-20 bg-white pr-2",
+      cell: "absolute z-20 pr-2",
       header: "sm:sticky bg-white w-10 -left-px h-5 pr-1",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.checkbox]: {
-    className: { all: "pr-4 pl-0 sticky -left-px bg-white absolute z-[41]" },
+    className: { all: "pr-4 pl-0 sticky -left-px absolute z-[41]" },
   },
   images: {
     className: {
@@ -106,7 +109,7 @@ const columnStyles = (
     : customColumnStyling.default;
 
   const typeSpecificClassName = colStyles?.className?.[type] || "";
-  return `${colStyles.className?.all || ""} ${typeSpecificClassName}  ${
+  return `${colStyles.className?.all || ""} ${typeSpecificClassName} ${
     withCheckbox
       ? colStyles.className?.withCheckbox
       : colStyles.className?.withoutCheckbox
@@ -160,6 +163,7 @@ const TableData = ({
   tableMeta,
   openPanel,
   object,
+  rowIsActive,
 }: {
   cell: Cell<ParsedSkylarkObject, unknown>;
   height: number;
@@ -167,6 +171,7 @@ const TableData = ({
   tableMeta: TableMeta<object> | undefined;
   openPanel: () => void;
   object: SkylarkObjectIdentifier;
+  rowIsActive?: boolean;
 }) => {
   const className = useMemo(
     () =>
@@ -175,9 +180,12 @@ const TableData = ({
         headAndDataClassNames,
         lastHeadAndDataClassNames,
         rowGroupClassName,
-        "border-l border-transparent last:pr-0",
+        rowIsActive && cell.column.id !== OBJECT_LIST_TABLE.columnIds.actions
+          ? activeRowClassName
+          : "border-transparent",
+        "border-l last:pr-0",
       ),
-    [cell.column.id, withCheckbox],
+    [cell.column.id, withCheckbox, rowIsActive],
   );
 
   const cellValue = cell.getValue();
@@ -195,7 +203,10 @@ const TableData = ({
       <DisplayNameTableCell
         id={cell.id}
         className={className}
-        rowGroupClassName={rowGroupClassName}
+        rowGroupClassName={clsx(
+          rowGroupClassName,
+          rowIsActive && activeRowClassName,
+        )}
         colour={cell.row.original.config?.colour}
         width={cell.column.getSize()}
         height={height}
@@ -208,7 +219,11 @@ const TableData = ({
   if (cell.column.id === OBJECT_LIST_TABLE.columnIds.actions) {
     const rowInEditMode = tableMeta?.rowInEditMode === cell.row.id || false;
     return (
-      <td key={cell.id} className={className} style={{ height }}>
+      <td
+        key={cell.id}
+        className={clsx(className, "bg-transparent")}
+        style={{ height }}
+      >
         <RowActions
           object={object}
           editRowEnabled={tableMeta?.withObjectEdit}
@@ -235,6 +250,7 @@ const TableData = ({
 
 const TableRow = ({
   row,
+  activeObject,
   setPanelObject,
   tableMeta,
   withCheckbox,
@@ -254,6 +270,9 @@ const TableRow = ({
     disabled: !withDraggableRow,
   });
 
+  const rowIsActive =
+    activeObject?.uid === uid && activeObject.language === language;
+
   const openPanel = () => {
     setPanelObject?.({ uid, objectType, language });
   };
@@ -265,7 +284,11 @@ const TableRow = ({
       {...listeners}
       {...attributes}
       key={row.id}
-      className={clsx("relative align-middle outline-none", rowClassName)}
+      className={clsx(
+        "relative align-middle outline-none",
+        rowClassName,
+        rowIsActive && activeRowClassName,
+      )}
       tabIndex={-1}
       onClick={openPanel}
       style={{
@@ -280,6 +303,7 @@ const TableRow = ({
           withCheckbox={withCheckbox}
           openPanel={openPanel}
           height={virtualRowSize}
+          rowIsActive={rowIsActive}
           object={{ uid, objectType, language }}
         />
       ))}
@@ -293,6 +317,7 @@ export const Table = ({
   virtualRows,
   totalRows,
   isLoadingMore,
+  activeObject,
   setPanelObject,
   withDraggableRow,
 }: TableProps) => {
@@ -335,6 +360,7 @@ export const Table = ({
             <TableRow
               key={virtualRow.index}
               row={row}
+              activeObject={activeObject}
               setPanelObject={setPanelObject}
               tableMeta={tableMeta}
               withCheckbox={withCheckbox}
@@ -352,19 +378,23 @@ export const Table = ({
           isLoadingMore &&
           [...Array(8)].map((e, i) => (
             <tr key={i} className="h-10">
-              {headers.map(({ id }, headerI) => (
-                <td
-                  key={id}
-                  className="h-10"
-                  style={{ height: virtualRows[0].size }}
-                >
-                  <div className="flex h-full w-full items-center justify-start">
-                    <Skeleton
-                      className={clsx("h-5 w-[90%]", headerI > 1 && "ml-1")}
-                    />
-                  </div>
-                </td>
-              ))}
+              {headers.map(({ id }) => {
+                if (id === OBJECT_LIST_TABLE.columnIds.dragIcon) {
+                  return <td key={id}></td>;
+                }
+
+                return (
+                  <td
+                    key={id}
+                    className="h-10"
+                    style={{ height: virtualRows[0].size }}
+                  >
+                    <div className="flex h-full w-full items-center justify-start">
+                      <Skeleton className={clsx("h-5 w-[95%]")} />
+                    </div>
+                  </td>
+                );
+              })}
             </tr>
           ))}
       </tbody>

@@ -32,7 +32,7 @@ export const ObjectIdentifierCard = ({
       <Pill
         label={object.config.objectTypeDisplayName || object.objectType}
         bgColor={object.config.colour}
-        className="w-20"
+        className="w-20 min-w-20 max-w-20"
       />
       <p className="flex flex-grow text-sm">{getObjectDisplayName(object)}</p>
       {children}

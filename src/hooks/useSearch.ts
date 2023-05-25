@@ -56,6 +56,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
           lastPage.search.objects.length > 0;
         return shouldFetchMore ? totalNumObjects : undefined;
       },
+      enabled: !!query,
     });
 
   const data = useMemo(() => {

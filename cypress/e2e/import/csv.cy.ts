@@ -17,7 +17,7 @@ describe("Import/CSV", () => {
         });
       }
       if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
-        req.alias = "introspectionQuery";
+        req.alias = "getObjectsConfig";
         req.reply({
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
         });
@@ -50,6 +50,7 @@ describe("Import/CSV", () => {
 
     cy.visit("/import/csv");
     cy.wait("@introspectionQuery");
+    cy.wait("@getObjectsConfig");
   });
 
   it("visit import/csv page", () => {
@@ -67,7 +68,6 @@ describe("Import/CSV", () => {
     cy.get("[data-testid=select-options]").scrollTo("bottom");
     cy.get("[data-testid=select-options]").within(() => {
       cy.contains("Set");
-      cy.contains("(SkylarkSet)");
     });
 
     cy.percySnapshot("import/csv - objectType select");
@@ -156,7 +156,10 @@ describe("Import/CSV", () => {
     });
 
     it("import a csv through Flatfile", { retries: 0 }, () => {
-      cy.get('[data-testid="select"]').click();
+      cy.contains("Import from CSV");
+      cy.get('[data-testid="select"]').within(() =>
+        cy.get("input").type("Episode"),
+      );
       cy.get('[data-testid="select-options"]').should("be.visible");
       cy.get('[data-testid="select-options"]')
         .get("li > span")
@@ -180,7 +183,9 @@ describe("Import/CSV", () => {
         .should("not.have.class", "btn-disabled");
 
       cy.get("button").contains("Import").should("be.disabled");
-      cy.get('[data-testid="select"]').should("be.disabled");
+      cy.get('[data-testid="select"]').within(() =>
+        cy.get("input").should("be.disabled"),
+      );
 
       cy.get("a")
         .contains("Start curating")
@@ -201,7 +206,12 @@ describe("Import/CSV", () => {
         }
       });
 
-      cy.get('[data-testid="select"]').click();
+      cy.contains("Import from CSV");
+      cy.get('[data-testid="select"]').should("not.be.disabled");
+      cy.get('[data-testid="select"]').within(() =>
+        cy.get("input").type("Episode"),
+      );
+
       cy.get('[data-testid="select-options"]').should("be.visible");
       cy.get('[data-testid="select-options"]')
         .get("li > span")
@@ -231,7 +241,9 @@ describe("Import/CSV", () => {
         .should("not.have.class", "btn-disabled");
 
       cy.get("button").contains("Import").should("be.disabled");
-      cy.get('[data-testid="select"]').should("be.disabled");
+      cy.get('[data-testid="select"]').within(() =>
+        cy.get("input").should("be.disabled"),
+      );
 
       cy.percySnapshot(
         "import/csv - import failed (skylark object creation error)",
@@ -239,7 +251,12 @@ describe("Import/CSV", () => {
     });
 
     it("can click new import to reset the state", () => {
-      cy.get('[data-testid="select"]').click();
+      cy.contains("Import from CSV");
+      cy.get('[data-testid="select"]').should("not.be.disabled");
+      cy.get('[data-testid="select"]').within(() =>
+        cy.get("input").type("Episode"),
+      );
+
       cy.get('[data-testid="select-options"]').should("be.visible");
       cy.get('[data-testid="select-options"]')
         .get("li > span")

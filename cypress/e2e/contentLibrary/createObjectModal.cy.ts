@@ -82,7 +82,6 @@ describe("Content Library - Metadata Panel", () => {
       cy.get("[data-testid=select-options]").scrollTo("bottom");
       cy.get("[data-testid=select-options]").within(() => {
         cy.contains("Set");
-        cy.contains("(SkylarkSet)");
       });
 
       cy.percySnapshot("Homepage - create object modal - object type select");
