@@ -1572,6 +1572,58 @@ describe("availabity dimensions view", () => {
 
       expect(screen.queryAllByText("Premium")).toHaveLength(1);
     });
+
+    test("edits and saves", async () => {
+      render(
+        <Panel
+          object={availabilityObject}
+          closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
+        />,
+      );
+
+      expect(screen.queryAllByText("Device type")).toHaveLength(0);
+
+      await waitFor(() =>
+        expect(screen.getByText("Dimensions")).toBeInTheDocument(),
+      );
+      fireEvent.click(screen.getByText("Dimensions"));
+
+      await waitFor(() =>
+        expect(screen.getByText("Premium")).toBeInTheDocument(),
+      );
+
+      const displayDiv = screen.getByText("Premium").parentElement
+        ?.parentElement as HTMLDivElement;
+      const wrapper = displayDiv?.parentElement as HTMLDivElement;
+      fireEvent.click(wrapper);
+
+      const combobox = within(wrapper).getByRole("combobox");
+      fireEvent.click(combobox);
+
+      expect(screen.queryAllByText("Standard")).toHaveLength(2);
+
+      // Select new option
+      expect(screen.queryByText("HYBRID")).toBeInTheDocument();
+      expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(0);
+      fireEvent.click(screen.getByText("HYBRID"));
+
+      // Check Pill is added
+      expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(1);
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      // Save
+      const saveButton = screen.getByText("Save");
+      fireEvent.click(saveButton);
+
+      await waitFor(() =>
+        expect(screen.queryByText("Editing")).not.toBeInTheDocument(),
+      );
+
+      await waitFor(() =>
+        expect(screen.getByText("Edit Dimensions")).toBeInTheDocument(),
+      );
+    });
   });
 });
 

@@ -43,6 +43,25 @@ test("selects an option", () => {
   expect(onChange).toHaveBeenCalledWith(["opt2"]);
 });
 
+test("selects an option - virtualised", () => {
+  const onChange = jest.fn();
+
+  render(
+    <MultiSelect
+      options={Array.from({ length: 50 }, (_, i) => ({
+        label: `label-${i}`,
+        value: `value-${i}`,
+      }))}
+      onChange={onChange}
+    />,
+  );
+
+  fireEvent.click(screen.getByRole("combobox"));
+  fireEvent.click(within(screen.getByRole("listbox")).getByText("label-1"));
+
+  expect(onChange).toHaveBeenCalledWith(["value-1"]);
+});
+
 test("deselects an option", () => {
   const onChange = jest.fn();
 
