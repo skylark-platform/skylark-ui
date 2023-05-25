@@ -18,6 +18,7 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
+import { hasProperty } from "src/lib/utils";
 
 import { DisplayNameTableCell, getCellWidths } from "./cell";
 
@@ -43,12 +44,11 @@ export interface TableRowProps {
 }
 
 const headAndDataClassNames =
-  "overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm text-base-content";
+  "overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm text-base-content bg-white";
 const lastHeadAndDataClassNames =
   "last:sticky last:right-0 last:pl-0 last:h-full last:z-10 last:min-w-0 last:border-l-0";
 const rowClassName = "group/row hover:bg-manatee-50 hover:border-manatee-50 ";
 const activeRowClassName = "bg-manatee-200 border-manatee-200";
-const inactiveRowClassName = "bg-white";
 const rowGroupClassName =
   "group-hover/row:bg-manatee-50 group-hover/row:border-manatee-50";
 
@@ -109,7 +109,7 @@ const columnStyles = (
     : customColumnStyling.default;
 
   const typeSpecificClassName = colStyles?.className?.[type] || "";
-  return `${colStyles.className?.all || ""} ${typeSpecificClassName}  ${
+  return `${colStyles.className?.all || ""} ${typeSpecificClassName} ${
     withCheckbox
       ? colStyles.className?.withCheckbox
       : colStyles.className?.withoutCheckbox
@@ -180,9 +180,9 @@ const TableData = ({
         headAndDataClassNames,
         lastHeadAndDataClassNames,
         rowGroupClassName,
-        rowIsActive
+        rowIsActive && cell.column.id !== OBJECT_LIST_TABLE.columnIds.actions
           ? activeRowClassName
-          : `${inactiveRowClassName} border-transparent`,
+          : "border-transparent",
         "border-l last:pr-0",
       ),
     [cell.column.id, withCheckbox, rowIsActive],
@@ -205,7 +205,7 @@ const TableData = ({
         className={className}
         rowGroupClassName={clsx(
           rowGroupClassName,
-          rowIsActive ? activeRowClassName : inactiveRowClassName,
+          rowIsActive && activeRowClassName,
         )}
         colour={cell.row.original.config?.colour}
         width={cell.column.getSize()}
@@ -219,7 +219,11 @@ const TableData = ({
   if (cell.column.id === OBJECT_LIST_TABLE.columnIds.actions) {
     const rowInEditMode = tableMeta?.rowInEditMode === cell.row.id || false;
     return (
-      <td key={cell.id} className={className} style={{ height }}>
+      <td
+        key={cell.id}
+        className={clsx(className, "bg-transparent")}
+        style={{ height }}
+      >
         <RowActions
           object={object}
           editRowEnabled={tableMeta?.withObjectEdit}
