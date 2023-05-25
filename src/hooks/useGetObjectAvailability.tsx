@@ -25,12 +25,12 @@ export const createGetObjectAvailabilityKeyPrefix = ({
 }: {
   objectType: string;
   uid: string;
-}) => [QueryKeys.GetObjectAvailability, objectType, uid];
+}) => [QueryKeys.GetObjectAvailability, { objectType, uid }];
 
 export const useGetObjectAvailability = (
   objectType: SkylarkObjectType,
   uid: string,
-  opts: GetObjectOptions,
+  opts?: GetObjectOptions,
 ) => {
   const { language }: GetObjectOptions = opts || { language: null };
 
@@ -43,7 +43,11 @@ export const useGetObjectAvailability = (
     GQLSkylarkGetObjectAvailabilityResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectAvailabilityResponse>
   >({
-    queryKey: [QueryKeys.Search, query, variables],
+    queryKey: [
+      ...createGetObjectAvailabilityKeyPrefix({ objectType, uid }),
+      query,
+      variables,
+    ],
     queryFn: async ({ pageParam: nextToken }) =>
       skylarkRequest(query as RequestDocument, {
         ...variables,

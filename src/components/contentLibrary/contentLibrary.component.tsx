@@ -7,6 +7,7 @@ import {
   getClientRect,
   DragEndEvent,
   DragStartEvent,
+  TouchSensor,
 } from "@dnd-kit/core";
 import clsx from "clsx";
 import { m, useMotionValue, useTransform } from "framer-motion";
@@ -121,8 +122,15 @@ export const ContentLibrary = () => {
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
+      // Require the mouse to move by 6 pixels before activating
       activationConstraint: {
-        delay: 150,
+        distance: 6,
+      },
+    }),
+    useSensor(TouchSensor, {
+      // Press delay of 250ms, with tolerance of 5px of movement
+      activationConstraint: {
+        delay: 250,
         tolerance: 5,
       },
     }),
@@ -132,6 +140,7 @@ export const ContentLibrary = () => {
     <DndContext
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onDragCancel={() => setDraggedObject(undefined)}
       sensors={sensors}
       measuring={{
         draggable: {
@@ -164,6 +173,7 @@ export const ContentLibrary = () => {
         >
           <ObjectList
             withCreateButtons
+            panelObject={activePanelObject}
             setPanelObject={setPanelObject}
             isPanelOpen={!!activePanelObject}
             isDragging={!!draggedObject}

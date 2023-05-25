@@ -12,7 +12,6 @@ describe("Content Library - Metadata Panel", () => {
         });
       }
       if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
-        req.alias = "introspectionQuery";
         req.reply({
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
         });
@@ -83,7 +82,6 @@ describe("Content Library - Metadata Panel", () => {
       cy.get("[data-testid=select-options]").scrollTo("bottom");
       cy.get("[data-testid=select-options]").within(() => {
         cy.contains("Set");
-        cy.contains("(SkylarkSet)");
       });
 
       cy.percySnapshot("Homepage - create object modal - object type select");

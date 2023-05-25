@@ -28,15 +28,7 @@ export const ObjectTypeSelect = forwardRef(
     const options: SelectOption[] =
       objectTypesWithConfig?.map(({ objectType, config }) => ({
         value: objectType,
-        label:
-          config && config.display_name ? (
-            <>
-              {config.display_name}
-              <span className="ml-1 text-manatee-300">{`(${objectType})`}</span>
-            </>
-          ) : (
-            objectType
-          ),
+        label: config?.display_name || objectType,
       })) || [];
 
     const onChangeWrapper = (value: string) => {
@@ -52,7 +44,7 @@ export const ObjectTypeSelect = forwardRef(
     return (
       <Select
         {...props}
-        disabled={!objectTypesWithConfig || props.disabled}
+        disabled={options.length === 0 || props.disabled}
         placeholder={props.placeholder || "Object Type"}
         options={options}
         ref={ref}

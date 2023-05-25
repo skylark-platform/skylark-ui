@@ -12,6 +12,7 @@ import {
 
 import { Checkbox } from "src/components/inputs/checkbox";
 import { Select } from "src/components/inputs/select";
+import { Skeleton } from "src/components/skeleton";
 import { INPUT_REGEX, SYSTEM_FIELDS } from "src/constants/skylark";
 import {
   NormalizedObjectField,
@@ -31,6 +32,7 @@ interface SkylarkObjectFieldInputProps {
   value: SkylarkObjectMetadataField;
   formState: FormState<Record<string, SkylarkObjectMetadataField>>;
   additionalRequiredFields?: string[];
+  isLoading?: boolean;
 }
 
 interface SkylarkObjectFieldInputComponentProps
@@ -139,7 +141,7 @@ const SkylarkObjectFieldInputGeneric = ({
     aria-invalid={error ? "true" : "false"}
     type={convertFieldTypeToHTMLInputType(config.type)}
     step={
-      (config.type === "int" && "1") ||
+      (["int", "datetime", "time"].includes(config.type) && "1") ||
       (config.type === "float" && "any") ||
       undefined
     }
@@ -150,7 +152,8 @@ const SkylarkObjectFieldInputGeneric = ({
 export const SkylarkObjectFieldInput = (
   props: SkylarkObjectFieldInputProps,
 ) => {
-  const { field, config, formState, additionalRequiredFields } = props;
+  const { field, config, formState, additionalRequiredFields, isLoading } =
+    props;
   const required =
     config.isRequired || additionalRequiredFields?.includes(config.name)
       ? `${formatObjectField(field)} is required`
@@ -215,17 +218,24 @@ export const SkylarkObjectFieldInput = (
   return (
     <div className="mb-4 text-sm">
       <SkylarkObjectFieldInputLabel field={field} isRequired={!!required} />
-      {(() => {
-        if (config.type === "enum") {
-          return <SkylarkObjectFieldInputEnum {...inputProps} />;
-        } else if (config.type === "boolean") {
-          return <SkylarkObjectFieldInputBoolean {...inputProps} />;
-        } else if (config.type === "string" && !SYSTEM_FIELDS.includes(field)) {
-          return <SkylarkObjectFieldInputTextArea {...inputProps} />;
-        } else {
-          return <SkylarkObjectFieldInputGeneric {...inputProps} />;
-        }
-      })()}
+      {isLoading ? (
+        <Skeleton className="h-11 w-full" />
+      ) : (
+        (() => {
+          if (config.type === "enum") {
+            return <SkylarkObjectFieldInputEnum {...inputProps} />;
+          } else if (config.type === "boolean") {
+            return <SkylarkObjectFieldInputBoolean {...inputProps} />;
+          } else if (
+            config.type === "string" &&
+            !SYSTEM_FIELDS.includes(field)
+          ) {
+            return <SkylarkObjectFieldInputTextArea {...inputProps} />;
+          } else {
+            return <SkylarkObjectFieldInputGeneric {...inputProps} />;
+          }
+        })()
+      )}
       {error && (
         <span className="mt-1 block text-xs text-error">
           {error?.message ||

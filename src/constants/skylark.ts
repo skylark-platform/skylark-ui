@@ -14,9 +14,11 @@ export const SAAS_API_KEY = (process.env.NEXT_PUBLIC_SAAS_API_KEY ||
 export const REQUEST_HEADERS = {
   apiKey: "Authorization",
   betaApiKey: "x-api-key",
+  bypassCache: "x-bypass-cache",
 };
 export const OBJECT_LIST_TABLE = {
   columnIds: {
+    dragIcon: "drag-icon",
     objectType: "__typename",
     displayField: "skylark-ui-display-field",
     checkbox: "skylark-ui-select",
@@ -38,6 +40,7 @@ export const SYSTEM_FIELDS: string[] = [
   SkylarkSystemField.UID,
   SkylarkSystemField.ExternalID,
   SkylarkSystemField.Slug,
+  SkylarkSystemField.Type,
   SkylarkSystemField.DataSourceID,
   SkylarkSystemField.DataSourceFields,
 ];

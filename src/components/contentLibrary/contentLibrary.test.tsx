@@ -49,11 +49,13 @@ test("open metadata panel, check information and close", async () => {
   );
 
   const panelHeader = screen.getByTestId("panel-header");
-  expect(
-    within(panelHeader).getByText(
-      GQLSkylarkAllAvailTestMovieFixture.data.getObject.title,
-    ),
-  ).toBeInTheDocument();
+  await waitFor(() =>
+    expect(
+      within(panelHeader).getByText(
+        GQLSkylarkAllAvailTestMovieFixture.data.getObject.title,
+      ),
+    ).toBeInTheDocument(),
+  );
 
   await waitFor(() => expect(screen.getByText("Close")).toBeInTheDocument());
   fireEvent.click(screen.getByText("Close"));

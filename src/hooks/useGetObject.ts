@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
+import { useMemo } from "react";
 
 import { QueryErrorMessages, QueryKeys } from "src/enums/graphql";
 import { ErrorCodes } from "src/interfaces/errors";
@@ -25,10 +26,12 @@ export interface GetObjectOptions {
 export const createGetObjectKeyPrefix = ({
   objectType,
   uid,
+  language,
 }: {
   objectType: string;
   uid: string;
-}) => [QueryKeys.GetObject, objectType, uid];
+  language?: string | null;
+}) => [QueryKeys.GetObject, { objectType, uid }, { language }];
 
 export const useGetObject = (
   objectType: SkylarkObjectType,
@@ -51,17 +54,16 @@ export const useGetObject = (
     GQLSkylarkGetObjectResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>
   >({
-    queryKey: [
-      ...createGetObjectKeyPrefix({ objectType, uid }),
-      query,
-      variables,
-    ],
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: createGetObjectKeyPrefix({ objectType, uid, language }),
     queryFn: async () => skylarkRequest(query as DocumentNode, variables),
     enabled: query !== null,
   });
 
-  const parsedObject =
-    data?.getObject && parseSkylarkObject(data?.getObject, objectMeta);
+  const parsedObject = useMemo(
+    () => data?.getObject && parseSkylarkObject(data?.getObject, objectMeta),
+    [data?.getObject, objectMeta],
+  );
 
   return {
     ...rest,

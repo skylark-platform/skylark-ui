@@ -2,7 +2,6 @@ import { Combobox, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import React, {
   useState,
-  Fragment,
   useCallback,
   useRef,
   CSSProperties,
@@ -14,10 +13,11 @@ import { GoTriangleDown } from "react-icons/go";
 import { GrClose } from "react-icons/gr";
 import { useVirtual } from "react-virtual";
 
+import { Checkbox } from "src/components/inputs/checkbox";
 import { formatObjectField } from "src/lib/utils";
 
 export interface SelectOption {
-  label: string | ReactNode;
+  label: string;
   value: string;
 }
 
@@ -30,29 +30,54 @@ export interface SelectProps {
   placeholder: string;
   className?: string;
   disabled?: boolean;
-  withSearch?: boolean;
+  searchable?: boolean;
   allowCustomValue?: boolean;
   rounded?: boolean;
+  withBasicSort?: boolean;
   onChange?: (value: string) => void;
   onValueClear?: () => void;
 }
 
-const getOptionHeight = (variant: SelectProps["variant"]) => {
+export const sortSelectOptions = (
+  { label: labelA, value: valueA }: SelectOption,
+  { label: labelB, value: valueB }: SelectOption,
+): number => ((labelA || valueA) > (labelB || valueB) ? 1 : -1);
+
+export const getSelectOptionHeight = (variant: SelectProps["variant"]) => {
   return variant === "pill" ? 30 : 40;
 };
 
-export const Option = ({
+export const SelectLabel = ({
+  label,
+  labelVariant,
+}: {
+  label: SelectProps["label"];
+  labelVariant: SelectProps["labelVariant"];
+}) => (
+  <Combobox.Label
+    className={clsx(
+      labelVariant === "default" && "text-sm font-light md:text-base",
+      labelVariant === "form" && "block text-sm font-bold",
+    )}
+  >
+    {labelVariant === "form" ? formatObjectField(label) : label}
+  </Combobox.Label>
+);
+
+export const SelectOptionComponent = ({
   variant,
   option,
-  currentSelected,
+  isSelected,
   style,
   className,
+  withCheckbox,
 }: {
   variant: SelectProps["variant"];
   option: SelectOption;
-  currentSelected?: SelectOption;
+  isSelected?: boolean;
   style?: CSSProperties;
   className?: string;
+  withCheckbox?: boolean;
 }) => (
   <Combobox.Option
     key={option.value}
@@ -60,18 +85,21 @@ export const Option = ({
       clsx(
         "relative flex cursor-default select-none items-center text-gray-900",
         variant === "pill" ? "px-2" : "px-4 pl-6",
-        (active || currentSelected?.value === option.value) &&
-          "bg-ultramarine-50",
+        (active || isSelected) && "bg-ultramarine-50",
         className,
       )
     }
     value={option}
-    style={style}
+    style={{
+      ...style,
+      height: style?.height || getSelectOptionHeight(variant),
+    }}
   >
+    {withCheckbox && <Checkbox checked={isSelected} className="mr-2" />}
     <span
       className={clsx(
         "block truncate",
-        currentSelected?.value === option.value ? "font-medium" : "font-normal",
+        isSelected ? "font-medium" : "font-normal",
       )}
     >
       {option.label}
@@ -79,7 +107,7 @@ export const Option = ({
   </Combobox.Option>
 );
 
-const OptionsContainer = forwardRef(
+export const SelectOptionsContainer = forwardRef(
   ({ children }: { children: ReactNode }, ref: Ref<HTMLDivElement>) => (
     <div
       ref={ref}
@@ -90,9 +118,9 @@ const OptionsContainer = forwardRef(
     </div>
   ),
 );
-OptionsContainer.displayName = "OptionsContainer";
+SelectOptionsContainer.displayName = "SelectOptionsContainer";
 
-const Options = ({
+export const Options = ({
   variant,
   options,
   currentSelected,
@@ -101,20 +129,19 @@ const Options = ({
   options: SelectOption[];
   currentSelected?: SelectOption;
 }) => (
-  <OptionsContainer>
+  <SelectOptionsContainer>
     {options.map((option) => (
-      <Option
+      <SelectOptionComponent
         key={option.value}
-        currentSelected={currentSelected}
+        isSelected={currentSelected?.value === option.value}
         variant={variant}
         option={option}
-        style={{ height: getOptionHeight(variant) }}
       />
     ))}
-  </OptionsContainer>
+  </SelectOptionsContainer>
 );
 
-const VirtualizedOptions = ({
+export const VirtualizedOptions = ({
   variant,
   options,
   currentSelected,
@@ -128,12 +155,12 @@ const VirtualizedOptions = ({
   const rowVirtualizer = useVirtual({
     parentRef,
     size: options.length,
-    estimateSize: useCallback(() => getOptionHeight(variant), [variant]),
+    estimateSize: useCallback(() => getSelectOptionHeight(variant), [variant]),
     overscan: 5,
   });
 
   return (
-    <OptionsContainer ref={parentRef}>
+    <SelectOptionsContainer ref={parentRef}>
       <div
         style={{
           height: `${rowVirtualizer.totalSize}px`,
@@ -141,9 +168,11 @@ const VirtualizedOptions = ({
         className="relative w-full"
       >
         {rowVirtualizer.virtualItems.map((virtualRow) => (
-          <Option
+          <SelectOptionComponent
             key={virtualRow.index}
-            currentSelected={currentSelected}
+            isSelected={
+              currentSelected?.value === options?.[virtualRow.index].value
+            }
             variant={variant}
             option={options?.[virtualRow.index]}
             style={{
@@ -157,7 +186,7 @@ const VirtualizedOptions = ({
           />
         ))}
       </div>
-    </OptionsContainer>
+    </SelectOptionsContainer>
   );
 };
 
@@ -165,7 +194,7 @@ export const Select = forwardRef(
   (props: SelectProps, ref: Ref<HTMLButtonElement | HTMLInputElement>) => {
     const {
       variant,
-      options,
+      options: unsortedOptions,
       label,
       labelVariant = "default",
       placeholder,
@@ -173,19 +202,30 @@ export const Select = forwardRef(
       onChange,
       disabled,
       selected,
-      withSearch,
+      searchable = true,
       rounded,
       allowCustomValue,
       onValueClear,
+      withBasicSort,
     } = props;
 
     const [query, setQuery] = useState("");
+
+    const options = withBasicSort
+      ? unsortedOptions.sort(sortSelectOptions)
+      : unsortedOptions;
 
     const filteredOptions =
       query === ""
         ? options
         : options.filter((option) => {
-            return option.value.toLowerCase().includes(query.toLowerCase());
+            const lwrQuery = query.toLocaleLowerCase();
+            const lwrValue = option.value.toLocaleLowerCase();
+            const sanitisedLabel = option.label.toLocaleLowerCase();
+            return (
+              lwrValue.includes(lwrQuery) ||
+              (sanitisedLabel && sanitisedLabel.includes(lwrQuery))
+            );
           });
 
     const onChangeWrapper = useCallback(
@@ -226,18 +266,13 @@ export const Select = forwardRef(
             className,
           )}
         >
-          {label && (
-            <Combobox.Label
-              className={clsx(
-                labelVariant === "default" && "text-sm font-light md:text-base",
-                labelVariant === "form" && "block text-sm font-bold",
-              )}
+          {label && <SelectLabel label={label} labelVariant={labelVariant} />}
+          {searchable ? (
+            <Combobox.Button
+              data-testid="select"
+              as="div"
+              className={clsx(selectClassName, label && "mt-2")}
             >
-              {labelVariant === "form" ? formatObjectField(label) : label}
-            </Combobox.Label>
-          )}
-          {withSearch ? (
-            <div className={clsx(selectClassName, label && "mt-2")}>
               <Combobox.Input
                 className={clsx(
                   "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0",
@@ -245,7 +280,9 @@ export const Select = forwardRef(
                   roundedClassName,
                   showClearValueButton ? "pr-12" : "pr-8",
                 )}
-                displayValue={(option: SelectOption) => option.value}
+                displayValue={(option: SelectOption) =>
+                  option.label || option.value
+                }
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={placeholder || "Select option"}
                 ref={ref as Ref<HTMLInputElement> | undefined}
@@ -259,14 +296,16 @@ export const Select = forwardRef(
                     <GrClose className="text-xs" />
                   </button>
                 )}
-                <Combobox.Button
-                  data-testid="select"
-                  className={clsx(variant === "pill" ? "px-2" : "pl-1 pr-4")}
+                <button
+                  className={clsx(
+                    "h-full",
+                    variant === "pill" ? "mx-2" : "ml-1 mr-4",
+                  )}
                 >
                   <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
-                </Combobox.Button>
+                </button>
               </span>
-            </div>
+            </Combobox.Button>
           ) : (
             <Combobox.Button
               data-testid="select"
@@ -297,7 +336,8 @@ export const Select = forwardRef(
           )}
 
           <Transition
-            as={Fragment}
+            as="div"
+            className="z-50"
             leave="transition ease-in duration-50"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
@@ -305,7 +345,7 @@ export const Select = forwardRef(
           >
             <Combobox.Options>
               {filteredOptions.length === 0 && query !== "" ? (
-                withSearch && allowCustomValue ? (
+                searchable && allowCustomValue ? (
                   <Options
                     variant={variant}
                     options={[{ value: query, label: `Use "${query}"` }]}

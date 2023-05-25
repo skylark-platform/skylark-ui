@@ -13,4 +13,12 @@ export const Default = Template.bind({});
 Default.args = {
   label: "Episode",
   bgColor: "orange",
+  onDelete: undefined,
+};
+
+export const WithClose = Template.bind({});
+WithClose.args = {
+  label: "Episode",
+  bgColor: "orange",
+  onDelete: () => "",
 };

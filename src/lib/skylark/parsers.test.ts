@@ -241,6 +241,46 @@ describe("parseObjectInputFields", () => {
     ]);
   });
 
+  test("parses a required enum input", () => {
+    const fields = {
+      name: "Test",
+      type: {
+        ...defaultType,
+        kind: "NON_NULL",
+        name: null,
+        ofType: {
+          ...defaultType,
+          kind: "ENUM",
+          name: "MyCustomEnum",
+        },
+      },
+    };
+
+    const got = parseObjectInputFields(
+      [fields] as unknown as IntrospectionField[],
+      {
+        MyCustomEnum: {
+          name: "MyCustomEnum",
+          kind: "ENUM",
+          enumValues: [
+            { name: "ENUM1" },
+            { name: "ENUM2" },
+          ] as IntrospectionEnumValue[],
+        },
+      },
+    );
+    expect(got).toEqual([
+      {
+        enumValues: ["ENUM1", "ENUM2"],
+        isList: false,
+        isRequired: true,
+        name: "Test",
+        type: "enum",
+        originalType: "MyCustomEnum",
+      },
+    ]);
+  });
+
   test("ignores an INPUT_OBJECT and OBJECT", () => {
     const fields = [
       {
@@ -382,6 +422,7 @@ describe("parseObjectContent", () => {
               global: 1,
               language: 2,
             },
+            availabilityStatus: null,
           },
           object: objects[0].object,
           objectType: objects[0].object.__typename,
@@ -400,6 +441,7 @@ describe("parseObjectContent", () => {
               global: 2,
               language: 1,
             },
+            availabilityStatus: null,
           },
           object: objects[1].object,
           objectType: objects[1].object.__typename,
@@ -467,6 +509,7 @@ describe("parseSkylarkObject", () => {
           language: 1,
           global: 2,
         },
+        availabilityStatus: AvailabilityStatus.Unavailable,
       },
       metadata: {
         uid: "uid123",
@@ -792,6 +835,7 @@ describe("parseUpdatedRelationshipObjects", () => {
         language: 1,
         global: 2,
       },
+      availabilityStatus: AvailabilityStatus.Unavailable,
     },
     metadata: {
       uid: "uid123",
