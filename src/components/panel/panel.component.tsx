@@ -21,6 +21,7 @@ import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectIdentifier,
   ParsedSkylarkObjectAvailabilityObject,
+  BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import {
   getSingleAvailabilityStatus,
@@ -94,9 +95,16 @@ export const Panel = ({
     originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
     updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
   }>({ originalRelationshipObjects: null, updatedRelationshipObjects: null });
-  const [availability, setAvailability] = useState<
-    ParsedSkylarkObject[] | null
-  >(null);
+
+  const [
+    { updatedAvailabilityObjects, originalAvailabilityObjects },
+    setAvailability,
+  ] = useState<{
+    originalAvailabilityObjects: ParsedSkylarkObjectAvailabilityObject[] | null;
+    updatedAvailabilityObjects:
+      | (ParsedSkylarkObjectAvailabilityObject | ParsedSkylarkObject)[]
+      | null;
+  }>({ originalAvailabilityObjects: null, updatedAvailabilityObjects: null });
 
   const { uid, objectType, language } = object;
   const {
@@ -249,33 +257,47 @@ export const Panel = ({
         }
         setEditMode(true);
       } else if (selectedTab === PanelTab.Availability) {
-        console.log({ droppedObject });
+        console.log("DDD", { droppedObject });
         if (droppedObject) {
-          /*
-          const t = droppedObject as ParsedSkylarkObjectAvailabilityObject;
-
-          const now = dayjs();
-          const { start, end } = t;
-          const neverExpires = !!(end && is2038Problem(end));
-          const status = getSingleAvailabilityStatus(
-            now,
-            start || "",
-            end || "",
-          );
-
-          const x = {
-            ...droppedObject,
-            title: t.title || "",
-            slug: t.slug || "",
-            start: start || "",
-            end: end || "",
-            timezone: t.timezone || "",
-            dimensions: [], // TODO
-            status,
-            neverExpires,
-          };
-*/
-          setAvailability([droppedObject]);
+          if (
+            droppedObject.objectType !== BuiltInSkylarkObjectType.Availability
+          ) {
+            toast(
+              <Toast
+                title={"Invalid Object"}
+                message={`${getObjectTypeDisplayNameFromParsedObject(
+                  droppedObject,
+                )} "${getObjectDisplayName(
+                  droppedObject,
+                )}" is not an Availability object`}
+                type="error"
+              />,
+            );
+          } else if (
+            updatedAvailabilityObjects?.find(
+              ({ uid }) => uid === droppedObject.uid,
+            )
+          ) {
+            toast(
+              <Toast
+                title={"Existing"}
+                message={`${getObjectTypeDisplayNameFromParsedObject(
+                  droppedObject,
+                )} "${getObjectDisplayName(
+                  droppedObject,
+                )}" is already assigned`}
+                type="warning"
+              />,
+            );
+          } else {
+            setAvailability({
+              originalAvailabilityObjects,
+              updatedAvailabilityObjects: [
+                ...(updatedAvailabilityObjects || []),
+                droppedObject,
+              ],
+            });
+          }
         }
       }
       clearDroppedObject?.();
@@ -292,6 +314,8 @@ export const Panel = ({
     objectType,
     data,
     object.uid,
+    originalAvailabilityObjects,
+    updatedAvailabilityObjects,
   ]);
 
   const { updateObjectRelationships, isLoading: updatingRelationshipObjects } =
@@ -473,9 +497,9 @@ export const Panel = ({
               language={language}
               setPanelObject={setPanelObject}
               inEditMode={inEditMode}
+              updatedAvailabilityObjects={updatedAvailabilityObjects}
               showDropArea={showDropArea}
               setAvailability={setAvailability}
-              availability={availability}
             />
           )}
           {selectedTab === PanelTab.Content && data.content && (

@@ -39,8 +39,13 @@ interface PanelAvailabilityProps {
   inEditMode: boolean;
   showDropArea?: boolean;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
-  setAvailability: any;
-  availability: ParsedSkylarkObject[];
+  setAvailability: (o: {
+    originalAvailabilityObjects: ParsedSkylarkObjectAvailabilityObject[] | null;
+    updatedAvailabilityObjects: ParsedSkylarkObjectAvailabilityObject[] | null;
+  }) => void;
+  updatedAvailabilityObjects:
+    | (ParsedSkylarkObject | ParsedSkylarkObjectAvailabilityObject)[]
+    | null;
 }
 
 const sortDimensionsByTitleOrSlug = (
@@ -86,7 +91,7 @@ export const PanelAvailability = ({
   setPanelObject,
   showDropArea,
   setAvailability,
-  availability,
+  updatedAvailabilityObjects,
 }: PanelAvailabilityProps) => {
   const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
     useGetObjectAvailability(objectType, objectUid, { language });
@@ -96,13 +101,16 @@ export const PanelAvailability = ({
 
   useEffect(() => {
     // TODO shouldn't need
-    if (availability === null && data) {
+    if (updatedAvailabilityObjects === null && data) {
       console.log("here", data);
-      // setAvailability(data);
+      setAvailability({
+        originalAvailabilityObjects: data,
+        updatedAvailabilityObjects: data,
+      });
     }
-  }, [availability, data, setAvailability]);
+  }, [updatedAvailabilityObjects, data, setAvailability]);
 
-  console.log({ availability });
+  console.log({ updatedAvailabilityObjects });
 
   if (showDropArea)
     return (
@@ -122,21 +130,22 @@ export const PanelAvailability = ({
       sections={[{ id: "availability-panel-title", title: "Availability" }]}
       isPage={isPage}
     >
-      {data && availability && (
+      {data && updatedAvailabilityObjects && (
         <>
           <PanelSectionTitle
             text={formatObjectField("Availability")}
             id={"availability-panel-title"}
           />
           {!isLoading && data?.length === 0 && <PanelEmptyDataText />}
-          {availability?.map((obj) => {
+          {updatedAvailabilityObjects?.map((obj) => {
             console.log("hey teacher", obj);
             return (
               <Fragment key={obj.uid}>
-                <div className="flex items-center ">
+                <div className="flex items-center">
                   <ObjectIdentifierCard
                     key={obj.uid}
-                    object={obj}
+                    // TODO improve this
+                    object={obj as unknown as ParsedSkylarkObject}
                     disableForwardClick={inEditMode}
                     onForwardClick={setPanelObject}
                   >

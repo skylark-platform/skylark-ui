@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import {
@@ -31,6 +31,7 @@ import {
   SkylarkGraphQLObjectImage,
   SkylarkObjectMetadataField,
   ParsedSkylarkObjectRelationships,
+  SkylarkGraphQLAvailability,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -39,7 +40,11 @@ import {
   isObject,
 } from "src/lib/utils";
 
-import { getObjectAvailabilityStatus } from "./availability";
+import {
+  getObjectAvailabilityStatus,
+  getSingleAvailabilityStatus,
+  is2038Problem,
+} from "./availability";
 
 dayjs.extend(customParseFormat);
 dayjs.extend(advancedFormat);

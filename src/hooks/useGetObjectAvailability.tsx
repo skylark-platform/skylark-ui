@@ -64,6 +64,7 @@ export const useGetObjectAvailability = (
 
         return {
           ...object,
+          // config: {},
           title: object.title || "",
           slug: object.slug || "",
           start: start || "",

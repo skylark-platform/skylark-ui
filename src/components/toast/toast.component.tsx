@@ -16,7 +16,7 @@ export interface ToastProps extends Partial<ToastContentProps> {
 export const ToastContainer = () => (
   <ReactToastifyContainer
     position="top-right"
-    autoClose={false}
+    autoClose={5000}
     hideProgressBar={true}
     theme="colored"
     closeButton={false}
