@@ -1,5 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
 import clsx from "clsx";
+import dayjs from "dayjs";
 import { Fragment, useEffect } from "react";
 
 import { AvailabilityLabel } from "src/components/availability";
@@ -26,7 +27,11 @@ import {
 } from "src/interfaces/skylark";
 import {
   formatReadableDate,
+  getAvailabilityStatusForAvailabilityObject,
+  getObjectAvailabilityStatus,
   getRelativeTimeFromDate,
+  getSingleAvailabilityStatus,
+  is2038Problem,
 } from "src/lib/skylark/availability";
 import { formatObjectField } from "src/lib/utils";
 
@@ -37,16 +42,15 @@ interface PanelAvailabilityProps {
   objectType: string;
   objectUid: string;
   language: string;
+  currentObjectAvailabilityStatus?: AvailabilityStatus | null;
   inEditMode: boolean;
   showDropArea?: boolean;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
-  setAvailability: (o: {
-    originalAvailabilityObjects: ParsedSkylarkObjectAvailabilityObject[] | null;
-    updatedAvailabilityObjects: ParsedSkylarkObjectAvailabilityObject[] | null;
+  availabilityObjects: ParsedSkylarkObject[] | null;
+  setAvailabilityObjects: (a: {
+    original: ParsedSkylarkObject[] | null;
+    updated: ParsedSkylarkObject[] | null;
   }) => void;
-  updatedAvailabilityObjects:
-    | (ParsedSkylarkObject | ParsedSkylarkObjectAvailabilityObject)[]
-    | null;
 }
 
 const sortDimensionsByTitleOrSlug = (
@@ -83,17 +87,120 @@ const AvailabilityValueGrid = ({
   );
 };
 
-export const PanelAvailability = ({
-  isPage,
-  objectType,
-  objectUid,
-  language,
+const convertAvailabilityToParsedObject = (
+  availabilityObjects: ParsedSkylarkObjectAvailabilityObject[],
+): ParsedSkylarkObject[] => {
+  const parsedObjects = availabilityObjects.map(
+    ({
+      uid,
+      start,
+      end,
+      external_id,
+      title,
+      slug,
+      timezone,
+    }): ParsedSkylarkObject => ({
+      uid,
+      config: {},
+      meta: {
+        language: "",
+        availableLanguages: [],
+        availabilityStatus: null,
+      },
+      availability: {
+        status: null,
+        objects: [],
+      },
+      objectType: BuiltInSkylarkObjectType.Availability,
+      metadata: {
+        uid,
+        start,
+        end,
+        external_id,
+        title,
+        slug,
+        timezone,
+      },
+    }),
+  );
+  return parsedObjects;
+};
+
+const PanelAvailabilityEditView = ({
+  availabilityObjects,
   inEditMode,
+  currentObjectAvailabilityStatus,
   setPanelObject,
-  showDropArea,
-  setAvailability,
-  updatedAvailabilityObjects,
-}: PanelAvailabilityProps) => {
+  removeAvailabilityObject,
+}: {
+  removeAvailabilityObject: (uid: string) => void;
+} & PanelAvailabilityProps) => {
+  const updatedObjectStatus: AvailabilityStatus | null = availabilityObjects
+    ? getObjectAvailabilityStatus(
+        availabilityObjects?.map(
+          ({ metadata }): ParsedSkylarkObjectAvailabilityObject => ({
+            uid: metadata.uid,
+            external_id: metadata.external_id,
+            title: (metadata.title as string) || "",
+            slug: (metadata.slug as string) || "",
+            start: (metadata.start as string) || "",
+            end: (metadata.end as string) || "",
+            timezone: (metadata.timezone as string) || "",
+            dimensions: [],
+          }),
+        ),
+      )
+    : null;
+
+  return (
+    <div>
+      {/* <p className="mb-2 border-b pb-2">
+        <span className="font-semibold">{`On save this object will ${
+          updatedObjectStatus === currentObjectAvailabilityStatus
+            ? "remain"
+            : "change to"
+        }:`}</span>
+        <AvailabilityLabel className="pl-1.5" status={updatedObjectStatus} />
+      </p> */}
+      {availabilityObjects?.map((obj) => {
+        return (
+          <Fragment key={obj.uid}>
+            <div className="flex items-center">
+              <ObjectIdentifierCard
+                key={obj.uid}
+                object={obj}
+                disableForwardClick={inEditMode}
+                hideObjectType
+                onForwardClick={setPanelObject}
+                onDeleteClick={() => removeAvailabilityObject(obj.uid)}
+              >
+                <AvailabilityLabel
+                  status={getAvailabilityStatusForAvailabilityObject(
+                    obj.metadata,
+                  )}
+                />
+              </ObjectIdentifierCard>
+            </div>
+          </Fragment>
+        );
+      })}
+    </div>
+  );
+};
+
+export const PanelAvailability = (props: PanelAvailabilityProps) => {
+  const {
+    isPage,
+    objectType,
+    objectUid,
+    language,
+    inEditMode,
+    setPanelObject,
+    showDropArea,
+    availabilityObjects,
+    setAvailabilityObjects,
+  } = props;
+
   const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
     useGetObjectAvailability(objectType, objectUid, { language });
   const { isOver, setNodeRef } = useDroppable({
@@ -101,17 +208,18 @@ export const PanelAvailability = ({
   });
 
   useEffect(() => {
-    // TODO shouldn't need
-    if (updatedAvailabilityObjects === null && data) {
-      console.log("here", data);
-      setAvailability({
-        originalAvailabilityObjects: data,
-        updatedAvailabilityObjects: data,
+    if (!inEditMode && data) {
+      const parsedObjects: ParsedSkylarkObject[] =
+        convertAvailabilityToParsedObject(data);
+
+      console.log("availability useEffect");
+
+      setAvailabilityObjects({
+        original: parsedObjects,
+        updated: parsedObjects,
       });
     }
-  }, [updatedAvailabilityObjects, data, setAvailability]);
-
-  console.log({ updatedAvailabilityObjects });
+  }, [data, inEditMode, setAvailabilityObjects]);
 
   if (showDropArea)
     return (
@@ -126,6 +234,17 @@ export const PanelAvailability = ({
       </div>
     );
 
+  const now = dayjs();
+
+  console.log({ availabilityObjects });
+
+  const removeAvailabilityObject = (uidToRemove: string) =>
+    availabilityObjects &&
+    setAvailabilityObjects({
+      original: data ? convertAvailabilityToParsedObject(data) : [],
+      updated: availabilityObjects.filter(({ uid }) => uid !== uidToRemove),
+    });
+
   return (
     <PanelSectionLayout
       sections={[{ id: "availability-panel-title", title: "Availability" }]}
@@ -138,131 +257,145 @@ export const PanelAvailability = ({
         />
         {data && (
           <>
-            {!isLoading && data?.length === 0 && <PanelEmptyDataText />}
-            {updatedAvailabilityObjects?.map((obj) => {
-              console.log("hey teacher", obj);
-              return (
-                <Fragment key={obj.uid}>
-                  <div className="flex items-center">
-                    <ObjectIdentifierCard
+            {!isLoading && data?.length === 0 && !inEditMode && (
+              <PanelEmptyDataText />
+            )}
+            {inEditMode ? (
+              <PanelAvailabilityEditView
+                {...props}
+                removeAvailabilityObject={removeAvailabilityObject}
+              />
+            ) : (
+              data
+                ?.filter(({ uid }) =>
+                  availabilityObjects?.find((existing) => existing.uid === uid),
+                )
+                .map((obj) => {
+                  const neverExpires = !!(obj.end && is2038Problem(obj.end));
+                  const status = getSingleAvailabilityStatus(
+                    now,
+                    obj.start || "",
+                    obj.end || "",
+                  );
+
+                  const availabilityInfo: {
+                    key: keyof Omit<
+                      ParsedSkylarkObjectAvailabilityObject,
+                      "dimensions"
+                    >;
+                    label: string;
+                    value: string;
+                  }[] = [
+                    {
+                      label: "Start",
+                      key: "start",
+                      value: formatReadableDate(obj.start),
+                    },
+                    {
+                      label: "End",
+                      key: "end",
+                      value: neverExpires
+                        ? "Never"
+                        : formatReadableDate(obj.end),
+                    },
+                    {
+                      label: "Timezone",
+                      key: "timezone",
+                      value: obj.timezone || "",
+                    },
+                  ];
+                  return (
+                    <div
                       key={obj.uid}
-                      // TODO improve this
-                      object={obj as unknown as ParsedSkylarkObject}
-                      disableForwardClick={inEditMode}
-                      onForwardClick={setPanelObject}
-                    >
-                      {inEditMode && (
-                        <span
-                          className={
-                            "flex h-6 min-w-6 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
-                          }
-                        />
+                      className={clsx(
+                        "my-2 max-w-xl border border-l-4 py-4 px-4",
+                        status === AvailabilityStatus.Active &&
+                          "border-l-success",
+                        status === AvailabilityStatus.Expired &&
+                          "border-l-error",
+                        status === AvailabilityStatus.Future &&
+                          "border-l-warning",
                       )}
-                      <button
-                        disabled={!inEditMode}
-                        onClick={() => console.log("")}
-                      >
-                        <Trash
-                          className={clsx(
-                            "ml-2 flex h-6 text-manatee-500 transition-all hover:text-error",
-                            inEditMode ? "w-6" : "w-0",
-                          )}
-                        />
-                      </button>
-                    </ObjectIdentifierCard>
-                  </div>
-                </Fragment>
-              );
-            })}
-            {data.map((obj) => {
-              const { status, neverExpires } = obj;
-              const availabilityInfo: {
-                key: keyof Omit<
-                  ParsedSkylarkObjectAvailabilityObject,
-                  "dimensions"
-                >;
-                label: string;
-                value: string;
-              }[] = [
-                {
-                  label: "Start",
-                  key: "start",
-                  value: formatReadableDate(obj.start),
-                },
-                {
-                  label: "End",
-                  key: "end",
-                  value: neverExpires ? "Never" : formatReadableDate(obj.end),
-                },
-                {
-                  label: "Timezone",
-                  key: "timezone",
-                  value: obj.timezone || "",
-                },
-              ];
-              return (
-                <div
-                  key={obj.uid}
-                  className={clsx(
-                    "my-2 max-w-xl border border-l-4 py-4 px-4",
-                    status === AvailabilityStatus.Active && "border-l-success",
-                    status === AvailabilityStatus.Expired && "border-l-error",
-                    status === AvailabilityStatus.Future && "border-l-warning",
-                  )}
-                >
-                  <div className="flex items-start">
-                    <div className="flex-grow">
-                      <PanelFieldTitle
-                        text={
-                          obj.title || obj.slug || obj.external_id || obj.uid
-                        }
-                      />
-                      <p className="text-manatee-400">
-                        {status &&
-                          getRelativeTimeFromDate(
-                            status,
-                            obj.start || "",
-                            obj.end || "",
-                          )}
-                      </p>
-                    </div>
+                    >
+                      <div className="flex items-start">
+                        <div className="flex-grow">
+                          <PanelFieldTitle
+                            text={
+                              obj.title ||
+                              obj.slug ||
+                              obj.external_id ||
+                              obj.uid
+                            }
+                          />
+                          <p className="text-manatee-400">
+                            {status &&
+                              getRelativeTimeFromDate(
+                                status,
+                                obj.start || "",
+                                obj.end || "",
+                              )}
+                          </p>
+                        </div>
 
-                    <div className="flex items-center justify-center space-x-2">
-                      {obj.status && <AvailabilityLabel status={obj.status} />}
-                      <OpenObjectButton
-                        onClick={() =>
-                          setPanelObject({
-                            uid: obj.uid,
-                            objectType: BuiltInSkylarkObjectType.Availability,
-                            language: "",
-                          })
-                        }
-                        disabled={inEditMode}
+                        <div className="flex items-center justify-center">
+                          {status && (
+                            <AvailabilityLabel
+                              status={status}
+                              className="pr-2 pl-1"
+                            />
+                          )}
+                          <OpenObjectButton
+                            onClick={() =>
+                              setPanelObject({
+                                uid: obj.uid,
+                                objectType:
+                                  BuiltInSkylarkObjectType.Availability,
+                                language: "",
+                              })
+                            }
+                            disabled={inEditMode}
+                          />
+                          <button
+                            disabled={!inEditMode}
+                            data-testid="availability-delete"
+                            className={clsx(
+                              "transition-width",
+                              inEditMode ? "visible w-6 pl-2" : "invisible w-0",
+                            )}
+                            onClick={() => removeAvailabilityObject(obj.uid)}
+                          >
+                            <Trash
+                              className={clsx(
+                                "flex h-6 text-manatee-500 transition-all hover:text-error",
+                                inEditMode ? "w-6" : "w-0",
+                              )}
+                            />
+                          </button>
+                        </div>
+                      </div>
+
+                      <AvailabilityValueGrid
+                        header="Time Window"
+                        data={availabilityInfo}
+                      />
+
+                      <AvailabilityValueGrid
+                        header="Audience"
+                        data={obj.dimensions
+                          .sort(sortDimensionsByTitleOrSlug)
+                          .map((dimension) => ({
+                            label: dimension.title || dimension.slug,
+                            value: dimension.values.objects
+                              .map((value) => value.title || value.slug)
+                              .sort()
+                              .join(", "),
+                            key: dimension.uid,
+                          }))}
                       />
                     </div>
-                  </div>
-
-                  <AvailabilityValueGrid
-                    header="Time Window"
-                    data={availabilityInfo}
-                  />
-
-                  <AvailabilityValueGrid
-                    header="Audience"
-                    data={obj.dimensions
-                      .sort(sortDimensionsByTitleOrSlug)
-                      .map((dimension) => ({
-                        label: dimension.title || dimension.slug,
-                        value: dimension.values.objects
-                          .map((value) => value.title || value.slug)
-                          .sort()
-                          .join(", "),
-                        key: dimension.uid,
-                      }))}
-                  />
-                </div>
-              );
-            })}
+                  );
+                })
+            )}
           </>
         )}
       </div>
@@ -272,7 +405,6 @@ export const PanelAvailability = ({
       >
         <Skeleton className="mb-2 h-52 w-full max-w-xl" />
         <Skeleton className="mb-2 h-52 w-full max-w-xl" />
-        <Skeleton className="mb-2 h-52 w-full max-w-xl" />
       </PanelLoading>
       <DisplayGraphQLQuery
         label="Get Object Availability"
@@ -280,11 +412,6 @@ export const PanelAvailability = ({
         variables={variables}
         buttonClassName="absolute right-2 top-0"
       />
-      {inEditMode && (
-        <p className="w-full py-4 text-center text-sm text-manatee-600">
-          {"Drag an object from the Content Library to add as relationship"}
-        </p>
-      )}
     </PanelSectionLayout>
   );
 };

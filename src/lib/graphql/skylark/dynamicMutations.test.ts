@@ -36,17 +36,6 @@ describe("createUpdateSetContentPositionMutation", () => {
     expect(got).toBeNull();
   });
 
-  test("returns null when no content is supplied", () => {
-    const got = createUpdateObjectContentMutation(
-      setObjectOperations,
-      [],
-      [],
-      [],
-    );
-
-    expect(got).toBeNull();
-  });
-
   test("returns expected GraphQL update mutation when no items are reordered", () => {
     const content: ParsedSkylarkObjectContentObject[] = [
       {

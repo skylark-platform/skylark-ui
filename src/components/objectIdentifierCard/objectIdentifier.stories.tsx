@@ -60,3 +60,9 @@ WithAllIcons.args = {
   onForwardClick: () => console.log("clicked"),
   onDeleteClick: () => console.log("clicked"),
 };
+
+export const WithObjectTypeHidden = Template.bind({});
+WithObjectTypeHidden.args = {
+  object,
+  hideObjectType: true,
+};

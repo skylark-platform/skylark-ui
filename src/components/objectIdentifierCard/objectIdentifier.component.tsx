@@ -15,6 +15,7 @@ interface ObjectIdentifierCardProps {
   children?: ReactNode;
   disableForwardClick?: boolean;
   disableDeleteClick?: boolean;
+  hideObjectType?: boolean;
   onForwardClick?: (o: SkylarkObjectIdentifier) => void;
   onDeleteClick?: () => void;
 }
@@ -24,16 +25,19 @@ export const ObjectIdentifierCard = ({
   children,
   disableForwardClick,
   disableDeleteClick,
+  hideObjectType,
   onForwardClick,
   onDeleteClick,
 }: ObjectIdentifierCardProps) => {
   return (
     <div className="flex w-full flex-grow items-center space-x-2 py-3">
-      <Pill
-        label={object.config.objectTypeDisplayName || object.objectType}
-        bgColor={object.config.colour}
-        className="w-20 min-w-20 max-w-20"
-      />
+      {!hideObjectType && (
+        <Pill
+          label={object.config.objectTypeDisplayName || object.objectType}
+          bgColor={object.config.colour}
+          className="w-20 min-w-20 max-w-20"
+        />
+      )}
       <p className="flex flex-grow text-sm">{getObjectDisplayName(object)}</p>
       {children}
       {onDeleteClick && (

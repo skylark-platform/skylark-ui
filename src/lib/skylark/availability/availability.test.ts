@@ -43,8 +43,6 @@ describe("getObjectAvailabilityStatus", () => {
     title: "",
     slug: "",
     dimensions: [],
-    status: AvailabilityStatus.Unavailable,
-    neverExpires: false,
   };
 
   test("returns Unavailable when the object has no availabilities", () => {

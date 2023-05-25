@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -7,6 +6,7 @@ import { Tabs } from "src/components/tabs/tabs.component";
 import { Toast } from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/useGetObject";
 import { useUpdateAvailabilityObjectDimensions } from "src/hooks/useUpdateAvailabilityObjectDimensions";
+import { useUpdateObjectAvailability } from "src/hooks/useUpdateObjectAvailability";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
 import { useUpdateObjectMetadata } from "src/hooks/useUpdateObjectMetadata";
 import { useUpdateObjectRelationships } from "src/hooks/useUpdateObjectRelationships";
@@ -18,7 +18,6 @@ import {
   SkylarkSystemField,
   ParsedSkylarkObjectRelationships,
   SkylarkObjectIdentifier,
-  ParsedSkylarkObjectAvailabilityObject,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
@@ -93,15 +92,14 @@ export const Panel = ({
     updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
   }>({ originalRelationshipObjects: null, updatedRelationshipObjects: null });
 
-  const [
-    { updatedAvailabilityObjects, originalAvailabilityObjects },
-    setAvailability,
-  ] = useState<{
-    originalAvailabilityObjects: ParsedSkylarkObjectAvailabilityObject[] | null;
-    updatedAvailabilityObjects:
-      | (ParsedSkylarkObjectAvailabilityObject | ParsedSkylarkObject)[]
-      | null;
-  }>({ originalAvailabilityObjects: null, updatedAvailabilityObjects: null });
+  const [availabilityObjects, setAvailabilityObjects] = useState<{
+    original: ParsedSkylarkObject[] | null;
+    updated: ParsedSkylarkObject[] | null;
+  }>({
+    original: null,
+    updated: null,
+  });
+
   const [availabilityDimensionValues, setAvailabilityDimensionValues] =
     useState<{
       original: Record<string, string[]> | null;
@@ -304,9 +302,10 @@ export const Panel = ({
               />,
             );
           } else if (
-            updatedAvailabilityObjects?.find(
-              ({ uid }) => uid === droppedObject.uid,
-            )
+            [
+              ...(availabilityObjects.original || []),
+              ...(availabilityObjects.updated || []),
+            ]?.find(({ uid }) => uid === droppedObject.uid)
           ) {
             toast(
               <Toast
@@ -320,13 +319,11 @@ export const Panel = ({
               />,
             );
           } else {
-            setAvailability({
-              originalAvailabilityObjects,
-              updatedAvailabilityObjects: [
-                ...(updatedAvailabilityObjects || []),
-                droppedObject,
-              ],
+            setAvailabilityObjects({
+              ...availabilityObjects,
+              updated: [...(availabilityObjects.updated || []), droppedObject],
             });
+            setEditMode(true);
           }
         }
       }
@@ -344,11 +341,10 @@ export const Panel = ({
     objectType,
     data,
     object.uid,
-    originalAvailabilityObjects,
-    updatedAvailabilityObjects,
+    availabilityObjects,
   ]);
 
-  const { updateObjectRelationships, isLoading: updatingRelationshipObjects } =
+  const { updateObjectRelationships, isLoading: updatingObjectRelationships } =
     useUpdateObjectRelationships({
       objectType,
       uid,
@@ -382,6 +378,17 @@ export const Panel = ({
       },
     });
 
+  const { updateObjectAvailability, isLoading: updatingObjectAvailability } =
+    useUpdateObjectAvailability({
+      objectType,
+      uid,
+      originalRelationshipObjects: availabilityObjects.original,
+      updatedRelationshipObjects: availabilityObjects.updated,
+      onSuccess: () => {
+        setEditMode(false);
+      },
+    });
+
   const {
     updateAvailabilityObjectDimensions,
     isLoading: updatingAvailabilityObjectDimensions,
@@ -406,6 +413,11 @@ export const Panel = ({
       updatedRelationshipObjects
     ) {
       updateObjectRelationships();
+    } else if (
+      selectedTab === PanelTab.Availability &&
+      availabilityObjects.updated
+    ) {
+      updateObjectAvailability();
     } else if (
       selectedTab === PanelTab.AvailabilityDimensions &&
       availabilityDimensionValues.updated
@@ -447,6 +459,7 @@ export const Panel = ({
           PanelTab.Metadata,
           PanelTab.Content,
           PanelTab.Relationships,
+          PanelTab.Availability,
           PanelTab.AvailabilityDimensions,
         ]}
         closePanel={closePanel}
@@ -454,8 +467,9 @@ export const Panel = ({
         save={saveActiveTabChanges}
         isSaving={
           updatingObjectContents ||
-          updatingRelationshipObjects ||
+          updatingObjectRelationships ||
           updatingObjectMetadata ||
+          updatingObjectAvailability ||
           updatingAvailabilityObjectDimensions
         }
         isTranslatable={objectMeta?.isTranslatable}
@@ -532,9 +546,10 @@ export const Panel = ({
               language={language}
               setPanelObject={setPanelObject}
               inEditMode={inEditMode}
-              updatedAvailabilityObjects={updatedAvailabilityObjects}
               showDropArea={showDropArea}
-              setAvailability={setAvailability}
+              currentObjectAvailabilityStatus={data?.meta.availabilityStatus}
+              availabilityObjects={availabilityObjects.updated}
+              setAvailabilityObjects={setAvailabilityObjects}
             />
           )}
           {selectedTab === PanelTab.Content && data?.content && (

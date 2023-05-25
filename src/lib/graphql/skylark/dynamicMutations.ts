@@ -4,6 +4,7 @@ import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
   BuiltInSkylarkObjectType,
+  ParsedSkylarkObject,
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObjectRelationships,
   SkylarkObjectMeta,
@@ -167,11 +168,7 @@ export const createUpdateObjectContentMutation = (
   updatedContentObjects: ParsedSkylarkObjectContentObject[],
   contentTypesToRequest: SkylarkObjectMeta[],
 ) => {
-  if (
-    !object ||
-    !object.operations.update ||
-    updatedContentObjects.length === 0
-  ) {
+  if (!object || !object.operations.update) {
     return null;
   }
 
@@ -326,6 +323,57 @@ export const createUpdateObjectRelationshipsMutation = (
           [object.operations.update.argName]: {
             relationships: {
               ...parsedRelationsToUpdate,
+            },
+          },
+        },
+        uid: true,
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(mutation);
+
+  return gql(graphQLQuery);
+};
+
+export const createUpdateObjectAvailability = (
+  object: SkylarkObjectMeta | null,
+  originalAvailabilityObjects: ParsedSkylarkObject[] | null,
+  updatedAvailabilityObjects: ParsedSkylarkObject[] | null,
+) => {
+  if (
+    !object ||
+    !object.operations.update ||
+    !originalAvailabilityObjects ||
+    !updatedAvailabilityObjects
+  ) {
+    return null;
+  }
+
+  const originalObjectUids = originalAvailabilityObjects.map(({ uid }) => uid);
+  const updatedObjectUids = updatedAvailabilityObjects.map(({ uid }) => uid);
+
+  const uidsToLink = updatedObjectUids.filter(
+    (uid) => !originalObjectUids.includes(uid),
+  );
+  const uidsToUnlink = originalObjectUids.filter(
+    (uid) => !updatedObjectUids.includes(uid),
+  );
+
+  const mutation = {
+    mutation: {
+      __name: `UPDATE_OBJECT_AVAILABILITY_${object.name}`,
+      __variables: {
+        uid: "String!",
+      },
+      updateAvailabilityObjects: {
+        __aliasFor: object.operations.update.name,
+        __args: {
+          uid: new VariableType("uid"),
+          [object.operations.update.argName]: {
+            availability: {
+              link: uidsToLink,
+              unlink: uidsToUnlink,
             },
           },
         },
