@@ -405,7 +405,6 @@ export const Panel = ({
         }
         isTranslatable={objectMeta?.isTranslatable}
         availabilityStatus={data?.meta.availabilityStatus}
-        metadataType={data?.metadata.type as string | undefined}
         toggleEditMode={() => {
           if (inEditMode) {
             metadataForm.reset();

@@ -31,7 +31,6 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import {
-  formatObjectField,
   getObjectDisplayName,
   getObjectTypeDisplayNameFromParsedObject,
 } from "src/lib/utils";
@@ -50,7 +49,6 @@ interface PanelHeaderProps {
   isSaving?: boolean;
   isTranslatable?: boolean;
   availabilityStatus?: AvailabilityStatus | null;
-  metadataType?: string;
   toggleEditMode: () => void;
   closePanel?: () => void;
   save: () => void;
@@ -72,7 +70,6 @@ export const PanelHeader = ({
   isSaving,
   isTranslatable,
   availabilityStatus,
-  metadataType,
   toggleEditMode,
   closePanel,
   save,
@@ -227,12 +224,6 @@ export const PanelHeader = ({
                 className="w-20 bg-brand-primary"
                 label={object.config.objectTypeDisplayName || objectType}
               />
-              {/* {metadataType && (
-                <Pill
-                  className="bg-manatee-600"
-                  label={formatObjectField(metadataType)}
-                />
-              )} */}
               {availabilityStatus && (
                 <AvailabilityLabelPill status={availabilityStatus} />
               )}
