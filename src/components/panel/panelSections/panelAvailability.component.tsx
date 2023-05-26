@@ -5,7 +5,6 @@ import { Fragment, useEffect } from "react";
 
 import { AvailabilityLabel } from "src/components/availability";
 import { OpenObjectButton } from "src/components/button";
-import { Trash } from "src/components/icons";
 import { DisplayGraphQLQuery } from "src/components/modals/graphQLQueryModal";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelLoading } from "src/components/panel/panelLoading";
@@ -28,7 +27,6 @@ import {
 import {
   formatReadableDate,
   getAvailabilityStatusForAvailabilityObject,
-  getObjectAvailabilityStatus,
   getRelativeTimeFromDate,
   getSingleAvailabilityStatus,
   is2038Problem,
@@ -42,7 +40,6 @@ interface PanelAvailabilityProps {
   objectType: string;
   objectUid: string;
   language: string;
-  currentObjectAvailabilityStatus?: AvailabilityStatus | null;
   inEditMode: boolean;
   showDropArea?: boolean;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
@@ -129,64 +126,32 @@ const convertAvailabilityToParsedObject = (
 const PanelAvailabilityEditView = ({
   availabilityObjects,
   inEditMode,
-  currentObjectAvailabilityStatus,
   setPanelObject,
   removeAvailabilityObject,
 }: {
   removeAvailabilityObject: (uid: string) => void;
-} & PanelAvailabilityProps) => {
-  const updatedObjectStatus: AvailabilityStatus | null = availabilityObjects
-    ? getObjectAvailabilityStatus(
-        availabilityObjects?.map(
-          ({ metadata }): ParsedSkylarkObjectAvailabilityObject => ({
-            uid: metadata.uid,
-            external_id: metadata.external_id,
-            title: (metadata.title as string) || "",
-            slug: (metadata.slug as string) || "",
-            start: (metadata.start as string) || "",
-            end: (metadata.end as string) || "",
-            timezone: (metadata.timezone as string) || "",
-            dimensions: [],
-          }),
-        ),
-      )
-    : null;
-
-  return (
-    <div>
-      {/* <p className="mb-2 border-b pb-2">
-        <span className="font-semibold">{`On save this object will ${
-          updatedObjectStatus === currentObjectAvailabilityStatus
-            ? "remain"
-            : "change to"
-        }:`}</span>
-        <AvailabilityLabel className="pl-1.5" status={updatedObjectStatus} />
-      </p> */}
-      {availabilityObjects?.map((obj) => {
-        return (
-          <Fragment key={obj.uid}>
-            <div className="flex items-center">
-              <ObjectIdentifierCard
-                key={obj.uid}
-                object={obj}
-                disableForwardClick={inEditMode}
-                hideObjectType
-                onForwardClick={setPanelObject}
-                onDeleteClick={() => removeAvailabilityObject(obj.uid)}
-              >
-                <AvailabilityLabel
-                  status={getAvailabilityStatusForAvailabilityObject(
-                    obj.metadata,
-                  )}
-                />
-              </ObjectIdentifierCard>
-            </div>
-          </Fragment>
-        );
-      })}
-    </div>
-  );
-};
+} & PanelAvailabilityProps) => (
+  <div>
+    {availabilityObjects?.map((obj) => {
+      return (
+        <div key={obj.uid} className="flex items-center">
+          <ObjectIdentifierCard
+            key={obj.uid}
+            object={obj}
+            disableForwardClick={inEditMode}
+            hideObjectType
+            onForwardClick={setPanelObject}
+            onDeleteClick={() => removeAvailabilityObject(obj.uid)}
+          >
+            <AvailabilityLabel
+              status={getAvailabilityStatusForAvailabilityObject(obj.metadata)}
+            />
+          </ObjectIdentifierCard>
+        </div>
+      );
+    })}
+  </div>
+);
 
 export const PanelAvailability = (props: PanelAvailabilityProps) => {
   const {

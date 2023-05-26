@@ -546,7 +546,6 @@ export const Panel = ({
               setPanelObject={setPanelObject}
               inEditMode={inEditMode}
               showDropArea={showDropArea}
-              currentObjectAvailabilityStatus={data?.meta.availabilityStatus}
               availabilityObjects={availabilityObjects.updated}
               setAvailabilityObjects={setAvailabilityObjects}
             />

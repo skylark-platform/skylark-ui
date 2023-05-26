@@ -18,7 +18,6 @@ import {
   waitFor,
   fireEvent,
   within,
-  prettyDOM,
 } from "src/__tests__/utils/test-utils";
 import { QueryErrorMessages } from "src/enums/graphql";
 import {
