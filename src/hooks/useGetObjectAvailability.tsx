@@ -59,23 +59,23 @@ export const useGetObjectAvailability = (
   });
 
   const availability: ParsedSkylarkObjectAvailabilityObject[] | undefined =
-    useMemo(() => {
-      console.log("useMemo");
-      return data?.pages
-        ?.flatMap((page) => page.getObjectAvailability.availability.objects)
-        .map((object): ParsedSkylarkObjectAvailabilityObject => {
-          return {
-            ...object,
-            // config: {},
-            title: object.title || "",
-            slug: object.slug || "",
-            start: object.start || "",
-            end: object.end || "",
-            timezone: object.timezone || "",
-            dimensions: object.dimensions.objects,
-          };
-        });
-    }, [data?.pages]);
+    useMemo(
+      () =>
+        data?.pages
+          ?.flatMap((page) => page.getObjectAvailability.availability.objects)
+          .map((object): ParsedSkylarkObjectAvailabilityObject => {
+            return {
+              ...object,
+              title: object.title || "",
+              slug: object.slug || "",
+              start: object.start || "",
+              end: object.end || "",
+              timezone: object.timezone || "",
+              dimensions: object.dimensions.objects,
+            };
+          }),
+      [data?.pages],
+    );
 
   return {
     ...rest,

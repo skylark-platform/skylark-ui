@@ -20,7 +20,7 @@ export const Pill = ({ label, bgColor, className, onDelete }: PillProps) => (
       className,
       // Only add a default bg when one isn't given in the className
       (!className || !twClassNameIncludes(className, "bg-")) &&
-        "bg-manatee-200",
+        "bg-manatee-300",
     )}
     style={bgColor ? { backgroundColor: bgColor } : undefined}
   >

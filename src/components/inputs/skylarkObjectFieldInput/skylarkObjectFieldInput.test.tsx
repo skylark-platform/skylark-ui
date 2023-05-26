@@ -307,3 +307,23 @@ describe("renders inputs", () => {
     expect(input).toBeInTheDocument();
   });
 });
+
+test("copies the value to the clipboard", async () => {
+  const config: NormalizedObjectField = {
+    name: "stringfield",
+    originalType: "String",
+    isRequired: false,
+    isList: false,
+    type: "string",
+  };
+  const value = "example";
+
+  jest.spyOn(navigator.clipboard, "writeText");
+
+  render(<WrappedSkylarkObjectFieldInput config={config} value={value} />);
+
+  const copyToken = screen.getByLabelText("Copy example to clipboard");
+  fireEvent.click(copyToken);
+
+  expect(navigator.clipboard.writeText).toHaveBeenCalledWith(value);
+});

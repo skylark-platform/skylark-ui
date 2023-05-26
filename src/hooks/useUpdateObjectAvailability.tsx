@@ -11,31 +11,28 @@ import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 export const useUpdateObjectAvailability = ({
   objectType,
   uid,
-  updatedRelationshipObjects,
-  originalRelationshipObjects,
+  updatedAvailabilityObjects,
+  originalAvailabilityObjects,
   onSuccess,
 }: {
   objectType: SkylarkObjectType;
   uid: string;
-  updatedRelationshipObjects: ParsedSkylarkObject[] | null;
-  originalRelationshipObjects: ParsedSkylarkObject[] | null;
+  updatedAvailabilityObjects: ParsedSkylarkObject[] | null;
+  originalAvailabilityObjects: ParsedSkylarkObject[] | null;
   onSuccess: () => void;
 }) => {
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  const updateObjectRelationshipsMutation = createUpdateObjectAvailability(
+  const mutation = createUpdateObjectAvailability(
     objectOperations,
-    originalRelationshipObjects,
-    updatedRelationshipObjects,
+    originalAvailabilityObjects,
+    updatedAvailabilityObjects,
   );
 
   const { mutate, ...rest } = useMutation({
     mutationFn: ({ uid }: { uid: string }) => {
-      return skylarkRequest(
-        updateObjectRelationshipsMutation as RequestDocument,
-        { uid },
-      );
+      return skylarkRequest(mutation as RequestDocument, { uid });
     },
     onSuccess: async (_, { uid }) => {
       await queryClient.refetchQueries({

@@ -39,7 +39,7 @@ const objectTypeColumn = columnHelper.accessor(
           <Pill
             label={original.config.objectTypeDisplayName || original.objectType}
             bgColor={original.config.colour}
-            className="w-full bg-brand-primary"
+            className="w-full"
           />
         </div>
       );

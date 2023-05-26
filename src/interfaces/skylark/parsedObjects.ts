@@ -31,7 +31,6 @@ export interface ParsedSkylarkDimensionsWithValues
 }
 
 export interface ParsedSkylarkObjectAvailabilityObject {
-  // config: ParsedSkylarkObjectConfig;
   uid: SkylarkUID;
   external_id: SkylarkExternalId;
   title: string;

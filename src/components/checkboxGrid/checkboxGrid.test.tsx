@@ -1,4 +1,9 @@
-import { fireEvent, render, screen } from "src/__tests__/utils/test-utils";
+import {
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "src/__tests__/utils/test-utils";
 
 import {
   CheckboxGrid,
@@ -171,6 +176,32 @@ describe("CheckboxGrid", () => {
     ]);
     screen.getAllByRole("checkbox").forEach((el) => {
       expect(el).toHaveAttribute("aria-checked", "false");
+    });
+  });
+
+  test("calls onChange with only the clicked option when 'Only' is clicked", async () => {
+    const onChange = jest.fn();
+    render(
+      <CheckboxGrid
+        label={label}
+        options={createCheckboxOptions(options, strOpts)}
+        onChange={onChange}
+      />,
+    );
+
+    const withinCheckboxContainer = within(
+      screen.getAllByRole("checkbox")[1].parentElement as HTMLDivElement,
+    );
+
+    fireEvent.click(withinCheckboxContainer.getByText("Only"));
+
+    expect(onChange).toHaveBeenCalledWith([
+      { option: { label: "opt1", value: "opt1" }, state: false },
+      { option: { label: "opt2", value: "opt2" }, state: true },
+      { option: { label: "opt3", value: "opt3" }, state: false },
+    ]);
+    screen.getAllByRole("checkbox").forEach((el, i) => {
+      expect(el).toHaveAttribute("aria-checked", i === 1 ? "true" : "false");
     });
   });
 });

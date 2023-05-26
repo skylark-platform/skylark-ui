@@ -23,7 +23,7 @@ export const AvailabilityLabel = ({
       status === AvailabilityStatus.Expired && "text-error",
     )}
   >
-    {status}
+    {status || AvailabilityStatus.Unavailable}
   </span>
 );
 

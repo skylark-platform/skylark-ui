@@ -382,8 +382,8 @@ export const Panel = ({
     useUpdateObjectAvailability({
       objectType,
       uid,
-      originalRelationshipObjects: availabilityObjects.original,
-      updatedRelationshipObjects: availabilityObjects.updated,
+      originalAvailabilityObjects: availabilityObjects.original,
+      updatedAvailabilityObjects: availabilityObjects.updated,
       onSuccess: () => {
         setEditMode(false);
       },
