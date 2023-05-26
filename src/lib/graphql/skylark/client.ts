@@ -44,7 +44,7 @@ export const skylarkRequest = <T>(
   };
 
   if (!opts?.useCache) {
-    headers[REQUEST_HEADERS.bypassCache] = "1";
+    // TODO BYPASS headers[REQUEST_HEADERS.bypassCache] = "1";
   }
 
   return request<T>(uri || SAAS_API_ENDPOINT, query, variables, headers);
