@@ -2,7 +2,7 @@ import { useDroppable } from "@dnd-kit/core";
 import clsx from "clsx";
 import { Fragment, useEffect, useState } from "react";
 
-import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
+import { DisplayGraphQLQuery } from "src/components/modals/graphQLQueryModal";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {

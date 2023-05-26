@@ -6,17 +6,16 @@ interface CopyToClipboardProps {
   className?: string;
 }
 
-export const CopyToClipboard = ({ value, className }: CopyToClipboardProps) => {
-  return value ? (
-    <GrCopy
-      aria-label={`Copy ${value} to clipboard`}
-      onClick={() => {
-        navigator.clipboard.writeText(`${value}`);
-      }}
-      className={clsx(
-        "ml-2 cursor-pointer text-lg opacity-20 transition-opacity hover:opacity-100 active:opacity-60",
-        className,
-      )}
-    />
-  ) : null;
-};
+export const CopyToClipboard = ({ value, className }: CopyToClipboardProps) => (
+  <GrCopy
+    aria-label={`Copy ${value} to clipboard`}
+    onClick={(e) => {
+      e.preventDefault();
+      navigator.clipboard.writeText(`${value}`);
+    }}
+    className={clsx(
+      "ml-2 cursor-pointer text-base opacity-20 transition-opacity hover:opacity-100 active:opacity-60 group-hover/copy-to-clipboard:visible",
+      className,
+    )}
+  />
+);

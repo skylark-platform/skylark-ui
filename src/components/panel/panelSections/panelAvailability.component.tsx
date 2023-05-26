@@ -5,8 +5,8 @@ import { Fragment, useEffect } from "react";
 
 import { AvailabilityLabel } from "src/components/availability";
 import { OpenObjectButton } from "src/components/button";
-import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { Trash } from "src/components/icons";
+import { DisplayGraphQLQuery } from "src/components/modals/graphQLQueryModal";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {

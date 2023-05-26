@@ -40,7 +40,7 @@ export interface TableRowProps {
   setPanelObject?: TableProps["setPanelObject"];
   tableMeta: TableMeta<object> | undefined;
   withCheckbox?: boolean;
-  withDraggableRow?: boolean;
+  isDraggable?: boolean;
 }
 
 const headAndDataClassNames =
@@ -164,6 +164,7 @@ const TableData = ({
   openPanel,
   object,
   rowIsActive,
+  isDraggable,
 }: {
   cell: Cell<ParsedSkylarkObject, unknown>;
   height: number;
@@ -172,20 +173,25 @@ const TableData = ({
   openPanel: () => void;
   object: SkylarkObjectIdentifier;
   rowIsActive?: boolean;
+  isDraggable?: boolean;
 }) => {
+  const columnId = cell.column.id;
   const className = useMemo(
     () =>
       clsx(
-        columnStyles(cell.column.id, "cell", withCheckbox),
+        columnStyles(columnId, "cell", withCheckbox),
         headAndDataClassNames,
         lastHeadAndDataClassNames,
         rowGroupClassName,
-        rowIsActive && cell.column.id !== OBJECT_LIST_TABLE.columnIds.actions
+        rowIsActive && columnId !== OBJECT_LIST_TABLE.columnIds.actions
           ? activeRowClassName
           : "border-transparent",
         "border-l last:pr-0",
+        OBJECT_LIST_TABLE.columnIds.dragIcon === columnId &&
+          !isDraggable &&
+          "[&>span]:invisible",
       ),
-    [cell.column.id, withCheckbox, rowIsActive],
+    [columnId, withCheckbox, rowIsActive, isDraggable],
   );
 
   const cellValue = cell.getValue();
@@ -210,6 +216,7 @@ const TableData = ({
         colour={cell.row.original.config?.colour}
         width={cell.column.getSize()}
         height={height}
+        isDraggable={isDraggable}
       >
         {children}
       </DisplayNameTableCell>
@@ -254,7 +261,7 @@ const TableRow = ({
   setPanelObject,
   tableMeta,
   withCheckbox,
-  withDraggableRow,
+  isDraggable,
   virtualRowSize,
 }: TableRowProps) => {
   const {
@@ -267,7 +274,7 @@ const TableRow = ({
     data: {
       object: row.original,
     },
-    disabled: !withDraggableRow,
+    disabled: !isDraggable,
   });
 
   const rowIsActive =
@@ -305,6 +312,7 @@ const TableRow = ({
           height={virtualRowSize}
           rowIsActive={rowIsActive}
           object={{ uid, objectType, language }}
+          isDraggable={isDraggable}
         />
       ))}
     </tr>
@@ -364,7 +372,7 @@ export const Table = ({
               setPanelObject={setPanelObject}
               tableMeta={tableMeta}
               withCheckbox={withCheckbox}
-              withDraggableRow={withDraggableRow}
+              isDraggable={withDraggableRow}
               virtualRowSize={virtualRow.size}
             />
           );

@@ -18,10 +18,7 @@ import { ObjectList } from "src/components/objectListing";
 import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
 import { usePanelObjectState } from "src/hooks/usePanelObjectState";
-import {
-  ParsedSkylarkObject,
-  ParsedSkylarkObjectAvailabilityObject,
-} from "src/interfaces/skylark";
+import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 const INITIAL_PANEL_PERCENTAGE = 70;
 const MINIMUM_SIZES = {
@@ -151,9 +148,7 @@ export const ContentLibrary = () => {
       <DragOverlay zIndex={100} dropAnimation={null}>
         {draggedObject ? (
           <div className="max-w-[350px] items-center rounded-sm border border-manatee-200 bg-white px-2">
-            <ObjectIdentifierCard
-              object={draggedObject as ParsedSkylarkObject}
-            />
+            <ObjectIdentifierCard object={draggedObject} />
           </div>
         ) : null}
       </DragOverlay>

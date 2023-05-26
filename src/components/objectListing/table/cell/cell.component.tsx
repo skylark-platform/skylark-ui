@@ -16,6 +16,7 @@ interface DisplayNameTableCellProps {
   children: ReactNode | JSX.Element;
   width: number;
   height: number;
+  isDraggable?: boolean;
 }
 
 export const DisplayNameTableCell = ({
@@ -26,6 +27,7 @@ export const DisplayNameTableCell = ({
   children,
   width,
   height,
+  isDraggable,
 }: DisplayNameTableCellProps) => {
   return (
     <td
@@ -41,6 +43,7 @@ export const DisplayNameTableCell = ({
             "relative h-6 w-2.5 border-r-4 border-r-brand-primary pl-8",
             "before:left-3 before:top-0 before:hidden before:h-full before:w-5 before:bg-inherit before:opacity-0 before:group-hover/row:opacity-60 md:before:absolute md:before:block",
             "before:bg-[url('/icons/drag_indicator_black.png')] before:bg-center before:bg-no-repeat",
+            !isDraggable && "before:invisible",
           )}
           style={{ borderRightColor: colour }}
         />

@@ -3,7 +3,7 @@ import { ComponentStory } from "@storybook/react";
 import { AddAuthTokenModal } from "./betaReleaseAuthModal.component";
 
 export default {
-  title: "Components/AddAuthTokenModal",
+  title: "Components/Modals/AddAuthTokenModal",
   component: AddAuthTokenModal,
 };
 

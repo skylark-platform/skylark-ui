@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
-import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
 import { MultiSelect } from "src/components/inputs/multiselect/multiselect.component";
 import { SelectOption, Select } from "src/components/inputs/select";
+import { DisplayGraphQLQuery } from "src/components/modals/graphQLQueryModal";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import { PanelFieldTitle } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";

@@ -6,7 +6,7 @@ import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 import { DisplayGraphQLQuery } from "./graphQLQueryModal.component";
 
 export default {
-  title: "Components/DisplayGraphQLQuery",
+  title: "Components/Modals/DisplayGraphQLQuery",
   component: DisplayGraphQLQuery,
 };
 

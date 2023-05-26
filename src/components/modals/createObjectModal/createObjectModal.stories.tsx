@@ -3,7 +3,7 @@ import { ComponentStory } from "@storybook/react";
 import { CreateObjectModal } from "./createObjectModal.component";
 
 export default {
-  title: "Components/ObjectListing/CreateObjectModal",
+  title: "Components/Modals/CreateObjectModal",
   component: CreateObjectModal,
 };
 

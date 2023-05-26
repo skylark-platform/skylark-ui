@@ -12,11 +12,3 @@ test("clicks the copy buttons", () => {
 
   expect(navigator.clipboard.writeText).toHaveBeenCalledWith("value");
 });
-
-test("does not render when value is undefined", () => {
-  render(<CopyToClipboard />);
-
-  expect(
-    screen.queryByLabelText("Copy value to clipboard"),
-  ).not.toBeInTheDocument();
-});

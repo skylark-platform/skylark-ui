@@ -3,8 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { AddAuthTokenModal } from "src/components/betaReleaseAuthModal";
 import { Button } from "src/components/button";
+import { AddAuthTokenModal } from "src/components/modals/betaReleaseAuthModal";
 import { Hamburger } from "src/components/navigation/hamburger";
 import { NavigationLinks } from "src/components/navigation/links";
 import { UserAvatar } from "src/components/user";
