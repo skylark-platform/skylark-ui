@@ -1,4 +1,3 @@
-import { useDroppable } from "@dnd-kit/core";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { Fragment, useEffect } from "react";
@@ -7,6 +6,7 @@ import { AvailabilityLabel } from "src/components/availability";
 import { OpenObjectButton } from "src/components/button";
 import { DisplayGraphQLQuery } from "src/components/modals/graphQLQueryModal";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
@@ -14,7 +14,6 @@ import {
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
-import { DROPPABLE_ID } from "src/constants/skylark";
 import { useGetObjectAvailability } from "src/hooks/useGetObjectAvailability";
 import {
   AvailabilityStatus,
@@ -41,7 +40,7 @@ interface PanelAvailabilityProps {
   objectUid: string;
   language: string;
   inEditMode: boolean;
-  showDropArea?: boolean;
+  showDropZone?: boolean;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
   availabilityObjects: ParsedSkylarkObject[] | null;
   setAvailabilityObjects: (a: {
@@ -161,16 +160,13 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
     language,
     inEditMode,
     setPanelObject,
-    showDropArea,
+    showDropZone,
     availabilityObjects,
     setAvailabilityObjects,
   } = props;
 
   const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
     useGetObjectAvailability(objectType, objectUid, { language });
-  const { isOver, setNodeRef } = useDroppable({
-    id: DROPPABLE_ID,
-  });
 
   useEffect(() => {
     if (!inEditMode && data) {
@@ -184,19 +180,6 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
     }
   }, [data, inEditMode, setAvailabilityObjects]);
 
-  if (showDropArea)
-    return (
-      <div
-        ref={setNodeRef}
-        className={clsx(
-          isOver && "border-primary text-primary",
-          "m-4 mt-10 flex h-72 items-center justify-center border-2 border-dotted text-center text-manatee-400",
-        )}
-      >
-        <span>{`Drop object here to add to the ${objectType}'s content`}</span>
-      </div>
-    );
-
   const now = dayjs();
 
   const removeAvailabilityObject = (uidToRemove: string) =>
@@ -205,6 +188,10 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
       original: data ? convertAvailabilityToParsedObject(data) : [],
       updated: availabilityObjects.filter(({ uid }) => uid !== uidToRemove),
     });
+
+  if (showDropZone) {
+    return <PanelDropZone />;
+  }
 
   return (
     <PanelSectionLayout

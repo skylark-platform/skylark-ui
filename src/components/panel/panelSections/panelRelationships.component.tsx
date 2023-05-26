@@ -1,16 +1,14 @@
-import { useDroppable } from "@dnd-kit/core";
-import clsx from "clsx";
 import { Fragment, useEffect, useState } from "react";
 
 import { DisplayGraphQLQuery } from "src/components/modals/graphQLQueryModal";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
-import { DROPPABLE_ID } from "src/constants/skylark";
 import { useGetObjectRelationships } from "src/hooks/useGetObjectRelationships";
 import {
   ParsedSkylarkObjectRelationships,
@@ -32,7 +30,7 @@ interface PanelRelationshipsProps {
     updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
   }) => void;
   inEditMode: boolean;
-  showDropArea?: boolean;
+  showDropZone?: boolean;
   language: string;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }
@@ -45,7 +43,7 @@ export const PanelRelationships = ({
   setRelationshipObjects,
   inEditMode,
   language,
-  showDropArea,
+  showDropZone,
   setPanelObject,
 }: PanelRelationshipsProps) => {
   const {
@@ -85,23 +83,6 @@ export const PanelRelationships = ({
   const [expandedRelationships, setExpandedRelationships] = useState<
     Record<string, boolean>
   >({});
-  const { isOver, setNodeRef } = useDroppable({
-    id: DROPPABLE_ID,
-  });
-
-  if (showDropArea)
-    return (
-      <div
-        ref={setNodeRef}
-        data-cy={"drop-area"}
-        className={clsx(
-          isOver && "border-primary text-primary",
-          "m-4 mt-10 flex h-72 items-center justify-center border-2 border-dotted text-center text-manatee-400",
-        )}
-      >
-        <span>{`Drag an object from the Content Library to add as a relationship`}</span>
-      </div>
-    );
 
   const relationshipNames = objectRelationships.map(
     ({ relationshipName }) => relationshipName,
@@ -111,6 +92,10 @@ export const PanelRelationships = ({
       relationshipNames.indexOf(a.relationshipName) -
       relationshipNames.indexOf(b.relationshipName),
   );
+
+  if (showDropZone) {
+    return <PanelDropZone />;
+  }
 
   return (
     <PanelSectionLayout

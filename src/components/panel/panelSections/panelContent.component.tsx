@@ -1,15 +1,14 @@
-import { useDroppable } from "@dnd-kit/core";
 import clsx from "clsx";
 import { Reorder } from "framer-motion";
 import { useEffect, useState } from "react";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import {
   PanelEmptyDataText,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
-import { DROPPABLE_ID } from "src/constants/skylark";
 import {
   ParsedSkylarkObjectContentObject,
   AddedSkylarkObjectContentObject,
@@ -25,7 +24,7 @@ interface PanelContentProps {
   objectType: string;
   onReorder: (objs: ParsedSkylarkObjectContentObject[]) => void;
   inEditMode?: boolean;
-  showDropArea?: boolean;
+  showDropZone?: boolean;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }
 
@@ -98,18 +97,14 @@ export const PanelContent = ({
   isPage,
   objects,
   inEditMode,
-  objectType,
+  showDropZone,
   onReorder,
-  showDropArea,
   setPanelObject,
 }: PanelContentProps) => {
   const removeItem = (uid: string) => {
     const filtered = objects.filter(({ object }) => uid !== object.uid);
     onReorder(filtered);
   };
-  const { isOver, setNodeRef } = useDroppable({
-    id: DROPPABLE_ID,
-  });
 
   const handleManualOrderChange = (
     currentIndex: number,
@@ -130,19 +125,9 @@ export const PanelContent = ({
     onReorder(updatedObjects);
   };
 
-  if (showDropArea)
-    return (
-      <div
-        ref={setNodeRef}
-        data-cy={"drop-area"}
-        className={clsx(
-          isOver && "border-primary text-primary",
-          "m-4 mt-10 flex h-72 items-center justify-center border-2 border-dotted text-center text-manatee-400",
-        )}
-      >
-        <span>{`Drop object here to add to the ${objectType}'s content`}</span>
-      </div>
-    );
+  if (showDropZone) {
+    return <PanelDropZone />;
+  }
 
   return (
     <PanelSectionLayout

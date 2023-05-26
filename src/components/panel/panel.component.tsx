@@ -28,6 +28,7 @@ import {
   hasProperty,
 } from "src/lib/utils";
 
+import { PanelDropZone } from "./panelDropZone/panelDropZone.component";
 import {
   PanelAvailability,
   PanelHeader,
@@ -42,7 +43,7 @@ interface PanelProps {
   isPage?: boolean;
   closePanel?: () => void;
   object: SkylarkObjectIdentifier;
-  showDropArea?: boolean;
+  isDraggedObject?: boolean;
   droppedObject?: ParsedSkylarkObject;
   clearDroppedObject?: () => void;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
@@ -57,6 +58,14 @@ enum PanelTab {
   Content = "Content",
   Relationships = "Relationships",
 }
+
+const tabsWithEditMode = [
+  PanelTab.Metadata,
+  PanelTab.Content,
+  PanelTab.Relationships,
+  PanelTab.Availability,
+  PanelTab.AvailabilityDimensions,
+];
 
 function parseSkylarkObjectContent(
   skylarkObject: ParsedSkylarkObject,
@@ -74,7 +83,7 @@ export const Panel = ({
   isPage,
   object,
   closePanel,
-  showDropArea,
+  isDraggedObject,
   droppedObject,
   clearDroppedObject,
   setPanelObject,
@@ -185,6 +194,7 @@ export const Panel = ({
       inEditMode || (metadataForm.formState.isDirty && !inEditMode);
 
     if (!metadataInEditMode && formParsedMetadata && !dataAndFormAreEqual) {
+      console.log("RUN");
       resetMetadataForm(formParsedMetadata);
     }
   }, [inEditMode, metadataForm, resetMetadataForm, formParsedMetadata]);
@@ -441,7 +451,7 @@ export const Panel = ({
 
   return (
     <section
-      className="mx-auto flex h-full w-full flex-col break-words"
+      className="mx-auto flex h-full w-full flex-col overflow-y-hidden break-words"
       data-cy={`panel-for-${objectType}-${uid}`}
       data-testid="panel"
     >
@@ -454,13 +464,7 @@ export const Panel = ({
         graphQLQuery={query}
         graphQLVariables={variables}
         currentTab={selectedTab}
-        tabsWithEditMode={[
-          PanelTab.Metadata,
-          PanelTab.Content,
-          PanelTab.Relationships,
-          PanelTab.Availability,
-          PanelTab.AvailabilityDimensions,
-        ]}
+        tabsWithEditMode={tabsWithEditMode}
         closePanel={closePanel}
         inEditMode={inEditMode}
         save={saveActiveTabChanges}
@@ -475,7 +479,7 @@ export const Panel = ({
         availabilityStatus={data?.meta.availabilityStatus}
         toggleEditMode={() => {
           if (inEditMode) {
-            metadataForm.reset();
+            resetMetadataForm(formParsedMetadata || {});
             setContentObjects(null);
             setRelationshipObjects({
               updatedRelationshipObjects: originalRelationshipObjects,
@@ -545,7 +549,7 @@ export const Panel = ({
               language={language}
               setPanelObject={setPanelObject}
               inEditMode={inEditMode}
-              showDropArea={showDropArea}
+              showDropZone={isDraggedObject}
               availabilityObjects={availabilityObjects.updated}
               setAvailabilityObjects={setAvailabilityObjects}
             />
@@ -557,7 +561,7 @@ export const Panel = ({
               inEditMode={inEditMode}
               objectType={objectType}
               onReorder={setContentObjects}
-              showDropArea={showDropArea}
+              showDropZone={isDraggedObject}
               setPanelObject={setPanelObject}
             />
           )}
@@ -569,8 +573,8 @@ export const Panel = ({
               updatedRelationshipObjects={updatedRelationshipObjects}
               setRelationshipObjects={setRelationshipObjects}
               inEditMode={inEditMode}
-              showDropArea={showDropArea}
               language={language}
+              showDropZone={isDraggedObject}
               setPanelObject={setPanelObject}
             />
           )}

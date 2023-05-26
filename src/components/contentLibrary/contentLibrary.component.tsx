@@ -204,7 +204,7 @@ export const ContentLibrary = () => {
               <Panel
                 object={activePanelObject}
                 closePanel={closePanel}
-                showDropArea={!!draggedObject}
+                isDraggedObject={!!draggedObject}
                 droppedObject={droppedObject}
                 setPanelObject={setPanelObject}
                 navigateToPreviousPanelObject={navigateToPreviousPanelObject}
