@@ -41,10 +41,10 @@ export const Checkbox = ({
         </Indicator>
       </Root>
       {label && (
-        <div className="group/checkbox-only relative flex w-full justify-between">
+        <div className="group/checkbox-only relative flex w-full justify-between peer-radix-state-checked:text-black peer-radix-state-unchecked:text-manatee-500">
           <label
             className={clsx(
-              "select-none overflow-hidden pl-2 font-medium group-hover/checkbox:cursor-pointer peer-radix-state-checked:text-black peer-radix-state-unchecked:text-manatee-500",
+              "select-none overflow-hidden pl-2 font-medium group-hover/checkbox:cursor-pointer",
               className,
             )}
             htmlFor={htmlFor}
