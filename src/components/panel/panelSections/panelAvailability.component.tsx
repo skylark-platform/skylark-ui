@@ -212,8 +212,6 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
       const parsedObjects: ParsedSkylarkObject[] =
         convertAvailabilityToParsedObject(data);
 
-      console.log("availability useEffect");
-
       setAvailabilityObjects({
         original: parsedObjects,
         updated: parsedObjects,
@@ -235,8 +233,6 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
     );
 
   const now = dayjs();
-
-  console.log({ availabilityObjects });
 
   const removeAvailabilityObject = (uidToRemove: string) =>
     availabilityObjects &&
@@ -355,22 +351,6 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                             }
                             disabled={inEditMode}
                           />
-                          <button
-                            disabled={!inEditMode}
-                            data-testid="availability-delete"
-                            className={clsx(
-                              "transition-width",
-                              inEditMode ? "visible w-6 pl-2" : "invisible w-0",
-                            )}
-                            onClick={() => removeAvailabilityObject(obj.uid)}
-                          >
-                            <Trash
-                              className={clsx(
-                                "flex h-6 text-manatee-500 transition-all hover:text-error",
-                                inEditMode ? "w-6" : "w-0",
-                              )}
-                            />
-                          </button>
                         </div>
                       </div>
 

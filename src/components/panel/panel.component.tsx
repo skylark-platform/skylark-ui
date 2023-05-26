@@ -285,7 +285,6 @@ export const Panel = ({
         }
         setEditMode(true);
       } else if (selectedTab === PanelTab.Availability) {
-        console.log("DDD", { droppedObject });
         if (droppedObject) {
           if (
             droppedObject.objectType !== BuiltInSkylarkObjectType.Availability

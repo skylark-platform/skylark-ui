@@ -44,21 +44,21 @@ export const WithForwardArrow = Template.bind({});
 WithForwardArrow.args = {
   object,
   onDeleteClick: undefined,
-  onForwardClick: () => console.log("clicked"),
+  onForwardClick: () => "",
 };
 
 export const WithDeleteIcon = Template.bind({});
 WithDeleteIcon.args = {
   object,
   onForwardClick: undefined,
-  onDeleteClick: () => console.log("clicked"),
+  onDeleteClick: () => "",
 };
 
 export const WithAllIcons = Template.bind({});
 WithAllIcons.args = {
   object,
-  onForwardClick: () => console.log("clicked"),
-  onDeleteClick: () => console.log("clicked"),
+  onForwardClick: () => "",
+  onDeleteClick: () => "",
 };
 
 export const WithObjectTypeHidden = Template.bind({});

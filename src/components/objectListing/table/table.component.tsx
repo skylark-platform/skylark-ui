@@ -243,7 +243,7 @@ const TableData = ({
           inEditMode={rowInEditMode}
           onEditClick={() => tableMeta?.onEditClick(cell.row.id)}
           onInfoClick={openPanel}
-          onEditSaveClick={() => console.log(cell.row)}
+          onEditSaveClick={() => ""}
           onEditCancelClick={() => tableMeta?.onEditCancelClick()}
         />
       </td>

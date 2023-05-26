@@ -12,10 +12,6 @@ import {
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectAvailabilityQuery } from "src/lib/graphql/skylark/dynamicQueries";
-import {
-  getSingleAvailabilityStatus,
-  is2038Problem,
-} from "src/lib/skylark/availability";
 
 import { GetObjectOptions } from "./useGetObject";
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
