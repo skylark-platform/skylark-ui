@@ -44,7 +44,7 @@ export interface TableRowProps {
 }
 
 const headAndDataClassNames =
-  "overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm text-base-content bg-white";
+  "overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm text-base-content";
 const lastHeadAndDataClassNames =
   "last:sticky last:right-0 last:pl-0 last:h-full last:z-10 last:min-w-0 last:border-l-0";
 const rowClassName = "group/row hover:bg-manatee-50 hover:border-manatee-50 ";
@@ -65,34 +65,40 @@ const customColumnStyling: Record<
   }
 > = {
   default: {
-    className: { all: "pr-1 pl-px" },
+    className: { all: "pr-1 pl-px bg-white" },
+  },
+  [OBJECT_LIST_TABLE.columnIds.actions]: {
+    className: {
+      all: "bg-transparent",
+    },
   },
   [OBJECT_LIST_TABLE.columnIds.displayField]: {
     className: {
-      all: "sm:sticky z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-1",
+      all: "sm:sticky z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-1 bg-white",
       withoutCheckbox: "left-6",
       withCheckbox: "left-10",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.dragIcon]: {
     className: {
-      all: "px-0 hidden md:table-cell",
+      all: "px-0 hidden md:table-cell bg-white",
       cell: "",
       header: "",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.objectType]: {
     className: {
-      all: "px-0",
+      all: "px-0 bg-white",
       cell: "absolute z-20 pr-2",
       header: "sm:sticky bg-white w-10 -left-px h-5 pr-1",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.checkbox]: {
-    className: { all: "pr-4 pl-0 sticky -left-px absolute z-[41]" },
+    className: { all: "pr-4 pl-0 sticky -left-px absolute z-[41] bg-white" },
   },
   images: {
     className: {
+      all: "bg-white",
       cell: "[&>div]:flex [&>div]:overflow-hidden [&>div]:h-7 [&>div]:md:h-8 pb-0 pt-0.5 md:py-0.5 [&>div]:mr-2 [&>div>img]:mr-0.5 [&>div>img]:h-full",
     },
   },
