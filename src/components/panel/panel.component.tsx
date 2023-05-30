@@ -28,7 +28,6 @@ import {
   hasProperty,
 } from "src/lib/utils";
 
-import { PanelDropZone } from "./panelDropZone/panelDropZone.component";
 import {
   PanelAvailability,
   PanelHeader,
@@ -194,7 +193,6 @@ export const Panel = ({
       inEditMode || (metadataForm.formState.isDirty && !inEditMode);
 
     if (!metadataInEditMode && formParsedMetadata && !dataAndFormAreEqual) {
-      console.log("RUN");
       resetMetadataForm(formParsedMetadata);
     }
   }, [inEditMode, metadataForm, resetMetadataForm, formParsedMetadata]);
@@ -221,13 +219,12 @@ export const Panel = ({
             );
 
           if (isAlreadyAdded) {
-            toast(
+            toast.warning(
               <Toast
                 title={"Relationship exists"}
                 message={`${getObjectTypeDisplayNameFromParsedObject(
                   droppedObject,
                 )} "${getObjectDisplayName(droppedObject)}" is already linked`}
-                type="warning"
               />,
             );
           } else {
@@ -248,7 +245,7 @@ export const Panel = ({
               });
           }
         } else {
-          toast(
+          toast.error(
             <Toast
               title={"Invalid relationship"}
               message={`${getObjectTypeDisplayNameFromParsedObject(
@@ -258,7 +255,6 @@ export const Panel = ({
                   ? getObjectTypeDisplayNameFromParsedObject(data)
                   : objectType
               }`}
-              type="error"
             />,
           );
         }
@@ -273,11 +269,19 @@ export const Panel = ({
           .includes(droppedObject.uid)
       ) {
         if (object.uid === droppedObject.uid) {
-          toast(
+          toast.warning(
             <Toast
               title={"Invalid Object"}
               message={"Unable to add a Set to its own Set Content"}
-              type="warning"
+            />,
+          );
+        } else if (
+          droppedObject.objectType === BuiltInSkylarkObjectType.Availability
+        ) {
+          toast.error(
+            <Toast
+              title={"Invalid Object Type"}
+              message={"Availability cannot be added as Set Content"}
             />,
           );
         } else {
@@ -299,7 +303,7 @@ export const Panel = ({
           if (
             droppedObject.objectType !== BuiltInSkylarkObjectType.Availability
           ) {
-            toast(
+            toast.error(
               <Toast
                 title={"Invalid Object"}
                 message={`${getObjectTypeDisplayNameFromParsedObject(
@@ -307,16 +311,14 @@ export const Panel = ({
                 )} "${getObjectDisplayName(
                   droppedObject,
                 )}" is not an Availability object`}
-                type="error"
               />,
             );
           } else if (
-            [
-              ...(availabilityObjects.original || []),
-              ...(availabilityObjects.updated || []),
-            ]?.find(({ uid }) => uid === droppedObject.uid)
+            [...(availabilityObjects.updated || [])]?.find(
+              ({ uid }) => uid === droppedObject.uid,
+            )
           ) {
-            toast(
+            toast.warning(
               <Toast
                 title={"Existing"}
                 message={`${getObjectTypeDisplayNameFromParsedObject(
@@ -324,7 +326,6 @@ export const Panel = ({
                 )} "${getObjectDisplayName(
                   droppedObject,
                 )}" is already assigned`}
-                type="warning"
               />,
             );
           } else {

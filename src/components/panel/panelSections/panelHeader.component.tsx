@@ -82,7 +82,7 @@ export const PanelHeader = ({
   const { mutate: deleteObjectMutation } = useDeleteObject({
     objectType,
     onSuccess: ({ objectType, uid }) => {
-      toast(
+      toast.success(
         <Toast
           title={`${
             object
@@ -94,7 +94,6 @@ export const PanelHeader = ({
               ? getObjectTypeDisplayNameFromParsedObject(object)
               : objectType
           } "${object ? getObjectDisplayName(object) : uid}" has been deleted`}
-          type="success"
         />,
       );
       closePanel?.();
