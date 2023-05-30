@@ -19,7 +19,7 @@ const options = ["Episode", "Season", "Brand", "Set", "Image", "Asset"].map(
 const Template: ComponentStory<typeof MultiSelect> = (args) => {
   return (
     <div className={clsx("w-96")}>
-      <MultiSelect {...args} onChange={(selected) => console.log(selected)} />
+      <MultiSelect {...args} onChange={() => ""} />
     </div>
   );
 };

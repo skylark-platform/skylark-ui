@@ -85,9 +85,17 @@ export const convertFieldTypeToHTMLInputType = (
   }
 };
 
-const isArraysEqual = (arr1: unknown[], arr2: unknown[]) =>
+export const isArraysDeepEqual = (arr1: unknown[], arr2: unknown[]) =>
   arr1.length == arr2.length &&
-  arr1.every((element, index) => element === arr2[index]);
+  arr1.every((el1, index) => {
+    const el2 = arr2[index];
+    const isObjects = isObject(el1) && isObject(el2);
+    if (isObjects) {
+      return isObjectsDeepEqual(el1, el2);
+    }
+
+    return el1 === el2;
+  });
 
 export const isObjectsDeepEqual = (
   obj1: Record<string, unknown>,
@@ -110,7 +118,7 @@ export const isObjectsDeepEqual = (
 
     const isArrays = Array.isArray(value1) && Array.isArray(value2);
     if (isArrays) {
-      return isArraysEqual(value1, value2);
+      return isArraysDeepEqual(value1, value2);
     }
 
     if (value1 !== value2) {

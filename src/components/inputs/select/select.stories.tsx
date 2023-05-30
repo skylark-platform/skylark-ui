@@ -17,7 +17,7 @@ const options = ["Episode", "Season", "Brand"].map((val) => ({
 const Template: ComponentStory<typeof Select> = (args) => {
   return (
     <div className={clsx(args.variant === "pill" ? "w-28" : "w-96")}>
-      <Select {...args} onChange={(selected) => console.log(selected)} />
+      <Select {...args} onChange={() => ""} />
     </div>
   );
 };

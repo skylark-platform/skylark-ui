@@ -200,6 +200,14 @@ describe("isObjectsDeepEqual", () => {
     expect(got).toEqual(true);
   });
 
+  test("objects with arrays of objects as values are same", () => {
+    const got = isObjectsDeepEqual(
+      { key1: [{ obj: 1 }, { test: "test" }] },
+      { key1: [{ obj: 1 }, { test: "test" }] },
+    );
+    expect(got).toEqual(true);
+  });
+
   test("objects with arrays in different orders as values are different", () => {
     const got = isObjectsDeepEqual({ key1: [1, 2, 3] }, { key1: [2, 3, 1] });
     expect(got).toEqual(false);

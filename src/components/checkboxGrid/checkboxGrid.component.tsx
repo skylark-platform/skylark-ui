@@ -66,6 +66,15 @@ export const CheckboxGrid = ({
     onChange(newCheckedOptions);
   };
 
+  const handleToggleOnly = (onlyOption: CheckboxOption) => {
+    const newCheckedOptions = checkboxState.map(({ option }) => ({
+      option,
+      state: option === onlyOption,
+    }));
+    setCheckboxState(newCheckedOptions);
+    onChange(newCheckedOptions);
+  };
+
   useEffect(() => {
     setCheckboxState(options);
   }, [options]);
@@ -97,6 +106,7 @@ export const CheckboxGrid = ({
             onCheckedChange={(checkedState) =>
               handleChange(option, checkedState)
             }
+            onOnlyClick={() => handleToggleOnly(option)}
           />
         ))}
       </div>

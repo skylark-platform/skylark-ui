@@ -9,6 +9,7 @@ import { LazyMotion } from "framer-motion";
 import PlausibleProvider from "next-plausible";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import "react-toastify/dist/ReactToastify.css";
 
 import { Navigation } from "src/components/navigation";
 import { ToastContainer } from "src/components/toast/toast.component";

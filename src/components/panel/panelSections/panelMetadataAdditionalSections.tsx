@@ -1,4 +1,3 @@
-import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 import { PanelFieldTitle } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
 import { useImageSize } from "src/hooks/useImageSize";
@@ -14,20 +13,17 @@ export const PanelMetadataProperty = ({
   value?: JSX.Element | SkylarkObjectMetadataField;
   isLoading?: boolean;
 }) => (
-  <div>
-    <PanelFieldTitle text={formatObjectField(property)} />
+  <div className="group/copy-to-clipboard">
+    <PanelFieldTitle
+      text={formatObjectField(property)}
+      withCopyValue
+      copyValue={value || undefined}
+    />
     {isLoading ? (
       <Skeleton className="mb-4 h-5 w-full" />
     ) : (
       <p className="relative mb-4 flex text-base-content">
-        {value ? (
-          <>
-            {value}
-            <CopyToClipboard value={value} />
-          </>
-        ) : (
-          "---"
-        )}
+        {value ? value : "---"}
       </p>
     )}
   </div>

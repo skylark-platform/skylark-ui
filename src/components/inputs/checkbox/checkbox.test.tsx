@@ -25,3 +25,13 @@ test("calls onCheckedChange when checked", async () => {
   expect(onChange).toHaveBeenCalledWith(true);
   expect(screen.getByRole("checkbox")).toHaveAttribute("aria-checked", "true");
 });
+
+test("calls onOnlyClick when 'Only' is checked", async () => {
+  const onOnlyClick = jest.fn();
+
+  render(<Checkbox label={label} onOnlyClick={onOnlyClick} />);
+
+  await fireEvent.click(screen.getByText("Only"));
+
+  expect(onOnlyClick).toHaveBeenCalled();
+});

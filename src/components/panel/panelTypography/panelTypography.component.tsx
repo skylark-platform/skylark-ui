@@ -1,10 +1,14 @@
 import clsx from "clsx";
 
+import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
+
 interface PanelHeaderProps {
   text: string;
   id?: string;
   count?: string | number;
   sticky?: boolean;
+  withCopyValue?: boolean;
+  copyValue?: string | number | true | JSX.Element | string[];
 }
 
 export const PanelSectionTitle = ({
@@ -29,15 +33,23 @@ export const PanelFieldTitle = ({
   id,
   count,
   sticky,
+  withCopyValue,
+  copyValue,
 }: PanelHeaderProps) => (
   <h4
     id={id}
     className={clsx(
-      "mb-1 bg-white pb-0.5 text-sm font-bold",
+      "group/header mb-1 flex items-center bg-white pb-0.5 text-sm font-bold",
       sticky && "sticky top-12 pt-2 md:top-[3.6rem]",
     )}
   >
     {count !== undefined ? `${text} (${count})` : text}
+    {withCopyValue && (
+      <CopyToClipboard
+        value={copyValue}
+        className="invisible group-hover/header:visible"
+      />
+    )}
   </h4>
 );
 

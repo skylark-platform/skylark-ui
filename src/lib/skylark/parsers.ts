@@ -41,9 +41,8 @@ import {
 } from "src/lib/utils";
 
 import {
-  getAvailabilityStatusForAvailabilityObject,
   getObjectAvailabilityStatus,
-  getSingleAvailabilityStatus,
+  getAvailabilityStatusForAvailabilityObject,
 } from "./availability";
 
 dayjs.extend(customParseFormat);

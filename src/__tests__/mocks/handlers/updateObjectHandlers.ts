@@ -40,4 +40,14 @@ export const updateObjectHandlers = [
       }),
     );
   }),
+
+  graphql.mutation("UPDATE_OBJECT_AVAILABILITY_Movie", (req, res, ctx) => {
+    return res(
+      ctx.data({
+        updateAvailabilityObjects: {
+          uid: "01GXSR23WH5DHGTXVHXW1TMGBJ",
+        },
+      }),
+    );
+  }),
 ];

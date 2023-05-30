@@ -7,7 +7,7 @@ import {
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
 import { Edit3, Plus, Upload } from "src/components/icons";
-import { CreateObjectModal } from "src/components/objectListing/createObjectModal/createObjectModal.component";
+import { CreateObjectModal } from "src/components/modals/createObjectModal";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 
 interface CreateButtonProps {

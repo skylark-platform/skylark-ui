@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { RequestDocument } from "graphql-request";
+import { useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import {
@@ -11,10 +12,6 @@ import {
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectAvailabilityQuery } from "src/lib/graphql/skylark/dynamicQueries";
-import {
-  getSingleAvailabilityStatus,
-  is2038Problem,
-} from "src/lib/skylark/availability";
 
 import { GetObjectOptions } from "./useGetObject";
 import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
@@ -57,27 +54,24 @@ export const useGetObjectAvailability = (
       lastPage.getObjectAvailability.availability?.next_token || undefined,
   });
 
-  const now = dayjs();
   const availability: ParsedSkylarkObjectAvailabilityObject[] | undefined =
-    data?.pages
-      ?.flatMap((page) => page.getObjectAvailability.availability.objects)
-      .map((object): ParsedSkylarkObjectAvailabilityObject => {
-        const { start, end } = object;
-        const neverExpires = !!(end && is2038Problem(end));
-        const status = getSingleAvailabilityStatus(now, start || "", end || "");
-
-        return {
-          ...object,
-          title: object.title || "",
-          slug: object.slug || "",
-          start: start || "",
-          end: end || "",
-          timezone: object.timezone || "",
-          dimensions: object.dimensions.objects,
-          status,
-          neverExpires,
-        };
-      });
+    useMemo(
+      () =>
+        data?.pages
+          ?.flatMap((page) => page.getObjectAvailability.availability.objects)
+          .map((object): ParsedSkylarkObjectAvailabilityObject => {
+            return {
+              ...object,
+              title: object.title || "",
+              slug: object.slug || "",
+              start: object.start || "",
+              end: object.end || "",
+              timezone: object.timezone || "",
+              dimensions: object.dimensions.objects,
+            };
+          }),
+      [data?.pages],
+    );
 
   return {
     ...rest,

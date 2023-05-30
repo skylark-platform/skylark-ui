@@ -7,7 +7,7 @@ import {
   CheckboxGrid,
   createCheckboxOptions,
 } from "src/components/checkboxGrid/checkboxGrid.component";
-import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
+import { DisplayGraphQLQuery } from "src/components/modals/graphQLQueryModal";
 import { SearchFilters } from "src/hooks/useSearch";
 import { SkylarkGraphQLObjectConfig } from "src/interfaces/skylark";
 

@@ -38,8 +38,6 @@ export interface ParsedSkylarkObjectAvailabilityObject {
   start: string;
   end: string;
   timezone: string;
-  neverExpires: boolean;
-  status: AvailabilityStatus | null;
   dimensions: SkylarkGraphQLAvailabilityDimensionWithValues[];
 }
 

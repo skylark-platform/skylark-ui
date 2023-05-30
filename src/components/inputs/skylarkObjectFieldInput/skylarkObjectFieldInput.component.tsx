@@ -10,6 +10,7 @@ import {
   ValidationRule,
 } from "react-hook-form";
 
+import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { Select } from "src/components/inputs/select";
 import { Skeleton } from "src/components/skeleton";
@@ -47,13 +48,22 @@ const createHtmlForId = (field: SkylarkObjectFieldInputProps["field"]) =>
 const SkylarkObjectFieldInputLabel = ({
   field,
   isRequired,
+  copyValue,
 }: {
   field: SkylarkObjectFieldInputProps["field"];
   isRequired?: boolean;
+  copyValue?: string;
 }) => (
-  <label className="mb-2 block font-bold" htmlFor={createHtmlForId(field)}>
+  <label
+    className="mb-2 flex items-center font-bold"
+    htmlFor={createHtmlForId(field)}
+  >
     {formatObjectField(field)}
     {isRequired && <span className="pl-0.5 text-error">*</span>}
+    <CopyToClipboard
+      value={copyValue}
+      className="invisible group-hover/input-field:visible"
+    />
   </label>
 );
 
@@ -216,8 +226,12 @@ export const SkylarkObjectFieldInput = (
   };
 
   return (
-    <div className="mb-4 text-sm">
-      <SkylarkObjectFieldInputLabel field={field} isRequired={!!required} />
+    <div className="group/input-field mb-4 text-sm">
+      <SkylarkObjectFieldInputLabel
+        field={field}
+        isRequired={!!required}
+        copyValue={props.value !== null ? `${props.value}` : undefined}
+      />
       {isLoading ? (
         <Skeleton className="h-11 w-full" />
       ) : (

@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 
 import { AvailabilityLabelPill } from "src/components/availability";
 import { Button } from "src/components/button";
-import { DisplayGraphQLQueryModal } from "src/components/displayGraphQLQuery";
 import {
   DropdownMenu,
   DropdownMenuButton,
@@ -20,6 +19,7 @@ import {
   ExternalLink,
 } from "src/components/icons";
 import { LanguageSelect } from "src/components/inputs/select";
+import { DisplayGraphQLQueryModal } from "src/components/modals/graphQLQueryModal";
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { Pill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
@@ -82,7 +82,7 @@ export const PanelHeader = ({
   const { mutate: deleteObjectMutation } = useDeleteObject({
     objectType,
     onSuccess: ({ objectType, uid }) => {
-      toast(
+      toast.success(
         <Toast
           title={`${
             object
@@ -94,7 +94,6 @@ export const PanelHeader = ({
               ? getObjectTypeDisplayNameFromParsedObject(object)
               : objectType
           } "${object ? getObjectDisplayName(object) : uid}" has been deleted`}
-          type="success"
         />,
       );
       closePanel?.();

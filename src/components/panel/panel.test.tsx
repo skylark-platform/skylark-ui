@@ -1241,15 +1241,7 @@ describe("availability view", () => {
     jest.useFakeTimers().setSystemTime(new Date("2023-03-10T00:00:00.000Z"));
   });
 
-  test("render the panel", async () => {
-    render(
-      <Panel
-        object={movieObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
-      />,
-    );
-
+  const switchToAvailability = async () => {
     expect(
       screen.queryAllByText(
         GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
@@ -1261,6 +1253,18 @@ describe("availability view", () => {
       expect(screen.getByText("Availability")).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Availability"));
+  };
+
+  test("render the panel", async () => {
+    render(
+      <Panel
+        object={movieObject}
+        closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
+      />,
+    );
+
+    await switchToAvailability();
 
     expect(
       screen.getAllByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
@@ -1313,10 +1317,7 @@ describe("availability view", () => {
       />,
     );
 
-    await waitFor(() =>
-      expect(screen.getByText("Availability")).toBeInTheDocument(),
-    );
-    fireEvent.click(screen.getByText("Availability"));
+    await switchToAvailability();
 
     await waitFor(() => expect(screen.getByText("None")).toBeInTheDocument());
   });
@@ -1330,10 +1331,7 @@ describe("availability view", () => {
       />,
     );
 
-    await waitFor(() =>
-      expect(screen.getByText("Availability")).toBeInTheDocument(),
-    );
-    fireEvent.click(screen.getByText("Availability"));
+    await switchToAvailability();
 
     const numberOfAvailabilityInFixture =
       GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
@@ -1361,10 +1359,7 @@ describe("availability view", () => {
       />,
     );
 
-    await waitFor(() =>
-      expect(screen.getByText("Availability")).toBeInTheDocument(),
-    );
-    fireEvent.click(screen.getByText("Availability"));
+    await switchToAvailability();
 
     const numberOfAvailabilityInFixture =
       GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
@@ -1403,10 +1398,7 @@ describe("availability view", () => {
       />,
     );
 
-    await waitFor(() =>
-      expect(screen.getByText("Availability")).toBeInTheDocument(),
-    );
-    fireEvent.click(screen.getByText("Availability"));
+    await switchToAvailability();
 
     const numberOfAvailabilityInFixture =
       GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
@@ -1427,6 +1419,122 @@ describe("availability view", () => {
       uid: GQLSkylarkGetObjectAvailabilityQueryFixture.data
         .getObjectAvailability.availability.objects[0].uid,
       language: "",
+    });
+  });
+
+  describe("availability view - edit", () => {
+    test("uses the object identifier card in edit mode", async () => {
+      render(
+        <Panel
+          object={movieObject}
+          closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
+        />,
+      );
+
+      await switchToAvailability();
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(
+            GQLSkylarkGetObjectQueryFixture.data.getObject.availability
+              .objects[0].title,
+          ),
+        ).toBeInTheDocument(),
+      );
+
+      expect(
+        screen.queryAllByText("Time Window").length,
+      ).toBeGreaterThanOrEqual(1);
+      expect(screen.queryAllByText("Audience").length).toBeGreaterThanOrEqual(
+        1,
+      );
+
+      fireEvent.click(screen.getByText("Edit Availability"));
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      expect(screen.queryAllByText("Time Window").length).toBe(0);
+      expect(screen.queryAllByText("Audience").length).toBe(0);
+    });
+
+    test("removes an availability and cancels", async () => {
+      const firstAvailabilityObjectTitle =
+        GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+          .title;
+      render(
+        <Panel
+          object={movieObject}
+          closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
+        />,
+      );
+
+      await switchToAvailability();
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(firstAvailabilityObjectTitle),
+        ).toBeInTheDocument(),
+      );
+
+      fireEvent.click(screen.getByText("Edit Availability"));
+
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      fireEvent.click(screen.getAllByTestId("object-identifier-delete")[0]);
+
+      expect(screen.queryAllByText(firstAvailabilityObjectTitle)).toHaveLength(
+        0,
+      );
+
+      // Cancel
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      expect(screen.queryAllByText(firstAvailabilityObjectTitle)).toHaveLength(
+        1,
+      );
+    });
+
+    test("removes an availability and saves", async () => {
+      const firstAvailabilityObjectTitle =
+        GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+          .title;
+      render(
+        <Panel
+          object={movieObject}
+          closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
+        />,
+      );
+
+      await switchToAvailability();
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(firstAvailabilityObjectTitle),
+        ).toBeInTheDocument(),
+      );
+
+      fireEvent.click(screen.getByText("Edit Availability"));
+
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      fireEvent.click(screen.getAllByTestId("object-identifier-delete")[0]);
+
+      expect(screen.queryAllByText(firstAvailabilityObjectTitle)).toHaveLength(
+        0,
+      );
+
+      // Save
+      const saveButton = screen.getByText("Save");
+      fireEvent.click(saveButton);
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(firstAvailabilityObjectTitle),
+        ).toBeInTheDocument(),
+      );
     });
   });
 });
