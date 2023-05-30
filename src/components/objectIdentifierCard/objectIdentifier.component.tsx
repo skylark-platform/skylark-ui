@@ -38,7 +38,11 @@ export const ObjectIdentifierCard = ({
           className="w-20 min-w-20 max-w-20"
         />
       )}
-      <p className="flex flex-grow text-sm">{getObjectDisplayName(object)}</p>
+      <p className="flex flex-grow overflow-hidden whitespace-nowrap text-sm">
+        <span className="overflow-hidden text-ellipsis">
+          {getObjectDisplayName(object)}
+        </span>
+      </p>
       {children}
       {onDeleteClick && (
         <button

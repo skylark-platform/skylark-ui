@@ -82,7 +82,9 @@ export const PanelContentItemOrderInput = ({
       }}
       className={clsx(
         "flex h-6 min-w-6 items-center justify-center rounded-full px-1 pb-0.5 text-center transition-colors",
-        (!hasMoved || disabled) && "bg-brand-primary text-white",
+        !isNewObject &&
+          (!hasMoved || disabled) &&
+          "bg-brand-primary text-white",
         !isNewObject && hasMoved && "bg-warning text-warning-content",
         isNewObject && "bg-success",
       )}
@@ -174,16 +176,18 @@ export const PanelContent = ({
                 onDeleteClick={() => removeItem(object.uid)}
               >
                 <div className="flex">
-                  <span
-                    className={clsx(
-                      "flex h-6 min-w-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
-                      !inEditMode || position === index + 1 || isNewObject
-                        ? "opacity-0"
-                        : "opacity-100",
-                    )}
-                  >
-                    {position}
-                  </span>
+                  {inEditMode && (
+                    <span
+                      className={clsx(
+                        "flex h-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
+                        position === index + 1 || isNewObject
+                          ? "opacity-0"
+                          : "opacity-100",
+                      )}
+                    >
+                      {position}
+                    </span>
+                  )}
                   <PanelContentItemOrderInput
                     disabled={!inEditMode}
                     position={index + 1}

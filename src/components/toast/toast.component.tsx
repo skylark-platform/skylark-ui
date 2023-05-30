@@ -45,7 +45,7 @@ export const ToastContainer = () => (
 
 export const Toast = ({ closeToast, title, message }: ToastProps) => {
   return (
-    <>
+    <div data-cy="toast">
       <div className="flex flex-row">
         <h4 className="flex-grow pr-2 text-base font-medium md:text-base">
           {title}
@@ -57,6 +57,6 @@ export const Toast = ({ closeToast, title, message }: ToastProps) => {
       {message && (
         <p className="mt-2 text-xs font-light md:text-sm">{message}</p>
       )}
-    </>
+    </div>
   );
 };

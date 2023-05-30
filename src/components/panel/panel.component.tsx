@@ -259,20 +259,27 @@ export const Panel = ({
           );
         }
         setEditMode(true);
-      } else if (
-        selectedTab === PanelTab.Content &&
-        !contentObjects
-          ?.map(({ object }) => object.uid)
-          .includes(droppedObject.uid) &&
-        !data?.content?.objects
-          ?.map(({ object }) => object.uid)
-          .includes(droppedObject.uid)
-      ) {
+      } else if (selectedTab === PanelTab.Content) {
         if (object.uid === droppedObject.uid) {
           toast.warning(
             <Toast
               title={"Invalid Object"}
               message={"Unable to add a Set to its own Set Content"}
+            />,
+          );
+        } else if (
+          contentObjects?.find(
+            ({ object: { uid } }) => uid === droppedObject.uid,
+          )
+        ) {
+          toast.warning(
+            <Toast
+              title={"Existing"}
+              message={`${getObjectTypeDisplayNameFromParsedObject(
+                droppedObject,
+              )} "${getObjectDisplayName(
+                droppedObject,
+              )}" already exists as content`}
             />,
           );
         } else if (
