@@ -59,7 +59,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
           const deltaX = 500;
           const deltaY = 500;
 
-          cy.get("[data-cy=drop-area]").should("not.exist");
+          cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
           cy.get(`[data-cy="draggable-item"`)
             .last()
@@ -80,7 +80,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               clientY: deltaY,
             })
             .then(() => {
-              cy.get("[data-cy=drop-area]").should("exist");
+              cy.get("[data-cy=panel-drop-zone]").should("exist");
             })
             .wait(100)
             .trigger("mouseup", { force: true })
@@ -110,7 +110,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
           const deltaX = 500;
           const deltaY = 500;
 
-          cy.get("[data-cy=drop-area]").should("not.exist");
+          cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
           cy.get(`[data-cy="draggable-item"`)
             .last()
@@ -125,7 +125,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               clientY: 20,
             })
             .then(() => {
-              cy.get("[data-cy=drop-area]").should("exist");
+              cy.get("[data-cy=panel-drop-zone]").should("exist");
             })
             .wait(500)
             .trigger("mousemove", {
@@ -155,7 +155,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               clientY: 20,
             })
             .then(() => {
-              cy.get("[data-cy=drop-area]").should("exist");
+              cy.get("[data-cy=panel-drop-zone]").should("exist");
             })
             .wait(500)
             .trigger("mousemove", {

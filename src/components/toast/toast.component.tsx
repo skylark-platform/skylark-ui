@@ -34,10 +34,10 @@ export const ToastContainer = () => (
     toastClassName={(props) => {
       return clsx(
         contextClassNames[props?.type || "default"],
-        "relative flex px-4 py-2 min-h-10 mt-2 justify-between overflow-hidden cursor-pointer min-h-16 h-full rounded-lg font-sans text-white",
+        "relative flex px-6 py-4 min-h-10 mt-2 justify-between overflow-hidden cursor-pointer min-h-16 h-full rounded font-sans text-white",
       );
     }}
-    className={"fixed right-0 top-20 z-[200] w-full pr-8 md:w-80 lg:w-96"}
+    className={"fixed right-0 top-0 z-[200] w-full pr-8 md:w-80 lg:w-96"}
     progressClassName="bg-brand-primary"
     icon={false}
   />
