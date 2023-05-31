@@ -14,6 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Navigation } from "src/components/navigation";
 import { ToastContainer } from "src/components/toast/toast.component";
 import { APP_URL } from "src/constants/skylark";
+import { UserProvider } from "src/contexts/useUser";
 import { createSkylarkReactQueryClient } from "src/lib/graphql/skylark/client";
 import "src/styles/globals.css";
 
@@ -56,9 +57,11 @@ export default function App({ Component, pageProps }: AppProps) {
           <link href="/favicons/favicon.ico" rel="icon" />
         </Head>
         <Navigation />
-        <LazyMotion features={loadFramerMotionFeatures} strict>
-          <Component {...pageProps} />
-        </LazyMotion>
+        <UserProvider>
+          <LazyMotion features={loadFramerMotionFeatures} strict>
+            <Component {...pageProps} />
+          </LazyMotion>
+        </UserProvider>
       </QueryClientProvider>
     </PlausibleProvider>
   );

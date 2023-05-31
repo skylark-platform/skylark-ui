@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
+import { useUser } from "src/contexts/useUser";
 import { QueryErrorMessages, QueryKeys } from "src/enums/graphql";
 import { ErrorCodes } from "src/interfaces/errors";
 import {
@@ -40,6 +41,8 @@ export const useGetObject = (
 ) => {
   const { language }: GetObjectOptions = opts || { language: null };
 
+  const { dispatch } = useUser();
+
   const {
     objectOperations: objectMeta,
     error: objectMetaError,
@@ -64,6 +67,18 @@ export const useGetObject = (
     () => data?.getObject && parseSkylarkObject(data?.getObject, objectMeta),
     [data?.getObject, objectMeta],
   );
+
+  useEffect(() => {
+    if (
+      parsedObject?.meta?.availableLanguages &&
+      parsedObject?.meta?.availableLanguages.length > 0
+    ) {
+      dispatch({
+        type: "addUsedLanguages",
+        value: parsedObject?.meta?.availableLanguages,
+      });
+    }
+  }, [dispatch, parsedObject?.meta?.availableLanguages]);
 
   return {
     ...rest,

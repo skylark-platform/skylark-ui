@@ -260,7 +260,7 @@ export const ObjectList = ({
           />
           <div className="mt-2 flex w-full justify-start pl-3 md:pl-7">
             <p className="text-xs font-medium text-manatee-400">
-              {searchLoading ? "Loading..." : `${totalHits} results`}
+              {searchLoading ? "Loading..." : `${totalHits || 0} results`}
             </p>
           </div>
         </div>
@@ -306,7 +306,7 @@ export const ObjectList = ({
             )}
 
             {!searchLoading && searchData && searchData.length === 0 && (
-              <p>{`No objects found.`}</p>
+              <p className="md:ml-6">{`No results containing all your search terms were found.`}</p>
             )}
           </div>
         )}
