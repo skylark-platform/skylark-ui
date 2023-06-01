@@ -29,6 +29,7 @@ export interface SelectProps {
   labelVariant?: "default" | "form";
   placeholder: string;
   className?: string;
+  optionsClassName?: string;
   disabled?: boolean;
   searchable?: boolean;
   allowCustomValue?: boolean;
@@ -108,11 +109,17 @@ export const SelectOptionComponent = ({
 );
 
 export const SelectOptionsContainer = forwardRef(
-  ({ children }: { children: ReactNode }, ref: Ref<HTMLDivElement>) => (
+  (
+    { children, className }: { children: ReactNode; className?: string },
+    ref: Ref<HTMLDivElement>,
+  ) => (
     <div
       ref={ref}
       data-testid="select-options"
-      className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+      className={clsx(
+        "absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
+        className,
+      )}
     >
       {children}
     </div>
@@ -124,12 +131,14 @@ export const Options = ({
   variant,
   options,
   currentSelected,
+  className,
 }: {
   variant: SelectProps["variant"];
   options: SelectOption[];
   currentSelected?: SelectOption;
+  className?: string;
 }) => (
-  <SelectOptionsContainer>
+  <SelectOptionsContainer className={className}>
     {options.map((option) => (
       <SelectOptionComponent
         key={option.value}
@@ -145,10 +154,12 @@ export const VirtualizedOptions = ({
   variant,
   options,
   currentSelected,
+  className,
 }: {
   variant: SelectProps["variant"];
   options: SelectOption[];
   currentSelected?: SelectOption;
+  className?: string;
 }) => {
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -160,7 +171,7 @@ export const VirtualizedOptions = ({
   });
 
   return (
-    <SelectOptionsContainer ref={parentRef}>
+    <SelectOptionsContainer ref={parentRef} className={className}>
       <div
         style={{
           height: `${rowVirtualizer.totalSize}px`,
@@ -199,6 +210,7 @@ export const Select = forwardRef(
       labelVariant = "default",
       placeholder,
       className,
+      optionsClassName,
       onChange,
       disabled,
       selected,
@@ -209,16 +221,15 @@ export const Select = forwardRef(
       withBasicSort,
     } = props;
 
-    const [query, setQuery] = useState("");
+    const [query, setQuery] = useState(selected || "");
 
     const options = withBasicSort
       ? unsortedOptions.sort(sortSelectOptions)
       : unsortedOptions;
 
     const filteredOptions =
-      query === ""
-        ? options
-        : options.filter((option) => {
+      searchable && query !== ""
+        ? options.filter((option) => {
             const lwrQuery = query.toLocaleLowerCase();
             const lwrValue = option.value.toLocaleLowerCase();
             const sanitisedLabel = option.label.toLocaleLowerCase();
@@ -226,7 +237,8 @@ export const Select = forwardRef(
               lwrValue.includes(lwrQuery) ||
               (sanitisedLabel && sanitisedLabel.includes(lwrQuery))
             );
-          });
+          })
+        : options;
 
     const onChangeWrapper = useCallback(
       (newSelected: SelectOption) => {
@@ -262,7 +274,7 @@ export const Select = forwardRef(
       >
         <div
           className={clsx(
-            "relative flex flex-col items-start justify-center",
+            "relative flex flex-col items-start justify-center text-sm",
             className,
           )}
         >
@@ -352,8 +364,13 @@ export const Select = forwardRef(
                     currentSelected={selectedOption}
                   />
                 ) : (
-                  <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <div className="relative cursor-default select-none bg-white py-2 px-4 text-sm text-gray-900">
+                  <div
+                    className={clsx(
+                      "absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
+                      optionsClassName,
+                    )}
+                  >
+                    <div className="relative cursor-default select-none bg-white py-2 px-4 text-gray-900">
                       Nothing found.
                     </div>
                   </div>
@@ -363,12 +380,14 @@ export const Select = forwardRef(
                   variant={variant}
                   options={filteredOptions ?? []}
                   currentSelected={selectedOption}
+                  className={optionsClassName}
                 />
               ) : (
                 <Options
                   variant={variant}
                   options={filteredOptions ?? []}
                   currentSelected={selectedOption}
+                  className={optionsClassName}
                 />
               )}
             </Combobox.Options>

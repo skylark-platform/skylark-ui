@@ -2,12 +2,15 @@ import { Dialog } from "@headlessui/react";
 import React, { useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { GrClose } from "react-icons/gr";
+import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
 import { SkylarkObjectFieldInput } from "src/components/inputs";
 import { LanguageSelect, ObjectTypeSelect } from "src/components/inputs/select";
+import { Toast } from "src/components/toast/toast.component";
 import { useCreateObject } from "src/hooks/useCreateObject";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
+import { useUpdateObjectMetadata } from "src/hooks/useUpdateObjectMetadata";
 import {
   SkylarkGraphQLObjectConfig,
   SkylarkObjectIdentifier,
@@ -19,6 +22,11 @@ import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objec
 interface CreateObjectModalProps {
   isOpen: boolean;
   objectType?: SkylarkObjectType;
+  createTranslation?: {
+    existingLanguages: string[];
+    objectTypeDisplayName?: string;
+    objectDisplayName?: string;
+  } & SkylarkObjectIdentifier;
   setIsOpen: (b: boolean) => void;
   onObjectCreated: (o: SkylarkObjectIdentifier) => void;
 }
@@ -34,6 +42,7 @@ const formHasObjectPropertyValues = (values: object) => {
 export const CreateObjectModal = ({
   isOpen,
   objectType: defaultObjectType,
+  createTranslation,
   setIsOpen,
   onObjectCreated,
 }: CreateObjectModalProps) => {
@@ -45,22 +54,30 @@ export const CreateObjectModal = ({
     getValues,
     formState,
     reset,
+    setValue,
   } = useForm<Record<string, SkylarkObjectMetadataField>>();
+  const isCreateTranslationModal = !!createTranslation;
+
   const [{ objectType, config: objectTypeConfig }, setObjectTypeWithConfig] =
     useState<{ objectType: string; config?: SkylarkGraphQLObjectConfig }>({
       objectType: defaultObjectType || "",
     });
 
-  const objectTypeDisplayName = objectTypeConfig?.display_name || objectType;
+  const objectTypeDisplayName = isCreateTranslationModal
+    ? createTranslation.objectTypeDisplayName || createTranslation.objectType
+    : objectTypeConfig?.display_name || objectType;
 
   const closeModal = () => {
     reset({});
+    setObjectTypeWithConfig({ objectType: "", config: undefined });
     setIsOpen(false);
   };
 
   const values = watch();
 
-  const { objectOperations } = useSkylarkObjectOperations(objectType);
+  const { objectOperations } = useSkylarkObjectOperations(
+    isCreateTranslationModal ? createTranslation.objectType : objectType,
+  );
 
   const { createObject, isLoading: isCreatingObject } = useCreateObject({
     objectType,
@@ -70,11 +87,40 @@ export const CreateObjectModal = ({
     },
   });
 
+  const { updateObjectMetadata, isLoading: isCreatingTranslation } =
+    useUpdateObjectMetadata({
+      objectType: createTranslation?.objectType || "",
+      onSuccess: (object) => {
+        onObjectCreated?.(object);
+        toast.success(
+          <Toast
+            title={`Translation "${object.language}" created`}
+            message={`The "${
+              object.language
+            }" translation has been created for the "${
+              createTranslation?.objectDisplayName || object.uid
+            }" ${objectTypeDisplayName}.`}
+          />,
+        );
+        closeModal();
+      },
+    });
+
+  // Add useCreateTranslation hook which calls updateObject with language
+
   const onSubmit = ({
     _language,
     ...metadata
-  }: Record<string, SkylarkObjectMetadataField>) =>
+  }: Record<string, SkylarkObjectMetadataField>) => {
+    if (isCreateTranslationModal) {
+      return updateObjectMetadata({
+        uid: createTranslation.uid,
+        language: _language as string,
+        metadata,
+      });
+    }
     createObject(_language as string, metadata);
+  };
 
   const {
     systemMetadataFields,
@@ -93,6 +139,34 @@ export const CreateObjectModal = ({
       };
 
   const objectTypeSelectRef = useRef(null);
+
+  const sectionConfig = {
+    system: {
+      id: "system",
+      title: "System Metadata",
+      metadataFields: systemMetadataFields,
+    },
+    translatable: {
+      id: "translatable",
+      title: "Translatable Metadata",
+      metadataFields: translatableMetadataFields,
+    },
+    global: {
+      id: "global",
+      title: "Global Metadata",
+      metadataFields: globalMetadataFields,
+    },
+  };
+
+  const formSections = isCreateTranslationModal
+    ? [sectionConfig.translatable]
+    : [sectionConfig.system, sectionConfig.translatable, sectionConfig.global];
+
+  const isExistingTranslation =
+    isCreateTranslationModal && values._language
+      ? createTranslation.existingLanguages.includes(values._language as string)
+      : false;
+
   return (
     <Dialog
       open={isOpen}
@@ -119,61 +193,58 @@ export const CreateObjectModal = ({
           </button>
 
           <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">
-            {`Create ${objectTypeDisplayName || "Object"}`}
+            {isCreateTranslationModal
+              ? `Create ${objectTypeDisplayName} Translation`
+              : `Create ${objectTypeDisplayName || "Object"}`}
           </Dialog.Title>
           <Dialog.Description>
-            Select Object Type to get started.
+            {isCreateTranslationModal
+              ? "Select language and add translatable data."
+              : "Select Object Type to get started."}
           </Dialog.Description>
           <form
             className="mt-8 flex w-full flex-col justify-end gap-4"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <ObjectTypeSelect
-              className="w-full"
-              variant="primary"
-              label="Object Type"
-              labelVariant="form"
-              placeholder="Select Object Type to get started"
-              selected={objectType}
-              onChange={setObjectTypeWithConfig}
-            />
+            {!isCreateTranslationModal && (
+              <ObjectTypeSelect
+                className="w-full"
+                variant="primary"
+                label="Object Type"
+                labelVariant="form"
+                placeholder="Select Object Type to get started"
+                selected={objectType}
+                onChange={setObjectTypeWithConfig}
+              />
+            )}
             {objectOperations && (
               <div>
-                {objectOperations.isTranslatable && (
-                  <Controller
-                    name="_language"
-                    control={control}
-                    render={({ field }) => (
-                      <LanguageSelect
-                        className="w-full"
-                        variant="primary"
-                        label="Object Language"
-                        labelVariant="form"
-                        rounded={false}
-                        selected={(field.value as string) || ""}
-                        onChange={field.onChange}
-                      />
+                {(objectOperations.isTranslatable ||
+                  isCreateTranslationModal) && (
+                  <>
+                    <Controller
+                      name="_language"
+                      control={control}
+                      render={({ field }) => (
+                        <LanguageSelect
+                          className="w-full"
+                          variant="primary"
+                          label="Object Language"
+                          labelVariant="form"
+                          rounded={false}
+                          selected={(field.value as string) || ""}
+                          onChange={field.onChange}
+                          onValueClear={() => setValue("_language", "")}
+                        />
+                      )}
+                    />
+                    {isExistingTranslation && (
+                      <p className="-mb-4 mt-2 text-error">{`The language "${values._language}" is an existing translation.`}</p>
                     )}
-                  />
+                  </>
                 )}
                 <div className="mt-10">
-                  {[
-                    {
-                      id: "system",
-                      title: "System Metadata",
-                      metadataFields: systemMetadataFields,
-                    },
-                    {
-                      id: "translatable",
-                      title: "Translatable Metadata",
-                      metadataFields: translatableMetadataFields,
-                    },
-                    {
-                      id: "global",
-                      title: "Global Metadata",
-                      metadataFields: globalMetadataFields,
-                    },
-                  ]
+                  {formSections
                     .filter(({ metadataFields }) => metadataFields.length > 0)
                     .map(({ id, title, metadataFields }) => (
                       <div key={id} className="mb-8">
@@ -201,23 +272,33 @@ export const CreateObjectModal = ({
                   <Button
                     variant="primary"
                     className="mt-4"
-                    loading={isCreatingObject}
+                    loading={isCreatingObject || isCreatingTranslation}
                     type="submit"
                     disabled={
-                      !objectOperations || !formHasObjectPropertyValues(values)
+                      !objectOperations ||
+                      !formHasObjectPropertyValues(values) ||
+                      isExistingTranslation
                     }
                     success
                   >
                     {isCreatingObject
-                      ? `Creating ${objectTypeDisplayName}`
-                      : `Create ${objectTypeDisplayName || "Object"}`}
+                      ? `Creating ${
+                          isCreateTranslationModal
+                            ? "Translation"
+                            : objectTypeDisplayName
+                        }`
+                      : `Create ${
+                          isCreateTranslationModal
+                            ? "Translation"
+                            : objectTypeDisplayName || "Object"
+                        }`}
                   </Button>
                   <Button
                     variant="outline"
                     className="mt-4"
                     type="button"
                     danger
-                    disabled={isCreatingObject}
+                    disabled={isCreatingObject || isCreatingTranslation}
                     onClick={closeModal}
                   >
                     Cancel

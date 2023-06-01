@@ -20,11 +20,22 @@ describe("createDeleteObjectMutation", () => {
     expect(got).toBeNull();
   });
 
-  test("returns expected GraphQL delete mutation", () => {
+  test("returns expected GraphQL delete mutation on a translatable object", () => {
     const got = createDeleteObjectMutation(episodeObjectOperations);
 
     expect(got?.loc?.source.body).toEqual(
-      "mutation DELETE_Episode ($uid: String!, $language: String) { deleteObject: deleteEpisode (uid: $uid, language: $language) { uid } }",
+      "mutation DELETE_Episode ($uid: String!, $language: String!) { deleteObject: deleteEpisode (uid: $uid, language: $language) { uid } }",
+    );
+  });
+
+  test("returns expected GraphQL delete mutation on a non-translatable object", () => {
+    const got = createDeleteObjectMutation({
+      ...episodeObjectOperations,
+      isTranslatable: false,
+    });
+
+    expect(got?.loc?.source.body).toEqual(
+      "mutation DELETE_Episode ($uid: String!) { deleteObject: deleteEpisode (uid: $uid) { uid } }",
     );
   });
 });

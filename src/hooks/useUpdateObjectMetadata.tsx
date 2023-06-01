@@ -4,7 +4,7 @@ import { RequestDocument } from "graphql-request";
 import {
   GQLSkylarkGetObjectResponse,
   GQLSkylarkUpdateObjectMetadataResponse,
-  ParsedSkylarkObjectMetadata,
+  SkylarkObjectIdentifier,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -17,14 +17,10 @@ import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const useUpdateObjectMetadata = ({
   objectType,
-  uid,
-  language,
   onSuccess,
 }: {
   objectType: SkylarkObjectType;
-  uid: string;
-  language: string;
-  onSuccess: () => void;
+  onSuccess: (o: SkylarkObjectIdentifier) => void;
 }) => {
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
@@ -32,22 +28,24 @@ export const useUpdateObjectMetadata = ({
   const { mutate, ...rest } = useMutation({
     mutationFn: ({
       uid,
+      language,
       metadata,
     }: {
       uid: string;
+      language?: string;
       metadata: Record<string, SkylarkObjectMetadataField>;
     }) => {
       const updateObjectMetadataMutation = createUpdateObjectMetadataMutation(
         objectOperations,
         metadata,
-        !!language,
+        objectOperations?.isTranslatable,
       );
       return skylarkRequest<GQLSkylarkUpdateObjectMetadataResponse>(
         updateObjectMetadataMutation as RequestDocument,
         { uid, language },
       );
     },
-    onSuccess: (data, { uid }) => {
+    onSuccess: (data, { uid, language }) => {
       // Update get query with updated data
       queryClient.setQueryData<GQLSkylarkGetObjectResponse>(
         createGetObjectKeyPrefix({ objectType, uid, language }),
@@ -58,14 +56,20 @@ export const useUpdateObjectMetadata = ({
           },
         }),
       );
-      onSuccess();
+      onSuccess({ uid, language: language || "", objectType });
       refetchSearchQueriesAfterUpdate(queryClient);
     },
   });
 
-  const updateObjectMetadata = (
-    metadata: Record<string, SkylarkObjectMetadataField>,
-  ) => mutate({ uid, metadata });
+  const updateObjectMetadata = ({
+    uid,
+    metadata,
+    language,
+  }: {
+    uid: string;
+    metadata: Record<string, SkylarkObjectMetadataField>;
+    language: string;
+  }) => mutate({ uid, metadata, language });
 
   return {
     updateObjectMetadata,

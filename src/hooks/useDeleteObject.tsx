@@ -2,7 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
 import { QueryKeys } from "src/enums/graphql";
-import { SkylarkObjectType } from "src/interfaces/skylark";
+import {
+  SkylarkObjectIdentifier,
+  SkylarkObjectType,
+} from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createDeleteObjectMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
@@ -15,7 +18,7 @@ export const useDeleteObject = ({
   onSuccess,
 }: {
   objectType: SkylarkObjectType;
-  onSuccess: ({ objectType, uid }: { objectType: string; uid: string }) => void;
+  onSuccess: (o: SkylarkObjectIdentifier) => void;
 }) => {
   const queryClient = useQueryClient();
 
@@ -24,16 +27,19 @@ export const useDeleteObject = ({
   const deleteObjectMutation = createDeleteObjectMutation(objectOperations);
 
   const mutation = useMutation({
-    mutationFn: ({ uid }: { uid: string }) => {
-      return skylarkRequest(deleteObjectMutation as RequestDocument, { uid });
+    mutationFn: ({ uid, language }: { uid: string; language: string }) => {
+      return skylarkRequest(deleteObjectMutation as RequestDocument, {
+        uid,
+        language,
+      });
     },
-    onSuccess: (_, { uid }) => {
+    onSuccess: (_, { uid, language }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.Search] });
       queryClient.invalidateQueries({
         queryKey: createGetObjectKeyPrefix({ objectType, uid }),
       });
       refetchSearchQueriesAfterUpdate(queryClient);
-      onSuccess({ objectType, uid });
+      onSuccess({ objectType, uid, language });
     },
   });
 

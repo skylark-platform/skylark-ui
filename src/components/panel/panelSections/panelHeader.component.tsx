@@ -19,6 +19,7 @@ import {
   ExternalLink,
 } from "src/components/icons";
 import { LanguageSelect } from "src/components/inputs/select";
+import { CreateObjectModal } from "src/components/modals/createObjectModal";
 import { DisplayGraphQLQueryModal } from "src/components/modals/graphQLQueryModal";
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { Pill } from "src/components/pill";
@@ -56,6 +57,8 @@ interface PanelHeaderProps {
   navigateToPreviousPanelObject?: () => void;
 }
 
+const ADD_LANGUAGE_OPTION = "Create Translation";
+
 export const PanelHeader = ({
   isPage,
   objectUid,
@@ -78,6 +81,9 @@ export const PanelHeader = ({
 }: PanelHeaderProps) => {
   const title = getObjectDisplayName(object);
   const [showGraphQLModal, setGraphQLModalOpen] = useState(false);
+  const [createObjectModalOpen, setCreateObjectModalOpen] = useState(false);
+
+  const existingLanguages = object?.meta.availableLanguages || [language];
 
   const { mutate: deleteObjectMutation } = useDeleteObject({
     objectType,
@@ -96,7 +102,17 @@ export const PanelHeader = ({
           } "${object ? getObjectDisplayName(object) : uid}" has been deleted`}
         />,
       );
-      closePanel?.();
+
+      const otherLanguages =
+        (object?.meta.availableLanguages &&
+          object.meta.availableLanguages.filter((lang) => lang !== language)) ||
+        [];
+
+      // Change to other language if exists, otherwise close the panel
+      return otherLanguages.length > 0
+        ? setLanguage(otherLanguages[0])
+        : // TODO should we go back, show a object deleted/doesn't exist message?
+          closePanel?.();
     },
   });
 
@@ -115,15 +131,24 @@ export const PanelHeader = ({
       },
       {
         id: "delete-object",
-        text: `Delete`,
+        text: `Delete ${language}`,
         Icon: <Trash className="w-5 fill-error stroke-error" />,
         danger: true,
-        disabled: true, // TODO finish object deletion
-        onClick: () => deleteObjectMutation({ uid: objectUid }),
+        disabled: true, // TODO finish object deletion (add confirmation modal)
+        onClick: () => deleteObjectMutation({ uid: objectUid, language }),
       },
     ],
-    [deleteObjectMutation, objectType, objectUid],
+    [deleteObjectMutation, objectType, objectUid, language],
   );
+
+  const changeLanguage = (val: string) => {
+    if (val === ADD_LANGUAGE_OPTION) {
+      console.log("Add language");
+      setCreateObjectModalOpen(true);
+    } else {
+      setLanguage(val);
+    }
+  };
 
   return (
     <div
@@ -229,12 +254,11 @@ export const PanelHeader = ({
               {isTranslatable && (
                 <LanguageSelect
                   selected={language || object.meta.language}
-                  disabled={inEditMode}
+                  disabled={inEditMode || !object.meta.availableLanguages}
                   variant="pill"
-                  languages={
-                    object.meta.availableLanguages || [object.meta.language]
-                  }
-                  onChange={(val) => setLanguage(val)}
+                  languages={[...existingLanguages, ADD_LANGUAGE_OPTION]}
+                  optionsClassName="w-36"
+                  onChange={changeLanguage}
                 />
               )}
             </>
@@ -271,6 +295,22 @@ export const PanelHeader = ({
             close={() => setGraphQLModalOpen(false)}
           />
         )}
+        <CreateObjectModal
+          createTranslation={{
+            uid: objectUid,
+            language,
+            objectType,
+            objectTypeDisplayName: object?.config.objectTypeDisplayName,
+            existingLanguages,
+            objectDisplayName: title,
+          }}
+          isOpen={createObjectModalOpen}
+          objectType={objectType}
+          setIsOpen={setCreateObjectModalOpen}
+          onObjectCreated={(obj) => {
+            setLanguage(obj.language);
+          }}
+        />
       </AnimatePresence>
     </div>
   );

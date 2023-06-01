@@ -38,19 +38,36 @@ export const createDeleteObjectMutation = (
     return null;
   }
 
-  const common = generateVariablesAndArgs(object.name, "Mutation", true);
+  const common = generateVariablesAndArgs(object.name, "Mutation", false);
+
+  let language = {
+    variable: {},
+    arg: {},
+  };
+  if (object.isTranslatable) {
+    language = {
+      variable: {
+        language: "String!",
+      },
+      arg: {
+        language: new VariableType("language"),
+      },
+    };
+  }
 
   const mutation = {
     mutation: {
       __name: `DELETE_${object.name}`,
       __variables: {
         uid: "String!",
+        ...language.variable,
         ...common.variables,
       },
       deleteObject: {
         __aliasFor: object.operations.delete.name,
         __args: {
           uid: new VariableType("uid"),
+          ...language.arg,
           ...common.args,
         },
         uid: true,
