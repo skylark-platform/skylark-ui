@@ -276,7 +276,8 @@ export const CreateObjectModal = ({
                     disabled={
                       !objectOperations ||
                       !formHasObjectPropertyValues(values) ||
-                      isExistingTranslation
+                      isExistingTranslation ||
+                      (isCreateTranslationModal && !values._language)
                     }
                     success
                   >

@@ -29,11 +29,14 @@ const userReducer = (state: State, action: Action) => {
             )
           : action.value;
       if (newLanguages.length > 0) {
+        const allLanguages = state.usedLanguages
+          ? [...new Set([...state.usedLanguages, ...newLanguages])]
+          : newLanguages;
         localStorage.setItem(
           LOCAL_STORAGE.usedLanguages,
-          JSON.stringify(newLanguages),
+          JSON.stringify(allLanguages),
         );
-        return { ...state, usedLanguages: newLanguages };
+        return { ...state, usedLanguages: allLanguages };
       }
       return state;
     }

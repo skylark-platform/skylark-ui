@@ -77,10 +77,14 @@ const availabilityColumn = columnHelper.accessor("meta.availabilityStatus", {
 // Temporarily unused until we add images back into Content Library
 const imagesColumn = columnHelper.accessor("images", {
   header: formatObjectField("Images"),
+  size: 100,
   cell: (props) => {
     const imageRelationships =
       props.getValue<ParsedSkylarkObjectImageRelationship[]>();
-    const allImages = imageRelationships.flatMap(({ objects }) => objects);
+    const allImages = imageRelationships
+      .flatMap(({ objects }) => objects)
+      .filter((obj) => obj);
+
     if (
       !imageRelationships ||
       imageRelationships.length === 0 ||

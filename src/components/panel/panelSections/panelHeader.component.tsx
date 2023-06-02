@@ -119,7 +119,6 @@ export const PanelHeader = ({
 
   const changeLanguage = (val: string) => {
     if (val === ADD_LANGUAGE_OPTION) {
-      console.log("Add language");
       setCreateObjectModalOpen(true);
     } else {
       setLanguage(val);
