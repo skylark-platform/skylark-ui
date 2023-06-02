@@ -111,7 +111,6 @@ export const PanelHeader = ({
             : `Delete "${actualLanguage}" translation`,
         Icon: <Trash className="w-5 fill-error stroke-error" />,
         danger: true,
-        // disabled: true, // TODO finish object deletion (add confirmation modal)
         onClick: () => setDeleteObjectConfirmationModalOpen(true),
       },
     ],

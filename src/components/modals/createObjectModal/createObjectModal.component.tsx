@@ -106,8 +106,6 @@ export const CreateObjectModal = ({
       },
     });
 
-  // Add useCreateTranslation hook which calls updateObject with language
-
   const onSubmit = ({
     _language,
     ...metadata

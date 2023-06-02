@@ -1,6 +1,5 @@
 import { waitFor, screen } from "@testing-library/react";
 
-import GQLSkylarkGetObjectGOTS01E01QueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01.json";
 import { render } from "src/__tests__/utils/test-utils";
 
 import { DeleteObjectModal } from "./deleteObjectModal.component";
