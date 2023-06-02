@@ -1,4 +1,5 @@
 import { VisibilityState } from "@tanstack/react-table";
+import clsx from "clsx";
 import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useEffect, useRef, useState } from "react";
@@ -74,10 +75,12 @@ export const Search = ({
   };
 
   return (
-    <div className="flex w-full flex-col md:flex-row" ref={filtersDivRef}>
-      <div className="relative flex w-full flex-row">
+    <div
+      className={clsx("flex w-full flex-col md:flex-row", className)}
+      ref={filtersDivRef}
+    >
+      <div className="relative flex w-full flex-grow flex-row">
         <SearchInput
-          className={className}
           onQueryChange={onQueryChange}
           searchQuery={searchQuery}
           isSearching={isSearching}
