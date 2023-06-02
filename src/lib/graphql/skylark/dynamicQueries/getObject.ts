@@ -51,7 +51,7 @@ export const createGetObjectQuery = (
         },
         __typename: true,
         ...common.fields,
-        ...generateFieldsToReturn(object.fields),
+        ...generateFieldsToReturn(object.fields, object.name),
         ...generateRelationshipsToReturn(object),
         ...generateContentsToReturn(object, contentTypesToRequest),
       },
@@ -188,6 +188,7 @@ export const createGetObjectRelationshipsQuery = (
                 __typename: true,
                 ...generateFieldsToReturn(
                   relationshipsFields[currentValue.objectType],
+                  currentValue.objectType,
                 ),
                 ...common.fields,
               },

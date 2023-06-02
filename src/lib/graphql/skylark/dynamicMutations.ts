@@ -20,7 +20,6 @@ import { hasProperty } from "src/lib/utils";
 import {
   generateContentsToReturn,
   generateFieldsToReturn,
-  generateRelationshipsToReturn,
   generateVariablesAndArgs,
 } from "./dynamicQueries";
 
@@ -33,6 +32,7 @@ interface SetContentOperation {
 
 export const createDeleteObjectMutation = (
   object: SkylarkObjectMeta | null,
+  isDeleteTranslation: boolean,
 ) => {
   if (!object || !object.operations.delete) {
     return null;
@@ -44,7 +44,7 @@ export const createDeleteObjectMutation = (
     variable: {},
     arg: {},
   };
-  if (object.isTranslatable) {
+  if (isDeleteTranslation) {
     language = {
       variable: {
         language: "String!",
@@ -169,7 +169,7 @@ export const createUpdateObjectMetadataMutation = (
         },
         __typename: true,
         ...common.fields,
-        ...generateFieldsToReturn(objectMeta.fields),
+        ...generateFieldsToReturn(objectMeta.fields, objectMeta.name),
       },
     },
   };

@@ -15,19 +15,24 @@ import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const useDeleteObject = ({
   objectType,
+  isDeleteTranslation,
   onSuccess,
 }: {
   objectType: SkylarkObjectType;
+  isDeleteTranslation: boolean;
   onSuccess: (o: SkylarkObjectIdentifier) => void;
 }) => {
   const queryClient = useQueryClient();
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  const deleteObjectMutation = createDeleteObjectMutation(objectOperations);
+  const deleteObjectMutation = createDeleteObjectMutation(
+    objectOperations,
+    isDeleteTranslation,
+  );
 
   const mutation = useMutation({
-    mutationFn: ({ uid, language }: { uid: string; language: string }) => {
+    mutationFn: ({ uid, language }: { uid: string; language?: string }) => {
       return skylarkRequest(deleteObjectMutation as RequestDocument, {
         uid,
         language,
@@ -39,7 +44,7 @@ export const useDeleteObject = ({
         queryKey: createGetObjectKeyPrefix({ objectType, uid }),
       });
       refetchSearchQueriesAfterUpdate(queryClient);
-      onSuccess({ objectType, uid, language });
+      onSuccess({ objectType, uid, language: language || "" });
     },
   });
 

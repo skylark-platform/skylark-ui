@@ -69,6 +69,8 @@ export const ObjectList = ({
     variables: graphqlSearchQueryVariables,
     hasNextPage,
     isFetchingNextPage,
+    isRefetching: searchRefetching,
+    refetch,
     fetchNextPage,
   } = useSearch(searchQuery, searchFilters);
 
@@ -236,14 +238,14 @@ export const ObjectList = ({
     >
       <div
         className={clsx(
-          "flex w-full items-start space-x-2 md:justify-between",
+          "flex w-full flex-col-reverse items-end space-x-2 md:flex-row md:items-start md:justify-between",
           isPanelOpen ? "lg:flex-row" : "pr-2 md:flex-row md:pr-8",
         )}
       >
         <div
           className={clsx(
             "flex w-full flex-1 flex-col items-center justify-start space-x-0.5 md:space-x-1",
-            withCreateButtons && "md:max-w-[50vw] xl:max-w-[33vw]",
+            withCreateButtons && "md:max-w-[50vw] xl:max-w-[45vw]",
           )}
         >
           <Search
@@ -252,6 +254,8 @@ export const ObjectList = ({
               query: graphqlSearchQuery,
               variables: graphqlSearchQueryVariables,
             }}
+            isSearching={searchLoading || searchRefetching}
+            onRefresh={refetch}
             onQueryChange={setSearchQuery}
             activeFilters={searchFilters}
             columns={sortedHeaders}
@@ -267,7 +271,7 @@ export const ObjectList = ({
         {withCreateButtons && (
           <CreateButtons
             className={clsx(
-              "justify-end md:w-full",
+              "mb-2 justify-end md:mb-0 md:w-full",
               isPanelOpen ? "pr-2 lg:w-auto lg:pr-4" : "md:w-auto",
             )}
             onObjectCreated={(obj) => {

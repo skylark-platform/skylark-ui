@@ -15,12 +15,13 @@ test("renders search input with placeholder", async () => {
       searchQuery=""
       onQueryChange={jest.fn()}
       toggleFilterOpen={jest.fn()}
+      onRefresh={jest.fn()}
     />,
   );
 
-  screen.findByPlaceholderText("Search for an object(s)");
-
-  expect(screen.getByRole("button")).toHaveTextContent("Filters");
+  expect(
+    screen.getByPlaceholderText("Search for an object(s)"),
+  ).toBeInTheDocument();
 });
 
 test("calls onQueryChange when the search query changes", async () => {
@@ -30,6 +31,7 @@ test("calls onQueryChange when the search query changes", async () => {
       searchQuery=""
       onQueryChange={onQueryChange}
       toggleFilterOpen={jest.fn()}
+      onRefresh={jest.fn()}
     />,
   );
 
@@ -43,6 +45,26 @@ test("calls onQueryChange when the search query changes", async () => {
   expect(onQueryChange).toHaveBeenCalledWith("New Search String");
 });
 
+test("calls onQueryChange with an empty string when the search query is cleared", async () => {
+  const onQueryChange = jest.fn();
+  render(
+    <SearchInput
+      searchQuery="searchquery"
+      onQueryChange={onQueryChange}
+      toggleFilterOpen={jest.fn()}
+      onRefresh={jest.fn()}
+    />,
+  );
+
+  fireEvent.click(screen.getByTestId("search-clear-query"));
+
+  act(() => {
+    jest.runAllTimers();
+  });
+
+  expect(onQueryChange).toHaveBeenCalledWith("");
+});
+
 test("calls toggleFilterOpen when the filter button is clicked", async () => {
   const toggleFilterOpen = jest.fn();
   render(
@@ -50,10 +72,27 @@ test("calls toggleFilterOpen when the filter button is clicked", async () => {
       searchQuery=""
       onQueryChange={jest.fn()}
       toggleFilterOpen={toggleFilterOpen}
+      onRefresh={jest.fn()}
     />,
   );
 
-  fireEvent.click(screen.getByRole("button"));
+  fireEvent.click(screen.getByLabelText("open-search-filters"));
 
   expect(toggleFilterOpen).toHaveBeenCalled();
+});
+
+test("calls onRefresh when the refresh button is clicked", async () => {
+  const refresh = jest.fn();
+  render(
+    <SearchInput
+      searchQuery=""
+      onQueryChange={jest.fn()}
+      toggleFilterOpen={jest.fn()}
+      onRefresh={refresh}
+    />,
+  );
+
+  fireEvent.click(screen.getByTestId("search-refresh"));
+
+  expect(refresh).toHaveBeenCalled();
 });
