@@ -76,6 +76,15 @@ describe("Content Library - Object Panel", () => {
             "./skylark/queries/getObjectDimensions/allDevicesAllCustomersAvailability.json",
         });
       }
+      if (hasOperationName(req, "DELETE_Episode")) {
+        req.reply({
+          data: {
+            deleteObject: {
+              uid: "01GX396FF5MFFZ5N8YYPAM4W03",
+            },
+          },
+        });
+      }
       if (hasOperationName(req, "SEARCH")) {
         if (hasMatchingVariable(req, "queryString", "got winter is coming")) {
           req.reply({
@@ -196,6 +205,50 @@ describe("Content Library - Object Panel", () => {
     });
     cy.contains("Query for");
     cy.percySnapshot("Homepage - object panel - graphql query");
+  });
+
+  it("create translation", () => {
+    cy.get('input[name="search-query-input"]').type("got winter is coming");
+    cy.openContentLibraryObjectPanelByText("GOT S01E1 - Winter");
+
+    // Trigger create translation modal
+    cy.get("[data-testid=panel-header]").within(() => {
+      cy.get("[data-testid=select]").click();
+      cy.contains("Create Translation").click();
+    });
+
+    // Select language and enter data
+    cy.get("[data-testid=create-object-modal]").within(() => {
+      cy.contains("Object language")
+        .parent()
+        .within(() => {
+          cy.get("[data-testid=select]").type("en-U");
+        });
+      cy.contains("en-US").click();
+      cy.getByLabel("Title").type("GOT S01E01");
+      cy.contains("Create Translation").click();
+    });
+
+    cy.contains('Translation "en-US" created');
+  });
+
+  it("delete translation", () => {
+    cy.get('input[name="search-query-input"]').type("got winter is coming");
+    cy.openContentLibraryObjectPanelByText("GOT S01E1 - Winter");
+
+    // Trigger delete modal
+    cy.get("[data-testid=panel-header]").within(() => {
+      cy.get('[aria-label="Open Panel Menu"]').click();
+      cy.contains("Delete").click();
+    });
+
+    cy.contains('Delete "pt-PT" translation');
+
+    cy.get("[data-testid=delete-object-modal]").within(() => {
+      cy.contains("Delete translation").click();
+    });
+
+    cy.contains('Translation "pt-PT" deleted');
   });
 
   describe("Metadata tab", () => {

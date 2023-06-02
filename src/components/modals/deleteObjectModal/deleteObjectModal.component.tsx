@@ -105,7 +105,7 @@ export const DeleteObjectModal = ({
                 deleteObject({ uid, language });
               }}
             >
-              Delete
+              {`Delete ${isDeleteTranslation ? "translation" : "object"}`}
             </Button>
             <Button variant="outline" type="button" onClick={closeModal}>
               Cancel

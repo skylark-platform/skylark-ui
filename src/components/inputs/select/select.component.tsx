@@ -23,6 +23,7 @@ export interface SelectOption {
 
 export interface SelectProps {
   variant: "primary" | "pill";
+  name?: string;
   selected?: string;
   options: SelectOption[];
   label?: string;
@@ -205,6 +206,7 @@ export const Select = forwardRef(
   (props: SelectProps, ref: Ref<HTMLButtonElement | HTMLInputElement>) => {
     const {
       variant,
+      name,
       options: unsortedOptions,
       label,
       labelVariant = "default",
@@ -271,6 +273,7 @@ export const Select = forwardRef(
         disabled={disabled}
         onChange={onChangeWrapper}
         value={selectedOption || ""}
+        name={name}
       >
         <div
           className={clsx(

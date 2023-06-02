@@ -151,7 +151,7 @@ test("successfully deletes the translation and calls the onSuccess callback", as
     expect(screen.getByTestId("delete-object-modal")).toBeInTheDocument(),
   );
 
-  const cancelButton = screen.getByText("Delete");
+  const cancelButton = screen.getByText("Delete translation");
   await user.click(cancelButton);
 
   await waitFor(() => expect(onDeleteSuccess).toHaveBeenCalled());

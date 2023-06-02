@@ -225,6 +225,7 @@ export const CreateObjectModal = ({
                       control={control}
                       render={({ field }) => (
                         <LanguageSelect
+                          name="_language"
                           className="w-full"
                           variant="primary"
                           label="Object Language"
