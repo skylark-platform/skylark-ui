@@ -288,7 +288,11 @@ export const DisplayGraphQLQuery = (props: GraphQLQueryModalProps) => {
       />
       <AnimatePresence>
         {isOpen && (
-          <DisplayGraphQLQueryModal {...props} close={() => setOpen(false)} />
+          <DisplayGraphQLQueryModal
+            key="graphql-query-modal"
+            {...props}
+            close={() => setOpen(false)}
+          />
         )}
       </AnimatePresence>
     </>

@@ -76,22 +76,26 @@ const SkylarkObjectFieldInputEnum = ({
   <Controller
     name={field}
     control={control}
-    render={({ field }) => (
-      <Select
-        className="w-full"
-        variant="primary"
-        selected={(field.value as string) || ""}
-        options={
-          config.enumValues?.map((opt) => ({
-            value: opt,
-            label: opt,
-          })) || []
-        }
-        placeholder={`Select ${formatObjectField(field.name)}`}
-        onChange={field.onChange}
-        aria-invalid={error ? "true" : "false"}
-      />
-    )}
+    render={({ field }) => {
+      const selected = (field.value as string) || "";
+      const options =
+        config.enumValues?.map((opt) => ({
+          value: opt,
+          label: opt,
+        })) || [];
+
+      return (
+        <Select
+          className="w-full"
+          variant="primary"
+          selected={selected}
+          options={options}
+          placeholder={`Select ${formatObjectField(field.name)}`}
+          onChange={field.onChange}
+          aria-invalid={error ? "true" : "false"}
+        />
+      );
+    }}
   />
 );
 

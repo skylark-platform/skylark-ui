@@ -127,3 +127,16 @@ export const isObjectsDeepEqual = (
   }
   return true;
 };
+
+export const getJSONFromLocalStorage = <T>(key: string) => {
+  const str = localStorage.getItem(key);
+  if (!str) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(str) as T;
+  } catch {
+    return null;
+  }
+};

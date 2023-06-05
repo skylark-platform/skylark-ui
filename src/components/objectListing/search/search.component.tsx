@@ -1,4 +1,5 @@
 import { VisibilityState } from "@tanstack/react-table";
+import clsx from "clsx";
 import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useEffect, useRef, useState } from "react";
@@ -16,12 +17,14 @@ interface SearchBarProps {
   columns: string[];
   visibleColumns: VisibilityState;
   className?: string;
+  isSearching: boolean;
   graphqlQuery: {
     query: DocumentNode | null;
     variables: object;
   };
   onQueryChange: (str: string) => void;
   onFilterChange: (f: SearchFilters, c: VisibilityState) => void;
+  onRefresh: () => void;
 }
 
 export const Search = ({
@@ -30,9 +33,11 @@ export const Search = ({
   visibleColumns,
   searchQuery,
   graphqlQuery,
+  isSearching,
   onQueryChange,
   activeFilters,
   onFilterChange,
+  onRefresh,
 }: SearchBarProps) => {
   const [isFilterOpen, setFilterOpen] = useState(false);
 
@@ -70,40 +75,47 @@ export const Search = ({
   };
 
   return (
-    <div className="relative flex w-full" ref={filtersDivRef}>
-      <SearchInput
-        className={className}
-        onQueryChange={onQueryChange}
-        searchQuery={searchQuery}
-        toggleFilterOpen={() => setFilterOpen(!isFilterOpen)}
-      />
+    <div
+      className={clsx("flex w-full flex-col md:flex-row", className)}
+      ref={filtersDivRef}
+    >
+      <div className="relative flex w-full flex-grow flex-row">
+        <SearchInput
+          onQueryChange={onQueryChange}
+          searchQuery={searchQuery}
+          isSearching={isSearching}
+          toggleFilterOpen={() => setFilterOpen(!isFilterOpen)}
+          onRefresh={onRefresh}
+        />
 
-      <AnimatePresence>
-        {isFilterOpen && (
-          <m.div
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3, type: "spring", bounce: 0.2 }}
-            className="absolute top-10 left-0 z-50 w-full md:top-14 md:w-auto"
-          >
-            <SearchFilter
-              activeFilters={activeFilters}
-              columns={columns}
-              visibleColumns={Object.keys(visibleColumns).filter(
-                (column) => visibleColumns[column],
-              )}
-              graphqlQuery={graphqlQuery}
-              objectTypesWithConfig={objectTypesWithConfig || []}
-              onFilterSave={onFilterSaveWrapper}
-            />
-          </m.div>
-        )}
-      </AnimatePresence>
-      <div className="ml-2">
+        <AnimatePresence>
+          {isFilterOpen && (
+            <m.div
+              key="search-filter"
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, type: "spring", bounce: 0.2 }}
+              className="absolute top-10 left-0 z-50 w-full md:top-14 md:w-auto"
+            >
+              <SearchFilter
+                activeFilters={activeFilters}
+                columns={columns}
+                visibleColumns={Object.keys(visibleColumns).filter(
+                  (column) => visibleColumns[column],
+                )}
+                graphqlQuery={graphqlQuery}
+                objectTypesWithConfig={objectTypesWithConfig || []}
+                onFilterSave={onFilterSaveWrapper}
+              />
+            </m.div>
+          )}
+        </AnimatePresence>
+      </div>
+      <div className="mt-2 md:mt-0 md:ml-2">
         <LanguageSelect
           variant="primary"
-          className="w-36"
+          className="w-full md:w-36"
           onChange={(language) =>
             onFilterChange({ ...activeFilters, language }, visibleColumns)
           }

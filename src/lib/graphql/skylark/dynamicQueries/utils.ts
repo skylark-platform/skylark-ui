@@ -1,5 +1,6 @@
 import { EnumType, VariableType } from "json-to-graphql-query";
 
+import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
   BuiltInSkylarkObjectType,
   SkylarkGraphQLObject,
@@ -100,9 +101,20 @@ export const generateVariablesAndArgs = (
 
 export const generateFieldsToReturn = (
   fields: SkylarkObjectMeta["fields"],
+  objectType: string | null,
   fieldAliasPrefix?: string,
 ) => {
   const fieldsToReturn = fields.reduce((previous, field) => {
+    const options = objectType
+      ? OBJECT_OPTIONS.find(({ objectTypes }) =>
+          objectTypes.includes(objectType),
+        )
+      : null;
+
+    if (options && options.hiddenFields.includes(field.name)) {
+      return previous;
+    }
+
     if (fieldAliasPrefix && !fieldNamesToNeverAlias.includes(field.name)) {
       // It can be beneficial to add an alias to a field when requesting multiple objects in the same request
       // From GraphQL Docs:
@@ -142,7 +154,10 @@ export const generateRelationshipsToReturn = (
       },
       next_token: true,
       objects: {
-        ...generateFieldsToReturn(object.availability?.fields),
+        ...generateFieldsToReturn(
+          object.availability?.fields,
+          object.availability.name,
+        ),
       },
     };
   }
@@ -156,7 +171,10 @@ export const generateRelationshipsToReturn = (
         next_token: true,
         objects: {
           ...commonGraphQLOpts.objectMeta,
-          ...generateFieldsToReturn(object.images?.objectMeta.fields || []),
+          ...generateFieldsToReturn(
+            object.images?.objectMeta.fields || [],
+            object.images?.objectMeta.name || null,
+          ),
         },
       };
     });
@@ -186,7 +204,11 @@ export const generateContentsToReturn = (
             __typename: true, // To remove the alias later
             ...commonGraphQLOpts.objectConfig,
             ...commonGraphQLOpts.objectMeta,
-            ...generateFieldsToReturn(object.fields, `__${object.name}__`),
+            ...generateFieldsToReturn(
+              object.fields,
+              object.name,
+              `__${object.name}__`,
+            ),
           })),
         },
         position: true,

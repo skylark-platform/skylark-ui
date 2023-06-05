@@ -5,6 +5,8 @@ import { LazyMotion, domMax } from "framer-motion";
 import PlausibleProvider from "next-plausible";
 import { ReactElement, ReactNode } from "react";
 
+import { UserProvider } from "src/contexts/useUser";
+
 const AllTheProviders = ({ children }: { children: ReactNode }) => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -23,7 +25,9 @@ const AllTheProviders = ({ children }: { children: ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <PlausibleProvider domain={""} enabled={false}>
-        <LazyMotion features={domMax}>{children}</LazyMotion>
+        <UserProvider>
+          <LazyMotion features={domMax}>{children}</LazyMotion>
+        </UserProvider>
       </PlausibleProvider>
     </QueryClientProvider>
   );

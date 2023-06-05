@@ -375,8 +375,6 @@ export const Panel = ({
   const { updateObjectMetadata, isLoading: updatingObjectMetadata } =
     useUpdateObjectMetadata({
       objectType,
-      uid,
-      language,
       onSuccess: () => {
         setEditMode(false);
         resetMetadataForm({ keepValues: true });
@@ -450,7 +448,7 @@ export const Panel = ({
           // Remove External ID when it hasn't changed
           delete values[SkylarkSystemField.ExternalID];
         }
-        updateObjectMetadata(values);
+        updateObjectMetadata({ uid, language, metadata: values });
       })();
     } else {
       setEditMode(false);

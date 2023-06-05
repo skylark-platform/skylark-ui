@@ -3,7 +3,6 @@ import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useMemo, useState } from "react";
 import { GrGraphQl } from "react-icons/gr";
-import { toast } from "react-toastify";
 
 import { AvailabilityLabelPill } from "src/components/availability";
 import { Button } from "src/components/button";
@@ -19,21 +18,20 @@ import {
   ExternalLink,
 } from "src/components/icons";
 import { LanguageSelect } from "src/components/inputs/select";
-import { DisplayGraphQLQueryModal } from "src/components/modals/graphQLQueryModal";
+import {
+  CreateObjectModal,
+  DeleteObjectModal,
+  DisplayGraphQLQueryModal,
+} from "src/components/modals";
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { Pill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
-import { Toast } from "src/components/toast/toast.component";
-import { useDeleteObject } from "src/hooks/useDeleteObject";
 import {
   AvailabilityStatus,
   ParsedSkylarkObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import {
-  getObjectDisplayName,
-  getObjectTypeDisplayNameFromParsedObject,
-} from "src/lib/utils";
+import { getObjectDisplayName } from "src/lib/utils";
 
 interface PanelHeaderProps {
   isPage?: boolean;
@@ -55,6 +53,8 @@ interface PanelHeaderProps {
   setLanguage: (l: string) => void;
   navigateToPreviousPanelObject?: () => void;
 }
+
+const ADD_LANGUAGE_OPTION = "Create Translation";
 
 export const PanelHeader = ({
   isPage,
@@ -78,33 +78,23 @@ export const PanelHeader = ({
 }: PanelHeaderProps) => {
   const title = getObjectDisplayName(object);
   const [showGraphQLModal, setGraphQLModalOpen] = useState(false);
+  const [createObjectModalOpen, setCreateObjectModalOpen] = useState(false);
+  const [
+    deleteObjectConfirmationModalOpen,
+    setDeleteObjectConfirmationModalOpen,
+  ] = useState(false);
 
-  const { mutate: deleteObjectMutation } = useDeleteObject({
-    objectType,
-    onSuccess: ({ objectType, uid }) => {
-      toast.success(
-        <Toast
-          title={`${
-            object
-              ? getObjectTypeDisplayNameFromParsedObject(object)
-              : objectType
-          } deleted`}
-          message={`${
-            object
-              ? getObjectTypeDisplayNameFromParsedObject(object)
-              : objectType
-          } "${object ? getObjectDisplayName(object) : uid}" has been deleted`}
-        />,
-      );
-      closePanel?.();
-    },
-  });
+  const objectTypeDisplayName =
+    object?.config.objectTypeDisplayName || objectType;
+
+  const actualLanguage = object?.meta.language || language;
+  const existingLanguages = object?.meta.availableLanguages || [language];
 
   const objectMenuOptions = useMemo(
     () => [
       {
         id: "graphql-query",
-        text: `Get ${objectType} Query`,
+        text: `Get ${objectTypeDisplayName} Query`,
         Icon: (
           <GrGraphQl
             className="text-lg"
@@ -115,15 +105,25 @@ export const PanelHeader = ({
       },
       {
         id: "delete-object",
-        text: `Delete`,
+        text:
+          existingLanguages.length < 2
+            ? `Delete ${objectTypeDisplayName}`
+            : `Delete "${actualLanguage}" translation`,
         Icon: <Trash className="w-5 fill-error stroke-error" />,
         danger: true,
-        disabled: true, // TODO finish object deletion
-        onClick: () => deleteObjectMutation({ uid: objectUid }),
+        onClick: () => setDeleteObjectConfirmationModalOpen(true),
       },
     ],
-    [deleteObjectMutation, objectType, objectUid],
+    [existingLanguages.length, objectTypeDisplayName, actualLanguage],
   );
+
+  const changeLanguage = (val: string) => {
+    if (val === ADD_LANGUAGE_OPTION) {
+      setCreateObjectModalOpen(true);
+    } else {
+      setLanguage(val);
+    }
+  };
 
   return (
     <div
@@ -151,8 +151,8 @@ export const PanelHeader = ({
               Icon={<ExternalLink />}
               variant="ghost"
               href={
-                language
-                  ? `/object/${objectType}/${objectUid}?language=${language}`
+                actualLanguage
+                  ? `/object/${objectType}/${objectUid}?language=${actualLanguage}`
                   : `/object/${objectType}/${objectUid}`
               }
               newTab
@@ -228,13 +228,12 @@ export const PanelHeader = ({
               )}
               {isTranslatable && (
                 <LanguageSelect
-                  selected={language || object.meta.language}
-                  disabled={inEditMode}
+                  selected={actualLanguage}
+                  disabled={inEditMode || !object.meta.availableLanguages}
                   variant="pill"
-                  languages={
-                    object.meta.availableLanguages || [object.meta.language]
-                  }
-                  onChange={(val) => setLanguage(val)}
+                  languages={[...existingLanguages, ADD_LANGUAGE_OPTION]}
+                  optionsClassName="w-36"
+                  onChange={changeLanguage}
                 />
               )}
             </>
@@ -265,6 +264,7 @@ export const PanelHeader = ({
       <AnimatePresence>
         {showGraphQLModal && (
           <DisplayGraphQLQueryModal
+            key="graphql-query-modal"
             label={`Get ${objectType} object`}
             query={graphQLQuery}
             variables={graphQLVariables}
@@ -272,6 +272,46 @@ export const PanelHeader = ({
           />
         )}
       </AnimatePresence>
+      <CreateObjectModal
+        createTranslation={{
+          uid: objectUid,
+          language,
+          objectType,
+          objectTypeDisplayName,
+          existingLanguages,
+          objectDisplayName: title,
+        }}
+        isOpen={createObjectModalOpen}
+        objectType={objectType}
+        setIsOpen={setCreateObjectModalOpen}
+        onObjectCreated={(obj) => {
+          setLanguage(obj.language);
+        }}
+      />
+      <DeleteObjectModal
+        isOpen={deleteObjectConfirmationModalOpen}
+        setIsOpen={setDeleteObjectConfirmationModalOpen}
+        uid={objectUid}
+        objectType={objectType}
+        language={actualLanguage}
+        objectDisplayName={title}
+        objectTypeDisplayName={objectTypeDisplayName}
+        availableLanguages={existingLanguages}
+        onDeleteSuccess={() => {
+          const otherLanguages =
+            (object?.meta.availableLanguages &&
+              object.meta.availableLanguages.filter(
+                (lang) => lang !== actualLanguage,
+              )) ||
+            [];
+
+          // Change to other language if exists, otherwise close the panel
+          return otherLanguages.length > 0
+            ? setLanguage(otherLanguages[0])
+            : // TODO should we go back, show a object deleted/doesn't exist message?
+              closePanel?.();
+        }}
+      />
     </div>
   );
 };

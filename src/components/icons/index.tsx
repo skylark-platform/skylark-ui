@@ -17,3 +17,4 @@ export * from "./more.component";
 export * from "./upload.component";
 export * from "./arrows.component";
 export * from "./externalLink.component";
+export * from "./refresh.component";

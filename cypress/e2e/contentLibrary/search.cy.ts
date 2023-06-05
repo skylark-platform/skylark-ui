@@ -72,7 +72,9 @@ describe("Content Library - Search", () => {
   });
 
   it("visits home", () => {
-    cy.contains("No objects found").should("not.exist");
+    cy.contains(
+      "No results containing all your search terms were found.",
+    ).should("not.exist");
     cy.contains("GOT");
     cy.percySnapshot("Homepage");
   });
@@ -90,7 +92,7 @@ describe("Content Library - Search", () => {
     cy.visit("/");
 
     cy.wait("@searchQueryEmpty");
-    cy.contains("No objects found");
+    cy.contains("No results containing all your search terms were found.");
     cy.percySnapshot("Homepage - no search data");
   });
 

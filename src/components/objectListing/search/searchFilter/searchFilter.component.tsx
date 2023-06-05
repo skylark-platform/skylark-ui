@@ -7,7 +7,7 @@ import {
   CheckboxGrid,
   createCheckboxOptions,
 } from "src/components/checkboxGrid/checkboxGrid.component";
-import { DisplayGraphQLQuery } from "src/components/modals/graphQLQueryModal";
+import { DisplayGraphQLQuery } from "src/components/modals";
 import { SearchFilters } from "src/hooks/useSearch";
 import { SkylarkGraphQLObjectConfig } from "src/interfaces/skylark";
 
@@ -77,7 +77,7 @@ export const SearchFilter = ({
 
   return (
     // TODO figure out what width the filter should actually be
-    <div className="relative flex max-h-96 w-[110%] flex-col rounded bg-white py-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 md:w-[120%] lg:w-[150%] xl:max-h-[28rem]">
+    <div className="relative flex max-h-96 w-full flex-col rounded bg-white py-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 md:w-[120%] lg:w-[150%] xl:max-h-[28rem]">
       <div className="absolute top-2 right-5 z-20">
         <DisplayGraphQLQuery
           label="Content Library Search"

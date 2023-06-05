@@ -1,5 +1,6 @@
 import { availabilityDimensionHandlers } from "./availabilityDimensions";
 import { createObjectHandlers } from "./createObjectHandlers";
+import { deleteObjectHandlers } from "./deleteObjectHandlers";
 import { flatfileHandlers } from "./flatfile";
 import {
   getObjectAvailabilityDimensionHandlers,
@@ -21,6 +22,7 @@ export const handlers = [
   ...getObjectRelationshipsHandlers,
   ...createObjectHandlers,
   ...updateObjectHandlers,
+  ...deleteObjectHandlers,
   ...searchHandlers,
   ...availabilityDimensionHandlers,
   ...flatfileHandlers,

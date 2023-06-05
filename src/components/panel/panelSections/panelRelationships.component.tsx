@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 
-import { DisplayGraphQLQuery } from "src/components/modals/graphQLQueryModal";
+import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
