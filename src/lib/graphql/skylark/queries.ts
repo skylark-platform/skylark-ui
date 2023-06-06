@@ -32,24 +32,6 @@ export const LIST_AVAILABILITY_DIMENSIONS = gql`
   }
 `;
 
-export const LIST_AVAILABILITY_DIMENSION_VALUES = gql`
-  query LIST_AVAILABILITY_DIMENSION_VALUES($uid: String!, $nextToken: String) {
-    getDimension(dimension_id: $uid) {
-      uid
-      values(next_token: $nextToken, limit: 50) {
-        objects {
-          description
-          external_id
-          slug
-          title
-          uid
-        }
-        next_token
-      }
-    }
-  }
-`;
-
 export const GET_AVAILABILITY_DIMENSIONS = gql`
   query GET_AVAILABILITY_DIMENSIONS($uid: String!, $nextToken: String) {
     getAvailability(uid: $uid) {
