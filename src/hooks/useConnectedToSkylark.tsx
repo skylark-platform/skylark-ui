@@ -40,7 +40,6 @@ export const useConnectedToSkylark = () => {
             {},
             {
               [REQUEST_HEADERS.apiKey]: token,
-              [REQUEST_HEADERS.betaApiKey]: token,
               [REQUEST_HEADERS.bypassCache]: "1",
             },
           );
