@@ -12,7 +12,7 @@ export const createSkylarkClient = (uri: string, token: string) =>
   new GraphQLClient(uri, {
     headers: {
       [REQUEST_HEADERS.apiKey]: token,
-      [REQUEST_HEADERS.betaApiKey]: token,
+      [REQUEST_HEADERS.bypassCache]: "1",
     },
   });
 
@@ -40,7 +40,6 @@ export const skylarkRequest = <T>(
 
   const headers: HeadersInit = {
     [REQUEST_HEADERS.apiKey]: tokenToSend,
-    [REQUEST_HEADERS.betaApiKey]: tokenToSend,
   };
 
   if (!opts?.useCache) {

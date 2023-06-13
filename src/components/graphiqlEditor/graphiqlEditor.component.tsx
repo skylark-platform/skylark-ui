@@ -68,7 +68,7 @@ export const GraphiQLEditor = ({
           Accept: "application/json",
           "Content-Type": "application/json",
           [REQUEST_HEADERS.apiKey]: token,
-          [REQUEST_HEADERS.betaApiKey]: token,
+          [REQUEST_HEADERS.bypassCache]: "1",
           ...opts?.headers,
         },
         body: JSON.stringify(graphQLParams),
@@ -85,6 +85,7 @@ export const GraphiQLEditor = ({
       setExplorerQuery(updatedQuery);
       setQuery(updatedQuery);
     },
+    showAttribution: false,
   });
 
   return (
