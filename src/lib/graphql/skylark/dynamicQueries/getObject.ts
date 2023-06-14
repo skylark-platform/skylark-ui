@@ -19,10 +19,11 @@ export const createGetObjectAvailabilityQueryName = (objectType: string) =>
   `GET_${objectType}_AVAILABILITY`;
 export const createGetObjectRelationshipsQueryName = (objectType: string) =>
   `GET_${objectType}_RELATIONSHIPS`;
+export const createGetObjectContentQueryName = (objectType: string) =>
+  `GET_${objectType}_CONTENT`;
 
 export const createGetObjectQuery = (
   object: SkylarkObjectMeta | null,
-  contentTypesToRequest: SkylarkObjectMeta[],
   addLanguageVariable?: boolean,
 ) => {
   if (!object || !object.operations.get) {
@@ -53,7 +54,6 @@ export const createGetObjectQuery = (
         ...common.fields,
         ...generateFieldsToReturn(object.fields, object.name),
         ...generateRelationshipsToReturn(object),
-        ...generateContentsToReturn(object, contentTypesToRequest),
       },
     },
   };
@@ -195,6 +195,44 @@ export const createGetObjectRelationshipsQuery = (
             },
           };
         }, {}),
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(query);
+
+  return gql(graphQLQuery);
+};
+
+export const createGetObjectContentQuery = (
+  object: SkylarkObjectMeta | null,
+  contentTypesToRequest: SkylarkObjectMeta[],
+  addLanguageVariable?: boolean,
+) => {
+  if (!object || !object.operations.get) {
+    return null;
+  }
+  const common = generateVariablesAndArgs(
+    object.name,
+    "Query",
+    addLanguageVariable,
+  );
+
+  const query = {
+    query: {
+      __name: createGetObjectContentQueryName(object.name),
+      __variables: {
+        ...common.variables,
+        uid: "String!",
+      },
+      getObjectContent: {
+        __aliasFor: object.operations.get.name,
+        __args: {
+          ...common.args,
+          uid: new VariableType("uid"),
+        },
+        __typename: true,
+        ...generateContentsToReturn(object, contentTypesToRequest),
       },
     },
   };

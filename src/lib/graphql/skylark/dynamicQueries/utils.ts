@@ -195,8 +195,9 @@ export const generateContentsToReturn = (
     content: {
       __args: {
         order: new EnumType("ASC"),
-        limit: 50,
+        limit: 20,
       },
+      next_token: true,
       objects: {
         object: {
           __on: objectsToRequest.map((object) => ({

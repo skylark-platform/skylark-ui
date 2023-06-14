@@ -11,7 +11,7 @@ import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynamicMutations";
 import { parseObjectContent } from "src/lib/skylark/parsers";
 
-import { createGetObjectKeyPrefix } from "./useGetObject";
+import { createGetObjectContentKeyPrefix } from "./useGetObjectContent";
 import {
   useAllObjectsMeta,
   useSkylarkObjectOperations,
@@ -20,14 +20,14 @@ import {
 export const useUpdateObjectContent = ({
   objectType,
   uid,
-  currentContentObjects,
+  originalContentObjects,
   updatedContentObjects,
   onSuccess,
 }: {
   objectType: SkylarkObjectType;
   uid: string;
-  currentContentObjects: ParsedSkylarkObjectContentObject[];
-  updatedContentObjects: ParsedSkylarkObjectContentObject[];
+  originalContentObjects: ParsedSkylarkObjectContentObject[] | null;
+  updatedContentObjects: ParsedSkylarkObjectContentObject[] | null;
   onSuccess: (updatedContent: ParsedSkylarkObjectContent) => void;
 }) => {
   const queryClient = useQueryClient();
@@ -36,7 +36,7 @@ export const useUpdateObjectContent = ({
 
   const updateObjectContentMutation = createUpdateObjectContentMutation(
     objectOperations,
-    currentContentObjects,
+    originalContentObjects,
     updatedContentObjects,
     objects,
   );
@@ -50,7 +50,7 @@ export const useUpdateObjectContent = ({
     },
     onSuccess: (data, { uid }) => {
       queryClient.invalidateQueries({
-        queryKey: createGetObjectKeyPrefix({ objectType, uid }),
+        queryKey: createGetObjectContentKeyPrefix({ objectType, uid }),
       });
       const parsedObjectContent = parseObjectContent(
         data.updateObjectContent.content,

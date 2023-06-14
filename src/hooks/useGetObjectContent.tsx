@@ -4,7 +4,6 @@ import {
   QueryKey,
   useInfiniteQuery,
 } from "@tanstack/react-query";
-import dayjs from "dayjs";
 import { DocumentNode } from "graphql";
 import { RequestDocument } from "graphql-request";
 import { useMemo } from "react";
@@ -13,31 +12,36 @@ import { QueryKeys } from "src/enums/graphql";
 import {
   SkylarkObjectType,
   GQLSkylarkErrorResponse,
-  GQLSkylarkGetObjectAvailabilityResponse,
-  ParsedSkylarkObjectAvailabilityObject,
   SkylarkObjectMeta,
+  GQLSkylarkGetObjectContentResponse,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import { createGetObjectAvailabilityQuery } from "src/lib/graphql/skylark/dynamicQueries";
+import { createGetObjectContentQuery } from "src/lib/graphql/skylark/dynamicQueries";
+import { parseObjectContent } from "src/lib/skylark/parsers";
 
 import { GetObjectOptions } from "./useGetObject";
-import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
+import {
+  useAllObjectsMeta,
+  useSkylarkObjectOperations,
+} from "./useSkylarkObjectTypes";
 
-export const createGetObjectAvailabilityKeyPrefix = ({
+export const createGetObjectContentKeyPrefix = ({
   objectType,
   uid,
 }: {
   objectType: string;
   uid: string;
-}) => [QueryKeys.GetObjectAvailability, { objectType, uid }];
+}) => [QueryKeys.GetObjectContent, { objectType, uid }];
 
 const generateQueryFunctionAndKey = ({
   objectMeta,
+  contentObjectsMeta,
   objectType,
   uid,
   variables,
 }: {
   objectMeta: SkylarkObjectMeta | null;
+  contentObjectsMeta: SkylarkObjectMeta[];
   objectType: SkylarkObjectType;
   uid: string;
   variables: {
@@ -46,17 +50,18 @@ const generateQueryFunctionAndKey = ({
     uid: string;
   };
 }): {
-  queryFn: QueryFunction<GQLSkylarkGetObjectAvailabilityResponse, QueryKey>;
+  queryFn: QueryFunction<GQLSkylarkGetObjectContentResponse, QueryKey>;
   queryKey: QueryKey;
   query: DocumentNode | null;
 } => {
-  const query = createGetObjectAvailabilityQuery(
+  const query = createGetObjectContentQuery(
     objectMeta,
+    contentObjectsMeta,
     !!variables.language,
   );
 
   const queryFn: QueryFunction<
-    GQLSkylarkGetObjectAvailabilityResponse,
+    GQLSkylarkGetObjectContentResponse,
     QueryKey
   > = async ({ pageParam: nextToken }) =>
     skylarkRequest(query as RequestDocument, {
@@ -65,7 +70,7 @@ const generateQueryFunctionAndKey = ({
     });
 
   const queryKey: QueryKey = [
-    ...createGetObjectAvailabilityKeyPrefix({
+    ...createGetObjectContentKeyPrefix({
       objectType,
       uid,
     }),
@@ -80,15 +85,17 @@ const generateQueryFunctionAndKey = ({
   };
 };
 
-export const prefetchGetObjectAvailability = async ({
+export const prefetchGetObjectContent = async ({
   queryClient,
   objectMeta,
+  contentObjectsMeta,
   objectType,
   uid,
   variables,
 }: {
   queryClient: QueryClient;
   objectMeta: SkylarkObjectMeta | null;
+  contentObjectsMeta: SkylarkObjectMeta[];
   objectType: SkylarkObjectType;
   uid: string;
   variables: {
@@ -99,6 +106,7 @@ export const prefetchGetObjectAvailability = async ({
 }) => {
   const { queryFn, queryKey } = generateQueryFunctionAndKey({
     objectMeta,
+    contentObjectsMeta,
     objectType,
     uid,
     variables,
@@ -106,7 +114,7 @@ export const prefetchGetObjectAvailability = async ({
   await queryClient.prefetchInfiniteQuery({ queryKey, queryFn });
 };
 
-export const useGetObjectAvailability = (
+export const useGetObjectContent = (
   objectType: SkylarkObjectType,
   uid: string,
   opts?: GetObjectOptions,
@@ -116,47 +124,41 @@ export const useGetObjectAvailability = (
   const { objectOperations: objectMeta } =
     useSkylarkObjectOperations(objectType);
 
+  const { objects: contentObjectsMeta } = useAllObjectsMeta(false);
+
   const variables = { uid, nextToken: "", language };
 
   const { queryFn, queryKey, query } = generateQueryFunctionAndKey({
     objectMeta,
+    contentObjectsMeta,
     objectType,
     uid,
     variables,
   });
 
   const { data, ...rest } = useInfiniteQuery<
-    GQLSkylarkGetObjectAvailabilityResponse,
-    GQLSkylarkErrorResponse<GQLSkylarkGetObjectAvailabilityResponse>
+    GQLSkylarkGetObjectContentResponse,
+    GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentResponse>
   >({
     queryFn,
     queryKey,
     getNextPageParam: (lastPage): string | undefined =>
-      lastPage.getObjectAvailability.availability?.next_token || undefined,
+      lastPage.getObjectContent.content?.next_token || undefined,
+    enabled: !!query,
   });
 
-  const availability: ParsedSkylarkObjectAvailabilityObject[] | undefined =
-    useMemo(
-      () =>
-        data?.pages
-          ?.flatMap((page) => page.getObjectAvailability.availability.objects)
-          .map((object): ParsedSkylarkObjectAvailabilityObject => {
-            return {
-              ...object,
-              title: object.title || "",
-              slug: object.slug || "",
-              start: object.start || "",
-              end: object.end || "",
-              timezone: object.timezone || "",
-              dimensions: object.dimensions.objects,
-            };
-          }),
-      [data?.pages],
-    );
+  const content = useMemo(() => {
+    const contentObjects =
+      data?.pages?.flatMap((page) => page.getObjectContent.content.objects) ||
+      [];
+
+    const parsedContent = parseObjectContent({ objects: contentObjects });
+    return parsedContent;
+  }, [data?.pages]);
 
   return {
     ...rest,
-    data: availability,
+    data: content.objects,
     isLoading: rest.isLoading || !query,
     query,
     variables,
