@@ -41,7 +41,7 @@ const generateQueryFunctionAndKey = ({
   variables,
 }: {
   objectMeta: SkylarkObjectMeta | null;
-  contentObjectsMeta: SkylarkObjectMeta[];
+  contentObjectsMeta: SkylarkObjectMeta[] | null;
   objectType: SkylarkObjectType;
   uid: string;
   variables: {
@@ -63,11 +63,12 @@ const generateQueryFunctionAndKey = ({
   const queryFn: QueryFunction<
     GQLSkylarkGetObjectContentResponse,
     QueryKey
-  > = async ({ pageParam: nextToken }) =>
-    skylarkRequest(query as RequestDocument, {
+  > = async ({ pageParam: nextToken }) => {
+    return skylarkRequest(query as RequestDocument, {
       ...variables,
       nextToken,
     });
+  };
 
   const queryKey: QueryKey = [
     ...createGetObjectContentKeyPrefix({
@@ -136,7 +137,7 @@ export const useGetObjectContent = (
     variables,
   });
 
-  const { data, ...rest } = useInfiniteQuery<
+  const { data, hasNextPage, fetchNextPage, ...rest } = useInfiniteQuery<
     GQLSkylarkGetObjectContentResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentResponse>
   >({
@@ -146,6 +147,10 @@ export const useGetObjectContent = (
       lastPage.getObjectContent.content?.next_token || undefined,
     enabled: !!query,
   });
+
+  if (hasNextPage) {
+    fetchNextPage();
+  }
 
   const content = useMemo(() => {
     const contentObjects =
@@ -162,5 +167,6 @@ export const useGetObjectContent = (
     isLoading: rest.isLoading || !query,
     query,
     variables,
+    hasNextPage,
   };
 };

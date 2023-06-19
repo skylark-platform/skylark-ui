@@ -281,7 +281,6 @@ export const createUpdateObjectContentMutation = (
           },
         },
         uid: true,
-        ...generateContentsToReturn(object, contentTypesToRequest),
       },
     },
   };

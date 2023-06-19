@@ -95,7 +95,7 @@ export const createGetObjectAvailabilityQuery = (
         },
         availability: {
           __args: {
-            limit: 5,
+            limit: 10,
             next_token: new VariableType("nextToken"),
           },
           next_token: true,
@@ -206,10 +206,10 @@ export const createGetObjectRelationshipsQuery = (
 
 export const createGetObjectContentQuery = (
   object: SkylarkObjectMeta | null,
-  contentTypesToRequest: SkylarkObjectMeta[],
+  contentTypesToRequest: SkylarkObjectMeta[] | null,
   addLanguageVariable?: boolean,
 ) => {
-  if (!object || !object.operations.get) {
+  if (!object || !object.operations.get || !contentTypesToRequest) {
     return null;
   }
   const common = generateVariablesAndArgs(
@@ -224,6 +224,7 @@ export const createGetObjectContentQuery = (
       __variables: {
         ...common.variables,
         uid: "String!",
+        nextToken: "String",
       },
       getObjectContent: {
         __aliasFor: object.operations.get.name,
@@ -232,7 +233,9 @@ export const createGetObjectContentQuery = (
           uid: new VariableType("uid"),
         },
         __typename: true,
-        ...generateContentsToReturn(object, contentTypesToRequest),
+        ...generateContentsToReturn(object, contentTypesToRequest, {
+          nextTokenVariableName: "nextToken",
+        }),
       },
     },
   };

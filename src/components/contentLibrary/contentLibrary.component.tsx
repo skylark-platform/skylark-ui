@@ -29,8 +29,11 @@ const MINIMUM_SIZES = {
 export const ContentLibrary = () => {
   const {
     activePanelObject,
+    activePanelTab,
     setPanelObject,
+    setPanelTab,
     navigateToPreviousPanelObject,
+    navigateToForwardPanelObject,
     resetPanelObjectState,
   } = usePanelObjectState();
 
@@ -203,11 +206,14 @@ export const ContentLibrary = () => {
             <div className="w-full overflow-x-scroll">
               <Panel
                 object={activePanelObject}
+                tab={activePanelTab}
                 closePanel={closePanel}
                 isDraggedObject={!!draggedObject}
                 droppedObject={droppedObject}
                 setPanelObject={setPanelObject}
+                setTab={setPanelTab}
                 navigateToPreviousPanelObject={navigateToPreviousPanelObject}
+                navigateToForwardPanelObject={navigateToForwardPanelObject}
                 clearDroppedObject={() => setDroppedObject(undefined)}
               />
             </div>

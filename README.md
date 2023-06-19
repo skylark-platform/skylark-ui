@@ -21,7 +21,7 @@
   <h3 align="center">Skylark UI</h3>
 
   <p align="center">
-    Curation UI for Skylark X
+    Curation UI for Skylark
     <br />
     <a href="https://www.skylarkplatform.com/"><strong>Learn more »</strong></a>
     <br />

@@ -2,55 +2,121 @@ import { useState, useCallback } from "react";
 
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 
-export const usePanelObjectState = (
-  initialPanelObject?: SkylarkObjectIdentifier,
-) => {
-  const [{ activePanelObject, previousPanelObjects }, setPanelState] =
-    useState<{
-      activePanelObject: SkylarkObjectIdentifier | null;
-      previousPanelObjects: SkylarkObjectIdentifier[];
-    }>({
-      activePanelObject: initialPanelObject || null,
-      previousPanelObjects: [],
-    });
+export enum PanelTab {
+  Metadata = "Metadata",
+  Imagery = "Imagery",
+  Availability = "Availability",
+  AvailabilityDimensions = "Dimensions",
+  Content = "Content",
+  Relationships = "Relationships",
+}
+
+export interface PanelObject extends SkylarkObjectIdentifier {
+  tab: PanelTab;
+}
+
+export const usePanelObjectState = (initialPanelState?: PanelObject) => {
+  const [
+    { activePanelState, previousPanelStates, forwardPanelStates },
+    setPanelState,
+  ] = useState<{
+    activePanelState: PanelObject | null;
+    previousPanelStates: PanelObject[];
+    forwardPanelStates: PanelObject[];
+  }>({
+    activePanelState: initialPanelState || null,
+    previousPanelStates: [],
+    forwardPanelStates: [],
+  });
 
   const setPanelObject = useCallback(
     (newPanelObject: SkylarkObjectIdentifier) => {
       setPanelState({
-        previousPanelObjects: activePanelObject
-          ? [...previousPanelObjects, activePanelObject]
-          : previousPanelObjects,
-        activePanelObject: newPanelObject,
+        forwardPanelStates: [],
+        previousPanelStates: activePanelState
+          ? [...previousPanelStates, activePanelState]
+          : previousPanelStates,
+        activePanelState: {
+          ...newPanelObject,
+          tab: PanelTab.Metadata,
+        },
       });
     },
-    [activePanelObject, previousPanelObjects],
+    [activePanelState, previousPanelStates],
   );
 
-  const navigateToPreviousPanelObject = () => {
-    const updatedPreviousPanelObjects = previousPanelObjects;
+  const setPanelTab = useCallback(
+    (newTab: PanelTab) => {
+      if (activePanelState) {
+        setPanelState({
+          forwardPanelStates,
+          previousPanelStates,
+          activePanelState: {
+            ...activePanelState,
+            tab: newTab,
+          },
+        });
+      }
+    },
+    [activePanelState, forwardPanelStates, previousPanelStates],
+  );
+
+  const navigateToPreviousPanelObject = useCallback(() => {
+    const updatedPreviousPanelObjects = previousPanelStates;
     const previousPanelObject = updatedPreviousPanelObjects.pop();
     if (previousPanelObject) {
       setPanelState({
-        previousPanelObjects: updatedPreviousPanelObjects,
-        activePanelObject: previousPanelObject,
+        previousPanelStates: updatedPreviousPanelObjects,
+        forwardPanelStates: activePanelState
+          ? [...forwardPanelStates, activePanelState]
+          : forwardPanelStates,
+        activePanelState: previousPanelObject,
       });
     }
-  };
+  }, [activePanelState, forwardPanelStates, previousPanelStates]);
 
-  const resetPanelObjectState = () => {
-    setPanelState({
-      activePanelObject: null,
-      previousPanelObjects: [],
+  const navigateToForwardPanelObject = useCallback(() => {
+    const updatedFowardPanelObjects = forwardPanelStates;
+    const forwardPanelObject = updatedFowardPanelObjects.pop();
+    console.log({
+      forwardPanelObject,
+      forwardPanelStates,
+      updatedFowardPanelObjects,
     });
-  };
+    if (forwardPanelObject) {
+      setPanelState({
+        previousPanelStates: [...previousPanelStates, forwardPanelObject],
+        forwardPanelStates: updatedFowardPanelObjects,
+        activePanelState: forwardPanelObject,
+      });
+    }
+  }, [forwardPanelStates, previousPanelStates]);
+
+  const resetPanelObjectState = useCallback(() => {
+    setPanelState({
+      activePanelState: null,
+      previousPanelStates: [],
+      forwardPanelStates: [],
+    });
+  }, []);
 
   return {
-    activePanelObject,
+    activePanelObject: activePanelState
+      ? {
+          uid: activePanelState.uid,
+          objectType: activePanelState.objectType,
+          language: activePanelState.language,
+        }
+      : null,
+    activePanelTab: activePanelState?.tab || PanelTab.Metadata,
     setPanelObject,
+    setPanelTab,
     navigateToPreviousPanelObject:
-      previousPanelObjects.length > 0
+      previousPanelStates.length > 0
         ? navigateToPreviousPanelObject
         : undefined,
+    navigateToForwardPanelObject:
+      forwardPanelStates.length > 0 ? navigateToForwardPanelObject : undefined,
     resetPanelObjectState,
   };
 };

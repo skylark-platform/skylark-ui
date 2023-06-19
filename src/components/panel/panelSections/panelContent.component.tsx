@@ -111,13 +111,11 @@ export const PanelContent = ({
   setContentObjects,
   setPanelObject,
 }: PanelContentProps) => {
-  const { data, isLoading, hasNextPage, fetchNextPage } = useGetObjectContent(
+  const { data, isLoading, hasNextPage } = useGetObjectContent(
     objectType,
     uid,
     { language },
   );
-
-  console.log({ data });
 
   useEffect(() => {
     if (!inEditMode && data) {
@@ -180,7 +178,7 @@ export const PanelContent = ({
           data-testid="panel-content-items"
           className="flex-grow"
         >
-          {objects?.length === 0 && <PanelEmptyDataText />}
+          {objects && objects?.length === 0 && <PanelEmptyDataText />}
           {objects.map((item, index) => {
             const { object, config, meta, position, isNewObject } = item;
 
@@ -244,14 +242,11 @@ export const PanelContent = ({
           })}
         </Reorder.Group>
       )}
-      <PanelLoading
-        isLoading={isLoading || hasNextPage}
-        loadMore={() => fetchNextPage()}
-      >
+      <PanelLoading isLoading={isLoading || hasNextPage}>
         {Array.from({ length: 6 }, (_, i) => (
           <Skeleton
             key={`content-skeleton-${i}`}
-            className="mb-2 h-12 w-full max-w-xl"
+            className="mb-2 h-11 w-full max-w-xl"
           />
         ))}
       </PanelLoading>

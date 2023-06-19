@@ -256,7 +256,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                     <div
                       key={obj.uid}
                       className={clsx(
-                        "my-2 max-w-xl border border-l-4 py-4 px-4",
+                        "my-4 max-w-xl border border-l-4 py-4 px-4",
                         status === AvailabilityStatus.Active &&
                           "border-l-success",
                         status === AvailabilityStatus.Expired &&
@@ -335,8 +335,8 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
         isLoading={isLoading || hasNextPage}
         loadMore={() => fetchNextPage()}
       >
-        <Skeleton className="mb-2 h-52 w-full max-w-xl" />
-        <Skeleton className="mb-2 h-52 w-full max-w-xl" />
+        <Skeleton className="mb-4 h-52 w-full max-w-xl" />
+        <Skeleton className="mb-4 h-52 w-full max-w-xl" />
       </PanelLoading>
       <DisplayGraphQLQuery
         label="Get Object Availability"
