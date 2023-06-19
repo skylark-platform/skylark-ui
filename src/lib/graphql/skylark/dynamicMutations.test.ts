@@ -1,7 +1,6 @@
 import {
   episodeObjectOperations,
   setObjectOperations,
-  movieObjectOperations,
 } from "src/__tests__/utils/objectOperations";
 import {
   AvailabilityStatus,
@@ -45,7 +44,7 @@ describe("createDeleteObjectMutation", () => {
 
 describe("createUpdateSetContentPositionMutation", () => {
   test("returns null when the object doesn't have an update operation", () => {
-    const got = createUpdateObjectContentMutation(null, [], [], []);
+    const got = createUpdateObjectContentMutation(null, [], []);
 
     expect(got).toBeNull();
   });
@@ -91,7 +90,6 @@ describe("createUpdateSetContentPositionMutation", () => {
       setObjectOperations,
       content,
       content,
-      [episodeObjectOperations, movieObjectOperations],
     );
 
     expect(got?.loc?.source.body).toContain(
@@ -142,7 +140,6 @@ describe("createUpdateSetContentPositionMutation", () => {
       setObjectOperations,
       content,
       updatedContent,
-      [episodeObjectOperations, movieObjectOperations],
     );
 
     expect(got?.loc?.source.body).toContain(
@@ -193,7 +190,6 @@ describe("createUpdateSetContentPositionMutation", () => {
       setObjectOperations,
       content,
       updatedContent,
-      [episodeObjectOperations, movieObjectOperations],
     );
 
     expect(got?.loc?.source.body).toContain(

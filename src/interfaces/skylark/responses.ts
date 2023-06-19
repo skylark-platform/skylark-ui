@@ -64,7 +64,7 @@ export interface GQLSkylarkUpdateObjectMetadataResponse {
 
 export interface GQLSkylarkUpdateObjectContentResponse {
   updateObjectContent: {
-    content: SkylarkGraphQLObjectContent;
+    uid: string;
   };
 }
 

@@ -9,6 +9,7 @@ import GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture from "src/__tests__/fixtures
 import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots04.json";
 import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
 import GQLSkylarkGetObjectAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/fantasticMrFox_All_Availabilities.json";
+import GQLSkylarkGetHomepageSetContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectContent/homepage.json";
 import GQLSkylarkGetSeasonRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/gots04relationships.json";
 import GQLSkylarkListAvailabilityDimensionsQueryFixture from "src/__tests__/fixtures/skylark/queries/listDimensions.json";
 import { server } from "src/__tests__/mocks/server";
@@ -20,6 +21,7 @@ import {
   within,
 } from "src/__tests__/utils/test-utils";
 import { QueryErrorMessages } from "src/enums/graphql";
+import { PanelTab } from "src/hooks/usePanelObjectState";
 import {
   AvailabilityStatus,
   BuiltInSkylarkObjectType,
@@ -80,15 +82,107 @@ const availabilityObject: SkylarkObjectIdentifier = {
   language: "",
 };
 
-describe("metadata view", () => {
-  test("renders the panel in the default view", async () => {
+const defaultProps = {
+  closePanel: jest.fn(),
+  setPanelObject: jest.fn(),
+  setTab: jest.fn(),
+  tab: PanelTab.Metadata,
+};
+
+describe("header (tab independent)", () => {
+  test("closing the panel using close button", async () => {
+    const closePanel = jest.fn();
+    render(
+      <Panel {...defaultProps} object={movieObject} closePanel={closePanel} />,
+    );
+
+    await waitFor(() => expect(screen.getByText("Close")).toBeInTheDocument());
+    fireEvent.click(screen.getByText("Close"));
+
+    expect(closePanel).toHaveBeenCalled();
+  });
+
+  test("switches to another tab", async () => {
+    const setTab = jest.fn();
     render(
       <Panel
-        object={movieObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
+        {...defaultProps}
+        object={setObjectWithContent}
+        tab={PanelTab.Metadata}
+        setTab={setTab}
       />,
     );
+
+    await waitFor(() =>
+      expect(screen.getByText("Content")).toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByText("Content"));
+
+    expect(setTab).toHaveBeenCalledWith("Content");
+  });
+
+  test("navigates to previous object using the arrows", () => {
+    const navigateToPreviousPanelObject = jest.fn();
+    render(
+      <Panel
+        {...defaultProps}
+        object={setObjectWithContent}
+        tab={PanelTab.Metadata}
+        navigateToPreviousPanelObject={navigateToPreviousPanelObject}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /Click to go back/i,
+      }),
+    );
+
+    expect(navigateToPreviousPanelObject).toHaveBeenCalled();
+  });
+
+  test("navigates to next object using the arrows", () => {
+    const navigateToForwardPanelObject = jest.fn();
+    render(
+      <Panel
+        {...defaultProps}
+        object={setObjectWithContent}
+        tab={PanelTab.Metadata}
+        navigateToForwardPanelObject={navigateToForwardPanelObject}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /Click to go forward/i,
+      }),
+    );
+
+    expect(navigateToForwardPanelObject).toHaveBeenCalled();
+  });
+
+  test("hides the previous object and external open object buttons when isPage is true", async () => {
+    render(<Panel {...defaultProps} isPage object={movieObject} />);
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    expect(
+      screen.queryAllByRole("button", {
+        name: /Click to go back/i,
+      }),
+    ).toHaveLength(0);
+
+    const panelHeader = within(screen.getByTestId("panel-header"));
+    expect(panelHeader.queryAllByRole("link")).toHaveLength(0);
+  });
+});
+
+describe("metadata view", () => {
+  test("renders the panel in the default view", async () => {
+    render(<Panel {...defaultProps} object={movieObject} />);
 
     await waitFor(() =>
       expect(screen.queryByTestId("loading")).toBeInTheDocument(),
@@ -112,13 +206,7 @@ describe("metadata view", () => {
   });
 
   test("renders three sections system, translatable, global", async () => {
-    render(
-      <Panel
-        object={movieObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
-      />,
-    );
+    render(<Panel {...defaultProps} object={movieObject} />);
 
     await waitFor(() =>
       expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
@@ -132,14 +220,7 @@ describe("metadata view", () => {
   });
 
   test("renders the side menu when isPage is true", async () => {
-    render(
-      <Panel
-        isPage
-        object={movieObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
-      />,
-    );
+    render(<Panel {...defaultProps} isPage object={movieObject} />);
 
     await waitFor(() =>
       expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
@@ -164,30 +245,6 @@ describe("metadata view", () => {
     ).toBeInTheDocument();
   });
 
-  test("hides the previous object and external open object buttons when isPage is true", async () => {
-    render(
-      <Panel
-        isPage
-        object={movieObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
-      />,
-    );
-
-    await waitFor(() =>
-      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
-    );
-
-    expect(
-      screen.queryAllByRole("button", {
-        name: /Open Previous Object/i,
-      }),
-    ).toHaveLength(0);
-
-    const panelHeader = within(screen.getByTestId("panel-header"));
-    expect(panelHeader.queryAllByRole("link")).toHaveLength(0);
-  });
-
   test("renders object not found when the object doesn't exist", async () => {
     server.use(
       graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
@@ -201,9 +258,8 @@ describe("metadata view", () => {
 
     render(
       <Panel
+        {...defaultProps}
         object={{ ...movieObject, uid: "nonexistant" }}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
       />,
     );
 
@@ -221,9 +277,8 @@ describe("metadata view", () => {
   test("renders object type not found when the object type isn't found in the schema", async () => {
     render(
       <Panel
+        {...defaultProps}
         object={{ uid: "123", objectType: "nonexistant", language: "" }}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
       />,
     );
 
@@ -243,13 +298,7 @@ describe("metadata view", () => {
       }),
     );
 
-    render(
-      <Panel
-        object={movieObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
-      />,
-    );
+    render(<Panel {...defaultProps} object={movieObject} />);
 
     await waitFor(() =>
       expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
@@ -279,13 +328,7 @@ describe("metadata view", () => {
       }),
     );
 
-    render(
-      <Panel
-        object={movieObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
-      />,
-    );
+    render(<Panel {...defaultProps} object={movieObject} />);
 
     await waitFor(() =>
       expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
@@ -311,13 +354,7 @@ describe("metadata view", () => {
   });
 
   test("renders an image and the original image size when the object type is an Image", async () => {
-    render(
-      <Panel
-        object={imageObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
-      />,
-    );
+    render(<Panel {...defaultProps} object={imageObject} />);
 
     await waitFor(() =>
       expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
@@ -338,13 +375,7 @@ describe("metadata view", () => {
 
   describe("multiple language versions", () => {
     test("renders the Portuguese GOT episode", async () => {
-      render(
-        <Panel
-          object={episodeObjectPtPT}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
-        />,
-      );
+      render(<Panel {...defaultProps} object={episodeObjectPtPT} />);
 
       await waitFor(() =>
         expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
@@ -365,11 +396,7 @@ describe("metadata view", () => {
       const SetObjectWrapper = () => {
         const [object, setObject] = useState(episodeObjectEnGB);
         return (
-          <Panel
-            object={object}
-            closePanel={jest.fn()}
-            setPanelObject={setObject}
-          />
+          <Panel {...defaultProps} object={object} setPanelObject={setObject} />
         );
       };
       render(<SetObjectWrapper />);
@@ -415,13 +442,7 @@ describe("metadata view", () => {
 
   describe("metadata view - edit", () => {
     test("switch into edit mode using the edit metadata button", async () => {
-      render(
-        <Panel
-          object={setObjectWithContent}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
-        />,
-      );
+      render(<Panel {...defaultProps} object={setObjectWithContent} />);
 
       await waitFor(() =>
         expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
@@ -436,11 +457,7 @@ describe("metadata view", () => {
 
     test("switch into edit mode by changing an input field", async () => {
       const { user } = render(
-        <Panel
-          object={setObjectWithContent}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
-        />,
+        <Panel {...defaultProps} object={setObjectWithContent} />,
       );
 
       await waitFor(() =>
@@ -458,11 +475,7 @@ describe("metadata view", () => {
 
     test("edits and cancels to revert a field to its initial value", async () => {
       const { user } = render(
-        <Panel
-          object={setObjectWithContent}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
-        />,
+        <Panel {...defaultProps} object={setObjectWithContent} />,
       );
 
       await waitFor(() =>
@@ -514,11 +527,7 @@ describe("metadata view", () => {
       );
 
       const { user } = render(
-        <Panel
-          object={setObjectWithContent}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
-        />,
+        <Panel {...defaultProps} object={setObjectWithContent} />,
       );
 
       await waitFor(() =>
@@ -563,11 +572,7 @@ describe("metadata view", () => {
       );
 
       const { user } = render(
-        <Panel
-          object={setObjectWithContent}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
-        />,
+        <Panel {...defaultProps} object={setObjectWithContent} />,
       );
 
       await waitFor(() =>
@@ -604,11 +609,7 @@ describe("metadata view", () => {
 describe("imagery view", () => {
   test("renders the panel", async () => {
     render(
-      <Panel
-        object={movieObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
-      />,
+      <Panel {...defaultProps} object={movieObject} tab={PanelTab.Imagery} />,
     );
 
     await waitFor(() =>
@@ -616,11 +617,6 @@ describe("imagery view", () => {
         screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
       ).toBeInTheDocument(),
     );
-
-    await waitFor(() =>
-      expect(screen.getByText("Imagery")).toBeInTheDocument(),
-    );
-    fireEvent.click(screen.getByText("Imagery"));
 
     expect(
       screen.getAllByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
@@ -657,9 +653,10 @@ describe("imagery view", () => {
     const setPanelObject = jest.fn();
     render(
       <Panel
+        {...defaultProps}
         object={movieObject}
-        closePanel={jest.fn()}
         setPanelObject={setPanelObject}
+        tab={PanelTab.Imagery}
       />,
     );
 
@@ -668,11 +665,6 @@ describe("imagery view", () => {
         screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
       ).toBeInTheDocument(),
     );
-
-    await waitFor(() =>
-      expect(screen.getByText("Imagery")).toBeInTheDocument(),
-    );
-    fireEvent.click(screen.getByText("Imagery"));
 
     expect(
       screen.getAllByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
@@ -695,21 +687,11 @@ describe("relationships view", () => {
   test("render the panel", async () => {
     render(
       <Panel
+        {...defaultProps}
         object={seasonWithRelationships}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
+        tab={PanelTab.Relationships}
       />,
     );
-
-    await waitFor(() =>
-      expect(
-        screen.getByText(
-          GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.title,
-        ),
-      ).toBeInTheDocument(),
-    );
-
-    fireEvent.click(screen.getByText("Relationships"));
 
     await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
 
@@ -731,21 +713,11 @@ describe("relationships view", () => {
   test("edit view", async () => {
     render(
       <Panel
+        {...defaultProps}
         object={seasonWithRelationships}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
+        tab={PanelTab.Relationships}
       />,
     );
-
-    await waitFor(() =>
-      expect(
-        screen.getByText(
-          GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.title,
-        ),
-      ).toBeInTheDocument(),
-    );
-
-    fireEvent.click(screen.getByText("Relationships"));
 
     await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
 
@@ -760,24 +732,12 @@ describe("relationships view", () => {
     const setPanelObject = jest.fn();
     render(
       <Panel
+        {...defaultProps}
         object={seasonWithRelationships}
-        closePanel={jest.fn()}
+        tab={PanelTab.Relationships}
         setPanelObject={setPanelObject}
       />,
     );
-
-    await waitFor(() =>
-      expect(
-        screen.getByText(
-          GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.title,
-        ),
-      ).toBeInTheDocument(),
-    );
-
-    await waitFor(() =>
-      expect(screen.getByText("Relationships")).toBeInTheDocument(),
-    );
-    fireEvent.click(screen.getByText("Relationships"));
 
     await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
 
@@ -797,9 +757,9 @@ describe("relationships view", () => {
     const renderAndSwitchToEditView = async () => {
       render(
         <Panel
+          {...defaultProps}
           object={seasonWithRelationships}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
+          tab={PanelTab.Relationships}
         />,
       );
 
@@ -811,8 +771,6 @@ describe("relationships view", () => {
           ),
         ).toBeInTheDocument(),
       );
-
-      fireEvent.click(screen.getByText("Relationships"));
 
       await waitFor(() =>
         expect(screen.getAllByText("Episode")).toHaveLength(3),
@@ -889,9 +847,9 @@ describe("content view", () => {
   test("render the panel", async () => {
     render(
       <Panel
+        {...defaultProps}
         object={setObjectWithContent}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
+        tab={PanelTab.Content}
       />,
     );
 
@@ -903,23 +861,24 @@ describe("content view", () => {
       ).toBeInTheDocument(),
     );
 
-    fireEvent.click(screen.getByText("Content"));
-
     expect(screen.getAllByText("Homepage")).toHaveLength(1);
-    expect(
-      screen.getByText(
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
-          .object?.__SkylarkSet__title as string,
-      ),
-    ).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+            .content.objects[0].object?.__SkylarkSet__title as string,
+        ),
+      ).toBeInTheDocument(),
+    );
   });
 
   test("edit view", async () => {
     render(
       <Panel
+        {...defaultProps}
         object={setObjectWithContent}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
+        tab={PanelTab.Content}
       />,
     );
 
@@ -930,8 +889,6 @@ describe("content view", () => {
         ),
       ).toBeInTheDocument(),
     );
-
-    fireEvent.click(screen.getByText("Content"));
 
     expect(screen.getAllByText("Homepage")).toHaveLength(1);
 
@@ -946,8 +903,9 @@ describe("content view", () => {
     const setPanelObject = jest.fn();
     render(
       <Panel
+        {...defaultProps}
         object={setObjectWithContent}
-        closePanel={jest.fn()}
+        tab={PanelTab.Content}
         setPanelObject={setPanelObject}
       />,
     );
@@ -959,9 +917,15 @@ describe("content view", () => {
         ),
       ).toBeInTheDocument(),
     );
-    fireEvent.click(screen.getByText("Content"));
 
     expect(screen.getAllByText("Homepage")).toHaveLength(1);
+
+    const firstContentItemTitle = GQLSkylarkGetHomepageSetContentQueryFixture
+      .data.getObjectContent.content.objects[0].object
+      .__SkylarkSet__title as string;
+    await waitFor(() =>
+      expect(screen.getByText(firstContentItemTitle)).toBeInTheDocument(),
+    );
 
     const firstOpenObjectButton = screen.getAllByRole("button", {
       name: /Open Object/i,
@@ -970,10 +934,10 @@ describe("content view", () => {
 
     expect(setPanelObject).toHaveBeenCalledWith({
       objectType:
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
-          .object.__typename,
-      uid: GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content
-        .objects[0].object.uid,
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[0].object.__typename,
+      uid: GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+        .content.objects[0].object.uid,
       language: "en-GB",
     });
   });
@@ -982,9 +946,9 @@ describe("content view", () => {
     const renderAndSwitchToEditView = async () => {
       render(
         <Panel
+          {...defaultProps}
           object={setObjectWithContent}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
+          tab={PanelTab.Content}
         />,
       );
 
@@ -995,7 +959,6 @@ describe("content view", () => {
           ),
         ).toBeInTheDocument(),
       );
-      fireEvent.click(screen.getByText("Content"));
 
       await waitFor(() =>
         expect(screen.getAllByText("Homepage")).toHaveLength(1),
@@ -1009,8 +972,8 @@ describe("content view", () => {
 
       expect(
         screen.getByText(
-          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
-            .object.__SkylarkSet__title as string,
+          GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+            .content.objects[0].object.__SkylarkSet__title as string,
         ),
       ).toBeInTheDocument();
     };
@@ -1030,20 +993,20 @@ describe("content view", () => {
       expect(
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
-          .object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[0].object.__SkylarkSet__title as string,
       );
       expect(
         screen.getByTestId("panel-object-content-item-2"),
       ).toHaveTextContent(
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[1]
-          .object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[1].object.__SkylarkSet__title as string,
       );
       expect(
         screen.getByTestId("panel-object-content-item-3"),
       ).toHaveTextContent(
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[2]
-          .object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[2].object.__SkylarkSet__title as string,
       );
 
       expect(screen.getByDisplayValue("1")).toBeInTheDocument();
@@ -1056,20 +1019,20 @@ describe("content view", () => {
       expect(
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[1]
-          .object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[1].object.__SkylarkSet__title as string,
       );
       expect(
         screen.getByTestId("panel-object-content-item-2"),
       ).toHaveTextContent(
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[2]
-          .object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[2].object.__SkylarkSet__title as string,
       );
       expect(
         screen.getByTestId("panel-object-content-item-3"),
       ).toHaveTextContent(
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
-          .object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[0].object.__SkylarkSet__title as string,
       );
     });
 
@@ -1089,8 +1052,8 @@ describe("content view", () => {
     test("when last item is made 10000, it changes back to the length of the content array", async () => {
       await renderAndSwitchToEditView();
       const maxPosition =
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects
-          .length;
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects.length;
 
       expect(maxPosition).toBeGreaterThan(0);
 
@@ -1098,9 +1061,9 @@ describe("content view", () => {
       expect(
         screen.getByTestId(`panel-object-content-item-${maxPosition}`),
       ).toHaveTextContent(
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[
-          maxPosition - 1
-        ].object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[maxPosition - 1].object
+          .__SkylarkSet__title as string,
       );
 
       const input = screen.getByDisplayValue(maxPosition);
@@ -1112,9 +1075,9 @@ describe("content view", () => {
       expect(
         screen.getByTestId(`panel-object-content-item-${maxPosition}`),
       ).toHaveTextContent(
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[
-          maxPosition - 1
-        ].object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[maxPosition - 1].object
+          .__SkylarkSet__title as string,
       );
     });
 
@@ -1125,8 +1088,8 @@ describe("content view", () => {
       expect(
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
-          .object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[0].object.__SkylarkSet__title as string,
       );
 
       const input = screen.getByDisplayValue(1);
@@ -1138,8 +1101,8 @@ describe("content view", () => {
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
         `${
-          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
-            .object.__SkylarkSet__title as string
+          GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+            .content.objects[0].object.__SkylarkSet__title as string
         }1`,
       );
     });
@@ -1151,8 +1114,8 @@ describe("content view", () => {
       expect(
         screen.getByTestId("panel-object-content-item-2"),
       ).toHaveTextContent(
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[1]
-          .object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[1].object.__SkylarkSet__title as string,
       );
 
       const input = screen.getByDisplayValue(1);
@@ -1164,8 +1127,8 @@ describe("content view", () => {
       expect(
         screen.getByTestId("panel-object-content-item-2"),
       ).toHaveTextContent(
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[1]
-          .object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[1].object.__SkylarkSet__title as string,
       );
     });
 
@@ -1173,8 +1136,8 @@ describe("content view", () => {
       await renderAndSwitchToEditView();
 
       const maxPosition =
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects
-          .length;
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects.length;
       expect(maxPosition).toBeGreaterThan(0);
 
       expect(
@@ -1183,8 +1146,8 @@ describe("content view", () => {
       expect(
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
-          .object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[0].object.__SkylarkSet__title as string,
       );
 
       const withinPanelObjectContentItem1 = within(
@@ -1201,8 +1164,8 @@ describe("content view", () => {
       expect(
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
-        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[1]
-          .object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[1].object.__SkylarkSet__title as string,
       );
     });
 
@@ -1241,7 +1204,15 @@ describe("availability view", () => {
     jest.useFakeTimers().setSystemTime(new Date("2023-03-10T00:00:00.000Z"));
   });
 
-  const switchToAvailability = async () => {
+  test("render the panel", async () => {
+    render(
+      <Panel
+        {...defaultProps}
+        object={movieObject}
+        tab={PanelTab.Availability}
+      />,
+    );
+
     expect(
       screen.queryAllByText(
         GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
@@ -1250,25 +1221,12 @@ describe("availability view", () => {
     ).toHaveLength(0);
 
     await waitFor(() =>
-      expect(screen.getByText("Availability")).toBeInTheDocument(),
+      expect(
+        screen.getAllByText(
+          GQLSkylarkGetObjectQueryFixture.data.getObject.title,
+        ),
+      ).toHaveLength(1),
     );
-    fireEvent.click(screen.getByText("Availability"));
-  };
-
-  test("render the panel", async () => {
-    render(
-      <Panel
-        object={movieObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
-      />,
-    );
-
-    await switchToAvailability();
-
-    expect(
-      screen.getAllByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
-    ).toHaveLength(1);
 
     const numberOfAvailabilityInFixture =
       GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
@@ -1311,13 +1269,18 @@ describe("availability view", () => {
 
     render(
       <Panel
+        {...defaultProps}
         object={movieObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
+        tab={PanelTab.Availability}
       />,
     );
 
-    await switchToAvailability();
+    expect(
+      screen.queryAllByText(
+        GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+          .title,
+      ),
+    ).toHaveLength(0);
 
     await waitFor(() => expect(screen.getByText("None")).toBeInTheDocument());
   });
@@ -1325,13 +1288,18 @@ describe("availability view", () => {
   it("finds the status of each availability", async () => {
     render(
       <Panel
+        {...defaultProps}
         object={movieObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
+        tab={PanelTab.Availability}
       />,
     );
 
-    await switchToAvailability();
+    expect(
+      screen.queryAllByText(
+        GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+          .title,
+      ),
+    ).toHaveLength(0);
 
     const numberOfAvailabilityInFixture =
       GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
@@ -1353,13 +1321,18 @@ describe("availability view", () => {
   it("converts start and end date to readable formats", async () => {
     render(
       <Panel
+        {...defaultProps}
         object={movieObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
+        tab={PanelTab.Availability}
       />,
     );
 
-    await switchToAvailability();
+    expect(
+      screen.queryAllByText(
+        GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+          .title,
+      ),
+    ).toHaveLength(0);
 
     const numberOfAvailabilityInFixture =
       GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
@@ -1392,13 +1365,19 @@ describe("availability view", () => {
     const setPanelObject = jest.fn();
     render(
       <Panel
+        {...defaultProps}
         object={movieObject}
-        closePanel={jest.fn()}
         setPanelObject={setPanelObject}
+        tab={PanelTab.Availability}
       />,
     );
 
-    await switchToAvailability();
+    expect(
+      screen.queryAllByText(
+        GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+          .title,
+      ),
+    ).toHaveLength(0);
 
     const numberOfAvailabilityInFixture =
       GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
@@ -1426,13 +1405,18 @@ describe("availability view", () => {
     test("uses the object identifier card in edit mode", async () => {
       render(
         <Panel
+          {...defaultProps}
           object={movieObject}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
+          tab={PanelTab.Availability}
         />,
       );
 
-      await switchToAvailability();
+      expect(
+        screen.queryAllByText(
+          GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+            .title,
+        ),
+      ).toHaveLength(0);
 
       await waitFor(() =>
         expect(
@@ -1463,13 +1447,18 @@ describe("availability view", () => {
           .title;
       render(
         <Panel
+          {...defaultProps}
           object={movieObject}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
+          tab={PanelTab.Availability}
         />,
       );
 
-      await switchToAvailability();
+      expect(
+        screen.queryAllByText(
+          GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+            .title,
+        ),
+      ).toHaveLength(0);
 
       await waitFor(() =>
         expect(
@@ -1502,13 +1491,18 @@ describe("availability view", () => {
           .title;
       render(
         <Panel
+          {...defaultProps}
           object={movieObject}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
+          tab={PanelTab.Availability}
         />,
       );
 
-      await switchToAvailability();
+      expect(
+        screen.queryAllByText(
+          GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+            .title,
+        ),
+      ).toHaveLength(0);
 
       await waitFor(() =>
         expect(
@@ -1543,9 +1537,9 @@ describe("availabity dimensions view", () => {
   test("render the panel and all dimensions", async () => {
     render(
       <Panel
+        {...defaultProps}
         object={availabilityObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
+        tab={PanelTab.AvailabilityDimensions}
       />,
     );
 
@@ -1575,18 +1569,13 @@ describe("availabity dimensions view", () => {
   test("displays the current selected dimensions", async () => {
     render(
       <Panel
+        {...defaultProps}
         object={availabilityObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
+        tab={PanelTab.AvailabilityDimensions}
       />,
     );
 
     expect(screen.queryAllByText("Device type")).toHaveLength(0);
-
-    await waitFor(() =>
-      expect(screen.getByText("Dimensions")).toBeInTheDocument(),
-    );
-    fireEvent.click(screen.getByText("Dimensions"));
 
     await waitFor(() =>
       expect(screen.getByText("Premium")).toBeInTheDocument(),
@@ -1600,9 +1589,9 @@ describe("availabity dimensions view", () => {
     test("selects a new value", async () => {
       render(
         <Panel
+          {...defaultProps}
           object={availabilityObject}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
+          tab={PanelTab.AvailabilityDimensions}
         />,
       );
 
@@ -1648,9 +1637,9 @@ describe("availabity dimensions view", () => {
     test("removes a value", async () => {
       render(
         <Panel
+          {...defaultProps}
           object={availabilityObject}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
+          tab={PanelTab.AvailabilityDimensions}
         />,
       );
 
@@ -1684,9 +1673,9 @@ describe("availabity dimensions view", () => {
     test("edits and saves", async () => {
       render(
         <Panel
+          {...defaultProps}
           object={availabilityObject}
-          closePanel={jest.fn()}
-          setPanelObject={jest.fn()}
+          tab={PanelTab.AvailabilityDimensions}
         />,
       );
 
@@ -1733,20 +1722,4 @@ describe("availabity dimensions view", () => {
       );
     });
   });
-});
-
-test("closing the panel using close button", async () => {
-  const closePanel = jest.fn();
-  render(
-    <Panel
-      object={movieObject}
-      closePanel={closePanel}
-      setPanelObject={jest.fn()}
-    />,
-  );
-
-  await waitFor(() => expect(screen.getByText("Close")).toBeInTheDocument());
-  fireEvent.click(screen.getByText("Close"));
-
-  expect(closePanel).toHaveBeenCalled();
 });

@@ -12,10 +12,7 @@ import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynam
 import { parseObjectContent } from "src/lib/skylark/parsers";
 
 import { createGetObjectContentKeyPrefix } from "./useGetObjectContent";
-import {
-  useAllObjectsMeta,
-  useSkylarkObjectOperations,
-} from "./useSkylarkObjectTypes";
+import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const useUpdateObjectContent = ({
   objectType,
@@ -28,17 +25,15 @@ export const useUpdateObjectContent = ({
   uid: string;
   originalContentObjects: ParsedSkylarkObjectContentObject[] | null;
   updatedContentObjects: ParsedSkylarkObjectContentObject[] | null;
-  onSuccess: (updatedContent: ParsedSkylarkObjectContent) => void;
+  onSuccess: () => void;
 }) => {
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
-  const { objects } = useAllObjectsMeta(false);
 
   const updateObjectContentMutation = createUpdateObjectContentMutation(
     objectOperations,
     originalContentObjects,
     updatedContentObjects,
-    objects,
   );
 
   const { mutate, ...rest } = useMutation({
@@ -48,14 +43,12 @@ export const useUpdateObjectContent = ({
         { uid },
       );
     },
-    onSuccess: (data, { uid }) => {
-      queryClient.invalidateQueries({
-        queryKey: createGetObjectContentKeyPrefix({ objectType, uid }),
+    onSuccess: async (_, { uid }) => {
+      await queryClient.refetchQueries({
+        queryKey: createGetObjectContentKeyPrefix({ uid, objectType }),
       });
-      const parsedObjectContent = parseObjectContent(
-        data.updateObjectContent.content,
-      );
-      onSuccess(parsedObjectContent);
+
+      onSuccess();
     },
   });
 

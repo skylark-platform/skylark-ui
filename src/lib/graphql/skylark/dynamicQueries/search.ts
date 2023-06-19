@@ -10,16 +10,21 @@ import {
 } from "./utils";
 
 export const createSearchObjectsQuery = (
-  objects: SkylarkObjectMeta[],
+  objects: SkylarkObjectMeta[] | null,
   typesToRequest: string[],
 ) => {
   // Default to showing all objects when no types are requested
   const objectsToRequest =
     typesToRequest.length > 0
-      ? objects.filter(({ name }) => typesToRequest.includes(name))
+      ? objects?.filter(({ name }) => typesToRequest.includes(name))
       : objects;
 
-  if (!objects || objects.length === 0 || objectsToRequest.length === 0) {
+  if (
+    !objects ||
+    objects.length === 0 ||
+    !objectsToRequest ||
+    objectsToRequest.length === 0
+  ) {
     return null;
   }
 

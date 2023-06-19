@@ -183,7 +183,6 @@ export const createUpdateObjectContentMutation = (
   object: SkylarkObjectMeta | null,
   originalContentObjects: ParsedSkylarkObjectContentObject[] | null,
   updatedContentObjects: ParsedSkylarkObjectContentObject[] | null,
-  contentTypesToRequest: SkylarkObjectMeta[],
 ) => {
   if (
     !object ||

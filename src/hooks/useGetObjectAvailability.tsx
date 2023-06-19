@@ -97,13 +97,15 @@ export const prefetchGetObjectAvailability = async ({
     uid: string;
   };
 }) => {
-  const { queryFn, queryKey } = generateQueryFunctionAndKey({
-    objectMeta,
-    objectType,
-    uid,
-    variables,
-  });
-  await queryClient.prefetchInfiniteQuery({ queryKey, queryFn });
+  if (objectMeta?.hasAvailability) {
+    const { queryFn, queryKey } = generateQueryFunctionAndKey({
+      objectMeta,
+      objectType,
+      uid,
+      variables,
+    });
+    await queryClient.prefetchInfiniteQuery({ queryKey, queryFn });
+  }
 };
 
 export const useGetObjectAvailability = (
