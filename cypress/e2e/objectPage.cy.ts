@@ -1,43 +1,9 @@
 // Most of the Object Page functionality should be tested by the contentLibrary/panel tests
 // These tests should only check functionality that is different
-import {
-  hasMatchingVariable,
-  hasOperationName,
-} from "../support/utils/graphqlTestUtils";
 
 describe("Object Page", () => {
   beforeEach(() => {
     cy.login();
-
-    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "IntrospectionQuery")) {
-        req.alias = "introspectionQuery";
-        req.reply({
-          fixture: "./skylark/queries/introspection/introspectionQuery.json",
-        });
-      }
-      if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
-        req.reply({
-          fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
-        });
-      }
-      if (hasOperationName(req, "GET_Episode")) {
-        if (hasMatchingVariable(req, "language", "pt-PT")) {
-          req.reply({
-            fixture: "./skylark/queries/getObject/gots01e01ptPT.json",
-          });
-        } else {
-          req.reply({
-            fixture: "./skylark/queries/getObject/gots01e01.json",
-          });
-        }
-      }
-      if (hasOperationName(req, "GET_SkylarkSet")) {
-        req.reply({
-          fixture: "./skylark/queries/getObject/homepage.json",
-        });
-      }
-    });
   });
 
   describe("SkylarkSet", () => {
@@ -47,7 +13,6 @@ describe("Object Page", () => {
           cy.visit(
             `/object/${objectJson.data.getObject.__typename}/${objectJson.data.getObject.uid}`,
           );
-          cy.wait("@introspectionQuery");
         },
       );
     });
@@ -72,26 +37,45 @@ describe("Object Page", () => {
     it("navigates to Content tab, opens an object and checks the URL has updated", () => {
       cy.fixture("./skylark/queries/getObject/homepage.json").then(
         (homepageJson) => {
-          const homepageUid = homepageJson.data.getObject.uid;
-          const homepageObjectType = homepageJson.data.getObject.__typename;
-          const firstSetContentItemUid =
-            homepageJson.data.getObject.content.objects[0].object.uid;
-          const firstSetContentItemObjectType =
-            homepageJson.data.getObject.content.objects[0].object.__typename;
+          return (
+            cy
+              // TODO change getObject to getObjectContent in next PR
+              .fixture("./skylark/queries/getObject/homepage.json")
+              .then((homepageContentJson) => {
+                console.log({ homepageContentJson });
 
-          cy.contains("button", "Content").click();
-          cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
+                const homepageUid = homepageJson.data.getObject.uid;
+                const homepageObjectType =
+                  homepageJson.data.getObject.__typename;
+                const firstSetContentItemUid =
+                  homepageJson.data.getObject.content.objects[0].object.uid;
+                const firstSetContentItemObjectType =
+                  homepageJson.data.getObject.content.objects[0].object
+                    .__typename;
+                // const firstSetContentItemUid =
+                //   homepageContentJson.data.getObjectContent.content.objects[0]
+                //     .object.uid;
+                // const firstSetContentItemObjectType =
+                //   homepageContentJson.data.getObjectContent.content.objects[0]
+                //     .object.__typename;
 
-          cy.get('[aria-label="Open Object"]').first().click();
+                cy.contains("button", "Content").click();
+                cy.get(
+                  `[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`,
+                );
 
-          // Only check the panel object type and uid so we don't have to mock the response
-          cy.get(
-            `[data-cy=panel-for-${firstSetContentItemObjectType}-${firstSetContentItemUid}]`,
-          );
+                cy.get('[aria-label="Open Object"]').first().click();
 
-          cy.url().should(
-            "include",
-            `/object/${firstSetContentItemObjectType}/${firstSetContentItemUid}`,
+                // Only check the panel object type and uid so we don't have to mock the response
+                cy.get(
+                  `[data-cy=panel-for-${firstSetContentItemObjectType}-${firstSetContentItemUid}]`,
+                );
+
+                cy.url().should(
+                  "include",
+                  `/object/${firstSetContentItemObjectType}/${firstSetContentItemUid}`,
+                );
+              })
           );
         },
       );

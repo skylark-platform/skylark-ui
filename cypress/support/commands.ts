@@ -1,5 +1,11 @@
 import "@percy/cypress";
 import "cypress-iframe";
+import msw, {
+  GraphQLContext,
+  GraphQLRequest,
+  GraphQLVariables,
+  ResponseComposition,
+} from "msw";
 
 import { LOCAL_STORAGE } from "../../src/constants/localStorage";
 
@@ -58,6 +64,23 @@ declare global {
       clickOutside(): Chainable<void>;
       getByLabel(l: string): Chainable<void>;
       openContentLibraryObjectPanelByText(t: string): Chainable<void>;
+
+      // interceptQuery(
+      //   name: string,
+      //   fn: (
+      //     req: GraphQLRequest<GraphQLVariables>,
+      //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      //     res: ResponseComposition<any>,
+      //     ctx: GraphQLContext<Record<string, unknown>>,
+      //   ) => void,
+      //   alias?: string,
+      // ): Chainable<void>;
     }
+  }
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  interface Window {
+    msw: {
+      worker: msw.SetupWorker;
+    };
   }
 }

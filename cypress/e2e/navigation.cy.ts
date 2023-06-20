@@ -1,20 +1,8 @@
-import { hasOperationName } from "../support/utils/graphqlTestUtils";
-
 describe("Navigation", () => {
   beforeEach(() => {
     cy.login();
 
-    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "IntrospectionQuery")) {
-        req.alias = "introspectionQuery";
-        req.reply({
-          fixture: "./skylark/queries/introspection/introspectionQuery.json",
-        });
-      }
-    });
-
     cy.visit("/");
-    cy.wait("@introspectionQuery");
   });
 
   it("contains the navigation bar", () => {

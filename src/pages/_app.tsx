@@ -23,6 +23,15 @@ const loadFramerMotionFeatures = () =>
     (res) => res.default,
   );
 
+if (true || process.env.NEXT_PUBLIC_API_MOCKING === "enabled") {
+  require("../__tests__/mocks");
+  // import("../__tests__/mocks").then(() => {
+  //   // if (window.Cypress) {
+  //   //   window.appReady = true;
+  //   // }
+  // });
+}
+
 export default function App({ Component, pageProps }: AppProps) {
   const queryClient = createSkylarkReactQueryClient();
 

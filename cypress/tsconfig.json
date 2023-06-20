@@ -1,8 +1,17 @@
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "target": "es5",
     "lib": ["es5", "dom"],
-    "types": ["cypress", "node", "@percy/cypress"]
+    "types": ["cypress", "node", "@percy/cypress"],
+    "baseUrl": ".",
+    "jsx": "react",
+    "paths": {
+      "src/*": ["../src/*"]
+      // "src/__tests__/*": ["../src/__tests__/*"],
+      // "src/lib/*": ["../src/lib/*"],
+      // "src/constants/*": ["../src/constants/*"]
+    }
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*", "../src/**/*"]
 }
