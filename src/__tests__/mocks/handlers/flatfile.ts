@@ -1,5 +1,6 @@
 import { rest, graphql } from "msw";
 
+import InitializeEmptyBatch from "src/__tests__/fixtures/flatfile/InitializeEmptyBatch.json";
 import {
   FlatfileCreatePortalResponse,
   FlatfileCreateTemplateResponse,
@@ -145,6 +146,15 @@ export const flatfileHandlers = [
     };
     return res(ctx.data(data));
   }),
+
+  graphql.mutation("InitializeEmptyBatch", (req, res, ctx) => {
+    return res(ctx.data(InitializeEmptyBatch.data));
+  }),
+
+  graphql.query("SmartWorkspace", (req, res, ctx) => {
+    return res(ctx.data(InitializeEmptyBatch.data));
+  }),
+
   graphql.mutation("CREATE_PORTAL", (req, res, ctx) => {
     const data: FlatfileCreatePortalResponse = {
       createEmbed: {
@@ -161,6 +171,7 @@ export const flatfileHandlers = [
     };
     return res(ctx.data(data));
   }),
+
   graphql.mutation("UPDATE_PORTAL", (req, res, ctx) => {
     const data: FlatfileUpdatePortalResponse = {
       updateEmbed: {

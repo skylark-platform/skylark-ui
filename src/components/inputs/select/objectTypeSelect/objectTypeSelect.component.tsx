@@ -23,7 +23,8 @@ export const ObjectTypeSelect = forwardRef(
     { ...props }: ObjectTypeSelectProps,
     ref: Ref<HTMLButtonElement | HTMLInputElement>,
   ) => {
-    const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+    const { objectTypesWithConfig, isLoading } =
+      useSkylarkObjectTypesWithConfig();
 
     const options: SelectOption[] =
       objectTypesWithConfig?.map(({ objectType, config }) => ({
@@ -44,7 +45,7 @@ export const ObjectTypeSelect = forwardRef(
     return (
       <Select
         {...props}
-        disabled={options.length === 0 || props.disabled}
+        disabled={isLoading || options.length === 0 || props.disabled}
         placeholder={props.placeholder || "Object Type"}
         options={options}
         ref={ref}

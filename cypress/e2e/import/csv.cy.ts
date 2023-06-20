@@ -1,4 +1,5 @@
 import { Server, WebSocket } from "mock-socket";
+import { rest } from "msw";
 
 import {
   hasOperationName,
@@ -7,32 +8,37 @@ import {
 
 describe("Import/CSV", () => {
   beforeEach(() => {
-    cy.login();
-
-    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "IntrospectionQuery")) {
-        req.alias = "introspectionQuery";
-        req.reply({
-          fixture: "./skylark/queries/introspection/introspectionQuery.json",
-        });
-      }
-      if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
-        req.alias = "getObjectsConfig";
-        req.reply({
-          fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
-        });
-      }
-      if (operationNameStartsWith(req, "createEpisode_")) {
-        req.reply({
-          fixture: "./skylark/mutations/import/csvImportEpisodeCreation.json",
-        });
-      }
-    });
+    // cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
+    //   if (hasOperationName(req, "IntrospectionQuery")) {
+    //     req.alias = "introspectionQuery";
+    //     req.reply({
+    //       fixture: "./skylark/queries/introspection/introspectionQuery.json",
+    //     });
+    //   }
+    //   if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
+    //     req.alias = "getObjectsConfig";
+    //     req.reply({
+    //       fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
+    //     });
+    //   }
+    //   if (operationNameStartsWith(req, "createEpisode_")) {
+    //     req.reply({
+    //       fixture: "./skylark/mutations/import/csvImportEpisodeCreation.json",
+    //     });
+    //   }
+    // });
 
     cy.intercept("POST", "https://api.us.flatfile.io/graphql", (req) => {
-      if (hasOperationName(req, "InitializeEmptyBatch")) {
+      if (hasOperationName(req, "SmartWorkspace")) {
+        console.log("INTERCEPTED SmartWorkspace");
         req.reply({
-          fixture: "./flatfile/mutations/InitializeEmptyBatch.json",
+          fixture: "./flatfile/InitializeEmptyBatch.json",
+        });
+      }
+      if (hasOperationName(req, "PreflightBatch")) {
+        console.log("INTERCEPTED PreflightBatch");
+        req.reply({
+          fixture: "./flatfile/InitializeEmptyBatch.json",
         });
       }
     });
@@ -41,16 +47,19 @@ describe("Import/CSV", () => {
       "createFlatfileTemplate",
     );
 
-    cy.intercept("POST", "**/api/flatfile/import", (req) => {
-      req.alias = "getImportedObjects";
-      req.reply({
-        fixture: "./skylark/apiRoutes/importEpisodes.json",
-      });
-    });
+    // cy.intercept("POST", "**/api/flatfile/import", (req) => {
+    //   console.log("intercept ", "**/api/flatfile/import");
+    //   req.alias = "getImportedObjects";
+    //   req.reply({
+    //     fixture: "./skylark/apiRoutes/importEpisodes.json",
+    //   });
+    // });
 
     cy.visit("/import/csv");
-    cy.wait("@introspectionQuery");
-    cy.wait("@getObjectsConfig");
+    cy.login();
+
+    // cy.wait("@introspectionQuery");
+    // cy.wait("@getObjectsConfig");
   });
 
   it("visit import/csv page", () => {
@@ -64,7 +73,9 @@ describe("Import/CSV", () => {
   });
 
   it("displays an objects display_name in a select", () => {
-    cy.get("[data-testid=select]").click();
+    // cy.wait(5000);
+    // cy.contains("Select your Skylark object type");
+    cy.get("[data-testid=select] > input").should("not.be.disabled").click();
     cy.get("[data-testid=select-options]").scrollTo("bottom");
     cy.get("[data-testid=select-options]").within(() => {
       cy.contains("Set");
@@ -75,8 +86,9 @@ describe("Import/CSV", () => {
 
   it("select objectType", () => {
     cy.contains("Download Example CSV").should("have.class", "btn-disabled");
-    cy.get('[data-testid="select"]').click();
+    cy.get('[data-testid="select"] > input').click();
     cy.get('[data-testid="select-options"]').should("be.visible");
+
     cy.percySnapshot("import/csv - objectType select open");
 
     cy.get('[data-testid="select-options"]')
@@ -97,14 +109,24 @@ describe("Import/CSV", () => {
     cy.percySnapshot("import/csv - objectType selected");
   });
 
-  it("opens and closes Flatfile", () => {
-    cy.get('[data-testid="select"]').click();
+  it.only("opens and closes Flatfile", () => {
+    cy.get('[data-testid="select"] > input').click();
     cy.get('[data-testid="select-options"]').should("be.visible");
     cy.get('[data-testid="select-options"]')
       .get("li > span")
       .contains("Episode")
       .click();
     cy.get("button").contains("Import").click();
+
+    // cy.window().then((window) => {
+    //   const { worker } = window.msw;
+
+    //   worker.use(
+    //     rest.post("/api/flatfile/import", (_, res, ctx) => {
+    //       res(ctx.body(JSON.stringify({ uid: "MEeeee" })));
+    //     }),
+    //   );
+    // });
 
     cy.wait("@createFlatfileTemplate");
 
@@ -169,7 +191,7 @@ describe("Import/CSV", () => {
 
       cy.get(".flatfile-sdk iframe").should("not.exist");
 
-      cy.wait("@getImportedObjects");
+      // cy.wait("@getImportedObjects");
 
       cy.get('[data-testid="status-card"].border-t-success', {
         timeout: 10000,
