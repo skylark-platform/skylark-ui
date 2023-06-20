@@ -231,7 +231,7 @@ export const Panel = ({
         },
       };
 
-      if (selectedTab !== PanelTab.Availability) {
+      if (objectMeta.hasContent && selectedTab !== PanelTab.Availability) {
         void prefetchGetObjectAvailability(prefetchArgs);
       }
       if (objectMeta.hasContent && selectedTab !== PanelTab.Content) {
