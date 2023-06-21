@@ -140,3 +140,31 @@ export const getJSONFromLocalStorage = <T>(key: string) => {
     return null;
   }
 };
+
+export const addCloudinaryOnTheFlyImageTransformation = (
+  imageUrl: string,
+  opts: { height?: number; width?: number },
+) => {
+  if (!imageUrl) {
+    return "";
+  }
+
+  const cloudinaryEnvironment = "dg6rjqzxn"; // JW personal account
+
+  const urlOpts = [];
+  if (opts.height) {
+    urlOpts.push(`h_${opts.height}`);
+  }
+  if (opts.width) {
+    urlOpts.push(`w_${opts.width}`);
+  }
+
+  if (opts.height && opts.width) {
+    urlOpts.push("c_fill");
+  }
+
+  const urlOptsStr = urlOpts.length > 0 ? `${urlOpts.join(",")}/` : "";
+
+  const cloudinaryUrl = `https://res.cloudinary.com/${cloudinaryEnvironment}/image/fetch/${urlOptsStr}${imageUrl}`;
+  return cloudinaryUrl;
+};

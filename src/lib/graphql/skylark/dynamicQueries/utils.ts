@@ -162,7 +162,7 @@ export const generateRelationshipsToReturn = (
     };
   }
 
-  if (!isSearch && object.images && object.images.objectMeta?.fields) {
+  if (object.images && object.images.objectMeta?.fields) {
     object.images.relationshipNames.forEach((relationshipName) => {
       relationshipsToReturn[relationshipName] = {
         __args: {

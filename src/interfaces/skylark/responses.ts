@@ -24,6 +24,16 @@ export interface GQLSkylarkErrorResponse<T> {
   };
 }
 
+export interface GQLSkylarkAccountResponse {
+  getAccount: {
+    config: {
+      defaultLanguage: string;
+    } | null;
+    account_id: string;
+    skylark_version: string;
+  };
+}
+
 export interface GQLSkylarkGetObjectResponse {
   getObject: SkylarkGraphQLObject;
 }

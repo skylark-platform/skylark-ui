@@ -7,16 +7,19 @@ import {
 } from "react";
 
 import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { useAccount } from "src/hooks/useAccount";
+import { SkylarkAccount } from "src/interfaces/skylark/environment";
 import { getJSONFromLocalStorage } from "src/lib/utils";
 
 type State = {
   usedLanguages: string[] | null;
+  defaultLanguage?: string;
 };
 type Action = { type: "addUsedLanguages"; value: string[] };
 type Dispatch = (action: Action) => void;
 
 const UserContext = createContext<
-  { state: State; dispatch: Dispatch } | undefined
+  { state: State; account?: SkylarkAccount; dispatch: Dispatch } | undefined
 >(undefined);
 
 const userReducer = (state: State, action: Action) => {
@@ -51,6 +54,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     usedLanguages: [],
   });
 
+  const { account } = useAccount();
+
   useEffect(() => {
     const usedLanguagesFromLocalStorage = getJSONFromLocalStorage<string[]>(
       LOCAL_STORAGE.usedLanguages,
@@ -63,7 +68,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ state, dispatch }}>
+    <UserContext.Provider value={{ state, account, dispatch }}>
       {children}
     </UserContext.Provider>
   );
@@ -75,10 +80,12 @@ export const useUser = () => {
     throw new Error("useUser must be used within a UserProvider");
   }
 
-  const { state, dispatch } = context;
+  const { state, account, dispatch } = context;
 
   return {
     ...state,
+    // In the future a user will have their own custom default language
+    defaultLanguage: account?.defaultLanguage,
     dispatch,
   };
 };
