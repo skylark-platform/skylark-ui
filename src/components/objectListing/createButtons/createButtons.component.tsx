@@ -7,7 +7,7 @@ import {
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
 import { Edit3, Plus, Upload } from "src/components/icons";
-import { CreateObjectModal } from "src/components/objectListing/createObjectModal/createObjectModal.component";
+import { CreateObjectModal } from "src/components/modals";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 
 interface CreateButtonProps {
@@ -44,9 +44,8 @@ export const CreateButtons = ({
             <Button
               variant="primary"
               Icon={<Plus className="h-4 w-4 stroke-success-content" />}
-              className="max-sm:min-w-0 max-sm:px-2"
             >
-              <span className="hidden sm:block">Create</span>
+              Create
             </Button>
           </DropdownMenuButton>
         </DropdownMenu>

@@ -1,3 +1,6 @@
+import GQLSkylarkAllAvailTestMovieFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
+import GQLSkylarkAllAvailTestMovieSearchFixture from "src/__tests__/fixtures/skylark/queries/search/fantasticMrFox_All_Availabilities.json";
+import GQLGameOfThronesSearchResults from "src/__tests__/fixtures/skylark/queries/search/gotPage1.json";
 import {
   act,
   fireEvent,
@@ -46,14 +49,45 @@ test("open metadata panel, check information and close", async () => {
   );
 
   const panelHeader = screen.getByTestId("panel-header");
-  expect(
-    within(panelHeader).getByText("All Avail Test Movie"),
-  ).toBeInTheDocument();
+  await waitFor(() =>
+    expect(
+      within(panelHeader).getByText(
+        GQLSkylarkAllAvailTestMovieFixture.data.getObject.title,
+      ),
+    ).toBeInTheDocument(),
+  );
 
   await waitFor(() => expect(screen.getByText("Close")).toBeInTheDocument());
   fireEvent.click(screen.getByText("Close"));
 
   await waitFor(() =>
     expect(screen.queryByTestId("panel-header")).not.toBeInTheDocument(),
+  );
+});
+
+test("displays the number of search results", async () => {
+  render(<ContentLibrary />);
+
+  await waitFor(() =>
+    expect(
+      screen.getByText(
+        `${GQLGameOfThronesSearchResults.data.search.total_count} results`,
+      ),
+    ).toBeInTheDocument(),
+  );
+
+  const input = screen.getByPlaceholderText("Search for an object(s)");
+  fireEvent.change(input, { target: { value: "AllAvailTestMovie" } });
+
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  await waitFor(() =>
+    expect(
+      screen.getByText(
+        `${GQLSkylarkAllAvailTestMovieSearchFixture.data.search.total_count} results`,
+      ),
+    ).toBeInTheDocument(),
   );
 });

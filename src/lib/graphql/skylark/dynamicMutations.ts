@@ -3,6 +3,8 @@ import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
+  BuiltInSkylarkObjectType,
+  ParsedSkylarkObject,
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObjectRelationships,
   SkylarkObjectMeta,
@@ -13,6 +15,7 @@ import {
   parseMetadataForGraphQLRequest,
   parseUpdatedRelationshipObjects,
 } from "src/lib/skylark/parsers";
+import { hasProperty } from "src/lib/utils";
 
 import {
   generateContentsToReturn,
@@ -29,24 +32,42 @@ interface SetContentOperation {
 
 export const createDeleteObjectMutation = (
   object: SkylarkObjectMeta | null,
+  isDeleteTranslation: boolean,
 ) => {
   if (!object || !object.operations.delete) {
     return null;
   }
 
-  const common = generateVariablesAndArgs(object.name, "Mutation", true);
+  const common = generateVariablesAndArgs(object.name, "Mutation", false);
+
+  let language = {
+    variable: {},
+    arg: {},
+  };
+  if (isDeleteTranslation) {
+    language = {
+      variable: {
+        language: "String!",
+      },
+      arg: {
+        language: new VariableType("language"),
+      },
+    };
+  }
 
   const mutation = {
     mutation: {
       __name: `DELETE_${object.name}`,
       __variables: {
         uid: "String!",
+        ...language.variable,
         ...common.variables,
       },
       deleteObject: {
         __aliasFor: object.operations.delete.name,
         __args: {
           uid: new VariableType("uid"),
+          ...language.arg,
           ...common.args,
         },
         uid: true,
@@ -146,8 +167,9 @@ export const createUpdateObjectMetadataMutation = (
           uid: new VariableType("uid"),
           [objectMeta.operations.update.argName]: parsedMetadata,
         },
-        uid: true,
-        ...generateFieldsToReturn(objectMeta.fields),
+        __typename: true,
+        ...common.fields,
+        ...generateFieldsToReturn(objectMeta.fields, objectMeta.name),
       },
     },
   };
@@ -163,11 +185,7 @@ export const createUpdateObjectContentMutation = (
   updatedContentObjects: ParsedSkylarkObjectContentObject[],
   contentTypesToRequest: SkylarkObjectMeta[],
 ) => {
-  if (
-    !object ||
-    !object.operations.update ||
-    updatedContentObjects.length === 0
-  ) {
+  if (!object || !object.operations.update) {
     return null;
   }
 
@@ -315,13 +333,187 @@ export const createUpdateObjectRelationshipsMutation = (
       __variables: {
         uid: "String!",
       },
-      updateRelationships: {
+      updateObjectRelationships: {
         __aliasFor: object.operations.update.name,
         __args: {
           uid: new VariableType("uid"),
           [object.operations.update.argName]: {
             relationships: {
               ...parsedRelationsToUpdate,
+            },
+          },
+        },
+        uid: true,
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(mutation);
+
+  return gql(graphQLQuery);
+};
+
+export const createUpdateObjectAvailability = (
+  object: SkylarkObjectMeta | null,
+  originalAvailabilityObjects: ParsedSkylarkObject[] | null,
+  updatedAvailabilityObjects: ParsedSkylarkObject[] | null,
+) => {
+  if (
+    !object ||
+    !object.operations.update ||
+    !originalAvailabilityObjects ||
+    !updatedAvailabilityObjects
+  ) {
+    return null;
+  }
+
+  const originalObjectUids = originalAvailabilityObjects.map(({ uid }) => uid);
+  const updatedObjectUids = updatedAvailabilityObjects.map(({ uid }) => uid);
+
+  const uidsToLink = updatedObjectUids.filter(
+    (uid) => !originalObjectUids.includes(uid),
+  );
+  const uidsToUnlink = originalObjectUids.filter(
+    (uid) => !updatedObjectUids.includes(uid),
+  );
+
+  const mutation = {
+    mutation: {
+      __name: `UPDATE_OBJECT_AVAILABILITY_${object.name}`,
+      __variables: {
+        uid: "String!",
+      },
+      updateAvailabilityObjects: {
+        __aliasFor: object.operations.update.name,
+        __args: {
+          uid: new VariableType("uid"),
+          [object.operations.update.argName]: {
+            availability: {
+              link: uidsToLink,
+              unlink: uidsToUnlink,
+            },
+          },
+        },
+        uid: true,
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(mutation);
+
+  return gql(graphQLQuery);
+};
+
+export const createUpdateAvailabilityDimensionsMutation = (
+  objectMeta: SkylarkObjectMeta | null,
+  originalAvailabilityDimensionValues: Record<string, string[]> | null,
+  updatedAvailabilityDimensionValues: Record<string, string[]> | null,
+) => {
+  if (
+    !objectMeta ||
+    objectMeta.name !== BuiltInSkylarkObjectType.Availability ||
+    !objectMeta.operations.update ||
+    !updatedAvailabilityDimensionValues ||
+    !originalAvailabilityDimensionValues
+  ) {
+    return null;
+  }
+
+  const dimensionSlugs = [
+    ...new Set([
+      ...Object.keys(originalAvailabilityDimensionValues),
+      ...Object.keys(updatedAvailabilityDimensionValues),
+    ]),
+  ];
+
+  const parsedDimensionsForRequest: {
+    link: {
+      dimension_slug: string;
+      value_slugs: string[];
+    }[];
+    unlink: {
+      dimension_slug: string;
+      value_slugs: string[];
+    }[];
+  } = dimensionSlugs.reduce(
+    (acc, dimensionSlug) => {
+      const originalDimensionValues =
+        hasProperty(originalAvailabilityDimensionValues, dimensionSlug) &&
+        originalAvailabilityDimensionValues[dimensionSlug];
+
+      const updatedDimensionValues =
+        hasProperty(updatedAvailabilityDimensionValues, dimensionSlug) &&
+        updatedAvailabilityDimensionValues[dimensionSlug];
+
+      if (!updatedDimensionValues) {
+        return acc;
+      }
+
+      if (!originalDimensionValues) {
+        return {
+          ...acc,
+          link: [
+            ...acc.link,
+            {
+              dimension_slug: dimensionSlug,
+              value_slugs: updatedDimensionValues,
+            },
+          ],
+        };
+      }
+
+      const valuesToLink: string[] = !originalDimensionValues
+        ? updatedDimensionValues
+        : updatedDimensionValues.filter(
+            (value) => !originalDimensionValues.includes(value),
+          );
+
+      const valuesToUnlink: string[] = originalDimensionValues.filter(
+        (value) => !updatedDimensionValues.includes(value),
+      );
+
+      return {
+        link:
+          valuesToLink.length === 0
+            ? acc.link
+            : [
+                ...acc.link,
+                {
+                  dimension_slug: dimensionSlug,
+                  value_slugs: valuesToLink,
+                },
+              ],
+        unlink:
+          valuesToUnlink.length === 0
+            ? acc.unlink
+            : [
+                ...acc.unlink,
+                {
+                  dimension_slug: dimensionSlug,
+                  value_slugs: valuesToUnlink,
+                },
+              ],
+      };
+    },
+    {
+      link: [] as { dimension_slug: string; value_slugs: string[] }[],
+      unlink: [] as { dimension_slug: string; value_slugs: string[] }[],
+    },
+  );
+
+  const mutation = {
+    mutation: {
+      __name: `UPDATE_AVAILABILITY_DIMENSIONS`,
+      __variables: {
+        uid: "String!",
+      },
+      updateAvailabilityDimensions: {
+        __aliasFor: objectMeta.operations.update.name,
+        __args: {
+          uid: new VariableType("uid"),
+          [objectMeta.operations.update.argName]: {
+            dimensions: {
+              ...parsedDimensionsForRequest,
             },
           },
         },

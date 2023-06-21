@@ -1,7 +1,6 @@
 import { ComponentStory } from "@storybook/react";
 import React from "react";
 
-import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 import { ObjectIdentifierCard } from "./objectIdentifier.component";
@@ -37,10 +36,33 @@ const Template: ComponentStory<typeof ObjectIdentifierCard> = (args) => {
 export const Default = Template.bind({});
 Default.args = {
   object,
+  onDeleteClick: undefined,
+  onForwardClick: undefined,
 };
 
-export const WithForwardClickArrow = Template.bind({});
-WithForwardClickArrow.args = {
+export const WithForwardArrow = Template.bind({});
+WithForwardArrow.args = {
   object,
-  onForwardClick: () => console.log("clicked"),
+  onDeleteClick: undefined,
+  onForwardClick: () => "",
+};
+
+export const WithDeleteIcon = Template.bind({});
+WithDeleteIcon.args = {
+  object,
+  onForwardClick: undefined,
+  onDeleteClick: () => "",
+};
+
+export const WithAllIcons = Template.bind({});
+WithAllIcons.args = {
+  object,
+  onForwardClick: () => "",
+  onDeleteClick: () => "",
+};
+
+export const WithObjectTypeHidden = Template.bind({});
+WithObjectTypeHidden.args = {
+  object,
+  hideObjectType: true,
 };

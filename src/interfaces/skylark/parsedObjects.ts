@@ -1,5 +1,7 @@
 import {
   SkylarkGraphQLAvailabilityDimension,
+  SkylarkGraphQLAvailabilityDimensionWithValues,
+  SkylarkGraphQLAvailabilityDimensionValue,
   SkylarkGraphQLObjectImage,
 } from "./gqlObjects";
 import {
@@ -23,6 +25,11 @@ export enum AvailabilityStatus {
   Unavailable = "Unavailable",
 }
 
+export interface ParsedSkylarkDimensionsWithValues
+  extends SkylarkGraphQLAvailabilityDimension {
+  values: SkylarkGraphQLAvailabilityDimensionValue[];
+}
+
 export interface ParsedSkylarkObjectAvailabilityObject {
   uid: SkylarkUID;
   external_id: SkylarkExternalId;
@@ -31,9 +38,7 @@ export interface ParsedSkylarkObjectAvailabilityObject {
   start: string;
   end: string;
   timezone: string;
-  neverExpires: boolean;
-  status: AvailabilityStatus | null;
-  dimensions: SkylarkGraphQLAvailabilityDimension[];
+  dimensions: SkylarkGraphQLAvailabilityDimensionWithValues[];
 }
 
 export interface ParsedSkylarkObjectAvailability {
@@ -76,6 +81,7 @@ export interface ParsedSkylarkObjectMeta {
     language?: number;
     global?: number;
   };
+  availabilityStatus: AvailabilityStatus | null;
 }
 
 export interface ParsedSkylarkObjectImageRelationship {

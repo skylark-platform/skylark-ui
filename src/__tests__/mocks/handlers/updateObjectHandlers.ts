@@ -1,13 +1,13 @@
 import { graphql } from "msw";
 
-import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
+import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
 
 export const updateObjectHandlers = [
   graphql.mutation(`UPDATE_OBJECT_CONTENT_SkylarkSet`, (req, res, ctx) => {
     return res(
       ctx.data({
         updateObjectContent:
-          GQLSkylarkGetSetWithContentQueryFixture.data.getObject,
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject,
       }),
     );
   }),
@@ -16,7 +16,7 @@ export const updateObjectHandlers = [
     return res(
       ctx.data({
         updateObjectMetadata:
-          GQLSkylarkGetSetWithContentQueryFixture.data.getObject,
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject,
       }),
     );
   }),
@@ -25,6 +25,26 @@ export const updateObjectHandlers = [
     return res(
       ctx.data({
         updateRelationships: {
+          uid: "01GXSR23WH5DHGTXVHXW1TMGBJ",
+        },
+      }),
+    );
+  }),
+
+  graphql.mutation("UPDATE_AVAILABILITY_DIMENSIONS", (req, res, ctx) => {
+    return res(
+      ctx.data({
+        updateAvailabilityDimensions: {
+          uid: "01GXSR23WH5DHGTXVHXW1TMGBJ",
+        },
+      }),
+    );
+  }),
+
+  graphql.mutation("UPDATE_OBJECT_AVAILABILITY_Movie", (req, res, ctx) => {
+    return res(
+      ctx.data({
+        updateAvailabilityObjects: {
           uid: "01GXSR23WH5DHGTXVHXW1TMGBJ",
         },
       }),

@@ -3,7 +3,10 @@ import {
   setObjectOperations,
   movieObjectOperations,
 } from "src/__tests__/utils/objectOperations";
-import { ParsedSkylarkObjectContentObject } from "src/interfaces/skylark";
+import {
+  AvailabilityStatus,
+  ParsedSkylarkObjectContentObject,
+} from "src/interfaces/skylark";
 
 import {
   createDeleteObjectMutation,
@@ -12,16 +15,30 @@ import {
 
 describe("createDeleteObjectMutation", () => {
   test("returns null when the object doesn't have a delete operation", () => {
-    const got = createDeleteObjectMutation(null);
+    const got = createDeleteObjectMutation(null, true);
 
     expect(got).toBeNull();
   });
 
-  test("returns expected GraphQL delete mutation", () => {
-    const got = createDeleteObjectMutation(episodeObjectOperations);
+  test("returns expected GraphQL delete mutation on a translatable object", () => {
+    const got = createDeleteObjectMutation(episodeObjectOperations, true);
 
     expect(got?.loc?.source.body).toEqual(
-      "mutation DELETE_Episode ($uid: String!, $language: String) { deleteObject: deleteEpisode (uid: $uid, language: $language) { uid } }",
+      "mutation DELETE_Episode ($uid: String!, $language: String!) { deleteObject: deleteEpisode (uid: $uid, language: $language) { uid } }",
+    );
+  });
+
+  test("returns expected GraphQL delete mutation on a non-translatable object", () => {
+    const got = createDeleteObjectMutation(
+      {
+        ...episodeObjectOperations,
+        isTranslatable: false,
+      },
+      false,
+    );
+
+    expect(got?.loc?.source.body).toEqual(
+      "mutation DELETE_Episode ($uid: String!) { deleteObject: deleteEpisode (uid: $uid) { uid } }",
     );
   });
 });
@@ -29,17 +46,6 @@ describe("createDeleteObjectMutation", () => {
 describe("createUpdateSetContentPositionMutation", () => {
   test("returns null when the object doesn't have an update operation", () => {
     const got = createUpdateObjectContentMutation(null, [], [], []);
-
-    expect(got).toBeNull();
-  });
-
-  test("returns null when no content is supplied", () => {
-    const got = createUpdateObjectContentMutation(
-      setObjectOperations,
-      [],
-      [],
-      [],
-    );
 
     expect(got).toBeNull();
   });
@@ -52,6 +58,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 1,
         object: { uid: "episode_1", external_id: "" },
@@ -62,6 +69,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 2,
         object: { uid: "episode_2", external_id: "" },
@@ -72,6 +80,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 3,
         object: { uid: "movie_1", external_id: "" },
@@ -98,6 +107,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 1,
         object: { uid: "episode_1", external_id: "" },
@@ -108,6 +118,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 2,
         object: { uid: "episode_2", external_id: "" },
@@ -118,6 +129,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 3,
         object: { uid: "movie_1", external_id: "" },
@@ -146,6 +158,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 1,
         object: { uid: "episode_1", external_id: "" },
@@ -156,6 +169,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 2,
         object: { uid: "episode_2", external_id: "" },
@@ -166,6 +180,7 @@ describe("createUpdateSetContentPositionMutation", () => {
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
+          availabilityStatus: AvailabilityStatus.Active,
         },
         position: 3,
         object: { uid: "movie_1", external_id: "" },

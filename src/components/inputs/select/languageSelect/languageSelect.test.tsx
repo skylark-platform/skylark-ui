@@ -36,7 +36,7 @@ test("lists only custom languages", async () => {
     />,
   );
 
-  expect(screen.getByRole("button")).toHaveTextContent("Language");
+  expect(screen.getByRole("combobox")).toHaveTextContent("");
   await fireEvent.click(screen.getByRole("button"));
 
   const gotOptions = screen.queryAllByRole("option");

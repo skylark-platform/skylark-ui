@@ -15,6 +15,7 @@ export enum SkylarkSystemField {
   Availability = "availability",
   Content = "content", // "Set like" content
   ContentOf = "content_of", // The reverse of Content, will return any Sets the object belongs to
+  Type = "type",
 }
 
 export enum SkylarkSystemGraphQLType {

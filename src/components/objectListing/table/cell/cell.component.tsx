@@ -2,12 +2,21 @@ import { CellContext } from "@tanstack/react-table";
 import clsx from "clsx";
 import { ReactNode, useEffect, useState } from "react";
 
+export const getCellWidths = (width: number) => ({
+  width,
+  minWidth: width,
+  maxWidth: width,
+});
+
 interface DisplayNameTableCellProps {
   id: string;
   colour?: string;
   className: string;
   rowGroupClassName: string;
   children: ReactNode | JSX.Element;
+  width: number;
+  height: number;
+  isDraggable?: boolean;
 }
 
 export const DisplayNameTableCell = ({
@@ -16,15 +25,27 @@ export const DisplayNameTableCell = ({
   className,
   rowGroupClassName,
   children,
+  width,
+  height,
+  isDraggable,
 }: DisplayNameTableCellProps) => {
   return (
-    <td key={id} className={`${className} overflow-visible`}>
+    <td
+      key={id}
+      className={`${className} overflow-visible`}
+      style={{ ...getCellWidths(width), height }}
+    >
       <div
-        className={`absolute z-30 -ml-2.5 -mt-[0.6rem] hidden h-full items-center bg-white sm:flex ${rowGroupClassName}`}
+        className={`absolute z-30 -ml-11 -mt-[0.6rem] hidden h-full items-center bg-white px-1 sm:flex ${rowGroupClassName}`}
       >
         <div
-          className="h-6 w-2.5 border-l-4 border-l-brand-primary"
-          style={{ borderLeftColor: colour }}
+          className={clsx(
+            "relative h-6 w-2.5 border-r-4 border-r-manatee-300 pl-8",
+            "before:left-3 before:top-0 before:hidden before:h-full before:w-5 before:bg-inherit before:opacity-0 before:group-hover/row:opacity-60 md:before:absolute md:before:block",
+            "before:bg-[url('/icons/drag_indicator_black.png')] before:bg-center before:bg-no-repeat",
+            !isDraggable && "before:invisible",
+          )}
+          style={{ borderRightColor: colour }}
         />
       </div>
       <div className="w-full overflow-hidden text-ellipsis">{children}</div>

@@ -37,6 +37,10 @@ export interface SkylarkGraphQLAvailabilityDimension {
   slug: string;
   title: string | null;
   description: string | null;
+}
+
+export interface SkylarkGraphQLAvailabilityDimensionWithValues
+  extends SkylarkGraphQLAvailabilityDimension {
   values: {
     next_token: NextToken;
     objects: SkylarkGraphQLAvailabilityDimensionValue[];
@@ -53,7 +57,7 @@ export interface SkylarkGraphQLAvailability {
   timezone: string | null;
   dimensions: {
     next_token: NextToken;
-    objects: SkylarkGraphQLAvailabilityDimension[];
+    objects: SkylarkGraphQLAvailabilityDimensionWithValues[];
   };
 }
 

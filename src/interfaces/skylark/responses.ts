@@ -1,6 +1,8 @@
 import {
   NextToken,
   SkylarkGraphQLAvailability,
+  SkylarkGraphQLAvailabilityDimension,
+  SkylarkGraphQLAvailabilityDimensionValue,
   SkylarkGraphQLObject,
   SkylarkGraphQLObjectConfig,
   SkylarkGraphQLObjectContent,
@@ -50,11 +52,12 @@ export interface GQLSkylarkGetObjectContentOfResponse {
 
 export interface GQLSkylarkSearchResponse {
   search: {
+    total_count?: number;
     objects: (SkylarkGraphQLObject | null)[];
   };
 }
 
-export interface GQLSkylarkUpdateObjectMetadataResponse {
+export interface GQLSkylarkCreateObjectMetadataResponse {
   createObject: SkylarkGraphQLObject;
 }
 
@@ -69,11 +72,31 @@ export interface GQLSkylarkUpdateObjectContentResponse {
 }
 
 export interface GQLSkylarkUpdateRelationshipsResponse {
-  updateRelationships: {
-    uid: string;
-  };
+  updateObjectRelationships: SkylarkGraphQLObject;
 }
 export type GQLSkylarkObjectTypesWithConfig = Record<
   SkylarkObjectType,
   SkylarkGraphQLObjectConfig
 >;
+
+export interface GQLSkylarkListAvailabilityDimensionsResponse {
+  listDimensions: {
+    next_token: NextToken;
+    objects: SkylarkGraphQLAvailabilityDimension[];
+  };
+}
+
+export type GQLSkylarkListAvailabilityDimensionValuesResponse = Record<
+  string,
+  {
+    uid: string;
+    values: {
+      next_token: NextToken;
+      objects: SkylarkGraphQLAvailabilityDimensionValue[];
+    };
+  }
+>;
+
+export interface GQLSkylarkGetAvailabilityDimensions {
+  getAvailability: SkylarkGraphQLAvailability;
+}

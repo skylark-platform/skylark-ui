@@ -1,34 +1,37 @@
 import clsx from "clsx";
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { GrGraphQl } from "react-icons/gr";
-import { toast } from "react-toastify";
 
+import { AvailabilityLabelPill } from "src/components/availability";
 import { Button } from "src/components/button";
-import { DisplayGraphQLQueryModal } from "src/components/displayGraphQLQuery";
 import {
   DropdownMenu,
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
 import {
   Edit,
-  Expand,
   Trash,
   MoreVertical,
   ArrowLeft,
   ExternalLink,
 } from "src/components/icons";
 import { LanguageSelect } from "src/components/inputs/select";
+import {
+  CreateObjectModal,
+  DeleteObjectModal,
+  DisplayGraphQLQueryModal,
+} from "src/components/modals";
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { Pill } from "src/components/pill";
-import { Toast } from "src/components/toast/toast.component";
-import { useDeleteObject } from "src/hooks/useDeleteObject";
-import { ParsedSkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
+import { Skeleton } from "src/components/skeleton";
 import {
-  getObjectDisplayName,
-  getObjectTypeDisplayNameFromParsedObject,
-} from "src/lib/utils";
+  AvailabilityStatus,
+  ParsedSkylarkObject,
+  SkylarkObjectType,
+} from "src/interfaces/skylark";
+import { getObjectDisplayName } from "src/lib/utils";
 
 interface PanelHeaderProps {
   isPage?: boolean;
@@ -43,12 +46,15 @@ interface PanelHeaderProps {
   inEditMode: boolean;
   isSaving?: boolean;
   isTranslatable?: boolean;
+  availabilityStatus?: AvailabilityStatus | null;
   toggleEditMode: () => void;
   closePanel?: () => void;
   save: () => void;
   setLanguage: (l: string) => void;
   navigateToPreviousPanelObject?: () => void;
 }
+
+const ADD_LANGUAGE_OPTION = "Create Translation";
 
 export const PanelHeader = ({
   isPage,
@@ -63,6 +69,7 @@ export const PanelHeader = ({
   inEditMode,
   isSaving,
   isTranslatable,
+  availabilityStatus,
   toggleEditMode,
   closePanel,
   save,
@@ -71,34 +78,23 @@ export const PanelHeader = ({
 }: PanelHeaderProps) => {
   const title = getObjectDisplayName(object);
   const [showGraphQLModal, setGraphQLModalOpen] = useState(false);
+  const [createObjectModalOpen, setCreateObjectModalOpen] = useState(false);
+  const [
+    deleteObjectConfirmationModalOpen,
+    setDeleteObjectConfirmationModalOpen,
+  ] = useState(false);
 
-  const { mutate: deleteObjectMutation } = useDeleteObject({
-    objectType,
-    onSuccess: ({ objectType, uid }) => {
-      toast(
-        <Toast
-          title={`${
-            object
-              ? getObjectTypeDisplayNameFromParsedObject(object)
-              : objectType
-          } deleted`}
-          message={`${
-            object
-              ? getObjectTypeDisplayNameFromParsedObject(object)
-              : objectType
-          } "${object ? getObjectDisplayName(object) : uid}" has been deleted`}
-          type="success"
-        />,
-      );
-      closePanel?.();
-    },
-  });
+  const objectTypeDisplayName =
+    object?.config.objectTypeDisplayName || objectType;
+
+  const actualLanguage = object?.meta.language || language;
+  const existingLanguages = object?.meta.availableLanguages || [language];
 
   const objectMenuOptions = useMemo(
     () => [
       {
         id: "graphql-query",
-        text: `Get ${objectType} Query`,
+        text: `Get ${objectTypeDisplayName} Query`,
         Icon: (
           <GrGraphQl
             className="text-lg"
@@ -109,15 +105,25 @@ export const PanelHeader = ({
       },
       {
         id: "delete-object",
-        text: `Delete ${objectType}`,
+        text:
+          existingLanguages.length < 2
+            ? `Delete ${objectTypeDisplayName}`
+            : `Delete "${actualLanguage}" translation`,
         Icon: <Trash className="w-5 fill-error stroke-error" />,
         danger: true,
-        // disabled: true, // TODO finish object deletion
-        onClick: () => deleteObjectMutation({ uid: objectUid }),
+        onClick: () => setDeleteObjectConfirmationModalOpen(true),
       },
     ],
-    [deleteObjectMutation, objectType, objectUid],
+    [existingLanguages.length, objectTypeDisplayName, actualLanguage],
   );
+
+  const changeLanguage = (val: string) => {
+    if (val === ADD_LANGUAGE_OPTION) {
+      setCreateObjectModalOpen(true);
+    } else {
+      setLanguage(val);
+    }
+  };
 
   return (
     <div
@@ -142,10 +148,13 @@ export const PanelHeader = ({
           )}
           {!isPage && (
             <Button
-              Icon={<ExternalLink className="text-gray-300" />}
-              disabled
+              Icon={<ExternalLink />}
               variant="ghost"
-              href={`/object/${objectType}/${objectUid}`}
+              href={
+                actualLanguage
+                  ? `/object/${objectType}/${objectUid}?language=${actualLanguage}`
+                  : `/object/${objectType}/${objectUid}`
+              }
               newTab
             />
           )}
@@ -191,38 +200,59 @@ export const PanelHeader = ({
           )}
         </div>
 
-        {closePanel && (
+        {!isPage && closePanel && (
           <Button variant="ghost" onClick={closePanel}>
             Close
           </Button>
         )}
       </div>
       <div className="flex flex-col items-start pb-2">
-        <h1 className="w-full flex-grow truncate text-ellipsis text-lg font-bold uppercase md:text-xl">
-          {title}
-        </h1>
-        {object && (
-          <div className="mt-2 flex items-center justify-center gap-2">
-            <Pill
-              bgColor={object.config.colour}
-              className="w-20 bg-brand-primary"
-              label={object.config.objectTypeDisplayName || objectType}
-            />
-            {isTranslatable && (
-              <LanguageSelect
-                selected={language || object.meta.language}
-                variant="pill"
-                languages={
-                  object.meta.availableLanguages || [object.meta.language]
-                }
-                onChange={(val) => setLanguage(val)}
-              />
-            )}
-          </div>
+        {title ? (
+          <h1 className="h-6 w-full flex-grow truncate text-ellipsis text-lg font-bold uppercase md:text-xl">
+            {title}
+          </h1>
+        ) : (
+          <Skeleton className="h-6 w-80" />
         )}
+
+        <div className="mt-2 flex h-5 items-center justify-center gap-2">
+          {object ? (
+            <>
+              <Pill
+                bgColor={object.config.colour}
+                className="w-20 bg-brand-primary"
+                label={object.config.objectTypeDisplayName || objectType}
+              />
+              {availabilityStatus && (
+                <AvailabilityLabelPill status={availabilityStatus} />
+              )}
+              {isTranslatable && (
+                <LanguageSelect
+                  selected={actualLanguage}
+                  disabled={inEditMode || !object.meta.availableLanguages}
+                  variant="pill"
+                  languages={[...existingLanguages, ADD_LANGUAGE_OPTION]}
+                  optionsClassName="w-36"
+                  onChange={changeLanguage}
+                />
+              )}
+            </>
+          ) : (
+            <>
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-20" />
+            </>
+          )}
+        </div>
         <div className="flex flex-row items-end justify-end space-x-2">
           {inEditMode && (
-            <div className="absolute left-1/2 -bottom-16 z-10 -translate-x-1/2 md:-bottom-18">
+            <div
+              className={clsx(
+                "absolute left-1/2 -bottom-16 z-10 -translate-x-1/2",
+                isPage ? "md:fixed md:top-24 md:bottom-auto" : " md:-bottom-18",
+              )}
+            >
               <PanelLabel
                 text={isSaving ? "Saving" : "Editing"}
                 loading={isSaving}
@@ -234,6 +264,7 @@ export const PanelHeader = ({
       <AnimatePresence>
         {showGraphQLModal && (
           <DisplayGraphQLQueryModal
+            key="graphql-query-modal"
             label={`Get ${objectType} object`}
             query={graphQLQuery}
             variables={graphQLVariables}
@@ -241,6 +272,46 @@ export const PanelHeader = ({
           />
         )}
       </AnimatePresence>
+      <CreateObjectModal
+        createTranslation={{
+          uid: objectUid,
+          language,
+          objectType,
+          objectTypeDisplayName,
+          existingLanguages,
+          objectDisplayName: title,
+        }}
+        isOpen={createObjectModalOpen}
+        objectType={objectType}
+        setIsOpen={setCreateObjectModalOpen}
+        onObjectCreated={(obj) => {
+          setLanguage(obj.language);
+        }}
+      />
+      <DeleteObjectModal
+        isOpen={deleteObjectConfirmationModalOpen}
+        setIsOpen={setDeleteObjectConfirmationModalOpen}
+        uid={objectUid}
+        objectType={objectType}
+        language={actualLanguage}
+        objectDisplayName={title}
+        objectTypeDisplayName={objectTypeDisplayName}
+        availableLanguages={existingLanguages}
+        onDeleteSuccess={() => {
+          const otherLanguages =
+            (object?.meta.availableLanguages &&
+              object.meta.availableLanguages.filter(
+                (lang) => lang !== actualLanguage,
+              )) ||
+            [];
+
+          // Change to other language if exists, otherwise close the panel
+          return otherLanguages.length > 0
+            ? setLanguage(otherLanguages[0])
+            : // TODO should we go back, show a object deleted/doesn't exist message?
+              closePanel?.();
+        }}
+      />
     </div>
   );
 };

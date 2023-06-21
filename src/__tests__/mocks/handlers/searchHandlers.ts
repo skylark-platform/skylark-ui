@@ -1,6 +1,6 @@
 import { graphql } from "msw";
 
-import GQLSkylarkAllAvailTestMovieSearchFixture from "src/__tests__/fixtures/skylark/queries/search/allMediaTestMovieOnly.json";
+import GQLSkylarkAllAvailTestMovieSearchFixture from "src/__tests__/fixtures/skylark/queries/search/fantasticMrFox_All_Availabilities.json";
 import GQLGameOfThronesSearchResultsPage1 from "src/__tests__/fixtures/skylark/queries/search/gotPage1.json";
 import GQLGameOfThronesSearchResultsPage1enGB from "src/__tests__/fixtures/skylark/queries/search/gotPage1enGB.json";
 import GQLGameOfThronesSearchResultsPage2 from "src/__tests__/fixtures/skylark/queries/search/gotPage2.json";

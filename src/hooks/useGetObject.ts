@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
+import { useEffect, useMemo } from "react";
 
+import { useUser } from "src/contexts/useUser";
 import { QueryErrorMessages, QueryKeys } from "src/enums/graphql";
 import { ErrorCodes } from "src/interfaces/errors";
 import {
@@ -25,10 +27,12 @@ export interface GetObjectOptions {
 export const createGetObjectKeyPrefix = ({
   objectType,
   uid,
+  language,
 }: {
   objectType: string;
   uid: string;
-}) => [QueryKeys.GetObject, objectType, uid];
+  language?: string | null;
+}) => [QueryKeys.GetObject, { objectType, uid }, { language }];
 
 export const useGetObject = (
   objectType: SkylarkObjectType,
@@ -36,6 +40,8 @@ export const useGetObject = (
   opts?: GetObjectOptions,
 ) => {
   const { language }: GetObjectOptions = opts || { language: null };
+
+  const { dispatch } = useUser();
 
   const {
     objectOperations: objectMeta,
@@ -51,17 +57,28 @@ export const useGetObject = (
     GQLSkylarkGetObjectResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>
   >({
-    queryKey: [
-      ...createGetObjectKeyPrefix({ objectType, uid }),
-      query,
-      variables,
-    ],
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: createGetObjectKeyPrefix({ objectType, uid, language }),
     queryFn: async () => skylarkRequest(query as DocumentNode, variables),
     enabled: query !== null,
   });
 
-  const parsedObject =
-    data?.getObject && parseSkylarkObject(data?.getObject, objectMeta);
+  const parsedObject = useMemo(
+    () => data?.getObject && parseSkylarkObject(data?.getObject, objectMeta),
+    [data?.getObject, objectMeta],
+  );
+
+  useEffect(() => {
+    if (
+      parsedObject?.meta?.availableLanguages &&
+      parsedObject?.meta?.availableLanguages.length > 0
+    ) {
+      dispatch({
+        type: "addUsedLanguages",
+        value: parsedObject?.meta?.availableLanguages,
+      });
+    }
+  }, [dispatch, parsedObject?.meta?.availableLanguages]);
 
   return {
     ...rest,

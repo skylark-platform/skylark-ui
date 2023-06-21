@@ -16,6 +16,7 @@ import {
 import { introspectionHandlers } from "../src/__tests__/mocks/handlers/introspectionHandlers";
 import { searchHandlers } from "../src/__tests__/mocks/handlers/searchHandlers";
 import { updateObjectHandlers } from "../src/__tests__/mocks/handlers/updateObjectHandlers";
+import { UserProvider } from "../src/contexts/useUser";
 import "../src/styles/globals.css";
 
 initializeMsw();
@@ -48,9 +49,11 @@ export const decorators = [
     return (
       <QueryClientProvider client={queryClient}>
         <PlausibleProvider domain={""} enabled={false}>
-          <LazyMotion features={domMax}>
-            <Story />
-          </LazyMotion>
+          <UserProvider>
+            <LazyMotion features={domMax}>
+              <Story />
+            </LazyMotion>
+          </UserProvider>
         </PlausibleProvider>
       </QueryClientProvider>
     );

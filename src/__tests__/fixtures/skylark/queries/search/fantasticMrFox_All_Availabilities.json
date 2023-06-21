@@ -1,0 +1,74 @@
+{
+  "data": {
+    "search": {
+      "__typename": "SearchResultListing",
+      "total_count": 1,
+      "objects": [
+        {
+          "__typename": "Movie",
+          "_config": {
+            "primary_field": "title",
+            "colour": "#009688",
+            "display_name": "Movie"
+          },
+          "_meta": {
+            "available_languages": ["en-GB"],
+            "language_data": { "language": "en-GB", "version": 1 },
+            "global_data": { "version": 1 }
+          },
+          "uid": "01GXZP1QDFQNTEGD9ASQMFXZC5",
+          "external_id": "recudCnvsnLP4PEeJ",
+          "__Movie__slug": "fantastic-mr-fox",
+          "__Movie__synopsis": "Mr Fox, a family man, goes back to his ways of stealing, unable to resist his animal instincts. However, he finds himself trapped when three farmers decide to kill him and his kind.\n\nThis test movie is configured with an expired, active and future availability.",
+          "__Movie__synopsis_short": "Mr Fox, a family man, goes back to his ways of stealing, unable to resist his animal instincts. However, he finds himself trapped when three farmers decide to kill him and his kind.",
+          "__Movie__title": "Fantastic Mr Fox (All Availabilities)",
+          "__Movie__title_short": "Fantastic Mr Fox (All)",
+          "__Movie__title_sort": null,
+          "__Movie__release_date": "2009-11-23",
+          "__Movie__year_of_release": null,
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01GXZNX7PPNAXGQ3YMPAX1XPPS",
+                "external_id": "recN2Jf4j9UCblsIc",
+                "title": "Active in the past",
+                "slug": "active-in-the-past",
+                "start": "2000-01-01T15:15:00+00:00",
+                "end": "2020-01-01T15:15:00+00:00",
+                "timezone": "+00:00"
+              },
+              {
+                "uid": "01GXZNX7S47WSMS5AJCNWB3KP5",
+                "external_id": "recMdBZyVPsIGqAYq",
+                "title": "Premium",
+                "slug": "premium",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              },
+              {
+                "uid": "01GXZNX7T6HJE1XKPQGN4K6G27",
+                "external_id": "recQzQ8ZUyh6VzVAw",
+                "title": "Active Next Sunday",
+                "slug": "active-next-sunday",
+                "start": "2023-04-16T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              },
+              {
+                "uid": "01GXZNX7WJZ8F9A100PSF9F0NR",
+                "external_id": "recX0Ztue3iBQR7rl",
+                "title": "Active Until Next Sunday",
+                "slug": "active-until-next-sunday",
+                "start": "2000-01-01T00:00:00+00:00",
+                "end": "2023-04-16T00:00:00+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

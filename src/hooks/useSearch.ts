@@ -1,7 +1,8 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
+import { useUser } from "src/contexts/useUser";
 import { QueryKeys } from "src/enums/graphql";
 import {
   SkylarkGraphQLObject,
@@ -56,9 +57,12 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
           lastPage.search.objects.length > 0;
         return shouldFetchMore ? totalNumObjects : undefined;
       },
+      enabled: !!query,
     });
 
-  const data = useMemo(() => {
+  const { dispatch } = useUser();
+
+  const { data, allAvailableLanguages } = useMemo(() => {
     // Using the errorPolicy "all" means that some data could be null
     const nonNullObjects = searchResponse?.pages
       ?.flatMap((page) => page.search.objects)
@@ -76,12 +80,27 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
       return parseSkylarkObject(obj, objectMeta);
     });
 
-    return parsedObjects;
+    const allAvailableLanguages = [
+      ...new Set(
+        parsedObjects.flatMap(
+          ({ meta: { availableLanguages } }) => availableLanguages,
+        ),
+      ),
+    ];
+
+    return { data: parsedObjects, allAvailableLanguages };
   }, [searchResponse?.pages, searchableObjects]);
+
+  useEffect(() => {
+    if (allAvailableLanguages.length > 0) {
+      dispatch({ type: "addUsedLanguages", value: allAvailableLanguages });
+    }
+  }, [allAvailableLanguages, dispatch]);
 
   return {
     ...rest,
     data,
+    totalHits: searchResponse?.pages[0].search?.total_count,
     properties: allFieldNames,
     query,
     variables,

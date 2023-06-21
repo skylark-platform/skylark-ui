@@ -2,32 +2,35 @@
   "data": {
     "search": {
       "__typename": "SearchResultListing",
+      "total_count": 2,
       "objects": [
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "pt-PT", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396FF5MFFZ5N8YYPAM4W03",
+          "uid": "01GXZP2FCCXY3KX6E3E8MJ2T6F",
           "external_id": null,
           "__Episode__slug": null,
-          "__Episode__synopsis_long": "Ao norte dos Sete Reinos de Westeros, os soldados da Patrulha da Noite são atacados por Caminhantes Brancos sobrenaturais. Um soldado escapa, mas é capturado no Castelo Winterfell. Eddard \"Ned\" Stark, Guardião do Norte, o executa por deserção. Mais tarde, seis filhotes de lobos órfãos são encontrados e um dado a cada irmão Stark, incluindo o filho bastardo de Ned, Jon Snow. Em Porto Real, a capital dos Sete Reinos, Jon Arryn, a Mão do Rei, morre repentinamente. Rei Robert Baratheon, velho amigo de Ned, viaja para Winterfell para recrutar Ned e propor um casamento entre seu herdeiro Joffrey e a filha de Ned, Sansa. Lysa Arryn, a viúva de Jon, envia a sua irmã (esposa de Ned), Catelyn, uma carta alegando que os Lannisters, a família da rainha Cersei, assassinaram Arryn. Catelyn acredita que os Lannisters estão tramando contra o Rei Robert. O filho mais novo de Ned, Brandon, sobe em uma torre alta e testemunha Cersei e seu irmão gêmeo, Jaime Lannister, fazendo sexo. Para esconder seu incesto, Jaime empurra Bran da janela alta. Do outro lado do Mar Estreito em Essos, o príncipe exilado Viserys Targaryen força sua irmã, Daenerys, a se casar com o senhor da guerra Dothraki, Drogo, em troca de um exército para conquistar Westeros e recuperar o Trono de Ferro. Robert Baratheon tornou-se rei depois que Jaime Lannister matou o rei \"louco\" Aerys Targaryen, ganhando a Jaime o apelido de \"O Matador de Reis\". Os antigos Targaryens já comandaram dragões, e Daenerys recebe três ovos de dragão fossilizados como presente de casamento.\n",
-          "__Episode__synopsis_medium": "Estreia da Série. Eddard Stark está dividido entre sua família e um velho amigo quando solicitado a servir ao lado do rei Robert Baratheon; Viserys planeja casar sua irmã com um senhor da guerra nômade em troca de um exército.\n",
-          "__Episode__synopsis_short": null,
+          "__Episode__synopsis": "Ao norte dos Sete Reinos de Westeros, os soldados da Patrulha da Noite são atacados por Caminhantes Brancos sobrenaturais. Um soldado escapa, mas é capturado no Castelo Winterfell. Eddard \"Ned\" Stark, Guardião do Norte, o executa por deserção. Mais tarde, seis filhotes de lobos órfãos são encontrados e um dado a cada irmão Stark, incluindo o filho bastardo de Ned, Jon Snow. Em Porto Real, a capital dos Sete Reinos, Jon Arryn, a Mão do Rei, morre repentinamente. Rei Robert Baratheon, velho amigo de Ned, viaja para Winterfell para recrutar Ned e propor um casamento entre seu herdeiro Joffrey e a filha de Ned, Sansa. Lysa Arryn, a viúva de Jon, envia a sua irmã (esposa de Ned), Catelyn, uma carta alegando que os Lannisters, a família da rainha Cersei, assassinaram Arryn. Catelyn acredita que os Lannisters estão tramando contra o Rei Robert. O filho mais novo de Ned, Brandon, sobe em uma torre alta e testemunha Cersei e seu irmão gêmeo, Jaime Lannister, fazendo sexo. Para esconder seu incesto, Jaime empurra Bran da janela alta. Do outro lado do Mar Estreito em Essos, o príncipe exilado Viserys Targaryen força sua irmã, Daenerys, a se casar com o senhor da guerra Dothraki, Drogo, em troca de um exército para conquistar Westeros e recuperar o Trono de Ferro. Robert Baratheon tornou-se rei depois que Jaime Lannister matou o rei \"louco\" Aerys Targaryen, ganhando a Jaime o apelido de \"O Matador de Reis\". Os antigos Targaryens já comandaram dragões, e Daenerys recebe três ovos de dragão fossilizados como presente de casamento.\n",
+          "__Episode__synopsis_short": "Estreia da Série. Eddard Stark está dividido entre sua família e um velho amigo quando solicitado a servir ao lado do rei Robert Baratheon; Viserys planeja casar sua irmã com um senhor da guerra nômade em troca de um exército.\n",
           "__Episode__title": "GOT S01E1 - Winter is Coming",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
           "__Episode__title_short": "O Inverno Está Chegando",
-          "__Episode__episode_number": null,
+          "__Episode__title_sort": null,
+          "__Episode__episode_number": 1,
           "__Episode__release_date": "2011-10-17",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",
@@ -40,29 +43,31 @@
         },
         {
           "__typename": "Episode",
-          "_config": { "primary_field": "title", "colour": "#ff7ba8" },
+          "_config": {
+            "primary_field": "title",
+            "colour": "#ff7ba8",
+            "display_name": "Episode"
+          },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
             "language_data": { "language": "en-GB", "version": 1 },
             "global_data": { "version": 2 }
           },
-          "uid": "01GX396FF5MFFZ5N8YYPAM4W03",
+          "uid": "01GXZP2FCCXY3KX6E3E8MJ2T6F",
           "external_id": "recAZhG0fPFgamb8I",
           "__Episode__slug": "winter-is-coming",
-          "__Episode__synopsis_long": "North of the Seven Kingdoms of Westeros, Night's Watch soldiers are attacked by supernatural White Walkers. One soldier escapes but is captured at Castle Winterfell. Eddard \"Ned\" Stark, Warden of the North, executes him for desertion. Later, six orphaned dire wolf pups are found and one given to each Stark sibling, including Ned's bastard son, Jon Snow. In King's Landing, the Seven Kingdoms capital, Jon Arryn, the Hand of the King, dies suddenly. King Robert Baratheon, Ned's old friend, travels to Winterfell to recruit Ned and propose a marriage between his heir Joffrey and Ned's daughter, Sansa. Lysa Arryn, Jon's widow, sends her sister (Ned's wife), Catelyn, a letter claiming the Lannisters, Queen Cersei's family, murdered Arryn. Catelyn believes the Lannisters are now plotting against King Robert. Ned's young son, Brandon, climbs a tall tower and witnesses Cersei and her twin brother, Jaime Lannister, inside having sex. To hide their incest, Jaime pushes Bran from the high window. Across the Narrow Sea in Essos, exiled Prince Viserys Targaryen forces his sister, Daenerys, to marry the Dothraki warlord, Drogo, in exchange for an army to conquer Westeros and reclaim the Iron Throne. Robert Baratheon became king after Jaime Lannister killed \"Mad\" King Aerys Targaryen, earning Jaime the nickname, \"The King Slayer\". The ancient Targaryens once commanded dragons, and Daenerys is given three fossilized dragon eggs as a wedding gift.",
-          "__Episode__synopsis_medium": "Series Premiere. Eddard Stark is torn between his family and an old friend when asked to serve at the side of King Robert Baratheon; Viserys plans to wed his sister to a nomadic warlord in exchange for an army.",
-          "__Episode__synopsis_short": null,
+          "__Episode__synopsis": "North of the Seven Kingdoms of Westeros, Night's Watch soldiers are attacked by supernatural White Walkers. One soldier escapes but is captured at Castle Winterfell. Eddard \"Ned\" Stark, Warden of the North, executes him for desertion. Later, six orphaned dire wolf pups are found and one given to each Stark sibling, including Ned's bastard son, Jon Snow. In King's Landing, the Seven Kingdoms capital, Jon Arryn, the Hand of the King, dies suddenly. King Robert Baratheon, Ned's old friend, travels to Winterfell to recruit Ned and propose a marriage between his heir Joffrey and Ned's daughter, Sansa. Lysa Arryn, Jon's widow, sends her sister (Ned's wife), Catelyn, a letter claiming the Lannisters, Queen Cersei's family, murdered Arryn. Catelyn believes the Lannisters are now plotting against King Robert. Ned's young son, Brandon, climbs a tall tower and witnesses Cersei and her twin brother, Jaime Lannister, inside having sex. To hide their incest, Jaime pushes Bran from the high window. Across the Narrow Sea in Essos, exiled Prince Viserys Targaryen forces his sister, Daenerys, to marry the Dothraki warlord, Drogo, in exchange for an army to conquer Westeros and reclaim the Iron Throne. Robert Baratheon became king after Jaime Lannister killed \"Mad\" King Aerys Targaryen, earning Jaime the nickname, \"The King Slayer\". The ancient Targaryens once commanded dragons, and Daenerys is given three fossilized dragon eggs as a wedding gift.",
+          "__Episode__synopsis_short": "Series Premiere. Eddard Stark is torn between his family and an old friend when asked to serve at the side of King Robert Baratheon; Viserys plans to wed his sister to a nomadic warlord in exchange for an army.",
           "__Episode__title": "GOT S01E1 - Winter is Coming",
-          "__Episode__title_long": null,
-          "__Episode__title_medium": null,
           "__Episode__title_short": "Winter is Coming",
+          "__Episode__title_sort": null,
           "__Episode__episode_number": 1,
           "__Episode__release_date": "2011-04-17",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
                 "external_id": "recXNjJNyc6nKQIYa",
                 "title": "Always - All devices, all customer types",
                 "slug": "always-all-devices-all-customer-types",

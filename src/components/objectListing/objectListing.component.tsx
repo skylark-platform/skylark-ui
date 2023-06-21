@@ -1,5 +1,5 @@
 import {
-  createColumnHelper,
+  ColumnDef,
   getCoreRowModel,
   useReactTable,
   VisibilityState,
@@ -8,159 +8,44 @@ import clsx from "clsx";
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useVirtual } from "react-virtual";
 
-import { AvailabilityLabel } from "src/components/availability";
 import { Spinner } from "src/components/icons";
-import { Checkbox } from "src/components/inputs/checkbox";
-import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ParsedSkylarkObjectAvailability,
-  ParsedSkylarkObject,
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,
+  ParsedSkylarkObject,
 } from "src/interfaces/skylark";
-import {
-  formatObjectField,
-  getObjectDisplayName,
-  hasProperty,
-} from "src/lib/utils";
+import { getObjectDisplayName, hasProperty } from "src/lib/utils";
 
+import { createObjectListingColumns } from "./columnConfiguration";
 import { CreateButtons } from "./createButtons";
 import { Search } from "./search";
-import { Table, TableCell } from "./table";
+import { Table } from "./table";
 
 const hardcodedColumns = [
   OBJECT_LIST_TABLE.columnIds.translation,
   OBJECT_LIST_TABLE.columnIds.availability,
   OBJECT_LIST_TABLE.columnIds.images,
 ];
-const orderedKeys = ["uid", "external_id", "data_source_id"];
-
-const columnHelper = createColumnHelper<object>();
+const orderedKeys = ["uid", "external_id", "data_source_id", "type"];
 
 export interface ObjectListProps {
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
+  panelObject?: SkylarkObjectIdentifier | null;
   setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
   isDragging?: boolean;
 }
-
-const createColumns = (
-  columns: string[],
-  opts: { withObjectSelect?: boolean },
-) => {
-  const objectTypeColumn = columnHelper.accessor(
-    OBJECT_LIST_TABLE.columnIds.objectType,
-    {
-      header: "",
-      cell: ({ row }) => {
-        const original = row.original as ParsedSkylarkObject;
-        return (
-          <Pill
-            label={original.config.objectTypeDisplayName || original.objectType}
-            bgColor={original.config.colour}
-            className="w-full bg-brand-primary"
-          />
-        );
-      },
-    },
-  );
-
-  const createdColumns = columns
-    .filter((column) => !hardcodedColumns.includes(column))
-    .map((column) =>
-      columnHelper.accessor(column, {
-        id: column,
-        header: formatObjectField(column),
-        cell: (props) => <TableCell {...props} />,
-      }),
-    );
-
-  const displayNameColumn = columnHelper.accessor(
-    OBJECT_LIST_TABLE.columnIds.displayField,
-    {
-      header: formatObjectField("Display Field"),
-      cell: (props) => <TableCell {...props} />,
-    },
-  );
-
-  const translationColumn = columnHelper.accessor(
-    OBJECT_LIST_TABLE.columnIds.translation,
-    {
-      header: formatObjectField("Translation"),
-      cell: (props) => <TableCell {...props} />,
-    },
-  );
-
-  const availabilityColumn = columnHelper.accessor("availability", {
-    header: formatObjectField("Availability"),
-    cell: (props) => {
-      const { status } = props.getValue<ParsedSkylarkObjectAvailability>();
-      return status && <AvailabilityLabel status={status} />;
-    },
-  });
-
-  // TODO only add/create this column if the schema has images. Or always created it but hide it when it doesn't have images
-  // const imagesColumn = columnHelper.accessor("images", {
-  //   header: formatObjectField("Images"),
-  //   cell: (props) => {
-  //     const imageRelationships =
-  //       props.getValue<ParsedSkylarkObjectImageRelationship[]>();
-  //     const allImages = imageRelationships.flatMap(({ objects }) => objects);
-  //     if (
-  //       !imageRelationships ||
-  //       imageRelationships.length === 0 ||
-  //       allImages.length === 0
-  //     ) {
-  //       return "";
-  //     }
-
-  //     return (
-  //       <div>
-  //         {allImages.map(({ uid, url, title }) => (
-  //           // eslint-disable-next-line @next/next/no-img-element
-  //           <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
-  //         ))}
-  //       </div>
-  //     );
-  //   },
-  // });
-
-  const selectColumn = columnHelper.display({
-    id: OBJECT_LIST_TABLE.columnIds.checkbox,
-    header: () => <Checkbox aria-label="toggle-select-all-objects" />,
-    cell: () => <Checkbox />,
-  });
-
-  const actionColumn = columnHelper.display({
-    id: OBJECT_LIST_TABLE.columnIds.actions,
-    cell: (props) => <TableCell {...props} />,
-  });
-
-  const orderedColumnArray = [
-    objectTypeColumn,
-    displayNameColumn,
-    translationColumn,
-    // imagesColumn,
-    availabilityColumn,
-    ...createdColumns,
-  ];
-  if (opts.withObjectSelect) {
-    return [selectColumn, ...orderedColumnArray];
-  }
-  return [...orderedColumnArray, actionColumn];
-
-  return orderedColumnArray;
-};
 
 export const ObjectList = ({
   withCreateButtons,
   withObjectSelect,
   withObjectEdit = false,
+  panelObject,
   setPanelObject,
   isDragging,
   isPanelOpen,
@@ -178,11 +63,14 @@ export const ObjectList = ({
     data: searchData,
     error: searchError,
     isLoading: searchLoading,
+    totalHits,
     properties,
     query: graphqlSearchQuery,
     variables: graphqlSearchQueryVariables,
     hasNextPage,
     isFetchingNextPage,
+    isRefetching: searchRefetching,
+    refetch,
     fetchNextPage,
   } = useSearch(searchQuery, searchFilters);
 
@@ -200,7 +88,10 @@ export const ObjectList = ({
   }, [properties]);
 
   const parsedColumns = useMemo(
-    () => createColumns(sortedHeaders, { withObjectSelect }),
+    () =>
+      createObjectListingColumns(sortedHeaders, hardcodedColumns, {
+        withObjectSelect,
+      }),
     [sortedHeaders, withObjectSelect],
   );
 
@@ -237,6 +128,7 @@ export const ObjectList = ({
 
     return searchDataWithTopLevelMetadata;
   }, [searchData]);
+
   const fetchMoreOnBottomReached = useCallback(
     (containerRefElement?: HTMLDivElement | null) => {
       if (containerRefElement) {
@@ -270,8 +162,11 @@ export const ObjectList = ({
   const table = useReactTable({
     debugAll: false,
     data: formattedSearchData || [],
-    columns: searchData ? parsedColumns : [],
+    columns: searchData
+      ? (parsedColumns as ColumnDef<object, ParsedSkylarkObject>[])
+      : [],
     getCoreRowModel: getCoreRowModel(),
+    columnResizeMode: "onChange",
     state: {
       columnVisibility,
     },
@@ -330,29 +225,27 @@ export const ObjectList = ({
     parentRef: tableContainerRef,
     size: rows.length,
     estimateSize: useCallback(() => 40, []),
-    overscan: 40,
+    overscan: 35,
   });
   const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
 
   return (
     <div
       className={clsx(
-        "flex h-full flex-col space-y-4",
-        isPanelOpen ? "lg:space-y-8" : "md:space-y-8",
+        "flex h-full flex-col space-y-2",
+        isPanelOpen ? "lg:space-y-2" : "md:space-y-2",
       )}
     >
       <div
         className={clsx(
-          "flex w-full items-center space-x-2 md:justify-between",
+          "flex w-full flex-col-reverse items-end space-x-2 md:flex-row md:items-start md:justify-between",
           isPanelOpen ? "lg:flex-row" : "pr-2 md:flex-row md:pr-8",
         )}
       >
         <div
           className={clsx(
-            "flex w-full flex-1 flex-row items-center justify-center space-x-0.5 md:space-x-1",
-            withCreateButtons &&
-              !isPanelOpen &&
-              "md:max-w-[50%] xl:max-w-[33%]",
+            "flex w-full flex-1 flex-col items-center justify-start space-x-0.5 md:space-x-1",
+            withCreateButtons && "md:max-w-[50vw] xl:max-w-[45vw]",
           )}
         >
           <Search
@@ -361,17 +254,24 @@ export const ObjectList = ({
               query: graphqlSearchQuery,
               variables: graphqlSearchQueryVariables,
             }}
+            isSearching={searchLoading || searchRefetching}
+            onRefresh={refetch}
             onQueryChange={setSearchQuery}
             activeFilters={searchFilters}
             columns={sortedHeaders}
             visibleColumns={columnVisibility}
             onFilterChange={onFilterChangeWrapper}
           />
+          <div className="mt-2 flex w-full justify-start pl-3 md:pl-7">
+            <p className="text-xs font-medium text-manatee-400">
+              {searchLoading ? "Loading..." : `${totalHits || 0} results`}
+            </p>
+          </div>
         </div>
         {withCreateButtons && (
           <CreateButtons
             className={clsx(
-              "justify-end md:w-full",
+              "mb-2 justify-end md:mb-0 md:w-full",
               isPanelOpen ? "pr-2 lg:w-auto lg:pr-4" : "md:w-auto",
             )}
             onObjectCreated={(obj) => {
@@ -383,7 +283,7 @@ export const ObjectList = ({
       <div
         className={clsx(
           isDragging ? "overflow-hidden" : "overflow-x-auto",
-          "relative mb-6 flex w-full flex-auto flex-grow flex-col overscroll-none",
+          "relative mb-6 flex w-full flex-auto flex-grow flex-col overscroll-none md:-ml-4",
         )}
         ref={tableContainerRef}
         data-testid="table-container"
@@ -396,6 +296,7 @@ export const ObjectList = ({
             totalRows={totalSize}
             withCheckbox={withObjectSelect}
             isLoadingMore={hasNextPage || isFetchingNextPage}
+            activeObject={panelObject || undefined}
             setPanelObject={setPanelObject}
             withDraggableRow={!!isPanelOpen}
           />
@@ -409,7 +310,7 @@ export const ObjectList = ({
             )}
 
             {!searchLoading && searchData && searchData.length === 0 && (
-              <p>{`No objects found.`}</p>
+              <p className="md:ml-6">{`No results containing all your search terms were found.`}</p>
             )}
           </div>
         )}

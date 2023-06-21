@@ -1,14 +1,16 @@
 import { graphql } from "msw";
 import { useState } from "react";
 
-import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allAvailTestMovie.json";
+import GQLSkylarkGetAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allDevicesAllCustomersAvailability.json";
+import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetObjectImageQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gotImage.json";
 import GQLSkylarkGetObjectGOTS01E01QueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01.json";
 import GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01ptPT.json";
 import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots04.json";
-import GQLSkylarkGetSetWithContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/setWithContent.json";
-import GQLSkylarkGetObjectAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/allAvailTestMovieAvailability.json";
+import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
+import GQLSkylarkGetObjectAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetSeasonRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/gots04relationships.json";
+import GQLSkylarkListAvailabilityDimensionsQueryFixture from "src/__tests__/fixtures/skylark/queries/listDimensions.json";
 import { server } from "src/__tests__/mocks/server";
 import {
   render,
@@ -20,6 +22,7 @@ import {
 import { QueryErrorMessages } from "src/enums/graphql";
 import {
   AvailabilityStatus,
+  BuiltInSkylarkObjectType,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import {
@@ -37,13 +40,14 @@ import { Panel } from "./panel.component";
 const movieObject: SkylarkObjectIdentifier = {
   uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
   objectType: "Movie",
-  language: "",
+  language:
+    GQLSkylarkGetObjectQueryFixture.data.getObject._meta.language_data.language,
 };
 
 const imageObject: SkylarkObjectIdentifier = {
   uid: GQLSkylarkGetObjectImageQueryFixture.data.getObject.uid,
   objectType: "SkylarkImage",
-  language: "",
+  language: "en-GB",
 };
 
 const episodeObjectEnGB: SkylarkObjectIdentifier = {
@@ -59,14 +63,20 @@ const episodeObjectPtPT: SkylarkObjectIdentifier = {
 };
 
 const setObjectWithContent: SkylarkObjectIdentifier = {
-  uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.uid,
+  uid: GQLSkylarkGetHomepageSetQueryFixture.data.getObject.uid,
   objectType: "SkylarkSet",
-  language: "",
+  language: "en-GB",
 };
 
 const seasonWithRelationships: SkylarkObjectIdentifier = {
   uid: GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.uid,
   objectType: "Season",
+  language: "en-GB",
+};
+
+const availabilityObject: SkylarkObjectIdentifier = {
+  uid: GQLSkylarkGetAvailabilityQueryFixture.data.getObject.uid,
+  objectType: BuiltInSkylarkObjectType.Availability,
   language: "",
 };
 
@@ -95,8 +105,8 @@ describe("metadata view", () => {
 
     expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
     await waitFor(() =>
-      expect(screen.getByLabelText("Title long")).toHaveValue(
-        "All Availabilities Test Movie (for dimension testing)",
+      expect(screen.getByLabelText("Title short")).toHaveValue(
+        GQLSkylarkGetObjectQueryFixture.data.getObject.title_short,
       ),
     );
   });
@@ -154,6 +164,30 @@ describe("metadata view", () => {
     ).toBeInTheDocument();
   });
 
+  test("hides the previous object and external open object buttons when isPage is true", async () => {
+    render(
+      <Panel
+        isPage
+        object={movieObject}
+        closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    expect(
+      screen.queryAllByRole("button", {
+        name: /Open Previous Object/i,
+      }),
+    ).toHaveLength(0);
+
+    const panelHeader = within(screen.getByTestId("panel-header"));
+    expect(panelHeader.queryAllByRole("link")).toHaveLength(0);
+  });
+
   test("renders object not found when the object doesn't exist", async () => {
     server.use(
       graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
@@ -177,9 +211,11 @@ describe("metadata view", () => {
       expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
     );
 
-    expect(
-      screen.getByText('Movie "nonexistant" not found'),
-    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        screen.getByText('Movie "nonexistant" not found'),
+      ).toBeInTheDocument(),
+    );
   });
 
   test("renders object type not found when the object type isn't found in the schema", async () => {
@@ -219,7 +255,9 @@ describe("metadata view", () => {
       expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
     );
 
-    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText("Something went wrong")).toBeInTheDocument(),
+    );
   });
 
   test("renders the objects primaryField and colour in the header when given", async () => {
@@ -256,8 +294,8 @@ describe("metadata view", () => {
 
     expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
     await waitFor(() =>
-      expect(screen.getByLabelText("Title long")).toHaveValue(
-        "All Availabilities Test Movie (for dimension testing)",
+      expect(screen.getByLabelText("Title short")).toHaveValue(
+        GQLSkylarkGetObjectQueryFixture.data.getObject.title_short,
       ),
     );
     const panelHeader = within(screen.getByTestId("panel-header"));
@@ -288,11 +326,14 @@ describe("metadata view", () => {
 
     expect(screen.queryByTestId("loading")).not.toBeInTheDocument();
     expect(screen.getByText("Original size")).toBeInTheDocument();
-    expect(
-      screen.getByAltText(
-        GQLSkylarkGetObjectImageQueryFixture.data.getObject.title,
-      ),
-    ).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(
+        screen.getByAltText(
+          GQLSkylarkGetObjectImageQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
+    );
   });
 
   describe("multiple language versions", () => {
@@ -432,7 +473,7 @@ describe("metadata view", () => {
 
       await waitFor(() => {
         expect(input).toHaveValue(
-          GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title_short,
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title_short,
         );
       });
 
@@ -449,7 +490,7 @@ describe("metadata view", () => {
       fireEvent.click(cancelButton);
 
       expect(input).toHaveValue(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title_short,
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title_short,
       );
     });
 
@@ -463,7 +504,7 @@ describe("metadata view", () => {
             return res(
               ctx.data({
                 updateObjectMetadata: {
-                  ...GQLSkylarkGetSetWithContentQueryFixture.data.getObject,
+                  ...GQLSkylarkGetHomepageSetQueryFixture.data.getObject,
                   title_short: changedValue,
                 },
               }),
@@ -488,7 +529,7 @@ describe("metadata view", () => {
 
       await waitFor(() => {
         expect(input).toHaveValue(
-          GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title_short,
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title_short,
         );
       });
 
@@ -537,7 +578,7 @@ describe("metadata view", () => {
 
       await waitFor(() => {
         expect(input).toHaveValue(
-          GQLSkylarkGetSetWithContentQueryFixture.data.getObject.title_short,
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title_short,
         );
       });
 
@@ -571,11 +612,19 @@ describe("imagery view", () => {
     );
 
     await waitFor(() =>
+      expect(
+        screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
+      ).toBeInTheDocument(),
+    );
+
+    await waitFor(() =>
       expect(screen.getByText("Imagery")).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Imagery"));
 
-    expect(screen.getAllByText("All Avail Test Movie")).toHaveLength(1);
+    expect(
+      screen.getAllByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
+    ).toHaveLength(1);
     expect(
       screen.getByText(
         `Title: ${GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].title}`,
@@ -615,11 +664,19 @@ describe("imagery view", () => {
     );
 
     await waitFor(() =>
+      expect(
+        screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
+      ).toBeInTheDocument(),
+    );
+
+    await waitFor(() =>
       expect(screen.getByText("Imagery")).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Imagery"));
 
-    expect(screen.getAllByText("All Avail Test Movie")).toHaveLength(1);
+    expect(
+      screen.getAllByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
+    ).toHaveLength(1);
 
     const firstOpenObjectButton = screen.getAllByRole("button", {
       name: /Open Object/i,
@@ -629,7 +686,7 @@ describe("imagery view", () => {
     expect(setPanelObject).toHaveBeenCalledWith({
       objectType: "SkylarkImage",
       uid: GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].uid,
-      language: "",
+      language: "en-GB",
     });
   });
 });
@@ -645,8 +702,13 @@ describe("relationships view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("Relationships")).toBeInTheDocument(),
+      expect(
+        screen.getByText(
+          GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
+
     fireEvent.click(screen.getByText("Relationships"));
 
     await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
@@ -676,8 +738,13 @@ describe("relationships view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("Relationships")).toBeInTheDocument(),
+      expect(
+        screen.getByText(
+          GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
+
     fireEvent.click(screen.getByText("Relationships"));
 
     await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
@@ -700,6 +767,14 @@ describe("relationships view", () => {
     );
 
     await waitFor(() =>
+      expect(
+        screen.getByText(
+          GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
+    );
+
+    await waitFor(() =>
       expect(screen.getByText("Relationships")).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Relationships"));
@@ -713,8 +788,8 @@ describe("relationships view", () => {
 
     expect(setPanelObject).toHaveBeenCalledWith({
       objectType: "Brand",
-      uid: "01GWFN4R99SNF3QTAZ7JTZCTZ6",
-      language: "",
+      uid: "01GXZP1T4QA54SWSD0N6ABTNEY",
+      language: "en-GB",
     });
   });
 
@@ -729,8 +804,14 @@ describe("relationships view", () => {
       );
 
       await waitFor(() =>
-        expect(screen.getByText("Relationships")).toBeInTheDocument(),
+        expect(
+          screen.getByText(
+            GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject
+              .title,
+          ),
+        ).toBeInTheDocument(),
       );
+
       fireEvent.click(screen.getByText("Relationships"));
 
       await waitFor(() =>
@@ -763,8 +844,11 @@ describe("relationships view", () => {
           .episodes.objects[0].title as string,
       );
 
-      const removeButton = screen.getByTestId(
-        "panel-relationship-episodes-item-1-remove",
+      const withinPanelObjectRelationshipItem1 = within(
+        screen.getByTestId("panel-relationship-episodes-item-1"),
+      );
+      const removeButton = withinPanelObjectRelationshipItem1.getByTestId(
+        "object-identifier-delete",
       );
       fireEvent.click(removeButton);
 
@@ -779,8 +863,11 @@ describe("relationships view", () => {
     test("removes an item and saves", async () => {
       await renderAndSwitchToEditView();
 
-      const removeButton = screen.getByTestId(
-        "panel-relationship-episodes-item-1-remove",
+      const withinPanelObjectRelationshipItem1 = within(
+        screen.getByTestId("panel-relationship-episodes-item-1"),
+      );
+      const removeButton = withinPanelObjectRelationshipItem1.getByTestId(
+        "object-identifier-delete",
       );
       fireEvent.click(removeButton);
 
@@ -809,15 +896,20 @@ describe("content view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("Content")).toBeInTheDocument(),
+      expect(
+        screen.getByText(
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
+
     fireEvent.click(screen.getByText("Content"));
 
     expect(screen.getAllByText("Homepage")).toHaveLength(1);
     expect(
       screen.getByText(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[0].object?.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
+          .object?.__SkylarkSet__title as string,
       ),
     ).toBeInTheDocument();
   });
@@ -832,8 +924,13 @@ describe("content view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("Content")).toBeInTheDocument(),
+      expect(
+        screen.getByText(
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
+
     fireEvent.click(screen.getByText("Content"));
 
     expect(screen.getAllByText("Homepage")).toHaveLength(1);
@@ -856,7 +953,11 @@ describe("content view", () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText("Content")).toBeInTheDocument(),
+      expect(
+        screen.getByText(
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title,
+        ),
+      ).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Content"));
 
@@ -869,11 +970,11 @@ describe("content view", () => {
 
     expect(setPanelObject).toHaveBeenCalledWith({
       objectType:
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[0].object.__typename,
-      uid: GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
+          .object.__typename,
+      uid: GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content
         .objects[0].object.uid,
-      language: "",
+      language: "en-GB",
     });
   });
 
@@ -888,11 +989,17 @@ describe("content view", () => {
       );
 
       await waitFor(() =>
-        expect(screen.getByText("Content")).toBeInTheDocument(),
+        expect(
+          screen.getByText(
+            GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title,
+          ),
+        ).toBeInTheDocument(),
       );
       fireEvent.click(screen.getByText("Content"));
 
-      expect(screen.getAllByText("Homepage")).toHaveLength(1);
+      await waitFor(() =>
+        expect(screen.getAllByText("Homepage")).toHaveLength(1),
+      );
 
       fireEvent.click(screen.getByText("Edit Content"));
 
@@ -902,8 +1009,8 @@ describe("content view", () => {
 
       expect(
         screen.getByText(
-          GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-            .objects[0].object.__SkylarkSet__title as string,
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
+            .object.__SkylarkSet__title as string,
         ),
       ).toBeInTheDocument();
     };
@@ -923,20 +1030,20 @@ describe("content view", () => {
       expect(
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[0].object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
+          .object.__SkylarkSet__title as string,
       );
       expect(
         screen.getByTestId("panel-object-content-item-2"),
       ).toHaveTextContent(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[1].object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[1]
+          .object.__SkylarkSet__title as string,
       );
       expect(
         screen.getByTestId("panel-object-content-item-3"),
       ).toHaveTextContent(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[2].object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[2]
+          .object.__SkylarkSet__title as string,
       );
 
       expect(screen.getByDisplayValue("1")).toBeInTheDocument();
@@ -949,20 +1056,20 @@ describe("content view", () => {
       expect(
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[1].object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[1]
+          .object.__SkylarkSet__title as string,
       );
       expect(
         screen.getByTestId("panel-object-content-item-2"),
       ).toHaveTextContent(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[2].object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[2]
+          .object.__SkylarkSet__title as string,
       );
       expect(
         screen.getByTestId("panel-object-content-item-3"),
       ).toHaveTextContent(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[0].object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
+          .object.__SkylarkSet__title as string,
       );
     });
 
@@ -982,7 +1089,7 @@ describe("content view", () => {
     test("when last item is made 10000, it changes back to the length of the content array", async () => {
       await renderAndSwitchToEditView();
       const maxPosition =
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects
           .length;
 
       expect(maxPosition).toBeGreaterThan(0);
@@ -991,7 +1098,7 @@ describe("content view", () => {
       expect(
         screen.getByTestId(`panel-object-content-item-${maxPosition}`),
       ).toHaveTextContent(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[
           maxPosition - 1
         ].object.__SkylarkSet__title as string,
       );
@@ -1005,7 +1112,7 @@ describe("content view", () => {
       expect(
         screen.getByTestId(`panel-object-content-item-${maxPosition}`),
       ).toHaveTextContent(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects[
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[
           maxPosition - 1
         ].object.__SkylarkSet__title as string,
       );
@@ -1018,8 +1125,8 @@ describe("content view", () => {
       expect(
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[0].object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
+          .object.__SkylarkSet__title as string,
       );
 
       const input = screen.getByDisplayValue(1);
@@ -1031,8 +1138,8 @@ describe("content view", () => {
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
         `${
-          GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-            .objects[0].object.__SkylarkSet__title as string
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
+            .object.__SkylarkSet__title as string
         }1`,
       );
     });
@@ -1044,8 +1151,8 @@ describe("content view", () => {
       expect(
         screen.getByTestId("panel-object-content-item-2"),
       ).toHaveTextContent(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[1].object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[1]
+          .object.__SkylarkSet__title as string,
       );
 
       const input = screen.getByDisplayValue(1);
@@ -1057,8 +1164,8 @@ describe("content view", () => {
       expect(
         screen.getByTestId("panel-object-content-item-2"),
       ).toHaveTextContent(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[1].object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[1]
+          .object.__SkylarkSet__title as string,
       );
     });
 
@@ -1066,7 +1173,7 @@ describe("content view", () => {
       await renderAndSwitchToEditView();
 
       const maxPosition =
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content.objects
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects
           .length;
       expect(maxPosition).toBeGreaterThan(0);
 
@@ -1076,15 +1183,15 @@ describe("content view", () => {
       expect(
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[0].object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[0]
+          .object.__SkylarkSet__title as string,
       );
 
       const withinPanelObjectContentItem1 = within(
         screen.getByTestId("panel-object-content-item-1"),
       );
       const removeButton = withinPanelObjectContentItem1.getByTestId(
-        "panel-object-content-item-remove",
+        "object-identifier-delete",
       );
       fireEvent.click(removeButton);
 
@@ -1094,8 +1201,8 @@ describe("content view", () => {
       expect(
         screen.getByTestId("panel-object-content-item-1"),
       ).toHaveTextContent(
-        GQLSkylarkGetSetWithContentQueryFixture.data.getObject.content
-          .objects[1].object.__SkylarkSet__title as string,
+        GQLSkylarkGetHomepageSetQueryFixture.data.getObject.content.objects[1]
+          .object.__SkylarkSet__title as string,
       );
     });
 
@@ -1106,7 +1213,7 @@ describe("content view", () => {
         screen.getByTestId("panel-object-content-item-1"),
       );
       const removeButton = withinPanelObjectContentItem1.getByTestId(
-        "panel-object-content-item-remove",
+        "object-identifier-delete",
       );
       fireEvent.click(removeButton);
 
@@ -1134,15 +1241,7 @@ describe("availability view", () => {
     jest.useFakeTimers().setSystemTime(new Date("2023-03-10T00:00:00.000Z"));
   });
 
-  test("render the panel", async () => {
-    render(
-      <Panel
-        object={movieObject}
-        closePanel={jest.fn()}
-        setPanelObject={jest.fn()}
-      />,
-    );
-
+  const switchToAvailability = async () => {
     expect(
       screen.queryAllByText(
         GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
@@ -1154,8 +1253,22 @@ describe("availability view", () => {
       expect(screen.getByText("Availability")).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByText("Availability"));
+  };
 
-    expect(screen.getAllByText("All Avail Test Movie")).toHaveLength(1);
+  test("render the panel", async () => {
+    render(
+      <Panel
+        object={movieObject}
+        closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
+      />,
+    );
+
+    await switchToAvailability();
+
+    expect(
+      screen.getAllByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
+    ).toHaveLength(1);
 
     const numberOfAvailabilityInFixture =
       GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
@@ -1204,15 +1317,12 @@ describe("availability view", () => {
       />,
     );
 
-    await waitFor(() =>
-      expect(screen.getByText("Availability")).toBeInTheDocument(),
-    );
-    fireEvent.click(screen.getByText("Availability"));
+    await switchToAvailability();
 
     await waitFor(() => expect(screen.getByText("None")).toBeInTheDocument());
   });
 
-  it("finds sets the status of each availability", async () => {
+  it("finds the status of each availability", async () => {
     render(
       <Panel
         object={movieObject}
@@ -1221,10 +1331,7 @@ describe("availability view", () => {
       />,
     );
 
-    await waitFor(() =>
-      expect(screen.getByText("Availability")).toBeInTheDocument(),
-    );
-    fireEvent.click(screen.getByText("Availability"));
+    await switchToAvailability();
 
     const numberOfAvailabilityInFixture =
       GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
@@ -1235,9 +1342,12 @@ describe("availability view", () => {
       ),
     );
 
-    expect(screen.queryAllByText("Expired")).toHaveLength(1);
-    expect(screen.queryAllByText("Future")).toHaveLength(1);
-    expect(screen.queryAllByText("Active")).toHaveLength(2);
+    const withinAvailabilityTab = within(
+      screen.getByTestId("panel-availability"),
+    );
+    expect(withinAvailabilityTab.queryAllByText("Expired")).toHaveLength(1);
+    expect(withinAvailabilityTab.queryAllByText("Future")).toHaveLength(1);
+    expect(withinAvailabilityTab.queryAllByText("Active")).toHaveLength(2);
   });
 
   it("converts start and end date to readable formats", async () => {
@@ -1249,10 +1359,7 @@ describe("availability view", () => {
       />,
     );
 
-    await waitFor(() =>
-      expect(screen.getByText("Availability")).toBeInTheDocument(),
-    );
-    fireEvent.click(screen.getByText("Availability"));
+    await switchToAvailability();
 
     const numberOfAvailabilityInFixture =
       GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
@@ -1291,10 +1398,7 @@ describe("availability view", () => {
       />,
     );
 
-    await waitFor(() =>
-      expect(screen.getByText("Availability")).toBeInTheDocument(),
-    );
-    fireEvent.click(screen.getByText("Availability"));
+    await switchToAvailability();
 
     const numberOfAvailabilityInFixture =
       GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
@@ -1315,6 +1419,318 @@ describe("availability view", () => {
       uid: GQLSkylarkGetObjectAvailabilityQueryFixture.data
         .getObjectAvailability.availability.objects[0].uid,
       language: "",
+    });
+  });
+
+  describe("availability view - edit", () => {
+    test("uses the object identifier card in edit mode", async () => {
+      render(
+        <Panel
+          object={movieObject}
+          closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
+        />,
+      );
+
+      await switchToAvailability();
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(
+            GQLSkylarkGetObjectQueryFixture.data.getObject.availability
+              .objects[0].title,
+          ),
+        ).toBeInTheDocument(),
+      );
+
+      expect(
+        screen.queryAllByText("Time Window").length,
+      ).toBeGreaterThanOrEqual(1);
+      expect(screen.queryAllByText("Audience").length).toBeGreaterThanOrEqual(
+        1,
+      );
+
+      fireEvent.click(screen.getByText("Edit Availability"));
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      expect(screen.queryAllByText("Time Window").length).toBe(0);
+      expect(screen.queryAllByText("Audience").length).toBe(0);
+    });
+
+    test("removes an availability and cancels", async () => {
+      const firstAvailabilityObjectTitle =
+        GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+          .title;
+      render(
+        <Panel
+          object={movieObject}
+          closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
+        />,
+      );
+
+      await switchToAvailability();
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(firstAvailabilityObjectTitle),
+        ).toBeInTheDocument(),
+      );
+
+      fireEvent.click(screen.getByText("Edit Availability"));
+
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      fireEvent.click(screen.getAllByTestId("object-identifier-delete")[0]);
+
+      expect(screen.queryAllByText(firstAvailabilityObjectTitle)).toHaveLength(
+        0,
+      );
+
+      // Cancel
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      expect(screen.queryAllByText(firstAvailabilityObjectTitle)).toHaveLength(
+        1,
+      );
+    });
+
+    test("removes an availability and saves", async () => {
+      const firstAvailabilityObjectTitle =
+        GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+          .title;
+      render(
+        <Panel
+          object={movieObject}
+          closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
+        />,
+      );
+
+      await switchToAvailability();
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(firstAvailabilityObjectTitle),
+        ).toBeInTheDocument(),
+      );
+
+      fireEvent.click(screen.getByText("Edit Availability"));
+
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      fireEvent.click(screen.getAllByTestId("object-identifier-delete")[0]);
+
+      expect(screen.queryAllByText(firstAvailabilityObjectTitle)).toHaveLength(
+        0,
+      );
+
+      // Save
+      const saveButton = screen.getByText("Save");
+      fireEvent.click(saveButton);
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(firstAvailabilityObjectTitle),
+        ).toBeInTheDocument(),
+      );
+    });
+  });
+});
+
+describe("availabity dimensions view", () => {
+  test("render the panel and all dimensions", async () => {
+    render(
+      <Panel
+        object={availabilityObject}
+        closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
+      />,
+    );
+
+    expect(screen.queryAllByText("Device type")).toHaveLength(0);
+
+    await waitFor(() =>
+      expect(screen.getByText("Dimensions")).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByText("Dimensions"));
+
+    await waitFor(() =>
+      expect(screen.getByText("Device type")).toBeInTheDocument(),
+    );
+
+    GQLSkylarkListAvailabilityDimensionsQueryFixture.data.listDimensions.objects.forEach(
+      ({ title }) => {
+        expect(screen.getByText(formatObjectField(title))).toBeInTheDocument();
+      },
+    );
+
+    // Check availability pill in header
+    expect(
+      within(screen.getByTestId("panel-header")).getByText("Active"),
+    ).toBeInTheDocument();
+  });
+
+  test("displays the current selected dimensions", async () => {
+    render(
+      <Panel
+        object={availabilityObject}
+        closePanel={jest.fn()}
+        setPanelObject={jest.fn()}
+      />,
+    );
+
+    expect(screen.queryAllByText("Device type")).toHaveLength(0);
+
+    await waitFor(() =>
+      expect(screen.getByText("Dimensions")).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByText("Dimensions"));
+
+    await waitFor(() =>
+      expect(screen.getByText("Premium")).toBeInTheDocument(),
+    );
+
+    expect(screen.getByText("Standard")).toBeInTheDocument();
+    expect(screen.queryByText("HYBRID")).not.toBeInTheDocument();
+  });
+
+  describe("dimensions view - edit", () => {
+    test("selects a new value", async () => {
+      render(
+        <Panel
+          object={availabilityObject}
+          closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
+        />,
+      );
+
+      expect(screen.queryAllByText("Device type")).toHaveLength(0);
+
+      await waitFor(() =>
+        expect(screen.getByText("Dimensions")).toBeInTheDocument(),
+      );
+      fireEvent.click(screen.getByText("Dimensions"));
+
+      await waitFor(() =>
+        expect(screen.getByText("Premium")).toBeInTheDocument(),
+      );
+
+      const displayDiv = screen.getByText("Premium").parentElement
+        ?.parentElement as HTMLDivElement;
+      const wrapper = displayDiv?.parentElement as HTMLDivElement;
+      fireEvent.click(wrapper);
+
+      const combobox = within(wrapper).getByRole("combobox");
+      fireEvent.click(combobox);
+
+      expect(screen.queryAllByText("Standard")).toHaveLength(2);
+
+      // Select new option
+      expect(screen.queryByText("HYBRID")).toBeInTheDocument();
+      expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(0);
+      fireEvent.click(screen.getByText("HYBRID"));
+
+      // Check Pill is added
+      expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(1);
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      // Cancel
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      await waitFor(() =>
+        expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(0),
+      );
+    });
+
+    test("removes a value", async () => {
+      render(
+        <Panel
+          object={availabilityObject}
+          closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
+        />,
+      );
+
+      expect(screen.queryAllByText("Device type")).toHaveLength(0);
+
+      await waitFor(() =>
+        expect(screen.getByText("Dimensions")).toBeInTheDocument(),
+      );
+      fireEvent.click(screen.getByText("Dimensions"));
+
+      await waitFor(() =>
+        expect(screen.getByText("Premium")).toBeInTheDocument(),
+      );
+
+      const deselectButton = within(
+        screen.getByText("Premium").parentElement as HTMLDivElement,
+      ).getByRole("button");
+      fireEvent.click(deselectButton);
+
+      // Check Pill is added
+      expect(screen.queryAllByText("Premium")).toHaveLength(0);
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      // Cancel
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      expect(screen.queryAllByText("Premium")).toHaveLength(1);
+    });
+
+    test("edits and saves", async () => {
+      render(
+        <Panel
+          object={availabilityObject}
+          closePanel={jest.fn()}
+          setPanelObject={jest.fn()}
+        />,
+      );
+
+      expect(screen.queryAllByText("Device type")).toHaveLength(0);
+
+      await waitFor(() =>
+        expect(screen.getByText("Dimensions")).toBeInTheDocument(),
+      );
+      fireEvent.click(screen.getByText("Dimensions"));
+
+      await waitFor(() =>
+        expect(screen.getByText("Premium")).toBeInTheDocument(),
+      );
+
+      const displayDiv = screen.getByText("Premium").parentElement
+        ?.parentElement as HTMLDivElement;
+      const wrapper = displayDiv?.parentElement as HTMLDivElement;
+      fireEvent.click(wrapper);
+
+      const combobox = within(wrapper).getByRole("combobox");
+      fireEvent.click(combobox);
+
+      expect(screen.queryAllByText("Standard")).toHaveLength(2);
+
+      // Select new option
+      expect(screen.queryByText("HYBRID")).toBeInTheDocument();
+      expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(0);
+      fireEvent.click(screen.getByText("HYBRID"));
+
+      // Check Pill is added
+      expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(1);
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      // Save
+      const saveButton = screen.getByText("Save");
+      fireEvent.click(saveButton);
+
+      await waitFor(() =>
+        expect(screen.queryByText("Editing")).not.toBeInTheDocument(),
+      );
+
+      await waitFor(() =>
+        expect(screen.getByText("Edit Dimensions")).toBeInTheDocument(),
+      );
     });
   });
 });

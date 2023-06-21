@@ -1,6 +1,8 @@
 import clsx from "clsx";
 import { ReactNode } from "react";
 
+import { hasProperty } from "src/lib/utils";
+
 interface PanelSectionLayoutProps {
   isPage?: boolean;
   sections: {
@@ -12,8 +14,12 @@ interface PanelSectionLayoutProps {
 }
 
 const scrollToSection = (id: string) =>
+  // Smooth scrolling breaks Cypress tests, we might want to refactor this to be global if we add another smooth scroll
   document?.getElementById(id)?.scrollIntoView({
-    behavior: "smooth",
+    behavior:
+      typeof window === "undefined" || hasProperty(window, "Cypress")
+        ? "auto"
+        : "smooth",
   });
 
 export const PanelSectionLayout = ({
@@ -47,7 +53,7 @@ export const PanelSectionLayout = ({
     <div className="h-full overflow-y-auto">
       <div
         className={clsx(
-          "relative pb-20 md:pb-32",
+          "relative pb-32 md:pb-56",
           withStickyHeaders ? "px-4 md:px-8" : "p-4 md:p-8",
         )}
       >

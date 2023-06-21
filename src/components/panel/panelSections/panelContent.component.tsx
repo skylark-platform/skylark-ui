@@ -1,16 +1,14 @@
-import { useDroppable } from "@dnd-kit/core";
 import clsx from "clsx";
 import { Reorder } from "framer-motion";
 import { useEffect, useState } from "react";
 
-import { Trash } from "src/components/icons";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import {
   PanelEmptyDataText,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
-import { DROPPABLE_ID } from "src/constants/skylark";
 import {
   ParsedSkylarkObjectContentObject,
   AddedSkylarkObjectContentObject,
@@ -26,7 +24,7 @@ interface PanelContentProps {
   objectType: string;
   onReorder: (objs: ParsedSkylarkObjectContentObject[]) => void;
   inEditMode?: boolean;
-  showDropArea?: boolean;
+  showDropZone?: boolean;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }
 
@@ -84,7 +82,9 @@ export const PanelContentItemOrderInput = ({
       }}
       className={clsx(
         "flex h-6 min-w-6 items-center justify-center rounded-full px-1 pb-0.5 text-center transition-colors",
-        (!hasMoved || disabled) && "bg-brand-primary text-white",
+        !isNewObject &&
+          (!hasMoved || disabled) &&
+          "bg-brand-primary text-white",
         !isNewObject && hasMoved && "bg-warning text-warning-content",
         isNewObject && "bg-success",
       )}
@@ -99,18 +99,14 @@ export const PanelContent = ({
   isPage,
   objects,
   inEditMode,
-  objectType,
+  showDropZone,
   onReorder,
-  showDropArea,
   setPanelObject,
 }: PanelContentProps) => {
   const removeItem = (uid: string) => {
     const filtered = objects.filter(({ object }) => uid !== object.uid);
     onReorder(filtered);
   };
-  const { isOver, setNodeRef } = useDroppable({
-    id: DROPPABLE_ID,
-  });
 
   const handleManualOrderChange = (
     currentIndex: number,
@@ -131,18 +127,9 @@ export const PanelContent = ({
     onReorder(updatedObjects);
   };
 
-  if (showDropArea)
-    return (
-      <div
-        ref={setNodeRef}
-        className={clsx(
-          isOver && "border-primary text-primary",
-          "m-4 mt-10 flex h-72 items-center justify-center border-2 border-dotted text-center text-manatee-400",
-        )}
-      >
-        <span>{`Drop object here to add to the ${objectType}'s content`}</span>
-      </div>
-    );
+  if (showDropZone) {
+    return <PanelDropZone />;
+  }
 
   return (
     <PanelSectionLayout
@@ -166,6 +153,7 @@ export const PanelContent = ({
               key={`panel-content-item-${object.uid}`}
               value={item}
               data-testid={`panel-object-content-item-${index + 1}`}
+              data-cy={"panel-object-content-item"}
               className={clsx(
                 "my-0 flex flex-col items-center justify-center",
                 inEditMode && "cursor-pointer",
@@ -184,41 +172,32 @@ export const PanelContent = ({
                 }
                 onForwardClick={setPanelObject}
                 disableForwardClick={inEditMode}
+                disableDeleteClick={!inEditMode}
+                onDeleteClick={() => removeItem(object.uid)}
               >
                 <div className="flex">
-                  <span
-                    className={clsx(
-                      "flex h-6 min-w-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
-                      !inEditMode || position === index + 1 || isNewObject
-                        ? "opacity-0"
-                        : "opacity-100",
-                    )}
-                  >
-                    {position}
-                  </span>
+                  {inEditMode && (
+                    <span
+                      className={clsx(
+                        "flex h-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
+                        position === index + 1 || isNewObject
+                          ? "opacity-0"
+                          : "opacity-100",
+                      )}
+                    >
+                      {position}
+                    </span>
+                  )}
                   <PanelContentItemOrderInput
                     disabled={!inEditMode}
                     position={index + 1}
-                    hasMoved={position !== index + 1}
-                    isNewObject={isNewObject}
+                    hasMoved={!!inEditMode && position !== index + 1}
+                    isNewObject={inEditMode && isNewObject}
                     onBlur={(updatedPosition: number) =>
                       handleManualOrderChange(index, updatedPosition)
                     }
                     maxPosition={objects.length}
                   />
-                  <button
-                    disabled={!inEditMode}
-                    data-testid="panel-object-content-item-remove"
-                    className={clsx(!inEditMode && "w-0")}
-                    onClick={() => removeItem(object.uid)}
-                  >
-                    <Trash
-                      className={clsx(
-                        "ml-2 flex h-6 text-manatee-300 transition-all hover:text-error",
-                        inEditMode ? "w-6" : "w-0",
-                      )}
-                    />
-                  </button>
                 </div>
               </ObjectIdentifierCard>
               {index < objects.length - 1 && (
@@ -228,9 +207,9 @@ export const PanelContent = ({
           );
         })}
       </Reorder.Group>
-      {inEditMode && (
+      {inEditMode && !isPage && (
         <p className="w-full py-4 text-center text-sm text-manatee-600">
-          {`Drag an object from the Content Library to add as content`}
+          {"Drag an object from the Content Library to add as content"}
         </p>
       )}
     </PanelSectionLayout>

@@ -3,6 +3,7 @@ import {
   ToastContainer as ReactToastifyContainer,
   ToastContentProps,
   TypeOptions,
+  Slide,
 } from "react-toastify";
 
 import { Cross } from "src/components/icons";
@@ -13,44 +14,43 @@ export interface ToastProps extends Partial<ToastContentProps> {
   type?: TypeOptions;
 }
 
+const contextClassNames = {
+  default: "bg-manatee-200 text-info-content",
+  info: "bg-info text-info-content",
+  success: "bg-success text-success-content",
+  warning: "bg-warning text-warning-content",
+  error: "bg-error text-error-content",
+};
+
 export const ToastContainer = () => (
   <ReactToastifyContainer
     position="top-right"
-    autoClose={false}
-    hideProgressBar={true}
+    autoClose={5000}
+    pauseOnHover
     theme="colored"
     closeButton={false}
+    transition={Slide}
     bodyClassName="p-0 bg-none"
-    toastClassName="p-0 my-2 md:my-4 min-h-6 rounded-lg bg-none"
-    className={"fixed right-0 top-20 z-[200] w-full pr-8 md:w-80 lg:w-96"}
+    toastClassName={(props) => {
+      return clsx(
+        contextClassNames[props?.type || "default"],
+        "relative flex px-6 py-4 min-h-10 mt-2 justify-between overflow-hidden cursor-pointer min-h-16 h-full rounded font-sans text-white",
+      );
+    }}
+    className={"fixed right-0 top-0 z-[200] w-full pr-8 md:w-80 lg:w-96"}
+    progressClassName="bg-brand-primary"
     icon={false}
   />
 );
 
-export const Toast = ({
-  toastProps,
-  title,
-  message,
-  type: propType,
-}: ToastProps) => {
-  const type = propType || toastProps?.type;
-
+export const Toast = ({ closeToast, title, message }: ToastProps) => {
   return (
-    <div
-      className={clsx(
-        "min-h-16 relative h-full rounded-lg px-6 py-4 font-sans text-white",
-        (type === "default" || !type) && "bg-brand-primary",
-        type === "info" && "bg-info text-info-content",
-        type === "success" && "bg-success text-success-content",
-        type === "warning" && "bg-warning text-warning-content",
-        type === "error" && "bg-error text-error-content",
-      )}
-    >
+    <div data-cy="toast">
       <div className="flex flex-row">
         <h4 className="flex-grow pr-2 text-base font-medium md:text-base">
           {title}
         </h4>
-        <button onClick={() => toastProps?.deleteToast()}>
+        <button onClick={() => closeToast?.()}>
           <Cross />
         </button>
       </div>

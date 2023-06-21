@@ -1,17 +1,14 @@
-import { useDroppable } from "@dnd-kit/core";
-import clsx from "clsx";
 import { Fragment, useEffect, useState } from "react";
 
-import { DisplayGraphQLQuery } from "src/components/displayGraphQLQuery";
-import { Trash } from "src/components/icons";
+import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
-import { DROPPABLE_ID } from "src/constants/skylark";
 import { useGetObjectRelationships } from "src/hooks/useGetObjectRelationships";
 import {
   ParsedSkylarkObjectRelationships,
@@ -28,13 +25,12 @@ interface PanelRelationshipsProps {
   objectType: SkylarkObjectType;
   uid: string;
   updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
-  originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
   setRelationshipObjects: (relationshipObjects: {
     originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
     updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
   }) => void;
   inEditMode: boolean;
-  showDropArea?: boolean;
+  showDropZone?: boolean;
   language: string;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }
@@ -45,28 +41,27 @@ export const PanelRelationships = ({
   uid,
   updatedRelationshipObjects,
   setRelationshipObjects,
-  originalRelationshipObjects,
   inEditMode,
   language,
-  showDropArea,
+  showDropZone,
   setPanelObject,
 }: PanelRelationshipsProps) => {
   const {
-    data: relationshipsData,
-    relationships = [],
+    relationships,
+    objectRelationships = [],
     isLoading,
     query,
     variables,
   } = useGetObjectRelationships(objectType, uid, { language });
 
   useEffect(() => {
-    if (originalRelationshipObjects === null) {
+    if (!inEditMode) {
       setRelationshipObjects({
-        updatedRelationshipObjects: relationshipsData,
-        originalRelationshipObjects: relationshipsData,
+        updatedRelationshipObjects: relationships,
+        originalRelationshipObjects: relationships,
       });
     }
-  }, [originalRelationshipObjects, relationshipsData, setRelationshipObjects]);
+  }, [inEditMode, relationships, setRelationshipObjects]);
 
   const removeRelationshipObject = (removeUid: string, relationship: string) =>
     updatedRelationshipObjects &&
@@ -82,141 +77,129 @@ export const PanelRelationships = ({
           } else return currentRelationship;
         },
       ),
-      originalRelationshipObjects,
+      originalRelationshipObjects: relationships,
     });
 
   const [expandedRelationships, setExpandedRelationships] = useState<
     Record<string, boolean>
   >({});
-  const { isOver, setNodeRef } = useDroppable({
-    id: DROPPABLE_ID,
-  });
 
-  if (showDropArea)
-    return (
-      <div
-        ref={setNodeRef}
-        className={clsx(
-          isOver && "border-primary text-primary",
-          "m-4 mt-10 flex h-72 items-center justify-center border-2 border-dotted text-center text-manatee-400",
-        )}
-      >
-        <span>{`Drag an object from the Content Library to add as a relationship`}</span>
-      </div>
-    );
+  const relationshipNames = objectRelationships.map(
+    ({ relationshipName }) => relationshipName,
+  );
+  const orderedRelationshipObjects = updatedRelationshipObjects?.sort(
+    (a, b) =>
+      relationshipNames.indexOf(a.relationshipName) -
+      relationshipNames.indexOf(b.relationshipName),
+  );
+
+  if (showDropZone) {
+    return <PanelDropZone />;
+  }
 
   return (
     <PanelSectionLayout
-      sections={relationships.map(({ relationshipName }) => ({
+      sections={relationshipNames.map((relationshipName) => ({
         id: `relationship-panel-${relationshipName}`,
         title: formatObjectField(relationshipName),
       }))}
       isPage={isPage}
     >
       <div>
-        {updatedRelationshipObjects?.map((relationship) => {
-          const { relationshipName, objects } = relationship;
-          const isExpanded = expandedRelationships[relationshipName];
+        {updatedRelationshipObjects &&
+          orderedRelationshipObjects?.map((relationship) => {
+            const { relationshipName, objects } = relationship;
+            const isExpanded = expandedRelationships[relationshipName];
 
-          const displayList =
-            objects?.length > 2 && !isExpanded ? objects.slice(0, 3) : objects;
+            const displayList =
+              objects?.length > 2 && !isExpanded
+                ? objects.slice(0, 3)
+                : objects;
 
-          return (
-            <div key={relationshipName} className="relative mb-8">
-              <PanelSectionTitle
-                text={formatObjectField(relationshipName)}
-                count={(objects.length >= 50 ? "50+" : objects.length) || 0}
-                id={`relationship-panel-${relationshipName}`}
-              />
+            return (
+              <div key={relationshipName} className="relative mb-8">
+                <PanelSectionTitle
+                  text={formatObjectField(relationshipName)}
+                  count={(objects.length >= 50 ? "50+" : objects.length) || 0}
+                  id={`relationship-panel-${relationshipName}`}
+                />
 
-              <div className="transition duration-300 ease-in-out">
-                {relationship && displayList?.length > 0 ? (
-                  displayList?.map((obj, index) => {
-                    const relationshipObject = relationships.find(
-                      (relationship) =>
-                        relationship.relationshipName === relationshipName,
-                    );
+                <div className="transition duration-300 ease-in-out">
+                  {relationship && displayList?.length > 0 ? (
+                    displayList?.map((obj, index) => {
+                      const relationshipObject = objectRelationships.find(
+                        (relationship) =>
+                          relationship.relationshipName === relationshipName,
+                      );
 
-                    const newUids =
-                      relationshipObject &&
-                      originalRelationshipObjects &&
-                      parseUpdatedRelationshipObjects(
-                        relationshipObject,
-                        updatedRelationshipObjects,
-                        originalRelationshipObjects,
-                      ).uidsToLink;
+                      const newUids =
+                        relationshipObject &&
+                        relationships &&
+                        parseUpdatedRelationshipObjects(
+                          relationshipObject,
+                          updatedRelationshipObjects,
+                          relationships,
+                        ).uidsToLink;
 
-                    return (
-                      <Fragment key={obj.uid}>
-                        <div
-                          className="flex items-center "
-                          data-testid={`panel-relationship-${relationshipName}-item-${
-                            index + 1
-                          }`}
-                        >
-                          <ObjectIdentifierCard
-                            key={obj.uid}
-                            object={obj}
-                            disableForwardClick={inEditMode}
-                            onForwardClick={setPanelObject}
+                      return (
+                        <Fragment key={obj.uid}>
+                          <div
+                            className="flex items-center "
+                            data-testid={`panel-relationship-${relationshipName}-item-${
+                              index + 1
+                            }`}
                           >
-                            {inEditMode && newUids?.includes(obj.uid) && (
-                              <span
-                                className={
-                                  "flex h-6 min-w-6 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
-                                }
-                              />
-                            )}
-                            <button
-                              disabled={!inEditMode}
-                              data-testid={`panel-relationship-${relationshipName}-item-${
-                                index + 1
-                              }-remove`}
-                              onClick={() =>
+                            <ObjectIdentifierCard
+                              key={obj.uid}
+                              object={obj}
+                              disableDeleteClick={!inEditMode}
+                              disableForwardClick={inEditMode}
+                              onDeleteClick={() =>
                                 removeRelationshipObject(
                                   obj.uid,
                                   relationshipName,
                                 )
                               }
+                              onForwardClick={setPanelObject}
                             >
-                              <Trash
-                                className={clsx(
-                                  "ml-2 flex h-6 text-manatee-300 transition-all hover:text-error",
-                                  inEditMode ? "w-6" : "w-0",
-                                )}
-                              />
-                            </button>
-                          </ObjectIdentifierCard>
-                        </div>
+                              {inEditMode && newUids?.includes(obj.uid) && (
+                                <span
+                                  className={
+                                    "flex h-6 min-w-6 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
+                                  }
+                                />
+                              )}
+                            </ObjectIdentifierCard>
+                          </div>
 
-                        {index < displayList.length - 1 && <PanelSeparator />}
-                      </Fragment>
-                    );
-                  })
-                ) : (
-                  <PanelEmptyDataText />
+                          {index < displayList.length - 1 && <PanelSeparator />}
+                        </Fragment>
+                      );
+                    })
+                  ) : (
+                    <PanelEmptyDataText />
+                  )}
+                </div>
+
+                {relationship && objects.length > 3 && (
+                  <div className="mb-3">
+                    <PanelSeparator />
+                    <button
+                      data-testid={`expand-relationship-${relationshipName}`}
+                      onClick={() =>
+                        setExpandedRelationships({
+                          [relationshipName]: !isExpanded,
+                        })
+                      }
+                      className="w-full cursor-pointer p-2 text-center text-xs text-manatee-500 hover:text-manatee-700"
+                    >
+                      {`Show ${isExpanded ? "less" : "more"}`}
+                    </button>
+                  </div>
                 )}
               </div>
-
-              {relationship && objects.length > 3 && (
-                <div className="mb-3">
-                  <PanelSeparator />
-                  <button
-                    data-testid={`expand-relationship-${relationshipName}`}
-                    onClick={() =>
-                      setExpandedRelationships({
-                        [relationshipName]: !isExpanded,
-                      })
-                    }
-                    className="w-full cursor-pointer p-2 text-center text-xs text-manatee-500 hover:text-manatee-700"
-                  >
-                    {`Show ${isExpanded ? "less" : "more"}`}
-                  </button>
-                </div>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
       <PanelLoading isLoading={isLoading} />
       <DisplayGraphQLQuery
@@ -225,6 +208,11 @@ export const PanelRelationships = ({
         variables={variables}
         buttonClassName="absolute right-2 top-0"
       />
+      {inEditMode && !isPage && (
+        <p className="w-full py-4 text-center text-sm text-manatee-600">
+          {"Drag an object from the Content Library to add as relationship"}
+        </p>
+      )}
     </PanelSectionLayout>
   );
 };

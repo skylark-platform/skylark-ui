@@ -1,6 +1,15 @@
 import { ComponentStory } from "@storybook/react";
+import { userEvent, waitFor, within } from "@storybook/testing-library";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-import { Toast, ToastContainer } from "./toast.component";
+import { Toast, ToastContainer, ToastProps } from "./toast.component";
+
+const sleep = (timeMs: number) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeMs);
+  });
+};
 
 export default {
   title: "Components/Toast",
@@ -13,13 +22,47 @@ export default {
   },
 };
 
-const Template: ComponentStory<typeof Toast> = (args) => <Toast {...args} />;
+const openToastAndCheckForTitle = async ({
+  canvasElement,
+  args,
+}: {
+  canvasElement: HTMLElement;
+  args: ToastProps;
+}) => {
+  const canvas = within(canvasElement);
+
+  await waitFor(async () => {
+    canvas.getByTestId("toastify-loaded");
+  });
+
+  // Delay to allow ToastContainer to mount
+  await sleep(1000);
+
+  toast(<Toast {...args} />, {
+    type: args.type,
+    autoClose: false,
+  });
+
+  await waitFor(async () => {
+    await userEvent.hover(canvas.getByText(args.title));
+  });
+};
+
+const Template: ComponentStory<typeof Toast> = () => {
+  return (
+    <>
+      <ToastContainer />
+      <span data-testid="toastify-loaded" />
+    </>
+  );
+};
 
 export const Default = Template.bind({});
 Default.args = {
   title: "Default toast",
   message: "Toast message",
 };
+Default.play = openToastAndCheckForTitle;
 
 export const Info = Template.bind({});
 Info.args = {
@@ -27,6 +70,7 @@ Info.args = {
   message: "This is some useful information",
   type: "info",
 };
+Info.play = openToastAndCheckForTitle;
 
 export const Success = Template.bind({});
 Success.args = {
@@ -34,6 +78,7 @@ Success.args = {
   message: "The operation was successful",
   type: "success",
 };
+Success.play = openToastAndCheckForTitle;
 
 export const Warning = Template.bind({});
 Warning.args = {
@@ -41,10 +86,12 @@ Warning.args = {
   message: "Are you sure you want to delete this?",
   type: "warning",
 };
+Warning.play = openToastAndCheckForTitle;
 
-export const Error = Template.bind({});
-Error.args = {
+export const ErrorToast = Template.bind({});
+ErrorToast.args = {
   title: "Error toast",
   message: "Operation has failed",
   type: "error",
 };
+ErrorToast.play = openToastAndCheckForTitle;

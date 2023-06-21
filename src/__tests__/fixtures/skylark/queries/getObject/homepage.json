@@ -2,30 +2,32 @@
   "data": {
     "getObject": {
       "__typename": "SkylarkSet",
-      "_config": { "primary_field": "title", "colour": "#000000" },
+      "_config": {
+        "primary_field": "title",
+        "colour": "#000000",
+        "display_name": "Setˢˡ"
+      },
       "_meta": {
         "available_languages": ["en-GB", "pt-PT"],
         "language_data": { "language": "en-GB", "version": 1 },
         "global_data": { "version": 2 }
       },
-      "uid": "01GX397W6N2N0WDJ5291DSJKQE",
+      "uid": "01GXZP42M2RNMRQQ0EV3DRHCMW",
       "slug": "media-reference-homepage",
       "external_id": "streamtv_homepage",
       "type": "PAGE",
       "title": "Homepage",
-      "synopsis_short": null,
-      "synopsis_medium": null,
-      "synopsis_long": null,
       "title_short": "Media Reference Homepage",
-      "title_medium": null,
-      "title_long": null,
+      "title_sort": null,
+      "synopsis": null,
+      "synopsis_short": null,
       "release_date": null,
       "description": null,
       "availability": {
         "next_token": null,
         "objects": [
           {
-            "uid": "01GX394VN31XAT1XBHD6SJV3C4",
+            "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
             "external_id": "recXNjJNyc6nKQIYa",
             "title": "Always - All devices, all customer types",
             "slug": "always-all-devices-all-customer-types",
@@ -39,35 +41,12 @@
         "next_token": null,
         "objects": [
           {
-            "uid": "01GX3952XBG7V93CQFH74PV4KJ",
-            "external_id": "recgkAKiElyJeSpvy",
-            "slug": null,
-            "title": "StreamTVLoadingScreen.png",
-            "description": null,
-            "type": "MAIN",
-            "url": "https://dl.airtable.com/.attachments/caec77d4d303b706499172d09d6389c7/b6497292/StreamTVLoadingScreen.png",
-            "external_url": "https://dl.airtable.com/.attachments/caec77d4d303b706499172d09d6389c7/b6497292/StreamTVLoadingScreen.png",
-            "upload_url": "https://obj-reg-storage-beta-2-base-eu-west-1-storage.s3.amazonaws.com/media/skylarkimages/dvi5bethk5hzfioyt352lkt7ma/01GX3952XBG7V93CQFH74PV4KJ/01GX3XYWXA25P7GZ0V0TKJYW7S?AWSAccessKeyId=ASIAQIVXPCFNV743ZZU7&Signature=js0BxUkJrJ7hYAJpNGpcgiaNzqw%3D&content-type=application%2Foctet&x-amz-meta-account_id=dvi5bethk5hzfioyt352lkt7ma&x-amz-meta-uid=01GX3952XBG7V93CQFH74PV4KJ&x-amz-security-token=IQoJb3JpZ2luX2VjEAAaCWV1LXdlc3QtMSJIMEYCIQCG1n30awfcS8SWhTSpyVsOeDXUkMbjutE2%2B5mc5yHioQIhALmx9OF9RS%2FA7bDiJAvQPWb%2BysekpmbqxEgs4mwKY49%2BKrYDCNn%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMMDE4NjM4Mzc3MzA3IgwSHOlzZgZtLWDstXMqigNSqAcJu9v%2BaACiA%2FlhXxdGVUd2F6MYKiV%2BIEqxVu%2FH5WdoHiQu8XKdtoGFYtd7s1d1zfBHW2KYm08et2hucy5Qvg6cwd0LZrP7tyRESpUTADR8Gw%2Fs7bv%2Far%2BBViCPlE6%2BC0To7NcBqzQsArp4AFgBG%2BHwyyAPoycNlYIp1onX%2BaXwNxprUtRz9sldjKN1zahiofaOHjXWufTjMs876vkNouBL5Gdo8AX79%2FFJNczYJmdRHjPlB0kM2APExIcwflYLgl5GBMo16pABt7fMSWF5x0Onvzn18hrnOTPX5rDdTHAyZY92XJpddl8bZN7ExSgPEatNiRzh5TxAye5gPKuXyXKcVe%2F3ZH2KOeu6dO1fzcZV40YPYkd7gZY0K1reS9SlQ98Q%2FQsNn%2BdyrZFy8yVWq6GKbonROMobuV7zBWzWpzw73lpSl6ZMl%2BGZ6qz1BaZDqtXoLn0fYPmDBWwfkq%2FqOho0%2BkzdZ936%2BL33xwgX5%2BLl4mdw8%2BetZxJPgzou4XZX4X0wHkaqY6KlMJrzq6EGOpwBSYgomFUmdzxmXKysKkq2Qn9tSZ0Vj8TnLa%2BS7VfJPoZN%2B%2F8JHMQCpxpV%2BMEm9BCIhLZE%2BjLBZMIF3kLMidYhtOUacac5TcsgEzJoudVVJbNedNl%2F1l4GRlxcKSe%2BJVt5BmK4VhzrPfMrG%2B8wZRyx3AQYL%2Ft5LYJcfyFO52s5uIkuIYI1%2BzoWzav7wQuvxzXfwboOLS391IXuKcRg&Expires=1680541639",
-            "download_from_url": null,
-            "file_name": null,
-            "content_type": null
-          },
-          {
-            "uid": "01GX3951RQGSR9B4BEY6KBRCNM",
-            "external_id": "recBiJpHfAYK1sPiI",
-            "slug": null,
-            "title": "HomepageAfterCarousel.png",
-            "description": null,
-            "type": "MAIN",
-            "url": "https://dl.airtable.com/.attachments/ec508b5317f19fee0c50ed9238d23588/02a5d627/HomepageAfterCarousel.png",
-            "external_url": "https://dl.airtable.com/.attachments/ec508b5317f19fee0c50ed9238d23588/02a5d627/HomepageAfterCarousel.png",
-            "upload_url": "https://obj-reg-storage-beta-2-base-eu-west-1-storage.s3.amazonaws.com/media/skylarkimages/dvi5bethk5hzfioyt352lkt7ma/01GX3951RQGSR9B4BEY6KBRCNM/01GX3XYWXAC6WNFEBJTC3YDC7K?AWSAccessKeyId=ASIAQIVXPCFNQPDGCH7O&Signature=me7TxRsIMjfU0jVV2ig62QjQKsg%3D&content-type=application%2Foctet&x-amz-meta-account_id=dvi5bethk5hzfioyt352lkt7ma&x-amz-meta-uid=01GX3951RQGSR9B4BEY6KBRCNM&x-amz-security-token=IQoJb3JpZ2luX2VjEAAaCWV1LXdlc3QtMSJIMEYCIQCmID9jXCZUtSvCEONZhFfdYsXAABsrsB2PV84dZed%2BYwIhAJew%2BW7QveK%2FivbwBPKGuVZtI%2BFUYuY%2Blqg9AMEHZqU1KrYDCNn%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMMDE4NjM4Mzc3MzA3IgzDclVkOnSi7va9qywqigO5bfrqvyV87uj7AFAc8hPKC9OOPuyxBdSCgv9nVy6ZBCYaD2t2%2F6HG1IO%2FNeNE7cUboDgHSGwVlEqhny%2BFNsYiW4GuYtHJRiVWI4TRD9S%2F3CTUzY1cyxGb9RNm2W4v1mFLWcE3Czi64Ljv%2FVpw8oeDzO%2FjlmtfWJGz9CwQhuQqyXK162o9UaW%2BUZjvI9HKsugv5E5Ngu2MRXPELOMBgdU8WjWJUOI0V96Ao6ZfvbCs%2FGWa4AuHPzbXriB6DMs3gMo5L05azcJp%2FAzhgDALMmlx%2Bo5F961DEjmIWDrzUsHjfOuY9SRXTmKJLhtCxA%2FZghDnY%2F6A6cnAlEAvJnHsSp84TX%2BsxQ3m%2BEiq8cB9T%2BJtGE5lQTlZRVHJfiwXtE8VjreL%2BpyHLvXE%2BMi4KgWgUnUSRx%2FuvdK8EAiGXQRY%2FTWZrizU9o1kH5Ug2Hh8S7hfaaR63%2FnQGIhObZRujv23JiO7Zx7u5EqtG%2Bgv41muNX2fPpJG0yRRYRekFLLWBkEG5%2FtdtRKyLJQagz7LMJrzq6EGOpwBlUV3IY4WbpeAxCb3Cl2q3xWWKNpwNk5OLp3N%2FNthCrZLqLTizgMWr%2FHcJxZ7J%2FiiFYqzFAEAP%2BE%2BwrU9PhxoB2cjnYuK9LzDEQALjTtc3V9HrwCXRcjkmSC8aMqVqi8KoOol8M5PUVS4FJpPnsMlaFljq9RN8Fe8INWXcEXlVzHdCAJG5%2F44cc5eu5DemvwZrSzNelL83fJI8fQU&Expires=1680541639",
-            "download_from_url": null,
-            "file_name": null,
-            "content_type": null
-          },
-          {
-            "uid": "01GX39517WXXGTDAT9PTD1QBCV",
+            "_meta": {
+              "available_languages": ["en-GB"],
+              "language_data": { "language": "en-GB", "version": 2 },
+              "global_data": { "version": 2 }
+            },
+            "uid": "01GXZNXH7S0NTPCACFEHEMX7NF",
             "external_id": "reckauU2wr4Jmo3BD",
             "slug": null,
             "title": "TopOfHomepage.png",
@@ -75,7 +54,45 @@
             "type": "MAIN",
             "url": "https://dl.airtable.com/.attachments/9d126fbf6638187bdf6fa5f7749ffeca/eb24fc2d/TopOfHomepage.png",
             "external_url": "https://dl.airtable.com/.attachments/9d126fbf6638187bdf6fa5f7749ffeca/eb24fc2d/TopOfHomepage.png",
-            "upload_url": "https://obj-reg-storage-beta-2-base-eu-west-1-storage.s3.amazonaws.com/media/skylarkimages/dvi5bethk5hzfioyt352lkt7ma/01GX39517WXXGTDAT9PTD1QBCV/01GX3XYWX9PECH19JQK1YPT0KT?AWSAccessKeyId=ASIAQIVXPCFN23TGLZN5&Signature=%2Fhd%2B8weQUEXF6T52oh%2F7Ynd4sPw%3D&content-type=application%2Foctet&x-amz-meta-account_id=dvi5bethk5hzfioyt352lkt7ma&x-amz-meta-uid=01GX39517WXXGTDAT9PTD1QBCV&x-amz-security-token=IQoJb3JpZ2luX2VjEAAaCWV1LXdlc3QtMSJHMEUCIH5AkP6zO0BNhxi4xtOoQjX3sbDimRyAQQJVifb4y2O1AiEAsfsjBSFjtKznqVRgCcGIM2fNLZwWmHnLAMNeRo%2FmwyYqtgMI2f%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgwwMTg2MzgzNzczMDciDKzENhvI%2BTCGZB8zaiqKAx5K0QB7rNe6BEAvUzIs55WJWl5lIi1CKvUGdp%2BTdFLt9bRnkxZnN57EoED%2FqhX%2BTW5BlHCKG6c9JkMeaWU7CU4hQuKQyIZG4Nb1WhWmokBGIzLuwgkMIHMQtCEyTyV5zBcsBYCtL3rsDqtlTFpLkMMhNpZyBSfoYXB776RROqQy2H%2FqfWn9jadyRQ0mr%2FOzCAOijWqviJn27emc6GTJg54U6aXe4nWNaTeTG95Z7Iq3XttbFUG5y6wwxrISuzESgpsx1SguR%2FXNlzJC32vnzUjnyw1mUIykoOsPuKE3DcYucbjkmv5XzvW57HymbLt4LEcWhn8R4bqqFPdB5cAbNMCb4I9o0u4e2zqQu5yV%2F1Ydpn%2FzhaAATQXyXWUkrzDOxY%2FUi5RUzrDte9%2BAKEsfY2ouGl8o4nrbdU1AtuqjHvEK2uKTR3yucSSmgyCup%2F%2B23RmhzkCfhxBTuEUETube0eF2moFqCBjwuvd%2FdupwjBvgRul1HoLu9qovneQbZiIjwigVFySBdb%2FXVUswmvOroQY6nQHeW%2BxIGxeRU6C1%2Bh2yQpKkF0BpL4wPibs7CjIdp5iSHCpyUoKCEPLxPWa9ZhIEN31IwFCK%2Fat6nntb0vTl5yxEm4wI%2BXZaJGYX2%2F6SW689egQMC1EL7vcUraVxj810MemwvsVjee6sEV1hgJnRfEmyPRVdaVXnV%2BIhdu%2Fft0EIp1fj01AzuwG6WKMV575aWr3fDHzKfPxwlagVdoln&Expires=1680541639",
+            "upload_url": "https://obj-reg-storage-sl-develop-eu-west-1-storage.s3.amazonaws.com/media/skylarkimages/vrdlihwc4ves3ihxxzrykjpvvm/01GXZNXH7S0NTPCACFEHEMX7NF/01GXZPP4169H543VQT7PWPETXH?AWSAccessKeyId=ASIA4YDX3EVVD2BOM24K&Signature=wxlJHo1hmRG%2BwOE3HgQumPvy3Sc%3D&content-type=application%2Foctet&x-amz-meta-account_id=vrdlihwc4ves3ihxxzrykjpvvm&x-amz-meta-uid=01GXZNXH7S0NTPCACFEHEMX7NF&x-amz-security-token=IQoJb3JpZ2luX2VjEAMaCWV1LXdlc3QtMSJGMEQCIGqjCXO0Ejkdoa45EieM4UGRcPsPTNqtbLvTxbYekyoKAiBcnDmYAJHLix7m6AqK8xhWfVtADzBEIPRI%2FvifV5QVqyq0Awjs%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDg3NjQyNDY2ODUyMiIMexT%2FLNSGMJQnbIwqKogDkUx3dqx0ZQugn6bb1CDVMDJnJOVjDnLWjmbKs29rshAhP%2BwMo7dK2IPpovcOnAINEcyQ9ov%2Fgvc3HQTz0CBf6PDDdwXWXtg0Mh6rk095CKexwbLynECEGNJpMFsTJtYGcsvI%2F4LyTA%2BxskZf9BGqIYLrxxhCM%2FzZi8ySsaTeprx57hhFA9nv5UrZI%2F1Jwp00UEyJkiEFVaVv1sMh3C%2BAxoYoeqxBpAI%2FutC%2BweaKTML79ESV4BA6Uy0EVH5xE%2BojG9pQSp7YHXgAFyIyIt3Tw%2F5Eg2k8%2FtrO5DkTRcYc9RDVBgmm8oJw1wTqSx5Mpal2KqwxQxiMarRZ8LVxdsbpthBTnxNDZy%2Ba%2FHU%2FcFjNB%2BNdBz9ANbhWJSMRcJ1dfUtVlJzDMwOETL7FmZ8DrwIEuRWWelq2mdbO2SZFFrA806Uve855i%2F1e5RnG1qTa0Eq3LOJ2KR3%2FIoMv6DYkA1f4bSe2CnK6xSBzlixeBuK5fXPkAPDI7ck3lEocOwmC%2BNiJOnfsS3TML4gwzt3koQY6ngHQF2W6gjj082uLT7%2B2aadFbEIBYQ%2BhGrLWkapVOAkG4kLpfyk35qVRtyJRDI9zPAMaV43P3GlIUGK1XePPZcXHSL4PdGC7nGo1wTb8v14OwfIqRglVfQJe9VNMkst6fhaLtuZQ%2FGA49%2FCdYAfeWBI3%2BD7X7MH1d%2B4GaPMljAkCyG32LEM39WLfv%2F3Lu%2FcNn6mHwCJJ%2BIPUOf9K2tvKPg%3D%3D&Expires=1681473535",
+            "download_from_url": null,
+            "file_name": null,
+            "content_type": null
+          },
+          {
+            "_meta": {
+              "available_languages": ["en-GB"],
+              "language_data": { "language": "en-GB", "version": 2 },
+              "global_data": { "version": 2 }
+            },
+            "uid": "01GXZNXNKEQ8AJJ59K272QXDWE",
+            "external_id": "recgkAKiElyJeSpvy",
+            "slug": null,
+            "title": "StreamTVLoadingScreen.png",
+            "description": null,
+            "type": "MAIN",
+            "url": "https://dl.airtable.com/.attachments/caec77d4d303b706499172d09d6389c7/b6497292/StreamTVLoadingScreen.png",
+            "external_url": "https://dl.airtable.com/.attachments/caec77d4d303b706499172d09d6389c7/b6497292/StreamTVLoadingScreen.png",
+            "upload_url": "https://obj-reg-storage-sl-develop-eu-west-1-storage.s3.amazonaws.com/media/skylarkimages/vrdlihwc4ves3ihxxzrykjpvvm/01GXZNXNKEQ8AJJ59K272QXDWE/01GXZPP3ZWRC6BTEVBMF42AYS7?AWSAccessKeyId=ASIA4YDX3EVVD2BOM24K&Signature=nwZhDLxmgNU85MyMW680zVlRuu4%3D&content-type=application%2Foctet&x-amz-meta-account_id=vrdlihwc4ves3ihxxzrykjpvvm&x-amz-meta-uid=01GXZNXNKEQ8AJJ59K272QXDWE&x-amz-security-token=IQoJb3JpZ2luX2VjEAMaCWV1LXdlc3QtMSJGMEQCIGqjCXO0Ejkdoa45EieM4UGRcPsPTNqtbLvTxbYekyoKAiBcnDmYAJHLix7m6AqK8xhWfVtADzBEIPRI%2FvifV5QVqyq0Awjs%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDg3NjQyNDY2ODUyMiIMexT%2FLNSGMJQnbIwqKogDkUx3dqx0ZQugn6bb1CDVMDJnJOVjDnLWjmbKs29rshAhP%2BwMo7dK2IPpovcOnAINEcyQ9ov%2Fgvc3HQTz0CBf6PDDdwXWXtg0Mh6rk095CKexwbLynECEGNJpMFsTJtYGcsvI%2F4LyTA%2BxskZf9BGqIYLrxxhCM%2FzZi8ySsaTeprx57hhFA9nv5UrZI%2F1Jwp00UEyJkiEFVaVv1sMh3C%2BAxoYoeqxBpAI%2FutC%2BweaKTML79ESV4BA6Uy0EVH5xE%2BojG9pQSp7YHXgAFyIyIt3Tw%2F5Eg2k8%2FtrO5DkTRcYc9RDVBgmm8oJw1wTqSx5Mpal2KqwxQxiMarRZ8LVxdsbpthBTnxNDZy%2Ba%2FHU%2FcFjNB%2BNdBz9ANbhWJSMRcJ1dfUtVlJzDMwOETL7FmZ8DrwIEuRWWelq2mdbO2SZFFrA806Uve855i%2F1e5RnG1qTa0Eq3LOJ2KR3%2FIoMv6DYkA1f4bSe2CnK6xSBzlixeBuK5fXPkAPDI7ck3lEocOwmC%2BNiJOnfsS3TML4gwzt3koQY6ngHQF2W6gjj082uLT7%2B2aadFbEIBYQ%2BhGrLWkapVOAkG4kLpfyk35qVRtyJRDI9zPAMaV43P3GlIUGK1XePPZcXHSL4PdGC7nGo1wTb8v14OwfIqRglVfQJe9VNMkst6fhaLtuZQ%2FGA49%2FCdYAfeWBI3%2BD7X7MH1d%2B4GaPMljAkCyG32LEM39WLfv%2F3Lu%2FcNn6mHwCJJ%2BIPUOf9K2tvKPg%3D%3D&Expires=1681473535",
+            "download_from_url": null,
+            "file_name": null,
+            "content_type": null
+          },
+          {
+            "_meta": {
+              "available_languages": ["en-GB"],
+              "language_data": { "language": "en-GB", "version": 2 },
+              "global_data": { "version": 2 }
+            },
+            "uid": "01GXZNXE4CKA7FBF61M7QEZAWJ",
+            "external_id": "recBiJpHfAYK1sPiI",
+            "slug": null,
+            "title": "HomepageAfterCarousel.png",
+            "description": null,
+            "type": "MAIN",
+            "url": "https://dl.airtable.com/.attachments/ec508b5317f19fee0c50ed9238d23588/02a5d627/HomepageAfterCarousel.png",
+            "external_url": "https://dl.airtable.com/.attachments/ec508b5317f19fee0c50ed9238d23588/02a5d627/HomepageAfterCarousel.png",
+            "upload_url": "https://obj-reg-storage-sl-develop-eu-west-1-storage.s3.amazonaws.com/media/skylarkimages/vrdlihwc4ves3ihxxzrykjpvvm/01GXZNXE4CKA7FBF61M7QEZAWJ/01GXZPP40C68TE6QBKPNMGSKQF?AWSAccessKeyId=ASIA4YDX3EVVD2BOM24K&Signature=FPwuhwaaVdRCNTfUv5hXlX0h0eI%3D&content-type=application%2Foctet&x-amz-meta-account_id=vrdlihwc4ves3ihxxzrykjpvvm&x-amz-meta-uid=01GXZNXE4CKA7FBF61M7QEZAWJ&x-amz-security-token=IQoJb3JpZ2luX2VjEAMaCWV1LXdlc3QtMSJGMEQCIGqjCXO0Ejkdoa45EieM4UGRcPsPTNqtbLvTxbYekyoKAiBcnDmYAJHLix7m6AqK8xhWfVtADzBEIPRI%2FvifV5QVqyq0Awjs%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDg3NjQyNDY2ODUyMiIMexT%2FLNSGMJQnbIwqKogDkUx3dqx0ZQugn6bb1CDVMDJnJOVjDnLWjmbKs29rshAhP%2BwMo7dK2IPpovcOnAINEcyQ9ov%2Fgvc3HQTz0CBf6PDDdwXWXtg0Mh6rk095CKexwbLynECEGNJpMFsTJtYGcsvI%2F4LyTA%2BxskZf9BGqIYLrxxhCM%2FzZi8ySsaTeprx57hhFA9nv5UrZI%2F1Jwp00UEyJkiEFVaVv1sMh3C%2BAxoYoeqxBpAI%2FutC%2BweaKTML79ESV4BA6Uy0EVH5xE%2BojG9pQSp7YHXgAFyIyIt3Tw%2F5Eg2k8%2FtrO5DkTRcYc9RDVBgmm8oJw1wTqSx5Mpal2KqwxQxiMarRZ8LVxdsbpthBTnxNDZy%2Ba%2FHU%2FcFjNB%2BNdBz9ANbhWJSMRcJ1dfUtVlJzDMwOETL7FmZ8DrwIEuRWWelq2mdbO2SZFFrA806Uve855i%2F1e5RnG1qTa0Eq3LOJ2KR3%2FIoMv6DYkA1f4bSe2CnK6xSBzlixeBuK5fXPkAPDI7ck3lEocOwmC%2BNiJOnfsS3TML4gwzt3koQY6ngHQF2W6gjj082uLT7%2B2aadFbEIBYQ%2BhGrLWkapVOAkG4kLpfyk35qVRtyJRDI9zPAMaV43P3GlIUGK1XePPZcXHSL4PdGC7nGo1wTb8v14OwfIqRglVfQJe9VNMkst6fhaLtuZQ%2FGA49%2FCdYAfeWBI3%2BD7X7MH1d%2B4GaPMljAkCyG32LEM39WLfv%2F3Lu%2FcNn6mHwCJJ%2BIPUOf9K2tvKPg%3D%3D&Expires=1681473535",
             "download_from_url": null,
             "file_name": null,
             "content_type": null
@@ -87,18 +104,25 @@
           {
             "object": {
               "__typename": "SkylarkSet",
-              "_config": { "primary_field": "title", "colour": "#000000" },
-              "uid": "01GX397J5BW6V7T96ZBNXP7ZNF",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#000000",
+                "display_name": "Setˢˡ"
+              },
+              "_meta": {
+                "available_languages": ["en-GB", "pt-PT"],
+                "language_data": { "language": "en-GB", "version": 1 },
+                "global_data": { "version": 2 }
+              },
+              "uid": "01GXZP3KGDESE0M305HM7PKTAE",
               "__SkylarkSet__slug": "media-reference-home-page-hero",
               "external_id": null,
               "__SkylarkSet__type": "SLIDER",
               "__SkylarkSet__title": "Home page hero",
-              "__SkylarkSet__synopsis_short": null,
-              "__SkylarkSet__synopsis_medium": null,
-              "__SkylarkSet__synopsis_long": null,
               "__SkylarkSet__title_short": null,
-              "__SkylarkSet__title_medium": null,
-              "__SkylarkSet__title_long": null,
+              "__SkylarkSet__title_sort": null,
+              "__SkylarkSet__synopsis": null,
+              "__SkylarkSet__synopsis_short": null,
               "__SkylarkSet__release_date": null,
               "__SkylarkSet__description": null
             },
@@ -107,18 +131,25 @@
           {
             "object": {
               "__typename": "SkylarkSet",
-              "_config": { "primary_field": "title", "colour": "#000000" },
-              "uid": "01GX397E7HTQ7RVZWCJ9HP6504",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#000000",
+                "display_name": "Setˢˡ"
+              },
+              "_meta": {
+                "available_languages": ["en-GB", "pt-PT"],
+                "language_data": { "language": "en-GB", "version": 1 },
+                "global_data": { "version": 2 }
+              },
+              "uid": "01GXZP3F8V13R6BQ3F6VC8KK7J",
               "__SkylarkSet__slug": "spotlight-movies",
               "external_id": "streamtv_spotlight_movies",
               "__SkylarkSet__type": "RAIL",
               "__SkylarkSet__title": "Spotlight movies",
-              "__SkylarkSet__synopsis_short": null,
-              "__SkylarkSet__synopsis_medium": null,
-              "__SkylarkSet__synopsis_long": null,
               "__SkylarkSet__title_short": "Latest releases",
-              "__SkylarkSet__title_medium": null,
-              "__SkylarkSet__title_long": null,
+              "__SkylarkSet__title_sort": null,
+              "__SkylarkSet__synopsis": null,
+              "__SkylarkSet__synopsis_short": null,
               "__SkylarkSet__release_date": null,
               "__SkylarkSet__description": null
             },
@@ -127,18 +158,25 @@
           {
             "object": {
               "__typename": "SkylarkSet",
-              "_config": { "primary_field": "title", "colour": "#000000" },
-              "uid": "01GX397CVC53809J0Y74ACP7C2",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#000000",
+                "display_name": "Setˢˡ"
+              },
+              "_meta": {
+                "available_languages": ["en-GB", "pt-PT"],
+                "language_data": { "language": "en-GB", "version": 1 },
+                "global_data": { "version": 2 }
+              },
+              "uid": "01GXZP3DNTEHF45AXZ4P3JBVEA",
               "__SkylarkSet__slug": "new-tv-releases",
               "external_id": "streamtv_new_tv_releases",
               "__SkylarkSet__type": "RAIL",
               "__SkylarkSet__title": "New TV Releases",
-              "__SkylarkSet__synopsis_short": null,
-              "__SkylarkSet__synopsis_medium": null,
-              "__SkylarkSet__synopsis_long": null,
               "__SkylarkSet__title_short": "Premium TV",
-              "__SkylarkSet__title_medium": null,
-              "__SkylarkSet__title_long": null,
+              "__SkylarkSet__title_sort": null,
+              "__SkylarkSet__synopsis": null,
+              "__SkylarkSet__synopsis_short": null,
               "__SkylarkSet__release_date": null,
               "__SkylarkSet__description": null
             },
@@ -147,17 +185,24 @@
           {
             "object": {
               "__typename": "Season",
-              "_config": { "primary_field": "title", "colour": "#9c27b0" },
-              "uid": "01GX396A0B7C4QMQ24J8Q09AEJ",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#9c27b0",
+                "display_name": "Season"
+              },
+              "_meta": {
+                "available_languages": ["en-GB", "pt-PT"],
+                "language_data": { "language": "en-GB", "version": 1 },
+                "global_data": { "version": 2 }
+              },
+              "uid": "01GXZP27HSF7NJYVTYHS7NDQ3P",
               "external_id": "recNWXkYGdriyverR",
               "__Season__slug": "got-s01",
-              "__Season__synopsis_long": null,
-              "__Season__synopsis_medium": "In the mythical continent of Westeros, several powerful families fight for control of the Seven Kingdoms. As conflict erupts in the kingdoms of men, an ancient enemy rises once again to threaten them all. Meanwhile, the last heirs of a recently usurped dynasty plot to take back their homeland from across the Narrow Sea.",
+              "__Season__synopsis": "In the mythical continent of Westeros, several powerful families fight for control of the Seven Kingdoms. As conflict erupts in the kingdoms of men, an ancient enemy rises once again to threaten them all. Meanwhile, the last heirs of a recently usurped dynasty plot to take back their homeland from across the Narrow Sea.",
               "__Season__synopsis_short": null,
-              "__Season__title": "GOT S01",
-              "__Season__title_long": null,
-              "__Season__title_medium": "Game of Thrones - Season 1",
-              "__Season__title_short": "GOT Season 1",
+              "__Season__title": "GOT Season 1",
+              "__Season__title_short": "GOT S01",
+              "__Season__title_sort": null,
               "__Season__number_of_episodes": null,
               "__Season__release_date": "2011-04-17",
               "__Season__season_number": 1
@@ -167,17 +212,24 @@
           {
             "object": {
               "__typename": "Season",
-              "_config": { "primary_field": "title", "colour": "#9c27b0" },
-              "uid": "01GX3967YDZD9B2QA2CABDP7PX",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#9c27b0",
+                "display_name": "Season"
+              },
+              "_meta": {
+                "available_languages": ["en-GB", "pt-PT"],
+                "language_data": { "language": "en-GB", "version": 1 },
+                "global_data": { "version": 2 }
+              },
+              "uid": "01GXZP256PY1A3FSH3WX85SDHP",
               "external_id": "rec6brp07XJZ5iFla",
               "__Season__slug": "got-s02",
-              "__Season__synopsis_long": null,
-              "__Season__synopsis_medium": null,
+              "__Season__synopsis": null,
               "__Season__synopsis_short": null,
-              "__Season__title": "GOT S02",
-              "__Season__title_long": null,
-              "__Season__title_medium": "Game of Thrones - Season 2",
-              "__Season__title_short": "GOT Season 2",
+              "__Season__title": "GOT Season 2",
+              "__Season__title_short": "GOT S02",
+              "__Season__title_sort": null,
               "__Season__number_of_episodes": null,
               "__Season__release_date": "2012-04-01",
               "__Season__season_number": 2
@@ -187,18 +239,25 @@
           {
             "object": {
               "__typename": "SkylarkSet",
-              "_config": { "primary_field": "title", "colour": "#000000" },
-              "uid": "01GX397TPYY0ABCJ8YTHZQQAKF",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#000000",
+                "display_name": "Setˢˡ"
+              },
+              "_meta": {
+                "available_languages": ["en-GB", "pt-PT"],
+                "language_data": { "language": "en-GB", "version": 1 },
+                "global_data": { "version": 2 }
+              },
+              "uid": "01GXZP40H07JY6YGNDEYHF5ENW",
               "__SkylarkSet__slug": "discover-collection",
               "external_id": null,
               "__SkylarkSet__type": "COLLECTION",
               "__SkylarkSet__title": "Discover Collection",
-              "__SkylarkSet__synopsis_short": null,
-              "__SkylarkSet__synopsis_medium": null,
-              "__SkylarkSet__synopsis_long": null,
               "__SkylarkSet__title_short": "Discover",
-              "__SkylarkSet__title_medium": null,
-              "__SkylarkSet__title_long": null,
+              "__SkylarkSet__title_sort": null,
+              "__SkylarkSet__synopsis": null,
+              "__SkylarkSet__synopsis_short": null,
               "__SkylarkSet__release_date": null,
               "__SkylarkSet__description": null
             },

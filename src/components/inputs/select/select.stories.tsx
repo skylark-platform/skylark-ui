@@ -17,7 +17,7 @@ const options = ["Episode", "Season", "Brand"].map((val) => ({
 const Template: ComponentStory<typeof Select> = (args) => {
   return (
     <div className={clsx(args.variant === "pill" ? "w-28" : "w-96")}>
-      <Select {...args} onChange={(selected) => console.log(selected)} />
+      <Select {...args} onChange={() => ""} />
     </div>
   );
 };
@@ -55,7 +55,13 @@ Rounded.args = {
 export const WithSearch = Template.bind({});
 WithSearch.args = {
   options,
-  withSearch: true,
+  searchable: true,
+};
+
+export const WithoutSearch = Template.bind({});
+WithoutSearch.args = {
+  options,
+  searchable: false,
 };
 
 export const Pill = Template.bind({});
@@ -64,11 +70,12 @@ Pill.args = {
   variant: "pill",
 };
 
-export const Open = Template.bind({});
-Open.args = {
+export const OpenWithoutSearch = Template.bind({});
+OpenWithoutSearch.args = {
   options,
+  searchable: false,
 };
-Open.play = async ({ canvasElement }) => {
+OpenWithoutSearch.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
   const selectButton = canvas.getByRole("button");
@@ -82,7 +89,7 @@ Open.play = async ({ canvasElement }) => {
 export const OpenWithSearch = Template.bind({});
 OpenWithSearch.args = {
   options,
-  withSearch: true,
+  searchable: true,
 };
 OpenWithSearch.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
@@ -98,7 +105,7 @@ OpenWithSearch.play = async ({ canvasElement }) => {
 export const OpenWithSearchNothingFound = Template.bind({});
 OpenWithSearchNothingFound.args = {
   options,
-  withSearch: true,
+  searchable: true,
 };
 OpenWithSearchNothingFound.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
@@ -112,7 +119,7 @@ OpenWithSearchNothingFound.play = async ({ canvasElement }) => {
 export const OpenWithSearchCustomValue = Template.bind({});
 OpenWithSearchCustomValue.args = {
   options,
-  withSearch: true,
+  searchable: true,
   allowCustomValue: true,
 };
 OpenWithSearchCustomValue.play = async ({ canvasElement }) => {
