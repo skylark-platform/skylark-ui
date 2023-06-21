@@ -55,6 +55,9 @@ export const createDeleteObjectMutation = (
     };
   }
 
+  const returnFields =
+    object.name === BuiltInSkylarkObjectType.Availability ? {} : { uid: true };
+
   const mutation = {
     mutation: {
       __name: `DELETE_${object.name}`,
@@ -70,7 +73,7 @@ export const createDeleteObjectMutation = (
           ...language.arg,
           ...common.args,
         },
-        uid: true,
+        ...returnFields,
       },
     },
   };
