@@ -178,7 +178,9 @@ export const PanelContent = ({
           data-testid="panel-content-items"
           className="flex-grow"
         >
-          {objects && objects?.length === 0 && <PanelEmptyDataText />}
+          {!isLoading && objects && objects?.length === 0 && (
+            <PanelEmptyDataText />
+          )}
           {objects.map((item, index) => {
             const { object, config, meta, position, isNewObject } = item;
 

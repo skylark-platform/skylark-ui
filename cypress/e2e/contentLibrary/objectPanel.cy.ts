@@ -386,6 +386,10 @@ describe("Content Library - Object Panel", () => {
           // Check back button returns to the original object
           cy.get('[aria-label="Click to go back"]').click();
           cy.get(`[data-cy=panel-for-${episodeObjectType}-${episodeUid}]`);
+
+          // Check forward button returns to the image object
+          cy.get('[aria-label="Click to go forward"]').click();
+          cy.get(`[data-cy=panel-for-SkylarkImage-${firstImageUid}]`);
         },
       );
     });
@@ -436,6 +440,12 @@ describe("Content Library - Object Panel", () => {
               cy.get('[aria-label="Click to go back"]').click();
               cy.get(
                 `[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`,
+              );
+
+              // Check forward button returns to the content object
+              cy.get('[aria-label="Click to go forward"]').click();
+              cy.get(
+                `[data-cy=panel-for-${firstSetContentItemObjectType}-${firstSetContentItemUid}]`,
               );
             });
         },
@@ -645,6 +655,12 @@ describe("Content Library - Object Panel", () => {
           // Check back button returns to the original object
           cy.get('[aria-label="Click to go back"]').click();
           cy.get(`[data-cy=panel-for-${objectType}-${objectUid}]`);
+
+          // Check forward button returns to the availability object
+          cy.get('[aria-label="Click to go forward"]').click();
+          cy.get(
+            `[data-cy=panel-for-Availability-${availabilityJson.data.getObjectAvailability.availability.objects[0].uid}]`,
+          );
         });
       });
     });

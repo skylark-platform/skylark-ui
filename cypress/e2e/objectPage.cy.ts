@@ -37,6 +37,11 @@ describe("Object Page", () => {
           fixture: "./skylark/queries/getObject/homepage.json",
         });
       }
+      if (hasOperationName(req, "GET_SkylarkSet_CONTENT")) {
+        req.reply({
+          fixture: "./skylark/queries/getObjectContent/homepage.json",
+        });
+      }
     });
   });
 
