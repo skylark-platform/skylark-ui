@@ -3,7 +3,6 @@ import {
   GraphQLRequest,
   GraphQLVariables,
   ResponseComposition,
-  ResponseResolver,
   graphql,
 } from "msw";
 

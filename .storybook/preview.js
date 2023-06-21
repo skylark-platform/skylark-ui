@@ -9,13 +9,7 @@ import { initialize as initializeMsw, mswDecorator } from "msw-storybook-addon";
 import PlausibleProvider from "next-plausible";
 import "react-toastify/dist/ReactToastify.min.css";
 
-import {
-  getObjectAvailabilityHandlers,
-  getObjectHandlers,
-} from "../src/__tests__/mocks/handlers/getObjectHandlers";
-import { introspectionHandlers } from "../src/__tests__/mocks/handlers/introspectionHandlers";
-import { searchHandlers } from "../src/__tests__/mocks/handlers/searchHandlers";
-import { updateObjectHandlers } from "../src/__tests__/mocks/handlers/updateObjectHandlers";
+import { handlers } from "../src/__tests__/mocks/handlers";
 import { UserProvider } from "../src/contexts/useUser";
 import "../src/styles/globals.css";
 
@@ -33,13 +27,7 @@ export const parameters = {
   },
   // Global MSW handlers
   msw: {
-    handlers: {
-      introspection: introspectionHandlers,
-      search: searchHandlers,
-      getObject: getObjectHandlers,
-      getObjectAvailability: getObjectAvailabilityHandlers,
-      updateObject: updateObjectHandlers,
-    },
+    handlers: handlers,
   },
 };
 
