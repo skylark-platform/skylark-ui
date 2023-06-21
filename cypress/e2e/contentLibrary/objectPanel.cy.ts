@@ -52,6 +52,11 @@ describe("Content Library - Object Panel", () => {
           fixture: "./skylark/queries/getObject/homepage.json",
         });
       }
+      if (hasOperationName(req, "GET_SkylarkSet_CONTENT")) {
+        req.reply({
+          fixture: "./skylark/queries/getObjectContent/homepage.json",
+        });
+      }
       if (hasOperationName(req, "GET_Movie")) {
         req.reply({
           fixture:
@@ -379,7 +384,7 @@ describe("Content Library - Object Panel", () => {
           cy.get(`[data-cy=panel-for-SkylarkImage-${firstImageUid}]`);
 
           // Check back button returns to the original object
-          cy.get('[aria-label="Open Previous Object"]').click();
+          cy.get('[aria-label="Click to go back"]').click();
           cy.get(`[data-cy=panel-for-${episodeObjectType}-${episodeUid}]`);
         },
       );
@@ -399,30 +404,40 @@ describe("Content Library - Object Panel", () => {
     it("navigates to the set content using the object button", () => {
       cy.fixture("./skylark/queries/getObject/homepage.json").then(
         (homepageJson) => {
-          const homepageUid = homepageJson.data.getObject.uid;
-          const homepageObjectType = homepageJson.data.getObject.__typename;
-          const firstSetContentItemUid =
-            homepageJson.data.getObject.content.objects[0].object.uid;
-          const firstSetContentItemObjectType =
-            homepageJson.data.getObject.content.objects[0].object.__typename;
+          return cy
+            .fixture("./skylark/queries/getObjectContent/homepage.json")
+            .then((homepageContentJson) => {
+              const homepageUid = homepageJson.data.getObject.uid;
+              const homepageObjectType = homepageJson.data.getObject.__typename;
+              const firstSetContentItemUid =
+                homepageContentJson.data.getObjectContent.content.objects[0]
+                  .object.uid;
+              const firstSetContentItemObjectType =
+                homepageContentJson.data.getObjectContent.content.objects[0]
+                  .object.__typename;
 
-          cy.get('input[name="search-query-input"]').type("Homepage");
-          cy.contains("Homepage").should("exist");
-          cy.openContentLibraryObjectPanelByText("Homepage");
+              cy.get('input[name="search-query-input"]').type("Homepage");
+              cy.contains("Homepage").should("exist");
+              cy.openContentLibraryObjectPanelByText("Homepage");
 
-          cy.contains("button", "Content").click();
-          cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
+              cy.contains("button", "Content").click();
+              cy.get(
+                `[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`,
+              );
 
-          cy.get('[aria-label="Open Object"]').first().click();
+              cy.get('[aria-label="Open Object"]').first().click();
 
-          // Only check the panel object type and uid so we don't have to mock the response
-          cy.get(
-            `[data-cy=panel-for-${firstSetContentItemObjectType}-${firstSetContentItemUid}]`,
-          );
+              // Only check the panel object type and uid so we don't have to mock the response
+              cy.get(
+                `[data-cy=panel-for-${firstSetContentItemObjectType}-${firstSetContentItemUid}]`,
+              );
 
-          // Check back button returns to the original object
-          cy.get('[aria-label="Open Previous Object"]').click();
-          cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
+              // Check back button returns to the original object
+              cy.get('[aria-label="Click to go back"]').click();
+              cy.get(
+                `[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`,
+              );
+            });
         },
       );
     });
@@ -433,6 +448,10 @@ describe("Content Library - Object Panel", () => {
       cy.openContentLibraryObjectPanelByText("Homepage");
 
       cy.contains("button", "Content").click();
+
+      cy.get("[data-testid=panel-content-items]").within(() => {
+        cy.contains("Home page hero");
+      });
 
       // Test switching to edit mode
       cy.contains("Editing").should("not.exist");
@@ -453,19 +472,19 @@ describe("Content Library - Object Panel", () => {
           "New TV Releases",
           "GOT Season 1",
           "GOT Season 2",
-          "Discover Collection",
+          "Discover",
         ]);
 
       cy.percySnapshot("Homepage - object panel - content (edit)");
 
       // Test deleting
-      cy.contains("Discover Collection")
+      cy.contains("Discover")
         .parent()
         .parent()
         .within(() => {
           cy.get("[data-testid=object-identifier-delete]").click();
         });
-      cy.contains("Discover Collection").should("not.exist");
+      cy.contains("Discover").should("not.exist");
 
       // Test reorder
       cy.get("[data-testid=panel-content-items] > li")
@@ -507,7 +526,7 @@ describe("Content Library - Object Panel", () => {
           "New TV Releases",
           "GOT Season 1",
           "GOT Season 2",
-          "Discover Collection",
+          "Discover",
         ]);
     });
 
@@ -518,11 +537,15 @@ describe("Content Library - Object Panel", () => {
 
       cy.contains("button", "Content").click();
 
+      cy.get("[data-testid=panel-content-items]").within(() => {
+        cy.contains("Home page hero");
+      });
+
       // Test switching to edit mode
       cy.contains("button", "Edit Content").should("not.be.disabled").click();
 
       // Delete
-      cy.contains("Discover Collection")
+      cy.contains("Discover")
         .parent()
         .parent()
         .within(() => {
@@ -620,7 +643,7 @@ describe("Content Library - Object Panel", () => {
           );
 
           // Check back button returns to the original object
-          cy.get('[aria-label="Open Previous Object"]').click();
+          cy.get('[aria-label="Click to go back"]').click();
           cy.get(`[data-cy=panel-for-${objectType}-${objectUid}]`);
         });
       });

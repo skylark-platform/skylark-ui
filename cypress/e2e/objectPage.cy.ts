@@ -72,27 +72,35 @@ describe("Object Page", () => {
     it("navigates to Content tab, opens an object and checks the URL has updated", () => {
       cy.fixture("./skylark/queries/getObject/homepage.json").then(
         (homepageJson) => {
-          const homepageUid = homepageJson.data.getObject.uid;
-          const homepageObjectType = homepageJson.data.getObject.__typename;
-          const firstSetContentItemUid =
-            homepageJson.data.getObject.content.objects[0].object.uid;
-          const firstSetContentItemObjectType =
-            homepageJson.data.getObject.content.objects[0].object.__typename;
+          return cy
+            .fixture("./skylark/queries/getObjectContent/homepage.json")
+            .then((homepageContentJson) => {
+              const homepageUid = homepageJson.data.getObject.uid;
+              const homepageObjectType = homepageJson.data.getObject.__typename;
+              const firstSetContentItemUid =
+                homepageContentJson.data.getObjectContent.content.objects[0]
+                  .object.uid;
+              const firstSetContentItemObjectType =
+                homepageContentJson.data.getObjectContent.content.objects[0]
+                  .object.__typename;
 
-          cy.contains("button", "Content").click();
-          cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
+              cy.contains("button", "Content").click();
+              cy.get(
+                `[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`,
+              );
 
-          cy.get('[aria-label="Open Object"]').first().click();
+              cy.get('[aria-label="Open Object"]').first().click();
 
-          // Only check the panel object type and uid so we don't have to mock the response
-          cy.get(
-            `[data-cy=panel-for-${firstSetContentItemObjectType}-${firstSetContentItemUid}]`,
-          );
+              // Only check the panel object type and uid so we don't have to mock the response
+              cy.get(
+                `[data-cy=panel-for-${firstSetContentItemObjectType}-${firstSetContentItemUid}]`,
+              );
 
-          cy.url().should(
-            "include",
-            `/object/${firstSetContentItemObjectType}/${firstSetContentItemUid}`,
-          );
+              cy.url().should(
+                "include",
+                `/object/${firstSetContentItemObjectType}/${firstSetContentItemUid}`,
+              );
+            });
         },
       );
     });
