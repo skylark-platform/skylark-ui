@@ -4,25 +4,31 @@ import { useEffect, useState } from "react";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
+import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
+import { Skeleton } from "src/components/skeleton";
+import { useGetObjectContent } from "src/hooks/useGetObjectContent";
 import {
   ParsedSkylarkObjectContentObject,
   AddedSkylarkObjectContentObject,
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
+import { hasProperty } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
-interface PanelContentProps {
+interface PanelContentProps extends SkylarkObjectIdentifier {
   isPage?: boolean;
-  objects: AddedSkylarkObjectContentObject[];
-  objectType: string;
-  onReorder: (objs: ParsedSkylarkObjectContentObject[]) => void;
+  objects: AddedSkylarkObjectContentObject[] | null;
+  setContentObjects: (contentObjects: {
+    original: ParsedSkylarkObjectContentObject[] | null;
+    updated: AddedSkylarkObjectContentObject[] | null;
+  }) => void;
   inEditMode?: boolean;
   showDropZone?: boolean;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
@@ -97,34 +103,64 @@ export const PanelContentItemOrderInput = ({
 
 export const PanelContent = ({
   isPage,
-  objects,
+  objects: updatedObjects,
   inEditMode,
   showDropZone,
-  onReorder,
+  objectType,
+  uid,
+  language,
+  setContentObjects,
   setPanelObject,
 }: PanelContentProps) => {
+  const { data, isLoading, hasNextPage } = useGetObjectContent(
+    objectType,
+    uid,
+    { language },
+  );
+
+  const objects = inEditMode ? updatedObjects : data;
+
+  useEffect(() => {
+    if (!inEditMode && data) {
+      setContentObjects({
+        original: data,
+        updated: data,
+      });
+    }
+  }, [data, inEditMode, setContentObjects]);
+
+  const onReorder = (updated: AddedSkylarkObjectContentObject[]) =>
+    setContentObjects({
+      original: data,
+      updated,
+    });
+
   const removeItem = (uid: string) => {
-    const filtered = objects.filter(({ object }) => uid !== object.uid);
-    onReorder(filtered);
+    if (objects) {
+      const filtered = objects.filter(({ object }) => uid !== object.uid);
+      onReorder(filtered);
+    }
   };
 
   const handleManualOrderChange = (
     currentIndex: number,
     updatedPosition: number,
   ) => {
-    const updatedIndex = updatedPosition - 1;
-    const realUpdatedIndex =
-      updatedIndex <= 0
-        ? 0
-        : updatedIndex >= objects.length
-        ? objects.length - 1
-        : updatedIndex;
-    const updatedObjects = [...objects];
+    if (objects) {
+      const updatedIndex = updatedPosition - 1;
+      const realUpdatedIndex =
+        updatedIndex <= 0
+          ? 0
+          : updatedIndex >= objects.length
+          ? objects.length - 1
+          : updatedIndex;
+      const updatedObjects = [...objects];
 
-    const objToMove = updatedObjects.splice(currentIndex, 1)[0];
-    updatedObjects.splice(realUpdatedIndex, 0, objToMove);
+      const objToMove = updatedObjects.splice(currentIndex, 1)[0];
+      updatedObjects.splice(realUpdatedIndex, 0, objToMove);
 
-    onReorder(updatedObjects);
+      onReorder(updatedObjects);
+    }
   };
 
   if (showDropZone) {
@@ -137,76 +173,89 @@ export const PanelContent = ({
       isPage={isPage}
     >
       <PanelSectionTitle text="Content" id="content-panel-title" />
-      <Reorder.Group
-        axis="y"
-        values={objects}
-        onReorder={onReorder}
-        data-testid="panel-content-items"
-        className="flex-grow"
-      >
-        {objects?.length === 0 && <PanelEmptyDataText />}
-        {objects.map((item, index) => {
-          const { object, config, meta, position, isNewObject } = item;
+      {objects && (
+        <Reorder.Group
+          axis="y"
+          values={objects}
+          onReorder={onReorder}
+          data-testid="panel-content-items"
+          className="flex-grow"
+        >
+          {!isLoading && objects && objects?.length === 0 && (
+            <PanelEmptyDataText />
+          )}
+          {objects.map((item, index) => {
+            const { object, config, meta, position } = item;
+            const isNewObject = hasProperty(item, "isNewObject");
 
-          return (
-            <Reorder.Item
-              key={`panel-content-item-${object.uid}`}
-              value={item}
-              data-testid={`panel-object-content-item-${index + 1}`}
-              data-cy={"panel-object-content-item"}
-              className={clsx(
-                "my-0 flex flex-col items-center justify-center",
-                inEditMode && "cursor-pointer",
-              )}
-              dragListener={inEditMode}
-            >
-              <ObjectIdentifierCard
-                object={
-                  {
-                    objectType: object.__typename,
-                    uid: object.uid,
-                    metadata: object,
-                    config,
-                    meta,
-                  } as ParsedSkylarkObject
-                }
-                onForwardClick={setPanelObject}
-                disableForwardClick={inEditMode}
-                disableDeleteClick={!inEditMode}
-                onDeleteClick={() => removeItem(object.uid)}
+            return (
+              <Reorder.Item
+                key={`panel-${uid}-content-item-${object.uid}`}
+                value={item}
+                data-testid={`panel-object-content-item-${index + 1}`}
+                data-cy={"panel-object-content-item"}
+                className={clsx(
+                  "my-0 flex flex-col items-center justify-center",
+                  inEditMode && "cursor-pointer",
+                )}
+                dragListener={inEditMode}
               >
-                <div className="flex">
-                  {inEditMode && (
-                    <span
-                      className={clsx(
-                        "flex h-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
-                        position === index + 1 || isNewObject
-                          ? "opacity-0"
-                          : "opacity-100",
-                      )}
-                    >
-                      {position}
-                    </span>
-                  )}
-                  <PanelContentItemOrderInput
-                    disabled={!inEditMode}
-                    position={index + 1}
-                    hasMoved={!!inEditMode && position !== index + 1}
-                    isNewObject={inEditMode && isNewObject}
-                    onBlur={(updatedPosition: number) =>
-                      handleManualOrderChange(index, updatedPosition)
-                    }
-                    maxPosition={objects.length}
-                  />
-                </div>
-              </ObjectIdentifierCard>
-              {index < objects.length - 1 && (
-                <PanelSeparator transparent={inEditMode} />
-              )}
-            </Reorder.Item>
-          );
-        })}
-      </Reorder.Group>
+                <ObjectIdentifierCard
+                  object={
+                    {
+                      objectType: object.__typename,
+                      uid: object.uid,
+                      metadata: object,
+                      config,
+                      meta,
+                    } as ParsedSkylarkObject
+                  }
+                  onForwardClick={setPanelObject}
+                  disableForwardClick={inEditMode}
+                  disableDeleteClick={!inEditMode}
+                  onDeleteClick={() => removeItem(object.uid)}
+                >
+                  <div className="flex">
+                    {inEditMode && (
+                      <span
+                        className={clsx(
+                          "flex h-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
+                          position === index + 1 || isNewObject
+                            ? "opacity-0"
+                            : "opacity-100",
+                        )}
+                      >
+                        {position}
+                      </span>
+                    )}
+                    <PanelContentItemOrderInput
+                      disabled={!inEditMode}
+                      position={index + 1}
+                      hasMoved={!!inEditMode && position !== index + 1}
+                      isNewObject={inEditMode && isNewObject}
+                      onBlur={(updatedPosition: number) =>
+                        handleManualOrderChange(index, updatedPosition)
+                      }
+                      maxPosition={objects.length}
+                    />
+                  </div>
+                </ObjectIdentifierCard>
+                {index < objects.length - 1 && (
+                  <PanelSeparator transparent={inEditMode} />
+                )}
+              </Reorder.Item>
+            );
+          })}
+        </Reorder.Group>
+      )}
+      <PanelLoading isLoading={isLoading || hasNextPage}>
+        {Array.from({ length: 6 }, (_, i) => (
+          <Skeleton
+            key={`content-skeleton-${i}`}
+            className="mb-2 h-11 w-full max-w-xl"
+          />
+        ))}
+      </PanelLoading>
       {inEditMode && !isPage && (
         <p className="w-full py-4 text-center text-sm text-manatee-600">
           {"Drag an object from the Content Library to add as content"}

@@ -13,10 +13,7 @@ import {
   SkylarkObjectIdentifier,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
-import {
-  formatObjectField,
-  hasProperty,
-} from "src/lib/utils";
+import { formatObjectField, hasProperty } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
@@ -93,16 +90,19 @@ export const PanelContentOf = ({
 
   const objectTypeGroupedData = groupContentOfByObjectType(data);
 
-  const sections = Object.keys(objectTypeGroupedData).length > 0 ? setObjectTypes?.map(({ objectType, config }) => {
-    return {
-      objectType,
-      id: `content-of-panel-${objectType}`,
-      title: formatObjectField(config?.display_name || objectType),
-      objectsGroupedByTypeField: groupObjectsByType(
-        objectTypeGroupedData[objectType],
-      )
-    };
-  }) : [];
+  const sections =
+    Object.keys(objectTypeGroupedData).length > 0
+      ? setObjectTypes?.map(({ objectType, config }) => {
+          return {
+            objectType,
+            id: `content-of-panel-${objectType}`,
+            title: formatObjectField(config?.display_name || objectType),
+            objectsGroupedByTypeField: groupObjectsByType(
+              objectTypeGroupedData[objectType],
+            ),
+          };
+        })
+      : [];
 
   return (
     <PanelSectionLayout
@@ -110,11 +110,12 @@ export const PanelContentOf = ({
       isPage={isPage}
       withStickyHeaders={sections && sections?.length > 0}
     >
-      {sections?.length === 0 && <div className="mt-2">
-                  <PanelEmptyDataText />
-                </div>}
+      {sections?.length === 0 && (
+        <div className="mt-2">
+          <PanelEmptyDataText />
+        </div>
+      )}
       {sections?.map(({ title, id, objectsGroupedByTypeField }) => {
-
         return (
           <div key={id} className="relative mb-8">
             <PanelSectionTitle text={title} id={id} sticky />

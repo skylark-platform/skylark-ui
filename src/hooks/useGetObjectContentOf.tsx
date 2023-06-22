@@ -44,7 +44,13 @@ export const useGetObjectContentOf = (
   const query = createGetObjectContentOfQuery(objectOperations, setObjects);
   const variables = { uid, nextToken: "", language };
 
-  const { data: contentOfResponse, isLoading, hasNextPage, fetchNextPage, ...rest } = useInfiniteQuery<
+  const {
+    data: contentOfResponse,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    ...rest
+  } = useInfiniteQuery<
     GQLSkylarkGetObjectContentOfResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentOfResponse>
   >({
@@ -80,7 +86,7 @@ export const useGetObjectContentOf = (
     return parsedObjects;
   }, [contentOfResponse?.pages, setObjects]);
 
-  if(hasNextPage) {
+  if (hasNextPage) {
     // Always fetch every page
     fetchNextPage();
   }

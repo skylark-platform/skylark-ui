@@ -233,13 +233,13 @@ export const CreateObjectModal = ({
                             labelVariant="form"
                             useDefaultLanguage
                             rounded={false}
-                            selected={(field.value as string | undefined)}
+                            selected={field.value as string | undefined}
                             onChange={(str: string) => {
-                              field.onChange(str)
+                              field.onChange(str);
                             }}
                             onValueClear={() => setValue("_language", "")}
                           />
-                        )
+                        );
                       }}
                     />
                     {isExistingTranslation && (

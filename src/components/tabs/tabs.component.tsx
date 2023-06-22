@@ -1,10 +1,9 @@
 import clsx from "clsx";
-import { Dispatch, SetStateAction } from "react";
 
 interface TabProps {
   tabs: string[];
   selectedTab: string;
-  onChange: Dispatch<SetStateAction<string>>;
+  onChange: (t: string) => void;
   disabled?: boolean;
 }
 

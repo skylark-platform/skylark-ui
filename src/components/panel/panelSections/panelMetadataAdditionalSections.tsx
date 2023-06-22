@@ -41,7 +41,7 @@ export const AdditionalImageMetadata = ({
     <div className="-mt-4">
       <PanelMetadataProperty
         property="Original Size"
-        value={size ? `${size?.h}x${size?.w}` : ""}
+        value={size ? `${size?.w}x${size?.h}` : ""}
       />
       <PanelMetadataProperty
         property="Rendered image"

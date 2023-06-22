@@ -25,10 +25,10 @@ import {
 } from "./useSkylarkObjectTypes";
 
 const getFieldsFromObjectType = (
-  objects: SkylarkObjectMeta[],
+  objects: SkylarkObjectMeta[] | null,
   objectType: string,
 ) => {
-  const object = objects.find(({ name }) => name === objectType);
+  const object = objects?.find(({ name }) => name === objectType);
   return object?.fields || [];
 };
 

@@ -48,9 +48,8 @@ export const useGetObject = (
     error: objectMetaError,
     isError: isObjectMetaError,
   } = useSkylarkObjectOperations(objectType);
-  const { objects: contentObjects } = useAllObjectsMeta(false);
 
-  const query = createGetObjectQuery(objectMeta, contentObjects, !!language);
+  const query = createGetObjectQuery(objectMeta, !!language);
   const variables = { uid, language };
 
   const { data, error, ...rest } = useQuery<

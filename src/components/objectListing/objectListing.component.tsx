@@ -76,13 +76,11 @@ export const ObjectList = ({
 
   // Sorts objects using the preference array above, any others are added to the end randomly
   const sortedHeaders = useMemo(() => {
-    const orderedKeysThatExist = properties.filter((property) =>
-      orderedKeys.includes(property),
-    );
+    const orderedKeysThatExist =
+      properties?.filter((property) => orderedKeys.includes(property)) || [];
 
-    const orderedProperties = properties.filter(
-      (property) => !orderedKeys.includes(property),
-    );
+    const orderedProperties =
+      properties?.filter((property) => !orderedKeys.includes(property)) || [];
 
     return [...hardcodedColumns, ...orderedKeysThatExist, ...orderedProperties];
   }, [properties]);

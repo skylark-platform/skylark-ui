@@ -18,7 +18,13 @@ type Action = { type: "addUsedLanguages"; value: string[] };
 type Dispatch = (action: Action) => void;
 
 const UserContext = createContext<
-  { state: State; account?: SkylarkAccount; isLoading: boolean; dispatch: Dispatch } | undefined
+  | {
+      state: State;
+      account?: SkylarkAccount;
+      isLoading: boolean;
+      dispatch: Dispatch;
+    }
+  | undefined
 >(undefined);
 
 const userReducer = (state: State, action: Action) => {
@@ -66,7 +72,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
-  console.log({ account})
+  console.log({ account });
 
   return (
     <UserContext.Provider value={{ state, account, isLoading, dispatch }}>

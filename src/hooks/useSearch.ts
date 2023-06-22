@@ -19,7 +19,7 @@ import { useAllObjectsMeta } from "./useSkylarkObjectTypes";
 
 export interface SearchFilters {
   objectTypes: string[] | null;
-  language: string | null;
+  language?: string | null;
 }
 
 export const SEARCH_PAGE_SIZE = 50;
@@ -74,7 +74,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
       ) || [];
 
     const parsedObjects = normalisedObjects.map((obj) => {
-      const objectMeta = searchableObjects.find(
+      const objectMeta = searchableObjects?.find(
         ({ name }) => name === obj.__typename,
       );
       return parseSkylarkObject(obj, objectMeta);

@@ -55,6 +55,9 @@ export const createDeleteObjectMutation = (
     };
   }
 
+  const returnFields =
+    object.name === BuiltInSkylarkObjectType.Availability ? {} : { uid: true };
+
   const mutation = {
     mutation: {
       __name: `DELETE_${object.name}`,
@@ -70,7 +73,7 @@ export const createDeleteObjectMutation = (
           ...language.arg,
           ...common.args,
         },
-        uid: true,
+        ...returnFields,
       },
     },
   };
@@ -181,15 +184,19 @@ export const createUpdateObjectMetadataMutation = (
 
 export const createUpdateObjectContentMutation = (
   object: SkylarkObjectMeta | null,
-  currentContentObjects: ParsedSkylarkObjectContentObject[],
-  updatedContentObjects: ParsedSkylarkObjectContentObject[],
-  contentTypesToRequest: SkylarkObjectMeta[],
+  originalContentObjects: ParsedSkylarkObjectContentObject[] | null,
+  updatedContentObjects: ParsedSkylarkObjectContentObject[] | null,
 ) => {
-  if (!object || !object.operations.update) {
+  if (
+    !object ||
+    !object.operations.update ||
+    !originalContentObjects ||
+    !updatedContentObjects
+  ) {
     return null;
   }
 
-  const currentContentObjectUids = currentContentObjects.map(
+  const originalContentObjectUids = originalContentObjects.map(
     ({ object }) => object.uid,
   );
   const updatedContentObjectUids = updatedContentObjects.map(
@@ -199,7 +206,7 @@ export const createUpdateObjectContentMutation = (
   const linkOrRepositionOperations = updatedContentObjects.map(
     ({ objectType, object: { uid } }, index): SetContentOperation => {
       const position = index + 1;
-      if (currentContentObjectUids.includes(uid)) {
+      if (originalContentObjectUids.includes(uid)) {
         return {
           operation: "reposition",
           objectType,
@@ -216,7 +223,7 @@ export const createUpdateObjectContentMutation = (
     },
   );
 
-  const deleteOperations = currentContentObjects
+  const deleteOperations = originalContentObjects
     .filter(({ object: { uid } }) => !updatedContentObjectUids.includes(uid))
     .map(({ objectType, object: { uid } }): SetContentOperation => {
       return {
@@ -276,7 +283,6 @@ export const createUpdateObjectContentMutation = (
           },
         },
         uid: true,
-        ...generateContentsToReturn(object, contentTypesToRequest),
       },
     },
   };

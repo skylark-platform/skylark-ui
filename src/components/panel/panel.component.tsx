@@ -1,10 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 import { Tabs } from "src/components/tabs/tabs.component";
 import { Toast } from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/useGetObject";
+import { prefetchGetObjectAvailability } from "src/hooks/useGetObjectAvailability";
+import { prefetchGetObjectContent } from "src/hooks/useGetObjectContent";
+import { PanelTab } from "src/hooks/usePanelObjectState";
+import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
 import { useUpdateAvailabilityObjectDimensions } from "src/hooks/useUpdateAvailabilityObjectDimensions";
 import { useUpdateObjectAvailability } from "src/hooks/useUpdateObjectAvailability";
 import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
@@ -45,19 +50,12 @@ interface PanelProps {
   object: SkylarkObjectIdentifier;
   isDraggedObject?: boolean;
   droppedObject?: ParsedSkylarkObject;
+  tab: PanelTab;
   clearDroppedObject?: () => void;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
+  setTab: (t: PanelTab) => void;
   navigateToPreviousPanelObject?: () => void;
-}
-
-enum PanelTab {
-  Metadata = "Metadata",
-  Imagery = "Imagery",
-  Availability = "Availability",
-  AvailabilityDimensions = "Dimensions",
-  Content = "Content",
-  ContentOf = "Appears In",
-  Relationships = "Relationships",
+  navigateToForwardPanelObject?: () => void;
 }
 
 const tabsWithEditMode = [
@@ -83,17 +81,27 @@ function parseSkylarkObjectContent(
 export const Panel = ({
   isPage,
   object,
+  tab: selectedTab,
   closePanel,
   isDraggedObject,
   droppedObject,
   clearDroppedObject,
-  setPanelObject,
+  setTab: setSelectedTab,
   navigateToPreviousPanelObject,
+  navigateToForwardPanelObject,
+  setPanelObject,
 }: PanelProps) => {
   const [inEditMode, setEditMode] = useState(false);
-  const [contentObjects, setContentObjects] = useState<
-    AddedSkylarkObjectContentObject[] | null
-  >(null);
+  const [isTabDataPrefetched, setIsTabDataPrefetched] = useState(false);
+
+  const [contentObjects, setContentObjects] = useState<{
+    original: ParsedSkylarkObjectContentObject[] | null;
+    updated: AddedSkylarkObjectContentObject[] | null;
+  }>({
+    original: null,
+    updated: null,
+  });
+
   const [
     { updatedRelationshipObjects, originalRelationshipObjects },
     setRelationshipObjects,
@@ -128,6 +136,9 @@ export const Panel = ({
     isObjectTypeNotFound,
     error,
   } = useGetObject(objectType, uid, { language });
+
+  const { objects: allObjectsMeta } = useAllObjectsMeta();
+
   const formParsedMetadata =
     (data &&
       objectMeta &&
@@ -140,7 +151,7 @@ export const Panel = ({
   });
   const { reset: resetMetadataForm } = metadataForm;
 
-  const tabs = useMemo(
+  const tabs: PanelTab[] = useMemo(
     () =>
       [
         PanelTab.Metadata,
@@ -151,23 +162,71 @@ export const Panel = ({
         objectMeta?.hasAvailability && PanelTab.Availability,
         objectMeta?.name === BuiltInSkylarkObjectType.Availability &&
           PanelTab.AvailabilityDimensions,
-      ].filter((tab) => !!tab) as string[],
-    [objectMeta?.hasAvailability, objectMeta?.hasContent, objectMeta?.hasContentOf, objectMeta?.hasRelationships, objectMeta?.images, objectMeta?.name],
+      ].filter((tab) => !!tab) as PanelTab[],
+    [
+      objectMeta?.hasAvailability,
+      objectMeta?.hasContent,
+      objectMeta?.hasContentOf,
+      objectMeta?.hasRelationships,
+      objectMeta?.images,
+      objectMeta?.name,
+    ],
   );
 
-  const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);
+  const resetPanelState = useCallback(
+    (resetIsTabDataPrefetched?: boolean) => {
+      setEditMode(false);
+      resetMetadataForm({});
+
+      if (resetIsTabDataPrefetched) {
+        setIsTabDataPrefetched(false);
+      }
+    },
+    [resetMetadataForm],
+  );
 
   useEffect(() => {
     // Resets any edited data when the panel object changes
-    setEditMode(false);
-    setSelectedTab(PanelTab.Metadata);
-    setContentObjects(null);
-    setRelationshipObjects({
-      originalRelationshipObjects: null,
-      updatedRelationshipObjects: null,
-    });
-    resetMetadataForm();
-  }, [uid, objectType, language, resetMetadataForm]);
+    resetPanelState(true);
+  }, [uid, objectType, language, resetPanelState]);
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (objectMeta && allObjectsMeta && !isTabDataPrefetched) {
+      const prefetchArgs = {
+        queryClient,
+        objectMeta,
+        objectType,
+        uid,
+        variables: {
+          uid,
+          language,
+          nextToken: "",
+        },
+      };
+
+      if (objectMeta.hasAvailability && selectedTab !== PanelTab.Availability) {
+        void prefetchGetObjectAvailability(prefetchArgs);
+      }
+      if (objectMeta.hasContent && selectedTab !== PanelTab.Content) {
+        void prefetchGetObjectContent({
+          ...prefetchArgs,
+          contentObjectsMeta: allObjectsMeta,
+        });
+      }
+      setIsTabDataPrefetched(true);
+    }
+  }, [
+    allObjectsMeta,
+    isTabDataPrefetched,
+    language,
+    objectMeta,
+    objectType,
+    queryClient,
+    selectedTab,
+    uid,
+  ]);
 
   useEffect(() => {
     // Switches into edit mode when the metadata form is changed
@@ -265,7 +324,7 @@ export const Panel = ({
             />,
           );
         } else if (
-          contentObjects?.find(
+          contentObjects.updated?.find(
             ({ object: { uid } }) => uid === droppedObject.uid,
           )
         ) {
@@ -290,16 +349,17 @@ export const Panel = ({
           );
         } else {
           const parseDroppedObject = parseSkylarkObjectContent(droppedObject);
-          setContentObjects([
-            ...(contentObjects || data?.content?.objects || []),
-            {
-              ...parseDroppedObject,
-              position:
-                (contentObjects?.length || data?.content?.objects.length || 0) +
-                1,
-              isNewObject: true,
-            },
-          ]);
+          setContentObjects({
+            ...contentObjects,
+            updated: [
+              ...(contentObjects.updated || []),
+              {
+                ...parseDroppedObject,
+                position: (contentObjects.updated?.length || 0) + 1,
+                isNewObject: true,
+              },
+            ],
+          });
         }
         setEditMode(true);
       } else if (selectedTab === PanelTab.Availability) {
@@ -382,11 +442,10 @@ export const Panel = ({
     useUpdateObjectContent({
       objectType,
       uid,
-      currentContentObjects: data?.content?.objects || [],
-      updatedContentObjects: contentObjects || [],
-      onSuccess: (updatedContent) => {
+      originalContentObjects: contentObjects.original,
+      updatedContentObjects: contentObjects.updated,
+      onSuccess: () => {
         setEditMode(false);
-        setContentObjects(updatedContent.objects);
       },
     });
 
@@ -414,11 +473,7 @@ export const Panel = ({
   });
 
   const saveActiveTabChanges = () => {
-    if (
-      selectedTab === PanelTab.Content &&
-      contentObjects &&
-      contentObjects !== data?.content?.objects
-    ) {
+    if (selectedTab === PanelTab.Content && contentObjects.updated) {
       updateObjectContent();
     } else if (
       selectedTab === PanelTab.Relationships &&
@@ -483,7 +538,10 @@ export const Panel = ({
         toggleEditMode={() => {
           if (inEditMode) {
             resetMetadataForm(formParsedMetadata || {});
-            setContentObjects(null);
+            setContentObjects({
+              original: contentObjects.original,
+              updated: contentObjects.original,
+            });
             setRelationshipObjects({
               updatedRelationshipObjects: originalRelationshipObjects,
               originalRelationshipObjects: originalRelationshipObjects,
@@ -500,13 +558,14 @@ export const Panel = ({
           setPanelObject({ uid, objectType, language: newLanguage })
         }
         navigateToPreviousPanelObject={navigateToPreviousPanelObject}
+        navigateToForwardPanelObject={navigateToForwardPanelObject}
       />
       <div className="border-b-2 border-gray-200">
         <div className="mx-auto w-full max-w-7xl flex-none overflow-x-auto">
           <Tabs
             tabs={tabs}
             selectedTab={selectedTab}
-            onChange={setSelectedTab}
+            onChange={(t) => setSelectedTab(t as PanelTab)}
             disabled={tabs.length === 0 || inEditMode || isError}
           />
         </div>
@@ -557,13 +616,15 @@ export const Panel = ({
               setAvailabilityObjects={setAvailabilityObjects}
             />
           )}
-          {selectedTab === PanelTab.Content && data?.content && (
+          {selectedTab === PanelTab.Content && (
             <PanelContent
               isPage={isPage}
-              objects={contentObjects || data?.content?.objects}
-              inEditMode={inEditMode}
               objectType={objectType}
-              onReorder={setContentObjects}
+              uid={uid}
+              language={language}
+              objects={contentObjects.updated}
+              inEditMode={inEditMode}
+              setContentObjects={setContentObjects}
               showDropZone={isDraggedObject}
               setPanelObject={setPanelObject}
             />

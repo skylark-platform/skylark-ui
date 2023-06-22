@@ -47,12 +47,16 @@ export const PanelRelationships = ({
   setPanelObject,
 }: PanelRelationshipsProps) => {
   const {
-    relationships,
+    relationships: serverRelationships,
     objectRelationships = [],
     isLoading,
     query,
     variables,
   } = useGetObjectRelationships(objectType, uid, { language });
+
+  const relationships = inEditMode
+    ? updatedRelationshipObjects
+    : serverRelationships;
 
   useEffect(() => {
     if (!inEditMode) {
@@ -64,19 +68,17 @@ export const PanelRelationships = ({
   }, [inEditMode, relationships, setRelationshipObjects]);
 
   const removeRelationshipObject = (removeUid: string, relationship: string) =>
-    updatedRelationshipObjects &&
+    relationships &&
     setRelationshipObjects({
-      updatedRelationshipObjects: updatedRelationshipObjects?.map(
-        (currentRelationship) => {
-          const { objects, relationshipName } = currentRelationship;
-          if (relationshipName === relationship) {
-            const filteredObjects = objects.filter(
-              (obj) => obj.uid !== removeUid,
-            );
-            return { ...currentRelationship, objects: filteredObjects };
-          } else return currentRelationship;
-        },
-      ),
+      updatedRelationshipObjects: relationships?.map((currentRelationship) => {
+        const { objects, relationshipName } = currentRelationship;
+        if (relationshipName === relationship) {
+          const filteredObjects = objects.filter(
+            (obj) => obj.uid !== removeUid,
+          );
+          return { ...currentRelationship, objects: filteredObjects };
+        } else return currentRelationship;
+      }),
       originalRelationshipObjects: relationships,
     });
 
@@ -87,7 +89,7 @@ export const PanelRelationships = ({
   const relationshipNames = objectRelationships.map(
     ({ relationshipName }) => relationshipName,
   );
-  const orderedRelationshipObjects = updatedRelationshipObjects?.sort(
+  const orderedRelationshipObjects = relationships?.sort(
     (a, b) =>
       relationshipNames.indexOf(a.relationshipName) -
       relationshipNames.indexOf(b.relationshipName),
@@ -106,7 +108,7 @@ export const PanelRelationships = ({
       isPage={isPage}
     >
       <div>
-        {updatedRelationshipObjects &&
+        {relationships &&
           orderedRelationshipObjects?.map((relationship) => {
             const { relationshipName, objects } = relationship;
             const isExpanded = expandedRelationships[relationshipName];
@@ -134,7 +136,7 @@ export const PanelRelationships = ({
 
                       const newUids =
                         relationshipObject &&
-                        relationships &&
+                        updatedRelationshipObjects &&
                         parseUpdatedRelationshipObjects(
                           relationshipObject,
                           updatedRelationshipObjects,

@@ -19,12 +19,13 @@ export const createGetObjectAvailabilityQueryName = (objectType: string) =>
   `GET_${objectType}_AVAILABILITY`;
 export const createGetObjectRelationshipsQueryName = (objectType: string) =>
   `GET_${objectType}_RELATIONSHIPS`;
+export const createGetObjectContentQueryName = (objectType: string) =>
+  `GET_${objectType}_CONTENT`;
 export const createGetObjectContentOfQueryName = (objectType: string) =>
   `GET_${objectType}_CONTENT_OF`;
 
 export const createGetObjectQuery = (
   object: SkylarkObjectMeta | null,
-  contentTypesToRequest: SkylarkObjectMeta[],
   addLanguageVariable?: boolean,
 ) => {
   if (!object || !object.operations.get) {
@@ -55,7 +56,6 @@ export const createGetObjectQuery = (
         ...common.fields,
         ...generateFieldsToReturn(object.fields, object.name),
         ...generateRelationshipsToReturn(object),
-        ...generateContentsToReturn(object, contentTypesToRequest),
       },
     },
   };
@@ -97,7 +97,7 @@ export const createGetObjectAvailabilityQuery = (
         },
         availability: {
           __args: {
-            limit: 5,
+            limit: 10,
             next_token: new VariableType("nextToken"),
           },
           next_token: true,
@@ -197,6 +197,47 @@ export const createGetObjectRelationshipsQuery = (
             },
           };
         }, {}),
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(query);
+
+  return gql(graphQLQuery);
+};
+
+export const createGetObjectContentQuery = (
+  object: SkylarkObjectMeta | null,
+  contentTypesToRequest: SkylarkObjectMeta[] | null,
+  addLanguageVariable?: boolean,
+) => {
+  if (!object || !object.operations.get || !contentTypesToRequest) {
+    return null;
+  }
+  const common = generateVariablesAndArgs(
+    object.name,
+    "Query",
+    addLanguageVariable,
+  );
+
+  const query = {
+    query: {
+      __name: createGetObjectContentQueryName(object.name),
+      __variables: {
+        ...common.variables,
+        uid: "String!",
+        nextToken: "String",
+      },
+      getObjectContent: {
+        __aliasFor: object.operations.get.name,
+        __args: {
+          ...common.args,
+          uid: new VariableType("uid"),
+        },
+        __typename: true,
+        ...generateContentsToReturn(object, contentTypesToRequest, {
+          nextTokenVariableName: "nextToken",
+        }),
       },
     },
   };

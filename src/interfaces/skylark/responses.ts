@@ -41,6 +41,13 @@ export interface GQLSkylarkGetObjectResponse {
 export interface GQLSkylarkGetObjectRelationshipsResponse {
   getObjectRelationships: SkylarkGraphQLObject;
 }
+
+export interface GQLSkylarkGetObjectContentResponse {
+  getObjectContent: {
+    content: SkylarkGraphQLObjectContent;
+  };
+}
+
 export interface GQLSkylarkGetObjectAvailabilityResponse {
   getObjectAvailability: {
     availability: {
@@ -77,7 +84,7 @@ export interface GQLSkylarkUpdateObjectMetadataResponse {
 
 export interface GQLSkylarkUpdateObjectContentResponse {
   updateObjectContent: {
-    content: SkylarkGraphQLObjectContent;
+    uid: string;
   };
 }
 
