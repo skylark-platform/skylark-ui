@@ -16,6 +16,7 @@ import {
 import { formatObjectField, hasProperty } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
+import { Skeleton } from "src/components/skeleton";
 
 interface PanelRelationshipsProps {
   isPage?: boolean;
@@ -110,7 +111,7 @@ export const PanelContentOf = ({
       isPage={isPage}
       withStickyHeaders={sections && sections?.length > 0}
     >
-      {sections?.length === 0 && (
+      {!isLoading && sections?.length === 0 && (
         <div className="mt-2">
           <PanelEmptyDataText />
         </div>
@@ -139,7 +140,23 @@ export const PanelContentOf = ({
           </div>
         );
       })}
-      <PanelLoading isLoading={isLoading} />
+      <PanelLoading isLoading={isLoading}>
+      {Array.from({ length: 2 }, (_, i) => (
+        <div key={`content-of-skeleton-${i}`} className="mb-8">
+        <Skeleton
+          className="mb-4 h-6 w-52"
+          />
+          <Skeleton
+          className="mb-2 h-5 w-36"
+          />
+        {Array.from({ length: 3 }, (_, j) => (
+          <Skeleton
+            key={`content-of-skeleton-inner-${i}-${j}`}
+            className="mb-2 h-11 w-full max-w-xl"
+          />
+        ))}
+        </div>))}
+      </PanelLoading>
       <DisplayGraphQLQuery
         label="Get Object Content Of"
         query={query}

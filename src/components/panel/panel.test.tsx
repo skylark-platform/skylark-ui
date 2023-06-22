@@ -35,7 +35,7 @@ import {
   formatReadableDate,
   getRelativeTimeFromDate,
 } from "src/lib/skylark/availability";
-import { formatObjectField } from "src/lib/utils";
+import { addCloudinaryOnTheFlyImageTransformation, formatObjectField } from "src/lib/utils";
 
 import { Panel } from "./panel.component";
 
@@ -645,7 +645,7 @@ describe("imagery view", () => {
 
     expect(image).toHaveAttribute(
       "src",
-      GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].url,
+      addCloudinaryOnTheFlyImageTransformation(GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].url, {}),
     );
   });
 

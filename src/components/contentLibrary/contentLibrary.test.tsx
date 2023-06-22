@@ -9,8 +9,11 @@ import {
   waitFor,
   within,
 } from "src/__tests__/utils/test-utils";
+import { server } from "src/__tests__/mocks/server";
 
 import { ContentLibrary } from "./contentLibrary.component";
+import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
+import { graphql } from "msw";
 
 beforeEach(() => {
   jest.useFakeTimers();
@@ -66,6 +69,21 @@ test("open metadata panel, check information and close", async () => {
 }, 10000);
 
 test("displays the number of search results", async () => {
+  server.use(
+    // Override GET_ACCOUNT query so the language sent is null
+    graphql.query("GET_ACCOUNT", (req, res, ctx) => {
+      const data: GQLSkylarkAccountResponse = {
+        getAccount: {
+          config: null,
+          account_id: "123",
+          skylark_version: "latest",
+        }
+
+      };
+      return res(ctx.data(data));
+    }),
+  );
+
   render(<ContentLibrary />);
 
   await waitFor(() =>

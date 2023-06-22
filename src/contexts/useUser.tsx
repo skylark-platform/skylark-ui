@@ -72,8 +72,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
-  console.log({ account });
-
   return (
     <UserContext.Provider value={{ state, account, isLoading, dispatch }}>
       {children}
