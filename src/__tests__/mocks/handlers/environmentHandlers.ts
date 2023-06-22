@@ -4,8 +4,6 @@ import GQLSkylarkGetAccountFixture from "src/__tests__/fixtures/skylark/queries/
 
 export const environmentHandlers = [
   graphql.query(`GET_ACCOUNT`, (req, res, ctx) => {
-    return res(
-      ctx.data(GQLSkylarkGetAccountFixture.data),
-    );
+    return res(ctx.data(GQLSkylarkGetAccountFixture.data));
   }),
 ];

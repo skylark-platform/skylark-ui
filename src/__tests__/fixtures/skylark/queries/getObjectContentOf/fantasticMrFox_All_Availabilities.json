@@ -1,44 +1,41 @@
 {
   "data": {
-      "getObjectContentOf": {
-          "content_of": {
-              "next_token": null,
-              "count": 1,
-              "objects": [
-                  {
-                      "__typename": "SkylarkSet",
-                      "_config": {
-                          "primary_field": "title",
-                          "colour": "#000000",
-                          "display_name": "Setˢˡ"
-                      },
-                      "_meta": {
-                          "available_languages": [
-                              "en-GB",
-                              "pt-PT"
-                          ],
-                          "language_data": {
-                              "language": "en-GB",
-                              "version": 1
-                          },
-                          "global_data": {
-                              "version": 2
-                          }
-                      },
-                      "uid": "01H3HDWN5NHRQMAQDY5793K7VG",
-                      "slug": "wes-anderson-movies-collection",
-                      "external_id": "streamtv_wes_anderson_movies",
-                      "type": "COLLECTION",
-                      "title": "Wes Anderson Movies Collection",
-                      "title_short": "Wes Anderson",
-                      "title_sort": null,
-                      "synopsis": "Wesley Wales Anderson is an American filmmaker. His films are known for their eccentricity and unique visual and narrative styles. They often contain themes of grief, loss of innocence, and dysfunctional families.",
-                      "synopsis_short": null,
-                      "release_date": null,
-                      "description": null
-                  }
-              ]
+    "getObjectContentOf": {
+      "content_of": {
+        "next_token": null,
+        "count": 1,
+        "objects": [
+          {
+            "__typename": "SkylarkSet",
+            "_config": {
+              "primary_field": "title",
+              "colour": "#000000",
+              "display_name": "Setˢˡ"
+            },
+            "_meta": {
+              "available_languages": ["en-GB", "pt-PT"],
+              "language_data": {
+                "language": "en-GB",
+                "version": 1
+              },
+              "global_data": {
+                "version": 2
+              }
+            },
+            "uid": "01H3HDWN5NHRQMAQDY5793K7VG",
+            "slug": "wes-anderson-movies-collection",
+            "external_id": "streamtv_wes_anderson_movies",
+            "type": "COLLECTION",
+            "title": "Wes Anderson Movies Collection",
+            "title_short": "Wes Anderson",
+            "title_sort": null,
+            "synopsis": "Wesley Wales Anderson is an American filmmaker. His films are known for their eccentricity and unique visual and narrative styles. They often contain themes of grief, loss of innocence, and dysfunctional families.",
+            "synopsis_short": null,
+            "release_date": null,
+            "description": null
           }
+        ]
       }
+    }
   }
 }

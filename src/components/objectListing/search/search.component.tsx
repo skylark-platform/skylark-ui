@@ -74,6 +74,10 @@ export const Search = ({
     onFilterChange(filters, columnVisibility);
   };
 
+  const onLanguageChange = (language: string | null) => {
+    onFilterChange({ ...activeFilters, language }, visibleColumns);
+  }
+
   return (
     <div
       className={clsx("flex w-full flex-col md:flex-row", className)}
@@ -121,12 +125,10 @@ export const Search = ({
           name="object-listing-language-select"
           className="w-full md:w-36"
           useDefaultLanguage
-          onChange={(language) =>
-            onFilterChange({ ...activeFilters, language }, visibleColumns)
-          }
+          onChange={onLanguageChange}
           selected={activeFilters.language}
           onValueClear={() =>
-            onFilterChange({ ...activeFilters, language: null }, visibleColumns)
+            onLanguageChange(null)
           }
         />
       </div>

@@ -6,6 +6,7 @@ import {
   PanelFieldTitle,
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
+import { Skeleton } from "src/components/skeleton";
 import { useGetObjectContentOf } from "src/hooks/useGetObjectContentOf";
 import { useSkylarkSetObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import {
@@ -16,7 +17,6 @@ import {
 import { formatObjectField, hasProperty } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
-import { Skeleton } from "src/components/skeleton";
 
 interface PanelRelationshipsProps {
   isPage?: boolean;
@@ -141,21 +141,18 @@ export const PanelContentOf = ({
         );
       })}
       <PanelLoading isLoading={isLoading}>
-      {Array.from({ length: 2 }, (_, i) => (
-        <div key={`content-of-skeleton-${i}`} className="mb-8">
-        <Skeleton
-          className="mb-4 h-6 w-52"
-          />
-          <Skeleton
-          className="mb-2 h-5 w-36"
-          />
-        {Array.from({ length: 3 }, (_, j) => (
-          <Skeleton
-            key={`content-of-skeleton-inner-${i}-${j}`}
-            className="mb-2 h-11 w-full max-w-xl"
-          />
+        {Array.from({ length: 2 }, (_, i) => (
+          <div key={`content-of-skeleton-${i}`} className="mb-8">
+            <Skeleton className="mb-4 h-6 w-52" />
+            <Skeleton className="mb-2 h-5 w-36" />
+            {Array.from({ length: 3 }, (_, j) => (
+              <Skeleton
+                key={`content-of-skeleton-inner-${i}-${j}`}
+                className="mb-2 h-11 w-full max-w-xl"
+              />
+            ))}
+          </div>
         ))}
-        </div>))}
       </PanelLoading>
       <DisplayGraphQLQuery
         label="Get Object Content Of"
