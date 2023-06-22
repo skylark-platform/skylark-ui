@@ -17,7 +17,13 @@ export default {
 };
 
 const Template: ComponentStory<typeof Panel> = (args) => {
-  return <Panel {...args} closePanel={() => alert("Close clicked")} />;
+  return (
+    <Panel
+      {...args}
+      closePanel={() => alert("Close clicked")}
+      setPanelObject={() => ""}
+    />
+  );
 };
 
 export const Default = Template.bind({});
