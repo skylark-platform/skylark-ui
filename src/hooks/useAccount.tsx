@@ -26,7 +26,7 @@ export const useAccount = () => {
     return {
       accountId: data?.getAccount.account_id,
       skylarkVersion: data?.getAccount.skylark_version,
-      defaultLanguage: data?.getAccount.config?.defaultLanguage,
+      defaultLanguage: data?.getAccount.config?.default_language,
     };
   }, [data]);
 

@@ -365,6 +365,11 @@ export const getObjectOperations = (
     getObjectInterface,
   );
 
+  const hasContentOf = objectHasRelationshipFromInterface(
+    SkylarkSystemField.ContentOf,
+    getObjectInterface,
+  );
+
   // TODO when Beta 1 environments are turned off, remove the BetaSkylarkImageListing check
   const imageRelationships =
     objectRelationshipFieldsFromGraphQLType(
@@ -439,6 +444,7 @@ export const getObjectOperations = (
     relationships,
     hasRelationships,
     hasContent,
+    hasContentOf,
     hasAvailability,
     isTranslatable: objectType !== BuiltInSkylarkObjectType.Availability,
   };

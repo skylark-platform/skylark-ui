@@ -50,9 +50,7 @@ export const useSkylarkObjectTypes = (
   };
 };
 
-export const useSkylarkObjectTypesWithConfig = () => {
-  const { objectTypes } = useSkylarkObjectTypes(true);
-
+const useObjectTypesConfig = (objectTypes?: string[]) => {
   const query = createGetAllObjectsConfigQuery(objectTypes);
 
   const { data, ...rest } = useQuery<GQLSkylarkObjectTypesWithConfig>({
@@ -96,6 +94,29 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
   }
 };
 
+export const useSkylarkObjectTypesWithConfig = () => {
+  const { objectTypes } = useSkylarkObjectTypes(true);
+  return useObjectTypesConfig(objectTypes);
+};
+
+export const useSkylarkSetObjectTypes = () => {
+  const { data, ...rest } = useSkylarkSchemaInterfaceType("Set");
+
+  const setObjectTypes = data
+    ? data?.possibleTypes.map(({ name }) => name) || []
+    : undefined;
+
+  return {
+    setObjectTypes,
+    ...rest,
+  };
+};
+
+export const useSkylarkSetObjectTypesWithConfig = () => {
+  const { setObjectTypes } = useSkylarkSetObjectTypes();
+  return useObjectTypesConfig(setObjectTypes);
+};
+
 export const useAllObjectsMeta = (searchable: boolean) => {
   const { data: schemaResponse, ...rest } = useSkylarkSchemaIntrospection();
 
@@ -119,6 +140,34 @@ export const useAllObjectsMeta = (searchable: boolean) => {
 
   return {
     objects,
+    allFieldNames,
+    ...rest,
+  };
+};
+
+export const useAllSetObjectsMeta = () => {
+  const { data: schemaResponse, ...rest } = useSkylarkSchemaIntrospection();
+
+  const { setObjectTypes } = useSkylarkSetObjectTypes();
+
+  const { setObjects, allFieldNames } = useMemo(() => {
+    const setObjects =
+      schemaResponse && setObjectTypes
+        ? getAllObjectsMeta(schemaResponse, setObjectTypes)
+        : [];
+    const allFieldNames = setObjects
+      .flatMap(({ fields }) => fields)
+      .map(({ name }) => name)
+      .filter((name, index, self) => self.indexOf(name) === index);
+
+    return {
+      setObjects,
+      allFieldNames,
+    };
+  }, [setObjectTypes, schemaResponse]);
+
+  return {
+    setObjects,
     allFieldNames,
     ...rest,
   };

@@ -116,10 +116,11 @@ export const Search = ({
         <LanguageSelect
           variant="primary"
           className="w-full md:w-36"
+          useDefaultLanguage
           onChange={(language) =>
             onFilterChange({ ...activeFilters, language }, visibleColumns)
           }
-          selected={activeFilters.language || ""}
+          selected={activeFilters.language}
           onValueClear={() =>
             onFilterChange({ ...activeFilters, language: null }, visibleColumns)
           }

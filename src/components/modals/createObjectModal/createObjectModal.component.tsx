@@ -223,19 +223,24 @@ export const CreateObjectModal = ({
                     <Controller
                       name="_language"
                       control={control}
-                      render={({ field }) => (
-                        <LanguageSelect
-                          name="_language"
-                          className="w-full"
-                          variant="primary"
-                          label="Object Language"
-                          labelVariant="form"
-                          rounded={false}
-                          selected={(field.value as string) || ""}
-                          onChange={field.onChange}
-                          onValueClear={() => setValue("_language", "")}
-                        />
-                      )}
+                      render={({ field }) => {
+                        return (
+                          <LanguageSelect
+                            name="_language"
+                            className="w-full"
+                            variant="primary"
+                            label="Object Language"
+                            labelVariant="form"
+                            useDefaultLanguage
+                            rounded={false}
+                            selected={(field.value as string | undefined)}
+                            onChange={(str: string) => {
+                              field.onChange(str)
+                            }}
+                            onValueClear={() => setValue("_language", "")}
+                          />
+                        )
+                      }}
                     />
                     {isExistingTranslation && (
                       <p className="-mb-4 mt-2 text-error">{`The language "${values._language}" is an existing translation.`}</p>

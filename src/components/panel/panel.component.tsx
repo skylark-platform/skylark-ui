@@ -36,6 +36,7 @@ import {
 } from "./panelSections";
 import { PanelAvailabilityDimensions } from "./panelSections/panelAvailabilityDimensions.component";
 import { PanelContent } from "./panelSections/panelContent.component";
+import { PanelContentOf } from "./panelSections/panelContentOf.component";
 import { PanelRelationships } from "./panelSections/panelRelationships.component";
 
 interface PanelProps {
@@ -55,6 +56,7 @@ enum PanelTab {
   Availability = "Availability",
   AvailabilityDimensions = "Dimensions",
   Content = "Content",
+  ContentOf = "Appears In",
   Relationships = "Relationships",
 }
 
@@ -143,6 +145,7 @@ export const Panel = ({
       [
         PanelTab.Metadata,
         objectMeta?.hasContent && PanelTab.Content,
+        objectMeta?.hasContentOf && PanelTab.ContentOf,
         objectMeta?.hasRelationships && PanelTab.Relationships,
         objectMeta?.images && PanelTab.Imagery,
         objectMeta?.hasAvailability && PanelTab.Availability,
@@ -152,6 +155,7 @@ export const Panel = ({
     [
       objectMeta?.hasAvailability,
       objectMeta?.hasContent,
+      objectMeta?.hasContentOf && PanelTab.ContentOf,
       objectMeta?.hasRelationships,
       objectMeta?.images,
       objectMeta?.name,
@@ -581,6 +585,16 @@ export const Panel = ({
               inEditMode={inEditMode}
               language={language}
               showDropZone={isDraggedObject}
+              setPanelObject={setPanelObject}
+            />
+          )}
+          {selectedTab === PanelTab.ContentOf && (
+            <PanelContentOf
+              isPage={isPage}
+              objectType={objectType}
+              uid={uid}
+              inEditMode={inEditMode}
+              language={language}
               setPanelObject={setPanelObject}
             />
           )}
