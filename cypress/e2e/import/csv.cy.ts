@@ -137,18 +137,21 @@ describe("Import/CSV", () => {
       cy.on("window:before:load", (win) => {
         win.WebSocket = WebSocket;
         mockGraphQlSocket.on("connection", (socket) => {
-          socket.on("message", (data: string) => {
-            const { id } = JSON.parse(data);
-            if (id === "1") {
-              socket.send(
-                JSON.stringify({
-                  type: "data",
-                  id: "1",
-                  payload,
-                }),
-              );
-            }
-          });
+          socket.on(
+            "message",
+            (message: string | ArrayBuffer | Blob | ArrayBufferView) => {
+              const { id } = JSON.parse(message as string);
+              if (id === "1") {
+                socket.send(
+                  JSON.stringify({
+                    type: "data",
+                    id: "1",
+                    payload,
+                  }),
+                );
+              }
+            },
+          );
         });
       });
 

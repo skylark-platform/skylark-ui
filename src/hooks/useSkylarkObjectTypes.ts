@@ -96,18 +96,19 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
   }
 };
 
-export const useAllObjectsMeta = (searchable: boolean) => {
+export const useAllObjectsMeta = (searchableOnly?: boolean) => {
   const { data: schemaResponse, ...rest } = useSkylarkSchemaIntrospection();
 
-  const { objectTypes } = useSkylarkObjectTypes(searchable);
+  const { objectTypes } = useSkylarkObjectTypes(!!searchableOnly);
 
   const { objects, allFieldNames } = useMemo(() => {
     const objects =
       schemaResponse && objectTypes
         ? getAllObjectsMeta(schemaResponse, objectTypes)
-        : [];
+        : null;
+
     const allFieldNames = objects
-      .flatMap(({ fields }) => fields)
+      ?.flatMap(({ fields }) => fields)
       .map(({ name }) => name)
       .filter((name, index, self) => self.indexOf(name) === index);
 

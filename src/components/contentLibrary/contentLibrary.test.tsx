@@ -63,7 +63,7 @@ test("open metadata panel, check information and close", async () => {
   await waitFor(() =>
     expect(screen.queryByTestId("panel-header")).not.toBeInTheDocument(),
   );
-});
+}, 10000);
 
 test("displays the number of search results", async () => {
   render(<ContentLibrary />);

@@ -186,6 +186,9 @@ export const generateRelationshipsToReturn = (
 export const generateContentsToReturn = (
   object: SkylarkObjectMeta | null,
   objectsToRequest: SkylarkObjectMeta[],
+  opts: {
+    nextTokenVariableName: string;
+  },
 ) => {
   if (!object || !object.hasContent || objectsToRequest.length === 0) {
     return {};
@@ -195,8 +198,10 @@ export const generateContentsToReturn = (
     content: {
       __args: {
         order: new EnumType("ASC"),
-        limit: 50,
+        limit: 10,
+        next_token: new VariableType(opts.nextTokenVariableName),
       },
+      next_token: true,
       objects: {
         object: {
           __on: objectsToRequest.map((object) => ({

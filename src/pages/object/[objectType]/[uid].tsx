@@ -1,14 +1,18 @@
+import Head from "next/head";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { Panel } from "src/components/panel";
+import { PanelTab } from "src/hooks/usePanelObjectState";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 
 const Object = () => {
   const router = useRouter();
   const { objectType, uid, language } = router.query;
 
-  const queryObject = useMemo(
+  const [tab, setTab] = useState<PanelTab>(PanelTab.Metadata);
+
+  const object = useMemo(
     () =>
       objectType && uid
         ? {
@@ -29,18 +33,28 @@ const Object = () => {
       pathname: "/object/[objectType]/[uid]",
       query: { uid, objectType, language },
     });
+    setTab(PanelTab.Metadata);
   };
 
   return (
     <div className="pt-nav flex w-full">
-      {queryObject && (
+      <Head>
+        <title>{`Skylark | ${objectType} ${uid} (${language})`}</title>
+      </Head>
+      {object && (
         <div
           className="relative mx-auto w-full"
           style={{
             maxHeight: `calc(100vh - 4rem)`,
           }}
         >
-          <Panel isPage object={queryObject} setPanelObject={setPanelObject} />
+          <Panel
+            isPage
+            object={object}
+            tab={tab}
+            setPanelObject={setPanelObject}
+            setTab={setTab}
+          />
         </div>
       )}
     </div>

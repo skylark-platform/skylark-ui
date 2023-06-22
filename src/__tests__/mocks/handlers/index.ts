@@ -5,6 +5,7 @@ import { flatfileHandlers } from "./flatfile";
 import {
   getObjectAvailabilityDimensionHandlers,
   getObjectAvailabilityHandlers,
+  getObjectContentHandlers,
   getObjectHandlers,
   getObjectRelationshipsHandlers,
   getObjectsConfigHandlers,
@@ -20,6 +21,7 @@ export const handlers = [
   ...getObjectAvailabilityHandlers,
   ...getObjectAvailabilityDimensionHandlers,
   ...getObjectRelationshipsHandlers,
+  ...getObjectContentHandlers,
   ...createObjectHandlers,
   ...updateObjectHandlers,
   ...deleteObjectHandlers,

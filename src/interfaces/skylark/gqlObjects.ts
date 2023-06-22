@@ -79,6 +79,7 @@ export interface SkylarkGraphQLObjectImage {
 }
 
 export interface SkylarkGraphQLObjectContent {
+  next_token?: NextToken;
   objects: {
     object: SkylarkGraphQLObject;
     position: number;

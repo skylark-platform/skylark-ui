@@ -11,34 +11,29 @@ import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynamicMutations";
 import { parseObjectContent } from "src/lib/skylark/parsers";
 
-import { createGetObjectKeyPrefix } from "./useGetObject";
-import {
-  useAllObjectsMeta,
-  useSkylarkObjectOperations,
-} from "./useSkylarkObjectTypes";
+import { createGetObjectContentKeyPrefix } from "./useGetObjectContent";
+import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const useUpdateObjectContent = ({
   objectType,
   uid,
-  currentContentObjects,
+  originalContentObjects,
   updatedContentObjects,
   onSuccess,
 }: {
   objectType: SkylarkObjectType;
   uid: string;
-  currentContentObjects: ParsedSkylarkObjectContentObject[];
-  updatedContentObjects: ParsedSkylarkObjectContentObject[];
-  onSuccess: (updatedContent: ParsedSkylarkObjectContent) => void;
+  originalContentObjects: ParsedSkylarkObjectContentObject[] | null;
+  updatedContentObjects: ParsedSkylarkObjectContentObject[] | null;
+  onSuccess: () => void;
 }) => {
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
-  const { objects } = useAllObjectsMeta(false);
 
   const updateObjectContentMutation = createUpdateObjectContentMutation(
     objectOperations,
-    currentContentObjects,
+    originalContentObjects,
     updatedContentObjects,
-    objects,
   );
 
   const { mutate, ...rest } = useMutation({
@@ -48,14 +43,12 @@ export const useUpdateObjectContent = ({
         { uid },
       );
     },
-    onSuccess: (data, { uid }) => {
-      queryClient.invalidateQueries({
-        queryKey: createGetObjectKeyPrefix({ objectType, uid }),
+    onSuccess: async (_, { uid }) => {
+      await queryClient.refetchQueries({
+        queryKey: createGetObjectContentKeyPrefix({ uid, objectType }),
       });
-      const parsedObjectContent = parseObjectContent(
-        data.updateObjectContent.content,
-      );
-      onSuccess(parsedObjectContent);
+
+      onSuccess();
     },
   });
 

@@ -16,6 +16,7 @@ import {
   MoreVertical,
   ArrowLeft,
   ExternalLink,
+  ArrowRight,
 } from "src/components/icons";
 import { LanguageSelect } from "src/components/inputs/select";
 import {
@@ -52,6 +53,7 @@ interface PanelHeaderProps {
   save: () => void;
   setLanguage: (l: string) => void;
   navigateToPreviousPanelObject?: () => void;
+  navigateToForwardPanelObject?: () => void;
 }
 
 const ADD_LANGUAGE_OPTION = "Create Translation";
@@ -75,6 +77,7 @@ export const PanelHeader = ({
   save,
   setLanguage,
   navigateToPreviousPanelObject,
+  navigateToForwardPanelObject,
 }: PanelHeaderProps) => {
   const title = getObjectDisplayName(object);
   const [showGraphQLModal, setGraphQLModalOpen] = useState(false);
@@ -138,25 +141,32 @@ export const PanelHeader = ({
       <div className="flex flex-row pb-2">
         <div className="flex flex-grow items-center space-x-2">
           {!isPage && (
-            <Button
-              Icon={<ArrowLeft />}
-              variant="ghost"
-              disabled={!navigateToPreviousPanelObject || inEditMode}
-              onClick={navigateToPreviousPanelObject}
-              aria-label="Open Previous Object"
-            />
-          )}
-          {!isPage && (
-            <Button
-              Icon={<ExternalLink />}
-              variant="ghost"
-              href={
-                actualLanguage
-                  ? `/object/${objectType}/${objectUid}?language=${actualLanguage}`
-                  : `/object/${objectType}/${objectUid}`
-              }
-              newTab
-            />
+            <>
+              <Button
+                Icon={<ArrowLeft />}
+                variant="ghost"
+                disabled={!navigateToPreviousPanelObject || inEditMode}
+                onClick={navigateToPreviousPanelObject}
+                aria-label="Click to go back"
+              />
+              <Button
+                Icon={<ArrowRight />}
+                variant="ghost"
+                disabled={!navigateToForwardPanelObject || inEditMode}
+                onClick={navigateToForwardPanelObject}
+                aria-label="Click to go forward"
+              />
+              <Button
+                Icon={<ExternalLink />}
+                variant="ghost"
+                href={
+                  actualLanguage
+                    ? `/object/${objectType}/${objectUid}?language=${actualLanguage}`
+                    : `/object/${objectType}/${objectUid}`
+                }
+                newTab
+              />
+            </>
           )}
           <DropdownMenu options={objectMenuOptions} align="left">
             <DropdownMenuButton

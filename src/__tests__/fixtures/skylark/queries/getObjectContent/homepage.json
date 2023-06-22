@@ -1,0 +1,206 @@
+{
+  "data": {
+    "getObjectContent": {
+      "__typename": "SkylarkSet",
+      "content": {
+        "next_token": null,
+        "objects": [
+          {
+            "object": {
+              "__typename": "SkylarkSet",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#000000",
+                "display_name": "Setˢˡ"
+              },
+              "_meta": {
+                "available_languages": ["en-GB", "pt-PT"],
+                "language_data": {
+                  "language": "en-GB",
+                  "version": 1
+                },
+                "global_data": {
+                  "version": 2
+                }
+              },
+              "uid": "01H38V02XW6830845P73PJRHM1",
+              "__SkylarkSet__slug": "media-reference-home-page-hero",
+              "external_id": "streamtv_home_page_slider",
+              "__SkylarkSet__type": "SLIDER",
+              "__SkylarkSet__title": "Home page hero",
+              "__SkylarkSet__title_short": null,
+              "__SkylarkSet__title_sort": null,
+              "__SkylarkSet__synopsis": null,
+              "__SkylarkSet__synopsis_short": null,
+              "__SkylarkSet__release_date": null,
+              "__SkylarkSet__description": null
+            },
+            "position": 1
+          },
+          {
+            "object": {
+              "__typename": "SkylarkSet",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#000000",
+                "display_name": "Setˢˡ"
+              },
+              "_meta": {
+                "available_languages": ["en-GB", "pt-PT"],
+                "language_data": {
+                  "language": "en-GB",
+                  "version": 1
+                },
+                "global_data": {
+                  "version": 2
+                }
+              },
+              "uid": "01H38TZWS0EEJJ34EZ4TS0VZ4S",
+              "__SkylarkSet__slug": "spotlight-movies",
+              "external_id": "streamtv_spotlight_movies",
+              "__SkylarkSet__type": "RAIL_MOVIE",
+              "__SkylarkSet__title": "Spotlight movies",
+              "__SkylarkSet__title_short": "Latest releases",
+              "__SkylarkSet__title_sort": null,
+              "__SkylarkSet__synopsis": null,
+              "__SkylarkSet__synopsis_short": null,
+              "__SkylarkSet__release_date": null,
+              "__SkylarkSet__description": null
+            },
+            "position": 2
+          },
+          {
+            "object": {
+              "__typename": "SkylarkSet",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#000000",
+                "display_name": "Setˢˡ"
+              },
+              "_meta": {
+                "available_languages": ["en-GB", "pt-PT"],
+                "language_data": {
+                  "language": "en-GB",
+                  "version": 1
+                },
+                "global_data": {
+                  "version": 2
+                }
+              },
+              "uid": "01H38TZS24125D2V39YHR67WB2",
+              "__SkylarkSet__slug": "new-tv-releases",
+              "external_id": "streamtv_new_tv_releases",
+              "__SkylarkSet__type": "RAIL",
+              "__SkylarkSet__title": "New TV Releases",
+              "__SkylarkSet__title_short": "Premium TV",
+              "__SkylarkSet__title_sort": null,
+              "__SkylarkSet__synopsis": null,
+              "__SkylarkSet__synopsis_short": null,
+              "__SkylarkSet__release_date": null,
+              "__SkylarkSet__description": null
+            },
+            "position": 3
+          },
+          {
+            "object": {
+              "__typename": "Season",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#9C27B0",
+                "display_name": "Season"
+              },
+              "_meta": {
+                "available_languages": ["en-GB", "pt-PT"],
+                "language_data": {
+                  "language": "en-GB",
+                  "version": 1
+                },
+                "global_data": {
+                  "version": 2
+                }
+              },
+              "uid": "01H38TY6XT5N73JT8J8Q5JQH62",
+              "external_id": "recNWXkYGdriyverR",
+              "__Season__slug": "got-s01",
+              "__Season__synopsis": "In the mythical continent of Westeros, several powerful families fight for control of the Seven Kingdoms. As conflict erupts in the kingdoms of men, an ancient enemy rises once again to threaten them all. Meanwhile, the last heirs of a recently usurped dynasty plot to take back their homeland from across the Narrow Sea.",
+              "__Season__synopsis_short": null,
+              "__Season__title": "GOT Season 1",
+              "__Season__title_short": "GOT S01",
+              "__Season__title_sort": null,
+              "__Season__number_of_episodes": null,
+              "__Season__release_date": "2011-10-17",
+              "__Season__season_number": 1,
+              "__Season__year_of_release": null
+            },
+            "position": 4
+          },
+          {
+            "object": {
+              "__typename": "Season",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#9C27B0",
+                "display_name": "Season"
+              },
+              "_meta": {
+                "available_languages": ["en-GB", "pt-PT"],
+                "language_data": {
+                  "language": "en-GB",
+                  "version": 1
+                },
+                "global_data": {
+                  "version": 2
+                }
+              },
+              "uid": "01H38TY6JZCCEN9B10SKGJ299K",
+              "external_id": "rec6brp07XJZ5iFla",
+              "__Season__slug": "got-s02",
+              "__Season__synopsis": null,
+              "__Season__synopsis_short": null,
+              "__Season__title": "GOT Season 2",
+              "__Season__title_short": "GOT S02",
+              "__Season__title_sort": null,
+              "__Season__number_of_episodes": null,
+              "__Season__release_date": "2012-04-23",
+              "__Season__season_number": 2,
+              "__Season__year_of_release": null
+            },
+            "position": 5
+          },
+          {
+            "object": {
+              "__typename": "SkylarkSet",
+              "_config": {
+                "primary_field": "title",
+                "colour": "#000000",
+                "display_name": "Setˢˡ"
+              },
+              "_meta": {
+                "available_languages": ["en-GB", "pt-PT"],
+                "language_data": {
+                  "language": "en-GB",
+                  "version": 1
+                },
+                "global_data": {
+                  "version": 2
+                }
+              },
+              "uid": "01H38V17743ZH83NRWJFYFKVQ3",
+              "__SkylarkSet__slug": "discover-collection",
+              "external_id": "streamtv_discover_collection",
+              "__SkylarkSet__type": "RAIL_PORTRAIT",
+              "__SkylarkSet__title": "Discover",
+              "__SkylarkSet__title_short": "Discover",
+              "__SkylarkSet__title_sort": null,
+              "__SkylarkSet__synopsis": null,
+              "__SkylarkSet__synopsis_short": null,
+              "__SkylarkSet__release_date": null,
+              "__SkylarkSet__description": null
+            },
+            "position": 6
+          }
+        ]
+      }
+    }
+  }
+}
