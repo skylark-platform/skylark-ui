@@ -1,12 +1,17 @@
+import { graphql } from "msw";
+
 import GQLGameOfThronesSearchResultsPage1 from "src/__tests__/fixtures/skylark/queries/search/gotPage1.json";
 import GQLGameOfThronesSearchResultsPage1enGB from "src/__tests__/fixtures/skylark/queries/search/gotPage1enGB.json";
+import { server } from "src/__tests__/mocks/server";
 import {
   fireEvent,
+  prettyDOM,
   render,
   screen,
   waitFor,
   within,
 } from "src/__tests__/utils/test-utils";
+import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
 
 import { ObjectList } from "./objectListing.component";
 
@@ -110,8 +115,22 @@ test("opens filters and deselects all object types", async () => {
   expect(screen.getByLabelText("Episode")).toBeInTheDocument();
 });
 
-test("filters to only en-gb translated objects", async () => {
+test("manually filters to only en-gb translated objects", async () => {
   // Arrange
+  server.use(
+    // Override GET_ACCOUNT query so the language sent is null
+    graphql.query("GET_ACCOUNT", (req, res, ctx) => {
+      const data: GQLSkylarkAccountResponse = {
+        getAccount: {
+          config: null,
+          account_id: "123",
+          skylark_version: "latest",
+        },
+      };
+      return res(ctx.data(data));
+    }),
+  );
+
   render(<ObjectList />);
 
   await screen.findByText("UID");
@@ -148,6 +167,31 @@ test("filters to only en-gb translated objects", async () => {
   expect(screen.queryAllByText("pt-PT")).toHaveLength(0);
 });
 
+test("automatically filters to only en-gb translated objects as its the user/account's default language", async () => {
+  await render(<ObjectList />);
+
+  await waitFor(
+    () => {
+      expect(screen.getByRole("combobox")).toHaveValue("en-GB");
+    },
+    { timeout: 10000 },
+  );
+
+  // Assert
+  await screen.findByText(
+    GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
+  );
+
+  expect(
+    screen.queryAllByText(
+      GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+        .uid as string,
+    ),
+  ).toHaveLength(1);
+  expect(screen.queryAllByText("en-GB").length).toBeGreaterThan(1);
+  expect(screen.queryAllByText("pt-PT")).toHaveLength(0);
+}, 10000);
+
 test("clears the language filter", async () => {
   // Arrange
   render(<ObjectList />);
@@ -180,6 +224,26 @@ test("clears the language filter", async () => {
 });
 
 describe("row in edit mode", () => {
+  beforeEach(() => {
+    server.use(
+      // Override GET_ACCOUNT query so the language sent is null
+      graphql.query("GET_ACCOUNT", (req, res, ctx) => {
+        const data: GQLSkylarkAccountResponse = {
+          getAccount: {
+            config: null,
+            account_id: "123",
+            skylark_version: "latest",
+          },
+        };
+        return res(ctx.data(data));
+      }),
+    );
+  });
+
+  afterEach(() => {
+    server.resetHandlers();
+  });
+
   test("save/cancel icon appears", async () => {
     render(<ObjectList withObjectEdit setPanelObject={jest.fn()} />);
 

@@ -1,6 +1,9 @@
+import { graphql } from "msw";
+
 import GQLSkylarkAllAvailTestMovieFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkAllAvailTestMovieSearchFixture from "src/__tests__/fixtures/skylark/queries/search/fantasticMrFox_All_Availabilities.json";
 import GQLGameOfThronesSearchResults from "src/__tests__/fixtures/skylark/queries/search/gotPage1.json";
+import { server } from "src/__tests__/mocks/server";
 import {
   act,
   fireEvent,
@@ -9,11 +12,9 @@ import {
   waitFor,
   within,
 } from "src/__tests__/utils/test-utils";
-import { server } from "src/__tests__/mocks/server";
+import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
 
 import { ContentLibrary } from "./contentLibrary.component";
-import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
-import { graphql } from "msw";
 
 beforeEach(() => {
   jest.useFakeTimers();
@@ -77,8 +78,7 @@ test("displays the number of search results", async () => {
           config: null,
           account_id: "123",
           skylark_version: "latest",
-        }
-
+        },
       };
       return res(ctx.data(data));
     }),
@@ -108,4 +108,4 @@ test("displays the number of search results", async () => {
       ),
     ).toBeInTheDocument(),
   );
-});
+}, 10000);

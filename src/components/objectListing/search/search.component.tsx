@@ -112,9 +112,13 @@ export const Search = ({
           )}
         </AnimatePresence>
       </div>
-      <div className="mt-2 md:mt-0 md:ml-2">
+      <div
+        className="mt-2 md:mt-0 md:ml-2"
+        data-testid="object-listing-language-select-container"
+      >
         <LanguageSelect
           variant="primary"
+          name="object-listing-language-select"
           className="w-full md:w-36"
           useDefaultLanguage
           onChange={(language) =>

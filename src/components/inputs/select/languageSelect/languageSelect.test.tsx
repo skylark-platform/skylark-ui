@@ -1,6 +1,7 @@
 import { fireEvent } from "@storybook/testing-library";
 
-import { render, screen } from "src/__tests__/utils/test-utils";
+import GQLSkylarkAccountFixture from "src/__tests__/fixtures/skylark/queries/getAccount.json";
+import { render, screen, waitFor } from "src/__tests__/utils/test-utils";
 
 import { LanguageSelect } from "./languageSelect.component";
 
@@ -47,4 +48,42 @@ test("lists only custom languages", async () => {
   await fireEvent.click(screen.getByText(languages[0]));
 
   expect(onChange).toHaveBeenCalledWith(languages[0]);
+});
+
+test("changes to the user/account's default language when useDefaultLanguage is passed", async () => {
+  const onChange = jest.fn();
+
+  render(
+    <LanguageSelect
+      variant="primary"
+      selected={undefined}
+      onChange={onChange}
+      useDefaultLanguage
+    />,
+  );
+
+  await waitFor(() => {
+    expect(onChange).toHaveBeenCalledWith(
+      GQLSkylarkAccountFixture.data.getAccount.config.default_language,
+    );
+  });
+});
+
+test("does not change the selected value when when useDefaultLanguage is passed but selected is an empty string", async () => {
+  const onChange = jest.fn();
+
+  render(
+    <LanguageSelect
+      variant="primary"
+      selected=""
+      onChange={onChange}
+      useDefaultLanguage
+    />,
+  );
+
+  await waitFor(() => {
+    expect(onChange).not.toHaveBeenCalledWith(
+      GQLSkylarkAccountFixture.data.getAccount.config.default_language,
+    );
+  });
 });

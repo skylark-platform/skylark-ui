@@ -301,6 +301,7 @@ export const Select = forwardRef(
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={placeholder || "Select option"}
                 ref={ref as Ref<HTMLInputElement> | undefined}
+                value={selectedOption?.value || ""}
               />
               <span className="absolute inset-y-0 right-0 flex items-center">
                 {showClearValueButton && (
