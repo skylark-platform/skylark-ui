@@ -1,417 +1,150 @@
-import { useDraggable } from "@dnd-kit/core";
-import {
-  Cell,
-  flexRender,
-  Header,
-  Table as ReactTable,
-  Row,
-  TableMeta,
-} from "@tanstack/react-table";
+import { Header, Table as ReactTable, Row } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useMemo } from "react";
-import { VirtualItem } from "react-virtual";
+import { forwardRef, Ref, RefObject, useCallback } from "react";
+import { useVirtual } from "react-virtual";
 
-import { RowActions } from "src/components/objectListing/rowActions";
 import { Skeleton } from "src/components/skeleton";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
-import { hasProperty } from "src/lib/utils";
 
-import { DisplayNameTableCell, getCellWidths } from "./cell";
+import { ObjectListingTableColumnHeader } from "./columnHeader";
+import { ObjectListingTableRow } from "./row.component";
 
 export interface TableProps {
   table: ReactTable<object>;
   withCheckbox?: boolean;
-  virtualRows: VirtualItem[];
-  totalRows: number;
   withDraggableRow?: boolean;
   isLoadingMore?: boolean;
   activeObject?: SkylarkObjectIdentifier;
   setPanelObject?: (o: SkylarkObjectIdentifier) => void;
 }
 
-export interface TableRowProps {
-  row: Row<ParsedSkylarkObject>;
-  virtualRowSize: number;
-  activeObject: TableProps["activeObject"];
-  setPanelObject?: TableProps["setPanelObject"];
-  tableMeta: TableMeta<object> | undefined;
-  withCheckbox?: boolean;
-  isDraggable?: boolean;
-}
-
-const headAndDataClassNames =
-  "overflow-hidden text-ellipsis whitespace-nowrap text-xs md:text-sm text-base-content";
-const lastHeadAndDataClassNames =
-  "last:sticky last:right-0 last:pl-0 last:h-full last:z-10 last:min-w-0 last:border-l-0";
-const rowClassName = "group/row hover:bg-manatee-50 hover:border-manatee-50 ";
-const activeRowClassName = "bg-manatee-200 border-manatee-200";
-const rowGroupClassName =
-  "group-hover/row:bg-manatee-50 group-hover/row:border-manatee-50";
-
-const customColumnStyling: Record<
-  string,
-  {
-    className?: {
-      all?: string;
-      header?: string;
-      cell?: string;
-      withoutCheckbox?: string;
-      withCheckbox?: string;
-    };
-  }
-> = {
-  default: {
-    className: { all: "pr-1 pl-px bg-white" },
-  },
-  [OBJECT_LIST_TABLE.columnIds.actions]: {
-    className: {
-      all: "bg-transparent",
-    },
-  },
-  [OBJECT_LIST_TABLE.columnIds.displayField]: {
-    className: {
-      all: "sm:sticky z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-1 bg-white",
-      withoutCheckbox: "left-6",
-      withCheckbox: "left-10",
-    },
-  },
-  [OBJECT_LIST_TABLE.columnIds.dragIcon]: {
-    className: {
-      all: "px-0 hidden md:table-cell bg-white",
-      cell: "",
-      header: "",
-    },
-  },
-  [OBJECT_LIST_TABLE.columnIds.objectType]: {
-    className: {
-      all: "px-0 bg-white",
-      cell: "absolute z-20 pr-2",
-      header: "sm:sticky bg-white w-10 -left-px h-5 pr-1",
-    },
-  },
-  [OBJECT_LIST_TABLE.columnIds.checkbox]: {
-    className: { all: "pr-4 pl-0 sticky -left-px absolute z-[41] bg-white" },
-  },
-  images: {
-    className: {
-      all: "bg-white",
-      cell: "[&>div]:flex [&>div]:overflow-hidden [&>div]:h-7 [&>div]:md:h-8 pb-0 pt-0.5 md:py-0.5 [&>div]:mr-2 [&>div>img]:mr-0.5 [&>div>img]:h-full",
-    },
-  },
-};
-const columnsWithCustomStyling = Object.keys(customColumnStyling);
-
-const columnStyles = (
-  column: string,
-  type: "header" | "cell",
-  withCheckbox?: boolean,
-) => {
-  const colStyles = columnsWithCustomStyling.includes(column)
-    ? customColumnStyling[column]
-    : customColumnStyling.default;
-
-  const typeSpecificClassName = colStyles?.className?.[type] || "";
-  return `${colStyles.className?.all || ""} ${typeSpecificClassName} ${
-    withCheckbox
-      ? colStyles.className?.withCheckbox
-      : colStyles.className?.withoutCheckbox
-  }`;
-};
-
-const TableHeader = ({
-  header,
+const TableHead = ({
+  headers,
   withCheckbox,
 }: {
-  header: Header<object, unknown>;
+  headers: Header<object, unknown>[];
   withCheckbox: boolean;
-}) => {
-  const className = useMemo(
-    () =>
-      clsx(
-        columnStyles(header.id, "header", withCheckbox),
-        headAndDataClassNames,
-        lastHeadAndDataClassNames,
-        "p-0 pb-2 text-left font-semibold text-opacity-30 last:-z-10",
-      ),
-    [header.id, withCheckbox],
-  );
-
-  return (
-    <th
-      key={header.id}
-      className={className}
-      style={{ ...getCellWidths(header.getSize()) }}
-    >
-      <div className="flex h-full select-none">
-        <div className="flex-grow">
-          {header.isPlaceholder
-            ? null
-            : flexRender(header.column.columnDef.header, header.getContext())}
-        </div>
-        <div
-          onMouseDown={header.getResizeHandler()}
-          onTouchStart={header.getResizeHandler()}
-          className="h-inherit w-0.5 cursor-col-resize bg-manatee-200"
-        ></div>
-      </div>
-    </th>
-  );
-};
-
-const TableData = ({
-  cell,
-  height,
-  withCheckbox,
-  tableMeta,
-  openPanel,
-  object,
-  rowIsActive,
-  isDraggable,
-}: {
-  cell: Cell<ParsedSkylarkObject, unknown>;
-  height: number;
-  withCheckbox?: boolean;
-  tableMeta: TableMeta<object> | undefined;
-  openPanel: () => void;
-  object: SkylarkObjectIdentifier;
-  rowIsActive?: boolean;
-  isDraggable?: boolean;
-}) => {
-  const columnId = cell.column.id;
-  const className = useMemo(
-    () =>
-      clsx(
-        columnStyles(columnId, "cell", withCheckbox),
-        headAndDataClassNames,
-        lastHeadAndDataClassNames,
-        rowGroupClassName,
-        rowIsActive && columnId !== OBJECT_LIST_TABLE.columnIds.actions
-          ? activeRowClassName
-          : "border-transparent",
-        "border-l last:pr-0",
-        OBJECT_LIST_TABLE.columnIds.dragIcon === columnId &&
-          !isDraggable &&
-          "[&>span]:invisible",
-      ),
-    [columnId, withCheckbox, rowIsActive, isDraggable],
-  );
-
-  const cellValue = cell.getValue();
-  const rowInEditMode = tableMeta?.rowInEditMode === cell.row.id || false;
-
-  const children = useMemo(() => {
-    // EXPERIMENTAL: Only render cell when value changes, or row is switched into edit mode
-    return flexRender(cell.column.columnDef.cell, cell.getContext());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cellValue, rowInEditMode]);
-
-  // We add some custom styling to the Display Name column so that it displays the object colour indicator
-  if (cell.column.id === OBJECT_LIST_TABLE.columnIds.displayField) {
-    return (
-      <DisplayNameTableCell
-        id={cell.id}
-        className={className}
-        rowGroupClassName={clsx(
-          rowGroupClassName,
-          rowIsActive && activeRowClassName,
-        )}
-        colour={cell.row.original.config?.colour}
-        width={cell.column.getSize()}
-        height={height}
-        isDraggable={isDraggable}
-      >
-        {children}
-      </DisplayNameTableCell>
-    );
-  }
-
-  if (cell.column.id === OBJECT_LIST_TABLE.columnIds.actions) {
-    const rowInEditMode = tableMeta?.rowInEditMode === cell.row.id || false;
-    return (
-      <td
-        key={cell.id}
-        className={clsx(className, "bg-transparent")}
-        style={{ height }}
-      >
-        <RowActions
-          object={object}
-          editRowEnabled={tableMeta?.withObjectEdit}
-          inEditMode={rowInEditMode}
-          onEditClick={() => tableMeta?.onEditClick(cell.row.id)}
-          onInfoClick={openPanel}
-          onEditSaveClick={() => ""}
-          onEditCancelClick={() => tableMeta?.onEditCancelClick()}
-        />
-      </td>
-    );
-  }
-
-  return (
-    <td
-      key={cell.id}
-      className={className}
-      style={{ ...getCellWidths(cell.column.getSize()), height }}
-    >
-      {children}
-    </td>
-  );
-};
-
-const TableRow = ({
-  row,
-  activeObject,
-  setPanelObject,
-  tableMeta,
-  withCheckbox,
-  isDraggable,
-  virtualRowSize,
-}: TableRowProps) => {
-  const {
-    uid,
-    objectType,
-    meta: { language },
-  } = row.original;
-  const { attributes, listeners, setNodeRef } = useDraggable({
-    id: uid,
-    data: {
-      object: row.original,
-    },
-    disabled: !isDraggable,
-  });
-
-  const rowIsActive =
-    activeObject?.uid === uid && activeObject.language === language;
-
-  const openPanel = () => {
-    setPanelObject?.({ uid, objectType, language });
-  };
-
-  return (
-    <tr
-      data-cy="draggable-item"
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      key={row.id}
-      className={clsx(
-        "relative align-middle outline-none",
-        rowClassName,
-        rowIsActive && activeRowClassName,
-      )}
-      tabIndex={-1}
-      onClick={openPanel}
-      style={{
-        height: virtualRowSize,
-      }}
-    >
-      {row.getVisibleCells().map((cell) => (
-        <TableData
-          tableMeta={tableMeta}
-          key={cell.id}
-          cell={cell}
+}) => (
+  <thead>
+    <tr className="sticky top-0 z-30 bg-white">
+      {headers.map((header) => (
+        <ObjectListingTableColumnHeader
+          key={header.id}
+          header={header}
           withCheckbox={withCheckbox}
-          openPanel={openPanel}
-          height={virtualRowSize}
-          rowIsActive={rowIsActive}
-          object={{ uid, objectType, language }}
-          isDraggable={isDraggable}
         />
       ))}
     </tr>
-  );
-};
+  </thead>
+);
 
-export const Table = ({
-  table,
-  withCheckbox = false,
-  virtualRows,
-  totalRows,
-  isLoadingMore,
-  activeObject,
-  setPanelObject,
-  withDraggableRow,
-}: TableProps) => {
-  const tableMeta = table.options.meta;
-  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
-  const paddingBottom =
-    virtualRows.length > 0
-      ? totalRows - (virtualRows?.[virtualRows.length - 1]?.end || 0)
-      : 0;
+const TableDataSkeletonLoading = ({
+  height,
+  headers,
+}: {
+  height: number;
+  headers: Header<object, unknown>[];
+}) => (
+  <>
+    {[...Array(8)].map((e, i) => (
+      <tr key={i} className="h-10">
+        {headers.map(({ id }) => {
+          if (id === OBJECT_LIST_TABLE.columnIds.dragIcon) {
+            return <td key={id}></td>;
+          }
 
-  const { rows } = table.getRowModel();
-  const headers = table.getHeaderGroups()[0].headers;
-
-  return (
-    <table
-      className="relative mb-10 bg-white"
-      width={table.getCenterTotalSize()}
-    >
-      <thead>
-        <tr className="sticky top-0 z-30 bg-white">
-          {headers.map((header) => (
-            <TableHeader
-              key={header.id}
-              header={header}
-              withCheckbox={withCheckbox}
-            />
-          ))}
-        </tr>
-      </thead>
-
-      <tbody className="align-top">
-        {paddingTop > 0 && (
-          <tr>
-            <td style={{ height: `${paddingTop}px` }} />
-          </tr>
-        )}
-        {virtualRows.map((virtualRow) => {
-          const row = rows[virtualRow.index] as Row<ParsedSkylarkObject>;
           return (
-            <TableRow
-              key={virtualRow.index}
-              row={row}
-              activeObject={activeObject}
-              setPanelObject={setPanelObject}
-              tableMeta={tableMeta}
-              withCheckbox={withCheckbox}
-              isDraggable={withDraggableRow}
-              virtualRowSize={virtualRow.size}
-            />
+            <td key={id} className="h-10" style={{ height }}>
+              <div className="flex h-full w-full items-center justify-start">
+                <Skeleton className={clsx("h-5 w-[95%]")} />
+              </div>
+            </td>
           );
         })}
-        {paddingBottom > 0 && (
-          <tr>
-            <td style={{ height: `${paddingBottom}px` }} />
-          </tr>
-        )}
-        {totalRows > 0 &&
-          isLoadingMore &&
-          [...Array(8)].map((e, i) => (
-            <tr key={i} className="h-10">
-              {headers.map(({ id }) => {
-                if (id === OBJECT_LIST_TABLE.columnIds.dragIcon) {
-                  return <td key={id}></td>;
-                }
+      </tr>
+    ))}
+  </>
+);
 
-                return (
-                  <td
-                    key={id}
-                    className="h-10"
-                    style={{ height: virtualRows[0].size }}
-                  >
-                    <div className="flex h-full w-full items-center justify-start">
-                      <Skeleton className={clsx("h-5 w-[95%]")} />
-                    </div>
-                  </td>
-                );
-              })}
+export const Table = forwardRef(
+  (
+    {
+      table,
+      withCheckbox = false,
+      isLoadingMore,
+      activeObject,
+      setPanelObject,
+      withDraggableRow,
+    }: TableProps,
+    parentRef: Ref<HTMLDivElement>,
+  ) => {
+    const { rows } = table.getRowModel();
+
+    const rowVirtualizer = useVirtual({
+      parentRef: parentRef as RefObject<HTMLDivElement>,
+      size: rows.length,
+      estimateSize: useCallback(() => 42, []),
+      overscan: 40,
+    });
+
+    const { virtualItems: virtualRows, totalSize: totalRows } = rowVirtualizer;
+
+    const tableMeta = table.options.meta;
+    const paddingTop =
+      virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
+    const paddingBottom =
+      virtualRows.length > 0
+        ? totalRows - (virtualRows?.[virtualRows.length - 1]?.end || 0)
+        : 0;
+
+    const headers = table.getHeaderGroups()[0].headers;
+
+    return (
+      <table
+        className="relative mb-10 bg-white"
+        width={table.getCenterTotalSize()}
+      >
+        <TableHead headers={headers} withCheckbox={withCheckbox} />
+
+        <tbody className="align-top">
+          {paddingTop > 0 && (
+            <tr>
+              <td style={{ height: `${paddingTop}px` }} />
             </tr>
-          ))}
-      </tbody>
-    </table>
-  );
-};
+          )}
+          {virtualRows.map((virtualRow) => {
+            const row = rows[virtualRow.index] as Row<ParsedSkylarkObject>;
+            return (
+              <ObjectListingTableRow
+                key={virtualRow.index}
+                row={row}
+                activeObject={activeObject}
+                setPanelObject={setPanelObject}
+                tableMeta={tableMeta}
+                withCheckbox={withCheckbox}
+                isDraggable={withDraggableRow}
+                virtualRowSize={virtualRow.size}
+              />
+            );
+          })}
+          {paddingBottom > 0 && (
+            <tr>
+              <td style={{ height: `${paddingBottom}px` }} />
+            </tr>
+          )}
+          {totalRows > 0 && isLoadingMore && (
+            <TableDataSkeletonLoading
+              height={virtualRows[0].size}
+              headers={headers}
+            />
+          )}
+        </tbody>
+      </table>
+    );
+  },
+);
+Table.displayName = "Table";
