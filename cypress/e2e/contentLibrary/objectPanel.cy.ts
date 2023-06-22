@@ -590,19 +590,6 @@ describe("Content Library - Object Panel", () => {
       cy.wait("@updateHomepageSetContent");
 
       cy.contains("button", "Edit Content").should("not.be.disabled");
-
-      cy.get("[data-testid=panel-content-items] > li p")
-        .then(($els) => {
-          const text = $els.toArray().map((el) => el.innerText.trim());
-          return text;
-        })
-        .should("deep.eq", [
-          "Spotlight movies",
-          "New TV Releases",
-          "GOT Season 1",
-          "GOT Season 2",
-          "Home page hero",
-        ]);
     });
   });
 

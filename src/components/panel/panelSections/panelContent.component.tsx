@@ -190,7 +190,7 @@ export const PanelContent = ({
 
             return (
               <Reorder.Item
-                key={`panel-content-item-${object.uid}`}
+                key={`panel-${uid}-content-item-${object.uid}`}
                 value={item}
                 data-testid={`panel-object-content-item-${index + 1}`}
                 data-cy={"panel-object-content-item"}
