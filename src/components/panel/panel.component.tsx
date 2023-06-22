@@ -88,7 +88,7 @@ export const Panel = ({
   setTab: setSelectedTab,
   navigateToPreviousPanelObject,
   navigateToForwardPanelObject,
-  setPanelObject: setParentPanelObject,
+  setPanelObject,
 }: PanelProps) => {
   const [inEditMode, setEditMode] = useState(false);
   const [isTabDataPrefetched, setIsTabDataPrefetched] = useState(false);
@@ -171,48 +171,20 @@ export const Panel = ({
   );
 
   const resetPanelState = useCallback(
-    ({
-      resetIsTabDataPrefetched,
-      uidChanged,
-    }: {
-      resetIsTabDataPrefetched?: boolean;
-      uidChanged?: boolean;
-    }) => {
+    (resetIsTabDataPrefetched?: boolean) => {
       setEditMode(false);
       resetMetadataForm({});
 
-      if (resetIsTabDataPrefetched || uidChanged) {
+      if (resetIsTabDataPrefetched) {
         setIsTabDataPrefetched(false);
-      }
-
-      // Reset non-language dependent states only when uid changes
-      if (uidChanged) {
-        setContentObjects({
-          original: null,
-          updated: null,
-        });
-        setRelationshipObjects({
-          originalRelationshipObjects: null,
-          updatedRelationshipObjects: null,
-        });
       }
     },
     [resetMetadataForm],
   );
 
-  const setPanelObject = useCallback(
-    (newObject: SkylarkObjectIdentifier) => {
-      resetPanelState({
-        uidChanged: newObject.uid !== object.uid,
-      });
-      setParentPanelObject(newObject);
-    },
-    [resetPanelState, object.uid, setParentPanelObject],
-  );
-
   useEffect(() => {
     // Resets any edited data when the panel object changes
-    resetPanelState({ resetIsTabDataPrefetched: true });
+    resetPanelState(true);
   }, [uid, objectType, language, resetPanelState]);
 
   const queryClient = useQueryClient();

@@ -18,6 +18,7 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
+import { hasProperty } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
@@ -102,7 +103,7 @@ export const PanelContentItemOrderInput = ({
 
 export const PanelContent = ({
   isPage,
-  objects,
+  objects: updatedObjects,
   inEditMode,
   showDropZone,
   objectType,
@@ -116,6 +117,8 @@ export const PanelContent = ({
     uid,
     { language },
   );
+
+  const objects = inEditMode ? updatedObjects : data;
 
   useEffect(() => {
     if (!inEditMode && data) {
@@ -182,7 +185,8 @@ export const PanelContent = ({
             <PanelEmptyDataText />
           )}
           {objects.map((item, index) => {
-            const { object, config, meta, position, isNewObject } = item;
+            const { object, config, meta, position } = item;
+            const isNewObject = hasProperty(item, "isNewObject");
 
             return (
               <Reorder.Item
