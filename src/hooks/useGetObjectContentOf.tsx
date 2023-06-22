@@ -1,5 +1,4 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import dayjs from "dayjs";
 import { RequestDocument } from "graphql-request";
 import { useMemo } from "react";
 
@@ -7,28 +6,20 @@ import { QueryKeys } from "src/enums/graphql";
 import {
   SkylarkObjectType,
   GQLSkylarkErrorResponse,
-  GQLSkylarkGetObjectAvailabilityResponse,
-  ParsedSkylarkObjectAvailabilityObject,
   GQLSkylarkGetObjectContentOfResponse,
   SkylarkGraphQLObject,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
-  createGetObjectAvailabilityQuery,
   createGetObjectContentOfQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
-import {
-  getSingleAvailabilityStatus,
-  is2038Problem,
-} from "src/lib/skylark/availability";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 import { GetObjectOptions } from "./useGetObject";
 import {
   useAllSetObjectsMeta,
   useSkylarkObjectOperations,
-  useSkylarkSetObjectTypes,
 } from "./useSkylarkObjectTypes";
 
 export const createGetObjectContentOfKeyPrefix = ({
@@ -53,7 +44,7 @@ export const useGetObjectContentOf = (
   const query = createGetObjectContentOfQuery(objectOperations, setObjects);
   const variables = { uid, nextToken: "", language };
 
-  const { data: contentOfResponse, ...rest } = useInfiniteQuery<
+  const { data: contentOfResponse, isLoading, hasNextPage, fetchNextPage, ...rest } = useInfiniteQuery<
     GQLSkylarkGetObjectContentOfResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentOfResponse>
   >({
@@ -89,10 +80,15 @@ export const useGetObjectContentOf = (
     return parsedObjects;
   }, [contentOfResponse?.pages, setObjects]);
 
+  if(hasNextPage) {
+    // Always fetch every page
+    fetchNextPage();
+  }
+
   return {
     ...rest,
     data,
-    isLoading: rest.isLoading || !query,
+    isLoading: isLoading || !query,
     query,
     variables,
   };

@@ -145,21 +145,14 @@ export const Panel = ({
       [
         PanelTab.Metadata,
         objectMeta?.hasContent && PanelTab.Content,
-        objectMeta?.hasContentOf && PanelTab.ContentOf,
         objectMeta?.hasRelationships && PanelTab.Relationships,
         objectMeta?.images && PanelTab.Imagery,
+        objectMeta?.hasContentOf && PanelTab.ContentOf,
         objectMeta?.hasAvailability && PanelTab.Availability,
         objectMeta?.name === BuiltInSkylarkObjectType.Availability &&
           PanelTab.AvailabilityDimensions,
       ].filter((tab) => !!tab) as string[],
-    [
-      objectMeta?.hasAvailability,
-      objectMeta?.hasContent,
-      objectMeta?.hasContentOf && PanelTab.ContentOf,
-      objectMeta?.hasRelationships,
-      objectMeta?.images,
-      objectMeta?.name,
-    ],
+    [objectMeta?.hasAvailability, objectMeta?.hasContent, objectMeta?.hasContentOf, objectMeta?.hasRelationships, objectMeta?.images, objectMeta?.name],
   );
 
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]);

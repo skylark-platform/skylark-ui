@@ -208,9 +208,7 @@ export const createGetObjectRelationshipsQuery = (
 
 export const createGetObjectContentOfQuery = (
   object: SkylarkObjectMeta | null,
-  // setObjectTypes: string[],
   setObjects: SkylarkObjectMeta[],
-  // typesToRequest: string[],
 ) => {
   if (!object || !object.operations.get) {
     return null;
@@ -234,7 +232,7 @@ export const createGetObjectContentOfQuery = (
         },
         content_of: {
           __args: {
-            limit: 50, // TODO should this be less?
+            limit: 20,
             next_token: new VariableType("nextToken"),
           },
           next_token: true,

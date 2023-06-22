@@ -12,11 +12,9 @@ import {
   SkylarkObjectType,
   SkylarkObjectIdentifier,
   ParsedSkylarkObject,
-  ParsedSkylarkObjectMetadata,
 } from "src/interfaces/skylark";
 import {
   formatObjectField,
-  getObjectTypeDisplayNameFromParsedObject,
   hasProperty,
 } from "src/lib/utils";
 
@@ -95,38 +93,31 @@ export const PanelContentOf = ({
 
   const objectTypeGroupedData = groupContentOfByObjectType(data);
 
-  console.log({ objectTypeGroupedData });
-
-  const objectTypes = Object.keys(objectTypeGroupedData);
-
-  const sections = setObjectTypes?.map(({ objectType, config }) => {
+  const sections = Object.keys(objectTypeGroupedData).length > 0 ? setObjectTypes?.map(({ objectType, config }) => {
     return {
       objectType,
       id: `content-of-panel-${objectType}`,
       title: formatObjectField(config?.display_name || objectType),
+      objectsGroupedByTypeField: groupObjectsByType(
+        objectTypeGroupedData[objectType],
+      )
     };
-  });
+  }) : [];
 
   return (
     <PanelSectionLayout
       sections={sections || []}
       isPage={isPage}
-      withStickyHeaders
+      withStickyHeaders={sections && sections?.length > 0}
     >
-      {sections?.map(({ objectType, title, id }) => {
-        const objectsGroupedByTypeField = groupObjectsByType(
-          objectTypeGroupedData[objectType],
-        );
-        console.log({ objectsGroupedByTypeField });
+      {sections?.length === 0 && <div className="mt-2">
+                  <PanelEmptyDataText />
+                </div>}
+      {sections?.map(({ title, id, objectsGroupedByTypeField }) => {
+
         return (
           <div key={id} className="relative mb-8">
             <PanelSectionTitle text={title} id={id} sticky />
-            {!hasProperty(objectTypeGroupedData, objectType) ||
-              (objectTypeGroupedData[objectType].length === 0 && (
-                <div className="mt-2">
-                  <PanelEmptyDataText />
-                </div>
-              ))}
             {Object.keys(objectsGroupedByTypeField).map((type) => (
               <div key={type} className="mb-4">
                 <PanelFieldTitle
