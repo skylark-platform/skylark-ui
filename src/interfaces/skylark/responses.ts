@@ -24,6 +24,16 @@ export interface GQLSkylarkErrorResponse<T> {
   };
 }
 
+export interface GQLSkylarkAccountResponse {
+  getAccount: {
+    config: {
+      default_language: string;
+    } | null;
+    account_id: string;
+    skylark_version: string;
+  };
+}
+
 export interface GQLSkylarkGetObjectResponse {
   getObject: SkylarkGraphQLObject;
 }
@@ -43,6 +53,16 @@ export interface GQLSkylarkGetObjectAvailabilityResponse {
     availability: {
       next_token: NextToken;
       objects: SkylarkGraphQLAvailability[];
+    };
+  };
+}
+
+export interface GQLSkylarkGetObjectContentOfResponse {
+  getObjectContentOf: {
+    content_of: {
+      next_token: string | null;
+      count: number;
+      objects: SkylarkGraphQLObject[];
     };
   };
 }

@@ -14,6 +14,7 @@ export enum SkylarkSystemField {
   DataSourceFields = "data_source_fields",
   Availability = "availability",
   Content = "content", // "Set like" content
+  ContentOf = "content_of", // The reverse of Content, will return any Sets the object belongs to
   Type = "type",
 }
 
@@ -102,6 +103,7 @@ export interface SkylarkObjectMeta extends SkylarkObjectFields {
   operations: SkylarkObjectOperations;
   relationships: SkylarkObjectRelationship[];
   hasContent: boolean;
+  hasContentOf: boolean;
   hasRelationships: boolean;
   hasAvailability: boolean;
   isTranslatable: boolean;

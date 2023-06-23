@@ -52,11 +52,14 @@ export const getSelectOptionHeight = (variant: SelectProps["variant"]) => {
 export const SelectLabel = ({
   label,
   labelVariant,
+  htmlFor,
 }: {
   label: SelectProps["label"];
   labelVariant: SelectProps["labelVariant"];
+  htmlFor?: string;
 }) => (
   <Combobox.Label
+    htmlFor={htmlFor}
     className={clsx(
       labelVariant === "default" && "text-sm font-light md:text-base",
       labelVariant === "form" && "block text-sm font-bold",
@@ -281,7 +284,13 @@ export const Select = forwardRef(
             className,
           )}
         >
-          {label && <SelectLabel label={label} labelVariant={labelVariant} />}
+          {label && (
+            <SelectLabel
+              htmlFor={name}
+              label={label}
+              labelVariant={labelVariant}
+            />
+          )}
           {searchable ? (
             <Combobox.Button
               data-testid="select"

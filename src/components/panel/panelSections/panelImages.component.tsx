@@ -11,7 +11,10 @@ import {
   SkylarkGraphQLObjectImage,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
-import { formatObjectField } from "src/lib/utils";
+import {
+  addCloudinaryOnTheFlyImageTransformation,
+  formatObjectField,
+} from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
@@ -51,7 +54,11 @@ const PanelImage = ({
   return (
     <div className="mb-4 break-words">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="max-h-64" src={src} alt={title || alt || ""} />
+      <img
+        className="max-h-64"
+        src={addCloudinaryOnTheFlyImageTransformation(src, {})}
+        alt={title || alt || ""}
+      />
       <div className="flex">
         <div className="mr-2 flex grow flex-col">
           {title && <p className="mt-1">Title: {title}</p>}

@@ -21,6 +21,11 @@ describe("Content Library - Object Panel", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
+      if (hasOperationName(req, "GET_ACCOUNT")) {
+        req.reply({
+          fixture: "./skylark/queries/getAccount.json",
+        });
+      }
       if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
         req.reply({
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
@@ -67,6 +72,12 @@ describe("Content Library - Object Panel", () => {
         req.reply({
           fixture:
             "./skylark/queries/getObjectAvailability/fantasticMrFox_All_Availabilities.json",
+        });
+      }
+      if (hasOperationName(req, "GET_Movie_CONTENT_OF")) {
+        req.reply({
+          fixture:
+            "./skylark/queries/getObjectContentOf/fantasticMrFox_All_Availabilities.json",
         });
       }
       if (hasOperationName(req, "GET_Availability")) {
@@ -341,10 +352,10 @@ describe("Content Library - Object Panel", () => {
       cy.contains("Title: GOT - S1 - 1.jpg");
       cy.contains("section", "Thumbnail")
         .find("img")
-        .should(
-          "have.attr",
-          "src",
-          "https://dl.airtable.com/.attachments/c8b23d45c55cf09081954dd208dcce4b/80b72296/GOT-S1-1.jpg",
+        .should("have.attr", "src")
+        .and(
+          "match",
+          /https:\/\/dl.airtable.com\/.attachments\/c8b23d45c55cf09081954dd208dcce4b\/80b72296\/GOT-S1-1.jpg/,
         );
 
       cy.percySnapshot("Homepage - object panel - imagery");
@@ -590,6 +601,64 @@ describe("Content Library - Object Panel", () => {
       cy.wait("@updateHomepageSetContent");
 
       cy.contains("button", "Edit Content").should("not.be.disabled");
+    });
+  });
+
+  describe("Appears In (content_of) tab", () => {
+    it("open Appears In tab", () => {
+      cy.get('input[name="search-query-input"]').type("all avail test movie");
+      cy.contains("Fantastic Mr Fox (All Availabilities)").should("exist");
+      cy.openContentLibraryObjectPanelByText(
+        "Fantastic Mr Fox (All Availabilities)",
+      );
+
+      cy.contains("button", "Appears In").click();
+
+      cy.contains("Wes Anderson Movies Collection");
+
+      cy.percySnapshot("Homepage - object panel - content of");
+    });
+
+    it("navigates to the Set using the object button", () => {
+      cy.fixture(
+        "./skylark/queries/getObject/fantasticMrFox_All_Availabilities.json",
+      ).then((objectJson) => {
+        cy.fixture(
+          "./skylark/queries/getObjectContentOf/fantasticMrFox_All_Availabilities.json",
+        ).then((contentOfJson) => {
+          const objectUid = objectJson.data.getObject.uid;
+          const objectType = objectJson.data.getObject.__typename;
+
+          cy.get('input[name="search-query-input"]').type(
+            "all avail test movie",
+          );
+          cy.contains("Fantastic Mr Fox (All Availabilities)").should("exist");
+          cy.openContentLibraryObjectPanelByText(
+            "Fantastic Mr Fox (All Availabilities)",
+          );
+
+          cy.contains("button", "Appears In").click();
+
+          cy.get(`[data-cy=panel-for-${objectType}-${objectUid}]`);
+
+          cy.get('[aria-label="Open Object"]').first().click();
+
+          // Only check the panel object type and uid so we don't have to mock the response
+          cy.get(
+            `[data-cy=panel-for-SkylarkSet-${contentOfJson.data.getObjectContentOf.content_of.objects[0].uid}]`,
+          );
+
+          // Check back button returns to the original object
+          cy.get('[aria-label="Click to go back"]').click();
+          cy.get(`[data-cy=panel-for-${objectType}-${objectUid}]`);
+
+          // Check forward button returns to the availability object
+          cy.get('[aria-label="Click to go forward"]').click();
+          cy.get(
+            `[data-cy=panel-for-SkylarkSet-${contentOfJson.data.getObjectContentOf.content_of.objects[0].uid}]`,
+          );
+        });
+      });
     });
   });
 

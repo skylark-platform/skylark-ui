@@ -1,0 +1,11 @@
+{
+  "data": {
+    "getAccount": {
+      "config": {
+        "default_language": "en-GB"
+      },
+      "account_id": "kxa3cpoawbcdpfkz3gusojkg3u",
+      "skylark_version": "230621.5.2"
+    }
+  }
+}

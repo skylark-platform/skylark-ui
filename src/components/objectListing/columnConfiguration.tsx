@@ -9,7 +9,10 @@ import {
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObjectImageRelationship,
 } from "src/interfaces/skylark";
-import { formatObjectField } from "src/lib/utils";
+import {
+  addCloudinaryOnTheFlyImageTransformation,
+  formatObjectField,
+} from "src/lib/utils";
 
 import { TableCell } from "./table";
 
@@ -97,7 +100,11 @@ const imagesColumn = columnHelper.accessor("images", {
       <div>
         {allImages.map(({ uid, url, title }) => (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={url} key={`${props.row.id}-${uid}`} alt={title} />
+          <img
+            src={addCloudinaryOnTheFlyImageTransformation(url, { height: 50 })}
+            key={`${props.row.id}-${uid}`}
+            alt={title}
+          />
         ))}
       </div>
     );
@@ -137,7 +144,7 @@ export const createObjectListingColumns = (
     objectTypeColumn,
     displayNameColumn,
     translationColumn,
-    // imagesColumn,
+    imagesColumn,
     availabilityColumn,
     ...createdColumns,
   ];

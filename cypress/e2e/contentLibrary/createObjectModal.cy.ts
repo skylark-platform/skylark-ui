@@ -11,6 +11,11 @@ describe("Content Library - Metadata Panel", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
+      if (hasOperationName(req, "GET_ACCOUNT")) {
+        req.reply({
+          fixture: "./skylark/queries/getAccount.json",
+        });
+      }
       if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
         req.reply({
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",

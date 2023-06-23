@@ -3,7 +3,6 @@ import {
   getCoreRowModel,
   useReactTable,
   VisibilityState,
-  Table as ReactTable,
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import {
@@ -12,11 +11,7 @@ import {
   useMemo,
   useRef,
   useCallback,
-  forwardRef,
-  Ref,
-  RefObject,
 } from "react";
-import { useVirtual } from "react-virtual";
 import { useDebounce } from "use-debounce";
 
 import { Spinner } from "src/components/icons";
@@ -182,7 +177,7 @@ export const ObjectSearch = (props: ObjectListProps) => {
   const { objectTypes } = useSkylarkObjectTypes(true);
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     objectTypes: null,
-    language: null,
+    language: undefined, // undefined initially as null is a valid language
   });
   const [debouncedSearchFilters] = useDebounce(searchFilters, 300);
 

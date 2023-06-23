@@ -74,6 +74,10 @@ export const Search = ({
     onFilterChange(filters, columnVisibility);
   };
 
+  const onLanguageChange = (language: string | null) => {
+    onFilterChange({ ...activeFilters, language }, visibleColumns);
+  };
+
   return (
     <div
       className={clsx("flex w-full flex-col md:flex-row", className)}
@@ -112,17 +116,18 @@ export const Search = ({
           )}
         </AnimatePresence>
       </div>
-      <div className="mt-2 md:mt-0 md:ml-2">
+      <div
+        className="mt-2 md:mt-0 md:ml-2"
+        data-testid="object-listing-language-select-container"
+      >
         <LanguageSelect
           variant="primary"
+          name="object-listing-language-select"
           className="w-full md:w-36"
-          onChange={(language) =>
-            onFilterChange({ ...activeFilters, language }, visibleColumns)
-          }
-          selected={activeFilters.language || ""}
-          onValueClear={() =>
-            onFilterChange({ ...activeFilters, language: null }, visibleColumns)
-          }
+          useDefaultLanguage
+          onChange={onLanguageChange}
+          selected={activeFilters.language}
+          onValueClear={() => onLanguageChange(null)}
         />
       </div>
     </div>

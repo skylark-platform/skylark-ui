@@ -54,3 +54,15 @@ export const GET_AVAILABILITY_DIMENSIONS = gql`
     }
   }
 `;
+
+export const GET_ACCOUNT = gql`
+  query GET_ACCOUNT {
+    getAccount {
+      config {
+        default_language
+      }
+      account_id
+      skylark_version
+    }
+  }
+`;

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import {
   Select,
@@ -11,8 +11,13 @@ import { useUser } from "src/contexts/useUser";
 // Downloaded from https://datahub.io/core/language-codes "ietf-language-tags"
 import IetfLanguageTags from "./ietf-language-tags.json";
 
-type LanguageSelectProps = Omit<SelectProps, "placeholder" | "options"> & {
+type LanguageSelectProps = Omit<
+  SelectProps,
+  "placeholder" | "options" | "selected"
+> & {
   languages?: string[];
+  useDefaultLanguage?: boolean;
+  selected: SelectProps["selected"] | null;
 };
 
 const defaultOptions: SelectOption[] = IetfLanguageTags.map(
@@ -26,9 +31,23 @@ const arrIndexOrMaxValue = (arr: string[], value: string): number => {
 
 export const LanguageSelect = ({
   languages,
+  selected,
+  useDefaultLanguage,
+  onChange,
   ...props
 }: LanguageSelectProps) => {
-  const { usedLanguages } = useUser();
+  const { usedLanguages, defaultLanguage } = useUser();
+
+  useEffect(() => {
+    if (
+      useDefaultLanguage &&
+      defaultLanguage &&
+      selected === undefined &&
+      onChange
+    ) {
+      onChange(defaultLanguage);
+    }
+  }, [useDefaultLanguage, defaultLanguage, onChange, selected]);
 
   const options: SelectOption[] = useMemo(() => {
     const unsortedOptions = languages
@@ -50,6 +69,8 @@ export const LanguageSelect = ({
   return (
     <Select
       {...props}
+      selected={selected || ""}
+      onChange={onChange}
       options={options}
       className={clsx(props.variant === "pill" ? "w-32" : props.className)}
       placeholder="Language"
