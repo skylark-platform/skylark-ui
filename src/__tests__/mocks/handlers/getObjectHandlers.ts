@@ -15,11 +15,13 @@ import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixt
 import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
 import GQLSkylarkGetMovieQueryAvailabilityFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetHomepageSetContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectContent/homepage.json";
+import GQLSkylarkGetMovieContentOfFixture from "src/__tests__/fixtures/skylark/queries/getObjectContentOf/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetAvailabilityDimensionsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectDimensions/allDevicesAllCustomersAvailability.json";
 import GQLSkylarkGetSeasonRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/gots04relationships.json";
 import GQLSkylarkGetObjectsConfigFixture from "src/__tests__/fixtures/skylark/queries/getObjectsConfig/allObjectsConfig.json";
 import {
   createGetObjectAvailabilityQueryName,
+  createGetObjectContentOfQueryName,
   createGetObjectContentQueryName,
   createGetObjectQueryName,
   createGetObjectRelationshipsQueryName,
@@ -153,4 +155,10 @@ export const getObjectContentHandlers = [
       return res(ctx.data(GQLSkylarkGetHomepageSetContentQueryFixture.data));
     },
   ),
+];
+
+export const getObjectContentOfHandlers = [
+  graphql.query(createGetObjectContentOfQueryName("Movie"), (_, res, ctx) => {
+    return res(ctx.data(GQLSkylarkGetMovieContentOfFixture.data));
+  }),
 ];

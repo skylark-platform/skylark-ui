@@ -10,6 +10,7 @@ import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixt
 import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
 import GQLSkylarkGetObjectAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetHomepageSetContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectContent/homepage.json";
+import GQLSkylarkGetMovieContentOfFixture from "src/__tests__/fixtures/skylark/queries/getObjectContentOf/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetSeasonRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/gots04relationships.json";
 import GQLSkylarkListAvailabilityDimensionsQueryFixture from "src/__tests__/fixtures/skylark/queries/listDimensions.json";
 import { server } from "src/__tests__/mocks/server";
@@ -35,7 +36,10 @@ import {
   formatReadableDate,
   getRelativeTimeFromDate,
 } from "src/lib/skylark/availability";
-import { formatObjectField } from "src/lib/utils";
+import {
+  addCloudinaryOnTheFlyImageTransformation,
+  formatObjectField,
+} from "src/lib/utils";
 
 import { Panel } from "./panel.component";
 
@@ -645,7 +649,10 @@ describe("imagery view", () => {
 
     expect(image).toHaveAttribute(
       "src",
-      GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].url,
+      addCloudinaryOnTheFlyImageTransformation(
+        GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].url,
+        {},
+      ),
     );
   });
 
@@ -1720,6 +1727,49 @@ describe("availabity dimensions view", () => {
       await waitFor(() =>
         expect(screen.getByText("Edit Dimensions")).toBeInTheDocument(),
       );
+    });
+  });
+});
+
+describe("appears in (content_of) view", () => {
+  test("render the panel", async () => {
+    const setPanelObject = jest.fn();
+
+    render(
+      <Panel
+        {...defaultProps}
+        object={movieObject}
+        tab={PanelTab.ContentOf}
+        setPanelObject={setPanelObject}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
+      ).toBeInTheDocument(),
+    );
+
+    const contentOfObjects =
+      GQLSkylarkGetMovieContentOfFixture.data.getObjectContentOf.content_of
+        .objects;
+    const firstContentOfItem = contentOfObjects[0];
+
+    expect(screen.getByText("Set")).toBeInTheDocument(),
+      expect(screen.getByText(`Collection (1)`)).toBeInTheDocument(),
+      await waitFor(() =>
+        expect(screen.getByText(firstContentOfItem.title)).toBeInTheDocument(),
+      );
+
+    const firstOpenObjectButton = screen.getAllByRole("button", {
+      name: /Open Object/i,
+    })[0];
+    fireEvent.click(firstOpenObjectButton);
+
+    expect(setPanelObject).toHaveBeenCalledWith({
+      objectType: firstContentOfItem.__typename,
+      uid: firstContentOfItem.uid,
+      language: firstContentOfItem._meta.language_data.language,
     });
   });
 });

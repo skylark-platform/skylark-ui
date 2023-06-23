@@ -1,6 +1,9 @@
+import { graphql } from "msw";
+
 import GQLSkylarkAllAvailTestMovieFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkAllAvailTestMovieSearchFixture from "src/__tests__/fixtures/skylark/queries/search/fantasticMrFox_All_Availabilities.json";
 import GQLGameOfThronesSearchResults from "src/__tests__/fixtures/skylark/queries/search/gotPage1.json";
+import { server } from "src/__tests__/mocks/server";
 import {
   act,
   fireEvent,
@@ -9,6 +12,7 @@ import {
   waitFor,
   within,
 } from "src/__tests__/utils/test-utils";
+import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
 
 import { ContentLibrary } from "./contentLibrary.component";
 
@@ -66,6 +70,20 @@ test("open metadata panel, check information and close", async () => {
 }, 10000);
 
 test("displays the number of search results", async () => {
+  server.use(
+    // Override GET_ACCOUNT query so the language sent is null
+    graphql.query("GET_ACCOUNT", (req, res, ctx) => {
+      const data: GQLSkylarkAccountResponse = {
+        getAccount: {
+          config: null,
+          account_id: "123",
+          skylark_version: "latest",
+        },
+      };
+      return res(ctx.data(data));
+    }),
+  );
+
   render(<ContentLibrary />);
 
   await waitFor(() =>
@@ -90,4 +108,4 @@ test("displays the number of search results", async () => {
       ),
     ).toBeInTheDocument(),
   );
-});
+}, 10000);

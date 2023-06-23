@@ -54,7 +54,7 @@ export const ObjectList = ({
   const { objectTypes } = useSkylarkObjectTypes(true);
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     objectTypes: null,
-    language: null,
+    language: undefined, // undefined initially as null is a valid language
   });
 
   const tableContainerRef = useRef<HTMLDivElement>(null);

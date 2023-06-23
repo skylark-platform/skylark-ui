@@ -41,6 +41,7 @@ import {
 } from "./panelSections";
 import { PanelAvailabilityDimensions } from "./panelSections/panelAvailabilityDimensions.component";
 import { PanelContent } from "./panelSections/panelContent.component";
+import { PanelContentOf } from "./panelSections/panelContentOf.component";
 import { PanelRelationships } from "./panelSections/panelRelationships.component";
 
 interface PanelProps {
@@ -157,6 +158,7 @@ export const Panel = ({
         objectMeta?.hasContent && PanelTab.Content,
         objectMeta?.hasRelationships && PanelTab.Relationships,
         objectMeta?.images && PanelTab.Imagery,
+        objectMeta?.hasContentOf && PanelTab.ContentOf,
         objectMeta?.hasAvailability && PanelTab.Availability,
         objectMeta?.name === BuiltInSkylarkObjectType.Availability &&
           PanelTab.AvailabilityDimensions,
@@ -164,6 +166,7 @@ export const Panel = ({
     [
       objectMeta?.hasAvailability,
       objectMeta?.hasContent,
+      objectMeta?.hasContentOf,
       objectMeta?.hasRelationships,
       objectMeta?.images,
       objectMeta?.name,
@@ -636,6 +639,16 @@ export const Panel = ({
               inEditMode={inEditMode}
               language={language}
               showDropZone={isDraggedObject}
+              setPanelObject={setPanelObject}
+            />
+          )}
+          {selectedTab === PanelTab.ContentOf && (
+            <PanelContentOf
+              isPage={isPage}
+              objectType={objectType}
+              uid={uid}
+              inEditMode={inEditMode}
+              language={language}
               setPanelObject={setPanelObject}
             />
           )}

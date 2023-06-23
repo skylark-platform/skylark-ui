@@ -100,6 +100,7 @@ const customColumnStyling: Record<
     className: {
       all: "bg-white",
       cell: "[&>div]:flex [&>div]:overflow-hidden [&>div]:h-7 [&>div]:md:h-8 pb-0 pt-0.5 md:py-0.5 [&>div]:mr-2 [&>div>img]:mr-0.5 [&>div>img]:h-full",
+      header: "pr-1 pl-px",
     },
   },
 };
