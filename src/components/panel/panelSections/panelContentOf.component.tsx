@@ -93,17 +93,19 @@ export const PanelContentOf = ({
 
   const sections =
     Object.keys(objectTypeGroupedData).length > 0
-      ? setObjectTypes?.map(({ objectType, config }) => {
-          return {
-            objectType,
-            id: `content-of-panel-${objectType}`,
-            title: formatObjectField(config?.display_name || objectType),
-            objectsGroupedByTypeField: groupObjectsByType(
-              objectTypeGroupedData[objectType],
-            ),
-          };
-        })
+      ? setObjectTypes
+          ?.map(({ objectType, config }) => {
+            return {
+              objectType,
+              id: `content-of-panel-${objectType}`,
+              title: formatObjectField(config?.display_name || objectType),
+              objects: groupObjectsByType(objectTypeGroupedData[objectType]),
+            };
+          })
+          .filter(({ objects }) => Object.keys(objects).length > 0)
       : [];
+
+  console.log({ sections });
 
   return (
     <PanelSectionLayout
@@ -116,18 +118,18 @@ export const PanelContentOf = ({
           <PanelEmptyDataText />
         </div>
       )}
-      {sections?.map(({ title, id, objectsGroupedByTypeField }) => {
+      {sections?.map(({ title, id, objects }) => {
         return (
           <div key={id} className="relative mb-8">
             <PanelSectionTitle text={title} id={id} sticky />
-            {Object.keys(objectsGroupedByTypeField).map((type) => (
+            {Object.keys(objects).map((type) => (
               <div key={type} className="mb-4">
                 <PanelFieldTitle
                   sticky
                   text={formatObjectField(type)}
-                  count={objectsGroupedByTypeField[type].length}
+                  count={objects[type].length}
                 />
-                {objectsGroupedByTypeField[type].map((object) => (
+                {objects[type].map((object) => (
                   <ObjectIdentifierCard
                     key={object.uid}
                     object={object}
