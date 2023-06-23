@@ -16,6 +16,13 @@ import {
 
 import { TableCell } from ".";
 
+export const OBJECT_SEARCH_HARDCODED_COLUMNS = [
+  OBJECT_LIST_TABLE.columnIds.translation,
+  OBJECT_LIST_TABLE.columnIds.availability,
+  OBJECT_LIST_TABLE.columnIds.images,
+];
+export const OBJECT_SEARCH_ORDERED_KEYS = ["uid", "external_id", "data_source_id", "type"];
+
 const columnHelper = createColumnHelper<object>();
 
 // Issues with Safari means its safe to allow the drag icon have it's own column than use a pseudo field

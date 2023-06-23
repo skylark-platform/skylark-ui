@@ -5,7 +5,7 @@ import { DocumentNode } from "graphql";
 import { useEffect, useRef, useState } from "react";
 
 import { LanguageSelect } from "src/components/inputs/select";
-import { SearchFilter } from "src/components/objectListing/search/searchFilter/searchFilter.component";
+import { SearchFilter } from "src/components/objectSearch/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 

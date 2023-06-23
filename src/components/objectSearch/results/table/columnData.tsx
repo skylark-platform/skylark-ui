@@ -2,7 +2,7 @@ import { Cell, TableMeta, flexRender } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useMemo } from "react";
 
-import { RowActions } from "src/components/objectListing/rowActions";
+import { RowActions } from "src/components/objectSearch/rowActions";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import {
   ParsedSkylarkObject,

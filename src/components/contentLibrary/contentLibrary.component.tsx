@@ -14,7 +14,7 @@ import { m, useMotionValue, useTransform } from "framer-motion";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
-import { ObjectSearch } from "src/components/objectListing";
+import { ObjectSearch } from "src/components/objectSearch";
 import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
 import { usePanelObjectState } from "src/hooks/usePanelObjectState";

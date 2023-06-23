@@ -1,35 +1,24 @@
 import {
-  ColumnDef,
-  getCoreRowModel,
-  useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useDebounce } from "use-debounce";
 
 import { Spinner } from "src/components/icons";
-import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
   SkylarkObjectIdentifier,
-  BuiltInSkylarkObjectType,
-  ParsedSkylarkObject,
 } from "src/interfaces/skylark";
-import { getObjectDisplayName, hasProperty } from "src/lib/utils";
+import { hasProperty } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
 import { Search } from "./search";
-import { Table } from "./table";
-import { createObjectListingColumns } from "./table/columnConfiguration";
+import { OBJECT_SEARCH_HARDCODED_COLUMNS, OBJECT_SEARCH_ORDERED_KEYS } from "./results/table/columnConfiguration";
+import { ObjectSearchResults } from "./results/objectSearchResults.component";
 
-const hardcodedColumns = [
-  OBJECT_LIST_TABLE.columnIds.translation,
-  OBJECT_LIST_TABLE.columnIds.availability,
-  OBJECT_LIST_TABLE.columnIds.images,
-];
-const orderedKeys = ["uid", "external_id", "data_source_id", "type"];
+
 
 export interface ObjectListProps {
   withCreateButtons?: boolean;
@@ -41,128 +30,7 @@ export interface ObjectListProps {
   isDragging?: boolean;
 }
 
-const ObjectSearchResults = ({
-  sortedHeaders,
-  columnVisibility,
-  isPanelOpen,
-  panelObject,
-  setPanelObject,
-  isDragging,
-  searchData,
-  withObjectSelect,
-  withObjectEdit,
-  fetchNextPage,
-}: {
-  fetchNextPage?: () => void;
-  searchData: ParsedSkylarkObject[];
-  sortedHeaders: string[];
-  columnVisibility: VisibilityState;
-} & ObjectListProps) => {
-  const tableContainerRef = useRef<HTMLDivElement>(null);
-  const [rowInEditMode, setRowInEditMode] = useState("");
 
-  const parsedColumns = useMemo(
-    () =>
-      createObjectListingColumns(sortedHeaders, hardcodedColumns, {
-        withObjectSelect,
-      }) as ColumnDef<object, ParsedSkylarkObject>[],
-    [sortedHeaders, withObjectSelect],
-  );
-
-  const formattedSearchData = useMemo(() => {
-    const searchDataWithDisplayField = searchData.map((obj) => {
-      return {
-        ...obj,
-        // When the object type is an image, we want to display its preview in the images tab
-        images: (
-          [
-            BuiltInSkylarkObjectType.SkylarkImage,
-            BuiltInSkylarkObjectType.BetaSkylarkImage,
-          ] as string[]
-        ).includes(obj.objectType)
-          ? [obj.metadata]
-          : obj.images,
-        [OBJECT_LIST_TABLE.columnIds.displayField]: getObjectDisplayName(obj),
-        [OBJECT_LIST_TABLE.columnIds.translation]: obj.meta.language,
-      };
-    });
-
-    // Move all entries in .metadata into the top level as tanstack-table outputs a warning messaged saying nested properties that are undefined
-    const searchDataWithTopLevelMetadata = searchDataWithDisplayField.map(
-      (obj) => ({
-        ...obj.metadata,
-        ...obj,
-      }),
-    );
-
-    return searchDataWithTopLevelMetadata;
-  }, [searchData]);
-
-  const fetchMoreOnBottomReached = useCallback(
-    (containerRefElement?: HTMLDivElement | null) => {
-      if (containerRefElement) {
-        const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
-        // once the user has scrolled within 500px of the bottom of the table, fetch more data if there is any
-        if (
-          fetchNextPage &&
-          searchData.length > 0 &&
-          scrollHeight - scrollTop - clientHeight < 500
-        ) {
-          fetchNextPage();
-        }
-      }
-    },
-    [searchData.length, fetchNextPage],
-  );
-
-  // a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
-  useEffect(() => {
-    fetchMoreOnBottomReached(tableContainerRef.current);
-  }, [fetchMoreOnBottomReached]);
-
-  const table = useReactTable({
-    debugAll: false,
-    data: formattedSearchData,
-    columns: parsedColumns,
-    getCoreRowModel: getCoreRowModel(),
-    columnResizeMode: "onChange",
-    state: {
-      columnVisibility,
-    },
-    meta: {
-      rowInEditMode,
-      withObjectEdit: !!withObjectEdit,
-      onEditClick(rowId) {
-        setRowInEditMode(rowId);
-      },
-      onEditCancelClick() {
-        setRowInEditMode("");
-      },
-    },
-  });
-
-  return (
-    <div
-      className={clsx(
-        isDragging ? "overflow-hidden" : "overflow-x-auto",
-        "relative mb-6 flex w-full flex-auto flex-grow flex-col overscroll-none md:-ml-4",
-      )}
-      ref={tableContainerRef}
-      data-testid="table-container"
-      onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
-    >
-      <Table
-        ref={tableContainerRef}
-        table={table}
-        withCheckbox={withObjectSelect}
-        isLoadingMore={!!fetchNextPage}
-        activeObject={panelObject || undefined}
-        setPanelObject={setPanelObject}
-        withDraggableRow={!!isPanelOpen}
-      />
-    </div>
-  );
-};
 
 export const ObjectSearch = (props: ObjectListProps) => {
   const { withCreateButtons, setPanelObject, isPanelOpen } = props;
@@ -197,12 +65,12 @@ export const ObjectSearch = (props: ObjectListProps) => {
   // Sorts objects using the preference array above, any others are added to the end randomly
   const sortedHeaders = useMemo(() => {
     const orderedKeysThatExist =
-      properties?.filter((property) => orderedKeys.includes(property)) || [];
+      properties?.filter((property) => OBJECT_SEARCH_ORDERED_KEYS.includes(property)) || [];
 
     const orderedProperties =
-      properties?.filter((property) => !orderedKeys.includes(property)) || [];
+      properties?.filter((property) => !OBJECT_SEARCH_ORDERED_KEYS.includes(property)) || [];
 
-    return [...hardcodedColumns, ...orderedKeysThatExist, ...orderedProperties];
+    return [...OBJECT_SEARCH_HARDCODED_COLUMNS, ...orderedKeysThatExist, ...orderedProperties];
   }, [properties]);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
