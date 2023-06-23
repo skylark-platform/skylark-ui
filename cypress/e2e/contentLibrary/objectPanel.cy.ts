@@ -235,7 +235,6 @@ describe("Content Library - Object Panel", () => {
 
     // Select language and enter data
     cy.get("[data-testid=create-object-modal]").within(() => {
-      cy.wait(5000)
       cy.contains("Object language")
         .parent()
         .within(() => {
