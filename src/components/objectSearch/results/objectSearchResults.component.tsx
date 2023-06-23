@@ -1,11 +1,25 @@
-import { VisibilityState, ColumnDef, useReactTable, getCoreRowModel } from "@tanstack/react-table";
+import {
+  VisibilityState,
+  ColumnDef,
+  useReactTable,
+  getCoreRowModel,
+} from "@tanstack/react-table";
 import clsx from "clsx";
 import { useRef, useState, useMemo, useCallback, useEffect } from "react";
+
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { SkylarkObjectIdentifier, ParsedSkylarkObject, BuiltInSkylarkObjectType } from "src/interfaces/skylark";
+import {
+  SkylarkObjectIdentifier,
+  ParsedSkylarkObject,
+  BuiltInSkylarkObjectType,
+} from "src/interfaces/skylark";
 import { getObjectDisplayName } from "src/lib/utils";
+
 import { Table } from "./table";
-import { OBJECT_SEARCH_HARDCODED_COLUMNS, createObjectListingColumns } from "./table/columnConfiguration";
+import {
+  OBJECT_SEARCH_HARDCODED_COLUMNS,
+  createObjectListingColumns,
+} from "./table/columnConfiguration";
 
 interface ObjectSearchResultsProps {
   withCreateButtons?: boolean;
@@ -38,9 +52,13 @@ export const ObjectSearchResults = ({
 
   const parsedColumns = useMemo(
     () =>
-      createObjectListingColumns(sortedHeaders, OBJECT_SEARCH_HARDCODED_COLUMNS, {
-        withObjectSelect,
-      }) as ColumnDef<object, ParsedSkylarkObject>[],
+      createObjectListingColumns(
+        sortedHeaders,
+        OBJECT_SEARCH_HARDCODED_COLUMNS,
+        {
+          withObjectSelect,
+        },
+      ) as ColumnDef<object, ParsedSkylarkObject>[],
     [sortedHeaders, withObjectSelect],
   );
 

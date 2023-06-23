@@ -1,6 +1,4 @@
-import {
-  VisibilityState,
-} from "@tanstack/react-table";
+import { VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useEffect, useState, useMemo } from "react";
 import { useDebounce } from "use-debounce";
@@ -8,17 +6,16 @@ import { useDebounce } from "use-debounce";
 import { Spinner } from "src/components/icons";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
-import {
-  SkylarkObjectIdentifier,
-} from "src/interfaces/skylark";
+import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
-import { Search } from "./search";
-import { OBJECT_SEARCH_HARDCODED_COLUMNS, OBJECT_SEARCH_ORDERED_KEYS } from "./results/table/columnConfiguration";
 import { ObjectSearchResults } from "./results/objectSearchResults.component";
-
-
+import {
+  OBJECT_SEARCH_HARDCODED_COLUMNS,
+  OBJECT_SEARCH_ORDERED_KEYS,
+} from "./results/table/columnConfiguration";
+import { Search } from "./search";
 
 export interface ObjectListProps {
   withCreateButtons?: boolean;
@@ -29,8 +26,6 @@ export interface ObjectListProps {
   setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
   isDragging?: boolean;
 }
-
-
 
 export const ObjectSearch = (props: ObjectListProps) => {
   const { withCreateButtons, setPanelObject, isPanelOpen } = props;
@@ -65,12 +60,20 @@ export const ObjectSearch = (props: ObjectListProps) => {
   // Sorts objects using the preference array above, any others are added to the end randomly
   const sortedHeaders = useMemo(() => {
     const orderedKeysThatExist =
-      properties?.filter((property) => OBJECT_SEARCH_ORDERED_KEYS.includes(property)) || [];
+      properties?.filter((property) =>
+        OBJECT_SEARCH_ORDERED_KEYS.includes(property),
+      ) || [];
 
     const orderedProperties =
-      properties?.filter((property) => !OBJECT_SEARCH_ORDERED_KEYS.includes(property)) || [];
+      properties?.filter(
+        (property) => !OBJECT_SEARCH_ORDERED_KEYS.includes(property),
+      ) || [];
 
-    return [...OBJECT_SEARCH_HARDCODED_COLUMNS, ...orderedKeysThatExist, ...orderedProperties];
+    return [
+      ...OBJECT_SEARCH_HARDCODED_COLUMNS,
+      ...orderedKeysThatExist,
+      ...orderedProperties,
+    ];
   }, [properties]);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(

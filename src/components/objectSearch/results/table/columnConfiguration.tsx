@@ -21,7 +21,12 @@ export const OBJECT_SEARCH_HARDCODED_COLUMNS = [
   OBJECT_LIST_TABLE.columnIds.availability,
   OBJECT_LIST_TABLE.columnIds.images,
 ];
-export const OBJECT_SEARCH_ORDERED_KEYS = ["uid", "external_id", "data_source_id", "type"];
+export const OBJECT_SEARCH_ORDERED_KEYS = [
+  "uid",
+  "external_id",
+  "data_source_id",
+  "type",
+];
 
 const columnHelper = createColumnHelper<object>();
 
