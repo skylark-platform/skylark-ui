@@ -6,6 +6,7 @@ import {
 import { RequestDocument } from "graphql-request";
 
 import { QueryKeys } from "src/enums/graphql";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkCreateObjectMetadataResponse,
   SkylarkObjectIdentifier,
@@ -14,8 +15,6 @@ import {
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createCreateObjectMutation } from "src/lib/graphql/skylark/dynamicMutations";
-
-import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const refetchSearchQueriesAfterUpdate = (queryClient: QueryClient) => {
   void queryClient.refetchQueries({

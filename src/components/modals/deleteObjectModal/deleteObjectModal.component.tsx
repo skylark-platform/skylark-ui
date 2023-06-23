@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
 import { Toast } from "src/components/toast/toast.component";
-import { useDeleteObject } from "src/hooks/useDeleteObject";
+import { useDeleteObject } from "src/hooks/objects/useDeleteObject";
 
 interface DeleteObjectModalProps {
   isOpen: boolean;

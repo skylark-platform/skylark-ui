@@ -1,12 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
+import { createGetObjectAvailabilityKeyPrefix } from "src/hooks/objects/get/useGetObjectAvailability";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import { ParsedSkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectAvailability } from "src/lib/graphql/skylark/dynamicMutations";
-
-import { createGetObjectAvailabilityKeyPrefix } from "./useGetObjectAvailability";
-import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const useUpdateObjectAvailability = ({
   objectType,

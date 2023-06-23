@@ -8,9 +8,9 @@ import { Button } from "src/components/button";
 import { SkylarkObjectFieldInput } from "src/components/inputs";
 import { LanguageSelect, ObjectTypeSelect } from "src/components/inputs/select";
 import { Toast } from "src/components/toast/toast.component";
-import { useCreateObject } from "src/hooks/useCreateObject";
+import { useUpdateObjectMetadata } from "src/hooks/objects/update/useUpdateObjectMetadata";
+import { useCreateObject } from "src/hooks/objects/useCreateObject";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
-import { useUpdateObjectMetadata } from "src/hooks/useUpdateObjectMetadata";
 import {
   SkylarkGraphQLObjectConfig,
   SkylarkObjectIdentifier,

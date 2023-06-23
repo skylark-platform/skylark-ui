@@ -9,7 +9,7 @@ import {
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
-import { useGetObjectRelationships } from "src/hooks/useGetObjectRelationships";
+import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
 import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectType,

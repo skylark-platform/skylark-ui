@@ -4,6 +4,10 @@ import { useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import {
+  useAllObjectsMeta,
+  useSkylarkObjectOperations,
+} from "src/hooks/useSkylarkObjectTypes";
+import {
   GQLSkylarkErrorResponse,
   GQLSkylarkGetObjectRelationshipsResponse,
   GQLSkylarkGetObjectResponse,
@@ -19,10 +23,6 @@ import { createGetObjectRelationshipsQuery } from "src/lib/graphql/skylark/dynam
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 import { GetObjectOptions } from "./useGetObject";
-import {
-  useAllObjectsMeta,
-  useSkylarkObjectOperations,
-} from "./useSkylarkObjectTypes";
 
 const getFieldsFromObjectType = (
   objects: SkylarkObjectMeta[] | null,

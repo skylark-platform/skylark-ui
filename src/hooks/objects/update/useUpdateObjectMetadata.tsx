@@ -1,6 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
+import { createGetObjectKeyPrefix } from "src/hooks/objects/get/useGetObject";
+import { refetchSearchQueriesAfterUpdate } from "src/hooks/objects/useCreateObject";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkGetObjectResponse,
   GQLSkylarkUpdateObjectMetadataResponse,
@@ -10,10 +13,6 @@ import {
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectMetadataMutation } from "src/lib/graphql/skylark/dynamicMutations";
-
-import { refetchSearchQueriesAfterUpdate } from "./useCreateObject";
-import { createGetObjectKeyPrefix } from "./useGetObject";
-import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const useUpdateObjectMetadata = ({
   objectType,

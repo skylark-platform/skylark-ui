@@ -11,7 +11,7 @@ import {
   PanelSeparator,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
-import { useGetObjectContent } from "src/hooks/useGetObjectContent";
+import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
 import {
   ParsedSkylarkObjectContentObject,
   AddedSkylarkObjectContentObject,

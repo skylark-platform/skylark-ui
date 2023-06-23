@@ -5,16 +5,16 @@ import { toast } from "react-toastify";
 
 import { Tabs } from "src/components/tabs/tabs.component";
 import { Toast } from "src/components/toast/toast.component";
-import { useGetObject } from "src/hooks/useGetObject";
-import { prefetchGetObjectAvailability } from "src/hooks/useGetObjectAvailability";
-import { prefetchGetObjectContent } from "src/hooks/useGetObjectContent";
+import { useGetObject } from "src/hooks/objects/get/useGetObject";
+import { prefetchGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
+import { prefetchGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
+import { useUpdateAvailabilityObjectDimensions } from "src/hooks/objects/update/useUpdateAvailabilityObjectDimensions";
+import { useUpdateObjectAvailability } from "src/hooks/objects/update/useUpdateObjectAvailability";
+import { useUpdateObjectContent } from "src/hooks/objects/update/useUpdateObjectContent";
+import { useUpdateObjectMetadata } from "src/hooks/objects/update/useUpdateObjectMetadata";
+import { useUpdateObjectRelationships } from "src/hooks/objects/update/useUpdateObjectRelationships";
 import { PanelTab } from "src/hooks/usePanelObjectState";
 import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
-import { useUpdateAvailabilityObjectDimensions } from "src/hooks/useUpdateAvailabilityObjectDimensions";
-import { useUpdateObjectAvailability } from "src/hooks/useUpdateObjectAvailability";
-import { useUpdateObjectContent } from "src/hooks/useUpdateObjectContent";
-import { useUpdateObjectMetadata } from "src/hooks/useUpdateObjectMetadata";
-import { useUpdateObjectRelationships } from "src/hooks/useUpdateObjectRelationships";
 import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,

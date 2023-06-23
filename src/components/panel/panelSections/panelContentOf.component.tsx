@@ -7,7 +7,7 @@ import {
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
-import { useGetObjectContentOf } from "src/hooks/useGetObjectContentOf";
+import { useGetObjectContentOf } from "src/hooks/objects/get/useGetObjectContentOf";
 import { useSkylarkSetObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import {
   SkylarkObjectType,
