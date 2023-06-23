@@ -1,3 +1,4 @@
+import * as constants from "src/constants/skylark";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 import {
@@ -11,7 +12,6 @@ import {
   isObjectsDeepEqual,
   pause,
 } from "./utils";
-import * as constants from "src/constants/skylark";
 
 describe("hasProperty", () => {
   test("returns true when the object has the property", () => {
@@ -218,29 +218,42 @@ describe("isObjectsDeepEqual", () => {
 
 describe("addCloudinaryOnTheFlyImageTransformation", () => {
   test("returns original URL when CLOUDINARY_ENVIRONMENT is not populated", () => {
-    const got = addCloudinaryOnTheFlyImageTransformation("https://skylark.com", {});
-    expect(got).toEqual("https://skylark.com")
-  })
+    const got = addCloudinaryOnTheFlyImageTransformation(
+      "https://skylark.com",
+      {},
+    );
+    expect(got).toEqual("https://skylark.com");
+  });
 
   beforeEach(() => {
     jest.resetModules();
-});
+  });
 
   test("returns the URL wrapped with Cloudinary's pass through URL", () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    constants.CLOUDINARY_ENVIRONMENT = "test"
+    constants.CLOUDINARY_ENVIRONMENT = "test";
 
-    const got = addCloudinaryOnTheFlyImageTransformation("https://skylark.com", {});
-    expect(got).toEqual("https://res.cloudinary.com/test/image/fetch/https://skylark.com")
-  })
+    const got = addCloudinaryOnTheFlyImageTransformation(
+      "https://skylark.com",
+      {},
+    );
+    expect(got).toEqual(
+      "https://res.cloudinary.com/test/image/fetch/https://skylark.com",
+    );
+  });
 
   test("returns the URL wrapped with Cloudinary's pass through URL with options", () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    constants.CLOUDINARY_ENVIRONMENT = "test"
+    constants.CLOUDINARY_ENVIRONMENT = "test";
 
-    const got = addCloudinaryOnTheFlyImageTransformation("https://skylark.com", { width: 20, height: 40});
-    expect(got).toEqual("https://res.cloudinary.com/test/image/fetch/h_40,w_20,c_fill/https://skylark.com")
-  })
-})
+    const got = addCloudinaryOnTheFlyImageTransformation(
+      "https://skylark.com",
+      { width: 20, height: 40 },
+    );
+    expect(got).toEqual(
+      "https://res.cloudinary.com/test/image/fetch/h_40,w_20,c_fill/https://skylark.com",
+    );
+  });
+});

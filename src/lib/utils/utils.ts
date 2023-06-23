@@ -1,7 +1,10 @@
 import { HTMLInputTypeAttribute } from "react";
 import { sentenceCase } from "sentence-case";
 
-import { CLOUDINARY_ENVIRONMENT, DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
+import {
+  CLOUDINARY_ENVIRONMENT,
+  DISPLAY_NAME_PRIORITY,
+} from "src/constants/skylark";
 import {
   NormalizedObjectFieldType,
   ParsedSkylarkObject,

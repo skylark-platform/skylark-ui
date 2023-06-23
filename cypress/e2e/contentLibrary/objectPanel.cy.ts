@@ -352,10 +352,11 @@ describe("Content Library - Object Panel", () => {
       cy.contains("Title: GOT - S1 - 1.jpg");
       cy.contains("section", "Thumbnail")
         .find("img")
-        .should(
-          "have.attr",
-          "src",
-        ).and('match', /https:\/\/dl.airtable.com\/.attachments\/c8b23d45c55cf09081954dd208dcce4b\/80b72296\/GOT-S1-1.jpg/);
+        .should("have.attr", "src")
+        .and(
+          "match",
+          /https:\/\/dl.airtable.com\/.attachments\/c8b23d45c55cf09081954dd208dcce4b\/80b72296\/GOT-S1-1.jpg/,
+        );
 
       cy.percySnapshot("Homepage - object panel - imagery");
     });
@@ -603,7 +604,6 @@ describe("Content Library - Object Panel", () => {
     });
   });
 
-
   describe("Appears In (content_of) tab", () => {
     it("open Appears In tab", () => {
       cy.get('input[name="search-query-input"]').type("all avail test movie");
@@ -629,13 +629,15 @@ describe("Content Library - Object Panel", () => {
           const objectUid = objectJson.data.getObject.uid;
           const objectType = objectJson.data.getObject.__typename;
 
-          cy.get('input[name="search-query-input"]').type("all avail test movie");
-      cy.contains("Fantastic Mr Fox (All Availabilities)").should("exist");
-      cy.openContentLibraryObjectPanelByText(
-        "Fantastic Mr Fox (All Availabilities)",
-      );
+          cy.get('input[name="search-query-input"]').type(
+            "all avail test movie",
+          );
+          cy.contains("Fantastic Mr Fox (All Availabilities)").should("exist");
+          cy.openContentLibraryObjectPanelByText(
+            "Fantastic Mr Fox (All Availabilities)",
+          );
 
-      cy.contains("button", "Appears In").click();
+          cy.contains("button", "Appears In").click();
 
           cy.get(`[data-cy=panel-for-${objectType}-${objectUid}]`);
 

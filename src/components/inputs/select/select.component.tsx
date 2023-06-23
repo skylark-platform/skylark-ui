@@ -59,7 +59,7 @@ export const SelectLabel = ({
   htmlFor?: string;
 }) => (
   <Combobox.Label
-  htmlFor={htmlFor}
+    htmlFor={htmlFor}
     className={clsx(
       labelVariant === "default" && "text-sm font-light md:text-base",
       labelVariant === "form" && "block text-sm font-bold",
@@ -284,7 +284,13 @@ export const Select = forwardRef(
             className,
           )}
         >
-          {label && <SelectLabel htmlFor={name} label={label} labelVariant={labelVariant} />}
+          {label && (
+            <SelectLabel
+              htmlFor={name}
+              label={label}
+              labelVariant={labelVariant}
+            />
+          )}
           {searchable ? (
             <Combobox.Button
               data-testid="select"
