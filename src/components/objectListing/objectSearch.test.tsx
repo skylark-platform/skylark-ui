@@ -13,7 +13,7 @@ import {
 } from "src/__tests__/utils/test-utils";
 import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
 
-import { ObjectSearch } from "./objectListing.component";
+import { ObjectSearch } from "./objectSearch.component";
 
 test("renders search bar, filters with no objects returned", () => {
   render(<ObjectSearch />);
@@ -80,14 +80,15 @@ test("renders search results (with default language)", async () => {
   await screen.findByText("UID"); // Search for table header
   // Search for table content
   await screen.findAllByText(
-    GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid,
+    GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
   );
 
   expect(
     screen.queryAllByText(
-      GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid as string,
+      GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+        .uid as string,
     ),
-  ).toHaveLength(2);
+  ).toHaveLength(1);
 });
 
 test("renders search results with language as null (no default)", async () => {
@@ -104,7 +105,7 @@ test("renders search results with language as null (no default)", async () => {
       return res(ctx.data(data));
     }),
   );
-  
+
   render(<ObjectSearch />);
 
   await screen.findByText("UID"); // Search for table header

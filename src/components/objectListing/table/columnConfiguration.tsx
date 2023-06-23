@@ -14,7 +14,7 @@ import {
   formatObjectField,
 } from "src/lib/utils";
 
-import { TableCell } from "./table";
+import { TableCell } from ".";
 
 const columnHelper = createColumnHelper<object>();
 

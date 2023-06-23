@@ -5,13 +5,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import {
-  useEffect,
-  useState,
-  useMemo,
-  useRef,
-  useCallback,
-} from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useDebounce } from "use-debounce";
 
 import { Spinner } from "src/components/icons";
@@ -25,10 +19,10 @@ import {
 } from "src/interfaces/skylark";
 import { getObjectDisplayName, hasProperty } from "src/lib/utils";
 
-import { createObjectListingColumns } from "./columnConfiguration";
 import { CreateButtons } from "./createButtons";
 import { Search } from "./search";
 import { Table } from "./table";
+import { createObjectListingColumns } from "./table/columnConfiguration";
 
 const hardcodedColumns = [
   OBJECT_LIST_TABLE.columnIds.translation,

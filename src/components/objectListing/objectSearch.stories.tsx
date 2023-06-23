@@ -3,7 +3,7 @@ import { userEvent, within } from "@storybook/testing-library";
 
 import GQLGameOfThronesSearchResults from "src/__tests__/fixtures/skylark/queries/search/gotPage1.json";
 
-import { ObjectSearch } from "./objectListing.component";
+import { ObjectSearch } from "./objectSearch.component";
 
 export default {
   title: "Components/ObjectSearch",

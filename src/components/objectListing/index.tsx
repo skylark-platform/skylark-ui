@@ -1,1 +1,1 @@
-export * from "./objectListing.component";
+export * from "./objectSearch.component";
