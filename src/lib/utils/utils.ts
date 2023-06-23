@@ -1,7 +1,7 @@
 import { HTMLInputTypeAttribute } from "react";
 import { sentenceCase } from "sentence-case";
 
-import { DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
+import { CLOUDINARY_ENVIRONMENT, DISPLAY_NAME_PRIORITY } from "src/constants/skylark";
 import {
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
@@ -145,11 +145,10 @@ export const addCloudinaryOnTheFlyImageTransformation = (
   imageUrl: string,
   opts: { height?: number; width?: number },
 ) => {
-  if (!imageUrl) {
-    return "";
+  // If the Cloudinary Environment is falsy, return the original image URL
+  if (!imageUrl || !CLOUDINARY_ENVIRONMENT) {
+    return imageUrl;
   }
-
-  const cloudinaryEnvironment = "dg6rjqzxn"; // JW personal account
 
   const urlOpts = [];
   if (opts.height) {
@@ -165,6 +164,6 @@ export const addCloudinaryOnTheFlyImageTransformation = (
 
   const urlOptsStr = urlOpts.length > 0 ? `${urlOpts.join(",")}/` : "";
 
-  const cloudinaryUrl = `https://res.cloudinary.com/${cloudinaryEnvironment}/image/fetch/${urlOptsStr}${imageUrl}`;
+  const cloudinaryUrl = `https://res.cloudinary.com/${CLOUDINARY_ENVIRONMENT}/image/fetch/${urlOptsStr}${imageUrl}`;
   return cloudinaryUrl;
 };

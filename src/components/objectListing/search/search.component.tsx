@@ -76,7 +76,7 @@ export const Search = ({
 
   const onLanguageChange = (language: string | null) => {
     onFilterChange({ ...activeFilters, language }, visibleColumns);
-  }
+  };
 
   return (
     <div
@@ -127,9 +127,7 @@ export const Search = ({
           useDefaultLanguage
           onChange={onLanguageChange}
           selected={activeFilters.language}
-          onValueClear={() =>
-            onLanguageChange(null)
-          }
+          onValueClear={() => onLanguageChange(null)}
         />
       </div>
     </div>
