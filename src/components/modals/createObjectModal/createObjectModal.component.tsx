@@ -87,24 +87,26 @@ export const CreateObjectModal = ({
     },
   });
 
-  const { updateObjectMetadata, isLoading: isCreatingTranslation } =
-    useUpdateObjectMetadata({
-      objectType: createTranslation?.objectType || "",
-      onSuccess: (object) => {
-        onObjectCreated?.(object);
-        toast.success(
-          <Toast
-            title={`Translation "${object.language}" created`}
-            message={`The "${
-              object.language
-            }" translation has been created for the "${
-              createTranslation?.objectDisplayName || object.uid
-            }" ${objectTypeDisplayName}.`}
-          />,
-        );
-        closeModal();
-      },
-    });
+  const {
+    updateObjectMetadata,
+    isUpdatingObjectMetadata: isCreatingTranslation,
+  } = useUpdateObjectMetadata({
+    objectType: createTranslation?.objectType || "",
+    onSuccess: (object) => {
+      onObjectCreated?.(object);
+      toast.success(
+        <Toast
+          title={`Translation "${object.language}" created`}
+          message={`The "${
+            object.language
+          }" translation has been created for the "${
+            createTranslation?.objectDisplayName || object.uid
+          }" ${objectTypeDisplayName}.`}
+        />,
+      );
+      closeModal();
+    },
+  });
 
   const onSubmit = ({
     _language,

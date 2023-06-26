@@ -40,7 +40,7 @@ const getNextPageParam = (
 export const useAvailabilityDimensionsWithValues = () => {
   const { dimensions: dimensionsWithoutValues } = useAvailabilityDimensions();
 
-  const { data, fetchNextPage, hasNextPage, ...rest } =
+  const { data, fetchNextPage, hasNextPage, isLoading } =
     useInfiniteQuery<GQLSkylarkListAvailabilityDimensionValuesResponse>({
       queryKey: [QueryKeys.AvailabilityDimensions, dimensionsWithoutValues],
       queryFn: async ({ pageParam: nextTokens }) => {
@@ -105,6 +105,6 @@ export const useAvailabilityDimensionsWithValues = () => {
 
   return {
     dimensions: dimensionsWithValues,
-    ...rest,
+    isLoading,
   };
 };

@@ -1,17 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 
 import { useUser } from "src/contexts/useUser";
 import { QueryErrorMessages, QueryKeys } from "src/enums/graphql";
-import {
-  useAllObjectsMeta,
-  useSkylarkObjectOperations,
-} from "src/hooks/useSkylarkObjectTypes";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import { ErrorCodes } from "src/interfaces/errors";
 import {
   SkylarkObjectType,
   GQLSkylarkErrorResponse,
+  ParsedSkylarkObject,
 } from "src/interfaces/skylark";
 import { GQLSkylarkGetObjectResponse } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -51,20 +49,26 @@ export const useGetObject = (
   const query = createGetObjectQuery(objectMeta, !!language);
   const variables = { uid, language };
 
-  const { data, error, ...rest } = useQuery<
+  const {
+    data: parsedObject,
+    error,
+    isLoading,
+    isError,
+  } = useQuery<
     GQLSkylarkGetObjectResponse,
-    GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>
+    GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>,
+    ParsedSkylarkObject
   >({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: createGetObjectKeyPrefix({ objectType, uid, language }),
     queryFn: async () => skylarkRequest(query as DocumentNode, variables),
     enabled: query !== null,
+    select: useCallback(
+      (data: GQLSkylarkGetObjectResponse) =>
+        data?.getObject && parseSkylarkObject(data?.getObject, objectMeta),
+      [objectMeta],
+    ),
   });
-
-  const parsedObject = useMemo(
-    () => data?.getObject && parseSkylarkObject(data?.getObject, objectMeta),
-    [data?.getObject, objectMeta],
-  );
 
   useEffect(() => {
     if (
@@ -79,18 +83,17 @@ export const useGetObject = (
   }, [dispatch, parsedObject?.meta?.availableLanguages]);
 
   return {
-    ...rest,
     error,
     data: parsedObject,
     objectMeta,
-    isLoading: (rest.isLoading || !query) && !isObjectMetaError,
+    isLoading: (isLoading || !query) && !isObjectMetaError,
     isNotFound:
       error?.response?.errors?.[0]?.errorType === QueryErrorMessages.NotFound,
     isObjectTypeNotFound:
       objectMetaError && hasProperty(objectMetaError, "code")
         ? objectMetaError.code === ErrorCodes.NotFound
         : false,
-    isError: rest.isError || isObjectMetaError,
+    isError: isError || isObjectMetaError,
     query,
     variables,
   };

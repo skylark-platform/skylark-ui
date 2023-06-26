@@ -9,7 +9,7 @@ import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { LIST_AVAILABILITY_DIMENSIONS } from "src/lib/graphql/skylark/queries";
 
 export const useAvailabilityDimensions = () => {
-  const { data, fetchNextPage, hasNextPage, ...rest } =
+  const { data, fetchNextPage, hasNextPage } =
     useInfiniteQuery<GQLSkylarkListAvailabilityDimensionsResponse>({
       queryKey: [
         QueryKeys.AvailabilityDimensions,
@@ -37,6 +37,5 @@ export const useAvailabilityDimensions = () => {
 
   return {
     dimensions,
-    ...rest,
   };
 };

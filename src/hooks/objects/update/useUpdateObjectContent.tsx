@@ -33,7 +33,7 @@ export const useUpdateObjectContent = ({
     updatedContentObjects,
   );
 
-  const { mutate, ...rest } = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationFn: ({ uid }: { uid: string }) => {
       return skylarkRequest<GQLSkylarkUpdateObjectContentResponse>(
         updateObjectContentMutation as RequestDocument,
@@ -53,6 +53,6 @@ export const useUpdateObjectContent = ({
 
   return {
     updateObjectContent,
-    ...rest,
+    isUpdatingObjectContent: isLoading,
   };
 };

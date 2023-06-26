@@ -137,7 +137,7 @@ export const useGetObjectContent = (
     variables,
   });
 
-  const { data, hasNextPage, fetchNextPage, ...rest } = useInfiniteQuery<
+  const { data, hasNextPage, fetchNextPage, isLoading } = useInfiniteQuery<
     GQLSkylarkGetObjectContentResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentResponse>
   >({
@@ -162,9 +162,8 @@ export const useGetObjectContent = (
   }, [data?.pages]);
 
   return {
-    ...rest,
     data: content.objects,
-    isLoading: rest.isLoading || !query,
+    isLoading: isLoading || !query,
     query,
     variables,
     hasNextPage,

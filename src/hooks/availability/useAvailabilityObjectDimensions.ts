@@ -20,7 +20,7 @@ export const useAvailabilityObjectDimensions = (uid: string) => {
   const query = GET_AVAILABILITY_DIMENSIONS;
   const variables = { uid, nextToken: "" };
 
-  const { data, ...rest } = useInfiniteQuery<
+  const { data, isLoading } = useInfiniteQuery<
     GQLSkylarkGetAvailabilityDimensions,
     GQLSkylarkErrorResponse<GQLSkylarkGetAvailabilityDimensions>
   >({
@@ -45,9 +45,9 @@ export const useAvailabilityObjectDimensions = (uid: string) => {
   );
 
   return {
-    ...rest,
     data: availabilityDimensions,
     query,
     variables,
+    isLoading,
   };
 };

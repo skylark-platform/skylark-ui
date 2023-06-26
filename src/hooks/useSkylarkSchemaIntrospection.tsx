@@ -4,13 +4,19 @@ import {
   IntrospectionQuery,
   IntrospectionType,
 } from "graphql";
+import { useCallback } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { SKYLARK_SCHEMA_INTROSPECTION_QUERY } from "src/lib/graphql/skylark/queries";
 
-export const useSkylarkSchemaIntrospection = () => {
-  const { data, ...rest } = useQuery<IntrospectionQuery>({
+const useSkylarkSchema = <
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
+  TData extends unknown = IntrospectionQuery,
+>(
+  select?: (data: IntrospectionQuery) => TData,
+) => {
+  const { data, isError } = useQuery<IntrospectionQuery, Error, TData>({
     queryKey: [QueryKeys.Schema, SKYLARK_SCHEMA_INTROSPECTION_QUERY],
     queryFn: async () =>
       skylarkRequest(
@@ -18,11 +24,19 @@ export const useSkylarkSchemaIntrospection = () => {
         {},
         { useCache: true },
       ),
+    select,
   });
-
   return {
-    data: data?.__schema,
-    ...rest,
+    data: data,
+    isError,
+  };
+};
+
+export const useSkylarkSchemaIntrospection = () => {
+  const { data, isError } = useSkylarkSchema((d) => d.__schema);
+  return {
+    data,
+    isError,
   };
 };
 
@@ -31,27 +45,31 @@ export const useSkylarkSchemaIntrospectionTypesOfKind = <
 >(
   kind: IntrospectionType["kind"],
 ) => {
-  const { data, ...rest } = useSkylarkSchemaIntrospection();
-  const types = data?.types?.filter((type) => kind === type.kind) as
-    | T[]
-    | undefined;
-
+  const { data } = useSkylarkSchema(
+    useCallback(
+      (d: IntrospectionQuery) =>
+        d.__schema.types.filter((type) => kind === type.kind) as
+          | T[]
+          | undefined,
+      [kind],
+    ),
+  );
   return {
-    data: types,
-    ...rest,
+    data,
   };
 };
 
 export const useSkylarkSchemaInterfaceType = (typeName: string) => {
-  const { data, ...rest } =
-    useSkylarkSchemaIntrospectionTypesOfKind<IntrospectionInterfaceType>(
-      "INTERFACE",
-    );
-
-  const type = data?.find(({ name }) => name === typeName);
-
+  const { data } = useSkylarkSchema(
+    useCallback(
+      (d: IntrospectionQuery) =>
+        d.__schema.types.find(
+          (type) => type.kind === "INTERFACE" && type.name === typeName,
+        ) as IntrospectionInterfaceType | undefined,
+      [typeName],
+    ),
+  );
   return {
-    data: type,
-    ...rest,
+    data,
   };
 };

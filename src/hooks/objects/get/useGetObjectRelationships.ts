@@ -63,7 +63,7 @@ export const useGetObjectRelationships = (
   );
   const variables = { uid, nextToken: "", language };
 
-  const { data, ...rest } = useQuery<
+  const { data, isLoading } = useQuery<
     GQLSkylarkGetObjectRelationshipsResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>
   >({
@@ -98,10 +98,9 @@ export const useGetObjectRelationships = (
   );
 
   return {
-    ...rest,
     relationships,
     objectRelationships: objectOperations?.relationships,
-    isLoading: rest.isLoading || !query,
+    isLoading: isLoading || !query,
     query,
     variables,
   };

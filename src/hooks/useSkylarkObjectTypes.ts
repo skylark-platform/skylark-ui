@@ -20,40 +20,28 @@ import {
   useSkylarkSchemaIntrospection,
 } from "./useSkylarkSchemaIntrospection";
 
-export const useSkylarkObjectTypes = (
-  searchable: boolean,
-): Omit<UseQueryResult, "data"> & {
-  objectTypes: string[] | undefined;
-} => {
-  // Newer Skylark's have a VisibleObject Interface which contains all items that appear in Search, whereas Metadata can all be added into Sets
-  const { data, ...rest } = useSkylarkSchemaInterfaceType(
+export const useSkylarkObjectTypes = (searchable: boolean) => {
+  // VisibleObject Interface contains all items that appear in Search, whereas Metadata can all be added into Sets
+  const { data } = useSkylarkSchemaInterfaceType(
     searchable ? "VisibleObject" : "Metadata",
   );
-
-  // TODO remove when beta is switched off
-  const { data: legacyMetadataData } =
-    useSkylarkSchemaInterfaceType("Metadata");
 
   const objectTypes = useMemo(() => {
     const objectTypes = data
       ? data?.possibleTypes.map(({ name }) => name) || []
       : undefined;
-    const legacyMetadata = legacyMetadataData
-      ? legacyMetadataData?.possibleTypes.map(({ name }) => name) || []
-      : undefined;
-    return (objectTypes || legacyMetadata)?.sort();
-  }, [data, legacyMetadataData]);
+    return objectTypes?.sort();
+  }, [data]);
 
   return {
     objectTypes,
-    ...rest,
   };
 };
 
 const useObjectTypesConfig = (objectTypes?: string[]) => {
   const query = createGetAllObjectsConfigQuery(objectTypes);
 
-  const { data, ...rest } = useQuery<GQLSkylarkObjectTypesWithConfig>({
+  const { data } = useQuery<GQLSkylarkObjectTypesWithConfig>({
     queryKey: [QueryKeys.ObjectTypesConfig, query],
     queryFn: async () => skylarkRequest(query as DocumentNode),
     enabled: query !== null,
@@ -65,29 +53,27 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
   }));
 
   return {
-    ...rest,
     objectTypesWithConfig,
   };
 };
 
 // Returns the operations for a given object (createEpisode etc for Episode)
 export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
-  const { data, ...rest } = useSkylarkSchemaIntrospection();
+  const { data, isError } = useSkylarkSchemaIntrospection();
 
-  if (!data || !objectType || rest.isError) {
-    return { objectOperations: null, ...rest };
+  if (!data || !objectType || isError) {
+    return { objectOperations: null, isError };
   }
 
   try {
     const objectOperations = getObjectOperations(objectType, data);
     return {
       objectOperations,
-      ...rest,
+      isError,
     };
   } catch (err) {
     return {
       objectOperations: null,
-      ...rest,
       isError: true,
       error: err as ObjectError | unknown,
     };
@@ -100,7 +86,7 @@ export const useSkylarkObjectTypesWithConfig = () => {
 };
 
 export const useSkylarkSetObjectTypes = () => {
-  const { data, ...rest } = useSkylarkSchemaInterfaceType("Set");
+  const { data } = useSkylarkSchemaInterfaceType("Set");
 
   const setObjectTypes = data
     ? data?.possibleTypes.map(({ name }) => name) || []
@@ -108,7 +94,6 @@ export const useSkylarkSetObjectTypes = () => {
 
   return {
     setObjectTypes,
-    ...rest,
   };
 };
 
@@ -118,7 +103,7 @@ export const useSkylarkSetObjectTypesWithConfig = () => {
 };
 
 export const useAllObjectsMeta = (searchableOnly?: boolean) => {
-  const { data: schemaResponse, ...rest } = useSkylarkSchemaIntrospection();
+  const { data: schemaResponse } = useSkylarkSchemaIntrospection();
 
   const { objectTypes } = useSkylarkObjectTypes(!!searchableOnly);
 
@@ -142,12 +127,11 @@ export const useAllObjectsMeta = (searchableOnly?: boolean) => {
   return {
     objects,
     allFieldNames,
-    ...rest,
   };
 };
 
 export const useAllSetObjectsMeta = () => {
-  const { data: schemaResponse, ...rest } = useSkylarkSchemaIntrospection();
+  const { data: schemaResponse } = useSkylarkSchemaIntrospection();
 
   const { setObjectTypes } = useSkylarkSetObjectTypes();
 
@@ -170,6 +154,5 @@ export const useAllSetObjectsMeta = () => {
   return {
     setObjects,
     allFieldNames,
-    ...rest,
   };
 };

@@ -49,7 +49,6 @@ export const useGetObjectContentOf = (
     isLoading,
     hasNextPage,
     fetchNextPage,
-    ...rest
   } = useInfiniteQuery<
     GQLSkylarkGetObjectContentOfResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentOfResponse>
@@ -92,7 +91,6 @@ export const useGetObjectContentOf = (
   }
 
   return {
-    ...rest,
     data,
     isLoading: isLoading || !query,
     query,

@@ -42,30 +42,28 @@ export const PanelMetadata = ({
   objectMeta,
   form: { register, getValues, control, formState },
 }: PanelMetadataProps) => {
-  const options = OBJECT_OPTIONS.find(({ objectTypes }) =>
-    objectTypes.includes(objectType),
-  );
-
   const {
     systemMetadataFields,
     translatableMetadataFields,
     globalMetadataFields,
-  } = useMemo(
-    () =>
-      objectMeta
-        ? splitMetadataIntoSystemTranslatableGlobal(
-            objectMeta.fields.map(({ name }) => name),
-            objectMeta.operations.update.inputs,
-            objectMeta.fieldConfig,
-            options,
-          )
-        : {
-            systemMetadataFields: [],
-            translatableMetadataFields: [],
-            globalMetadataFields: [],
-          },
-    [objectMeta, options],
-  );
+  } = useMemo(() => {
+    const options = OBJECT_OPTIONS.find(({ objectTypes }) =>
+      objectTypes.includes(objectType),
+    );
+
+    return objectMeta
+      ? splitMetadataIntoSystemTranslatableGlobal(
+          objectMeta.fields.map(({ name }) => name),
+          objectMeta.operations.update.inputs,
+          objectMeta.fieldConfig,
+          options,
+        )
+      : {
+          systemMetadataFields: [],
+          translatableMetadataFields: [],
+          globalMetadataFields: [],
+        };
+  }, [objectMeta, objectType]);
 
   const requiredFields = objectMeta?.operations.create.inputs
     .filter(({ isRequired }) => isRequired)

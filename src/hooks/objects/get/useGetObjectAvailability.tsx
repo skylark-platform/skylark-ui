@@ -126,7 +126,7 @@ export const useGetObjectAvailability = (
     variables,
   });
 
-  const { data, ...rest } = useInfiniteQuery<
+  const { data, isLoading, hasNextPage, fetchNextPage } = useInfiniteQuery<
     GQLSkylarkGetObjectAvailabilityResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectAvailabilityResponse>
   >({
@@ -156,9 +156,10 @@ export const useGetObjectAvailability = (
     );
 
   return {
-    ...rest,
     data: availability,
-    isLoading: rest.isLoading || !query,
+    isLoading: isLoading || !query,
+    hasNextPage,
+    fetchNextPage,
     query,
     variables,
   };

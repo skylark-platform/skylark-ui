@@ -37,7 +37,7 @@ export const DeleteObjectModal = ({
   const isDeleteTranslation =
     (language && availableLanguages.length > 1) || false;
 
-  const { mutate: deleteObject, isLoading: isDeleting } = useDeleteObject({
+  const { deleteObject, isDeleting } = useDeleteObject({
     objectType,
     isDeleteTranslation,
     onSuccess: () => {

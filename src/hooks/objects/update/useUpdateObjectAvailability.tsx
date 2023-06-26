@@ -29,7 +29,7 @@ export const useUpdateObjectAvailability = ({
     updatedAvailabilityObjects,
   );
 
-  const { mutate, ...rest } = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationFn: ({ uid }: { uid: string }) => {
       return skylarkRequest(mutation as RequestDocument, { uid });
     },
@@ -46,6 +46,6 @@ export const useUpdateObjectAvailability = ({
 
   return {
     updateObjectAvailability,
-    ...rest,
+    isUpdatingObjectAvailability: isLoading,
   };
 };

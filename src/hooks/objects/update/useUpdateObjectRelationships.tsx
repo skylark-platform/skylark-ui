@@ -34,7 +34,7 @@ export const useUpdateObjectRelationships = ({
       originalRelationshipObjects,
     );
 
-  const { mutate, ...rest } = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationFn: ({ uid }: { uid: string }) => {
       return skylarkRequest<GQLSkylarkUpdateRelationshipsResponse>(
         updateObjectRelationshipsMutation as RequestDocument,
@@ -54,6 +54,6 @@ export const useUpdateObjectRelationships = ({
 
   return {
     updateObjectRelationships,
-    ...rest,
+    isUpdatingObjectRelationships: isLoading,
   };
 };

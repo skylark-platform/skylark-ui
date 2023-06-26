@@ -24,7 +24,7 @@ export const useUpdateObjectMetadata = ({
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  const { mutate, ...rest } = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationFn: ({
       uid,
       language,
@@ -72,6 +72,6 @@ export const useUpdateObjectMetadata = ({
 
   return {
     updateObjectMetadata,
-    ...rest,
+    isUpdatingObjectMetadata: isLoading,
   };
 };

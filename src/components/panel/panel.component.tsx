@@ -418,7 +418,7 @@ export const Panel = ({
     availabilityObjects,
   ]);
 
-  const { updateObjectRelationships, isLoading: updatingObjectRelationships } =
+  const { updateObjectRelationships, isUpdatingObjectRelationships } =
     useUpdateObjectRelationships({
       objectType,
       uid,
@@ -429,7 +429,7 @@ export const Panel = ({
       },
     });
 
-  const { updateObjectMetadata, isLoading: updatingObjectMetadata } =
+  const { updateObjectMetadata, isUpdatingObjectMetadata } =
     useUpdateObjectMetadata({
       objectType,
       onSuccess: () => {
@@ -438,7 +438,7 @@ export const Panel = ({
       },
     });
 
-  const { updateObjectContent, isLoading: updatingObjectContents } =
+  const { updateObjectContent, isUpdatingObjectContent } =
     useUpdateObjectContent({
       objectType,
       uid,
@@ -449,7 +449,7 @@ export const Panel = ({
       },
     });
 
-  const { updateObjectAvailability, isLoading: updatingObjectAvailability } =
+  const { updateObjectAvailability, isUpdatingObjectAvailability } =
     useUpdateObjectAvailability({
       objectType,
       uid,
@@ -462,7 +462,7 @@ export const Panel = ({
 
   const {
     updateAvailabilityObjectDimensions,
-    isLoading: updatingAvailabilityObjectDimensions,
+    isUpdatingAvailabilityObjectDimensions,
   } = useUpdateAvailabilityObjectDimensions({
     uid,
     originalAvailabilityDimensions: availabilityDimensionValues.original,
@@ -527,11 +527,11 @@ export const Panel = ({
         inEditMode={inEditMode}
         save={saveActiveTabChanges}
         isSaving={
-          updatingObjectContents ||
-          updatingObjectRelationships ||
-          updatingObjectMetadata ||
-          updatingObjectAvailability ||
-          updatingAvailabilityObjectDimensions
+          isUpdatingObjectRelationships ||
+          isUpdatingObjectMetadata ||
+          isUpdatingObjectContent ||
+          isUpdatingObjectAvailability ||
+          isUpdatingAvailabilityObjectDimensions
         }
         isTranslatable={objectMeta?.isTranslatable}
         availabilityStatus={data?.meta.availabilityStatus}

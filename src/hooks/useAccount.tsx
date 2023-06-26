@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import {
@@ -10,28 +9,25 @@ import { SkylarkAccount } from "src/interfaces/skylark/environment";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { GET_ACCOUNT } from "src/lib/graphql/skylark/queries";
 
+const select = (data: GQLSkylarkAccountResponse): SkylarkAccount => ({
+  accountId: data?.getAccount.account_id,
+  skylarkVersion: data?.getAccount.skylark_version,
+  defaultLanguage: data?.getAccount.config?.default_language,
+});
+
 export const useAccount = () => {
-  const { data, ...rest } = useQuery<
+  const { data: account, isLoading } = useQuery<
     GQLSkylarkAccountResponse,
-    GQLSkylarkErrorResponse<GQLSkylarkAccountResponse>
+    GQLSkylarkErrorResponse<GQLSkylarkAccountResponse>,
+    SkylarkAccount
   >({
     queryKey: [QueryKeys.Account, GET_ACCOUNT],
     queryFn: async () => skylarkRequest(GET_ACCOUNT),
+    select,
   });
 
-  const account = useMemo((): SkylarkAccount | undefined => {
-    if (!data?.getAccount) {
-      return;
-    }
-    return {
-      accountId: data?.getAccount.account_id,
-      skylarkVersion: data?.getAccount.skylark_version,
-      defaultLanguage: data?.getAccount.config?.default_language,
-    };
-  }, [data]);
-
   return {
-    ...rest,
     account,
+    isLoading,
   };
 };
