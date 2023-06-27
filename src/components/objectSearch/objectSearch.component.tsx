@@ -1,13 +1,13 @@
 import { VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useEffect, useState, useMemo } from "react";
-import { useDebounce } from "use-debounce";
 
 import { Spinner } from "src/components/icons";
+import { useUser } from "src/contexts/useUser";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
-import { hasProperty } from "src/lib/utils";
+import { hasProperty, isObjectsDeepEqual } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
 import { ObjectSearchResults } from "./results/objectSearchResults.component";
@@ -28,15 +28,23 @@ export interface ObjectListProps {
 }
 
 export const ObjectSearch = (props: ObjectListProps) => {
+  const { defaultLanguage, isLoading: isUserLoading } = useUser();
   const { withCreateButtons, setPanelObject, isPanelOpen } = props;
 
-  const [searchQuery, setSearchQuery] = useState("");
   const { objectTypes } = useSkylarkObjectTypes(true);
-  const [searchFilters, setSearchFilters] = useState<SearchFilters>({
-    objectTypes: null,
-    language: undefined, // undefined initially as null is a valid language
-  });
-  const [debouncedSearchFilters] = useDebounce(searchFilters, 300);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchLanguage, setSearchLanguage] =
+    // undefined initially as null is a valid language
+    useState<SearchFilters["language"]>(undefined);
+  const [searchObjectTypes, setSearchObjectTypes] =
+    useState<SearchFilters["objectTypes"]>(null);
+
+  useEffect(() => {
+    if (objectTypes && objectTypes.length !== 0 && searchObjectTypes === null) {
+      setSearchObjectTypes(objectTypes);
+    }
+  }, [objectTypes, searchObjectTypes]);
 
   const {
     data: searchData,
@@ -51,11 +59,12 @@ export const ObjectSearch = (props: ObjectListProps) => {
     isRefetching: searchRefetching,
     refetch,
     fetchNextPage,
-  } = useSearch(searchQuery, debouncedSearchFilters);
+  } = useSearch(searchQuery, {
+    language: searchLanguage || defaultLanguage,
+    objectTypes: searchObjectTypes || objectTypes || null,
+  });
 
-  const isSearching =
-    isLoading ||
-    JSON.stringify(searchFilters) !== JSON.stringify(debouncedSearchFilters);
+  const isSearching = isLoading || isUserLoading;
 
   // Sorts objects using the preference array above, any others are added to the end randomly
   const sortedHeaders = useMemo(() => {
@@ -81,40 +90,21 @@ export const ObjectSearch = (props: ObjectListProps) => {
   );
 
   useEffect(() => {
-    if (
-      objectTypes &&
-      objectTypes.length !== 0 &&
-      searchFilters.objectTypes === null
-    ) {
-      setSearchFilters({ ...searchFilters, objectTypes: objectTypes });
-    }
-  }, [objectTypes, searchFilters]);
-
-  useEffect(() => {
-    // Update the column visibility when new fields are added
+    // Update the column visibility when new fields are added / removed
     if (sortedHeaders && sortedHeaders.length !== 0) {
-      const headersWithoutVisibility = sortedHeaders.filter(
-        (header) => !hasProperty(columnVisibility, header),
+      const newColumnVisibility = Object.fromEntries(
+        sortedHeaders.map((header) => [
+          header,
+          hasProperty(columnVisibility, header)
+            ? columnVisibility[header]
+            : true,
+        ]),
       );
-      if (headersWithoutVisibility.length > 0) {
-        const newColumns = Object.fromEntries(
-          headersWithoutVisibility.map((header) => [header, true]),
-        );
-        setColumnVisibility({
-          ...columnVisibility,
-          ...newColumns,
-        });
+      if (!isObjectsDeepEqual(newColumnVisibility, columnVisibility)) {
+        setColumnVisibility(newColumnVisibility);
       }
     }
   }, [sortedHeaders, columnVisibility]);
-
-  const onFilterChangeWrapper = (
-    updatedFilters: SearchFilters,
-    updatedColumnVisibility: VisibilityState,
-  ) => {
-    setSearchFilters(updatedFilters);
-    setColumnVisibility(updatedColumnVisibility);
-  };
 
   if (searchError) console.error("Search Errors:", { searchError });
 
@@ -146,10 +136,15 @@ export const ObjectSearch = (props: ObjectListProps) => {
             isSearching={isSearching || searchRefetching}
             onRefresh={refetch}
             onQueryChange={setSearchQuery}
-            activeFilters={searchFilters}
+            activeFilters={{
+              objectTypes: searchObjectTypes,
+              language: searchLanguage,
+            }}
             columns={sortedHeaders}
             visibleColumns={columnVisibility}
-            onFilterChange={onFilterChangeWrapper}
+            onColumnVisibilityChange={setColumnVisibility}
+            onLanguageChange={setSearchLanguage}
+            onObjectTypeChange={setSearchObjectTypes}
           />
           <div className="mt-2 flex w-full justify-start pl-3 md:pl-7">
             <p className="text-xs font-medium text-manatee-400">
@@ -169,7 +164,7 @@ export const ObjectSearch = (props: ObjectListProps) => {
           />
         )}
       </div>
-      {!isSearching && (
+      {sortedHeaders.length > 0 && (
         <ObjectSearchResults
           {...props}
           fetchNextPage={

@@ -1,6 +1,6 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { DocumentNode } from "graphql";
-import { useMemo } from "react";
+import { DocumentNode, IntrospectionQuery, IntrospectionSchema } from "graphql";
+import { useCallback, useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import {
@@ -16,6 +16,7 @@ import {
 import { ObjectError } from "src/lib/utils/errors";
 
 import {
+  selectSchema,
   useSkylarkSchemaInterfaceType,
   useSkylarkSchemaIntrospection,
 } from "./useSkylarkSchemaIntrospection";
@@ -59,7 +60,7 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
 
 // Returns the operations for a given object (createEpisode etc for Episode)
 export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
-  const { data, isError } = useSkylarkSchemaIntrospection();
+  const { data, isError } = useSkylarkSchemaIntrospection(selectSchema);
 
   if (!data || !objectType || isError) {
     return { objectOperations: null, isError };
@@ -103,35 +104,38 @@ export const useSkylarkSetObjectTypesWithConfig = () => {
 };
 
 export const useAllObjectsMeta = (searchableOnly?: boolean) => {
-  const { data: schemaResponse } = useSkylarkSchemaIntrospection();
-
   const { objectTypes } = useSkylarkObjectTypes(!!searchableOnly);
 
-  const { objects, allFieldNames } = useMemo(() => {
-    const objects =
-      schemaResponse && objectTypes
-        ? getAllObjectsMeta(schemaResponse, objectTypes)
-        : null;
+  const { data } = useSkylarkSchemaIntrospection(
+    useCallback(
+      ({ __schema: schemaResponse }: IntrospectionQuery) => {
+        const objects =
+          schemaResponse && objectTypes
+            ? getAllObjectsMeta(schemaResponse, objectTypes)
+            : null;
 
-    const allFieldNames = objects
-      ?.flatMap(({ fields }) => fields)
-      .map(({ name }) => name)
-      .filter((name, index, self) => self.indexOf(name) === index);
+        const allFieldNames = objects
+          ?.flatMap(({ fields }) => fields)
+          .map(({ name }) => name)
+          .filter((name, index, self) => self.indexOf(name) === index);
 
-    return {
-      objects,
-      allFieldNames,
-    };
-  }, [objectTypes, schemaResponse]);
+        return {
+          objects,
+          allFieldNames,
+        };
+      },
+      [objectTypes],
+    ),
+  );
 
   return {
-    objects,
-    allFieldNames,
+    objects: data?.objects || null,
+    allFieldNames: data?.allFieldNames,
   };
 };
 
 export const useAllSetObjectsMeta = () => {
-  const { data: schemaResponse } = useSkylarkSchemaIntrospection();
+  const { data: schemaResponse } = useSkylarkSchemaIntrospection(selectSchema);
 
   const { setObjectTypes } = useSkylarkSetObjectTypes();
 

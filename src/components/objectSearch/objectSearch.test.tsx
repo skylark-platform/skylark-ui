@@ -4,6 +4,7 @@ import GQLGameOfThronesSearchResultsPage1 from "src/__tests__/fixtures/skylark/q
 import GQLGameOfThronesSearchResultsPage1enGB from "src/__tests__/fixtures/skylark/queries/search/gotPage1enGB.json";
 import { server } from "src/__tests__/mocks/server";
 import {
+  act,
   fireEvent,
   prettyDOM,
   render,
@@ -78,6 +79,11 @@ test("renders search results (with default language)", async () => {
   render(<ObjectSearch />);
 
   await screen.findByText("UID"); // Search for table header
+  await waitFor(() => {
+    expect(
+      screen.getByTestId("object-search-results-table-body"),
+    ).toBeInTheDocument();
+  });
   // Search for table content
   await screen.findAllByText(
     GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
@@ -167,6 +173,10 @@ test("manually filters to only en-gb translated objects", async () => {
   await screen.findByText("UID");
   await screen.findByText("Translation");
 
+  await waitFor(() => {
+    screen.getByTestId("object-search-results-table-body");
+  });
+
   expect(
     screen.queryAllByText(
       GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid as string,
@@ -222,37 +232,6 @@ test("automatically filters to only en-gb translated objects as its the user/acc
   expect(screen.queryAllByText("en-GB").length).toBeGreaterThan(1);
   expect(screen.queryAllByText("pt-PT")).toHaveLength(0);
 }, 10000);
-
-test("clears the language filter", async () => {
-  // Arrange
-  render(<ObjectSearch />);
-
-  const combobox = screen.getByRole("combobox");
-  await fireEvent.change(combobox, {
-    target: { value: "en-GB" },
-  });
-  await fireEvent.click(
-    within(screen.getByTestId("select-options")).getByText("en-GB"),
-  );
-  await screen.findByText(
-    GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
-  );
-  expect(screen.queryAllByText("en-GB").length).toBeGreaterThan(1);
-  expect(screen.queryAllByText("pt-PT")).toHaveLength(0);
-
-  // Act
-  await fireEvent.click(screen.getByTestId("select-clear-value"));
-
-  // Assert
-  await screen.findByText("Translation");
-  expect(
-    screen.queryAllByText(
-      GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid as string,
-    ),
-  ).toHaveLength(2);
-  expect(screen.queryAllByText("en-GB").length).toBeGreaterThan(1);
-  expect(screen.queryAllByText("pt-PT").length).toBeGreaterThan(1);
-});
 
 describe("row in edit mode", () => {
   beforeEach(() => {

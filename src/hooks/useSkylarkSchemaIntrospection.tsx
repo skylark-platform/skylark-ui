@@ -10,7 +10,9 @@ import { QueryKeys } from "src/enums/graphql";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { SKYLARK_SCHEMA_INTROSPECTION_QUERY } from "src/lib/graphql/skylark/queries";
 
-const useSkylarkSchema = <
+export const selectSchema = (data: IntrospectionQuery) => data.__schema;
+
+export const useSkylarkSchemaIntrospection = <
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
   TData extends unknown = IntrospectionQuery,
 >(
@@ -32,20 +34,12 @@ const useSkylarkSchema = <
   };
 };
 
-export const useSkylarkSchemaIntrospection = () => {
-  const { data, isError } = useSkylarkSchema((d) => d.__schema);
-  return {
-    data,
-    isError,
-  };
-};
-
 export const useSkylarkSchemaIntrospectionTypesOfKind = <
   T extends IntrospectionType,
 >(
   kind: IntrospectionType["kind"],
 ) => {
-  const { data } = useSkylarkSchema(
+  const { data } = useSkylarkSchemaIntrospection(
     useCallback(
       (d: IntrospectionQuery) =>
         d.__schema.types.filter((type) => kind === type.kind) as
@@ -60,7 +54,7 @@ export const useSkylarkSchemaIntrospectionTypesOfKind = <
 };
 
 export const useSkylarkSchemaInterfaceType = (typeName: string) => {
-  const { data } = useSkylarkSchema(
+  const { data } = useSkylarkSchemaIntrospection(
     useCallback(
       (d: IntrospectionQuery) =>
         d.__schema.types.find(

@@ -33,7 +33,7 @@ const customColumnStyling: Record<
   },
   [OBJECT_LIST_TABLE.columnIds.displayField]: {
     className: {
-      all: "sm:sticky z-10 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-1 bg-white",
+      all: "sm:sticky z-20 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-1 bg-white",
       withoutCheckbox: "left-6",
       withCheckbox: "left-10",
     },
@@ -48,8 +48,8 @@ const customColumnStyling: Record<
   [OBJECT_LIST_TABLE.columnIds.objectType]: {
     className: {
       all: "px-0 bg-white",
-      cell: "absolute z-20 pr-2",
-      header: "sm:sticky bg-white w-10 -left-px h-5 pr-1",
+      cell: "absolute z-30 pr-2",
+      header: "sm:sticky bg-white w-10 -left-px h-5 pr-1 z-20",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.checkbox]: {

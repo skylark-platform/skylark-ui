@@ -76,25 +76,26 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
       ?.flatMap((page) => page.search.objects)
       .filter((obj) => obj !== null) as SkylarkGraphQLObject[] | undefined;
 
-    const normalisedObjects =
-      nonNullObjects?.map(
-        removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>,
-      ) || [];
+    const normalisedObjects = nonNullObjects?.map(
+      removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>,
+    );
 
-    const parsedObjects = normalisedObjects.map((obj) => {
+    const parsedObjects = normalisedObjects?.map((obj) => {
       const objectMeta = searchableObjects?.find(
         ({ name }) => name === obj.__typename,
       );
       return parseSkylarkObject(obj, objectMeta);
     });
 
-    const allAvailableLanguages = [
-      ...new Set(
-        parsedObjects.flatMap(
-          ({ meta: { availableLanguages } }) => availableLanguages,
-        ),
-      ),
-    ];
+    const allAvailableLanguages = parsedObjects
+      ? [
+          ...new Set(
+            parsedObjects.flatMap(
+              ({ meta: { availableLanguages } }) => availableLanguages,
+            ),
+          ),
+        ]
+      : [];
 
     return { data: parsedObjects, allAvailableLanguages };
   }, [searchResponse?.pages, searchableObjects]);

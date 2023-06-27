@@ -1,7 +1,6 @@
 import { Header, Table as ReactTable, Row } from "@tanstack/react-table";
 import clsx from "clsx";
-import { forwardRef, Ref, RefObject, useCallback } from "react";
-import { useVirtual } from "react-virtual";
+import { VirtualItem } from "react-virtual";
 
 import { Skeleton } from "src/components/skeleton";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
@@ -15,6 +14,8 @@ import { ObjectListingTableRow } from "./row.component";
 
 export interface TableProps {
   table: ReactTable<object>;
+  virtualRows: VirtualItem[];
+  totalRows: number;
   withCheckbox?: boolean;
   withDraggableRow?: boolean;
   isLoadingMore?: boolean;
@@ -70,47 +71,39 @@ const TableDataSkeletonLoading = ({
   </>
 );
 
-export const Table = forwardRef(
-  (
-    {
-      table,
-      withCheckbox = false,
-      isLoadingMore,
-      activeObject,
-      setPanelObject,
-      withDraggableRow,
-    }: TableProps,
-    parentRef: Ref<HTMLDivElement>,
-  ) => {
-    const { rows } = table.getRowModel();
+export const Table = ({
+  table,
+  withCheckbox = false,
+  isLoadingMore,
+  activeObject,
+  setPanelObject,
+  withDraggableRow,
+  virtualRows,
+  totalRows,
+}: TableProps) => {
+  const tableMeta = table.options.meta;
+  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
+  const paddingBottom =
+    virtualRows.length > 0
+      ? totalRows - (virtualRows?.[virtualRows.length - 1]?.end || 0)
+      : 0;
 
-    const rowVirtualizer = useVirtual({
-      parentRef: parentRef as RefObject<HTMLDivElement>,
-      size: rows.length,
-      estimateSize: useCallback(() => 42, []),
-      overscan: 40,
-    });
+  const headers = table.getHeaderGroups()[0].headers;
 
-    const { virtualItems: virtualRows, totalSize: totalRows } = rowVirtualizer;
+  const { rows } = table.getRowModel();
 
-    const tableMeta = table.options.meta;
-    const paddingTop =
-      virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
-    const paddingBottom =
-      virtualRows.length > 0
-        ? totalRows - (virtualRows?.[virtualRows.length - 1]?.end || 0)
-        : 0;
+  return (
+    <table
+      className="relative mb-10 bg-white"
+      width={table.getCenterTotalSize()}
+    >
+      <TableHead headers={headers} withCheckbox={withCheckbox} />
 
-    const headers = table.getHeaderGroups()[0].headers;
-
-    return (
-      <table
-        className="relative mb-10 bg-white"
-        width={table.getCenterTotalSize()}
-      >
-        <TableHead headers={headers} withCheckbox={withCheckbox} />
-
-        <tbody className="align-top">
+      {virtualRows.length > 0 && (
+        <tbody
+          className="align-top"
+          data-testid="object-search-results-table-body"
+        >
           {paddingTop > 0 && (
             <tr>
               <td style={{ height: `${paddingTop}px` }} />
@@ -120,7 +113,7 @@ export const Table = forwardRef(
             const row = rows[virtualRow.index] as Row<ParsedSkylarkObject>;
             return (
               <ObjectListingTableRow
-                key={virtualRow.index}
+                key={`row-${virtualRow.index}-${row.original.uid || ""}`}
                 row={row}
                 activeObject={activeObject}
                 setPanelObject={setPanelObject}
@@ -143,8 +136,7 @@ export const Table = forwardRef(
             />
           )}
         </tbody>
-      </table>
-    );
-  },
-);
-Table.displayName = "Table";
+      )}
+    </table>
+  );
+};

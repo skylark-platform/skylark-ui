@@ -23,7 +23,7 @@ test("renders with all checkboxes checked", async () => {
   render(
     <SearchFilter
       objectTypesWithConfig={objectTypesWithConfig}
-      activeFilters={{ objectTypes, language: "" }}
+      activeObjectTypes={objectTypes}
       columns={columns}
       visibleColumns={columns}
       onFilterSave={jest.fn()}
@@ -44,7 +44,7 @@ test("changes checkboxes and calls onFilterSave when apply is clicked", async ()
   render(
     <SearchFilter
       objectTypesWithConfig={objectTypesWithConfig}
-      activeFilters={{ objectTypes, language: "" }}
+      activeObjectTypes={objectTypes}
       columns={columns}
       visibleColumns={columns}
       onFilterSave={onFilterSave}
@@ -59,10 +59,11 @@ test("changes checkboxes and calls onFilterSave when apply is clicked", async ()
 
   fireEvent.click(screen.getByText("Apply"));
 
-  expect(onFilterSave).toHaveBeenCalledWith(
-    { objectTypes: ["Brand", "Episode"], language: "" },
-    { external_id: true, slug: false, uid: true },
-  );
+  expect(onFilterSave).toHaveBeenCalledWith(["Brand", "Episode"], {
+    external_id: true,
+    slug: false,
+    uid: true,
+  });
 });
 
 test("when reset is clicked, all filters are returned to all options checked without saving", async () => {
@@ -71,7 +72,7 @@ test("when reset is clicked, all filters are returned to all options checked wit
   render(
     <SearchFilter
       objectTypesWithConfig={objectTypesWithConfig}
-      activeFilters={{ objectTypes: [], language: "" }}
+      activeObjectTypes={[]}
       columns={columns}
       visibleColumns={[]}
       onFilterSave={onFilterSave}

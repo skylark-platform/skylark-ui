@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useRef, useState, useMemo, useCallback, useEffect } from "react";
+import { useVirtual } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import {
@@ -30,10 +31,13 @@ interface ObjectSearchResultsProps {
   setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
   isDragging?: boolean;
   fetchNextPage?: () => void;
-  searchData: ParsedSkylarkObject[];
+  searchData?: ParsedSkylarkObject[];
   sortedHeaders: string[];
   columnVisibility: VisibilityState;
 }
+
+// https://github.com/TanStack/table/issues/4240
+const emptyArray = [] as object[];
 
 export const ObjectSearchResults = ({
   sortedHeaders,
@@ -63,7 +67,7 @@ export const ObjectSearchResults = ({
   );
 
   const formattedSearchData = useMemo(() => {
-    const searchDataWithDisplayField = searchData.map((obj) => {
+    const searchDataWithDisplayField = searchData?.map((obj) => {
       return {
         ...obj,
         // When the object type is an image, we want to display its preview in the images tab
@@ -81,7 +85,7 @@ export const ObjectSearchResults = ({
     });
 
     // Move all entries in .metadata into the top level as tanstack-table outputs a warning messaged saying nested properties that are undefined
-    const searchDataWithTopLevelMetadata = searchDataWithDisplayField.map(
+    const searchDataWithTopLevelMetadata = searchDataWithDisplayField?.map(
       (obj) => ({
         ...obj.metadata,
         ...obj,
@@ -91,6 +95,7 @@ export const ObjectSearchResults = ({
     return searchDataWithTopLevelMetadata;
   }, [searchData]);
 
+  const searchDataLength = searchData?.length || 0;
   const fetchMoreOnBottomReached = useCallback(
     (containerRefElement?: HTMLDivElement | null) => {
       if (containerRefElement) {
@@ -98,14 +103,14 @@ export const ObjectSearchResults = ({
         // once the user has scrolled within 500px of the bottom of the table, fetch more data if there is any
         if (
           fetchNextPage &&
-          searchData.length > 0 &&
+          searchDataLength &&
           scrollHeight - scrollTop - clientHeight < 500
         ) {
           fetchNextPage();
         }
       }
     },
-    [searchData.length, fetchNextPage],
+    [searchDataLength, fetchNextPage],
   );
 
   // a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
@@ -115,7 +120,7 @@ export const ObjectSearchResults = ({
 
   const table = useReactTable({
     debugAll: false,
-    data: formattedSearchData,
+    data: formattedSearchData || emptyArray,
     columns: parsedColumns,
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: "onChange",
@@ -134,19 +139,31 @@ export const ObjectSearchResults = ({
     },
   });
 
+  const { rows } = table.getRowModel();
+
+  const rowVirtualizer = useVirtual({
+    parentRef: tableContainerRef,
+    size: rows.length,
+    estimateSize: useCallback(() => 42, []),
+    overscan: 40,
+  });
+
+  const { virtualItems: virtualRows, totalSize: totalRows } = rowVirtualizer;
+
   return (
     <div
       className={clsx(
         isDragging ? "overflow-hidden" : "overflow-x-auto",
-        "relative mb-6 flex w-full flex-auto flex-grow flex-col overscroll-none md:-ml-4",
+        "relative mb-6 flex w-full flex-col overscroll-none md:-ml-4",
       )}
       ref={tableContainerRef}
-      data-testid="table-container"
+      data-testid="object-search-results"
       onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
     >
       <Table
-        ref={tableContainerRef}
         table={table}
+        virtualRows={virtualRows}
+        totalRows={totalRows}
         withCheckbox={withObjectSelect}
         isLoadingMore={!!fetchNextPage}
         activeObject={panelObject || undefined}

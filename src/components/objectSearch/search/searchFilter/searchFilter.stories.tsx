@@ -50,10 +50,7 @@ const Template: ComponentStory<typeof SearchFilter> = (args) => {
 
 export const Default = Template.bind({});
 Default.args = {
-  activeFilters: {
-    objectTypes,
-    language: "",
-  },
+  activeObjectTypes: objectTypes,
   objectTypesWithConfig,
   columns,
   visibleColumns: columns,
@@ -62,10 +59,7 @@ Default.args = {
 
 export const WithNoFiltersSelected = Template.bind({});
 WithNoFiltersSelected.args = {
-  activeFilters: {
-    objectTypes: [],
-    language: "",
-  },
+  activeObjectTypes: objectTypes,
   objectTypesWithConfig,
   columns,
   visibleColumns: [],
