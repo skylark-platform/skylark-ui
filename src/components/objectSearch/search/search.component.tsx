@@ -128,6 +128,7 @@ export const Search = ({
           selected={activeFilters.language}
           onChange={onLanguageChange}
           useDefaultLanguage
+          onValueClear={() => onLanguageChange(null)}
         />
       </div>
     </div>

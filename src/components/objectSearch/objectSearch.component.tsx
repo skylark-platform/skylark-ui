@@ -60,7 +60,7 @@ export const ObjectSearch = (props: ObjectListProps) => {
     refetch,
     fetchNextPage,
   } = useSearch(searchQuery, {
-    language: searchLanguage || defaultLanguage,
+    language: searchLanguage === undefined ? defaultLanguage : searchLanguage,
     objectTypes: searchObjectTypes || objectTypes || null,
   });
 

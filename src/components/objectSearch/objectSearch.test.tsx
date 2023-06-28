@@ -233,6 +233,42 @@ test("automatically filters to only en-gb translated objects as its the user/acc
   expect(screen.queryAllByText("pt-PT")).toHaveLength(0);
 }, 10000);
 
+test("clears the language filter", async () => {
+  // Arrange
+  render(<ObjectSearch />);
+
+  const combobox = screen.getByRole("combobox");
+  await fireEvent.change(combobox, {
+    target: { value: "en-GB" },
+  });
+  await fireEvent.click(
+    within(screen.getByTestId("select-options")).getByText("en-GB"),
+  );
+  await screen.findByText(
+    GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
+  );
+  expect(screen.queryAllByText("en-GB").length).toBeGreaterThan(1);
+  expect(screen.queryAllByText("pt-PT")).toHaveLength(0);
+
+  // Act
+  await fireEvent.click(screen.getByTestId("select-clear-value"));
+
+  // Assert
+  await screen.findByText("Translation");
+
+  await waitFor(() => {
+    screen.getByTestId("object-search-results-table-body");
+  });
+
+  expect(
+    screen.queryAllByText(
+      GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid as string,
+    ),
+  ).toHaveLength(2);
+  expect(screen.queryAllByText("en-GB").length).toBeGreaterThan(1);
+  expect(screen.queryAllByText("pt-PT").length).toBeGreaterThan(1);
+});
+
 describe("row in edit mode", () => {
   beforeEach(() => {
     server.use(
