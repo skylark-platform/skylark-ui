@@ -59,7 +59,7 @@ Default.args = {
 
 export const WithNoFiltersSelected = Template.bind({});
 WithNoFiltersSelected.args = {
-  activeObjectTypes: objectTypes,
+  activeObjectTypes: [],
   objectTypesWithConfig,
   columns,
   visibleColumns: [],
