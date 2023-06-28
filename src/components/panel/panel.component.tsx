@@ -49,9 +49,9 @@ interface PanelProps {
   closePanel?: () => void;
   object: SkylarkObjectIdentifier;
   isDraggedObject?: boolean;
-  droppedObject?: ParsedSkylarkObject;
+  droppedObjects?: ParsedSkylarkObject[];
   tab: PanelTab;
-  clearDroppedObject?: () => void;
+  clearDroppedObjects?: () => void;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
   setTab: (t: PanelTab) => void;
   navigateToPreviousPanelObject?: () => void;
@@ -84,8 +84,8 @@ export const Panel = ({
   tab: selectedTab,
   closePanel,
   isDraggedObject,
-  droppedObject,
-  clearDroppedObject,
+  droppedObjects,
+  clearDroppedObjects,
   setTab: setSelectedTab,
   navigateToPreviousPanelObject,
   navigateToForwardPanelObject,
@@ -254,7 +254,9 @@ export const Panel = ({
   }, [inEditMode, metadataForm, resetMetadataForm, formParsedMetadata]);
 
   useEffect(() => {
-    if (droppedObject) {
+    console.log("panel useEffect", { droppedObjects });
+    if (droppedObjects && droppedObjects.length === 1) {
+      const [droppedObject] = droppedObjects;
       if (selectedTab === PanelTab.Relationships) {
         const relationships = objectMeta?.relationships || [];
         const droppedObjectRelationshipName = relationships.find(
@@ -401,13 +403,13 @@ export const Panel = ({
           }
         }
       }
-      clearDroppedObject?.();
+      clearDroppedObjects?.();
     }
   }, [
-    clearDroppedObject,
+    clearDroppedObjects,
     contentObjects,
     data?.content?.objects,
-    droppedObject,
+    droppedObjects,
     selectedTab,
     objectMeta?.relationships,
     updatedRelationshipObjects,
@@ -550,7 +552,7 @@ export const Panel = ({
               original: availabilityDimensionValues.original,
               updated: availabilityDimensionValues.original,
             });
-            clearDroppedObject?.();
+            clearDroppedObjects?.();
           }
           setEditMode(!inEditMode);
         }}

@@ -1,3 +1,4 @@
+import { CheckedState } from "@radix-ui/react-checkbox";
 import {
   VisibilityState,
   ColumnDef,
@@ -22,7 +23,7 @@ import {
   createObjectListingColumns,
 } from "./table/columnConfiguration";
 
-interface ObjectSearchResultsProps {
+export interface ObjectSearchResultsProps {
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
   withObjectEdit?: boolean;
@@ -34,6 +35,13 @@ interface ObjectSearchResultsProps {
   searchData?: ParsedSkylarkObject[];
   sortedHeaders: string[];
   columnVisibility: VisibilityState;
+  onRowCheckChange?: ({
+    object,
+    checkedState,
+  }: {
+    object: ParsedSkylarkObject;
+    checkedState: CheckedState;
+  }) => void;
 }
 
 // https://github.com/TanStack/table/issues/4240
@@ -50,6 +58,7 @@ export const ObjectSearchResults = ({
   withObjectSelect,
   withObjectEdit,
   fetchNextPage,
+  onRowCheckChange,
 }: ObjectSearchResultsProps) => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [rowInEditMode, setRowInEditMode] = useState("");
@@ -128,6 +137,7 @@ export const ObjectSearchResults = ({
       columnVisibility,
     },
     meta: {
+      onRowCheckChange,
       rowInEditMode,
       withObjectEdit: !!withObjectEdit,
       onEditClick(rowId) {

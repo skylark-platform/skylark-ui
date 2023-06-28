@@ -53,7 +53,11 @@ const customColumnStyling: Record<
     },
   },
   [OBJECT_LIST_TABLE.columnIds.checkbox]: {
-    className: { all: "pr-4 pl-0 sticky -left-px absolute z-[41] bg-white" },
+    className: {
+      all: "pr-0 pl-0 sticky -left-px absolute bg-white",
+      cell: "z-[31]",
+      header: "z-40",
+    },
   },
   images: {
     className: {

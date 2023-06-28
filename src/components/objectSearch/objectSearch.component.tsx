@@ -1,6 +1,6 @@
 import { VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, memo } from "react";
 
 import { Spinner } from "src/components/icons";
 import { useUser } from "src/contexts/useUser";
@@ -10,7 +10,10 @@ import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 import { hasProperty, isObjectsDeepEqual } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
-import { ObjectSearchResults } from "./results/objectSearchResults.component";
+import {
+  ObjectSearchResults,
+  ObjectSearchResultsProps,
+} from "./results/objectSearchResults.component";
 import {
   OBJECT_SEARCH_HARDCODED_COLUMNS,
   OBJECT_SEARCH_ORDERED_KEYS,
@@ -25,6 +28,7 @@ export interface ObjectListProps {
   panelObject?: SkylarkObjectIdentifier | null;
   setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
   isDragging?: boolean;
+  onRowCheckChange: ObjectSearchResultsProps["onRowCheckChange"];
 }
 
 export const ObjectSearch = (props: ObjectListProps) => {
@@ -193,3 +197,40 @@ export const ObjectSearch = (props: ObjectListProps) => {
     </div>
   );
 };
+
+const objectSearchPropsAreEqual = (
+  prevProps: Readonly<ObjectListProps>,
+  nextProps: Readonly<ObjectListProps>,
+) => {
+  const isPanelOpenSame = prevProps.isPanelOpen === nextProps.isPanelOpen;
+  const isOnRowCheckChangeSame =
+    prevProps.onRowCheckChange === nextProps.onRowCheckChange;
+  const isPanelObjectSame =
+    prevProps.panelObject?.uid === nextProps.panelObject?.uid &&
+    prevProps.panelObject?.objectType === nextProps.panelObject?.objectType;
+  const isSetPanelObjectSame =
+    prevProps.setPanelObject === nextProps.setPanelObject;
+
+  const areEqual =
+    isPanelOpenSame &&
+    // isOnRowCheckChangeSame &&
+    isPanelObjectSame &&
+    isSetPanelObjectSame;
+
+  console.log({
+    isPanelOpenSame,
+    isOnRowCheckChangeSame,
+    isPanelObjectSame,
+    isSetPanelObjectSame,
+    areEqual,
+  });
+
+  return areEqual;
+};
+
+export const MemoizedObjectSearch = memo(
+  ObjectSearch,
+  objectSearchPropsAreEqual,
+);
+
+// export const MemoizedObjectSearch = ObjectSearch;

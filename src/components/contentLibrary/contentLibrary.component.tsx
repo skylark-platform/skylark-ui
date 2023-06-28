@@ -9,12 +9,16 @@ import {
   DragStartEvent,
   TouchSensor,
 } from "@dnd-kit/core";
+import { CheckedState } from "@radix-ui/react-checkbox";
 import clsx from "clsx";
 import { m, useMotionValue, useTransform } from "framer-motion";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
-import { ObjectSearch } from "src/components/objectSearch";
+import {
+  MemoizedObjectSearch,
+  ObjectSearch,
+} from "src/components/objectSearch";
 import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
 import { usePanelObjectState } from "src/hooks/usePanelObjectState";
@@ -24,6 +28,31 @@ const INITIAL_PANEL_PERCENTAGE = 70;
 const MINIMUM_SIZES = {
   objectListing: 425,
   panel: 450,
+};
+
+const updateCheckedObjects = (
+  existingCheckedObjects: ParsedSkylarkObject[],
+  object: ParsedSkylarkObject,
+  checkedState: CheckedState,
+) => {
+  if (checkedState) {
+    const objAlreadyChecked =
+      existingCheckedObjects.findIndex(
+        ({ uid, objectType }) =>
+          uid === object.uid && objectType === object.objectType,
+      ) > -1;
+
+    if (objAlreadyChecked) {
+      return existingCheckedObjects;
+    }
+
+    return [...existingCheckedObjects, object];
+  }
+
+  return existingCheckedObjects.filter(
+    ({ uid, objectType }) =>
+      !(uid === object.uid && objectType === object.objectType),
+  );
 };
 
 export const ContentLibrary = () => {
@@ -37,11 +66,56 @@ export const ContentLibrary = () => {
     resetPanelObjectState,
   } = usePanelObjectState();
 
+  // const [checkedObjects, setCheckedObjects] = useState<ParsedSkylarkObject[]>(
+  //   [],
+  // );
+
+  const myRef = useRef<{
+    objects: ParsedSkylarkObject[];
+    objectTypes: string[];
+  }>({ objects: [], objectTypes: [] });
+
+  const onRowCheckChange = ({
+    checkedState,
+    object,
+  }: {
+    checkedState: CheckedState;
+    object: ParsedSkylarkObject;
+  }) => {
+    console.log({ checkedState, object });
+
+    // const existingCheckedObjects = myRef.current;
+
+    // setCheckedObjects((existingCheckedObjects) => {
+
+    // });
+
+    const updatedCheckedObjects = updateCheckedObjects(
+      myRef.current.objects,
+      object,
+      checkedState,
+    );
+    const checkedObjectTypes = [
+      ...new Set(
+        updatedCheckedObjects.map(
+          ({ config, objectType }) =>
+            config?.objectTypeDisplayName || objectType,
+        ),
+      ),
+    ];
+
+    myRef.current = {
+      objects: updatedCheckedObjects,
+      objectTypes: checkedObjectTypes,
+    };
+    console.log({ updatedCheckedObjects: myRef.current });
+  };
+
   const [draggedObject, setDraggedObject] = useState<
     ParsedSkylarkObject | undefined
   >(undefined);
   const [droppedObject, setDroppedObject] = useState<
-    ParsedSkylarkObject | undefined
+    ParsedSkylarkObject[] | undefined
   >(undefined);
   const [windowSize, setWindowSize] = useState(0);
   const mousePosition = useRef(0);
@@ -151,7 +225,13 @@ export const ContentLibrary = () => {
       <DragOverlay zIndex={100} dropAnimation={null}>
         {draggedObject ? (
           <div className="max-w-[350px] items-center rounded-sm border border-manatee-200 bg-white px-2">
-            <ObjectIdentifierCard object={draggedObject} />
+            {myRef.current.objects.length > 0 ? (
+              <p className="bg-brand-primary py-2 text-white">{`Add ${
+                myRef.current.objects.length
+              } ${myRef.current.objectTypes.join(", ")} objects`}</p>
+            ) : (
+              <ObjectIdentifierCard object={draggedObject} />
+            )}
           </div>
         ) : null}
       </DragOverlay>
@@ -169,12 +249,14 @@ export const ContentLibrary = () => {
           )}
           style={{ width: activePanelObject ? objectListingWidth : "100%" }}
         >
-          <ObjectSearch
+          <MemoizedObjectSearch
             withCreateButtons
             panelObject={activePanelObject}
             setPanelObject={setPanelObject}
             isPanelOpen={!!activePanelObject}
             isDragging={!!draggedObject}
+            withObjectSelect
+            onRowCheckChange={onRowCheckChange}
           />
         </m.div>
         {activePanelObject && (
@@ -209,12 +291,12 @@ export const ContentLibrary = () => {
                 tab={activePanelTab}
                 closePanel={closePanel}
                 isDraggedObject={!!draggedObject}
-                droppedObject={droppedObject}
+                droppedObjects={droppedObject}
                 setPanelObject={setPanelObject}
                 setTab={setPanelTab}
                 navigateToPreviousPanelObject={navigateToPreviousPanelObject}
                 navigateToForwardPanelObject={navigateToForwardPanelObject}
-                clearDroppedObject={() => setDroppedObject(undefined)}
+                clearDroppedObjects={() => setDroppedObject(undefined)}
               />
             </div>
           </m.div>
@@ -228,8 +310,17 @@ export const ContentLibrary = () => {
   }
 
   function handleDragEnd(event: DragEndEvent) {
-    if (event.over && event.over.id === DROPPABLE_ID) {
-      setDroppedObject(draggedObject);
+    if (event.over && event.over.id === DROPPABLE_ID && draggedObject) {
+      const checkedObjects = myRef.current.objects;
+      const draggedObjectIsChecked = checkedObjects.findIndex(
+        ({ uid, objectType }) =>
+          uid === draggedObject.uid && objectType === draggedObject.objectType,
+      );
+
+      // Like Gmail, if the dragged object is not checked, just use the dragged object
+      setDroppedObject(
+        draggedObjectIsChecked ? checkedObjects : [draggedObject],
+      );
     }
     setDraggedObject(undefined);
   }
