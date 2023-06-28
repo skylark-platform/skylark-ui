@@ -40,25 +40,33 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     language: language || null,
   };
 
-  const { data: searchResponse, ...rest } =
-    useInfiniteQuery<GQLSkylarkSearchResponse>({
-      queryKey: [QueryKeys.Search, query, variables],
-      queryFn: async ({ pageParam: offset = 0 }) =>
-        skylarkRequest(query as RequestDocument, {
-          ...variables,
-          offset,
-        }),
-      getNextPageParam: (lastPage, pages): number | undefined => {
-        const totalNumObjects = pages.flatMap(
-          (page) => page.search.objects,
-        ).length;
-        const shouldFetchMore =
-          totalNumObjects % SEARCH_PAGE_SIZE === 0 &&
-          lastPage.search.objects.length > 0;
-        return shouldFetchMore ? totalNumObjects : undefined;
-      },
-      enabled: !!query,
-    });
+  const {
+    data: searchResponse,
+    error,
+    isLoading,
+    hasNextPage,
+    isFetchingNextPage,
+    isRefetching,
+    refetch,
+    fetchNextPage,
+  } = useInfiniteQuery<GQLSkylarkSearchResponse>({
+    queryKey: [QueryKeys.Search, query, variables],
+    queryFn: async ({ pageParam: offset = 0 }) =>
+      skylarkRequest(query as RequestDocument, {
+        ...variables,
+        offset,
+      }),
+    getNextPageParam: (lastPage, pages): number | undefined => {
+      const totalNumObjects = pages.flatMap(
+        (page) => page.search.objects,
+      ).length;
+      const shouldFetchMore =
+        totalNumObjects % SEARCH_PAGE_SIZE === 0 &&
+        lastPage.search.objects.length > 0;
+      return shouldFetchMore ? totalNumObjects : undefined;
+    },
+    enabled: !!query,
+  });
 
   const { dispatch } = useUser();
 
@@ -68,25 +76,26 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
       ?.flatMap((page) => page.search.objects)
       .filter((obj) => obj !== null) as SkylarkGraphQLObject[] | undefined;
 
-    const normalisedObjects =
-      nonNullObjects?.map(
-        removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>,
-      ) || [];
+    const normalisedObjects = nonNullObjects?.map(
+      removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>,
+    );
 
-    const parsedObjects = normalisedObjects.map((obj) => {
+    const parsedObjects = normalisedObjects?.map((obj) => {
       const objectMeta = searchableObjects?.find(
         ({ name }) => name === obj.__typename,
       );
       return parseSkylarkObject(obj, objectMeta);
     });
 
-    const allAvailableLanguages = [
-      ...new Set(
-        parsedObjects.flatMap(
-          ({ meta: { availableLanguages } }) => availableLanguages,
-        ),
-      ),
-    ];
+    const allAvailableLanguages = parsedObjects
+      ? [
+          ...new Set(
+            parsedObjects.flatMap(
+              ({ meta: { availableLanguages } }) => availableLanguages,
+            ),
+          ),
+        ]
+      : [];
 
     return { data: parsedObjects, allAvailableLanguages };
   }, [searchResponse?.pages, searchableObjects]);
@@ -98,8 +107,14 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
   }, [allAvailableLanguages, dispatch]);
 
   return {
-    ...rest,
     data,
+    error,
+    isLoading,
+    hasNextPage,
+    isFetchingNextPage,
+    isRefetching,
+    refetch,
+    fetchNextPage,
     totalHits: searchResponse?.pages[0].search?.total_count,
     properties: allFieldNames,
     query,

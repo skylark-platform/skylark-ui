@@ -12,7 +12,7 @@ import { SearchFilters } from "src/hooks/useSearch";
 import { SkylarkGraphQLObjectConfig } from "src/interfaces/skylark";
 
 interface SearchFilterProps {
-  activeFilters: SearchFilters;
+  activeObjectTypes: SearchFilters["objectTypes"];
   objectTypesWithConfig: {
     objectType: string;
     config?: SkylarkGraphQLObjectConfig;
@@ -24,7 +24,7 @@ interface SearchFilterProps {
     variables: object;
   };
   onFilterSave: (
-    filters: SearchFilters,
+    objectTypes: SearchFilters["objectTypes"],
     columnVisibility: VisibilityState,
   ) => void;
 }
@@ -44,7 +44,7 @@ const convertCheckedColumnsToVisibilityState = (
     : {};
 
 export const SearchFilter = ({
-  activeFilters,
+  activeObjectTypes,
   objectTypesWithConfig,
   columns,
   visibleColumns,
@@ -52,17 +52,14 @@ export const SearchFilter = ({
   onFilterSave,
 }: SearchFilterProps) => {
   const [updatedObjectTypes, updateObjectTypes] = useState<string[]>(
-    activeFilters.objectTypes || [],
+    activeObjectTypes || [],
   );
   const [updatedVisibleColumns, updateVisibleColumns] =
     useState<string[]>(visibleColumns);
 
   const makeFiltersActive = () => {
     onFilterSave(
-      {
-        ...activeFilters,
-        objectTypes: updatedObjectTypes,
-      },
+      updatedObjectTypes,
       convertCheckedColumnsToVisibilityState(updatedVisibleColumns, columns),
     );
   };

@@ -14,7 +14,7 @@ import {
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
-import { useGetObjectAvailability } from "src/hooks/useGetObjectAvailability";
+import { useGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
 import {
   AvailabilityStatus,
   SkylarkGraphQLAvailabilityDimensionWithValues,

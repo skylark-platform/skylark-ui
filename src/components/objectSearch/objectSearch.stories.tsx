@@ -3,15 +3,15 @@ import { userEvent, within } from "@storybook/testing-library";
 
 import GQLGameOfThronesSearchResults from "src/__tests__/fixtures/skylark/queries/search/gotPage1.json";
 
-import { ObjectList } from "./objectListing.component";
+import { ObjectSearch } from "./objectSearch.component";
 
 export default {
-  title: "Components/ObjectListing",
-  component: ObjectList,
+  title: "Components/ObjectSearch",
+  component: ObjectSearch,
 };
 
-const Template: ComponentStory<typeof ObjectList> = (args) => {
-  return <ObjectList {...args} />;
+const Template: ComponentStory<typeof ObjectSearch> = (args) => {
+  return <ObjectSearch {...args} />;
 };
 
 export const Default = Template.bind({});

@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
 import { QueryKeys } from "src/enums/graphql";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   SkylarkObjectIdentifier,
   SkylarkObjectType,
@@ -9,9 +10,8 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createDeleteObjectMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
+import { createGetObjectKeyPrefix } from "./get/useGetObject";
 import { refetchSearchQueriesAfterUpdate } from "./useCreateObject";
-import { createGetObjectKeyPrefix } from "./useGetObject";
-import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const useDeleteObject = ({
   objectType,
@@ -31,7 +31,7 @@ export const useDeleteObject = ({
     isDeleteTranslation,
   );
 
-  const mutation = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationFn: ({ uid, language }: { uid: string; language?: string }) => {
       return skylarkRequest(deleteObjectMutation as RequestDocument, {
         uid,
@@ -48,5 +48,8 @@ export const useDeleteObject = ({
     },
   });
 
-  return mutation;
+  return {
+    deleteObject: mutate,
+    isDeleting: isLoading,
+  };
 };

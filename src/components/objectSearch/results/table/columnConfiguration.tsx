@@ -14,7 +14,19 @@ import {
   formatObjectField,
 } from "src/lib/utils";
 
-import { TableCell } from "./table";
+import { TableCell } from ".";
+
+export const OBJECT_SEARCH_HARDCODED_COLUMNS = [
+  OBJECT_LIST_TABLE.columnIds.translation,
+  OBJECT_LIST_TABLE.columnIds.availability,
+  OBJECT_LIST_TABLE.columnIds.images,
+];
+export const OBJECT_SEARCH_ORDERED_KEYS = [
+  "uid",
+  "external_id",
+  "data_source_id",
+  "type",
+];
 
 const columnHelper = createColumnHelper<object>();
 
@@ -62,6 +74,7 @@ const displayNameColumn = columnHelper.accessor(
 const translationColumn = columnHelper.accessor(
   OBJECT_LIST_TABLE.columnIds.translation,
   {
+    id: OBJECT_LIST_TABLE.columnIds.translation,
     header: formatObjectField("Translation"),
     size: 120,
     cell: (props) => <TableCell {...props} />,
@@ -69,6 +82,7 @@ const translationColumn = columnHelper.accessor(
 );
 
 const availabilityColumn = columnHelper.accessor("meta.availabilityStatus", {
+  id: OBJECT_LIST_TABLE.columnIds.availability,
   header: formatObjectField("Availability"),
   size: 120,
   cell: (props) => {
@@ -101,6 +115,7 @@ const imagesColumn = columnHelper.accessor("images", {
         {allImages.map(({ uid, url, title }) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img
+            className="object-cover object-left"
             src={addCloudinaryOnTheFlyImageTransformation(url, { height: 50 })}
             key={`${props.row.id}-${uid}`}
             alt={title}

@@ -1,12 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
+import { createGetAvailabilityObjectDimensionsKeyPrefix } from "src/hooks/availability/useAvailabilityObjectDimensions";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateAvailabilityDimensionsMutation } from "src/lib/graphql/skylark/dynamicMutations";
-
-import { createGetAvailabilityObjectDimensionsKeyPrefix } from "./availability/useAvailabilityObjectDimensions";
-import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const useUpdateAvailabilityObjectDimensions = ({
   uid,
@@ -31,7 +30,7 @@ export const useUpdateAvailabilityObjectDimensions = ({
       updatedAvailabilityDimensions,
     );
 
-  const { mutate, ...rest } = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationFn: ({ uid }: { uid: string }) => {
       return skylarkRequest(
         updateAvailabilityObjectDimensionsMutation as RequestDocument,
@@ -51,6 +50,6 @@ export const useUpdateAvailabilityObjectDimensions = ({
 
   return {
     updateAvailabilityObjectDimensions,
-    ...rest,
+    isUpdatingAvailabilityObjectDimensions: isLoading,
   };
 };

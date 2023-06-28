@@ -4,6 +4,10 @@ import { useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import {
+  useAllSetObjectsMeta,
+  useSkylarkObjectOperations,
+} from "src/hooks/useSkylarkObjectTypes";
+import {
   SkylarkObjectType,
   GQLSkylarkErrorResponse,
   GQLSkylarkGetObjectContentOfResponse,
@@ -17,10 +21,6 @@ import {
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 import { GetObjectOptions } from "./useGetObject";
-import {
-  useAllSetObjectsMeta,
-  useSkylarkObjectOperations,
-} from "./useSkylarkObjectTypes";
 
 export const createGetObjectContentOfKeyPrefix = ({
   objectType,
@@ -49,7 +49,6 @@ export const useGetObjectContentOf = (
     isLoading,
     hasNextPage,
     fetchNextPage,
-    ...rest
   } = useInfiniteQuery<
     GQLSkylarkGetObjectContentOfResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentOfResponse>
@@ -92,7 +91,6 @@ export const useGetObjectContentOf = (
   }
 
   return {
-    ...rest,
     data,
     isLoading: isLoading || !query,
     query,

@@ -1,18 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
+import { createGetObjectContentKeyPrefix } from "src/hooks/objects/get/useGetObjectContent";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkUpdateObjectContentResponse,
-  ParsedSkylarkObjectContent,
   ParsedSkylarkObjectContentObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynamicMutations";
-import { parseObjectContent } from "src/lib/skylark/parsers";
-
-import { createGetObjectContentKeyPrefix } from "./useGetObjectContent";
-import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const useUpdateObjectContent = ({
   objectType,
@@ -36,7 +33,7 @@ export const useUpdateObjectContent = ({
     updatedContentObjects,
   );
 
-  const { mutate, ...rest } = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationFn: ({ uid }: { uid: string }) => {
       return skylarkRequest<GQLSkylarkUpdateObjectContentResponse>(
         updateObjectContentMutation as RequestDocument,
@@ -56,6 +53,6 @@ export const useUpdateObjectContent = ({
 
   return {
     updateObjectContent,
-    ...rest,
+    isUpdatingObjectContent: isLoading,
   };
 };

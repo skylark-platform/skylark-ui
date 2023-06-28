@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
+import { createGetObjectRelationshipsKeyPrefix } from "src/hooks/objects/get/useGetObjectRelationships";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkUpdateRelationshipsResponse,
   ParsedSkylarkObjectRelationships,
@@ -8,9 +10,6 @@ import {
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectRelationshipsMutation } from "src/lib/graphql/skylark/dynamicMutations";
-
-import { createGetObjectRelationshipsKeyPrefix } from "./useGetObjectRelationships";
-import { useSkylarkObjectOperations } from "./useSkylarkObjectTypes";
 
 export const useUpdateObjectRelationships = ({
   objectType,
@@ -35,7 +34,7 @@ export const useUpdateObjectRelationships = ({
       originalRelationshipObjects,
     );
 
-  const { mutate, ...rest } = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationFn: ({ uid }: { uid: string }) => {
       return skylarkRequest<GQLSkylarkUpdateRelationshipsResponse>(
         updateObjectRelationshipsMutation as RequestDocument,
@@ -55,6 +54,6 @@ export const useUpdateObjectRelationships = ({
 
   return {
     updateObjectRelationships,
-    ...rest,
+    isUpdatingObjectRelationships: isLoading,
   };
 };

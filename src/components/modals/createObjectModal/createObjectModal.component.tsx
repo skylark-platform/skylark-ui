@@ -8,9 +8,9 @@ import { Button } from "src/components/button";
 import { SkylarkObjectFieldInput } from "src/components/inputs";
 import { LanguageSelect, ObjectTypeSelect } from "src/components/inputs/select";
 import { Toast } from "src/components/toast/toast.component";
-import { useCreateObject } from "src/hooks/useCreateObject";
+import { useUpdateObjectMetadata } from "src/hooks/objects/update/useUpdateObjectMetadata";
+import { useCreateObject } from "src/hooks/objects/useCreateObject";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
-import { useUpdateObjectMetadata } from "src/hooks/useUpdateObjectMetadata";
 import {
   SkylarkGraphQLObjectConfig,
   SkylarkObjectIdentifier,
@@ -87,24 +87,26 @@ export const CreateObjectModal = ({
     },
   });
 
-  const { updateObjectMetadata, isLoading: isCreatingTranslation } =
-    useUpdateObjectMetadata({
-      objectType: createTranslation?.objectType || "",
-      onSuccess: (object) => {
-        onObjectCreated?.(object);
-        toast.success(
-          <Toast
-            title={`Translation "${object.language}" created`}
-            message={`The "${
-              object.language
-            }" translation has been created for the "${
-              createTranslation?.objectDisplayName || object.uid
-            }" ${objectTypeDisplayName}.`}
-          />,
-        );
-        closeModal();
-      },
-    });
+  const {
+    updateObjectMetadata,
+    isUpdatingObjectMetadata: isCreatingTranslation,
+  } = useUpdateObjectMetadata({
+    objectType: createTranslation?.objectType || "",
+    onSuccess: (object) => {
+      onObjectCreated?.(object);
+      toast.success(
+        <Toast
+          title={`Translation "${object.language}" created`}
+          message={`The "${
+            object.language
+          }" translation has been created for the "${
+            createTranslation?.objectDisplayName || object.uid
+          }" ${objectTypeDisplayName}.`}
+        />,
+      );
+      closeModal();
+    },
+  });
 
   const onSubmit = ({
     _language,

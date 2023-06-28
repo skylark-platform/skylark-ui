@@ -5,7 +5,7 @@ import { DocumentNode } from "graphql";
 import { useEffect, useRef, useState } from "react";
 
 import { LanguageSelect } from "src/components/inputs/select";
-import { SearchFilter } from "src/components/objectListing/search/searchFilter/searchFilter.component";
+import { SearchFilter } from "src/components/objectSearch/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 
@@ -23,7 +23,9 @@ interface SearchBarProps {
     variables: object;
   };
   onQueryChange: (str: string) => void;
-  onFilterChange: (f: SearchFilters, c: VisibilityState) => void;
+  onColumnVisibilityChange: (c: VisibilityState) => void;
+  onLanguageChange: (l: SearchFilters["language"]) => void;
+  onObjectTypeChange: (o: SearchFilters["objectTypes"]) => void;
   onRefresh: () => void;
 }
 
@@ -34,9 +36,11 @@ export const Search = ({
   searchQuery,
   graphqlQuery,
   isSearching,
-  onQueryChange,
   activeFilters,
-  onFilterChange,
+  onQueryChange,
+  onColumnVisibilityChange,
+  onLanguageChange,
+  onObjectTypeChange,
   onRefresh,
 }: SearchBarProps) => {
   const [isFilterOpen, setFilterOpen] = useState(false);
@@ -67,15 +71,12 @@ export const Search = ({
   }, [setFilterOpen]);
 
   const onFilterSaveWrapper = (
-    filters: SearchFilters,
+    objectTypes: SearchFilters["objectTypes"],
     columnVisibility: VisibilityState,
   ) => {
     setFilterOpen(false);
-    onFilterChange(filters, columnVisibility);
-  };
-
-  const onLanguageChange = (language: string | null) => {
-    onFilterChange({ ...activeFilters, language }, visibleColumns);
+    onObjectTypeChange(objectTypes);
+    onColumnVisibilityChange(columnVisibility);
   };
 
   return (
@@ -103,7 +104,7 @@ export const Search = ({
               className="absolute top-10 left-0 z-50 w-full md:top-14 md:w-auto"
             >
               <SearchFilter
-                activeFilters={activeFilters}
+                activeObjectTypes={activeFilters.objectTypes}
                 columns={columns}
                 visibleColumns={Object.keys(visibleColumns).filter(
                   (column) => visibleColumns[column],
@@ -124,9 +125,9 @@ export const Search = ({
           variant="primary"
           name="object-listing-language-select"
           className="w-full md:w-36"
-          useDefaultLanguage
-          onChange={onLanguageChange}
           selected={activeFilters.language}
+          onChange={onLanguageChange}
+          useDefaultLanguage
           onValueClear={() => onLanguageChange(null)}
         />
       </div>

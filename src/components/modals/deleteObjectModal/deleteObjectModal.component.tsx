@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
 import { Toast } from "src/components/toast/toast.component";
-import { useDeleteObject } from "src/hooks/useDeleteObject";
+import { useDeleteObject } from "src/hooks/objects/useDeleteObject";
 
 interface DeleteObjectModalProps {
   isOpen: boolean;
@@ -37,7 +37,7 @@ export const DeleteObjectModal = ({
   const isDeleteTranslation =
     (language && availableLanguages.length > 1) || false;
 
-  const { mutate: deleteObject, isLoading: isDeleting } = useDeleteObject({
+  const { deleteObject, isDeleting } = useDeleteObject({
     objectType,
     isDeleteTranslation,
     onSuccess: () => {
