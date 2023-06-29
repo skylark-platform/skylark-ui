@@ -170,3 +170,20 @@ export const addCloudinaryOnTheFlyImageTransformation = (
   const cloudinaryUrl = `https://res.cloudinary.com/${CLOUDINARY_ENVIRONMENT}/image/fetch/${urlOptsStr}${imageUrl}`;
   return cloudinaryUrl;
 };
+
+export const skylarkObjectsAreSame = (
+  obj1: ParsedSkylarkObject,
+  obj2: ParsedSkylarkObject,
+) => obj1.uid === obj2.uid && obj1.objectType === obj2.objectType;
+
+export const skylarkObjectIsInArray = (
+  obj: ParsedSkylarkObject,
+  arr: ParsedSkylarkObject[],
+) =>
+  arr.findIndex(
+    ({ uid, objectType }) => uid === obj.uid && objectType === obj.objectType,
+  ) > -1;
+
+// Naive implementation, just removes Listing from ImageListing
+export const getObjectTypeFromListingTypeName = (typename: string) =>
+  typename.substring(0, typename.lastIndexOf("Listing"));

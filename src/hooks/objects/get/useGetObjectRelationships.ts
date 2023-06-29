@@ -21,6 +21,7 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectRelationshipsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
+import { getObjectTypeFromListingTypeName } from "src/lib/utils";
 
 import { GetObjectOptions } from "./useGetObject";
 
@@ -87,10 +88,15 @@ export const useGetObjectRelationships = (
               parseSkylarkObject(relatedObject as SkylarkGraphQLObject),
             );
 
+            const objectType = getObjectTypeFromListingTypeName(
+              relationship.__typename,
+            );
+
             return {
               relationshipName: relation,
               nextToken: relationship?.next_token,
               objects: parsedObjects,
+              objectType,
             };
           })
         : null,

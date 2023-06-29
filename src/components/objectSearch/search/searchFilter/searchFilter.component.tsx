@@ -73,8 +73,7 @@ export const SearchFilter = ({
   };
 
   return (
-    // TODO figure out what width the filter should actually be
-    <div className="relative flex max-h-96 w-full flex-col rounded bg-white py-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 md:w-[120%] lg:w-[150%] xl:max-h-[28rem]">
+    <div className="relative flex max-h-[60vh] w-full flex-col rounded bg-white py-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 xl:max-h-[28rem]">
       <div className="absolute top-2 right-5 z-20">
         <DisplayGraphQLQuery
           label="Content Library Search"

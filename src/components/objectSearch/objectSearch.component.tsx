@@ -6,11 +6,15 @@ import { Spinner } from "src/components/icons";
 import { useUser } from "src/contexts/useUser";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
-import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
+import {
+  SkylarkObjectIdentifier,
+  SkylarkObjectTypes,
+} from "src/interfaces/skylark";
 import { hasProperty, isObjectsDeepEqual } from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
 import {
+  MemoizedObjectSearchResults,
   ObjectSearchResults,
   ObjectSearchResultsProps,
 } from "./results/objectSearchResults.component";
@@ -20,20 +24,30 @@ import {
 } from "./results/table/columnConfiguration";
 import { Search } from "./search";
 
-export interface ObjectListProps {
+export interface ObjectSearchProps {
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
   withObjectEdit?: boolean;
   isPanelOpen?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
+  defaultObjectTypes?: SkylarkObjectTypes;
+  hiddenFields?: string[];
   setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
-  isDragging?: boolean;
   onRowCheckChange: ObjectSearchResultsProps["onRowCheckChange"];
+  resetRowsChecked: () => void;
 }
 
-export const ObjectSearch = (props: ObjectListProps) => {
+export const ObjectSearch = (props: ObjectSearchProps) => {
+  console.log("*** OBJECT SEARCH RENDERED");
   const { defaultLanguage, isLoading: isUserLoading } = useUser();
-  const { withCreateButtons, setPanelObject, isPanelOpen } = props;
+  const {
+    withCreateButtons,
+    setPanelObject,
+    isPanelOpen,
+    defaultObjectTypes,
+    hiddenFields,
+    resetRowsChecked,
+  } = props;
 
   const { objectTypes } = useSkylarkObjectTypes(true);
 
@@ -41,8 +55,9 @@ export const ObjectSearch = (props: ObjectListProps) => {
   const [searchLanguage, setSearchLanguage] =
     // undefined initially as null is a valid language
     useState<SearchFilters["language"]>(undefined);
-  const [searchObjectTypes, setSearchObjectTypes] =
-    useState<SearchFilters["objectTypes"]>(null);
+  const [searchObjectTypes, setSearchObjectTypes] = useState<
+    SearchFilters["objectTypes"]
+  >(defaultObjectTypes || null);
 
   useEffect(() => {
     if (objectTypes && objectTypes.length !== 0 && searchObjectTypes === null) {
@@ -58,9 +73,8 @@ export const ObjectSearch = (props: ObjectListProps) => {
     properties,
     query: graphqlSearchQuery,
     variables: graphqlSearchQueryVariables,
-    hasNextPage,
-    isFetchingNextPage,
     isRefetching: searchRefetching,
+    searchHash,
     refetch,
     fetchNextPage,
   } = useSearch(searchQuery, {
@@ -68,10 +82,18 @@ export const ObjectSearch = (props: ObjectListProps) => {
     objectTypes: searchObjectTypes || objectTypes || null,
   });
 
+  useEffect(() => {
+    resetRowsChecked?.();
+  }, [resetRowsChecked, searchHash]);
+
   const isSearching = isLoading || isUserLoading;
 
   // Sorts objects using the preference array above, any others are added to the end randomly
   const sortedHeaders = useMemo(() => {
+    if (!properties) {
+      return [];
+    }
+
     const orderedKeysThatExist =
       properties?.filter((property) =>
         OBJECT_SEARCH_ORDERED_KEYS.includes(property),
@@ -82,12 +104,18 @@ export const ObjectSearch = (props: ObjectListProps) => {
         (property) => !OBJECT_SEARCH_ORDERED_KEYS.includes(property),
       ) || [];
 
-    return [
+    const headers = [
       ...OBJECT_SEARCH_HARDCODED_COLUMNS,
       ...orderedKeysThatExist,
       ...orderedProperties,
     ];
-  }, [properties]);
+
+    if (hiddenFields) {
+      return headers.filter((header) => !hiddenFields.includes(header));
+    }
+
+    return headers;
+  }, [hiddenFields, properties]);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     Object.fromEntries(sortedHeaders.map((header) => [header, true])),
@@ -169,13 +197,9 @@ export const ObjectSearch = (props: ObjectListProps) => {
         )}
       </div>
       {sortedHeaders.length > 0 && (
-        <ObjectSearchResults
+        <MemoizedObjectSearchResults
           {...props}
-          fetchNextPage={
-            hasNextPage && !isFetchingNextPage
-              ? () => fetchNextPage()
-              : undefined
-          }
+          // fetchNextPage={fetchNextPage}
           sortedHeaders={sortedHeaders}
           searchData={searchData}
           columnVisibility={columnVisibility}
@@ -199,8 +223,8 @@ export const ObjectSearch = (props: ObjectListProps) => {
 };
 
 const objectSearchPropsAreEqual = (
-  prevProps: Readonly<ObjectListProps>,
-  nextProps: Readonly<ObjectListProps>,
+  prevProps: Readonly<ObjectSearchProps>,
+  nextProps: Readonly<ObjectSearchProps>,
 ) => {
   const isPanelOpenSame = prevProps.isPanelOpen === nextProps.isPanelOpen;
   const isOnRowCheckChangeSame =
@@ -210,10 +234,12 @@ const objectSearchPropsAreEqual = (
     prevProps.panelObject?.objectType === nextProps.panelObject?.objectType;
   const isSetPanelObjectSame =
     prevProps.setPanelObject === nextProps.setPanelObject;
+  const isResetRowsCheckSame =
+    prevProps.resetRowsChecked === nextProps.resetRowsChecked;
 
   const areEqual =
     isPanelOpenSame &&
-    // isOnRowCheckChangeSame &&
+    isOnRowCheckChangeSame &&
     isPanelObjectSame &&
     isSetPanelObjectSame;
 
@@ -222,6 +248,7 @@ const objectSearchPropsAreEqual = (
     isOnRowCheckChangeSame,
     isPanelObjectSame,
     isSetPanelObjectSame,
+    isResetRowsCheckSame,
     areEqual,
   });
 
@@ -232,5 +259,3 @@ export const MemoizedObjectSearch = memo(
   ObjectSearch,
   objectSearchPropsAreEqual,
 );
-
-// export const MemoizedObjectSearch = ObjectSearch;

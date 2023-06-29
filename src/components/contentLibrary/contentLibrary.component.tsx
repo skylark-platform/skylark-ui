@@ -9,10 +9,12 @@ import {
   DragStartEvent,
   TouchSensor,
 } from "@dnd-kit/core";
+import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import clsx from "clsx";
 import { m, useMotionValue, useTransform } from "framer-motion";
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import {
@@ -23,6 +25,7 @@ import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
 import { usePanelObjectState } from "src/hooks/usePanelObjectState";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import { skylarkObjectIsInArray } from "src/lib/utils";
 
 const INITIAL_PANEL_PERCENTAGE = 70;
 const MINIMUM_SIZES = {
@@ -66,49 +69,48 @@ export const ContentLibrary = () => {
     resetPanelObjectState,
   } = usePanelObjectState();
 
-  // const [checkedObjects, setCheckedObjects] = useState<ParsedSkylarkObject[]>(
-  //   [],
-  // );
-
-  const myRef = useRef<{
+  const checkedRows = useRef<{
     objects: ParsedSkylarkObject[];
     objectTypes: string[];
   }>({ objects: [], objectTypes: [] });
 
-  const onRowCheckChange = ({
-    checkedState,
-    object,
-  }: {
-    checkedState: CheckedState;
-    object: ParsedSkylarkObject;
-  }) => {
-    console.log({ checkedState, object });
-
-    // const existingCheckedObjects = myRef.current;
-
-    // setCheckedObjects((existingCheckedObjects) => {
-
-    // });
-
-    const updatedCheckedObjects = updateCheckedObjects(
-      myRef.current.objects,
-      object,
+  const onRowCheckChange = useCallback(
+    ({
       checkedState,
-    );
-    const checkedObjectTypes = [
-      ...new Set(
-        updatedCheckedObjects.map(
-          ({ config, objectType }) =>
-            config?.objectTypeDisplayName || objectType,
+      object,
+    }: {
+      checkedState: CheckedState;
+      object: ParsedSkylarkObject;
+    }) => {
+      const updatedCheckedObjects = updateCheckedObjects(
+        checkedRows.current.objects,
+        object,
+        checkedState,
+      );
+      const checkedObjectTypes = [
+        ...new Set(
+          updatedCheckedObjects.map(
+            ({ config, objectType }) =>
+              config?.objectTypeDisplayName || objectType,
+          ),
         ),
-      ),
-    ];
+      ];
 
-    myRef.current = {
-      objects: updatedCheckedObjects,
-      objectTypes: checkedObjectTypes,
-    };
-    console.log({ updatedCheckedObjects: myRef.current });
+      checkedRows.current = {
+        objects: updatedCheckedObjects,
+        objectTypes: checkedObjectTypes,
+      };
+    },
+    [],
+  );
+
+  console.log({ checked: checkedRows.current });
+
+  const resetRowsChecked = () => {
+    // checkedRows.current = {
+    //   objects: [],
+    //   objectTypes: [],
+    // };
   };
 
   const [draggedObject, setDraggedObject] = useState<
@@ -187,13 +189,6 @@ export const ContentLibrary = () => {
     [objectListingWidth, windowSize],
   );
 
-  const handleMeasure = (element: HTMLElement) => {
-    return {
-      ...getClientRect(element),
-      left: mousePosition.current,
-    };
-  };
-
   const sensors = useSensors(
     useSensor(MouseSensor, {
       // Require the mouse to move by 6 pixels before activating
@@ -216,25 +211,30 @@ export const ContentLibrary = () => {
       onDragEnd={handleDragEnd}
       onDragCancel={() => setDraggedObject(undefined)}
       sensors={sensors}
-      measuring={{
-        draggable: {
-          measure: handleMeasure,
-        },
-      }}
+      modifiers={[snapCenterToCursor]}
     >
-      <DragOverlay zIndex={100} dropAnimation={null}>
-        {draggedObject ? (
-          <div className="max-w-[350px] items-center rounded-sm border border-manatee-200 bg-white px-2">
-            {myRef.current.objects.length > 0 ? (
-              <p className="bg-brand-primary py-2 text-white">{`Add ${
-                myRef.current.objects.length
-              } ${myRef.current.objectTypes.join(", ")} objects`}</p>
-            ) : (
-              <ObjectIdentifierCard object={draggedObject} />
-            )}
-          </div>
-        ) : null}
-      </DragOverlay>
+      {typeof window !== "undefined" &&
+        document?.body &&
+        createPortal(
+          <DragOverlay zIndex={99999999} dropAnimation={null}>
+            {draggedObject ? (
+              <div className="max-w-[350px] cursor-grabbing items-center rounded-sm border border-manatee-200 bg-white px-2">
+                {checkedRows.current.objects.length > 0 &&
+                skylarkObjectIsInArray(
+                  draggedObject,
+                  checkedRows.current.objects,
+                ) ? (
+                  <p className="bg-brand-primary py-2 text-white">{`Add ${
+                    checkedRows.current.objects.length
+                  } ${checkedRows.current.objectTypes.join(", ")} objects`}</p>
+                ) : (
+                  <ObjectIdentifierCard object={draggedObject} />
+                )}
+              </div>
+            ) : null}
+          </DragOverlay>,
+          document.body,
+        )}
       <div
         className="flex h-screen w-full flex-row overflow-x-hidden"
         ref={containerRef}
@@ -244,19 +244,23 @@ export const ContentLibrary = () => {
       >
         <m.div
           className={clsx(
-            "w-full max-w-full pt-6 pl-2 md:pl-6 lg:pl-10",
+            "relative w-full max-w-full pt-6 pl-2 md:pl-6 lg:pl-10",
             activePanelObject && "md:w-1/2 lg:w-5/12 xl:w-3/5",
+            !!draggedObject && "pointer-events-none",
           )}
           style={{ width: activePanelObject ? objectListingWidth : "100%" }}
         >
+          {!!draggedObject && (
+            <div className="absolute inset-0 z-[100] block bg-black/5"></div>
+          )}
           <MemoizedObjectSearch
             withCreateButtons
             panelObject={activePanelObject}
             setPanelObject={setPanelObject}
             isPanelOpen={!!activePanelObject}
-            isDragging={!!draggedObject}
             withObjectSelect
             onRowCheckChange={onRowCheckChange}
+            resetRowsChecked={resetRowsChecked}
           />
         </m.div>
         {activePanelObject && (
@@ -307,14 +311,19 @@ export const ContentLibrary = () => {
 
   function handleDragStart(event: DragStartEvent) {
     setDraggedObject(event.active.data.current?.object);
+    const el = document.getElementById("object-search-results");
+    if (el) el.style.overflow = "hidden";
   }
 
   function handleDragEnd(event: DragEndEvent) {
+    const el = document.getElementById("object-search-results");
+    if (el) el.style.overflow = "";
+
     if (event.over && event.over.id === DROPPABLE_ID && draggedObject) {
-      const checkedObjects = myRef.current.objects;
-      const draggedObjectIsChecked = checkedObjects.findIndex(
-        ({ uid, objectType }) =>
-          uid === draggedObject.uid && objectType === draggedObject.objectType,
+      const checkedObjects = checkedRows.current.objects;
+      const draggedObjectIsChecked = skylarkObjectIsInArray(
+        draggedObject,
+        checkedObjects,
       );
 
       // Like Gmail, if the dragged object is not checked, just use the dragged object

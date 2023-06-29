@@ -24,6 +24,7 @@ import {
   NormalizedObjectField,
   SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
+import { getObjectTypeFromListingTypeName } from "src/lib/utils";
 import { ObjectError } from "src/lib/utils/errors";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
@@ -158,11 +159,11 @@ const objectRelationshipFieldsFromGraphQLType = (
         field.type.kind === "OBJECT",
     )
     .map((field) => {
-      // Naive implementation, just removes Listing from ImageListing
       const typeName = (field.type as IntrospectionObjectType | undefined)
         ?.name;
-      const objectType =
-        typeName?.substring(0, typeName?.lastIndexOf("Listing")) || "";
+      const objectType = typeName
+        ? getObjectTypeFromListingTypeName(typeName)
+        : "";
       return {
         objectType,
         relationshipName: field.name,

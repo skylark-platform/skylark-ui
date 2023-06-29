@@ -6,7 +6,7 @@ import {
   getCoreRowModel,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useRef, useState, useMemo, useCallback, useEffect } from "react";
+import { useRef, useState, useMemo, useCallback, useEffect, memo } from "react";
 import { useVirtual } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
@@ -15,7 +15,7 @@ import {
   ParsedSkylarkObject,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
-import { getObjectDisplayName } from "src/lib/utils";
+import { getObjectDisplayName, isObjectsDeepEqual } from "src/lib/utils";
 
 import { Table } from "./table";
 import {
@@ -27,10 +27,8 @@ export interface ObjectSearchResultsProps {
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
   withObjectEdit?: boolean;
-  isPanelOpen?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
   setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
-  isDragging?: boolean;
   fetchNextPage?: () => void;
   searchData?: ParsedSkylarkObject[];
   sortedHeaders: string[];
@@ -50,16 +48,16 @@ const emptyArray = [] as object[];
 export const ObjectSearchResults = ({
   sortedHeaders,
   columnVisibility,
-  isPanelOpen,
   panelObject,
   setPanelObject,
-  isDragging,
   searchData,
   withObjectSelect,
   withObjectEdit,
   fetchNextPage,
   onRowCheckChange,
 }: ObjectSearchResultsProps) => {
+  console.log("&&& OBJECT_SEARCH RESULTS RENDERED");
+
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [rowInEditMode, setRowInEditMode] = useState("");
 
@@ -163,11 +161,11 @@ export const ObjectSearchResults = ({
   return (
     <div
       className={clsx(
-        isDragging ? "overflow-hidden" : "overflow-x-auto",
-        "relative mb-6 flex w-full flex-col overscroll-none md:-ml-4",
+        "relative mb-6 flex w-full flex-col overflow-x-auto overscroll-none md:-ml-4",
       )}
       ref={tableContainerRef}
       data-testid="object-search-results"
+      id="object-search-results"
       onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
     >
       <Table
@@ -178,8 +176,78 @@ export const ObjectSearchResults = ({
         isLoadingMore={!!fetchNextPage}
         activeObject={panelObject || undefined}
         setPanelObject={setPanelObject}
-        withDraggableRow={!!isPanelOpen}
+        withDraggableRow={!!panelObject}
       />
     </div>
   );
 };
+
+const shallowCompare = (
+  obj1: Record<string, unknown>,
+  obj2: Record<string, unknown>,
+) =>
+  Object.keys(obj1).length === Object.keys(obj2).length &&
+  Object.keys(obj1).every((key) => obj1[key] === obj2[key]);
+
+const ObjectSearchResultsPropsAreEqual = (
+  prevProps: Readonly<ObjectSearchResultsProps>,
+  nextProps: Readonly<ObjectSearchResultsProps>,
+) => {
+  const {
+    withCreateButtons,
+    withObjectSelect,
+    withObjectEdit,
+    panelObject,
+    setPanelObject,
+    fetchNextPage,
+    searchData,
+    sortedHeaders,
+    columnVisibility,
+    onRowCheckChange,
+  } = nextProps;
+
+  const isSearchDataSame = prevProps.searchData === searchData;
+  const isPanelObjectSame = prevProps.panelObject === panelObject;
+  const isWithCreateButtonsSame =
+    prevProps.withCreateButtons === withCreateButtons;
+  const isWithObjectEditSame = prevProps.withObjectEdit === withObjectEdit;
+  const isSetPanelObjectSame = prevProps.setPanelObject === setPanelObject;
+  const isWithObjectSelectSame =
+    prevProps.withObjectSelect === withObjectSelect;
+  const isFetchNextPageSame = prevProps.fetchNextPage === fetchNextPage;
+  const isSortedHeadersSame = prevProps.sortedHeaders === sortedHeaders;
+  const isColumnVisibilitySame =
+    prevProps.columnVisibility === columnVisibility;
+  const isOnRowCheckChangeSame =
+    prevProps.onRowCheckChange === onRowCheckChange;
+
+  const isShallowSame = shallowCompare(prevProps, nextProps);
+
+  console.log({
+    prevProps,
+    nextProps,
+    isSame: prevProps === nextProps,
+
+    isShallowSame,
+    isDeepSame: isObjectsDeepEqual(prevProps, nextProps),
+    props: {
+      isPanelObjectSame,
+      isSearchDataSame,
+      isWithCreateButtonsSame,
+      isWithObjectEditSame,
+      isSetPanelObjectSame,
+      isWithObjectSelectSame,
+      isFetchNextPageSame,
+      isSortedHeadersSame,
+      isColumnVisibilitySame,
+      isOnRowCheckChangeSame,
+    },
+  });
+
+  return isShallowSame;
+};
+
+export const MemoizedObjectSearchResults = memo(
+  ObjectSearchResults,
+  ObjectSearchResultsPropsAreEqual,
+);

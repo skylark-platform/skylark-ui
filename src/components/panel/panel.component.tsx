@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -91,6 +91,8 @@ export const Panel = ({
   navigateToForwardPanelObject,
   setPanelObject,
 }: PanelProps) => {
+  console.log("--- PANEL RENDERED");
+
   const [inEditMode, setEditMode] = useState(false);
   const [isTabDataPrefetched, setIsTabDataPrefetched] = useState(false);
 

@@ -1,5 +1,5 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { DocumentNode, IntrospectionQuery, IntrospectionSchema } from "graphql";
+import { useQuery } from "@tanstack/react-query";
+import { DocumentNode, IntrospectionQuery } from "graphql";
 import { useCallback, useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";

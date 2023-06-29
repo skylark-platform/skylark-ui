@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 
-import { DisplayGraphQLQuery } from "src/components/modals";
+import { Plus } from "src/components/icons";
+import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
@@ -14,6 +15,7 @@ import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectType,
   SkylarkObjectIdentifier,
+  SkylarkObjectTypes,
 } from "src/interfaces/skylark";
 import { parseUpdatedRelationshipObjects } from "src/lib/skylark/parsers";
 import { formatObjectField } from "src/lib/utils";
@@ -95,6 +97,11 @@ export const PanelRelationships = ({
       relationshipNames.indexOf(b.relationshipName),
   );
 
+  const [searchObjectsModalState, setSearchObjectsModalState] = useState({
+    open: false,
+    objectTypes: [] as SkylarkObjectTypes,
+  });
+
   if (showDropZone) {
     return <PanelDropZone />;
   }
@@ -110,7 +117,7 @@ export const PanelRelationships = ({
       <div>
         {relationships &&
           orderedRelationshipObjects?.map((relationship) => {
-            const { relationshipName, objects } = relationship;
+            const { relationshipName, objects, objectType } = relationship;
             const isExpanded = expandedRelationships[relationshipName];
 
             const displayList =
@@ -120,12 +127,24 @@ export const PanelRelationships = ({
 
             return (
               <div key={relationshipName} className="relative mb-8">
-                <PanelSectionTitle
-                  text={formatObjectField(relationshipName)}
-                  count={(objects.length >= 50 ? "50+" : objects.length) || 0}
-                  id={`relationship-panel-${relationshipName}`}
-                />
-
+                <div className="flex items-center ">
+                  <PanelSectionTitle
+                    text={formatObjectField(relationshipName)}
+                    count={(objects.length >= 50 ? "50+" : objects.length) || 0}
+                    id={`relationship-panel-${relationshipName}`}
+                  />
+                  <button
+                    onClick={() =>
+                      setSearchObjectsModalState({
+                        open: true,
+                        objectTypes: [objectType],
+                      })
+                    }
+                    className="ml-1.5 mb-4 text-manatee-500 transition-colors hover:text-brand-primary"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </button>
+                </div>
                 <div className="transition duration-300 ease-in-out">
                   {relationship && displayList?.length > 0 ? (
                     displayList?.map((obj, index) => {
@@ -209,6 +228,16 @@ export const PanelRelationships = ({
         query={query}
         variables={variables}
         buttonClassName="absolute right-2 top-0"
+      />
+      <SearchObjectsModal
+        isOpen={searchObjectsModalState.open}
+        objectTypes={searchObjectsModalState.objectTypes}
+        setIsOpen={() =>
+          setSearchObjectsModalState({
+            ...searchObjectsModalState,
+            open: !searchObjectsModalState.open,
+          })
+        }
       />
       {inEditMode && !isPage && (
         <p className="w-full py-4 text-center text-sm text-manatee-600">
