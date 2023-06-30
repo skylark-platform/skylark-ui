@@ -38,7 +38,6 @@ export interface ObjectSearchProps {
 }
 
 export const ObjectSearch = (props: ObjectSearchProps) => {
-  console.log("*** OBJECT SEARCH RENDERED");
   const { defaultLanguage, isLoading: isUserLoading } = useUser();
   const {
     withCreateButtons,
@@ -76,6 +75,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     isRefetching: searchRefetching,
     searchHash,
     refetch,
+    hasNextPage,
     fetchNextPage,
   } = useSearch(searchQuery, {
     language: searchLanguage === undefined ? defaultLanguage : searchLanguage,
@@ -84,7 +84,9 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
 
   useEffect(() => {
     resetRowsChecked?.();
-  }, [resetRowsChecked, searchHash]);
+    // We only want to trigger this useEffect when the searchHash has changed (not resetRowsChecked)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchHash]);
 
   const isSearching = isLoading || isUserLoading;
 
@@ -199,7 +201,9 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
       {sortedHeaders.length > 0 && (
         <MemoizedObjectSearchResults
           {...props}
-          // fetchNextPage={fetchNextPage}
+          key={searchHash} // This will rerender all results when the searchHash changes - importantly clearing the checkboxes back to an unchecked state
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
           sortedHeaders={sortedHeaders}
           searchData={searchData}
           columnVisibility={columnVisibility}

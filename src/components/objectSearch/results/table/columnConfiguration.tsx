@@ -129,7 +129,7 @@ const imagesColumn = columnHelper.accessor("images", {
 const selectColumn = columnHelper.display({
   id: OBJECT_LIST_TABLE.columnIds.checkbox,
   size: 26,
-  header: () => <Checkbox aria-label="toggle-select-all-objects" />,
+  // header: () => <Checkbox aria-label="toggle-select-all-objects" />,
   // cell: () => <Checkbox onClick={(e) => e.stopPropagation()} onCheckedChange={(e) =>  />,
   cell: ({ row, table }) => {
     const object = row.original as ParsedSkylarkObject;

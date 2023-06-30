@@ -24,6 +24,8 @@ import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,
+  SkylarkObjectMeta,
+  ParsedSkylarkObjectAvailabilityObject,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
@@ -58,17 +60,21 @@ interface PanelProps {
   navigateToForwardPanelObject?: () => void;
 }
 
-const tabsWithEditMode = [
-  PanelTab.Metadata,
+const tabsWithDropZones = [
   PanelTab.Content,
   PanelTab.Relationships,
   PanelTab.Availability,
+];
+
+const tabsWithEditMode = [
+  ...tabsWithDropZones,
+  PanelTab.Metadata,
   PanelTab.AvailabilityDimensions,
 ];
 
-function parseSkylarkObjectContent(
+const parseSkylarkObjectContent = (
   skylarkObject: ParsedSkylarkObject,
-): ParsedSkylarkObjectContentObject {
+): ParsedSkylarkObjectContentObject => {
   return {
     config: skylarkObject.config,
     meta: skylarkObject.meta,
@@ -76,7 +82,195 @@ function parseSkylarkObjectContent(
     objectType: skylarkObject.objectType,
     position: 1,
   };
-}
+};
+
+const handleDroppedRelationships = ({
+  existingObjects,
+  objectMetaRelationships,
+  panelObject,
+  droppedObjects,
+}: {
+  existingObjects: ParsedSkylarkObjectRelationships[];
+  objectMetaRelationships: SkylarkObjectMeta["relationships"];
+  panelObject: ParsedSkylarkObject;
+  droppedObjects: ParsedSkylarkObject[];
+}) => {
+  const { count, updatedRelationshipObjects } = droppedObjects.reduce(
+    (
+      previous,
+      droppedObject,
+    ): {
+      count: number;
+      updatedRelationshipObjects: ParsedSkylarkObjectRelationships[];
+    } => {
+      const droppedObjectRelationshipName = objectMetaRelationships.find(
+        (relationship) => relationship.objectType === droppedObject.objectType,
+      )?.relationshipName;
+
+      if (!droppedObjectRelationshipName) {
+        // throw new Error("INVALID_RELATIONSHIP");
+        toast.error(
+          <Toast
+            title={"Invalid relationship"}
+            message={`${getObjectTypeDisplayNameFromParsedObject(
+              droppedObject,
+            )} is not configured to link to ${getObjectTypeDisplayNameFromParsedObject(
+              panelObject,
+            )}`}
+          />,
+        );
+        return previous;
+      }
+
+      const droppedObjectRelationshipObjects = existingObjects.find(
+        (relationship) =>
+          relationship.relationshipName === droppedObjectRelationshipName,
+      );
+
+      const isAlreadyAdded = !!droppedObjectRelationshipObjects?.objects.find(
+        ({ uid }) => droppedObject.uid === uid,
+      );
+
+      if (isAlreadyAdded) {
+        toast.warning(
+          <Toast
+            title={"Relationship exists"}
+            message={`${getObjectTypeDisplayNameFromParsedObject(
+              droppedObject,
+            )} "${getObjectDisplayName(droppedObject)}" is already linked`}
+          />,
+        );
+        return previous;
+      }
+
+      const updatedRelationshipObjects =
+        previous.updatedRelationshipObjects.map((relationship) => {
+          const { objects, relationshipName } = relationship;
+          if (relationshipName === droppedObjectRelationshipName) {
+            return {
+              ...relationship,
+              objects: [droppedObject, ...objects],
+            };
+          } else return relationship;
+        });
+
+      return {
+        count: (previous.count += 1),
+        updatedRelationshipObjects,
+      };
+    },
+    { count: 0, updatedRelationshipObjects: existingObjects },
+  );
+
+  return {
+    count,
+    updatedRelationshipObjects,
+  };
+};
+
+const handleDroppedContents = ({
+  existingObjects,
+  panelObject,
+  droppedObjects,
+}: {
+  existingObjects: AddedSkylarkObjectContentObject[];
+  panelObject: ParsedSkylarkObject;
+  droppedObjects: ParsedSkylarkObject[];
+}): AddedSkylarkObjectContentObject[] => {
+  const newContentObjects = droppedObjects
+    .map((droppedObject, index): AddedSkylarkObjectContentObject | null => {
+      if (panelObject.uid === droppedObject.uid) {
+        toast.warning(
+          <Toast
+            title={"Invalid Object"}
+            message={"Unable to add a Set to its own Set Content"}
+          />,
+        );
+        return null;
+      }
+
+      if (
+        existingObjects?.find(
+          ({ object: { uid } }) => uid === droppedObject.uid,
+        )
+      ) {
+        toast.warning(
+          <Toast
+            title={"Existing"}
+            message={`${getObjectTypeDisplayNameFromParsedObject(
+              droppedObject,
+            )} "${getObjectDisplayName(
+              droppedObject,
+            )}" already exists as content`}
+          />,
+        );
+        return null;
+      }
+
+      if (droppedObject.objectType === BuiltInSkylarkObjectType.Availability) {
+        toast.error(
+          <Toast
+            title={"Invalid Object Type"}
+            message={"Availability cannot be added as Set Content"}
+          />,
+        );
+        return null;
+      }
+
+      const parseDroppedContent = parseSkylarkObjectContent(droppedObject);
+
+      return {
+        ...parseDroppedContent,
+        position: existingObjects.length + index + 1,
+        isNewObject: true,
+      };
+    })
+    .filter((obj): obj is AddedSkylarkObjectContentObject => obj !== null);
+
+  return [...existingObjects, ...newContentObjects];
+};
+
+const handleDroppedAvailabilities = ({
+  existingObjects,
+  droppedObjects,
+}: {
+  existingObjects: ParsedSkylarkObject[];
+  droppedObjects: ParsedSkylarkObject[];
+}) => {
+  const newObjects: ParsedSkylarkObject[] = droppedObjects
+    .map((droppedObject) => {
+      if (droppedObject.objectType !== BuiltInSkylarkObjectType.Availability) {
+        toast.error(
+          <Toast
+            title={"Invalid Object"}
+            message={`${getObjectTypeDisplayNameFromParsedObject(
+              droppedObject,
+            )} "${getObjectDisplayName(
+              droppedObject,
+            )}" is not an Availability object`}
+          />,
+        );
+        return null;
+      }
+
+      if (existingObjects.find(({ uid }) => uid === droppedObject.uid)) {
+        toast.warning(
+          <Toast
+            title={"Existing"}
+            message={`${getObjectTypeDisplayNameFromParsedObject(
+              droppedObject,
+            )} "${getObjectDisplayName(droppedObject)}" is already assigned`}
+          />,
+        );
+        return null;
+      }
+
+      return droppedObject;
+    })
+    .filter((obj): obj is ParsedSkylarkObject => obj !== null);
+
+  return [...existingObjects, ...newObjects];
+};
 
 export const Panel = ({
   isPage,
@@ -91,8 +285,6 @@ export const Panel = ({
   navigateToForwardPanelObject,
   setPanelObject,
 }: PanelProps) => {
-  console.log("--- PANEL RENDERED");
-
   const [inEditMode, setEditMode] = useState(false);
   const [isTabDataPrefetched, setIsTabDataPrefetched] = useState(false);
 
@@ -104,13 +296,10 @@ export const Panel = ({
     updated: null,
   });
 
-  const [
-    { updatedRelationshipObjects, originalRelationshipObjects },
-    setRelationshipObjects,
-  ] = useState<{
-    originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
-    updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
-  }>({ originalRelationshipObjects: null, updatedRelationshipObjects: null });
+  const [relationshipObjects, setRelationshipObjects] = useState<{
+    original: ParsedSkylarkObjectRelationships[] | null;
+    updated: ParsedSkylarkObjectRelationships[] | null;
+  }>({ original: null, updated: null });
 
   const [availabilityObjects, setAvailabilityObjects] = useState<{
     original: ParsedSkylarkObject[] | null;
@@ -256,178 +445,80 @@ export const Panel = ({
   }, [inEditMode, metadataForm, resetMetadataForm, formParsedMetadata]);
 
   useEffect(() => {
-    console.log("panel useEffect", { droppedObjects });
-    if (droppedObjects && droppedObjects.length === 1) {
-      const [droppedObject] = droppedObjects;
-      if (selectedTab === PanelTab.Relationships) {
-        const relationships = objectMeta?.relationships || [];
-        const droppedObjectRelationshipName = relationships.find(
-          (relationship) =>
-            relationship.objectType === droppedObject.objectType,
-        )?.relationshipName;
+    if (
+      data &&
+      droppedObjects &&
+      droppedObjects.length > 0 &&
+      tabsWithDropZones.includes(selectedTab)
+    ) {
+      setEditMode(true);
 
-        if (droppedObjectRelationshipName) {
-          const droppedObjectRelationshipObjects =
-            updatedRelationshipObjects?.find(
-              (relationship) =>
-                relationship.relationshipName === droppedObjectRelationshipName,
-            );
+      if (
+        selectedTab === PanelTab.Relationships &&
+        objectMeta?.relationships &&
+        relationshipObjects.updated
+      ) {
+        const { updatedRelationshipObjects } = handleDroppedRelationships({
+          droppedObjects,
+          panelObject: data,
+          existingObjects: relationshipObjects.updated,
+          objectMetaRelationships: objectMeta.relationships,
+        });
 
-          const isAlreadyAdded =
-            !!droppedObjectRelationshipObjects?.objects.find(
-              ({ uid }) => droppedObject.uid === uid,
-            );
-
-          if (isAlreadyAdded) {
-            toast.warning(
-              <Toast
-                title={"Relationship exists"}
-                message={`${getObjectTypeDisplayNameFromParsedObject(
-                  droppedObject,
-                )} "${getObjectDisplayName(droppedObject)}" is already linked`}
-              />,
-            );
-          } else {
-            updatedRelationshipObjects &&
-              setRelationshipObjects({
-                updatedRelationshipObjects: updatedRelationshipObjects?.map(
-                  (relationship) => {
-                    const { objects, relationshipName } = relationship;
-                    if (relationshipName === droppedObjectRelationshipName) {
-                      return {
-                        ...relationship,
-                        objects: [droppedObject, ...objects],
-                      };
-                    } else return relationship;
-                  },
-                ),
-                originalRelationshipObjects,
-              });
-          }
-        } else {
-          toast.error(
-            <Toast
-              title={"Invalid relationship"}
-              message={`${getObjectTypeDisplayNameFromParsedObject(
-                droppedObject,
-              )} is not configured to link to ${
-                data
-                  ? getObjectTypeDisplayNameFromParsedObject(data)
-                  : objectType
-              }`}
-            />,
-          );
-        }
-        setEditMode(true);
-      } else if (selectedTab === PanelTab.Content) {
-        if (object.uid === droppedObject.uid) {
-          toast.warning(
-            <Toast
-              title={"Invalid Object"}
-              message={"Unable to add a Set to its own Set Content"}
-            />,
-          );
-        } else if (
-          contentObjects.updated?.find(
-            ({ object: { uid } }) => uid === droppedObject.uid,
-          )
-        ) {
-          toast.warning(
-            <Toast
-              title={"Existing"}
-              message={`${getObjectTypeDisplayNameFromParsedObject(
-                droppedObject,
-              )} "${getObjectDisplayName(
-                droppedObject,
-              )}" already exists as content`}
-            />,
-          );
-        } else if (
-          droppedObject.objectType === BuiltInSkylarkObjectType.Availability
-        ) {
-          toast.error(
-            <Toast
-              title={"Invalid Object Type"}
-              message={"Availability cannot be added as Set Content"}
-            />,
-          );
-        } else {
-          const parseDroppedObject = parseSkylarkObjectContent(droppedObject);
-          setContentObjects({
-            ...contentObjects,
-            updated: [
-              ...(contentObjects.updated || []),
-              {
-                ...parseDroppedObject,
-                position: (contentObjects.updated?.length || 0) + 1,
-                isNewObject: true,
-              },
-            ],
-          });
-        }
-        setEditMode(true);
-      } else if (selectedTab === PanelTab.Availability) {
-        if (droppedObject) {
-          if (
-            droppedObject.objectType !== BuiltInSkylarkObjectType.Availability
-          ) {
-            toast.error(
-              <Toast
-                title={"Invalid Object"}
-                message={`${getObjectTypeDisplayNameFromParsedObject(
-                  droppedObject,
-                )} "${getObjectDisplayName(
-                  droppedObject,
-                )}" is not an Availability object`}
-              />,
-            );
-          } else if (
-            [...(availabilityObjects.updated || [])]?.find(
-              ({ uid }) => uid === droppedObject.uid,
-            )
-          ) {
-            toast.warning(
-              <Toast
-                title={"Existing"}
-                message={`${getObjectTypeDisplayNameFromParsedObject(
-                  droppedObject,
-                )} "${getObjectDisplayName(
-                  droppedObject,
-                )}" is already assigned`}
-              />,
-            );
-          } else {
-            setAvailabilityObjects({
-              ...availabilityObjects,
-              updated: [...(availabilityObjects.updated || []), droppedObject],
-            });
-            setEditMode(true);
-          }
-        }
+        setRelationshipObjects({
+          ...relationshipObjects,
+          updated: updatedRelationshipObjects,
+        });
       }
+
+      if (selectedTab === PanelTab.Content && contentObjects.updated) {
+        const updatedContentObjects = handleDroppedContents({
+          droppedObjects,
+          panelObject: data,
+          existingObjects: contentObjects.updated,
+        });
+
+        setContentObjects({
+          ...contentObjects,
+          updated: updatedContentObjects,
+        });
+      }
+
+      if (
+        selectedTab === PanelTab.Availability &&
+        availabilityObjects.updated
+      ) {
+        console.log("HERE", availabilityObjects.updated);
+        const updatedAvailabilityObjects = handleDroppedAvailabilities({
+          droppedObjects,
+          existingObjects: availabilityObjects.updated,
+        });
+
+        setAvailabilityObjects({
+          ...availabilityObjects,
+          updated: updatedAvailabilityObjects,
+        });
+      }
+
       clearDroppedObjects?.();
     }
   }, [
+    availabilityObjects,
     clearDroppedObjects,
     contentObjects,
-    data?.content?.objects,
-    droppedObjects,
-    selectedTab,
-    objectMeta?.relationships,
-    updatedRelationshipObjects,
-    originalRelationshipObjects,
-    objectType,
     data,
-    object.uid,
-    availabilityObjects,
+    droppedObjects,
+    objectMeta?.relationships,
+    relationshipObjects,
+    selectedTab,
   ]);
 
   const { updateObjectRelationships, isUpdatingObjectRelationships } =
     useUpdateObjectRelationships({
       objectType,
       uid,
-      updatedRelationshipObjects,
-      originalRelationshipObjects,
+      updatedRelationshipObjects: relationshipObjects.updated,
+      originalRelationshipObjects: relationshipObjects.original,
       onSuccess: () => {
         setEditMode(false);
       },
@@ -481,7 +572,7 @@ export const Panel = ({
       updateObjectContent();
     } else if (
       selectedTab === PanelTab.Relationships &&
-      updatedRelationshipObjects
+      relationshipObjects.updated
     ) {
       updateObjectRelationships();
     } else if (
@@ -547,8 +638,8 @@ export const Panel = ({
               updated: contentObjects.original,
             });
             setRelationshipObjects({
-              updatedRelationshipObjects: originalRelationshipObjects,
-              originalRelationshipObjects: originalRelationshipObjects,
+              original: relationshipObjects.original,
+              updated: relationshipObjects.original,
             });
             setAvailabilityDimensionValues({
               original: availabilityDimensionValues.original,
@@ -638,7 +729,7 @@ export const Panel = ({
               isPage={isPage}
               objectType={objectType}
               uid={uid}
-              updatedRelationshipObjects={updatedRelationshipObjects}
+              updatedRelationshipObjects={relationshipObjects.updated}
               setRelationshipObjects={setRelationshipObjects}
               inEditMode={inEditMode}
               language={language}

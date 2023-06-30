@@ -5,6 +5,7 @@ import { useCallback, useMemo } from "react";
 import { QueryKeys } from "src/enums/graphql";
 import {
   GQLSkylarkObjectTypesWithConfig,
+  SkylarkObjectMeta,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -62,23 +63,30 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
 export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
   const { data, isError } = useSkylarkSchemaIntrospection(selectSchema);
 
-  if (!data || !objectType || isError) {
-    return { objectOperations: null, isError };
-  }
+  const res: {
+    objectOperations: SkylarkObjectMeta | null;
+    isError: boolean;
+    error?: ObjectError | unknown;
+  } = useMemo(() => {
+    if (!data || !objectType || isError) {
+      return { objectOperations: null, isError };
+    }
+    try {
+      const objectOperations = getObjectOperations(objectType, data);
+      return {
+        objectOperations,
+        isError,
+      };
+    } catch (err) {
+      return {
+        objectOperations: null,
+        isError: true,
+        error: err as ObjectError | unknown,
+      };
+    }
+  }, [data, isError, objectType]);
 
-  try {
-    const objectOperations = getObjectOperations(objectType, data);
-    return {
-      objectOperations,
-      isError,
-    };
-  } catch (err) {
-    return {
-      objectOperations: null,
-      isError: true,
-      error: err as ObjectError | unknown,
-    };
-  }
+  return res;
 };
 
 export const useSkylarkObjectTypesWithConfig = () => {

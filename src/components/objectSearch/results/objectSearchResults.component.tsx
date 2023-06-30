@@ -32,6 +32,7 @@ export interface ObjectSearchResultsProps {
   fetchNextPage?: () => void;
   searchData?: ParsedSkylarkObject[];
   sortedHeaders: string[];
+  hasNextPage?: boolean;
   columnVisibility: VisibilityState;
   onRowCheckChange?: ({
     object,
@@ -53,11 +54,10 @@ export const ObjectSearchResults = ({
   searchData,
   withObjectSelect,
   withObjectEdit,
+  hasNextPage,
   fetchNextPage,
   onRowCheckChange,
 }: ObjectSearchResultsProps) => {
-  console.log("&&& OBJECT_SEARCH RESULTS RENDERED");
-
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [rowInEditMode, setRowInEditMode] = useState("");
 
@@ -109,6 +109,7 @@ export const ObjectSearchResults = ({
         const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
         // once the user has scrolled within 500px of the bottom of the table, fetch more data if there is any
         if (
+          hasNextPage &&
           fetchNextPage &&
           searchDataLength &&
           scrollHeight - scrollTop - clientHeight < 500
@@ -173,7 +174,7 @@ export const ObjectSearchResults = ({
         virtualRows={virtualRows}
         totalRows={totalRows}
         withCheckbox={withObjectSelect}
-        isLoadingMore={!!fetchNextPage}
+        isLoadingMore={hasNextPage}
         activeObject={panelObject || undefined}
         setPanelObject={setPanelObject}
         withDraggableRow={!!panelObject}

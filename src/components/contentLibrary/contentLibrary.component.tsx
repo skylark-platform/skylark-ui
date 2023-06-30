@@ -17,10 +17,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
-import {
-  MemoizedObjectSearch,
-  ObjectSearch,
-} from "src/components/objectSearch";
+import { MemoizedObjectSearch } from "src/components/objectSearch";
 import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
 import { usePanelObjectState } from "src/hooks/usePanelObjectState";
@@ -107,10 +104,10 @@ export const ContentLibrary = () => {
   console.log({ checked: checkedRows.current });
 
   const resetRowsChecked = () => {
-    // checkedRows.current = {
-    //   objects: [],
-    //   objectTypes: [],
-    // };
+    checkedRows.current = {
+      objects: [],
+      objectTypes: [],
+    };
   };
 
   const [draggedObject, setDraggedObject] = useState<

@@ -28,8 +28,8 @@ interface PanelRelationshipsProps {
   uid: string;
   updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
   setRelationshipObjects: (relationshipObjects: {
-    originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
-    updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
+    original: ParsedSkylarkObjectRelationships[] | null;
+    updated: ParsedSkylarkObjectRelationships[] | null;
   }) => void;
   inEditMode: boolean;
   showDropZone?: boolean;
@@ -63,8 +63,8 @@ export const PanelRelationships = ({
   useEffect(() => {
     if (!inEditMode) {
       setRelationshipObjects({
-        updatedRelationshipObjects: relationships,
-        originalRelationshipObjects: relationships,
+        original: relationships,
+        updated: relationships,
       });
     }
   }, [inEditMode, relationships, setRelationshipObjects]);
@@ -72,7 +72,8 @@ export const PanelRelationships = ({
   const removeRelationshipObject = (removeUid: string, relationship: string) =>
     relationships &&
     setRelationshipObjects({
-      updatedRelationshipObjects: relationships?.map((currentRelationship) => {
+      original: relationships,
+      updated: relationships?.map((currentRelationship) => {
         const { objects, relationshipName } = currentRelationship;
         if (relationshipName === relationship) {
           const filteredObjects = objects.filter(
@@ -81,7 +82,6 @@ export const PanelRelationships = ({
           return { ...currentRelationship, objects: filteredObjects };
         } else return currentRelationship;
       }),
-      originalRelationshipObjects: relationships,
     });
 
   const [expandedRelationships, setExpandedRelationships] = useState<
@@ -133,7 +133,7 @@ export const PanelRelationships = ({
                     count={(objects.length >= 50 ? "50+" : objects.length) || 0}
                     id={`relationship-panel-${relationshipName}`}
                   />
-                  <button
+                  {/* <button
                     onClick={() =>
                       setSearchObjectsModalState({
                         open: true,
@@ -143,7 +143,7 @@ export const PanelRelationships = ({
                     className="ml-1.5 mb-4 text-manatee-500 transition-colors hover:text-brand-primary"
                   >
                     <Plus className="h-3 w-3" />
-                  </button>
+                  </button> */}
                 </div>
                 <div className="transition duration-300 ease-in-out">
                   {relationship && displayList?.length > 0 ? (
