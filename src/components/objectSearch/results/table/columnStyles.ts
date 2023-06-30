@@ -7,7 +7,7 @@ const headAndDataClassNames =
 const lastHeadAndDataClassNames =
   "last:sticky last:right-0 last:pl-0 last:h-full last:z-10 last:min-w-0 last:border-l-0";
 const rowClassName = "group/row hover:bg-manatee-50 hover:border-manatee-50 ";
-const activeRowClassName = "bg-manatee-200 border-manatee-200";
+const activeRowClassName = "bg-manatee-100 border-manatee-100";
 const rowGroupClassName =
   "group-hover/row:bg-manatee-50 group-hover/row:border-manatee-50";
 
@@ -35,7 +35,7 @@ const customColumnStyling: Record<
     className: {
       all: "sm:sticky z-20 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-1 bg-white",
       withoutCheckbox: "left-6",
-      withCheckbox: "left-10",
+      withCheckbox: "left-14",
     },
   },
   [OBJECT_LIST_TABLE.columnIds.dragIcon]: {
@@ -54,7 +54,7 @@ const customColumnStyling: Record<
   },
   [OBJECT_LIST_TABLE.columnIds.checkbox]: {
     className: {
-      all: "pr-0 pl-0 sticky -left-px absolute bg-white",
+      all: "pr-0 pl-0 sticky left-5 absolute bg-white",
       cell: "z-[31]",
       header: "z-40",
     },
@@ -70,20 +70,20 @@ const customColumnStyling: Record<
 const columnsWithCustomStyling = Object.keys(customColumnStyling);
 
 export const getObjectSearchTableColumnStyles = (
-  column: string,
+  columnId: string,
   type: "header" | "cell",
   opts: {
     withCheckbox?: boolean;
     rowIsActive?: boolean;
   },
 ) => {
-  const colStyles = columnsWithCustomStyling.includes(column)
-    ? customColumnStyling[column]
+  const colStyles = columnsWithCustomStyling.includes(columnId)
+    ? customColumnStyling[columnId]
     : customColumnStyling.default;
 
   const typeSpecificClassName = colStyles?.className?.[type] || "";
   return clsx(
-    headAndDataClassNames,
+    columnId !== OBJECT_LIST_TABLE.columnIds.checkbox && headAndDataClassNames,
     lastHeadAndDataClassNames,
     type === "cell" && rowGroupClassName,
     type === "cell" && opts.rowIsActive && activeRowClassName,
@@ -100,3 +100,10 @@ export const getObjectSearchDisplayNameCellStyles = (rowIsActive: boolean) =>
 
 export const getObjectSearchTableRowStyles = (rowIsActive: boolean) =>
   clsx(rowClassName, rowIsActive && activeRowClassName);
+
+export const getDragIconBeforeStyles = (isDraggable?: boolean) =>
+  clsx(
+    "before:left-3 before:top-0 before:hidden before:h-full before:w-5 before:bg-inherit before:opacity-0 before:group-hover/row:opacity-60 md:before:absolute md:before:block",
+    "before:bg-[url('/icons/drag_indicator_black.png')] before:bg-center before:bg-no-repeat",
+    !isDraggable && "before:invisible",
+  );

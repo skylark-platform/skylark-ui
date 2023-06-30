@@ -1,7 +1,6 @@
 import { createColumnHelper } from "@tanstack/react-table";
 
 import { AvailabilityLabel } from "src/components/availability";
-import { Checkbox } from "src/components/inputs/checkbox";
 import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import {
@@ -130,18 +129,6 @@ const selectColumn = columnHelper.display({
   id: OBJECT_LIST_TABLE.columnIds.checkbox,
   size: 26,
   // header: () => <Checkbox aria-label="toggle-select-all-objects" />,
-  // cell: () => <Checkbox onClick={(e) => e.stopPropagation()} onCheckedChange={(e) =>  />,
-  cell: ({ row, table }) => {
-    const object = row.original as ParsedSkylarkObject;
-    return (
-      <Checkbox
-        onClick={(e) => e.stopPropagation()}
-        onCheckedChange={(checkedState) => {
-          table.options.meta?.onRowCheckChange?.({ checkedState, object });
-        }}
-      />
-    );
-  },
 });
 
 const actionColumn = columnHelper.display({

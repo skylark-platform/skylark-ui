@@ -2,6 +2,7 @@ import { Cell, TableMeta, flexRender } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useMemo } from "react";
 
+import { Checkbox } from "src/components/inputs/checkbox";
 import { RowActions } from "src/components/objectSearch/rowActions";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import {
@@ -9,7 +10,11 @@ import {
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 
-import { DisplayNameTableCell, getCellWidths } from "./cell";
+import {
+  DisplayNameTableCell,
+  ObjectSelectTableCell,
+  getCellWidths,
+} from "./cell";
 import {
   getObjectSearchDisplayNameCellStyles,
   getObjectSearchTableColumnStyles,
@@ -74,6 +79,29 @@ export const ObjectListingTableData = ({
       >
         {children}
       </DisplayNameTableCell>
+    );
+  }
+
+  if (cell.column.id === OBJECT_LIST_TABLE.columnIds.checkbox) {
+    return (
+      <ObjectSelectTableCell
+        id={cell.id}
+        className={className}
+        rowGroupClassName={getObjectSearchDisplayNameCellStyles(!!rowIsActive)}
+        width={cell.column.getSize()}
+        height={height}
+        isDraggable={isDraggable}
+      >
+        <Checkbox
+          onClick={(e) => e.stopPropagation()}
+          onCheckedChange={(checkedState) => {
+            tableMeta?.onRowCheckChange?.({
+              checkedState,
+              object: cell.row.original,
+            });
+          }}
+        />
+      </ObjectSelectTableCell>
     );
   }
 
