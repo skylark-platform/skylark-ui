@@ -29,27 +29,29 @@ export const PanelMetadataProperty = ({
   </div>
 );
 
-export const AdditionalImageMetadata = ({
+export const CalculatedImageSize = ({ src }: { src: string | null }) => {
+  const { size } = useImageSize(src);
+  return (
+    <div className="-mt-6">
+      <PanelMetadataProperty
+        property="Original Size"
+        value={size ? `${size?.w}x${size?.h}` : ""}
+      />
+    </div>
+  );
+};
+
+export const RenderedImage = ({
   src,
   alt,
 }: {
   src: string | null;
   alt: string;
 }) => {
-  const { size } = useImageSize(src);
   return (
-    <div className="-mt-4">
-      <PanelMetadataProperty
-        property="Original Size"
-        value={size ? `${size?.w}x${size?.h}` : ""}
-      />
-      <PanelMetadataProperty
-        property="Rendered image"
-        value={
-          /* eslint-disable-next-line @next/next/no-img-element */
-          src ? <img src={src} alt={alt} /> : undefined
-        }
-      />
+    <div className="mb-4 flex w-full items-center justify-center">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {src && <img className="max-h-64" src={src} alt={alt} />}
     </div>
   );
 };

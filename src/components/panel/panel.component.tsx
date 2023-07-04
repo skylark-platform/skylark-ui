@@ -488,7 +488,6 @@ export const Panel = ({
         selectedTab === PanelTab.Availability &&
         availabilityObjects.updated
       ) {
-        console.log("HERE", availabilityObjects.updated);
         const updatedAvailabilityObjects = handleDroppedAvailabilities({
           droppedObjects,
           existingObjects: availabilityObjects.updated,

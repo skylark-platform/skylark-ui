@@ -7,6 +7,7 @@ import { EnumType } from "json-to-graphql-query";
 
 import {
   AvailabilityStatus,
+  BuiltInSkylarkObjectType,
   NormalizedObjectField,
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
@@ -485,10 +486,12 @@ describe("parseSkylarkObject", () => {
       release_date: "2012-04-01",
       season_number: 2,
       availability: {
+        __typename: "SkylarkAvailabilityListing",
         next_token: null,
         objects: [],
       },
       images: {
+        __typename: "SkylarkImageListing",
         next_token: null,
         objects: [],
       },
@@ -863,13 +866,15 @@ describe("parseUpdatedRelationshipObjects", () => {
 
   const updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] = [
     {
-      relationshipName: "Seasons",
+      objectType: "Season",
+      relationshipName: "seasons",
       objects: [expectedParsedObject],
     },
   ];
   const originalRelationshipObjects: ParsedSkylarkObjectRelationships[] = [
     {
-      relationshipName: "Seasons",
+      objectType: "Season",
+      relationshipName: "seasons",
       objects: [expectedParsedObject],
     },
   ];

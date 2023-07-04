@@ -78,14 +78,10 @@ export const ObjectSearchResults = ({
       return {
         ...obj,
         // When the object type is an image, we want to display its preview in the images tab
-        images: (
-          [
-            BuiltInSkylarkObjectType.SkylarkImage,
-            BuiltInSkylarkObjectType.BetaSkylarkImage,
-          ] as string[]
-        ).includes(obj.objectType)
-          ? [obj.metadata]
-          : obj.images,
+        images:
+          obj.objectType === BuiltInSkylarkObjectType.SkylarkImage
+            ? [obj.metadata]
+            : obj.images,
         [OBJECT_LIST_TABLE.columnIds.displayField]: getObjectDisplayName(obj),
         [OBJECT_LIST_TABLE.columnIds.translation]: obj.meta.language,
       };
@@ -118,7 +114,7 @@ export const ObjectSearchResults = ({
         }
       }
     },
-    [searchDataLength, fetchNextPage],
+    [hasNextPage, fetchNextPage, searchDataLength],
   );
 
   // a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
@@ -139,6 +135,7 @@ export const ObjectSearchResults = ({
       onRowCheckChange,
       rowInEditMode,
       withObjectEdit: !!withObjectEdit,
+      onObjectClick: setPanelObject,
       onEditClick(rowId) {
         setRowInEditMode(rowId);
       },

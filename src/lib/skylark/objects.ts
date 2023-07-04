@@ -371,16 +371,10 @@ export const getObjectOperations = (
     getObjectInterface,
   );
 
-  // TODO when Beta 1 environments are turned off, remove the BetaSkylarkImageListing check
-  const imageRelationships =
-    objectRelationshipFieldsFromGraphQLType(
-      SkylarkSystemGraphQLType.SkylarkImageListing,
-      getObjectInterface,
-    ) ||
-    objectRelationshipFieldsFromGraphQLType(
-      SkylarkSystemGraphQLType.BetaSkylarkImageListing,
-      getObjectInterface,
-    );
+  const imageRelationships = objectRelationshipFieldsFromGraphQLType(
+    SkylarkSystemGraphQLType.SkylarkImageListing,
+    getObjectInterface,
+  );
   const imageOperations = imageRelationships
     ? getObjectOperations(imageRelationships.objectType, schema)
     : null;
@@ -448,6 +442,7 @@ export const getObjectOperations = (
     hasContentOf,
     hasAvailability,
     isTranslatable: objectType !== BuiltInSkylarkObjectType.Availability,
+    isImage: objectType === BuiltInSkylarkObjectType.SkylarkImage,
   };
 
   return objectMeta;

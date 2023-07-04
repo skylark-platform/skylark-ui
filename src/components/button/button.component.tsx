@@ -6,7 +6,7 @@ import { CgSpinner } from "react-icons/cg";
 export interface ButtonProps {
   onClick?: () => void;
   children?: ReactNode;
-  variant: "primary" | "outline" | "ghost" | "link";
+  variant: "primary" | "outline" | "ghost" | "link" | "form";
   loading?: boolean;
   success?: boolean;
   danger?: boolean;
@@ -47,12 +47,14 @@ export const Button = forwardRef(
       "btn flex-nowrap",
       Icon && children && "gap-x-2",
       !iconOnly && "min-h-8 text-xs normal-case h-8 md:h-10 md:text-sm",
-      variant !== "ghost" && "min-w-24 rounded-full",
+      variant !== "ghost" && variant !== "form" && "min-w-24 rounded-full",
       variant === "primary" && "btn-primary shadow",
       variant === "outline" &&
         "btn-outline btn-primary disabled:border-none disabled:shadow",
       variant === "ghost" && "btn-ghost text-black hover:bg-transparent p-0",
       variant === "link" && "btn-link",
+      variant === "form" &&
+        "p-0 h-auto min-h-0 btn-ghost hover:bg-transparent opacity-30 transition-opacity hover:opacity-100 active:opacity-60",
       success && !disabled && !loading && "btn-success text-white",
       danger && "btn-error",
       !iconOnly &&

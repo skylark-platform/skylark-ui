@@ -4,6 +4,7 @@ import { AvailabilityLabel } from "src/components/availability";
 import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import {
+  BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObjectImageRelationship,
@@ -111,9 +112,19 @@ const imagesColumn = columnHelper.accessor("images", {
 
     return (
       <div>
-        {allImages.map(({ uid, url, title }) => (
+        {allImages.map(({ uid, url, title, _meta }) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img
+            onClick={(e) => {
+              if (props.table.options.meta?.onObjectClick) {
+                e.stopPropagation();
+                props.table.options.meta.onObjectClick({
+                  uid,
+                  objectType: BuiltInSkylarkObjectType.SkylarkImage,
+                  language: _meta?.language_data.language || "",
+                });
+              }
+            }}
             className="object-cover object-left"
             src={addCloudinaryOnTheFlyImageTransformation(url, { height: 50 })}
             key={`${props.row.id}-${uid}`}

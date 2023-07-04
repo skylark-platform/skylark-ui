@@ -33,8 +33,8 @@ export interface ObjectSearchProps {
   defaultObjectTypes?: SkylarkObjectTypes;
   hiddenFields?: string[];
   setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
-  onRowCheckChange: ObjectSearchResultsProps["onRowCheckChange"];
-  resetRowsChecked: () => void;
+  onRowCheckChange?: ObjectSearchResultsProps["onRowCheckChange"];
+  resetRowsChecked?: () => void;
 }
 
 export const ObjectSearch = (props: ObjectSearchProps) => {

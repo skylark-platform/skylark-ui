@@ -76,10 +76,7 @@ export const OBJECT_OPTIONS: {
   hiddenFields: string[];
 }[] = [
   {
-    objectTypes: [
-      BuiltInSkylarkObjectType.SkylarkImage,
-      BuiltInSkylarkObjectType.BetaSkylarkImage,
-    ],
+    objectTypes: [BuiltInSkylarkObjectType.SkylarkImage],
     hiddenFields: ["external_url", "upload_url", "download_from_url"],
   },
 ];
