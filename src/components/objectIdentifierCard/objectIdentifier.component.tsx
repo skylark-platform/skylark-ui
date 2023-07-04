@@ -16,6 +16,7 @@ interface ObjectIdentifierCardProps {
   disableForwardClick?: boolean;
   disableDeleteClick?: boolean;
   hideObjectType?: boolean;
+  className?: string;
   onForwardClick?: (o: SkylarkObjectIdentifier) => void;
   onDeleteClick?: () => void;
 }
@@ -26,11 +27,17 @@ export const ObjectIdentifierCard = ({
   disableForwardClick,
   disableDeleteClick,
   hideObjectType,
+  className,
   onForwardClick,
   onDeleteClick,
 }: ObjectIdentifierCardProps) => {
   return (
-    <div className="flex w-full flex-grow items-center space-x-2 py-3">
+    <div
+      className={clsx(
+        "flex w-full flex-grow items-center space-x-2 py-3",
+        className,
+      )}
+    >
       {!hideObjectType && (
         <Pill
           label={object.config.objectTypeDisplayName || object.objectType}

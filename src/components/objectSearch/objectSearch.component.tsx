@@ -158,7 +158,8 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         <div
           className={clsx(
             "flex w-full flex-1 flex-col items-center justify-start space-x-0.5 md:space-x-1",
-            withCreateButtons && "md:max-w-[50vw] xl:max-w-[45vw]",
+            withCreateButtons &&
+              "md:max-w-[50vw] lg:max-w-[45vw] xl:max-w-[40vw]",
           )}
         >
           <Search
@@ -189,7 +190,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         {withCreateButtons && (
           <CreateButtons
             className={clsx(
-              "mb-2 justify-end md:mb-0 md:w-full",
+              "mb-2 justify-end md:mb-0",
               isPanelOpen ? "pr-2 lg:w-auto lg:pr-4" : "md:w-auto",
             )}
             onObjectCreated={(obj) => {

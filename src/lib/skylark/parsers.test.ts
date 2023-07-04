@@ -866,15 +866,13 @@ describe("parseUpdatedRelationshipObjects", () => {
 
   const updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] = [
     {
-      objectType: "Season",
-      relationshipName: "seasons",
+      ...relationship,
       objects: [expectedParsedObject],
     },
   ];
   const originalRelationshipObjects: ParsedSkylarkObjectRelationships[] = [
     {
-      objectType: "Season",
-      relationshipName: "seasons",
+      ...relationship,
       objects: [expectedParsedObject],
     },
   ];
@@ -893,11 +891,10 @@ describe("parseUpdatedRelationshipObjects", () => {
   });
 
   test("returns the correct linked and unlinked uids when original objects is empty", () => {
-    const originalRelationshipObjects: ParsedSkylarkObjectRelationships[] = [];
     const result = parseUpdatedRelationshipObjects(
       relationship,
       updatedRelationshipObjects,
-      originalRelationshipObjects,
+      [],
     );
     expect(result).toEqual({
       relationship: relationship,
@@ -907,10 +904,9 @@ describe("parseUpdatedRelationshipObjects", () => {
   });
 
   test("returns the correct linked and unlinked uids when updated objects is empty", () => {
-    const updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] = [];
     const result = parseUpdatedRelationshipObjects(
       relationship,
-      updatedRelationshipObjects,
+      [],
       originalRelationshipObjects,
     );
     expect(result).toEqual({
@@ -921,13 +917,7 @@ describe("parseUpdatedRelationshipObjects", () => {
   });
 
   test("returns the correct linked and unlinked uids when both original and updated objects are empty", () => {
-    const updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] = [];
-    const originalRelationshipObjects: ParsedSkylarkObjectRelationships[] = [];
-    const result = parseUpdatedRelationshipObjects(
-      relationship,
-      updatedRelationshipObjects,
-      originalRelationshipObjects,
-    );
+    const result = parseUpdatedRelationshipObjects(relationship, [], []);
     expect(result).toEqual({
       relationship: relationship,
       uidsToLink: [],

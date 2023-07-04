@@ -68,10 +68,18 @@ test("does not render info button when setPanelObject is undefined", async () =>
 test("renders row select checkboxes", async () => {
   render(<ObjectSearch withObjectSelect />);
 
+  await waitFor(() => {
+    expect(
+      screen.getByTestId("object-search-results-table-body"),
+    ).toBeInTheDocument();
+  });
+
   await waitFor(() =>
     expect(
-      screen.getByRole("checkbox", { name: "toggle-select-all-objects" }),
-    ).toBeInTheDocument(),
+      within(
+        screen.getByTestId("object-search-results-table-body"),
+      ).queryAllByRole("checkbox").length,
+    ).toBeGreaterThan(0),
   );
 });
 

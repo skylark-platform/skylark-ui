@@ -4,7 +4,6 @@ import {
   useSensors,
   MouseSensor,
   DragOverlay,
-  getClientRect,
   DragEndEvent,
   DragStartEvent,
   TouchSensor,
@@ -215,17 +214,24 @@ export const ContentLibrary = () => {
         createPortal(
           <DragOverlay zIndex={99999999} dropAnimation={null}>
             {draggedObject ? (
-              <div className="max-w-[350px] cursor-grabbing items-center rounded-sm border border-manatee-200 bg-white px-2">
+              <div className="max-w-[350px] cursor-grabbing items-center rounded-sm border border-manatee-200 bg-white">
                 {checkedRows.current.objects.length > 0 &&
                 skylarkObjectIsInArray(
                   draggedObject,
                   checkedRows.current.objects,
                 ) ? (
-                  <p className="bg-brand-primary py-2 text-white">{`Add ${
+                  <p className="p-2">{`Add ${
                     checkedRows.current.objects.length
-                  } ${checkedRows.current.objectTypes.join(", ")} objects`}</p>
+                  } ${
+                    checkedRows.current.objectTypes.length === 1
+                      ? checkedRows.current.objectTypes[0]
+                      : ""
+                  } objects`}</p>
                 ) : (
-                  <ObjectIdentifierCard object={draggedObject} />
+                  <ObjectIdentifierCard
+                    className="px-2"
+                    object={draggedObject}
+                  />
                 )}
               </div>
             ) : null}
@@ -241,7 +247,7 @@ export const ContentLibrary = () => {
       >
         <m.div
           className={clsx(
-            "relative w-full max-w-full pt-6 pl-2 md:pl-6 lg:pl-10",
+            "relative w-full max-w-full pl-2 pt-6 md:pl-6 lg:pl-10",
             activePanelObject && "md:w-1/2 lg:w-5/12 xl:w-3/5",
             !!draggedObject && "pointer-events-none",
           )}

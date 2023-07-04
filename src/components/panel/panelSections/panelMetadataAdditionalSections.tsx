@@ -49,7 +49,7 @@ export const RenderedImage = ({
   alt: string;
 }) => {
   return (
-    <div className="mb-4 flex w-full items-center justify-center">
+    <div className="mb-6 flex w-full items-center justify-center">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {src && <img className="max-h-64" src={src} alt={alt} />}
     </div>
