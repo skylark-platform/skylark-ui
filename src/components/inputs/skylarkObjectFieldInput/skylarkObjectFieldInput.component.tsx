@@ -149,7 +149,7 @@ const SkylarkObjectFieldInputTextArea = ({
           ((value as string).length > 50 && 5))) ||
       1
     }
-    className="w-full rounded-sm bg-manatee-50 py-3 px-4"
+    className="w-full rounded-sm bg-manatee-50 px-4 py-3"
   />
 );
 
@@ -172,7 +172,7 @@ const SkylarkObjectFieldInputGeneric = ({
       (config.type === "float" && "any") ||
       undefined
     }
-    className="w-full rounded-sm bg-manatee-50 py-3 px-4"
+    className="w-full rounded-sm bg-manatee-50 px-4 py-3"
   />
 );
 

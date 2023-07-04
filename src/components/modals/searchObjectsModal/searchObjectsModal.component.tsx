@@ -38,7 +38,7 @@ export const SearchObjectsModal = ({
         <Dialog.Panel className="relative mx-auto flex h-full max-h-[90%] w-full max-w-6xl flex-col overflow-y-auto rounded bg-white py-6 md:w-4/5 md:py-10">
           <button
             aria-label="close"
-            className="absolute top-4 right-4 sm:top-9 sm:right-8"
+            className="absolute right-4 top-4 sm:right-8 sm:top-9"
             onClick={closeModal}
             tabIndex={-1}
           >

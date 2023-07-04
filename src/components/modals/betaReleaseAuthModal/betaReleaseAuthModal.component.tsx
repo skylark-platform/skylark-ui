@@ -121,7 +121,7 @@ export const AddAuthTokenModal = ({
         <Dialog.Panel className="relative mx-auto max-w-lg rounded bg-white p-6 md:p-10">
           <button
             aria-label="close"
-            className="absolute top-4 right-4 sm:top-9 sm:right-8"
+            className="absolute right-4 top-4 sm:right-8 sm:top-9"
             onClick={closeModal}
             tabIndex={-1}
           >

@@ -38,14 +38,14 @@ export const SearchInput = ({
         className,
       )}
     >
-      <div className="relative flex w-full items-center rounded-l-full outline-2 focus-within:-outline-offset-1 focus-within:outline-brand-primary focus-within:outline">
+      <div className="relative flex w-full items-center rounded-l-full outline-2 focus-within:outline focus-within:-outline-offset-1 focus-within:outline-brand-primary">
         <Search className="ml-2 h-4 md:ml-5 md:h-5" />
         <input
           name="search-query-input"
           value={query}
           type="text"
           placeholder="Search for an object(s)"
-          className="min-w-32 flex-grow rounded-none bg-inherit py-2 px-1 pr-0 focus:outline-none md:px-2 md:py-3 md:pr-0"
+          className="min-w-32 flex-grow rounded-none bg-inherit px-1 py-2 pr-0 focus:outline-none md:px-2 md:py-3 md:pr-0"
           onChange={(e) => setQuery(e.target.value)}
         />
         <button

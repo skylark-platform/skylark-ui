@@ -259,8 +259,8 @@ export const PanelHeader = ({
           {inEditMode && (
             <div
               className={clsx(
-                "absolute left-1/2 -bottom-16 z-10 -translate-x-1/2",
-                isPage ? "md:fixed md:top-24 md:bottom-auto" : " md:-bottom-18",
+                "absolute -bottom-16 left-1/2 z-10 -translate-x-1/2",
+                isPage ? "md:fixed md:bottom-auto md:top-24" : " md:-bottom-18",
               )}
             >
               <PanelLabel
