@@ -7,11 +7,14 @@ import { useUser } from "src/contexts/useUser";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ParsedSkylarkObject,
   SkylarkObjectIdentifier,
   SkylarkObjectTypes,
 } from "src/interfaces/skylark";
-import { hasProperty, isObjectsDeepEqual } from "src/lib/utils";
+import {
+  hasProperty,
+  isObjectsDeepEqual,
+  shallowCompareObjects,
+} from "src/lib/utils";
 
 import { CreateButtons } from "./createButtons";
 import {
@@ -227,43 +230,11 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   );
 };
 
-const shallowCompare = (
-  obj1: Record<string, unknown>,
-  obj2: Record<string, unknown>,
-) =>
-  Object.keys(obj1).length === Object.keys(obj2).length &&
-  Object.keys(obj1).every((key) => obj1[key] === obj2[key]);
-
 const objectSearchPropsAreEqual = (
   prevProps: Readonly<ObjectSearchProps>,
   nextProps: Readonly<ObjectSearchProps>,
 ) => {
-  const isPanelOpenSame = prevProps.isPanelOpen === nextProps.isPanelOpen;
-  const isOnObjectCheckedChanged =
-    prevProps.onObjectCheckedChanged === nextProps.onObjectCheckedChanged;
-  const isPanelObjectSame =
-    prevProps.panelObject?.uid === nextProps.panelObject?.uid &&
-    prevProps.panelObject?.objectType === nextProps.panelObject?.objectType;
-  const isSetPanelObjectSame =
-    prevProps.setPanelObject === nextProps.setPanelObject;
-
-  const areEqual =
-    isPanelOpenSame &&
-    isOnObjectCheckedChanged &&
-    isPanelObjectSame &&
-    isSetPanelObjectSame;
-
-  const isShallowSame = shallowCompare(prevProps, nextProps);
-
-  // console.log({
-  //   isPanelOpenSame,
-  //   isOnRowCheckChangeSame,
-  //   isPanelObjectSame,
-  //   isSetPanelObjectSame,
-  //   isResetRowsCheckSame,
-  //   areEqual,
-  // });
-
+  const isShallowSame = shallowCompareObjects(prevProps, nextProps);
   return isShallowSame;
 };
 

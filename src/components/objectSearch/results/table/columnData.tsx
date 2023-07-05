@@ -9,7 +9,6 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
-import { skylarkObjectsAreSame } from "src/lib/utils";
 
 import {
   DisplayNameTableCell,

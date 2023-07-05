@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 

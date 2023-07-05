@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { VariableType, jsonToGraphQLQuery } from "json-to-graphql-query";
+import { jsonToGraphQLQuery } from "json-to-graphql-query";
 
 import { SkylarkGraphQLAvailabilityDimension } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";

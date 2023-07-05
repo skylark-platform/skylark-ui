@@ -184,3 +184,10 @@ export const skylarkObjectIsInArray = (
 // Naive implementation, just removes Listing from ImageListing
 export const getObjectTypeFromListingTypeName = (typename: string) =>
   typename.substring(0, typename.lastIndexOf("Listing"));
+
+export const shallowCompareObjects = (
+  obj1: Record<string, unknown>,
+  obj2: Record<string, unknown>,
+) =>
+  Object.keys(obj1).length === Object.keys(obj2).length &&
+  Object.keys(obj1).every((key) => obj1[key] === obj2[key]);

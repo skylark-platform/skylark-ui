@@ -15,7 +15,11 @@ import {
   ParsedSkylarkObject,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
-import { getObjectDisplayName, skylarkObjectsAreSame } from "src/lib/utils";
+import {
+  getObjectDisplayName,
+  shallowCompareObjects,
+  skylarkObjectsAreSame,
+} from "src/lib/utils";
 
 import { Table } from "./table";
 import {
@@ -240,68 +244,11 @@ export const ObjectSearchResults = ({
   );
 };
 
-const shallowCompare = (
-  obj1: Record<string, unknown>,
-  obj2: Record<string, unknown>,
-) =>
-  Object.keys(obj1).length === Object.keys(obj2).length &&
-  Object.keys(obj1).every((key) => obj1[key] === obj2[key]);
-
 const ObjectSearchResultsPropsAreEqual = (
   prevProps: Readonly<ObjectSearchResultsProps>,
   nextProps: Readonly<ObjectSearchResultsProps>,
 ) => {
-  const {
-    withCreateButtons,
-    withObjectSelect,
-    withObjectEdit,
-    panelObject,
-    setPanelObject,
-    fetchNextPage,
-    searchData,
-    sortedHeaders,
-    columnVisibility,
-    onObjectCheckedChanged,
-  } = nextProps;
-
-  const isSearchDataSame = prevProps.searchData === searchData;
-  const isPanelObjectSame = prevProps.panelObject === panelObject;
-  const isWithCreateButtonsSame =
-    prevProps.withCreateButtons === withCreateButtons;
-  const isWithObjectEditSame = prevProps.withObjectEdit === withObjectEdit;
-  const isSetPanelObjectSame = prevProps.setPanelObject === setPanelObject;
-  const isWithObjectSelectSame =
-    prevProps.withObjectSelect === withObjectSelect;
-  const isFetchNextPageSame = prevProps.fetchNextPage === fetchNextPage;
-  const isSortedHeadersSame = prevProps.sortedHeaders === sortedHeaders;
-  const isColumnVisibilitySame =
-    prevProps.columnVisibility === columnVisibility;
-  const isOnObjectCheckedChanged =
-    prevProps.onObjectCheckedChanged === onObjectCheckedChanged;
-
-  const isShallowSame = shallowCompare(prevProps, nextProps);
-
-  // console.log({
-  //   prevProps,
-  //   nextProps,
-  //   isSame: prevProps === nextProps,
-
-  //   isShallowSame,
-  //   isDeepSame: isObjectsDeepEqual(prevProps, nextProps),
-  //   props: {
-  //     isPanelObjectSame,
-  //     isSearchDataSame,
-  //     isWithCreateButtonsSame,
-  //     isWithObjectEditSame,
-  //     isSetPanelObjectSame,
-  //     isWithObjectSelectSame,
-  //     isFetchNextPageSame,
-  //     isSortedHeadersSame,
-  //     isColumnVisibilitySame,
-  //     isOnObjectCheckedChanged,
-  //   },
-  // });
-
+  const isShallowSame = shallowCompareObjects(prevProps, nextProps);
   return isShallowSame;
 };
 

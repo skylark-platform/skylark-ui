@@ -6,7 +6,7 @@ import GQLSkylarkGetAvailabilityQueryFixture from "src/__tests__/fixtures/skylar
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetSeasonQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots04.json";
 import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
-import { PanelTab } from "src/hooks/state/usePanelObjectState";
+import { PanelTab } from "src/hooks/state";
 
 import { Panel } from "./panel.component";
 

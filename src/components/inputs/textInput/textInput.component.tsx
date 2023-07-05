@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import { GrCopy } from "react-icons/gr";
 
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 

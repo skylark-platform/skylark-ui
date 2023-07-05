@@ -22,7 +22,7 @@ import {
   within,
 } from "src/__tests__/utils/test-utils";
 import { QueryErrorMessages } from "src/enums/graphql";
-import { PanelTab } from "src/hooks/state/usePanelObjectState";
+import { PanelTab } from "src/hooks/state";
 import {
   AvailabilityStatus,
   BuiltInSkylarkObjectType,

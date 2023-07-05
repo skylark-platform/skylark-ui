@@ -13,7 +13,7 @@ import { useUpdateObjectAvailability } from "src/hooks/objects/update/useUpdateO
 import { useUpdateObjectContent } from "src/hooks/objects/update/useUpdateObjectContent";
 import { useUpdateObjectMetadata } from "src/hooks/objects/update/useUpdateObjectMetadata";
 import { useUpdateObjectRelationships } from "src/hooks/objects/update/useUpdateObjectRelationships";
-import { PanelTab } from "src/hooks/state/usePanelObjectState";
+import { PanelTab } from "src/hooks/state";
 import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectContentObject,

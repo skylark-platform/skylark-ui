@@ -1,6 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
 
-import { Plus } from "src/components/icons";
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";

@@ -9,16 +9,9 @@ import {
   TouchSensor,
 } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
-import { CheckedState } from "@radix-ui/react-checkbox";
 import clsx from "clsx";
 import { m, useMotionValue, useTransform } from "framer-motion";
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
@@ -26,39 +19,13 @@ import { MemoizedObjectSearch } from "src/components/objectSearch";
 import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
 import { usePanelObjectState } from "src/hooks/state";
-import { useCheckedObjectsState } from "src/hooks/state/useCheckedObjectsState";
+import { useCheckedObjectsState } from "src/hooks/state";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
-import { skylarkObjectIsInArray } from "src/lib/utils";
 
 const INITIAL_PANEL_PERCENTAGE = 70;
 const MINIMUM_SIZES = {
   objectListing: 425,
   panel: 450,
-};
-
-const updateCheckedObjects = (
-  existingCheckedObjects: ParsedSkylarkObject[],
-  object: ParsedSkylarkObject,
-  checkedState: CheckedState,
-) => {
-  if (checkedState) {
-    const objAlreadyChecked =
-      existingCheckedObjects.findIndex(
-        ({ uid, objectType }) =>
-          uid === object.uid && objectType === object.objectType,
-      ) > -1;
-
-    if (objAlreadyChecked) {
-      return existingCheckedObjects;
-    }
-
-    return [...existingCheckedObjects, object];
-  }
-
-  return existingCheckedObjects.filter(
-    ({ uid, objectType }) =>
-      !(uid === object.uid && objectType === object.objectType),
-  );
 };
 
 export const ContentLibrary = () => {
@@ -72,49 +39,8 @@ export const ContentLibrary = () => {
     resetPanelObjectState,
   } = usePanelObjectState();
 
-  // const checkedRows = useRef<{
-  //   objects: ParsedSkylarkObject[];
-  //   objectTypes: string[];
-  // }>({ objects: [], objectTypes: [] });
-
   const { checkedObjects, checkedUids, checkedObjectTypes, setCheckedObjects } =
     useCheckedObjectsState();
-  // const onRowCheckChange = useCallback(
-  //   ({
-  //     checkedState,
-  //     object,
-  //   }: {
-  //     checkedState: CheckedState;
-  //     object: ParsedSkylarkObject;
-  //   }) => {
-  //     const updatedCheckedObjects = updateCheckedObjects(
-  //       checkedRows.current.objects,
-  //       object,
-  //       checkedState,
-  //     );
-  //     const checkedObjectTypes = [
-  //       ...new Set(
-  //         updatedCheckedObjects.map(
-  //           ({ config, objectType }) =>
-  //             config?.objectTypeDisplayName || objectType,
-  //         ),
-  //       ),
-  //     ];
-
-  //     checkedRows.current = {
-  //       objects: updatedCheckedObjects,
-  //       objectTypes: checkedObjectTypes,
-  //     };
-  //   },
-  //   [],
-  // );
-
-  // const resetRowsChecked = () => {
-  //   checkedRows.current = {
-  //     objects: [],
-  //     objectTypes: [],
-  //   };
-  // };
 
   const [draggedObject, setDraggedObject] = useState<
     ParsedSkylarkObject | undefined
