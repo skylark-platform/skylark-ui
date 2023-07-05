@@ -34,7 +34,6 @@ export interface ObjectSearchProps {
   isPanelOpen?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
   defaultObjectTypes?: SkylarkObjectTypes;
-  hiddenFields?: string[];
   setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
   checkedObjects?: ObjectSearchResultsProps["checkedObjects"];
   onObjectCheckedChanged?: ObjectSearchResultsProps["onObjectCheckedChanged"];
@@ -47,7 +46,6 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     setPanelObject,
     isPanelOpen,
     defaultObjectTypes,
-    hiddenFields,
     onObjectCheckedChanged,
   } = props;
 
@@ -115,12 +113,8 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
       ...orderedProperties,
     ];
 
-    if (hiddenFields) {
-      return headers.filter((header) => !hiddenFields.includes(header));
-    }
-
     return headers;
-  }, [hiddenFields, properties]);
+  }, [properties]);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     Object.fromEntries(sortedHeaders.map((header) => [header, true])),

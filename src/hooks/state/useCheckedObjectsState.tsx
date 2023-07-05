@@ -2,12 +2,8 @@ import { useState, useMemo } from "react";
 
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
-export interface CheckedSkylarkObject extends ParsedSkylarkObject {
-  rowIndex?: number;
-}
-
 export const useCheckedObjectsState = () => {
-  const [checkedObjects, setCheckedObjects] = useState<CheckedSkylarkObject[]>(
+  const [checkedObjects, setCheckedObjects] = useState<ParsedSkylarkObject[]>(
     [],
   );
   const { checkedObjectTypes, checkedUids } = useMemo(() => {

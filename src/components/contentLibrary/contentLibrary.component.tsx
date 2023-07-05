@@ -147,7 +147,7 @@ export const ContentLibrary = () => {
         createPortal(
           <DragOverlay zIndex={99999999} dropAnimation={null}>
             {draggedObject ? (
-              <div className="max-w-[350px] cursor-grabbing items-center rounded-sm border border-manatee-200 bg-white">
+              <div className="max-w-[350px] cursor-grabbing items-center rounded-sm border border-manatee-200 bg-white text-sm">
                 {checkedObjects.length > 0 &&
                 checkedUids.includes(draggedObject.uid) ? (
                   <p className="p-2">{`Add ${checkedObjects.length} ${
@@ -240,14 +240,9 @@ export const ContentLibrary = () => {
 
   function handleDragStart(event: DragStartEvent) {
     setDraggedObject(event.active.data.current?.object);
-    const el = document.getElementById("object-search-results");
-    if (el) el.style.overflow = "hidden";
   }
 
   function handleDragEnd(event: DragEndEvent) {
-    const el = document.getElementById("object-search-results");
-    if (el) el.style.overflow = "";
-
     if (event.over && event.over.id === DROPPABLE_ID && draggedObject) {
       const draggedObjectIsChecked = checkedUids.includes(draggedObject.uid);
 
