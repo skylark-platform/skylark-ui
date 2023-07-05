@@ -9,6 +9,7 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
+import { skylarkObjectsAreSame } from "src/lib/utils";
 
 import {
   DisplayNameTableCell,
@@ -83,6 +84,7 @@ export const ObjectListingTableData = ({
   }
 
   if (cell.column.id === OBJECT_LIST_TABLE.columnIds.checkbox) {
+    const checked = Boolean(tableMeta?.checkedRows?.includes(cell.row.index));
     return (
       <ObjectSelectTableCell
         id={cell.id}
@@ -93,12 +95,18 @@ export const ObjectListingTableData = ({
         isDraggable={isDraggable}
       >
         <Checkbox
-          onClick={(e) => e.stopPropagation()}
-          onCheckedChange={(checkedState) => {
-            tableMeta?.onRowCheckChange?.({
-              checkedState,
-              object: cell.row.original,
-            });
+          checked={checked}
+          // Not using onCheckChanged so that we have access to the native click event
+          onClick={(e) => {
+            e.stopPropagation();
+            if (e.shiftKey) {
+              tableMeta?.batchCheckRows("shift", cell.row.index);
+            } else {
+              tableMeta?.onRowCheckChange?.({
+                checkedState: !checked,
+                object: cell.row.original,
+              });
+            }
           }}
         />
       </ObjectSelectTableCell>

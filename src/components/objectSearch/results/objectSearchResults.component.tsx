@@ -15,7 +15,7 @@ import {
   ParsedSkylarkObject,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
-import { getObjectDisplayName, isObjectsDeepEqual } from "src/lib/utils";
+import { getObjectDisplayName, skylarkObjectsAreSame } from "src/lib/utils";
 
 import { Table } from "./table";
 import {
@@ -34,13 +34,8 @@ export interface ObjectSearchResultsProps {
   sortedHeaders: string[];
   hasNextPage?: boolean;
   columnVisibility: VisibilityState;
-  onRowCheckChange?: ({
-    object,
-    checkedState,
-  }: {
-    object: ParsedSkylarkObject;
-    checkedState: CheckedState;
-  }) => void;
+  checkedObjects?: ParsedSkylarkObject[];
+  onObjectCheckedChanged?: (o: ParsedSkylarkObject[]) => void;
 }
 
 // https://github.com/TanStack/table/issues/4240
@@ -56,7 +51,8 @@ export const ObjectSearchResults = ({
   withObjectEdit,
   hasNextPage,
   fetchNextPage,
-  onRowCheckChange,
+  checkedObjects,
+  onObjectCheckedChanged,
 }: ObjectSearchResultsProps) => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [rowInEditMode, setRowInEditMode] = useState("");
@@ -122,6 +118,69 @@ export const ObjectSearchResults = ({
     fetchMoreOnBottomReached(tableContainerRef.current);
   }, [fetchMoreOnBottomReached]);
 
+  const onRowCheckChange = useCallback(
+    ({
+      object,
+      checkedState,
+    }: {
+      object: ParsedSkylarkObject;
+      checkedState: CheckedState;
+    }) => {
+      if (onObjectCheckedChanged && checkedObjects) {
+        if (checkedState) {
+          onObjectCheckedChanged([...checkedObjects, object]);
+        } else {
+          onObjectCheckedChanged(
+            checkedObjects.filter((obj) => !skylarkObjectsAreSame(obj, object)),
+          );
+        }
+      }
+    },
+    [checkedObjects, onObjectCheckedChanged],
+  );
+
+  const checkedRows = useMemo(() => {
+    const searchObjectUids = searchData?.map(({ uid }) => uid);
+
+    return withObjectSelect && checkedObjects && searchObjectUids
+      ? checkedObjects.map((checkedObj) =>
+          searchObjectUids.indexOf(checkedObj.uid),
+        )
+      : [];
+  }, [checkedObjects, searchData, withObjectSelect]);
+
+  const batchCheckRows = useCallback(
+    (type: "shift" | "clear-all", rowIndex?: number) => {
+      if (onObjectCheckedChanged) {
+        if (
+          type === "shift" &&
+          rowIndex !== undefined &&
+          checkedObjects &&
+          searchData
+        ) {
+          // We want to find the last checked row before the given index
+          const reverseSortedCheckedRows = checkedRows.sort((a, b) => b - a);
+          const firstSmallerIndex = reverseSortedCheckedRows.findIndex(
+            (val) => val < rowIndex,
+          );
+
+          // Once found, we check all boxes after the previous row until and including the given index
+          const objectsToCheck = searchData.slice(
+            reverseSortedCheckedRows[firstSmallerIndex] || 0,
+            rowIndex + 1,
+          );
+
+          onObjectCheckedChanged([...checkedObjects, ...objectsToCheck]);
+        }
+
+        if (type === "clear-all") {
+          onObjectCheckedChanged([]);
+        }
+      }
+    },
+    [checkedObjects, checkedRows, onObjectCheckedChanged, searchData],
+  );
+
   const table = useReactTable({
     debugAll: false,
     data: formattedSearchData || emptyArray,
@@ -132,7 +191,9 @@ export const ObjectSearchResults = ({
       columnVisibility,
     },
     meta: {
+      checkedRows,
       onRowCheckChange,
+      batchCheckRows,
       rowInEditMode,
       withObjectEdit: !!withObjectEdit,
       onObjectClick: setPanelObject,
@@ -151,7 +212,7 @@ export const ObjectSearchResults = ({
     parentRef: tableContainerRef,
     size: rows.length,
     estimateSize: useCallback(() => 42, []),
-    overscan: 40,
+    overscan: 10,
   });
 
   const { virtualItems: virtualRows, totalSize: totalRows } = rowVirtualizer;
@@ -200,7 +261,7 @@ const ObjectSearchResultsPropsAreEqual = (
     searchData,
     sortedHeaders,
     columnVisibility,
-    onRowCheckChange,
+    onObjectCheckedChanged,
   } = nextProps;
 
   const isSearchDataSame = prevProps.searchData === searchData;
@@ -215,8 +276,8 @@ const ObjectSearchResultsPropsAreEqual = (
   const isSortedHeadersSame = prevProps.sortedHeaders === sortedHeaders;
   const isColumnVisibilitySame =
     prevProps.columnVisibility === columnVisibility;
-  const isOnRowCheckChangeSame =
-    prevProps.onRowCheckChange === onRowCheckChange;
+  const isOnObjectCheckedChanged =
+    prevProps.onObjectCheckedChanged === onObjectCheckedChanged;
 
   const isShallowSame = shallowCompare(prevProps, nextProps);
 
@@ -237,7 +298,7 @@ const ObjectSearchResultsPropsAreEqual = (
   //     isFetchNextPageSame,
   //     isSortedHeadersSame,
   //     isColumnVisibilitySame,
-  //     isOnRowCheckChangeSame,
+  //     isOnObjectCheckedChanged,
   //   },
   // });
 

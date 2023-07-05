@@ -177,12 +177,9 @@ export const skylarkObjectsAreSame = (
 ) => obj1.uid === obj2.uid && obj1.objectType === obj2.objectType;
 
 export const skylarkObjectIsInArray = (
-  obj: ParsedSkylarkObject,
+  objToFind: ParsedSkylarkObject,
   arr: ParsedSkylarkObject[],
-) =>
-  arr.findIndex(
-    ({ uid, objectType }) => uid === obj.uid && objectType === obj.objectType,
-  ) > -1;
+) => arr.findIndex((obj) => skylarkObjectsAreSame(objToFind, obj)) > -1;
 
 // Naive implementation, just removes Listing from ImageListing
 export const getObjectTypeFromListingTypeName = (typename: string) =>

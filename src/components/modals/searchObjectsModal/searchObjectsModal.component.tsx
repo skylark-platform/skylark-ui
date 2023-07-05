@@ -59,8 +59,7 @@ export const SearchObjectsModal = ({
               //   "translation",
               //   ...OBJECT_SEARCH_HARDCODED_COLUMNS,
               // ]}
-              resetRowsChecked={console.log}
-              onRowCheckChange={console.log}
+              // onRowCheckChange={console.log}
               withObjectSelect
             />
           </div>

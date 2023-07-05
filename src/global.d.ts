@@ -10,6 +10,7 @@ import {
 export declare module "@tanstack/table-core" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
+    checkedRows?: number[];
     onRowCheckChange?: ({
       object,
       checkedState,
@@ -17,6 +18,7 @@ export declare module "@tanstack/table-core" {
       object: ParsedSkylarkObject;
       checkedState: CheckedState;
     }) => void;
+    batchCheckRows: (type: "shift" | "clear-all", rowIndex?: number) => void;
     onObjectClick?: (obj: SkylarkObjectIdentifier) => void;
     rowInEditMode: string;
     withObjectEdit: boolean;

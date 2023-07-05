@@ -12,14 +12,21 @@ import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import clsx from "clsx";
 import { m, useMotionValue, useTransform } from "framer-motion";
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { createPortal } from "react-dom";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { MemoizedObjectSearch } from "src/components/objectSearch";
 import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
-import { usePanelObjectState } from "src/hooks/usePanelObjectState";
+import { usePanelObjectState } from "src/hooks/state";
+import { useCheckedObjectsState } from "src/hooks/state/useCheckedObjectsState";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 import { skylarkObjectIsInArray } from "src/lib/utils";
 
@@ -65,47 +72,49 @@ export const ContentLibrary = () => {
     resetPanelObjectState,
   } = usePanelObjectState();
 
-  const checkedRows = useRef<{
-    objects: ParsedSkylarkObject[];
-    objectTypes: string[];
-  }>({ objects: [], objectTypes: [] });
+  // const checkedRows = useRef<{
+  //   objects: ParsedSkylarkObject[];
+  //   objectTypes: string[];
+  // }>({ objects: [], objectTypes: [] });
 
-  const onRowCheckChange = useCallback(
-    ({
-      checkedState,
-      object,
-    }: {
-      checkedState: CheckedState;
-      object: ParsedSkylarkObject;
-    }) => {
-      const updatedCheckedObjects = updateCheckedObjects(
-        checkedRows.current.objects,
-        object,
-        checkedState,
-      );
-      const checkedObjectTypes = [
-        ...new Set(
-          updatedCheckedObjects.map(
-            ({ config, objectType }) =>
-              config?.objectTypeDisplayName || objectType,
-          ),
-        ),
-      ];
+  const { checkedObjects, checkedUids, checkedObjectTypes, setCheckedObjects } =
+    useCheckedObjectsState();
+  // const onRowCheckChange = useCallback(
+  //   ({
+  //     checkedState,
+  //     object,
+  //   }: {
+  //     checkedState: CheckedState;
+  //     object: ParsedSkylarkObject;
+  //   }) => {
+  //     const updatedCheckedObjects = updateCheckedObjects(
+  //       checkedRows.current.objects,
+  //       object,
+  //       checkedState,
+  //     );
+  //     const checkedObjectTypes = [
+  //       ...new Set(
+  //         updatedCheckedObjects.map(
+  //           ({ config, objectType }) =>
+  //             config?.objectTypeDisplayName || objectType,
+  //         ),
+  //       ),
+  //     ];
 
-      checkedRows.current = {
-        objects: updatedCheckedObjects,
-        objectTypes: checkedObjectTypes,
-      };
-    },
-    [],
-  );
+  //     checkedRows.current = {
+  //       objects: updatedCheckedObjects,
+  //       objectTypes: checkedObjectTypes,
+  //     };
+  //   },
+  //   [],
+  // );
 
-  const resetRowsChecked = () => {
-    checkedRows.current = {
-      objects: [],
-      objectTypes: [],
-    };
-  };
+  // const resetRowsChecked = () => {
+  //   checkedRows.current = {
+  //     objects: [],
+  //     objectTypes: [],
+  //   };
+  // };
 
   const [draggedObject, setDraggedObject] = useState<
     ParsedSkylarkObject | undefined
@@ -213,17 +222,10 @@ export const ContentLibrary = () => {
           <DragOverlay zIndex={99999999} dropAnimation={null}>
             {draggedObject ? (
               <div className="max-w-[350px] cursor-grabbing items-center rounded-sm border border-manatee-200 bg-white">
-                {checkedRows.current.objects.length > 0 &&
-                skylarkObjectIsInArray(
-                  draggedObject,
-                  checkedRows.current.objects,
-                ) ? (
-                  <p className="p-2">{`Add ${
-                    checkedRows.current.objects.length
-                  } ${
-                    checkedRows.current.objectTypes.length === 1
-                      ? checkedRows.current.objectTypes[0]
-                      : ""
+                {checkedObjects.length > 0 &&
+                checkedUids.includes(draggedObject.uid) ? (
+                  <p className="p-2">{`Add ${checkedObjects.length} ${
+                    checkedObjectTypes.length === 1 ? checkedObjectTypes[0] : ""
                   } objects`}</p>
                 ) : (
                   <ObjectIdentifierCard
@@ -260,8 +262,8 @@ export const ContentLibrary = () => {
             setPanelObject={setPanelObject}
             isPanelOpen={!!activePanelObject}
             withObjectSelect
-            onRowCheckChange={onRowCheckChange}
-            resetRowsChecked={resetRowsChecked}
+            checkedObjects={checkedObjects}
+            onObjectCheckedChanged={setCheckedObjects}
           />
         </m.div>
         {activePanelObject && (
@@ -321,11 +323,7 @@ export const ContentLibrary = () => {
     if (el) el.style.overflow = "";
 
     if (event.over && event.over.id === DROPPABLE_ID && draggedObject) {
-      const checkedObjects = checkedRows.current.objects;
-      const draggedObjectIsChecked = skylarkObjectIsInArray(
-        draggedObject,
-        checkedObjects,
-      );
+      const draggedObjectIsChecked = checkedUids.includes(draggedObject.uid);
 
       // Like Gmail, if the dragged object is not checked, just use the dragged object
       setDroppedObject(

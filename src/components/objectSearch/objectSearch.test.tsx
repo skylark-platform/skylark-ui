@@ -12,7 +12,10 @@ import {
   waitFor,
   within,
 } from "src/__tests__/utils/test-utils";
-import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
+import {
+  GQLSkylarkAccountResponse,
+  ParsedSkylarkObject,
+} from "src/interfaces/skylark";
 
 import { ObjectSearch } from "./objectSearch.component";
 
@@ -107,7 +110,11 @@ describe("with object select (checkboxes)", () => {
     const onRowCheckChange = jest.fn();
 
     await render(
-      <ObjectSearch withObjectSelect onRowCheckChange={onRowCheckChange} />,
+      <ObjectSearch
+        withObjectSelect
+        onObjectCheckedChanged={onRowCheckChange}
+        checkedObjects={[]}
+      />,
     );
 
     const results = await screen.findByTestId(
@@ -116,30 +123,27 @@ describe("with object select (checkboxes)", () => {
 
     const withinResults = within(results);
 
-    const checkbox = (await withinResults.findAllByRole("checkbox"))[0];
+    expect(
+      (await withinResults.findAllByRole("checkbox")).length,
+    ).toBeGreaterThan(2);
+
+    const checkbox = (await withinResults.findAllByRole("checkbox"))[1];
 
     await fireEvent.click(checkbox);
 
-    expect(onRowCheckChange).toHaveBeenCalledWith({
-      checkedState: true,
-      object: expect.any(Object),
-    });
-
-    await fireEvent.click(checkbox);
-
-    expect(onRowCheckChange).toHaveBeenCalledWith({
-      checkedState: false,
-      object: expect.any(Object),
-    });
+    expect(onRowCheckChange).toHaveBeenLastCalledWith([expect.any(Object)]);
   });
 
-  test("resets the checkedrows when the search changes", async () => {
+  test("resets the checked rows when the search changes", async () => {
     jest.useFakeTimers();
 
-    const resetRowsChecked = jest.fn();
+    const onObjectCheckedChanged = jest.fn();
 
     await render(
-      <ObjectSearch withObjectSelect resetRowsChecked={resetRowsChecked} />,
+      <ObjectSearch
+        withObjectSelect
+        onObjectCheckedChanged={onObjectCheckedChanged}
+      />,
     );
 
     const results = await screen.findByTestId(
@@ -159,7 +163,36 @@ describe("with object select (checkboxes)", () => {
       jest.advanceTimersByTime(2000);
     });
 
-    expect(resetRowsChecked).toHaveBeenCalledTimes(3);
+    expect(onObjectCheckedChanged).toHaveBeenCalledTimes(3);
+    expect(onObjectCheckedChanged).toHaveBeenCalledWith([]);
+  });
+
+  test("clears all selected rows using the toggle all", async () => {
+    const onRowCheckChange = jest.fn();
+
+    await render(
+      <ObjectSearch
+        withObjectSelect
+        onObjectCheckedChanged={onRowCheckChange}
+        checkedObjects={[{} as ParsedSkylarkObject]}
+      />,
+    );
+
+    const results = await screen.findByTestId(
+      "object-search-results-table-body",
+    );
+
+    const withinResults = within(results);
+
+    expect(
+      (await withinResults.findAllByRole("checkbox")).length,
+    ).toBeGreaterThan(1);
+
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: "clear-all-checked-objects" }),
+    );
+
+    expect(onRowCheckChange).toHaveBeenCalledWith([]);
   });
 });
 

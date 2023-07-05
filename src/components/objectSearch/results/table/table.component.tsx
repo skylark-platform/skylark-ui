@@ -58,9 +58,16 @@ const TableDataSkeletonLoading = ({
           }
 
           return (
-            <td key={id} className="h-10" style={{ height }}>
+            <td key={id} className="h-10 p-0" style={{ height }}>
               <div className="flex h-full w-full items-center justify-start">
-                <Skeleton className={clsx("h-5 w-[95%]")} />
+                <Skeleton
+                  className={clsx(
+                    "h-5",
+                    id === OBJECT_LIST_TABLE.columnIds.checkbox
+                      ? "w-5"
+                      : "w-[95%]",
+                  )}
+                />
               </div>
             </td>
           );

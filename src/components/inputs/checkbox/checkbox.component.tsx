@@ -4,7 +4,7 @@ import {
   CheckboxProps as RadixCheckboxProps,
 } from "@radix-ui/react-checkbox";
 import clsx from "clsx";
-import { GoCheck } from "react-icons/go";
+import { GoCheck, GoX } from "react-icons/go";
 
 interface CheckboxProps extends RadixCheckboxProps {
   label?: string;
@@ -19,6 +19,8 @@ export const Checkbox = ({
   "aria-label": ariaLabel,
   ...props
 }: CheckboxProps) => {
+  const { checked } = props;
+
   const htmlFor = label
     ? `checkbox-${name}`.replaceAll(" ", "-").toLowerCase()
     : "";
@@ -30,14 +32,15 @@ export const Checkbox = ({
         aria-label={ariaLabel}
         className={clsx(
           "peer flex h-5 w-5 min-w-5 items-center justify-center rounded-sm group-hover/checkbox:cursor-pointer",
-          "border-2 radix-state-checked:border-brand-primary radix-state-checked:bg-brand-primary radix-state-unchecked:bg-manatee-200",
+          "border-2 radix-state-checked:border-brand-primary radix-state-checked:bg-brand-primary radix-state-indeterminate:border-error radix-state-indeterminate:bg-error radix-state-unchecked:bg-manatee-200",
           "text-white focus:outline-none focus-visible:ring focus-visible:ring-brand-primary focus-visible:ring-opacity-75",
           className,
         )}
         {...props}
       >
         <Indicator>
-          <GoCheck />
+          {checked === "indeterminate" && <GoX />}
+          {checked === true && <GoCheck />}
         </Indicator>
       </Root>
       {label && (

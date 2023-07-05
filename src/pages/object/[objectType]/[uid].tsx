@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 
 import { Panel } from "src/components/panel";
-import { PanelTab } from "src/hooks/usePanelObjectState";
+import { PanelTab } from "src/hooks/state/usePanelObjectState";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 
 const Object = () => {

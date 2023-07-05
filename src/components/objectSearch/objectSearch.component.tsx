@@ -7,6 +7,7 @@ import { useUser } from "src/contexts/useUser";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
+  ParsedSkylarkObject,
   SkylarkObjectIdentifier,
   SkylarkObjectTypes,
 } from "src/interfaces/skylark";
@@ -32,8 +33,8 @@ export interface ObjectSearchProps {
   defaultObjectTypes?: SkylarkObjectTypes;
   hiddenFields?: string[];
   setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
-  onRowCheckChange?: ObjectSearchResultsProps["onRowCheckChange"];
-  resetRowsChecked?: () => void;
+  checkedObjects?: ObjectSearchResultsProps["checkedObjects"];
+  onObjectCheckedChanged?: ObjectSearchResultsProps["onObjectCheckedChanged"];
 }
 
 export const ObjectSearch = (props: ObjectSearchProps) => {
@@ -44,7 +45,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     isPanelOpen,
     defaultObjectTypes,
     hiddenFields,
-    resetRowsChecked,
+    onObjectCheckedChanged,
   } = props;
 
   const { objectTypes } = useSkylarkObjectTypes(true);
@@ -82,7 +83,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   });
 
   useEffect(() => {
-    resetRowsChecked?.();
+    onObjectCheckedChanged?.([]);
     // We only want to trigger this useEffect when the searchHash has changed (not resetRowsChecked)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchHash]);
@@ -226,26 +227,33 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   );
 };
 
+const shallowCompare = (
+  obj1: Record<string, unknown>,
+  obj2: Record<string, unknown>,
+) =>
+  Object.keys(obj1).length === Object.keys(obj2).length &&
+  Object.keys(obj1).every((key) => obj1[key] === obj2[key]);
+
 const objectSearchPropsAreEqual = (
   prevProps: Readonly<ObjectSearchProps>,
   nextProps: Readonly<ObjectSearchProps>,
 ) => {
   const isPanelOpenSame = prevProps.isPanelOpen === nextProps.isPanelOpen;
-  const isOnRowCheckChangeSame =
-    prevProps.onRowCheckChange === nextProps.onRowCheckChange;
+  const isOnObjectCheckedChanged =
+    prevProps.onObjectCheckedChanged === nextProps.onObjectCheckedChanged;
   const isPanelObjectSame =
     prevProps.panelObject?.uid === nextProps.panelObject?.uid &&
     prevProps.panelObject?.objectType === nextProps.panelObject?.objectType;
   const isSetPanelObjectSame =
     prevProps.setPanelObject === nextProps.setPanelObject;
-  const isResetRowsCheckSame =
-    prevProps.resetRowsChecked === nextProps.resetRowsChecked;
 
   const areEqual =
     isPanelOpenSame &&
-    isOnRowCheckChangeSame &&
+    isOnObjectCheckedChanged &&
     isPanelObjectSame &&
     isSetPanelObjectSame;
+
+  const isShallowSame = shallowCompare(prevProps, nextProps);
 
   // console.log({
   //   isPanelOpenSame,
@@ -256,7 +264,7 @@ const objectSearchPropsAreEqual = (
   //   areEqual,
   // });
 
-  return areEqual;
+  return isShallowSame;
 };
 
 export const MemoizedObjectSearch = memo(
