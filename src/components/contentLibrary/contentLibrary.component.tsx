@@ -240,9 +240,14 @@ export const ContentLibrary = () => {
 
   function handleDragStart(event: DragStartEvent) {
     setDraggedObject(event.active.data.current?.object);
+    const el = document.getElementById("object-search-results");
+    if (el) el.style.overflow = "hidden";
   }
 
   function handleDragEnd(event: DragEndEvent) {
+    const el = document.getElementById("object-search-results");
+    if (el) el.style.overflow = "";
+
     if (event.over && event.over.id === DROPPABLE_ID && draggedObject) {
       const draggedObjectIsChecked = checkedUids.includes(draggedObject.uid);
 
