@@ -144,11 +144,11 @@ export const ObjectSearchResults = ({
   );
 
   const checkedRows = useMemo(() => {
-    const searchObjectUids = searchData?.map(({ uid }) => uid);
-
-    return withObjectSelect && checkedObjects && searchObjectUids
+    return withObjectSelect && checkedObjects && searchData
       ? checkedObjects.map((checkedObj) =>
-          searchObjectUids.indexOf(checkedObj.uid),
+          searchData.findIndex((searchDataObj) =>
+            skylarkObjectsAreSame(checkedObj, searchDataObj),
+          ),
         )
       : [];
   }, [checkedObjects, searchData, withObjectSelect]);
@@ -170,7 +170,7 @@ export const ObjectSearchResults = ({
 
           // Once found, we check all boxes after the previous row until and including the given index
           const objectsToCheck = searchData.slice(
-            reverseSortedCheckedRows[firstSmallerIndex] || 0,
+            reverseSortedCheckedRows[firstSmallerIndex] + 1 || 0,
             rowIndex + 1,
           );
 

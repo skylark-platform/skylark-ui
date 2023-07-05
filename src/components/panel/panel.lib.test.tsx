@@ -245,7 +245,7 @@ describe("handleDroppedAvailabilities", () => {
     expect(got.errors).toEqual([
       {
         object: expect.any(Object),
-        type: HandleDropErrorType.OBJECTS_ARE_SAME,
+        type: HandleDropErrorType.INVALID_OBJECT_TYPE,
       },
       {
         object: expect.any(Object),

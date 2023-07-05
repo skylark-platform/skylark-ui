@@ -54,9 +54,13 @@ export const handleDroppedRelationships = ({
       updatedRelationshipObjects: ParsedSkylarkObjectRelationships[];
       errors: HandleDropError[];
     } => {
-      if (panelObject.uid === droppedObject.uid) {
+      const droppedObjectRelationshipName = objectMetaRelationships.find(
+        (relationship) => relationship.objectType === droppedObject.objectType,
+      )?.relationshipName;
+
+      if (!droppedObjectRelationshipName) {
         const error: HandleDropError = {
-          type: HandleDropErrorType.OBJECTS_ARE_SAME,
+          type: HandleDropErrorType.INVALID_OBJECT_TYPE,
           object: droppedObject,
         };
         return {
@@ -65,13 +69,9 @@ export const handleDroppedRelationships = ({
         };
       }
 
-      const droppedObjectRelationshipName = objectMetaRelationships.find(
-        (relationship) => relationship.objectType === droppedObject.objectType,
-      )?.relationshipName;
-
-      if (!droppedObjectRelationshipName) {
+      if (panelObject.uid === droppedObject.uid) {
         const error: HandleDropError = {
-          type: HandleDropErrorType.INVALID_OBJECT_TYPE,
+          type: HandleDropErrorType.OBJECTS_ARE_SAME,
           object: droppedObject,
         };
         return {
@@ -152,6 +152,17 @@ export const handleDroppedContents = ({
       updatedContentObjects: AddedSkylarkObjectContentObject[];
       errors: HandleDropError[];
     } => {
+      if (droppedObject.objectType === BuiltInSkylarkObjectType.Availability) {
+        const error: HandleDropError = {
+          type: HandleDropErrorType.INVALID_OBJECT_TYPE,
+          object: droppedObject,
+        };
+        return {
+          ...previous,
+          errors: [...previous.errors, error],
+        };
+      }
+
       if (panelObject.uid === droppedObject.uid) {
         const error: HandleDropError = {
           type: HandleDropErrorType.OBJECTS_ARE_SAME,
@@ -170,17 +181,6 @@ export const handleDroppedContents = ({
       ) {
         const error: HandleDropError = {
           type: HandleDropErrorType.EXISTING_LINK,
-          object: droppedObject,
-        };
-        return {
-          ...previous,
-          errors: [...previous.errors, error],
-        };
-      }
-
-      if (droppedObject.objectType === BuiltInSkylarkObjectType.Availability) {
-        const error: HandleDropError = {
-          type: HandleDropErrorType.INVALID_OBJECT_TYPE,
           object: droppedObject,
         };
         return {
@@ -226,9 +226,9 @@ export const handleDroppedAvailabilities = ({
       updatedAvailabilityObjects: ParsedSkylarkObject[];
       errors: HandleDropError[];
     } => {
-      if (panelObject.uid === droppedObject.uid) {
+      if (droppedObject.objectType !== BuiltInSkylarkObjectType.Availability) {
         const error: HandleDropError = {
-          type: HandleDropErrorType.OBJECTS_ARE_SAME,
+          type: HandleDropErrorType.INVALID_OBJECT_TYPE,
           object: droppedObject,
         };
         return {
@@ -237,9 +237,9 @@ export const handleDroppedAvailabilities = ({
         };
       }
 
-      if (droppedObject.objectType !== BuiltInSkylarkObjectType.Availability) {
+      if (panelObject.uid === droppedObject.uid) {
         const error: HandleDropError = {
-          type: HandleDropErrorType.INVALID_OBJECT_TYPE,
+          type: HandleDropErrorType.OBJECTS_ARE_SAME,
           object: droppedObject,
         };
         return {
