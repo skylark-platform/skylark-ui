@@ -174,7 +174,10 @@ export const addCloudinaryOnTheFlyImageTransformation = (
 export const skylarkObjectsAreSame = (
   obj1: ParsedSkylarkObject,
   obj2: ParsedSkylarkObject,
-) => obj1.uid === obj2.uid && obj1.objectType === obj2.objectType;
+) =>
+  obj1.uid === obj2.uid &&
+  obj1.objectType === obj2.objectType &&
+  obj1.meta.language === obj2.meta.language;
 
 export const skylarkObjectIsInArray = (
   objToFind: ParsedSkylarkObject,
