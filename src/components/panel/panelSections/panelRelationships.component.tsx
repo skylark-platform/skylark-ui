@@ -157,10 +157,11 @@ export const PanelRelationships = ({
                       const newUids =
                         relationshipObject &&
                         updatedRelationshipObjects &&
+                        serverRelationships &&
                         parseUpdatedRelationshipObjects(
                           relationshipObject,
                           updatedRelationshipObjects,
-                          relationships,
+                          serverRelationships,
                         ).uidsToLink;
 
                       return (
@@ -187,7 +188,7 @@ export const PanelRelationships = ({
                               {inEditMode && newUids?.includes(obj.uid) && (
                                 <span
                                   className={
-                                    "flex h-6 min-w-6 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
+                                    "flex h-4 w-4 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
                                   }
                                 />
                               )}

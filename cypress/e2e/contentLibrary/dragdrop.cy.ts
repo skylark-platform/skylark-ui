@@ -189,8 +189,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(250)
               .then(() => {
                 cy.get("[data-cy=toast]").within(() => {
-                  cy.contains("Existing").should("exist");
-                  cy.contains("exists as content").should("exist");
+                  cy.contains("Existing Linked Object").should("exist");
+                  cy.contains("HomepageAfterCarousel.png").should("exist");
                 });
               });
           },
@@ -249,7 +249,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
         );
       });
 
-      it("shows a warning toast when the relationship already exists", () => {
+      it("shows an error toast when the relationship already exists", () => {
         cy.fixture("./skylark/queries/getObject/homepage.json").then(
           (homepageJson) => {
             const homepageUid = homepageJson.data.getObject.uid;
@@ -322,7 +322,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(250)
               .then(() => {
                 cy.get("[data-cy=toast]").within(() => {
-                  cy.contains("Relationship exists").should("exist");
+                  cy.contains("Existing Linked Object").should("exist");
                 });
               });
           },
@@ -372,7 +372,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(250)
               .then(() => {
                 cy.get("[data-cy=toast]").within(() => {
-                  cy.contains("Invalid relationship").should("exist");
+                  cy.contains("Object added to self").should("exist");
                 });
               });
           },
@@ -520,9 +520,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(250)
               .then(() => {
                 cy.get("[data-cy=toast]").within(() => {
-                  cy.contains(
-                    `Availability "${allDevicesAllCustomersAvailability}" is already assigned`,
-                  ).should("exist");
+                  cy.contains(`Existing Linked Object`).should("exist");
                 });
               });
           },
@@ -572,7 +570,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(250)
               .then(() => {
                 cy.get("[data-cy=toast]").within(() => {
-                  cy.contains("is not an Availability object").should("exist");
+                  cy.contains("Invalid Object Type").should("exist");
                 });
               });
           },
