@@ -15,7 +15,6 @@ import { hasProperty, isObjectsDeepEqual } from "src/lib/utils";
 import { CreateButtons } from "./createButtons";
 import {
   MemoizedObjectSearchResults,
-  ObjectSearchResults,
   ObjectSearchResultsProps,
 } from "./results/objectSearchResults.component";
 import {
@@ -248,14 +247,14 @@ const objectSearchPropsAreEqual = (
     isPanelObjectSame &&
     isSetPanelObjectSame;
 
-  console.log({
-    isPanelOpenSame,
-    isOnRowCheckChangeSame,
-    isPanelObjectSame,
-    isSetPanelObjectSame,
-    isResetRowsCheckSame,
-    areEqual,
-  });
+  // console.log({
+  //   isPanelOpenSame,
+  //   isOnRowCheckChangeSame,
+  //   isPanelObjectSame,
+  //   isSetPanelObjectSame,
+  //   isResetRowsCheckSame,
+  //   areEqual,
+  // });
 
   return areEqual;
 };

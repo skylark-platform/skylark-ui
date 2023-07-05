@@ -100,8 +100,6 @@ export const ContentLibrary = () => {
     [],
   );
 
-  console.log({ checked: checkedRows.current });
-
   const resetRowsChecked = () => {
     checkedRows.current = {
       objects: [],

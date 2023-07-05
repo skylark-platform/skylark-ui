@@ -173,7 +173,6 @@ export const ObjectSearchResults = ({
         withCheckbox={withObjectSelect}
         isLoadingMore={hasNextPage}
         activeObject={panelObject || undefined}
-        setPanelObject={setPanelObject}
         withDraggableRow={!!panelObject}
       />
     </div>
@@ -221,26 +220,26 @@ const ObjectSearchResultsPropsAreEqual = (
 
   const isShallowSame = shallowCompare(prevProps, nextProps);
 
-  console.log({
-    prevProps,
-    nextProps,
-    isSame: prevProps === nextProps,
+  // console.log({
+  //   prevProps,
+  //   nextProps,
+  //   isSame: prevProps === nextProps,
 
-    isShallowSame,
-    isDeepSame: isObjectsDeepEqual(prevProps, nextProps),
-    props: {
-      isPanelObjectSame,
-      isSearchDataSame,
-      isWithCreateButtonsSame,
-      isWithObjectEditSame,
-      isSetPanelObjectSame,
-      isWithObjectSelectSame,
-      isFetchNextPageSame,
-      isSortedHeadersSame,
-      isColumnVisibilitySame,
-      isOnRowCheckChangeSame,
-    },
-  });
+  //   isShallowSame,
+  //   isDeepSame: isObjectsDeepEqual(prevProps, nextProps),
+  //   props: {
+  //     isPanelObjectSame,
+  //     isSearchDataSame,
+  //     isWithCreateButtonsSame,
+  //     isWithObjectEditSame,
+  //     isSetPanelObjectSame,
+  //     isWithObjectSelectSame,
+  //     isFetchNextPageSame,
+  //     isSortedHeadersSame,
+  //     isColumnVisibilitySame,
+  //     isOnRowCheckChangeSame,
+  //   },
+  // });
 
   return isShallowSame;
 };

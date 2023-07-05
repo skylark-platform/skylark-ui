@@ -20,7 +20,6 @@ export interface TableProps {
   withDraggableRow?: boolean;
   isLoadingMore?: boolean;
   activeObject?: SkylarkObjectIdentifier;
-  setPanelObject?: (o: SkylarkObjectIdentifier) => void;
 }
 
 const TableHead = ({
@@ -76,7 +75,6 @@ export const Table = ({
   withCheckbox = false,
   isLoadingMore,
   activeObject,
-  setPanelObject,
   withDraggableRow,
   virtualRows,
   totalRows,
@@ -116,7 +114,6 @@ export const Table = ({
                 key={`row-${virtualRow.index}-${row.original.uid || ""}`}
                 row={row}
                 activeObject={activeObject}
-                setPanelObject={setPanelObject}
                 tableMeta={tableMeta}
                 withCheckbox={withCheckbox}
                 isDraggable={withDraggableRow}

@@ -8,9 +8,9 @@ import {
 } from "src/interfaces/skylark";
 
 export enum HandleDropErrorType {
-  "EXISTING_LINK",
-  "INVALID_OBJECT_TYPE",
-  "OBJECTS_ARE_SAME",
+  "EXISTING_LINK" = "EXISTING_LINK",
+  "INVALID_OBJECT_TYPE" = "INVALID_OBJECT_TYPE",
+  "OBJECTS_ARE_SAME" = "OBJECTS_ARE_SAME",
 }
 
 export interface HandleDropError {

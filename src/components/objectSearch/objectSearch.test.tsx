@@ -16,12 +16,35 @@ import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
 
 import { ObjectSearch } from "./objectSearch.component";
 
-test("renders search bar, filters with no objects returned", () => {
+afterEach(() => {
+  jest.useRealTimers();
+});
+
+test("renders search bar", () => {
   render(<ObjectSearch />);
 
   screen.findByPlaceholderText("Search for an object(s)");
 
   expect(screen.getByText("Filters")).toBeInTheDocument();
+});
+
+test("renders search bar, filters with no objects returned", async () => {
+  jest.useFakeTimers();
+
+  render(<ObjectSearch />);
+
+  const input = screen.getByPlaceholderText("Search for an object(s)");
+  fireEvent.change(input, { target: { value: "AllAvailTestMovie" } });
+
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  await screen.findByTestId("object-search-results-table-body");
+
+  expect(
+    (await screen.findAllByText("Fantastic Mr Fox (All Availabilities)"))[0],
+  ).toBeInTheDocument();
 });
 
 describe("create button", () => {
@@ -65,22 +88,79 @@ test("does not render info button when setPanelObject is undefined", async () =>
   ).not.toBeInTheDocument();
 });
 
-test("renders row select checkboxes", async () => {
-  render(<ObjectSearch withObjectSelect />);
+describe("with object select (checkboxes)", () => {
+  test("renders row select checkboxes", async () => {
+    await render(<ObjectSearch withObjectSelect />);
 
-  await waitFor(() => {
+    const results = await screen.findByTestId(
+      "object-search-results-table-body",
+    );
+
+    const withinResults = within(results);
+
     expect(
-      screen.getByTestId("object-search-results-table-body"),
-    ).toBeInTheDocument();
+      (await withinResults.findAllByRole("checkbox")).length,
+    ).toBeGreaterThan(0);
   });
 
-  await waitFor(() =>
+  test("fires on rowCheckChange callback when a checkbox is checked", async () => {
+    const onRowCheckChange = jest.fn();
+
+    await render(
+      <ObjectSearch withObjectSelect onRowCheckChange={onRowCheckChange} />,
+    );
+
+    const results = await screen.findByTestId(
+      "object-search-results-table-body",
+    );
+
+    const withinResults = within(results);
+
+    const checkbox = (await withinResults.findAllByRole("checkbox"))[0];
+
+    await fireEvent.click(checkbox);
+
+    expect(onRowCheckChange).toHaveBeenCalledWith({
+      checkedState: true,
+      object: expect.any(Object),
+    });
+
+    await fireEvent.click(checkbox);
+
+    expect(onRowCheckChange).toHaveBeenCalledWith({
+      checkedState: false,
+      object: expect.any(Object),
+    });
+  });
+
+  test("resets the checkedrows when the search changes", async () => {
+    jest.useFakeTimers();
+
+    const resetRowsChecked = jest.fn();
+
+    await render(
+      <ObjectSearch withObjectSelect resetRowsChecked={resetRowsChecked} />,
+    );
+
+    const results = await screen.findByTestId(
+      "object-search-results-table-body",
+    );
+
+    const withinResults = within(results);
+
     expect(
-      within(
-        screen.getByTestId("object-search-results-table-body"),
-      ).queryAllByRole("checkbox").length,
-    ).toBeGreaterThan(0),
-  );
+      (await withinResults.findAllByRole("checkbox")).length,
+    ).toBeGreaterThan(0);
+
+    const input = screen.getByPlaceholderText("Search for an object(s)");
+    await fireEvent.change(input, { target: { value: "AllAvailTestMovie" } });
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+
+    expect(resetRowsChecked).toHaveBeenCalledTimes(3);
+  });
 });
 
 test("renders search results (with default language)", async () => {

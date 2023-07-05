@@ -7,7 +7,6 @@ import { EnumType } from "json-to-graphql-query";
 
 import {
   AvailabilityStatus,
-  BuiltInSkylarkObjectType,
   NormalizedObjectField,
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
