@@ -1,10 +1,11 @@
-import { Checkbox } from "@radix-ui/react-checkbox";
 import { createColumnHelper } from "@tanstack/react-table";
 
 import { AvailabilityLabel } from "src/components/availability";
+import { Checkbox } from "src/components/inputs/checkbox";
 import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import {
+  BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObjectImageRelationship,
@@ -12,6 +13,8 @@ import {
 import {
   addCloudinaryOnTheFlyImageTransformation,
   formatObjectField,
+  getObjectDisplayName,
+  hasProperty,
 } from "src/lib/utils";
 
 import { TableCell } from ".";
@@ -98,25 +101,59 @@ const imagesColumn = columnHelper.accessor("images", {
   cell: (props) => {
     const imageRelationships =
       props.getValue<ParsedSkylarkObjectImageRelationship[]>();
+    const imageObj = props.row.original as ParsedSkylarkObject;
+
+    const cloudinaryConfig = { height: 50 };
+    const className = "object-cover object-left";
+
+    if (
+      imageObj.objectType === BuiltInSkylarkObjectType.SkylarkImage &&
+      hasProperty(imageObj, "url")
+    ) {
+      return (
+        <div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className={className}
+            src={addCloudinaryOnTheFlyImageTransformation(
+              imageObj.url as string,
+              cloudinaryConfig,
+            )}
+            key={`${props.row.id}-${imageObj.uid}`}
+            alt={getObjectDisplayName(imageObj)}
+          />
+        </div>
+      );
+    }
+
     const allImages = imageRelationships
       .flatMap(({ objects }) => objects)
       .filter((obj) => obj);
 
-    if (
-      !imageRelationships ||
-      imageRelationships.length === 0 ||
-      allImages.length === 0
-    ) {
+    if (allImages.length === 0) {
       return "";
     }
 
     return (
       <div>
-        {allImages.map(({ uid, url, title }) => (
+        {allImages.map(({ uid, url, title, _meta }) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            className="object-cover object-left"
-            src={addCloudinaryOnTheFlyImageTransformation(url, { height: 50 })}
+            onClick={(e) => {
+              if (props.table.options.meta?.onObjectClick) {
+                e.stopPropagation();
+                props.table.options.meta.onObjectClick({
+                  uid,
+                  objectType: BuiltInSkylarkObjectType.SkylarkImage,
+                  language: _meta?.language_data.language || "",
+                });
+              }
+            }}
+            className={className}
+            src={addCloudinaryOnTheFlyImageTransformation(
+              url,
+              cloudinaryConfig,
+            )}
             key={`${props.row.id}-${uid}`}
             alt={title}
           />
@@ -128,8 +165,20 @@ const imagesColumn = columnHelper.accessor("images", {
 
 const selectColumn = columnHelper.display({
   id: OBJECT_LIST_TABLE.columnIds.checkbox,
-  header: () => <Checkbox aria-label="toggle-select-all-objects" />,
-  cell: () => <Checkbox />,
+  size: 26,
+  header: ({
+    table: {
+      options: { meta: tableMeta },
+    },
+  }) =>
+    tableMeta?.checkedRows &&
+    tableMeta.checkedRows.length > 0 && (
+      <Checkbox
+        aria-label="clear-all-checked-objects"
+        checked="indeterminate"
+        onClick={() => tableMeta.batchCheckRows("clear-all")}
+      />
+    ),
 });
 
 const actionColumn = columnHelper.display({
@@ -155,7 +204,6 @@ export const createObjectListingColumns = (
     );
 
   const orderedColumnArray = [
-    dragIconColumn,
     objectTypeColumn,
     displayNameColumn,
     translationColumn,
@@ -164,7 +212,7 @@ export const createObjectListingColumns = (
     ...createdColumns,
   ];
   if (opts.withObjectSelect) {
-    return [selectColumn, ...orderedColumnArray];
+    return [dragIconColumn, selectColumn, ...orderedColumnArray, actionColumn];
   }
-  return [...orderedColumnArray, actionColumn];
+  return [dragIconColumn, ...orderedColumnArray, actionColumn];
 };

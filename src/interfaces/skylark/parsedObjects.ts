@@ -102,6 +102,7 @@ export interface ParsedSkylarkObject {
 
 export interface ParsedSkylarkObjectRelationships {
   relationshipName: string;
+  objectType: SkylarkObjectType;
   nextToken?: string | null;
   objects: ParsedSkylarkObject[];
 }

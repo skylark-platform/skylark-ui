@@ -5,7 +5,6 @@ import {
   Edit,
   CheckSquare,
   CrossSquare,
-  Trash,
   ExternalLink,
 } from "src/components/icons";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";

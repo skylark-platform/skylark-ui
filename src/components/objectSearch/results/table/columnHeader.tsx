@@ -36,7 +36,7 @@ export const ObjectListingTableColumnHeader = ({
         <div
           onMouseDown={header.getResizeHandler()}
           onTouchStart={header.getResizeHandler()}
-          className="h-inherit absolute right-0 top-0 bottom-0 z-10 w-0.5 cursor-col-resize bg-manatee-200"
+          className="h-inherit absolute bottom-0 right-0 top-0 z-10 w-0.5 cursor-col-resize bg-manatee-200"
         ></div>
       </div>
     </th>

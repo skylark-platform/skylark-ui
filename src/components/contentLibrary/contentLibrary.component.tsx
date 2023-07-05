@@ -4,20 +4,22 @@ import {
   useSensors,
   MouseSensor,
   DragOverlay,
-  getClientRect,
   DragEndEvent,
   DragStartEvent,
   TouchSensor,
 } from "@dnd-kit/core";
+import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import clsx from "clsx";
 import { m, useMotionValue, useTransform } from "framer-motion";
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
-import { ObjectSearch } from "src/components/objectSearch";
+import { MemoizedObjectSearch } from "src/components/objectSearch";
 import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
-import { usePanelObjectState } from "src/hooks/usePanelObjectState";
+import { usePanelObjectState } from "src/hooks/state";
+import { useCheckedObjectsState } from "src/hooks/state";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 const INITIAL_PANEL_PERCENTAGE = 70;
@@ -37,11 +39,14 @@ export const ContentLibrary = () => {
     resetPanelObjectState,
   } = usePanelObjectState();
 
+  const { checkedObjects, checkedUids, checkedObjectTypes, setCheckedObjects } =
+    useCheckedObjectsState();
+
   const [draggedObject, setDraggedObject] = useState<
     ParsedSkylarkObject | undefined
   >(undefined);
   const [droppedObject, setDroppedObject] = useState<
-    ParsedSkylarkObject | undefined
+    ParsedSkylarkObject[] | undefined
   >(undefined);
   const [windowSize, setWindowSize] = useState(0);
   const mousePosition = useRef(0);
@@ -113,13 +118,6 @@ export const ContentLibrary = () => {
     [objectListingWidth, windowSize],
   );
 
-  const handleMeasure = (element: HTMLElement) => {
-    return {
-      ...getClientRect(element),
-      left: mousePosition.current,
-    };
-  };
-
   const sensors = useSensors(
     useSensor(MouseSensor, {
       // Require the mouse to move by 6 pixels before activating
@@ -142,19 +140,30 @@ export const ContentLibrary = () => {
       onDragEnd={handleDragEnd}
       onDragCancel={() => setDraggedObject(undefined)}
       sensors={sensors}
-      measuring={{
-        draggable: {
-          measure: handleMeasure,
-        },
-      }}
+      modifiers={[snapCenterToCursor]}
     >
-      <DragOverlay zIndex={100} dropAnimation={null}>
-        {draggedObject ? (
-          <div className="max-w-[350px] items-center rounded-sm border border-manatee-200 bg-white px-2">
-            <ObjectIdentifierCard object={draggedObject} />
-          </div>
-        ) : null}
-      </DragOverlay>
+      {typeof window !== "undefined" &&
+        document?.body &&
+        createPortal(
+          <DragOverlay zIndex={99999999} dropAnimation={null}>
+            {draggedObject ? (
+              <div className="max-w-[350px] cursor-grabbing items-center rounded-sm border border-manatee-200 bg-white text-sm">
+                {checkedObjects.length > 0 &&
+                checkedUids.includes(draggedObject.uid) ? (
+                  <p className="p-2">{`Add ${checkedObjects.length} ${
+                    checkedObjectTypes.length === 1 ? checkedObjectTypes[0] : ""
+                  } objects`}</p>
+                ) : (
+                  <ObjectIdentifierCard
+                    className="px-2"
+                    object={draggedObject}
+                  />
+                )}
+              </div>
+            ) : null}
+          </DragOverlay>,
+          document.body,
+        )}
       <div
         className="flex h-screen w-full flex-row overflow-x-hidden"
         ref={containerRef}
@@ -164,17 +173,23 @@ export const ContentLibrary = () => {
       >
         <m.div
           className={clsx(
-            "w-full max-w-full pt-6 pl-2 md:pl-6 lg:pl-10",
+            "relative w-full max-w-full pl-2 pt-6 md:pl-6 lg:pl-10",
             activePanelObject && "md:w-1/2 lg:w-5/12 xl:w-3/5",
+            !!draggedObject && "pointer-events-none",
           )}
           style={{ width: activePanelObject ? objectListingWidth : "100%" }}
         >
-          <ObjectSearch
+          {!!draggedObject && (
+            <div className="absolute inset-0 z-[100] block bg-black/5"></div>
+          )}
+          <MemoizedObjectSearch
             withCreateButtons
             panelObject={activePanelObject}
             setPanelObject={setPanelObject}
             isPanelOpen={!!activePanelObject}
-            isDragging={!!draggedObject}
+            withObjectSelect
+            checkedObjects={checkedObjects}
+            onObjectCheckedChanged={setCheckedObjects}
           />
         </m.div>
         {activePanelObject && (
@@ -209,12 +224,12 @@ export const ContentLibrary = () => {
                 tab={activePanelTab}
                 closePanel={closePanel}
                 isDraggedObject={!!draggedObject}
-                droppedObject={droppedObject}
+                droppedObjects={droppedObject}
                 setPanelObject={setPanelObject}
                 setTab={setPanelTab}
                 navigateToPreviousPanelObject={navigateToPreviousPanelObject}
                 navigateToForwardPanelObject={navigateToForwardPanelObject}
-                clearDroppedObject={() => setDroppedObject(undefined)}
+                clearDroppedObjects={() => setDroppedObject(undefined)}
               />
             </div>
           </m.div>
@@ -225,11 +240,21 @@ export const ContentLibrary = () => {
 
   function handleDragStart(event: DragStartEvent) {
     setDraggedObject(event.active.data.current?.object);
+    const el = document.getElementById("object-search-results");
+    if (el) el.style.overflow = "hidden";
   }
 
   function handleDragEnd(event: DragEndEvent) {
-    if (event.over && event.over.id === DROPPABLE_ID) {
-      setDroppedObject(draggedObject);
+    const el = document.getElementById("object-search-results");
+    if (el) el.style.overflow = "";
+
+    if (event.over && event.over.id === DROPPABLE_ID && draggedObject) {
+      const draggedObjectIsChecked = checkedUids.includes(draggedObject.uid);
+
+      // Like Gmail, if the dragged object is not checked, just use the dragged object
+      setDroppedObject(
+        draggedObjectIsChecked ? checkedObjects : [draggedObject],
+      );
     }
     setDraggedObject(undefined);
   }

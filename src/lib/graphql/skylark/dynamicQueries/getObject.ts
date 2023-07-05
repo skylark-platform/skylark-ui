@@ -184,6 +184,7 @@ export const createGetObjectRelationshipsQuery = (
                 limit: 50,
                 next_token: new VariableType("nextToken"),
               },
+              __typename: true, // To get the ObjectType (Listing)
               next_token: true,
               objects: {
                 uid: true,

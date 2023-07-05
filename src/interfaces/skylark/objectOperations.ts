@@ -3,7 +3,6 @@ import { GQLScalars } from "src/interfaces/graphql/introspection";
 export enum BuiltInSkylarkObjectType {
   Availability = "Availability",
   SkylarkImage = "SkylarkImage",
-  BetaSkylarkImage = "Image",
 }
 
 export enum SkylarkSystemField {
@@ -20,7 +19,6 @@ export enum SkylarkSystemField {
 
 export enum SkylarkSystemGraphQLType {
   SkylarkImageListing = "SkylarkImageListing",
-  BetaSkylarkImageListing = "ImageListing", // Remove after beta 1 envs are turned off
 }
 
 export type SkylarkObjectType = string | BuiltInSkylarkObjectType;
@@ -107,4 +105,5 @@ export interface SkylarkObjectMeta extends SkylarkObjectFields {
   hasRelationships: boolean;
   hasAvailability: boolean;
   isTranslatable: boolean;
+  isImage: boolean;
 }

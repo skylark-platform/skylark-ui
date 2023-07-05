@@ -101,7 +101,7 @@ export const Search = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3, type: "spring", bounce: 0.2 }}
-              className="absolute top-10 left-0 z-50 w-full md:top-14 md:w-auto"
+              className="absolute left-0 top-10 z-50 w-full md:top-14 md:w-auto"
             >
               <SearchFilter
                 activeObjectTypes={activeFilters.objectTypes}
@@ -118,7 +118,7 @@ export const Search = ({
         </AnimatePresence>
       </div>
       <div
-        className="mt-2 md:mt-0 md:ml-2"
+        className="mt-2 md:ml-2 md:mt-0"
         data-testid="object-listing-language-select-container"
       >
         <LanguageSelect

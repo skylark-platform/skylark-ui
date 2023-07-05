@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 
-import { DisplayGraphQLQuery } from "src/components/modals";
+import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
@@ -14,6 +14,7 @@ import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectType,
   SkylarkObjectIdentifier,
+  SkylarkObjectTypes,
 } from "src/interfaces/skylark";
 import { parseUpdatedRelationshipObjects } from "src/lib/skylark/parsers";
 import { formatObjectField } from "src/lib/utils";
@@ -26,8 +27,8 @@ interface PanelRelationshipsProps {
   uid: string;
   updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
   setRelationshipObjects: (relationshipObjects: {
-    originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
-    updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
+    original: ParsedSkylarkObjectRelationships[] | null;
+    updated: ParsedSkylarkObjectRelationships[] | null;
   }) => void;
   inEditMode: boolean;
   showDropZone?: boolean;
@@ -61,25 +62,27 @@ export const PanelRelationships = ({
   useEffect(() => {
     if (!inEditMode) {
       setRelationshipObjects({
-        updatedRelationshipObjects: relationships,
-        originalRelationshipObjects: relationships,
+        original: serverRelationships,
+        updated: serverRelationships,
       });
     }
-  }, [inEditMode, relationships, setRelationshipObjects]);
+  }, [inEditMode, serverRelationships, setRelationshipObjects]);
 
   const removeRelationshipObject = (removeUid: string, relationship: string) =>
     relationships &&
     setRelationshipObjects({
-      updatedRelationshipObjects: relationships?.map((currentRelationship) => {
+      original: serverRelationships,
+      updated: relationships?.map((currentRelationship) => {
         const { objects, relationshipName } = currentRelationship;
         if (relationshipName === relationship) {
           const filteredObjects = objects.filter(
             (obj) => obj.uid !== removeUid,
           );
           return { ...currentRelationship, objects: filteredObjects };
-        } else return currentRelationship;
+        } else {
+          return currentRelationship;
+        }
       }),
-      originalRelationshipObjects: relationships,
     });
 
   const [expandedRelationships, setExpandedRelationships] = useState<
@@ -94,6 +97,11 @@ export const PanelRelationships = ({
       relationshipNames.indexOf(a.relationshipName) -
       relationshipNames.indexOf(b.relationshipName),
   );
+
+  const [searchObjectsModalState, setSearchObjectsModalState] = useState({
+    open: false,
+    objectTypes: [] as SkylarkObjectTypes,
+  });
 
   if (showDropZone) {
     return <PanelDropZone />;
@@ -110,7 +118,7 @@ export const PanelRelationships = ({
       <div>
         {relationships &&
           orderedRelationshipObjects?.map((relationship) => {
-            const { relationshipName, objects } = relationship;
+            const { relationshipName, objects, objectType } = relationship;
             const isExpanded = expandedRelationships[relationshipName];
 
             const displayList =
@@ -120,12 +128,24 @@ export const PanelRelationships = ({
 
             return (
               <div key={relationshipName} className="relative mb-8">
-                <PanelSectionTitle
-                  text={formatObjectField(relationshipName)}
-                  count={(objects.length >= 50 ? "50+" : objects.length) || 0}
-                  id={`relationship-panel-${relationshipName}`}
-                />
-
+                <div className="flex items-center ">
+                  <PanelSectionTitle
+                    text={formatObjectField(relationshipName)}
+                    count={(objects.length >= 50 ? "50+" : objects.length) || 0}
+                    id={`relationship-panel-${relationshipName}`}
+                  />
+                  {/* <button
+                    onClick={() =>
+                      setSearchObjectsModalState({
+                        open: true,
+                        objectTypes: [objectType],
+                      })
+                    }
+                    className="ml-1.5 mb-4 text-manatee-500 transition-colors hover:text-brand-primary"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </button> */}
+                </div>
                 <div className="transition duration-300 ease-in-out">
                   {relationship && displayList?.length > 0 ? (
                     displayList?.map((obj, index) => {
@@ -137,10 +157,11 @@ export const PanelRelationships = ({
                       const newUids =
                         relationshipObject &&
                         updatedRelationshipObjects &&
+                        serverRelationships &&
                         parseUpdatedRelationshipObjects(
                           relationshipObject,
                           updatedRelationshipObjects,
-                          relationships,
+                          serverRelationships,
                         ).uidsToLink;
 
                       return (
@@ -167,7 +188,7 @@ export const PanelRelationships = ({
                               {inEditMode && newUids?.includes(obj.uid) && (
                                 <span
                                   className={
-                                    "flex h-6 min-w-6 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
+                                    "flex h-4 w-4 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
                                   }
                                 />
                               )}
@@ -209,6 +230,16 @@ export const PanelRelationships = ({
         query={query}
         variables={variables}
         buttonClassName="absolute right-2 top-0"
+      />
+      <SearchObjectsModal
+        isOpen={searchObjectsModalState.open}
+        objectTypes={searchObjectsModalState.objectTypes}
+        setIsOpen={() =>
+          setSearchObjectsModalState({
+            ...searchObjectsModalState,
+            open: !searchObjectsModalState.open,
+          })
+        }
       />
       {inEditMode && !isPage && (
         <p className="w-full py-4 text-center text-sm text-manatee-600">

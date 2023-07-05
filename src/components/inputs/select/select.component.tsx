@@ -314,7 +314,10 @@ export const Select = forwardRef(
               <span className="absolute inset-y-0 right-0 flex items-center">
                 {showClearValueButton && (
                   <button
-                    onClick={onValueClear}
+                    onClick={(e) => {
+                      onValueClear();
+                      e.stopPropagation();
+                    }}
                     data-testid="select-clear-value"
                   >
                     <GrClose className="text-xs" />
@@ -382,7 +385,7 @@ export const Select = forwardRef(
                       optionsClassName,
                     )}
                   >
-                    <div className="relative cursor-default select-none bg-white py-2 px-4 text-gray-900">
+                    <div className="relative cursor-default select-none bg-white px-4 py-2 text-gray-900">
                       Nothing found.
                     </div>
                   </div>

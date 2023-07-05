@@ -454,18 +454,17 @@ export const parseUpdatedRelationshipObjects = (
       )
       ?.objects.map(({ uid }) => uid) || [];
 
-  const originalObjects: string[] =
-    originalRelationshipObjects
-      .find(
-        ({ relationshipName }) =>
-          relationshipName === relationship?.relationshipName,
-      )
-      ?.objects.map(({ uid }) => uid) || [];
+  const originalObjects =
+    originalRelationshipObjects.find(
+      ({ relationshipName }) =>
+        relationshipName === relationship?.relationshipName,
+    )?.objects || [];
+  const originalUids = originalObjects.map(({ uid }) => uid);
 
   const uidsToLink = updatedObjects.filter(
-    (uid) => !originalObjects.includes(uid),
+    (uid) => !originalUids.includes(uid),
   );
-  const uidsToUnlink = originalObjects.filter(
+  const uidsToUnlink = originalUids.filter(
     (uid) => !updatedObjects.includes(uid),
   );
 

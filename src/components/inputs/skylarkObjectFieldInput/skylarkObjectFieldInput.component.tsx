@@ -10,7 +10,9 @@ import {
   ValidationRule,
 } from "react-hook-form";
 
+import { Button } from "src/components/button";
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
+import { ExternalLink } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { Select } from "src/components/inputs/select";
 import { Skeleton } from "src/components/skeleton";
@@ -49,10 +51,12 @@ const SkylarkObjectFieldInputLabel = ({
   field,
   isRequired,
   copyValue,
+  href,
 }: {
   field: SkylarkObjectFieldInputProps["field"];
   isRequired?: boolean;
   copyValue?: string;
+  href?: string;
 }) => (
   <label
     className="mb-2 flex items-center font-bold"
@@ -60,6 +64,15 @@ const SkylarkObjectFieldInputLabel = ({
   >
     {formatObjectField(field)}
     {isRequired && <span className="pl-0.5 text-error">*</span>}
+    {href && (
+      <Button
+        Icon={<ExternalLink className="h-4 w-4" />}
+        className="ml-2 hover:text-brand-primary"
+        variant="form"
+        href={href}
+        newTab
+      />
+    )}
     <CopyToClipboard
       value={copyValue}
       className="invisible group-hover/input-field:visible"
@@ -136,7 +149,7 @@ const SkylarkObjectFieldInputTextArea = ({
           ((value as string).length > 50 && 5))) ||
       1
     }
-    className="w-full rounded-sm bg-manatee-50 py-3 px-4"
+    className="w-full rounded-sm bg-manatee-50 px-4 py-3"
   />
 );
 
@@ -159,7 +172,7 @@ const SkylarkObjectFieldInputGeneric = ({
       (config.type === "float" && "any") ||
       undefined
     }
-    className="w-full rounded-sm bg-manatee-50 py-3 px-4"
+    className="w-full rounded-sm bg-manatee-50 px-4 py-3"
   />
 );
 
@@ -235,6 +248,7 @@ export const SkylarkObjectFieldInput = (
         field={field}
         isRequired={!!required}
         copyValue={props.value !== null ? `${props.value}` : undefined}
+        href={config.type === "url" ? `${props.value}` : undefined}
       />
       {isLoading ? (
         <Skeleton className="h-11 w-full" />

@@ -10,7 +10,8 @@ import { Cross } from "src/components/icons";
 
 export interface ToastProps extends Partial<ToastContentProps> {
   title: string;
-  message?: string;
+  message?: string | string[] | JSX.Element;
+  messageClassName?: string;
   type?: TypeOptions;
 }
 
@@ -43,7 +44,41 @@ export const ToastContainer = () => (
   />
 );
 
-export const Toast = ({ closeToast, title, message }: ToastProps) => {
+const ToastMessage = ({
+  message,
+  className,
+}: {
+  message: ToastProps["message"];
+  className: ToastProps["messageClassName"];
+}): JSX.Element => {
+  if (typeof message === "string") {
+    return <p className={clsx("mt-2", className)}>{message}</p>;
+  }
+
+  if (
+    Array.isArray(message) &&
+    message.every((msg): msg is string => typeof msg === "string")
+  ) {
+    return (
+      <>
+        {message.map((msg) => (
+          <p key={msg} className={clsx("mt-2", className)}>
+            {msg}
+          </p>
+        ))}
+      </>
+    );
+  }
+
+  return message || <></>;
+};
+
+export const Toast = ({
+  closeToast,
+  title,
+  message,
+  messageClassName,
+}: ToastProps) => {
   return (
     <div data-cy="toast">
       <div className="flex flex-row">
@@ -55,7 +90,9 @@ export const Toast = ({ closeToast, title, message }: ToastProps) => {
         </button>
       </div>
       {message && (
-        <p className="mt-2 text-xs font-light md:text-sm">{message}</p>
+        <div className="mt-1 text-xs font-light md:text-sm">
+          <ToastMessage message={message} className={messageClassName} />
+        </div>
       )}
     </div>
   );

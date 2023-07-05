@@ -28,6 +28,9 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta(true);
   const { objectTypes, language } = filters;
 
+  // Used to rerender search results when the search changes but objects are the same
+  const searchHash = `${queryString}-${language}-${objectTypes?.join("-")}`;
+
   const query = useMemo(
     () => createSearchObjectsQuery(searchableObjects, objectTypes || []),
     [searchableObjects, objectTypes],
@@ -119,5 +122,6 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     properties: allFieldNames,
     query,
     variables,
+    searchHash,
   };
 };

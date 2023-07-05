@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 
@@ -93,14 +93,26 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
     });
   }, []);
 
+  const activePanelObject: SkylarkObjectIdentifier | null = useMemo(
+    () =>
+      panelState.activePanelState?.uid === undefined ||
+      panelState.activePanelState?.objectType === undefined ||
+      panelState.activePanelState?.language === undefined
+        ? null
+        : {
+            uid: panelState.activePanelState?.uid,
+            objectType: panelState.activePanelState?.objectType,
+            language: panelState.activePanelState?.language,
+          },
+    [
+      panelState.activePanelState?.language,
+      panelState.activePanelState?.objectType,
+      panelState.activePanelState?.uid,
+    ],
+  );
+
   return {
-    activePanelObject: panelState.activePanelState
-      ? {
-          uid: panelState.activePanelState.uid,
-          objectType: panelState.activePanelState.objectType,
-          language: panelState.activePanelState.language,
-        }
-      : null,
+    activePanelObject,
     activePanelTab: panelState.activePanelState?.tab || PanelTab.Metadata,
     setPanelObject,
     setPanelTab,

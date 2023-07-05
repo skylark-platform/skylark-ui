@@ -256,7 +256,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                     <div
                       key={obj.uid}
                       className={clsx(
-                        "my-4 max-w-xl border border-l-4 py-4 px-4",
+                        "my-4 max-w-xl border border-l-4 px-4 py-4",
                         status === AvailabilityStatus.Active &&
                           "border-l-success",
                         status === AvailabilityStatus.Expired &&
@@ -289,7 +289,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                           {status && (
                             <AvailabilityLabel
                               status={status}
-                              className="pr-2 pl-1"
+                              className="pl-1 pr-2"
                             />
                           )}
                           <OpenObjectButton

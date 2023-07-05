@@ -18,8 +18,9 @@ import {
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
 
 import {
-  AdditionalImageMetadata,
+  CalculatedImageSize,
   PanelMetadataProperty,
+  RenderedImage,
 } from "./panelMetadataAdditionalSections";
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
@@ -91,6 +92,12 @@ export const PanelMetadata = ({
 
   return (
     <PanelSectionLayout sections={sideBarSections} isPage={isPage}>
+      {objectMeta?.isImage && metadata?.url && (
+        <RenderedImage
+          src={metadata?.url as string | null}
+          alt={metadata?.title as string}
+        />
+      )}
       <form
         className="h-full"
         data-testid="panel-metadata"
@@ -131,16 +138,8 @@ export const PanelMetadata = ({
           ),
         )}
 
-        {(
-          [
-            BuiltInSkylarkObjectType.SkylarkImage,
-            BuiltInSkylarkObjectType.BetaSkylarkImage,
-          ] as string[]
-        ).includes(objectType) && (
-          <AdditionalImageMetadata
-            src={metadata?.url as string | null}
-            alt={metadata?.title as string}
-          />
+        {objectType === BuiltInSkylarkObjectType.SkylarkImage && (
+          <CalculatedImageSize src={metadata?.url as string | null} />
         )}
       </form>
       <PanelLoading isLoading={!objectMeta}>

@@ -6,22 +6,47 @@ import { server } from "src/__tests__/mocks/server";
 import {
   act,
   fireEvent,
-  prettyDOM,
   render,
   screen,
   waitFor,
   within,
 } from "src/__tests__/utils/test-utils";
-import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
+import {
+  GQLSkylarkAccountResponse,
+  ParsedSkylarkObject,
+} from "src/interfaces/skylark";
 
 import { ObjectSearch } from "./objectSearch.component";
 
-test("renders search bar, filters with no objects returned", () => {
+afterEach(() => {
+  jest.useRealTimers();
+});
+
+test("renders search bar", () => {
   render(<ObjectSearch />);
 
   screen.findByPlaceholderText("Search for an object(s)");
 
   expect(screen.getByText("Filters")).toBeInTheDocument();
+});
+
+test("renders search bar, filters with no objects returned", async () => {
+  jest.useFakeTimers();
+
+  render(<ObjectSearch />);
+
+  const input = screen.getByPlaceholderText("Search for an object(s)");
+  fireEvent.change(input, { target: { value: "AllAvailTestMovie" } });
+
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  await screen.findByTestId("object-search-results-table-body");
+
+  expect(
+    (await screen.findAllByText("Fantastic Mr Fox (All Availabilities)"))[0],
+  ).toBeInTheDocument();
 });
 
 describe("create button", () => {
@@ -65,14 +90,109 @@ test("does not render info button when setPanelObject is undefined", async () =>
   ).not.toBeInTheDocument();
 });
 
-test("renders row select checkboxes", async () => {
-  render(<ObjectSearch withObjectSelect />);
+describe("with object select (checkboxes)", () => {
+  test("renders row select checkboxes", async () => {
+    await render(<ObjectSearch withObjectSelect />);
 
-  await waitFor(() =>
+    const results = await screen.findByTestId(
+      "object-search-results-table-body",
+    );
+
+    const withinResults = within(results);
+
     expect(
-      screen.getByRole("checkbox", { name: "toggle-select-all-objects" }),
-    ).toBeInTheDocument(),
-  );
+      (await withinResults.findAllByRole("checkbox")).length,
+    ).toBeGreaterThan(0);
+  });
+
+  test("fires on rowCheckChange callback when a checkbox is checked", async () => {
+    const onRowCheckChange = jest.fn();
+
+    await render(
+      <ObjectSearch
+        withObjectSelect
+        onObjectCheckedChanged={onRowCheckChange}
+        checkedObjects={[]}
+      />,
+    );
+
+    const results = await screen.findByTestId(
+      "object-search-results-table-body",
+    );
+
+    const withinResults = within(results);
+
+    expect(
+      (await withinResults.findAllByRole("checkbox")).length,
+    ).toBeGreaterThan(2);
+
+    const checkbox = (await withinResults.findAllByRole("checkbox"))[1];
+
+    await fireEvent.click(checkbox);
+
+    expect(onRowCheckChange).toHaveBeenLastCalledWith([expect.any(Object)]);
+  });
+
+  test("resets the checked rows when the search changes", async () => {
+    jest.useFakeTimers();
+
+    const onObjectCheckedChanged = jest.fn();
+
+    await render(
+      <ObjectSearch
+        withObjectSelect
+        onObjectCheckedChanged={onObjectCheckedChanged}
+      />,
+    );
+
+    const results = await screen.findByTestId(
+      "object-search-results-table-body",
+    );
+
+    const withinResults = within(results);
+
+    expect(
+      (await withinResults.findAllByRole("checkbox")).length,
+    ).toBeGreaterThan(0);
+
+    const input = screen.getByPlaceholderText("Search for an object(s)");
+    await fireEvent.change(input, { target: { value: "AllAvailTestMovie" } });
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+
+    expect(onObjectCheckedChanged).toHaveBeenCalledTimes(3);
+    expect(onObjectCheckedChanged).toHaveBeenCalledWith([]);
+  });
+
+  test("clears all selected rows using the toggle all", async () => {
+    const onRowCheckChange = jest.fn();
+
+    await render(
+      <ObjectSearch
+        withObjectSelect
+        onObjectCheckedChanged={onRowCheckChange}
+        checkedObjects={[{} as ParsedSkylarkObject]}
+      />,
+    );
+
+    const results = await screen.findByTestId(
+      "object-search-results-table-body",
+    );
+
+    const withinResults = within(results);
+
+    expect(
+      (await withinResults.findAllByRole("checkbox")).length,
+    ).toBeGreaterThan(1);
+
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: "clear-all-checked-objects" }),
+    );
+
+    expect(onRowCheckChange).toHaveBeenCalledWith([]);
+  });
 });
 
 test("renders search results (with default language)", async () => {

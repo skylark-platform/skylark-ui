@@ -18,7 +18,6 @@ import {
 import { hasProperty } from "src/lib/utils";
 
 import {
-  generateContentsToReturn,
   generateFieldsToReturn,
   generateVariablesAndArgs,
 } from "./dynamicQueries";

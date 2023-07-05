@@ -24,6 +24,7 @@ import {
   NormalizedObjectField,
   SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
+import { getObjectTypeFromListingTypeName } from "src/lib/utils";
 import { ObjectError } from "src/lib/utils/errors";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
@@ -158,11 +159,11 @@ const objectRelationshipFieldsFromGraphQLType = (
         field.type.kind === "OBJECT",
     )
     .map((field) => {
-      // Naive implementation, just removes Listing from ImageListing
       const typeName = (field.type as IntrospectionObjectType | undefined)
         ?.name;
-      const objectType =
-        typeName?.substring(0, typeName?.lastIndexOf("Listing")) || "";
+      const objectType = typeName
+        ? getObjectTypeFromListingTypeName(typeName)
+        : "";
       return {
         objectType,
         relationshipName: field.name,
@@ -370,16 +371,10 @@ export const getObjectOperations = (
     getObjectInterface,
   );
 
-  // TODO when Beta 1 environments are turned off, remove the BetaSkylarkImageListing check
-  const imageRelationships =
-    objectRelationshipFieldsFromGraphQLType(
-      SkylarkSystemGraphQLType.SkylarkImageListing,
-      getObjectInterface,
-    ) ||
-    objectRelationshipFieldsFromGraphQLType(
-      SkylarkSystemGraphQLType.BetaSkylarkImageListing,
-      getObjectInterface,
-    );
+  const imageRelationships = objectRelationshipFieldsFromGraphQLType(
+    SkylarkSystemGraphQLType.SkylarkImageListing,
+    getObjectInterface,
+  );
   const imageOperations = imageRelationships
     ? getObjectOperations(imageRelationships.objectType, schema)
     : null;
@@ -447,6 +442,7 @@ export const getObjectOperations = (
     hasContentOf,
     hasAvailability,
     isTranslatable: objectType !== BuiltInSkylarkObjectType.Availability,
+    isImage: objectType === BuiltInSkylarkObjectType.SkylarkImage,
   };
 
   return objectMeta;

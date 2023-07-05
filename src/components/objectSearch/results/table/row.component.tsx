@@ -12,7 +12,6 @@ export interface TableRowProps {
   row: Row<ParsedSkylarkObject>;
   virtualRowSize: number;
   activeObject: TableProps["activeObject"];
-  setPanelObject?: TableProps["setPanelObject"];
   tableMeta: TableMeta<object> | undefined;
   withCheckbox?: boolean;
   isDraggable?: boolean;
@@ -21,7 +20,6 @@ export interface TableRowProps {
 export const ObjectListingTableRow = ({
   row,
   activeObject,
-  setPanelObject,
   tableMeta,
   withCheckbox,
   isDraggable,
@@ -44,7 +42,7 @@ export const ObjectListingTableRow = ({
     activeObject?.uid === uid && activeObject.language === language;
 
   const openPanel = () => {
-    setPanelObject?.({ uid, objectType, language });
+    tableMeta?.onObjectClick?.({ uid, objectType, language });
   };
 
   return (

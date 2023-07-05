@@ -20,7 +20,6 @@ export interface TableProps {
   withDraggableRow?: boolean;
   isLoadingMore?: boolean;
   activeObject?: SkylarkObjectIdentifier;
-  setPanelObject?: (o: SkylarkObjectIdentifier) => void;
 }
 
 const TableHead = ({
@@ -31,7 +30,7 @@ const TableHead = ({
   withCheckbox: boolean;
 }) => (
   <thead>
-    <tr className="sticky top-0 z-30 bg-white">
+    <tr className="sticky top-0 z-40 bg-white">
       {headers.map((header) => (
         <ObjectListingTableColumnHeader
           key={header.id}
@@ -59,9 +58,16 @@ const TableDataSkeletonLoading = ({
           }
 
           return (
-            <td key={id} className="h-10" style={{ height }}>
+            <td key={id} className="h-10 p-0" style={{ height }}>
               <div className="flex h-full w-full items-center justify-start">
-                <Skeleton className={clsx("h-5 w-[95%]")} />
+                <Skeleton
+                  className={clsx(
+                    "h-5",
+                    id === OBJECT_LIST_TABLE.columnIds.checkbox
+                      ? "w-5"
+                      : "w-[95%]",
+                  )}
+                />
               </div>
             </td>
           );
@@ -76,7 +82,6 @@ export const Table = ({
   withCheckbox = false,
   isLoadingMore,
   activeObject,
-  setPanelObject,
   withDraggableRow,
   virtualRows,
   totalRows,
@@ -116,7 +121,6 @@ export const Table = ({
                 key={`row-${virtualRow.index}-${row.original.uid || ""}`}
                 row={row}
                 activeObject={activeObject}
-                setPanelObject={setPanelObject}
                 tableMeta={tableMeta}
                 withCheckbox={withCheckbox}
                 isDraggable={withDraggableRow}

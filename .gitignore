@@ -40,3 +40,4 @@ build-storybook.log
 
 cypress/videos
 cypress/screenshots
+cypress/downloads

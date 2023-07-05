@@ -73,16 +73,15 @@ export const SearchFilter = ({
   };
 
   return (
-    // TODO figure out what width the filter should actually be
-    <div className="relative flex max-h-96 w-full flex-col rounded bg-white py-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 md:w-[120%] lg:w-[150%] xl:max-h-[28rem]">
-      <div className="absolute top-2 right-5 z-20">
+    <div className="relative flex max-h-[60vh] w-full flex-col rounded bg-white py-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 xl:max-h-[28rem]">
+      <div className="absolute right-5 top-2 z-20">
         <DisplayGraphQLQuery
           label="Content Library Search"
           query={graphqlQuery.query}
           variables={graphqlQuery.variables}
         />
       </div>
-      <div className="relative flex-grow overflow-scroll border-none p-2 px-4 [&>section]:border-b-2 [&>section]:border-b-manatee-100 [&>section]:pt-3 [&>section]:pb-3 first:[&>section]:pt-0 last:[&>section]:border-none last:[&>section]:pb-0">
+      <div className="relative flex-grow overflow-scroll border-none p-2 px-4 [&>section]:border-b-2 [&>section]:border-b-manatee-100 [&>section]:pb-3 [&>section]:pt-3 first:[&>section]:pt-0 last:[&>section]:border-none last:[&>section]:pb-0">
         <CheckboxGrid
           label="Object type"
           withToggleAll

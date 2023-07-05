@@ -22,7 +22,7 @@ import {
   within,
 } from "src/__tests__/utils/test-utils";
 import { QueryErrorMessages } from "src/enums/graphql";
-import { PanelTab } from "src/hooks/usePanelObjectState";
+import { PanelTab } from "src/hooks/state";
 import {
   AvailabilityStatus,
   BuiltInSkylarkObjectType,
@@ -755,7 +755,7 @@ describe("relationships view", () => {
 
     expect(setPanelObject).toHaveBeenCalledWith({
       objectType: "Brand",
-      uid: "01GXZP1T4QA54SWSD0N6ABTNEY",
+      uid: "01H4FFNYEMRC6YM8ZV65WN65NP",
       language: "en-GB",
     });
   });

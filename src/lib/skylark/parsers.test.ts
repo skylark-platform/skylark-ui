@@ -485,10 +485,12 @@ describe("parseSkylarkObject", () => {
       release_date: "2012-04-01",
       season_number: 2,
       availability: {
+        __typename: "SkylarkAvailabilityListing",
         next_token: null,
         objects: [],
       },
       images: {
+        __typename: "SkylarkImageListing",
         next_token: null,
         objects: [],
       },
@@ -863,13 +865,13 @@ describe("parseUpdatedRelationshipObjects", () => {
 
   const updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] = [
     {
-      relationshipName: "Seasons",
+      ...relationship,
       objects: [expectedParsedObject],
     },
   ];
   const originalRelationshipObjects: ParsedSkylarkObjectRelationships[] = [
     {
-      relationshipName: "Seasons",
+      ...relationship,
       objects: [expectedParsedObject],
     },
   ];
@@ -888,11 +890,10 @@ describe("parseUpdatedRelationshipObjects", () => {
   });
 
   test("returns the correct linked and unlinked uids when original objects is empty", () => {
-    const originalRelationshipObjects: ParsedSkylarkObjectRelationships[] = [];
     const result = parseUpdatedRelationshipObjects(
       relationship,
       updatedRelationshipObjects,
-      originalRelationshipObjects,
+      [],
     );
     expect(result).toEqual({
       relationship: relationship,
@@ -902,10 +903,9 @@ describe("parseUpdatedRelationshipObjects", () => {
   });
 
   test("returns the correct linked and unlinked uids when updated objects is empty", () => {
-    const updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] = [];
     const result = parseUpdatedRelationshipObjects(
       relationship,
-      updatedRelationshipObjects,
+      [],
       originalRelationshipObjects,
     );
     expect(result).toEqual({
@@ -916,13 +916,7 @@ describe("parseUpdatedRelationshipObjects", () => {
   });
 
   test("returns the correct linked and unlinked uids when both original and updated objects are empty", () => {
-    const updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] = [];
-    const originalRelationshipObjects: ParsedSkylarkObjectRelationships[] = [];
-    const result = parseUpdatedRelationshipObjects(
-      relationship,
-      updatedRelationshipObjects,
-      originalRelationshipObjects,
-    );
+    const result = parseUpdatedRelationshipObjects(relationship, [], []);
     expect(result).toEqual({
       relationship: relationship,
       uidsToLink: [],
