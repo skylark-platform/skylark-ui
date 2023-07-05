@@ -3,6 +3,7 @@ import {
   SkylarkGraphQLAvailabilityDimensionWithValues,
   SkylarkGraphQLAvailabilityDimensionValue,
   SkylarkGraphQLObjectImage,
+  SkylarkObjectConfigFieldType,
 } from "./gqlObjects";
 import {
   SkylarkObjectMetadataField,
@@ -72,6 +73,11 @@ export interface ParsedSkylarkObjectConfig {
   colour?: string;
   primaryField?: string;
   objectTypeDisplayName?: string;
+  fieldConfig: {
+    name: string;
+    fieldType: SkylarkObjectConfigFieldType;
+    position: number;
+  }[];
 }
 
 export interface ParsedSkylarkObjectMeta {

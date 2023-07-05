@@ -28,7 +28,7 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
   });
 
   const setPanelObject = useCallback(
-    (newPanelObject: SkylarkObjectIdentifier) => {
+    (newPanelObject: SkylarkObjectIdentifier, tab?: PanelTab) => {
       setPanelState((oldState) => ({
         forwardPanelStates: [],
         previousPanelStates: oldState.activePanelState
@@ -36,7 +36,7 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
           : oldState.previousPanelStates,
         activePanelState: {
           ...newPanelObject,
-          tab: PanelTab.Metadata,
+          tab: tab || PanelTab.Metadata,
         },
       }));
     },

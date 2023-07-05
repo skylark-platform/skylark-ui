@@ -97,7 +97,7 @@ const convertAvailabilityToParsedObject = (
       timezone,
     }): ParsedSkylarkObject => ({
       uid,
-      config: {},
+      config: { fieldConfig: [] },
       meta: {
         language: "",
         availableLanguages: [],

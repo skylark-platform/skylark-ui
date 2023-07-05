@@ -367,6 +367,9 @@ describe("parseObjectContent", () => {
           _config: {
             colour: "black",
             primary_field: "uid",
+            field_config: [
+              { name: "title", ui_position: 1, ui_field_type: "STRING" },
+            ],
           },
           _meta: {
             language_data: {
@@ -389,6 +392,9 @@ describe("parseObjectContent", () => {
             colour: "black",
             primary_field: "uid",
             display_name: "Set",
+            field_config: [
+              { name: "synopsis", ui_position: 2, ui_field_type: "TEXTAREA" },
+            ],
           },
           _meta: {
             language_data: {
@@ -414,6 +420,13 @@ describe("parseObjectContent", () => {
             colour: "black",
             primaryField: "uid",
             objectTypeDisplayName: undefined,
+            fieldConfig: [
+              {
+                name: "title",
+                position: 1,
+                fieldType: "STRING",
+              },
+            ],
           },
           meta: {
             availableLanguages: ["en-GB", "pt-PT"],
@@ -433,6 +446,13 @@ describe("parseObjectContent", () => {
             colour: "black",
             primaryField: "uid",
             objectTypeDisplayName: "Set",
+            fieldConfig: [
+              {
+                name: "synopsis",
+                position: 2,
+                fieldType: "TEXTAREA",
+              },
+            ],
           },
           meta: {
             availableLanguages: ["en-GB"],
@@ -460,6 +480,13 @@ describe("parseSkylarkObject", () => {
         primary_field: "title",
         colour: "#9c27b0",
         display_name: "SpecialSeason",
+        field_config: [
+          {
+            name: "title",
+            ui_position: 1,
+            ui_field_type: "STRING",
+          },
+        ],
       },
       _meta: {
         available_languages: ["en-GB", "pt-PT"],
@@ -503,6 +530,13 @@ describe("parseSkylarkObject", () => {
         colour: "#9c27b0",
         primaryField: "title",
         objectTypeDisplayName: "SpecialSeason",
+        fieldConfig: [
+          {
+            name: "title",
+            position: 1,
+            fieldType: "STRING",
+          },
+        ],
       },
       meta: {
         language: "pt-PT",
@@ -829,6 +863,7 @@ describe("parseUpdatedRelationshipObjects", () => {
     config: {
       colour: "#9c27b0",
       primaryField: "title",
+      fieldConfig: [],
     },
     meta: {
       language: "pt-PT",

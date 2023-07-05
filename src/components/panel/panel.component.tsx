@@ -585,6 +585,7 @@ export const Panel = ({
               form={metadataForm}
               objectType={objectType}
               objectMeta={objectMeta}
+              objectFieldConfig={data?.config.fieldConfig}
             />
           )}
           {selectedTab === PanelTab.Imagery && data?.images && (

@@ -22,6 +22,11 @@ const commonGraphQLOpts = {
       primary_field: true,
       colour: true,
       display_name: true,
+      field_config: {
+        name: true,
+        ui_field_type: true,
+        ui_position: true,
+      },
     },
   },
   objectMeta: {

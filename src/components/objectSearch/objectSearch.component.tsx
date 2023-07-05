@@ -34,7 +34,7 @@ export interface ObjectSearchProps {
   isPanelOpen?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
   defaultObjectTypes?: SkylarkObjectTypes;
-  setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
+  setPanelObject?: ObjectSearchResultsProps["setPanelObject"];
   checkedObjects?: ObjectSearchResultsProps["checkedObjects"];
   onObjectCheckedChanged?: ObjectSearchResultsProps["onObjectCheckedChanged"];
 }

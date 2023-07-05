@@ -53,7 +53,7 @@ describe("createUpdateSetContentPositionMutation", () => {
     const content: ParsedSkylarkObjectContentObject[] = [
       {
         objectType: "Episode",
-        config: {},
+        config: { fieldConfig: [] },
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
@@ -64,7 +64,7 @@ describe("createUpdateSetContentPositionMutation", () => {
       },
       {
         objectType: "Episode",
-        config: {},
+        config: { fieldConfig: [] },
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
@@ -75,7 +75,7 @@ describe("createUpdateSetContentPositionMutation", () => {
       },
       {
         objectType: "Movie",
-        config: {},
+        config: { fieldConfig: [] },
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
@@ -101,7 +101,7 @@ describe("createUpdateSetContentPositionMutation", () => {
     const content: ParsedSkylarkObjectContentObject[] = [
       {
         objectType: "Episode",
-        config: {},
+        config: { fieldConfig: [] },
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
@@ -112,7 +112,7 @@ describe("createUpdateSetContentPositionMutation", () => {
       },
       {
         objectType: "Episode",
-        config: {},
+        config: { fieldConfig: [] },
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
@@ -123,7 +123,7 @@ describe("createUpdateSetContentPositionMutation", () => {
       },
       {
         objectType: "Movie",
-        config: {},
+        config: { fieldConfig: [] },
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
@@ -151,7 +151,7 @@ describe("createUpdateSetContentPositionMutation", () => {
     const content: ParsedSkylarkObjectContentObject[] = [
       {
         objectType: "Episode",
-        config: {},
+        config: { fieldConfig: [] },
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
@@ -162,7 +162,7 @@ describe("createUpdateSetContentPositionMutation", () => {
       },
       {
         objectType: "Episode",
-        config: {},
+        config: { fieldConfig: [] },
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
@@ -173,7 +173,7 @@ describe("createUpdateSetContentPositionMutation", () => {
       },
       {
         objectType: "Movie",
-        config: {},
+        config: { fieldConfig: [] },
         meta: {
           language: "en-GB",
           availableLanguages: ["en-GB"],
