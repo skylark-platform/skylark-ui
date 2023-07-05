@@ -62,16 +62,16 @@ export const PanelRelationships = ({
   useEffect(() => {
     if (!inEditMode) {
       setRelationshipObjects({
-        original: relationships,
-        updated: relationships,
+        original: serverRelationships,
+        updated: serverRelationships,
       });
     }
-  }, [inEditMode, relationships, setRelationshipObjects]);
+  }, [inEditMode, serverRelationships, setRelationshipObjects]);
 
   const removeRelationshipObject = (removeUid: string, relationship: string) =>
     relationships &&
     setRelationshipObjects({
-      original: relationships,
+      original: serverRelationships,
       updated: relationships?.map((currentRelationship) => {
         const { objects, relationshipName } = currentRelationship;
         if (relationshipName === relationship) {
@@ -79,7 +79,9 @@ export const PanelRelationships = ({
             (obj) => obj.uid !== removeUid,
           );
           return { ...currentRelationship, objects: filteredObjects };
-        } else return currentRelationship;
+        } else {
+          return currentRelationship;
+        }
       }),
     });
 
