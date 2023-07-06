@@ -187,12 +187,12 @@ const parseObjectConfig = (
 ): ParsedSkylarkObjectConfig => {
   const fieldConfig: ParsedSkylarkObjectConfig["fieldConfig"] =
     unparsedConfig?.field_config
-      .map(({ name, ui_position, ui_field_type }) => ({
+      ?.map(({ name, ui_position, ui_field_type }) => ({
         name,
         position: ui_position,
         fieldType: ui_field_type,
       }))
-      .sort((a, b) => a.position - b.position) || [];
+      .sort((a, b) => a.position - b.position);
 
   return {
     colour: unparsedConfig?.colour,

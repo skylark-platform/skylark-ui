@@ -8,7 +8,7 @@
           {
             "__typename": "SkylarkSet",
             "_config": {
-              "primary_field": "title",
+              "primary_field": "internal_title",
               "colour": "#000000",
               "display_name": "Setˢˡ"
             },
@@ -22,10 +22,11 @@
                 "version": 2
               }
             },
-            "uid": "01H3HDWN5NHRQMAQDY5793K7VG",
+            "uid": "01H4MMF4SDYPY60D7YCA3WQJWF",
             "slug": "wes-anderson-movies-collection",
             "external_id": "streamtv_wes_anderson_movies",
             "type": "COLLECTION",
+            "internal_title": null,
             "title": "Wes Anderson Movies Collection",
             "title_short": "Wes Anderson",
             "title_sort": null,

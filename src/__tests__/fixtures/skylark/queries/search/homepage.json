@@ -2,62 +2,30 @@
   "data": {
     "search": {
       "__typename": "SearchResultListing",
-      "total_count": 5,
+      "total_count": 8,
       "objects": [
         {
           "__typename": "SkylarkSet",
           "_config": {
-            "primary_field": "title",
+            "primary_field": "internal_title",
             "colour": "#000000",
             "display_name": "Setˢˡ"
           },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "pt-PT", "version": 1 },
-            "global_data": { "version": 2 }
+            "language_data": {
+              "language": "pt-PT",
+              "version": 1
+            },
+            "global_data": {
+              "version": 2
+            }
           },
-          "uid": "01H38V1C0BNDWHNKSPGDKVXVS1",
-          "__SkylarkSet__slug": "media-reference-homepage",
-          "external_id": null,
-          "__SkylarkSet__type": "PAGE",
-          "__SkylarkSet__title": "Homepage",
-          "__SkylarkSet__title_short": "Media Reference Homepage",
-          "__SkylarkSet__title_sort": null,
-          "__SkylarkSet__synopsis": null,
-          "__SkylarkSet__synopsis_short": null,
-          "__SkylarkSet__release_date": null,
-          "__SkylarkSet__description": null,
-          "availability": {
-            "next_token": null,
-            "objects": [
-              {
-                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
-                "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
-              }
-            ]
-          }
-        },
-        {
-          "__typename": "SkylarkSet",
-          "_config": {
-            "primary_field": "title",
-            "colour": "#000000",
-            "display_name": "Setˢˡ"
-          },
-          "_meta": {
-            "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "en-GB", "version": 1 },
-            "global_data": { "version": 2 }
-          },
-          "uid": "01H38V1C0BNDWHNKSPGDKVXVS1",
+          "uid": "01H4MMFVVVK9AM71JY9449RHG9",
           "__SkylarkSet__slug": "media-reference-homepage",
           "external_id": "streamtv_homepage",
           "__SkylarkSet__type": "PAGE",
+          "__SkylarkSet__internal_title": null,
           "__SkylarkSet__title": "Homepage",
           "__SkylarkSet__title_short": "Media Reference Homepage",
           "__SkylarkSet__title_sort": null,
@@ -69,13 +37,84 @@
             "next_token": null,
             "objects": [
               {
-                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
-                "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
-                "slug": "always-all-devices-all-customer-types",
-                "start": "2022-01-01T00:00:00+00:00",
+                "uid": "01H4MMB03HPEF1G9VXAWXN9GN4",
+                "external_id": "recR7MXtwMj6MR8TK",
+                "title": "Always - everything",
+                "slug": "always-everything",
+                "start": "2000-01-01T15:15:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
                 "timezone": "+00:00"
+              }
+            ]
+          },
+          "images": {
+            "next_token": null,
+            "objects": [
+              {
+                "_meta": {
+                  "available_languages": ["en-GB"],
+                  "language_data": {
+                    "language": "en-GB",
+                    "version": 1
+                  },
+                  "global_data": {
+                    "version": 1
+                  }
+                },
+                "uid": "01H4MMC4QWTSY44KXKFV3DHV26",
+                "external_id": "recgkAKiElyJeSpvy",
+                "slug": null,
+                "internal_title": null,
+                "title": "StreamTVLoadingScreen.png",
+                "description": null,
+                "type": "MAIN",
+                "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMC4QWTSY44KXKFV3DHV26/01H4MMC886BGZBV3DM33WPPGFS",
+                "file_name": null,
+                "content_type": "image/png"
+              },
+              {
+                "_meta": {
+                  "available_languages": ["en-GB"],
+                  "language_data": {
+                    "language": "en-GB",
+                    "version": 1
+                  },
+                  "global_data": {
+                    "version": 1
+                  }
+                },
+                "uid": "01H4MMC4W0RKHKCDQ0E6A387V8",
+                "external_id": "reckauU2wr4Jmo3BD",
+                "slug": null,
+                "internal_title": null,
+                "title": "TopOfHomepage.png",
+                "description": null,
+                "type": "MAIN",
+                "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMC4W0RKHKCDQ0E6A387V8/01H4MMC89T3JSX4HPA95R8EHRN",
+                "file_name": null,
+                "content_type": "image/png"
+              },
+              {
+                "_meta": {
+                  "available_languages": ["en-GB"],
+                  "language_data": {
+                    "language": "en-GB",
+                    "version": 1
+                  },
+                  "global_data": {
+                    "version": 1
+                  }
+                },
+                "uid": "01H4MMBW8YPVNTD1R8RA5Q9R2Z",
+                "external_id": "recBiJpHfAYK1sPiI",
+                "slug": null,
+                "internal_title": null,
+                "title": "HomepageAfterCarousel.png",
+                "description": null,
+                "type": "MAIN",
+                "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMBW8YPVNTD1R8RA5Q9R2Z/01H4MMBZ5FXGPXKBS2FRQPZ3MH",
+                "file_name": null,
+                "content_type": "image/png"
               }
             ]
           }
@@ -83,19 +122,140 @@
         {
           "__typename": "SkylarkSet",
           "_config": {
-            "primary_field": "title",
+            "primary_field": "internal_title",
             "colour": "#000000",
             "display_name": "Setˢˡ"
           },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "pt-PT", "version": 1 },
-            "global_data": { "version": 2 }
+            "language_data": {
+              "language": "en-GB",
+              "version": 1
+            },
+            "global_data": {
+              "version": 2
+            }
           },
-          "uid": "01GXZP3KGDESE0M305HM7PKTAE",
+          "uid": "01H4MMFVVVK9AM71JY9449RHG9",
+          "__SkylarkSet__slug": "media-reference-homepage",
+          "external_id": "streamtv_homepage",
+          "__SkylarkSet__type": "PAGE",
+          "__SkylarkSet__internal_title": null,
+          "__SkylarkSet__title": "Homepage",
+          "__SkylarkSet__title_short": "Media Reference Homepage",
+          "__SkylarkSet__title_sort": null,
+          "__SkylarkSet__synopsis": null,
+          "__SkylarkSet__synopsis_short": null,
+          "__SkylarkSet__release_date": null,
+          "__SkylarkSet__description": null,
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01H4MMB03HPEF1G9VXAWXN9GN4",
+                "external_id": "recR7MXtwMj6MR8TK",
+                "title": "Always - everything",
+                "slug": "always-everything",
+                "start": "2000-01-01T15:15:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          },
+          "images": {
+            "next_token": null,
+            "objects": [
+              {
+                "_meta": {
+                  "available_languages": ["en-GB"],
+                  "language_data": {
+                    "language": "en-GB",
+                    "version": 1
+                  },
+                  "global_data": {
+                    "version": 1
+                  }
+                },
+                "uid": "01H4MMC4QWTSY44KXKFV3DHV26",
+                "external_id": "recgkAKiElyJeSpvy",
+                "slug": null,
+                "internal_title": null,
+                "title": "StreamTVLoadingScreen.png",
+                "description": null,
+                "type": "MAIN",
+                "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMC4QWTSY44KXKFV3DHV26/01H4MMC886BGZBV3DM33WPPGFS",
+                "file_name": null,
+                "content_type": "image/png"
+              },
+              {
+                "_meta": {
+                  "available_languages": ["en-GB"],
+                  "language_data": {
+                    "language": "en-GB",
+                    "version": 1
+                  },
+                  "global_data": {
+                    "version": 1
+                  }
+                },
+                "uid": "01H4MMC4W0RKHKCDQ0E6A387V8",
+                "external_id": "reckauU2wr4Jmo3BD",
+                "slug": null,
+                "internal_title": null,
+                "title": "TopOfHomepage.png",
+                "description": null,
+                "type": "MAIN",
+                "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMC4W0RKHKCDQ0E6A387V8/01H4MMC89T3JSX4HPA95R8EHRN",
+                "file_name": null,
+                "content_type": "image/png"
+              },
+              {
+                "_meta": {
+                  "available_languages": ["en-GB"],
+                  "language_data": {
+                    "language": "en-GB",
+                    "version": 1
+                  },
+                  "global_data": {
+                    "version": 1
+                  }
+                },
+                "uid": "01H4MMBW8YPVNTD1R8RA5Q9R2Z",
+                "external_id": "recBiJpHfAYK1sPiI",
+                "slug": null,
+                "internal_title": null,
+                "title": "HomepageAfterCarousel.png",
+                "description": null,
+                "type": "MAIN",
+                "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMBW8YPVNTD1R8RA5Q9R2Z/01H4MMBZ5FXGPXKBS2FRQPZ3MH",
+                "file_name": null,
+                "content_type": "image/png"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "SkylarkSet",
+          "_config": {
+            "primary_field": "internal_title",
+            "colour": "#000000",
+            "display_name": "Setˢˡ"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": {
+              "language": "pt-PT",
+              "version": 1
+            },
+            "global_data": {
+              "version": 2
+            }
+          },
+          "uid": "01H4MMETXPPWWVW0DKV7YV49GA",
           "__SkylarkSet__slug": "media-reference-home-page-hero",
           "external_id": "streamtv_home_page_slider",
           "__SkylarkSet__type": "SLIDER",
+          "__SkylarkSet__internal_title": null,
           "__SkylarkSet__title": "Home page hero",
           "__SkylarkSet__title_short": null,
           "__SkylarkSet__title_sort": null,
@@ -107,33 +267,43 @@
             "next_token": null,
             "objects": [
               {
-                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "uid": "01H4MMB075XZ6FDAYJYH8TFMXW",
                 "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
+                "title": "Always - All devices, all non-kids customer types",
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
                 "timezone": "+00:00"
               }
             ]
+          },
+          "images": {
+            "next_token": null,
+            "objects": []
           }
         },
         {
           "__typename": "SkylarkSet",
           "_config": {
-            "primary_field": "title",
+            "primary_field": "internal_title",
             "colour": "#000000",
             "display_name": "Setˢˡ"
           },
           "_meta": {
             "available_languages": ["en-GB", "pt-PT"],
-            "language_data": { "language": "en-GB", "version": 1 },
-            "global_data": { "version": 2 }
+            "language_data": {
+              "language": "en-GB",
+              "version": 1
+            },
+            "global_data": {
+              "version": 2
+            }
           },
-          "uid": "01GXZP3KGDESE0M305HM7PKTAE",
+          "uid": "01H4MMETXPPWWVW0DKV7YV49GA",
           "__SkylarkSet__slug": "media-reference-home-page-hero",
-          "external_id": null,
+          "external_id": "streamtv_home_page_slider",
           "__SkylarkSet__type": "SLIDER",
+          "__SkylarkSet__internal_title": null,
           "__SkylarkSet__title": "Home page hero",
           "__SkylarkSet__title_short": null,
           "__SkylarkSet__title_sort": null,
@@ -145,52 +315,271 @@
             "next_token": null,
             "objects": [
               {
-                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "uid": "01H4MMB075XZ6FDAYJYH8TFMXW",
                 "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
+                "title": "Always - All devices, all non-kids customer types",
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
                 "timezone": "+00:00"
               }
             ]
+          },
+          "images": {
+            "next_token": null,
+            "objects": []
           }
         },
         {
           "__typename": "SkylarkImage",
           "_config": {
-            "primary_field": "title",
-            "colour": "#607d8b",
+            "primary_field": "internal_title",
+            "colour": "#607D8B",
             "display_name": "Imageˢˡ"
           },
           "_meta": {
             "available_languages": ["en-GB"],
-            "language_data": { "language": "en-GB", "version": 2 },
-            "global_data": { "version": 2 }
+            "language_data": {
+              "language": "en-GB",
+              "version": 1
+            },
+            "global_data": {
+              "version": 1
+            }
           },
-          "uid": "01GXZNXE4CKA7FBF61M7QEZAWJ",
+          "uid": "01H4MMBW8YPVNTD1R8RA5Q9R2Z",
           "external_id": "recBiJpHfAYK1sPiI",
           "__SkylarkImage__slug": null,
+          "__SkylarkImage__internal_title": null,
           "__SkylarkImage__title": "HomepageAfterCarousel.png",
           "__SkylarkImage__description": null,
           "__SkylarkImage__type": "MAIN",
-          "__SkylarkImage__url": "https://dl.airtable.com/.attachments/ec508b5317f19fee0c50ed9238d23588/02a5d627/HomepageAfterCarousel.png",
-          "__SkylarkImage__external_url": "https://dl.airtable.com/.attachments/ec508b5317f19fee0c50ed9238d23588/02a5d627/HomepageAfterCarousel.png",
-          "__SkylarkImage__upload_url": "https://obj-reg-storage-sl-develop-eu-west-1-storage.s3.amazonaws.com/media/skylarkimages/vrdlihwc4ves3ihxxzrykjpvvm/01GXZNXE4CKA7FBF61M7QEZAWJ/01GXZPB0XY1FPBZM4Z8KWDBX5G?AWSAccessKeyId=ASIA4YDX3EVVD2BOM24K&Signature=3BUyYVVLa3a51fScbrujl%2BY2H88%3D&content-type=application%2Foctet&x-amz-meta-account_id=vrdlihwc4ves3ihxxzrykjpvvm&x-amz-meta-uid=01GXZNXE4CKA7FBF61M7QEZAWJ&x-amz-security-token=IQoJb3JpZ2luX2VjEAMaCWV1LXdlc3QtMSJGMEQCIGqjCXO0Ejkdoa45EieM4UGRcPsPTNqtbLvTxbYekyoKAiBcnDmYAJHLix7m6AqK8xhWfVtADzBEIPRI%2FvifV5QVqyq0Awjs%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDg3NjQyNDY2ODUyMiIMexT%2FLNSGMJQnbIwqKogDkUx3dqx0ZQugn6bb1CDVMDJnJOVjDnLWjmbKs29rshAhP%2BwMo7dK2IPpovcOnAINEcyQ9ov%2Fgvc3HQTz0CBf6PDDdwXWXtg0Mh6rk095CKexwbLynECEGNJpMFsTJtYGcsvI%2F4LyTA%2BxskZf9BGqIYLrxxhCM%2FzZi8ySsaTeprx57hhFA9nv5UrZI%2F1Jwp00UEyJkiEFVaVv1sMh3C%2BAxoYoeqxBpAI%2FutC%2BweaKTML79ESV4BA6Uy0EVH5xE%2BojG9pQSp7YHXgAFyIyIt3Tw%2F5Eg2k8%2FtrO5DkTRcYc9RDVBgmm8oJw1wTqSx5Mpal2KqwxQxiMarRZ8LVxdsbpthBTnxNDZy%2Ba%2FHU%2FcFjNB%2BNdBz9ANbhWJSMRcJ1dfUtVlJzDMwOETL7FmZ8DrwIEuRWWelq2mdbO2SZFFrA806Uve855i%2F1e5RnG1qTa0Eq3LOJ2KR3%2FIoMv6DYkA1f4bSe2CnK6xSBzlixeBuK5fXPkAPDI7ck3lEocOwmC%2BNiJOnfsS3TML4gwzt3koQY6ngHQF2W6gjj082uLT7%2B2aadFbEIBYQ%2BhGrLWkapVOAkG4kLpfyk35qVRtyJRDI9zPAMaV43P3GlIUGK1XePPZcXHSL4PdGC7nGo1wTb8v14OwfIqRglVfQJe9VNMkst6fhaLtuZQ%2FGA49%2FCdYAfeWBI3%2BD7X7MH1d%2B4GaPMljAkCyG32LEM39WLfv%2F3Lu%2FcNn6mHwCJJ%2BIPUOf9K2tvKPg%3D%3D&Expires=1681473172",
-          "__SkylarkImage__download_from_url": null,
+          "__SkylarkImage__url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMBW8YPVNTD1R8RA5Q9R2Z/01H4MMBZ5FXGPXKBS2FRQPZ3MH",
           "__SkylarkImage__file_name": null,
-          "__SkylarkImage__content_type": null,
+          "__SkylarkImage__content_type": "image/png",
           "availability": {
             "next_token": null,
             "objects": [
               {
-                "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+                "uid": "01H4MMB075XZ6FDAYJYH8TFMXW",
                 "external_id": "recXNjJNyc6nKQIYa",
-                "title": "Always - All devices, all customer types",
+                "title": "Always - All devices, all non-kids customer types",
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
                 "timezone": "+00:00"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "SkylarkSet",
+          "_config": {
+            "primary_field": "internal_title",
+            "colour": "#000000",
+            "display_name": "Setˢˡ"
+          },
+          "_meta": {
+            "available_languages": ["en-GB"],
+            "language_data": {
+              "language": "en-GB",
+              "version": 1
+            },
+            "global_data": {
+              "version": 1
+            }
+          },
+          "uid": "01H4MMEXNREJ7W51JKAF1HBRY5",
+          "__SkylarkSet__slug": "media-reference-home-page-hero-kids",
+          "external_id": "streamtv_home_page_slider_kids",
+          "__SkylarkSet__type": "SLIDER",
+          "__SkylarkSet__internal_title": null,
+          "__SkylarkSet__title": "Kids Home page hero",
+          "__SkylarkSet__title_short": null,
+          "__SkylarkSet__title_sort": null,
+          "__SkylarkSet__synopsis": null,
+          "__SkylarkSet__synopsis_short": null,
+          "__SkylarkSet__release_date": null,
+          "__SkylarkSet__description": null,
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01H4MMB0431DYV209TRN7Q42P0",
+                "external_id": "recyySS4ixXlyGG48",
+                "title": "Always - Kids",
+                "slug": "always-kids",
+                "start": "2000-01-01T15:15:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          },
+          "images": {
+            "next_token": null,
+            "objects": []
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "internal_title",
+            "colour": "#FF7BA8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["en-GB", "pt-PT"],
+            "language_data": {
+              "language": "pt-PT",
+              "version": 1
+            },
+            "global_data": {
+              "version": 2
+            }
+          },
+          "uid": "01H4MMDT3AX0KQBGRPZZY9BC50",
+          "external_id": "recTNEXuxvDlycEH0",
+          "__Episode__slug": null,
+          "__Episode__synopsis": "Ao retornar a Porto Real, Tyrion para em Winterfell, onde apresenta aos Stark um design de sela que permitirá ao paraplégico Bran andar a cavalo. Ned investiga secretamente a morte de Jon Arryn. No processo, ele descobre um dos filhos ilegítimos do rei Robert, Gendry, um armeiro. Robert e seus convidados participam de um torneio em homenagem a Ned, que Ned considera uma extravagância. Jon toma medidas para proteger Samwell Tarly, um recruta da Patrulha da Noite desajeitado e sem amigos, do abuso dos outros Watchmen. Um Viserys frustrado entra em conflito com sua irmã recém-empoderada. Sansa sonha em um dia se tornar rainha, enquanto Arya imagina um futuro muito diferente. Em uma taverna à beira da estrada, Catelyn, que é filha de Lorde Hoster Tully, inesperadamente encontra Tyrion Lannister. Ela reúne os aliados de seu pai em Correrrio para prender Tyrion por conspirar para assassinar seu filho.\n",
+          "__Episode__synopsis_short": "Eddard investiga o assassinato de Jon Arryn. Jon faz amizade com Samwell Tarly, um covarde que veio para se juntar à Patrulha da Noite.\n",
+          "__Episode__title": "GOT S01E4 - Cripples, Bastards, and Broken Things",
+          "__Episode__title_short": "Aleijados, Bastardos e Coisas Partidas",
+          "__Episode__episode_number": 4,
+          "__Episode__internal_title": null,
+          "__Episode__release_date": "2011-11-07",
+          "__Episode__title_sort": null,
+          "__Episode__year_of_release": null,
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01H4MMB075XZ6FDAYJYH8TFMXW",
+                "external_id": "recXNjJNyc6nKQIYa",
+                "title": "Always - All devices, all non-kids customer types",
+                "slug": "always-all-devices-all-customer-types",
+                "start": "2022-01-01T00:00:00+00:00",
+                "end": "2038-01-19T03:14:07+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          },
+          "images": {
+            "next_token": null,
+            "objects": [
+              {
+                "_meta": {
+                  "available_languages": ["en-GB"],
+                  "language_data": {
+                    "language": "en-GB",
+                    "version": 1
+                  },
+                  "global_data": {
+                    "version": 1
+                  }
+                },
+                "uid": "01H4MMBWC9ASS3XCJMARCCR4B7",
+                "external_id": "recDu644N0AcECXrw",
+                "slug": null,
+                "internal_title": null,
+                "title": "cripples-character.jpg",
+                "description": null,
+                "type": "CHARACTER",
+                "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMBWC9ASS3XCJMARCCR4B7/01H4MMC3SWSBGZZ5ZYR70XR1ND",
+                "file_name": null,
+                "content_type": "image/jpeg"
+              },
+              {
+                "_meta": {
+                  "available_languages": ["en-GB"],
+                  "language_data": {
+                    "language": "en-GB",
+                    "version": 1
+                  },
+                  "global_data": {
+                    "version": 1
+                  }
+                },
+                "uid": "01H4MMC62CPQFDP9J7N34XKJ17",
+                "external_id": "recsDXsDRREFMjXU8",
+                "slug": null,
+                "internal_title": null,
+                "title": "GOT - S1 - 4.jpg",
+                "description": null,
+                "type": "THUMBNAIL",
+                "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMC62CPQFDP9J7N34XKJ17/01H4MMC9P9733HRB91V4N7HZ88",
+                "file_name": null,
+                "content_type": "image/jpeg"
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Episode",
+          "_config": {
+            "primary_field": "internal_title",
+            "colour": "#FF7BA8",
+            "display_name": "Episode"
+          },
+          "_meta": {
+            "available_languages": ["pt-PT"],
+            "language_data": {
+              "language": "pt-PT",
+              "version": 1
+            },
+            "global_data": {
+              "version": 1
+            }
+          },
+          "uid": "01H4MMDT585B8EGE880XQS7KVR",
+          "external_id": "recawh81kVY2Dj4SH",
+          "__Episode__slug": "o-poeta-censurado",
+          "__Episode__synopsis": "Bocage é avisado de que os esbirros de Pina Manique estão atrás de si. O poeta prepara-se para escapar rumo ao Brasil (Bahia) a bordo da corveta Aviso.\nÉ apanhado. No dia 7 de Agosto, Bocage dá entrada da prisão do Limoeiro. Para o Intendente, a tentativa de fuga só servia para fornecer ainda mais claros indícios de que o acusado era mesmo culpado de todos os delitos de que havia sido denunciado e de ser o autor de ?papéis ímpios, sediciosos e críticos?.\nNo Limoeiro, Bocage é conduzido ao segredo, nome que se dá à casa forte e onde são metidos os presos indisciplinados. Bocage suporta agora aquilo que o pai sofrera 26 anos antes, e começa a colocar no papel tudo o que passa na sua alma atormentada.\nNa prisão, desesperado, Bocage tenta obter o favorecimento de conhecidos ilustres, como a Marquesa d?Alorna, José Seabra da Silva, ministro do Reino, que conhecera as agruras do cárcere na mesma altura que seu pai, mas sem sucesso. Ao juiz do Crime do bairro do Andaluz, Inácio José de Morais, o responsável directo pela sua detenção, Bocage tece rasgados elogios em sonetos de homenagem, tentando ganhar a simpatia do juiz, mas também sem sucesso.\nA verdade é que todos eles acabam por ser, de uma maneira ou de outra, conquistados pelo poeta, e todos tentam convencer Pina Manique a libertá-lo. Mas o Intendente não cede a pressões, e não deixa de manter Bocage na prisão. Primeiro tinha de ter a certeza de que Bocage se ?reeducara?... Em Dezembro de 1797, Bocage é transferido, a pedido de Pina Manique, para o cárcere da Inquisição de Lisboa, no Palácio dos Estaus, no Rossio. Lá, é submetido ao interrogatório de praxe, acusado de compor obras heréticas.",
+          "__Episode__synopsis_short": null,
+          "__Episode__title": "O poeta censurado",
+          "__Episode__title_short": "O poeta censurado",
+          "__Episode__episode_number": 7,
+          "__Episode__internal_title": null,
+          "__Episode__release_date": "2006-02-24",
+          "__Episode__title_sort": null,
+          "__Episode__year_of_release": null,
+          "availability": {
+            "next_token": null,
+            "objects": [
+              {
+                "uid": "01H4MMB04SKWKSTZEGJCEPN1GD",
+                "external_id": "recveu37mRvKHV28n",
+                "title": "Never",
+                "slug": "never",
+                "start": "2000-01-01T00:00:00+00:00",
+                "end": "2001-01-01T00:00:00+00:00",
+                "timezone": "+00:00"
+              }
+            ]
+          },
+          "images": {
+            "next_token": null,
+            "objects": [
+              {
+                "_meta": {
+                  "available_languages": ["en-GB"],
+                  "language_data": {
+                    "language": "en-GB",
+                    "version": 1
+                  },
+                  "global_data": {
+                    "version": 1
+                  }
+                },
+                "uid": "01H4MMBA1W115R604ED4ZM98Y7",
+                "external_id": "rec3eaoVRvAGq6HST",
+                "slug": null,
+                "internal_title": null,
+                "title": "bocage7.webp",
+                "description": null,
+                "type": "THUMBNAIL",
+                "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMBA1W115R604ED4ZM98Y7/01H4MMBEYBRN31ZD66PNA6B793",
+                "file_name": null,
+                "content_type": "image/webp"
               }
             ]
           }

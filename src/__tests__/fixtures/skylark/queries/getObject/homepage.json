@@ -3,9 +3,51 @@
     "getObject": {
       "__typename": "SkylarkSet",
       "_config": {
-        "primary_field": "title",
+        "primary_field": "internal_title",
         "colour": "#000000",
-        "display_name": "Setˢˡ"
+        "display_name": "Setˢˡ",
+        "field_config": [
+          {
+            "name": "release_date",
+            "ui_field_type": null,
+            "ui_position": 6
+          },
+          {
+            "name": "title_sort",
+            "ui_field_type": null,
+            "ui_position": 7
+          },
+          {
+            "name": "title_short",
+            "ui_field_type": null,
+            "ui_position": 2
+          },
+          {
+            "name": "internal_title",
+            "ui_field_type": null,
+            "ui_position": 0
+          },
+          {
+            "name": "description",
+            "ui_field_type": "TEXTAREA",
+            "ui_position": 5
+          },
+          {
+            "name": "synopsis_short",
+            "ui_field_type": "TEXTAREA",
+            "ui_position": 4
+          },
+          {
+            "name": "synopsis",
+            "ui_field_type": "TEXTAREA",
+            "ui_position": 3
+          },
+          {
+            "name": "title",
+            "ui_field_type": null,
+            "ui_position": 1
+          }
+        ]
       },
       "_meta": {
         "available_languages": ["en-GB", "pt-PT"],
@@ -17,10 +59,11 @@
           "version": 2
         }
       },
-      "uid": "01H38V1C0BNDWHNKSPGDKVXVS1",
+      "uid": "01H4MMFVVVK9AM71JY9449RHG9",
       "slug": "media-reference-homepage",
       "external_id": "streamtv_homepage",
       "type": "PAGE",
+      "internal_title": null,
       "title": "Homepage",
       "title_short": "Media Reference Homepage",
       "title_sort": null,
@@ -32,7 +75,7 @@
         "next_token": null,
         "objects": [
           {
-            "uid": "01H38TTY30A0GYM6ZARCGCH0N7",
+            "uid": "01H4MMB03HPEF1G9VXAWXN9GN4",
             "external_id": "recR7MXtwMj6MR8TK",
             "title": "Always - everything",
             "slug": "always-everything",
@@ -56,34 +99,14 @@
                 "version": 1
               }
             },
-            "uid": "01H38TVV5GAN2RHTPBVZC2C3BG",
-            "external_id": "recBiJpHfAYK1sPiI",
-            "slug": null,
-            "title": "HomepageAfterCarousel.png",
-            "description": null,
-            "type": "MAIN",
-            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/mt3lb55zorcg7mu3mn62gzr5ne/01H38TVV5GAN2RHTPBVZC2C3BG/01H38TVW496NC3SKYDNSWK6PJC",
-            "file_name": null,
-            "content_type": "image/png"
-          },
-          {
-            "_meta": {
-              "available_languages": ["en-GB"],
-              "language_data": {
-                "language": "en-GB",
-                "version": 1
-              },
-              "global_data": {
-                "version": 1
-              }
-            },
-            "uid": "01H38TVFRWJ9MKCS2T70BD0Q8C",
+            "uid": "01H4MMC4QWTSY44KXKFV3DHV26",
             "external_id": "recgkAKiElyJeSpvy",
             "slug": null,
+            "internal_title": null,
             "title": "StreamTVLoadingScreen.png",
             "description": null,
             "type": "MAIN",
-            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/mt3lb55zorcg7mu3mn62gzr5ne/01H38TVFRWJ9MKCS2T70BD0Q8C/01H38TVGNT7VY4V27Z3Y2PHYT0",
+            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMC4QWTSY44KXKFV3DHV26/01H4MMC886BGZBV3DM33WPPGFS",
             "file_name": null,
             "content_type": "image/png"
           },
@@ -98,13 +121,36 @@
                 "version": 1
               }
             },
-            "uid": "01H38TVVC7QPYEZC17K02Z97TH",
+            "uid": "01H4MMC4W0RKHKCDQ0E6A387V8",
             "external_id": "reckauU2wr4Jmo3BD",
             "slug": null,
+            "internal_title": null,
             "title": "TopOfHomepage.png",
             "description": null,
             "type": "MAIN",
-            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/mt3lb55zorcg7mu3mn62gzr5ne/01H38TVVC7QPYEZC17K02Z97TH/01H38TVW91KRH5C8A2Y4B2PK9P",
+            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMC4W0RKHKCDQ0E6A387V8/01H4MMC89T3JSX4HPA95R8EHRN",
+            "file_name": null,
+            "content_type": "image/png"
+          },
+          {
+            "_meta": {
+              "available_languages": ["en-GB"],
+              "language_data": {
+                "language": "en-GB",
+                "version": 1
+              },
+              "global_data": {
+                "version": 1
+              }
+            },
+            "uid": "01H4MMBW8YPVNTD1R8RA5Q9R2Z",
+            "external_id": "recBiJpHfAYK1sPiI",
+            "slug": null,
+            "internal_title": null,
+            "title": "HomepageAfterCarousel.png",
+            "description": null,
+            "type": "MAIN",
+            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMBW8YPVNTD1R8RA5Q9R2Z/01H4MMBZ5FXGPXKBS2FRQPZ3MH",
             "file_name": null,
             "content_type": "image/png"
           }

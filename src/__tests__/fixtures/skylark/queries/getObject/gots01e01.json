@@ -3,32 +3,86 @@
     "getObject": {
       "__typename": "Episode",
       "_config": {
-        "primary_field": "title",
-        "colour": "#ff7ba8",
-        "display_name": "Episode"
+        "primary_field": "internal_title",
+        "colour": "#FF7BA8",
+        "display_name": "Episode",
+        "field_config": [
+          {
+            "name": "release_date",
+            "ui_field_type": null,
+            "ui_position": 6
+          },
+          {
+            "name": "episode_number",
+            "ui_field_type": null,
+            "ui_position": 5
+          },
+          {
+            "name": "title_sort",
+            "ui_field_type": null,
+            "ui_position": 8
+          },
+          {
+            "name": "title_short",
+            "ui_field_type": null,
+            "ui_position": 2
+          },
+          {
+            "name": "internal_title",
+            "ui_field_type": null,
+            "ui_position": 0
+          },
+          {
+            "name": "year_of_release",
+            "ui_field_type": null,
+            "ui_position": 7
+          },
+          {
+            "name": "synopsis_short",
+            "ui_field_type": "TEXTAREA",
+            "ui_position": 4
+          },
+          {
+            "name": "synopsis",
+            "ui_field_type": "TEXTAREA",
+            "ui_position": 3
+          },
+          {
+            "name": "title",
+            "ui_field_type": null,
+            "ui_position": 1
+          }
+        ]
       },
       "_meta": {
         "available_languages": ["en-GB", "pt-PT"],
-        "language_data": { "language": "en-GB", "version": 1 },
-        "global_data": { "version": 2 }
+        "language_data": {
+          "language": "en-GB",
+          "version": 1
+        },
+        "global_data": {
+          "version": 2
+        }
       },
-      "uid": "01GXZP2FCCXY3KX6E3E8MJ2T6F",
+      "uid": "01H4MMDQK2NX8KQCF2Q5B05XRZ",
       "external_id": "recAZhG0fPFgamb8I",
       "slug": "winter-is-coming",
       "synopsis": "North of the Seven Kingdoms of Westeros, Night's Watch soldiers are attacked by supernatural White Walkers. One soldier escapes but is captured at Castle Winterfell. Eddard \"Ned\" Stark, Warden of the North, executes him for desertion. Later, six orphaned dire wolf pups are found and one given to each Stark sibling, including Ned's bastard son, Jon Snow. In King's Landing, the Seven Kingdoms capital, Jon Arryn, the Hand of the King, dies suddenly. King Robert Baratheon, Ned's old friend, travels to Winterfell to recruit Ned and propose a marriage between his heir Joffrey and Ned's daughter, Sansa. Lysa Arryn, Jon's widow, sends her sister (Ned's wife), Catelyn, a letter claiming the Lannisters, Queen Cersei's family, murdered Arryn. Catelyn believes the Lannisters are now plotting against King Robert. Ned's young son, Brandon, climbs a tall tower and witnesses Cersei and her twin brother, Jaime Lannister, inside having sex. To hide their incest, Jaime pushes Bran from the high window. Across the Narrow Sea in Essos, exiled Prince Viserys Targaryen forces his sister, Daenerys, to marry the Dothraki warlord, Drogo, in exchange for an army to conquer Westeros and reclaim the Iron Throne. Robert Baratheon became king after Jaime Lannister killed \"Mad\" King Aerys Targaryen, earning Jaime the nickname, \"The King Slayer\". The ancient Targaryens once commanded dragons, and Daenerys is given three fossilized dragon eggs as a wedding gift.",
       "synopsis_short": "Series Premiere. Eddard Stark is torn between his family and an old friend when asked to serve at the side of King Robert Baratheon; Viserys plans to wed his sister to a nomadic warlord in exchange for an army.",
       "title": "GOT S01E1 - Winter is Coming",
       "title_short": "Winter is Coming",
-      "title_sort": null,
       "episode_number": 1,
-      "release_date": "2011-04-17",
+      "internal_title": null,
+      "release_date": "2011-10-17",
+      "title_sort": null,
+      "year_of_release": null,
       "availability": {
         "next_token": null,
         "objects": [
           {
-            "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+            "uid": "01H4MMB075XZ6FDAYJYH8TFMXW",
             "external_id": "recXNjJNyc6nKQIYa",
-            "title": "Always - All devices, all customer types",
+            "title": "Always - All devices, all non-kids customer types",
             "slug": "always-all-devices-all-customer-types",
             "start": "2022-01-01T00:00:00+00:00",
             "end": "2038-01-19T03:14:07+00:00",
@@ -42,21 +96,46 @@
           {
             "_meta": {
               "available_languages": ["en-GB"],
-              "language_data": { "language": "en-GB", "version": 2 },
-              "global_data": { "version": 2 }
+              "language_data": {
+                "language": "en-GB",
+                "version": 1
+              },
+              "global_data": {
+                "version": 1
+              }
             },
-            "uid": "01GXZNXWYGGFA5JJQF8ARBS40M",
+            "uid": "01H4MMBWH8J6E85G7PEZQ96RK4",
+            "external_id": "recG6mBvfUuRNVI5Y",
+            "slug": null,
+            "internal_title": null,
+            "title": "winter-is-coming-character.jpeg",
+            "description": null,
+            "type": "CHARACTER",
+            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMBWH8J6E85G7PEZQ96RK4/01H4MMC39TYKJ0T2A4M0Y8XH1E",
+            "file_name": null,
+            "content_type": "image/jpeg"
+          },
+          {
+            "_meta": {
+              "available_languages": ["en-GB"],
+              "language_data": {
+                "language": "en-GB",
+                "version": 1
+              },
+              "global_data": {
+                "version": 1
+              }
+            },
+            "uid": "01H4MMC4NXTEYXRNZYEYFA2QTG",
             "external_id": "recbXlWg7DJA1ZNO2",
             "slug": null,
+            "internal_title": null,
             "title": "GOT - S1 - 1.jpg",
             "description": null,
             "type": "THUMBNAIL",
-            "url": "https://dl.airtable.com/.attachments/c8b23d45c55cf09081954dd208dcce4b/80b72296/GOT-S1-1.jpg",
-            "external_url": "https://dl.airtable.com/.attachments/c8b23d45c55cf09081954dd208dcce4b/80b72296/GOT-S1-1.jpg",
-            "upload_url": "https://obj-reg-storage-sl-develop-eu-west-1-storage.s3.amazonaws.com/media/skylarkimages/vrdlihwc4ves3ihxxzrykjpvvm/01GXZNXWYGGFA5JJQF8ARBS40M/01GY0SPCGE507F4719R1XMNGZN?AWSAccessKeyId=ASIA4YDX3EVVNPTV74EF&Signature=4ZP3vZb5hv89HSj8xE%2FjAAyktsU%3D&content-type=application%2Foctet&x-amz-meta-account_id=vrdlihwc4ves3ihxxzrykjpvvm&x-amz-meta-uid=01GXZNXWYGGFA5JJQF8ARBS40M&x-amz-security-token=IQoJb3JpZ2luX2VjEA0aCWV1LXdlc3QtMSJGMEQCIC7T0eNvAbq0yrE7fCcMIF7QtPoQykMMGLmUzmq15nHTAiBmIuXf41tPqHAwbPoOx9HxikP5Vh%2FD5UmFY2hjNbRdSCq0Awj2%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDg3NjQyNDY2ODUyMiIM3QXYi6yYsLD3O7WgKogDZhewoVbxesFf6Hc8CamtriHgJai2BcM6AjqEFaN4J6N2ck3mJrLZMVtmLNkwIM9syGlLeSYa9VCYCCKhm%2BMBMan7qePu6jGFbGhSus1MwAptmY7KV8Vh%2BdCMBUy8UxL1VxxfQ6mksNZAr608RRITjh1d%2FP9gFgr1NU3%2Fszff%2FNgYb%2Fq588yKuK0KUNo7g6UWlKaq0UMjRIlTe0GjUFH6l7wsUZ1wlfv209O1L9awChF8mL9oE%2BvwQOUxz2uIGOfEfJntB6cym%2FCknG0UCKPSoaJTwli50slgD4w8pWW1YMn7t6lulH9q438FbiYz8tgIeP8VedxELb6uQXJB%2B%2BjPZRWtsyWUEfKDuU9PZgKh9BI%2BdJATivm3EyOMKAEjY6dmvZD7vqFtPXPdANP2PoTtpay4E3utRqSCMaYD3caKrwAIWA1wCmq0iNkcwN7Jc%2BNBDcl7JuiB0gpOAZ0ShFG9UWX3Gu1s5Ynf0IY8rFILUP%2FFRH2YHY9uW0p64FHIW2RrWlmOgXPTTjEwzILnoQY6ngFvXzCq88G%2BHoGvXjy9O%2BDItv90bBJDktXdAqOjr8AMptt8RApzmchgUu5dsNdWjEjQcGRaAWArZUSa54gvoAa31%2Fz7JY9LYWgVM0GlQnQBkgq%2FisvOeEF6YXqwHzkHDi6Iz2NGvlchriPh%2FzH94HgrY5AhXTlT9QfG5fDVby1cW1pMZY2Pb%2BhrandtBQRtnxm%2Frknm97IYh1UMiKaEgw%3D%3D&Expires=1681510244",
-            "download_from_url": null,
+            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMC4NXTEYXRNZYEYFA2QTG/01H4MMC85CCH3EV3S0Q1KXTYN4",
             "file_name": null,
-            "content_type": null
+            "content_type": "image/jpeg"
           }
         ]
       }

@@ -11,6 +11,7 @@ import {
   generateFieldsToReturn,
   generateRelationshipsToReturn,
   generateContentsToReturn,
+  getObjectConfigFields,
 } from "./utils";
 
 export const createGetObjectQueryName = (objectType: string) =>
@@ -54,6 +55,7 @@ export const createGetObjectQuery = (
         },
         __typename: true,
         ...common.fields,
+        ...getObjectConfigFields(true),
         ...generateFieldsToReturn(object.fields, object.name),
         ...generateRelationshipsToReturn(object),
       },

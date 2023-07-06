@@ -5,11 +5,33 @@
       "_config": {
         "primary_field": "title",
         "colour": "#9E9E9E",
-        "display_name": "Availability"
+        "display_name": "Availability",
+        "field_config": [
+          {
+            "name": "start",
+            "ui_field_type": null,
+            "ui_position": 2
+          },
+          {
+            "name": "timezone",
+            "ui_field_type": null,
+            "ui_position": 4
+          },
+          {
+            "name": "title",
+            "ui_field_type": null,
+            "ui_position": 1
+          },
+          {
+            "name": "end",
+            "ui_field_type": null,
+            "ui_position": 3
+          }
+        ]
       },
-      "uid": "01H0EQ3XC327T0GMYK85FWN6F1",
+      "uid": "01H4MMB075XZ6FDAYJYH8TFMXW",
       "external_id": "recXNjJNyc6nKQIYa",
-      "title": "Always - All devices, all customer types",
+      "title": "Always - All devices, all non-kids customer types",
       "slug": "always-all-devices-all-customer-types",
       "start": "2022-01-01T00:00:00+00:00",
       "end": "2038-01-19T03:14:07+00:00",

@@ -3,30 +3,84 @@
     "getObject": {
       "__typename": "Movie",
       "_config": {
-        "primary_field": "title",
+        "primary_field": "internal_title",
         "colour": "#009688",
-        "display_name": "Movie"
+        "display_name": "Movie",
+        "field_config": [
+          {
+            "name": "release_date",
+            "ui_field_type": null,
+            "ui_position": 6
+          },
+          {
+            "name": "title_sort",
+            "ui_field_type": null,
+            "ui_position": 8
+          },
+          {
+            "name": "title_short",
+            "ui_field_type": null,
+            "ui_position": 2
+          },
+          {
+            "name": "internal_title",
+            "ui_field_type": null,
+            "ui_position": 0
+          },
+          {
+            "name": "year_of_release",
+            "ui_field_type": null,
+            "ui_position": 7
+          },
+          {
+            "name": "movie_number",
+            "ui_field_type": null,
+            "ui_position": 5
+          },
+          {
+            "name": "synopsis_short",
+            "ui_field_type": "TEXTAREA",
+            "ui_position": 4
+          },
+          {
+            "name": "synopsis",
+            "ui_field_type": "TEXTAREA",
+            "ui_position": 3
+          },
+          {
+            "name": "title",
+            "ui_field_type": null,
+            "ui_position": 1
+          }
+        ]
       },
       "_meta": {
         "available_languages": ["en-GB"],
-        "language_data": { "language": "en-GB", "version": 1 },
-        "global_data": { "version": 1 }
+        "language_data": {
+          "language": "en-GB",
+          "version": 1
+        },
+        "global_data": {
+          "version": 1
+        }
       },
-      "uid": "01GXZP1QDFQNTEGD9ASQMFXZC5",
+      "uid": "01H4MMDGJ8WRYFHF2D94CQEQJP",
       "external_id": "recudCnvsnLP4PEeJ",
       "slug": "fantastic-mr-fox",
       "synopsis": "Mr Fox, a family man, goes back to his ways of stealing, unable to resist his animal instincts. However, he finds himself trapped when three farmers decide to kill him and his kind.\n\nThis test movie is configured with an expired, active and future availability.",
       "synopsis_short": "Mr Fox, a family man, goes back to his ways of stealing, unable to resist his animal instincts. However, he finds himself trapped when three farmers decide to kill him and his kind.",
       "title": "Fantastic Mr Fox (All Availabilities)",
       "title_short": "Fantastic Mr Fox (All)",
-      "title_sort": null,
+      "internal_title": null,
+      "movie_number": null,
       "release_date": "2009-11-23",
+      "title_sort": null,
       "year_of_release": null,
       "availability": {
         "next_token": null,
         "objects": [
           {
-            "uid": "01GXZNX7PPNAXGQ3YMPAX1XPPS",
+            "uid": "01H4MMB03K5NZT7RXVR26VT9PT",
             "external_id": "recN2Jf4j9UCblsIc",
             "title": "Active in the past",
             "slug": "active-in-the-past",
@@ -35,7 +89,16 @@
             "timezone": "+00:00"
           },
           {
-            "uid": "01GXZNX7S47WSMS5AJCNWB3KP5",
+            "uid": "01H4MMB058XJR2EMZ9N3WE0MNS",
+            "external_id": "recQzQ8ZUyh6VzVAw",
+            "title": "Active Next Sunday @ 9PM",
+            "slug": "active-next-sunday",
+            "start": "2023-07-09T00:00:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "+00:00"
+          },
+          {
+            "uid": "01H4MMB068TWWK04H4XRFD4BQ3",
             "external_id": "recMdBZyVPsIGqAYq",
             "title": "Premium",
             "slug": "premium",
@@ -44,21 +107,12 @@
             "timezone": "+00:00"
           },
           {
-            "uid": "01GXZNX7T6HJE1XKPQGN4K6G27",
-            "external_id": "recQzQ8ZUyh6VzVAw",
-            "title": "Active Next Sunday",
-            "slug": "active-next-sunday",
-            "start": "2023-04-16T00:00:00+00:00",
-            "end": "2038-01-19T03:14:07+00:00",
-            "timezone": "+00:00"
-          },
-          {
-            "uid": "01GXZNX7WJZ8F9A100PSF9F0NR",
+            "uid": "01H4MMB06BGXN91JK2T5A16N45",
             "external_id": "recX0Ztue3iBQR7rl",
-            "title": "Active Until Next Sunday",
+            "title": "Active Until Next Sunday @ 9PM",
             "slug": "active-until-next-sunday",
             "start": "2000-01-01T00:00:00+00:00",
-            "end": "2023-04-16T00:00:00+00:00",
+            "end": "2023-07-09T00:00:00+00:00",
             "timezone": "+00:00"
           }
         ]
@@ -69,21 +123,24 @@
           {
             "_meta": {
               "available_languages": ["en-GB"],
-              "language_data": { "language": "en-GB", "version": 2 },
-              "global_data": { "version": 2 }
+              "language_data": {
+                "language": "en-GB",
+                "version": 1
+              },
+              "global_data": {
+                "version": 1
+              }
             },
-            "uid": "01GXZNXKKARTPGTCVDTBAT1CH7",
+            "uid": "01H4MMC0ZHBKSZ0KYRD4VJ23K7",
             "external_id": "recRH4TzBhGsnXfDg",
             "slug": null,
+            "internal_title": null,
             "title": "wes_mrfox.jpeg",
             "description": null,
             "type": "THUMBNAIL",
-            "url": "https://dl.airtable.com/.attachments/049af3da40927919a12f156b62991b08/ecaf9964/wes_mrfox.jpeg",
-            "external_url": "https://dl.airtable.com/.attachments/049af3da40927919a12f156b62991b08/ecaf9964/wes_mrfox.jpeg",
-            "upload_url": "https://obj-reg-storage-sl-develop-eu-west-1-storage.s3.amazonaws.com/media/skylarkimages/vrdlihwc4ves3ihxxzrykjpvvm/01GXZNXKKARTPGTCVDTBAT1CH7/01GXZPZ12M1AP2S3EQE0VB6GED?AWSAccessKeyId=ASIA4YDX3EVVJDKKOUVJ&Signature=knjAp4fFQFjCMbbIsSTtrQVX7xg%3D&content-type=application%2Foctet&x-amz-meta-account_id=vrdlihwc4ves3ihxxzrykjpvvm&x-amz-meta-uid=01GXZNXKKARTPGTCVDTBAT1CH7&x-amz-security-token=IQoJb3JpZ2luX2VjEAMaCWV1LXdlc3QtMSJHMEUCIQDP6tYrQVW83ZbrCMUy6Nc%2FzUlSkfolHcq%2BgDl1aszJiQIgAl0JpHzIIov7mVa5G2J44Xt1BMUvYiGCsoa1HMZQ7%2FoqtAMI7P%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw4NzY0MjQ2Njg1MjIiDC%2B6tMR6aKM06H%2BLMCqIA0n0vGef%2Bw%2BelFnkho%2BK6hwzv6%2BzNAGlAq5ouKJZHnl8tsICFGfZ8BqQrEWG4Myz0NZXTFT6b%2BeaZT4k0jQy8dj6jmrWZ2BR5F1VFFq1kUkPuLXvPvSPr%2B6gFp3pfhVbZRkX5DsniK81OUVgHHOLnD3ATqs466Gse4UAENysa7GBSX8DMBfNAqENlNB0HepmlHYA3Klr0EKL%2BIr1BUfm68JUhhBdx9hBW7jwECI0wCzRblMeuv03wLVaqjtaZjmYifV3fgV3BF09g38wrc2hlskpMakRZRvRB6NtwbdyrTVD%2FS413LJcJ7S1%2FkIlsQuuHYIHqm5oYbR9chBo3PmgdBMvnD4HFGKqbzPIo4kUEu3oMKisP37A8FlnrZCn56HhK09t1j%2F8yKaRXyOLY3WFZv4CeBsx1qzPFbPcbcNyYH4LkrC4jsyfU4nRkeEeQZr5qmi%2Ff4PMnUXkW%2BTJvd3nUdKqRwidbvuraz32rVYgGyLX8nnD%2FiIypusc3z799Efe0TKiPq34twqlMO%2Fj5KEGOp0BanIhdABW%2Be577gTraPNfURF4hsMusUo4fM1QAsmDKXWSujesq40T3InF2ZLS0UE3YrvD5da32klO1pGdldqjWYkq3DLSUm59s5N2zlCMyBOav5wJ4JO6yFSmYPD0ttcjebV9pcn1JoovGSyMyymMnvplUv86OK9t8hCezCpCs1wrAcie%2FLhM6gMTldxKzAAZHojphp6Z05z2tcX6Iw%3D%3D&Expires=1681473827",
-            "download_from_url": null,
+            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMC0ZHBKSZ0KYRD4VJ23K7/01H4MMC3VS4HB0ZYRSNZSHB676",
             "file_name": null,
-            "content_type": null
+            "content_type": "image/jpeg"
           }
         ]
       }

@@ -11,9 +11,9 @@
             "colour": "#9E9E9E",
             "display_name": "Availability"
           },
-          "uid": "01H0EQ3XC327T0GMYK85FWN6F1",
+          "uid": "01H4MMB075XZ6FDAYJYH8TFMXW",
           "external_id": "recXNjJNyc6nKQIYa",
-          "__Availability__title": "Always - All devices, all customer types",
+          "__Availability__title": "Always - All devices, all non-kids customer types",
           "__Availability__slug": "always-all-devices-all-customer-types",
           "__Availability__start": "2022-01-01T00:00:00+00:00",
           "__Availability__end": "2038-01-19T03:14:07+00:00",

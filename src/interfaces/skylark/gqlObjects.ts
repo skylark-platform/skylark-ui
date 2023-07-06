@@ -16,7 +16,7 @@ export interface SkylarkGraphQLObjectConfig {
   colour: string;
   primary_field: string;
   display_name: string;
-  field_config: {
+  field_config?: {
     name: string;
     ui_field_type: SkylarkObjectConfigFieldType;
     ui_position: number;

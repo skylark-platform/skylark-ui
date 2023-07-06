@@ -1,40 +1,73 @@
 {
   "data": {
     "getObject": {
+      "__typename": "SkylarkImage",
       "_config": {
-        "primary_field": "title",
-        "colour": "#607d8b",
-        "__typename": "ObjectConfig"
+        "primary_field": "internal_title",
+        "colour": "#607D8B",
+        "display_name": "Imageˢˡ",
+        "field_config": [
+          {
+            "name": "description",
+            "ui_field_type": "TEXTAREA",
+            "ui_position": 2
+          },
+          {
+            "name": "content_type",
+            "ui_field_type": null,
+            "ui_position": 4
+          },
+          {
+            "name": "title",
+            "ui_field_type": null,
+            "ui_position": 1
+          },
+          {
+            "name": "internal_title",
+            "ui_field_type": null,
+            "ui_position": 0
+          },
+          {
+            "name": "file_name",
+            "ui_field_type": null,
+            "ui_position": 3
+          }
+        ]
       },
-      "uid": "01GR0BKCK1C8E32KVXEFR4HFQQ",
+      "_meta": {
+        "available_languages": ["en-GB"],
+        "language_data": {
+          "language": "en-GB",
+          "version": 1
+        },
+        "global_data": {
+          "version": 1
+        }
+      },
+      "uid": "01H4MMC12F3XHYMZFR9VZSZQ0J",
       "external_id": "recPTz6boXKXgPnAs",
       "slug": null,
-      "title": "GotImageTitle",
+      "internal_title": null,
+      "title": "Hero - GOT - s01.jpg",
       "description": null,
       "type": "MAIN",
-      "url": "https://dl.airtable.com/.attachments/1cb0b174fb684054eac6de51921e8a57/ec5f37e7/Hero-GOT-s01.jpg",
-      "external_url": "https://dl.airtable.com/.attachments/1cb0b174fb684054eac6de51921e8a57/ec5f37e7/Hero-GOT-s01.jpg",
-      "upload_url": "https://obj-reg-storage-saas-showcase-eu-west-1-storage.s3.amazonaws.com/media/images/qfmk74pkejb3ldjxbwbsk4ldju/01GR0BKCK1C8E32KVXEFR4HFQQ/01GR18GMQJ6ZDJTBBTSHYD2HW9?AWSAccessKeyId=ASIAZOW2GFFBELOYS5FU&Signature=8JeKM65PzV9cSetSs8T5q4xTGrs%3D&content-type=application%2Foctet&x-amz-meta-account_id=qfmk74pkejb3ldjxbwbsk4ldju&x-amz-meta-uid=01GR0BKCK1C8E32KVXEFR4HFQQ&x-amz-security-token=IQoJb3JpZ2luX2VjEBQaCWV1LXdlc3QtMSJHMEUCIHKpP1%2BNKMtOe4M8eiz2sRLmL0vk8QyL%2B11P3qBTwPvkAiEAp5LZjPRYp2ZJ9PoBl19jON55I7Yy3MWRm5yC8Ur4VzcqrAMIjf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2NTAwNzEzODY0MzQiDAGF%2BtNxI%2FZUEfZbMCqAA9KvuBC12FF92SKqt6JjTbfgHH0N%2FP3ziX3F20Qnum1kokV8UjTFyzeuzeViTXUvRwJPxpnyhS%2B3Zr6bbJw%2F1%2BPH7ZsTNNcgmA6ErAU7mi%2Bt0KSKiFlthz7XqhFRbtt3gI84WkvQ%2BheMM1nT9rWkG0bRhudlhSBsgVPRQ1gmY5h9ZyRLkBOuXuBbIHjfC4uM4N2UAflLH1Mt3FoLnbkqzLTyVRaHq%2B%2FZnwkSxvC%2Bdws540UnpVbHSg2gHUjOz99DVcOK9laxSswx95rOZrUwzq%2B%2BZgtXkqUiyD4hqUMBrrLmsM3omlDd%2Bx%2BS9WsBVOWuP0ubqiif0%2F%2F7AYxOMhHWzSuLuVBoZdRm%2BmblXzkWNor2VweGJU7AFl3oa9W3sadZvnCoNVDr56IxK4UVKvNDKteN3ZlHBvcn%2BxUSjrM9d3iF9%2FFDq0QaOjZi4DmLXEB11n9ycwLQCgnr6aWJTCV8a6Y3%2BYcGeFjb1L%2FETOlK0Pz1DyIZFDUcjVP7jwjIQOZwfTDx3t6eBjqdAZwo8vtwzC%2BP4uYoyTx4x27T2f6XAMZEQC7I0FfA6ukfvl60HX1FuJ%2FXEGp9%2FQ4VkMNFhYVtKC8oH5eC1MZL9cnm9Kg7wxaxSsLuWtVv%2F12sKLS%2FvTW2hrLC55TmyyAKwC27w4Y%2Fox8iNKtq%2BlRDX2d1TArnNLLAWl4%2BP7qDwuzP7v6MGKiSszMV9ijOE0x0DBnrUfOR%2BPF0q8y2VAA%3D&Expires=1675083334",
-      "download_from_url": null,
+      "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMC12F3XHYMZFR9VZSZQ0J/01H4MMC4JBJ28YAXBW3K9AVGF6",
       "file_name": null,
-      "content_type": null,
+      "content_type": "image/jpeg",
       "availability": {
         "next_token": null,
         "objects": [
           {
-            "uid": "01GR0BK6VZH7WRNCN1D8P0JTYE",
+            "uid": "01H4MMB075XZ6FDAYJYH8TFMXW",
             "external_id": "recXNjJNyc6nKQIYa",
-            "title": "Always - All devices, all customer types",
+            "title": "Always - All devices, all non-kids customer types",
             "slug": "always-all-devices-all-customer-types",
             "start": "2022-01-01T00:00:00+00:00",
             "end": "2038-01-19T03:14:07+00:00",
-            "timezone": "+00:00",
-            "__typename": "Availability"
+            "timezone": "+00:00"
           }
-        ],
-        "__typename": "AvailabilityListing"
-      },
-      "__typename": "SkylarkImage"
+        ]
+      }
     }
   }
 }
