@@ -5,7 +5,7 @@ import {
 } from "../../support/utils/graphqlTestUtils";
 
 const allDevicesAllCustomersAvailability =
-  "Always - All devices, all customer types";
+  "Always - All devices, all non-kids customer types";
 
 const assetOnlyQuery =
   "query SEARCH($ignoreAvailability: Boolean = true, $queryString: String!) {\n  search(\n    ignore_availability: $ignoreAvailability\n    query: $queryString\n    limit: 1000\n  ) {\n    __typename\n    objects {\n      ... on Asset {\n        __typename\n        uid\n        external_id\n        __Asset__slug: slug\n        __Asset__title: title\n        __Asset__type: type\n        __Asset__url: url\n      }\n      __typename\n    }\n  }\n}";
@@ -355,22 +355,30 @@ describe("Content Library - Object Panel", () => {
         .should("have.attr", "src")
         .and(
           "match",
-          /https:\/\/dl.airtable.com\/.attachments\/c8b23d45c55cf09081954dd208dcce4b\/80b72296\/GOT-S1-1.jpg/,
+          /https:\/\/media.showcase.skylarkplatform.com\/skylarkimages\/4h6gok37lvcmln3jz7pjsmzrte\/01H4MMBWH8J6E85G7PEZQ96RK4\/01H4MMC39TYKJ0T2A4M0Y8XH1E/,
         );
 
       cy.percySnapshot("Homepage - object panel - imagery");
     });
 
     it("navigates to the image object using the object button", () => {
-      cy.get('input[name="search-query-input"]').type("got winter is coming");
-      cy.openContentLibraryObjectPanelByText("GOT S01E1 - Winter");
+      cy.fixture("./skylark/queries/getObject/gots01e01.json").then(
+        (objectJson) => {
+          const firstImageUid = objectJson.data.getObject.images.objects[0].uid;
 
-      cy.contains("button", "Imagery").click();
+          cy.get('input[name="search-query-input"]').type(
+            "got winter is coming",
+          );
+          cy.openContentLibraryObjectPanelByText("GOT S01E1 - Winter");
 
-      cy.get('[aria-label="Open Object"]').click();
+          cy.contains("button", "Imagery").click();
 
-      // Only check the panel object type and uid so we don't have to mock the response
-      cy.get(`[data-cy=panel-for-SkylarkImage-01GXZNXWYGGFA5JJQF8ARBS40M]`);
+          cy.get('[aria-label="Open Object"]').first().click();
+
+          // Only check the panel object type and uid so we don't have to mock the response
+          cy.get(`[data-cy=panel-for-SkylarkImage-${firstImageUid}]`);
+        },
+      );
     });
 
     it("navigates to the image using the object button", () => {
@@ -407,6 +415,18 @@ describe("Content Library - Object Panel", () => {
   });
 
   describe("Content tab", () => {
+    const homepageContentOrdered = [
+      "Home page hero",
+      "Kids Home page hero",
+      "Spotlight movies",
+      "New TV Releases",
+      "Classic kids shows",
+      "Best Picture Nominees 2021",
+      "GOT Season 1",
+      "Miraculous Season 5",
+      "Discover",
+    ];
+
     it("Open", () => {
       cy.get('input[name="search-query-input"]').type("Homepage");
       cy.contains("Homepage").should("exist");
@@ -487,14 +507,7 @@ describe("Content Library - Object Panel", () => {
           const text = $els.toArray().map((el) => el.innerText.trim());
           return text;
         })
-        .should("deep.eq", [
-          "Home page hero",
-          "Spotlight movies",
-          "New TV Releases",
-          "GOT Season 1",
-          "GOT Season 2",
-          "Discover",
-        ]);
+        .should("deep.eq", homepageContentOrdered);
 
       cy.percySnapshot("Homepage - object panel - content (edit)");
 
@@ -511,7 +524,7 @@ describe("Content Library - Object Panel", () => {
       cy.get("[data-testid=panel-content-items] > li")
         .first()
         .within(() => {
-          cy.get("input").clear().type("20");
+          cy.get("input").clear().type("30");
         });
 
       cy.get("[data-testid=panel-content-items]").click();
@@ -523,10 +536,13 @@ describe("Content Library - Object Panel", () => {
           return text;
         })
         .should("deep.eq", [
+          "Kids Home page hero",
           "Spotlight movies",
           "New TV Releases",
+          "Classic kids shows",
+          "Best Picture Nominees 2021",
           "GOT Season 1",
-          "GOT Season 2",
+          "Miraculous Season 5",
           "Home page hero",
         ]);
 
@@ -541,14 +557,7 @@ describe("Content Library - Object Panel", () => {
           const text = $els.toArray().map((el) => el.innerText.trim());
           return text;
         })
-        .should("deep.eq", [
-          "Home page hero",
-          "Spotlight movies",
-          "New TV Releases",
-          "GOT Season 1",
-          "GOT Season 2",
-          "Discover",
-        ]);
+        .should("deep.eq", homepageContentOrdered);
     });
 
     it("Reorder, remove and save", () => {
@@ -588,10 +597,13 @@ describe("Content Library - Object Panel", () => {
           return text;
         })
         .should("deep.eq", [
+          "Kids Home page hero",
           "Spotlight movies",
           "New TV Releases",
+          "Classic kids shows",
+          "Best Picture Nominees 2021",
           "GOT Season 1",
-          "GOT Season 2",
+          "Miraculous Season 5",
           "Home page hero",
         ]);
 

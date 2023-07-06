@@ -85,34 +85,6 @@
                 "version": 1
               }
             }
-          },
-          {
-            "uid": "01H4MMBW8YPVNTD1R8RA5Q9R2Z",
-            "__typename": "SkylarkImage",
-            "external_id": "recBiJpHfAYK1sPiI",
-            "slug": null,
-            "internal_title": null,
-            "title": "HomepageAfterCarousel.png",
-            "description": null,
-            "type": "MAIN",
-            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMBW8YPVNTD1R8RA5Q9R2Z/01H4MMBZ5FXGPXKBS2FRQPZ3MH",
-            "file_name": null,
-            "content_type": "image/png",
-            "_config": {
-              "primary_field": "internal_title",
-              "colour": "#607D8B",
-              "display_name": "Imageˢˡ"
-            },
-            "_meta": {
-              "available_languages": ["en-GB"],
-              "language_data": {
-                "language": "en-GB",
-                "version": 1
-              },
-              "global_data": {
-                "version": 1
-              }
-            }
           }
         ]
       },
