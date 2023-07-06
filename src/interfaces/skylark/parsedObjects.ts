@@ -69,7 +69,7 @@ export type ParsedSkylarkObjectMetadata = {
   external_id: SkylarkExternalId;
 } & Record<string, SkylarkObjectMetadataField>;
 
-export interface ParsedSkylakrObjectConfigFieldConfig {
+export interface ParsedSkylarkObjectConfigFieldConfig {
   name: string;
   fieldType: SkylarkObjectConfigFieldType;
   position: number;
@@ -79,7 +79,7 @@ export interface ParsedSkylarkObjectConfig {
   colour?: string;
   primaryField?: string;
   objectTypeDisplayName?: string;
-  fieldConfig?: ParsedSkylakrObjectConfigFieldConfig[];
+  fieldConfig?: ParsedSkylarkObjectConfigFieldConfig[];
 }
 
 export interface ParsedSkylarkObjectMeta {

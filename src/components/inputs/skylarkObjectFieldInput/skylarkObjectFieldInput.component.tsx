@@ -19,8 +19,7 @@ import { Skeleton } from "src/components/skeleton";
 import { INPUT_REGEX, SYSTEM_FIELDS } from "src/constants/skylark";
 import {
   NormalizedObjectField,
-  ParsedSkylakrObjectConfigFieldConfig,
-  ParsedSkylarkObjectConfig,
+  ParsedSkylarkObjectConfigFieldConfig,
   SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
 import { parseInputFieldValue } from "src/lib/skylark/parsers";
@@ -38,7 +37,7 @@ interface SkylarkObjectFieldInputProps {
   formState: FormState<Record<string, SkylarkObjectMetadataField>>;
   additionalRequiredFields?: string[];
   isLoading?: boolean;
-  fieldConfigFromObject?: ParsedSkylakrObjectConfigFieldConfig;
+  fieldConfigFromObject?: ParsedSkylarkObjectConfigFieldConfig;
 }
 
 interface SkylarkObjectFieldInputComponentProps

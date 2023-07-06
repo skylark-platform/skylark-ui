@@ -247,7 +247,6 @@ export const parseSkylarkObject = (
   object: SkylarkGraphQLObject,
   objectMeta?: SkylarkObjectMeta | null,
 ): ParsedSkylarkObject => {
-  // TODO split into Language and Global
   const metadata: ParsedSkylarkObjectMetadata = {
     ...Object.keys(object).reduce((prev, key) => {
       return {
