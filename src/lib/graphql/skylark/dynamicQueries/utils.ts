@@ -14,16 +14,27 @@ const fieldNamesToNeverAlias: string[] = [
   SkylarkSystemField.ExternalID,
 ];
 
+export const getObjectConfigFields = (withFieldConfig: boolean) => ({
+  _config: {
+    primary_field: true,
+    colour: true,
+    display_name: true,
+    ...(withFieldConfig
+      ? {
+          field_config: {
+            name: true,
+            ui_field_type: true,
+            ui_position: true,
+          },
+        }
+      : {}),
+  },
+});
+
 const commonGraphQLOpts = {
   variables: {},
   args: {},
-  objectConfig: {
-    _config: {
-      primary_field: true,
-      colour: true,
-      display_name: true,
-    },
-  },
+  objectConfig: getObjectConfigFields(false),
   objectMeta: {
     _meta: {
       available_languages: true,

@@ -6,10 +6,21 @@ import { SkylarkExternalId, SkylarkUID } from "./parsedObjects";
 
 export type NextToken = string | null;
 
+export type SkylarkObjectConfigFieldType =
+  | "STRING"
+  | "TEXTAREA"
+  | "WYSIWYG"
+  | null;
+
 export interface SkylarkGraphQLObjectConfig {
   colour: string;
   primary_field: string;
   display_name: string;
+  field_config?: {
+    name: string;
+    ui_field_type: SkylarkObjectConfigFieldType;
+    ui_position: number;
+  }[];
 }
 
 export interface SkylarkGraphQLObjectMeta {

@@ -10,6 +10,7 @@ import { useRef, useState, useMemo, useCallback, useEffect, memo } from "react";
 import { useVirtual } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { PanelTab } from "src/hooks/state";
 import {
   SkylarkObjectIdentifier,
   ParsedSkylarkObject,
@@ -32,7 +33,7 @@ export interface ObjectSearchResultsProps {
   withObjectSelect?: boolean;
   withObjectEdit?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
-  setPanelObject?: (obj: SkylarkObjectIdentifier) => void;
+  setPanelObject?: (obj: SkylarkObjectIdentifier, tab?: PanelTab) => void;
   fetchNextPage?: () => void;
   searchData?: ParsedSkylarkObject[];
   sortedHeaders: string[];

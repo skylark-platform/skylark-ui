@@ -19,6 +19,7 @@ import { Skeleton } from "src/components/skeleton";
 import { INPUT_REGEX, SYSTEM_FIELDS } from "src/constants/skylark";
 import {
   NormalizedObjectField,
+  ParsedSkylarkObjectConfigFieldConfig,
   SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
 import { parseInputFieldValue } from "src/lib/skylark/parsers";
@@ -36,6 +37,7 @@ interface SkylarkObjectFieldInputProps {
   formState: FormState<Record<string, SkylarkObjectMetadataField>>;
   additionalRequiredFields?: string[];
   isLoading?: boolean;
+  fieldConfigFromObject?: ParsedSkylarkObjectConfigFieldConfig;
 }
 
 interface SkylarkObjectFieldInputComponentProps
@@ -179,8 +181,14 @@ const SkylarkObjectFieldInputGeneric = ({
 export const SkylarkObjectFieldInput = (
   props: SkylarkObjectFieldInputProps,
 ) => {
-  const { field, config, formState, additionalRequiredFields, isLoading } =
-    props;
+  const {
+    field,
+    config,
+    formState,
+    additionalRequiredFields,
+    isLoading,
+    fieldConfigFromObject,
+  } = props;
   const required =
     config.isRequired || additionalRequiredFields?.includes(config.name)
       ? `${formatObjectField(field)} is required`
@@ -259,8 +267,11 @@ export const SkylarkObjectFieldInput = (
           } else if (config.type === "boolean") {
             return <SkylarkObjectFieldInputBoolean {...inputProps} />;
           } else if (
-            config.type === "string" &&
-            !SYSTEM_FIELDS.includes(field)
+            fieldConfigFromObject?.fieldType === "TEXTAREA" ||
+            fieldConfigFromObject?.fieldType === "WYSIWYG" ||
+            (config.type === "string" &&
+              !SYSTEM_FIELDS.includes(field) &&
+              fieldConfigFromObject === undefined)
           ) {
             return <SkylarkObjectFieldInputTextArea {...inputProps} />;
           } else {

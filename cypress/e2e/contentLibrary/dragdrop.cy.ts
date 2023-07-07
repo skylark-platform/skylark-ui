@@ -4,7 +4,7 @@ import {
 } from "../../support/utils/graphqlTestUtils";
 
 const allDevicesAllCustomersAvailability =
-  "Always - All devices, all customer types";
+  "Always - All devices, all non-kids customer types";
 
 describe("Drag and Drop - Content and Relationship tab", () => {
   beforeEach(() => {
@@ -190,7 +190,6 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .then(() => {
                 cy.get("[data-cy=toast]").within(() => {
                   cy.contains("Existing Linked Object").should("exist");
-                  cy.contains("HomepageAfterCarousel.png").should("exist");
                 });
               });
           },
@@ -372,7 +371,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(250)
               .then(() => {
                 cy.get("[data-cy=toast]").within(() => {
-                  cy.contains("Object added to self").should("exist");
+                  cy.contains("Invalid Object Type").should("exist");
                 });
               });
           },

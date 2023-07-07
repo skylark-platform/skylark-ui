@@ -14,7 +14,7 @@ describe("createGetObjectQuery", () => {
     const got = createGetObjectQuery(episodeObjectOperations);
 
     expect(got?.loc?.source.body).toEqual(
-      "query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { __typename _config { primary_field colour display_name } _meta { available_languages language_data { language version } global_data { version } } uid external_id slug synopsis synopsis_short title title_short title_sort episode_number release_date availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { _meta { available_languages language_data { language version } global_data { version } } uid external_id slug title description type url file_name content_type } } } }",
+      "query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { __typename _config { primary_field colour display_name field_config { name ui_field_type ui_position } } _meta { available_languages language_data { language version } global_data { version } } uid external_id slug synopsis synopsis_short title title_short title_sort episode_number release_date availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { _meta { available_languages language_data { language version } global_data { version } } uid external_id slug title description type url file_name content_type } } } }",
     );
   });
 });

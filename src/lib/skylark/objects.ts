@@ -23,6 +23,9 @@ import {
   SkylarkSystemGraphQLType,
   NormalizedObjectField,
   SkylarkObjectRelationship,
+  ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
+  ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
 import { getObjectTypeFromListingTypeName } from "src/lib/utils";
 import { ObjectError } from "src/lib/utils/errors";
@@ -527,3 +530,13 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
     translatableMetadataFields,
   };
 };
+
+export const convertParsedObjectToIdentifier = ({
+  uid,
+  objectType,
+  meta: { language },
+}: ParsedSkylarkObject): SkylarkObjectIdentifier => ({
+  uid,
+  objectType,
+  language,
+});

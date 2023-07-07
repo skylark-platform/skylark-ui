@@ -3,6 +3,7 @@ import { Row, TableMeta } from "@tanstack/react-table";
 import clsx from "clsx";
 
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
 import { ObjectListingTableData } from "./columnData";
 import { getObjectSearchTableRowStyles } from "./columnStyles";
@@ -27,7 +28,6 @@ export const ObjectListingTableRow = ({
 }: TableRowProps) => {
   const {
     uid,
-    objectType,
     meta: { language },
   } = row.original;
   const { attributes, listeners, setNodeRef } = useDraggable({
@@ -41,8 +41,10 @@ export const ObjectListingTableRow = ({
   const rowIsActive =
     activeObject?.uid === uid && activeObject.language === language;
 
+  const objectIdentifier = convertParsedObjectToIdentifier(row.original);
+
   const openPanel = () => {
-    tableMeta?.onObjectClick?.({ uid, objectType, language });
+    tableMeta?.onObjectClick?.(objectIdentifier);
   };
 
   return (
@@ -71,7 +73,7 @@ export const ObjectListingTableRow = ({
           openPanel={openPanel}
           height={virtualRowSize}
           rowIsActive={rowIsActive}
-          object={{ uid, objectType, language }}
+          object={objectIdentifier}
           isDraggable={isDraggable}
         />
       ))}

@@ -4,12 +4,14 @@ import { AvailabilityLabel } from "src/components/availability";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { PanelTab } from "src/hooks/state";
 import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObjectImageRelationship,
 } from "src/interfaces/skylark";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
   addCloudinaryOnTheFlyImageTransformation,
   formatObjectField,
@@ -88,9 +90,29 @@ const availabilityColumn = columnHelper.accessor("meta.availabilityStatus", {
   id: OBJECT_LIST_TABLE.columnIds.availability,
   header: formatObjectField("Availability"),
   size: 120,
-  cell: (props) => {
-    const status = props.getValue<ParsedSkylarkObjectAvailability["status"]>();
-    return status && <AvailabilityLabel status={status} />;
+  cell: ({
+    getValue,
+    table: {
+      options: { meta: tableMeta },
+    },
+    row: { original: object },
+  }) => {
+    const status = getValue<ParsedSkylarkObjectAvailability["status"]>();
+    return (
+      status && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            tableMeta?.onObjectClick?.(
+              convertParsedObjectToIdentifier(object as ParsedSkylarkObject),
+              PanelTab.Availability,
+            );
+          }}
+        >
+          <AvailabilityLabel status={status} />
+        </button>
+      )
+    );
   },
 });
 

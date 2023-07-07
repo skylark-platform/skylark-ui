@@ -32,6 +32,8 @@ import {
   SkylarkObjectMetadataField,
   ParsedSkylarkObjectRelationships,
   BuiltInSkylarkObjectType,
+  ParsedSkylarkObjectConfig,
+  SkylarkGraphQLObjectConfig,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -180,6 +182,26 @@ const parseObjectAvailability = (
   };
 };
 
+const parseObjectConfig = (
+  unparsedConfig?: SkylarkGraphQLObjectConfig,
+): ParsedSkylarkObjectConfig => {
+  const fieldConfig: ParsedSkylarkObjectConfig["fieldConfig"] =
+    unparsedConfig?.field_config
+      ?.map(({ name, ui_position, ui_field_type }) => ({
+        name,
+        position: ui_position,
+        fieldType: ui_field_type,
+      }))
+      .sort((a, b) => a.position - b.position);
+
+  return {
+    colour: unparsedConfig?.colour,
+    primaryField: unparsedConfig?.primary_field,
+    objectTypeDisplayName: unparsedConfig?.display_name,
+    fieldConfig,
+  };
+};
+
 export const parseObjectRelationship = <T>(
   unparsedObject?: SkylarkGraphQLObjectRelationship,
 ): T[] => {
@@ -201,11 +223,7 @@ export const parseObjectContent = (
       return {
         objectType: object.__typename,
         position,
-        config: {
-          colour: object._config?.colour,
-          primaryField: object._config?.primary_field,
-          objectTypeDisplayName: object._config?.display_name,
-        },
+        config: parseObjectConfig(object._config),
         meta: {
           language: object._meta?.language_data.language || "",
           availableLanguages: object._meta?.available_languages || [],
@@ -229,8 +247,7 @@ export const parseSkylarkObject = (
   object: SkylarkGraphQLObject,
   objectMeta?: SkylarkObjectMeta | null,
 ): ParsedSkylarkObject => {
-  // TODO split into Language and Global
-  const metadata: ParsedSkylarkObject["metadata"] = {
+  const metadata: ParsedSkylarkObjectMetadata = {
     ...Object.keys(object).reduce((prev, key) => {
       return {
         ...prev,
@@ -272,11 +289,7 @@ export const parseSkylarkObject = (
     object && {
       objectType: object.__typename,
       uid: object.uid,
-      config: {
-        colour: object._config?.colour,
-        primaryField: object._config?.primary_field,
-        objectTypeDisplayName: object._config?.display_name,
-      },
+      config: parseObjectConfig(object._config),
       meta: {
         language: object._meta?.language_data.language || "",
         availableLanguages: object._meta?.available_languages || [],

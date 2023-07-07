@@ -3,33 +3,93 @@
     "getObject": {
       "__typename": "Season",
       "_config": {
-        "primary_field": "title",
-        "colour": "#9c27b0",
-        "display_name": "Season"
+        "primary_field": "internal_title",
+        "colour": "#9C27B0",
+        "display_name": "Season",
+        "field_config": [
+          {
+            "name": "release_date",
+            "ui_field_type": null,
+            "ui_position": 7
+          },
+          {
+            "name": "title_sort",
+            "ui_field_type": null,
+            "ui_position": 9
+          },
+          {
+            "name": "title_short",
+            "ui_field_type": null,
+            "ui_position": 2
+          },
+          {
+            "name": "number_of_episodes",
+            "ui_field_type": null,
+            "ui_position": 6
+          },
+          {
+            "name": "internal_title",
+            "ui_field_type": null,
+            "ui_position": 0
+          },
+          {
+            "name": "year_of_release",
+            "ui_field_type": null,
+            "ui_position": 8
+          },
+          {
+            "name": "synopsis_short",
+            "ui_field_type": "TEXTAREA",
+            "ui_position": 4
+          },
+          {
+            "name": "synopsis",
+            "ui_field_type": "TEXTAREA",
+            "ui_position": 3
+          },
+          {
+            "name": "title",
+            "ui_field_type": null,
+            "ui_position": 1
+          },
+          {
+            "name": "season_number",
+            "ui_field_type": null,
+            "ui_position": 5
+          }
+        ]
       },
       "_meta": {
         "available_languages": ["en-GB", "pt-PT"],
-        "language_data": { "language": "en-GB", "version": 1 },
-        "global_data": { "version": 2 }
+        "language_data": {
+          "language": "en-GB",
+          "version": 1
+        },
+        "global_data": {
+          "version": 2
+        }
       },
-      "uid": "01GXZP2C7263QWF0CC20AH4MQY",
+      "uid": "01H4MMDKC3A179ZGGW5H3G4QDV",
       "external_id": "reclB1adS6DrTlJaF",
       "slug": "got-s04",
       "synopsis": null,
       "synopsis_short": null,
       "title": "GOT Season 4",
       "title_short": "GOT S04",
-      "title_sort": null,
+      "internal_title": null,
       "number_of_episodes": null,
-      "release_date": "2014-04-06",
+      "preferred_image_type": null,
+      "release_date": "2014-04-08",
       "season_number": 4,
+      "title_sort": null,
+      "year_of_release": null,
       "availability": {
         "next_token": null,
         "objects": [
           {
-            "uid": "01GXZNX7Q25B2ED3VB1KDA248M",
+            "uid": "01H4MMB075XZ6FDAYJYH8TFMXW",
             "external_id": "recXNjJNyc6nKQIYa",
-            "title": "Always - All devices, all customer types",
+            "title": "Always - All devices, all non-kids customer types",
             "slug": "always-all-devices-all-customer-types",
             "start": "2022-01-01T00:00:00+00:00",
             "end": "2038-01-19T03:14:07+00:00",
@@ -43,21 +103,24 @@
           {
             "_meta": {
               "available_languages": ["en-GB"],
-              "language_data": { "language": "en-GB", "version": 2 },
-              "global_data": { "version": 2 }
+              "language_data": {
+                "language": "en-GB",
+                "version": 1
+              },
+              "global_data": {
+                "version": 1
+              }
             },
-            "uid": "01GXZNXYN2AABCMQ52JV63NXHF",
+            "uid": "01H4MMC4PYRXCT8V78G3YKTQV8",
             "external_id": "recehX8tJ07frgIst",
             "slug": null,
+            "internal_title": null,
             "title": "Hero - GOT - s04.jpg",
             "description": null,
             "type": "MAIN",
-            "url": "https://dl.airtable.com/.attachments/7df0d8b9d9dfb74e9edd137b1cb1e3a1/7e13d60c/Hero-GOT-s04.jpg",
-            "external_url": "https://dl.airtable.com/.attachments/7df0d8b9d9dfb74e9edd137b1cb1e3a1/7e13d60c/Hero-GOT-s04.jpg",
-            "upload_url": "https://obj-reg-storage-sl-develop-eu-west-1-storage.s3.amazonaws.com/media/skylarkimages/vrdlihwc4ves3ihxxzrykjpvvm/01GXZNXYN2AABCMQ52JV63NXHF/01GY0SRR2D0Z0PADWRE7CZHGCP?AWSAccessKeyId=ASIA4YDX3EVVNPTV74EF&Signature=TV2tl50kKRafmpRmnFOBZwXcVJo%3D&content-type=application%2Foctet&x-amz-meta-account_id=vrdlihwc4ves3ihxxzrykjpvvm&x-amz-meta-uid=01GXZNXYN2AABCMQ52JV63NXHF&x-amz-security-token=IQoJb3JpZ2luX2VjEA0aCWV1LXdlc3QtMSJGMEQCIC7T0eNvAbq0yrE7fCcMIF7QtPoQykMMGLmUzmq15nHTAiBmIuXf41tPqHAwbPoOx9HxikP5Vh%2FD5UmFY2hjNbRdSCq0Awj2%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDg3NjQyNDY2ODUyMiIM3QXYi6yYsLD3O7WgKogDZhewoVbxesFf6Hc8CamtriHgJai2BcM6AjqEFaN4J6N2ck3mJrLZMVtmLNkwIM9syGlLeSYa9VCYCCKhm%2BMBMan7qePu6jGFbGhSus1MwAptmY7KV8Vh%2BdCMBUy8UxL1VxxfQ6mksNZAr608RRITjh1d%2FP9gFgr1NU3%2Fszff%2FNgYb%2Fq588yKuK0KUNo7g6UWlKaq0UMjRIlTe0GjUFH6l7wsUZ1wlfv209O1L9awChF8mL9oE%2BvwQOUxz2uIGOfEfJntB6cym%2FCknG0UCKPSoaJTwli50slgD4w8pWW1YMn7t6lulH9q438FbiYz8tgIeP8VedxELb6uQXJB%2B%2BjPZRWtsyWUEfKDuU9PZgKh9BI%2BdJATivm3EyOMKAEjY6dmvZD7vqFtPXPdANP2PoTtpay4E3utRqSCMaYD3caKrwAIWA1wCmq0iNkcwN7Jc%2BNBDcl7JuiB0gpOAZ0ShFG9UWX3Gu1s5Ynf0IY8rFILUP%2FFRH2YHY9uW0p64FHIW2RrWlmOgXPTTjEwzILnoQY6ngFvXzCq88G%2BHoGvXjy9O%2BDItv90bBJDktXdAqOjr8AMptt8RApzmchgUu5dsNdWjEjQcGRaAWArZUSa54gvoAa31%2Fz7JY9LYWgVM0GlQnQBkgq%2FisvOeEF6YXqwHzkHDi6Iz2NGvlchriPh%2FzH94HgrY5AhXTlT9QfG5fDVby1cW1pMZY2Pb%2BhrandtBQRtnxm%2Frknm97IYh1UMiKaEgw%3D%3D&Expires=1681510321",
-            "download_from_url": null,
+            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMC4PYRXCT8V78G3YKTQV8/01H4MMC859M72QBB1220FTQ0NF",
             "file_name": null,
-            "content_type": null
+            "content_type": "image/jpeg"
           }
         ]
       }

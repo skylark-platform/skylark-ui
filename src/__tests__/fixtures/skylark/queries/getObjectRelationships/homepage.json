@@ -31,35 +31,7 @@
         "next_token": null,
         "objects": [
           {
-            "uid": "01H4FFMS0WW4KD8N1MQGWYZ7YV",
-            "__typename": "SkylarkImage",
-            "external_id": "reckauU2wr4Jmo3BD",
-            "slug": null,
-            "internal_title": null,
-            "title": "TopOfHomepage.png",
-            "description": null,
-            "type": "MAIN",
-            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/izrzkrreqvcqjnslyzmuc4zkfu/01H4FFMS0WW4KD8N1MQGWYZ7YV/01H4FFMVZW8SXWKZW6W9F43TS4",
-            "file_name": null,
-            "content_type": "image/png",
-            "_config": {
-              "primary_field": "internal_title",
-              "colour": "#607D8B",
-              "display_name": "Imageˢˡ"
-            },
-            "_meta": {
-              "available_languages": ["en-GB"],
-              "language_data": {
-                "language": "en-GB",
-                "version": 1
-              },
-              "global_data": {
-                "version": 1
-              }
-            }
-          },
-          {
-            "uid": "01H4FFMS16E0YXH212AJ42J1YW",
+            "uid": "01H4MMC4QWTSY44KXKFV3DHV26",
             "__typename": "SkylarkImage",
             "external_id": "recgkAKiElyJeSpvy",
             "slug": null,
@@ -67,7 +39,7 @@
             "title": "StreamTVLoadingScreen.png",
             "description": null,
             "type": "MAIN",
-            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/izrzkrreqvcqjnslyzmuc4zkfu/01H4FFMS16E0YXH212AJ42J1YW/01H4FFMW2HGJ6AVAXB5DDXN10A",
+            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMC4QWTSY44KXKFV3DHV26/01H4MMC886BGZBV3DM33WPPGFS",
             "file_name": null,
             "content_type": "image/png",
             "_config": {
@@ -87,15 +59,15 @@
             }
           },
           {
-            "uid": "01H4FFMMFRGKHQVNTDZJM1Y09H",
+            "uid": "01H4MMC4W0RKHKCDQ0E6A387V8",
             "__typename": "SkylarkImage",
-            "external_id": "recBiJpHfAYK1sPiI",
+            "external_id": "reckauU2wr4Jmo3BD",
             "slug": null,
             "internal_title": null,
-            "title": "HomepageAfterCarousel.png",
+            "title": "TopOfHomepage.png",
             "description": null,
             "type": "MAIN",
-            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/izrzkrreqvcqjnslyzmuc4zkfu/01H4FFMMFRGKHQVNTDZJM1Y09H/01H4FFMRSCPM5YYQNDG3C1X3DB",
+            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMC4W0RKHKCDQ0E6A387V8/01H4MMC89T3JSX4HPA95R8EHRN",
             "file_name": null,
             "content_type": "image/png",
             "_config": {

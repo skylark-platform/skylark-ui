@@ -31,6 +31,7 @@ const panelObject: ParsedSkylarkObject = {
   },
   config: {
     primaryField: "title",
+    fieldConfig: [],
   },
   meta: {
     language: "",

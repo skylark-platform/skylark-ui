@@ -11,6 +11,7 @@ import { Skeleton } from "src/components/skeleton";
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
   BuiltInSkylarkObjectType,
+  ParsedSkylarkObjectConfig,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
@@ -32,8 +33,21 @@ interface PanelMetadataProps {
   objectType: SkylarkObjectType;
   objectMeta: SkylarkObjectMeta | null;
   metadata: Record<string, SkylarkObjectMetadataField> | null;
+  objectFieldConfig?: ParsedSkylarkObjectConfig["fieldConfig"];
   form: UseFormReturn<Record<string, SkylarkObjectMetadataField>>;
 }
+
+const sortFieldsByConfigPosition = (
+  { field: fieldA }: { field: string },
+  { field: fieldB }: { field: string },
+  objectFieldConfig?: ParsedSkylarkObjectConfig["fieldConfig"],
+) => {
+  const aFieldConfig = objectFieldConfig?.find(({ name }) => fieldA === name);
+  const bFieldConfig = objectFieldConfig?.find(({ name }) => fieldB === name);
+  const aPosition = aFieldConfig?.position || -1;
+  const bPosition = bFieldConfig?.position || -1;
+  return aPosition - bPosition;
+};
 
 export const PanelMetadata = ({
   isPage,
@@ -41,6 +55,7 @@ export const PanelMetadata = ({
   metadata,
   objectType,
   objectMeta,
+  objectFieldConfig: objectFieldConfigArr,
   form: { register, getValues, control, formState },
 }: PanelMetadataProps) => {
   const {
@@ -79,12 +94,16 @@ export const PanelMetadata = ({
     {
       id: "translatable",
       title: "Translatable Metadata",
-      metadataFields: translatableMetadataFields,
+      metadataFields: translatableMetadataFields.sort((a, b) =>
+        sortFieldsByConfigPosition(a, b, objectFieldConfigArr),
+      ),
     },
     {
       id: "global",
       title: "Global Metadata",
-      metadataFields: globalMetadataFields,
+      metadataFields: globalMetadataFields.sort((a, b) =>
+        sortFieldsByConfigPosition(a, b, objectFieldConfigArr),
+      ),
     },
   ].filter(({ metadataFields }) => metadataFields.length > 0);
 
@@ -108,6 +127,10 @@ export const PanelMetadata = ({
             <div key={id} className="mb-8 md:mb-10">
               <PanelSectionTitle id={id} text={title} />
               {metadataFields.map(({ field, config }) => {
+                const fieldConfigFromObject = objectFieldConfigArr?.find(
+                  ({ name }) => name === field,
+                );
+
                 if (config) {
                   return (
                     <SkylarkObjectFieldInput
@@ -120,6 +143,7 @@ export const PanelMetadata = ({
                       value={getValues(field)}
                       formState={formState}
                       additionalRequiredFields={requiredFields}
+                      fieldConfigFromObject={fieldConfigFromObject}
                     />
                   );
                 }

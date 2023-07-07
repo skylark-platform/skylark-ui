@@ -1,6 +1,7 @@
 // @tanstack/react-table meta object declaration
 import { CheckedState } from "@radix-ui/react-checkbox";
 
+import { PanelTab } from "./hooks/state";
 import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
@@ -19,7 +20,7 @@ export declare module "@tanstack/table-core" {
       checkedState: CheckedState;
     }) => void;
     batchCheckRows: (type: "shift" | "clear-all", rowIndex?: number) => void;
-    onObjectClick?: (obj: SkylarkObjectIdentifier) => void;
+    onObjectClick?: (obj: SkylarkObjectIdentifier, tab?: PanelTab) => void;
     rowInEditMode: string;
     withObjectEdit: boolean;
     onEditClick: (rowId: string) => void;
