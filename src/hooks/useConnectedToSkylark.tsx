@@ -3,18 +3,60 @@ import request from "graphql-request";
 import { useEffect, useState } from "react";
 
 import { LOCAL_STORAGE } from "src/constants/localStorage";
-import { REQUEST_HEADERS } from "src/constants/skylark";
+import {
+  REQUEST_HEADERS,
+  SAAS_API_ENDPOINT,
+  SAAS_API_KEY,
+} from "src/constants/skylark";
 import { GQLSkylarkObjectTypesResponse } from "src/interfaces/graphql/introspection";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
+export interface SkylarkCreds {
+  uri: string | null;
+  token: string | null;
+}
+
+export const getSkylarkCredsFromLocalStorage = (
+  withDevelopmentDefault?: boolean,
+): SkylarkCreds => {
+  if (typeof window === "undefined") {
+    return {
+      uri: null,
+      token: null,
+    };
+  }
+
+  let fallbackUri = null;
+  let fallbackToken = null;
+
+  if (withDevelopmentDefault) {
+    const { origin } = window.location;
+    // Timesaving in development to connect to sl-develop-10 when available unless in Storybook.
+    const useDevelopmentDefaults =
+      (origin.includes("http://localhost") &&
+        !origin.includes("http://localhost:6006")) ||
+      origin.includes("vercel.app");
+
+    if (useDevelopmentDefaults) {
+      fallbackUri = SAAS_API_ENDPOINT || null;
+      fallbackToken = SAAS_API_KEY || null;
+    }
+  }
+
+  const uri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) || fallbackUri;
+  const token =
+    localStorage.getItem(LOCAL_STORAGE.betaAuth.token) || fallbackToken;
+
+  return {
+    uri,
+    token,
+  };
+};
+
 export const useConnectedToSkylark = () => {
-  const [currentCreds, setCreds] = useState<{
-    uri: string | null;
-    token: string | null;
-  }>({
-    uri: null,
-    token: null,
-  });
+  const [currentCreds, setCreds] = useState<SkylarkCreds>(
+    getSkylarkCredsFromLocalStorage,
+  );
 
   const { data, error, isError, isLoading, isSuccess, refetch } = useQuery<
     GQLSkylarkObjectTypesResponse,
@@ -53,10 +95,7 @@ export const useConnectedToSkylark = () => {
   useEffect(() => {
     const refresh = () => {
       refetch();
-      setCreds({
-        uri: localStorage.getItem(LOCAL_STORAGE.betaAuth.uri),
-        token: localStorage.getItem(LOCAL_STORAGE.betaAuth.token),
-      });
+      setCreds(getSkylarkCredsFromLocalStorage());
     };
     window.addEventListener("storage", refresh);
     return () => {
@@ -70,18 +109,10 @@ export const useConnectedToSkylark = () => {
     !currentCreds.uri || (!data && isError && !unauthenticated);
   const invalidToken = invalidUri || (error && unauthenticated) || false;
 
-  const isConnected = !!(
-    !invalidUri &&
-    !invalidToken &&
-    (isLoading || isSuccess)
-  );
-
-  useEffect(() => {
-    setCreds({
-      uri: localStorage.getItem(LOCAL_STORAGE.betaAuth.uri),
-      token: localStorage.getItem(LOCAL_STORAGE.betaAuth.token),
-    });
-  }, []);
+  const isConnected =
+    // Window check to prevent https://nextjs.org/docs/messages/react-hydration-error
+    typeof window === "undefined" ||
+    !!(!invalidUri && !invalidToken && (isLoading || isSuccess));
 
   return {
     isLoading,
@@ -89,6 +120,6 @@ export const useConnectedToSkylark = () => {
     invalidUri,
     invalidToken,
     currentCreds,
-    setCreds: () => "",
+    setCreds,
   };
 };

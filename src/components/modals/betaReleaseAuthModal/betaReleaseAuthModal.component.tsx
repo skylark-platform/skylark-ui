@@ -4,14 +4,17 @@ import clsx from "clsx";
 import { usePlausible } from "next-plausible";
 import React, { useEffect, useState } from "react";
 import { GrClose } from "react-icons/gr";
-import { useDebounce } from "use-debounce";
+import { useDebouncedCallback } from "use-debounce";
 
 import { Button } from "src/components/button";
 import { TextInput } from "src/components/inputs/textInput";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
-import { SAAS_API_ENDPOINT, SAAS_API_KEY } from "src/constants/skylark";
 import { QueryKeys } from "src/enums/graphql";
-import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
+import {
+  SkylarkCreds,
+  getSkylarkCredsFromLocalStorage,
+  useConnectedToSkylark,
+} from "src/hooks/useConnectedToSkylark";
 
 interface AddAuthTokenModalProps {
   isOpen: boolean;
@@ -28,54 +31,40 @@ export const AddAuthTokenModal = ({
   const { isConnected, isLoading, invalidUri, invalidToken, setCreds } =
     useConnectedToSkylark();
 
-  const [inputUri, setInputUri] = useState<string | null>(null);
-  const [inputToken, setInputToken] = useState<string | null>(null);
-  const [debouncedUri] = useDebounce(inputUri, 750);
-  const [debouncedToken] = useDebounce(inputToken, 750);
+  const [{ uri: inputUri, token: inputToken }, setInputCreds] =
+    useState<SkylarkCreds>(() => getSkylarkCredsFromLocalStorage(true));
 
-  useEffect(() => {
-    if (
-      (!isLoading && !isConnected) ||
-      !localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) ||
-      !localStorage.getItem(LOCAL_STORAGE.betaAuth.token)
-    ) {
-      setIsOpen(true);
+  const [{ uri: debouncedUri, token: debouncedToken }, setDebouncedCreds] =
+    useState<SkylarkCreds>(() => getSkylarkCredsFromLocalStorage(true));
+
+  const debouncedSetCreds = useDebouncedCallback((creds: SkylarkCreds) => {
+    setDebouncedCreds(creds);
+    if (creds.uri) {
+      setCreds(creds);
+    } else {
+      setCreds({ uri: null, token: null });
     }
-  }, [isLoading, isConnected, setIsOpen]);
+  }, 750);
+
+  if (
+    (!isOpen && !isLoading && !isConnected) ||
+    (!isOpen && (!debouncedUri || !debouncedToken))
+  ) {
+    setIsOpen(true);
+  }
 
   useEffect(() => {
-    const { origin } = window.location;
-    // Timesaving in development to connect to sl-develop-10 when available unless in Storybook.
-    const useDevelopmentDefaults =
-      (origin.includes("http://localhost") &&
-        !origin.includes("http://localhost:6006")) ||
-      origin.includes("vercel.app");
-    const developmentUri = useDevelopmentDefaults ? SAAS_API_ENDPOINT : null;
-    const developmentToken = useDevelopmentDefaults ? SAAS_API_KEY : null;
-
     const updateInputsFromLocalStorage = () => {
-      setInputUri(
-        localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) || developmentUri,
-      );
-      setInputToken(
-        localStorage.getItem(LOCAL_STORAGE.betaAuth.token) || developmentToken,
-      );
+      const creds = getSkylarkCredsFromLocalStorage(true);
+      setInputCreds(creds);
+      setDebouncedCreds(creds);
     };
-    updateInputsFromLocalStorage();
 
     window.addEventListener("storage", updateInputsFromLocalStorage);
     return () => {
       window.removeEventListener("storage", updateInputsFromLocalStorage);
     };
   }, []);
-
-  useEffect(() => {
-    if (debouncedUri) {
-      setCreds({ uri: debouncedUri, token: debouncedToken });
-      return;
-    }
-    setCreds({ uri: null, token: null });
-  }, [debouncedUri, debouncedToken, setCreds]);
 
   // Show loading state before the debounced values have been updated
   const requestLoading =
@@ -138,7 +127,10 @@ export const AddAuthTokenModal = ({
           <div className="my-6 flex flex-col space-y-2 md:my-10">
             <TextInput
               value={inputUri || ""}
-              onChange={setInputUri}
+              onChange={(uri) => {
+                setInputCreds((prev) => ({ ...prev, uri }));
+                debouncedSetCreds({ token: debouncedToken, uri });
+              }}
               label="GraphQL URL"
               tabIndex={-1}
               className={clsx(
@@ -154,7 +146,10 @@ export const AddAuthTokenModal = ({
 
             <TextInput
               value={inputToken || ""}
-              onChange={setInputToken}
+              onChange={(token) => {
+                setInputCreds((prev) => ({ ...prev, token }));
+                debouncedSetCreds({ uri: debouncedUri, token });
+              }}
               label="API Key"
               tabIndex={-1}
               className={clsx(
