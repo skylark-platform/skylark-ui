@@ -41,13 +41,8 @@ export const Navigation = () => {
     currentCreds: { uri },
   } = useConnectedToSkylark();
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
-  const [customerIdentifier, setCustomerIdentifier] = useState("");
 
-  useEffect(() => {
-    if (uri) {
-      setCustomerIdentifier(getCustomerIdentifier(uri));
-    }
-  }, [uri]);
+  const customerIdentifier = uri && getCustomerIdentifier(uri);
 
   return (
     <>
@@ -92,7 +87,7 @@ export const Navigation = () => {
       </div>
       {/* This should be removed after beta when we implement real authentication */}
       <AddAuthTokenModal
-        isOpen={isAuthModalOpen || (!isConnected && !isLoading)}
+        isOpen={isAuthModalOpen || !isConnected}
         setIsOpen={setAuthModalOpen}
       />
     </>

@@ -220,6 +220,7 @@ export const ContentLibrary = () => {
             </m.div>
             <div className="w-full overflow-x-scroll">
               <Panel
+                key={`${activePanelObject.objectType}-${activePanelObject.uid}-${activePanelObject.language}`}
                 object={activePanelObject}
                 tab={activePanelTab}
                 closePanel={closePanel}

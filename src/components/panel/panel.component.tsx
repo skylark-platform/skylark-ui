@@ -174,7 +174,7 @@ export const Panel = ({
   navigateToForwardPanelObject,
   setPanelObject,
 }: PanelProps) => {
-  const [inEditMode, setEditMode] = useState(false);
+  const [panelInEditMode, setEditMode] = useState(false);
   const [isTabDataPrefetched, setIsTabDataPrefetched] = useState(false);
 
   const [contentObjects, setContentObjects] = useState<{
@@ -231,6 +231,11 @@ export const Panel = ({
   });
   const { reset: resetMetadataForm } = metadataForm;
 
+  const inEditMode =
+    !panelInEditMode &&
+    metadataForm.formState.isDirty &&
+    !metadataForm.formState.isSubmitted;
+
   const tabs: PanelTab[] = useMemo(
     () =>
       [
@@ -252,23 +257,6 @@ export const Panel = ({
       objectMeta?.name,
     ],
   );
-
-  const resetPanelState = useCallback(
-    (resetIsTabDataPrefetched?: boolean) => {
-      setEditMode(false);
-      resetMetadataForm({});
-
-      if (resetIsTabDataPrefetched) {
-        setIsTabDataPrefetched(false);
-      }
-    },
-    [resetMetadataForm],
-  );
-
-  useEffect(() => {
-    // Resets any edited data when the panel object changes
-    resetPanelState(true);
-  }, [uid, objectType, language, resetPanelState]);
 
   const queryClient = useQueryClient();
 
@@ -309,26 +297,12 @@ export const Panel = ({
   ]);
 
   useEffect(() => {
-    // Switches into edit mode when the metadata form is changed
-    if (
-      !inEditMode &&
-      metadataForm.formState.isDirty &&
-      !metadataForm.formState.isSubmitted
-    ) {
-      setEditMode(true);
-    }
-  }, [inEditMode, metadataForm.formState]);
-
-  useEffect(() => {
     // Updates the form values when metadata is updated in Skylark
     const formValues = metadataForm.getValues();
     const dataAndFormAreEqual =
       formParsedMetadata && isObjectsDeepEqual(formParsedMetadata, formValues);
 
-    const metadataInEditMode =
-      inEditMode || (metadataForm.formState.isDirty && !inEditMode);
-
-    if (!metadataInEditMode && formParsedMetadata && !dataAndFormAreEqual) {
+    if (formParsedMetadata && !dataAndFormAreEqual) {
       resetMetadataForm(formParsedMetadata);
     }
   }, [inEditMode, metadataForm, resetMetadataForm, formParsedMetadata]);

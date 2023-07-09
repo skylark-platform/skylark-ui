@@ -1,7 +1,7 @@
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FiRefreshCw, FiX } from "react-icons/fi";
-import { useDebounce } from "use-debounce";
+import { useDebouncedCallback } from "use-debounce";
 
 import { Filter, Search } from "src/components/icons";
 
@@ -23,13 +23,15 @@ export const SearchInput = ({
   onRefresh,
 }: SearchInputProps) => {
   const [query, setQuery] = useState(searchQuery);
-  const [debouncedQuery] = useDebounce(query, 750);
 
-  useEffect(() => {
-    if (debouncedQuery !== searchQuery) {
-      onQueryChange(debouncedQuery);
-    }
-  }, [debouncedQuery, searchQuery, onQueryChange]);
+  const debouncedQueryChange = useDebouncedCallback((value) => {
+    onQueryChange(value);
+  }, 750);
+
+  const inputChange = (str: string) => {
+    setQuery(str);
+    debouncedQueryChange(str);
+  };
 
   return (
     <div
@@ -46,7 +48,12 @@ export const SearchInput = ({
           type="text"
           placeholder="Search for an object(s)"
           className="min-w-32 flex-grow rounded-none bg-inherit px-1 py-2 pr-0 focus:outline-none md:px-2 md:py-3 md:pr-0"
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => inputChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              debouncedQueryChange.flush();
+            }
+          }}
         />
         <button
           onClick={() => setQuery("")}

@@ -89,6 +89,6 @@ export const useConnectedToSkylark = () => {
     invalidUri,
     invalidToken,
     currentCreds,
-    setCreds,
+    setCreds: () => "",
   };
 };

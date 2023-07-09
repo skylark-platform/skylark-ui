@@ -1,6 +1,6 @@
 import { VisibilityState } from "@tanstack/react-table";
 import { DocumentNode } from "graphql";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Button } from "src/components/button";
 import {
@@ -51,7 +51,7 @@ export const SearchFilter = ({
   graphqlQuery,
   onFilterSave,
 }: SearchFilterProps) => {
-  const [updatedObjectTypes, updateObjectTypes] = useState<string[]>(
+  const [updatedObjectTypes, updateObjectTypes] = useState(
     activeObjectTypes || [],
   );
   const [updatedVisibleColumns, updateVisibleColumns] =
@@ -72,6 +72,33 @@ export const SearchFilter = ({
     updateVisibleColumns(columns);
   };
 
+  const objectTypeOptions = useMemo(
+    () =>
+      createCheckboxOptions(
+        objectTypesWithConfig
+          ?.map(({ objectType, config }) => ({
+            label: config?.display_name || objectType,
+            value: objectType,
+          }))
+          .sort(({ label: labelA }, { label: labelB }) =>
+            labelA
+              .toLocaleUpperCase()
+              .localeCompare(labelB.toLocaleUpperCase()),
+          ) || [],
+        updatedObjectTypes,
+      ),
+    [objectTypesWithConfig, updatedObjectTypes],
+  );
+
+  const columnOptions = useMemo(
+    () =>
+      createCheckboxOptions(
+        columns.map((column) => ({ label: column, value: column })),
+        updatedVisibleColumns,
+      ),
+    [columns, updatedVisibleColumns],
+  );
+
   return (
     <div className="relative flex max-h-[60vh] w-full flex-col rounded bg-white py-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 xl:max-h-[28rem]">
       <div className="absolute right-5 top-2 z-20">
@@ -85,40 +112,19 @@ export const SearchFilter = ({
         <CheckboxGrid
           label="Object type"
           withToggleAll
-          options={createCheckboxOptions(
-            objectTypesWithConfig
-              ?.map(({ objectType, config }) => ({
-                label: config?.display_name || objectType,
-                value: objectType,
-              }))
-              .sort(({ label: labelA }, { label: labelB }) =>
-                labelA
-                  .toLocaleUpperCase()
-                  .localeCompare(labelB.toLocaleUpperCase()),
-              ) || [],
-            updatedObjectTypes,
-          )}
-          onChange={(optionsState) => {
-            updateObjectTypes(
-              optionsState
-                .filter(({ state }) => state === true)
-                .map(({ option }) => option.value),
-            );
+          options={objectTypeOptions}
+          checkedOptions={updatedObjectTypes}
+          onChange={(checkedOptions) => {
+            updateObjectTypes(checkedOptions);
           }}
         />
         <CheckboxGrid
           label="Columns"
           withToggleAll
-          options={createCheckboxOptions(
-            columns.map((column) => ({ label: column, value: column })),
-            updatedVisibleColumns,
-          )}
-          onChange={(optionsState) => {
-            updateVisibleColumns(
-              optionsState
-                .filter(({ state }) => state === true)
-                .map(({ option }) => option.value),
-            );
+          options={columnOptions}
+          checkedOptions={updatedVisibleColumns}
+          onChange={(checkedOptions) => {
+            updateVisibleColumns(checkedOptions);
           }}
         />
       </div>
