@@ -21,6 +21,12 @@ const getCustomerIdentifier = (uri: string) => {
     return "";
   }
 
+  const isIntEnvironment = uri.includes(".api.int.development.");
+  if (isIntEnvironment) {
+    const identifier = uri.split("/")[2].split(".api.int.development.")[0];
+    return `${identifier} (int)`;
+  }
+
   const path = uri.split(
     isCom ? "skylarkplatform.com" : "skylarkplatform.io",
   )[1];
