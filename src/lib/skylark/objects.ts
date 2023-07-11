@@ -410,7 +410,7 @@ export const getObjectOperations = (
           type: "Query",
           name: listQuery.name,
         }
-      : undefined,
+      : null,
     create: {
       type: "Mutation",
       name: createMutation.name,

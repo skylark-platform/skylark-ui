@@ -72,8 +72,8 @@ interface Mutation extends BaseQueryMutation {
 }
 
 export interface SkylarkObjectOperations {
-  get: Query | null;
-  list?: Query | null;
+  get: Query;
+  list: Query | null;
   create: Mutation;
   update: Mutation;
   delete: Mutation;
