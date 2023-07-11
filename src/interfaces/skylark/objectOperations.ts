@@ -3,6 +3,7 @@ import { GQLScalars } from "src/interfaces/graphql/introspection";
 export enum BuiltInSkylarkObjectType {
   Availability = "Availability",
   SkylarkImage = "SkylarkImage",
+  SkylarkFavoriteList = "SkylarkFavoriteList",
 }
 
 export enum SkylarkSystemField {
@@ -71,7 +72,7 @@ interface Mutation extends BaseQueryMutation {
 }
 
 export interface SkylarkObjectOperations {
-  get: Query | null;
+  get: Query;
   list: Query | null;
   create: Mutation;
   update: Mutation;
