@@ -25,12 +25,15 @@ import {
   SkylarkObjectRelationship,
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
-  ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
 import { getObjectTypeFromListingTypeName } from "src/lib/utils";
 import { ObjectError } from "src/lib/utils/errors";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
+
+const objectsWithoutListQuery: string[] = [
+  BuiltInSkylarkObjectType.SkylarkFavoriteList,
+];
 
 const getObjectInterface = (
   schemaTypes: IntrospectionQuery["__schema"]["types"],
@@ -320,7 +323,7 @@ export const getObjectOperations = (
 
   if (
     !getQuery ||
-    !listQuery ||
+    (!listQuery && !objectsWithoutListQuery.includes(objectType)) ||
     !createMutation ||
     !updateMutation ||
     !deleteMutation
@@ -402,10 +405,12 @@ export const getObjectOperations = (
       type: "Query",
       name: getQuery.name,
     },
-    list: {
-      type: "Query",
-      name: listQuery.name,
-    },
+    list: listQuery
+      ? {
+          type: "Query",
+          name: listQuery.name,
+        }
+      : null,
     create: {
       type: "Mutation",
       name: createMutation.name,
