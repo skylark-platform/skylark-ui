@@ -38,7 +38,7 @@ export const DisplayNameTableCell = ({
       style={{ ...getCellWidths(width), height }}
     >
       <div
-        className={`absolute z-30 -ml-11 -mt-[0.7rem] hidden h-full items-center bg-white px-1 sm:flex ${rowGroupClassName}`}
+        className={`absolute z-30 -ml-11 -mt-[0.7rem] hidden h-full items-center px-1 sm:flex ${rowGroupClassName}`}
       >
         <div
           className={clsx(
@@ -71,7 +71,7 @@ export const ObjectSelectTableCell = ({
       <div className={rowGroupClassName}>
         <div
           className={clsx(
-            "absolute -ml-8 -mt-[0.7rem] hidden h-full w-8 items-center bg-white px-0 sm:flex",
+            "absolute -ml-8 -mt-[0.7rem] hidden h-full w-8 items-center px-0 sm:flex",
             getDragIconBeforeStyles(isDraggable),
             rowGroupClassName,
           )}

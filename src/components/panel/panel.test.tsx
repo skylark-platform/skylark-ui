@@ -350,11 +350,13 @@ describe("metadata view", () => {
       panelHeader.getByText(withPrimaryFieldMock.getObject.release_date),
     ).toBeInTheDocument();
 
-    expect(
-      panelHeader
-        .getByText(withPrimaryFieldMock.getObject.__typename)
-        .closest("div"),
-    ).toHaveAttribute("style", "background-color: rgb(123, 123, 123);");
+    await waitFor(() => {
+      expect(
+        panelHeader
+          .getByText(withPrimaryFieldMock.getObject.__typename)
+          .closest("div"),
+      ).toHaveAttribute("style", "background-color: rgb(123, 123, 123);");
+    });
   });
 
   test("renders an image and the original image size when the object type is an Image", async () => {

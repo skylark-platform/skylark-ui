@@ -225,7 +225,7 @@ export const ObjectSearchResults = ({
   return (
     <div
       className={clsx(
-        "relative mb-6 flex w-full flex-col overflow-x-auto overscroll-none md:-ml-4",
+        "relative mb-6 flex w-auto flex-col overflow-x-auto overscroll-none md:-ml-4",
       )}
       ref={tableContainerRef}
       data-testid="object-search-results"
