@@ -34,7 +34,7 @@ export const ObjectListingTableData = ({
   height: number;
   withCheckbox?: boolean;
   tableMeta: TableMeta<object> | undefined;
-  openPanel: () => void;
+  openPanel?: () => void;
   object: SkylarkObjectIdentifier;
   rowIsActive?: boolean;
   isDraggable?: boolean;

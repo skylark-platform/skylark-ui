@@ -65,22 +65,19 @@ interface PanelProps {
   navigateToForwardPanelObject?: () => void;
 }
 
-const tabsWithDropZones = [
-  PanelTab.Content,
-  PanelTab.Relationships,
-  PanelTab.Availability,
-];
+const tabsWithDropZones = [PanelTab.Content, PanelTab.Availability];
 
 const tabsWithEditMode = [
   ...tabsWithDropZones,
   PanelTab.Metadata,
+  PanelTab.Relationships,
   PanelTab.AvailabilityDimensions,
 ];
 
 const displayHandleDroppedErrors = (
   errors: HandleDropError[],
-  panelObject: ParsedSkylarkObject,
   tab: PanelTab,
+  panelObject?: ParsedSkylarkObject,
 ) => {
   const addedToSelfError = errors.find(
     (error) => error.type === HandleDropErrorType.OBJECTS_ARE_SAME,
@@ -111,9 +108,9 @@ const displayHandleDroppedErrors = (
       ),
     ];
 
-    const objectTypeText = `"${getObjectTypeDisplayNameFromParsedObject(
-      panelObject,
-    )}"`;
+    const objectTypeText = panelObject
+      ? `"${getObjectTypeDisplayNameFromParsedObject(panelObject)}"`
+      : "the active object";
 
     let tabText = `are not configured to link to ${objectTypeText}`;
     if (tab === PanelTab.Content) {
@@ -185,10 +182,10 @@ export const Panel = ({
     updated: null,
   });
 
-  const [relationshipObjects, setRelationshipObjects] = useState<{
-    original: ParsedSkylarkObjectRelationships[] | null;
-    updated: ParsedSkylarkObjectRelationships[] | null;
-  }>({ original: null, updated: null });
+  const [modifiedRelationships, setModifiedRelationships] = useState<Record<
+    string,
+    { added: ParsedSkylarkObject[]; removed: string[] }
+  > | null>(null);
 
   const [availabilityObjects, setAvailabilityObjects] = useState<{
     original: ParsedSkylarkObject[] | null;
@@ -232,9 +229,9 @@ export const Panel = ({
   const { reset: resetMetadataForm } = metadataForm;
 
   const inEditMode =
-    !panelInEditMode &&
-    metadataForm.formState.isDirty &&
-    !metadataForm.formState.isSubmitted;
+    panelInEditMode ||
+    (metadataForm.formState.isDirty && !metadataForm.formState.isSubmitted) ||
+    modifiedRelationships !== null;
 
   const tabs: PanelTab[] = useMemo(
     () =>
@@ -302,7 +299,7 @@ export const Panel = ({
     const dataAndFormAreEqual =
       formParsedMetadata && isObjectsDeepEqual(formParsedMetadata, formValues);
 
-    if (formParsedMetadata && !dataAndFormAreEqual) {
+    if (!inEditMode && formParsedMetadata && !dataAndFormAreEqual) {
       resetMetadataForm(formParsedMetadata);
     }
   }, [inEditMode, metadataForm, resetMetadataForm, formParsedMetadata]);
@@ -316,27 +313,6 @@ export const Panel = ({
     ) {
       setEditMode(true);
 
-      if (
-        selectedTab === PanelTab.Relationships &&
-        objectMeta?.relationships &&
-        relationshipObjects.updated
-      ) {
-        const { updatedRelationshipObjects, errors } =
-          handleDroppedRelationships({
-            droppedObjects,
-            panelObject: data,
-            existingObjects: relationshipObjects.updated,
-            objectMetaRelationships: objectMeta.relationships,
-          });
-
-        displayHandleDroppedErrors(errors, data, selectedTab);
-
-        setRelationshipObjects({
-          ...relationshipObjects,
-          updated: updatedRelationshipObjects,
-        });
-      }
-
       if (selectedTab === PanelTab.Content && contentObjects.updated) {
         const { updatedContentObjects, errors } = handleDroppedContents({
           droppedObjects,
@@ -344,7 +320,7 @@ export const Panel = ({
           existingObjects: contentObjects.updated,
         });
 
-        displayHandleDroppedErrors(errors, data, selectedTab);
+        displayHandleDroppedErrors(errors, selectedTab, data);
 
         setContentObjects({
           ...contentObjects,
@@ -363,7 +339,7 @@ export const Panel = ({
             existingObjects: availabilityObjects.updated,
           });
 
-        displayHandleDroppedErrors(errors, data, selectedTab);
+        displayHandleDroppedErrors(errors, selectedTab, data);
 
         setAvailabilityObjects({
           ...availabilityObjects,
@@ -379,8 +355,6 @@ export const Panel = ({
     contentObjects,
     data,
     droppedObjects,
-    objectMeta?.relationships,
-    relationshipObjects,
     selectedTab,
   ]);
 
@@ -388,10 +362,10 @@ export const Panel = ({
     useUpdateObjectRelationships({
       objectType,
       uid,
-      updatedRelationshipObjects: relationshipObjects.updated,
-      originalRelationshipObjects: relationshipObjects.original,
+      modifiedRelationships,
       onSuccess: () => {
-        setEditMode(false);
+        setModifiedRelationships(null);
+        if (panelInEditMode) setEditMode(false);
       },
     });
 
@@ -443,7 +417,7 @@ export const Panel = ({
       updateObjectContent();
     } else if (
       selectedTab === PanelTab.Relationships &&
-      relationshipObjects.updated
+      modifiedRelationships
     ) {
       updateObjectRelationships();
     } else if (
@@ -471,6 +445,21 @@ export const Panel = ({
     } else {
       setEditMode(false);
     }
+  };
+
+  const handleRelationshipsObjectsModified = (
+    updatedModifiedRelationships: Record<
+      string,
+      {
+        added: ParsedSkylarkObject[];
+        removed: string[];
+      }
+    >,
+    errors: HandleDropError[],
+  ) => {
+    setModifiedRelationships(updatedModifiedRelationships);
+    displayHandleDroppedErrors(errors, selectedTab, data);
+    clearDroppedObjects?.();
   };
 
   return (
@@ -508,10 +497,7 @@ export const Panel = ({
               original: contentObjects.original,
               updated: contentObjects.original,
             });
-            setRelationshipObjects({
-              original: relationshipObjects.original,
-              updated: relationshipObjects.original,
-            });
+            setModifiedRelationships(null);
             setAvailabilityDimensionValues({
               original: availabilityDimensionValues.original,
               updated: availabilityDimensionValues.original,
@@ -601,11 +587,12 @@ export const Panel = ({
               isPage={isPage}
               objectType={objectType}
               uid={uid}
-              updatedRelationshipObjects={relationshipObjects.updated}
-              setRelationshipObjects={setRelationshipObjects}
+              modifiedRelationships={modifiedRelationships || {}}
+              setModifiedRelationships={handleRelationshipsObjectsModified}
               inEditMode={inEditMode}
               language={language}
               showDropZone={isDraggedObject}
+              droppedObjects={droppedObjects}
               setPanelObject={setPanelObject}
             />
           )}

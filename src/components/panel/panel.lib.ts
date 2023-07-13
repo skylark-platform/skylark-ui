@@ -6,6 +6,7 @@ import {
   BuiltInSkylarkObjectType,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
+import { hasProperty } from "src/lib/utils";
 
 export enum HandleDropErrorType {
   "EXISTING_LINK" = "EXISTING_LINK",
@@ -33,100 +34,125 @@ const parseSkylarkObjectContent = (
 export const handleDroppedRelationships = ({
   existingObjects,
   objectMetaRelationships,
-  panelObject,
+  activeObjectUid,
   droppedObjects,
+  relationshipName,
 }: {
   existingObjects: ParsedSkylarkObjectRelationships[];
   objectMetaRelationships: SkylarkObjectMeta["relationships"];
-  panelObject: ParsedSkylarkObject;
+  activeObjectUid: string;
   droppedObjects: ParsedSkylarkObject[];
+  relationshipName?: string;
 }): {
   count: number;
   updatedRelationshipObjects: ParsedSkylarkObjectRelationships[];
+  addedObjects: Record<string, ParsedSkylarkObject[]>;
   errors: HandleDropError[];
 } => {
-  const { count, updatedRelationshipObjects, errors } = droppedObjects.reduce(
-    (
-      previous,
-      droppedObject,
-    ): {
-      count: number;
-      updatedRelationshipObjects: ParsedSkylarkObjectRelationships[];
-      errors: HandleDropError[];
-    } => {
-      const droppedObjectRelationshipName = objectMetaRelationships.find(
-        (relationship) => relationship.objectType === droppedObject.objectType,
-      )?.relationshipName;
+  const { count, updatedRelationshipObjects, errors, addedObjects } =
+    droppedObjects.reduce(
+      (
+        previous,
+        droppedObject,
+      ): {
+        count: number;
+        updatedRelationshipObjects: ParsedSkylarkObjectRelationships[];
+        addedObjects: Record<string, ParsedSkylarkObject[]>;
+        errors: HandleDropError[];
+      } => {
+        // Unless the relationshipName is passed in, we make a best guess based on the object type
+        const droppedObjectRelationshipName =
+          relationshipName ||
+          objectMetaRelationships.find(
+            (relationship) =>
+              relationship.objectType === droppedObject.objectType,
+          )?.relationshipName;
 
-      if (!droppedObjectRelationshipName) {
-        const error: HandleDropError = {
-          type: HandleDropErrorType.INVALID_OBJECT_TYPE,
-          object: droppedObject,
+        if (!droppedObjectRelationshipName) {
+          const error: HandleDropError = {
+            type: HandleDropErrorType.INVALID_OBJECT_TYPE,
+            object: droppedObject,
+          };
+          return {
+            ...previous,
+            errors: [...previous.errors, error],
+          };
+        }
+
+        if (activeObjectUid === droppedObject.uid) {
+          const error: HandleDropError = {
+            type: HandleDropErrorType.OBJECTS_ARE_SAME,
+            object: droppedObject,
+          };
+          return {
+            ...previous,
+            errors: [...previous.errors, error],
+          };
+        }
+
+        const droppedObjectRelationshipObjects = existingObjects.find(
+          (relationship) =>
+            relationship.relationshipName === droppedObjectRelationshipName,
+        );
+
+        const isAlreadyAdded = !!droppedObjectRelationshipObjects?.objects.find(
+          ({ uid }) => droppedObject.uid === uid,
+        );
+
+        if (isAlreadyAdded) {
+          const error: HandleDropError = {
+            type: HandleDropErrorType.EXISTING_LINK,
+            object: droppedObject,
+          };
+          return {
+            ...previous,
+            errors: [...previous.errors, error],
+          };
+        }
+
+        const updatedRelationshipObjects =
+          previous.updatedRelationshipObjects.map((relationship) => {
+            const { objects, relationshipName } = relationship;
+            if (relationshipName === droppedObjectRelationshipName) {
+              return {
+                ...relationship,
+                objects: [droppedObject, ...objects],
+              };
+            } else return relationship;
+          });
+
+        const addedObjects = {
+          ...previous.addedObjects,
+          [droppedObjectRelationshipName]: hasProperty(
+            previous.addedObjects,
+            droppedObjectRelationshipName,
+          )
+            ? [
+                ...previous.addedObjects[droppedObjectRelationshipName],
+                droppedObject,
+              ]
+            : [droppedObject],
         };
+
         return {
-          ...previous,
-          errors: [...previous.errors, error],
+          count: (previous.count += 1),
+          updatedRelationshipObjects,
+          addedObjects,
+          errors: previous.errors,
         };
-      }
-
-      if (panelObject.uid === droppedObject.uid) {
-        const error: HandleDropError = {
-          type: HandleDropErrorType.OBJECTS_ARE_SAME,
-          object: droppedObject,
-        };
-        return {
-          ...previous,
-          errors: [...previous.errors, error],
-        };
-      }
-
-      const droppedObjectRelationshipObjects = existingObjects.find(
-        (relationship) =>
-          relationship.relationshipName === droppedObjectRelationshipName,
-      );
-
-      const isAlreadyAdded = !!droppedObjectRelationshipObjects?.objects.find(
-        ({ uid }) => droppedObject.uid === uid,
-      );
-
-      if (isAlreadyAdded) {
-        const error: HandleDropError = {
-          type: HandleDropErrorType.EXISTING_LINK,
-          object: droppedObject,
-        };
-        return {
-          ...previous,
-          errors: [...previous.errors, error],
-        };
-      }
-
-      const updatedRelationshipObjects =
-        previous.updatedRelationshipObjects.map((relationship) => {
-          const { objects, relationshipName } = relationship;
-          if (relationshipName === droppedObjectRelationshipName) {
-            return {
-              ...relationship,
-              objects: [droppedObject, ...objects],
-            };
-          } else return relationship;
-        });
-
-      return {
-        count: (previous.count += 1),
-        updatedRelationshipObjects,
-        errors: previous.errors,
-      };
-    },
-    {
-      count: 0,
-      updatedRelationshipObjects: existingObjects,
-      errors: [] as HandleDropError[],
-    },
-  );
+      },
+      {
+        count: 0,
+        updatedRelationshipObjects: existingObjects,
+        addedObjects: {} as Record<string, ParsedSkylarkObject[]>,
+        errors: [] as HandleDropError[],
+      },
+    );
 
   return {
     count,
     updatedRelationshipObjects,
+    addedObjects,
     errors,
   };
 };

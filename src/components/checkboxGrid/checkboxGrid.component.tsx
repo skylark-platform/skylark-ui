@@ -13,7 +13,7 @@ export type CheckboxOptionState = {
   state: CheckedState;
 };
 
-interface CheckboxGridProps {
+export interface CheckboxGridProps {
   label?: string;
   options: CheckboxOptionState[];
   checkedOptions: string[];
@@ -42,7 +42,9 @@ export const CheckboxGrid = ({
   checkedOptions,
   onChange,
 }: CheckboxGridProps) => {
-  const allOptionsChecked = options.every((option) => option.state === true);
+  const allOptionsChecked = options.every(({ option }) =>
+    checkedOptions.includes(option.value),
+  );
 
   const handleChange = (option: CheckboxOption, checkedState: CheckedState) => {
     const updatedCheckedOptions = checkedState

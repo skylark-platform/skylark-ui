@@ -73,7 +73,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
 
   const { dispatch } = useUser();
 
-  const { data, allAvailableLanguages } = useMemo(() => {
+  const { data, allAvailableLanguages, totalHits } = useMemo(() => {
     // Using the errorPolicy "all" means that some data could be null
     const nonNullObjects = searchResponse?.pages
       ?.flatMap((page) => page.search.objects)
@@ -100,7 +100,21 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
         ]
       : [];
 
-    return { data: parsedObjects, allAvailableLanguages };
+    // Sometimes the first page's total_count is out of date
+    const largestTotalCount = searchResponse?.pages.reduce(
+      (previousTotal, { search: { total_count } }) => {
+        return total_count && total_count > previousTotal
+          ? total_count
+          : previousTotal;
+      },
+      0,
+    );
+
+    return {
+      data: parsedObjects,
+      allAvailableLanguages,
+      totalHits: largestTotalCount,
+    };
   }, [searchResponse?.pages, searchableObjects]);
 
   useEffect(() => {
@@ -118,7 +132,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     isRefetching,
     refetch,
     fetchNextPage,
-    totalHits: searchResponse?.pages[0].search?.total_count,
+    totalHits,
     properties: allFieldNames,
     query,
     variables,

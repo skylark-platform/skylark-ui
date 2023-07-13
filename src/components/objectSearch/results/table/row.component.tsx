@@ -43,8 +43,22 @@ export const ObjectListingTableRow = ({
 
   const objectIdentifier = convertParsedObjectToIdentifier(row.original);
 
-  const openPanel = () => {
-    tableMeta?.onObjectClick?.(objectIdentifier);
+  const hasObjectClick = !!tableMeta?.onObjectClick;
+  const openPanel = () => tableMeta?.onObjectClick?.(objectIdentifier);
+
+  const handleRowClick = () => {
+    if (hasObjectClick) {
+      openPanel();
+      return;
+    }
+
+    if (withCheckbox) {
+      const checked = Boolean(tableMeta?.checkedRows?.includes(row.index));
+      tableMeta?.onRowCheckChange?.({
+        checkedState: !checked,
+        object: row.original,
+      });
+    }
   };
 
   return (
@@ -59,7 +73,7 @@ export const ObjectListingTableRow = ({
         getObjectSearchTableRowStyles(rowIsActive),
       )}
       tabIndex={-1}
-      onClick={openPanel}
+      onClick={handleRowClick}
       style={{
         height: virtualRowSize,
       }}
@@ -70,7 +84,7 @@ export const ObjectListingTableRow = ({
           key={cell.id}
           cell={cell}
           withCheckbox={withCheckbox}
-          openPanel={openPanel}
+          openPanel={hasObjectClick ? openPanel : undefined}
           height={virtualRowSize}
           rowIsActive={rowIsActive}
           object={objectIdentifier}

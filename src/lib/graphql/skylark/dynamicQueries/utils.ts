@@ -34,7 +34,7 @@ export const getObjectConfigFields = (withFieldConfig: boolean) => ({
 const commonGraphQLOpts = {
   variables: {},
   args: {},
-  objectConfig: getObjectConfigFields(false),
+  // objectConfig: getObjectConfigFields(false),
   objectMeta: {
     _meta: {
       available_languages: true,
@@ -87,7 +87,7 @@ export const generateVariablesAndArgs = (
       variables: {},
       args: {},
       fields: {
-        ...commonGraphQLOpts.objectConfig,
+        // ...commonGraphQLOpts.objectConfig,
       },
     };
   }
@@ -104,7 +104,7 @@ export const generateVariablesAndArgs = (
       ...language.args,
     },
     fields: {
-      ...commonGraphQLOpts.objectConfig,
+      // ...commonGraphQLOpts.objectConfig,
       ...commonGraphQLOpts.objectMeta,
     },
   };
@@ -218,7 +218,7 @@ export const generateContentsToReturn = (
           __on: objectsToRequest.map((object) => ({
             __typeName: object.name,
             __typename: true, // To remove the alias later
-            ...commonGraphQLOpts.objectConfig,
+            // ...commonGraphQLOpts.objectConfig,
             ...commonGraphQLOpts.objectMeta,
             ...generateFieldsToReturn(
               object.fields,

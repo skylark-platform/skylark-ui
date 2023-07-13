@@ -82,6 +82,7 @@ export const useUser = () => {
   return {
     ...state,
     // In the future a user will have their own custom default language
+    accountId: account?.accountId,
     defaultLanguage: account?.defaultLanguage,
     isLoading,
     dispatch,

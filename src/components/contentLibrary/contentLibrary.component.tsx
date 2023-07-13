@@ -194,7 +194,7 @@ export const ContentLibrary = () => {
         </m.div>
         {activePanelObject && (
           <m.div
-            className="fixed z-50 flex h-full w-full grow flex-row bg-white md:relative md:z-auto"
+            className="fixed z-40 flex h-full w-full grow flex-row bg-white md:relative md:z-auto"
             style={{ width: activePanelObject ? panelWidth : 0 }}
           >
             <m.div

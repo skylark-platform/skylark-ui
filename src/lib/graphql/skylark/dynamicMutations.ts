@@ -293,39 +293,25 @@ export const createUpdateObjectContentMutation = (
 
 export const createUpdateObjectRelationshipsMutation = (
   object: SkylarkObjectMeta | null,
-  updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null,
-  originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null,
+  modifiedRelationships: Record<
+    string,
+    {
+      added: ParsedSkylarkObject[];
+      removed: string[];
+    }
+  > | null,
 ) => {
-  if (
-    !object ||
-    !object.operations.update ||
-    !updatedRelationshipObjects ||
-    !originalRelationshipObjects
-  ) {
+  if (!object || !object.operations.update || !modifiedRelationships) {
     return null;
   }
 
-  const relationships = object?.relationships || [];
-  const objectsToLinkAndUnlink = relationships
-    .map((relationship) =>
-      parseUpdatedRelationshipObjects(
-        relationship,
-        updatedRelationshipObjects,
-        originalRelationshipObjects,
-      ),
-    )
-    .filter(
-      ({ uidsToLink, uidsToUnlink }) =>
-        uidsToLink.length > 0 || uidsToUnlink.length > 0,
-    );
-
-  const parsedRelationsToUpdate = objectsToLinkAndUnlink.reduce(
-    (acc, { relationship, uidsToLink, uidsToUnlink }) => {
+  const parsedRelationsToUpdate = Object.entries(modifiedRelationships).reduce(
+    (acc, [relationshipName, { added, removed }]) => {
       return {
         ...acc,
-        [relationship.relationshipName]: {
-          link: uidsToLink,
-          unlink: uidsToUnlink,
+        [relationshipName]: {
+          link: added.map(({ uid }) => uid),
+          unlink: removed,
         },
       };
     },

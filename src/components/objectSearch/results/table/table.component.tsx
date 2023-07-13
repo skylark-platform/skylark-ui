@@ -30,7 +30,7 @@ const TableHead = ({
   withCheckbox: boolean;
 }) => (
   <thead>
-    <tr className="sticky top-0 z-40 bg-white">
+    <tr className="sticky top-0 z-40 h-8 bg-white">
       {headers.map((header) => (
         <ObjectListingTableColumnHeader
           key={header.id}

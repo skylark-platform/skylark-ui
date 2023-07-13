@@ -54,7 +54,7 @@ const customColumnStyling: Record<
   },
   [OBJECT_LIST_TABLE.columnIds.checkbox]: {
     className: {
-      all: "pr-0 pl-0 sticky left-5 absolute bg-white",
+      all: "pr-0 pl-0 sm:sticky left-5 bg-white",
       cell: "z-[31]",
       header: "z-40",
     },

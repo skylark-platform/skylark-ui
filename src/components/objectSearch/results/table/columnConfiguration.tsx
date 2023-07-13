@@ -2,7 +2,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 
 import { AvailabilityLabel } from "src/components/availability";
 import { Checkbox } from "src/components/inputs/checkbox";
-import { Pill } from "src/components/pill";
+import { ObjectTypePill, Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { PanelTab } from "src/hooks/state";
 import {
@@ -56,11 +56,7 @@ const objectTypeColumn = columnHelper.accessor(
       const original = row.original as ParsedSkylarkObject;
       return (
         <div className="flex h-full items-center">
-          <Pill
-            label={original.config.objectTypeDisplayName || original.objectType}
-            bgColor={original.config.colour}
-            className="w-full"
-          />
+          <ObjectTypePill type={original.objectType} className="w-full" />
         </div>
       );
     },

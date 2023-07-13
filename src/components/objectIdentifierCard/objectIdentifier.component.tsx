@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 
 import { OpenObjectButton } from "src/components/button";
 import { Trash } from "src/components/icons";
-import { Pill } from "src/components/pill";
+import { ObjectTypePill, Pill } from "src/components/pill";
 import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
@@ -39,9 +39,8 @@ export const ObjectIdentifierCard = ({
       )}
     >
       {!hideObjectType && (
-        <Pill
-          label={object.config.objectTypeDisplayName || object.objectType}
-          bgColor={object.config.colour}
+        <ObjectTypePill
+          type={object.objectType}
           className="w-20 min-w-20 max-w-20"
         />
       )}

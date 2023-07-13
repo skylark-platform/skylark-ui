@@ -41,7 +41,6 @@ export const HREFS = {
 export const SYSTEM_FIELDS: string[] = [
   SkylarkSystemField.UID,
   SkylarkSystemField.ExternalID,
-  SkylarkSystemField.Slug,
   SkylarkSystemField.Type,
   SkylarkSystemField.DataSourceID,
   SkylarkSystemField.DataSourceFields,

@@ -22,6 +22,7 @@ interface SearchBarProps {
     query: DocumentNode | null;
     variables: object;
   };
+  hideFilters?: boolean;
   onQueryChange: (str: string) => void;
   onColumnVisibilityChange: (c: VisibilityState) => void;
   onLanguageChange: (l: SearchFilters["language"]) => void;
@@ -37,6 +38,7 @@ export const Search = ({
   graphqlQuery,
   isSearching,
   activeFilters,
+  hideFilters,
   onQueryChange,
   onColumnVisibilityChange,
   onLanguageChange,
@@ -89,6 +91,7 @@ export const Search = ({
           onQueryChange={onQueryChange}
           searchQuery={searchQuery}
           isSearching={isSearching}
+          hideFilters={hideFilters}
           toggleFilterOpen={() => setFilterOpen(!isFilterOpen)}
           onRefresh={onRefresh}
         />

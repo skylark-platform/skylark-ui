@@ -9,6 +9,7 @@ interface SearchInputProps {
   searchQuery: string;
   className?: string;
   isSearching?: boolean;
+  hideFilters?: boolean;
   onQueryChange: (str: string) => void;
   toggleFilterOpen: () => void;
   onRefresh: () => void;
@@ -18,6 +19,7 @@ export const SearchInput = ({
   className,
   searchQuery,
   isSearching,
+  hideFilters,
   onQueryChange,
   toggleFilterOpen,
   onRefresh,
@@ -40,7 +42,12 @@ export const SearchInput = ({
         className,
       )}
     >
-      <div className="relative flex w-full items-center rounded-l-full outline-2 focus-within:outline focus-within:-outline-offset-1 focus-within:outline-brand-primary">
+      <div
+        className={clsx(
+          "relative flex w-full items-center rounded-l-full outline-2 focus-within:outline focus-within:-outline-offset-1 focus-within:outline-brand-primary",
+          hideFilters && "rounded-r-full",
+        )}
+      >
         <Search className="ml-2 h-4 md:ml-5 md:h-5" />
         <input
           name="search-query-input"
@@ -80,15 +87,17 @@ export const SearchInput = ({
           />
         </button>
       </div>
-      <button
-        className="flex items-center justify-center space-x-2 rounded-r-full bg-manatee-200 p-2 pl-4 pr-5 focus:outline-brand-primary md:p-3 md:pl-6 md:pr-8"
-        onClick={toggleFilterOpen}
-        aria-label="open-search-filters"
-        type="button"
-      >
-        <Filter />
-        <span className="font-medium">Filters</span>
-      </button>
+      {!hideFilters && (
+        <button
+          className="flex items-center justify-center space-x-2 rounded-r-full bg-manatee-200 p-2 pl-4 pr-5 focus:outline-brand-primary md:p-3 md:pl-6 md:pr-8"
+          onClick={toggleFilterOpen}
+          aria-label="open-search-filters"
+          type="button"
+        >
+          <Filter />
+          <span className="font-medium">Filters</span>
+        </button>
+      )}
     </div>
   );
 };

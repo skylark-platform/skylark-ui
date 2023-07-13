@@ -7,9 +7,11 @@ import { GrClose } from "react-icons/gr";
 import { useDebouncedCallback } from "use-debounce";
 
 import { Button } from "src/components/button";
+import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 import { TextInput } from "src/components/inputs/textInput";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { QueryKeys } from "src/enums/graphql";
+import { useAccount } from "src/hooks/useAccount";
 import {
   SkylarkCreds,
   getSkylarkCredsFromLocalStorage,
@@ -30,6 +32,8 @@ export const AddAuthTokenModal = ({
 
   const { isConnected, isLoading, invalidUri, invalidToken, setCreds } =
     useConnectedToSkylark();
+
+  const { account } = useAccount();
 
   const [{ uri: inputUri, token: inputToken }, setInputCreds] =
     useState<SkylarkCreds>(() => getSkylarkCredsFromLocalStorage(true));
@@ -124,7 +128,16 @@ export const AddAuthTokenModal = ({
             Enter your GraphQL URI and API Key below to connect to your Skylark
             account.
           </Dialog.Description>
-          <div className="my-6 flex flex-col space-y-2 md:my-10">
+          <div className="mt-2 flex items-center">
+            <p>
+              Currently connected to:{" "}
+              <code className="rounded-sm bg-manatee-200 p-1">
+                {account?.accountId}
+              </code>
+            </p>
+            <CopyToClipboard value={account?.accountId} />
+          </div>
+          <div className="my-4 flex flex-col space-y-2 md:my-10">
             <TextInput
               value={inputUri || ""}
               onChange={(uri) => {

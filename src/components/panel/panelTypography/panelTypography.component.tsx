@@ -20,7 +20,7 @@ export const PanelSectionTitle = ({
   <h3
     id={id}
     className={clsx(
-      "bg-white pb-1 text-base font-semibold underline md:pb-2 md:text-lg",
+      "bg-white pb-1 text-base font-semibold underline md:pb-2 ",
       sticky ? "sticky top-0 z-[2] pb-2 pt-4 md:pt-8" : "mb-2",
     )}
   >
@@ -57,11 +57,18 @@ export const PanelEmptyDataText = () => (
   <p className="text-sm text-manatee-500">None</p>
 );
 
-export const PanelSeparator = ({ transparent }: { transparent?: boolean }) => (
+export const PanelSeparator = ({
+  transparent,
+  className,
+}: {
+  transparent?: boolean;
+  className?: string;
+}) => (
   <span
     className={clsx(
       "flex h-px w-full flex-grow",
       transparent ? "bg-transparent" : "bg-manatee-100",
+      className,
     )}
   />
 );

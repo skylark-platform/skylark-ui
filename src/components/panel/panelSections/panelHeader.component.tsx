@@ -25,7 +25,7 @@ import {
   DisplayGraphQLQueryModal,
 } from "src/components/modals";
 import { PanelLabel } from "src/components/panel/panelLabel";
-import { Pill } from "src/components/pill";
+import { ObjectTypePill, Pill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
 import {
   AvailabilityStatus,
@@ -228,10 +228,9 @@ export const PanelHeader = ({
         <div className="mt-2 flex h-5 items-center justify-center gap-2">
           {object ? (
             <>
-              <Pill
-                bgColor={object.config.colour}
+              <ObjectTypePill
                 className="w-20 bg-brand-primary"
-                label={object.config.objectTypeDisplayName || objectType}
+                type={objectType}
               />
               {availabilityStatus && (
                 <AvailabilityLabelPill status={availabilityStatus} />

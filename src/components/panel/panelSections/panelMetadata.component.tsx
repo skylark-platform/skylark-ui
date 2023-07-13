@@ -44,8 +44,8 @@ const sortFieldsByConfigPosition = (
 ) => {
   const aFieldConfig = objectFieldConfig?.find(({ name }) => fieldA === name);
   const bFieldConfig = objectFieldConfig?.find(({ name }) => fieldB === name);
-  const aPosition = aFieldConfig?.position || -1;
-  const bPosition = bFieldConfig?.position || -1;
+  const aPosition = aFieldConfig?.position || 999;
+  const bPosition = bFieldConfig?.position || 999;
   return aPosition - bPosition;
 };
 
