@@ -304,3 +304,49 @@ export const handleDroppedAvailabilities = ({
     errors,
   };
 };
+
+export const handleDroppedObjectsToAssignToAvailability = ({
+  newObjects,
+}: {
+  newObjects: ParsedSkylarkObject[];
+}): {
+  updatedAssignedToObjects: ParsedSkylarkObject[];
+  errors: HandleDropError[];
+} => {
+  const { updatedAssignedToObjects, errors } = newObjects.reduce(
+    (
+      previous,
+      newObject,
+    ): {
+      updatedAssignedToObjects: ParsedSkylarkObject[];
+      errors: HandleDropError[];
+    } => {
+      if (newObject.objectType === BuiltInSkylarkObjectType.Availability) {
+        const error: HandleDropError = {
+          type: HandleDropErrorType.INVALID_OBJECT_TYPE,
+          object: newObject,
+        };
+        return {
+          ...previous,
+          errors: [...previous.errors, error],
+        };
+      }
+
+      const updatedAssignedToObjects = [
+        ...previous.updatedAssignedToObjects,
+        newObject,
+      ];
+
+      return {
+        ...previous,
+        updatedAssignedToObjects,
+      };
+    },
+    {
+      updatedAssignedToObjects: [] as ParsedSkylarkObject[],
+      errors: [] as HandleDropError[],
+    },
+  );
+
+  return { updatedAssignedToObjects, errors };
+};

@@ -8,6 +8,7 @@ import { Toast } from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/objects/get/useGetObject";
 import { prefetchGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
 import { prefetchGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
+import { useUpdateAvailabilityAssignedTo } from "src/hooks/objects/update/useUpdateAvailabilityAssignedTo";
 import { useUpdateAvailabilityObjectDimensions } from "src/hooks/objects/update/useUpdateAvailabilityObjectDimensions";
 import { useUpdateObjectAvailability } from "src/hooks/objects/update/useUpdateObjectAvailability";
 import { useUpdateObjectContent } from "src/hooks/objects/update/useUpdateObjectContent";
@@ -46,6 +47,7 @@ import {
   PanelImages,
   PanelMetadata,
 } from "./panelSections";
+import { PanelAvailabilityAssignedTo } from "./panelSections/panelAvailabilityAssignedTo.component";
 import { PanelAvailabilityDimensions } from "./panelSections/panelAvailabilityDimensions.component";
 import { PanelContent } from "./panelSections/panelContent.component";
 import { PanelContentOf } from "./panelSections/panelContentOf.component";
@@ -72,6 +74,7 @@ const tabsWithEditMode = [
   PanelTab.Metadata,
   PanelTab.Relationships,
   PanelTab.AvailabilityDimensions,
+  PanelTab.AvailabilityAssignedTo,
 ];
 
 const displayHandleDroppedErrors = (
@@ -201,6 +204,9 @@ export const Panel = ({
       updated: Record<string, string[]> | null;
     }>({ original: null, updated: null });
 
+  const [modifiedAvailabilityAssignedTo, setModifiedAvailabilityAssignedTo] =
+    useState<{ added: ParsedSkylarkObject[] } | null>(null);
+
   const { uid, objectType, language } = object;
   const {
     data,
@@ -231,7 +237,8 @@ export const Panel = ({
   const inEditMode =
     panelInEditMode ||
     (metadataForm.formState.isDirty && !metadataForm.formState.isSubmitted) ||
-    modifiedRelationships !== null;
+    modifiedRelationships !== null ||
+    modifiedAvailabilityAssignedTo !== null;
 
   const tabs: PanelTab[] = useMemo(
     () =>
@@ -244,6 +251,8 @@ export const Panel = ({
         objectMeta?.hasAvailability && PanelTab.Availability,
         objectMeta?.name === BuiltInSkylarkObjectType.Availability &&
           PanelTab.AvailabilityDimensions,
+        objectMeta?.name === BuiltInSkylarkObjectType.Availability &&
+          PanelTab.AvailabilityAssignedTo,
       ].filter((tab) => !!tab) as PanelTab[],
     [
       objectMeta?.hasAvailability,
@@ -412,6 +421,13 @@ export const Panel = ({
     },
   });
 
+  const { updateAvailabilityAssignedTo, isUpdatingAvailabilityAssignedTo } =
+    useUpdateAvailabilityAssignedTo({
+      onSuccess: () => {
+        setModifiedAvailabilityAssignedTo(null);
+      },
+    });
+
   const saveActiveTabChanges = () => {
     if (selectedTab === PanelTab.Content && contentObjects.updated) {
       updateObjectContent();
@@ -430,6 +446,14 @@ export const Panel = ({
       availabilityDimensionValues.updated
     ) {
       updateAvailabilityObjectDimensions();
+    } else if (
+      selectedTab === PanelTab.AvailabilityAssignedTo &&
+      modifiedAvailabilityAssignedTo
+    ) {
+      updateAvailabilityAssignedTo({
+        uid,
+        modifiedAvailabilityAssignedTo,
+      });
     } else if (selectedTab === PanelTab.Metadata) {
       metadataForm.handleSubmit((values) => {
         if (
@@ -462,6 +486,17 @@ export const Panel = ({
     clearDroppedObjects?.();
   };
 
+  const handleAvailabilityAssignedToModified = (
+    updatedAssignedToObjects: {
+      added: ParsedSkylarkObject[];
+    },
+    errors?: HandleDropError[],
+  ) => {
+    setModifiedAvailabilityAssignedTo(updatedAssignedToObjects);
+    if (errors) displayHandleDroppedErrors(errors, selectedTab, data);
+    clearDroppedObjects?.();
+  };
+
   return (
     <section
       className="mx-auto flex h-full w-full flex-col overflow-y-hidden break-words"
@@ -486,7 +521,8 @@ export const Panel = ({
           isUpdatingObjectMetadata ||
           isUpdatingObjectContent ||
           isUpdatingObjectAvailability ||
-          isUpdatingAvailabilityObjectDimensions
+          isUpdatingAvailabilityObjectDimensions ||
+          isUpdatingAvailabilityAssignedTo
         }
         isTranslatable={objectMeta?.isTranslatable}
         availabilityStatus={data?.meta.availabilityStatus}
@@ -502,6 +538,7 @@ export const Panel = ({
               original: availabilityDimensionValues.original,
               updated: availabilityDimensionValues.original,
             });
+            setModifiedAvailabilityAssignedTo(null);
             clearDroppedObjects?.();
           }
           setEditMode(!inEditMode);
@@ -619,6 +656,18 @@ export const Panel = ({
                   setEditMode(true);
                 }
               }}
+            />
+          )}
+          {selectedTab === PanelTab.AvailabilityAssignedTo && (
+            <PanelAvailabilityAssignedTo
+              isPage={isPage}
+              inEditMode={inEditMode}
+              showDropZone={isDraggedObject}
+              modifiedAvailabilityAssignedTo={modifiedAvailabilityAssignedTo}
+              droppedObjects={droppedObjects}
+              setModifiedAvailabilityAssignedTo={
+                handleAvailabilityAssignedToModified
+              }
             />
           )}
         </>

@@ -9,13 +9,13 @@ import {
 } from "src/components/checkboxGrid/checkboxGrid.component";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { SearchFilters } from "src/hooks/useSearch";
-import { SkylarkGraphQLObjectConfig } from "src/interfaces/skylark";
+import { ParsedSkylarkObjectConfig } from "src/interfaces/skylark";
 
 interface SearchFilterProps {
   activeObjectTypes: SearchFilters["objectTypes"];
   objectTypesWithConfig: {
     objectType: string;
-    config?: SkylarkGraphQLObjectConfig;
+    config?: ParsedSkylarkObjectConfig;
   }[];
   columns: string[];
   visibleColumns: string[];
@@ -77,7 +77,7 @@ export const SearchFilter = ({
       createCheckboxOptions(
         objectTypesWithConfig
           ?.map(({ objectType, config }) => ({
-            label: config?.display_name || objectType,
+            label: config?.objectTypeDisplayName || objectType,
             value: objectType,
           }))
           .sort(({ label: labelA }, { label: labelB }) =>

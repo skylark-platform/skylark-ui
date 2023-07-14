@@ -25,6 +25,7 @@
     "@dnd-kit/core": "^6.0.7",
     "@dnd-kit/modifiers": "^6.0.1",
     "@flatfile/sdk": "^2.3.2",
+    "@floating-ui/react": "^0.24.7",
     "@fontsource/inter": "^4.5.14",
     "@fontsource/work-sans": "^4.5.12",
     "@graphiql/plugin-explorer": "^0.1.12",

@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { OpenObjectButton } from "src/components/button";
 import { Trash } from "src/components/icons";
 import { ObjectTypePill, Pill } from "src/components/pill";
+import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
@@ -31,6 +32,12 @@ export const ObjectIdentifierCard = ({
   onForwardClick,
   onDeleteClick,
 }: ObjectIdentifierCardProps) => {
+  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+
+  const { config } = objectTypesWithConfig?.find(
+    ({ objectType }) => objectType === object.objectType,
+  ) || { config: object.config };
+
   return (
     <div
       className={clsx(
@@ -41,12 +48,13 @@ export const ObjectIdentifierCard = ({
       {!hideObjectType && (
         <ObjectTypePill
           type={object.objectType}
+          defaultConfig={object.config}
           className="w-20 min-w-20 max-w-20"
         />
       )}
       <p className="flex flex-grow overflow-hidden whitespace-nowrap text-sm">
         <span className="overflow-hidden text-ellipsis">
-          {getObjectDisplayName(object)}
+          {getObjectDisplayName({ ...object, config })}
         </span>
       </p>
       {children}

@@ -12,6 +12,7 @@ import { useUpdateObjectMetadata } from "src/hooks/objects/update/useUpdateObjec
 import { useCreateObject } from "src/hooks/objects/useCreateObject";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
+  ParsedSkylarkObjectConfig,
   SkylarkGraphQLObjectConfig,
   SkylarkObjectIdentifier,
   SkylarkObjectMetadataField,
@@ -59,13 +60,13 @@ export const CreateObjectModal = ({
   const isCreateTranslationModal = !!createTranslation;
 
   const [{ objectType, config: objectTypeConfig }, setObjectTypeWithConfig] =
-    useState<{ objectType: string; config?: SkylarkGraphQLObjectConfig }>({
+    useState<{ objectType: string; config?: ParsedSkylarkObjectConfig }>({
       objectType: defaultObjectType || "",
     });
 
   const objectTypeDisplayName = isCreateTranslationModal
     ? createTranslation.objectTypeDisplayName || createTranslation.objectType
-    : objectTypeConfig?.display_name || objectType;
+    : objectTypeConfig?.objectTypeDisplayName || objectType;
 
   const closeModal = () => {
     reset({});

@@ -1,22 +1,30 @@
 import { Pill } from "src/components/pill/pill.component";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
-import { SkylarkObjectType } from "src/interfaces/skylark";
+import {
+  ParsedSkylarkObjectConfig,
+  SkylarkObjectType,
+} from "src/interfaces/skylark";
 
 interface ObjectTypePillProps {
   type: SkylarkObjectType;
+  defaultConfig?: ParsedSkylarkObjectConfig;
   className?: string;
 }
 
-export const ObjectTypePill = ({ type, className }: ObjectTypePillProps) => {
+export const ObjectTypePill = ({
+  type,
+  defaultConfig,
+  className,
+}: ObjectTypePillProps) => {
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
 
   const { config } = objectTypesWithConfig?.find(
     ({ objectType }) => objectType === type,
-  ) || { config: null };
+  ) || { config: defaultConfig };
 
   return (
     <Pill
-      label={config?.display_name || type}
+      label={config?.objectTypeDisplayName || type}
       bgColor={config?.colour}
       className={className}
     />

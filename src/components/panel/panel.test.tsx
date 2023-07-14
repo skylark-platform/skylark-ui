@@ -321,7 +321,6 @@ describe("metadata view", () => {
         _config: {
           ...GQLSkylarkGetObjectQueryFixture.data.getObject._config,
           primary_field: "release_date",
-          colour: "rgb(123, 123, 123)",
         },
       },
     };
@@ -355,7 +354,7 @@ describe("metadata view", () => {
         panelHeader
           .getByText(withPrimaryFieldMock.getObject.__typename)
           .closest("div"),
-      ).toHaveAttribute("style", "background-color: rgb(123, 123, 123);");
+      ).toHaveAttribute("style", "background-color: rgb(0, 150, 136);"); // Movie HEX in RGB
     });
   });
 

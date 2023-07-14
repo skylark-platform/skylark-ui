@@ -14,6 +14,7 @@ import {
   getObjectOperations,
   getAllObjectsMeta,
 } from "src/lib/skylark/objects";
+import { parseObjectConfig } from "src/lib/skylark/parsers";
 import { ObjectError } from "src/lib/utils/errors";
 
 import {
@@ -49,10 +50,14 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
     enabled: query !== null,
   });
 
-  const objectTypesWithConfig = objectTypes?.map((objectType) => ({
-    objectType,
-    config: data?.[objectType],
-  }));
+  const objectTypesWithConfig = useMemo(
+    () =>
+      objectTypes?.map((objectType) => ({
+        objectType,
+        config: parseObjectConfig(data?.[objectType]),
+      })),
+    [data, objectTypes],
+  );
 
   return {
     objectTypesWithConfig,

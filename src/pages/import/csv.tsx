@@ -14,6 +14,7 @@ import { FlatfileRow } from "src/interfaces/flatfile/responses";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
 import {
   NormalizedObjectField,
+  ParsedSkylarkObjectConfig,
   SkylarkGraphQLObjectConfig,
 } from "src/interfaces/skylark";
 import {
@@ -147,11 +148,12 @@ function reducer(
 
 export default function CSVImportPage() {
   const [{ objectType, config: objectTypeConfig }, setObjectTypeWithConfig] =
-    useState<{ objectType: string; config?: SkylarkGraphQLObjectConfig }>({
+    useState<{ objectType: string; config?: ParsedSkylarkObjectConfig }>({
       objectType: "",
     });
 
-  const objectTypeDisplayName = objectTypeConfig?.display_name || objectType;
+  const objectTypeDisplayName =
+    objectTypeConfig?.objectTypeDisplayName || objectType;
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 

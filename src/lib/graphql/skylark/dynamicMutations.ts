@@ -310,8 +310,8 @@ export const createUpdateObjectRelationshipsMutation = (
       return {
         ...acc,
         [relationshipName]: {
-          link: added.map(({ uid }) => uid),
-          unlink: removed,
+          link: [...new Set(added.map(({ uid }) => uid))],
+          unlink: [...new Set(removed)],
         },
       };
     },
@@ -512,6 +512,61 @@ export const createUpdateAvailabilityDimensionsMutation = (
       },
     },
   };
+
+  const graphQLQuery = jsonToGraphQLQuery(mutation);
+
+  return gql(graphQLQuery);
+};
+
+export const createUpdateAvailabilityAssignedToMutation = (
+  allObjectsMeta: SkylarkObjectMeta[] | null,
+  availabilityUid: string,
+  addedObjects: ParsedSkylarkObject[],
+) => {
+  if (!allObjectsMeta || !availabilityUid || addedObjects.length === 0) {
+    return null;
+  }
+
+  const operations = addedObjects.reduce((previous, object) => {
+    if (object.objectType === BuiltInSkylarkObjectType.Availability) {
+      return previous;
+    }
+
+    const objectMeta = allObjectsMeta.find(
+      ({ name }) => name === object.objectType,
+    );
+    if (!objectMeta) {
+      return previous;
+    }
+
+    const operation = {
+      [`assign_availability_${availabilityUid}_to_${object.objectType}_${object.uid}`]:
+        {
+          __aliasFor: objectMeta.operations.update.name,
+          __args: {
+            uid: object.uid,
+            [objectMeta.operations.update.argName]: {
+              availability: { link: availabilityUid },
+            },
+          },
+          uid: true,
+        },
+    };
+
+    return {
+      ...previous,
+      ...operation,
+    };
+  }, {});
+
+  const mutation = {
+    mutation: {
+      __name: `UPDATE_AVAILABILITY_ASSIGNED_TO`,
+      ...operations,
+    },
+  };
+
+  console.log({ mutation });
 
   const graphQLQuery = jsonToGraphQLQuery(mutation);
 

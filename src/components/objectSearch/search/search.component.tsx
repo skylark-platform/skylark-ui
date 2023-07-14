@@ -4,6 +4,7 @@ import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useEffect, useRef, useState } from "react";
 
+import { AvailabilityDimensionsPicker } from "src/components/inputs/availabilityDimensionsPicker/availabilityDimensionsPicker.component";
 import { LanguageSelect } from "src/components/inputs/select";
 import { SearchFilter } from "src/components/objectSearch/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
@@ -134,6 +135,9 @@ export const Search = ({
           onValueClear={() => onLanguageChange(null)}
         />
       </div>
+      {/* <div>
+        <AvailabilityDimensionsPicker />
+      </div> */}
     </div>
   );
 };
