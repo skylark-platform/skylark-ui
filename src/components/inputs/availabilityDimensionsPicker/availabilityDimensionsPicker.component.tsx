@@ -1,9 +1,8 @@
-import { Popover, Portal } from "@headlessui/react";
+import { Popover } from "@headlessui/react";
 import { useState } from "react";
 import { GrDown } from "react-icons/gr";
 
 import { Button } from "src/components/button";
-import { MultiSelect } from "src/components/inputs/multiselect/multiselect.component";
 import { Select } from "src/components/inputs/select";
 import { PanelFieldTitle } from "src/components/panel/panelTypography";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
@@ -14,8 +13,6 @@ export const AvailabilityDimensionsPicker = () => {
   const { dimensions, isLoading } = useAvailabilityDimensionsWithValues();
 
   const [activeValues, setActiveValues] = useState<Record<string, string>>({});
-
-  console.log({ dimensions, isLoading });
 
   return (
     <Popover className="relative">

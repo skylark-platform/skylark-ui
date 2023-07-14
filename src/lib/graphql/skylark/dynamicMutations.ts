@@ -566,8 +566,6 @@ export const createUpdateAvailabilityAssignedToMutation = (
     },
   };
 
-  console.log({ mutation });
-
   const graphQLQuery = jsonToGraphQLQuery(mutation);
 
   return gql(graphQLQuery);

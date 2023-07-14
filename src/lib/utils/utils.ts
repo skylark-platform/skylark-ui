@@ -41,7 +41,6 @@ export const getObjectDisplayName = (
 ): string => {
   if (!object) return "";
   const primaryKeyField = getPrimaryKeyField(object);
-  console.log({ object, primaryKeyField });
   const displayName = primaryKeyField && object.metadata[primaryKeyField];
   return (displayName as string) || object.uid;
 };

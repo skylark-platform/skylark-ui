@@ -76,6 +76,6 @@ export const OBJECT_OPTIONS: {
 }[] = [
   {
     objectTypes: [BuiltInSkylarkObjectType.SkylarkImage],
-    hiddenFields: ["external_url", "upload_url", "download_from_url"],
+    hiddenFields: ["upload_url", "download_from_url"],
   },
 ];
