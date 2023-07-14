@@ -135,9 +135,7 @@ export const Search = ({
           onValueClear={() => onLanguageChange(null)}
         />
       </div>
-      {/* <div>
-        <AvailabilityDimensionsPicker />
-      </div> */}
+      <div>{/* <AvailabilityDimensionsPicker /> */}</div>
     </div>
   );
 };

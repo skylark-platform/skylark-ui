@@ -13,7 +13,7 @@ import {
   autoUpdate,
   FloatingPortal,
 } from "@floating-ui/react";
-import { Combobox, Transition } from "@headlessui/react";
+import { Combobox, Transition, Portal } from "@headlessui/react";
 import clsx from "clsx";
 import React, {
   useState,
@@ -407,7 +407,7 @@ export const Select = forwardRef(
               afterLeave={() => setQuery("")}
             >
               {open && (
-                <FloatingPortal>
+                <Portal>
                   <Combobox.Options
                     static
                     ref={refs.setFloating}
@@ -449,7 +449,7 @@ export const Select = forwardRef(
                       />
                     )}
                   </Combobox.Options>
-                </FloatingPortal>
+                </Portal>
               )}
             </Transition>
           </div>
