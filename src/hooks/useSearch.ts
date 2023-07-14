@@ -31,10 +31,15 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
   // Used to rerender search results when the search changes but objects are the same
   const searchHash = `${queryString}-${language}-${objectTypes?.join("-")}`;
 
-  const query = useMemo(
-    () => createSearchObjectsQuery(searchableObjects, objectTypes || []),
-    [searchableObjects, objectTypes],
-  );
+  const { query } = useMemo(() => {
+    const query = createSearchObjectsQuery(
+      searchableObjects,
+      objectTypes || [],
+    );
+    return {
+      query,
+    };
+  }, [searchableObjects, objectTypes]);
 
   const variables = {
     queryString,
@@ -53,7 +58,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     refetch,
     fetchNextPage,
   } = useInfiniteQuery<GQLSkylarkSearchResponse>({
-    queryKey: [QueryKeys.Search, query, variables],
+    queryKey: [QueryKeys.Search, ...Object.values(variables), query],
     queryFn: async ({ pageParam: offset = 0 }) =>
       skylarkRequest(query as RequestDocument, {
         ...variables,

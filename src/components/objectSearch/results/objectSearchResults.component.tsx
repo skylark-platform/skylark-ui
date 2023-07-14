@@ -38,6 +38,7 @@ export interface ObjectSearchResultsProps {
   searchData?: ParsedSkylarkObject[];
   sortedHeaders: string[];
   hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
   columnVisibility: VisibilityState;
   checkedObjects?: ParsedSkylarkObject[];
   onObjectCheckedChanged?: (o: ParsedSkylarkObject[]) => void;
@@ -57,6 +58,7 @@ export const ObjectSearchResults = ({
   hasNextPage,
   fetchNextPage,
   checkedObjects,
+  isFetchingNextPage,
   onObjectCheckedChanged,
 }: ObjectSearchResultsProps) => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -108,6 +110,7 @@ export const ObjectSearchResults = ({
         if (
           hasNextPage &&
           fetchNextPage &&
+          !isFetchingNextPage &&
           searchDataLength &&
           scrollHeight - scrollTop - clientHeight < 500
         ) {
@@ -115,7 +118,7 @@ export const ObjectSearchResults = ({
         }
       }
     },
-    [hasNextPage, fetchNextPage, searchDataLength],
+    [hasNextPage, fetchNextPage, searchDataLength, isFetchingNextPage],
   );
 
   // a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data

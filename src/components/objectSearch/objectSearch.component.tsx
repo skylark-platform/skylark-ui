@@ -80,6 +80,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     searchHash,
     refetch,
     hasNextPage,
+    isFetchingNextPage,
     fetchNextPage,
   } = useSearch(searchQuery, {
     language: searchLanguage === undefined ? defaultLanguage : searchLanguage,
@@ -211,6 +212,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
           key={searchHash} // This will rerender all results when the searchHash changes - importantly clearing the checkboxes back to an unchecked state
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
           sortedHeaders={sortedHeaders}
           searchData={searchData}
           columnVisibility={columnVisibility}

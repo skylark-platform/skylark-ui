@@ -48,6 +48,9 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
     queryKey: [QueryKeys.ObjectTypesConfig, query],
     queryFn: async () => skylarkRequest(query as DocumentNode),
     enabled: query !== null,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const objectTypesWithConfig = useMemo(
