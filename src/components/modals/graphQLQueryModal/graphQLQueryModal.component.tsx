@@ -203,7 +203,7 @@ export const DisplayGraphQLQueryModal = ({
         id="graphql-query-modal"
         className="fixed inset-0 flex h-full items-center justify-center overflow-y-hidden py-4 text-sm sm:py-10 md:py-20"
       >
-        <Dialog.Panel className="relative mx-auto flex h-full w-full flex-col overflow-y-hidden rounded bg-white sm:w-11/12 md:w-5/6 lg:w-3/4 xl:w-1/2">
+        <Dialog.Panel className="relative mx-auto flex h-full w-full flex-col overflow-y-hidden rounded bg-white sm:w-11/12 md:w-5/6 lg:w-3/4 xl:w-2/3 2xl:w-1/2">
           <div className="sticky top-0 bg-white pt-8 text-black shadow">
             <button
               className="absolute right-4 top-4 sm:right-8 sm:top-9"

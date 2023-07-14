@@ -50,6 +50,7 @@ Default.args = {
   activeFilters: {
     objectTypes,
     language: "",
+    availabilityDimensions: null,
   },
   columns,
   visibleColumns,

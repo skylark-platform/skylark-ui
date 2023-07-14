@@ -241,7 +241,7 @@ export const Select = forwardRef(
       withBasicSort,
     } = props;
 
-    const [query, setQuery] = useState(selected || "");
+    const [query, setQuery] = useState("");
 
     const { refs, floatingStyles } = useFloating({
       placement: "bottom-start",
@@ -375,8 +375,6 @@ export const Select = forwardRef(
                   paddingClassName,
                   label && "mt-2",
                 )}
-                // ref={ref as Ref<HTMLButtonElement> | undefined}
-                // ref={refs.setReference}
                 ref={mergeRefs([refs.setReference, ref])}
               >
                 <span

@@ -2,13 +2,18 @@ import { VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
 import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode } from "graphql";
+import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 
-import { AvailabilityDimensionsPicker } from "src/components/inputs/availabilityDimensionsPicker/availabilityDimensionsPicker.component";
+import {
+  AvailabilityDimensionsPicker,
+  AvailabilityDimensionsPickerValues,
+} from "src/components/inputs/availabilityDimensionsPicker/availabilityDimensionsPicker.component";
 import { LanguageSelect } from "src/components/inputs/select";
 import { SearchFilter } from "src/components/objectSearch/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
+import { hasProperty } from "src/lib/utils";
 
 import { SearchInput } from "./searchInput/searchInput.component";
 
@@ -17,6 +22,7 @@ interface SearchBarProps {
   activeFilters: SearchFilters;
   columns: string[];
   visibleColumns: VisibilityState;
+  activeDimensions: AvailabilityDimensionsPickerValues;
   className?: string;
   isSearching: boolean;
   graphqlQuery: {
@@ -28,6 +34,7 @@ interface SearchBarProps {
   onColumnVisibilityChange: (c: VisibilityState) => void;
   onLanguageChange: (l: SearchFilters["language"]) => void;
   onObjectTypeChange: (o: SearchFilters["objectTypes"]) => void;
+  onActiveDimensionsChange: (args: AvailabilityDimensionsPickerValues) => void;
   onRefresh: () => void;
 }
 
@@ -44,8 +51,11 @@ export const Search = ({
   onColumnVisibilityChange,
   onLanguageChange,
   onObjectTypeChange,
+  onActiveDimensionsChange,
   onRefresh,
 }: SearchBarProps) => {
+  const { query } = useRouter();
+
   const [isFilterOpen, setFilterOpen] = useState(false);
 
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
@@ -135,7 +145,14 @@ export const Search = ({
           onValueClear={() => onLanguageChange(null)}
         />
       </div>
-      <div>{/* <AvailabilityDimensionsPicker /> */}</div>
+      {hasProperty(query, "next") && (
+        <div>
+          <AvailabilityDimensionsPicker
+            activeDimensions={activeFilters.availabilityDimensions}
+            setActiveDimensions={onActiveDimensionsChange}
+          />
+        </div>
+      )}
     </div>
   );
 };

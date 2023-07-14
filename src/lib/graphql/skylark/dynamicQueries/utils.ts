@@ -249,3 +249,19 @@ export const removeFieldPrefixFromReturnedObject = <T>(
   );
   return result as T;
 };
+
+export const convertAvailabilityDimensionsObjectToGQLDimensions = (
+  availabilityDimensions: Record<string, string> | null,
+) => {
+  if (!availabilityDimensions) {
+    return [];
+  }
+
+  const dimensions = Object.entries(availabilityDimensions).map(
+    ([dimension, value]) => ({
+      dimension,
+      value,
+    }),
+  );
+  return dimensions;
+};

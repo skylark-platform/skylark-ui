@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { RequestDocument } from "graphql-request";
+import { RequestDocument, Variables } from "graphql-request";
 import { useEffect, useMemo } from "react";
 
 import { useUser } from "src/contexts/useUser";
@@ -20,33 +20,41 @@ import { useAllObjectsMeta } from "./useSkylarkObjectTypes";
 export interface SearchFilters {
   objectTypes: string[] | null;
   language?: string | null;
+  availabilityDimensions: Record<string, string> | null;
 }
 
-export const SEARCH_PAGE_SIZE = 50;
+export const SEARCH_PAGE_SIZE = 25;
 
 export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta(true);
-  const { objectTypes, language } = filters;
+  const { objectTypes, language, availabilityDimensions } = filters;
 
   // Used to rerender search results when the search changes but objects are the same
   const searchHash = `${queryString}-${language}-${objectTypes?.join("-")}`;
 
   const { query } = useMemo(() => {
-    const query = createSearchObjectsQuery(
-      searchableObjects,
-      objectTypes || [],
-    );
+    const query = createSearchObjectsQuery(searchableObjects, {
+      typesToRequest: objectTypes || [],
+      availabilityDimensions,
+    });
     return {
       query,
     };
-  }, [searchableObjects, objectTypes]);
+  }, [searchableObjects, objectTypes, availabilityDimensions]);
 
-  const variables = {
+  const variables: Variables = {
     queryString,
     limit: SEARCH_PAGE_SIZE,
     offset: 0,
     language: language || null,
   };
+
+  if (
+    filters.availabilityDimensions &&
+    Object.keys(filters.availabilityDimensions).length > 0
+  ) {
+    variables.ignoreAvailability = false;
+  }
 
   const {
     data: searchResponse,
@@ -127,6 +135,15 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
       dispatch({ type: "addUsedLanguages", value: allAvailableLanguages });
     }
   }, [allAvailableLanguages, dispatch]);
+
+  if (
+    data &&
+    hasNextPage &&
+    !isFetchingNextPage &&
+    data.length < SEARCH_PAGE_SIZE * 2
+  ) {
+    fetchNextPage();
+  }
 
   return {
     data,

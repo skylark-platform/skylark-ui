@@ -7,11 +7,18 @@ import {
   generateVariablesAndArgs,
   generateFieldsToReturn,
   generateRelationshipsToReturn,
+  convertAvailabilityDimensionsObjectToGQLDimensions,
 } from "./utils";
 
 export const createSearchObjectsQuery = (
   objects: SkylarkObjectMeta[] | null,
-  typesToRequest: string[],
+  {
+    typesToRequest,
+    availabilityDimensions,
+  }: {
+    typesToRequest: string[];
+    availabilityDimensions: Record<string, string> | null;
+  },
 ) => {
   // Default to showing all objects when no types are requested
   const objectsToRequest =
@@ -29,6 +36,9 @@ export const createSearchObjectsQuery = (
   }
 
   const { args, variables } = generateVariablesAndArgs("search", "Query", true);
+  const dimensions = convertAvailabilityDimensionsObjectToGQLDimensions(
+    availabilityDimensions,
+  );
 
   const query = {
     query: {
@@ -45,6 +55,7 @@ export const createSearchObjectsQuery = (
           query: new VariableType("queryString"),
           offset: new VariableType("offset"),
           limit: new VariableType("limit"),
+          dimensions,
         },
         __typename: true,
         total_count: true,

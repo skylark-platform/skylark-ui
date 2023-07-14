@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { useEffect, useState, useMemo, memo } from "react";
 
 import { Spinner } from "src/components/icons";
+import { AvailabilityDimensionsPickerValues } from "src/components/inputs/availabilityDimensionsPicker/availabilityDimensionsPicker.component";
 import { useUser } from "src/contexts/useUser";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
@@ -61,6 +62,8 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   const [searchObjectTypes, setSearchObjectTypes] = useState<
     SearchFilters["objectTypes"]
   >(defaultObjectTypes || null);
+  const [searchAvailabilityDimensions, setSearchAvailabilityDimensions] =
+    useState<SearchFilters["availabilityDimensions"]>(null);
 
   useEffect(() => {
     if (objectTypes && objectTypes.length !== 0 && searchObjectTypes === null) {
@@ -85,6 +88,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   } = useSearch(searchQuery, {
     language: searchLanguage === undefined ? defaultLanguage : searchLanguage,
     objectTypes: searchObjectTypes || objectTypes || null,
+    availabilityDimensions: searchAvailabilityDimensions,
   });
 
   useEffect(() => {
@@ -180,13 +184,16 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             activeFilters={{
               objectTypes: searchObjectTypes,
               language: searchLanguage,
+              availabilityDimensions: searchAvailabilityDimensions,
             }}
             columns={sortedHeaders}
             visibleColumns={columnVisibility}
+            activeDimensions={searchAvailabilityDimensions}
             hideFilters={props.hideSearchFilters}
             onColumnVisibilityChange={setColumnVisibility}
             onLanguageChange={setSearchLanguage}
             onObjectTypeChange={setSearchObjectTypes}
+            onActiveDimensionsChange={setSearchAvailabilityDimensions}
           />
           <div className="mt-2 flex w-full justify-start pl-3 md:pl-7">
             <p className="text-xs font-medium text-manatee-400">
