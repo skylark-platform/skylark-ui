@@ -124,7 +124,7 @@ export const PanelAvailabilityDimensions = ({
             : [];
 
           return (
-            <div key={dimension.uid} className="mb-6">
+            <div key={`dimension-card-${dimension.uid}`} className="mb-6">
               <PanelFieldTitle
                 text={title}
                 id={`dimensions-panel-${dimension.uid}`}

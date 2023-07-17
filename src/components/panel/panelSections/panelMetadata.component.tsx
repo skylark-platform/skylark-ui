@@ -37,18 +37,6 @@ interface PanelMetadataProps {
   form: UseFormReturn<Record<string, SkylarkObjectMetadataField>>;
 }
 
-const sortFieldsByConfigPosition = (
-  { field: fieldA }: { field: string },
-  { field: fieldB }: { field: string },
-  objectFieldConfig?: ParsedSkylarkObjectConfig["fieldConfig"],
-) => {
-  const aFieldConfig = objectFieldConfig?.find(({ name }) => fieldA === name);
-  const bFieldConfig = objectFieldConfig?.find(({ name }) => fieldB === name);
-  const aPosition = aFieldConfig?.position || 999;
-  const bPosition = bFieldConfig?.position || 999;
-  return aPosition - bPosition;
-};
-
 export const PanelMetadata = ({
   isPage,
   isLoading,
@@ -72,6 +60,7 @@ export const PanelMetadata = ({
           objectMeta.fields.map(({ name }) => name),
           objectMeta.operations.update.inputs,
           objectMeta.fieldConfig,
+          objectFieldConfigArr,
           options,
         )
       : {
@@ -79,7 +68,7 @@ export const PanelMetadata = ({
           translatableMetadataFields: [],
           globalMetadataFields: [],
         };
-  }, [objectMeta, objectType]);
+  }, [objectMeta, objectType, objectFieldConfigArr]);
 
   const requiredFields = objectMeta?.operations.create.inputs
     .filter(({ isRequired }) => isRequired)
@@ -94,16 +83,12 @@ export const PanelMetadata = ({
     {
       id: "translatable",
       title: "Translatable Metadata",
-      metadataFields: translatableMetadataFields.sort((a, b) =>
-        sortFieldsByConfigPosition(a, b, objectFieldConfigArr),
-      ),
+      metadataFields: translatableMetadataFields,
     },
     {
       id: "global",
       title: "Global Metadata",
-      metadataFields: globalMetadataFields.sort((a, b) =>
-        sortFieldsByConfigPosition(a, b, objectFieldConfigArr),
-      ),
+      metadataFields: globalMetadataFields,
     },
   ].filter(({ metadataFields }) => metadataFields.length > 0);
 

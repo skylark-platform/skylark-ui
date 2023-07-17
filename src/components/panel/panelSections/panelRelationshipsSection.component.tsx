@@ -67,7 +67,7 @@ export const PanelRelationshipSection = ({
         {displayList?.length > 0 ? (
           displayList?.map((obj, index) => {
             return (
-              <Fragment key={obj.uid}>
+              <Fragment key={`relationship-${obj.objectType}-${obj.uid}`}>
                 <div
                   className="flex items-center "
                   data-testid={`panel-relationship-${relationshipName}-item-${
@@ -75,7 +75,6 @@ export const PanelRelationshipSection = ({
                   }`}
                 >
                   <ObjectIdentifierCard
-                    key={obj.uid}
                     object={obj}
                     disableDeleteClick={!inEditMode}
                     disableForwardClick={inEditMode}

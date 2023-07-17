@@ -1,5 +1,5 @@
 import { Dialog } from "@headlessui/react";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { GrClose } from "react-icons/gr";
 import { toast } from "react-toastify";
@@ -19,6 +19,7 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
+import { userIsOnMac } from "src/lib/utils";
 
 interface CreateObjectModalProps {
   isOpen: boolean;
@@ -57,6 +58,9 @@ export const CreateObjectModal = ({
     reset,
     setValue,
   } = useForm<Record<string, SkylarkObjectMetadataField>>();
+
+  const submitButtonRef = useRef<HTMLButtonElement | null>(null);
+
   const isCreateTranslationModal = !!createTranslation;
 
   const [{ objectType, config: objectTypeConfig }, setObjectTypeWithConfig] =
@@ -109,19 +113,46 @@ export const CreateObjectModal = ({
     },
   });
 
-  const onSubmit = ({
-    _language,
-    ...metadata
-  }: Record<string, SkylarkObjectMetadataField>) => {
-    if (isCreateTranslationModal) {
-      return updateObjectMetadata({
-        uid: createTranslation.uid,
-        language: _language as string,
-        metadata,
-      });
+  const onSubmit = useCallback(
+    ({
+      _language,
+      ...metadata
+    }: Record<string, SkylarkObjectMetadataField>) => {
+      if (isCreateTranslationModal) {
+        return updateObjectMetadata({
+          uid: createTranslation.uid,
+          language: _language as string,
+          metadata,
+        });
+      }
+      createObject(_language as string, metadata);
+    },
+    [
+      createObject,
+      createTranslation?.uid,
+      isCreateTranslationModal,
+      updateObjectMetadata,
+    ],
+  );
+
+  useEffect(() => {
+    const handleSaveKeyPress = (e: KeyboardEvent) => {
+      const isMac = userIsOnMac();
+
+      if ((isMac ? e.metaKey : e.ctrlKey) && e.key === "s") {
+        e.preventDefault();
+        submitButtonRef?.current?.scrollIntoView();
+        if (!submitButtonRef?.current?.disabled) {
+          submitButtonRef?.current?.click();
+        }
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleSaveKeyPress);
+      return () => document.removeEventListener("keydown", handleSaveKeyPress);
     }
-    createObject(_language as string, metadata);
-  };
+  }, [isOpen]);
 
   const {
     systemMetadataFields,
@@ -132,6 +163,7 @@ export const CreateObjectModal = ({
         objectOperations.operations.create.inputs.map(({ name }) => name),
         objectOperations.operations.create.inputs,
         objectOperations.fieldConfig,
+        objectTypeConfig?.fieldConfig,
       )
     : {
         systemMetadataFields: [],
@@ -277,6 +309,7 @@ export const CreateObjectModal = ({
                 </div>
                 <div className="flex justify-end space-x-2">
                   <Button
+                    ref={submitButtonRef}
                     variant="primary"
                     className="mt-4"
                     loading={isCreatingObject || isCreatingTranslation}

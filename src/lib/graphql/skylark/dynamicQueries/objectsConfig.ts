@@ -3,6 +3,8 @@ import { EnumType, jsonToGraphQLQuery } from "json-to-graphql-query";
 
 import { SkylarkObjectType } from "src/interfaces/skylark";
 
+import { getObjectConfigFields } from "./utils";
+
 export const createGetAllObjectsConfigQuery = (
   objectTypes?: SkylarkObjectType[],
 ) => {
@@ -21,9 +23,7 @@ export const createGetAllObjectsConfigQuery = (
             __args: {
               object: new EnumType(objectType),
             },
-            primary_field: true,
-            colour: true,
-            display_name: true,
+            ...getObjectConfigFields(true)._config,
           },
         };
       }, {}),

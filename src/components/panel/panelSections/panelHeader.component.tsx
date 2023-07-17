@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { GrGraphQl } from "react-icons/gr";
 
 import { AvailabilityLabelPill } from "src/components/availability";
@@ -32,7 +32,7 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import { getObjectDisplayName } from "src/lib/utils";
+import { getObjectDisplayName, userIsOnMac } from "src/lib/utils";
 
 interface PanelHeaderProps {
   isPage?: boolean;
@@ -87,6 +87,8 @@ export const PanelHeader = ({
     setDeleteObjectConfirmationModalOpen,
   ] = useState(false);
 
+  const saveButtonRef = useRef<HTMLButtonElement | null>(null);
+
   const objectTypeDisplayName =
     object?.config.objectTypeDisplayName || objectType;
 
@@ -127,6 +129,24 @@ export const PanelHeader = ({
       setLanguage(val);
     }
   };
+
+  useEffect(() => {
+    const handleSaveKeyPress = (e: KeyboardEvent) => {
+      const isMac = userIsOnMac();
+
+      if ((isMac ? e.metaKey : e.ctrlKey) && e.key === "s") {
+        e.preventDefault();
+        if (!saveButtonRef?.current?.disabled) {
+          saveButtonRef?.current?.click();
+        }
+      }
+    };
+
+    if (inEditMode) {
+      document.addEventListener("keydown", handleSaveKeyPress);
+      return () => document.removeEventListener("keydown", handleSaveKeyPress);
+    }
+  }, [inEditMode]);
 
   return (
     <div
@@ -180,6 +200,7 @@ export const PanelHeader = ({
           {inEditMode ? (
             <>
               <Button
+                ref={saveButtonRef}
                 variant="primary"
                 success
                 onClick={save}

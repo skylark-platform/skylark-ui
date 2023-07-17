@@ -97,7 +97,7 @@ export const PanelAvailabilityAssignedTo = ({
       {inEditMode &&
         modifiedAvailabilityAssignedTo?.added.map((obj) => (
           <ObjectIdentifierCard
-            key={obj.uid}
+            key={`assigned-to-card-${obj.uid}`}
             object={obj}
             disableDeleteClick={!inEditMode}
             disableForwardClick={inEditMode}
