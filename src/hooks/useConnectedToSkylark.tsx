@@ -54,9 +54,7 @@ export const getSkylarkCredsFromLocalStorage = (
 };
 
 export const useConnectedToSkylark = () => {
-  const [currentCreds, setCreds] = useState<SkylarkCreds>(
-    getSkylarkCredsFromLocalStorage,
-  );
+  const [currentCreds, setCreds] = useState<SkylarkCreds | null>(null);
 
   const { data, error, isError, isLoading, isSuccess, refetch } = useQuery<
     GQLSkylarkObjectTypesResponse,
@@ -65,17 +63,17 @@ export const useConnectedToSkylark = () => {
     queryKey: [
       "credentialValidator",
       GET_SKYLARK_OBJECT_TYPES,
-      currentCreds.uri,
-      currentCreds.token,
+      currentCreds?.uri,
+      currentCreds?.token,
     ],
-    queryFn: currentCreds.uri
+    queryFn: currentCreds?.uri
       ? async () => {
           const token =
-            currentCreds.token ||
+            currentCreds?.token ||
             localStorage.getItem(LOCAL_STORAGE.betaAuth.token) ||
             "";
           return request(
-            currentCreds.uri ||
+            currentCreds?.uri ||
               localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) ||
               "",
             GET_SKYLARK_OBJECT_TYPES,
@@ -87,10 +85,16 @@ export const useConnectedToSkylark = () => {
           );
         }
       : undefined,
-    enabled: !!currentCreds.uri,
+    enabled: !!currentCreds?.uri,
     retry: false,
     cacheTime: 0,
   });
+
+  useEffect(() => {
+    // We have to use a useEffect to load credentials from local storage otherwise we hit a hydration error
+    // https://nextjs.org/docs/messages/react-hydration-error
+    setCreds(getSkylarkCredsFromLocalStorage());
+  }, []);
 
   useEffect(() => {
     const refresh = () => {
@@ -106,12 +110,11 @@ export const useConnectedToSkylark = () => {
   const unauthenticated =
     error?.response?.errors?.[0]?.errorType === "UnauthorizedException";
   const invalidUri =
-    !currentCreds.uri || (!data && isError && !unauthenticated);
+    !currentCreds?.uri || (!data && isError && !unauthenticated);
   const invalidToken = invalidUri || (error && unauthenticated) || false;
 
   const isConnected =
-    // Window check to prevent https://nextjs.org/docs/messages/react-hydration-error
-    typeof window === "undefined" ||
+    currentCreds === null ||
     !!(!invalidUri && !invalidToken && (isLoading || isSuccess));
 
   return {

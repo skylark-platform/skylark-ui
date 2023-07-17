@@ -52,22 +52,21 @@ export const Navigation = () => {
   const [open, setOpen] = useState(false);
   const [customerIdentifier, setCustomerIdentifier] = useState("");
 
-  const {
-    isConnected,
-    currentCreds: { uri },
-  } = useConnectedToSkylark();
+  const { isConnected, currentCreds } = useConnectedToSkylark();
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
 
   const { accountId } = useUser();
 
   useEffect(() => {
     // Have to use a useEffect here to prevent https://nextjs.org/docs/messages/react-hydration-error
-    const newCustomerIdenfitier = uri ? getCustomerIdentifier(uri) : "";
+    const newCustomerIdenfitier = currentCreds?.uri
+      ? getCustomerIdentifier(currentCreds.uri)
+      : "";
 
     if (newCustomerIdenfitier !== customerIdentifier) {
       setCustomerIdentifier(newCustomerIdenfitier);
     }
-  }, [customerIdentifier, uri]);
+  }, [customerIdentifier, currentCreds?.uri]);
 
   return (
     <>
