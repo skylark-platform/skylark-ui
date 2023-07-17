@@ -35,6 +35,7 @@
     "@radix-ui/react-checkbox": "^1.0.1",
     "@tanstack/react-query": "^4.24.10",
     "@tanstack/react-table": "^8.7.9",
+    "@vercel/kv": "^0.2.2",
     "autoprefixer": "^10.4.13",
     "clsx": "^1.2.1",
     "daisyui": "^2.41.0",
