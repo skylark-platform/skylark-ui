@@ -1,5 +1,5 @@
 import { ComponentStory } from "@storybook/react";
-import { userEvent, waitFor, within } from "@storybook/testing-library";
+import { userEvent, waitFor, within, screen } from "@storybook/testing-library";
 import clsx from "clsx";
 
 import { Select } from "./select.component";
@@ -82,7 +82,8 @@ OpenWithoutSearch.play = async ({ canvasElement }) => {
   await userEvent.click(selectButton);
 
   await waitFor(async () => {
-    await userEvent.hover(canvas.getByText("Season"));
+    // Select uses a Portal so isn't within the canvasElement
+    await userEvent.hover(screen.getByText("Season"));
   });
 };
 
@@ -98,7 +99,8 @@ OpenWithSearch.play = async ({ canvasElement }) => {
   await userEvent.click(selectButton);
 
   await waitFor(async () => {
-    await userEvent.hover(canvas.getByText("Season"));
+    // Select uses a Portal so isn't within the canvasElement
+    await userEvent.hover(screen.getByText("Season"));
   });
 };
 

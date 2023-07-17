@@ -182,6 +182,38 @@ describe("header (tab independent)", () => {
     const panelHeader = within(screen.getByTestId("panel-header"));
     expect(panelHeader.queryAllByRole("link")).toHaveLength(0);
   });
+
+  test("cancel/exit edit view", async () => {
+    render(<Panel {...defaultProps} object={movieObject} />);
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByText("Edit Metadata"));
+
+    const cancelButton = screen.getByText("Cancel");
+    fireEvent.click(cancelButton);
+
+    expect(screen.queryByText("Editing")).not.toBeInTheDocument();
+  });
+
+  test("cancel/exit edit view using the escape key", async () => {
+    render(<Panel {...defaultProps} object={movieObject} />);
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByText("Edit Metadata"));
+
+    fireEvent.keyDown(screen.getByTestId("panel-header"), {
+      key: "Escape",
+      code: "Escape",
+    });
+
+    expect(screen.queryByText("Editing")).not.toBeInTheDocument();
+  });
 });
 
 describe("metadata view", () => {
@@ -793,15 +825,6 @@ describe("relationships view", () => {
       );
     };
 
-    test("cancel/exit edit view", async () => {
-      await renderAndSwitchToEditView();
-
-      const cancelButton = screen.getByText("Cancel");
-      fireEvent.click(cancelButton);
-
-      expect(screen.queryByText("Editing")).not.toBeInTheDocument();
-    });
-
     test("removes an item from the relationship list", async () => {
       await renderAndSwitchToEditView();
 
@@ -987,15 +1010,6 @@ describe("content view", () => {
         ),
       ).toBeInTheDocument();
     };
-
-    test("cancel/exit edit view", async () => {
-      await renderAndSwitchToEditView();
-
-      const cancelButton = screen.getByText("Cancel");
-      fireEvent.click(cancelButton);
-
-      expect(screen.queryByText("Editing")).not.toBeInTheDocument();
-    });
 
     test("reordering", async () => {
       await renderAndSwitchToEditView();
