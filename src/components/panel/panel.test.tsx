@@ -182,6 +182,59 @@ describe("header (tab independent)", () => {
     const panelHeader = within(screen.getByTestId("panel-header"));
     expect(panelHeader.queryAllByRole("link")).toHaveLength(0);
   });
+
+  test("cancel/exit edit view", async () => {
+    render(<Panel {...defaultProps} object={movieObject} />);
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByText("Edit Metadata"));
+
+    const cancelButton = screen.getByText("Cancel");
+    fireEvent.click(cancelButton);
+
+    expect(screen.queryByText("Editing")).not.toBeInTheDocument();
+  });
+
+  test("cancel/exit edit view using the escape key", async () => {
+    render(<Panel {...defaultProps} object={movieObject} />);
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByText("Edit Metadata"));
+
+    fireEvent.keyDown(screen.getByTestId("panel-header"), {
+      key: "Escape",
+      code: "Escape",
+    });
+
+    expect(screen.queryByText("Editing")).not.toBeInTheDocument();
+  });
+
+  test("save using the ctrl+s hotkey key", async () => {
+    render(<Panel {...defaultProps} object={setObjectWithContent} />);
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByText("Edit Metadata"));
+
+    await fireEvent.keyDown(screen.getByTestId("panel-header"), {
+      key: "s",
+      code: "s",
+      ctrlKey: true,
+    });
+
+    await waitFor(() =>
+      expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+    );
+    expect(screen.queryByText("Editing")).not.toBeInTheDocument();
+  });
 });
 
 describe("metadata view", () => {
@@ -321,7 +374,6 @@ describe("metadata view", () => {
         _config: {
           ...GQLSkylarkGetObjectQueryFixture.data.getObject._config,
           primary_field: "release_date",
-          colour: "rgb(123, 123, 123)",
         },
       },
     };
@@ -350,11 +402,13 @@ describe("metadata view", () => {
       panelHeader.getByText(withPrimaryFieldMock.getObject.release_date),
     ).toBeInTheDocument();
 
-    expect(
-      panelHeader
-        .getByText(withPrimaryFieldMock.getObject.__typename)
-        .closest("div"),
-    ).toHaveAttribute("style", "background-color: rgb(123, 123, 123);");
+    await waitFor(() => {
+      expect(
+        panelHeader
+          .getByText(withPrimaryFieldMock.getObject.__typename)
+          .closest("div"),
+      ).toHaveAttribute("style", "background-color: rgb(0, 150, 136);"); // Movie HEX in RGB
+    });
   });
 
   test("renders an image and the original image size when the object type is an Image", async () => {
@@ -494,6 +548,7 @@ describe("metadata view", () => {
         );
       });
 
+      await user.click(input);
       await user.clear(input);
       await user.type(input, "changed");
 
@@ -546,6 +601,7 @@ describe("metadata view", () => {
         );
       });
 
+      await user.click(input);
       await user.clear(input);
       await user.type(input, changedValue);
 
@@ -790,15 +846,6 @@ describe("relationships view", () => {
       );
     };
 
-    test("cancel/exit edit view", async () => {
-      await renderAndSwitchToEditView();
-
-      const cancelButton = screen.getByText("Cancel");
-      fireEvent.click(cancelButton);
-
-      expect(screen.queryByText("Editing")).not.toBeInTheDocument();
-    });
-
     test("removes an item from the relationship list", async () => {
       await renderAndSwitchToEditView();
 
@@ -984,15 +1031,6 @@ describe("content view", () => {
         ),
       ).toBeInTheDocument();
     };
-
-    test("cancel/exit edit view", async () => {
-      await renderAndSwitchToEditView();
-
-      const cancelButton = screen.getByText("Cancel");
-      fireEvent.click(cancelButton);
-
-      expect(screen.queryByText("Editing")).not.toBeInTheDocument();
-    });
 
     test("reordering", async () => {
       await renderAndSwitchToEditView();

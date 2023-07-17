@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { GrGraphQl } from "react-icons/gr";
 
 import { AvailabilityLabelPill } from "src/components/availability";
@@ -25,14 +25,14 @@ import {
   DisplayGraphQLQueryModal,
 } from "src/components/modals";
 import { PanelLabel } from "src/components/panel/panelLabel";
-import { Pill } from "src/components/pill";
+import { ObjectTypePill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
 import {
   AvailabilityStatus,
   ParsedSkylarkObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import { getObjectDisplayName } from "src/lib/utils";
+import { getObjectDisplayName, userIsOnMac } from "src/lib/utils";
 
 interface PanelHeaderProps {
   isPage?: boolean;
@@ -87,6 +87,9 @@ export const PanelHeader = ({
     setDeleteObjectConfirmationModalOpen,
   ] = useState(false);
 
+  const saveButtonRef = useRef<HTMLButtonElement | null>(null);
+  const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
+
   const objectTypeDisplayName =
     object?.config.objectTypeDisplayName || objectType;
 
@@ -127,6 +130,31 @@ export const PanelHeader = ({
       setLanguage(val);
     }
   };
+
+  useEffect(() => {
+    const handleSaveKeyPress = (e: KeyboardEvent) => {
+      const isMac = userIsOnMac();
+
+      if ((isMac ? e.metaKey : e.ctrlKey) && e.key === "s") {
+        e.preventDefault();
+        if (!saveButtonRef?.current?.disabled) {
+          saveButtonRef?.current?.click();
+        }
+      }
+
+      if (e.key === "Escape") {
+        e.preventDefault();
+        if (!cancelButtonRef?.current?.disabled) {
+          cancelButtonRef?.current?.click();
+        }
+      }
+    };
+
+    if (inEditMode) {
+      document.addEventListener("keydown", handleSaveKeyPress);
+      return () => document.removeEventListener("keydown", handleSaveKeyPress);
+    }
+  }, [inEditMode]);
 
   return (
     <div
@@ -180,6 +208,7 @@ export const PanelHeader = ({
           {inEditMode ? (
             <>
               <Button
+                ref={saveButtonRef}
                 variant="primary"
                 success
                 onClick={save}
@@ -188,6 +217,7 @@ export const PanelHeader = ({
                 Save
               </Button>
               <Button
+                ref={cancelButtonRef}
                 variant="outline"
                 danger
                 onClick={toggleEditMode}
@@ -228,10 +258,9 @@ export const PanelHeader = ({
         <div className="mt-2 flex h-5 items-center justify-center gap-2">
           {object ? (
             <>
-              <Pill
-                bgColor={object.config.colour}
+              <ObjectTypePill
                 className="w-20 bg-brand-primary"
-                label={object.config.objectTypeDisplayName || objectType}
+                type={objectType}
               />
               {availabilityStatus && (
                 <AvailabilityLabelPill status={availabilityStatus} />

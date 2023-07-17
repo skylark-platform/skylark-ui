@@ -7,14 +7,14 @@ import {
 } from "src/components/inputs/select";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import {
-  SkylarkGraphQLObjectConfig,
+  ParsedSkylarkObjectConfig,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 
 type ObjectTypeSelectProps = Omit<SelectProps, "options" | "onChange"> & {
   onChange: (v: {
     objectType: SkylarkObjectType;
-    config?: SkylarkGraphQLObjectConfig;
+    config?: ParsedSkylarkObjectConfig;
   }) => void;
 };
 
@@ -28,7 +28,7 @@ export const ObjectTypeSelect = forwardRef(
     const options: SelectOption[] =
       objectTypesWithConfig?.map(({ objectType, config }) => ({
         value: objectType,
-        label: config?.display_name || objectType,
+        label: config?.objectTypeDisplayName || objectType,
       })) || [];
 
     const onChangeWrapper = (value: string) => {

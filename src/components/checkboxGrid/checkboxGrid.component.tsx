@@ -1,6 +1,5 @@
 import { CheckedState } from "@radix-ui/react-checkbox";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
 
 import { Checkbox } from "src/components/inputs/checkbox";
 
@@ -14,12 +13,13 @@ export type CheckboxOptionState = {
   state: CheckedState;
 };
 
-interface CheckboxGridProps {
+export interface CheckboxGridProps {
   label?: string;
   options: CheckboxOptionState[];
+  checkedOptions: string[];
   className?: string;
   withToggleAll?: boolean;
-  onChange: (optionsState: CheckboxOptionState[]) => void;
+  onChange: (checkedOptions: string[]) => void;
 }
 
 export const createCheckboxOptions = (
@@ -36,48 +36,32 @@ export const createCheckboxOptions = (
 
 export const CheckboxGrid = ({
   label,
-  options,
   className,
   withToggleAll,
+  options,
+  checkedOptions,
   onChange,
 }: CheckboxGridProps) => {
-  const [checkboxState, setCheckboxState] = useState(options);
-
-  const allOptionsChecked = checkboxState.every(
-    (option) => option.state === true,
+  const allOptionsChecked = options.every(({ option }) =>
+    checkedOptions.includes(option.value),
   );
 
   const handleChange = (option: CheckboxOption, checkedState: CheckedState) => {
-    const newCheckedOptions = checkboxState.map((state) =>
-      option.value === state.option.value
-        ? { option, state: checkedState }
-        : state,
-    );
-    setCheckboxState(newCheckedOptions);
-    onChange(newCheckedOptions);
+    const updatedCheckedOptions = checkedState
+      ? [...checkedOptions, option.value]
+      : checkedOptions.filter((value) => value !== option.value);
+    onChange(updatedCheckedOptions);
   };
 
   const handleToggleAll = () => {
-    const newCheckedOptions = checkboxState.map(({ option }) => ({
-      option,
-      state: !allOptionsChecked,
-    }));
-    setCheckboxState(newCheckedOptions);
-    onChange(newCheckedOptions);
+    onChange(
+      allOptionsChecked ? [] : options.map(({ option: { value } }) => value),
+    );
   };
 
   const handleToggleOnly = (onlyOption: CheckboxOption) => {
-    const newCheckedOptions = checkboxState.map(({ option }) => ({
-      option,
-      state: option === onlyOption,
-    }));
-    setCheckboxState(newCheckedOptions);
-    onChange(newCheckedOptions);
+    onChange([onlyOption.value]);
   };
-
-  useEffect(() => {
-    setCheckboxState(options);
-  }, [options]);
 
   return (
     <section
@@ -97,12 +81,12 @@ export const CheckboxGrid = ({
         />
       )}
       <div className="columns-2 space-y-2 md:columns-4 lg:columns-5 xl:columns-6">
-        {checkboxState.map(({ option, state }) => (
+        {options.map(({ option }) => (
           <Checkbox
             label={option.label}
             key={option.value}
             name={`${label}-${option.value}`}
-            checked={state}
+            checked={checkedOptions.includes(option.value)}
             onCheckedChange={(checkedState) =>
               handleChange(option, checkedState)
             }

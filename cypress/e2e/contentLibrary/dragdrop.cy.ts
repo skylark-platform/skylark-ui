@@ -33,6 +33,12 @@ describe("Drag and Drop - Content and Relationship tab", () => {
           fixture: "./skylark/queries/getObject/homepage.json",
         });
       }
+      if (hasOperationName(req, "GET_Availability")) {
+        req.reply({
+          fixture:
+            "./skylark/queries/getObject/allDevicesAllCustomersAvailability.json",
+        });
+      }
 
       if (hasOperationName(req, "SEARCH")) {
         if (hasMatchingVariable(req, "queryString", "Homepage")) {
@@ -574,6 +580,107 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               });
           },
         );
+      });
+    });
+
+    describe("Availability Assigned To", () => {
+      it("drags an object to add it", () => {
+        cy.get('input[name="search-query-input"]')
+          .clear()
+          .type(allDevicesAllCustomersAvailability);
+        cy.openContentLibraryObjectPanelByText(
+          allDevicesAllCustomersAvailability,
+        );
+
+        cy.contains("Assigned To").click();
+
+        cy.contains("Assign to multiple objects dropzone");
+
+        cy.get('input[name="search-query-input"]').clear().type("Homepage");
+        cy.contains("Homepage").should("exist");
+
+        const deltaX = 500;
+        const deltaY = 500;
+
+        cy.get("[data-cy=panel-drop-zone]").should("not.exist");
+
+        cy.get(`[data-cy="draggable-item"`)
+          .last()
+          .trigger("mousedown", {
+            button: 0,
+            release: false,
+            force: true,
+          })
+          .trigger("mousemove", {
+            force: true,
+            clientX: 20,
+            clientY: 20,
+          })
+          .then(() => {
+            cy.get("[data-cy=panel-drop-zone]").should("exist");
+          })
+          .wait(500)
+          .trigger("mousemove", {
+            force: true,
+            clientX: deltaX,
+            clientY: deltaY,
+          })
+          .wait(100)
+          .trigger("mouseup", { force: true })
+          .wait(250)
+          .then(() => {
+            cy.get("[data-testid=panel]").within(() => {
+              cy.contains("HomepageAfterCarousel");
+            });
+          });
+      });
+
+      it("shows an error toast when an Availability object is dragged into the drop zone", () => {
+        cy.get('input[name="search-query-input"]')
+          .clear()
+          .type(allDevicesAllCustomersAvailability);
+        cy.openContentLibraryObjectPanelByText(
+          allDevicesAllCustomersAvailability,
+        );
+
+        cy.contains("Assigned To").click();
+
+        cy.contains("Assign to multiple objects dropzone");
+
+        const deltaX = 500;
+        const deltaY = 500;
+
+        cy.get("[data-cy=panel-drop-zone]").should("not.exist");
+
+        cy.get(`[data-cy="draggable-item"`)
+          .last()
+          .trigger("mousedown", {
+            button: 0,
+            release: false,
+            force: true,
+          })
+          .trigger("mousemove", {
+            force: true,
+            clientX: 20,
+            clientY: 20,
+          })
+          .then(() => {
+            cy.get("[data-cy=panel-drop-zone]").should("exist");
+          })
+          .wait(500)
+          .trigger("mousemove", {
+            force: true,
+            clientX: deltaX,
+            clientY: deltaY,
+          })
+          .wait(100)
+          .trigger("mouseup", { force: true })
+          .wait(250)
+          .then(() => {
+            cy.get("[data-cy=toast]").within(() => {
+              cy.contains("Invalid Object Type").should("exist");
+            });
+          });
       });
     });
   });

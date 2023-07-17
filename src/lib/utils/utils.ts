@@ -8,6 +8,7 @@ import {
 import {
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
+  ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
 
 export const hasProperty = <T, K extends PropertyKey>(
@@ -194,3 +195,21 @@ export const shallowCompareObjects = (
 ) =>
   Object.keys(obj1).length === Object.keys(obj2).length &&
   Object.keys(obj1).every((key) => obj1[key] === obj2[key]);
+
+// https://github.com/gregberge/react-merge-refs/blob/93bec3a1bf57c58a952c9f9b27ac81b64d9c2ee3/src/index.tsx
+export function mergeRefs<T = unknown>(
+  refs: Array<React.MutableRefObject<T> | React.LegacyRef<T>>,
+): React.RefCallback<T> {
+  return (value) => {
+    refs.forEach((ref) => {
+      if (typeof ref === "function") {
+        ref(value);
+      } else if (ref != null) {
+        (ref as React.MutableRefObject<T | null>).current = value;
+      }
+    });
+  };
+}
+
+export const userIsOnMac = () =>
+  navigator.platform.toUpperCase().indexOf("MAC") >= 0;

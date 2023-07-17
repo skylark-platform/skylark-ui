@@ -293,39 +293,25 @@ export const createUpdateObjectContentMutation = (
 
 export const createUpdateObjectRelationshipsMutation = (
   object: SkylarkObjectMeta | null,
-  updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null,
-  originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null,
+  modifiedRelationships: Record<
+    string,
+    {
+      added: ParsedSkylarkObject[];
+      removed: string[];
+    }
+  > | null,
 ) => {
-  if (
-    !object ||
-    !object.operations.update ||
-    !updatedRelationshipObjects ||
-    !originalRelationshipObjects
-  ) {
+  if (!object || !object.operations.update || !modifiedRelationships) {
     return null;
   }
 
-  const relationships = object?.relationships || [];
-  const objectsToLinkAndUnlink = relationships
-    .map((relationship) =>
-      parseUpdatedRelationshipObjects(
-        relationship,
-        updatedRelationshipObjects,
-        originalRelationshipObjects,
-      ),
-    )
-    .filter(
-      ({ uidsToLink, uidsToUnlink }) =>
-        uidsToLink.length > 0 || uidsToUnlink.length > 0,
-    );
-
-  const parsedRelationsToUpdate = objectsToLinkAndUnlink.reduce(
-    (acc, { relationship, uidsToLink, uidsToUnlink }) => {
+  const parsedRelationsToUpdate = Object.entries(modifiedRelationships).reduce(
+    (acc, [relationshipName, { added, removed }]) => {
       return {
         ...acc,
-        [relationship.relationshipName]: {
-          link: uidsToLink,
-          unlink: uidsToUnlink,
+        [relationshipName]: {
+          link: [...new Set(added.map(({ uid }) => uid))],
+          unlink: [...new Set(removed)],
         },
       };
     },
@@ -524,6 +510,59 @@ export const createUpdateAvailabilityDimensionsMutation = (
         },
         uid: true,
       },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(mutation);
+
+  return gql(graphQLQuery);
+};
+
+export const createUpdateAvailabilityAssignedToMutation = (
+  allObjectsMeta: SkylarkObjectMeta[] | null,
+  availabilityUid: string,
+  addedObjects: ParsedSkylarkObject[],
+) => {
+  if (!allObjectsMeta || !availabilityUid || addedObjects.length === 0) {
+    return null;
+  }
+
+  const operations = addedObjects.reduce((previous, object) => {
+    if (object.objectType === BuiltInSkylarkObjectType.Availability) {
+      return previous;
+    }
+
+    const objectMeta = allObjectsMeta.find(
+      ({ name }) => name === object.objectType,
+    );
+    if (!objectMeta) {
+      return previous;
+    }
+
+    const operation = {
+      [`assign_availability_${availabilityUid}_to_${object.objectType}_${object.uid}`]:
+        {
+          __aliasFor: objectMeta.operations.update.name,
+          __args: {
+            uid: object.uid,
+            [objectMeta.operations.update.argName]: {
+              availability: { link: availabilityUid },
+            },
+          },
+          uid: true,
+        },
+    };
+
+    return {
+      ...previous,
+      ...operation,
+    };
+  }, {});
+
+  const mutation = {
+    mutation: {
+      __name: `UPDATE_AVAILABILITY_ASSIGNED_TO`,
+      ...operations,
     },
   };
 

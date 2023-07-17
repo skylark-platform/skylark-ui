@@ -41,7 +41,6 @@ export const HREFS = {
 export const SYSTEM_FIELDS: string[] = [
   SkylarkSystemField.UID,
   SkylarkSystemField.ExternalID,
-  SkylarkSystemField.Slug,
   SkylarkSystemField.Type,
   SkylarkSystemField.DataSourceID,
   SkylarkSystemField.DataSourceFields,
@@ -77,6 +76,6 @@ export const OBJECT_OPTIONS: {
 }[] = [
   {
     objectTypes: [BuiltInSkylarkObjectType.SkylarkImage],
-    hiddenFields: ["external_url", "upload_url", "download_from_url"],
+    hiddenFields: ["upload_url", "download_from_url"],
   },
 ];

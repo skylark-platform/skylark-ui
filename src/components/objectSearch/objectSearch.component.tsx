@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { useEffect, useState, useMemo, memo } from "react";
 
 import { Spinner } from "src/components/icons";
+import { AvailabilityDimensionsPickerValues } from "src/components/inputs/availabilityDimensionsPicker/availabilityDimensionsPicker.component";
 import { useUser } from "src/contexts/useUser";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
@@ -34,6 +35,8 @@ export interface ObjectSearchProps {
   isPanelOpen?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
   defaultObjectTypes?: SkylarkObjectTypes;
+  defaultColumns?: string[];
+  hideSearchFilters?: boolean;
   setPanelObject?: ObjectSearchResultsProps["setPanelObject"];
   checkedObjects?: ObjectSearchResultsProps["checkedObjects"];
   onObjectCheckedChanged?: ObjectSearchResultsProps["onObjectCheckedChanged"];
@@ -46,6 +49,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     setPanelObject,
     isPanelOpen,
     defaultObjectTypes,
+    defaultColumns,
     onObjectCheckedChanged,
   } = props;
 
@@ -58,6 +62,8 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   const [searchObjectTypes, setSearchObjectTypes] = useState<
     SearchFilters["objectTypes"]
   >(defaultObjectTypes || null);
+  const [searchAvailabilityDimensions, setSearchAvailabilityDimensions] =
+    useState<SearchFilters["availabilityDimensions"]>(null);
 
   useEffect(() => {
     if (objectTypes && objectTypes.length !== 0 && searchObjectTypes === null) {
@@ -77,10 +83,12 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     searchHash,
     refetch,
     hasNextPage,
+    isFetchingNextPage,
     fetchNextPage,
   } = useSearch(searchQuery, {
     language: searchLanguage === undefined ? defaultLanguage : searchLanguage,
     objectTypes: searchObjectTypes || objectTypes || null,
+    availabilityDimensions: searchAvailabilityDimensions,
   });
 
   useEffect(() => {
@@ -117,7 +125,12 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   }, [properties]);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    Object.fromEntries(sortedHeaders.map((header) => [header, true])),
+    Object.fromEntries(
+      sortedHeaders.map((header) => [
+        header,
+        defaultColumns ? defaultColumns.includes(header) : true,
+      ]),
+    ),
   );
 
   useEffect(() => {
@@ -171,12 +184,16 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             activeFilters={{
               objectTypes: searchObjectTypes,
               language: searchLanguage,
+              availabilityDimensions: searchAvailabilityDimensions,
             }}
             columns={sortedHeaders}
             visibleColumns={columnVisibility}
+            activeDimensions={searchAvailabilityDimensions}
+            hideFilters={props.hideSearchFilters}
             onColumnVisibilityChange={setColumnVisibility}
             onLanguageChange={setSearchLanguage}
             onObjectTypeChange={setSearchObjectTypes}
+            onActiveDimensionsChange={setSearchAvailabilityDimensions}
           />
           <div className="mt-2 flex w-full justify-start pl-3 md:pl-7">
             <p className="text-xs font-medium text-manatee-400">
@@ -202,6 +219,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
           key={searchHash} // This will rerender all results when the searchHash changes - importantly clearing the checkboxes back to an unchecked state
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
           sortedHeaders={sortedHeaders}
           searchData={searchData}
           columnVisibility={columnVisibility}

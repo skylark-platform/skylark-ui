@@ -182,7 +182,7 @@ const parseObjectAvailability = (
   };
 };
 
-const parseObjectConfig = (
+export const parseObjectConfig = (
   unparsedConfig?: SkylarkGraphQLObjectConfig,
 ): ParsedSkylarkObjectConfig => {
   const fieldConfig: ParsedSkylarkObjectConfig["fieldConfig"] =

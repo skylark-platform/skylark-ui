@@ -14,14 +14,17 @@ describe("createGetObjectQuery", () => {
     const got = createGetObjectQuery(episodeObjectOperations);
 
     expect(got?.loc?.source.body).toEqual(
-      "query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { __typename _config { primary_field colour display_name field_config { name ui_field_type ui_position } } _meta { available_languages language_data { language version } global_data { version } } uid external_id slug synopsis synopsis_short title title_short title_sort episode_number release_date availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { _meta { available_languages language_data { language version } global_data { version } } uid external_id slug title description type url file_name content_type } } } }",
+      "query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { __typename _meta { available_languages language_data { language version } global_data { version } } _config { primary_field colour display_name field_config { name ui_field_type ui_position } } uid external_id slug synopsis synopsis_short title title_short title_sort episode_number release_date availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { _meta { available_languages language_data { language version } global_data { version } } uid external_id slug title description type url external_url file_name content_type } } } }",
     );
   });
 });
 
 describe("createSearchObjectsQuery", () => {
   test("returns null when no objects are given", () => {
-    const got = createSearchObjectsQuery([], []);
+    const got = createSearchObjectsQuery([], {
+      typesToRequest: [],
+      availabilityDimensions: null,
+    });
 
     expect(got).toBeNull();
   });
@@ -97,11 +100,11 @@ describe("createSearchObjectsQuery", () => {
           isImage: false,
         },
       ],
-      [],
+      { typesToRequest: [], availabilityDimensions: null },
     );
 
     expect(got?.loc?.source.body).toEqual(
-      `query SEARCH ($ignoreAvailability: Boolean = true, $language: String, $queryString: String!, $offset: Int, $limit: Int) { search (ignore_availability: $ignoreAvailability, language: $language, query: $queryString, offset: $offset, limit: $limit) { __typename total_count objects { ... on Episode { __typename _config { primary_field colour display_name } _meta { available_languages language_data { language version } global_data { version } } __Episode__title: title __Episode__episode_number: episode_number } ... on Brand { __typename _config { primary_field colour display_name } _meta { available_languages language_data { language version } global_data { version } } __Brand__title: title __Brand__synopsis: synopsis } } } }`,
+      `query SEARCH ($ignoreAvailability: Boolean = true, $language: String, $queryString: String!, $offset: Int, $limit: Int) { search (ignore_availability: $ignoreAvailability, language: $language, query: $queryString, offset: $offset, limit: $limit, dimensions: []) { __typename total_count objects { ... on Episode { __typename _meta { available_languages language_data { language version } global_data { version } } __Episode__title: title __Episode__episode_number: episode_number } ... on Brand { __typename _meta { available_languages language_data { language version } global_data { version } } __Brand__title: title __Brand__synopsis: synopsis } } } }`,
     );
   });
 });

@@ -135,7 +135,7 @@ const PanelAvailabilityEditView = ({
       return (
         <div key={obj.uid} className="flex items-center">
           <ObjectIdentifierCard
-            key={obj.uid}
+            key={`availability-edit-card-${obj.uid}`}
             object={obj}
             disableForwardClick={inEditMode}
             hideObjectType
@@ -254,7 +254,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                   ];
                   return (
                     <div
-                      key={obj.uid}
+                      key={`availability-card-${obj.uid}`}
                       className={clsx(
                         "my-4 max-w-xl border border-l-4 px-4 py-4",
                         status === AvailabilityStatus.Active &&

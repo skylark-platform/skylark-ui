@@ -13,7 +13,7 @@ interface RowActionsProps {
   object: SkylarkObjectIdentifier;
   editRowEnabled?: boolean;
   inEditMode?: boolean;
-  onInfoClick: () => void;
+  onInfoClick?: () => void;
   onEditClick: () => void;
   onEditSaveClick: () => void;
   onEditCancelClick: () => void;
@@ -40,9 +40,11 @@ export const RowActions = ({
       </>
     ) : (
       <>
-        <button onClick={onInfoClick} aria-label="object-info">
-          <InfoCircle className="h-5 stroke-brand-primary transition-colors hover:stroke-brand-primary/60" />
-        </button>
+        {onInfoClick && (
+          <button onClick={onInfoClick} aria-label="object-info">
+            <InfoCircle className="h-5 stroke-brand-primary transition-colors hover:stroke-brand-primary/60" />
+          </button>
+        )}
         <Link
           href={{
             pathname: `/object/${objectType}/${uid}`,

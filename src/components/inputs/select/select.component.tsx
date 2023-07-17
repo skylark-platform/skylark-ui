@@ -1,4 +1,5 @@
-import { Combobox, Transition } from "@headlessui/react";
+import { useFloating, offset, flip, size } from "@floating-ui/react";
+import { Combobox, Transition, Portal } from "@headlessui/react";
 import clsx from "clsx";
 import React, {
   useState,
@@ -14,7 +15,7 @@ import { GrClose } from "react-icons/gr";
 import { useVirtual } from "react-virtual";
 
 import { Checkbox } from "src/components/inputs/checkbox";
-import { formatObjectField } from "src/lib/utils";
+import { formatObjectField, mergeRefs } from "src/lib/utils";
 
 export interface SelectOption {
   label: string;
@@ -121,7 +122,7 @@ export const SelectOptionsContainer = forwardRef(
       ref={ref}
       data-testid="select-options"
       className={clsx(
-        "absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
+        "absolute z-[60] mt-1 max-h-48 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
         className,
       )}
     >
@@ -226,7 +227,24 @@ export const Select = forwardRef(
       withBasicSort,
     } = props;
 
-    const [query, setQuery] = useState(selected || "");
+    const [query, setQuery] = useState("");
+
+    const { refs, floatingStyles } = useFloating({
+      placement: "bottom-start",
+      middleware: [
+        offset(5),
+        flip({ padding: 10 }),
+        size({
+          apply({ rects, elements, availableHeight }) {
+            Object.assign(elements.floating.style, {
+              maxHeight: `${availableHeight}px`,
+              minWidth: `${rects.reference.width}px`,
+            });
+          },
+          padding: 10,
+        }),
+      ],
+    });
 
     const options = withBasicSort
       ? unsortedOptions.sort(sortSelectOptions)
@@ -278,136 +296,148 @@ export const Select = forwardRef(
         value={selectedOption || ""}
         name={name}
       >
-        <div
-          className={clsx(
-            "relative flex flex-col items-start justify-center text-sm",
-            className,
-          )}
-        >
-          {label && (
-            <SelectLabel
-              htmlFor={name}
-              label={label}
-              labelVariant={labelVariant}
-            />
-          )}
-          {searchable ? (
-            <Combobox.Button
-              data-testid="select"
-              as="div"
-              className={clsx(selectClassName, label && "mt-2")}
-            >
-              <Combobox.Input
-                className={clsx(
-                  "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0",
-                  paddingClassName,
-                  roundedClassName,
-                  showClearValueButton ? "pr-12" : "pr-8",
-                )}
-                displayValue={(option: SelectOption) =>
-                  option.label || option.value
-                }
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder={placeholder || "Select option"}
-                ref={ref as Ref<HTMLInputElement> | undefined}
+        {({ open }) => (
+          <div
+            className={clsx(
+              "relative flex flex-col items-start justify-center text-sm",
+              className,
+            )}
+          >
+            {label && (
+              <SelectLabel
+                htmlFor={name}
+                label={label}
+                labelVariant={labelVariant}
               />
-              <span className="absolute inset-y-0 right-0 flex items-center">
-                {showClearValueButton && (
-                  <button
-                    onClick={(e) => {
-                      onValueClear();
-                      e.stopPropagation();
-                    }}
-                    data-testid="select-clear-value"
-                  >
-                    <GrClose className="text-xs" />
-                  </button>
-                )}
-                <button
+            )}
+            {searchable ? (
+              <Combobox.Button
+                data-testid="select"
+                as="div"
+                className={clsx(selectClassName, label && "mt-2")}
+                ref={refs.setReference}
+              >
+                <Combobox.Input
                   className={clsx(
-                    "h-full",
-                    variant === "pill" ? "mx-2" : "ml-1 mr-4",
+                    "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0",
+                    paddingClassName,
+                    roundedClassName,
+                    showClearValueButton ? "pr-12" : "pr-8",
+                  )}
+                  displayValue={(option: SelectOption) =>
+                    option.label || option.value
+                  }
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder={placeholder || "Select option"}
+                  ref={ref as Ref<HTMLInputElement> | undefined}
+                />
+                <span className="absolute inset-y-0 right-0 flex items-center">
+                  {showClearValueButton && (
+                    <button
+                      onClick={(e) => {
+                        onValueClear();
+                        e.stopPropagation();
+                      }}
+                      data-testid="select-clear-value"
+                    >
+                      <GrClose className="text-xs" />
+                    </button>
+                  )}
+                  <button
+                    className={clsx(
+                      "h-full",
+                      variant === "pill" ? "mx-2" : "ml-1 mr-4",
+                    )}
+                  >
+                    <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
+                  </button>
+                </span>
+              </Combobox.Button>
+            ) : (
+              <Combobox.Button
+                data-testid="select"
+                className={clsx(
+                  selectClassName,
+                  paddingClassName,
+                  label && "mt-2",
+                )}
+                ref={mergeRefs([refs.setReference, ref])}
+              >
+                <span
+                  className={clsx(
+                    "block truncate",
+                    !selectedOption?.label && "text-gray-300",
+                  )}
+                >
+                  {selectedOption?.label || placeholder || "Select option"}
+                </span>
+                <span
+                  className={clsx(
+                    "pointer-events-none absolute inset-y-0 right-0 flex items-center",
+                    variant === "pill" ? "pr-2" : "pr-4",
                   )}
                 >
                   <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
-                </button>
-              </span>
-            </Combobox.Button>
-          ) : (
-            <Combobox.Button
-              data-testid="select"
-              className={clsx(
-                selectClassName,
-                paddingClassName,
-                label && "mt-2",
-              )}
-              ref={ref as Ref<HTMLButtonElement> | undefined}
-            >
-              <span
-                className={clsx(
-                  "block truncate",
-                  !selectedOption?.label && "text-gray-300",
-                )}
-              >
-                {selectedOption?.label || placeholder || "Select option"}
-              </span>
-              <span
-                className={clsx(
-                  "pointer-events-none absolute inset-y-0 right-0 flex items-center",
-                  variant === "pill" ? "pr-2" : "pr-4",
-                )}
-              >
-                <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
-              </span>
-            </Combobox.Button>
-          )}
+                </span>
+              </Combobox.Button>
+            )}
 
-          <Transition
-            as="div"
-            className="z-50"
-            leave="transition ease-in duration-50"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-            afterLeave={() => setQuery("")}
-          >
-            <Combobox.Options>
-              {filteredOptions.length === 0 && query !== "" ? (
-                searchable && allowCustomValue ? (
-                  <Options
-                    variant={variant}
-                    options={[{ value: query, label: `Use "${query}"` }]}
-                    currentSelected={selectedOption}
-                  />
-                ) : (
-                  <div
-                    className={clsx(
-                      "absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
-                      optionsClassName,
-                    )}
+            <Transition
+              as="div"
+              className="z-[10000]"
+              leave="transition ease-in duration-50"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+              afterLeave={() => setQuery("")}
+            >
+              {open && (
+                <Portal>
+                  <Combobox.Options
+                    static
+                    ref={refs.setFloating}
+                    style={floatingStyles}
+                    className="z-50 text-sm"
                   >
-                    <div className="relative cursor-default select-none bg-white px-4 py-2 text-gray-900">
-                      Nothing found.
-                    </div>
-                  </div>
-                )
-              ) : options.length > 40 ? (
-                <VirtualizedOptions
-                  variant={variant}
-                  options={filteredOptions ?? []}
-                  currentSelected={selectedOption}
-                  className={optionsClassName}
-                />
-              ) : (
-                <Options
-                  variant={variant}
-                  options={filteredOptions ?? []}
-                  currentSelected={selectedOption}
-                  className={optionsClassName}
-                />
+                    {filteredOptions.length === 0 && query !== "" ? (
+                      searchable && allowCustomValue ? (
+                        <Options
+                          variant={variant}
+                          options={[{ value: query, label: `Use "${query}"` }]}
+                          currentSelected={selectedOption}
+                        />
+                      ) : (
+                        <div
+                          className={clsx(
+                            "absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
+                            optionsClassName,
+                          )}
+                        >
+                          <div className="relative cursor-default select-none bg-white px-4 py-2 text-gray-900">
+                            Nothing found.
+                          </div>
+                        </div>
+                      )
+                    ) : options.length > 40 ? (
+                      <VirtualizedOptions
+                        variant={variant}
+                        options={filteredOptions ?? []}
+                        currentSelected={selectedOption}
+                        className={optionsClassName}
+                      />
+                    ) : (
+                      <Options
+                        variant={variant}
+                        options={filteredOptions ?? []}
+                        currentSelected={selectedOption}
+                        className={optionsClassName}
+                      />
+                    )}
+                  </Combobox.Options>
+                </Portal>
               )}
-            </Combobox.Options>
-          </Transition>
-        </div>
+            </Transition>
+          </div>
+        )}
       </Combobox>
     );
   },

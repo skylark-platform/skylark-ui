@@ -4,21 +4,36 @@ import { GrClose } from "react-icons/gr";
 
 import { Button } from "src/components/button";
 import { ObjectSearch } from "src/components/objectSearch";
-import { SkylarkObjectTypes } from "src/interfaces/skylark";
+import { useCheckedObjectsState } from "src/hooks/state";
+import {
+  ParsedSkylarkObject,
+  SkylarkObjectTypes,
+} from "src/interfaces/skylark";
 
 interface SearchObjectsModalProps {
-  objectTypes: SkylarkObjectTypes;
+  title: string;
+  objectTypes?: SkylarkObjectTypes;
+  columns?: string[];
   isOpen: boolean;
-  setIsOpen: (b: boolean) => void;
+  closeModal: () => void;
+  onModalClose: (args: { checkedObjects: ParsedSkylarkObject[] }) => void;
 }
 
 export const SearchObjectsModal = ({
+  title,
   isOpen,
   objectTypes,
-  setIsOpen,
+  columns,
+  closeModal,
+  onModalClose,
 }: SearchObjectsModalProps) => {
-  const closeModal = () => {
-    setIsOpen(false);
+  const { checkedObjects, checkedObjectTypesForDisplay, setCheckedObjects } =
+    useCheckedObjectsState();
+
+  const onModalCloseWrapper = () => {
+    onModalClose({ checkedObjects });
+    closeModal();
+    setCheckedObjects([]);
   };
 
   return (
@@ -26,7 +41,7 @@ export const SearchObjectsModal = ({
       open={isOpen}
       onClose={closeModal}
       className="font-body relative z-50"
-      data-testid="create-object-modal"
+      data-testid="search-objects-modal"
     >
       <div
         className="fixed inset-0 bg-black/40"
@@ -35,7 +50,7 @@ export const SearchObjectsModal = ({
       />
 
       <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
-        <Dialog.Panel className="relative mx-auto flex h-full max-h-[90%] w-full max-w-6xl flex-col overflow-y-auto rounded bg-white py-6 md:w-4/5 md:py-10">
+        <Dialog.Panel className="relative mx-auto flex h-full max-h-[90%] w-full max-w-6xl flex-col overflow-y-auto rounded bg-white pb-4 pt-6 md:w-4/5 md:pb-8 md:pt-10">
           <button
             aria-label="close"
             className="absolute right-4 top-4 sm:right-8 sm:top-9"
@@ -47,19 +62,16 @@ export const SearchObjectsModal = ({
 
           <div className="px-6 md:px-10">
             <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">
-              title
+              {title}
             </Dialog.Title>
-            <Dialog.Description>desc</Dialog.Description>
           </div>
-          <div className="ml-4 flex-grow overflow-auto px-px pt-2">
+          <div className="ml-4 flex-grow overflow-auto pl-4 pr-0 pt-2">
             <ObjectSearch
               defaultObjectTypes={objectTypes}
-              // hiddenFields={[
-              //   "uid",
-              //   "translation",
-              //   ...OBJECT_SEARCH_HARDCODED_COLUMNS,
-              // ]}
-              // onRowCheckChange={console.log}
+              defaultColumns={columns}
+              checkedObjects={checkedObjects}
+              onObjectCheckedChanged={setCheckedObjects}
+              hideSearchFilters
               withObjectSelect
             />
           </div>
@@ -67,24 +79,23 @@ export const SearchObjectsModal = ({
             <Button
               variant="primary"
               className="mt-4"
-              // loading={isCreatingObject || isCreatingTranslation}
-              type="submit"
-              // disabled={
-              //   !objectOperations ||
-              //   !formHasObjectPropertyValues(values) ||
-              //   isExistingTranslation ||
-              //   (isCreateTranslationModal && !values._language)
-              // }
+              onClick={onModalCloseWrapper}
+              type="button"
+              disabled={checkedObjects.length === 0}
               success
+              data-testid="search-objects-modal-save"
             >
-              Add 4 Episodes
+              {`Add ${checkedObjects.length} ${
+                checkedObjectTypesForDisplay.length === 1
+                  ? `${checkedObjectTypesForDisplay[0]}`
+                  : "Objects"
+              }`}
             </Button>
             <Button
               variant="outline"
               className="mt-4"
               type="button"
               danger
-              // disabled={isCreatingObject || isCreatingTranslation}
               onClick={closeModal}
             >
               Cancel

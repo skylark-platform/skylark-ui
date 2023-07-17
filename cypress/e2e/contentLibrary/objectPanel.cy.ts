@@ -62,6 +62,11 @@ describe("Content Library - Object Panel", () => {
           fixture: "./skylark/queries/getObjectContent/homepage.json",
         });
       }
+      if (hasOperationName(req, "GET_SkylarkSet_RELATIONSHIPS")) {
+        req.reply({
+          fixture: "./skylark/queries/getObjectRelationships/homepage.json",
+        });
+      }
       if (hasOperationName(req, "GET_Movie")) {
         req.reply({
           fixture:
@@ -230,8 +235,8 @@ describe("Content Library - Object Panel", () => {
     // Trigger create translation modal
     cy.get("[data-testid=panel-header]").within(() => {
       cy.get("[data-testid=select]").click();
-      cy.contains("Create Translation").click();
     });
+    cy.contains("Create Translation").click();
 
     // Select language and enter data
     cy.get("[data-testid=create-object-modal]").within(() => {
@@ -282,6 +287,8 @@ describe("Content Library - Object Panel", () => {
       // Change language
       cy.get("[data-testid=panel-header]").within(() => {
         cy.contains("en-GB").click();
+      });
+      cy.get("[data-testid=select-options]").within(() => {
         cy.contains("pt-PT").click();
       });
 
@@ -613,6 +620,50 @@ describe("Content Library - Object Panel", () => {
       cy.wait("@updateHomepageSetContent");
 
       cy.contains("button", "Edit Content").should("not.be.disabled");
+    });
+  });
+
+  describe("Relationships Tab", () => {
+    it("open Relationships tab", () => {
+      cy.get('input[name="search-query-input"]').type("Homepage");
+      cy.contains("Homepage").should("exist");
+      cy.openContentLibraryObjectPanelByText("Homepage");
+
+      cy.contains("button", "Relationships").click();
+
+      cy.contains("StreamTVLoadingScreen.png");
+
+      cy.percySnapshot("Homepage - object panel - relationships");
+    });
+
+    it("adds Relationships using the Object Search modal", () => {
+      cy.get('input[name="search-query-input"]').type("Homepage");
+      cy.contains("Homepage").should("exist");
+      cy.openContentLibraryObjectPanelByText("Homepage");
+
+      cy.contains("button", "Relationships").click();
+
+      cy.get("#relationship-panel-assets").scrollIntoView();
+
+      cy.get("#relationship-panel-assets")
+        .parent()
+        .within(() => {
+          cy.get("button").click();
+        });
+
+      cy.get("[data-testid=search-objects-modal-save]").should("exist");
+
+      cy.contains("GOT S04 Trailer").click();
+
+      cy.contains("Add 1").click();
+
+      cy.get("[data-testid=search-objects-modal-save]").should("not.exist");
+
+      cy.get("#relationship-panel-assets").scrollIntoView();
+
+      cy.contains("GOT S04 Trailer");
+
+      cy.contains("Editing");
     });
   });
 

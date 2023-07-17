@@ -25,6 +25,7 @@ import {
   SkylarkObjectRelationship,
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
+  ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
 import { getObjectTypeFromListingTypeName } from "src/lib/utils";
 import { ObjectError } from "src/lib/utils/errors";
@@ -467,10 +468,25 @@ export const getAllObjectsMeta = (
   return objectOperations;
 };
 
+const sortFieldsByConfigPosition = (
+  { field: fieldA }: { field: string },
+  { field: fieldB }: { field: string },
+  objectFieldConfig?: ParsedSkylarkObjectConfig["fieldConfig"],
+) => {
+  const aFieldConfig = objectFieldConfig?.find(({ name }) => fieldA === name);
+  const bFieldConfig = objectFieldConfig?.find(({ name }) => fieldB === name);
+  const aPosition =
+    aFieldConfig?.position !== undefined ? aFieldConfig.position : 999;
+  const bPosition =
+    bFieldConfig?.position !== undefined ? bFieldConfig.position : 999;
+  return aPosition - bPosition;
+};
+
 export const splitMetadataIntoSystemTranslatableGlobal = (
   allMetadataFields: string[],
   inputFields: NormalizedObjectField[],
   fieldConfig: SkylarkObjectMeta["fieldConfig"],
+  objectFieldConfig: ParsedSkylarkObjectConfig["fieldConfig"],
   options?: {
     objectTypes: string[];
     hiddenFields: string[];
@@ -522,12 +538,12 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
     ({ field }) => !SYSTEM_FIELDS.includes(field),
   );
 
-  const globalMetadataFields = otherFields.filter(({ field }) =>
-    fieldConfig.global.includes(field),
-  );
-  const translatableMetadataFields = otherFields.filter(({ field }) =>
-    fieldConfig.translatable.includes(field),
-  );
+  const globalMetadataFields = otherFields
+    .filter(({ field }) => fieldConfig.global.includes(field))
+    .sort((a, b) => sortFieldsByConfigPosition(a, b, objectFieldConfig));
+  const translatableMetadataFields = otherFields
+    .filter(({ field }) => fieldConfig.translatable.includes(field))
+    .sort((a, b) => sortFieldsByConfigPosition(a, b, objectFieldConfig));
 
   return {
     systemMetadataFields,

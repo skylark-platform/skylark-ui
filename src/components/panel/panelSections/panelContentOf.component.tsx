@@ -98,7 +98,9 @@ export const PanelContentOf = ({
             return {
               objectType,
               id: `content-of-panel-${objectType}`,
-              title: formatObjectField(config?.display_name || objectType),
+              title: formatObjectField(
+                config?.objectTypeDisplayName || objectType,
+              ),
               objects: groupObjectsByType(objectTypeGroupedData[objectType]),
             };
           })

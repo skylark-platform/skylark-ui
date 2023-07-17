@@ -56,8 +56,8 @@ export default function App({ Component, pageProps }: AppProps) {
           <link href="/favicons/site.webmanifest" rel="manifest" />
           <link href="/favicons/favicon.ico" rel="icon" />
         </Head>
-        <Navigation />
         <UserProvider>
+          <Navigation />
           <LazyMotion features={loadFramerMotionFeatures} strict>
             <Component {...pageProps} />
           </LazyMotion>

@@ -34,7 +34,6 @@ export const getObjectConfigFields = (withFieldConfig: boolean) => ({
 const commonGraphQLOpts = {
   variables: {},
   args: {},
-  objectConfig: getObjectConfigFields(false),
   objectMeta: {
     _meta: {
       available_languages: true,
@@ -86,9 +85,7 @@ export const generateVariablesAndArgs = (
     return {
       variables: {},
       args: {},
-      fields: {
-        ...commonGraphQLOpts.objectConfig,
-      },
+      fields: {},
     };
   }
 
@@ -104,7 +101,6 @@ export const generateVariablesAndArgs = (
       ...language.args,
     },
     fields: {
-      ...commonGraphQLOpts.objectConfig,
       ...commonGraphQLOpts.objectMeta,
     },
   };
@@ -218,7 +214,6 @@ export const generateContentsToReturn = (
           __on: objectsToRequest.map((object) => ({
             __typeName: object.name,
             __typename: true, // To remove the alias later
-            ...commonGraphQLOpts.objectConfig,
             ...commonGraphQLOpts.objectMeta,
             ...generateFieldsToReturn(
               object.fields,
@@ -253,4 +248,20 @@ export const removeFieldPrefixFromReturnedObject = <T>(
     }),
   );
   return result as T;
+};
+
+export const convertAvailabilityDimensionsObjectToGQLDimensions = (
+  availabilityDimensions: Record<string, string> | null,
+) => {
+  if (!availabilityDimensions) {
+    return [];
+  }
+
+  const dimensions = Object.entries(availabilityDimensions).map(
+    ([dimension, value]) => ({
+      dimension,
+      value,
+    }),
+  );
+  return dimensions;
 };

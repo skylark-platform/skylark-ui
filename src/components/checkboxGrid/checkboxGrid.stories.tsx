@@ -29,22 +29,30 @@ const options: CheckboxOptionState[] = Object.entries({
   }),
 );
 
+const allOptionsChecked = options.map(({ option: { value } }) => value);
+
 export const Default = Template.bind({});
 Default.args = {
-  className: "w-96",
   options,
+  checkedOptions: [],
+};
+
+export const DefaultChecked = Template.bind({});
+DefaultChecked.args = {
+  options,
+  checkedOptions: allOptionsChecked,
 };
 
 export const WithLabel = Template.bind({});
 WithLabel.args = {
-  className: "w-96",
   label: "Checkbox Grid",
   options,
+  checkedOptions: allOptionsChecked,
 };
 
 export const WithToggleAll = Template.bind({});
 WithToggleAll.args = {
-  className: "w-96",
   withToggleAll: true,
   options,
+  checkedOptions: allOptionsChecked,
 };

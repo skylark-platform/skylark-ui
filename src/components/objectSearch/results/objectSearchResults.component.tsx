@@ -11,6 +11,7 @@ import { useVirtual } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { PanelTab } from "src/hooks/state";
+import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import {
   SkylarkObjectIdentifier,
   ParsedSkylarkObject,
@@ -38,6 +39,7 @@ export interface ObjectSearchResultsProps {
   searchData?: ParsedSkylarkObject[];
   sortedHeaders: string[];
   hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
   columnVisibility: VisibilityState;
   checkedObjects?: ParsedSkylarkObject[];
   onObjectCheckedChanged?: (o: ParsedSkylarkObject[]) => void;
@@ -57,10 +59,13 @@ export const ObjectSearchResults = ({
   hasNextPage,
   fetchNextPage,
   checkedObjects,
+  isFetchingNextPage,
   onObjectCheckedChanged,
 }: ObjectSearchResultsProps) => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [rowInEditMode, setRowInEditMode] = useState("");
+
+  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
 
   const parsedColumns = useMemo(
     () =>
@@ -76,6 +81,9 @@ export const ObjectSearchResults = ({
 
   const formattedSearchData = useMemo(() => {
     const searchDataWithDisplayField = searchData?.map((obj) => {
+      const { config } = objectTypesWithConfig?.find(
+        ({ objectType }) => objectType === obj.objectType,
+      ) || { config: obj.config };
       return {
         ...obj,
         // When the object type is an image, we want to display its preview in the images tab
@@ -83,7 +91,10 @@ export const ObjectSearchResults = ({
           obj.objectType === BuiltInSkylarkObjectType.SkylarkImage
             ? [obj.metadata]
             : obj.images,
-        [OBJECT_LIST_TABLE.columnIds.displayField]: getObjectDisplayName(obj),
+        [OBJECT_LIST_TABLE.columnIds.displayField]: getObjectDisplayName({
+          ...obj,
+          config,
+        }),
         [OBJECT_LIST_TABLE.columnIds.translation]: obj.meta.language,
       };
     });
@@ -97,7 +108,7 @@ export const ObjectSearchResults = ({
     );
 
     return searchDataWithTopLevelMetadata;
-  }, [searchData]);
+  }, [objectTypesWithConfig, searchData]);
 
   const searchDataLength = searchData?.length || 0;
   const fetchMoreOnBottomReached = useCallback(
@@ -108,6 +119,7 @@ export const ObjectSearchResults = ({
         if (
           hasNextPage &&
           fetchNextPage &&
+          !isFetchingNextPage &&
           searchDataLength &&
           scrollHeight - scrollTop - clientHeight < 500
         ) {
@@ -115,7 +127,7 @@ export const ObjectSearchResults = ({
         }
       }
     },
-    [hasNextPage, fetchNextPage, searchDataLength],
+    [hasNextPage, fetchNextPage, searchDataLength, isFetchingNextPage],
   );
 
   // a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
@@ -225,7 +237,7 @@ export const ObjectSearchResults = ({
   return (
     <div
       className={clsx(
-        "relative mb-6 flex w-full flex-col overflow-x-auto overscroll-none md:-ml-4",
+        "relative mb-6 flex w-auto flex-col overflow-x-auto overscroll-none md:-ml-4",
       )}
       ref={tableContainerRef}
       data-testid="object-search-results"

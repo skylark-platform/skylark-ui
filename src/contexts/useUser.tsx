@@ -56,21 +56,13 @@ const userReducer = (state: State, action: Action) => {
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(userReducer, {
-    usedLanguages: [],
+    usedLanguages:
+      typeof window !== "undefined"
+        ? getJSONFromLocalStorage<string[]>(LOCAL_STORAGE.usedLanguages)
+        : [],
   });
 
   const { account, isLoading } = useAccount();
-
-  useEffect(() => {
-    const usedLanguagesFromLocalStorage = getJSONFromLocalStorage<string[]>(
-      LOCAL_STORAGE.usedLanguages,
-    );
-
-    dispatch({
-      type: "addUsedLanguages",
-      value: usedLanguagesFromLocalStorage || [],
-    });
-  }, []);
 
   return (
     <UserContext.Provider value={{ state, account, isLoading, dispatch }}>
@@ -90,6 +82,7 @@ export const useUser = () => {
   return {
     ...state,
     // In the future a user will have their own custom default language
+    accountId: account?.accountId,
     defaultLanguage: account?.defaultLanguage,
     isLoading,
     dispatch,

@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { RequestDocument } from "graphql-request";
+import { RequestDocument, Variables } from "graphql-request";
 import { useEffect, useMemo } from "react";
 
 import { useUser } from "src/contexts/useUser";
@@ -20,28 +20,41 @@ import { useAllObjectsMeta } from "./useSkylarkObjectTypes";
 export interface SearchFilters {
   objectTypes: string[] | null;
   language?: string | null;
+  availabilityDimensions: Record<string, string> | null;
 }
 
-export const SEARCH_PAGE_SIZE = 50;
+export const SEARCH_PAGE_SIZE = 25;
 
 export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta(true);
-  const { objectTypes, language } = filters;
+  const { objectTypes, language, availabilityDimensions } = filters;
 
   // Used to rerender search results when the search changes but objects are the same
   const searchHash = `${queryString}-${language}-${objectTypes?.join("-")}`;
 
-  const query = useMemo(
-    () => createSearchObjectsQuery(searchableObjects, objectTypes || []),
-    [searchableObjects, objectTypes],
-  );
+  const { query } = useMemo(() => {
+    const query = createSearchObjectsQuery(searchableObjects, {
+      typesToRequest: objectTypes || [],
+      availabilityDimensions,
+    });
+    return {
+      query,
+    };
+  }, [searchableObjects, objectTypes, availabilityDimensions]);
 
-  const variables = {
+  const variables: Variables = {
     queryString,
     limit: SEARCH_PAGE_SIZE,
     offset: 0,
     language: language || null,
   };
+
+  if (
+    filters.availabilityDimensions &&
+    Object.keys(filters.availabilityDimensions).length > 0
+  ) {
+    variables.ignoreAvailability = false;
+  }
 
   const {
     data: searchResponse,
@@ -53,7 +66,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     refetch,
     fetchNextPage,
   } = useInfiniteQuery<GQLSkylarkSearchResponse>({
-    queryKey: [QueryKeys.Search, query, variables],
+    queryKey: [QueryKeys.Search, ...Object.values(variables), query],
     queryFn: async ({ pageParam: offset = 0 }) =>
       skylarkRequest(query as RequestDocument, {
         ...variables,
@@ -73,7 +86,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
 
   const { dispatch } = useUser();
 
-  const { data, allAvailableLanguages } = useMemo(() => {
+  const { data, allAvailableLanguages, totalHits } = useMemo(() => {
     // Using the errorPolicy "all" means that some data could be null
     const nonNullObjects = searchResponse?.pages
       ?.flatMap((page) => page.search.objects)
@@ -100,7 +113,21 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
         ]
       : [];
 
-    return { data: parsedObjects, allAvailableLanguages };
+    // Sometimes the first page's total_count is out of date
+    const largestTotalCount = searchResponse?.pages.reduce(
+      (previousTotal, { search: { total_count } }) => {
+        return total_count && total_count > previousTotal
+          ? total_count
+          : previousTotal;
+      },
+      0,
+    );
+
+    return {
+      data: parsedObjects,
+      allAvailableLanguages,
+      totalHits: largestTotalCount,
+    };
   }, [searchResponse?.pages, searchableObjects]);
 
   useEffect(() => {
@@ -108,6 +135,15 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
       dispatch({ type: "addUsedLanguages", value: allAvailableLanguages });
     }
   }, [allAvailableLanguages, dispatch]);
+
+  if (
+    data &&
+    hasNextPage &&
+    !isFetchingNextPage &&
+    data.length < SEARCH_PAGE_SIZE * 2
+  ) {
+    fetchNextPage();
+  }
 
   return {
     data,
@@ -118,7 +154,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     isRefetching,
     refetch,
     fetchNextPage,
-    totalHits: searchResponse?.pages[0].search?.total_count,
+    totalHits,
     properties: allFieldNames,
     query,
     variables,

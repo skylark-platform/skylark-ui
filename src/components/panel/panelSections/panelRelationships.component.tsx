@@ -1,107 +1,275 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { sentenceCase } from "sentence-case";
 
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import {
+  HandleDropError,
+  handleDroppedRelationships,
+} from "src/components/panel/panel.lib";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
-import {
-  PanelEmptyDataText,
-  PanelSectionTitle,
-  PanelSeparator,
-} from "src/components/panel/panelTypography";
+import { PanelSeparator } from "src/components/panel/panelTypography";
+import { Skeleton } from "src/components/skeleton";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
 import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectType,
   SkylarkObjectIdentifier,
   SkylarkObjectTypes,
+  ParsedSkylarkObject,
 } from "src/interfaces/skylark";
-import { parseUpdatedRelationshipObjects } from "src/lib/skylark/parsers";
-import { formatObjectField } from "src/lib/utils";
+import { formatObjectField, hasProperty } from "src/lib/utils";
 
+import { PanelRelationshipSection } from "./panelRelationshipsSection.component";
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
 interface PanelRelationshipsProps {
   isPage?: boolean;
   objectType: SkylarkObjectType;
   uid: string;
-  updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
-  setRelationshipObjects: (relationshipObjects: {
-    original: ParsedSkylarkObjectRelationships[] | null;
-    updated: ParsedSkylarkObjectRelationships[] | null;
-  }) => void;
+  modifiedRelationships: Record<
+    string,
+    { added: ParsedSkylarkObject[]; removed: string[] }
+  >;
+  setModifiedRelationships: (
+    rels: Record<string, { added: ParsedSkylarkObject[]; removed: string[] }>,
+    errors: HandleDropError[],
+  ) => void;
   inEditMode: boolean;
   showDropZone?: boolean;
+  droppedObjects?: ParsedSkylarkObject[];
   language: string;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }
+
+const sortByRelationshipName = (
+  relationshipNames: string[],
+  arr: ParsedSkylarkObjectRelationships[] | null,
+) =>
+  arr?.sort(
+    (a, b) =>
+      relationshipNames.indexOf(a.relationshipName) -
+      relationshipNames.indexOf(b.relationshipName),
+  ) || [];
+
+const splitRelationshipsIntoSections = (
+  relationshipNames: string[],
+  relationships: ParsedSkylarkObjectRelationships[] | null,
+) =>
+  sortByRelationshipName(relationshipNames, relationships).reduce(
+    (previous, relationship) => {
+      if (relationship.objects.length > 0) {
+        return {
+          ...previous,
+          orderedRelationships: [
+            ...previous.orderedRelationships,
+            relationship,
+          ],
+        };
+      }
+
+      return {
+        ...previous,
+        emptyOrderedRelationships: [
+          ...previous.emptyOrderedRelationships,
+          relationship,
+        ],
+      };
+    },
+    {
+      orderedRelationships: [],
+      emptyOrderedRelationships: [],
+    } as {
+      orderedRelationships: ParsedSkylarkObjectRelationships[];
+      emptyOrderedRelationships: ParsedSkylarkObjectRelationships[];
+    },
+  );
+
+const addModifiedRelationshipsOntoRelationships = (
+  relationships: ParsedSkylarkObjectRelationships[] | null,
+  modifiedRelationships: PanelRelationshipsProps["modifiedRelationships"],
+): ParsedSkylarkObjectRelationships[] | null => {
+  if (!relationships) {
+    return null;
+  }
+
+  const updatedRelationships = relationships.map((relationship) => {
+    const { relationshipName, objects } = relationship;
+
+    const modifedRelations = hasProperty(
+      modifiedRelationships,
+      relationshipName,
+    )
+      ? modifiedRelationships[relationshipName]
+      : null;
+
+    if (!modifedRelations) {
+      return relationship;
+    }
+
+    const { added, removed } = modifedRelations;
+
+    const withRemovedFilteredOut = [...objects, ...added].filter(
+      ({ uid }) => !removed.includes(uid),
+    );
+
+    return {
+      ...relationship,
+      objects: withRemovedFilteredOut,
+    };
+  });
+
+  return updatedRelationships;
+};
+
+const getNewUidsForRelationship = (
+  relationshipName: string,
+  modifiedRelationships: PanelRelationshipsProps["modifiedRelationships"],
+) =>
+  hasProperty(modifiedRelationships, relationshipName)
+    ? modifiedRelationships[relationshipName].added.map(({ uid }) => uid)
+    : [];
+
+const updateModifiedObjectsWithAddedObjects = (
+  modifiedRelationships: PanelRelationshipsProps["modifiedRelationships"],
+  addedObjects: Record<string, ParsedSkylarkObject[]>,
+) => {
+  const updatedModifiedRelationships: PanelRelationshipsProps["modifiedRelationships"] =
+    Object.fromEntries(
+      Object.entries(addedObjects).map(([relationshipName, objects]) => {
+        if (!hasProperty(modifiedRelationships, relationshipName)) {
+          return [relationshipName, { added: objects, removed: [] }];
+        }
+
+        return [
+          relationshipName,
+          {
+            ...modifiedRelationships[relationshipName],
+            added: [
+              ...modifiedRelationships[relationshipName].added,
+              ...objects,
+            ],
+          },
+        ];
+      }),
+    );
+
+  return {
+    ...modifiedRelationships,
+    ...updatedModifiedRelationships,
+  };
+};
+
+const parseAddedAndRemovedRelationshipObjects = (
+  existing: { added: ParsedSkylarkObject[]; removed: string[] },
+  added: ParsedSkylarkObject[],
+  removed: string[],
+) => {
+  const updatedAdded = added ? [...existing.added, ...added] : existing.added;
+  const updatedRemoved = removed
+    ? [...existing.removed, ...removed]
+    : existing.removed;
+
+  const duplicates = updatedAdded
+    .filter(({ uid }) => updatedRemoved.includes(uid))
+    .map(({ uid }) => uid);
+
+  return {
+    added: updatedAdded.filter(({ uid }) => !duplicates.includes(uid)),
+    removed: updatedRemoved.filter((uid) => !duplicates.includes(uid)),
+  };
+};
 
 export const PanelRelationships = ({
   isPage,
   objectType,
   uid,
-  updatedRelationshipObjects,
-  setRelationshipObjects,
+  modifiedRelationships,
+  setModifiedRelationships,
   inEditMode,
   language,
+  droppedObjects,
   showDropZone,
   setPanelObject,
 }: PanelRelationshipsProps) => {
   const {
     relationships: serverRelationships,
-    objectRelationships = [],
+    objectRelationships: objectMetaRelationships = [],
     isLoading,
     query,
     variables,
   } = useGetObjectRelationships(objectType, uid, { language });
 
   const relationships = inEditMode
-    ? updatedRelationshipObjects
+    ? addModifiedRelationshipsOntoRelationships(
+        serverRelationships,
+        modifiedRelationships,
+      )
     : serverRelationships;
 
   useEffect(() => {
-    if (!inEditMode) {
-      setRelationshipObjects({
-        original: serverRelationships,
-        updated: serverRelationships,
+    if (
+      droppedObjects &&
+      droppedObjects.length > 0 &&
+      objectMetaRelationships &&
+      relationships
+    ) {
+      const { addedObjects, errors } = handleDroppedRelationships({
+        droppedObjects,
+        activeObjectUid: uid,
+        existingObjects: relationships,
+        objectMetaRelationships,
       });
+
+      setModifiedRelationships(
+        updateModifiedObjectsWithAddedObjects(
+          modifiedRelationships,
+          addedObjects,
+        ),
+        errors,
+      );
     }
-  }, [inEditMode, serverRelationships, setRelationshipObjects]);
+  }, [
+    droppedObjects,
+    modifiedRelationships,
+    objectMetaRelationships,
+    relationships,
+    setModifiedRelationships,
+    uid,
+  ]);
 
-  const removeRelationshipObject = (removeUid: string, relationship: string) =>
-    relationships &&
-    setRelationshipObjects({
-      original: serverRelationships,
-      updated: relationships?.map((currentRelationship) => {
-        const { objects, relationshipName } = currentRelationship;
-        if (relationshipName === relationship) {
-          const filteredObjects = objects.filter(
-            (obj) => obj.uid !== removeUid,
-          );
-          return { ...currentRelationship, objects: filteredObjects };
-        } else {
-          return currentRelationship;
-        }
-      }),
-    });
+  const modifyRelationshipObjects = (
+    relationshipName: string,
+    { added, removed }: { added?: ParsedSkylarkObject[]; removed?: string[] },
+  ) => {
+    const relationship = hasProperty(modifiedRelationships, relationshipName)
+      ? modifiedRelationships[relationshipName]
+      : { added: [], removed: [] };
 
-  const [expandedRelationships, setExpandedRelationships] = useState<
-    Record<string, boolean>
-  >({});
+    setModifiedRelationships(
+      {
+        ...modifiedRelationships,
+        [relationshipName]: parseAddedAndRemovedRelationshipObjects(
+          relationship,
+          added || [],
+          removed || [],
+        ),
+      },
+      [],
+    );
+  };
 
-  const relationshipNames = objectRelationships.map(
+  const relationshipNames = objectMetaRelationships.map(
     ({ relationshipName }) => relationshipName,
   );
-  const orderedRelationshipObjects = relationships?.sort(
-    (a, b) =>
-      relationshipNames.indexOf(a.relationshipName) -
-      relationshipNames.indexOf(b.relationshipName),
-  );
 
-  const [searchObjectsModalState, setSearchObjectsModalState] = useState({
-    open: false,
-    objectTypes: [] as SkylarkObjectTypes,
-  });
+  const { orderedRelationships, emptyOrderedRelationships } =
+    splitRelationshipsIntoSections(relationshipNames, relationships);
+
+  const [searchObjectsModalState, setSearchObjectsModalState] = useState<{
+    relationship: ParsedSkylarkObjectRelationships;
+    fields?: string[];
+  } | null>(null);
 
   if (showDropZone) {
     return <PanelDropZone />;
@@ -116,131 +284,103 @@ export const PanelRelationships = ({
       isPage={isPage}
     >
       <div>
-        {relationships &&
-          orderedRelationshipObjects?.map((relationship) => {
-            const { relationshipName, objects, objectType } = relationship;
-            const isExpanded = expandedRelationships[relationshipName];
+        {orderedRelationships?.map((relationship) => {
+          return (
+            <PanelRelationshipSection
+              key={relationship.relationshipName}
+              relationship={relationship}
+              inEditMode={inEditMode}
+              newUids={getNewUidsForRelationship(
+                relationship.relationshipName,
+                modifiedRelationships,
+              )}
+              setPanelObject={setPanelObject}
+              removeRelationshipObject={({ relationshipName, uid }) => {
+                modifyRelationshipObjects(relationshipName, { removed: [uid] });
+              }}
+              setSearchObjectsModalState={setSearchObjectsModalState}
+            />
+          );
+        })}
 
-            const displayList =
-              objects?.length > 2 && !isExpanded
-                ? objects.slice(0, 3)
-                : objects;
+        {orderedRelationships.length > 0 &&
+          emptyOrderedRelationships.length > 0 && (
+            <PanelSeparator className="my-8" />
+          )}
 
-            return (
-              <div key={relationshipName} className="relative mb-8">
-                <div className="flex items-center ">
-                  <PanelSectionTitle
-                    text={formatObjectField(relationshipName)}
-                    count={(objects.length >= 50 ? "50+" : objects.length) || 0}
-                    id={`relationship-panel-${relationshipName}`}
-                  />
-                  {/* <button
-                    onClick={() =>
-                      setSearchObjectsModalState({
-                        open: true,
-                        objectTypes: [objectType],
-                      })
-                    }
-                    className="ml-1.5 mb-4 text-manatee-500 transition-colors hover:text-brand-primary"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </button> */}
-                </div>
-                <div className="transition duration-300 ease-in-out">
-                  {relationship && displayList?.length > 0 ? (
-                    displayList?.map((obj, index) => {
-                      const relationshipObject = objectRelationships.find(
-                        (relationship) =>
-                          relationship.relationshipName === relationshipName,
-                      );
-
-                      const newUids =
-                        relationshipObject &&
-                        updatedRelationshipObjects &&
-                        serverRelationships &&
-                        parseUpdatedRelationshipObjects(
-                          relationshipObject,
-                          updatedRelationshipObjects,
-                          serverRelationships,
-                        ).uidsToLink;
-
-                      return (
-                        <Fragment key={obj.uid}>
-                          <div
-                            className="flex items-center "
-                            data-testid={`panel-relationship-${relationshipName}-item-${
-                              index + 1
-                            }`}
-                          >
-                            <ObjectIdentifierCard
-                              key={obj.uid}
-                              object={obj}
-                              disableDeleteClick={!inEditMode}
-                              disableForwardClick={inEditMode}
-                              onDeleteClick={() =>
-                                removeRelationshipObject(
-                                  obj.uid,
-                                  relationshipName,
-                                )
-                              }
-                              onForwardClick={setPanelObject}
-                            >
-                              {inEditMode && newUids?.includes(obj.uid) && (
-                                <span
-                                  className={
-                                    "flex h-4 w-4 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
-                                  }
-                                />
-                              )}
-                            </ObjectIdentifierCard>
-                          </div>
-
-                          {index < displayList.length - 1 && <PanelSeparator />}
-                        </Fragment>
-                      );
-                    })
-                  ) : (
-                    <PanelEmptyDataText />
-                  )}
-                </div>
-
-                {relationship && objects.length > 3 && (
-                  <div className="mb-3">
-                    <PanelSeparator />
-                    <button
-                      data-testid={`expand-relationship-${relationshipName}`}
-                      onClick={() =>
-                        setExpandedRelationships({
-                          [relationshipName]: !isExpanded,
-                        })
-                      }
-                      className="w-full cursor-pointer p-2 text-center text-xs text-manatee-500 hover:text-manatee-700"
-                    >
-                      {`Show ${isExpanded ? "less" : "more"}`}
-                    </button>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        {emptyOrderedRelationships?.map((relationship) => {
+          return (
+            <PanelRelationshipSection
+              key={relationship.relationshipName}
+              relationship={relationship}
+              inEditMode={inEditMode}
+              newUids={getNewUidsForRelationship(
+                relationship.relationshipName,
+                modifiedRelationships,
+              )}
+              setPanelObject={setPanelObject}
+              removeRelationshipObject={({ relationshipName, uid }) => {
+                modifyRelationshipObjects(relationshipName, { removed: [uid] });
+              }}
+              setSearchObjectsModalState={setSearchObjectsModalState}
+            />
+          );
+        })}
       </div>
-      <PanelLoading isLoading={isLoading} />
+      <PanelLoading isLoading={isLoading}>
+        {Array.from({ length: 2 }, (_, i) => (
+          <div key={`content-of-skeleton-${i}`} className="mb-8">
+            <Skeleton className="mb-4 h-6 w-52" />
+            {Array.from({ length: 3 }, (_, j) => (
+              <Skeleton
+                key={`content-of-skeleton-inner-${i}-${j}`}
+                className="mb-2 h-11 w-full max-w-xl"
+              />
+            ))}
+          </div>
+        ))}
+      </PanelLoading>
       <DisplayGraphQLQuery
         label="Get Object Relationships"
         query={query}
         variables={variables}
         buttonClassName="absolute right-2 top-0"
       />
-      <SearchObjectsModal
-        isOpen={searchObjectsModalState.open}
-        objectTypes={searchObjectsModalState.objectTypes}
-        setIsOpen={() =>
-          setSearchObjectsModalState({
-            ...searchObjectsModalState,
-            open: !searchObjectsModalState.open,
-          })
-        }
-      />
+      {relationships && (
+        <SearchObjectsModal
+          title={`Add ${sentenceCase(
+            formatObjectField(
+              searchObjectsModalState?.relationship.relationshipName,
+            ) || "Relationships",
+          )}`}
+          isOpen={!!searchObjectsModalState}
+          objectTypes={
+            searchObjectsModalState
+              ? [searchObjectsModalState?.relationship.objectType]
+              : undefined
+          }
+          columns={searchObjectsModalState?.fields}
+          closeModal={() => setSearchObjectsModalState(null)}
+          onModalClose={({ checkedObjects }) => {
+            const { addedObjects, errors } = handleDroppedRelationships({
+              droppedObjects: checkedObjects,
+              activeObjectUid: uid,
+              existingObjects: relationships,
+              objectMetaRelationships,
+              relationshipName:
+                searchObjectsModalState?.relationship.relationshipName,
+            });
+
+            setModifiedRelationships(
+              updateModifiedObjectsWithAddedObjects(
+                modifiedRelationships,
+                addedObjects,
+              ),
+              errors,
+            );
+          }}
+        />
+      )}
       {inEditMode && !isPage && (
         <p className="w-full py-4 text-center text-sm text-manatee-600">
           {"Drag an object from the Content Library to add as relationship"}

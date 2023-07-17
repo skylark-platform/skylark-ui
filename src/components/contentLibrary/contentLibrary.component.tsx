@@ -18,7 +18,7 @@ import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { MemoizedObjectSearch } from "src/components/objectSearch";
 import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
-import { usePanelObjectState } from "src/hooks/state";
+import { PanelTab, usePanelObjectState } from "src/hooks/state";
 import { useCheckedObjectsState } from "src/hooks/state";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
@@ -39,8 +39,12 @@ export const ContentLibrary = () => {
     resetPanelObjectState,
   } = usePanelObjectState();
 
-  const { checkedObjects, checkedUids, checkedObjectTypes, setCheckedObjects } =
-    useCheckedObjectsState();
+  const {
+    checkedObjects,
+    checkedUids,
+    checkedObjectTypesForDisplay,
+    setCheckedObjects,
+  } = useCheckedObjectsState();
 
   const [draggedObject, setDraggedObject] = useState<
     ParsedSkylarkObject | undefined
@@ -151,7 +155,9 @@ export const ContentLibrary = () => {
                 {checkedObjects.length > 0 &&
                 checkedUids.includes(draggedObject.uid) ? (
                   <p className="p-2">{`Add ${checkedObjects.length} ${
-                    checkedObjectTypes.length === 1 ? checkedObjectTypes[0] : ""
+                    checkedObjectTypesForDisplay.length === 1
+                      ? checkedObjectTypesForDisplay[0]
+                      : ""
                   } objects`}</p>
                 ) : (
                   <ObjectIdentifierCard
@@ -194,7 +200,7 @@ export const ContentLibrary = () => {
         </m.div>
         {activePanelObject && (
           <m.div
-            className="fixed z-50 flex h-full w-full grow flex-row bg-white md:relative md:z-auto"
+            className="fixed z-40 flex h-full w-full grow flex-row bg-white md:relative md:z-auto"
             style={{ width: activePanelObject ? panelWidth : 0 }}
           >
             <m.div
@@ -220,6 +226,7 @@ export const ContentLibrary = () => {
             </m.div>
             <div className="w-full overflow-x-scroll">
               <Panel
+                key={`${activePanelObject.objectType}-${activePanelObject.uid}-${activePanelObject.language}`}
                 object={activePanelObject}
                 tab={activePanelTab}
                 closePanel={closePanel}
@@ -242,6 +249,10 @@ export const ContentLibrary = () => {
     setDraggedObject(event.active.data.current?.object);
     const el = document.getElementById("object-search-results");
     if (el) el.style.overflow = "hidden";
+
+    if (activePanelTab === PanelTab.Metadata) {
+      setPanelTab(PanelTab.Relationships);
+    }
   }
 
   function handleDragEnd(event: DragEndEvent) {

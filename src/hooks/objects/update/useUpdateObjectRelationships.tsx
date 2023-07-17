@@ -5,6 +5,7 @@ import { createGetObjectRelationshipsKeyPrefix } from "src/hooks/objects/get/use
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkUpdateRelationshipsResponse,
+  ParsedSkylarkObject,
   ParsedSkylarkObjectRelationships,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -14,14 +15,18 @@ import { createUpdateObjectRelationshipsMutation } from "src/lib/graphql/skylark
 export const useUpdateObjectRelationships = ({
   objectType,
   uid,
-  updatedRelationshipObjects,
-  originalRelationshipObjects,
+  modifiedRelationships,
   onSuccess,
 }: {
   objectType: SkylarkObjectType;
   uid: string;
-  updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
-  originalRelationshipObjects: ParsedSkylarkObjectRelationships[] | null;
+  modifiedRelationships: Record<
+    string,
+    {
+      added: ParsedSkylarkObject[];
+      removed: string[];
+    }
+  > | null;
   onSuccess: () => void;
 }) => {
   const queryClient = useQueryClient();
@@ -30,8 +35,7 @@ export const useUpdateObjectRelationships = ({
   const updateObjectRelationshipsMutation =
     createUpdateObjectRelationshipsMutation(
       objectOperations,
-      updatedRelationshipObjects,
-      originalRelationshipObjects,
+      modifiedRelationships,
     );
 
   const { mutate, isLoading } = useMutation({

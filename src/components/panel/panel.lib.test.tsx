@@ -79,7 +79,7 @@ describe("handleDroppedRelationships", () => {
     ];
 
     const got = handleDroppedRelationships({
-      panelObject,
+      activeObjectUid: panelObject.uid,
       existingObjects: existingRelationships,
       droppedObjects: [
         ...droppedObjects,

@@ -1,7 +1,7 @@
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FiRefreshCw, FiX } from "react-icons/fi";
-import { useDebounce } from "use-debounce";
+import { useDebouncedCallback } from "use-debounce";
 
 import { Filter, Search } from "src/components/icons";
 
@@ -9,6 +9,7 @@ interface SearchInputProps {
   searchQuery: string;
   className?: string;
   isSearching?: boolean;
+  hideFilters?: boolean;
   onQueryChange: (str: string) => void;
   toggleFilterOpen: () => void;
   onRefresh: () => void;
@@ -18,18 +19,21 @@ export const SearchInput = ({
   className,
   searchQuery,
   isSearching,
+  hideFilters,
   onQueryChange,
   toggleFilterOpen,
   onRefresh,
 }: SearchInputProps) => {
   const [query, setQuery] = useState(searchQuery);
-  const [debouncedQuery] = useDebounce(query, 750);
 
-  useEffect(() => {
-    if (debouncedQuery !== searchQuery) {
-      onQueryChange(debouncedQuery);
-    }
-  }, [debouncedQuery, searchQuery, onQueryChange]);
+  const debouncedQueryChange = useDebouncedCallback((value) => {
+    onQueryChange(value);
+  }, 750);
+
+  const inputChange = (str: string) => {
+    setQuery(str);
+    debouncedQueryChange(str);
+  };
 
   return (
     <div
@@ -38,7 +42,12 @@ export const SearchInput = ({
         className,
       )}
     >
-      <div className="relative flex w-full items-center rounded-l-full outline-2 focus-within:outline focus-within:-outline-offset-1 focus-within:outline-brand-primary">
+      <div
+        className={clsx(
+          "relative flex w-full items-center rounded-l-full outline-2 focus-within:outline focus-within:-outline-offset-1 focus-within:outline-brand-primary",
+          hideFilters && "rounded-r-full",
+        )}
+      >
         <Search className="ml-2 h-4 md:ml-5 md:h-5" />
         <input
           name="search-query-input"
@@ -46,10 +55,15 @@ export const SearchInput = ({
           type="text"
           placeholder="Search for an object(s)"
           className="min-w-32 flex-grow rounded-none bg-inherit px-1 py-2 pr-0 focus:outline-none md:px-2 md:py-3 md:pr-0"
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => inputChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              debouncedQueryChange.flush();
+            }
+          }}
         />
         <button
-          onClick={() => setQuery("")}
+          onClick={() => inputChange("")}
           data-testid="search-clear-query"
           className={clsx(
             "px-1 py-2 transition-opacity focus:outline-brand-primary",
@@ -73,15 +87,17 @@ export const SearchInput = ({
           />
         </button>
       </div>
-      <button
-        className="flex items-center justify-center space-x-2 rounded-r-full bg-manatee-200 p-2 pl-4 pr-5 focus:outline-brand-primary md:p-3 md:pl-6 md:pr-8"
-        onClick={toggleFilterOpen}
-        aria-label="open-search-filters"
-        type="button"
-      >
-        <Filter />
-        <span className="font-medium">Filters</span>
-      </button>
+      {!hideFilters && (
+        <button
+          className="flex items-center justify-center space-x-2 rounded-r-full bg-manatee-200 p-2 pl-4 pr-5 focus:outline-brand-primary md:p-3 md:pl-6 md:pr-8"
+          onClick={toggleFilterOpen}
+          aria-label="open-search-filters"
+          type="button"
+        >
+          <Filter />
+          <span className="font-medium">Filters</span>
+        </button>
+      )}
     </div>
   );
 };

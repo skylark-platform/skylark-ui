@@ -7,6 +7,7 @@ export enum PanelTab {
   Imagery = "Imagery",
   Availability = "Availability",
   AvailabilityDimensions = "Dimensions",
+  AvailabilityAssignedTo = "Assigned To",
   Content = "Content",
   ContentOf = "Appears In",
   Relationships = "Relationships",

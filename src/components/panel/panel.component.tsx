@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -8,6 +8,7 @@ import { Toast } from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/objects/get/useGetObject";
 import { prefetchGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
 import { prefetchGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
+import { useUpdateAvailabilityAssignedTo } from "src/hooks/objects/update/useUpdateAvailabilityAssignedTo";
 import { useUpdateAvailabilityObjectDimensions } from "src/hooks/objects/update/useUpdateAvailabilityObjectDimensions";
 import { useUpdateObjectAvailability } from "src/hooks/objects/update/useUpdateObjectAvailability";
 import { useUpdateObjectContent } from "src/hooks/objects/update/useUpdateObjectContent";
@@ -21,7 +22,6 @@ import {
   AddedSkylarkObjectContentObject,
   SkylarkObjectMetadataField,
   SkylarkSystemField,
-  ParsedSkylarkObjectRelationships,
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -34,7 +34,6 @@ import {
 } from "src/lib/utils";
 
 import {
-  handleDroppedRelationships,
   handleDroppedContents,
   handleDroppedAvailabilities,
   HandleDropError,
@@ -46,6 +45,7 @@ import {
   PanelImages,
   PanelMetadata,
 } from "./panelSections";
+import { PanelAvailabilityAssignedTo } from "./panelSections/panelAvailabilityAssignedTo.component";
 import { PanelAvailabilityDimensions } from "./panelSections/panelAvailabilityDimensions.component";
 import { PanelContent } from "./panelSections/panelContent.component";
 import { PanelContentOf } from "./panelSections/panelContentOf.component";
@@ -65,22 +65,20 @@ interface PanelProps {
   navigateToForwardPanelObject?: () => void;
 }
 
-const tabsWithDropZones = [
-  PanelTab.Content,
-  PanelTab.Relationships,
-  PanelTab.Availability,
-];
+const tabsWithDropZones = [PanelTab.Content, PanelTab.Availability];
 
 const tabsWithEditMode = [
   ...tabsWithDropZones,
   PanelTab.Metadata,
+  PanelTab.Relationships,
   PanelTab.AvailabilityDimensions,
+  PanelTab.AvailabilityAssignedTo,
 ];
 
 const displayHandleDroppedErrors = (
   errors: HandleDropError[],
-  panelObject: ParsedSkylarkObject,
   tab: PanelTab,
+  panelObject?: ParsedSkylarkObject,
 ) => {
   const addedToSelfError = errors.find(
     (error) => error.type === HandleDropErrorType.OBJECTS_ARE_SAME,
@@ -111,9 +109,9 @@ const displayHandleDroppedErrors = (
       ),
     ];
 
-    const objectTypeText = `"${getObjectTypeDisplayNameFromParsedObject(
-      panelObject,
-    )}"`;
+    const objectTypeText = panelObject
+      ? `"${getObjectTypeDisplayNameFromParsedObject(panelObject)}"`
+      : "the active object";
 
     let tabText = `are not configured to link to ${objectTypeText}`;
     if (tab === PanelTab.Content) {
@@ -174,7 +172,7 @@ export const Panel = ({
   navigateToForwardPanelObject,
   setPanelObject,
 }: PanelProps) => {
-  const [inEditMode, setEditMode] = useState(false);
+  const [panelInEditMode, setEditMode] = useState(false);
   const [isTabDataPrefetched, setIsTabDataPrefetched] = useState(false);
 
   const [contentObjects, setContentObjects] = useState<{
@@ -185,10 +183,10 @@ export const Panel = ({
     updated: null,
   });
 
-  const [relationshipObjects, setRelationshipObjects] = useState<{
-    original: ParsedSkylarkObjectRelationships[] | null;
-    updated: ParsedSkylarkObjectRelationships[] | null;
-  }>({ original: null, updated: null });
+  const [modifiedRelationships, setModifiedRelationships] = useState<Record<
+    string,
+    { added: ParsedSkylarkObject[]; removed: string[] }
+  > | null>(null);
 
   const [availabilityObjects, setAvailabilityObjects] = useState<{
     original: ParsedSkylarkObject[] | null;
@@ -203,6 +201,9 @@ export const Panel = ({
       original: Record<string, string[]> | null;
       updated: Record<string, string[]> | null;
     }>({ original: null, updated: null });
+
+  const [modifiedAvailabilityAssignedTo, setModifiedAvailabilityAssignedTo] =
+    useState<{ added: ParsedSkylarkObject[] } | null>(null);
 
   const { uid, objectType, language } = object;
   const {
@@ -231,6 +232,12 @@ export const Panel = ({
   });
   const { reset: resetMetadataForm } = metadataForm;
 
+  const inEditMode =
+    panelInEditMode ||
+    (metadataForm.formState.isDirty && !metadataForm.formState.isSubmitted) ||
+    modifiedRelationships !== null ||
+    modifiedAvailabilityAssignedTo !== null;
+
   const tabs: PanelTab[] = useMemo(
     () =>
       [
@@ -242,6 +249,8 @@ export const Panel = ({
         objectMeta?.hasAvailability && PanelTab.Availability,
         objectMeta?.name === BuiltInSkylarkObjectType.Availability &&
           PanelTab.AvailabilityDimensions,
+        objectMeta?.name === BuiltInSkylarkObjectType.Availability &&
+          PanelTab.AvailabilityAssignedTo,
       ].filter((tab) => !!tab) as PanelTab[],
     [
       objectMeta?.hasAvailability,
@@ -252,23 +261,6 @@ export const Panel = ({
       objectMeta?.name,
     ],
   );
-
-  const resetPanelState = useCallback(
-    (resetIsTabDataPrefetched?: boolean) => {
-      setEditMode(false);
-      resetMetadataForm({});
-
-      if (resetIsTabDataPrefetched) {
-        setIsTabDataPrefetched(false);
-      }
-    },
-    [resetMetadataForm],
-  );
-
-  useEffect(() => {
-    // Resets any edited data when the panel object changes
-    resetPanelState(true);
-  }, [uid, objectType, language, resetPanelState]);
 
   const queryClient = useQueryClient();
 
@@ -309,26 +301,12 @@ export const Panel = ({
   ]);
 
   useEffect(() => {
-    // Switches into edit mode when the metadata form is changed
-    if (
-      !inEditMode &&
-      metadataForm.formState.isDirty &&
-      !metadataForm.formState.isSubmitted
-    ) {
-      setEditMode(true);
-    }
-  }, [inEditMode, metadataForm.formState]);
-
-  useEffect(() => {
     // Updates the form values when metadata is updated in Skylark
     const formValues = metadataForm.getValues();
     const dataAndFormAreEqual =
       formParsedMetadata && isObjectsDeepEqual(formParsedMetadata, formValues);
 
-    const metadataInEditMode =
-      inEditMode || (metadataForm.formState.isDirty && !inEditMode);
-
-    if (!metadataInEditMode && formParsedMetadata && !dataAndFormAreEqual) {
+    if (!inEditMode && formParsedMetadata && !dataAndFormAreEqual) {
       resetMetadataForm(formParsedMetadata);
     }
   }, [inEditMode, metadataForm, resetMetadataForm, formParsedMetadata]);
@@ -342,27 +320,6 @@ export const Panel = ({
     ) {
       setEditMode(true);
 
-      if (
-        selectedTab === PanelTab.Relationships &&
-        objectMeta?.relationships &&
-        relationshipObjects.updated
-      ) {
-        const { updatedRelationshipObjects, errors } =
-          handleDroppedRelationships({
-            droppedObjects,
-            panelObject: data,
-            existingObjects: relationshipObjects.updated,
-            objectMetaRelationships: objectMeta.relationships,
-          });
-
-        displayHandleDroppedErrors(errors, data, selectedTab);
-
-        setRelationshipObjects({
-          ...relationshipObjects,
-          updated: updatedRelationshipObjects,
-        });
-      }
-
       if (selectedTab === PanelTab.Content && contentObjects.updated) {
         const { updatedContentObjects, errors } = handleDroppedContents({
           droppedObjects,
@@ -370,7 +327,7 @@ export const Panel = ({
           existingObjects: contentObjects.updated,
         });
 
-        displayHandleDroppedErrors(errors, data, selectedTab);
+        displayHandleDroppedErrors(errors, selectedTab, data);
 
         setContentObjects({
           ...contentObjects,
@@ -389,7 +346,7 @@ export const Panel = ({
             existingObjects: availabilityObjects.updated,
           });
 
-        displayHandleDroppedErrors(errors, data, selectedTab);
+        displayHandleDroppedErrors(errors, selectedTab, data);
 
         setAvailabilityObjects({
           ...availabilityObjects,
@@ -405,8 +362,6 @@ export const Panel = ({
     contentObjects,
     data,
     droppedObjects,
-    objectMeta?.relationships,
-    relationshipObjects,
     selectedTab,
   ]);
 
@@ -414,10 +369,10 @@ export const Panel = ({
     useUpdateObjectRelationships({
       objectType,
       uid,
-      updatedRelationshipObjects: relationshipObjects.updated,
-      originalRelationshipObjects: relationshipObjects.original,
+      modifiedRelationships,
       onSuccess: () => {
-        setEditMode(false);
+        setModifiedRelationships(null);
+        if (panelInEditMode) setEditMode(false);
       },
     });
 
@@ -464,12 +419,19 @@ export const Panel = ({
     },
   });
 
+  const { updateAvailabilityAssignedTo, isUpdatingAvailabilityAssignedTo } =
+    useUpdateAvailabilityAssignedTo({
+      onSuccess: () => {
+        setModifiedAvailabilityAssignedTo(null);
+      },
+    });
+
   const saveActiveTabChanges = () => {
     if (selectedTab === PanelTab.Content && contentObjects.updated) {
       updateObjectContent();
     } else if (
       selectedTab === PanelTab.Relationships &&
-      relationshipObjects.updated
+      modifiedRelationships
     ) {
       updateObjectRelationships();
     } else if (
@@ -482,6 +444,14 @@ export const Panel = ({
       availabilityDimensionValues.updated
     ) {
       updateAvailabilityObjectDimensions();
+    } else if (
+      selectedTab === PanelTab.AvailabilityAssignedTo &&
+      modifiedAvailabilityAssignedTo
+    ) {
+      updateAvailabilityAssignedTo({
+        uid,
+        modifiedAvailabilityAssignedTo,
+      });
     } else if (selectedTab === PanelTab.Metadata) {
       metadataForm.handleSubmit((values) => {
         if (
@@ -497,6 +467,32 @@ export const Panel = ({
     } else {
       setEditMode(false);
     }
+  };
+
+  const handleRelationshipsObjectsModified = (
+    updatedModifiedRelationships: Record<
+      string,
+      {
+        added: ParsedSkylarkObject[];
+        removed: string[];
+      }
+    >,
+    errors: HandleDropError[],
+  ) => {
+    setModifiedRelationships(updatedModifiedRelationships);
+    displayHandleDroppedErrors(errors, selectedTab, data);
+    clearDroppedObjects?.();
+  };
+
+  const handleAvailabilityAssignedToModified = (
+    updatedAssignedToObjects: {
+      added: ParsedSkylarkObject[];
+    },
+    errors?: HandleDropError[],
+  ) => {
+    setModifiedAvailabilityAssignedTo(updatedAssignedToObjects);
+    if (errors) displayHandleDroppedErrors(errors, selectedTab, data);
+    clearDroppedObjects?.();
   };
 
   return (
@@ -523,7 +519,8 @@ export const Panel = ({
           isUpdatingObjectMetadata ||
           isUpdatingObjectContent ||
           isUpdatingObjectAvailability ||
-          isUpdatingAvailabilityObjectDimensions
+          isUpdatingAvailabilityObjectDimensions ||
+          isUpdatingAvailabilityAssignedTo
         }
         isTranslatable={objectMeta?.isTranslatable}
         availabilityStatus={data?.meta.availabilityStatus}
@@ -534,14 +531,12 @@ export const Panel = ({
               original: contentObjects.original,
               updated: contentObjects.original,
             });
-            setRelationshipObjects({
-              original: relationshipObjects.original,
-              updated: relationshipObjects.original,
-            });
+            setModifiedRelationships(null);
             setAvailabilityDimensionValues({
               original: availabilityDimensionValues.original,
               updated: availabilityDimensionValues.original,
             });
+            setModifiedAvailabilityAssignedTo(null);
             clearDroppedObjects?.();
           }
           setEditMode(!inEditMode);
@@ -627,11 +622,12 @@ export const Panel = ({
               isPage={isPage}
               objectType={objectType}
               uid={uid}
-              updatedRelationshipObjects={relationshipObjects.updated}
-              setRelationshipObjects={setRelationshipObjects}
+              modifiedRelationships={modifiedRelationships || {}}
+              setModifiedRelationships={handleRelationshipsObjectsModified}
               inEditMode={inEditMode}
               language={language}
               showDropZone={isDraggedObject}
+              droppedObjects={droppedObjects}
               setPanelObject={setPanelObject}
             />
           )}
@@ -658,6 +654,18 @@ export const Panel = ({
                   setEditMode(true);
                 }
               }}
+            />
+          )}
+          {selectedTab === PanelTab.AvailabilityAssignedTo && (
+            <PanelAvailabilityAssignedTo
+              isPage={isPage}
+              inEditMode={inEditMode}
+              showDropZone={isDraggedObject}
+              modifiedAvailabilityAssignedTo={modifiedAvailabilityAssignedTo}
+              droppedObjects={droppedObjects}
+              setModifiedAvailabilityAssignedTo={
+                handleAvailabilityAssignedToModified
+              }
             />
           )}
         </>

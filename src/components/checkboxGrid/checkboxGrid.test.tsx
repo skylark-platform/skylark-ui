@@ -1,15 +1,36 @@
+import { useState } from "react";
+
 import {
   fireEvent,
   render,
   screen,
+  waitFor,
   within,
 } from "src/__tests__/utils/test-utils";
 
 import {
-  CheckboxGrid,
+  CheckboxGrid as CheckboxGridComponent,
+  CheckboxGridProps,
   CheckboxOption,
   createCheckboxOptions,
 } from "./checkboxGrid.component";
+
+const CheckboxGrid = (props: Omit<CheckboxGridProps, "checkedOptions">) => {
+  const [checkedOptions, setCheckedObjects] = useState<string[]>([]);
+
+  const onChangeWrapper = (checked: string[]) => {
+    setCheckedObjects(checked);
+    props.onChange(checked);
+  };
+
+  return (
+    <CheckboxGridComponent
+      {...props}
+      checkedOptions={checkedOptions}
+      onChange={onChangeWrapper}
+    />
+  );
+};
 
 describe("createCheckboxOptions", () => {
   const strOpts = ["opt1", "opt2"];
@@ -100,11 +121,7 @@ describe("CheckboxGrid", () => {
 
     fireEvent.click(screen.getAllByRole("checkbox")[0]);
 
-    expect(onChange).toHaveBeenCalledWith([
-      { option: { label: "opt1", value: "opt1" }, state: true },
-      { option: { label: "opt2", value: "opt2" }, state: false },
-      { option: { label: "opt3", value: "opt3" }, state: false },
-    ]);
+    expect(onChange).toHaveBeenCalledWith(["opt1"]);
     screen.getAllByRole("checkbox").forEach((el, i) => {
       expect(el).toHaveAttribute("aria-checked", i === 0 ? "true" : "false");
     });
@@ -123,11 +140,7 @@ describe("CheckboxGrid", () => {
 
     fireEvent.click(screen.getAllByRole("checkbox")[0]);
 
-    expect(onChange).toHaveBeenCalledWith([
-      { option: { label: "opt1", value: "opt1" }, state: true },
-      { option: { label: "opt2", value: "opt2" }, state: true },
-      { option: { label: "opt3", value: "opt3" }, state: true },
-    ]);
+    expect(onChange).toHaveBeenCalledWith(["opt1", "opt2", "opt3"]);
     screen.getAllByRole("checkbox").forEach((el) => {
       expect(el).toHaveAttribute("aria-checked", "true");
     });
@@ -146,11 +159,7 @@ describe("CheckboxGrid", () => {
 
     fireEvent.click(screen.getAllByRole("checkbox")[0]);
 
-    expect(onChange).toHaveBeenCalledWith([
-      { option: { label: "opt1", value: "opt1" }, state: true },
-      { option: { label: "opt2", value: "opt2" }, state: true },
-      { option: { label: "opt3", value: "opt3" }, state: true },
-    ]);
+    expect(onChange).toHaveBeenCalledWith(["opt1", "opt2", "opt3"]);
     screen.getAllByRole("checkbox").forEach((el) => {
       expect(el).toHaveAttribute("aria-checked", "true");
     });
@@ -169,13 +178,9 @@ describe("CheckboxGrid", () => {
 
     fireEvent.click(screen.getAllByRole("checkbox")[0]);
 
-    expect(onChange).toHaveBeenCalledWith([
-      { option: { label: "opt1", value: "opt1" }, state: false },
-      { option: { label: "opt2", value: "opt2" }, state: false },
-      { option: { label: "opt3", value: "opt3" }, state: false },
-    ]);
+    expect(onChange).toHaveBeenCalledWith(["opt1", "opt2", "opt3"]);
     screen.getAllByRole("checkbox").forEach((el) => {
-      expect(el).toHaveAttribute("aria-checked", "false");
+      expect(el).toHaveAttribute("aria-checked", "true");
     });
   });
 
@@ -195,11 +200,7 @@ describe("CheckboxGrid", () => {
 
     fireEvent.click(withinCheckboxContainer.getByText("Only"));
 
-    expect(onChange).toHaveBeenCalledWith([
-      { option: { label: "opt1", value: "opt1" }, state: false },
-      { option: { label: "opt2", value: "opt2" }, state: true },
-      { option: { label: "opt3", value: "opt3" }, state: false },
-    ]);
+    expect(onChange).toHaveBeenCalledWith(["opt2"]);
     screen.getAllByRole("checkbox").forEach((el, i) => {
       expect(el).toHaveAttribute("aria-checked", i === 1 ? "true" : "false");
     });

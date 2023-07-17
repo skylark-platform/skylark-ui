@@ -27,6 +27,8 @@ export const useSkylarkSchemaIntrospection = <
         { useCache: true },
       ),
     select,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: Infinity,
   });
   return {
     data: data,

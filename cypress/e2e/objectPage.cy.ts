@@ -62,18 +62,6 @@ describe("Object Page", () => {
       cy.percySnapshot("Object page - metadata");
     });
 
-    it("scrolls to Translatable Metadata using the side navigation", () => {
-      cy.get("[data-testid=panel-metadata]").within(() => {
-        cy.contains("Translatable Metadata").should("not.be.visible");
-      });
-
-      cy.contains("button", "Translatable Metadata").click();
-
-      cy.get("[data-testid=panel-metadata]").within(() => {
-        cy.contains("Translatable Metadata").should("be.visible");
-      });
-    });
-
     it("navigates to Content tab, opens an object and checks the URL has updated", () => {
       cy.fixture("./skylark/queries/getObject/homepage.json").then(
         (homepageJson) => {
@@ -108,6 +96,30 @@ describe("Object Page", () => {
             });
         },
       );
+    });
+  });
+
+  describe("Movie", () => {
+    beforeEach(() => {
+      cy.fixture(
+        "./skylark/queries/getObject/fantasticMrFox_All_Availabilities.json",
+      ).then((objectJson) => {
+        cy.visit(
+          `/object/${objectJson.data.getObject.__typename}/${objectJson.data.getObject.uid}`,
+        );
+        cy.wait("@introspectionQuery");
+      });
+    });
+    it("scrolls to Global Metadata using the side navigation", () => {
+      cy.get("[data-testid=panel-metadata]").within(() => {
+        cy.contains("Global Metadata").should("not.be.visible");
+      });
+
+      cy.contains("button", "Global Metadata").click();
+
+      cy.get("[data-testid=panel-metadata]").within(() => {
+        cy.contains("Global Metadata").should("be.visible");
+      });
     });
   });
 });

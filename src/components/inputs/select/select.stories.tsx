@@ -1,5 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-import { userEvent, waitFor, within } from "@storybook/testing-library";
+import { ComponentStory, Story } from "@storybook/react";
+import { userEvent, waitFor, within, screen } from "@storybook/testing-library";
 import clsx from "clsx";
 
 import { Select } from "./select.component";
@@ -7,6 +7,14 @@ import { Select } from "./select.component";
 export default {
   title: "Components/Inputs/Select",
   component: Select,
+  // Decorator to increase Story height https://www.chromatic.com/docs/snapshots#why-are-components-that-render-in-a-portal-tooltip-modal-menu-ge
+  decorators: [
+    (Story: Story) => (
+      <div style={{ height: "300px" }}>
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 const options = ["Episode", "Season", "Brand"].map((val) => ({
@@ -82,7 +90,8 @@ OpenWithoutSearch.play = async ({ canvasElement }) => {
   await userEvent.click(selectButton);
 
   await waitFor(async () => {
-    await userEvent.hover(canvas.getByText("Season"));
+    // Select uses a Portal so isn't within the canvasElement
+    await userEvent.hover(screen.getByText("Season"));
   });
 };
 
@@ -98,7 +107,8 @@ OpenWithSearch.play = async ({ canvasElement }) => {
   await userEvent.click(selectButton);
 
   await waitFor(async () => {
-    await userEvent.hover(canvas.getByText("Season"));
+    // Select uses a Portal so isn't within the canvasElement
+    await userEvent.hover(screen.getByText("Season"));
   });
 };
 
