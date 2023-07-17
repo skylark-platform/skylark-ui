@@ -342,7 +342,7 @@ export const Panel = ({
         const { updatedAvailabilityObjects, errors } =
           handleDroppedAvailabilities({
             droppedObjects,
-            panelObject: data,
+            activeObjectUid: data.uid,
             existingObjects: availabilityObjects.updated,
           });
 

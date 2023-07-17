@@ -1,20 +1,23 @@
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import { AvailabilityLabel } from "src/components/availability";
 import { OpenObjectButton } from "src/components/button";
-import { DisplayGraphQLQuery } from "src/components/modals";
+import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { handleDroppedAvailabilities } from "src/components/panel/panel.lib";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
   PanelFieldTitle,
+  PanelPlusButton,
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
 import { useGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   AvailabilityStatus,
   SkylarkGraphQLAvailabilityDimensionWithValues,
@@ -168,6 +171,11 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
   const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
     useGetObjectAvailability(objectType, objectUid, { language });
 
+  const [objectSearchModalOpen, setObjectSearchModalOpen] = useState(false);
+
+  const { objectOperations: availabilityObjectMeta } =
+    useSkylarkObjectOperations(BuiltInSkylarkObjectType.Availability);
+
   useEffect(() => {
     if (!inEditMode && data) {
       const parsedObjects: ParsedSkylarkObject[] =
@@ -199,10 +207,13 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
       isPage={isPage}
     >
       <div data-testid="panel-availability">
-        <PanelSectionTitle
-          text={formatObjectField("Availability")}
-          id={"availability-panel-title"}
-        />
+        <div className="flex items-center">
+          <PanelSectionTitle
+            text={formatObjectField("Availability")}
+            id={"availability-panel-title"}
+          />
+          <PanelPlusButton onClick={() => setObjectSearchModalOpen(true)} />
+        </div>
         {data && (
           <>
             {!isLoading && data?.length === 0 && !inEditMode && (
@@ -344,6 +355,30 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
         variables={variables}
         buttonClassName="absolute right-2 top-0"
       />
+      {data && availabilityObjectMeta && (
+        <SearchObjectsModal
+          title={`Add Availability`}
+          isOpen={objectSearchModalOpen}
+          objectTypes={[BuiltInSkylarkObjectType.Availability]}
+          columns={availabilityObjectMeta.fields.map(({ name }) => name)}
+          closeModal={() => setObjectSearchModalOpen(false)}
+          onModalClose={({ checkedObjects }) => {
+            const original = convertAvailabilityToParsedObject(data);
+
+            const { updatedAvailabilityObjects, errors } =
+              handleDroppedAvailabilities({
+                droppedObjects: checkedObjects,
+                existingObjects: availabilityObjects || original,
+                activeObjectUid: objectUid,
+              });
+
+            setAvailabilityObjects({
+              original: original,
+              updated: updatedAvailabilityObjects,
+            });
+          }}
+        />
+      )}
     </PanelSectionLayout>
   );
 };

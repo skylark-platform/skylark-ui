@@ -238,11 +238,11 @@ export const handleDroppedContents = ({
 export const handleDroppedAvailabilities = ({
   existingObjects,
   droppedObjects,
-  panelObject,
+  activeObjectUid,
 }: {
   existingObjects: ParsedSkylarkObject[];
   droppedObjects: ParsedSkylarkObject[];
-  panelObject: ParsedSkylarkObject;
+  activeObjectUid: string;
 }) => {
   const { updatedAvailabilityObjects, errors } = droppedObjects.reduce(
     (
@@ -263,7 +263,7 @@ export const handleDroppedAvailabilities = ({
         };
       }
 
-      if (panelObject.uid === droppedObject.uid) {
+      if (activeObjectUid === droppedObject.uid) {
         const error: HandleDropError = {
           type: HandleDropErrorType.OBJECTS_ARE_SAME,
           object: droppedObject,

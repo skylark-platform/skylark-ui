@@ -1,8 +1,8 @@
 import { useState, Fragment } from "react";
 
-import { Plus } from "src/components/icons";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import {
+  PanelPlusButton,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
@@ -54,14 +54,11 @@ export const PanelRelationshipSection = ({
           count={(objects.length >= 50 ? "50+" : objects.length) || 0}
           id={`relationship-panel-${relationshipName}`}
         />
-        <button
+        <PanelPlusButton
           onClick={() =>
             setSearchObjectsModalState({ relationship, fields: objectFields })
           }
-          className="mb-4 px-2 py-1 text-manatee-500 transition-colors hover:text-brand-primary"
-        >
-          <Plus className="h-3 w-3" />
-        </button>
+        />
       </div>
       <div className="transition duration-300 ease-in-out">
         {displayList?.length > 0 ? (

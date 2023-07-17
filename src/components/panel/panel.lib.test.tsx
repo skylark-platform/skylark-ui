@@ -228,7 +228,7 @@ describe("handleDroppedAvailabilities", () => {
     };
 
     const got = handleDroppedAvailabilities({
-      panelObject,
+      activeObjectUid: panelObject.uid,
       existingObjects: [existingOb],
       droppedObjects: [...droppedObjects, existingOb],
     });

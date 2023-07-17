@@ -1,6 +1,7 @@
 import clsx from "clsx";
 
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
+import { Plus } from "src/components/icons";
 
 interface PanelHeaderProps {
   text: string;
@@ -71,4 +72,13 @@ export const PanelSeparator = ({
       className,
     )}
   />
+);
+
+export const PanelPlusButton = ({ onClick }: { onClick: () => void }) => (
+  <button
+    className="mb-4 px-2 py-1 text-manatee-500 transition-colors hover:text-brand-primary"
+    onClick={onClick}
+  >
+    <Plus className="h-3 w-3" />
+  </button>
 );
