@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -22,7 +22,6 @@ import {
   AddedSkylarkObjectContentObject,
   SkylarkObjectMetadataField,
   SkylarkSystemField,
-  ParsedSkylarkObjectRelationships,
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -35,7 +34,6 @@ import {
 } from "src/lib/utils";
 
 import {
-  handleDroppedRelationships,
   handleDroppedContents,
   handleDroppedAvailabilities,
   HandleDropError,

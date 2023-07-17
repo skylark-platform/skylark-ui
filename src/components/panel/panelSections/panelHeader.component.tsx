@@ -25,7 +25,7 @@ import {
   DisplayGraphQLQueryModal,
 } from "src/components/modals";
 import { PanelLabel } from "src/components/panel/panelLabel";
-import { ObjectTypePill, Pill } from "src/components/pill";
+import { ObjectTypePill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
 import {
   AvailabilityStatus,
@@ -88,6 +88,7 @@ export const PanelHeader = ({
   ] = useState(false);
 
   const saveButtonRef = useRef<HTMLButtonElement | null>(null);
+  const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const objectTypeDisplayName =
     object?.config.objectTypeDisplayName || objectType;
@@ -138,6 +139,13 @@ export const PanelHeader = ({
         e.preventDefault();
         if (!saveButtonRef?.current?.disabled) {
           saveButtonRef?.current?.click();
+        }
+      }
+
+      if (e.key === "Escape") {
+        e.preventDefault();
+        if (!cancelButtonRef?.current?.disabled) {
+          cancelButtonRef?.current?.click();
         }
       }
     };
@@ -209,6 +217,7 @@ export const PanelHeader = ({
                 Save
               </Button>
               <Button
+                ref={cancelButtonRef}
                 variant="outline"
                 danger
                 onClick={toggleEditMode}
