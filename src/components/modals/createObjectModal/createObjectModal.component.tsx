@@ -141,7 +141,7 @@ export const CreateObjectModal = ({
 
       if ((isMac ? e.metaKey : e.ctrlKey) && e.key === "s") {
         e.preventDefault();
-        submitButtonRef?.current?.scrollIntoView();
+        submitButtonRef?.current?.scrollIntoView?.();
         if (!submitButtonRef?.current?.disabled) {
           submitButtonRef?.current?.click();
         }

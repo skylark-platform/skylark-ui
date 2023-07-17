@@ -96,3 +96,19 @@ test("calls onRefresh when the refresh button is clicked", async () => {
 
   expect(refresh).toHaveBeenCalled();
 });
+
+test("can't find/open filters when hideFilters prop is given", async () => {
+  render(
+    <SearchInput
+      searchQuery=""
+      onQueryChange={jest.fn()}
+      toggleFilterOpen={jest.fn()}
+      onRefresh={jest.fn()}
+      hideFilters
+    />,
+  );
+
+  expect(
+    screen.queryByLabelText("open-search-filters"),
+  ).not.toBeInTheDocument();
+});

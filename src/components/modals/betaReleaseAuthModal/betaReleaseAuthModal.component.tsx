@@ -185,7 +185,6 @@ export const AddAuthTokenModal = ({
               onClick={() => updateLocalStorage()}
               loading={requestLoading}
               type="button"
-              data-testid="beta-release-auth-modal-connect-button"
             >
               {requestLoading ? "Validating" : "Connect"}
             </Button>

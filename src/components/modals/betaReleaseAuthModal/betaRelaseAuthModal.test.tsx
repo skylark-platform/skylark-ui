@@ -182,3 +182,13 @@ test("when GraphQL is valid, updates local storage", async () => {
   );
   expect(setItem).toHaveBeenCalledWith(LOCAL_STORAGE.betaAuth.token, "token");
 });
+
+test("shows the user's account when connected", async () => {
+  render(<AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />);
+
+  await waitFor(() => {
+    expect(screen.getByText("Currently connected to:")).toBeInTheDocument();
+  });
+
+  expect(screen.getByText("kxa3cpoawbcdpfkz3gusojkg3u")).toBeInTheDocument();
+});

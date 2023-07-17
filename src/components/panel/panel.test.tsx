@@ -214,6 +214,27 @@ describe("header (tab independent)", () => {
 
     expect(screen.queryByText("Editing")).not.toBeInTheDocument();
   });
+
+  test("save using the ctrl+s hotkey key", async () => {
+    render(<Panel {...defaultProps} object={setObjectWithContent} />);
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByText("Edit Metadata"));
+
+    await fireEvent.keyDown(screen.getByTestId("panel-header"), {
+      key: "s",
+      code: "s",
+      ctrlKey: true,
+    });
+
+    await waitFor(() =>
+      expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+    );
+    expect(screen.queryByText("Editing")).not.toBeInTheDocument();
+  });
 });
 
 describe("metadata view", () => {

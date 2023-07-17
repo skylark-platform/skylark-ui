@@ -51,6 +51,7 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: Infinity,
   });
 
   const objectTypesWithConfig = useMemo(

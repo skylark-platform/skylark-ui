@@ -3,12 +3,8 @@ import React from "react";
 import { GrClose } from "react-icons/gr";
 
 import { Button } from "src/components/button";
-import { ObjectSearch, ObjectSearchProps } from "src/components/objectSearch";
+import { ObjectSearch } from "src/components/objectSearch";
 import { useCheckedObjectsState } from "src/hooks/state";
-import {
-  useAllObjectsMeta,
-  useSkylarkObjectOperations,
-} from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObject,
   SkylarkObjectTypes,
@@ -68,7 +64,6 @@ export const SearchObjectsModal = ({
             <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">
               {title}
             </Dialog.Title>
-            {/* <Dialog.Description>desc</Dialog.Description> */}
           </div>
           <div className="ml-4 flex-grow overflow-auto pl-4 pr-0 pt-2">
             <ObjectSearch
@@ -84,7 +79,6 @@ export const SearchObjectsModal = ({
             <Button
               variant="primary"
               className="mt-4"
-              // loading={isCreatingObject || isCreatingTranslation}
               onClick={onModalCloseWrapper}
               type="button"
               disabled={checkedObjects.length === 0}
@@ -101,7 +95,6 @@ export const SearchObjectsModal = ({
               className="mt-4"
               type="button"
               danger
-              // disabled={isCreatingObject || isCreatingTranslation}
               onClick={closeModal}
             >
               Cancel
