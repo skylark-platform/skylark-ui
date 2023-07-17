@@ -18,6 +18,14 @@ import {
 
 import { ObjectSearch } from "./objectSearch.component";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const useRouter = jest.spyOn(require("next/router"), "useRouter");
+
+beforeEach(() => {
+  const router = { query: {} };
+  useRouter.mockReturnValue(router);
+});
+
 afterEach(() => {
   jest.useRealTimers();
 });

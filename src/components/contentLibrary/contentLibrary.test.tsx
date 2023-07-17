@@ -16,8 +16,14 @@ import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
 
 import { ContentLibrary } from "./contentLibrary.component";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const useRouter = jest.spyOn(require("next/router"), "useRouter");
+
 beforeEach(() => {
   jest.useFakeTimers();
+
+  const router = { query: {} };
+  useRouter.mockReturnValue(router);
 });
 
 test("open metadata panel, check information and close", async () => {

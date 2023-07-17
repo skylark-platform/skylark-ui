@@ -495,6 +495,7 @@ describe("metadata view", () => {
         );
       });
 
+      await user.click(input);
       await user.clear(input);
       await user.type(input, "changed");
 
@@ -547,6 +548,7 @@ describe("metadata view", () => {
         );
       });
 
+      await user.click(input);
       await user.clear(input);
       await user.type(input, changedValue);
 

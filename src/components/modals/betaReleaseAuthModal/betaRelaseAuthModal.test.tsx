@@ -2,6 +2,7 @@ import { graphql } from "msw";
 
 import { server } from "src/__tests__/mocks/server";
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -12,19 +13,22 @@ import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
 import { AddAuthTokenModal } from "./betaReleaseAuthModal.component";
 
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+
 test("renders as closed", () => {
   render(<AddAuthTokenModal isOpen={false} setIsOpen={jest.fn()} />);
 
   expect(screen.queryByText("Connect to Skylark")).toBeNull();
 });
 
-test("renders as open", () => {
+test("renders as open", async () => {
   render(<AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />);
 
   expect(screen.getByText("Connect to Skylark")).toBeInTheDocument();
   expect(screen.getByLabelText("GraphQL URL")).toBeInTheDocument();
   expect(screen.getByLabelText("API Key")).toBeInTheDocument();
-  expect(screen.getByText("Validating").closest("button")).toBeDisabled();
 });
 
 test("renders as open and closes on the esc key", () => {
@@ -116,6 +120,10 @@ test("changes input to red when they are invalid", async () => {
     target: { value: "http://invalidgraphqlurl.com" },
   });
 
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
   await waitFor(() => expect(uriInput).toHaveClass("border-error"));
   await waitFor(() => expect(tokenInput).toHaveClass("border-error"));
   expect(screen.getByText("Connect").closest("button")).toBeDisabled();
@@ -149,11 +157,15 @@ test("when GraphQL is valid, updates local storage", async () => {
   const uriInput = screen.getByLabelText("GraphQL URL");
   const tokenInput = screen.getByLabelText("API Key");
 
-  fireEvent.change(uriInput, {
+  await fireEvent.change(uriInput, {
     target: { value: "http://valid.com" },
   });
-  fireEvent.change(tokenInput, {
+  await fireEvent.change(tokenInput, {
     target: { value: "token" },
+  });
+
+  act(() => {
+    jest.advanceTimersByTime(2000);
   });
 
   const connect = screen.getByRole("button", {

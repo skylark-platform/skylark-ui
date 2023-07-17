@@ -63,7 +63,7 @@ export const SearchInput = ({
           }}
         />
         <button
-          onClick={() => setQuery("")}
+          onClick={() => inputChange("")}
           data-testid="search-clear-query"
           className={clsx(
             "px-1 py-2 transition-opacity focus:outline-brand-primary",

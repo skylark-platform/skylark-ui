@@ -128,21 +128,23 @@ export const AddAuthTokenModal = ({
             Enter your GraphQL URI and API Key below to connect to your Skylark
             account.
           </Dialog.Description>
-          <div className="mt-2 flex items-center">
-            <p>
-              Currently connected to:{" "}
-              <code className="rounded-sm bg-manatee-200 p-1">
-                {account?.accountId}
-              </code>
-            </p>
-            <CopyToClipboard value={account?.accountId} />
-          </div>
+          {account?.accountId && (
+            <div className="mt-2 flex items-center">
+              <p>
+                Currently connected to:{" "}
+                <code className="rounded-sm bg-manatee-200 p-1">
+                  {account?.accountId}
+                </code>
+              </p>
+              <CopyToClipboard value={account?.accountId} />
+            </div>
+          )}
           <div className="my-4 flex flex-col space-y-2 md:my-10">
             <TextInput
               value={inputUri || ""}
               onChange={(uri) => {
                 setInputCreds((prev) => ({ ...prev, uri }));
-                debouncedSetCreds({ token: debouncedToken, uri });
+                debouncedSetCreds({ token: inputToken, uri });
               }}
               label="GraphQL URL"
               tabIndex={-1}
@@ -161,7 +163,7 @@ export const AddAuthTokenModal = ({
               value={inputToken || ""}
               onChange={(token) => {
                 setInputCreds((prev) => ({ ...prev, token }));
-                debouncedSetCreds({ uri: debouncedUri, token });
+                debouncedSetCreds({ uri: inputUri, token });
               }}
               label="API Key"
               tabIndex={-1}
@@ -183,6 +185,7 @@ export const AddAuthTokenModal = ({
               onClick={() => updateLocalStorage()}
               loading={requestLoading}
               type="button"
+              data-testid="beta-release-auth-modal-connect-button"
             >
               {requestLoading ? "Validating" : "Connect"}
             </Button>
