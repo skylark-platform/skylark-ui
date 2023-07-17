@@ -27,7 +27,7 @@ export const SearchObjectsModal = ({
   closeModal,
   onModalClose,
 }: SearchObjectsModalProps) => {
-  const { checkedObjects, checkedObjectTypes, setCheckedObjects } =
+  const { checkedObjects, checkedObjectTypesForDisplay, setCheckedObjects } =
     useCheckedObjectsState();
 
   const onModalCloseWrapper = () => {
@@ -41,7 +41,7 @@ export const SearchObjectsModal = ({
       open={isOpen}
       onClose={closeModal}
       className="font-body relative z-50"
-      data-testid="create-object-modal"
+      data-testid="search-objects-modal"
     >
       <div
         className="fixed inset-0 bg-black/40"
@@ -83,10 +83,11 @@ export const SearchObjectsModal = ({
               type="button"
               disabled={checkedObjects.length === 0}
               success
+              data-testid="search-objects-modal-save"
             >
               {`Add ${checkedObjects.length} ${
-                checkedObjectTypes.length === 1
-                  ? `${checkedObjectTypes[0]}s`
+                checkedObjectTypesForDisplay.length === 1
+                  ? `${checkedObjectTypesForDisplay[0]}`
                   : "Objects"
               }`}
             </Button>

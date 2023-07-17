@@ -1,18 +1,4 @@
-import {
-  useFloating,
-  useClick,
-  useDismiss,
-  useRole,
-  useListNavigation,
-  useInteractions,
-  FloatingFocusManager,
-  useTypeahead,
-  offset,
-  flip,
-  size,
-  autoUpdate,
-  FloatingPortal,
-} from "@floating-ui/react";
+import { useFloating, offset, flip, size } from "@floating-ui/react";
 import { Combobox, Transition, Portal } from "@headlessui/react";
 import clsx from "clsx";
 import React, {
