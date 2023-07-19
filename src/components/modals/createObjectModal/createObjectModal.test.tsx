@@ -1,7 +1,7 @@
 import { waitFor, screen, fireEvent } from "@testing-library/react";
 
-import GQLSkylarkAccountFixture from "src/__tests__/fixtures/skylark/queries/getAccount.json";
 import GQLSkylarkGetObjectGOTS01E01QueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01.json";
+import GQLSkylarkUserAccountFixture from "src/__tests__/fixtures/skylark/queries/getUserAndAccount.json";
 import { render } from "src/__tests__/utils/test-utils";
 
 import { CreateObjectModal } from "./createObjectModal.component";
@@ -125,7 +125,7 @@ describe("Create Object (new object)", () => {
 
     expect(onObjectCreated).toHaveBeenCalledWith({
       language:
-        GQLSkylarkAccountFixture.data.getAccount.config.default_language,
+        GQLSkylarkUserAccountFixture.data.getAccount.config.default_language,
       objectType: "Episode",
       uid: GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.uid,
     });

@@ -142,7 +142,14 @@ const SkylarkObjectFieldInputWYSIWYG = ({
   <Controller
     name={field}
     control={control}
-    render={({ field }) => <WYSIWYGEditor />}
+    render={({ field }) => (
+      <WYSIWYGEditor
+        id={createHtmlForId(field.name)}
+        value={field.value as string}
+        onEditorChange={field.onChange}
+        aria-invalid={error ? "true" : "false"}
+      />
+    )}
   />
 );
 
@@ -271,7 +278,9 @@ export const SkylarkObjectFieldInput = (
         copyValue={props.value !== null ? `${props.value}` : undefined}
         href={config.type === "url" ? `${props.value}` : undefined}
       />
-      {isLoading ? (
+      {isLoading &&
+      (!fieldConfigFromObject ||
+        fieldConfigFromObject.fieldType !== "WYSIWYG") ? (
         <Skeleton className="h-11 w-full" />
       ) : (
         (() => {

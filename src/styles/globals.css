@@ -36,3 +36,8 @@
   width: 2rem !important;
   padding: 0.5rem !important;
 }
+
+/* Overrides for TinyMCE */
+.tox-statusbar__branding {
+  display: none !important;
+}
