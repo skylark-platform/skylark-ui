@@ -43,7 +43,7 @@ export interface ObjectSearchProps {
 }
 
 export const ObjectSearch = (props: ObjectSearchProps) => {
-  const { defaultLanguage, isLoading: isUserLoading } = useUser();
+  const { account, isLoading: isUserLoading } = useUser();
   const {
     withCreateButtons,
     setPanelObject,
@@ -86,7 +86,8 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     isFetchingNextPage,
     fetchNextPage,
   } = useSearch(searchQuery, {
-    language: searchLanguage === undefined ? defaultLanguage : searchLanguage,
+    language:
+      searchLanguage === undefined ? account?.defaultLanguage : searchLanguage,
     objectTypes: searchObjectTypes || objectTypes || null,
     availabilityDimensions: searchAvailabilityDimensions,
   });
@@ -149,6 +150,21 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
       }
     }
   }, [sortedHeaders, columnVisibility]);
+
+  const tab: {
+    query: string;
+    language: string | null;
+    filters: SearchFilters;
+    columns: string[];
+  } = {
+    query: searchQuery,
+    language: searchLanguage || null,
+    filters: {
+      objectTypes: searchObjectTypes,
+      availabilityDimensions: searchAvailabilityDimensions,
+    },
+    columns: [],
+  };
 
   if (searchError) console.error("Search Errors:", { searchError });
 
