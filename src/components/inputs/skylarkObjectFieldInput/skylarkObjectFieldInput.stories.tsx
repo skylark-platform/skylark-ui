@@ -16,6 +16,7 @@ const Template: ComponentStory<typeof SkylarkObjectFieldInput> = ({
   return (
     <div className="w-64">
       <SkylarkObjectFieldInput
+        idPrefix="storybook"
         register={register}
         control={control}
         value={getValues(config.name)}
@@ -179,5 +180,37 @@ Enum.args = {
     enumValues: ["value1", "value2"],
     isRequired: false,
     isList: false,
+  },
+};
+
+export const Textarea = Template.bind({});
+Textarea.args = {
+  config: {
+    type: "string",
+    name: "textarea",
+    originalType: "String",
+    isRequired: false,
+    isList: false,
+  },
+  fieldConfigFromObject: {
+    fieldType: "TEXTAREA",
+    name: "textarea",
+    position: 0,
+  },
+};
+
+export const WYSIWYGEditor = Template.bind({});
+WYSIWYGEditor.args = {
+  config: {
+    type: "string",
+    name: "wysiwyg",
+    originalType: "String",
+    isRequired: false,
+    isList: false,
+  },
+  fieldConfigFromObject: {
+    fieldType: "WYSIWYG",
+    name: "wysiwyg",
+    position: 0,
   },
 };

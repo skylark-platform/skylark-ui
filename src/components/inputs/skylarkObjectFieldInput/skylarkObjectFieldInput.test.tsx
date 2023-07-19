@@ -38,6 +38,7 @@ const WrappedSkylarkObjectFieldInput = ({
   return (
     <div>
       <SkylarkObjectFieldInput
+        idPrefix="test"
         register={register}
         control={control}
         value={getValues(config.name)}
