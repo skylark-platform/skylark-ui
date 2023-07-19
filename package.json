@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "postinstall": "node ./postinstall.js",
+    "postinstall": "node ./postInstall.js",
     "dev": "next dev",
     "dev:all": "concurrently -c \"#226DFF\",\"#F84785\"  \"yarn:dev\" \"yarn:storybook\"",
     "build": "next build",
