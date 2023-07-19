@@ -12,6 +12,7 @@ import {
   IntrospectionScalarType,
 } from "graphql";
 import { EnumType } from "json-to-graphql-query";
+import { HTMLInputTypeAttribute } from "react";
 
 import { SYSTEM_FIELDS } from "src/constants/skylark";
 import { GQLScalars } from "src/interfaces/graphql/introspection";
@@ -410,6 +411,39 @@ export const parseMetadataForGraphQLRequest = (
   return parsedMetadata;
 };
 
+export const parseDateTimeForHTMLForm = (
+  type: HTMLInputTypeAttribute,
+  value: SkylarkObjectMetadataField,
+) => {
+  if (type === "datetime-local") {
+    // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local
+    const validDateTimeLocal = dayjs(`${value}`).format(
+      "YYYY-MM-DDTHH:mm:ss.SSS",
+    );
+    return validDateTimeLocal;
+  }
+
+  if (type === "date") {
+    const validDate = validateAndParseDate(
+      type,
+      `${value}`,
+      ["YYYY-MM-DD", "YYYY-MM-DD+Z"],
+      true,
+    ).format("YYYY-MM-DD");
+    return validDate;
+  }
+
+  if (type === "time") {
+    const validTime = validateAndParseDate(
+      type,
+      `${value}`,
+      ["HH:mm:ss", "HH:mm:ss.SSS", "HH:mm:ss.SSS+Z"],
+      true,
+    ).format("HH:mm:ss.SSS");
+    return validTime;
+  }
+};
+
 // Parses an object's metadata so it works with a HTML Form Input
 export const parseMetadataForHTMLForm = (
   metadata: Record<string, SkylarkObjectMetadataField>,
@@ -418,32 +452,10 @@ export const parseMetadataForHTMLForm = (
   const keyValuePairs = Object.entries(metadata).map(([key, value]) => {
     const input = inputFields.find((createInput) => createInput.name === key);
     if (input) {
-      if (convertFieldTypeToHTMLInputType(input.type) === "datetime-local") {
-        // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local
-        const validDateTimeLocal = dayjs(`${value}`).format(
-          "YYYY-MM-DDTHH:mm:ss.SSS",
-        );
-        return [key, validDateTimeLocal];
-      }
+      const htmlInputType = convertFieldTypeToHTMLInputType(input.type);
 
-      if (convertFieldTypeToHTMLInputType(input.type) === "date") {
-        const validDate = validateAndParseDate(
-          input.type,
-          `${value}`,
-          ["YYYY-MM-DD", "YYYY-MM-DD+Z"],
-          true,
-        ).format("YYYY-MM-DD");
-        return [key, validDate];
-      }
-
-      if (convertFieldTypeToHTMLInputType(input.type) === "time") {
-        const validTime = validateAndParseDate(
-          input.type,
-          `${value}`,
-          ["HH:mm:ss", "HH:mm:ss.SSS", "HH:mm:ss.SSS+Z"],
-          true,
-        ).format("HH:mm:ss.SSS");
-        return [key, validTime];
+      if (["datetime-local", "date", "time"].includes(htmlInputType)) {
+        return [key, parseDateTimeForHTMLForm(htmlInputType, value)];
       }
     }
 

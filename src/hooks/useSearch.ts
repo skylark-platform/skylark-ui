@@ -21,6 +21,10 @@ export interface SearchFilters {
   objectTypes: string[] | null;
   language?: string | null;
   availabilityDimensions: Record<string, string> | null;
+  timeTravel: {
+    start: string;
+    end: string;
+  } | null;
 }
 
 export const SEARCH_PAGE_SIZE = 25;
@@ -49,11 +53,24 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     language: language || null,
   };
 
+  const headers: HeadersInit = {
+    "x-ignore-availability": "true",
+  };
+
   if (
     filters.availabilityDimensions &&
     Object.keys(filters.availabilityDimensions).length > 0
   ) {
-    variables.ignoreAvailability = false;
+    headers["x-ignore-availability"] = "false";
+  }
+
+  if (filters.timeTravel) {
+    headers["x-ignore-availability"] = "false";
+    headers["x-time-travel"] = filters.timeTravel.start;
+
+    if (filters.timeTravel.end) {
+      headers["x-time-travel-end"] = filters.timeTravel.end;
+    }
   }
 
   const {
@@ -66,12 +83,22 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     refetch,
     fetchNextPage,
   } = useInfiniteQuery<GQLSkylarkSearchResponse>({
-    queryKey: [QueryKeys.Search, ...Object.values(variables), query],
+    queryKey: [
+      QueryKeys.Search,
+      ...Object.values(variables),
+      ...Object.values(headers),
+      query,
+    ],
     queryFn: async ({ pageParam: offset = 0 }) =>
-      skylarkRequest(query as RequestDocument, {
-        ...variables,
-        offset,
-      }),
+      skylarkRequest(
+        query as RequestDocument,
+        {
+          ...variables,
+          offset,
+        },
+        {},
+        headers,
+      ),
     getNextPageParam: (lastPage, pages): number | undefined => {
       const totalNumObjects = pages.flatMap(
         (page) => page.search.objects,

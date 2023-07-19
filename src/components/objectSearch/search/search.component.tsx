@@ -10,6 +10,10 @@ import {
   AvailabilityDimensionsPickerValues,
 } from "src/components/inputs/availabilityDimensionsPicker/availabilityDimensionsPicker.component";
 import { LanguageSelect } from "src/components/inputs/select";
+import {
+  TimeTravelPicker,
+  TimeTravelPickerValues,
+} from "src/components/inputs/timeTravelPicker/timeTravelPicker.component";
 import { SearchFilter } from "src/components/objectSearch/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
@@ -35,6 +39,7 @@ interface SearchBarProps {
   onLanguageChange: (l: SearchFilters["language"]) => void;
   onObjectTypeChange: (o: SearchFilters["objectTypes"]) => void;
   onActiveDimensionsChange: (args: AvailabilityDimensionsPickerValues) => void;
+  onTimeTravelChange: (args: TimeTravelPickerValues) => void;
   onRefresh: () => void;
 }
 
@@ -52,6 +57,7 @@ export const Search = ({
   onLanguageChange,
   onObjectTypeChange,
   onActiveDimensionsChange,
+  onTimeTravelChange,
   onRefresh,
 }: SearchBarProps) => {
   const { query } = useRouter();
@@ -146,12 +152,20 @@ export const Search = ({
         />
       </div>
       {hasProperty(query, "next") && (
-        <div>
-          <AvailabilityDimensionsPicker
-            activeDimensions={activeFilters.availabilityDimensions}
-            setActiveDimensions={onActiveDimensionsChange}
-          />
-        </div>
+        <>
+          <div>
+            <AvailabilityDimensionsPicker
+              activeDimensions={activeFilters.availabilityDimensions}
+              setActiveDimensions={onActiveDimensionsChange}
+            />
+          </div>
+          <div>
+            <TimeTravelPicker
+              activeTimeTravel={activeFilters.timeTravel}
+              setActiveDimensions={onTimeTravelChange}
+            />
+          </div>
+        </>
       )}
     </div>
   );

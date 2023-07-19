@@ -64,6 +64,8 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   >(defaultObjectTypes || null);
   const [searchAvailabilityDimensions, setSearchAvailabilityDimensions] =
     useState<SearchFilters["availabilityDimensions"]>(null);
+  const [searchTimeTravel, setSearchTimeTravel] =
+    useState<SearchFilters["timeTravel"]>(null);
 
   useEffect(() => {
     if (objectTypes && objectTypes.length !== 0 && searchObjectTypes === null) {
@@ -89,6 +91,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     language: searchLanguage === undefined ? defaultLanguage : searchLanguage,
     objectTypes: searchObjectTypes || objectTypes || null,
     availabilityDimensions: searchAvailabilityDimensions,
+    timeTravel: searchTimeTravel,
   });
 
   useEffect(() => {
@@ -185,6 +188,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
               objectTypes: searchObjectTypes,
               language: searchLanguage,
               availabilityDimensions: searchAvailabilityDimensions,
+              timeTravel: searchTimeTravel,
             }}
             columns={sortedHeaders}
             visibleColumns={columnVisibility}
@@ -194,6 +198,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             onLanguageChange={setSearchLanguage}
             onObjectTypeChange={setSearchObjectTypes}
             onActiveDimensionsChange={setSearchAvailabilityDimensions}
+            onTimeTravelChange={setSearchTimeTravel}
           />
           <div className="mt-2 flex w-full justify-start pl-3 md:pl-7">
             <p className="text-xs font-medium text-manatee-400">

@@ -51,6 +51,7 @@ Default.args = {
     objectTypes,
     language: "",
     availabilityDimensions: null,
+    timeTravel: null,
   },
   columns,
   visibleColumns,
