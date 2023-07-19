@@ -79,9 +79,11 @@ export const useUser = () => {
 
   return {
     ...state,
+    accountId: account?.accountId || user?.account,
     // In the future a user will have their own custom default language
-    account,
-    user,
+    defaultLanguage: account?.defaultLanguage,
+    permissions: user?.permissions,
+    role: user?.role,
     isLoading,
     dispatch,
   };

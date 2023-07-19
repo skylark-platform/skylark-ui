@@ -36,8 +36,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# storybook
 build-storybook.log
 
+# cypress
 cypress/videos
 cypress/screenshots
 cypress/downloads
+
+# tinymce
+/public/tinymce/

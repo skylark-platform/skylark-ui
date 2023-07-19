@@ -16,6 +16,7 @@ import { ExternalLink } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { Select } from "src/components/inputs/select";
 import { Skeleton } from "src/components/skeleton";
+import { WYSIWYGEditor } from "src/components/wysiwygEditor";
 import { INPUT_REGEX, SYSTEM_FIELDS } from "src/constants/skylark";
 import {
   NormalizedObjectField,
@@ -130,6 +131,18 @@ const SkylarkObjectFieldInputBoolean = ({
         id={createHtmlForId(field.name)}
       />
     )}
+  />
+);
+
+const SkylarkObjectFieldInputWYSIWYG = ({
+  field,
+  control,
+  error,
+}: SkylarkObjectFieldInputComponentProps) => (
+  <Controller
+    name={field}
+    control={control}
+    render={({ field }) => <WYSIWYGEditor />}
   />
 );
 
@@ -267,11 +280,15 @@ export const SkylarkObjectFieldInput = (
           } else if (config.type === "boolean") {
             return <SkylarkObjectFieldInputBoolean {...inputProps} />;
           } else if (
-            fieldConfigFromObject?.fieldType === "TEXTAREA" ||
-            fieldConfigFromObject?.fieldType === "WYSIWYG" ||
-            (config.type === "string" &&
-              !SYSTEM_FIELDS.includes(field) &&
-              fieldConfigFromObject === undefined)
+            config.type === "string" &&
+            fieldConfigFromObject?.fieldType === "WYSIWYG"
+          ) {
+            return <SkylarkObjectFieldInputWYSIWYG {...inputProps} />;
+          } else if (
+            config.type === "string" &&
+            (fieldConfigFromObject?.fieldType === "TEXTAREA" ||
+              (!SYSTEM_FIELDS.includes(field) &&
+                fieldConfigFromObject === undefined))
           ) {
             return <SkylarkObjectFieldInputTextArea {...inputProps} />;
           } else {
