@@ -1,3 +1,11 @@
+# Next.js build file
 .next
+
+# Jest coverage
 coverage
+
+# MSW
 public/mockServiceWorker.js
+
+# tinymce
+/public/tinymce/
