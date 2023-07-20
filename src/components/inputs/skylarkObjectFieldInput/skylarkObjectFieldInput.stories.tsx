@@ -10,6 +10,12 @@ export default {
   component: SkylarkObjectFieldInput,
 };
 
+const sleep = (timeMs: number) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeMs);
+  });
+};
+
 const Template: ComponentStory<typeof SkylarkObjectFieldInput> = ({
   config,
   fieldConfigFromObject,
@@ -228,6 +234,10 @@ WYSIWYGEditor.play = async ({ canvasElement }) => {
   await waitFor(() => {
     expect(canvas.getByText("Wysiwyg")).toBeInTheDocument();
   });
+
+  // Delay to allow TinyMCE to load
+  await sleep(5000);
+
   await waitFor(() => {
     expect(canvas.getByText("File")).toBeInTheDocument();
   });
