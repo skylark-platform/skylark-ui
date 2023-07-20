@@ -32,10 +32,10 @@ export interface SelectProps {
   placeholder: string;
   className?: string;
   optionsClassName?: string;
+  buttonClassName?: string;
   disabled?: boolean;
   searchable?: boolean;
   allowCustomValue?: boolean;
-  rounded?: boolean;
   withBasicSort?: boolean;
   onChange?: (value: string) => void;
   onValueClear?: () => void;
@@ -217,11 +217,11 @@ export const Select = forwardRef(
       placeholder,
       className,
       optionsClassName,
+      buttonClassName,
       onChange,
       disabled,
       selected,
       searchable = true,
-      rounded,
       allowCustomValue,
       onValueClear,
       withBasicSort,
@@ -272,12 +272,11 @@ export const Select = forwardRef(
 
     const paddingClassName =
       variant === "pill" ? "h-5 pl-3 pr-2" : "py-2 pl-3 pr-2 sm:py-3 sm:pl-6";
-    const roundedClassName =
-      rounded || variant === "pill" ? "rounded-full" : "rounded-sm";
-    const selectClassName = clsx(
+    const selectButtonClassName = clsx(
       "relative w-full cursor-default bg-manatee-50 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 disabled:text-manatee-500",
       variant === "pill" ? "text-xs" : "text-sm",
-      roundedClassName,
+      variant === "pill" && "rounded-full",
+      buttonClassName || (variant !== "pill" && "rounded-sm"),
     );
 
     const selectedOption = selected
@@ -314,14 +313,13 @@ export const Select = forwardRef(
               <Combobox.Button
                 data-testid="select"
                 as="div"
-                className={clsx(selectClassName, label && "mt-2")}
+                className={clsx(selectButtonClassName, label && "mt-2")}
                 ref={refs.setReference}
               >
                 <Combobox.Input
                   className={clsx(
-                    "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0",
+                    "block w-full truncate rounded-[inherit] border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0",
                     paddingClassName,
-                    roundedClassName,
                     showClearValueButton ? "pr-12" : "pr-8",
                   )}
                   displayValue={(option: SelectOption) =>
@@ -357,7 +355,7 @@ export const Select = forwardRef(
               <Combobox.Button
                 data-testid="select"
                 className={clsx(
-                  selectClassName,
+                  selectButtonClassName,
                   paddingClassName,
                   label && "mt-2",
                 )}

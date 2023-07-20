@@ -54,11 +54,11 @@ WithFormLabel.args = {
   options,
 };
 
-export const Rounded = Template.bind({});
-Rounded.args = {
-  options,
-  rounded: true,
-};
+// export const Rounded = Template.bind({});
+// Rounded.args = {
+//   options,
+//   rounded: true,
+// };
 
 export const WithSearch = Template.bind({});
 WithSearch.args = {

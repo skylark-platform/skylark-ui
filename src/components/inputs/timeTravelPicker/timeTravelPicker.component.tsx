@@ -1,4 +1,5 @@
 import { Popover } from "@headlessui/react";
+import clsx from "clsx";
 import { useState } from "react";
 import { GrDown } from "react-icons/gr";
 
@@ -13,14 +14,14 @@ import {
   parseMetadataForHTMLForm,
 } from "src/lib/skylark/parsers";
 
-export type TimeTravelPickerValues = { start: string; end: string } | null;
+export type TimeTravelPickerValues = string | null;
 
 interface TimeTravelPickerProps {
   activeTimeTravel: TimeTravelPickerValues;
   setActiveDimensions: (args: TimeTravelPickerValues) => void;
 }
 
-const TimeTravelSelectors = ({
+export const TimeTravelSelectors = ({
   initialActiveTimeTravel,
   close,
   save,
@@ -29,36 +30,16 @@ const TimeTravelSelectors = ({
   close: () => void;
   save: (args: TimeTravelPickerValues) => void;
 }) => {
-  const [activeTimeTravel, setActiveTimeTravel] = useState({
-    start: initialActiveTimeTravel?.start
-      ? parseDateTimeForHTMLForm(
-          "datetime-local",
-          initialActiveTimeTravel?.start,
-        )
+  const [activeTimeTravel, setActiveTimeTravel] = useState(
+    initialActiveTimeTravel
+      ? parseDateTimeForHTMLForm("datetime-local", initialActiveTimeTravel)
       : "",
-    end: initialActiveTimeTravel?.end
-      ? parseDateTimeForHTMLForm("datetime-local", initialActiveTimeTravel?.end)
-      : "",
-  });
+  );
 
   const onSave = () => {
     save(
       activeTimeTravel
-        ? {
-            start: activeTimeTravel.start
-              ? (parseInputFieldValue(
-                  activeTimeTravel.start,
-                  "datetime",
-                ) as string)
-              : "",
-            end:
-              activeTimeTravel.start && activeTimeTravel.end
-                ? (parseInputFieldValue(
-                    activeTimeTravel.end,
-                    "datetime",
-                  ) as string)
-                : "",
-          }
+        ? (parseInputFieldValue(activeTimeTravel, "datetime") as string)
         : null,
     );
     close();
@@ -74,45 +55,15 @@ const TimeTravelSelectors = ({
   return (
     <>
       <div className="flex h-full flex-grow flex-col">
-        <div className="mb-6">
+        <div className="">
           <PanelFieldTitle text={"Time Travel"} />
           <input
             // aria-invalid={error ? "true" : "false"}
-            onChange={(e) =>
-              setActiveTimeTravel((oldValue) =>
-                oldValue
-                  ? {
-                      ...oldValue,
-                      start: e.target.value,
-                    }
-                  : { end: "", start: e.target.value },
-              )
-            }
-            value={activeTimeTravel?.start}
+            onChange={(e) => setActiveTimeTravel(e.target.value)}
+            value={activeTimeTravel || ""}
             type="datetime-local"
             step="1"
             className="w-full rounded-sm bg-manatee-50 px-4 py-3"
-          />
-        </div>
-        <div className="mb-6">
-          <PanelFieldTitle text={"Time Travel End"} />
-          <input
-            // aria-invalid={error ? "true" : "false"}
-            onChange={(e) =>
-              setActiveTimeTravel((oldValue) =>
-                oldValue
-                  ? {
-                      ...oldValue,
-                      end: e.target.value,
-                    }
-                  : { start: "", end: e.target.value },
-              )
-            }
-            value={activeTimeTravel?.end}
-            type="datetime-local"
-            step="1"
-            className="w-full rounded-sm bg-manatee-50 px-4 py-3"
-            disabled={!activeTimeTravel?.start}
           />
         </div>
       </div>
@@ -150,9 +101,16 @@ export const TimeTravelPicker = ({
   return (
     <Popover className="relative">
       <Popover.Button as="div">
-        <Button variant="ghost" className="mx-4">
-          Time Travel <GrDown className="ml-1 h-4 w-4" />
-        </Button>
+        <button
+          className={clsx(
+            "flex h-full w-max items-center justify-center rounded px-4 py-3 text-sm",
+            initialActiveTimeTravel
+              ? "bg-success bg-opacity-20 text-success"
+              : "bg-manatee-100 text-manatee-400",
+          )}
+        >
+          Time Travel <GrDown className="ml-1 h-4 w-4 opacity-30" />
+        </button>
       </Popover.Button>
       <Popover.Panel className="bg-manatee absolute -left-6 z-[50] flex max-h-96 w-96 flex-col justify-between overflow-y-scroll rounded bg-white px-6 py-6 text-sm shadow-lg shadow-manatee-500">
         {({ close }) => (

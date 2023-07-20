@@ -267,7 +267,6 @@ export const CreateObjectModal = ({
                             label="Object Language"
                             labelVariant="form"
                             useDefaultLanguage={!isCreateTranslationModal}
-                            rounded={false}
                             selected={field.value as string | undefined}
                             onChange={(str: string) => {
                               field.onChange(str);

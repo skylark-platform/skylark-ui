@@ -107,6 +107,7 @@ const SkylarkObjectFieldInputEnum = ({
           options={options}
           placeholder={`Select ${formatObjectField(field.name)}`}
           onChange={field.onChange}
+          buttonClassName="rounded-sm"
           aria-invalid={error ? "true" : "false"}
         />
       );

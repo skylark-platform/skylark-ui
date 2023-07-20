@@ -20,18 +20,17 @@ import { useAllObjectsMeta } from "./useSkylarkObjectTypes";
 export interface SearchFilters {
   objectTypes: string[] | null;
   language?: string | null;
-  availabilityDimensions: Record<string, string> | null;
-  timeTravel: {
-    start: string;
-    end: string;
-  } | null;
+  availability: {
+    dimensions: Record<string, string> | null;
+    timeTravel: string | null;
+  };
 }
 
 export const SEARCH_PAGE_SIZE = 25;
 
 export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta(true);
-  const { objectTypes, language, availabilityDimensions } = filters;
+  const { objectTypes, language, availability } = filters;
 
   // Used to rerender search results when the search changes but objects are the same
   const searchHash = `${queryString}-${language}-${objectTypes?.join("-")}`;
@@ -39,12 +38,12 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { query } = useMemo(() => {
     const query = createSearchObjectsQuery(searchableObjects, {
       typesToRequest: objectTypes || [],
-      availabilityDimensions,
+      availabilityDimensions: availability.dimensions,
     });
     return {
       query,
     };
-  }, [searchableObjects, objectTypes, availabilityDimensions]);
+  }, [searchableObjects, objectTypes, availability.dimensions]);
 
   const variables: Variables = {
     queryString,
@@ -58,21 +57,15 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
   };
 
   if (
-    filters.availabilityDimensions &&
-    Object.keys(filters.availabilityDimensions).length > 0
+    filters.availability.dimensions &&
+    Object.keys(filters.availability.dimensions).length > 0
   ) {
     headers["x-ignore-availability"] = "false";
-    if (!filters.timeTravel) {
-      headers["x-ignore-time"] = "true";
-    }
-  }
+    headers["x-ignore-time"] = "true";
 
-  if (filters.timeTravel) {
-    headers["x-ignore-availability"] = "false";
-    headers["x-time-travel"] = filters.timeTravel.start;
-
-    if (filters.timeTravel.end) {
-      headers["x-time-travel-end"] = filters.timeTravel.end;
+    if (filters.availability.timeTravel) {
+      headers["x-ignore-availability"] = "false";
+      headers["x-time-travel"] = filters.availability.timeTravel;
     }
   }
 

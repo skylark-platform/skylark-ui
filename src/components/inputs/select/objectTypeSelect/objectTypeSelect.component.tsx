@@ -49,6 +49,7 @@ export const ObjectTypeSelect = forwardRef(
         options={options}
         ref={ref}
         onChange={onChangeWrapper}
+        buttonClassName="rounded-sm"
       />
     );
   },

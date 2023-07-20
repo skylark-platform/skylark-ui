@@ -50,8 +50,10 @@ Default.args = {
   activeFilters: {
     objectTypes,
     language: "",
-    availabilityDimensions: null,
-    timeTravel: null,
+    availability: {
+      dimensions: null,
+      timeTravel: null,
+    },
   },
   columns,
   visibleColumns,

@@ -6,9 +6,10 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 
 import {
-  AvailabilityDimensionsPicker,
+  AvailabilityPicker,
   AvailabilityDimensionsPickerValues,
-} from "src/components/inputs/availabilityDimensionsPicker/availabilityDimensionsPicker.component";
+  AvailabilityPickerValues,
+} from "src/components/inputs/availabilityPicker/availabilityPicker.component";
 import { LanguageSelect } from "src/components/inputs/select";
 import {
   TimeTravelPicker,
@@ -26,7 +27,6 @@ interface SearchBarProps {
   activeFilters: SearchFilters;
   columns: string[];
   visibleColumns: VisibilityState;
-  activeDimensions: AvailabilityDimensionsPickerValues;
   className?: string;
   isSearching: boolean;
   graphqlQuery: {
@@ -38,8 +38,7 @@ interface SearchBarProps {
   onColumnVisibilityChange: (c: VisibilityState) => void;
   onLanguageChange: (l: SearchFilters["language"]) => void;
   onObjectTypeChange: (o: SearchFilters["objectTypes"]) => void;
-  onActiveDimensionsChange: (args: AvailabilityDimensionsPickerValues) => void;
-  onTimeTravelChange: (args: TimeTravelPickerValues) => void;
+  onActiveAvailabilityChange: (args: AvailabilityPickerValues) => void;
   onRefresh: () => void;
 }
 
@@ -56,8 +55,7 @@ export const Search = ({
   onColumnVisibilityChange,
   onLanguageChange,
   onObjectTypeChange,
-  onActiveDimensionsChange,
-  onTimeTravelChange,
+  onActiveAvailabilityChange,
   onRefresh,
 }: SearchBarProps) => {
   const { query } = useRouter();
@@ -137,36 +135,34 @@ export const Search = ({
           )}
         </AnimatePresence>
       </div>
-      <div
-        className="mt-2 md:ml-2 md:mt-0"
-        data-testid="object-listing-language-select-container"
-      >
-        <LanguageSelect
-          variant="primary"
-          name="object-listing-language-select"
-          className="w-full md:w-36"
-          selected={activeFilters.language}
-          onChange={onLanguageChange}
-          useDefaultLanguage
-          onValueClear={() => onLanguageChange(null)}
-        />
+      <div className="flex flex-row space-x-2">
+        <div
+          className={clsx(
+            "mt-2 md:ml-2 md:mt-0",
+            hasProperty(query, "next") ? "w-1/2 md:w-32" : "w-full",
+          )}
+          data-testid="object-listing-language-select-container"
+        >
+          <LanguageSelect
+            variant="primary"
+            name="object-listing-language-select"
+            className="w-full"
+            selected={activeFilters.language}
+            onChange={onLanguageChange}
+            buttonClassName="rounded-full"
+            useDefaultLanguage
+            onValueClear={() => onLanguageChange(null)}
+          />
+        </div>
+        {hasProperty(query, "next") && (
+          <div className="mt-2 w-1/2 md:ml-2 md:mt-0">
+            <AvailabilityPicker
+              activeValues={activeFilters.availability}
+              setActiveAvailability={onActiveAvailabilityChange}
+            />
+          </div>
+        )}
       </div>
-      {hasProperty(query, "next") && (
-        <>
-          <div>
-            <AvailabilityDimensionsPicker
-              activeDimensions={activeFilters.availabilityDimensions}
-              setActiveDimensions={onActiveDimensionsChange}
-            />
-          </div>
-          <div>
-            <TimeTravelPicker
-              activeTimeTravel={activeFilters.timeTravel}
-              setActiveDimensions={onTimeTravelChange}
-            />
-          </div>
-        </>
-      )}
     </div>
   );
 };
