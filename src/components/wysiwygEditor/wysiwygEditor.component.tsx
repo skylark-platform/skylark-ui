@@ -21,6 +21,7 @@ const WYSIWYG_INIT: RawEditorOptions & {
   promotion: false,
   menubar: "file edit view insert format table",
   removed_menuitems: "newdocument restoredraft",
+  skin: "oxide",
   plugins: [
     "advlist",
     "autolink",
@@ -76,6 +77,7 @@ export const WYSIWYGEditor = ({
       {!isLoaded && (
         <div
           style={{ height: WYSIWYG_DEFAULT_HEIGHT }}
+          data-testid="wysiwyg-skeleton"
           className="absolute top-0 z-10 h-full w-full bg-white"
         >
           <Skeleton className={`h-full w-full`} />

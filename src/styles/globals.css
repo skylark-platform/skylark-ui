@@ -41,3 +41,8 @@
 .tox-statusbar__branding {
   display: none !important;
 }
+
+.tox.tox-tinymce {
+  /* Same border-radius as other inputs */
+  border-radius: 0.125rem;
+}

@@ -1,4 +1,6 @@
+import { expect } from "@storybook/jest";
 import { ComponentStory } from "@storybook/react";
+import { waitFor, within } from "@storybook/testing-library";
 import { useForm } from "react-hook-form";
 
 import { SkylarkObjectFieldInput } from "./skylarkObjectFieldInput.component";
@@ -10,11 +12,16 @@ export default {
 
 const Template: ComponentStory<typeof SkylarkObjectFieldInput> = ({
   config,
+  fieldConfigFromObject,
 }) => {
   const { register, control, getValues, formState } = useForm();
 
   return (
-    <div className="w-64">
+    <div
+      className={
+        fieldConfigFromObject?.fieldType === "WYSIWYG" ? "w-[500px]" : "w-64"
+      }
+    >
       <SkylarkObjectFieldInput
         idPrefix="storybook"
         register={register}
@@ -23,6 +30,7 @@ const Template: ComponentStory<typeof SkylarkObjectFieldInput> = ({
         formState={formState}
         field={config.name}
         config={config}
+        fieldConfigFromObject={fieldConfigFromObject}
       />
     </div>
   );
@@ -213,4 +221,17 @@ WYSIWYGEditor.args = {
     name: "wysiwyg",
     position: 0,
   },
+};
+WYSIWYGEditor.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  await waitFor(() => {
+    expect(canvas.getByText("Wysiwyg")).toBeInTheDocument();
+  });
+  await waitFor(() => {
+    expect(canvas.getByText("File")).toBeInTheDocument();
+  });
+  await waitFor(() => {
+    expect(canvas.getByText("Format")).toBeInTheDocument();
+  });
 };

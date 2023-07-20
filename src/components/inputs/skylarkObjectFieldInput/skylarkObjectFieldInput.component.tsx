@@ -281,6 +281,8 @@ export const SkylarkObjectFieldInput = (
     },
   };
 
+  console.log(field, inputProps);
+
   return (
     <div className="group/input-field mb-4 text-sm">
       <SkylarkObjectFieldInputLabel
