@@ -62,6 +62,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     Object.keys(filters.availabilityDimensions).length > 0
   ) {
     headers["x-ignore-availability"] = "false";
+    headers["x-ignore-time"] = "true";
   }
 
   if (filters.timeTravel) {
