@@ -38,6 +38,7 @@ next-env.d.ts
 
 # storybook
 build-storybook.log
+storybook-static
 
 # cypress
 cypress/videos

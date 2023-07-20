@@ -63,7 +63,7 @@ export const WYSIWYGEditor = ({
   const [isLoaded, setIsLoaded] = useState(withSkeletonLoading ? false : true);
 
   return (
-    <div className="relative">
+    <div className="relative" data-testid="wysiwyg-editor">
       <Editor
         tinymceScriptSrc="/tinymce/tinymce.min.js"
         id={id}
