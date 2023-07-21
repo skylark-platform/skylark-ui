@@ -294,12 +294,16 @@ export const CreateObjectModal = ({
                           ({ field, config }) =>
                             config && (
                               <SkylarkObjectFieldInput
+                                idPrefix="create-object-modal"
                                 key={field}
                                 field={field}
                                 config={config}
                                 control={control}
                                 register={register}
                                 value={getValues(field)}
+                                fieldConfigFromObject={objectTypeConfig?.fieldConfig?.find(
+                                  ({ name }) => name === field,
+                                )}
                                 formState={formState}
                               />
                             ),

@@ -11,12 +11,12 @@ import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.
 import { TextInput } from "src/components/inputs/textInput";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { QueryKeys } from "src/enums/graphql";
-import { useAccount } from "src/hooks/useAccount";
 import {
   SkylarkCreds,
   getSkylarkCredsFromLocalStorage,
   useConnectedToSkylark,
 } from "src/hooks/useConnectedToSkylark";
+import { useUserAccount } from "src/hooks/useUserAccount";
 
 interface AddAuthTokenModalProps {
   isOpen: boolean;
@@ -33,7 +33,7 @@ export const AddAuthTokenModal = ({
   const { isConnected, isLoading, invalidUri, invalidToken, setCreds } =
     useConnectedToSkylark();
 
-  const { account } = useAccount();
+  const { account } = useUserAccount();
 
   const [{ uri: inputUri, token: inputToken }, setInputCreds] =
     useState<SkylarkCreds>(() => getSkylarkCredsFromLocalStorage(true));

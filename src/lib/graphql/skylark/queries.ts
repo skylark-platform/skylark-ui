@@ -55,8 +55,13 @@ export const GET_AVAILABILITY_DIMENSIONS = gql`
   }
 `;
 
-export const GET_ACCOUNT = gql`
-  query GET_ACCOUNT {
+export const GET_USER_AND_ACCOUNT = gql`
+  query GET_USER_AND_ACCOUNT {
+    getUser {
+      account
+      role
+      permissions
+    }
     getAccount {
       config {
         default_language

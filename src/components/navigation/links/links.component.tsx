@@ -22,6 +22,7 @@ const navigationItems = [
     text: "Content Library",
     href: "/",
     Icon: <TbBooks className="text-xl" />,
+    shouldMarkAsActive: (path: string) => path.startsWith("/object"),
   },
   // {
   //   text: "Relationships",
@@ -76,36 +77,42 @@ export const NavigationLinks = () => {
 
   return (
     <ul className="flex h-full select-none flex-col items-center justify-center text-base font-bold md:ml-4 md:flex-grow md:flex-row md:items-center md:justify-start md:text-sm lg:ml-6">
-      {navigationItems.map(({ text, href, Icon, links }) => {
-        const subhrefs = links?.map((l) => l.href);
-        const isActiveLink = href === asPath || subhrefs?.includes(asPath);
-        return (
-          <li
-            key={`${text}-${href}`}
-            className={clsx(
-              "group flex items-center py-6 text-black md:h-full md:px-4 md:py-0 lg:px-6",
-              !isActiveLink &&
-                "[&>a]:text-black/50 [&>div>button]:text-black/50",
-            )}
-          >
-            {links ? (
-              <DropdownMenu options={links} align="left" mobileAlign="center">
-                <Menu.Button className="flex w-full items-center justify-center space-x-1 text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:text-sm">
-                  {Icon}
-                  <span>{text}</span>
-                </Menu.Button>
-              </DropdownMenu>
-            ) : (
-              <Link
-                className="flex flex-row items-center space-x-1 group-hover:text-black"
-                href={href}
-                Icon={Icon}
-                text={text}
-              />
-            )}
-          </li>
-        );
-      })}
+      {navigationItems.map(
+        ({ text, href, Icon, links, shouldMarkAsActive }) => {
+          const subhrefs = links?.map((l) => l.href);
+          const isActiveLink =
+            href === asPath ||
+            subhrefs?.includes(asPath) ||
+            shouldMarkAsActive?.(asPath) ||
+            false;
+          return (
+            <li
+              key={`${text}-${href}`}
+              className={clsx(
+                "group flex items-center py-6 text-black md:h-full md:px-4 md:py-0 lg:px-6",
+                !isActiveLink &&
+                  "[&>a]:text-black/50 [&>div>button]:text-black/50",
+              )}
+            >
+              {links ? (
+                <DropdownMenu options={links} align="left" mobileAlign="center">
+                  <Menu.Button className="flex w-full items-center justify-center space-x-1 text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:text-sm">
+                    {Icon}
+                    <span>{text}</span>
+                  </Menu.Button>
+                </DropdownMenu>
+              ) : (
+                <Link
+                  className="flex flex-row items-center space-x-1 group-hover:text-black"
+                  href={href}
+                  Icon={Icon}
+                  text={text}
+                />
+              )}
+            </li>
+          );
+        },
+      )}
     </ul>
   );
 };

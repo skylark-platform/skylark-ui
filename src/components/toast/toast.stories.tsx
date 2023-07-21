@@ -1,3 +1,4 @@
+import { expect } from "@storybook/jest";
 import { ComponentStory } from "@storybook/react";
 import { userEvent, waitFor, within } from "@storybook/testing-library";
 import { toast } from "react-toastify";
@@ -43,9 +44,14 @@ const openToastAndCheckForTitle = async ({
     autoClose: false,
   });
 
-  await waitFor(async () => {
-    await userEvent.hover(canvas.getByText(args.title));
+  await waitFor(() => {
+    expect(canvas.getByText(args.title)).toBeInTheDocument();
   });
+
+  // Delay to allow Toast to animate
+  await sleep(2000);
+
+  await userEvent.hover(canvas.getByText(args.title));
 };
 
 const Template: ComponentStory<typeof Toast> = () => {

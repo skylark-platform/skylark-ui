@@ -3,3 +3,9 @@ export interface SkylarkAccount {
   skylarkVersion: string;
   defaultLanguage?: string;
 }
+
+export interface SkylarkUser {
+  account: string;
+  role: string;
+  permissions: string[];
+}

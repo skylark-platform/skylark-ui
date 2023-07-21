@@ -227,8 +227,8 @@ test("renders search results (with default language)", async () => {
 
 test("renders search results with language as null (no default)", async () => {
   server.use(
-    // Override GET_ACCOUNT query so the language sent is null
-    graphql.query("GET_ACCOUNT", (req, res, ctx) => {
+    // Override GET_USER_AND_ACCOUNT query so the language sent is null
+    graphql.query("GET_USER_AND_ACCOUNT", (req, res, ctx) => {
       const data: GQLSkylarkAccountResponse = {
         getAccount: {
           config: null,
@@ -283,8 +283,8 @@ test("opens filters and deselects all object types", async () => {
 test("manually filters to only en-gb translated objects", async () => {
   // Arrange
   server.use(
-    // Override GET_ACCOUNT query so the language sent is null
-    graphql.query("GET_ACCOUNT", (req, res, ctx) => {
+    // Override GET_USER_AND_ACCOUNT query so the language sent is null
+    graphql.query("GET_USER_AND_ACCOUNT", (req, res, ctx) => {
       const data: GQLSkylarkAccountResponse = {
         getAccount: {
           config: null,
@@ -400,8 +400,8 @@ test("clears the language filter", async () => {
 describe("row in edit mode", () => {
   beforeEach(() => {
     server.use(
-      // Override GET_ACCOUNT query so the language sent is null
-      graphql.query("GET_ACCOUNT", (req, res, ctx) => {
+      // Override GET_USER_AND_ACCOUNT query so the language sent is null
+      graphql.query("GET_USER_AND_ACCOUNT", (req, res, ctx) => {
         const data: GQLSkylarkAccountResponse = {
           getAccount: {
             config: null,

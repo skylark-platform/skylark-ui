@@ -77,8 +77,8 @@ test("open metadata panel, check information and close", async () => {
 
 test("displays the number of search results", async () => {
   server.use(
-    // Override GET_ACCOUNT query so the language sent is null
-    graphql.query("GET_ACCOUNT", (req, res, ctx) => {
+    // Override GET_USER_AND_ACCOUNT query so the language sent is null
+    graphql.query("GET_USER_AND_ACCOUNT", (req, res, ctx) => {
       const data: GQLSkylarkAccountResponse = {
         getAccount: {
           config: null,
