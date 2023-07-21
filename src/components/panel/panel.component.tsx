@@ -8,6 +8,7 @@ import { Toast } from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/objects/get/useGetObject";
 import { prefetchGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
 import { prefetchGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
+import { useGetObjectPrefetchQueries } from "src/hooks/objects/get/useGetObjectPrefetchQueries";
 import { useUpdateAvailabilityAssignedTo } from "src/hooks/objects/update/useUpdateAvailabilityAssignedTo";
 import { useUpdateAvailabilityObjectDimensions } from "src/hooks/objects/update/useUpdateAvailabilityObjectDimensions";
 import { useUpdateObjectAvailability } from "src/hooks/objects/update/useUpdateObjectAvailability";
@@ -172,8 +173,12 @@ export const Panel = ({
   navigateToForwardPanelObject,
   setPanelObject,
 }: PanelProps) => {
+  useGetObjectPrefetchQueries({
+    ...object,
+    selectedTab,
+  });
+
   const [panelInEditMode, setEditMode] = useState(false);
-  const [isTabDataPrefetched, setIsTabDataPrefetched] = useState(false);
 
   const [contentObjects, setContentObjects] = useState<{
     original: ParsedSkylarkObjectContentObject[] | null;
@@ -218,23 +223,24 @@ export const Panel = ({
     error,
   } = useGetObject(objectType, uid, { language });
 
-  const { objects: allObjectsMeta } = useAllObjectsMeta();
-
-  const formParsedMetadata =
-    (data &&
-      objectMeta &&
-      parseMetadataForHTMLForm(data.metadata, objectMeta.fields)) ||
-    null;
+  const formParsedMetadata = useMemo(
+    () =>
+      (data &&
+        objectMeta &&
+        parseMetadataForHTMLForm(data.metadata, objectMeta.fields)) ||
+      null,
+    [data, objectMeta],
+  );
 
   const metadataForm = useForm<Record<string, SkylarkObjectMetadataField>>({
     // Can't use onSubmit because we don't have a submit button within the form
     mode: "onTouched",
+    values: formParsedMetadata || {},
   });
   const { reset: resetMetadataForm } = metadataForm;
-
   const inEditMode =
     panelInEditMode ||
-    (metadataForm.formState.isDirty && !metadataForm.formState.isSubmitted) ||
+    metadataForm.formState.isDirty ||
     modifiedRelationships !== null ||
     modifiedAvailabilityAssignedTo !== null;
 
@@ -261,55 +267,6 @@ export const Panel = ({
       objectMeta?.name,
     ],
   );
-
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    if (objectMeta && allObjectsMeta && !isTabDataPrefetched) {
-      const prefetchArgs = {
-        queryClient,
-        objectMeta,
-        objectType,
-        uid,
-        variables: {
-          uid,
-          language,
-          nextToken: "",
-        },
-      };
-
-      if (objectMeta.hasAvailability && selectedTab !== PanelTab.Availability) {
-        void prefetchGetObjectAvailability(prefetchArgs);
-      }
-      if (objectMeta.hasContent && selectedTab !== PanelTab.Content) {
-        void prefetchGetObjectContent({
-          ...prefetchArgs,
-          contentObjectsMeta: allObjectsMeta,
-        });
-      }
-      setIsTabDataPrefetched(true);
-    }
-  }, [
-    allObjectsMeta,
-    isTabDataPrefetched,
-    language,
-    objectMeta,
-    objectType,
-    queryClient,
-    selectedTab,
-    uid,
-  ]);
-
-  useEffect(() => {
-    // Updates the form values when metadata is updated in Skylark
-    const formValues = metadataForm.getValues();
-    const dataAndFormAreEqual =
-      formParsedMetadata && isObjectsDeepEqual(formParsedMetadata, formValues);
-
-    if (!inEditMode && formParsedMetadata && !dataAndFormAreEqual) {
-      resetMetadataForm(formParsedMetadata);
-    }
-  }, [inEditMode, metadataForm, resetMetadataForm, formParsedMetadata]);
 
   useEffect(() => {
     if (
@@ -380,8 +337,9 @@ export const Panel = ({
     useUpdateObjectMetadata({
       objectType,
       onSuccess: () => {
+        resetMetadataForm(undefined, { keepValues: true });
+
         setEditMode(false);
-        resetMetadataForm({ keepValues: true });
       },
     });
 
