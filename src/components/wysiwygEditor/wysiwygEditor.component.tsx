@@ -51,7 +51,7 @@ const WYSIWYG_INIT: RawEditorOptions & {
     "ltr rtl | fullscreen",
   content_style:
     "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-  quickbars_insert_toolbar: "quickimage quicktable | hr pagebreak",
+  quickbars_insert_toolbar: "image quicktable | hr pagebreak",
 };
 
 export const WYSIWYGEditor = ({
