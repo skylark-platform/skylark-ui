@@ -6,6 +6,7 @@ import ReactPlayer from "react-player/lazy";
 import { SkylarkObjectFieldInput } from "src/components/inputs/skylarkObjectFieldInput";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
+  PanelFieldTitle,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
@@ -20,7 +21,7 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
-import { hasProperty } from "src/lib/utils";
+import { formatObjectField, hasProperty } from "src/lib/utils";
 
 import {
   CalculatedImageSize,
@@ -159,8 +160,8 @@ export const PanelMetadata = ({
         )}
         {hasProperty(query, "next") &&
           objectType === BuiltInSkylarkObjectType.SkylarkAsset && (
-            <div className="mt-4 flex flex-col gap-4">
-              <p className="text-base">Playback</p>
+            <div className="mt-4 flex flex-col">
+              <PanelSectionTitle text="Playback" />
               {/* <MuxPlayer
                 className="h-full w-full bg-black object-cover object-center"
                 // controls
@@ -176,10 +177,13 @@ export const PanelMetadata = ({
                 className="h-full w-full bg-black object-cover object-center"
                 onError={console.log}
               /> */}
+              <PanelFieldTitle text="HLS" />
               <VideoPlayer
                 src={(metadata?.hls_url as string) || ""}
-                className="h-full w-full bg-black object-cover object-center"
+                className="mb-4 h-full w-full bg-black object-cover object-center"
               />
+
+              <PanelFieldTitle text="Dash" />
               <VideoPlayer
                 src={(metadata?.dash_url as string) || ""}
                 className="h-full w-full bg-black object-cover object-center"
