@@ -1,3 +1,4 @@
+import MuxPlayer from "@mux/mux-player-react/lazy";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -159,13 +160,19 @@ export const PanelMetadata = ({
           objectType === BuiltInSkylarkObjectType.SkylarkAsset && (
             <div className="mt-4">
               <p className="text-base">Playback</p>
-              <video
-                className="my-2 w-full border"
-                src={(metadata?.hls_url as string) || ""}
+              <MuxPlayer
+                className="h-full w-full bg-black object-cover object-center"
+                // controls
+                data-testid="player"
+                src={(metadata?.hls_url as string) || null}
+                streamType={"on-demand"}
               />
-              <video
-                className="my-2 w-full border"
-                src={(metadata?.dash_url as string) || ""}
+              <MuxPlayer
+                className="h-full w-full bg-black object-cover object-center"
+                // controls
+                data-testid="player"
+                src={(metadata?.dash_url as string) || null}
+                streamType={"on-demand"}
               />
             </div>
           )}
