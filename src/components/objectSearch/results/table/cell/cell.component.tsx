@@ -3,6 +3,8 @@ import clsx from "clsx";
 import { ReactNode, useEffect, useState } from "react";
 
 import { getDragIconBeforeStyles } from "src/components/objectSearch/results/table/columnStyles";
+import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
+import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 export const getCellWidths = (width: number) => ({
   width,
@@ -12,7 +14,7 @@ export const getCellWidths = (width: number) => ({
 
 interface DisplayNameTableCellProps {
   id: string;
-  colour?: string;
+  object: ParsedSkylarkObject;
   className: string;
   rowGroupClassName: string;
   children: ReactNode | JSX.Element;
@@ -23,7 +25,7 @@ interface DisplayNameTableCellProps {
 
 export const DisplayNameTableCell = ({
   id,
-  colour,
+  object,
   className,
   rowGroupClassName,
   children,
@@ -31,6 +33,12 @@ export const DisplayNameTableCell = ({
   height,
   isDraggable,
 }: DisplayNameTableCellProps) => {
+  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+
+  const { config } = objectTypesWithConfig?.find(
+    ({ objectType }) => objectType === object.objectType,
+  ) || { config: object.config };
+
   return (
     <td
       key={id}
@@ -45,7 +53,7 @@ export const DisplayNameTableCell = ({
             "relative h-6 w-2.5 border-r-4 border-r-manatee-300 pl-8",
             getDragIconBeforeStyles(isDraggable),
           )}
-          style={{ borderRightColor: colour }}
+          style={{ borderRightColor: config.colour }}
         />
       </div>
       <div className="w-full overflow-hidden text-ellipsis">{children}</div>

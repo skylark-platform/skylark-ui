@@ -121,7 +121,7 @@ export const ObjectSearchResults = ({
           fetchNextPage &&
           !isFetchingNextPage &&
           searchDataLength &&
-          scrollHeight - scrollTop - clientHeight < 500
+          scrollHeight - scrollTop - clientHeight < 1000
         ) {
           fetchNextPage();
         }

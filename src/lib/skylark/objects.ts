@@ -531,7 +531,7 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
     .filter(({ field }) => SYSTEM_FIELDS.includes(field))
     .sort(
       ({ field: a }, { field: b }) =>
-        SYSTEM_FIELDS.indexOf(b) - SYSTEM_FIELDS.indexOf(a),
+        SYSTEM_FIELDS.indexOf(a) - SYSTEM_FIELDS.indexOf(b),
     );
 
   const otherFields = metadataArrWithHiddenFieldsRemoved.filter(

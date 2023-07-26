@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { RowActions } from "src/components/objectSearch/rowActions";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
@@ -72,7 +73,7 @@ export const ObjectListingTableData = ({
         id={cell.id}
         className={className}
         rowGroupClassName={getObjectSearchDisplayNameCellStyles(!!rowIsActive)}
-        colour={cell.row.original.config?.colour}
+        object={cell.row.original}
         width={cell.column.getSize()}
         height={height}
         isDraggable={isDraggable}
@@ -88,6 +89,7 @@ export const ObjectListingTableData = ({
       <ObjectSelectTableCell
         id={cell.id}
         className={className}
+        object={cell.row.original}
         rowGroupClassName={getObjectSearchDisplayNameCellStyles(!!rowIsActive)}
         width={cell.column.getSize()}
         height={height}
