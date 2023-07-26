@@ -1,7 +1,7 @@
-import MuxPlayer from "@mux/mux-player-react/lazy";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
+import ReactPlayer from "react-player/lazy";
 
 import { SkylarkObjectFieldInput } from "src/components/inputs/skylarkObjectFieldInput";
 import { PanelLoading } from "src/components/panel/panelLoading";
@@ -9,6 +9,7 @@ import {
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
+import { VideoPlayer } from "src/components/players";
 import { Skeleton } from "src/components/skeleton";
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
@@ -158,21 +159,30 @@ export const PanelMetadata = ({
         )}
         {hasProperty(query, "next") &&
           objectType === BuiltInSkylarkObjectType.SkylarkAsset && (
-            <div className="mt-4">
+            <div className="mt-4 flex flex-col gap-4">
               <p className="text-base">Playback</p>
-              <MuxPlayer
+              {/* <MuxPlayer
                 className="h-full w-full bg-black object-cover object-center"
                 // controls
                 data-testid="player"
                 src={(metadata?.hls_url as string) || null}
                 streamType={"on-demand"}
-              />
-              <MuxPlayer
+              /> */}
+              {/* <ReactPlayer
+                url={(metadata?.hls_url as string) || ""}
+                height="100%"
+                width="100%"
+                controls
                 className="h-full w-full bg-black object-cover object-center"
-                // controls
-                data-testid="player"
-                src={(metadata?.dash_url as string) || null}
-                streamType={"on-demand"}
+                onError={console.log}
+              /> */}
+              <VideoPlayer
+                src={(metadata?.hls_url as string) || ""}
+                className="h-full w-full bg-black object-cover object-center"
+              />
+              <VideoPlayer
+                src={(metadata?.dash_url as string) || ""}
+                className="h-full w-full bg-black object-cover object-center"
               />
             </div>
           )}
