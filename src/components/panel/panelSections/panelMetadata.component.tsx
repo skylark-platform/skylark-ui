@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
 
@@ -17,6 +18,7 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
+import { hasProperty } from "src/lib/utils";
 
 import {
   CalculatedImageSize,
@@ -46,6 +48,8 @@ export const PanelMetadata = ({
   objectFieldConfig: objectFieldConfigArr,
   form: { register, getValues, control, formState },
 }: PanelMetadataProps) => {
+  const { query } = useRouter();
+
   const {
     systemMetadataFields,
     translatableMetadataFields,
@@ -151,6 +155,20 @@ export const PanelMetadata = ({
         {objectType === BuiltInSkylarkObjectType.SkylarkImage && (
           <CalculatedImageSize src={metadata?.url as string | null} />
         )}
+        {hasProperty(query, "next") &&
+          objectType === BuiltInSkylarkObjectType.SkylarkAsset && (
+            <div className="mt-4">
+              <p className="text-base">Playback</p>
+              <video
+                className="my-2 w-full border"
+                src={(metadata?.hls_url as string) || ""}
+              />
+              <video
+                className="my-2 w-full border"
+                src={(metadata?.dash_url as string) || ""}
+              />
+            </div>
+          )}
       </form>
       <PanelLoading isLoading={!objectMeta}>
         <Skeleton className="mb-6 h-8 w-64" />
