@@ -119,6 +119,7 @@ export const PanelMetadata = ({
                 if (config) {
                   return (
                     <SkylarkObjectFieldInput
+                      idPrefix="panel-metadata"
                       isLoading={isLoading}
                       key={field}
                       field={field}

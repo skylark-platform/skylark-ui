@@ -1,6 +1,6 @@
 import { fireEvent } from "@storybook/testing-library";
 
-import GQLSkylarkAccountFixture from "src/__tests__/fixtures/skylark/queries/getAccount.json";
+import GQLSkylarkUserAccountFixture from "src/__tests__/fixtures/skylark/queries/getUserAndAccount.json";
 import { render, screen, waitFor } from "src/__tests__/utils/test-utils";
 
 import { LanguageSelect } from "./languageSelect.component";
@@ -64,7 +64,7 @@ test("changes to the user/account's default language when useDefaultLanguage is 
 
   await waitFor(() => {
     expect(onChange).toHaveBeenCalledWith(
-      GQLSkylarkAccountFixture.data.getAccount.config.default_language,
+      GQLSkylarkUserAccountFixture.data.getAccount.config.default_language,
     );
   });
 });
@@ -83,7 +83,7 @@ test("does not change the selected value when when useDefaultLanguage is passed 
 
   await waitFor(() => {
     expect(onChange).not.toHaveBeenCalledWith(
-      GQLSkylarkAccountFixture.data.getAccount.config.default_language,
+      GQLSkylarkUserAccountFixture.data.getAccount.config.default_language,
     );
   });
 });

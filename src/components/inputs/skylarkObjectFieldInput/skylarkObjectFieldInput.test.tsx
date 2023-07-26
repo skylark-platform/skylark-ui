@@ -9,6 +9,7 @@ import {
 import {
   NormalizedObjectField,
   NormalizedObjectFieldType,
+  ParsedSkylarkObjectConfigFieldConfig,
   SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
@@ -18,9 +19,11 @@ import { SkylarkObjectFieldInput } from "./skylarkObjectFieldInput.component";
 const WrappedSkylarkObjectFieldInput = ({
   config,
   value,
+  fieldConfig,
 }: {
   config: NormalizedObjectField;
   value?: SkylarkObjectMetadataField;
+  fieldConfig?: ParsedSkylarkObjectConfigFieldConfig;
 }) => {
   const defaultValues: Record<string, SkylarkObjectMetadataField> | undefined =
     value
@@ -38,12 +41,14 @@ const WrappedSkylarkObjectFieldInput = ({
   return (
     <div>
       <SkylarkObjectFieldInput
+        idPrefix="test"
         register={register}
         control={control}
         value={getValues(config.name)}
         formState={formState}
         field={config.name}
         config={config}
+        fieldConfigFromObject={fieldConfig}
       />
       <button type="button" onClick={() => trigger()}>
         submit
@@ -305,6 +310,32 @@ describe("renders inputs", () => {
       `Select ${formatObjectField("enumfield")}`,
     );
     expect(input).toBeInTheDocument();
+  });
+
+  test("renders the wysiwyg editor when the field config is WYSIWYG", async () => {
+    const { field } = testFieldConfigs.string;
+    render(
+      <WrappedSkylarkObjectFieldInput
+        config={{
+          ...field,
+          type: "string",
+        }}
+        fieldConfig={{
+          name: field.name,
+          fieldType: "WYSIWYG",
+          position: 0,
+        }}
+      />,
+    );
+
+    // The actual editor won't load here
+    const editorTextarea = screen.getByLabelText("Stringfield");
+    expect(editorTextarea).toBeInTheDocument();
+    expect(editorTextarea).toHaveAttribute(
+      "id",
+      "test-skylark-object-field-input-stringfield",
+    );
+    expect(editorTextarea).toHaveStyle({ visibility: "hidden" });
   });
 });
 

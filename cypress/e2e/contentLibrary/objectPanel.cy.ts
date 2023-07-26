@@ -21,9 +21,9 @@ describe("Content Library - Object Panel", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
-      if (hasOperationName(req, "GET_ACCOUNT")) {
+      if (hasOperationName(req, "GET_USER_AND_ACCOUNT")) {
         req.reply({
-          fixture: "./skylark/queries/getAccount.json",
+          fixture: "./skylark/queries/getUserAndAccount.json",
         });
       }
       if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {

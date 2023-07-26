@@ -1,0 +1,23 @@
+{
+  "data": {
+    "getUser": {
+      "account": "kxa3cpoawbcdpfkz3gusojkg3u",
+      "role": "ADMIN",
+      "permissions": [
+        "READ",
+        "WRITE",
+        "IGNORE_AVAILABILITY",
+        "TIME_TRAVEL",
+        "ACCOUNT_SETUP",
+        "SELF_CONFIG"
+      ]
+    },
+    "getAccount": {
+      "config": {
+        "default_language": "en-GB"
+      },
+      "account_id": "kxa3cpoawbcdpfkz3gusojkg3u",
+      "skylark_version": "230714.7.2"
+    }
+  }
+}

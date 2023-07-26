@@ -49,7 +49,8 @@ export const SYSTEM_FIELDS: string[] = [
 export const DISPLAY_NAME_PRIORITY = [
   "title",
   "name",
-  ...SYSTEM_FIELDS.reverse(),
+  SkylarkSystemField.ExternalID,
+  SkylarkSystemField.UID,
 ];
 
 export const DROPPABLE_ID = "droppable";

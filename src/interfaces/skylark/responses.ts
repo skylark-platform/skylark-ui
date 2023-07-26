@@ -34,6 +34,14 @@ export interface GQLSkylarkAccountResponse {
   };
 }
 
+export interface GQLSkylarkUserResponse {
+  getUser: {
+    account: string;
+    role: string;
+    permissions: string[];
+  };
+}
+
 export interface GQLSkylarkGetObjectResponse {
   getObject: SkylarkGraphQLObject;
 }

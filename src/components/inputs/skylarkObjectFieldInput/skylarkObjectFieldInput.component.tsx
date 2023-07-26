@@ -16,6 +16,7 @@ import { ExternalLink } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { Select } from "src/components/inputs/select";
 import { Skeleton } from "src/components/skeleton";
+import { WYSIWYGEditor } from "src/components/wysiwygEditor";
 import { INPUT_REGEX, SYSTEM_FIELDS } from "src/constants/skylark";
 import {
   NormalizedObjectField,
@@ -35,6 +36,7 @@ interface SkylarkObjectFieldInputProps {
   control: Control<Record<string, SkylarkObjectMetadataField>>;
   value: SkylarkObjectMetadataField;
   formState: FormState<Record<string, SkylarkObjectMetadataField>>;
+  idPrefix: string; // Stops the WYSIWYG editor clashing ids
   additionalRequiredFields?: string[];
   isLoading?: boolean;
   fieldConfigFromObject?: ParsedSkylarkObjectConfigFieldConfig;
@@ -46,23 +48,27 @@ interface SkylarkObjectFieldInputComponentProps
   registerOptions?: RegisterOptions<FieldValues, string>;
 }
 
-const createHtmlForId = (field: SkylarkObjectFieldInputProps["field"]) =>
-  `skylark-object-field-input-${field}`;
+const createHtmlForId = (
+  prefix: string,
+  field: SkylarkObjectFieldInputProps["field"],
+) => `${prefix}-skylark-object-field-input-${field}`;
 
 const SkylarkObjectFieldInputLabel = ({
   field,
   isRequired,
   copyValue,
   href,
+  idPrefix,
 }: {
   field: SkylarkObjectFieldInputProps["field"];
   isRequired?: boolean;
   copyValue?: string;
   href?: string;
+  idPrefix: string;
 }) => (
   <label
     className="mb-2 flex items-center font-bold"
-    htmlFor={createHtmlForId(field)}
+    htmlFor={createHtmlForId(idPrefix, field)}
   >
     {formatObjectField(field)}
     {isRequired && <span className="pl-0.5 text-error">*</span>}
@@ -118,6 +124,7 @@ const SkylarkObjectFieldInputBoolean = ({
   field,
   control,
   error,
+  idPrefix,
 }: SkylarkObjectFieldInputComponentProps) => (
   <Controller
     name={field}
@@ -127,7 +134,28 @@ const SkylarkObjectFieldInputBoolean = ({
         checked={field.value as CheckedState}
         onCheckedChange={field.onChange}
         aria-invalid={error ? "true" : "false"}
-        id={createHtmlForId(field.name)}
+        id={createHtmlForId(idPrefix, field.name)}
+      />
+    )}
+  />
+);
+
+const SkylarkObjectFieldInputWYSIWYG = ({
+  field,
+  control,
+  error,
+  idPrefix,
+}: SkylarkObjectFieldInputComponentProps) => (
+  <Controller
+    name={field}
+    control={control}
+    render={({ field }) => (
+      <WYSIWYGEditor
+        id={createHtmlForId(idPrefix, field.name)}
+        value={field.value as string}
+        onEditorChange={field.onChange}
+        aria-invalid={error ? "true" : "false"}
+        withSkeletonLoading
       />
     )}
   />
@@ -139,11 +167,12 @@ const SkylarkObjectFieldInputTextArea = ({
   value,
   error,
   registerOptions,
+  idPrefix,
 }: SkylarkObjectFieldInputComponentProps) => (
   <textarea
     {...register(field, registerOptions)}
     aria-invalid={error ? "true" : "false"}
-    id={createHtmlForId(field)}
+    id={createHtmlForId(idPrefix, field)}
     rows={
       (value &&
         (((value as string).length > 1000 && 18) ||
@@ -161,12 +190,13 @@ const SkylarkObjectFieldInputGeneric = ({
   config,
   error,
   registerOptions,
+  idPrefix,
 }: SkylarkObjectFieldInputComponentProps) => (
   <input
     {...register(field, {
       ...registerOptions,
     })}
-    id={createHtmlForId(field)}
+    id={createHtmlForId(idPrefix, field)}
     aria-invalid={error ? "true" : "false"}
     type={convertFieldTypeToHTMLInputType(config.type)}
     step={
@@ -188,6 +218,7 @@ export const SkylarkObjectFieldInput = (
     additionalRequiredFields,
     isLoading,
     fieldConfigFromObject,
+    idPrefix,
   } = props;
   const required =
     config.isRequired || additionalRequiredFields?.includes(config.name)
@@ -253,12 +284,15 @@ export const SkylarkObjectFieldInput = (
   return (
     <div className="group/input-field mb-4 text-sm">
       <SkylarkObjectFieldInputLabel
+        idPrefix={idPrefix}
         field={field}
         isRequired={!!required}
         copyValue={props.value !== null ? `${props.value}` : undefined}
         href={config.type === "url" ? `${props.value}` : undefined}
       />
-      {isLoading ? (
+      {isLoading &&
+      (!fieldConfigFromObject ||
+        fieldConfigFromObject.fieldType !== "WYSIWYG") ? (
         <Skeleton className="h-11 w-full" />
       ) : (
         (() => {
@@ -267,11 +301,15 @@ export const SkylarkObjectFieldInput = (
           } else if (config.type === "boolean") {
             return <SkylarkObjectFieldInputBoolean {...inputProps} />;
           } else if (
-            fieldConfigFromObject?.fieldType === "TEXTAREA" ||
-            fieldConfigFromObject?.fieldType === "WYSIWYG" ||
-            (config.type === "string" &&
-              !SYSTEM_FIELDS.includes(field) &&
-              fieldConfigFromObject === undefined)
+            config.type === "string" &&
+            fieldConfigFromObject?.fieldType === "WYSIWYG"
+          ) {
+            return <SkylarkObjectFieldInputWYSIWYG {...inputProps} />;
+          } else if (
+            config.type === "string" &&
+            (fieldConfigFromObject?.fieldType === "TEXTAREA" ||
+              (!SYSTEM_FIELDS.includes(field) &&
+                fieldConfigFromObject === undefined))
           ) {
             return <SkylarkObjectFieldInputTextArea {...inputProps} />;
           } else {

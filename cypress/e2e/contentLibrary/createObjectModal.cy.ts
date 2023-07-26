@@ -1,6 +1,6 @@
 import { hasOperationName } from "../../support/utils/graphqlTestUtils";
 
-describe("Content Library - Metadata Panel", () => {
+describe("Create Object Modal", () => {
   beforeEach(() => {
     cy.login();
 
@@ -11,9 +11,9 @@ describe("Content Library - Metadata Panel", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
-      if (hasOperationName(req, "GET_ACCOUNT")) {
+      if (hasOperationName(req, "GET_USER_AND_ACCOUNT")) {
         req.reply({
-          fixture: "./skylark/queries/getAccount.json",
+          fixture: "./skylark/queries/getUserAndAccount.json",
         });
       }
       if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
@@ -131,5 +131,23 @@ describe("Content Library - Metadata Panel", () => {
     // Check Panel opens
     cy.contains("Metadata");
     cy.getByLabel("Slug").should("have.value", "winter-is-coming");
+  });
+
+  it("selects a Person Object Type and checks the WYSIWYG Editor loads", () => {
+    openModal();
+
+    cy.get("[data-testid=create-object-modal]").within(() => {
+      cy.get("[data-testid=select]").click();
+      cy.get("[data-testid=select-options]").within(() => {
+        cy.contains("Person").click();
+      });
+
+      cy.contains("Bio long").scrollIntoView();
+
+      cy.get(".tox-tinymce").should("exist");
+
+      cy.contains("File");
+      cy.contains("Format");
+    });
   });
 });
