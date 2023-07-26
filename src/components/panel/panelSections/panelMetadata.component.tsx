@@ -1,16 +1,12 @@
-import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
-import ReactPlayer from "react-player/lazy";
 
 import { SkylarkObjectFieldInput } from "src/components/inputs/skylarkObjectFieldInput";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
-  PanelFieldTitle,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
-import { VideoPlayer } from "src/components/players";
 import { Skeleton } from "src/components/skeleton";
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
@@ -21,7 +17,6 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
-import { formatObjectField, hasProperty } from "src/lib/utils";
 
 import {
   CalculatedImageSize,
@@ -51,8 +46,6 @@ export const PanelMetadata = ({
   objectFieldConfig: objectFieldConfigArr,
   form: { register, getValues, control, formState },
 }: PanelMetadataProps) => {
-  const { query } = useRouter();
-
   const {
     systemMetadataFields,
     translatableMetadataFields,
@@ -158,38 +151,6 @@ export const PanelMetadata = ({
         {objectType === BuiltInSkylarkObjectType.SkylarkImage && (
           <CalculatedImageSize src={metadata?.url as string | null} />
         )}
-        {hasProperty(query, "next") &&
-          objectType === BuiltInSkylarkObjectType.SkylarkAsset && (
-            <div className="mt-4 flex flex-col">
-              <PanelSectionTitle text="Playback" />
-              {/* <MuxPlayer
-                className="h-full w-full bg-black object-cover object-center"
-                // controls
-                data-testid="player"
-                src={(metadata?.hls_url as string) || null}
-                streamType={"on-demand"}
-              /> */}
-              {/* <ReactPlayer
-                url={(metadata?.hls_url as string) || ""}
-                height="100%"
-                width="100%"
-                controls
-                className="h-full w-full bg-black object-cover object-center"
-                onError={console.log}
-              /> */}
-              <PanelFieldTitle text="HLS" />
-              <VideoPlayer
-                src={(metadata?.hls_url as string) || ""}
-                className="mb-4 h-full w-full bg-black object-cover object-center"
-              />
-
-              <PanelFieldTitle text="Dash" />
-              <VideoPlayer
-                src={(metadata?.dash_url as string) || ""}
-                className="h-full w-full bg-black object-cover object-center"
-              />
-            </div>
-          )}
       </form>
       <PanelLoading isLoading={!objectMeta}>
         <Skeleton className="mb-6 h-8 w-64" />

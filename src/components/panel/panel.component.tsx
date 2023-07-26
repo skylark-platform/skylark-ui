@@ -1,4 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -50,6 +51,7 @@ import { PanelAvailabilityAssignedTo } from "./panelSections/panelAvailabilityAs
 import { PanelAvailabilityDimensions } from "./panelSections/panelAvailabilityDimensions.component";
 import { PanelContent } from "./panelSections/panelContent.component";
 import { PanelContentOf } from "./panelSections/panelContentOf.component";
+import { PanelPlayback } from "./panelSections/panelPlayback.component";
 import { PanelRelationships } from "./panelSections/panelRelationships.component";
 
 interface PanelProps {
@@ -178,6 +180,8 @@ export const Panel = ({
     selectedTab,
   });
 
+  const { query: urlQuery } = useRouter();
+
   const [panelInEditMode, setEditMode] = useState(false);
 
   const [contentObjects, setContentObjects] = useState<{
@@ -249,6 +253,9 @@ export const Panel = ({
       [
         PanelTab.Metadata,
         objectMeta?.hasContent && PanelTab.Content,
+        hasProperty(urlQuery, "next") &&
+          objectMeta?.name === BuiltInSkylarkObjectType.SkylarkAsset &&
+          PanelTab.Playback,
         objectMeta?.hasRelationships && PanelTab.Relationships,
         objectMeta?.images && PanelTab.Imagery,
         objectMeta?.hasContentOf && PanelTab.ContentOf,
@@ -265,6 +272,7 @@ export const Panel = ({
       objectMeta?.hasRelationships,
       objectMeta?.images,
       objectMeta?.name,
+      urlQuery,
     ],
   );
 
@@ -545,6 +553,14 @@ export const Panel = ({
             <PanelImages
               isPage={isPage}
               images={data.images}
+              setPanelObject={setPanelObject}
+              inEditMode={inEditMode}
+            />
+          )}
+          {selectedTab === PanelTab.Playback && (
+            <PanelPlayback
+              isPage={isPage}
+              metadata={formParsedMetadata}
               setPanelObject={setPanelObject}
               inEditMode={inEditMode}
             />
