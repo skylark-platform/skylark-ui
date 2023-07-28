@@ -63,6 +63,7 @@ const AvailabilityDimensionSelectors = ({
               disabled={isLoadingDimensions}
               placeholder={`Select ${title || slug || "Dimension"} value`}
               className="mt-1"
+              renderInPortal
             />
           </div>
         ))}

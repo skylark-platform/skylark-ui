@@ -1,4 +1,10 @@
-import { useFloating, offset, flip, size } from "@floating-ui/react";
+import {
+  useFloating,
+  offset,
+  flip,
+  size,
+  autoUpdate,
+} from "@floating-ui/react";
 import { Combobox, Transition, Portal } from "@headlessui/react";
 import clsx from "clsx";
 import React, {
@@ -37,6 +43,7 @@ export interface SelectProps {
   allowCustomValue?: boolean;
   rounded?: boolean;
   withBasicSort?: boolean;
+  renderInPortal?: boolean;
   onChange?: (value: string) => void;
   onValueClear?: () => void;
 }
@@ -206,8 +213,22 @@ export const VirtualizedOptions = ({
   );
 };
 
+const OptionsPortalWrapper = ({
+  usePortal,
+  children,
+}: {
+  usePortal: boolean;
+  children: ReactNode;
+}): JSX.Element => {
+  if (usePortal) {
+    return <Portal>{children}</Portal>;
+  }
+
+  return <>{children}</>;
+};
+
 export const Select = forwardRef(
-  (props: SelectProps, ref: Ref<HTMLButtonElement | HTMLInputElement>) => {
+  (props: SelectProps, propRef: Ref<HTMLButtonElement | HTMLInputElement>) => {
     const {
       variant,
       name,
@@ -225,6 +246,7 @@ export const Select = forwardRef(
       allowCustomValue,
       onValueClear,
       withBasicSort,
+      renderInPortal,
     } = props;
 
     const [query, setQuery] = useState("");
@@ -244,6 +266,7 @@ export const Select = forwardRef(
           padding: 10,
         }),
       ],
+      whileElementsMounted: autoUpdate,
     });
 
     const options = withBasicSort
@@ -329,7 +352,7 @@ export const Select = forwardRef(
                   }
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder={placeholder || "Select option"}
-                  ref={ref as Ref<HTMLInputElement> | undefined}
+                  ref={propRef as Ref<HTMLInputElement> | undefined}
                 />
                 <span className="absolute inset-y-0 right-0 flex items-center">
                   {showClearValueButton && (
@@ -361,7 +384,7 @@ export const Select = forwardRef(
                   paddingClassName,
                   label && "mt-2",
                 )}
-                ref={mergeRefs([refs.setReference, ref])}
+                ref={mergeRefs([refs.setReference, propRef])}
               >
                 <span
                   className={clsx(
@@ -391,7 +414,7 @@ export const Select = forwardRef(
               afterLeave={() => setQuery("")}
             >
               {open && (
-                <Portal>
+                <OptionsPortalWrapper usePortal={!!renderInPortal}>
                   <Combobox.Options
                     static
                     ref={refs.setFloating}
@@ -433,7 +456,7 @@ export const Select = forwardRef(
                       />
                     )}
                   </Combobox.Options>
-                </Portal>
+                </OptionsPortalWrapper>
               )}
             </Transition>
           </div>
