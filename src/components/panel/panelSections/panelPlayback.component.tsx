@@ -32,7 +32,6 @@ interface PanelPlaybackProps {
 const videoTypes = ["hls", "dash"];
 
 export const PanelPlayback = ({ metadata, isPage }: PanelPlaybackProps) => {
-  console.log({ metadata });
   return (
     <PanelSectionLayout
       sections={videoTypes.map((type) => ({

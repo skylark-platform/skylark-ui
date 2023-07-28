@@ -34,9 +34,7 @@ export const VideoPlayer = ({ src, className }: VideoPlayerProps) => {
           {playerError === PlayerError.UNKNOWN && (
             <p>Unknown Error playing Video</p>
           )}
-          {playerError === PlayerError.ACCESS_DENIED && (
-            <p>Tayler access denied</p>
-          )}
+          {playerError === PlayerError.ACCESS_DENIED && <p>Access denied</p>}
         </div>
       ) : (
         <ReactPlayer
