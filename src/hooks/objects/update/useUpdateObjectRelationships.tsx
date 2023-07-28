@@ -6,19 +6,12 @@ import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkUpdateRelationshipsResponse,
   ParsedSkylarkObject,
-  ParsedSkylarkObjectRelationships,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectRelationshipsMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
-export const useUpdateObjectRelationships = ({
-  objectType,
-  uid,
-  modifiedRelationships,
-  onSuccess,
-}: {
-  objectType: SkylarkObjectType;
+interface MutationArgs {
   uid: string;
   modifiedRelationships: Record<
     string,
@@ -27,19 +20,26 @@ export const useUpdateObjectRelationships = ({
       removed: string[];
     }
   > | null;
+}
+
+export const useUpdateObjectRelationships = ({
+  objectType,
+  onSuccess,
+}: {
+  objectType: SkylarkObjectType;
   onSuccess: () => void;
 }) => {
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  const updateObjectRelationshipsMutation =
-    createUpdateObjectRelationshipsMutation(
-      objectOperations,
-      modifiedRelationships,
-    );
-
   const { mutate, isLoading } = useMutation({
-    mutationFn: ({ uid }: { uid: string }) => {
+    mutationFn: ({ uid, modifiedRelationships }: MutationArgs) => {
+      const updateObjectRelationshipsMutation =
+        createUpdateObjectRelationshipsMutation(
+          objectOperations,
+          modifiedRelationships,
+        );
+
       return skylarkRequest<GQLSkylarkUpdateRelationshipsResponse>(
         updateObjectRelationshipsMutation as RequestDocument,
         { uid },
@@ -54,10 +54,8 @@ export const useUpdateObjectRelationships = ({
     },
   });
 
-  const updateObjectRelationships = () => mutate({ uid });
-
   return {
-    updateObjectRelationships,
+    updateObjectRelationships: mutate,
     isUpdatingObjectRelationships: isLoading,
   };
 };

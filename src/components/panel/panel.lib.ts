@@ -244,12 +244,12 @@ export const handleDroppedAvailabilities = ({
   droppedObjects: ParsedSkylarkObject[];
   activeObjectUid: string;
 }) => {
-  const { updatedAvailabilityObjects, errors } = droppedObjects.reduce(
+  const { addedObjects, errors } = droppedObjects.reduce(
     (
       previous,
       droppedObject,
     ): {
-      updatedAvailabilityObjects: ParsedSkylarkObject[];
+      addedObjects: ParsedSkylarkObject[];
       errors: HandleDropError[];
     } => {
       if (droppedObject.objectType !== BuiltInSkylarkObjectType.Availability) {
@@ -287,20 +287,17 @@ export const handleDroppedAvailabilities = ({
 
       return {
         ...previous,
-        updatedAvailabilityObjects: [
-          ...previous.updatedAvailabilityObjects,
-          droppedObject,
-        ],
+        addedObjects: [...previous.addedObjects, droppedObject],
       };
     },
     {
-      updatedAvailabilityObjects: existingObjects,
+      addedObjects: [] as ParsedSkylarkObject[],
       errors: [] as HandleDropError[],
     },
   );
 
   return {
-    updatedAvailabilityObjects,
+    addedObjects,
     errors,
   };
 };
