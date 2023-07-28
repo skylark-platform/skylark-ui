@@ -783,6 +783,58 @@ describe("Content Library - Object Panel", () => {
         });
       });
     });
+
+    it("adds Availability using the Object Search modal", () => {
+      cy.fixture(
+        "./skylark/queries/getObject/fantasticMrFox_All_Availabilities.json",
+      ).then((objectJson) => {
+        cy.get('input[name="search-query-input"]').type("all avail test movie");
+        cy.contains("Fantastic Mr Fox (All Availabilities)").should("exist");
+        cy.openContentLibraryObjectPanelByText(
+          "Fantastic Mr Fox (All Availabilities)",
+        );
+
+        cy.contains("button", "Availability").click();
+
+        // Check default Availability view shows
+        cy.contains("Time Window");
+
+        cy.get("#availability-panel-header")
+          .parent()
+          .within(() => {
+            cy.get("button").click();
+          });
+
+        cy.get("[data-testid=search-objects-modal-save]").should("exist");
+
+        cy.get("[data-testid=search-objects-modal]").within(() => {
+          cy.get('input[name="search-query-input"]').type(
+            allDevicesAllCustomersAvailability,
+          );
+        });
+
+        cy.contains(allDevicesAllCustomersAvailability).click();
+
+        cy.contains("Add 1").click();
+
+        cy.get("[data-testid=search-objects-modal-save]").should("not.exist");
+
+        // Check edit Availability view shows
+        cy.contains("Time Window").should("not.exist");
+
+        cy.contains(allDevicesAllCustomersAvailability);
+
+        cy.contains("Editing");
+
+        cy.contains(allDevicesAllCustomersAvailability)
+          .closest("div")
+          .within(() => {
+            cy.get("[data-testid=object-identifier-delete]").click();
+          });
+
+        cy.contains(allDevicesAllCustomersAvailability).should("not.exist");
+      });
+    });
   });
 
   describe("Availability Dimensions tab", () => {

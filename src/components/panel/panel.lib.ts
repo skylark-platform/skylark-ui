@@ -238,18 +238,18 @@ export const handleDroppedContents = ({
 export const handleDroppedAvailabilities = ({
   existingObjects,
   droppedObjects,
-  panelObject,
+  activeObjectUid,
 }: {
   existingObjects: ParsedSkylarkObject[];
   droppedObjects: ParsedSkylarkObject[];
-  panelObject: ParsedSkylarkObject;
+  activeObjectUid: string;
 }) => {
-  const { updatedAvailabilityObjects, errors } = droppedObjects.reduce(
+  const { addedObjects, errors } = droppedObjects.reduce(
     (
       previous,
       droppedObject,
     ): {
-      updatedAvailabilityObjects: ParsedSkylarkObject[];
+      addedObjects: ParsedSkylarkObject[];
       errors: HandleDropError[];
     } => {
       if (droppedObject.objectType !== BuiltInSkylarkObjectType.Availability) {
@@ -263,7 +263,7 @@ export const handleDroppedAvailabilities = ({
         };
       }
 
-      if (panelObject.uid === droppedObject.uid) {
+      if (activeObjectUid === droppedObject.uid) {
         const error: HandleDropError = {
           type: HandleDropErrorType.OBJECTS_ARE_SAME,
           object: droppedObject,
@@ -287,20 +287,17 @@ export const handleDroppedAvailabilities = ({
 
       return {
         ...previous,
-        updatedAvailabilityObjects: [
-          ...previous.updatedAvailabilityObjects,
-          droppedObject,
-        ],
+        addedObjects: [...previous.addedObjects, droppedObject],
       };
     },
     {
-      updatedAvailabilityObjects: existingObjects,
+      addedObjects: [] as ParsedSkylarkObject[],
       errors: [] as HandleDropError[],
     },
   );
 
   return {
-    updatedAvailabilityObjects,
+    addedObjects,
     errors,
   };
 };

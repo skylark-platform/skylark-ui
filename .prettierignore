@@ -9,3 +9,6 @@ public/mockServiceWorker.js
 
 # tinymce
 /public/tinymce/
+
+# Storybook
+storybook-static

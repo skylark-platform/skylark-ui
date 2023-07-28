@@ -3,6 +3,7 @@ import { GQLScalars } from "src/interfaces/graphql/introspection";
 export enum BuiltInSkylarkObjectType {
   Availability = "Availability",
   SkylarkImage = "SkylarkImage",
+  SkylarkAsset = "SkylarkAsset",
   SkylarkFavoriteList = "SkylarkFavoriteList",
 }
 

@@ -11,30 +11,34 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
-export const useUpdateObjectContent = ({
-  objectType,
-  uid,
-  originalContentObjects,
-  updatedContentObjects,
-  onSuccess,
-}: {
-  objectType: SkylarkObjectType;
+interface MutationArgs {
   uid: string;
   originalContentObjects: ParsedSkylarkObjectContentObject[] | null;
   updatedContentObjects: ParsedSkylarkObjectContentObject[] | null;
+}
+
+export const useUpdateObjectContent = ({
+  objectType,
+  onSuccess,
+}: {
+  objectType: SkylarkObjectType;
   onSuccess: () => void;
 }) => {
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  const updateObjectContentMutation = createUpdateObjectContentMutation(
-    objectOperations,
-    originalContentObjects,
-    updatedContentObjects,
-  );
-
   const { mutate, isLoading } = useMutation({
-    mutationFn: ({ uid }: { uid: string }) => {
+    mutationFn: ({
+      uid,
+      originalContentObjects,
+      updatedContentObjects,
+    }: MutationArgs) => {
+      const updateObjectContentMutation = createUpdateObjectContentMutation(
+        objectOperations,
+        originalContentObjects,
+        updatedContentObjects,
+      );
+
       return skylarkRequest<GQLSkylarkUpdateObjectContentResponse>(
         updateObjectContentMutation as RequestDocument,
         { uid },
@@ -49,10 +53,8 @@ export const useUpdateObjectContent = ({
     },
   });
 
-  const updateObjectContent = () => mutate({ uid });
-
   return {
-    updateObjectContent,
+    updateObjectContent: mutate,
     isUpdatingObjectContent: isLoading,
   };
 };
