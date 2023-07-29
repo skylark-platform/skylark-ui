@@ -4,9 +4,19 @@ import {
   ColumnDef,
   useReactTable,
   getCoreRowModel,
+  flexRender,
+  Row,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useRef, useState, useMemo, useCallback, useEffect, memo } from "react";
+import {
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  memo,
+  Fragment,
+} from "react";
 import { useVirtual } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
@@ -19,6 +29,7 @@ import {
 } from "src/interfaces/skylark";
 import {
   getObjectDisplayName,
+  hasProperty,
   shallowCompareObjects,
   skylarkObjectsAreSame,
 } from "src/lib/utils";
@@ -223,36 +234,132 @@ export const ObjectSearchResults = ({
     },
   });
 
-  const { rows } = table.getRowModel();
+  const getObjectProperty = (
+    obj: ParsedSkylarkObject,
+    property: string,
+    rowIndex: number,
+  ) => {
+    if (property === OBJECT_LIST_TABLE.columnIds.displayField) {
+      return rowIndex;
+    }
+    return hasProperty(obj.metadata, property)
+      ? `${obj.metadata[property]}`
+      : "";
+  };
 
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
-    size: rows.length,
+    size: formattedSearchData?.length ? formattedSearchData.length + 1 : 0,
     estimateSize: useCallback(() => 42, []),
-    overscan: 10,
+    // overscan: 10,
+  });
+
+  const columnVirtualizer = useVirtual({
+    parentRef: tableContainerRef,
+    size: parsedColumns.length,
+    estimateSize: useCallback(() => 200, []),
+    // overscan: 10,
+    horizontal: true,
   });
 
   const { virtualItems: virtualRows, totalSize: totalRows } = rowVirtualizer;
+  const { virtualItems: virtualColumns, totalSize: totalColumns } =
+    columnVirtualizer;
 
+  const headers = table.getHeaderGroups()[0].headers;
+
+  const { rows } = table.getRowModel();
+
+  // return (
+  //   <div
+  //     className={clsx(
+  //       "scrollbar-hidden relative mb-6 flex w-auto flex-col overflow-x-auto overscroll-none md:-ml-4 ",
+  //     )}
+  //     ref={tableContainerRef}
+  //     data-testid="object-search-results"
+  //     id="object-search-results"
+  //     onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
+  //   >
+  //     <Table
+  //       table={table}
+  //       virtualRows={virtualRows}
+  //       totalRows={totalRows}
+  //       withCheckbox={withObjectSelect}
+  //       isLoadingMore={hasNextPage}
+  //       activeObject={panelObject || undefined}
+  //       withDraggableRow={!!panelObject}
+  //     />
+  //   </div>
+  // );
   return (
     <div
-      className={clsx(
-        "scrollbar-hidden relative mb-6 flex w-auto flex-col overflow-x-auto overscroll-none md:-ml-4 ",
-      )}
       ref={tableContainerRef}
-      data-testid="object-search-results"
-      id="object-search-results"
-      onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
+      className="scrollbar-hidden relative mb-6 flex w-auto flex-col overflow-x-auto overscroll-none border-red-500 text-sm md:-ml-4"
+      // style={{
+      //   height: `400px`,
+      //   width: `500px`,
+      //   overflow: "auto",
+      // }}
     >
-      <Table
-        table={table}
-        virtualRows={virtualRows}
-        totalRows={totalRows}
-        withCheckbox={withObjectSelect}
-        isLoadingMore={hasNextPage}
-        activeObject={panelObject || undefined}
-        withDraggableRow={!!panelObject}
-      />
+      <div
+        style={{
+          height: rowVirtualizer.totalSize,
+          width: columnVirtualizer.totalSize,
+          position: "relative",
+        }}
+      >
+        {rowVirtualizer.virtualItems.map((virtualRow) => (
+          <Fragment key={virtualRow.key}>
+            {columnVirtualizer.virtualItems.map((virtualColumn) => {
+              const column = table.getAllColumns()[virtualColumn.index];
+              return (
+                <div
+                  key={virtualColumn.key}
+                  ref={(el) => {
+                    virtualRow.measureRef(el);
+                    virtualColumn.measureRef(el);
+                  }}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    transform: `translateX(${virtualColumn.start}px) translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <div
+                    style={{
+                      height: virtualRow.size,
+                      width: column.getSize(),
+                      // height: 100,
+                      // width: 100,
+                    }}
+                    className="overflow-hidden px-2"
+                  >
+                    {virtualRow.index === 0
+                      ? flexRender(
+                          headers[virtualColumn.index].column.columnDef.header,
+                          headers[virtualColumn.index].getContext(),
+                        )
+                      : getObjectProperty(
+                          (
+                            rows[
+                              virtualRow.index - 1
+                            ] as Row<ParsedSkylarkObject>
+                          ).original,
+                          (
+                            rows[
+                              virtualRow.index - 1
+                            ] as Row<ParsedSkylarkObject>
+                          ).getVisibleCells()[virtualColumn.index].column.id,
+                          virtualRow.index,
+                        )}
+                  </div>
+                </div>
+              );
+            })}
+          </Fragment>
+        ))}
+      </div>
     </div>
   );
 };
