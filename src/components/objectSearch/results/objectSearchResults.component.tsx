@@ -6,6 +6,8 @@ import {
   getCoreRowModel,
   flexRender,
   Row,
+  Column,
+  Header,
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import {
@@ -17,8 +19,10 @@ import {
   memo,
   Fragment,
 } from "react";
-import { useVirtual } from "react-virtual";
+import { VirtualItem, defaultRangeExtractor, useVirtual } from "react-virtual";
 
+import { Checkbox } from "src/components/inputs/checkbox";
+import { ObjectTypePill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { PanelTab } from "src/hooks/state";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
@@ -142,9 +146,9 @@ export const ObjectSearchResults = ({
   );
 
   // a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
-  useEffect(() => {
-    fetchMoreOnBottomReached(tableContainerRef.current);
-  }, [fetchMoreOnBottomReached]);
+  // useEffect(() => {
+  //   fetchMoreOnBottomReached(tableContainerRef.current);
+  // }, [fetchMoreOnBottomReached]);
 
   const onRowCheckChange = useCallback(
     ({
@@ -234,24 +238,16 @@ export const ObjectSearchResults = ({
     },
   });
 
-  const getObjectProperty = (
-    obj: ParsedSkylarkObject,
-    property: string,
-    rowIndex: number,
-  ) => {
-    if (property === OBJECT_LIST_TABLE.columnIds.displayField) {
-      return rowIndex;
-    }
-    return hasProperty(obj.metadata, property)
-      ? `${obj.metadata[property]}`
-      : "";
-  };
-
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
-    size: formattedSearchData?.length ? formattedSearchData.length + 1 : 0,
+    size: formattedSearchData?.length ? formattedSearchData.length : 0,
     estimateSize: useCallback(() => 42, []),
     // overscan: 10,
+    paddingStart: 42, // Padding to handle the sticky headers, same as estimateSize
+    rangeExtractor: (range) => {
+      const rangeAsSet = new Set([0, ...defaultRangeExtractor(range)]);
+      return [...rangeAsSet];
+    },
   });
 
   const columnVirtualizer = useVirtual({
@@ -260,6 +256,10 @@ export const ObjectSearchResults = ({
     estimateSize: useCallback(() => 200, []),
     // overscan: 10,
     horizontal: true,
+    rangeExtractor: (range) => {
+      const rangeAsSet = new Set([0, ...defaultRangeExtractor(range)]);
+      return [...rangeAsSet];
+    },
   });
 
   const { virtualItems: virtualRows, totalSize: totalRows } = rowVirtualizer;
@@ -269,97 +269,246 @@ export const ObjectSearchResults = ({
   const headers = table.getHeaderGroups()[0].headers;
 
   const { rows } = table.getRowModel();
+  const columns = table.getAllColumns();
 
-  // return (
-  //   <div
-  //     className={clsx(
-  //       "scrollbar-hidden relative mb-6 flex w-auto flex-col overflow-x-auto overscroll-none md:-ml-4 ",
-  //     )}
-  //     ref={tableContainerRef}
-  //     data-testid="object-search-results"
-  //     id="object-search-results"
-  //     onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
-  //   >
-  //     <Table
-  //       table={table}
-  //       virtualRows={virtualRows}
-  //       totalRows={totalRows}
-  //       withCheckbox={withObjectSelect}
-  //       isLoadingMore={hasNextPage}
-  //       activeObject={panelObject || undefined}
-  //       withDraggableRow={!!panelObject}
-  //     />
-  //   </div>
-  // );
+  console.log({
+    x: tableContainerRef.current?.scrollLeft,
+    rows,
+    rowSize: formattedSearchData?.length,
+    formattedSearchData,
+    columns,
+  });
+
+  const hasScrolledRight =
+    (tableContainerRef?.current && tableContainerRef.current.scrollLeft > 5) ||
+    false;
+
+  return (
+    <>
+      <div ref={tableContainerRef} className="relative overflow-auto text-sm">
+        <div
+          style={{
+            height: rowVirtualizer.totalSize,
+            width: columnVirtualizer.totalSize,
+          }}
+          className="relative"
+        >
+          <HeaderRow
+            headers={headers}
+            virtualColumns={columnVirtualizer.virtualItems}
+            height={virtualRows[0].size}
+            showLeftGridShadow={hasScrolledRight}
+          />
+          <LeftGrid
+            virtualRows={rowVirtualizer.virtualItems}
+            width={columns[0].getSize()}
+            rows={rows as Row<ParsedSkylarkObject>[]}
+            showShadow={hasScrolledRight}
+          />
+          <RightGrid
+            virtualColumns={columnVirtualizer.virtualItems}
+            virtualRows={rowVirtualizer.virtualItems}
+          />
+        </div>
+      </div>
+    </>
+  );
+};
+
+const HeaderRow = ({
+  headers,
+  virtualColumns,
+  height,
+  showLeftGridShadow,
+}: {
+  headers: Header<object, string>[];
+  virtualColumns: VirtualItem[];
+  height: number;
+  showLeftGridShadow: boolean;
+}) => {
   return (
     <div
-      ref={tableContainerRef}
-      className="scrollbar-hidden relative mb-6 flex w-auto flex-col overflow-x-auto overscroll-none border-red-500 text-sm md:-ml-4"
-      // style={{
-      //   height: `400px`,
-      //   width: `500px`,
-      //   overflow: "auto",
-      // }}
+      style={{
+        height,
+      }}
+      className="sticky top-0 z-[2] w-full"
     >
+      {virtualColumns.map((virtualColumn) => {
+        const header = headers[virtualColumn.index];
+        return (
+          <div
+            key={virtualColumn.index}
+            className="left-0 top-0 flex select-none items-center bg-white px-2 font-medium "
+            style={{
+              position: virtualColumn.index === 0 ? "sticky" : "absolute",
+              zIndex: virtualColumn.index === 0 ? 1 : undefined,
+              width: header.getSize(),
+              height,
+              transform: `translateX(${virtualColumn.start}px) translateY(0px)`,
+              boxShadow:
+                header.id === OBJECT_LIST_TABLE.columnIds.displayField &&
+                showLeftGridShadow
+                  ? "2px 0px 5px 0px #888"
+                  : undefined,
+            }}
+            ref={(el) => {
+              virtualColumn.measureRef(el);
+            }}
+          >
+            {flexRender(header.column.columnDef.header, header.getContext())}
+            <div
+              onMouseDown={header.getResizeHandler()}
+              onTouchStart={header.getResizeHandler()}
+              className="absolute right-0 z-10 mr-1 h-4 w-0.5 cursor-col-resize bg-manatee-200"
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const LeftGrid = ({
+  virtualRows,
+  width,
+  rows,
+  showShadow,
+}: {
+  virtualRows: VirtualItem[];
+  width: number;
+  rows: Row<ParsedSkylarkObject>[];
+  showShadow: boolean;
+}) => {
+  return (
+    <div
+      className="sticky left-0 z-[1] transition-shadow"
+      style={{
+        zIndex: 1,
+        left: 0,
+        width,
+        height: `100%`,
+        boxShadow: showShadow ? "2px 0px 5px 0px #888" : undefined,
+      }}
+    >
+      {virtualRows.map((virtualRow) => {
+        const row = rows[virtualRow.index];
+        const cell = row ? row.getAllCells()[0] : null;
+        return (
+          <div
+            key={virtualRow.index}
+            className="absolute left-0 flex items-center gap-2 bg-white"
+            style={{
+              width,
+              height: virtualRow.size,
+              transform: `translateX(0px) translateY(${
+                virtualRow.start - virtualRows[0].size
+              }px)`,
+            }}
+          >
+            {/* {`Row ${virtualRow.index}`} */}
+            {row ? (
+              <>
+                <div className="w-4 min-w-4 max-w-4">{virtualRow.index}</div>
+                <Checkbox />
+                <ObjectTypePill
+                  type={row.original.objectType}
+                  className="w-20 min-w-20"
+                />
+                <div>
+                  {cell
+                    ? flexRender(cell.column.columnDef.cell, cell.getContext())
+                    : ""}
+                </div>
+              </>
+            ) : (
+              <></>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const RightGrid = ({
+  virtualRows,
+  virtualColumns,
+}: {
+  virtualRows: VirtualItem[];
+  virtualColumns: VirtualItem[];
+}) => {
+  return (
+    <div>
+      {virtualRows.map((virtualRow) => (
+        <Fragment key={virtualRow.index}>
+          {virtualColumns.map((virtualColumn) => (
+            <div
+              key={virtualColumn.index}
+              ref={(el) => {
+                virtualColumn.measureRef(el);
+              }}
+              className="absolute left-0 top-0 px-2"
+              style={{
+                transform: `translateX(${virtualColumn.start}px) translateY(${virtualRow.start}px)`,
+                width: `${virtualColumn.size}px`,
+                height: `${virtualRow.size}px`,
+              }}
+            >
+              {`Cell ${virtualRow.index}, ${virtualColumn.index}`}
+            </div>
+          ))}
+        </Fragment>
+      ))}
+    </div>
+  );
+};
+
+const DataCell = ({
+  column,
+  row,
+  virtualRow,
+  virtualColumn,
+}: {
+  column: Column<object>;
+  row: Row<ParsedSkylarkObject>;
+  virtualColumn: VirtualItem;
+  virtualRow: VirtualItem;
+}) => {
+  const property = row.getVisibleCells()[virtualColumn.index].column.id;
+
+  const value: string | number = hasProperty(row.original.metadata, property)
+    ? `${row.original.metadata[property]}`
+    : "";
+
+  if (property === OBJECT_LIST_TABLE.columnIds.displayField) {
+    return (
       <div
         style={{
-          height: rowVirtualizer.totalSize,
-          width: columnVirtualizer.totalSize,
-          position: "relative",
+          height: virtualRow.size,
+          width: column.getSize(),
+          // height: 100,
+          // width: 100,
         }}
+        className="sticky flex items-center gap-2 overflow-hidden px-2"
       >
-        {rowVirtualizer.virtualItems.map((virtualRow) => (
-          <Fragment key={virtualRow.key}>
-            {columnVirtualizer.virtualItems.map((virtualColumn) => {
-              const column = table.getAllColumns()[virtualColumn.index];
-              return (
-                <div
-                  key={virtualColumn.key}
-                  ref={(el) => {
-                    virtualRow.measureRef(el);
-                    virtualColumn.measureRef(el);
-                  }}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    transform: `translateX(${virtualColumn.start}px) translateY(${virtualRow.start}px)`,
-                  }}
-                >
-                  <div
-                    style={{
-                      height: virtualRow.size,
-                      width: column.getSize(),
-                      // height: 100,
-                      // width: 100,
-                    }}
-                    className="overflow-hidden px-2"
-                  >
-                    {virtualRow.index === 0
-                      ? flexRender(
-                          headers[virtualColumn.index].column.columnDef.header,
-                          headers[virtualColumn.index].getContext(),
-                        )
-                      : getObjectProperty(
-                          (
-                            rows[
-                              virtualRow.index - 1
-                            ] as Row<ParsedSkylarkObject>
-                          ).original,
-                          (
-                            rows[
-                              virtualRow.index - 1
-                            ] as Row<ParsedSkylarkObject>
-                          ).getVisibleCells()[virtualColumn.index].column.id,
-                          virtualRow.index,
-                        )}
-                  </div>
-                </div>
-              );
-            })}
-          </Fragment>
-        ))}
+        <div className="w-2">D</div>
+        <Checkbox />
+        <ObjectTypePill type={row.original.objectType} className="w-20" />
       </div>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        height: virtualRow.size,
+        width: column.getSize(),
+        // height: 100,
+        // width: 100,
+      }}
+      className="overflow-hidden px-2"
+    >
+      {value}
     </div>
   );
 };

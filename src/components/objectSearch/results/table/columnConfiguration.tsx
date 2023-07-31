@@ -112,7 +112,6 @@ const availabilityColumn = columnHelper.accessor("meta.availabilityStatus", {
   },
 });
 
-// Temporarily unused until we add images back into Content Library
 const imagesColumn = columnHelper.accessor("images", {
   header: formatObjectField("Images"),
   size: 100,
@@ -222,15 +221,17 @@ export const createObjectListingColumns = (
     );
 
   const orderedColumnArray = [
-    objectTypeColumn,
+    // objectTypeColumn,
     displayNameColumn,
     translationColumn,
-    imagesColumn,
-    availabilityColumn,
+    // imagesColumn,
+    // availabilityColumn,
     ...createdColumns,
   ];
-  if (opts.withObjectSelect) {
-    return [dragIconColumn, selectColumn, ...orderedColumnArray, actionColumn];
-  }
-  return [dragIconColumn, ...orderedColumnArray, actionColumn];
+  // if (opts.withObjectSelect) {
+  //   return [dragIconColumn, selectColumn, ...orderedColumnArray, actionColumn];
+  // }
+  // return [dragIconColumn, ...orderedColumnArray, actionColumn];
+
+  return [...orderedColumnArray, actionColumn];
 };
