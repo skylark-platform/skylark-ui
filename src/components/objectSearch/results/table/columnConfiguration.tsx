@@ -67,7 +67,7 @@ const displayNameColumn = columnHelper.accessor(
   OBJECT_LIST_TABLE.columnIds.displayField,
   {
     header: formatObjectField("Display Field"),
-    size: 250,
+    size: 400,
     cell: (props) => <TableCell {...props} />,
   },
 );

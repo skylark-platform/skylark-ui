@@ -277,6 +277,8 @@ export const ObjectSearchResults = ({
     rowSize: formattedSearchData?.length,
     formattedSearchData,
     columns,
+    headers,
+    headersSlice: headers.slice(1),
   });
 
   const hasScrolledRight =
@@ -286,30 +288,36 @@ export const ObjectSearchResults = ({
   return (
     <>
       <div ref={tableContainerRef} className="relative overflow-auto text-sm">
-        <div
-          style={{
-            height: rowVirtualizer.totalSize,
-            width: columnVirtualizer.totalSize,
-          }}
-          className="relative"
-        >
-          <HeaderRow
+        {headers && (
+          <div
+            style={{
+              height: rowVirtualizer.totalSize,
+              width: columnVirtualizer.totalSize,
+            }}
+            className="relative flex"
+          >
+            {/* <HeaderRow
             headers={headers}
             virtualColumns={columnVirtualizer.virtualItems}
             height={virtualRows[0].size}
             showLeftGridShadow={hasScrolledRight}
-          />
-          <LeftGrid
-            virtualRows={rowVirtualizer.virtualItems}
-            width={columns[0].getSize()}
-            rows={rows as Row<ParsedSkylarkObject>[]}
-            showShadow={hasScrolledRight}
-          />
-          <RightGrid
-            virtualColumns={columnVirtualizer.virtualItems}
-            virtualRows={rowVirtualizer.virtualItems}
-          />
-        </div>
+          /> */}
+            <LeftGrid
+              virtualColumns={columnVirtualizer.virtualItems.slice(0, 1)}
+              virtualRows={rowVirtualizer.virtualItems}
+              headers={headers}
+              width={columns[0].getSize()}
+              rows={rows as Row<ParsedSkylarkObject>[]}
+              showShadow={hasScrolledRight}
+            />
+            <RightGrid
+              virtualColumns={columnVirtualizer.virtualItems.slice(1)}
+              virtualRows={rowVirtualizer.virtualItems}
+              headers={headers}
+              leftGridSize={400}
+            />
+          </div>
+        )}
       </div>
     </>
   );
@@ -340,8 +348,6 @@ const HeaderRow = ({
             key={virtualColumn.index}
             className="left-0 top-0 flex select-none items-center bg-white px-2 font-medium "
             style={{
-              position: virtualColumn.index === 0 ? "sticky" : "absolute",
-              zIndex: virtualColumn.index === 0 ? 1 : undefined,
               width: header.getSize(),
               height,
               transform: `translateX(${virtualColumn.start}px) translateY(0px)`,
@@ -373,23 +379,60 @@ const LeftGrid = ({
   width,
   rows,
   showShadow,
+  virtualColumns,
+  headers,
 }: {
   virtualRows: VirtualItem[];
   width: number;
   rows: Row<ParsedSkylarkObject>[];
   showShadow: boolean;
+  virtualColumns: VirtualItem[];
+  headers: Header<object, string>[];
 }) => {
   return (
     <div
-      className="sticky left-0 z-[1] transition-shadow"
+      className="sticky left-0 z-[5] transition-shadow"
       style={{
-        zIndex: 1,
         left: 0,
         width,
         height: `100%`,
         boxShadow: showShadow ? "2px 0px 5px 0px #888" : undefined,
       }}
     >
+      <div
+        style={{
+          height: virtualRows[0].size,
+        }}
+        className="sticky top-0 z-[4] w-full"
+      >
+        {virtualColumns.map((virtualColumn) => {
+          const header = headers[virtualColumn.index];
+          console.log(headers, virtualColumn.index);
+          return (
+            <div
+              key={virtualColumn.index}
+              className="absolute left-0 top-0 z-[4] flex select-none items-center bg-white px-2 font-medium"
+              style={{
+                // position: virtualColumn.index === 0 ? "sticky" : "absolute",
+                // zIndex: virtualColumn.index === 0 ? 1 : undefined,
+                width: header.getSize(),
+                height: virtualRows[0].size,
+                transform: `translateX(${virtualColumn.start}px) translateY(0px)`,
+              }}
+              ref={(el) => {
+                virtualColumn.measureRef(el);
+              }}
+            >
+              {flexRender(header.column.columnDef.header, header.getContext())}
+              <div
+                onMouseDown={header.getResizeHandler()}
+                onTouchStart={header.getResizeHandler()}
+                className="absolute right-0 z-10 mr-1 h-4 w-0.5 cursor-col-resize bg-manatee-200"
+              />
+            </div>
+          );
+        })}
+      </div>
       {virtualRows.map((virtualRow) => {
         const row = rows[virtualRow.index];
         const cell = row ? row.getAllCells()[0] : null;
@@ -433,23 +476,65 @@ const LeftGrid = ({
 const RightGrid = ({
   virtualRows,
   virtualColumns,
+  headers,
+  leftGridSize,
 }: {
   virtualRows: VirtualItem[];
   virtualColumns: VirtualItem[];
+  headers: Header<object, string>[];
+  leftGridSize: number;
 }) => {
+  console.log("RightGrid", { headers, virtualColumns });
   return (
-    <div>
+    <div className="relative">
+      <div
+        style={{
+          height: virtualRows[0].size,
+        }}
+        className="sticky top-0 z-[1] w-full"
+      >
+        {virtualColumns.map((virtualColumn) => {
+          const header = headers[virtualColumn.index];
+          return (
+            <div
+              key={`right-grid-header-${header.id}`}
+              className="left-0 top-0 flex select-none items-center bg-white px-2 font-medium "
+              style={{
+                position: "absolute",
+                width: header.getSize(),
+                height: virtualRows[0].size,
+                transform: `translateX(${
+                  virtualColumn.start - leftGridSize
+                }px) translateY(0px)`,
+              }}
+              ref={(el) => {
+                virtualColumn.measureRef(el);
+              }}
+            >
+              {flexRender(header.column.columnDef.header, header.getContext())}
+              <div
+                onMouseDown={header.getResizeHandler()}
+                onTouchStart={header.getResizeHandler()}
+                className="absolute right-0 z-[1] mr-1 h-4 w-0.5 cursor-col-resize bg-manatee-200"
+              />
+            </div>
+          );
+        })}
+      </div>
+
       {virtualRows.map((virtualRow) => (
-        <Fragment key={virtualRow.index}>
+        <Fragment key={`right-grid-row-${virtualRow.index}`}>
           {virtualColumns.map((virtualColumn) => (
             <div
-              key={virtualColumn.index}
+              key={`right-grid-col-${virtualColumn.index}`}
               ref={(el) => {
                 virtualColumn.measureRef(el);
               }}
               className="absolute left-0 top-0 px-2"
               style={{
-                transform: `translateX(${virtualColumn.start}px) translateY(${virtualRow.start}px)`,
+                transform: `translateX(${
+                  virtualColumn.start - leftGridSize
+                }px) translateY(${virtualRow.start}px)`,
                 width: `${virtualColumn.size}px`,
                 height: `${virtualRow.size}px`,
               }}
