@@ -206,7 +206,7 @@ export const ContentLibrary = () => {
             <m.div
               data-testid="drag-bar"
               key={windowSize}
-              className="hidden w-3 cursor-col-resize items-center bg-manatee-100 md:flex"
+              className="hidden w-3 cursor-pointer items-center bg-manatee-100 md:flex"
               onDrag={handleDrag}
               onDragStart={() => {
                 if (containerRef.current) {
@@ -221,6 +221,15 @@ export const ContentLibrary = () => {
               dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
               dragElastic={0}
               dragMomentum={false}
+              onDoubleClick={() => {
+                const halfWindowWidth = window.innerWidth / 2;
+
+                const newObjectListingWidth =
+                  panelWidth.get() === halfWindowWidth
+                    ? window.innerWidth - MINIMUM_SIZES.panel
+                    : halfWindowWidth;
+                objectListingWidth.set(newObjectListingWidth);
+              }}
             >
               <div className="mx-1 h-20 w-full rounded bg-manatee-600"></div>
             </m.div>
