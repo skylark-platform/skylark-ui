@@ -2,6 +2,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 
 import { AvailabilityLabel } from "src/components/availability";
 import { Checkbox } from "src/components/inputs/checkbox";
+import { RowActions } from "src/components/objectSearch/rowActions";
 import { ObjectTypePill, Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { PanelTab } from "src/hooks/state";
@@ -55,9 +56,9 @@ const objectTypeColumn = columnHelper.accessor(
     cell: ({ row }) => {
       const original = row.original as ParsedSkylarkObject;
       return (
-        <div className="flex h-full items-center">
-          <ObjectTypePill type={original.objectType} className="w-full" />
-        </div>
+        // <div className="flex h-full items-center">
+        <ObjectTypePill type={original.objectType} className="w-full" />
+        // </div>
       );
     },
   },
@@ -67,7 +68,7 @@ const displayNameColumn = columnHelper.accessor(
   OBJECT_LIST_TABLE.columnIds.displayField,
   {
     header: formatObjectField("Display Field"),
-    size: 400,
+    size: 250,
     cell: (props) => <TableCell {...props} />,
   },
 );
@@ -121,14 +122,15 @@ const imagesColumn = columnHelper.accessor("images", {
     const imageObj = props.row.original as ParsedSkylarkObject;
 
     const cloudinaryConfig = { height: 50 };
-    const className = "object-cover object-left";
+    const wrapperClassName = "items-center flex h-full py-1 overflow-hidden";
+    const className = "object-cover object-left pr-0.5 h-full";
 
     if (
       imageObj.objectType === BuiltInSkylarkObjectType.SkylarkImage &&
       hasProperty(imageObj, "url")
     ) {
       return (
-        <div>
+        <div className={wrapperClassName}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             className={className}
@@ -152,10 +154,12 @@ const imagesColumn = columnHelper.accessor("images", {
     }
 
     return (
-      <div>
+      <div className={wrapperClassName}>
         {allImages.map(({ uid, url, title, _meta }) => (
           // eslint-disable-next-line @next/next/no-img-element
+          // <div className="flex h-full overflow-hidden">
           <img
+            key={`${props.row.id}-${uid}`}
             onClick={(e) => {
               if (props.table.options.meta?.onObjectClick) {
                 e.stopPropagation();
@@ -171,9 +175,9 @@ const imagesColumn = columnHelper.accessor("images", {
               url,
               cloudinaryConfig,
             )}
-            key={`${props.row.id}-${uid}`}
             alt={title}
           />
+          // </div>
         ))}
       </div>
     );
@@ -196,12 +200,58 @@ const selectColumn = columnHelper.display({
         onClick={() => tableMeta.batchCheckRows("clear-all")}
       />
     ),
+  cell: ({
+    cell,
+    table: {
+      options: { meta: tableMeta },
+    },
+  }) => {
+    const checked = Boolean(tableMeta?.checkedRows?.includes(cell.row.index));
+
+    return (
+      <Checkbox
+        checked={checked}
+        // Not using onCheckChanged so that we have access to the native click event
+        onClick={(e) => {
+          e.stopPropagation();
+          if (e.shiftKey) {
+            tableMeta?.batchCheckRows("shift", cell.row.index);
+          } else {
+            tableMeta?.onRowCheckChange?.({
+              checkedState: !checked,
+              object: cell.row.original as ParsedSkylarkObject,
+            });
+          }
+        }}
+      />
+    );
+  },
 });
 
 const actionColumn = columnHelper.display({
   id: OBJECT_LIST_TABLE.columnIds.actions,
   size: 100,
-  cell: (props) => <TableCell {...props} />,
+  cell: ({
+    cell,
+    table: {
+      options: { meta: tableMeta },
+    },
+    row: { original },
+  }) => (
+    <RowActions
+      object={convertParsedObjectToIdentifier(original as ParsedSkylarkObject)}
+      editRowEnabled={tableMeta?.withObjectEdit}
+      inEditMode={false}
+      onEditClick={() => tableMeta?.onEditClick(cell.row.id)}
+      onInfoClick={() =>
+        tableMeta?.onObjectClick?.(
+          convertParsedObjectToIdentifier(original as ParsedSkylarkObject),
+        )
+      }
+      onEditSaveClick={() => ""}
+      onEditCancelClick={() => tableMeta?.onEditCancelClick()}
+    />
+  ),
 });
 
 export const createObjectListingColumns = (
@@ -221,9 +271,10 @@ export const createObjectListingColumns = (
     );
 
   const orderedColumnArray = [
-    dragIconColumn,
-    // objectTypeColumn,
+    // dragIconColumn,
+    selectColumn,
     displayNameColumn,
+    objectTypeColumn,
     translationColumn,
     imagesColumn,
     availabilityColumn,
