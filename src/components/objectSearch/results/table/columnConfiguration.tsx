@@ -23,6 +23,7 @@ import {
 import { TableCell } from ".";
 
 export const OBJECT_SEARCH_HARDCODED_COLUMNS = [
+  OBJECT_LIST_TABLE.columnIds.objectType,
   OBJECT_LIST_TABLE.columnIds.translation,
   OBJECT_LIST_TABLE.columnIds.availability,
   OBJECT_LIST_TABLE.columnIds.images,
@@ -51,14 +52,14 @@ const dragIconColumn = columnHelper.accessor(
 const objectTypeColumn = columnHelper.accessor(
   OBJECT_LIST_TABLE.columnIds.objectType,
   {
-    header: "",
-    size: 100,
+    header: formatObjectField("Object type"),
+    size: 120,
     cell: ({ row }) => {
       const original = row.original as ParsedSkylarkObject;
       return (
-        // <div className="flex h-full items-center">
-        <ObjectTypePill type={original.objectType} className="w-full" />
-        // </div>
+        <div className="flex h-full w-full items-center pr-2">
+          <ObjectTypePill type={original.objectType} className="w-full" />
+        </div>
       );
     },
   },
@@ -69,7 +70,12 @@ const displayNameColumn = columnHelper.accessor(
   {
     header: formatObjectField("Display Field"),
     size: 250,
-    cell: (props) => <TableCell {...props} />,
+    cell: (props) => (
+      <>
+        <div className="absolute -ml-4">a</div>
+        {props.cell.getValue() as string}
+      </>
+    ),
   },
 );
 
@@ -79,7 +85,7 @@ const translationColumn = columnHelper.accessor(
     id: OBJECT_LIST_TABLE.columnIds.translation,
     header: formatObjectField("Translation"),
     size: 120,
-    cell: (props) => <TableCell {...props} />,
+    cell: (props) => <>{props.cell.getValue() as string}</>,
   },
 );
 
@@ -157,7 +163,6 @@ const imagesColumn = columnHelper.accessor("images", {
       <div className={wrapperClassName}>
         {allImages.map(({ uid, url, title, _meta }) => (
           // eslint-disable-next-line @next/next/no-img-element
-          // <div className="flex h-full overflow-hidden">
           <img
             key={`${props.row.id}-${uid}`}
             onClick={(e) => {
@@ -177,7 +182,6 @@ const imagesColumn = columnHelper.accessor("images", {
             )}
             alt={title}
           />
-          // </div>
         ))}
       </div>
     );
@@ -186,7 +190,7 @@ const imagesColumn = columnHelper.accessor("images", {
 
 const selectColumn = columnHelper.display({
   id: OBJECT_LIST_TABLE.columnIds.checkbox,
-  size: 26,
+  size: 20,
   header: ({
     table: {
       options: { meta: tableMeta },
@@ -230,7 +234,7 @@ const selectColumn = columnHelper.display({
 
 const actionColumn = columnHelper.display({
   id: OBJECT_LIST_TABLE.columnIds.actions,
-  size: 100,
+  size: 10,
   cell: ({
     cell,
     table: {
@@ -239,7 +243,7 @@ const actionColumn = columnHelper.display({
     row: { original },
   }) => (
     <RowActions
-      object={convertParsedObjectToIdentifier(original as ParsedSkylarkObject)}
+      object={original as ParsedSkylarkObject}
       editRowEnabled={tableMeta?.withObjectEdit}
       inEditMode={false}
       onEditClick={() => tableMeta?.onEditClick(cell.row.id)}
@@ -266,13 +270,14 @@ export const createObjectListingColumns = (
         id: column,
         header: formatObjectField(column),
         size: 200,
-        cell: (props) => <TableCell {...props} />,
+        cell: (props) => <>{props.cell.getValue() as string}</>,
       }),
     );
 
   const orderedColumnArray = [
     // dragIconColumn,
     selectColumn,
+    actionColumn,
     displayNameColumn,
     objectTypeColumn,
     translationColumn,
@@ -285,5 +290,5 @@ export const createObjectListingColumns = (
   // }
   // return [dragIconColumn, ...orderedColumnArray, actionColumn];
 
-  return [...orderedColumnArray, actionColumn];
+  return [...orderedColumnArray];
 };

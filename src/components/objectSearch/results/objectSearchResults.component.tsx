@@ -32,6 +32,7 @@ import {
   ParsedSkylarkObject,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
   getObjectDisplayName,
   hasProperty,
@@ -47,8 +48,14 @@ import {
 
 const frozenColumns = [
   OBJECT_LIST_TABLE.columnIds.checkbox,
-  OBJECT_LIST_TABLE.columnIds.objectType,
+  // OBJECT_LIST_TABLE.columnIds.objectType,
   OBJECT_LIST_TABLE.columnIds.displayField,
+  OBJECT_LIST_TABLE.columnIds.actions,
+];
+
+const columnsWithoutResize = [
+  OBJECT_LIST_TABLE.columnIds.actions,
+  OBJECT_LIST_TABLE.columnIds.checkbox,
 ];
 
 export interface ObjectSearchResultsProps {
@@ -321,9 +328,10 @@ export const ObjectSearchResults = ({
       <div
         ref={tableContainerRef}
         className="relative overflow-auto overscroll-contain text-sm"
-        onScroll={(e) => {
-          e.preventDefault();
-        }}
+        // onScroll={(e) => {
+        //   e.preventDefault();
+        // }}
+        onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
       >
         {headers && (
           <div
@@ -372,7 +380,7 @@ const LeftGrid = ({
 }) => {
   return (
     <div
-      className="sticky left-0 z-[5] h-full transition-shadow"
+      className="relative left-0 z-[5] h-full transition-shadow md:sticky"
       style={{
         width,
         boxShadow: showShadow ? "-2px 0px 10px 0px #BBB" : undefined,
@@ -404,7 +412,7 @@ const LeftGrid = ({
               return <></>;
             }
 
-            const cell = row.getAllCells()[virtualColumn.index];
+            const cell = row.getVisibleCells()[virtualColumn.index];
 
             return (
               <DataCell
@@ -463,7 +471,7 @@ const RightGrid = ({
             if (!row) {
               return <></>;
             }
-            const cell = row.getAllCells()[virtualColumn.index];
+            const cell = row.getVisibleCells()[virtualColumn.index];
             return (
               <DataCell
                 key={`right-grid-data-${virtualRow.index}-${virtualColumn.index}`}
@@ -510,11 +518,13 @@ const HeaderCell = ({
       }}
     >
       {flexRender(header.column.columnDef.header, header.getContext())}
-      <div
-        onMouseDown={header.getResizeHandler()}
-        onTouchStart={header.getResizeHandler()}
-        className="absolute right-0 z-[1] mr-1 h-4 w-0.5 cursor-col-resize bg-manatee-200"
-      />
+      {!columnsWithoutResize.includes(header.id) && (
+        <div
+          onMouseDown={header.getResizeHandler()}
+          onTouchStart={header.getResizeHandler()}
+          className="absolute right-0 z-[1] mr-1 h-4 w-0.5 cursor-col-resize bg-manatee-200"
+        />
+      )}
     </div>
   );
 };
@@ -530,14 +540,15 @@ const DataCell = ({
   paddingLeft?: number;
   cell: Cell<ParsedSkylarkObject, unknown>;
 }) => {
+  const cellContext = cell.getContext();
   return (
     <div
       ref={(el) => {
         virtualColumn.measureRef(el);
       }}
       className={clsx(
-        "absolute left-0 top-0 flex items-center bg-white",
-        cell.column.id === OBJECT_LIST_TABLE.columnIds.checkbox ? "" : "px-1.5",
+        "absolute left-0 top-0 flex cursor-pointer items-center bg-white",
+        columnsWithoutResize.includes(cell.column.id) ? "" : "px-1.5",
       )}
       style={{
         transform: `translateX(${
@@ -546,15 +557,23 @@ const DataCell = ({
         width: `${virtualColumn.size}px`,
         height: `${virtualRow.size}px`,
       }}
+      onClick={() => {
+        cellContext.table.options?.meta?.onObjectClick?.(
+          convertParsedObjectToIdentifier(cell.row.original),
+        );
+      }}
     >
       <div
         className={clsx(
           headAndDataClassNames,
           "inline-block max-h-full w-full select-text py-0.5",
-          cell.column.id === OBJECT_LIST_TABLE.columnIds.images && "h-full",
+          [
+            OBJECT_LIST_TABLE.columnIds.images,
+            OBJECT_LIST_TABLE.columnIds.actions,
+          ].includes(cell.column.id) && "h-full",
         )}
       >
-        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        {flexRender(cell.column.columnDef.cell, cellContext)}
       </div>
     </div>
   );

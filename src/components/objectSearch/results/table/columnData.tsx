@@ -123,7 +123,7 @@ export const ObjectListingTableData = ({
         style={{ height }}
       >
         <RowActions
-          object={object}
+          object={cell.row.original}
           editRowEnabled={tableMeta?.withObjectEdit}
           inEditMode={rowInEditMode}
           onEditClick={() => tableMeta?.onEditClick(cell.row.id)}
