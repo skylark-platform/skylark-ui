@@ -221,11 +221,12 @@ export const createObjectListingColumns = (
     );
 
   const orderedColumnArray = [
+    dragIconColumn,
     // objectTypeColumn,
     displayNameColumn,
     translationColumn,
-    // imagesColumn,
-    // availabilityColumn,
+    imagesColumn,
+    availabilityColumn,
     ...createdColumns,
   ];
   // if (opts.withObjectSelect) {

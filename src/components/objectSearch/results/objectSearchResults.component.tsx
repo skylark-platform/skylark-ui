@@ -257,7 +257,7 @@ export const ObjectSearchResults = ({
     // overscan: 10,
     horizontal: true,
     rangeExtractor: (range) => {
-      const rangeAsSet = new Set([0, ...defaultRangeExtractor(range)]);
+      const rangeAsSet = new Set([0, 1, ...defaultRangeExtractor(range)]);
       return [...rangeAsSet];
     },
   });
@@ -296,81 +296,24 @@ export const ObjectSearchResults = ({
             }}
             className="relative flex"
           >
-            {/* <HeaderRow
-            headers={headers}
-            virtualColumns={columnVirtualizer.virtualItems}
-            height={virtualRows[0].size}
-            showLeftGridShadow={hasScrolledRight}
-          /> */}
             <LeftGrid
-              virtualColumns={columnVirtualizer.virtualItems.slice(0, 1)}
+              virtualColumns={columnVirtualizer.virtualItems.slice(0, 2)}
               virtualRows={rowVirtualizer.virtualItems}
               headers={headers}
-              width={columns[0].getSize()}
+              width={columns[0].getSize() + columns[1].getSize()}
               rows={rows as Row<ParsedSkylarkObject>[]}
               showShadow={hasScrolledRight}
             />
             <RightGrid
-              virtualColumns={columnVirtualizer.virtualItems.slice(1)}
+              virtualColumns={columnVirtualizer.virtualItems.slice(2)}
               virtualRows={rowVirtualizer.virtualItems}
               headers={headers}
-              leftGridSize={400}
+              leftGridSize={columns[0].getSize() + columns[1].getSize()}
             />
           </div>
         )}
       </div>
     </>
-  );
-};
-
-const HeaderRow = ({
-  headers,
-  virtualColumns,
-  height,
-  showLeftGridShadow,
-}: {
-  headers: Header<object, string>[];
-  virtualColumns: VirtualItem[];
-  height: number;
-  showLeftGridShadow: boolean;
-}) => {
-  return (
-    <div
-      style={{
-        height,
-      }}
-      className="sticky top-0 z-[2] w-full"
-    >
-      {virtualColumns.map((virtualColumn) => {
-        const header = headers[virtualColumn.index];
-        return (
-          <div
-            key={virtualColumn.index}
-            className="left-0 top-0 flex select-none items-center bg-white px-2 font-medium "
-            style={{
-              width: header.getSize(),
-              height,
-              transform: `translateX(${virtualColumn.start}px) translateY(0px)`,
-              boxShadow:
-                header.id === OBJECT_LIST_TABLE.columnIds.displayField &&
-                showLeftGridShadow
-                  ? "2px 0px 5px 0px #888"
-                  : undefined,
-            }}
-            ref={(el) => {
-              virtualColumn.measureRef(el);
-            }}
-          >
-            {flexRender(header.column.columnDef.header, header.getContext())}
-            <div
-              onMouseDown={header.getResizeHandler()}
-              onTouchStart={header.getResizeHandler()}
-              className="absolute right-0 z-10 mr-1 h-4 w-0.5 cursor-col-resize bg-manatee-200"
-            />
-          </div>
-        );
-      })}
-    </div>
   );
 };
 
@@ -391,11 +334,9 @@ const LeftGrid = ({
 }) => {
   return (
     <div
-      className="sticky left-0 z-[5] transition-shadow"
+      className="sticky left-0 z-[5] h-full transition-shadow"
       style={{
-        left: 0,
         width,
-        height: `100%`,
         boxShadow: showShadow ? "2px 0px 5px 0px #888" : undefined,
       }}
     >
@@ -407,68 +348,63 @@ const LeftGrid = ({
       >
         {virtualColumns.map((virtualColumn) => {
           const header = headers[virtualColumn.index];
-          console.log(headers, virtualColumn.index);
           return (
-            <div
-              key={virtualColumn.index}
-              className="absolute left-0 top-0 z-[4] flex select-none items-center bg-white px-2 font-medium"
-              style={{
-                // position: virtualColumn.index === 0 ? "sticky" : "absolute",
-                // zIndex: virtualColumn.index === 0 ? 1 : undefined,
-                width: header.getSize(),
-                height: virtualRows[0].size,
-                transform: `translateX(${virtualColumn.start}px) translateY(0px)`,
-              }}
-              ref={(el) => {
-                virtualColumn.measureRef(el);
-              }}
-            >
-              {flexRender(header.column.columnDef.header, header.getContext())}
-              <div
-                onMouseDown={header.getResizeHandler()}
-                onTouchStart={header.getResizeHandler()}
-                className="absolute right-0 z-10 mr-1 h-4 w-0.5 cursor-col-resize bg-manatee-200"
-              />
-            </div>
+            <HeaderCell
+              key={`left-grid-header-${header.id}`}
+              header={header}
+              height={virtualRows[0].size}
+              virtualColumn={virtualColumn}
+            />
           );
         })}
       </div>
-      {virtualRows.map((virtualRow) => {
-        const row = rows[virtualRow.index];
-        const cell = row ? row.getAllCells()[0] : null;
-        return (
-          <div
-            key={virtualRow.index}
-            className="absolute left-0 flex items-center gap-2 bg-white"
-            style={{
-              width,
-              height: virtualRow.size,
-              transform: `translateX(0px) translateY(${
-                virtualRow.start - virtualRows[0].size
-              }px)`,
-            }}
-          >
-            {/* {`Row ${virtualRow.index}`} */}
-            {row ? (
-              <>
-                <div className="w-4 min-w-4 max-w-4">{virtualRow.index}</div>
-                <Checkbox />
-                <ObjectTypePill
-                  type={row.original.objectType}
-                  className="w-20 min-w-20"
-                />
-                <div>
-                  {cell
-                    ? flexRender(cell.column.columnDef.cell, cell.getContext())
-                    : ""}
-                </div>
-              </>
-            ) : (
-              <></>
-            )}
-          </div>
-        );
-      })}
+      {virtualRows.map((virtualRow) => (
+        <Fragment key={`left-grid-row-${virtualRow.index}`}>
+          {virtualColumns.map((virtualColumn) => {
+            const row = rows[virtualRow.index];
+            const cell = row ? row.getAllCells()[virtualColumn.index] : null;
+
+            return (
+              <div
+                key={`left-grid-column-${virtualColumn.index}`}
+                className="absolute left-0 flex items-center gap-2 bg-white"
+                style={{
+                  width: virtualColumn.size,
+                  height: virtualRow.size,
+                  transform: `translateX(${virtualColumn.start}px) translateY(${
+                    virtualRow.start - virtualRows[0].size
+                  }px)`,
+                }}
+              >
+                {/* {`Row ${virtualRow.index}`} */}
+                {cell &&
+                cell.column.id === OBJECT_LIST_TABLE.columnIds.displayField ? (
+                  <>
+                    <div className="w-4 min-w-4 max-w-4">
+                      {virtualRow.index}
+                    </div>
+                    {/* <Checkbox />
+                    <ObjectTypePill
+                      type={row.original.objectType}
+                      className="w-20 min-w-20"
+                    /> */}
+                    <div>
+                      {cell
+                        ? flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )
+                        : ""}
+                    </div>
+                  </>
+                ) : (
+                  <></>
+                )}
+              </div>
+            );
+          })}
+        </Fragment>
+      ))}
     </div>
   );
 };
@@ -496,28 +432,13 @@ const RightGrid = ({
         {virtualColumns.map((virtualColumn) => {
           const header = headers[virtualColumn.index];
           return (
-            <div
+            <HeaderCell
               key={`right-grid-header-${header.id}`}
-              className="left-0 top-0 flex select-none items-center bg-white px-2 font-medium "
-              style={{
-                position: "absolute",
-                width: header.getSize(),
-                height: virtualRows[0].size,
-                transform: `translateX(${
-                  virtualColumn.start - leftGridSize
-                }px) translateY(0px)`,
-              }}
-              ref={(el) => {
-                virtualColumn.measureRef(el);
-              }}
-            >
-              {flexRender(header.column.columnDef.header, header.getContext())}
-              <div
-                onMouseDown={header.getResizeHandler()}
-                onTouchStart={header.getResizeHandler()}
-                className="absolute right-0 z-[1] mr-1 h-4 w-0.5 cursor-col-resize bg-manatee-200"
-              />
-            </div>
+              header={header}
+              height={virtualRows[0].size}
+              virtualColumn={virtualColumn}
+              paddingLeft={leftGridSize}
+            />
           );
         })}
       </div>
@@ -530,7 +451,7 @@ const RightGrid = ({
               ref={(el) => {
                 virtualColumn.measureRef(el);
               }}
-              className="absolute left-0 top-0 px-2"
+              className="absolute left-0 top-0 flex items-center justify-start px-2"
               style={{
                 transform: `translateX(${
                   virtualColumn.start - leftGridSize
@@ -548,54 +469,61 @@ const RightGrid = ({
   );
 };
 
-const DataCell = ({
-  column,
-  row,
-  virtualRow,
+const HeaderCell = ({
+  header,
+  height,
   virtualColumn,
+  paddingLeft = 0,
 }: {
-  column: Column<object>;
-  row: Row<ParsedSkylarkObject>;
+  header: Header<object, string>;
+  height: number;
   virtualColumn: VirtualItem;
-  virtualRow: VirtualItem;
+  paddingLeft?: number;
 }) => {
-  const property = row.getVisibleCells()[virtualColumn.index].column.id;
-
-  const value: string | number = hasProperty(row.original.metadata, property)
-    ? `${row.original.metadata[property]}`
-    : "";
-
-  if (property === OBJECT_LIST_TABLE.columnIds.displayField) {
-    return (
-      <div
-        style={{
-          height: virtualRow.size,
-          width: column.getSize(),
-          // height: 100,
-          // width: 100,
-        }}
-        className="sticky flex items-center gap-2 overflow-hidden px-2"
-      >
-        <div className="w-2">D</div>
-        <Checkbox />
-        <ObjectTypePill type={row.original.objectType} className="w-20" />
-      </div>
-    );
-  }
-
   return (
     <div
+      className="absolute left-0 top-0 flex select-none items-center bg-white px-2 font-medium "
       style={{
-        height: virtualRow.size,
-        width: column.getSize(),
-        // height: 100,
-        // width: 100,
+        width: header.getSize(),
+        height,
+        transform: `translateX(${
+          virtualColumn.start - paddingLeft
+        }px) translateY(0px)`,
       }}
-      className="overflow-hidden px-2"
+      ref={(el) => {
+        virtualColumn.measureRef(el);
+      }}
     >
-      {value}
+      {flexRender(header.column.columnDef.header, header.getContext())}
+      <div
+        onMouseDown={header.getResizeHandler()}
+        onTouchStart={header.getResizeHandler()}
+        className="absolute right-0 z-[1] mr-1 h-4 w-0.5 cursor-col-resize bg-manatee-200"
+      />
     </div>
   );
+
+  // <div
+  //   key={virtualColumn.index}
+  //   className="absolute left-0 top-0 z-[4] flex select-none items-center bg-white px-2 font-medium"
+  //   style={{
+  //     // position: virtualColumn.index === 0 ? "sticky" : "absolute",
+  //     // zIndex: virtualColumn.index === 0 ? 1 : undefined,
+  //     width: header.getSize(),
+  //     height: virtualRows[0].size,
+  //     transform: `translateX(${virtualColumn.start}px) translateY(0px)`,
+  //   }}
+  //   ref={(el) => {
+  //     virtualColumn.measureRef(el);
+  //   }}
+  // >
+  //   {flexRender(header.column.columnDef.header, header.getContext())}
+  //   <div
+  //     onMouseDown={header.getResizeHandler()}
+  //     onTouchStart={header.getResizeHandler()}
+  //     className="absolute right-0 z-10 mr-1 h-4 w-0.5 cursor-col-resize bg-manatee-200"
+  //   />
+  // </div>;
 };
 
 const ObjectSearchResultsPropsAreEqual = (
