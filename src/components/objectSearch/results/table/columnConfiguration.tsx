@@ -49,6 +49,7 @@ const columnHelper = createColumnHelper<object>();
 const dragIconColumn = columnHelper.accessor(
   OBJECT_LIST_TABLE.columnIds.dragIcon,
   {
+    id: OBJECT_LIST_TABLE.columnIds.dragIcon,
     header: "",
     size: 20,
     cell: ({ cell, row, table }) => {
@@ -69,6 +70,7 @@ const dragIconColumn = columnHelper.accessor(
 const objectTypeColumn = columnHelper.accessor(
   OBJECT_LIST_TABLE.columnIds.objectType,
   {
+    id: OBJECT_LIST_TABLE.columnIds.objectType,
     header: formatObjectField("Object type"),
     size: 120,
     cell: ({ row }) => {
@@ -85,6 +87,7 @@ const objectTypeColumn = columnHelper.accessor(
 const displayNameColumn = columnHelper.accessor(
   OBJECT_LIST_TABLE.columnIds.displayField,
   {
+    id: OBJECT_LIST_TABLE.columnIds.displayField,
     header: formatObjectField("Display Field"),
     size: 250,
     cell: (props) => <>{props.cell.getValue() as string}</>,
@@ -133,7 +136,8 @@ const availabilityColumn = columnHelper.accessor("meta.availabilityStatus", {
   },
 });
 
-const imagesColumn = columnHelper.accessor("images", {
+const imagesColumn = columnHelper.accessor(OBJECT_LIST_TABLE.columnIds.images, {
+  id: OBJECT_LIST_TABLE.columnIds.images,
   header: formatObjectField("Images"),
   size: 100,
   cell: (props) => {

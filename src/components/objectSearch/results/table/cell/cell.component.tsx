@@ -112,18 +112,5 @@ export const TableCell = ({
     setValue(initialValue);
   }, [initialValue]);
 
-  return row.id === table.options.meta?.rowInEditMode ? (
-    <input
-      value={(value || "") as string}
-      onChange={(e) => setValue(e.target.value)}
-      className={clsx(
-        "w-full border-b-2 border-brand-primary py-1 outline-none disabled:border-none disabled:border-manatee-200 disabled:text-manatee-500",
-        initialValue !== value && "border-warning",
-        value === "" && initialValue !== "" && "border-error",
-      )}
-      disabled={column.id === "uid"}
-    />
-  ) : (
-    <>{initialValue as string}</>
-  );
+  return <>{initialValue as string}</>;
 };

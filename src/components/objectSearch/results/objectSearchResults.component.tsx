@@ -1,4 +1,13 @@
-import { useDraggable } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  useDndContext,
+  useDraggable,
+  useDroppable,
+} from "@dnd-kit/core";
+import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import {
   VisibilityState,
@@ -10,6 +19,8 @@ import {
   Column,
   Header,
   Cell,
+  ColumnOrderState,
+  Table,
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import {
@@ -42,7 +53,6 @@ import {
   skylarkObjectsAreSame,
 } from "src/lib/utils";
 
-import { Table } from "./table";
 import {
   OBJECT_SEARCH_HARDCODED_COLUMNS,
   createObjectListingColumns,
@@ -82,6 +92,19 @@ const headAndDataClassNames =
 
 // https://github.com/TanStack/table/issues/4240
 const emptyArray = [] as object[];
+
+const reorderColumn = (
+  draggedColumnId: string,
+  targetColumnId: string,
+  columnOrder: string[],
+): ColumnOrderState => {
+  columnOrder.splice(
+    columnOrder.indexOf(targetColumnId),
+    0,
+    columnOrder.splice(columnOrder.indexOf(draggedColumnId), 1)[0] as string,
+  );
+  return [...columnOrder];
+};
 
 export const ObjectSearchResults = ({
   sortedHeaders,
@@ -237,6 +260,10 @@ export const ObjectSearchResults = ({
   // TODO we may want to refactor this so that hovering doesn't trigger a render
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
 
+  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
+    parsedColumns.map((column) => column.id as string), //must start out with populated columnOrder so we can splice
+  );
+
   const table = useReactTable({
     debugAll: false,
     data: formattedSearchData || emptyArray,
@@ -245,7 +272,9 @@ export const ObjectSearchResults = ({
     columnResizeMode: "onChange",
     state: {
       columnVisibility,
+      columnOrder,
     },
+    onColumnOrderChange: setColumnOrder,
     meta: {
       activeObject: panelObject || null,
       checkedRows,
@@ -331,6 +360,11 @@ export const ObjectSearchResults = ({
     (tableContainerRef?.current && tableContainerRef.current.scrollLeft > 5) ||
     false;
 
+  const totalVirtualSizes = {
+    height: rowVirtualizer.totalSize,
+    width: columnVirtualizer.totalSize,
+  };
+
   return (
     <>
       <div
@@ -339,15 +373,10 @@ export const ObjectSearchResults = ({
         onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
       >
         {headers && (
-          <div
-            style={{
-              height: rowVirtualizer.totalSize,
-              width: columnVirtualizer.totalSize,
-            }}
-            className="relative flex min-h-full"
-          >
+          <div style={totalVirtualSizes} className="relative flex min-h-full">
             {virtualColumns.left.length > 0 && (
               <LeftGrid
+                table={table}
                 virtualColumns={virtualColumns.left}
                 virtualRows={rowVirtualizer.virtualItems}
                 headers={headers}
@@ -361,6 +390,8 @@ export const ObjectSearchResults = ({
             )}
             {virtualColumns.right.length > 0 && (
               <RightGrid
+                table={table}
+                totalVirtualSizes={totalVirtualSizes}
                 virtualColumns={virtualColumns.right}
                 virtualRows={rowVirtualizer.virtualItems}
                 headers={headers}
@@ -379,6 +410,7 @@ export const ObjectSearchResults = ({
 };
 
 const LeftGrid = ({
+  table,
   virtualRows,
   width,
   rows,
@@ -389,6 +421,7 @@ const LeftGrid = ({
   hoveredRow,
   setHoveredRow,
 }: {
+  table: Table<object>;
   virtualRows: VirtualItem[];
   width: number;
   rows: Row<ParsedSkylarkObject>[];
@@ -451,6 +484,8 @@ const LeftGrid = ({
 };
 
 const RightGrid = ({
+  table,
+  totalVirtualSizes,
   rows,
   virtualRows,
   virtualColumns,
@@ -460,6 +495,8 @@ const RightGrid = ({
   hoveredRow,
   setHoveredRow,
 }: {
+  table: Table<object>;
+  totalVirtualSizes: { height: number; width: number };
   rows: Row<ParsedSkylarkObject>[];
   virtualRows: VirtualItem[];
   virtualColumns: VirtualItem[];
@@ -469,32 +506,90 @@ const RightGrid = ({
   hoveredRow: number | null;
   setHoveredRow: (rowId: number | null) => void;
 }) => {
+  const [draggedColumn, setDraggedColumn] = useState<{
+    id: string;
+    width: number;
+  } | null>(null);
+
+  function handleDragStart(event: DragStartEvent) {
+    console.log("start", { event });
+    if (event.active.data.current?.column) {
+      const column = event.active.data.current.column as Column<object>;
+      column.getSize();
+      setDraggedColumn({
+        id: column.id,
+        width: column.getSize(),
+      });
+    }
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { getState, setColumnOrder } = table;
+    const { columnOrder } = getState();
+
+    if (draggedColumn && event.over?.data.current?.column) {
+      const overColumn = event.over?.data.current?.column as Column<object>;
+
+      const newColumnOrder = reorderColumn(
+        draggedColumn.id,
+        overColumn.id,
+        columnOrder,
+      );
+
+      console.log("end", {
+        event,
+        draggedColumn,
+        overColumn,
+        columnOrder,
+        newColumnOrder,
+      });
+      setColumnOrder(newColumnOrder);
+    }
+  }
   return (
     <div className="relative">
-      <div
-        style={{
-          height: virtualRows[0].size,
-        }}
-        className="sticky top-0 z-[1] w-full bg-white"
+      <DndContext
+        onDragEnd={handleDragEnd}
+        onDragStart={handleDragStart}
+        modifiers={[restrictToHorizontalAxis]}
       >
-        {virtualColumns.map((virtualColumn) => {
-          const header = headers[virtualColumn.index];
-          const key = `right-grid-header-${virtualColumn.index}`;
-          if (!header) {
-            return <Fragment key={key} />;
-          }
+        <DragOverlay className="" dropAnimation={null}>
+          {draggedColumn ? (
+            <div
+              className="h-20 bg-black/40"
+              style={{
+                height: totalVirtualSizes.height,
+                width: draggedColumn.width,
+              }}
+            ></div>
+          ) : null}
+        </DragOverlay>
+        <div
+          style={{
+            height: virtualRows[0].size,
+          }}
+          className="sticky top-0 z-[1] w-full bg-white"
+        >
+          {virtualColumns.map((virtualColumn) => {
+            const header = headers[virtualColumn.index];
+            const key = `right-grid-header-${virtualColumn.index}`;
+            if (!header) {
+              return <Fragment key={key} />;
+            }
 
-          return (
-            <HeaderCell
-              key={key}
-              header={header}
-              height={virtualRows[0].size}
-              virtualColumn={virtualColumn}
-              paddingLeft={leftGridSize}
-            />
-          );
-        })}
-      </div>
+            return (
+              <HeaderCell
+                key={key}
+                header={header}
+                height={virtualRows[0].size}
+                virtualColumn={virtualColumn}
+                paddingLeft={leftGridSize}
+                isDraggable
+              />
+            );
+          })}
+        </div>
+      </DndContext>
 
       {virtualRows.map((virtualRow) => {
         const row = rows[virtualRow.index];
@@ -526,18 +621,36 @@ const HeaderCell = ({
   height,
   virtualColumn,
   paddingLeft = 0,
+  isDraggable,
 }: {
   header: Header<object, string>;
   height: number;
   virtualColumn: VirtualItem;
   paddingLeft?: number;
+  isDraggable?: boolean;
 }) => {
+  const { column } = header;
+
+  const { isOver, setNodeRef: setDropRef } = useDroppable({
+    id: `drop-${column.id}`,
+    data: {
+      column,
+    },
+    disabled: !isDraggable,
+  });
+
+  const { attributes, listeners, setNodeRef } = useDraggable({
+    id: `drag-${column.id}`,
+    data: {
+      column,
+    },
+    disabled: !isDraggable,
+  });
+
   return (
     <div
       className={clsx(
         "absolute left-0 top-0 flex select-none items-center bg-white font-medium",
-        headAndDataClassNames,
-        header.id === OBJECT_LIST_TABLE.columnIds.checkbox ? "" : "px-1.5",
       )}
       style={{
         width: header.getSize(),
@@ -550,12 +663,31 @@ const HeaderCell = ({
         virtualColumn.measureRef(el);
       }}
     >
-      {flexRender(header.column.columnDef.header, header.getContext())}
+      <div
+        ref={setDropRef}
+        className={clsx(
+          "absolute bottom-0 left-0 right-0 top-0",
+          // isOver && "bg-brand-primary",
+        )}
+      ></div>
+      <div
+        ref={setNodeRef}
+        {...listeners}
+        {...attributes}
+        className={clsx(
+          "z-[1] flex h-full w-full cursor-default items-center",
+          header.id === OBJECT_LIST_TABLE.columnIds.checkbox ? "" : "px-1.5",
+        )}
+      >
+        <div className={clsx(headAndDataClassNames)}>
+          {flexRender(header.column.columnDef.header, header.getContext())}
+        </div>
+      </div>
       {!columnsWithoutResize.includes(header.id) && (
         <div
           onMouseDown={header.getResizeHandler()}
           onTouchStart={header.getResizeHandler()}
-          className="absolute right-0 z-[1] mr-1 h-4 w-0.5 cursor-col-resize bg-manatee-200"
+          className="absolute right-0 z-[2] mr-1 h-4 w-0.5 cursor-col-resize border-r bg-manatee-200"
         />
       )}
     </div>
