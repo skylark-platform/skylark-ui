@@ -58,13 +58,12 @@ export const ObjectListingTableData = ({
   );
 
   const cellValue = cell.getValue();
-  const rowInEditMode = tableMeta?.rowInEditMode === cell.row.id || false;
 
   const children = useMemo(() => {
     // EXPERIMENTAL: Only render cell when value changes, or row is switched into edit mode
     return flexRender(cell.column.columnDef.cell, cell.getContext());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cellValue, rowInEditMode]);
+  }, [cellValue]);
 
   // We add some custom styling to the Display Name column so that it displays the object colour indicator
   if (cell.column.id === OBJECT_LIST_TABLE.columnIds.displayField) {
@@ -115,22 +114,13 @@ export const ObjectListingTableData = ({
   }
 
   if (cell.column.id === OBJECT_LIST_TABLE.columnIds.actions) {
-    const rowInEditMode = tableMeta?.rowInEditMode === cell.row.id || false;
     return (
       <td
         key={cell.id}
         className={clsx(className, "bg-transparent")}
         style={{ height }}
       >
-        <RowActions
-          object={cell.row.original}
-          editRowEnabled={tableMeta?.withObjectEdit}
-          inEditMode={rowInEditMode}
-          onEditClick={() => tableMeta?.onEditClick(cell.row.id)}
-          onInfoClick={openPanel}
-          onEditSaveClick={() => ""}
-          onEditCancelClick={() => tableMeta?.onEditCancelClick()}
-        />
+        <RowActions object={cell.row.original} onInfoClick={openPanel} />
       </td>
     );
   }

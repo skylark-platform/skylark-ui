@@ -21,9 +21,14 @@ export declare module "@tanstack/table-core" {
     }) => void;
     batchCheckRows: (type: "shift" | "clear-all", rowIndex?: number) => void;
     onObjectClick?: (obj: SkylarkObjectIdentifier, tab?: PanelTab) => void;
-    rowInEditMode: string;
-    withObjectEdit: boolean;
-    onEditClick: (rowId: string) => void;
-    onEditCancelClick: () => void;
+    activeObject: SkylarkObjectIdentifier | null;
+    objectTypesWithConfig:
+      | {
+          objectType: string;
+          config: ParsedSkylarkObjectConfig;
+        }[]
+      | undefined;
+    hoveredRow: number | null;
+    setHoveredRow: (rowId: number | null) => void;
   }
 }

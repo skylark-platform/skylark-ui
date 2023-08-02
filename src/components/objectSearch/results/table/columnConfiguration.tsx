@@ -1,4 +1,9 @@
-import { createColumnHelper } from "@tanstack/react-table";
+import {
+  Cell,
+  Table,
+  TableMeta,
+  createColumnHelper,
+} from "@tanstack/react-table";
 
 import { AvailabilityLabel } from "src/components/availability";
 import { Checkbox } from "src/components/inputs/checkbox";
@@ -35,6 +40,9 @@ export const OBJECT_SEARCH_ORDERED_KEYS = [
   "type",
 ];
 
+const isRowChecked = (cell: Cell<object, unknown>, table: Table<object>) =>
+  Boolean(table.options.meta?.checkedRows?.includes(cell.row.index));
+
 const columnHelper = createColumnHelper<object>();
 
 // Issues with Safari means its safe to allow the drag icon have it's own column than use a pseudo field
@@ -43,9 +51,18 @@ const dragIconColumn = columnHelper.accessor(
   {
     header: "",
     size: 20,
-    cell: () => (
-      <span className="block h-full w-5 bg-inherit bg-[url('/icons/drag_indicator_black.png')] bg-center bg-no-repeat opacity-0 group-hover/row:opacity-60" />
-    ),
+    cell: ({ cell, row, table }) => {
+      const isCheckedRow = isRowChecked(cell, table);
+
+      const tableMeta = table.options.meta;
+      const isHoveredRow = tableMeta?.hoveredRow === row.index;
+
+      return tableMeta?.activeObject && (isCheckedRow || isHoveredRow) ? (
+        <span className="block h-full w-5 bg-inherit bg-[url('/icons/drag_indicator_black.png')] bg-center bg-no-repeat opacity-60" />
+      ) : (
+        <></>
+      );
+    },
   },
 );
 
@@ -70,12 +87,7 @@ const displayNameColumn = columnHelper.accessor(
   {
     header: formatObjectField("Display Field"),
     size: 250,
-    cell: (props) => (
-      <>
-        <div className="absolute -ml-4">a</div>
-        {props.cell.getValue() as string}
-      </>
-    ),
+    cell: (props) => <>{props.cell.getValue() as string}</>,
   },
 );
 
@@ -105,11 +117,13 @@ const availabilityColumn = columnHelper.accessor("meta.availabilityStatus", {
       status && (
         <button
           onClick={(e) => {
-            e.stopPropagation();
-            tableMeta?.onObjectClick?.(
-              convertParsedObjectToIdentifier(object as ParsedSkylarkObject),
-              PanelTab.Availability,
-            );
+            if (tableMeta?.onObjectClick) {
+              e.stopPropagation();
+              tableMeta.onObjectClick(
+                convertParsedObjectToIdentifier(object as ParsedSkylarkObject),
+                PanelTab.Availability,
+              );
+            }
           }}
         >
           <AvailabilityLabel status={status} />
@@ -190,7 +204,7 @@ const imagesColumn = columnHelper.accessor("images", {
 
 const selectColumn = columnHelper.display({
   id: OBJECT_LIST_TABLE.columnIds.checkbox,
-  size: 20,
+  size: 24,
   header: ({
     table: {
       options: { meta: tableMeta },
@@ -204,14 +218,9 @@ const selectColumn = columnHelper.display({
         onClick={() => tableMeta.batchCheckRows("clear-all")}
       />
     ),
-  cell: ({
-    cell,
-    table: {
-      options: { meta: tableMeta },
-    },
-  }) => {
-    const checked = Boolean(tableMeta?.checkedRows?.includes(cell.row.index));
-
+  cell: ({ cell, table }) => {
+    const checked = isRowChecked(cell, table);
+    const tableMeta = table.options.meta;
     return (
       <Checkbox
         checked={checked}
@@ -244,16 +253,11 @@ const actionColumn = columnHelper.display({
   }) => (
     <RowActions
       object={original as ParsedSkylarkObject}
-      editRowEnabled={tableMeta?.withObjectEdit}
-      inEditMode={false}
-      onEditClick={() => tableMeta?.onEditClick(cell.row.id)}
       onInfoClick={() =>
         tableMeta?.onObjectClick?.(
           convertParsedObjectToIdentifier(original as ParsedSkylarkObject),
         )
       }
-      onEditSaveClick={() => ""}
-      onEditCancelClick={() => tableMeta?.onEditCancelClick()}
     />
   ),
 });
@@ -261,7 +265,7 @@ const actionColumn = columnHelper.display({
 export const createObjectListingColumns = (
   columns: string[],
   hardcodedColumns: string[],
-  opts: { withObjectSelect?: boolean },
+  opts: { withObjectSelect?: boolean; withPanel: boolean },
 ) => {
   const createdColumns = columns
     .filter((column) => !hardcodedColumns.includes(column))
@@ -275,9 +279,7 @@ export const createObjectListingColumns = (
     );
 
   const orderedColumnArray = [
-    // dragIconColumn,
-    selectColumn,
-    actionColumn,
+    // actionColumn,
     displayNameColumn,
     objectTypeColumn,
     translationColumn,
@@ -285,10 +287,13 @@ export const createObjectListingColumns = (
     availabilityColumn,
     ...createdColumns,
   ];
-  // if (opts.withObjectSelect) {
-  //   return [dragIconColumn, selectColumn, ...orderedColumnArray, actionColumn];
-  // }
-  // return [dragIconColumn, ...orderedColumnArray, actionColumn];
 
-  return [...orderedColumnArray];
+  if (opts.withObjectSelect) {
+    if (opts.withPanel) {
+      return [dragIconColumn, selectColumn, ...orderedColumnArray];
+    }
+    return [selectColumn, ...orderedColumnArray];
+  }
+
+  return orderedColumnArray;
 };

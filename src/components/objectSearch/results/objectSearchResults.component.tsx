@@ -32,6 +32,7 @@ import {
   SkylarkObjectIdentifier,
   ParsedSkylarkObject,
   BuiltInSkylarkObjectType,
+  ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
@@ -48,13 +49,15 @@ import {
 } from "./table/columnConfiguration";
 
 const frozenColumns = [
+  OBJECT_LIST_TABLE.columnIds.dragIcon,
   OBJECT_LIST_TABLE.columnIds.checkbox,
   // OBJECT_LIST_TABLE.columnIds.objectType,
   OBJECT_LIST_TABLE.columnIds.displayField,
-  OBJECT_LIST_TABLE.columnIds.actions,
+  // OBJECT_LIST_TABLE.columnIds.actions,
 ];
 
 const columnsWithoutResize = [
+  OBJECT_LIST_TABLE.columnIds.dragIcon,
   OBJECT_LIST_TABLE.columnIds.actions,
   OBJECT_LIST_TABLE.columnIds.checkbox,
 ];
@@ -62,7 +65,6 @@ const columnsWithoutResize = [
 export interface ObjectSearchResultsProps {
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
-  withObjectEdit?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
   setPanelObject?: (obj: SkylarkObjectIdentifier, tab?: PanelTab) => void;
   fetchNextPage?: () => void;
@@ -88,7 +90,6 @@ export const ObjectSearchResults = ({
   setPanelObject,
   searchData,
   withObjectSelect,
-  withObjectEdit,
   hasNextPage,
   fetchNextPage,
   checkedObjects,
@@ -96,9 +97,10 @@ export const ObjectSearchResults = ({
   onObjectCheckedChanged,
 }: ObjectSearchResultsProps) => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
-  const [rowInEditMode, setRowInEditMode] = useState("");
 
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+
+  const withPanel = typeof setPanelObject !== "undefined";
 
   const parsedColumns = useMemo(
     () =>
@@ -107,9 +109,10 @@ export const ObjectSearchResults = ({
         OBJECT_SEARCH_HARDCODED_COLUMNS,
         {
           withObjectSelect,
+          withPanel,
         },
       ) as ColumnDef<object, ParsedSkylarkObject>[],
-    [sortedHeaders, withObjectSelect],
+    [sortedHeaders, withObjectSelect, withPanel],
   );
 
   const formattedSearchData = useMemo(() => {
@@ -231,6 +234,9 @@ export const ObjectSearchResults = ({
     [checkedObjects, checkedRows, onObjectCheckedChanged, searchData],
   );
 
+  // TODO we may want to refactor this so that hovering doesn't trigger a render
+  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
+
   const table = useReactTable({
     debugAll: false,
     data: formattedSearchData || emptyArray,
@@ -241,18 +247,14 @@ export const ObjectSearchResults = ({
       columnVisibility,
     },
     meta: {
+      activeObject: panelObject || null,
       checkedRows,
+      objectTypesWithConfig,
       onRowCheckChange,
       batchCheckRows,
-      rowInEditMode,
-      withObjectEdit: !!withObjectEdit,
       onObjectClick: setPanelObject,
-      onEditClick(rowId) {
-        setRowInEditMode(rowId);
-      },
-      onEditCancelClick() {
-        setRowInEditMode("");
-      },
+      hoveredRow,
+      setHoveredRow,
     },
   });
 
@@ -270,19 +272,24 @@ export const ObjectSearchResults = ({
 
   const frozenColumnsParsedColumnsIndexes = useMemo(
     () =>
-      frozenColumns.map((col) =>
-        parsedColumns.findIndex(
-          (header) =>
-            header.id === col ||
-            (hasProperty(header, "accessorKey") && header.accessorKey === col),
-        ),
-      ),
+      frozenColumns
+        .map((col) =>
+          parsedColumns.findIndex(
+            (header) =>
+              header.id === col ||
+              (hasProperty(header, "accessorKey") &&
+                header.accessorKey === col),
+          ),
+        )
+        .filter((num) => num > -1),
     [parsedColumns],
   );
 
+  const headers = table.getHeaderGroups()[0].headers;
+
   const columnVirtualizer = useVirtual({
     parentRef: tableContainerRef,
-    size: parsedColumns.length,
+    size: headers.length,
     estimateSize: useCallback(() => 200, []),
     // overscan: 10,
     horizontal: true,
@@ -294,8 +301,6 @@ export const ObjectSearchResults = ({
       return [...rangeAsSet];
     },
   });
-
-  const headers = table.getHeaderGroups()[0].headers;
 
   const virtualColumns = useMemo(() => {
     const leftVirtualColumns = columnVirtualizer.virtualItems
@@ -330,10 +335,7 @@ export const ObjectSearchResults = ({
     <>
       <div
         ref={tableContainerRef}
-        className="relative overflow-auto overscroll-contain text-sm"
-        // onScroll={(e) => {
-        //   e.preventDefault();
-        // }}
+        className="relative min-h-full overflow-auto overscroll-contain text-sm"
         onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
       >
         {headers && (
@@ -342,25 +344,33 @@ export const ObjectSearchResults = ({
               height: rowVirtualizer.totalSize,
               width: columnVirtualizer.totalSize,
             }}
-            className="relative flex"
+            className="relative flex min-h-full"
           >
-            <LeftGrid
-              virtualColumns={virtualColumns.left}
-              virtualRows={rowVirtualizer.virtualItems}
-              headers={headers}
-              width={leftGridTotalSize}
-              rows={rows as Row<ParsedSkylarkObject>[]}
-              showShadow={hasScrolledRight}
-              isDraggable={!!panelObject}
-            />
-            <RightGrid
-              virtualColumns={virtualColumns.right}
-              virtualRows={rowVirtualizer.virtualItems}
-              headers={headers}
-              rows={rows as Row<ParsedSkylarkObject>[]}
-              leftGridSize={leftGridTotalSize}
-              isDraggable={!!panelObject}
-            />
+            {virtualColumns.left.length > 0 && (
+              <LeftGrid
+                virtualColumns={virtualColumns.left}
+                virtualRows={rowVirtualizer.virtualItems}
+                headers={headers}
+                width={leftGridTotalSize}
+                rows={rows as Row<ParsedSkylarkObject>[]}
+                showShadow={hasScrolledRight}
+                panelObject={panelObject || null}
+                hoveredRow={hoveredRow}
+                setHoveredRow={setHoveredRow}
+              />
+            )}
+            {virtualColumns.right.length > 0 && (
+              <RightGrid
+                virtualColumns={virtualColumns.right}
+                virtualRows={rowVirtualizer.virtualItems}
+                headers={headers}
+                rows={rows as Row<ParsedSkylarkObject>[]}
+                leftGridSize={leftGridTotalSize}
+                panelObject={panelObject || null}
+                hoveredRow={hoveredRow}
+                setHoveredRow={setHoveredRow}
+              />
+            )}
           </div>
         )}
       </div>
@@ -375,7 +385,9 @@ const LeftGrid = ({
   showShadow,
   virtualColumns,
   headers,
-  isDraggable,
+  panelObject,
+  hoveredRow,
+  setHoveredRow,
 }: {
   virtualRows: VirtualItem[];
   width: number;
@@ -383,7 +395,9 @@ const LeftGrid = ({
   showShadow: boolean;
   virtualColumns: VirtualItem[];
   headers: Header<object, string>[];
-  isDraggable: boolean;
+  panelObject: SkylarkObjectIdentifier | null;
+  hoveredRow: number | null;
+  setHoveredRow: (rowId: number | null) => void;
 }) => {
   return (
     <div
@@ -420,13 +434,15 @@ const LeftGrid = ({
         }
 
         return (
-          <DataRow
-            key={`left-grid-row-${virtualRow.index}`}
+          <LayoutRow
+            key={key}
             row={row}
             virtualRow={virtualRow}
             virtualColumns={virtualColumns}
-            isDraggable={isDraggable}
+            panelObject={panelObject}
+            hoveredRow={hoveredRow}
             isLeft
+            setHoveredRow={setHoveredRow}
           />
         );
       })}
@@ -440,14 +456,18 @@ const RightGrid = ({
   virtualColumns,
   headers,
   leftGridSize,
-  isDraggable,
+  panelObject,
+  hoveredRow,
+  setHoveredRow,
 }: {
   rows: Row<ParsedSkylarkObject>[];
   virtualRows: VirtualItem[];
   virtualColumns: VirtualItem[];
   headers: Header<object, string>[];
   leftGridSize: number;
-  isDraggable: boolean;
+  panelObject: SkylarkObjectIdentifier | null;
+  hoveredRow: number | null;
+  setHoveredRow: (rowId: number | null) => void;
 }) => {
   return (
     <div className="relative">
@@ -455,13 +475,18 @@ const RightGrid = ({
         style={{
           height: virtualRows[0].size,
         }}
-        className="sticky top-0 z-[1] w-full"
+        className="sticky top-0 z-[1] w-full bg-white"
       >
         {virtualColumns.map((virtualColumn) => {
           const header = headers[virtualColumn.index];
+          const key = `right-grid-header-${virtualColumn.index}`;
+          if (!header) {
+            return <Fragment key={key} />;
+          }
+
           return (
             <HeaderCell
-              key={`right-grid-header-${header.id}`}
+              key={key}
               header={header}
               height={virtualRows[0].size}
               virtualColumn={virtualColumn}
@@ -478,32 +503,17 @@ const RightGrid = ({
         if (!row) {
           return <Fragment key={key} />;
         }
-        // <Fragment key={`right-grid-row-${virtualRow.index}`}>
-        //   {virtualColumns.map((virtualColumn) => {
-        //     if (!row) {
-        //       return <></>;
-        //     }
-        //     const cell = row.getVisibleCells()[virtualColumn.index];
-        //     return (
-        //       <DataCell
-        //         key={`right-grid-data-${virtualRow.index}-${virtualColumn.index}`}
-        //         virtualRow={virtualRow}
-        //         virtualColumn={virtualColumn}
-        //         paddingLeft={leftGridSize}
-        //         cell={cell}
-        //       />
-        //     );
-        //   })}
-        // </Fragment>
+
         return (
-          <DataRow
+          <LayoutRow
             key={key}
             row={row}
             virtualRow={virtualRow}
             virtualColumns={virtualColumns}
-            isDraggable={isDraggable}
+            panelObject={panelObject}
             paddingLeft={leftGridSize}
-            isLeft
+            hoveredRow={hoveredRow}
+            setHoveredRow={setHoveredRow}
           />
         );
       })}
@@ -603,21 +613,70 @@ const DataCell = ({
   );
 };
 
+const LayoutRow = ({
+  virtualRow,
+  hoveredRow,
+  setHoveredRow,
+  virtualColumns,
+  paddingLeft = 0,
+  panelObject,
+  row,
+  ...props
+}: {
+  virtualRow: VirtualItem;
+  row: Row<ParsedSkylarkObject>;
+  virtualColumns: VirtualItem[];
+  panelObject: SkylarkObjectIdentifier | null;
+  paddingLeft?: number;
+  isLeft?: boolean;
+  hoveredRow: number | null;
+  setHoveredRow: (rowId: number | null) => void;
+}) => {
+  const isPanelObject = panelObject && panelObject.uid === row.original.uid;
+  const isHoveredRow = hoveredRow === row.index;
+
+  return (
+    <div
+      data-row={row.id}
+      className={clsx(
+        "absolute left-0 top-0 flex outline-none",
+        !isHoveredRow && !isPanelObject && "bg-white",
+        !isPanelObject && isHoveredRow && "bg-manatee-50",
+        isPanelObject && "bg-manatee-100",
+      )}
+      style={{
+        transform: `translateX(${
+          virtualColumns[0].start - paddingLeft
+        }px) translateY(${virtualRow.start}px)`,
+      }}
+      onMouseEnter={() => setHoveredRow(row.index)}
+      onMouseLeave={() => setHoveredRow(null)}
+    >
+      <DataRow
+        {...props}
+        virtualRow={virtualRow}
+        virtualColumns={virtualColumns}
+        isDraggable={!!panelObject}
+        row={row}
+      />
+    </div>
+  );
+};
+
 const DataRow = ({
   virtualRow,
   row,
   virtualColumns,
   isDraggable,
-  paddingLeft = 0,
-  isLeft = false,
+  isLeft,
 }: {
   virtualRow: VirtualItem;
   row: Row<ParsedSkylarkObject>;
   virtualColumns: VirtualItem[];
   isDraggable: boolean;
-  paddingLeft?: number;
   isLeft?: boolean;
 }) => {
+  const draggableId = `row-${row.id}-${isLeft ? "left" : ""}`;
   const { attributes, listeners, setNodeRef } = useDraggable({
     id: `row-${row.id}-${isLeft ? "left" : ""}`,
     data: {
@@ -629,29 +688,42 @@ const DataRow = ({
   return (
     <div
       ref={setNodeRef}
-      className="absolute left-0 top-0 flex outline-none"
+      className="flex h-full w-full outline-none"
       {...listeners}
       {...attributes}
       tabIndex={-1}
-      style={{
-        transform: `translateX(${
-          virtualColumns[0].start - paddingLeft
-        }px) translateY(${virtualRow.start}px)`,
-      }}
     >
       {virtualColumns.map((virtualColumn) => {
         const cell = row.getVisibleCells()[virtualColumn.index];
+        const key = `${draggableId}-data-${virtualRow.index}-${virtualColumn.index}`;
+
+        // console.log({
+        //   cell,
+        //   virtualColumn,
+        //   vis: row.getVisibleCells(),
+        //   isLeft,
+        // });
+
+        if (!cell) {
+          return <Fragment key={`${key}+1`} />;
+        }
+
         const cellContext = cell.getContext();
+
+        const { config }: { config: ParsedSkylarkObjectConfig | null } =
+          cellContext.table.options.meta?.objectTypesWithConfig?.find(
+            ({ objectType }) => objectType === row.original.objectType,
+          ) || { config: null };
 
         return (
           <div
-            key={`left-grid-data-${virtualRow.index}-${virtualColumn.index}`}
+            key={key}
             data-cell={cell.id}
             ref={(el) => {
               virtualColumn.measureRef(el);
             }}
             className={clsx(
-              "flex cursor-pointer items-center bg-white",
+              "flex cursor-pointer items-center",
               columnsWithoutResize.includes(cell.column.id) ? "" : "px-1.5",
             )}
             style={{
@@ -659,16 +731,39 @@ const DataRow = ({
               height: `${virtualRow.size}px`,
             }}
             onClick={() => {
-              cellContext.table.options?.meta?.onObjectClick?.(
-                convertParsedObjectToIdentifier(cell.row.original),
-              );
+              const tableMeta = cellContext.table.options?.meta;
+
+              if (tableMeta?.onObjectClick) {
+                tableMeta.onObjectClick?.(
+                  convertParsedObjectToIdentifier(cell.row.original),
+                );
+                return;
+              }
+
+              if (tableMeta?.onRowCheckChange) {
+                const checked = Boolean(
+                  tableMeta?.checkedRows?.includes(row.index),
+                );
+                tableMeta.onRowCheckChange({
+                  checkedState: !checked,
+                  object: row.original,
+                });
+              }
             }}
           >
+            {isLeft &&
+              cell.column.id === OBJECT_LIST_TABLE.columnIds.displayField && (
+                <div
+                  className=" -bottom-0.5 -left-2 -top-0.5 mr-2 h-6 w-1 bg-manatee-300"
+                  style={{ background: config ? config.colour : undefined }}
+                ></div>
+              )}
             <div
               className={clsx(
                 headAndDataClassNames,
-                "inline-block max-h-full w-full select-text py-0.5",
+                "relative inline-block max-h-full w-full select-text py-0.5",
                 [
+                  OBJECT_LIST_TABLE.columnIds.dragIcon,
                   OBJECT_LIST_TABLE.columnIds.images,
                   OBJECT_LIST_TABLE.columnIds.actions,
                 ].includes(cell.column.id) && "h-full",
