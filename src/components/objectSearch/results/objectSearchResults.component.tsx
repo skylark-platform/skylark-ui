@@ -1,3 +1,4 @@
+import { useDraggable } from "@dnd-kit/core";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import {
   VisibilityState,
@@ -297,10 +298,12 @@ export const ObjectSearchResults = ({
   const headers = table.getHeaderGroups()[0].headers;
 
   const virtualColumns = useMemo(() => {
-    const leftVirtualColumns = columnVirtualizer.virtualItems.filter(
-      (virtualCol) =>
+    const leftVirtualColumns = columnVirtualizer.virtualItems
+      .filter((virtualCol) =>
         frozenColumnsParsedColumnsIndexes.includes(virtualCol.index),
-    );
+      )
+      .sort((colA, colB) => colA.index - colB.index);
+
     const rightVirtualColumns = columnVirtualizer.virtualItems.filter(
       (virtualCol) =>
         !frozenColumnsParsedColumnsIndexes.includes(virtualCol.index),
@@ -348,6 +351,7 @@ export const ObjectSearchResults = ({
               width={leftGridTotalSize}
               rows={rows as Row<ParsedSkylarkObject>[]}
               showShadow={hasScrolledRight}
+              isDraggable={!!panelObject}
             />
             <RightGrid
               virtualColumns={virtualColumns.right}
@@ -355,6 +359,7 @@ export const ObjectSearchResults = ({
               headers={headers}
               rows={rows as Row<ParsedSkylarkObject>[]}
               leftGridSize={leftGridTotalSize}
+              isDraggable={!!panelObject}
             />
           </div>
         )}
@@ -370,6 +375,7 @@ const LeftGrid = ({
   showShadow,
   virtualColumns,
   headers,
+  isDraggable,
 }: {
   virtualRows: VirtualItem[];
   width: number;
@@ -377,6 +383,7 @@ const LeftGrid = ({
   showShadow: boolean;
   virtualColumns: VirtualItem[];
   headers: Header<object, string>[];
+  isDraggable: boolean;
 }) => {
   return (
     <div
@@ -404,27 +411,25 @@ const LeftGrid = ({
           );
         })}
       </div>
-      {virtualRows.map((virtualRow) => (
-        <Fragment key={`left-grid-row-${virtualRow.index}`}>
-          {virtualColumns.map((virtualColumn) => {
-            const row = rows[virtualRow.index];
-            if (!row) {
-              return <></>;
-            }
+      {virtualRows.map((virtualRow) => {
+        const row = rows[virtualRow.index];
+        const key = `left-grid-row-${virtualRow.index}`;
 
-            const cell = row.getVisibleCells()[virtualColumn.index];
+        if (!row) {
+          return <Fragment key={key} />;
+        }
 
-            return (
-              <DataCell
-                key={`left-grid-data-${virtualRow.index}-${virtualColumn.index}`}
-                virtualRow={virtualRow}
-                virtualColumn={virtualColumn}
-                cell={cell}
-              />
-            );
-          })}
-        </Fragment>
-      ))}
+        return (
+          <DataRow
+            key={`left-grid-row-${virtualRow.index}`}
+            row={row}
+            virtualRow={virtualRow}
+            virtualColumns={virtualColumns}
+            isDraggable={isDraggable}
+            isLeft
+          />
+        );
+      })}
     </div>
   );
 };
@@ -435,12 +440,14 @@ const RightGrid = ({
   virtualColumns,
   headers,
   leftGridSize,
+  isDraggable,
 }: {
   rows: Row<ParsedSkylarkObject>[];
   virtualRows: VirtualItem[];
   virtualColumns: VirtualItem[];
   headers: Header<object, string>[];
   leftGridSize: number;
+  isDraggable: boolean;
 }) => {
   return (
     <div className="relative">
@@ -464,26 +471,42 @@ const RightGrid = ({
         })}
       </div>
 
-      {virtualRows.map((virtualRow) => (
-        <Fragment key={`right-grid-row-${virtualRow.index}`}>
-          {virtualColumns.map((virtualColumn) => {
-            const row = rows[virtualRow.index];
-            if (!row) {
-              return <></>;
-            }
-            const cell = row.getVisibleCells()[virtualColumn.index];
-            return (
-              <DataCell
-                key={`right-grid-data-${virtualRow.index}-${virtualColumn.index}`}
-                virtualRow={virtualRow}
-                virtualColumn={virtualColumn}
-                paddingLeft={leftGridSize}
-                cell={cell}
-              />
-            );
-          })}
-        </Fragment>
-      ))}
+      {virtualRows.map((virtualRow) => {
+        const row = rows[virtualRow.index];
+        const key = `right-grid-row-${virtualRow.index}`;
+
+        if (!row) {
+          return <Fragment key={key} />;
+        }
+        // <Fragment key={`right-grid-row-${virtualRow.index}`}>
+        //   {virtualColumns.map((virtualColumn) => {
+        //     if (!row) {
+        //       return <></>;
+        //     }
+        //     const cell = row.getVisibleCells()[virtualColumn.index];
+        //     return (
+        //       <DataCell
+        //         key={`right-grid-data-${virtualRow.index}-${virtualColumn.index}`}
+        //         virtualRow={virtualRow}
+        //         virtualColumn={virtualColumn}
+        //         paddingLeft={leftGridSize}
+        //         cell={cell}
+        //       />
+        //     );
+        //   })}
+        // </Fragment>
+        return (
+          <DataRow
+            key={key}
+            row={row}
+            virtualRow={virtualRow}
+            virtualColumns={virtualColumns}
+            isDraggable={isDraggable}
+            paddingLeft={leftGridSize}
+            isLeft
+          />
+        );
+      })}
     </div>
   );
 };
@@ -541,6 +564,7 @@ const DataCell = ({
   cell: Cell<ParsedSkylarkObject, unknown>;
 }) => {
   const cellContext = cell.getContext();
+
   return (
     <div
       ref={(el) => {
@@ -575,6 +599,86 @@ const DataCell = ({
       >
         {flexRender(cell.column.columnDef.cell, cellContext)}
       </div>
+    </div>
+  );
+};
+
+const DataRow = ({
+  virtualRow,
+  row,
+  virtualColumns,
+  isDraggable,
+  paddingLeft = 0,
+  isLeft = false,
+}: {
+  virtualRow: VirtualItem;
+  row: Row<ParsedSkylarkObject>;
+  virtualColumns: VirtualItem[];
+  isDraggable: boolean;
+  paddingLeft?: number;
+  isLeft?: boolean;
+}) => {
+  const { attributes, listeners, setNodeRef } = useDraggable({
+    id: `row-${row.id}-${isLeft ? "left" : ""}`,
+    data: {
+      object: row.original,
+    },
+    disabled: !isDraggable,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className="absolute left-0 top-0 flex outline-none"
+      {...listeners}
+      {...attributes}
+      tabIndex={-1}
+      style={{
+        transform: `translateX(${
+          virtualColumns[0].start - paddingLeft
+        }px) translateY(${virtualRow.start}px)`,
+      }}
+    >
+      {virtualColumns.map((virtualColumn) => {
+        const cell = row.getVisibleCells()[virtualColumn.index];
+        const cellContext = cell.getContext();
+
+        return (
+          <div
+            key={`left-grid-data-${virtualRow.index}-${virtualColumn.index}`}
+            data-cell={cell.id}
+            ref={(el) => {
+              virtualColumn.measureRef(el);
+            }}
+            className={clsx(
+              "flex cursor-pointer items-center bg-white",
+              columnsWithoutResize.includes(cell.column.id) ? "" : "px-1.5",
+            )}
+            style={{
+              width: `${virtualColumn.size}px`,
+              height: `${virtualRow.size}px`,
+            }}
+            onClick={() => {
+              cellContext.table.options?.meta?.onObjectClick?.(
+                convertParsedObjectToIdentifier(cell.row.original),
+              );
+            }}
+          >
+            <div
+              className={clsx(
+                headAndDataClassNames,
+                "inline-block max-h-full w-full select-text py-0.5",
+                [
+                  OBJECT_LIST_TABLE.columnIds.images,
+                  OBJECT_LIST_TABLE.columnIds.actions,
+                ].includes(cell.column.id) && "h-full",
+              )}
+            >
+              {flexRender(cell.column.columnDef.cell, cellContext)}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
