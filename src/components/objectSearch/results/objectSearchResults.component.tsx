@@ -191,9 +191,9 @@ export const ObjectSearchResults = ({
   );
 
   // a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
-  useEffect(() => {
-    fetchMoreOnBottomReached(tableContainerRef.current);
-  }, [fetchMoreOnBottomReached]);
+  // useEffect(() => {
+  //   fetchMoreOnBottomReached(tableContainerRef.current);
+  // }, [fetchMoreOnBottomReached]);
 
   const onRowCheckChange = useCallback(
     ({
@@ -374,7 +374,7 @@ export const ObjectSearchResults = ({
         onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
         onMouseLeave={() => setHoveredRow(null)}
       >
-        {hoveredRow !== null && (
+        {/* {virtualColumns.right.length > 0 && hoveredRow !== null && (
           <RowActions
             onInfoClick={
               setPanelObject
@@ -382,10 +382,11 @@ export const ObjectSearchResults = ({
                 : undefined
             }
             activeRowIndex={hoveredRow}
+            virtualColumns={virtualColumns.right}
             rows={rows}
             virtualRows={rowVirtualizer.virtualItems}
           />
-        )}
+        )} */}
         {headers && (
           <div style={totalVirtualSizes} className="relative flex min-h-full">
             {virtualColumns.left.length > 0 && (
@@ -454,6 +455,22 @@ const LeftGrid = ({
         boxShadow: showShadow ? "-2px 0px 10px 0px #BBB" : undefined,
       }}
     >
+      {virtualColumns.length > 0 && hoveredRow !== null && (
+        <RowActions
+          onInfoClick={
+            table.options.meta?.onObjectClick
+              ? (obj) =>
+                  table.options.meta?.onObjectClick?.(
+                    convertParsedObjectToIdentifier(obj),
+                  )
+              : undefined
+          }
+          activeRowIndex={hoveredRow}
+          virtualColumns={virtualColumns}
+          rows={rows}
+          virtualRows={virtualRows}
+        />
+      )}
       <div
         style={{
           height: virtualRows[0].size,

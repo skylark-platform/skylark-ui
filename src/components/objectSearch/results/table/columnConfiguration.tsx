@@ -25,8 +25,6 @@ import {
   hasProperty,
 } from "src/lib/utils";
 
-import { TableCell } from ".";
-
 export const OBJECT_SEARCH_HARDCODED_COLUMNS = [
   OBJECT_LIST_TABLE.columnIds.objectType,
   OBJECT_LIST_TABLE.columnIds.translation,
@@ -89,7 +87,7 @@ const displayNameColumn = columnHelper.accessor(
   {
     id: OBJECT_LIST_TABLE.columnIds.displayField,
     header: formatObjectField("Display Field"),
-    size: 250,
+    size: 280,
     cell: (props) => <>{props.cell.getValue() as string}</>,
   },
 );
