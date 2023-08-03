@@ -35,6 +35,7 @@ import {
 import { VirtualItem, defaultRangeExtractor, useVirtual } from "react-virtual";
 
 import { Checkbox } from "src/components/inputs/checkbox";
+import { RowActions } from "src/components/objectSearch/rowActions";
 import { ObjectTypePill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { PanelTab } from "src/hooks/state";
@@ -134,7 +135,7 @@ export const ObjectSearchResults = ({
           withObjectSelect,
           withPanel,
         },
-      ) as ColumnDef<object, ParsedSkylarkObject>[],
+      ) as ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[],
     [sortedHeaders, withObjectSelect, withPanel],
   );
 
@@ -190,9 +191,9 @@ export const ObjectSearchResults = ({
   );
 
   // a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
-  // useEffect(() => {
-  //   fetchMoreOnBottomReached(tableContainerRef.current);
-  // }, [fetchMoreOnBottomReached]);
+  useEffect(() => {
+    fetchMoreOnBottomReached(tableContainerRef.current);
+  }, [fetchMoreOnBottomReached]);
 
   const onRowCheckChange = useCallback(
     ({
@@ -264,9 +265,9 @@ export const ObjectSearchResults = ({
     parsedColumns.map((column) => column.id as string), //must start out with populated columnOrder so we can splice
   );
 
-  const table = useReactTable({
+  const table = useReactTable<ParsedSkylarkObject>({
     debugAll: false,
-    data: formattedSearchData || emptyArray,
+    data: (formattedSearchData as ParsedSkylarkObject[]) || emptyArray,
     columns: parsedColumns,
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: "onChange",
@@ -371,7 +372,20 @@ export const ObjectSearchResults = ({
         ref={tableContainerRef}
         className="relative min-h-full overflow-auto overscroll-contain text-sm"
         onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
+        onMouseLeave={() => setHoveredRow(null)}
       >
+        {hoveredRow !== null && (
+          <RowActions
+            onInfoClick={
+              setPanelObject
+                ? (obj) => setPanelObject(convertParsedObjectToIdentifier(obj))
+                : undefined
+            }
+            activeRowIndex={hoveredRow}
+            rows={rows}
+            virtualRows={rowVirtualizer.virtualItems}
+          />
+        )}
         {headers && (
           <div style={totalVirtualSizes} className="relative flex min-h-full">
             {virtualColumns.left.length > 0 && (
@@ -421,13 +435,13 @@ const LeftGrid = ({
   hoveredRow,
   setHoveredRow,
 }: {
-  table: Table<object>;
+  table: Table<ParsedSkylarkObject>;
   virtualRows: VirtualItem[];
   width: number;
   rows: Row<ParsedSkylarkObject>[];
   showShadow: boolean;
   virtualColumns: VirtualItem[];
-  headers: Header<object, string>[];
+  headers: Header<ParsedSkylarkObject, string>[];
   panelObject: SkylarkObjectIdentifier | null;
   hoveredRow: number | null;
   setHoveredRow: (rowId: number | null) => void;
@@ -495,12 +509,12 @@ const RightGrid = ({
   hoveredRow,
   setHoveredRow,
 }: {
-  table: Table<object>;
+  table: Table<ParsedSkylarkObject>;
   totalVirtualSizes: { height: number; width: number };
   rows: Row<ParsedSkylarkObject>[];
   virtualRows: VirtualItem[];
   virtualColumns: VirtualItem[];
-  headers: Header<object, string>[];
+  headers: Header<ParsedSkylarkObject, string>[];
   leftGridSize: number;
   panelObject: SkylarkObjectIdentifier | null;
   hoveredRow: number | null;
@@ -623,7 +637,7 @@ const HeaderCell = ({
   paddingLeft = 0,
   isDraggable,
 }: {
-  header: Header<object, string>;
+  header: Header<ParsedSkylarkObject, string>;
   height: number;
   virtualColumn: VirtualItem;
   paddingLeft?: number;
@@ -782,7 +796,6 @@ const LayoutRow = ({
         }px) translateY(${virtualRow.start}px)`,
       }}
       onMouseEnter={() => setHoveredRow(row.index)}
-      onMouseLeave={() => setHoveredRow(null)}
     >
       <DataRow
         {...props}

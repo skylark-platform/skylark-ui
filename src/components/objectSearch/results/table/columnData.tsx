@@ -113,17 +113,17 @@ export const ObjectListingTableData = ({
     );
   }
 
-  if (cell.column.id === OBJECT_LIST_TABLE.columnIds.actions) {
-    return (
-      <td
-        key={cell.id}
-        className={clsx(className, "bg-transparent")}
-        style={{ height }}
-      >
-        <RowActions object={cell.row.original} onInfoClick={openPanel} />
-      </td>
-    );
-  }
+  // if (cell.column.id === OBJECT_LIST_TABLE.columnIds.actions) {
+  //   return (
+  //     <td
+  //       key={cell.id}
+  //       className={clsx(className, "bg-transparent")}
+  //       style={{ height }}
+  //     >
+  //       <RowActions object={cell.row.original} onInfoClick={openPanel} />
+  //     </td>
+  //   );
+  // }
 
   return (
     <td

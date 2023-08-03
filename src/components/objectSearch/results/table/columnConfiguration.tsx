@@ -245,27 +245,6 @@ const selectColumn = columnHelper.display({
   },
 });
 
-const actionColumn = columnHelper.display({
-  id: OBJECT_LIST_TABLE.columnIds.actions,
-  size: 10,
-  cell: ({
-    cell,
-    table: {
-      options: { meta: tableMeta },
-    },
-    row: { original },
-  }) => (
-    <RowActions
-      object={original as ParsedSkylarkObject}
-      onInfoClick={() =>
-        tableMeta?.onObjectClick?.(
-          convertParsedObjectToIdentifier(original as ParsedSkylarkObject),
-        )
-      }
-    />
-  ),
-});
-
 export const createObjectListingColumns = (
   columns: string[],
   hardcodedColumns: string[],
