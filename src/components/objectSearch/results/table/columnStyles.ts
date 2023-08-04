@@ -27,11 +27,6 @@ const customColumnStyling: Record<
   default: {
     className: { all: "pr-1 pl-px" },
   },
-  [OBJECT_LIST_TABLE.columnIds.actions]: {
-    className: {
-      all: "bg-transparent",
-    },
-  },
   [OBJECT_LIST_TABLE.columnIds.displayField]: {
     className: {
       all: "sm:sticky z-20 pl-0 [&>span]:pl-0 [&>span]:border-l-0 border-l-0 pr-1",
@@ -88,10 +83,7 @@ export const getObjectSearchTableColumnStyles = (
     lastHeadAndDataClassNames,
     type === "cell" && rowGroupClassName,
     type === "cell" && opts.rowIsActive && activeRowClassName,
-    type === "cell" &&
-      !opts.rowIsActive &&
-      columnId !== OBJECT_LIST_TABLE.columnIds.actions &&
-      inactiveClassName,
+    type === "cell" && !opts.rowIsActive && inactiveClassName,
     type === "header" && "bg-white",
     colStyles.className?.all,
     typeSpecificClassName,

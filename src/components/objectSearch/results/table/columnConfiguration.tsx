@@ -15,6 +15,7 @@ import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
   ParsedSkylarkObjectAvailability,
+  ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectImageRelationship,
 } from "src/interfaces/skylark";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
@@ -31,11 +32,18 @@ export const OBJECT_SEARCH_HARDCODED_COLUMNS = [
   OBJECT_LIST_TABLE.columnIds.availability,
   OBJECT_LIST_TABLE.columnIds.images,
 ];
+
 export const OBJECT_SEARCH_ORDERED_KEYS = [
   "uid",
   "external_id",
   "data_source_id",
   "type",
+];
+
+export const OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS = [
+  OBJECT_LIST_TABLE.columnIds.dragIcon,
+  OBJECT_LIST_TABLE.columnIds.checkbox,
+  OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
 ];
 
 const isRowChecked = (cell: Cell<object, unknown>, table: Table<object>) =>
@@ -44,26 +52,23 @@ const isRowChecked = (cell: Cell<object, unknown>, table: Table<object>) =>
 const columnHelper = createColumnHelper<object>();
 
 // Issues with Safari means its safe to allow the drag icon have it's own column than use a pseudo field
-const dragIconColumn = columnHelper.accessor(
-  OBJECT_LIST_TABLE.columnIds.dragIcon,
-  {
-    id: OBJECT_LIST_TABLE.columnIds.dragIcon,
-    header: "",
-    size: 20,
-    cell: ({ cell, row, table }) => {
-      const isCheckedRow = isRowChecked(cell, table);
+const dragIconColumn = columnHelper.display({
+  id: OBJECT_LIST_TABLE.columnIds.dragIcon,
+  header: "",
+  size: 20,
+  cell: ({ cell, row, table }) => {
+    const isCheckedRow = isRowChecked(cell, table);
 
-      const tableMeta = table.options.meta;
-      const isHoveredRow = tableMeta?.hoveredRow === row.index;
+    const tableMeta = table.options.meta;
+    const isHoveredRow = tableMeta?.hoveredRow === row.index;
 
-      return tableMeta?.activeObject && (isCheckedRow || isHoveredRow) ? (
-        <span className="block h-full w-5 bg-inherit bg-[url('/icons/drag_indicator_black.png')] bg-center bg-no-repeat opacity-60" />
-      ) : (
-        <></>
-      );
-    },
+    return tableMeta?.activeObject && (isCheckedRow || isHoveredRow) ? (
+      <span className="block h-full w-5 bg-inherit bg-[url('/icons/drag_indicator_black.png')] bg-center bg-no-repeat opacity-60" />
+    ) : (
+      <></>
+    );
   },
-);
+});
 
 const objectTypeColumn = columnHelper.accessor(
   OBJECT_LIST_TABLE.columnIds.objectType,
@@ -71,16 +76,50 @@ const objectTypeColumn = columnHelper.accessor(
     id: OBJECT_LIST_TABLE.columnIds.objectType,
     header: formatObjectField("Object type"),
     size: 120,
-    cell: ({ row }) => {
+    cell: ({ cell, row }) => {
       const original = row.original as ParsedSkylarkObject;
+      const cellContext = cell.getContext();
+
+      const { config }: { config: ParsedSkylarkObjectConfig | null } =
+        cellContext.table.options.meta?.objectTypesWithConfig?.find(
+          ({ objectType }) => objectType === original.objectType,
+        ) || { config: null };
+
       return (
         <div className="flex h-full w-full items-center pr-2">
-          <ObjectTypePill type={original.objectType} className="w-full" />
+          <Pill
+            label={config?.objectTypeDisplayName || original.objectType}
+            bgColor={config?.colour}
+            className="w-full"
+          />
         </div>
       );
     },
   },
 );
+
+const objectTypeIndicatorColumn = columnHelper.display({
+  id: OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
+  header: "",
+  size: 12,
+  maxSize: 12,
+  cell: ({ cell, row }) => {
+    const original = row.original as ParsedSkylarkObject;
+    const cellContext = cell.getContext();
+
+    const { config }: { config: ParsedSkylarkObjectConfig | null } =
+      cellContext.table.options.meta?.objectTypesWithConfig?.find(
+        ({ objectType }) => objectType === original.objectType,
+      ) || { config: null };
+
+    return (
+      <div
+        className="mx-auto h-6 w-1 bg-manatee-300"
+        style={{ background: config ? config.colour : undefined }}
+      />
+    );
+  },
+});
 
 const displayNameColumn = columnHelper.accessor(
   OBJECT_LIST_TABLE.columnIds.displayField,
@@ -261,6 +300,7 @@ export const createObjectListingColumns = (
 
   const orderedColumnArray = [
     // actionColumn,
+    objectTypeIndicatorColumn,
     displayNameColumn,
     objectTypeColumn,
     translationColumn,

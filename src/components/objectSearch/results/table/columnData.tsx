@@ -46,8 +46,7 @@ export const ObjectListingTableData = ({
       clsx(
         getObjectSearchTableColumnStyles(columnId, "cell", {
           withCheckbox,
-          rowIsActive:
-            rowIsActive && columnId !== OBJECT_LIST_TABLE.columnIds.actions,
+          rowIsActive: rowIsActive,
         }),
         "last:pr-0",
         OBJECT_LIST_TABLE.columnIds.dragIcon === columnId &&

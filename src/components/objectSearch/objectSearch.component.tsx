@@ -1,13 +1,19 @@
-import { VisibilityState } from "@tanstack/react-table";
+import {
+  ColumnDef,
+  ColumnOrderState,
+  VisibilityState,
+} from "@tanstack/react-table";
 import clsx from "clsx";
 import { useEffect, useState, useMemo, memo } from "react";
 
 import { Spinner } from "src/components/icons";
 import { AvailabilityDimensionsPickerValues } from "src/components/inputs/availabilityDimensionsPicker/availabilityDimensionsPicker.component";
+import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useUser } from "src/contexts/useUser";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
+  ParsedSkylarkObject,
   SkylarkObjectIdentifier,
   SkylarkObjectTypes,
 } from "src/interfaces/skylark";
@@ -25,6 +31,8 @@ import {
 import {
   OBJECT_SEARCH_HARDCODED_COLUMNS,
   OBJECT_SEARCH_ORDERED_KEYS,
+  OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+  createObjectListingColumns,
 } from "./results/table/columnConfiguration";
 import { Search } from "./search";
 
@@ -42,6 +50,11 @@ export interface ObjectSearchProps {
   onObjectCheckedChanged?: ObjectSearchResultsProps["onObjectCheckedChanged"];
 }
 
+const initialFrozenColumns = [
+  ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+  OBJECT_LIST_TABLE.columnIds.displayField,
+];
+
 export const ObjectSearch = (props: ObjectSearchProps) => {
   const { defaultLanguage, isLoading: isUserLoading } = useUser();
   const {
@@ -51,7 +64,10 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     defaultObjectTypes,
     defaultColumns,
     onObjectCheckedChanged,
+    withObjectSelect,
   } = props;
+
+  const withPanel = typeof setPanelObject !== "undefined";
 
   const { objectTypes } = useSkylarkObjectTypes(true);
 
@@ -124,6 +140,19 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     return headers;
   }, [properties]);
 
+  const parsedTableColumns = useMemo(
+    () =>
+      createObjectListingColumns(
+        sortedHeaders,
+        OBJECT_SEARCH_HARDCODED_COLUMNS,
+        {
+          withObjectSelect,
+          withPanel,
+        },
+      ) as ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[],
+    [sortedHeaders, withObjectSelect, withPanel],
+  );
+
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     Object.fromEntries(
       sortedHeaders.map((header) => [
@@ -132,6 +161,16 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
       ]),
     ),
   );
+
+  const [frozenColumns, setFrozenColumns] =
+    useState<string[]>(initialFrozenColumns);
+
+  const [stateColumnOrder, setColumnOrder] = useState<ColumnOrderState>([]);
+  const defaultColumnOrder = parsedTableColumns.map(
+    (column) => column.id as string,
+  );
+  const columnOrder: ColumnOrderState =
+    stateColumnOrder.length > 0 ? stateColumnOrder : defaultColumnOrder;
 
   useEffect(() => {
     // Update the column visibility when new fields are added / removed
@@ -217,12 +256,17 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         <MemoizedObjectSearchResults
           {...props}
           key={searchHash} // This will rerender all results when the searchHash changes - importantly clearing the checkboxes back to an unchecked state
+          tableColumns={parsedTableColumns}
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
-          sortedHeaders={sortedHeaders}
           searchData={searchData}
           columnVisibility={columnVisibility}
+          setColumnVisibility={setColumnVisibility}
+          frozenColumns={frozenColumns}
+          setFrozenColumns={setFrozenColumns}
+          columnOrder={columnOrder}
+          setColumnOrder={setColumnOrder}
         />
       )}
       {(isSearching || (searchData && searchData.length === 0)) && (

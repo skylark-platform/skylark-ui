@@ -22,6 +22,8 @@ import {
   Cell,
   ColumnOrderState,
   Table,
+  Updater,
+  OnChangeFn,
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import {
@@ -58,35 +60,35 @@ import {
 
 import {
   OBJECT_SEARCH_HARDCODED_COLUMNS,
+  OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
   createObjectListingColumns,
 } from "./table/columnConfiguration";
 
-const initialFrozenColumns = [
-  OBJECT_LIST_TABLE.columnIds.dragIcon,
-  OBJECT_LIST_TABLE.columnIds.checkbox,
-  // OBJECT_LIST_TABLE.columnIds.objectType,
-  OBJECT_LIST_TABLE.columnIds.displayField,
-  // OBJECT_LIST_TABLE.columnIds.actions,
-];
+const MAX_FROZEN_COLUMNS = 4;
 
 const columnsWithoutResize = [
   OBJECT_LIST_TABLE.columnIds.dragIcon,
-  OBJECT_LIST_TABLE.columnIds.actions,
   OBJECT_LIST_TABLE.columnIds.checkbox,
+  OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
 ];
 
 export interface ObjectSearchResultsProps {
+  tableColumns: ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[];
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
   setPanelObject?: (obj: SkylarkObjectIdentifier, tab?: PanelTab) => void;
   fetchNextPage?: () => void;
   searchData?: ParsedSkylarkObject[];
-  sortedHeaders: string[];
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
   columnVisibility: VisibilityState;
+  columnOrder: ColumnOrderState;
+  frozenColumns: string[];
   checkedObjects?: ParsedSkylarkObject[];
+  setColumnVisibility: OnChangeFn<VisibilityState>;
+  setColumnOrder: OnChangeFn<ColumnOrderState>;
+  setFrozenColumns: (cols: string[]) => void;
   onObjectCheckedChanged?: (o: ParsedSkylarkObject[]) => void;
 }
 
@@ -109,9 +111,29 @@ const reorderColumn = (
   return [...columnOrder];
 };
 
+const splitVirtualColumns = (
+  virtualItems: VirtualItem[],
+  leftIndexes: number[],
+) => {
+  const leftVirtualColumns = virtualItems
+    .filter((virtualCol) => leftIndexes.includes(virtualCol.index))
+    .sort((colA, colB) => colA.index - colB.index);
+
+  const rightVirtualColumns = virtualItems.filter(
+    (virtualCol) => !leftIndexes.includes(virtualCol.index),
+  );
+
+  return {
+    left: leftVirtualColumns,
+    right: rightVirtualColumns,
+  };
+};
+
 export const ObjectSearchResults = ({
-  sortedHeaders,
+  tableColumns,
   columnVisibility,
+  columnOrder,
+  frozenColumns,
   panelObject,
   setPanelObject,
   searchData,
@@ -121,25 +143,13 @@ export const ObjectSearchResults = ({
   checkedObjects,
   isFetchingNextPage,
   onObjectCheckedChanged,
+  setColumnVisibility,
+  setColumnOrder,
+  setFrozenColumns,
 }: ObjectSearchResultsProps) => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
-
-  const withPanel = typeof setPanelObject !== "undefined";
-
-  const parsedColumns = useMemo(
-    () =>
-      createObjectListingColumns(
-        sortedHeaders,
-        OBJECT_SEARCH_HARDCODED_COLUMNS,
-        {
-          withObjectSelect,
-          withPanel,
-        },
-      ) as ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[],
-    [sortedHeaders, withObjectSelect, withPanel],
-  );
 
   const formattedSearchData = useMemo(() => {
     const searchDataWithDisplayField = searchData?.map((obj) => {
@@ -263,21 +273,28 @@ export const ObjectSearchResults = ({
   // TODO we may want to refactor this so that hovering doesn't trigger a render
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
 
-  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
-    parsedColumns.map((column) => column.id as string), //must start out with populated columnOrder so we can splice
-  );
+  const showObjectTypeIndicator =
+    !columnVisibility[OBJECT_LIST_TABLE.columnIds.objectType] ||
+    frozenColumns.indexOf(OBJECT_LIST_TABLE.columnIds.objectTypeIndicator) +
+      1 !==
+      frozenColumns.indexOf(OBJECT_LIST_TABLE.columnIds.objectType);
 
   const table = useReactTable<ParsedSkylarkObject>({
     debugAll: false,
     data: (formattedSearchData as ParsedSkylarkObject[]) || emptyArray,
-    columns: parsedColumns,
+    columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: "onChange",
     state: {
-      columnVisibility,
+      columnVisibility: {
+        ...columnVisibility,
+        [OBJECT_LIST_TABLE.columnIds.objectTypeIndicator]:
+          showObjectTypeIndicator,
+      },
       columnOrder,
     },
     onColumnOrderChange: setColumnOrder,
+    onColumnVisibilityChange: setColumnVisibility,
     meta: {
       activeObject: panelObject || null,
       checkedRows,
@@ -302,10 +319,9 @@ export const ObjectSearchResults = ({
     },
   });
 
-  const [frozenColumns, setFrozenColumns] =
-    useState<string[]>(initialFrozenColumns);
-
-  const visibleColumns = table.getVisibleFlatColumns();
+  const visibleColumns = table
+    .getVisibleFlatColumns()
+    .sort((a, b) => columnOrder.indexOf(a.id) - columnOrder.indexOf(b.id));
 
   const frozenColumnsParsedColumnsIndexes = useMemo(
     () =>
@@ -322,7 +338,10 @@ export const ObjectSearchResults = ({
     [frozenColumns, visibleColumns],
   );
 
-  const headers = table.getHeaderGroups()[0].headers;
+  const headers = table.getHeaderGroups()[0].headers as Header<
+    ParsedSkylarkObject,
+    string
+  >[];
 
   const columnVirtualizer = useVirtual({
     parentRef: tableContainerRef,
@@ -339,30 +358,18 @@ export const ObjectSearchResults = ({
     },
   });
 
-  const virtualColumns = useMemo(() => {
-    const leftVirtualColumns = columnVirtualizer.virtualItems
-      .filter((virtualCol) =>
-        frozenColumnsParsedColumnsIndexes.includes(virtualCol.index),
-      )
-      .sort((colA, colB) => colA.index - colB.index);
-
-    const rightVirtualColumns = columnVirtualizer.virtualItems.filter(
-      (virtualCol) =>
-        !frozenColumnsParsedColumnsIndexes.includes(virtualCol.index),
-    );
-
-    return {
-      left: leftVirtualColumns,
-      right: rightVirtualColumns,
-    };
-  }, [columnVirtualizer.virtualItems, frozenColumnsParsedColumnsIndexes]);
+  const virtualColumns = useMemo(
+    () =>
+      splitVirtualColumns(
+        columnVirtualizer.virtualItems,
+        frozenColumnsParsedColumnsIndexes,
+      ),
+    [columnVirtualizer.virtualItems, frozenColumnsParsedColumnsIndexes],
+  );
 
   const { rows } = table.getRowModel();
-  const columns = table.getAllColumns();
 
-  console.log({ columns });
-
-  const leftGridTotalSize = columns
+  const leftGridTotalSize = visibleColumns
     .filter((col) => frozenColumns.includes(col.id))
     .reduce((total, col) => total + col.getSize(), 0);
 
@@ -375,38 +382,36 @@ export const ObjectSearchResults = ({
     width: columnVirtualizer.totalSize,
   };
 
-  const [showStickyColumnDropZones, setShowStickyColumnDropZones] =
+  const [showFrozenColumnDropZones, setShowFrozenColumnDropZones] =
     useState(false);
 
   useDndMonitor({
     onDragStart(event) {
-      console.log({ event });
       if (event.active.id === "MODIFY_FROZEN_COLUMNS") {
-        setShowStickyColumnDropZones(true);
+        setShowFrozenColumnDropZones(true);
       }
     },
     onDragEnd(event) {
       if (event.active.id === "MODIFY_FROZEN_COLUMNS") {
-        console.log("end", { event });
         const dropzoneColumnId = event.over?.data.current?.columnId;
         if (dropzoneColumnId) {
-          const isFrozen = frozenColumns.includes(dropzoneColumnId);
+          const orderedVisibleColumns = [...visibleColumns].sort(
+            (a, b) => columnOrder.indexOf(a.id) - columnOrder.indexOf(b.id),
+          );
 
-          const columnIndex = visibleColumns.findIndex(
+          const columnIndex = orderedVisibleColumns.findIndex(
             (col) => col.id === dropzoneColumnId,
           );
 
-          const updatedFrozenColumns = visibleColumns
-            .slice(0, columnIndex + 1)
-            .map(({ id }) => id);
-
-          console.log({
-            dropzoneColumnId,
-            frozenColumns,
-            isFrozen,
-            columnIndex,
-            updatedFrozenColumns,
-          });
+          const updatedFrozenColumns = [
+            ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+            ...orderedVisibleColumns
+              .slice(0, columnIndex + 1)
+              .map(({ id }) => id)
+              .filter(
+                (col) => !OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS.includes(col),
+              ),
+          ];
 
           // Need to make it so at the time of switching, if there are hidden columns in between the frozen and target, the visible targets are moved to the left of the hidden columns
 
@@ -414,10 +419,10 @@ export const ObjectSearchResults = ({
         }
       }
 
-      setShowStickyColumnDropZones(false);
+      setShowFrozenColumnDropZones(false);
     },
-    onDragCancel(event) {
-      setShowStickyColumnDropZones(false);
+    onDragCancel() {
+      setShowFrozenColumnDropZones(false);
     },
   });
 
@@ -429,19 +434,6 @@ export const ObjectSearchResults = ({
         onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
         onMouseLeave={() => setHoveredRow(null)}
       >
-        {/* {virtualColumns.right.length > 0 && hoveredRow !== null && (
-          <RowActions
-            onInfoClick={
-              setPanelObject
-                ? (obj) => setPanelObject(convertParsedObjectToIdentifier(obj))
-                : undefined
-            }
-            activeRowIndex={hoveredRow}
-            virtualColumns={virtualColumns.right}
-            rows={rows}
-            virtualRows={rowVirtualizer.virtualItems}
-          />
-        )} */}
         {headers && (
           <div style={totalVirtualSizes} className="relative flex min-h-full">
             {virtualColumns.left.length > 0 && (
@@ -450,12 +442,18 @@ export const ObjectSearchResults = ({
                 virtualColumns={virtualColumns.left}
                 virtualRows={rowVirtualizer.virtualItems}
                 headers={headers}
-                width={leftGridTotalSize}
+                leftGridSize={leftGridTotalSize}
                 rows={rows as Row<ParsedSkylarkObject>[]}
-                showShadow={hasScrolledRight}
+                hasScrolledRight={hasScrolledRight}
                 panelObject={panelObject || null}
                 hoveredRow={hoveredRow}
                 setHoveredRow={setHoveredRow}
+                totalVirtualSizes={totalVirtualSizes}
+                showFrozenColumnDropZones={showFrozenColumnDropZones}
+                numberFrozenColumns={
+                  frozenColumns.length -
+                  OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS.length
+                }
               />
             )}
             <GridDivider
@@ -466,6 +464,7 @@ export const ObjectSearchResults = ({
               <RightGrid
                 table={table}
                 totalVirtualSizes={totalVirtualSizes}
+                hasScrolledRight={hasScrolledRight}
                 virtualColumns={virtualColumns.right}
                 virtualRows={rowVirtualizer.virtualItems}
                 headers={headers}
@@ -474,7 +473,11 @@ export const ObjectSearchResults = ({
                 panelObject={panelObject || null}
                 hoveredRow={hoveredRow}
                 setHoveredRow={setHoveredRow}
-                showStickyColumnDropZones={showStickyColumnDropZones}
+                showFrozenColumnDropZones={showFrozenColumnDropZones}
+                numberFrozenColumns={
+                  frozenColumns.length -
+                  OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS.length
+                }
               />
             )}
           </div>
@@ -484,29 +487,53 @@ export const ObjectSearchResults = ({
   );
 };
 
+interface GridProps {
+  table: Table<ParsedSkylarkObject>;
+  totalVirtualSizes: { height: number; width: number };
+  rows: Row<ParsedSkylarkObject>[];
+  virtualRows: VirtualItem[];
+  virtualColumns: VirtualItem[];
+  headers: Header<ParsedSkylarkObject, string>[];
+  leftGridSize: number;
+  panelObject: SkylarkObjectIdentifier | null;
+  hoveredRow: number | null;
+  setHoveredRow: (rowId: number | null) => void;
+  showFrozenColumnDropZones: boolean;
+  numberFrozenColumns: number;
+  hasScrolledRight: boolean;
+}
+
 const LeftGrid = ({
   table,
+  totalVirtualSizes,
   virtualRows,
-  width,
+  leftGridSize: width,
   rows,
-  showShadow,
+  hasScrolledRight: showShadow,
   virtualColumns,
   headers,
   panelObject,
   hoveredRow,
+  showFrozenColumnDropZones,
   setHoveredRow,
-}: {
-  table: Table<ParsedSkylarkObject>;
-  virtualRows: VirtualItem[];
-  width: number;
-  rows: Row<ParsedSkylarkObject>[];
-  showShadow: boolean;
-  virtualColumns: VirtualItem[];
-  headers: Header<ParsedSkylarkObject, string>[];
-  panelObject: SkylarkObjectIdentifier | null;
-  hoveredRow: number | null;
-  setHoveredRow: (rowId: number | null) => void;
-}) => {
+}: GridProps) => {
+  const visiblePermanentFrozenColumns = headers.filter((header) =>
+    OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS.includes(header.id),
+  );
+
+  // Drop area should show on Display name field and all others apart from the last frozen one
+  const unfreezableVirtualColumns = virtualColumns.slice(
+    visiblePermanentFrozenColumns.length,
+    virtualColumns.length - 1,
+  );
+
+  const unfreezeAllDropzone =
+    visiblePermanentFrozenColumns[visiblePermanentFrozenColumns.length - 1];
+  const unfreezeAllDropzoneWidth = visiblePermanentFrozenColumns.reduce(
+    (total, header) => total + header.getSize(),
+    0,
+  );
+
   return (
     <div
       className="relative left-0 z-[5] h-full transition-shadow md:sticky"
@@ -515,7 +542,23 @@ const LeftGrid = ({
         boxShadow: showShadow ? "-2px 0px 10px 0px #BBB" : undefined,
       }}
     >
-      {virtualColumns.length > 0 && hoveredRow !== null && (
+      {showFrozenColumnDropZones && (
+        <FrozenColumnDropzone
+          columnId={unfreezeAllDropzone.id}
+          height={totalVirtualSizes.height}
+          leftGridSize={0}
+          width={unfreezeAllDropzoneWidth}
+          virtualColumn={virtualColumns[0]}
+        />
+      )}
+      <FrozenColumnDropzones
+        show={showFrozenColumnDropZones}
+        dropzoneColumns={unfreezableVirtualColumns}
+        leftGridSize={0}
+        height={totalVirtualSizes.height}
+        headers={headers}
+      />
+      {virtualColumns.length > 0 && width >= 110 && hoveredRow !== null && (
         <RowActions
           onInfoClick={
             table.options.meta?.onObjectClick
@@ -543,8 +586,8 @@ const LeftGrid = ({
             <HeaderCell
               key={`left-grid-header-${header.id}`}
               header={header}
-              height={virtualRows[0].size}
               virtualColumn={virtualColumn}
+              onMouseEnter={() => setHoveredRow(null)}
             />
           );
         })}
@@ -594,10 +637,6 @@ const GridDivider = ({
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: "MODIFY_FROZEN_COLUMNS",
-      // data: {
-      //   column,
-      // },
-      // disabled: !isDraggable,
     });
 
   const style: CSSProperties | undefined = transform
@@ -620,21 +659,14 @@ const GridDivider = ({
             }
           : { ...previousValue, current: event.delta.y },
       );
-      // const rect =
-      //   event.activatorEvent.currentTarget?.getBoundingClientRect?.();
-      // const y = event.activatorEvent?.clientY - rect.top;
-      // setMousePosition(y);
     },
-    // onDragOver(event) {},
-    // onDragEnd(event) {},
-    // onDragCancel(event) {},
   });
 
   return (
     <div
       // The mt- needs to match the -top- in the element below
       className={clsx(
-        "group/grid-divider bg-red- sticky right-0 z-[5] -ml-4 mt-10 w-3 ",
+        "group/grid-divider sticky right-0 z-[5] -ml-4 mt-10 w-3 ",
         isDragging && "cursor-grabbing",
       )}
       style={{
@@ -677,7 +709,7 @@ const GridDivider = ({
   );
 };
 
-const StickyColumnDropzone = ({
+const FrozenColumnDropzone = ({
   columnId,
   height,
   width,
@@ -695,7 +727,6 @@ const StickyColumnDropzone = ({
     data: {
       columnId,
     },
-    // disabled: !isDraggable,
   });
 
   return (
@@ -704,8 +735,6 @@ const StickyColumnDropzone = ({
       style={{
         height,
         width: width - 10,
-
-        // transform: `translateX(${virtualColumn.start - leftGridSize}px)`,
         left: virtualColumn.start - leftGridSize + 10,
       }}
       className={clsx(
@@ -713,6 +742,42 @@ const StickyColumnDropzone = ({
         isOver ? "border-r border-r-brand-primary " : "bg-transparent",
       )}
     />
+  );
+};
+
+const FrozenColumnDropzones = ({
+  show,
+  dropzoneColumns,
+  headers,
+  ...props
+}: {
+  height: number;
+  dropzoneColumns: VirtualItem[];
+  leftGridSize: number;
+  show: boolean;
+  headers: Header<ParsedSkylarkObject, string>[];
+}) => {
+  return show ? (
+    <>
+      {dropzoneColumns.map((virtualColumn) => {
+        const header = headers[virtualColumn.index];
+        const key = `grid-sticky-drop-${virtualColumn.index}`;
+        if (!header) {
+          return <Fragment key={key} />;
+        }
+        return (
+          <FrozenColumnDropzone
+            key={key}
+            {...props}
+            columnId={header.column.id}
+            width={header.getSize()}
+            virtualColumn={virtualColumn}
+          />
+        );
+      })}
+    </>
+  ) : (
+    <></>
   );
 };
 
@@ -727,20 +792,9 @@ const RightGrid = ({
   panelObject,
   hoveredRow,
   setHoveredRow,
-  showStickyColumnDropZones,
-}: {
-  table: Table<ParsedSkylarkObject>;
-  totalVirtualSizes: { height: number; width: number };
-  rows: Row<ParsedSkylarkObject>[];
-  virtualRows: VirtualItem[];
-  virtualColumns: VirtualItem[];
-  headers: Header<ParsedSkylarkObject, string>[];
-  leftGridSize: number;
-  panelObject: SkylarkObjectIdentifier | null;
-  hoveredRow: number | null;
-  setHoveredRow: (rowId: number | null) => void;
-  showStickyColumnDropZones: boolean;
-}) => {
+  showFrozenColumnDropZones,
+  numberFrozenColumns,
+}: GridProps) => {
   const [draggedColumn, setDraggedColumn] = useState<{
     id: string;
     width: number;
@@ -769,39 +823,23 @@ const RightGrid = ({
         overColumn.id,
         columnOrder,
       );
+
       setColumnOrder(newColumnOrder);
     }
   }
 
   return (
     <div className="relative">
-      {
-        showStickyColumnDropZones &&
-          // <div
-          //   style={{
-          //     height: virtualRows[0].size,
-          //   }}
-          //   className="absolute top-0 z-[3] w-full bg-white"
-          // >
-          virtualColumns.map((virtualColumn) => {
-            const header = headers[virtualColumn.index];
-            const key = `right-grid-sticky-drop-${virtualColumn.index}`;
-            if (!header) {
-              return <Fragment key={key} />;
-            }
-            return (
-              <StickyColumnDropzone
-                key={key}
-                columnId={header.column.id}
-                height={totalVirtualSizes.height}
-                width={header.getSize()}
-                virtualColumn={virtualColumn}
-                leftGridSize={leftGridSize}
-              />
-            );
-          })
-        // </div>
-      }
+      <FrozenColumnDropzones
+        show={showFrozenColumnDropZones}
+        dropzoneColumns={virtualColumns.slice(
+          0,
+          MAX_FROZEN_COLUMNS - numberFrozenColumns,
+        )}
+        leftGridSize={leftGridSize}
+        height={totalVirtualSizes.height}
+        headers={headers}
+      />
       <DndContext
         onDragEnd={handleDragEnd}
         onDragStart={handleDragStart}
@@ -835,10 +873,10 @@ const RightGrid = ({
               <HeaderCell
                 key={key}
                 header={header}
-                height={virtualRows[0].size}
                 virtualColumn={virtualColumn}
                 paddingLeft={leftGridSize}
                 isDraggable
+                onMouseEnter={() => setHoveredRow(null)}
               />
             );
           })}
@@ -872,16 +910,16 @@ const RightGrid = ({
 
 const HeaderCell = ({
   header,
-  height,
   virtualColumn,
   paddingLeft = 0,
   isDraggable,
+  onMouseEnter,
 }: {
   header: Header<ParsedSkylarkObject, string>;
-  height: number;
   virtualColumn: VirtualItem;
   paddingLeft?: number;
   isDraggable?: boolean;
+  onMouseEnter: () => void;
 }) => {
   const { column } = header;
 
@@ -904,11 +942,10 @@ const HeaderCell = ({
   return (
     <div
       className={clsx(
-        "absolute left-0 top-0 flex select-none items-center bg-white font-medium",
+        "absolute left-0 top-0 flex h-10 select-none items-center bg-white font-medium",
       )}
       style={{
         width: header.getSize(),
-        height,
         transform: `translateX(${
           virtualColumn.start - paddingLeft
         }px) translateY(0px)`,
@@ -916,6 +953,7 @@ const HeaderCell = ({
       ref={(el) => {
         virtualColumn.measureRef(el);
       }}
+      onMouseEnter={onMouseEnter}
     >
       <div
         ref={setDropRef}
@@ -944,57 +982,6 @@ const HeaderCell = ({
           className="absolute right-0 z-[2] mr-1 h-4 w-0.5 cursor-col-resize border-r bg-manatee-200"
         />
       )}
-    </div>
-  );
-};
-
-const DataCell = ({
-  virtualColumn,
-  virtualRow,
-  paddingLeft = 0,
-  cell,
-}: {
-  virtualColumn: VirtualItem;
-  virtualRow: VirtualItem;
-  paddingLeft?: number;
-  cell: Cell<ParsedSkylarkObject, unknown>;
-}) => {
-  const cellContext = cell.getContext();
-
-  return (
-    <div
-      ref={(el) => {
-        virtualColumn.measureRef(el);
-      }}
-      className={clsx(
-        "absolute left-0 top-0 flex cursor-pointer items-center bg-white",
-        columnsWithoutResize.includes(cell.column.id) ? "" : "px-1.5",
-      )}
-      style={{
-        transform: `translateX(${
-          virtualColumn.start - paddingLeft
-        }px) translateY(${virtualRow.start}px)`,
-        width: `${virtualColumn.size}px`,
-        height: `${virtualRow.size}px`,
-      }}
-      onClick={() => {
-        cellContext.table.options?.meta?.onObjectClick?.(
-          convertParsedObjectToIdentifier(cell.row.original),
-        );
-      }}
-    >
-      <div
-        className={clsx(
-          headAndDataClassNames,
-          "inline-block max-h-full w-full select-text py-0.5",
-          [
-            OBJECT_LIST_TABLE.columnIds.images,
-            OBJECT_LIST_TABLE.columnIds.actions,
-          ].includes(cell.column.id) && "h-full",
-        )}
-      >
-        {flexRender(cell.column.columnDef.cell, cellContext)}
-      </div>
     </div>
   );
 };
@@ -1088,11 +1075,6 @@ const DataRow = ({
 
         const cellContext = cell.getContext();
 
-        const { config }: { config: ParsedSkylarkObjectConfig | null } =
-          cellContext.table.options.meta?.objectTypesWithConfig?.find(
-            ({ objectType }) => objectType === row.original.objectType,
-          ) || { config: null };
-
         return (
           <div
             key={key}
@@ -1129,13 +1111,6 @@ const DataRow = ({
               }
             }}
           >
-            {isLeft &&
-              cell.column.id === OBJECT_LIST_TABLE.columnIds.displayField && (
-                <div
-                  className=" -bottom-0.5 -left-2 -top-0.5 mr-2 h-6 w-1 bg-manatee-300"
-                  style={{ background: config ? config.colour : undefined }}
-                ></div>
-              )}
             <div
               className={clsx(
                 headAndDataClassNames,
@@ -1143,7 +1118,6 @@ const DataRow = ({
                 [
                   OBJECT_LIST_TABLE.columnIds.dragIcon,
                   OBJECT_LIST_TABLE.columnIds.images,
-                  OBJECT_LIST_TABLE.columnIds.actions,
                 ].includes(cell.column.id) && "h-full",
               )}
             >
