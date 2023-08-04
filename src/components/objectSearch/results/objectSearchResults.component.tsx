@@ -4,6 +4,7 @@ import {
   DragOverlay,
   DragStartEvent,
   useDndContext,
+  useDndMonitor,
   useDraggable,
   useDroppable,
 } from "@dnd-kit/core";
@@ -31,6 +32,7 @@ import {
   useEffect,
   memo,
   Fragment,
+  CSSProperties,
 } from "react";
 import { VirtualItem, defaultRangeExtractor, useVirtual } from "react-virtual";
 
@@ -59,7 +61,7 @@ import {
   createObjectListingColumns,
 } from "./table/columnConfiguration";
 
-const frozenColumns = [
+const initialFrozenColumns = [
   OBJECT_LIST_TABLE.columnIds.dragIcon,
   OBJECT_LIST_TABLE.columnIds.checkbox,
   // OBJECT_LIST_TABLE.columnIds.objectType,
@@ -300,11 +302,16 @@ export const ObjectSearchResults = ({
     },
   });
 
+  const [frozenColumns, setFrozenColumns] =
+    useState<string[]>(initialFrozenColumns);
+
+  const visibleColumns = table.getVisibleFlatColumns();
+
   const frozenColumnsParsedColumnsIndexes = useMemo(
     () =>
       frozenColumns
         .map((col) =>
-          parsedColumns.findIndex(
+          visibleColumns.findIndex(
             (header) =>
               header.id === col ||
               (hasProperty(header, "accessorKey") &&
@@ -312,7 +319,7 @@ export const ObjectSearchResults = ({
           ),
         )
         .filter((num) => num > -1),
-    [parsedColumns],
+    [frozenColumns, visibleColumns],
   );
 
   const headers = table.getHeaderGroups()[0].headers;
@@ -353,6 +360,8 @@ export const ObjectSearchResults = ({
   const { rows } = table.getRowModel();
   const columns = table.getAllColumns();
 
+  console.log({ columns });
+
   const leftGridTotalSize = columns
     .filter((col) => frozenColumns.includes(col.id))
     .reduce((total, col) => total + col.getSize(), 0);
@@ -365,6 +374,52 @@ export const ObjectSearchResults = ({
     height: rowVirtualizer.totalSize,
     width: columnVirtualizer.totalSize,
   };
+
+  const [showStickyColumnDropZones, setShowStickyColumnDropZones] =
+    useState(false);
+
+  useDndMonitor({
+    onDragStart(event) {
+      console.log({ event });
+      if (event.active.id === "MODIFY_FROZEN_COLUMNS") {
+        setShowStickyColumnDropZones(true);
+      }
+    },
+    onDragEnd(event) {
+      if (event.active.id === "MODIFY_FROZEN_COLUMNS") {
+        console.log("end", { event });
+        const dropzoneColumnId = event.over?.data.current?.columnId;
+        if (dropzoneColumnId) {
+          const isFrozen = frozenColumns.includes(dropzoneColumnId);
+
+          const columnIndex = visibleColumns.findIndex(
+            (col) => col.id === dropzoneColumnId,
+          );
+
+          const updatedFrozenColumns = visibleColumns
+            .slice(0, columnIndex + 1)
+            .map(({ id }) => id);
+
+          console.log({
+            dropzoneColumnId,
+            frozenColumns,
+            isFrozen,
+            columnIndex,
+            updatedFrozenColumns,
+          });
+
+          // Need to make it so at the time of switching, if there are hidden columns in between the frozen and target, the visible targets are moved to the left of the hidden columns
+
+          setFrozenColumns(updatedFrozenColumns);
+        }
+      }
+
+      setShowStickyColumnDropZones(false);
+    },
+    onDragCancel(event) {
+      setShowStickyColumnDropZones(false);
+    },
+  });
 
   return (
     <>
@@ -403,6 +458,10 @@ export const ObjectSearchResults = ({
                 setHoveredRow={setHoveredRow}
               />
             )}
+            <GridDivider
+              leftGridSize={leftGridTotalSize}
+              totalVirtualSizes={totalVirtualSizes}
+            />
             {virtualColumns.right.length > 0 && (
               <RightGrid
                 table={table}
@@ -415,6 +474,7 @@ export const ObjectSearchResults = ({
                 panelObject={panelObject || null}
                 hoveredRow={hoveredRow}
                 setHoveredRow={setHoveredRow}
+                showStickyColumnDropZones={showStickyColumnDropZones}
               />
             )}
           </div>
@@ -475,7 +535,7 @@ const LeftGrid = ({
         style={{
           height: virtualRows[0].size,
         }}
-        className="sticky top-0 z-[4] w-full"
+        className="sticky top-0 z-[6] w-full"
       >
         {virtualColumns.map((virtualColumn) => {
           const header = headers[virtualColumn.index];
@@ -514,6 +574,148 @@ const LeftGrid = ({
   );
 };
 
+const GridDivider = ({
+  leftGridSize,
+  totalVirtualSizes,
+}: {
+  leftGridSize: number;
+  totalVirtualSizes: { height: number; width: number };
+}) => {
+  const [mousePosition, setMousePosition] = useState(0);
+  const [dragDelta, setDragDelta] = useState<{
+    initial: number;
+    current: number;
+  } | null>(null);
+
+  const dragPositionDifference = dragDelta
+    ? dragDelta.current - dragDelta.initial
+    : 0;
+
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: "MODIFY_FROZEN_COLUMNS",
+      // data: {
+      //   column,
+      // },
+      // disabled: !isDraggable,
+    });
+
+  const style: CSSProperties | undefined = transform
+    ? {
+        transform: `translate3d(${transform.x}px, 0px, 0)`,
+        left: 0,
+        display: "block",
+        zIndex: 6,
+        // position: "sticky",
+      }
+    : undefined;
+
+  useDndMonitor({
+    onDragMove(event) {
+      setDragDelta((previousValue) =>
+        previousValue === null
+          ? {
+              initial: event.delta.y,
+              current: event.delta.y,
+            }
+          : { ...previousValue, current: event.delta.y },
+      );
+      // const rect =
+      //   event.activatorEvent.currentTarget?.getBoundingClientRect?.();
+      // const y = event.activatorEvent?.clientY - rect.top;
+      // setMousePosition(y);
+    },
+    // onDragOver(event) {},
+    // onDragEnd(event) {},
+    // onDragCancel(event) {},
+  });
+
+  return (
+    <div
+      // The mt- needs to match the -top- in the element below
+      className={clsx(
+        "group/grid-divider bg-red- sticky right-0 z-[5] -ml-4 mt-10 w-3 ",
+        isDragging && "cursor-grabbing",
+      )}
+      style={{
+        left: leftGridSize - 5,
+        height: totalVirtualSizes.height,
+        ...style,
+      }}
+      onMouseMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        setMousePosition(y);
+      }}
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+    >
+      <div
+        className={clsx(
+          "absolute -top-10 bottom-0 left-1 h-full w-px rounded-full bg-manatee-200",
+          isDragging
+            ? "block cursor-grabbing"
+            : "hidden group-hover/grid-divider:block",
+        )}
+        // style={style}
+      ></div>
+      <button
+        className={clsx(
+          "absolute -top-4 left-px h-8 w-2 cursor-grab rounded-full bg-brand-primary",
+          isDragging
+            ? "block cursor-grabbing"
+            : "hidden group-hover/grid-divider:block",
+        )}
+        style={{
+          transform: isDragging
+            ? `translateY(${mousePosition + dragPositionDifference - 5}px)`
+            : `translateY(${mousePosition}px)`,
+        }}
+      ></button>
+    </div>
+  );
+};
+
+const StickyColumnDropzone = ({
+  columnId,
+  height,
+  width,
+  virtualColumn,
+  leftGridSize,
+}: {
+  columnId: string;
+  height: number;
+  width: number;
+  virtualColumn: VirtualItem;
+  leftGridSize: number;
+}) => {
+  const { isOver, setNodeRef } = useDroppable({
+    id: `FROZEN_COLUMN_${virtualColumn.index}`,
+    data: {
+      columnId,
+    },
+    // disabled: !isDraggable,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        height,
+        width: width - 10,
+
+        // transform: `translateX(${virtualColumn.start - leftGridSize}px)`,
+        left: virtualColumn.start - leftGridSize + 10,
+      }}
+      className={clsx(
+        "absolute top-0 z-[6]",
+        isOver ? "border-r border-r-brand-primary " : "bg-transparent",
+      )}
+    />
+  );
+};
+
 const RightGrid = ({
   table,
   totalVirtualSizes,
@@ -525,6 +727,7 @@ const RightGrid = ({
   panelObject,
   hoveredRow,
   setHoveredRow,
+  showStickyColumnDropZones,
 }: {
   table: Table<ParsedSkylarkObject>;
   totalVirtualSizes: { height: number; width: number };
@@ -536,6 +739,7 @@ const RightGrid = ({
   panelObject: SkylarkObjectIdentifier | null;
   hoveredRow: number | null;
   setHoveredRow: (rowId: number | null) => void;
+  showStickyColumnDropZones: boolean;
 }) => {
   const [draggedColumn, setDraggedColumn] = useState<{
     id: string;
@@ -543,7 +747,6 @@ const RightGrid = ({
   } | null>(null);
 
   function handleDragStart(event: DragStartEvent) {
-    console.log("start", { event });
     if (event.active.data.current?.column) {
       const column = event.active.data.current.column as Column<object>;
       column.getSize();
@@ -566,19 +769,39 @@ const RightGrid = ({
         overColumn.id,
         columnOrder,
       );
-
-      console.log("end", {
-        event,
-        draggedColumn,
-        overColumn,
-        columnOrder,
-        newColumnOrder,
-      });
       setColumnOrder(newColumnOrder);
     }
   }
+
   return (
     <div className="relative">
+      {
+        showStickyColumnDropZones &&
+          // <div
+          //   style={{
+          //     height: virtualRows[0].size,
+          //   }}
+          //   className="absolute top-0 z-[3] w-full bg-white"
+          // >
+          virtualColumns.map((virtualColumn) => {
+            const header = headers[virtualColumn.index];
+            const key = `right-grid-sticky-drop-${virtualColumn.index}`;
+            if (!header) {
+              return <Fragment key={key} />;
+            }
+            return (
+              <StickyColumnDropzone
+                key={key}
+                columnId={header.column.id}
+                height={totalVirtualSizes.height}
+                width={header.getSize()}
+                virtualColumn={virtualColumn}
+                leftGridSize={leftGridSize}
+              />
+            );
+          })
+        // </div>
+      }
       <DndContext
         onDragEnd={handleDragEnd}
         onDragStart={handleDragStart}
@@ -599,7 +822,7 @@ const RightGrid = ({
           style={{
             height: virtualRows[0].size,
           }}
-          className="sticky top-0 z-[1] w-full bg-white"
+          className="sticky top-0 z-[3] w-full bg-white"
         >
           {virtualColumns.map((virtualColumn) => {
             const header = headers[virtualColumn.index];
@@ -858,13 +1081,6 @@ const DataRow = ({
       {virtualColumns.map((virtualColumn) => {
         const cell = row.getVisibleCells()[virtualColumn.index];
         const key = `${draggableId}-data-${virtualRow.index}-${virtualColumn.index}`;
-
-        // console.log({
-        //   cell,
-        //   virtualColumn,
-        //   vis: row.getVisibleCells(),
-        //   isLeft,
-        // });
 
         if (!cell) {
           return <Fragment key={`${key}+1`} />;

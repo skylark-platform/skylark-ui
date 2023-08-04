@@ -33,22 +33,13 @@ export const RowActions = ({
 
   const transform = `translateY(${activeVirtualRow.start}px)`;
 
-  console.log({
-    virtualRows,
-    virtualColumns,
-    rows,
-    activeRow,
-    activeVirtualRow,
-    transform,
-  });
-
   return (
     <div
       style={{
         height: activeVirtualRow.size,
         transform,
       }}
-      className="absolute right-0 z-10 hidden items-center justify-center space-x-0.5 bg-manatee-50 text-center sm:flex sm:px-0.5 md:px-1"
+      className="absolute right-0 z-[3] hidden items-center justify-center space-x-0.5 bg-manatee-50 text-center sm:flex sm:px-0.5 md:px-1"
     >
       {onInfoClick && (
         <button onClick={() => onInfoClick(object)} aria-label="object-info">
