@@ -55,6 +55,9 @@ module.exports = {
       maxWidth: (theme) => ({
         ...theme("spacing"),
       }),
+      boxShadow: {
+        "object-search-divider": "-2px 0px 10px 0px #BBB",
+      },
     },
   },
   daisyui: {

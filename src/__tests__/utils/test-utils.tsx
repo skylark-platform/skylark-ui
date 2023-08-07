@@ -1,3 +1,4 @@
+import { DndContext } from "@dnd-kit/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, RenderOptions } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -25,9 +26,11 @@ const AllTheProviders = ({ children }: { children: ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <PlausibleProvider domain={""} enabled={false}>
-        <UserProvider>
-          <LazyMotion features={domMax}>{children}</LazyMotion>
-        </UserProvider>
+        <DndContext>
+          <UserProvider>
+            <LazyMotion features={domMax}>{children}</LazyMotion>
+          </UserProvider>
+        </DndContext>
       </PlausibleProvider>
     </QueryClientProvider>
   );

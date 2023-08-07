@@ -1,13 +1,4 @@
-import {
-  DndContext,
-  DragEndEvent,
-  DragOverlay,
-  DragStartEvent,
-  useDndContext,
-  useDndMonitor,
-  useDraggable,
-  useDroppable,
-} from "@dnd-kit/core";
+import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import {
@@ -41,6 +32,7 @@ import { VirtualItem, defaultRangeExtractor, useVirtual } from "react-virtual";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { RowActions } from "src/components/objectSearch/rowActions";
 import { ObjectTypePill } from "src/components/pill";
+import { Skeleton } from "src/components/skeleton";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { PanelTab } from "src/hooks/state";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
@@ -50,6 +42,13 @@ import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
+import {
+  DragEndEvent,
+  DragStartEvent,
+  useDraggable,
+  useDroppable,
+  useDndMonitor,
+} from "src/lib/dndkit/dndkit";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
   getObjectDisplayName,
@@ -303,7 +302,6 @@ export const ObjectSearchResults = ({
       batchCheckRows,
       onObjectClick: setPanelObject,
       hoveredRow,
-      setHoveredRow,
     },
   });
 
@@ -386,13 +384,18 @@ export const ObjectSearchResults = ({
     useState(false);
 
   useDndMonitor({
-    onDragStart(event) {
-      if (event.active.id === "MODIFY_FROZEN_COLUMNS") {
+    onDragStart(event: DragStartEvent) {
+      if (
+        event.active.data.current.type === "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS"
+      ) {
         setShowFrozenColumnDropZones(true);
       }
+      console.log({ event });
     },
     onDragEnd(event) {
-      if (event.active.id === "MODIFY_FROZEN_COLUMNS") {
+      if (
+        event.active.data.current.type === "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS"
+      ) {
         const dropzoneColumnId = event.over?.data.current?.columnId;
         if (dropzoneColumnId) {
           const orderedVisibleColumns = [...visibleColumns].sort(
@@ -430,12 +433,21 @@ export const ObjectSearchResults = ({
     <>
       <div
         ref={tableContainerRef}
-        className="relative min-h-full overflow-auto overscroll-contain text-sm"
+        className={clsx(
+          "relative min-h-full overscroll-contain text-sm",
+          formattedSearchData && formattedSearchData.length > 0
+            ? "overflow-auto"
+            : "overflow-hidden",
+        )}
         onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
         onMouseLeave={() => setHoveredRow(null)}
       >
         {headers && (
-          <div style={totalVirtualSizes} className="relative flex min-h-full">
+          <div
+            style={totalVirtualSizes}
+            className="relative flex min-h-full"
+            data-testid="object-search-results-content"
+          >
             {virtualColumns.left.length > 0 && (
               <LeftGrid
                 table={table}
@@ -454,6 +466,7 @@ export const ObjectSearchResults = ({
                   frozenColumns.length -
                   OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS.length
                 }
+                showSkeletonRows={hasNextPage || isFetchingNextPage || false}
               />
             )}
             <GridDivider
@@ -478,9 +491,14 @@ export const ObjectSearchResults = ({
                   frozenColumns.length -
                   OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS.length
                 }
+                showSkeletonRows={hasNextPage || isFetchingNextPage || false}
               />
             )}
           </div>
+        )}
+
+        {formattedSearchData && formattedSearchData.length === 0 && (
+          <p className="absolute left-2 right-5 top-14 text-manatee-600 md:left-8">{`No results containing all your search terms were found.`}</p>
         )}
       </div>
     </>
@@ -501,6 +519,7 @@ interface GridProps {
   showFrozenColumnDropZones: boolean;
   numberFrozenColumns: number;
   hasScrolledRight: boolean;
+  showSkeletonRows: boolean;
 }
 
 const LeftGrid = ({
@@ -515,6 +534,7 @@ const LeftGrid = ({
   panelObject,
   hoveredRow,
   showFrozenColumnDropZones,
+  showSkeletonRows,
   setHoveredRow,
 }: GridProps) => {
   const visiblePermanentFrozenColumns = headers.filter((header) =>
@@ -536,10 +556,12 @@ const LeftGrid = ({
 
   return (
     <div
-      className="relative left-0 z-[5] h-full transition-shadow md:sticky"
+      className={clsx(
+        "left-0 z-[5] h-full transition-shadow md:sticky",
+        showShadow && "md:shadow-object-search-divider",
+      )}
       style={{
         width,
-        boxShadow: showShadow ? "-2px 0px 10px 0px #BBB" : undefined,
       }}
     >
       {showFrozenColumnDropZones && (
@@ -613,6 +635,75 @@ const LeftGrid = ({
           />
         );
       })}
+      {showSkeletonRows && (
+        <GridSkeleton
+          virtualColumns={virtualColumns}
+          virtualRows={virtualRows}
+          headers={headers}
+          totalVirtualSizes={totalVirtualSizes}
+          paddingLeft={0}
+          className="bg-white"
+        />
+      )}
+    </div>
+  );
+};
+
+const GridSkeleton = ({
+  virtualRows,
+  virtualColumns,
+  totalVirtualSizes,
+  headers,
+  paddingLeft,
+  className,
+}: {
+  virtualRows: VirtualItem[];
+  virtualColumns: VirtualItem[];
+  totalVirtualSizes: { height: number; width: number };
+  headers: Header<ParsedSkylarkObject, string>[];
+  paddingLeft: number;
+  className?: string;
+}) => {
+  const lastVirtualRow = virtualRows[virtualRows.length - 1];
+  return (
+    <div
+      className={clsx("absolute", className)}
+      style={{
+        left: virtualColumns[0].start - paddingLeft,
+        top: totalVirtualSizes.height,
+      }}
+    >
+      {[...Array(15)].map((e, i) => {
+        return (
+          <div key={`skeleton-row-${i}`} className="relative flex h-10">
+            {virtualColumns.map((virtualColumn) => {
+              const columnId = headers[virtualColumn.index]?.id;
+              return (
+                <div
+                  key={`skeleton-row-${i}-column-${virtualColumn.index}`}
+                  style={{
+                    width: virtualColumn.size,
+                    height: lastVirtualRow.size,
+                  }}
+                >
+                  <div className="flex h-full w-full items-center justify-start">
+                    <Skeleton
+                      className={clsx(
+                        "h-5",
+                        columnId === OBJECT_LIST_TABLE.columnIds.dragIcon &&
+                          "hidden",
+                        columnId === OBJECT_LIST_TABLE.columnIds.checkbox
+                          ? "w-5"
+                          : "ml-1 w-[90%]",
+                      )}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -636,6 +727,7 @@ const GridDivider = ({
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
+      type: "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS",
       id: "MODIFY_FROZEN_COLUMNS",
     });
 
@@ -645,7 +737,6 @@ const GridDivider = ({
         left: 0,
         display: "block",
         zIndex: 6,
-        // position: "sticky",
       }
     : undefined;
 
@@ -666,7 +757,7 @@ const GridDivider = ({
     <div
       // The mt- needs to match the -top- in the element below
       className={clsx(
-        "group/grid-divider sticky right-0 z-[5] -ml-4 mt-10 w-3 ",
+        "group/grid-divider sticky right-0 z-[5] -ml-4 mt-10 hidden w-3 md:block",
         isDragging && "cursor-grabbing",
       )}
       style={{
@@ -690,7 +781,6 @@ const GridDivider = ({
             ? "block cursor-grabbing"
             : "hidden group-hover/grid-divider:block",
         )}
-        // style={style}
       ></div>
       <button
         className={clsx(
@@ -723,6 +813,7 @@ const FrozenColumnDropzone = ({
   leftGridSize: number;
 }) => {
   const { isOver, setNodeRef } = useDroppable({
+    type: "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS",
     id: `FROZEN_COLUMN_${virtualColumn.index}`,
     data: {
       columnId,
@@ -794,6 +885,7 @@ const RightGrid = ({
   setHoveredRow,
   showFrozenColumnDropZones,
   numberFrozenColumns,
+  showSkeletonRows,
 }: GridProps) => {
   const [draggedColumn, setDraggedColumn] = useState<{
     id: string;
@@ -904,6 +996,15 @@ const RightGrid = ({
           />
         );
       })}
+      {showSkeletonRows && (
+        <GridSkeleton
+          virtualColumns={virtualColumns}
+          virtualRows={virtualRows}
+          headers={headers}
+          totalVirtualSizes={totalVirtualSizes}
+          paddingLeft={leftGridSize}
+        />
+      )}
     </div>
   );
 };
@@ -924,6 +1025,7 @@ const HeaderCell = ({
   const { column } = header;
 
   const { isOver, setNodeRef: setDropRef } = useDroppable({
+    type: "OBJECT_SEARCH_REORDER_COLUMNS",
     id: `drop-${column.id}`,
     data: {
       column,
@@ -932,6 +1034,7 @@ const HeaderCell = ({
   });
 
   const { attributes, listeners, setNodeRef } = useDraggable({
+    type: "OBJECT_SEARCH_REORDER_COLUMNS",
     id: `drag-${column.id}`,
     data: {
       column,
@@ -971,7 +1074,7 @@ const HeaderCell = ({
           header.id === OBJECT_LIST_TABLE.columnIds.checkbox ? "" : "px-1.5",
         )}
       >
-        <div className={clsx(headAndDataClassNames)}>
+        <div className={clsx(headAndDataClassNames, "text-manatee-500")}>
           {flexRender(header.column.columnDef.header, header.getContext())}
         </div>
       </div>
@@ -1050,6 +1153,7 @@ const DataRow = ({
 }) => {
   const draggableId = `row-${row.id}-${isLeft ? "left" : ""}`;
   const { attributes, listeners, setNodeRef } = useDraggable({
+    type: "CONTENT_LIBRARY_OBJECT",
     id: `row-${row.id}-${isLeft ? "left" : ""}`,
     data: {
       object: row.original,

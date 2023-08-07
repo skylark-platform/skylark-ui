@@ -50,7 +50,7 @@ test("renders search bar, filters with no objects returned", async () => {
     jest.advanceTimersByTime(2000);
   });
 
-  await screen.findByTestId("object-search-results-table-body");
+  await screen.findByTestId("object-search-results-content");
 
   expect(
     (await screen.findAllByText("Fantastic Mr Fox (All Availabilities)"))[0],
@@ -102,9 +102,7 @@ describe("with object select (checkboxes)", () => {
   test("renders row select checkboxes", async () => {
     await render(<ObjectSearch withObjectSelect />);
 
-    const results = await screen.findByTestId(
-      "object-search-results-table-body",
-    );
+    const results = await screen.findByTestId("object-search-results-content");
 
     const withinResults = within(results);
 
@@ -124,9 +122,7 @@ describe("with object select (checkboxes)", () => {
       />,
     );
 
-    const results = await screen.findByTestId(
-      "object-search-results-table-body",
-    );
+    const results = await screen.findByTestId("object-search-results-content");
 
     const withinResults = within(results);
 
@@ -153,9 +149,7 @@ describe("with object select (checkboxes)", () => {
       />,
     );
 
-    const results = await screen.findByTestId(
-      "object-search-results-table-body",
-    );
+    const results = await screen.findByTestId("object-search-results-content");
 
     const withinResults = within(results);
 
@@ -185,9 +179,7 @@ describe("with object select (checkboxes)", () => {
       />,
     );
 
-    const results = await screen.findByTestId(
-      "object-search-results-table-body",
-    );
+    const results = await screen.findByTestId("object-search-results-content");
 
     const withinResults = within(results);
 
@@ -209,7 +201,7 @@ test("renders search results (with default language)", async () => {
   await screen.findByText("UID"); // Search for table header
   await waitFor(() => {
     expect(
-      screen.getByTestId("object-search-results-table-body"),
+      screen.getByTestId("object-search-results-content"),
     ).toBeInTheDocument();
   });
   // Search for table content
@@ -302,7 +294,7 @@ test("manually filters to only en-gb translated objects", async () => {
   await screen.findByText("Translation");
 
   await waitFor(() => {
-    screen.getByTestId("object-search-results-table-body");
+    screen.getByTestId("object-search-results-content");
   });
 
   expect(
@@ -385,7 +377,7 @@ test("clears the language filter", async () => {
   await screen.findByText("Translation");
 
   await waitFor(() => {
-    screen.getByTestId("object-search-results-table-body");
+    screen.getByTestId("object-search-results-content");
   });
 
   expect(

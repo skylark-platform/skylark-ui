@@ -29,6 +29,5 @@ export declare module "@tanstack/table-core" {
         }[]
       | undefined;
     hoveredRow: number | null;
-    setHoveredRow: (rowId: number | null) => void;
   }
 }

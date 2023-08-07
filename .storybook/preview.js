@@ -1,3 +1,4 @@
+import { DndContext } from "@dnd-kit/core";
 import "@fontsource/inter/300.css";
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
@@ -37,11 +38,13 @@ export const decorators = [
     return (
       <QueryClientProvider client={queryClient}>
         <PlausibleProvider domain={""} enabled={false}>
-          <UserProvider>
-            <LazyMotion features={domMax}>
-              <Story />
-            </LazyMotion>
-          </UserProvider>
+          <DndContext>
+            <UserProvider>
+              <LazyMotion features={domMax}>
+                <Story />
+              </LazyMotion>
+            </UserProvider>
+          </DndContext>
         </PlausibleProvider>
       </QueryClientProvider>
     );

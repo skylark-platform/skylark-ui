@@ -1,14 +1,8 @@
-import {
-  Cell,
-  Table,
-  TableMeta,
-  createColumnHelper,
-} from "@tanstack/react-table";
+import { Cell, Table, createColumnHelper } from "@tanstack/react-table";
 
 import { AvailabilityLabel } from "src/components/availability";
 import { Checkbox } from "src/components/inputs/checkbox";
-import { RowActions } from "src/components/objectSearch/rowActions";
-import { ObjectTypePill, Pill } from "src/components/pill";
+import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { PanelTab } from "src/hooks/state";
 import {
@@ -56,6 +50,7 @@ const dragIconColumn = columnHelper.display({
   id: OBJECT_LIST_TABLE.columnIds.dragIcon,
   header: "",
   size: 20,
+  maxSize: 20,
   cell: ({ cell, row, table }) => {
     const isCheckedRow = isRowChecked(cell, table);
 
@@ -76,6 +71,7 @@ const objectTypeColumn = columnHelper.accessor(
     id: OBJECT_LIST_TABLE.columnIds.objectType,
     header: formatObjectField("Object type"),
     size: 120,
+    minSize: 60,
     cell: ({ cell, row }) => {
       const original = row.original as ParsedSkylarkObject;
       const cellContext = cell.getContext();
@@ -86,7 +82,7 @@ const objectTypeColumn = columnHelper.accessor(
         ) || { config: null };
 
       return (
-        <div className="flex h-full w-full items-center pr-2">
+        <div className="flex h-full w-full items-center pr-0.5">
           <Pill
             label={config?.objectTypeDisplayName || original.objectType}
             bgColor={config?.colour}
@@ -103,6 +99,7 @@ const objectTypeIndicatorColumn = columnHelper.display({
   header: "",
   size: 12,
   maxSize: 12,
+  minSize: 12,
   cell: ({ cell, row }) => {
     const original = row.original as ParsedSkylarkObject;
     const cellContext = cell.getContext();
@@ -127,6 +124,7 @@ const displayNameColumn = columnHelper.accessor(
     id: OBJECT_LIST_TABLE.columnIds.displayField,
     header: formatObjectField("Display Field"),
     size: 280,
+    minSize: 100,
     cell: (props) => <>{props.cell.getValue() as string}</>,
   },
 );
@@ -137,6 +135,7 @@ const translationColumn = columnHelper.accessor(
     id: OBJECT_LIST_TABLE.columnIds.translation,
     header: formatObjectField("Translation"),
     size: 120,
+    minSize: 80,
     cell: (props) => <>{props.cell.getValue() as string}</>,
   },
 );
@@ -145,6 +144,7 @@ const availabilityColumn = columnHelper.accessor("meta.availabilityStatus", {
   id: OBJECT_LIST_TABLE.columnIds.availability,
   header: formatObjectField("Availability"),
   size: 120,
+  minSize: 80,
   cell: ({
     getValue,
     table: {
@@ -177,6 +177,7 @@ const imagesColumn = columnHelper.accessor(OBJECT_LIST_TABLE.columnIds.images, {
   id: OBJECT_LIST_TABLE.columnIds.images,
   header: formatObjectField("Images"),
   size: 100,
+  minSize: 80,
   cell: (props) => {
     const imageRelationships =
       props.getValue<ParsedSkylarkObjectImageRelationship[]>();
@@ -246,6 +247,8 @@ const imagesColumn = columnHelper.accessor(OBJECT_LIST_TABLE.columnIds.images, {
 const selectColumn = columnHelper.display({
   id: OBJECT_LIST_TABLE.columnIds.checkbox,
   size: 24,
+  minSize: 24,
+  maxSize: 24,
   header: ({
     table: {
       options: { meta: tableMeta },
@@ -294,15 +297,15 @@ export const createObjectListingColumns = (
         id: column,
         header: formatObjectField(column),
         size: 200,
+        minSize: 80,
         cell: (props) => <>{props.cell.getValue() as string}</>,
       }),
     );
 
   const orderedColumnArray = [
-    // actionColumn,
     objectTypeIndicatorColumn,
-    displayNameColumn,
     objectTypeColumn,
+    displayNameColumn,
     translationColumn,
     imagesColumn,
     availabilityColumn,

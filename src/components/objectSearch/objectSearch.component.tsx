@@ -52,6 +52,7 @@ export interface ObjectSearchProps {
 
 const initialFrozenColumns = [
   ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+  OBJECT_LIST_TABLE.columnIds.objectType,
   OBJECT_LIST_TABLE.columnIds.displayField,
 ];
 
@@ -275,10 +276,6 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             <div className="flex w-full justify-center">
               <Spinner className="h-10 w-10 animate-spin" />
             </div>
-          )}
-
-          {!isSearching && searchData && searchData.length === 0 && (
-            <p className="md:ml-6">{`No results containing all your search terms were found.`}</p>
           )}
         </div>
       )}

@@ -34,7 +34,7 @@ test("renders the modal", async () => {
   await screen.findByText("UID"); // Search for table header
   await waitFor(() => {
     expect(
-      screen.getByTestId("object-search-results-table-body"),
+      screen.getByTestId("object-search-results-content"),
     ).toBeInTheDocument();
   });
   // Search for table content
@@ -72,7 +72,7 @@ test("calls onModalClose with the selected rows", async () => {
   await screen.findByText("UID"); // Search for table header
   await waitFor(() => {
     expect(
-      screen.getByTestId("object-search-results-table-body"),
+      screen.getByTestId("object-search-results-content"),
     ).toBeInTheDocument();
   });
 
