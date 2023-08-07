@@ -166,7 +166,7 @@ export const PanelHeader = ({
           : "md:py-6",
       )}
     >
-      <div className="flex flex-row pb-2">
+      <div className="flex flex-row items-center pb-2">
         <div className="flex flex-grow items-center space-x-2">
           {!isPage && (
             <>

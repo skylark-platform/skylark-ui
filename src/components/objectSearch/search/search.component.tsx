@@ -94,10 +94,13 @@ export const Search = ({
 
   return (
     <div
-      className={clsx("flex w-full flex-col md:flex-row", className)}
+      className={clsx(
+        "flex w-full flex-col items-center sm:h-10 sm:flex-row",
+        className,
+      )}
       ref={filtersDivRef}
     >
-      <div className="relative flex w-full flex-grow flex-row">
+      <div className="relative flex h-full w-full flex-grow flex-row">
         <SearchInput
           onQueryChange={onQueryChange}
           searchQuery={searchQuery}
@@ -132,7 +135,7 @@ export const Search = ({
         </AnimatePresence>
       </div>
       <div
-        className="mt-2 md:ml-2 md:mt-0"
+        className="mt-2 w-full sm:ml-2 sm:mt-0 sm:w-auto"
         data-testid="object-listing-language-select-container"
       >
         <LanguageSelect

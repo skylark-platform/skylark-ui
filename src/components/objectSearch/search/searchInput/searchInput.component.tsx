@@ -89,7 +89,7 @@ export const SearchInput = ({
       </div>
       {!hideFilters && (
         <button
-          className="flex items-center justify-center space-x-2 rounded-r-full bg-manatee-200 p-2 pl-4 pr-5 focus:outline-brand-primary md:p-3 md:pl-6 md:pr-8"
+          className="flex h-full items-center justify-center space-x-2 rounded-r-full bg-manatee-200 pl-4 pr-5 focus:outline-brand-primary md:pl-6 md:pr-8"
           onClick={toggleFilterOpen}
           aria-label="open-search-filters"
           type="button"

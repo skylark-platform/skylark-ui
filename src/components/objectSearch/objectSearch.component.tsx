@@ -252,21 +252,23 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         )}
       </div>
       {sortedHeaders.length > 0 && (
-        <MemoizedObjectSearchResults
-          {...props}
-          key={searchHash} // This will rerender all results when the searchHash changes - importantly clearing the checkboxes back to an unchecked state
-          tableColumns={parsedTableColumns}
-          fetchNextPage={fetchNextPage}
-          hasNextPage={hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-          searchData={searchData}
-          columnVisibility={columnVisibility}
-          setColumnVisibility={setColumnVisibility}
-          frozenColumns={frozenColumns}
-          setFrozenColumns={setFrozenColumns}
-          columnOrder={columnOrder}
-          setColumnOrder={setColumnOrder}
-        />
+        <div className="flex grow flex-col overflow-hidden">
+          <MemoizedObjectSearchResults
+            {...props}
+            key={searchHash} // This will rerender all results when the searchHash changes - importantly clearing the checkboxes back to an unchecked state
+            tableColumns={parsedTableColumns}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            searchData={searchData}
+            columnVisibility={columnVisibility}
+            setColumnVisibility={setColumnVisibility}
+            frozenColumns={frozenColumns}
+            setFrozenColumns={setFrozenColumns}
+            columnOrder={columnOrder}
+            setColumnOrder={setColumnOrder}
+          />
+        </div>
       )}
       {(isSearching || (searchData && searchData.length === 0)) && (
         <div className="items-top justify-left flex h-96 w-full flex-col space-y-2 text-sm text-manatee-600 md:text-base">
