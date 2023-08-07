@@ -25,6 +25,7 @@ import {
 import {
   DragEndEvent,
   DragStartEvent,
+  DragType,
   useDndMonitor,
   useDraggable,
   useDroppable,
@@ -44,7 +45,7 @@ interface GridProps {
   leftGridSize: number;
   panelObject: SkylarkObjectIdentifier | null;
   hoveredRow: number | null;
-  setHoveredRow: (rowId: number | null) => void;
+  setHoveredRow?: (rowId: number | null) => void;
   showFrozenColumnDropZones: boolean;
   numberFrozenColumns: number;
   hasScrolledRight: boolean;
@@ -210,7 +211,7 @@ export const ObjectSearchResultsLeftGrid = ({
               key={`left-grid-header-${header.id}`}
               header={header}
               virtualColumn={virtualColumn}
-              onMouseEnter={() => setHoveredRow(null)}
+              onMouseEnter={() => setHoveredRow?.(null)}
             />
           );
         })}
@@ -269,7 +270,7 @@ export const ObjectSearchResultGridDivider = ({
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
-      type: "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS",
+      type: DragType.OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS,
       id: "MODIFY_FROZEN_COLUMNS",
     });
 
@@ -355,7 +356,7 @@ const FrozenColumnDropzone = ({
   leftGridSize: number;
 }) => {
   const { isOver, setNodeRef } = useDroppable({
-    type: "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS",
+    type: DragType.OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS,
     id: `FROZEN_COLUMN_${virtualColumn.index}`,
     data: {
       columnId,
@@ -452,6 +453,8 @@ export const ObjectSearchResultsRightGrid = ({
     if (draggedColumn && event.over?.data.current?.column) {
       const overColumn = event.over?.data.current?.column as Column<object>;
 
+      console.log({ columnOrder, overColumn });
+
       const newColumnOrder = reorderColumn(
         draggedColumn.id,
         overColumn.id,
@@ -510,7 +513,7 @@ export const ObjectSearchResultsRightGrid = ({
                 virtualColumn={virtualColumn}
                 paddingLeft={leftGridSize}
                 isDraggable
-                onMouseEnter={() => setHoveredRow(null)}
+                onMouseEnter={() => setHoveredRow?.(null)}
               />
             );
           })}

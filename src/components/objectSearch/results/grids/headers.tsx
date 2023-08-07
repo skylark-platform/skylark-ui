@@ -5,7 +5,7 @@ import { VirtualItem } from "react-virtual";
 import { columnsWithoutResize } from "src/components/objectSearch/results/columnConfiguration";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
-import { useDraggable, useDroppable } from "src/lib/dndkit/dndkit";
+import { DragType, useDraggable, useDroppable } from "src/lib/dndkit/dndkit";
 
 export const HeaderCell = ({
   header,
@@ -23,7 +23,7 @@ export const HeaderCell = ({
   const { column } = header;
 
   const { setNodeRef: setDropRef } = useDroppable({
-    type: "OBJECT_SEARCH_REORDER_COLUMNS",
+    type: DragType.OBJECT_SEARCH_REORDER_COLUMNS,
     id: `drop-${column.id}`,
     data: {
       column,
@@ -32,7 +32,7 @@ export const HeaderCell = ({
   });
 
   const { attributes, listeners, setNodeRef } = useDraggable({
-    type: "OBJECT_SEARCH_REORDER_COLUMNS",
+    type: DragType.OBJECT_SEARCH_REORDER_COLUMNS,
     id: `drag-${column.id}`,
     data: {
       column,

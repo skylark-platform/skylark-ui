@@ -1,4 +1,9 @@
-import { Cell, Table, createColumnHelper } from "@tanstack/react-table";
+import {
+  Cell,
+  CellContext,
+  Table,
+  createColumnHelper,
+} from "@tanstack/react-table";
 
 import { AvailabilityLabel } from "src/components/availability";
 import { Checkbox } from "src/components/inputs/checkbox";
@@ -12,6 +17,7 @@ import {
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectImageRelationship,
 } from "src/interfaces/skylark";
+import { formatReadableDate } from "src/lib/skylark/availability";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
   addCloudinaryOnTheFlyImageTransformation,
@@ -181,6 +187,52 @@ const availabilityColumn = columnHelper.accessor("meta.availabilityStatus", {
   },
 });
 
+const dateCreated = columnHelper.accessor("meta.created", {
+  id: OBJECT_LIST_TABLE.columnIds.dateCreated,
+  header: formatObjectField("Date added"),
+  size: 200,
+  minSize: 100,
+  cell: ({ getValue }) => {
+    const value = getValue();
+    return <>{value ? formatReadableDate(value) : null}</>;
+  },
+});
+
+const dateModified = columnHelper.accessor("meta.modified", {
+  id: OBJECT_LIST_TABLE.columnIds.dateModified,
+  header: formatObjectField("Date modified"),
+  size: 200,
+  minSize: 100,
+  cell: ({ getValue }) => {
+    const value = getValue();
+    return <>{value ? formatReadableDate(value) : null}</>;
+  },
+});
+
+const languageVersion = columnHelper.accessor("meta.versions.language", {
+  id: OBJECT_LIST_TABLE.columnIds.languageVersion,
+  header: formatObjectField("Language Version"),
+  size: 150,
+  minSize: 80,
+  cell: ({ getValue }) => {
+    const value = getValue();
+    return <>{value}</>;
+  },
+});
+
+const globalVersion = columnHelper.accessor("meta.versions.global", {
+  id: OBJECT_LIST_TABLE.columnIds.globalVersion,
+  header: formatObjectField("Global Version"),
+  size: 150,
+  minSize: 80,
+  cell: ({ getValue }) => {
+    const value = getValue();
+    return <>{value}</>;
+  },
+});
+
+// Add language / global versions?
+
 const imagesColumn = columnHelper.accessor(OBJECT_LIST_TABLE.columnIds.images, {
   id: OBJECT_LIST_TABLE.columnIds.images,
   header: formatObjectField("Images"),
@@ -305,7 +357,7 @@ export const createObjectListingColumns = (
         id: column,
         header: formatObjectField(column),
         size: 200,
-        minSize: 80,
+        minSize: 100,
         cell: (props) => <>{props.cell.getValue() as string}</>,
       }),
     );
@@ -318,6 +370,10 @@ export const createObjectListingColumns = (
     imagesColumn,
     availabilityColumn,
     ...createdColumns,
+    dateCreated,
+    dateModified,
+    languageVersion,
+    globalVersion,
   ];
 
   if (opts.withObjectSelect) {

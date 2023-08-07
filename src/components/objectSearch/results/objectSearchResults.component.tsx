@@ -10,7 +10,7 @@ import {
   OnChangeFn,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useRef, useState, useMemo, useCallback, memo } from "react";
+import { useRef, useState, useMemo, useCallback, memo, useEffect } from "react";
 import { VirtualItem, defaultRangeExtractor, useVirtual } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
@@ -151,9 +151,9 @@ export const ObjectSearchResults = ({
   );
 
   // a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
-  // useEffect(() => {
-  //   fetchMoreOnBottomReached(tableContainerRef.current);
-  // }, [fetchMoreOnBottomReached]);
+  useEffect(() => {
+    fetchMoreOnBottomReached(tableContainerRef.current);
+  }, [fetchMoreOnBottomReached]);
 
   const onRowCheckChange = useCallback(
     ({
@@ -221,6 +221,9 @@ export const ObjectSearchResults = ({
   // TODO we may want to refactor this so that hovering doesn't trigger a render
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
 
+  // Disable Table Overflow, hover events - used when dragging
+  const [disableTableEvents, setDisableTableEvents] = useState(false);
+
   const showObjectTypeIndicator =
     !columnVisibility[OBJECT_LIST_TABLE.columnIds.objectType] ||
     frozenColumns.indexOf(OBJECT_LIST_TABLE.columnIds.objectTypeIndicator) +
@@ -251,6 +254,7 @@ export const ObjectSearchResults = ({
       batchCheckRows,
       onObjectClick: setPanelObject,
       hoveredRow,
+      disableTableEvents,
     },
   });
 
@@ -332,14 +336,21 @@ export const ObjectSearchResults = ({
   const [showFrozenColumnDropZones, setShowFrozenColumnDropZones] =
     useState(false);
 
+  const onDragEnd = () => {
+    if (disableTableEvents) setDisableTableEvents(false);
+    if (showFrozenColumnDropZones) setShowFrozenColumnDropZones(false);
+  };
+
   useDndMonitor({
-    onDragStart(event: DragStartEvent) {
-      if (
-        event.active.data.current.type === "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS"
-      ) {
+    onDragStart(event) {
+      const type = event.active.data.current.type;
+
+      if (type === "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS") {
         setShowFrozenColumnDropZones(true);
+        tableContainerRef.current?.scrollTo({ left: 0, behavior: "instant" });
+      } else if (type === "CONTENT_LIBRARY_OBJECT") {
+        setDisableTableEvents(true);
       }
-      console.log({ event });
     },
     onDragEnd(event) {
       if (
@@ -347,6 +358,7 @@ export const ObjectSearchResults = ({
       ) {
         const dropzoneColumnId = event.over?.data.current?.columnId;
         if (dropzoneColumnId) {
+          // When the frozen columns are changed, unfreeze any hidden columns and move to the right of the frozen columns
           const orderedVisibleColumns = [...visibleColumns].sort(
             (a, b) => columnOrder.indexOf(a.id) - columnOrder.indexOf(b.id),
           );
@@ -365,17 +377,31 @@ export const ObjectSearchResults = ({
               ),
           ];
 
-          // Need to make it so at the time of switching, if there are hidden columns in between the frozen and target, the visible targets are moved to the left of the hidden columns
+          // Move newly unfrozen columns to the right
+          const columnsToBeUnfrozen = frozenColumns.filter(
+            (col) => !updatedFrozenColumns.includes(col),
+          );
+
+          if (columnsToBeUnfrozen.length > 0) {
+            const unfrozenColumns = columnOrder.filter(
+              (col) => !updatedFrozenColumns.includes(col),
+            );
+
+            const updatedColumnOrder = [
+              ...updatedFrozenColumns,
+              ...unfrozenColumns,
+            ];
+
+            setColumnOrder(updatedColumnOrder);
+          }
 
           setFrozenColumns(updatedFrozenColumns);
         }
       }
 
-      setShowFrozenColumnDropZones(false);
+      onDragEnd();
     },
-    onDragCancel() {
-      setShowFrozenColumnDropZones(false);
-    },
+    onDragCancel: onDragEnd,
   });
 
   return (
@@ -384,9 +410,11 @@ export const ObjectSearchResults = ({
         ref={tableContainerRef}
         className={clsx(
           "relative min-h-full overscroll-contain text-sm",
-          formattedSearchData && formattedSearchData.length > 0
-            ? "overflow-auto"
-            : "overflow-hidden",
+          !formattedSearchData ||
+            formattedSearchData.length === 0 ||
+            disableTableEvents
+            ? "overflow-hidden"
+            : "overflow-auto",
         )}
         onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
         onMouseLeave={() => setHoveredRow(null)}
@@ -408,7 +436,7 @@ export const ObjectSearchResults = ({
                 hasScrolledRight={hasScrolledRight}
                 panelObject={panelObject || null}
                 hoveredRow={hoveredRow}
-                setHoveredRow={setHoveredRow}
+                setHoveredRow={!disableTableEvents ? setHoveredRow : undefined}
                 totalVirtualSizes={totalVirtualSizes}
                 showFrozenColumnDropZones={showFrozenColumnDropZones}
                 numberFrozenColumns={
@@ -434,7 +462,7 @@ export const ObjectSearchResults = ({
                 leftGridSize={leftGridTotalSize}
                 panelObject={panelObject || null}
                 hoveredRow={hoveredRow}
-                setHoveredRow={setHoveredRow}
+                setHoveredRow={!disableTableEvents ? setHoveredRow : undefined}
                 showFrozenColumnDropZones={showFrozenColumnDropZones}
                 numberFrozenColumns={
                   frozenColumns.length -

@@ -28,6 +28,10 @@ export const OBJECT_LIST_TABLE = {
     availability: "availability",
     images: "images",
     translation: "translation",
+    dateCreated: "meta-date-created",
+    dateModified: "meta-date-modified",
+    languageVersion: "meta-language-version",
+    globalVersion: "meta-global-version",
   },
 };
 export const HREFS = {

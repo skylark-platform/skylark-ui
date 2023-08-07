@@ -9,57 +9,22 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
-import { useDraggable } from "src/lib/dndkit/dndkit";
+import { DragType, useDraggable } from "src/lib/dndkit/dndkit";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
-export const LayoutRow = ({
-  virtualRow,
-  hoveredRow,
-  setHoveredRow,
-  virtualColumns,
-  paddingLeft = 0,
-  panelObject,
-  row,
-  ...props
-}: {
+interface DataRowProps {
   virtualRow: VirtualItem;
   row: Row<ParsedSkylarkObject>;
   virtualColumns: VirtualItem[];
+  isLeft?: boolean;
+}
+
+interface LayoutRowProps extends DataRowProps {
   panelObject: SkylarkObjectIdentifier | null;
   paddingLeft?: number;
-  isLeft?: boolean;
   hoveredRow: number | null;
-  setHoveredRow: (rowId: number | null) => void;
-}) => {
-  const isPanelObject = panelObject && panelObject.uid === row.original.uid;
-  const isHoveredRow = hoveredRow === row.index;
-
-  return (
-    <div
-      data-row={row.id}
-      className={clsx(
-        "absolute left-0 top-0 flex outline-none",
-        !isHoveredRow && !isPanelObject && "bg-white",
-        !isPanelObject && isHoveredRow && "bg-manatee-50",
-        isPanelObject && "bg-manatee-100",
-      )}
-      style={{
-        transform: `translateX(${
-          virtualColumns[0].start - paddingLeft
-        }px) translateY(${virtualRow.start}px)`,
-      }}
-      onMouseEnter={() => setHoveredRow(row.index)}
-    >
-      <DataRow
-        {...props}
-        virtualRow={virtualRow}
-        virtualColumns={virtualColumns}
-        isDraggable={!!panelObject}
-        row={row}
-      />
-    </div>
-  );
-};
+  setHoveredRow?: (rowId: number | null) => void;
+}
 
 const DataRow = ({
   virtualRow,
@@ -67,16 +32,10 @@ const DataRow = ({
   virtualColumns,
   isDraggable,
   isLeft,
-}: {
-  virtualRow: VirtualItem;
-  row: Row<ParsedSkylarkObject>;
-  virtualColumns: VirtualItem[];
-  isDraggable: boolean;
-  isLeft?: boolean;
-}) => {
+}: DataRowProps & { isDraggable: boolean }) => {
   const draggableId = `row-${row.id}-${isLeft ? "left" : ""}`;
   const { attributes, listeners, setNodeRef } = useDraggable({
-    type: "CONTENT_LIBRARY_OBJECT",
+    type: DragType.CONTENT_LIBRARY_OBJECT,
     id: `row-${row.id}-${isLeft ? "left" : ""}`,
     data: {
       object: row.original,
@@ -153,6 +112,46 @@ const DataRow = ({
           </div>
         );
       })}
+    </div>
+  );
+};
+
+export const LayoutRow = ({
+  virtualRow,
+  hoveredRow,
+  setHoveredRow,
+  virtualColumns,
+  paddingLeft = 0,
+  panelObject,
+  row,
+  ...props
+}: LayoutRowProps) => {
+  const isPanelObject = panelObject && panelObject.uid === row.original.uid;
+  const isHoveredRow = hoveredRow === row.index;
+
+  return (
+    <div
+      data-row={row.id}
+      className={clsx(
+        "absolute left-0 top-0 flex outline-none",
+        !isHoveredRow && !isPanelObject && "bg-white",
+        !isPanelObject && isHoveredRow && "bg-manatee-50",
+        isPanelObject && "bg-manatee-100",
+      )}
+      style={{
+        transform: `translateX(${
+          virtualColumns[0].start - paddingLeft
+        }px) translateY(${virtualRow.start}px)`,
+      }}
+      onMouseEnter={() => setHoveredRow?.(row.index)}
+    >
+      <DataRow
+        {...props}
+        virtualRow={virtualRow}
+        virtualColumns={virtualColumns}
+        isDraggable={!!panelObject}
+        row={row}
+      />
     </div>
   );
 };

@@ -29,5 +29,6 @@ export declare module "@tanstack/table-core" {
         }[]
       | undefined;
     hoveredRow: number | null;
+    disableTableEvents: boolean;
   }
 }

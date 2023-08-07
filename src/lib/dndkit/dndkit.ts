@@ -1,20 +1,42 @@
 import * as dndkit from "@dnd-kit/core";
-import { MutableRefObject } from "react";
+import { Column } from "@tanstack/react-table";
+import { MutableRefObject, ReactNode } from "react";
+
+import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 declare type AnyData = Record<string, unknown>;
 
-export type DragType =
-  | "CONTENT_LIBRARY_OBJECT"
-  | "OBJECT_SEARCH_REORDER_COLUMNS"
-  | "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS";
-
-interface DataRef<T> extends dndkit.DataRef<T> {
-  current: dndkit.Data<T> & {
-    type: DragType;
-  };
+export enum DragType {
+  CONTENT_LIBRARY_OBJECT = "CONTENT_LIBRARY_OBJECT",
+  OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS = "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS",
+  OBJECT_SEARCH_REORDER_COLUMNS = "OBJECT_SEARCH_REORDER_COLUMNS",
 }
 
-interface Active<T> extends dndkit.Active {
+type Data<T> = dndkit.Data<T> & {
+  options?: {
+    dragOverlay?: ReactNode;
+    modifiers?: dndkit.Modifiers;
+  };
+} & (
+    | {
+        type: DragType.CONTENT_LIBRARY_OBJECT;
+        object: ParsedSkylarkObject;
+      }
+    | {
+        type: DragType.OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS;
+        columnId: string;
+      }
+    | {
+        type: DragType.OBJECT_SEARCH_REORDER_COLUMNS;
+        column: Column<ParsedSkylarkObject, string>;
+      }
+  );
+
+interface DataRef<T> extends dndkit.DataRef<T> {
+  current: Data<T>;
+}
+
+export interface Active<T = AnyData> extends dndkit.Active {
   id: dndkit.UniqueIdentifier;
   data: DataRef<T>;
   rect: MutableRefObject<{

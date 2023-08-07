@@ -19,12 +19,54 @@ import { DROPPABLE_ID } from "src/constants/skylark";
 import { PanelTab, usePanelObjectState } from "src/hooks/state";
 import { useCheckedObjectsState } from "src/hooks/state";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
-import { DragEndEvent, DragStartEvent } from "src/lib/dndkit/dndkit";
+import {
+  Active,
+  DragEndEvent,
+  DragStartEvent,
+  DragType,
+} from "src/lib/dndkit/dndkit";
 
 const INITIAL_PANEL_PERCENTAGE = 70;
 const MINIMUM_SIZES = {
   objectListing: 425,
   panel: 450,
+};
+
+const ContentLibraryDragOverlay = ({
+  activeDragged,
+  checkedObjects,
+  checkedUids,
+  checkedObjectTypesForDisplay,
+}: {
+  activeDragged?: Active;
+  checkedObjects: ParsedSkylarkObject[];
+  checkedObjectTypesForDisplay: string[];
+  checkedUids: string[];
+}) => {
+  // https://github.com/clauderic/dnd-kit/issues/818#issuecomment-1171367457
+  if (activeDragged?.data.current.options?.dragOverlay) {
+    return <>{activeDragged?.data.current.options.dragOverlay}</>;
+  }
+
+  if (activeDragged?.data.current.type === DragType.CONTENT_LIBRARY_OBJECT) {
+    const draggedObject = activeDragged.data.current.object;
+    return (
+      <div className="max-w-[350px] cursor-grabbing items-center rounded-sm border border-manatee-200 bg-white text-sm">
+        {checkedObjects.length > 0 &&
+        checkedUids.includes(draggedObject.uid) ? (
+          <p className="p-2">{`Add ${checkedObjects.length} ${
+            checkedObjectTypesForDisplay.length === 1
+              ? checkedObjectTypesForDisplay[0]
+              : ""
+          } objects`}</p>
+        ) : (
+          <ObjectIdentifierCard className="px-2" object={draggedObject} />
+        )}
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export const ContentLibrary = () => {
@@ -45,10 +87,13 @@ export const ContentLibrary = () => {
     setCheckedObjects,
   } = useCheckedObjectsState();
 
-  const [draggedObject, setDraggedObject] = useState<
-    ParsedSkylarkObject | undefined
-  >(undefined);
-  const [droppedObject, setDroppedObject] = useState<
+  const [activeDragged, setActiveDragged] = useState<Active | null>(null);
+  const isDraggingObject =
+    (activeDragged &&
+      activeDragged.data.current.type === DragType.CONTENT_LIBRARY_OBJECT) ||
+    false;
+
+  const [droppedObjects, setDroppedObjects] = useState<
     ParsedSkylarkObject[] | undefined
   >(undefined);
   const [windowSize, setWindowSize] = useState(0);
@@ -141,30 +186,25 @@ export const ContentLibrary = () => {
     <DndContext
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onDragCancel={() => setDraggedObject(undefined)}
+      onDragCancel={() => setActiveDragged(null)}
       sensors={sensors}
-      modifiers={[snapCenterToCursor]}
+      modifiers={
+        activeDragged?.data.current.options?.modifiers
+          ? activeDragged.data.current.options.modifiers
+          : [snapCenterToCursor]
+      }
     >
       {typeof window !== "undefined" &&
         document?.body &&
         createPortal(
           <DragOverlay zIndex={99999999} dropAnimation={null}>
-            {draggedObject ? (
-              <div className="max-w-[350px] cursor-grabbing items-center rounded-sm border border-manatee-200 bg-white text-sm">
-                {checkedObjects.length > 0 &&
-                checkedUids.includes(draggedObject.uid) ? (
-                  <p className="p-2">{`Add ${checkedObjects.length} ${
-                    checkedObjectTypesForDisplay.length === 1
-                      ? checkedObjectTypesForDisplay[0]
-                      : ""
-                  } objects`}</p>
-                ) : (
-                  <ObjectIdentifierCard
-                    className="px-2"
-                    object={draggedObject}
-                  />
-                )}
-              </div>
+            {activeDragged ? (
+              <ContentLibraryDragOverlay
+                activeDragged={activeDragged}
+                checkedObjects={checkedObjects}
+                checkedUids={checkedUids}
+                checkedObjectTypesForDisplay={checkedObjectTypesForDisplay}
+              />
             ) : null}
           </DragOverlay>,
           document.body,
@@ -180,11 +220,11 @@ export const ContentLibrary = () => {
           className={clsx(
             "relative w-full max-w-full pl-2 pt-6 md:pl-6 lg:pl-10",
             activePanelObject && "md:w-1/2 lg:w-5/12 xl:w-3/5",
-            !!draggedObject && "pointer-events-none",
+            isDraggingObject && "pointer-events-none",
           )}
           style={{ width: activePanelObject ? objectListingWidth : "100%" }}
         >
-          {!!draggedObject && (
+          {isDraggingObject && (
             <div className="absolute inset-0 z-[100] block bg-black/5"></div>
           )}
           <MemoizedObjectSearch
@@ -229,13 +269,13 @@ export const ContentLibrary = () => {
                 object={activePanelObject}
                 tab={activePanelTab}
                 closePanel={closePanel}
-                isDraggedObject={!!draggedObject}
-                droppedObjects={droppedObject}
+                isDraggedObject={isDraggingObject}
+                droppedObjects={droppedObjects}
                 setPanelObject={setPanelObject}
                 setTab={setPanelTab}
                 navigateToPreviousPanelObject={navigateToPreviousPanelObject}
                 navigateToForwardPanelObject={navigateToForwardPanelObject}
-                clearDroppedObjects={() => setDroppedObject(undefined)}
+                clearDroppedObjects={() => setDroppedObjects(undefined)}
               />
             </div>
           </m.div>
@@ -245,8 +285,8 @@ export const ContentLibrary = () => {
   );
 
   function handleDragStart(event: DragStartEvent) {
-    if (event.active.data.current.type === "CONTENT_LIBRARY_OBJECT") {
-      setDraggedObject(event.active.data.current?.object);
+    if (event.active.data.current.type === DragType.CONTENT_LIBRARY_OBJECT) {
+      setActiveDragged(event.active);
 
       if (activePanelTab === PanelTab.Metadata) {
         setPanelTab(PanelTab.Relationships);
@@ -258,16 +298,19 @@ export const ContentLibrary = () => {
     if (
       event.over &&
       event.over.id === DROPPABLE_ID &&
-      event.active.data.current.type === "CONTENT_LIBRARY_OBJECT" &&
-      draggedObject
+      event.active.data.current.type === DragType.CONTENT_LIBRARY_OBJECT &&
+      activeDragged?.data.current.type === DragType.CONTENT_LIBRARY_OBJECT
     ) {
-      const draggedObjectIsChecked = checkedUids.includes(draggedObject.uid);
+      const draggedObject = activeDragged?.data.current.object;
+      const draggedObjectIsChecked = checkedUids.includes(
+        activeDragged.data.current.object.uid,
+      );
 
       // Like Gmail, if the dragged object is not checked, just use the dragged object
-      setDroppedObject(
+      setDroppedObjects(
         draggedObjectIsChecked ? checkedObjects : [draggedObject],
       );
     }
-    if (draggedObject) setDraggedObject(undefined);
+    if (activeDragged) setActiveDragged(null);
   }
 };
