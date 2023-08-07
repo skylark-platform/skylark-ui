@@ -40,6 +40,14 @@ export const OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS = [
   OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
 ];
 
+export const MAX_FROZEN_COLUMNS = 4;
+
+export const columnsWithoutResize = [
+  OBJECT_LIST_TABLE.columnIds.dragIcon,
+  OBJECT_LIST_TABLE.columnIds.checkbox,
+  OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
+];
+
 const isRowChecked = (cell: Cell<object, unknown>, table: Table<object>) =>
   Boolean(table.options.meta?.checkedRows?.includes(cell.row.index));
 

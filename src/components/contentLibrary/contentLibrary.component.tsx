@@ -1,12 +1,10 @@
 import {
   DndContext,
+  DragOverlay,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
-  MouseSensor,
-  DragOverlay,
-  DragEndEvent,
-  DragStartEvent,
-  TouchSensor,
 } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import clsx from "clsx";
@@ -21,6 +19,7 @@ import { DROPPABLE_ID } from "src/constants/skylark";
 import { PanelTab, usePanelObjectState } from "src/hooks/state";
 import { useCheckedObjectsState } from "src/hooks/state";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import { DragEndEvent, DragStartEvent } from "src/lib/dndkit/dndkit";
 
 const INITIAL_PANEL_PERCENTAGE = 70;
 const MINIMUM_SIZES = {
@@ -246,20 +245,22 @@ export const ContentLibrary = () => {
   );
 
   function handleDragStart(event: DragStartEvent) {
-    setDraggedObject(event.active.data.current?.object);
-    const el = document.getElementById("object-search-results");
-    if (el) el.style.overflow = "hidden";
+    if (event.active.data.current.type === "CONTENT_LIBRARY_OBJECT") {
+      setDraggedObject(event.active.data.current?.object);
 
-    if (activePanelTab === PanelTab.Metadata) {
-      setPanelTab(PanelTab.Relationships);
+      if (activePanelTab === PanelTab.Metadata) {
+        setPanelTab(PanelTab.Relationships);
+      }
     }
   }
 
   function handleDragEnd(event: DragEndEvent) {
-    const el = document.getElementById("object-search-results");
-    if (el) el.style.overflow = "";
-
-    if (event.over && event.over.id === DROPPABLE_ID && draggedObject) {
+    if (
+      event.over &&
+      event.over.id === DROPPABLE_ID &&
+      event.active.data.current.type === "CONTENT_LIBRARY_OBJECT" &&
+      draggedObject
+    ) {
       const draggedObjectIsChecked = checkedUids.includes(draggedObject.uid);
 
       // Like Gmail, if the dragged object is not checked, just use the dragged object
@@ -267,6 +268,6 @@ export const ContentLibrary = () => {
         draggedObjectIsChecked ? checkedObjects : [draggedObject],
       );
     }
-    setDraggedObject(undefined);
+    if (draggedObject) setDraggedObject(undefined);
   }
 };
