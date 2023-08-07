@@ -10,10 +10,8 @@ import {
   Row,
   Column,
   Header,
-  Cell,
   ColumnOrderState,
   Table,
-  Updater,
   OnChangeFn,
 } from "@tanstack/react-table";
 import clsx from "clsx";
@@ -22,16 +20,13 @@ import {
   useState,
   useMemo,
   useCallback,
-  useEffect,
   memo,
   Fragment,
   CSSProperties,
 } from "react";
 import { VirtualItem, defaultRangeExtractor, useVirtual } from "react-virtual";
 
-import { Checkbox } from "src/components/inputs/checkbox";
 import { RowActions } from "src/components/objectSearch/rowActions";
-import { ObjectTypePill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { PanelTab } from "src/hooks/state";
@@ -40,7 +35,6 @@ import {
   SkylarkObjectIdentifier,
   ParsedSkylarkObject,
   BuiltInSkylarkObjectType,
-  ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
 import {
   DragEndEvent,
@@ -57,11 +51,7 @@ import {
   skylarkObjectsAreSame,
 } from "src/lib/utils";
 
-import {
-  OBJECT_SEARCH_HARDCODED_COLUMNS,
-  OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
-  createObjectListingColumns,
-} from "./table/columnConfiguration";
+import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "./columnConfiguration";
 
 const MAX_FROZEN_COLUMNS = 4;
 
@@ -1164,6 +1154,7 @@ const DataRow = ({
   return (
     <div
       ref={setNodeRef}
+      data-cy="draggable-item"
       className="flex h-full w-full outline-none"
       {...listeners}
       {...attributes}

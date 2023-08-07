@@ -7,7 +7,6 @@ import clsx from "clsx";
 import { useEffect, useState, useMemo, memo } from "react";
 
 import { Spinner } from "src/components/icons";
-import { AvailabilityDimensionsPickerValues } from "src/components/inputs/availabilityDimensionsPicker/availabilityDimensionsPicker.component";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useUser } from "src/contexts/useUser";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
@@ -25,21 +24,20 @@ import {
 
 import { CreateButtons } from "./createButtons";
 import {
-  MemoizedObjectSearchResults,
-  ObjectSearchResultsProps,
-} from "./results/objectSearchResults.component";
-import {
   OBJECT_SEARCH_HARDCODED_COLUMNS,
   OBJECT_SEARCH_ORDERED_KEYS,
   OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
   createObjectListingColumns,
-} from "./results/table/columnConfiguration";
+} from "./results/columnConfiguration";
+import {
+  MemoizedObjectSearchResults,
+  ObjectSearchResultsProps,
+} from "./results/objectSearchResults.component";
 import { Search } from "./search";
 
 export interface ObjectSearchProps {
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
-  withObjectEdit?: boolean;
   isPanelOpen?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
   defaultObjectTypes?: SkylarkObjectTypes;
