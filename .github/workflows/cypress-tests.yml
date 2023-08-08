@@ -85,32 +85,3 @@ jobs:
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           # re-enable PR comment bot
           COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha }}
-
-  # percy:
-  #   name: Check Percy Build Status
-  #   if: always()
-  #   runs-on: ubuntu-latest
-  #   needs: tests
-  #   env:
-  #     PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - run: yarn
-  #     - run: yarn add @percy/client
-  #     - name: Percy Finalize
-  #       uses: actions/github-script@v6
-  #       id: percy-info
-  #       env:
-  #         PERCY_PARALLEL_TOTAL: "-1"
-  #       with:
-  #         script: |
-  #           const { PercyClient } = await import('${{ github.workspace }}/node_modules/@percy/client/dist/index.js')
-
-  #           const client = new PercyClient({
-  #             token: process.env.PERCY_TOKEN,
-  #           })
-
-  #           // Copied from Percy CLI https://github.com/percy/cli/blob/acf5d99373782fa47cc79dababead812679d0054/packages/cli-build/src/finalize.js#L22
-  #           // rely on the parallel nonce to cause the API to return the current running build for the nonce
-  #           const { data: build } = await client.createBuild();
-  #           await client.finalizeBuild(build.id, { all: true });
