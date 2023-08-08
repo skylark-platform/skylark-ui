@@ -1,5 +1,8 @@
 import { DndContext, DragOverlay } from "@dnd-kit/core";
-import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+import {
+  restrictToHorizontalAxis,
+  snapCenterToCursor,
+} from "@dnd-kit/modifiers";
 import {
   Table,
   Row,
@@ -250,6 +253,24 @@ export const ObjectSearchResultsLeftGrid = ({
   );
 };
 
+const FrozenColumnDragPill = ({
+  style,
+  isDragging,
+}: {
+  style?: CSSProperties;
+  isDragging?: boolean;
+}) => (
+  <button
+    className={clsx(
+      "absolute -top-4 left-px h-8 w-2 rounded-full bg-brand-primary",
+      isDragging
+        ? "block cursor-grabbing"
+        : "hidden cursor-grab group-hover/grid-divider:block",
+    )}
+    style={style}
+  />
+);
+
 export const ObjectSearchResultGridDivider = ({
   leftGridSize,
   totalVirtualSizes,
@@ -258,19 +279,15 @@ export const ObjectSearchResultGridDivider = ({
   totalVirtualSizes: { height: number; width: number };
 }) => {
   const [mousePosition, setMousePosition] = useState(0);
-  const [dragDelta, setDragDelta] = useState<{
-    initial: number;
-    current: number;
-  } | null>(null);
-
-  const dragPositionDifference = dragDelta
-    ? dragDelta.current - dragDelta.initial
-    : 0;
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       type: DragType.OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS,
       id: "MODIFY_FROZEN_COLUMNS",
+      options: {
+        modifiers: [snapCenterToCursor],
+        dragOverlay: <FrozenColumnDragPill isDragging />,
+      },
     });
 
   const style: CSSProperties | undefined = transform
@@ -281,19 +298,6 @@ export const ObjectSearchResultGridDivider = ({
         zIndex: 6,
       }
     : undefined;
-
-  useDndMonitor({
-    onDragMove(event) {
-      setDragDelta((previousValue) =>
-        previousValue === null
-          ? {
-              initial: event.delta.y,
-              current: event.delta.y,
-            }
-          : { ...previousValue, current: event.delta.y },
-      );
-    },
-  });
 
   return (
     <div
@@ -323,20 +327,14 @@ export const ObjectSearchResultGridDivider = ({
             ? "block cursor-grabbing"
             : "hidden group-hover/grid-divider:block",
         )}
-      ></div>
-      <button
-        className={clsx(
-          "absolute -top-4 left-px h-8 w-2 cursor-grab rounded-full bg-brand-primary",
-          isDragging
-            ? "block cursor-grabbing"
-            : "hidden group-hover/grid-divider:block",
-        )}
-        style={{
-          transform: isDragging
-            ? `translateY(${mousePosition + dragPositionDifference - 5}px)`
-            : `translateY(${mousePosition}px)`,
-        }}
-      ></button>
+      />
+      {!isDragging && (
+        <FrozenColumnDragPill
+          style={{
+            transform: `translateY(${mousePosition}px)`,
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -428,10 +428,12 @@ test("clears the language filter", async () => {
   await fireEvent.click(screen.getByTestId("select-clear-value"));
 
   // Assert
-  await screen.findByTestId("search-spinner");
+  await screen.findByTestId("object-search-loading-spinner");
 
   await waitFor(() => {
-    expect(screen.queryByTestId("search-spinner")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("object-search-loading-spinner"),
+    ).not.toBeInTheDocument();
   });
 
   await screen.findByText("UID");

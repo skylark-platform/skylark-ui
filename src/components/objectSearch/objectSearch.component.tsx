@@ -306,7 +306,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
           {isSearching && (
             <div
               className="flex w-full justify-center"
-              data-testid="search-spinner"
+              data-testid="object-search-loading-spinner"
             >
               <Spinner className="h-10 w-10 animate-spin" />
             </div>

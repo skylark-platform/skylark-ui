@@ -182,17 +182,17 @@ export const ContentLibrary = () => {
     }),
   );
 
+  const dndModifiers = activeDragged?.data.current.options?.modifiers
+    ? activeDragged.data.current.options.modifiers
+    : [snapCenterToCursor];
+
   return (
     <DndContext
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragCancel={() => setActiveDragged(null)}
       sensors={sensors}
-      modifiers={
-        activeDragged?.data.current.options?.modifiers
-          ? activeDragged.data.current.options.modifiers
-          : [snapCenterToCursor]
-      }
+      modifiers={dndModifiers}
     >
       {typeof window !== "undefined" &&
         document?.body &&
@@ -285,12 +285,17 @@ export const ContentLibrary = () => {
   );
 
   function handleDragStart(event: DragStartEvent) {
-    if (event.active.data.current.type === DragType.CONTENT_LIBRARY_OBJECT) {
+    const type = event.active.data.current.type;
+    if (type === DragType.CONTENT_LIBRARY_OBJECT) {
       setActiveDragged(event.active);
 
       if (activePanelTab === PanelTab.Metadata) {
         setPanelTab(PanelTab.Relationships);
       }
+    }
+
+    if (type === DragType.OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS) {
+      setActiveDragged(event.active);
     }
   }
 

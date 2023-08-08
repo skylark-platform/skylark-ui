@@ -68,8 +68,8 @@ const columnHelper = createColumnHelper<object>();
 const dragIconColumn = columnHelper.display({
   id: OBJECT_LIST_TABLE.columnIds.dragIcon,
   header: "",
-  size: 20,
-  maxSize: 20,
+  size: 25,
+  maxSize: 25,
   cell: ({ cell, row, table }) => {
     const tableMeta = table.options.meta;
     const isHoveredRow = tableMeta?.hoveredRow === row.index;

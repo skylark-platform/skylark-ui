@@ -12,11 +12,13 @@ export enum DragType {
   OBJECT_SEARCH_REORDER_COLUMNS = "OBJECT_SEARCH_REORDER_COLUMNS",
 }
 
+type DragOptions = {
+  dragOverlay?: ReactNode;
+  modifiers?: dndkit.Modifiers;
+};
+
 type Data<T> = dndkit.Data<T> & {
-  options?: {
-    dragOverlay?: ReactNode;
-    modifiers?: dndkit.Modifiers;
-  };
+  options?: DragOptions;
 } & (
     | {
         type: DragType.CONTENT_LIBRARY_OBJECT;
@@ -61,6 +63,7 @@ export type DragCancelEvent<T = AnyData> = DragEndEvent<T>;
 
 export interface UseDraggableArguments extends dndkit.UseDraggableArguments {
   type: DragType;
+  options?: DragOptions;
 }
 
 export interface UseDroppableArguments extends dndkit.UseDroppableArguments {
@@ -75,12 +78,17 @@ export interface DndMonitorListener extends dndkit.DndMonitorListener {
   onDragCancel?(event: DragCancelEvent): void;
 }
 
-export const useDraggable = ({ type, ...args }: UseDraggableArguments) => {
+export const useDraggable = ({
+  type,
+  options,
+  ...args
+}: UseDraggableArguments) => {
   return dndkit.useDraggable({
     ...args,
     data: {
       ...args.data,
       type,
+      options,
     },
   });
 };
