@@ -38,7 +38,7 @@ export const SearchInput = ({
   return (
     <div
       className={clsx(
-        "flex w-full flex-row items-center justify-center rounded-full bg-manatee-50 text-sm",
+        "flex h-8 w-full flex-row items-center justify-center rounded-full bg-manatee-50 text-xs sm:text-sm md:h-10",
         className,
       )}
     >

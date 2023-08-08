@@ -299,7 +299,7 @@ export const Select = forwardRef(
       rounded || variant === "pill" ? "rounded-full" : "rounded-sm";
     const selectClassName = clsx(
       "relative w-full cursor-default bg-manatee-50 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 disabled:text-manatee-500",
-      variant === "pill" ? "text-xs" : "text-sm",
+      variant === "pill" ? "text-xs" : "text-xs sm:text-sm",
       roundedClassName,
     );
 
@@ -322,7 +322,7 @@ export const Select = forwardRef(
         {({ open }) => (
           <div
             className={clsx(
-              "relative flex flex-col items-start justify-center text-sm",
+              "relative flex flex-col items-start justify-center text-xs sm:text-sm",
               className,
             )}
           >
@@ -419,7 +419,7 @@ export const Select = forwardRef(
                     static
                     ref={refs.setFloating}
                     style={floatingStyles}
-                    className="z-50 text-sm"
+                    className="z-50 text-xs sm:text-sm"
                   >
                     {filteredOptions.length === 0 && query !== "" ? (
                       searchable && allowCustomValue ? (

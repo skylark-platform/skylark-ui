@@ -42,7 +42,7 @@ const columns = [
 
 const Template: ComponentStory<typeof SearchFilter> = (args) => {
   return (
-    <div className="w-96">
+    <div className="w-full max-w-4xl">
       <SearchFilter {...args} />
     </div>
   );

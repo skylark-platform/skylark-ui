@@ -80,6 +80,7 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          PERCY_PARALLEL_TOTAL: 2
           # overwrite commit message sent to Dashboard
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           # re-enable PR comment bot
@@ -113,36 +114,3 @@ jobs:
   #           // rely on the parallel nonce to cause the API to return the current running build for the nonce
   #           const { data: build } = await client.createBuild();
   #           await client.finalizeBuild(build.id, { all: true });
-
-  #           const { 'web-url': url } = build.attributes;
-  #           core.setOutput("url", url);
-  #           core.setOutput("build-id", build.id);
-
-  #           await client.waitForBuild({
-  #             build: build.id
-  #           }, (data) => {
-  #             // called whenever data changes
-  #             console.log("build:", data);
-  #             core.setOutput("review-state", data.attributes["review-state"]);
-  #           })
-  #     - uses: actions/github-script@v6
-  #       id: percy-url
-  #       env:
-  #         STATUS: ${{ steps.percy-info.outputs.review-state }}
-  #       with:
-  #         result-encoding: string
-  #         script: |
-  #           const emoji = process.env.STATUS === "approved" ? "✅" : "🚫";
-  #           const label = process.env.STATUS === "approved" ?  "Percy build (all good)" : "Percy build (changes detected)";
-  #           const json = JSON.stringify([
-  #             { emoji, label, value: "${{ steps.percy-info.outputs.url }}" },
-  #           ]);
-  #           return json;
-  #     - name: Comment Percy status on PR
-  #       uses: skylark-platform/comment-url-on-pr@v1
-  #       with:
-  #         title: ${{ env.percy-comment-title }}
-  #         comment_id: ${{ env.percy-comment-id }}
-  #         status: success
-  #         github_token: ${{ github.token }}
-  #         additional_urls: ${{ steps.percy-url.outputs.result }}
