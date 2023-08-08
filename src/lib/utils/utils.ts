@@ -8,7 +8,6 @@ import {
 import {
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
-  ParsedSkylarkObjectConfig,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 

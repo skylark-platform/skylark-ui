@@ -6,7 +6,6 @@ import { server } from "src/__tests__/mocks/server";
 import {
   act,
   fireEvent,
-  prettyDOM,
   render,
   screen,
   waitFor,

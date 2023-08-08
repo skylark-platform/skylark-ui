@@ -1,8 +1,4 @@
-import {
-  ColumnDef,
-  ColumnOrderState,
-  VisibilityState,
-} from "@tanstack/react-table";
+import { ColumnOrderState, VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useEffect, useState, useMemo, memo } from "react";
 
@@ -12,7 +8,6 @@ import { useUser } from "src/contexts/useUser";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ParsedSkylarkObject,
   SkylarkObjectIdentifier,
   SkylarkObjectTypes,
 } from "src/interfaces/skylark";

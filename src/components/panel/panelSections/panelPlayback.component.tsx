@@ -1,23 +1,10 @@
-import { OpenObjectButton } from "src/components/button";
-import {
-  PanelEmptyDataText,
-  PanelFieldTitle,
-  PanelSectionTitle,
-} from "src/components/panel/panelTypography";
+import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { VideoPlayer } from "src/components/players";
-import { useImageSize } from "src/hooks/useImageSize";
 import {
-  BuiltInSkylarkObjectType,
-  ParsedSkylarkObjectImageRelationship,
-  SkylarkGraphQLObjectImage,
   SkylarkObjectIdentifier,
   SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
-import {
-  addCloudinaryOnTheFlyImageTransformation,
-  formatObjectField,
-  hasProperty,
-} from "src/lib/utils";
+import { hasProperty } from "src/lib/utils";
 
 import { PanelMetadataProperty } from "./panelMetadataAdditionalSections";
 import { PanelSectionLayout } from "./panelSectionLayout.component";

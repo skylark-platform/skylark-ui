@@ -193,7 +193,6 @@ export const ObjectSearchResultsLeftGrid = ({
               : undefined
           }
           activeRowIndex={hoveredRow}
-          virtualColumns={virtualColumns}
           rows={rows}
           virtualRows={virtualRows}
         />

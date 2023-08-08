@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 
 import { OpenObjectButton } from "src/components/button";
 import { Trash } from "src/components/icons";
-import { ObjectTypePill, Pill } from "src/components/pill";
+import { ObjectTypePill } from "src/components/pill";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObject,

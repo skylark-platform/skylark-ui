@@ -1,6 +1,5 @@
 import {
   Cell,
-  CellContext,
   ColumnDef,
   Table,
   createColumnHelper,

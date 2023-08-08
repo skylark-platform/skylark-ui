@@ -9,7 +9,6 @@ interface RowActionsProps {
   activeRowIndex: number;
   rows: Row<ParsedSkylarkObject>[];
   virtualRows: VirtualItem[];
-  virtualColumns: VirtualItem[];
   onInfoClick?: (object: ParsedSkylarkObject) => void;
 }
 
@@ -17,7 +16,6 @@ export const RowActions = ({
   activeRowIndex,
   rows,
   virtualRows,
-  virtualColumns,
   onInfoClick,
 }: RowActionsProps) => {
   const activeRow = rows.find(({ index }) => index === activeRowIndex);

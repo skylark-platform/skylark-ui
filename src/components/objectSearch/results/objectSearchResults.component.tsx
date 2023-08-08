@@ -10,7 +10,7 @@ import {
   OnChangeFn,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useRef, useState, useMemo, useCallback, memo, useEffect } from "react";
+import { useRef, useState, useMemo, useCallback, memo } from "react";
 import { VirtualItem, defaultRangeExtractor, useVirtual } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
@@ -348,7 +348,7 @@ export const ObjectSearchResults = ({
 
       if (type === "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS") {
         setShowFrozenColumnDropZones(true);
-        tableContainerRef.current?.scrollTo({ left: 0, behavior: "auto" });
+        tableContainerRef.current?.scrollTo({ left: 0, behavior: "instant" });
       } else if (type === "CONTENT_LIBRARY_OBJECT") {
         setDisableTableEvents(true);
       }
