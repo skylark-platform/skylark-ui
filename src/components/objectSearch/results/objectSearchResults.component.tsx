@@ -223,7 +223,10 @@ export const ObjectSearchResults = ({
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
 
   // Disable Table Overflow, hover events - used when dragging
-  const [disableTableEvents, setDisableTableEvents] = useState(false);
+  const [disableTableEvents, setDisableTableEvents] = useState<{
+    overflow: boolean;
+    hover: boolean;
+  } | null>(null);
 
   const showObjectTypeIndicator =
     !columnVisibility[OBJECT_LIST_TABLE.columnIds.objectType] ||
@@ -263,7 +266,6 @@ export const ObjectSearchResults = ({
     parentRef: tableContainerRef,
     size: formattedSearchData?.length ? formattedSearchData.length : 0,
     estimateSize: useCallback(() => 42, []),
-    // overscan: 10,
     paddingStart: 42, // Padding to handle the sticky headers, same as estimateSize
     rangeExtractor: (range) => {
       const rangeAsSet = new Set([0, ...defaultRangeExtractor(range)]);
@@ -299,7 +301,6 @@ export const ObjectSearchResults = ({
     parentRef: tableContainerRef,
     size: headers.length,
     estimateSize: useCallback(() => 200, []),
-    // overscan: 10,
     horizontal: true,
     rangeExtractor: (range) => {
       const rangeAsSet = new Set([
@@ -338,7 +339,7 @@ export const ObjectSearchResults = ({
     useState(false);
 
   const onDragEnd = () => {
-    if (disableTableEvents) setDisableTableEvents(false);
+    if (disableTableEvents) setDisableTableEvents(null);
     if (showFrozenColumnDropZones) setShowFrozenColumnDropZones(false);
   };
 
@@ -348,9 +349,16 @@ export const ObjectSearchResults = ({
 
       if (type === "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS") {
         setShowFrozenColumnDropZones(true);
+        setDisableTableEvents({
+          hover: true,
+          overflow: false,
+        });
         tableContainerRef.current?.scrollTo({ left: 0, behavior: "instant" });
       } else if (type === "CONTENT_LIBRARY_OBJECT") {
-        setDisableTableEvents(true);
+        setDisableTableEvents({
+          overflow: true,
+          hover: true,
+        });
       }
     },
     onDragEnd(event) {
@@ -413,7 +421,7 @@ export const ObjectSearchResults = ({
           "relative min-h-full overscroll-contain text-sm",
           !formattedSearchData ||
             formattedSearchData.length === 0 ||
-            disableTableEvents
+            disableTableEvents?.overflow
             ? "overflow-hidden"
             : "overflow-auto",
         )}
@@ -438,7 +446,9 @@ export const ObjectSearchResults = ({
                 hasScrolledRight={hasScrolledRight}
                 panelObject={panelObject || null}
                 hoveredRow={hoveredRow}
-                setHoveredRow={!disableTableEvents ? setHoveredRow : undefined}
+                setHoveredRow={
+                  !disableTableEvents?.hover ? setHoveredRow : undefined
+                }
                 totalVirtualSizes={totalVirtualSizes}
                 showFrozenColumnDropZones={showFrozenColumnDropZones}
                 numberFrozenColumns={
@@ -464,7 +474,9 @@ export const ObjectSearchResults = ({
                 leftGridSize={leftGridTotalSize}
                 panelObject={panelObject || null}
                 hoveredRow={hoveredRow}
-                setHoveredRow={!disableTableEvents ? setHoveredRow : undefined}
+                setHoveredRow={
+                  !disableTableEvents?.hover ? setHoveredRow : undefined
+                }
                 showFrozenColumnDropZones={showFrozenColumnDropZones}
                 numberFrozenColumns={
                   frozenColumns.length -

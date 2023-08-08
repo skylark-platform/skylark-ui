@@ -283,7 +283,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         )}
       </div>
       {sortedHeaders.length > 0 && (
-        <div className="flex grow flex-col overflow-hidden">
+        <div className="flex grow flex-col overflow-hidden md:-ml-4">
           <MemoizedObjectSearchResults
             {...props}
             key={searchHash} // This will rerender all results when the searchHash changes - importantly clearing the checkboxes back to an unchecked state

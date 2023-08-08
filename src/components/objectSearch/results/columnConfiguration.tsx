@@ -71,13 +71,30 @@ const dragIconColumn = columnHelper.display({
   size: 20,
   maxSize: 20,
   cell: ({ cell, row, table }) => {
-    const isCheckedRow = isRowChecked(cell, table);
-
     const tableMeta = table.options.meta;
     const isHoveredRow = tableMeta?.hoveredRow === row.index;
 
-    return tableMeta?.activeObject && (isCheckedRow || isHoveredRow) ? (
+    const showObjectTypeIndicator = table
+      .getColumn(OBJECT_LIST_TABLE.columnIds.objectTypeIndicator)
+      ?.getIsVisible();
+
+    const original = row.original as ParsedSkylarkObject;
+    const cellContext = cell.getContext();
+
+    const { config }: { config: ParsedSkylarkObjectConfig | null } =
+      cellContext.table.options.meta?.objectTypesWithConfig?.find(
+        ({ objectType }) => objectType === original.objectType,
+      ) || { config: null };
+
+    return tableMeta?.activeObject && isHoveredRow ? (
       <span className="block h-full w-5 bg-inherit bg-[url('/icons/drag_indicator_black.png')] bg-center bg-no-repeat opacity-60" />
+    ) : showObjectTypeIndicator ? (
+      <div className="flex h-full items-center justify-center">
+        <div
+          className="h-2 w-2 rounded-full bg-manatee-300"
+          style={{ background: config ? config.colour : undefined }}
+        />
+      </div>
     ) : (
       <></>
     );
@@ -113,12 +130,13 @@ const objectTypeColumn = columnHelper.accessor(
   },
 );
 
+// TODO remove this when we're settled on a design for the indicator
 const objectTypeIndicatorColumn = columnHelper.display({
   id: OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
   header: "",
-  size: 12,
-  maxSize: 12,
-  minSize: 12,
+  size: 0,
+  maxSize: 0,
+  minSize: 0,
   cell: ({ cell, row }) => {
     const original = row.original as ParsedSkylarkObject;
     const cellContext = cell.getContext();
@@ -129,10 +147,11 @@ const objectTypeIndicatorColumn = columnHelper.display({
       ) || { config: null };
 
     return (
-      <div
-        className="mx-auto h-6 w-1 bg-manatee-300"
-        style={{ background: config ? config.colour : undefined }}
-      />
+      // <div
+      //   className="mx-auto h-1.5 w-1.5 rounded-full bg-manatee-300"
+      //   style={{ background: config ? config.colour : undefined }}
+      // />
+      <></>
     );
   },
 });
@@ -236,8 +255,6 @@ const globalVersion = columnHelper.accessor("meta.versions.global", {
   },
 });
 
-// Add language / global versions?
-
 const imagesColumn = columnHelper.accessor(OBJECT_LIST_TABLE.columnIds.images, {
   id: OBJECT_LIST_TABLE.columnIds.images,
   header: formatObjectField("Images"),
@@ -311,9 +328,9 @@ const imagesColumn = columnHelper.accessor(OBJECT_LIST_TABLE.columnIds.images, {
 
 const selectColumn = columnHelper.display({
   id: OBJECT_LIST_TABLE.columnIds.checkbox,
-  size: 24,
-  minSize: 24,
-  maxSize: 24,
+  size: 28,
+  minSize: 28,
+  maxSize: 28,
   header: ({
     table: {
       options: { meta: tableMeta },
