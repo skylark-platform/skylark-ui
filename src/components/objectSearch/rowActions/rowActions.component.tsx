@@ -40,7 +40,12 @@ export const RowActions = ({
       className="absolute right-0 z-[3] hidden items-center justify-center space-x-0.5 bg-manatee-50 text-center sm:flex sm:px-0.5 md:px-1"
     >
       {onInfoClick && (
-        <button onClick={() => onInfoClick(object)} aria-label="object-info">
+        <button
+          onClick={() => {
+            onInfoClick(object);
+          }}
+          aria-label="object-info"
+        >
           <InfoCircle className="h-4 stroke-brand-primary transition-colors hover:stroke-brand-primary/60" />
         </button>
       )}

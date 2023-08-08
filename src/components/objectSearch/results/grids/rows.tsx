@@ -46,7 +46,7 @@ const DataRow = ({
   return (
     <div
       ref={setNodeRef}
-      data-cy="draggable-item"
+      data-cy="object-search-results-row-draggable"
       className="flex h-full w-full outline-none"
       {...listeners}
       {...attributes}
@@ -132,6 +132,7 @@ export const LayoutRow = ({
   return (
     <div
       data-row={row.id}
+      data-testid="object-search-results-row"
       className={clsx(
         "absolute left-0 top-0 flex outline-none",
         !isHoveredRow && !isPanelObject && "bg-white",
