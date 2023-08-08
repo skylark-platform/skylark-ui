@@ -5,7 +5,7 @@ import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 import { SearchFilter } from "./searchFilter.component";
 
 export default {
-  title: "Components/ObjectListing/Search/Filter",
+  title: "Components/ObjectSearch/Search/Filter",
   component: SearchFilter,
 };
 

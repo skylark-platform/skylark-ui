@@ -8,7 +8,7 @@ import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 import { Search } from "./search.component";
 
 export default {
-  title: "Components/ObjectListing/Search",
+  title: "Components/ObjectSearch/Search",
   component: Search,
 };
 
@@ -57,6 +57,7 @@ Default.args = {
     availabilityDimensions: null,
   },
   columns,
+  columnIds,
   visibleColumns,
   graphqlQuery,
 };

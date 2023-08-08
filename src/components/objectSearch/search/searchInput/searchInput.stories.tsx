@@ -3,7 +3,7 @@ import { ComponentStory } from "@storybook/react";
 import { SearchInput } from "./searchInput.component";
 
 export default {
-  title: "Components/ObjectListing/Search/Input",
+  title: "Components/ObjectSearch/Search/Input",
   component: SearchInput,
 };
 
