@@ -2,6 +2,7 @@ import { ComponentStory } from "@storybook/react";
 import { userEvent, within } from "@storybook/testing-library";
 import { VisibilityState } from "@tanstack/react-table";
 
+import { createObjectListingColumns } from "src/components/objectSearch/results/columnConfiguration";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
 import { Search } from "./search.component";
@@ -26,7 +27,7 @@ const objectTypes = [
   "Genre",
 ];
 
-const columns = [
+const columnIds = [
   "uid",
   "title",
   "title_short",
@@ -36,8 +37,11 @@ const columns = [
   "synopsis_medium",
   "synopsis_long",
 ];
+
+const columns = createObjectListingColumns(columnIds, [], { withPanel: false });
+
 const visibleColumns: VisibilityState = Object.fromEntries(
-  columns.map((column) => [column, true]),
+  columnIds.map((column) => [column, true]),
 );
 
 const Template: ComponentStory<typeof Search> = (args) => {

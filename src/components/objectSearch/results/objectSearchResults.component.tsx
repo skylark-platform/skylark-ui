@@ -21,7 +21,7 @@ import {
   ParsedSkylarkObject,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
-import { DragStartEvent, useDndMonitor } from "src/lib/dndkit/dndkit";
+import { useDndMonitor } from "src/lib/dndkit/dndkit";
 import {
   getObjectDisplayName,
   hasProperty,
@@ -150,10 +150,11 @@ export const ObjectSearchResults = ({
     [hasNextPage, fetchNextPage, searchDataLength, isFetchingNextPage],
   );
 
+  // TODO enable this? Leaving this here to see if we're actually affect by the problem
   // a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
-  useEffect(() => {
-    fetchMoreOnBottomReached(tableContainerRef.current);
-  }, [fetchMoreOnBottomReached]);
+  // useEffect(() => {
+  //   fetchMoreOnBottomReached(tableContainerRef.current);
+  // }, [fetchMoreOnBottomReached]);
 
   const onRowCheckChange = useCallback(
     ({
@@ -347,7 +348,7 @@ export const ObjectSearchResults = ({
 
       if (type === "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS") {
         setShowFrozenColumnDropZones(true);
-        tableContainerRef.current?.scrollTo({ left: 0, behavior: "instant" });
+        tableContainerRef.current?.scrollTo({ left: 0, behavior: "auto" });
       } else if (type === "CONTENT_LIBRARY_OBJECT") {
         setDisableTableEvents(true);
       }
@@ -418,6 +419,7 @@ export const ObjectSearchResults = ({
         )}
         onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
         onMouseLeave={() => setHoveredRow(null)}
+        data-testid="object-search-results"
       >
         {headers && (
           <div

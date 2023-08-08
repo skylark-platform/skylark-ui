@@ -218,7 +218,7 @@ export const ContentLibrary = () => {
       >
         <m.div
           className={clsx(
-            "relative w-full max-w-full pl-2 pt-6 md:pl-6 lg:pl-10",
+            "relative w-full max-w-full pl-2 pt-2 md:pl-6 md:pt-6 lg:pl-10",
             activePanelObject && "md:w-1/2 lg:w-5/12 xl:w-3/5",
             isDraggingObject && "pointer-events-none",
           )}

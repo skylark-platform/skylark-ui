@@ -54,6 +54,34 @@ const initialFrozenColumns = [
   OBJECT_LIST_TABLE.columnIds.displayField,
 ];
 
+const generateColumnVisibility = (
+  sortedHeaders: string[],
+  existingColumnVisibility: Record<string, boolean>,
+  defaultColumns?: string[],
+): VisibilityState => {
+  if (Object.keys(existingColumnVisibility).length === 0) {
+    const columnVisibility = Object.fromEntries(
+      sortedHeaders.map((header) => [
+        header,
+        defaultColumns ? defaultColumns.includes(header) : true,
+      ]),
+    );
+
+    return columnVisibility;
+  }
+
+  const columnVisibility = Object.fromEntries(
+    sortedHeaders.map((header) => [
+      header,
+      hasProperty(existingColumnVisibility, header)
+        ? existingColumnVisibility[header]
+        : true,
+    ]),
+  );
+
+  return columnVisibility;
+};
+
 export const ObjectSearch = (props: ObjectSearchProps) => {
   const { defaultLanguage, isLoading: isUserLoading } = useUser();
   const {
@@ -148,7 +176,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
           withObjectSelect,
           withPanel,
         },
-      ) as ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[],
+      ),
     [sortedHeaders, withObjectSelect, withPanel],
   );
 
@@ -174,19 +202,26 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   useEffect(() => {
     // Update the column visibility when new fields are added / removed
     if (sortedHeaders && sortedHeaders.length !== 0) {
-      const newColumnVisibility = Object.fromEntries(
-        sortedHeaders.map((header) => [
-          header,
-          hasProperty(columnVisibility, header)
-            ? columnVisibility[header]
-            : true,
-        ]),
+      if (Object.keys(columnVisibility).length === 0) {
+        setColumnVisibility(
+          generateColumnVisibility(
+            sortedHeaders,
+            columnVisibility,
+            defaultColumns,
+          ),
+        );
+        return;
+      }
+
+      const newColumnVisibility = generateColumnVisibility(
+        sortedHeaders,
+        columnVisibility,
       );
       if (!isObjectsDeepEqual(newColumnVisibility, columnVisibility)) {
         setColumnVisibility(newColumnVisibility);
       }
     }
-  }, [sortedHeaders, columnVisibility]);
+  }, [sortedHeaders, columnVisibility, defaultColumns]);
 
   if (searchError) console.error("Search Errors:", { searchError });
 
@@ -224,7 +259,8 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
               language: searchLanguage,
               availabilityDimensions: searchAvailabilityDimensions,
             }}
-            columns={sortedHeaders}
+            columns={parsedTableColumns}
+            columnIds={sortedHeaders}
             visibleColumns={columnVisibility}
             activeDimensions={searchAvailabilityDimensions}
             hideFilters={props.hideSearchFilters}
@@ -273,7 +309,10 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
       {(isSearching || (searchData && searchData.length === 0)) && (
         <div className="items-top justify-left flex h-96 w-full flex-col space-y-2 text-sm text-manatee-600 md:text-base">
           {isSearching && (
-            <div className="flex w-full justify-center">
+            <div
+              className="flex w-full justify-center"
+              data-testid="search-spinner"
+            >
               <Spinner className="h-10 w-10 animate-spin" />
             </div>
           )}

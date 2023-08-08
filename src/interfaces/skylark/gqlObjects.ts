@@ -32,11 +32,11 @@ export interface SkylarkGraphQLObjectMeta {
   global_data: {
     version: number;
   };
-  modified: {
-    date: string;
+  modified?: {
+    date?: string;
   };
-  created: {
-    date: string;
+  created?: {
+    date?: string;
   };
 }
 

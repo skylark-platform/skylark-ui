@@ -453,8 +453,6 @@ export const ObjectSearchResultsRightGrid = ({
     if (draggedColumn && event.over?.data.current?.column) {
       const overColumn = event.over?.data.current?.column as Column<object>;
 
-      console.log({ columnOrder, overColumn });
-
       const newColumnOrder = reorderColumn(
         draggedColumn.id,
         overColumn.id,
@@ -466,7 +464,7 @@ export const ObjectSearchResultsRightGrid = ({
   };
 
   return (
-    <div className="relative">
+    <div className="relative" data-testid="object-search-results-grid-right">
       <FrozenColumnDropzones
         show={showFrozenColumnDropZones}
         dropzoneColumns={virtualColumns.slice(

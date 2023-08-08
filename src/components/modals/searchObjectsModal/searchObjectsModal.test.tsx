@@ -22,6 +22,7 @@ test("renders the modal", async () => {
       isOpen={true}
       closeModal={jest.fn()}
       onModalClose={jest.fn()}
+      columns={["uid"]}
     />,
   );
 
@@ -66,6 +67,7 @@ test("calls onModalClose with the selected rows", async () => {
       isOpen={true}
       closeModal={jest.fn()}
       onModalClose={onModalClose}
+      columns={["uid"]}
     />,
   );
 
@@ -77,19 +79,15 @@ test("calls onModalClose with the selected rows", async () => {
   });
 
   fireEvent.click(
-    screen
-      .getByText(
-        GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
-      )
-      .closest("tr") as Element,
+    screen.getByText(
+      GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
+    ),
   );
 
   fireEvent.click(
-    screen
-      .getByText(
-        GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[2].uid,
-      )
-      .closest("tr") as Element,
+    screen.getByText(
+      GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[1].uid,
+    ),
   );
 
   fireEvent.click(screen.getByTestId("search-objects-modal-save"));
@@ -103,9 +101,9 @@ test("calls onModalClose with the selected rows", async () => {
             .__typename,
       }),
       expect.objectContaining({
-        uid: GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[2].uid,
+        uid: GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[1].uid,
         objectType:
-          GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[2]
+          GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[1]
             .__typename,
       }),
     ],

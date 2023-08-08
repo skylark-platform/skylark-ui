@@ -17,7 +17,7 @@ interface SearchFilterProps {
     objectType: string;
     config?: ParsedSkylarkObjectConfig;
   }[];
-  columns: string[];
+  columns: { value: string; label?: string }[];
   visibleColumns: string[];
   graphqlQuery: {
     query: DocumentNode | null;
@@ -60,7 +60,10 @@ export const SearchFilter = ({
   const makeFiltersActive = () => {
     onFilterSave(
       updatedObjectTypes,
-      convertCheckedColumnsToVisibilityState(updatedVisibleColumns, columns),
+      convertCheckedColumnsToVisibilityState(
+        updatedVisibleColumns,
+        columns.map(({ value }) => value),
+      ),
     );
   };
 
@@ -69,7 +72,7 @@ export const SearchFilter = ({
       updateObjectTypes(
         objectTypesWithConfig.map(({ objectType }) => objectType),
       );
-    updateVisibleColumns(columns);
+    updateVisibleColumns(columns.map(({ value }) => value));
   };
 
   const objectTypeOptions = useMemo(
@@ -93,7 +96,7 @@ export const SearchFilter = ({
   const columnOptions = useMemo(
     () =>
       createCheckboxOptions(
-        columns.map((column) => ({ label: column, value: column })),
+        columns.map(({ label, value }) => ({ label: label || value, value })),
         updatedVisibleColumns,
       ),
     [columns, updatedVisibleColumns],

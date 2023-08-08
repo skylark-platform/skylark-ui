@@ -1,6 +1,7 @@
 import {
   Cell,
   CellContext,
+  ColumnDef,
   Table,
   createColumnHelper,
 } from "@tanstack/react-table";
@@ -27,10 +28,15 @@ import {
 } from "src/lib/utils";
 
 export const OBJECT_SEARCH_HARDCODED_COLUMNS = [
+  OBJECT_LIST_TABLE.columnIds.displayField,
   OBJECT_LIST_TABLE.columnIds.objectType,
   OBJECT_LIST_TABLE.columnIds.translation,
   OBJECT_LIST_TABLE.columnIds.availability,
   OBJECT_LIST_TABLE.columnIds.images,
+  OBJECT_LIST_TABLE.columnIds.dateCreated,
+  OBJECT_LIST_TABLE.columnIds.dateModified,
+  OBJECT_LIST_TABLE.columnIds.languageVersion,
+  OBJECT_LIST_TABLE.columnIds.globalVersion,
 ];
 
 export const OBJECT_SEARCH_ORDERED_KEYS = [
@@ -349,7 +355,7 @@ export const createObjectListingColumns = (
   columns: string[],
   hardcodedColumns: string[],
   opts: { withObjectSelect?: boolean; withPanel: boolean },
-) => {
+): ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[] => {
   const createdColumns = columns
     .filter((column) => !hardcodedColumns.includes(column))
     .map((column) =>
@@ -378,10 +384,19 @@ export const createObjectListingColumns = (
 
   if (opts.withObjectSelect) {
     if (opts.withPanel) {
-      return [dragIconColumn, selectColumn, ...orderedColumnArray];
+      return [dragIconColumn, selectColumn, ...orderedColumnArray] as ColumnDef<
+        ParsedSkylarkObject,
+        ParsedSkylarkObject
+      >[];
     }
-    return [selectColumn, ...orderedColumnArray];
+    return [selectColumn, ...orderedColumnArray] as ColumnDef<
+      ParsedSkylarkObject,
+      ParsedSkylarkObject
+    >[];
   }
 
-  return orderedColumnArray;
+  return orderedColumnArray as ColumnDef<
+    ParsedSkylarkObject,
+    ParsedSkylarkObject
+  >[];
 };

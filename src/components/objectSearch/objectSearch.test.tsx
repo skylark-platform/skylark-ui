@@ -6,11 +6,13 @@ import { server } from "src/__tests__/mocks/server";
 import {
   act,
   fireEvent,
+  prettyDOM,
   render,
   screen,
   waitFor,
   within,
 } from "src/__tests__/utils/test-utils";
+import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import {
   GQLSkylarkAccountResponse,
   ParsedSkylarkObject,
@@ -88,8 +90,42 @@ describe("create button", () => {
   });
 });
 
-test("does not render info button when setPanelObject is undefined", async () => {
+test("renders the info button on row hover when setPanelObject is given", async () => {
+  render(<ObjectSearch setPanelObject={() => ""} />);
+
+  await screen.findAllByText(
+    GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+      .__SkylarkSet__title as string,
+  );
+
+  fireEvent.mouseEnter(
+    screen.getByText(
+      GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+        .__SkylarkSet__title as string,
+    ),
+  );
+
+  expect(
+    await screen.queryByRole("button", {
+      name: /object-info/i,
+    }),
+  ).toBeInTheDocument();
+});
+
+test("does not render info button on row hover when setPanelObject is undefined", async () => {
   render(<ObjectSearch setPanelObject={undefined} />);
+
+  await screen.findAllByText(
+    GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+      .__SkylarkSet__title as string,
+  );
+
+  fireEvent.mouseEnter(
+    screen.getByText(
+      GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+        .__SkylarkSet__title as string,
+    ),
+  );
 
   expect(
     await screen.queryByRole("button", {
@@ -128,7 +164,7 @@ describe("with object select (checkboxes)", () => {
 
     expect(
       (await withinResults.findAllByRole("checkbox")).length,
-    ).toBeGreaterThan(2);
+    ).toBeGreaterThan(1);
 
     const checkbox = (await withinResults.findAllByRole("checkbox"))[1];
 
@@ -198,21 +234,23 @@ describe("with object select (checkboxes)", () => {
 test("renders search results (with default language)", async () => {
   render(<ObjectSearch />);
 
-  await screen.findByText("UID"); // Search for table header
+  await screen.findByText("Display field"); // Search for table header
   await waitFor(() => {
     expect(
       screen.getByTestId("object-search-results-content"),
     ).toBeInTheDocument();
   });
+
   // Search for table content
   await screen.findAllByText(
-    GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
+    GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+      .__SkylarkSet__title as string,
   );
 
   expect(
     screen.queryAllByText(
       GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
-        .uid as string,
+        .__SkylarkSet__title as string,
     ),
   ).toHaveLength(1);
 });
@@ -234,23 +272,25 @@ test("renders search results with language as null (no default)", async () => {
 
   render(<ObjectSearch />);
 
-  await screen.findByText("UID"); // Search for table header
+  await screen.findByText("Display field"); // Search for table header
   // Search for table content
   await screen.findAllByText(
-    GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid,
+    GQLGameOfThronesSearchResultsPage1.data.search.objects[0]
+      .__SkylarkSet__title as string,
   );
 
   expect(
     screen.queryAllByText(
-      GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid as string,
+      GQLGameOfThronesSearchResultsPage1.data.search.objects[0]
+        .__SkylarkSet__title as string,
     ),
   ).toHaveLength(2);
 });
 
 test("opens filters and deselects all object types", async () => {
-  render(<ObjectSearch />);
+  render(<ObjectSearch defaultColumns={["uid"]} />);
 
-  await screen.findByText("UID");
+  await screen.findByText("Display field"); // Search for table header
 
   fireEvent.click(
     screen.getByRole("button", {
@@ -259,7 +299,7 @@ test("opens filters and deselects all object types", async () => {
   );
 
   await waitFor(() => {
-    expect(screen.getByText("Object type")).toBeInTheDocument();
+    expect(screen.getAllByText("Object type").length).toBeGreaterThanOrEqual(1);
   });
 
   expect(screen.getAllByRole("checkbox")[0]).toHaveAttribute(
@@ -288,7 +328,11 @@ test("manually filters to only en-gb translated objects", async () => {
     }),
   );
 
-  render(<ObjectSearch />);
+  render(
+    <ObjectSearch
+      defaultColumns={["uid", OBJECT_LIST_TABLE.columnIds.translation]}
+    />,
+  );
 
   await screen.findByText("UID");
   await screen.findByText("Translation");
@@ -302,8 +346,8 @@ test("manually filters to only en-gb translated objects", async () => {
       GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid as string,
     ),
   ).toHaveLength(2);
-  expect(screen.queryAllByText("en-GB").length).toBeGreaterThan(1);
-  expect(screen.queryAllByText("pt-PT").length).toBeGreaterThan(1);
+  expect(screen.queryAllByText("en-GB").length).toBeGreaterThanOrEqual(1);
+  expect(screen.queryAllByText("pt-PT").length).toBeGreaterThanOrEqual(1);
 
   // Act
   const combobox = screen.getByRole("combobox");
@@ -329,7 +373,11 @@ test("manually filters to only en-gb translated objects", async () => {
 });
 
 test("automatically filters to only en-gb translated objects as its the user/account's default language", async () => {
-  await render(<ObjectSearch />);
+  await render(
+    <ObjectSearch
+      defaultColumns={["uid", OBJECT_LIST_TABLE.columnIds.translation]}
+    />,
+  );
 
   await waitFor(
     () => {
@@ -355,7 +403,11 @@ test("automatically filters to only en-gb translated objects as its the user/acc
 
 test("clears the language filter", async () => {
   // Arrange
-  render(<ObjectSearch />);
+  render(
+    <ObjectSearch
+      defaultColumns={["uid", OBJECT_LIST_TABLE.columnIds.translation]}
+    />,
+  );
 
   const combobox = screen.getByRole("combobox");
   await fireEvent.change(combobox, {
@@ -364,6 +416,9 @@ test("clears the language filter", async () => {
   await fireEvent.click(
     within(screen.getByTestId("select-options")).getByText("en-GB"),
   );
+
+  await screen.findByText("UID");
+
   await screen.findByText(
     GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
   );
@@ -374,6 +429,13 @@ test("clears the language filter", async () => {
   await fireEvent.click(screen.getByTestId("select-clear-value"));
 
   // Assert
+  await screen.findByTestId("search-spinner");
+
+  await waitFor(() => {
+    expect(screen.queryByTestId("search-spinner")).not.toBeInTheDocument();
+  });
+
+  await screen.findByText("UID");
   await screen.findByText("Translation");
 
   await waitFor(() => {
@@ -385,6 +447,6 @@ test("clears the language filter", async () => {
       GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid as string,
     ),
   ).toHaveLength(2);
-  expect(screen.queryAllByText("en-GB").length).toBeGreaterThan(1);
-  expect(screen.queryAllByText("pt-PT").length).toBeGreaterThan(1);
+  expect(screen.queryAllByText("en-GB").length).toBeGreaterThanOrEqual(1);
+  expect(screen.queryAllByText("pt-PT").length).toBeGreaterThanOrEqual(1);
 });

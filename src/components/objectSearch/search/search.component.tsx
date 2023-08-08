@@ -1,4 +1,4 @@
-import { VisibilityState } from "@tanstack/react-table";
+import { ColumnDef, VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
 import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode } from "graphql";
@@ -13,6 +13,7 @@ import { LanguageSelect } from "src/components/inputs/select";
 import { SearchFilter } from "src/components/objectSearch/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
+import { ParsedSkylarkObject } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 
 import { SearchInput } from "./searchInput/searchInput.component";
@@ -20,7 +21,8 @@ import { SearchInput } from "./searchInput/searchInput.component";
 interface SearchBarProps {
   searchQuery: string;
   activeFilters: SearchFilters;
-  columns: string[];
+  columns: ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[];
+  columnIds: string[];
   visibleColumns: VisibilityState;
   activeDimensions: AvailabilityDimensionsPickerValues;
   className?: string;
@@ -41,6 +43,7 @@ interface SearchBarProps {
 export const Search = ({
   className,
   columns,
+  columnIds,
   visibleColumns,
   searchQuery,
   graphqlQuery,
@@ -92,6 +95,12 @@ export const Search = ({
     onColumnVisibilityChange(columnVisibility);
   };
 
+  const columnOptions = columnIds.map((value) => ({
+    value,
+    label:
+      columns.find((col) => col?.id === value)?.header?.toString() || value,
+  }));
+
   return (
     <div
       className={clsx(
@@ -122,7 +131,7 @@ export const Search = ({
             >
               <SearchFilter
                 activeObjectTypes={activeFilters.objectTypes}
-                columns={columns}
+                columns={columnOptions}
                 visibleColumns={Object.keys(visibleColumns).filter(
                   (column) => visibleColumns[column],
                 )}

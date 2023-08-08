@@ -38,7 +38,7 @@ const columns = [
   "synopsis_short",
   "synopsis_medium",
   "synopsis_long",
-];
+].map((col) => ({ value: col }));
 
 const Template: ComponentStory<typeof SearchFilter> = (args) => {
   return (
@@ -53,7 +53,7 @@ Default.args = {
   activeObjectTypes: objectTypes,
   objectTypesWithConfig,
   columns,
-  visibleColumns: columns,
+  visibleColumns: columns.map(({ value }) => value),
   graphqlQuery,
 };
 
