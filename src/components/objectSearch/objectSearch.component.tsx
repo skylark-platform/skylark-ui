@@ -283,7 +283,14 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         )}
       </div>
       {sortedHeaders.length > 0 && (
-        <div className="flex grow flex-col overflow-hidden md:-ml-6">
+        <div
+          className={clsx(
+            "flex grow flex-col overflow-hidden",
+            columnOrder.length > 0 &&
+              columnOrder[0] === OBJECT_LIST_TABLE.columnIds.dragIcon &&
+              "md:-ml-6",
+          )}
+        >
           <MemoizedObjectSearchResults
             {...props}
             key={searchHash} // This will rerender all results when the searchHash changes - importantly clearing the checkboxes back to an unchecked state
