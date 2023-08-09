@@ -22,12 +22,16 @@ export const OBJECT_LIST_TABLE = {
   columnIds: {
     dragIcon: "drag-icon",
     objectType: "__typename",
+    objectTypeIndicator: "__typename-indicator",
     displayField: "skylark-ui-display-field",
     checkbox: "skylark-ui-select",
-    actions: "skylark-ui-actions",
     availability: "availability",
     images: "images",
     translation: "translation",
+    dateCreated: "meta-date-created",
+    dateModified: "meta-date-modified",
+    languageVersion: "meta-language-version",
+    globalVersion: "meta-global-version",
   },
 };
 export const HREFS = {

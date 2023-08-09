@@ -6,6 +6,9 @@ import {
 const allDevicesAllCustomersAvailability =
   "Always - All devices, all non-kids customer types";
 
+const panelDragDeltaX = 1800;
+const panelDragDeltaY = 500;
+
 describe("Drag and Drop - Content and Relationship tab", () => {
   beforeEach(() => {
     cy.login();
@@ -82,12 +85,9 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             cy.contains("button", "Content").click();
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
-            const deltaX = 500;
-            const deltaY = 500;
-
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="draggable-item"`)
+            cy.get(`[data-cy="object-search-results-row-draggable"`)
               .last()
               .trigger("mousedown", {
                 button: 0,
@@ -102,8 +102,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(500)
               .trigger("mousemove", {
                 force: true,
-                clientX: deltaX,
-                clientY: deltaY,
+                clientX: panelDragDeltaX,
+                clientY: panelDragDeltaY,
               })
               .then(() => {
                 cy.get("[data-cy=panel-drop-zone]").should("exist");
@@ -133,12 +133,9 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             cy.contains("button", "Content").click();
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
-            const deltaX = 500;
-            const deltaY = 500;
-
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="draggable-item"`)
+            cy.get(`[data-cy="object-search-results-row-draggable"`)
               .last()
               .trigger("mousedown", {
                 button: 0,
@@ -153,8 +150,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(500)
               .trigger("mousemove", {
                 force: true,
-                clientX: deltaX,
-                clientY: deltaY,
+                clientX: panelDragDeltaX,
+                clientY: panelDragDeltaY,
               })
               .then(() => {
                 cy.get("[data-cy=panel-drop-zone]").should("exist");
@@ -169,7 +166,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
                   .should("have.length", 1);
               });
 
-            cy.get(`[data-cy="draggable-item"`)
+            cy.get(`[data-cy="object-search-results-row-draggable"`)
               .last()
               .trigger("mousedown", {
                 button: 0,
@@ -184,8 +181,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(500)
               .trigger("mousemove", {
                 force: true,
-                clientX: deltaX,
-                clientY: deltaY,
+                clientX: panelDragDeltaX,
+                clientY: panelDragDeltaY,
               })
               .then(() => {
                 cy.get("[data-cy=panel-drop-zone]").should("exist");
@@ -216,12 +213,9 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             cy.contains("button", "Relationships").click();
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
-            const deltaX = 500;
-            const deltaY = 500;
-
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="draggable-item"`)
+            cy.get(`[data-cy="object-search-results-row-draggable"`)
               .last()
               .trigger("mousedown", {
                 button: 0,
@@ -239,8 +233,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(500)
               .trigger("mousemove", {
                 force: true,
-                clientX: deltaX,
-                clientY: deltaY,
+                clientX: panelDragDeltaX,
+                clientY: panelDragDeltaY,
               })
               .wait(100)
               .trigger("mouseup", { force: true })
@@ -266,12 +260,9 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             cy.contains("button", "Relationships").click();
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
-            const deltaX = 500;
-            const deltaY = 500;
-
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="draggable-item"`)
+            cy.get(`[data-cy="object-search-results-row-draggable"`)
               .last()
               .trigger("mousedown", {
                 button: 0,
@@ -289,8 +280,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(500)
               .trigger("mousemove", {
                 force: true,
-                clientX: deltaX,
-                clientY: deltaY,
+                clientX: panelDragDeltaX,
+                clientY: panelDragDeltaY,
               })
               .wait(100)
               .trigger("mouseup", { force: true })
@@ -301,7 +292,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
                   .should("have.length", 1);
               });
 
-            cy.get(`[data-cy="draggable-item"`)
+            cy.get(`[data-cy="object-search-results-row-draggable"`)
               .last()
               .trigger("mousedown", {
                 button: 0,
@@ -319,8 +310,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(500)
               .trigger("mousemove", {
                 force: true,
-                clientX: deltaX,
-                clientY: deltaY,
+                clientX: panelDragDeltaX,
+                clientY: panelDragDeltaY,
               })
               .wait(100)
               .trigger("mouseup", { force: true })
@@ -346,12 +337,9 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             cy.contains("button", "Relationships").click();
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
-            const deltaX = 500;
-            const deltaY = 500;
-
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="draggable-item"`)
+            cy.get(`[data-cy="object-search-results-row-draggable"`)
               .first()
               .trigger("mousedown", {
                 button: 0,
@@ -369,8 +357,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(500)
               .trigger("mousemove", {
                 force: true,
-                clientX: deltaX,
-                clientY: deltaY,
+                clientX: panelDragDeltaX,
+                clientY: panelDragDeltaY,
               })
               .wait(100)
               .trigger("mouseup", { force: true })
@@ -404,12 +392,9 @@ describe("Drag and Drop - Content and Relationship tab", () => {
 
             cy.contains(allDevicesAllCustomersAvailability).should("exist");
 
-            const deltaX = 500;
-            const deltaY = 500;
-
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="draggable-item"`)
+            cy.get(`[data-cy="object-search-results-row-draggable"`)
               .last()
               .trigger("mousedown", {
                 button: 0,
@@ -427,8 +412,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(500)
               .trigger("mousemove", {
                 force: true,
-                clientX: deltaX,
-                clientY: deltaY,
+                clientX: panelDragDeltaX,
+                clientY: panelDragDeltaY,
               })
               .wait(100)
               .trigger("mouseup", { force: true })
@@ -462,12 +447,9 @@ describe("Drag and Drop - Content and Relationship tab", () => {
 
             cy.contains(allDevicesAllCustomersAvailability).should("exist");
 
-            const deltaX = 500;
-            const deltaY = 500;
-
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="draggable-item"`)
+            cy.get(`[data-cy="object-search-results-row-draggable"`)
               .last()
               .trigger("mousedown", {
                 button: 0,
@@ -485,8 +467,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(500)
               .trigger("mousemove", {
                 force: true,
-                clientX: deltaX,
-                clientY: deltaY,
+                clientX: panelDragDeltaX,
+                clientY: panelDragDeltaY,
               })
               .wait(100)
               .trigger("mouseup", { force: true })
@@ -499,7 +481,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
                 });
               });
 
-            cy.get(`[data-cy="draggable-item"`)
+            cy.get(`[data-cy="object-search-results-row-draggable"`)
               .last()
               .trigger("mousedown", {
                 button: 0,
@@ -517,8 +499,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(500)
               .trigger("mousemove", {
                 force: true,
-                clientX: deltaX,
-                clientY: deltaY,
+                clientX: panelDragDeltaX,
+                clientY: panelDragDeltaY,
               })
               .wait(100)
               .trigger("mouseup", { force: true })
@@ -544,12 +526,9 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             cy.contains("button", "Availability").click();
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
-            const deltaX = 500;
-            const deltaY = 500;
-
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="draggable-item"`)
+            cy.get(`[data-cy="object-search-results-row-draggable"`)
               .last()
               .trigger("mousedown", {
                 button: 0,
@@ -567,8 +546,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .wait(500)
               .trigger("mousemove", {
                 force: true,
-                clientX: deltaX,
-                clientY: deltaY,
+                clientX: panelDragDeltaX,
+                clientY: panelDragDeltaY,
               })
               .wait(100)
               .trigger("mouseup", { force: true })
@@ -599,12 +578,9 @@ describe("Drag and Drop - Content and Relationship tab", () => {
         cy.get('input[name="search-query-input"]').clear().type("Homepage");
         cy.contains("Homepage").should("exist");
 
-        const deltaX = 500;
-        const deltaY = 500;
-
         cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-        cy.get(`[data-cy="draggable-item"`)
+        cy.get(`[data-cy="object-search-results-row-draggable"`)
           .last()
           .trigger("mousedown", {
             button: 0,
@@ -622,8 +598,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
           .wait(500)
           .trigger("mousemove", {
             force: true,
-            clientX: deltaX,
-            clientY: deltaY,
+            clientX: panelDragDeltaX,
+            clientY: panelDragDeltaY,
           })
           .wait(100)
           .trigger("mouseup", { force: true })
@@ -647,12 +623,9 @@ describe("Drag and Drop - Content and Relationship tab", () => {
 
         cy.contains("Assign to multiple objects dropzone");
 
-        const deltaX = 500;
-        const deltaY = 500;
-
         cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-        cy.get(`[data-cy="draggable-item"`)
+        cy.get(`[data-cy="object-search-results-row-draggable"`)
           .last()
           .trigger("mousedown", {
             button: 0,
@@ -670,8 +643,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
           .wait(500)
           .trigger("mousemove", {
             force: true,
-            clientX: deltaX,
-            clientY: deltaY,
+            clientX: panelDragDeltaX,
+            clientY: panelDragDeltaY,
           })
           .wait(100)
           .trigger("mouseup", { force: true })

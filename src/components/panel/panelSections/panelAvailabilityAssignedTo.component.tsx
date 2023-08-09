@@ -4,14 +4,10 @@ import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import {
   HandleDropError,
   handleDroppedObjectsToAssignToAvailability,
-  handleDroppedRelationships,
 } from "src/components/panel/panel.lib";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
-import {
-  ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
-} from "src/interfaces/skylark";
+import { ParsedSkylarkObject } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";

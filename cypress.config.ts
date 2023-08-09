@@ -11,4 +11,6 @@ export default defineConfig({
   },
   fixturesFolder: "./src/__tests__/fixtures",
   chromeWebSecurity: false, // Allow accessing iframes
+  viewportWidth: 1920,
+  viewportHeight: 1080,
 });

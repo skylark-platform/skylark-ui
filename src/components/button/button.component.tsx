@@ -64,6 +64,7 @@ export const Button = forwardRef(
       (iconOnly || variant === "link") &&
         disabled &&
         "btn-disabled bg-transparent disabled:bg-transparent",
+      iconOnly && "min-h-8 h-8 md:h-10",
       block && "btn-block",
       className,
     );

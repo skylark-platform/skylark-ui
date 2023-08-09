@@ -298,6 +298,8 @@ export const parseSkylarkObject = (
           global: object._meta?.global_data.version,
         },
         availabilityStatus,
+        created: object._meta?.created?.date,
+        modified: object._meta?.modified?.date,
       },
       metadata,
       availability,

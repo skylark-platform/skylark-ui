@@ -1,67 +1,65 @@
+import { Row } from "@tanstack/react-table";
 import Link from "next/link";
+import { VirtualItem } from "react-virtual";
 
-import {
-  InfoCircle,
-  Edit,
-  CheckSquare,
-  CrossSquare,
-  ExternalLink,
-} from "src/components/icons";
-import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
+import { InfoCircle, ExternalLink } from "src/components/icons";
+import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 interface RowActionsProps {
-  object: SkylarkObjectIdentifier;
-  editRowEnabled?: boolean;
-  inEditMode?: boolean;
-  onInfoClick?: () => void;
-  onEditClick: () => void;
-  onEditSaveClick: () => void;
-  onEditCancelClick: () => void;
+  activeRowIndex: number;
+  rows: Row<ParsedSkylarkObject>[];
+  virtualRows: VirtualItem[];
+  onInfoClick?: (object: ParsedSkylarkObject) => void;
 }
 
 export const RowActions = ({
-  object: { uid, objectType, language },
-  editRowEnabled,
-  inEditMode,
+  activeRowIndex,
+  rows,
+  virtualRows,
   onInfoClick,
-  onEditClick,
-  onEditSaveClick,
-  onEditCancelClick,
-}: RowActionsProps) => (
-  <div className="hidden h-full w-full items-center justify-center space-x-2 bg-inherit pl-4 pr-3 text-center group-hover/row:flex">
-    {inEditMode && editRowEnabled ? (
-      <>
-        <button onClick={onEditSaveClick} aria-label="object-edit-save">
-          <CheckSquare className="h-5 stroke-success transition-colors hover:stroke-success/60" />
-        </button>
-        <button onClick={onEditCancelClick} aria-label="object-edit-cancel">
-          <CrossSquare className="h-5 stroke-error transition-colors hover:stroke-error/60" />
-        </button>
-      </>
-    ) : (
-      <>
-        {onInfoClick && (
-          <button onClick={onInfoClick} aria-label="object-info">
-            <InfoCircle className="h-5 stroke-brand-primary transition-colors hover:stroke-brand-primary/60" />
-          </button>
-        )}
-        <Link
-          href={{
-            pathname: `/object/${objectType}/${uid}`,
-            query: { language },
+}: RowActionsProps) => {
+  const activeRow = rows.find(({ index }) => index === activeRowIndex);
+  const activeVirtualRow = activeRow
+    ? virtualRows.find((virtualRow) => virtualRow.index === activeRow.index)
+    : null;
+
+  if (!activeRow || !activeVirtualRow) {
+    return <></>;
+  }
+
+  const object = activeRow.original;
+
+  const transform = `translateY(${activeVirtualRow.start}px)`;
+
+  return (
+    <div
+      style={{
+        height: activeVirtualRow.size,
+        transform,
+      }}
+      className="absolute right-0 z-[3] hidden items-center justify-center space-x-0.5 bg-manatee-50 text-center sm:flex sm:px-0.5 md:px-1"
+    >
+      {onInfoClick && (
+        <button
+          onClick={() => {
+            onInfoClick(object);
           }}
-          onClick={(e) => e.stopPropagation()}
-          rel="noopener noreferrer"
-          target="_blank"
+          aria-label="object-info"
         >
-          <ExternalLink className="h-5 transition-colors hover:text-brand-primary" />
-        </Link>
-        {editRowEnabled && (
-          <button onClick={onEditClick} aria-label="object-edit">
-            <Edit className="h-5 stroke-brand-primary transition-colors hover:stroke-brand-primary/60" />
-          </button>
-        )}
-      </>
-    )}
-  </div>
-);
+          <InfoCircle className="h-4 stroke-brand-primary transition-colors hover:stroke-brand-primary/60" />
+        </button>
+      )}
+      <Link
+        href={{
+          pathname: `/object/${object.objectType}/${object.uid}`,
+          query: { language: object.meta.language },
+        }}
+        onClick={(e) => e.stopPropagation()}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <ExternalLink className="h-4 transition-colors hover:text-brand-primary" />
+      </Link>
+    </div>
+  );
+};

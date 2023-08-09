@@ -293,13 +293,13 @@ export const Select = forwardRef(
       [onChange],
     );
 
-    const paddingClassName =
-      variant === "pill" ? "h-5 pl-3 pr-2" : "py-2 pl-3 pr-2 sm:py-3 sm:pl-6";
+    const sizingClassName =
+      variant === "pill" ? "h-5 pl-3 pr-2" : "h-8 pl-3 pr-2 sm:h-10 sm:pl-6";
     const roundedClassName =
       rounded || variant === "pill" ? "rounded-full" : "rounded-sm";
     const selectClassName = clsx(
       "relative w-full cursor-default bg-manatee-50 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 disabled:text-manatee-500",
-      variant === "pill" ? "text-xs" : "text-sm",
+      variant === "pill" ? "text-xs" : "text-xs sm:text-sm",
       roundedClassName,
     );
 
@@ -322,7 +322,7 @@ export const Select = forwardRef(
         {({ open }) => (
           <div
             className={clsx(
-              "relative flex flex-col items-start justify-center text-sm",
+              "relative flex flex-col items-start justify-center text-xs sm:text-sm",
               className,
             )}
           >
@@ -343,7 +343,7 @@ export const Select = forwardRef(
                 <Combobox.Input
                   className={clsx(
                     "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0",
-                    paddingClassName,
+                    sizingClassName,
                     roundedClassName,
                     showClearValueButton ? "pr-12" : "pr-8",
                   )}
@@ -381,7 +381,7 @@ export const Select = forwardRef(
                 data-testid="select"
                 className={clsx(
                   selectClassName,
-                  paddingClassName,
+                  sizingClassName,
                   label && "mt-2",
                 )}
                 ref={mergeRefs([refs.setReference, propRef])}
@@ -419,7 +419,7 @@ export const Select = forwardRef(
                     static
                     ref={refs.setFloating}
                     style={floatingStyles}
-                    className="z-50 text-sm"
+                    className="z-50 text-xs sm:text-sm"
                   >
                     {filteredOptions.length === 0 && query !== "" ? (
                       searchable && allowCustomValue ? (

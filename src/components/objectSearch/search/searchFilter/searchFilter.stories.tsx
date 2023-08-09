@@ -5,7 +5,7 @@ import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 import { SearchFilter } from "./searchFilter.component";
 
 export default {
-  title: "Components/ObjectListing/Search/Filter",
+  title: "Components/ObjectSearch/Search/Filter",
   component: SearchFilter,
 };
 
@@ -38,11 +38,11 @@ const columns = [
   "synopsis_short",
   "synopsis_medium",
   "synopsis_long",
-];
+].map((col) => ({ value: col }));
 
 const Template: ComponentStory<typeof SearchFilter> = (args) => {
   return (
-    <div className="w-96">
+    <div className="w-full max-w-4xl">
       <SearchFilter {...args} />
     </div>
   );
@@ -53,7 +53,7 @@ Default.args = {
   activeObjectTypes: objectTypes,
   objectTypesWithConfig,
   columns,
-  visibleColumns: columns,
+  visibleColumns: columns.map(({ value }) => value),
   graphqlQuery,
 };
 

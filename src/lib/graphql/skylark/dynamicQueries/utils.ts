@@ -44,6 +44,12 @@ const commonGraphQLOpts = {
       global_data: {
         version: true,
       },
+      modified: {
+        date: true,
+      },
+      created: {
+        date: true,
+      },
     },
   },
 };

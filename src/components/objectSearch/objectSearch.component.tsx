@@ -1,9 +1,9 @@
-import { VisibilityState } from "@tanstack/react-table";
+import { ColumnOrderState, VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useEffect, useState, useMemo, memo } from "react";
 
 import { Spinner } from "src/components/icons";
-import { AvailabilityDimensionsPickerValues } from "src/components/inputs/availabilityDimensionsPicker/availabilityDimensionsPicker.component";
+import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useUser } from "src/contexts/useUser";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
@@ -19,19 +19,20 @@ import {
 
 import { CreateButtons } from "./createButtons";
 import {
+  OBJECT_SEARCH_HARDCODED_COLUMNS,
+  OBJECT_SEARCH_ORDERED_KEYS,
+  OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+  createObjectListingColumns,
+} from "./results/columnConfiguration";
+import {
   MemoizedObjectSearchResults,
   ObjectSearchResultsProps,
 } from "./results/objectSearchResults.component";
-import {
-  OBJECT_SEARCH_HARDCODED_COLUMNS,
-  OBJECT_SEARCH_ORDERED_KEYS,
-} from "./results/table/columnConfiguration";
 import { Search } from "./search";
 
 export interface ObjectSearchProps {
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
-  withObjectEdit?: boolean;
   isPanelOpen?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
   defaultObjectTypes?: SkylarkObjectTypes;
@@ -42,6 +43,40 @@ export interface ObjectSearchProps {
   onObjectCheckedChanged?: ObjectSearchResultsProps["onObjectCheckedChanged"];
 }
 
+const initialFrozenColumns = [
+  ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+  OBJECT_LIST_TABLE.columnIds.objectType,
+  OBJECT_LIST_TABLE.columnIds.displayField,
+];
+
+const generateColumnVisibility = (
+  sortedHeaders: string[],
+  existingColumnVisibility: Record<string, boolean>,
+  defaultColumns?: string[],
+): VisibilityState => {
+  if (Object.keys(existingColumnVisibility).length === 0) {
+    const columnVisibility = Object.fromEntries(
+      sortedHeaders.map((header) => [
+        header,
+        defaultColumns ? defaultColumns.includes(header) : true,
+      ]),
+    );
+
+    return columnVisibility;
+  }
+
+  const columnVisibility = Object.fromEntries(
+    sortedHeaders.map((header) => [
+      header,
+      hasProperty(existingColumnVisibility, header)
+        ? existingColumnVisibility[header]
+        : true,
+    ]),
+  );
+
+  return columnVisibility;
+};
+
 export const ObjectSearch = (props: ObjectSearchProps) => {
   const { defaultLanguage, isLoading: isUserLoading } = useUser();
   const {
@@ -51,7 +86,10 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     defaultObjectTypes,
     defaultColumns,
     onObjectCheckedChanged,
+    withObjectSelect,
   } = props;
+
+  const withPanel = typeof setPanelObject !== "undefined";
 
   const { objectTypes } = useSkylarkObjectTypes(true);
 
@@ -124,6 +162,19 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     return headers;
   }, [properties]);
 
+  const parsedTableColumns = useMemo(
+    () =>
+      createObjectListingColumns(
+        sortedHeaders,
+        OBJECT_SEARCH_HARDCODED_COLUMNS,
+        {
+          withObjectSelect,
+          withPanel,
+        },
+      ),
+    [sortedHeaders, withObjectSelect, withPanel],
+  );
+
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     Object.fromEntries(
       sortedHeaders.map((header) => [
@@ -133,22 +184,39 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     ),
   );
 
+  const [frozenColumns, setFrozenColumns] =
+    useState<string[]>(initialFrozenColumns);
+
+  const [stateColumnOrder, setColumnOrder] = useState<ColumnOrderState>([]);
+  const defaultColumnOrder = parsedTableColumns.map(
+    (column) => column.id as string,
+  );
+  const columnOrder: ColumnOrderState =
+    stateColumnOrder.length > 0 ? stateColumnOrder : defaultColumnOrder;
+
   useEffect(() => {
     // Update the column visibility when new fields are added / removed
     if (sortedHeaders && sortedHeaders.length !== 0) {
-      const newColumnVisibility = Object.fromEntries(
-        sortedHeaders.map((header) => [
-          header,
-          hasProperty(columnVisibility, header)
-            ? columnVisibility[header]
-            : true,
-        ]),
+      if (Object.keys(columnVisibility).length === 0) {
+        setColumnVisibility(
+          generateColumnVisibility(
+            sortedHeaders,
+            columnVisibility,
+            defaultColumns,
+          ),
+        );
+        return;
+      }
+
+      const newColumnVisibility = generateColumnVisibility(
+        sortedHeaders,
+        columnVisibility,
       );
       if (!isObjectsDeepEqual(newColumnVisibility, columnVisibility)) {
         setColumnVisibility(newColumnVisibility);
       }
     }
-  }, [sortedHeaders, columnVisibility]);
+  }, [sortedHeaders, columnVisibility, defaultColumns]);
 
   if (searchError) console.error("Search Errors:", { searchError });
 
@@ -186,7 +254,8 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
               language: searchLanguage,
               availabilityDimensions: searchAvailabilityDimensions,
             }}
-            columns={sortedHeaders}
+            columns={parsedTableColumns}
+            columnIds={sortedHeaders}
             visibleColumns={columnVisibility}
             activeDimensions={searchAvailabilityDimensions}
             hideFilters={props.hideSearchFilters}
@@ -214,27 +283,40 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         )}
       </div>
       {sortedHeaders.length > 0 && (
-        <MemoizedObjectSearchResults
-          {...props}
-          key={searchHash} // This will rerender all results when the searchHash changes - importantly clearing the checkboxes back to an unchecked state
-          fetchNextPage={fetchNextPage}
-          hasNextPage={hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-          sortedHeaders={sortedHeaders}
-          searchData={searchData}
-          columnVisibility={columnVisibility}
-        />
+        <div
+          className={clsx(
+            "flex grow flex-col overflow-hidden",
+            columnOrder.length > 0 &&
+              columnOrder[0] === OBJECT_LIST_TABLE.columnIds.dragIcon &&
+              "md:-ml-6",
+          )}
+        >
+          <MemoizedObjectSearchResults
+            {...props}
+            key={searchHash} // This will rerender all results when the searchHash changes - importantly clearing the checkboxes back to an unchecked state
+            tableColumns={parsedTableColumns}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            searchData={searchData}
+            columnVisibility={columnVisibility}
+            setColumnVisibility={setColumnVisibility}
+            frozenColumns={frozenColumns}
+            setFrozenColumns={setFrozenColumns}
+            columnOrder={columnOrder}
+            setColumnOrder={setColumnOrder}
+          />
+        </div>
       )}
       {(isSearching || (searchData && searchData.length === 0)) && (
         <div className="items-top justify-left flex h-96 w-full flex-col space-y-2 text-sm text-manatee-600 md:text-base">
           {isSearching && (
-            <div className="flex w-full justify-center">
+            <div
+              className="flex w-full justify-center"
+              data-testid="object-search-loading-spinner"
+            >
               <Spinner className="h-10 w-10 animate-spin" />
             </div>
-          )}
-
-          {!isSearching && searchData && searchData.length === 0 && (
-            <p className="md:ml-6">{`No results containing all your search terms were found.`}</p>
           )}
         </div>
       )}

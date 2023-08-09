@@ -160,13 +160,13 @@ export const PanelHeader = ({
     <div
       data-testid="panel-header"
       className={clsx(
-        "relative mx-auto flex w-full max-w-7xl flex-col p-4 pb-2 md:p-8",
+        "relative mx-auto flex w-full max-w-7xl flex-col px-4 py-2 md:px-8",
         isPage
           ? "md:flex-row-reverse md:justify-between md:py-8 md:pt-12"
           : "md:py-6",
       )}
     >
-      <div className="flex flex-row pb-2">
+      <div className="flex flex-row items-center pb-2 md:pb-4">
         <div className="flex flex-grow items-center space-x-2">
           {!isPage && (
             <>

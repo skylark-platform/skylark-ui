@@ -40,14 +40,16 @@ Cypress.Commands.add("getByLabel", (label) => {
 });
 
 Cypress.Commands.add("openContentLibraryObjectPanelByText", (text) => {
-  cy.contains("tr", text)
-    .should(($el) => {
+  cy.contains("[data-testid=object-search-results-row]", text)
+    .trigger("mouseover")
+    .should((el) => {
       // eslint-disable-next-line jest/valid-expect
-      expect(Cypress.dom.isDetached($el)).to.eq(false);
-    })
-    .within(() => {
-      cy.get('[aria-label="object-info"]').click({ force: true });
+      expect(Cypress.dom.isDetached(el)).to.eq(false);
     });
+
+  // TODO this wait is crap and purely here to allow React to rerender to open the correct object
+  cy.wait(1000);
+  cy.get('[aria-label="object-info"]').click({ force: true });
 });
 
 declare global {

@@ -15,7 +15,6 @@ import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectType,
   SkylarkObjectIdentifier,
-  SkylarkObjectTypes,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
 import { formatObjectField, hasProperty } from "src/lib/utils";

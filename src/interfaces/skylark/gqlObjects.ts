@@ -32,6 +32,12 @@ export interface SkylarkGraphQLObjectMeta {
   global_data: {
     version: number;
   };
+  modified?: {
+    date?: string;
+  };
+  created?: {
+    date?: string;
+  };
 }
 
 export interface SkylarkGraphQLAvailabilityDimensionValue {
