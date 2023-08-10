@@ -7,7 +7,6 @@ import { GrClose } from "react-icons/gr";
 
 import { Button } from "src/components/button";
 import { Select } from "src/components/inputs/select";
-import { TimeTravelPickerValues } from "src/components/inputs/timeTravelPicker/timeTravelPicker.component";
 import {
   PanelFieldTitle,
   PanelSectionTitle,
@@ -17,6 +16,8 @@ import { ParsedSkylarkDimensionsWithValues } from "src/interfaces/skylark";
 import { parseDateTimeForHTMLForm } from "src/lib/skylark/parsers";
 
 export type AvailabilityDimensionsPickerValues = Record<string, string> | null;
+
+export type TimeTravelPickerValues = string | null;
 
 export type AvailabilityPickerValues = {
   dimensions: AvailabilityDimensionsPickerValues;
@@ -86,7 +87,6 @@ const AvailabilitySelectors = ({
                     label: value.title || value.slug,
                     value: value.slug,
                   }))}
-                  buttonClassName="rounded"
                   selected={activeDimensions?.[slug]}
                   onChange={(updatedValue) =>
                     setActiveDimensions({
@@ -97,6 +97,7 @@ const AvailabilitySelectors = ({
                   disabled={isLoadingDimensions}
                   placeholder={`Select ${title || slug || "Dimension"} value`}
                   className="mt-1"
+                  renderInPortal
                 />
               </div>
             ))}
@@ -111,7 +112,7 @@ const AvailabilitySelectors = ({
             value={activeTimeTravel || ""}
             type="datetime-local"
             step="1"
-            className="w-full rounded bg-manatee-50 px-4 py-3"
+            className="h-8 w-full rounded bg-manatee-50 px-4 md:h-10"
           />
         </div>
       </div>
@@ -175,7 +176,7 @@ export const AvailabilityPicker = ({
       <Popover.Button
         ref={refs.setReference}
         className={clsx(
-          "relative flex h-full w-full items-center justify-start rounded px-3 py-2 text-sm md:w-52 md:px-6 md:py-3",
+          "relative flex h-8 w-full items-center justify-start rounded-full px-3 text-sm md:h-10 md:w-52 md:px-6",
           activeValues.dimensions
             ? "bg-success bg-opacity-20 text-success"
             : "bg-manatee-50 text-manatee-400",

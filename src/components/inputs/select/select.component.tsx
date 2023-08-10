@@ -38,13 +38,12 @@ export interface SelectProps {
   placeholder: string;
   className?: string;
   optionsClassName?: string;
-  buttonClassName?: string;
   disabled?: boolean;
   searchable?: boolean;
   allowCustomValue?: boolean;
+  rounded?: boolean;
   withBasicSort?: boolean;
   renderInPortal?: boolean;
-  rounded?: boolean;
   onChange?: (value: string) => void;
   onValueClear?: () => void;
 }
@@ -239,12 +238,11 @@ export const Select = forwardRef(
       placeholder,
       className,
       optionsClassName,
-      buttonClassName,
-      rounded,
       onChange,
       disabled,
       selected,
       searchable = true,
+      rounded,
       allowCustomValue,
       onValueClear,
       withBasicSort,
