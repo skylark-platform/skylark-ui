@@ -48,7 +48,7 @@ export const Button = forwardRef(
     const combinedClassName = clsx(
       "btn flex-nowrap min-h-8 h-8 md:h-10",
       Icon && children && "gap-x-2",
-      !iconOnly && "text-xs normal-case md:text-sm px-5 ",
+      !iconOnly && "text-xs normal-case md:text-sm",
       variant !== "ghost" && variant !== "form" && "min-w-24 rounded-full",
       variant === "primary" && "btn-primary shadow",
       variant === "neutral" &&
@@ -68,6 +68,7 @@ export const Button = forwardRef(
       (iconOnly || variant === "link") &&
         disabled &&
         "btn-disabled bg-transparent disabled:bg-transparent",
+      !iconOnly && variant !== "ghost" && "px-5",
       block && "btn-block",
       !animated && "no-animation",
       className,

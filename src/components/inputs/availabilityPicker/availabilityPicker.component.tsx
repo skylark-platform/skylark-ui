@@ -176,7 +176,7 @@ export const AvailabilityPicker = ({
 
   return (
     <Popover className="relative">
-      <Popover.Button ref={refs.setReference} as="div">
+      <Popover.Button ref={refs.setReference} as="div" className="relative">
         <Button
           data-testid="open-availability-picker"
           variant="neutral"
