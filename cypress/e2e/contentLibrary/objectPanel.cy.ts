@@ -906,10 +906,10 @@ describe("Content Library - Object Panel", () => {
           cy.get("[data-testid=multiselect-input]").click();
         });
 
-      cy.contains("HYBRID").click();
+      cy.contains("Kids").click();
 
       cy.contains("Editing");
-      cy.contains("HYBRID");
+      cy.contains("Kids");
 
       cy.contains("Save").click();
 

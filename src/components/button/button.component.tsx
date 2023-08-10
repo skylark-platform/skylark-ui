@@ -18,8 +18,6 @@ export interface ButtonProps {
   downloadName?: string;
   type?: "button" | "submit" | "reset";
   newTab?: boolean;
-  textAlign?: "center" | "left";
-  fontWeight?: "normal" | "bold";
   animated?: boolean;
 }
 
@@ -40,8 +38,6 @@ export const Button = forwardRef(
       downloadName,
       type,
       newTab,
-      textAlign,
-      fontWeight,
       animated = true,
       ...props
     }: ButtonProps,
@@ -73,8 +69,6 @@ export const Button = forwardRef(
         disabled &&
         "btn-disabled bg-transparent disabled:bg-transparent",
       block && "btn-block",
-      textAlign === "left" && "text-left justify-start",
-      fontWeight === "normal" && "font-normal",
       !animated && "no-animation",
       className,
     );

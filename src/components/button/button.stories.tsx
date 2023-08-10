@@ -71,6 +71,12 @@ Loading.args = {
   loading: true,
 };
 
+export const Neutral = Template.bind({});
+Neutral.args = {
+  ...defaultProps,
+  variant: "neutral",
+};
+
 export const Outline = Template.bind({});
 Outline.args = {
   ...defaultProps,

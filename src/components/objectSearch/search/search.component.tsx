@@ -143,27 +143,23 @@ export const Search = ({
         </AnimatePresence>
       </div>
       <div
-        className="mt-2 w-full sm:ml-2 sm:mt-0 sm:w-auto"
+        className="mt-2 grid w-full grid-cols-2 gap-2 sm:ml-2 sm:mt-0 sm:flex sm:w-auto md:gap-0"
         data-testid="object-listing-language-select-container"
       >
         <LanguageSelect
           variant="primary"
           name="object-listing-language-select"
-          className="w-full md:w-36"
+          className="w-full sm:mr-2 md:w-36"
           selected={activeFilters.language}
           onChange={onLanguageChange}
           useDefaultLanguage
           onValueClear={() => onLanguageChange(null)}
         />
+        <AvailabilityPicker
+          activeValues={activeFilters.availability}
+          setActiveAvailability={onActiveAvailabilityChange}
+        />
       </div>
-      {hasProperty(query, "next") && (
-        <div className="mt-2 w-1/2 md:ml-2 md:mt-0">
-          <AvailabilityPicker
-            activeValues={activeFilters.availability}
-            setActiveAvailability={onActiveAvailabilityChange}
-          />
-        </div>
-      )}
     </div>
   );
 };

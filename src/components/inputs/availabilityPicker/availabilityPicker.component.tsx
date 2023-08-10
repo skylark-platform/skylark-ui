@@ -105,9 +105,13 @@ const AvailabilitySelectors = ({
         </div>
         <div className="mb-6 w-72">
           <PanelSectionTitle text={"Time"} />
-          <InputLabel text="Time Travel" />
+          <InputLabel
+            text="Time Travel"
+            htmlFor="availability-picker-time-travel-input"
+          />
           <input
             onChange={(e) => setActiveTimeTravel(e.target.value)}
+            id="availability-picker-time-travel-input"
             value={activeTimeTravel || ""}
             type="datetime-local"
             step="1"
@@ -175,32 +179,36 @@ export const AvailabilityPicker = ({
 
   return (
     <Popover className="relative">
-      <Popover.Button
-        ref={refs.setReference}
-        as={Button}
-        data-testid="open-availability-picker"
-        variant="neutral"
-        className={clsx(
-          "relative w-full md:w-52",
-          !activeValues.dimensions &&
-            !activeValues.timeTravel &&
-            "text-manatee-400",
-        )}
-        textAlign="left"
-        fontWeight="normal"
-        animated={false}
-      >
-        {!activeValues.dimensions && !activeValues.timeTravel && (
-          <>Availability Filters</>
-        )}
-        {activeValues.dimensions && !activeValues.timeTravel && (
-          <>Dimensions only</>
-        )}
-        {activeValues.dimensions && activeValues.timeTravel && (
-          <>Dimensions & Time</>
-        )}
-
-        <span className="absolute inset-y-0 right-3 flex items-center">
+      <Popover.Button ref={refs.setReference} as="div">
+        <Button
+          data-testid="open-availability-picker"
+          variant="neutral"
+          className={clsx(
+            "relative w-full justify-start text-left font-normal md:w-52",
+            !activeValues.dimensions &&
+              !activeValues.timeTravel &&
+              "text-manatee-400",
+          )}
+          animated={false}
+        >
+          {!activeValues.dimensions && !activeValues.timeTravel && (
+            <>Availability Filters</>
+          )}
+          {activeValues.dimensions && !activeValues.timeTravel && (
+            <>Dimensions only</>
+          )}
+          {activeValues.dimensions && activeValues.timeTravel && (
+            <>Dimensions & Time</>
+          )}
+          <div
+            className={clsx(
+              "absolute inset-y-0 right-4 ml-1 flex items-center text-black",
+            )}
+          >
+            <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
+          </div>
+        </Button>
+        <div className="absolute inset-y-0 right-8 flex items-center">
           {activeValues.dimensions && (
             <button
               onClick={(e) => {
@@ -211,10 +219,7 @@ export const AvailabilityPicker = ({
               <GrClose className="text-xs" />
             </button>
           )}
-          <button className={clsx("ml-1 h-full text-black")}>
-            <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
-          </button>
-        </span>
+        </div>
       </Popover.Button>
       <Popover.Panel
         ref={refs.setFloating}
