@@ -5,6 +5,7 @@ import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 export enum PanelTab {
   Metadata = "Metadata",
   Imagery = "Imagery",
+  Playback = "Playback",
   Availability = "Availability",
   AvailabilityDimensions = "Dimensions",
   AvailabilityAssignedTo = "Assigned To",

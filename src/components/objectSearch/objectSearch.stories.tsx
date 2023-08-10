@@ -41,5 +41,4 @@ export const KitchenSink = Template.bind({});
 KitchenSink.args = {
   withCreateButtons: true,
   withObjectSelect: true,
-  withObjectEdit: true,
 };

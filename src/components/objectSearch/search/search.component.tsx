@@ -1,4 +1,4 @@
-import { VisibilityState } from "@tanstack/react-table";
+import { ColumnDef, VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
 import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode } from "graphql";
@@ -7,17 +7,13 @@ import { useEffect, useRef, useState } from "react";
 
 import {
   AvailabilityPicker,
-  AvailabilityDimensionsPickerValues,
   AvailabilityPickerValues,
 } from "src/components/inputs/availabilityPicker/availabilityPicker.component";
 import { LanguageSelect } from "src/components/inputs/select";
-import {
-  TimeTravelPicker,
-  TimeTravelPickerValues,
-} from "src/components/inputs/timeTravelPicker/timeTravelPicker.component";
 import { SearchFilter } from "src/components/objectSearch/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
+import { ParsedSkylarkObject } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 
 import { SearchInput } from "./searchInput/searchInput.component";
@@ -25,7 +21,8 @@ import { SearchInput } from "./searchInput/searchInput.component";
 interface SearchBarProps {
   searchQuery: string;
   activeFilters: SearchFilters;
-  columns: string[];
+  columns: ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[];
+  columnIds: string[];
   visibleColumns: VisibilityState;
   className?: string;
   isSearching: boolean;
@@ -45,6 +42,7 @@ interface SearchBarProps {
 export const Search = ({
   className,
   columns,
+  columnIds,
   visibleColumns,
   searchQuery,
   graphqlQuery,
@@ -96,12 +94,21 @@ export const Search = ({
     onColumnVisibilityChange(columnVisibility);
   };
 
+  const columnOptions = columnIds.map((value) => ({
+    value,
+    label:
+      columns.find((col) => col?.id === value)?.header?.toString() || value,
+  }));
+
   return (
     <div
-      className={clsx("flex w-full flex-col md:flex-row", className)}
+      className={clsx(
+        "flex w-full flex-col items-center sm:h-10 sm:flex-row",
+        className,
+      )}
       ref={filtersDivRef}
     >
-      <div className="relative flex w-full flex-grow flex-row">
+      <div className="relative flex h-full w-full flex-grow flex-row">
         <SearchInput
           onQueryChange={onQueryChange}
           searchQuery={searchQuery}
@@ -123,7 +130,7 @@ export const Search = ({
             >
               <SearchFilter
                 activeObjectTypes={activeFilters.objectTypes}
-                columns={columns}
+                columns={columnOptions}
                 visibleColumns={Object.keys(visibleColumns).filter(
                   (column) => visibleColumns[column],
                 )}
@@ -135,34 +142,28 @@ export const Search = ({
           )}
         </AnimatePresence>
       </div>
-      <div className="flex flex-row space-x-2">
-        <div
-          className={clsx(
-            "mt-2 md:ml-2 md:mt-0",
-            hasProperty(query, "next") ? "w-1/2 md:w-32" : "w-full",
-          )}
-          data-testid="object-listing-language-select-container"
-        >
-          <LanguageSelect
-            variant="primary"
-            name="object-listing-language-select"
-            className="w-full"
-            selected={activeFilters.language}
-            onChange={onLanguageChange}
-            buttonClassName="rounded-full"
-            useDefaultLanguage
-            onValueClear={() => onLanguageChange(null)}
+      <div
+        className="mt-2 w-full sm:ml-2 sm:mt-0 sm:w-auto"
+        data-testid="object-listing-language-select-container"
+      >
+        <LanguageSelect
+          variant="primary"
+          name="object-listing-language-select"
+          className="w-full md:w-36"
+          selected={activeFilters.language}
+          onChange={onLanguageChange}
+          useDefaultLanguage
+          onValueClear={() => onLanguageChange(null)}
+        />
+      </div>
+      {hasProperty(query, "next") && (
+        <div className="mt-2 w-1/2 md:ml-2 md:mt-0">
+          <AvailabilityPicker
+            activeValues={activeFilters.availability}
+            setActiveAvailability={onActiveAvailabilityChange}
           />
         </div>
-        {hasProperty(query, "next") && (
-          <div className="mt-2 w-1/2 md:ml-2 md:mt-0">
-            <AvailabilityPicker
-              activeValues={activeFilters.availability}
-              setActiveAvailability={onActiveAvailabilityChange}
-            />
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 };

@@ -3,92 +3,680 @@
     "Availability": {
       "primary_field": "title",
       "colour": "#9E9E9E",
-      "display_name": "Availability"
+      "display_name": "Availability",
+      "field_config": [
+        {
+          "name": "start",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "timezone",
+          "ui_field_type": null,
+          "ui_position": 4
+        },
+        {
+          "name": "title",
+          "ui_field_type": null,
+          "ui_position": 1
+        },
+        {
+          "name": "end",
+          "ui_field_type": null,
+          "ui_position": 3
+        }
+      ]
     },
     "Brand": {
-      "primary_field": "title",
-      "colour": "#673ab7",
-      "display_name": "Brand"
+      "primary_field": "internal_title",
+      "colour": "#673AB7",
+      "display_name": "Brand",
+      "field_config": [
+        {
+          "name": "release_date",
+          "ui_field_type": null,
+          "ui_position": 5
+        },
+        {
+          "name": "title_sort",
+          "ui_field_type": null,
+          "ui_position": 6
+        },
+        {
+          "name": "synopsis_short",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 4
+        },
+        {
+          "name": "title_short",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "synopsis",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 3
+        },
+        {
+          "name": "title",
+          "ui_field_type": null,
+          "ui_position": 1
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        }
+      ]
+    },
+    "CallToAction": {
+      "primary_field": "internal_title",
+      "colour": "#F44336",
+      "display_name": "CTA",
+      "field_config": [
+        {
+          "name": "url",
+          "ui_field_type": null,
+          "ui_position": 6
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        },
+        {
+          "name": "text",
+          "ui_field_type": null,
+          "ui_position": 1
+        },
+        {
+          "name": "url_path",
+          "ui_field_type": null,
+          "ui_position": 7
+        },
+        {
+          "name": "description_short",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 4
+        },
+        {
+          "name": "description",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 3
+        },
+        {
+          "name": "type",
+          "ui_field_type": null,
+          "ui_position": 5
+        },
+        {
+          "name": "text_short",
+          "ui_field_type": null,
+          "ui_position": 2
+        }
+      ]
     },
     "Credit": {
-      "primary_field": "slug",
-      "colour": "#ff5722",
-      "display_name": "Credit"
+      "primary_field": "internal_title",
+      "colour": "#FF5722",
+      "display_name": "Credit",
+      "field_config": [
+        {
+          "name": "position",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        },
+        {
+          "name": "character",
+          "ui_field_type": null,
+          "ui_position": 1
+        }
+      ]
     },
     "Episode": {
-      "primary_field": "title",
-      "colour": "#ff7ba8",
-      "display_name": "Episode"
+      "primary_field": "internal_title",
+      "colour": "#FF7BA8",
+      "display_name": "Episode",
+      "field_config": [
+        {
+          "name": "release_date",
+          "ui_field_type": null,
+          "ui_position": 6
+        },
+        {
+          "name": "episode_number",
+          "ui_field_type": null,
+          "ui_position": 5
+        },
+        {
+          "name": "title_sort",
+          "ui_field_type": null,
+          "ui_position": 8
+        },
+        {
+          "name": "title_short",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        },
+        {
+          "name": "year_of_release",
+          "ui_field_type": null,
+          "ui_position": 7
+        },
+        {
+          "name": "synopsis_short",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 4
+        },
+        {
+          "name": "synopsis",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 3
+        },
+        {
+          "name": "title",
+          "ui_field_type": null,
+          "ui_position": 1
+        }
+      ]
     },
     "Genre": {
-      "primary_field": "name",
-      "colour": "#8bc34a",
-      "display_name": "Genre"
+      "primary_field": "internal_title",
+      "colour": "#8BC34A",
+      "display_name": "Genre",
+      "field_config": [
+        {
+          "name": "metadata_source",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "title_sort",
+          "ui_field_type": null,
+          "ui_position": 3
+        },
+        {
+          "name": "name",
+          "ui_field_type": null,
+          "ui_position": 1
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        }
+      ]
     },
     "Movie": {
-      "primary_field": "title",
+      "primary_field": "internal_title",
       "colour": "#009688",
-      "display_name": "Movie"
+      "display_name": "Movie",
+      "field_config": [
+        {
+          "name": "release_date",
+          "ui_field_type": null,
+          "ui_position": 6
+        },
+        {
+          "name": "title_sort",
+          "ui_field_type": null,
+          "ui_position": 8
+        },
+        {
+          "name": "title_short",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        },
+        {
+          "name": "year_of_release",
+          "ui_field_type": null,
+          "ui_position": 7
+        },
+        {
+          "name": "movie_number",
+          "ui_field_type": null,
+          "ui_position": 5
+        },
+        {
+          "name": "synopsis_short",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 4
+        },
+        {
+          "name": "synopsis",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 3
+        },
+        {
+          "name": "title",
+          "ui_field_type": null,
+          "ui_position": 1
+        }
+      ]
     },
     "ParentalGuidance": {
-      "primary_field": "slug",
-      "colour": "#03a9f4",
-      "display_name": "ParentalGuidance"
+      "primary_field": "internal_title",
+      "colour": "#03A9F4",
+      "display_name": "ParentalGuidance",
+      "field_config": [
+        {
+          "name": "reason_sort",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "reason",
+          "ui_field_type": null,
+          "ui_position": 1
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        }
+      ]
     },
     "Person": {
       "primary_field": "name",
-      "colour": "#ff9800",
-      "display_name": "Person"
+      "colour": "#FF9800",
+      "display_name": "Person",
+      "field_config": [
+        {
+          "name": "bio_long",
+          "ui_field_type": "WYSIWYG",
+          "ui_position": 7
+        },
+        {
+          "name": "name_sort",
+          "ui_field_type": null,
+          "ui_position": 10
+        },
+        {
+          "name": "genre",
+          "ui_field_type": null,
+          "ui_position": 4
+        },
+        {
+          "name": "abbreviation",
+          "ui_field_type": null,
+          "ui_position": 3
+        },
+        {
+          "name": "bio_medium",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 6
+        },
+        {
+          "name": "alias",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "name",
+          "ui_field_type": null,
+          "ui_position": 1
+        },
+        {
+          "name": "place_of_birth",
+          "ui_field_type": null,
+          "ui_position": 9
+        },
+        {
+          "name": "bio_short",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 5
+        },
+        {
+          "name": "date_of_birth",
+          "ui_field_type": null,
+          "ui_position": 8
+        }
+      ]
     },
     "Rating": {
-      "primary_field": "title",
-      "colour": "#00bcd4",
-      "display_name": "Rating"
+      "primary_field": "internal_title",
+      "colour": "#00BCD4",
+      "display_name": "Rating",
+      "field_config": [
+        {
+          "name": "description",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 2
+        },
+        {
+          "name": "value",
+          "ui_field_type": null,
+          "ui_position": 3
+        },
+        {
+          "name": "title",
+          "ui_field_type": null,
+          "ui_position": 1
+        },
+        {
+          "name": "schema",
+          "ui_field_type": null,
+          "ui_position": 4
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        }
+      ]
     },
     "Role": {
-      "primary_field": "title",
-      "colour": "#ffc107",
-      "display_name": "Role"
+      "primary_field": "internal_title",
+      "colour": "#FFC107",
+      "display_name": "Role",
+      "field_config": [
+        {
+          "name": "title_sort",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "title",
+          "ui_field_type": null,
+          "ui_position": 1
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        }
+      ]
     },
     "Season": {
-      "primary_field": "title",
-      "colour": "#9c27b0",
-      "display_name": "Season"
+      "primary_field": "internal_title",
+      "colour": "#9C27B0",
+      "display_name": "Season",
+      "field_config": [
+        {
+          "name": "release_date",
+          "ui_field_type": null,
+          "ui_position": 7
+        },
+        {
+          "name": "title_sort",
+          "ui_field_type": null,
+          "ui_position": 9
+        },
+        {
+          "name": "title_short",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "number_of_episodes",
+          "ui_field_type": null,
+          "ui_position": 6
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        },
+        {
+          "name": "year_of_release",
+          "ui_field_type": null,
+          "ui_position": 8
+        },
+        {
+          "name": "synopsis_short",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 4
+        },
+        {
+          "name": "synopsis",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 3
+        },
+        {
+          "name": "title",
+          "ui_field_type": null,
+          "ui_position": 1
+        },
+        {
+          "name": "season_number",
+          "ui_field_type": null,
+          "ui_position": 5
+        }
+      ]
     },
     "SkylarkAsset": {
-      "primary_field": "title",
-      "colour": "#9e9e9e",
-      "display_name": "Assetˢˡ"
+      "primary_field": "internal_title",
+      "colour": "#6F5060",
+      "display_name": "Assetˢˡ",
+      "field_config": [
+        {
+          "name": "release_date",
+          "ui_field_type": null,
+          "ui_position": 4
+        },
+        {
+          "name": "duration",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "title_sort",
+          "ui_field_type": null,
+          "ui_position": 5
+        },
+        {
+          "name": "title",
+          "ui_field_type": null,
+          "ui_position": 1
+        },
+        {
+          "name": "url",
+          "ui_field_type": null,
+          "ui_position": 3
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        }
+      ]
     },
-    "SkylarkChannel": {
-      "primary_field": "name",
-      "colour": "#C94C4C",
-      "display_name": "Channelˢˡ"
-    },
-    "SkylarkEPGProgramme": {
-      "primary_field": "name",
+    "SkylarkEPGProgram": {
+      "primary_field": "internal_title",
       "colour": "#EF6C00",
-      "display_name": "EPG Programmeˢˡ"
+      "display_name": "EPG Programˢˡ",
+      "field_config": [
+        {
+          "name": "name_sort",
+          "ui_field_type": null,
+          "ui_position": 3
+        },
+        {
+          "name": "url",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "name",
+          "ui_field_type": null,
+          "ui_position": 1
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        }
+      ]
     },
     "SkylarkImage": {
-      "primary_field": "title",
-      "colour": "#607d8b",
-      "display_name": "Imageˢˡ"
+      "primary_field": "internal_title",
+      "colour": "#607D8B",
+      "display_name": "Imageˢˡ",
+      "field_config": [
+        {
+          "name": "description",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 2
+        },
+        {
+          "name": "content_type",
+          "ui_field_type": null,
+          "ui_position": 4
+        },
+        {
+          "name": "title",
+          "ui_field_type": null,
+          "ui_position": 1
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        },
+        {
+          "name": "file_name",
+          "ui_field_type": null,
+          "ui_position": 3
+        }
+      ]
+    },
+    "SkylarkLiveStream": {
+      "primary_field": "internal_title",
+      "colour": "#C94C4C",
+      "display_name": "LiveStreamˢˡ",
+      "field_config": [
+        {
+          "name": "name_sort",
+          "ui_field_type": null,
+          "ui_position": 3
+        },
+        {
+          "name": "url",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "name",
+          "ui_field_type": null,
+          "ui_position": 1
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        }
+      ]
     },
     "SkylarkSet": {
-      "primary_field": "title",
+      "primary_field": "internal_title",
       "colour": "#000000",
-      "display_name": "Setˢˡ"
+      "display_name": "Setˢˡ",
+      "field_config": [
+        {
+          "name": "release_date",
+          "ui_field_type": null,
+          "ui_position": 6
+        },
+        {
+          "name": "title_sort",
+          "ui_field_type": null,
+          "ui_position": 7
+        },
+        {
+          "name": "title_short",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        },
+        {
+          "name": "description",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 5
+        },
+        {
+          "name": "synopsis_short",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 4
+        },
+        {
+          "name": "synopsis",
+          "ui_field_type": "TEXTAREA",
+          "ui_position": 3
+        },
+        {
+          "name": "title",
+          "ui_field_type": null,
+          "ui_position": 1
+        }
+      ]
     },
     "SkylarkTag": {
       "primary_field": "name",
-      "colour": "#4caf50",
-      "display_name": "Tagˢˡ"
+      "colour": "#4CAF50",
+      "display_name": "Tagˢˡ",
+      "field_config": [
+        {
+          "name": "name_sort",
+          "ui_field_type": null,
+          "ui_position": 3
+        },
+        {
+          "name": "tag_category",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "name",
+          "ui_field_type": null,
+          "ui_position": 1
+        }
+      ]
     },
     "Theme": {
-      "primary_field": "name",
-      "colour": "#cddc39",
-      "display_name": "Theme"
+      "primary_field": "internal_title",
+      "colour": "#CDDC39",
+      "display_name": "Theme",
+      "field_config": [
+        {
+          "name": "metadata_source",
+          "ui_field_type": null,
+          "ui_position": 2
+        },
+        {
+          "name": "name_sort",
+          "ui_field_type": null,
+          "ui_position": 3
+        },
+        {
+          "name": "name",
+          "ui_field_type": null,
+          "ui_position": 1
+        },
+        {
+          "name": "internal_title",
+          "ui_field_type": null,
+          "ui_position": 0
+        }
+      ]
     }
   }
 }

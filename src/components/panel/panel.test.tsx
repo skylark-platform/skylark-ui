@@ -93,6 +93,14 @@ const defaultProps = {
   tab: PanelTab.Metadata,
 };
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const useRouter = jest.spyOn(require("next/router"), "useRouter");
+
+beforeEach(() => {
+  const router = { query: {} };
+  useRouter.mockReturnValue(router);
+});
+
 describe("header (tab independent)", () => {
   test("closing the panel using close button", async () => {
     const closePanel = jest.fn();

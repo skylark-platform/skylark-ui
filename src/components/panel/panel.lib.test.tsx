@@ -228,18 +228,14 @@ describe("handleDroppedAvailabilities", () => {
     };
 
     const got = handleDroppedAvailabilities({
-      panelObject,
+      activeObjectUid: panelObject.uid,
       existingObjects: [existingOb],
       droppedObjects: [...droppedObjects, existingOb],
     });
 
     // Check valid content objects
-    expect(got.updatedAvailabilityObjects).toHaveLength(2);
-    expect(got.updatedAvailabilityObjects[0]).toEqual(existingOb);
-    expect(got.updatedAvailabilityObjects[1]).toHaveProperty(
-      "uid",
-      "new-availability",
-    );
+    expect(got.addedObjects).toHaveLength(1);
+    expect(got.addedObjects[0]).toHaveProperty("uid", "new-availability");
 
     // Check errors
     expect(got.errors).toHaveLength(4);

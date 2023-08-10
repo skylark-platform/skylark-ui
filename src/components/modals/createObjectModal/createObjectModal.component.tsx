@@ -13,7 +13,6 @@ import { useCreateObject } from "src/hooks/objects/useCreateObject";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectConfig,
-  SkylarkGraphQLObjectConfig,
   SkylarkObjectIdentifier,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
@@ -293,12 +292,16 @@ export const CreateObjectModal = ({
                           ({ field, config }) =>
                             config && (
                               <SkylarkObjectFieldInput
+                                idPrefix="create-object-modal"
                                 key={field}
                                 field={field}
                                 config={config}
                                 control={control}
                                 register={register}
                                 value={getValues(field)}
+                                fieldConfigFromObject={objectTypeConfig?.fieldConfig?.find(
+                                  ({ name }) => name === field,
+                                )}
                                 formState={formState}
                               />
                             ),

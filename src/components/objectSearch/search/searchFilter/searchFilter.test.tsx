@@ -13,6 +13,7 @@ const objectTypesWithConfig = objectTypes.map((objectType) => ({
 }));
 
 const columns = ["uid", "external_id", "slug"];
+const columnOpts = columns.map((id) => ({ value: id }));
 
 const graphqlQuery = {
   query: GET_SKYLARK_OBJECT_TYPES,
@@ -24,7 +25,7 @@ test("renders with all checkboxes checked", async () => {
     <SearchFilter
       objectTypesWithConfig={objectTypesWithConfig}
       activeObjectTypes={objectTypes}
-      columns={columns}
+      columns={columnOpts}
       visibleColumns={columns}
       onFilterSave={jest.fn()}
       graphqlQuery={graphqlQuery}
@@ -45,7 +46,7 @@ test("changes checkboxes and calls onFilterSave when apply is clicked", async ()
     <SearchFilter
       objectTypesWithConfig={objectTypesWithConfig}
       activeObjectTypes={objectTypes}
-      columns={columns}
+      columns={columnOpts}
       visibleColumns={columns}
       onFilterSave={onFilterSave}
       graphqlQuery={graphqlQuery}
@@ -73,7 +74,7 @@ test("when reset is clicked, all filters are returned to all options checked wit
     <SearchFilter
       objectTypesWithConfig={objectTypesWithConfig}
       activeObjectTypes={[]}
-      columns={columns}
+      columns={columnOpts}
       visibleColumns={[]}
       onFilterSave={onFilterSave}
       graphqlQuery={graphqlQuery}

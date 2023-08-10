@@ -22,6 +22,16 @@
 }
 
 @layer utilities {
+  .scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
 }
 
 /* Overrides for GraphiQL Explorer */
@@ -35,4 +45,14 @@
   height: 2rem !important;
   width: 2rem !important;
   padding: 0.5rem !important;
+}
+
+/* Overrides for TinyMCE */
+.tox-statusbar__branding {
+  display: none !important;
+}
+
+.tox.tox-tinymce {
+  /* Same border-radius as other inputs */
+  border-radius: 0.125rem;
 }

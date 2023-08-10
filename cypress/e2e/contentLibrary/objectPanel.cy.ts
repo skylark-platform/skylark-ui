@@ -21,9 +21,9 @@ describe("Content Library - Object Panel", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
-      if (hasOperationName(req, "GET_ACCOUNT")) {
+      if (hasOperationName(req, "GET_USER_AND_ACCOUNT")) {
         req.reply({
-          fixture: "./skylark/queries/getAccount.json",
+          fixture: "./skylark/queries/getUserAndAccount.json",
         });
       }
       if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
@@ -197,12 +197,18 @@ describe("Content Library - Object Panel", () => {
 
   it("open Panel", () => {
     cy.get('input[name="search-query-input"]').type("got winter is coming");
-    cy.openContentLibraryObjectPanelByText("GOT S01E1 - Winter");
+    cy.contains("GOT S01E1 - Winter");
+    cy.openContentLibraryObjectPanelByText("en-GB"); // Open the English version
 
     cy.contains("Metadata");
-    cy.contains(
-      "Series Premiere. Eddard Stark is torn between his family and an old friend when asked to serve at the side of King Robert Baratheon; Viserys plans to wed his sister to a nomadic warlord in exchange for an army.",
-    );
+    cy.contains("Synopsis short").scrollIntoView();
+
+    cy.get('textarea[name="synopsis_short"]')
+      .invoke("val")
+      .should(
+        "equal",
+        "Series Premiere. Eddard Stark is torn between his family and an old friend when asked to serve at the side of King Robert Baratheon; Viserys plans to wed his sister to a nomadic warlord in exchange for an army.",
+      );
     cy.percySnapshot("Homepage - metadata panel - fields");
   });
 
@@ -275,7 +281,7 @@ describe("Content Library - Object Panel", () => {
   describe("Metadata tab", () => {
     it("change language to pt-PT", () => {
       cy.get('input[name="search-query-input"]').type("got winter is coming");
-      cy.contains("tr", "GOT S01E1 - Winter");
+      cy.contains("div", "GOT S01E1 - Winter");
       cy.openContentLibraryObjectPanelByText("en-GB");
 
       cy.contains("Metadata");
@@ -304,7 +310,7 @@ describe("Content Library - Object Panel", () => {
 
     it("edit metadata and cancel", () => {
       cy.get('input[name="search-query-input"]').type("got winter is coming");
-      cy.contains("tr", "GOT S01E1 - Winter");
+      cy.contains("div", "GOT S01E1 - Winter");
       cy.openContentLibraryObjectPanelByText("en-GB");
 
       cy.contains("Metadata");
@@ -330,7 +336,7 @@ describe("Content Library - Object Panel", () => {
 
     it("edit metadata and save", () => {
       cy.get('input[name="search-query-input"]').type("got winter is coming");
-      cy.contains("tr", "GOT S01E1 - Winter");
+      cy.contains("div", "GOT S01E1 - Winter");
       cy.openContentLibraryObjectPanelByText("en-GB");
 
       cy.contains("Metadata");
@@ -781,6 +787,58 @@ describe("Content Library - Object Panel", () => {
             `[data-cy=panel-for-Availability-${availabilityJson.data.getObjectAvailability.availability.objects[0].uid}]`,
           );
         });
+      });
+    });
+
+    it("adds Availability using the Object Search modal", () => {
+      cy.fixture(
+        "./skylark/queries/getObject/fantasticMrFox_All_Availabilities.json",
+      ).then((objectJson) => {
+        cy.get('input[name="search-query-input"]').type("all avail test movie");
+        cy.contains("Fantastic Mr Fox (All Availabilities)").should("exist");
+        cy.openContentLibraryObjectPanelByText(
+          "Fantastic Mr Fox (All Availabilities)",
+        );
+
+        cy.contains("button", "Availability").click();
+
+        // Check default Availability view shows
+        cy.contains("Time Window");
+
+        cy.get("#availability-panel-header")
+          .parent()
+          .within(() => {
+            cy.get("button").click();
+          });
+
+        cy.get("[data-testid=search-objects-modal-save]").should("exist");
+
+        cy.get("[data-testid=search-objects-modal]").within(() => {
+          cy.get('input[name="search-query-input"]').type(
+            allDevicesAllCustomersAvailability,
+          );
+        });
+
+        cy.contains(allDevicesAllCustomersAvailability).click();
+
+        cy.contains("Add 1").click();
+
+        cy.get("[data-testid=search-objects-modal-save]").should("not.exist");
+
+        // Check edit Availability view shows
+        cy.contains("Time Window").should("not.exist");
+
+        cy.contains(allDevicesAllCustomersAvailability);
+
+        cy.contains("Editing");
+
+        cy.contains(allDevicesAllCustomersAvailability)
+          .closest("div")
+          .within(() => {
+            cy.get("[data-testid=object-identifier-delete]").click();
+          });
+
+        cy.contains(allDevicesAllCustomersAvailability).should("not.exist");
       });
     });
   });

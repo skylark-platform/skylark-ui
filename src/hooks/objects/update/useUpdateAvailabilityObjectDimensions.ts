@@ -7,15 +7,15 @@ import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateAvailabilityDimensionsMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
-export const useUpdateAvailabilityObjectDimensions = ({
-  uid,
-  originalAvailabilityDimensions,
-  updatedAvailabilityDimensions,
-  onSuccess,
-}: {
+interface MutationArgs {
   uid: string;
   originalAvailabilityDimensions: Record<string, string[]> | null;
   updatedAvailabilityDimensions: Record<string, string[]> | null;
+}
+
+export const useUpdateAvailabilityObjectDimensions = ({
+  onSuccess,
+}: {
   onSuccess: () => void;
 }) => {
   const queryClient = useQueryClient();
@@ -23,15 +23,19 @@ export const useUpdateAvailabilityObjectDimensions = ({
     BuiltInSkylarkObjectType.Availability,
   );
 
-  const updateAvailabilityObjectDimensionsMutation =
-    createUpdateAvailabilityDimensionsMutation(
-      objectOperations,
+  const { mutate, isLoading } = useMutation({
+    mutationFn: ({
+      uid,
       originalAvailabilityDimensions,
       updatedAvailabilityDimensions,
-    );
+    }: MutationArgs) => {
+      const updateAvailabilityObjectDimensionsMutation =
+        createUpdateAvailabilityDimensionsMutation(
+          objectOperations,
+          originalAvailabilityDimensions,
+          updatedAvailabilityDimensions,
+        );
 
-  const { mutate, isLoading } = useMutation({
-    mutationFn: ({ uid }: { uid: string }) => {
       return skylarkRequest(
         updateAvailabilityObjectDimensionsMutation as RequestDocument,
         { uid },
@@ -46,10 +50,8 @@ export const useUpdateAvailabilityObjectDimensions = ({
     },
   });
 
-  const updateAvailabilityObjectDimensions = () => mutate({ uid });
-
   return {
-    updateAvailabilityObjectDimensions,
+    updateAvailabilityObjectDimensions: mutate,
     isUpdatingAvailabilityObjectDimensions: isLoading,
   };
 };

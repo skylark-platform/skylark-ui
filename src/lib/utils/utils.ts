@@ -8,7 +8,7 @@ import {
 import {
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
-  ParsedSkylarkObjectConfig,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
 
 export const hasProperty = <T, K extends PropertyKey>(
@@ -25,12 +25,17 @@ export const isObject = (input: unknown): input is Record<string, unknown> => {
 export const pause = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-export const formatObjectField = (field?: string) =>
-  field
-    ? field === "uid"
-      ? "UID"
-      : sentenceCase(field?.replaceAll("_", " "))
-    : "";
+export const formatObjectField = (field?: string) => {
+  if (!field) {
+    return "";
+  }
+
+  if (field === SkylarkSystemField.UID) {
+    return "UID";
+  }
+
+  return sentenceCase(field?.replaceAll("_", " "));
+};
 
 export const getPrimaryKeyField = (object: ParsedSkylarkObject) =>
   [object?.config?.primaryField || "", ...DISPLAY_NAME_PRIORITY].find(

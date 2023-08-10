@@ -90,6 +90,8 @@ export interface ParsedSkylarkObjectMeta {
     global?: number;
   };
   availabilityStatus: AvailabilityStatus | null;
+  created?: string;
+  modified?: string;
 }
 
 export interface ParsedSkylarkObjectImageRelationship {

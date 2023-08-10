@@ -1,4 +1,6 @@
+import { expect } from "@storybook/jest";
 import { ComponentStory } from "@storybook/react";
+import { waitFor, within } from "@storybook/testing-library";
 import { useForm } from "react-hook-form";
 
 import { SkylarkObjectFieldInput } from "./skylarkObjectFieldInput.component";
@@ -8,20 +10,33 @@ export default {
   component: SkylarkObjectFieldInput,
 };
 
+const sleep = (timeMs: number) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeMs);
+  });
+};
+
 const Template: ComponentStory<typeof SkylarkObjectFieldInput> = ({
   config,
+  fieldConfigFromObject,
 }) => {
   const { register, control, getValues, formState } = useForm();
 
   return (
-    <div className="w-64">
+    <div
+      className={
+        fieldConfigFromObject?.fieldType === "WYSIWYG" ? "w-[500px]" : "w-64"
+      }
+    >
       <SkylarkObjectFieldInput
+        idPrefix="storybook"
         register={register}
         control={control}
         value={getValues(config.name)}
         formState={formState}
         field={config.name}
         config={config}
+        fieldConfigFromObject={fieldConfigFromObject}
       />
     </div>
   );
@@ -180,4 +195,53 @@ Enum.args = {
     isRequired: false,
     isList: false,
   },
+};
+
+export const Textarea = Template.bind({});
+Textarea.args = {
+  config: {
+    type: "string",
+    name: "textarea",
+    originalType: "String",
+    isRequired: false,
+    isList: false,
+  },
+  fieldConfigFromObject: {
+    fieldType: "TEXTAREA",
+    name: "textarea",
+    position: 0,
+  },
+};
+
+export const WYSIWYGEditor = Template.bind({});
+WYSIWYGEditor.args = {
+  config: {
+    type: "string",
+    name: "wysiwyg",
+    originalType: "String",
+    isRequired: false,
+    isList: false,
+  },
+  fieldConfigFromObject: {
+    fieldType: "WYSIWYG",
+    name: "wysiwyg",
+    position: 0,
+  },
+};
+WYSIWYGEditor.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  await waitFor(() => {
+    expect(canvas.getByText("Wysiwyg")).toBeInTheDocument();
+  });
+
+  // Delay to allow TinyMCE to load
+  await sleep(5000);
+
+  await waitFor(() => {
+    expect(canvas.getByText("File")).toBeInTheDocument();
+  });
+  await waitFor(() => {
+    expect(canvas.getByText("Format")).toBeInTheDocument();
+  });
 };

@@ -6,15 +6,11 @@ import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
   ParsedSkylarkObjectContentObject,
-  ParsedSkylarkObjectRelationships,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import {
-  parseMetadataForGraphQLRequest,
-  parseUpdatedRelationshipObjects,
-} from "src/lib/skylark/parsers";
+import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
 import { hasProperty } from "src/lib/utils";
 
 import {
@@ -346,27 +342,16 @@ export const createUpdateObjectRelationshipsMutation = (
 
 export const createUpdateObjectAvailability = (
   object: SkylarkObjectMeta | null,
-  originalAvailabilityObjects: ParsedSkylarkObject[] | null,
-  updatedAvailabilityObjects: ParsedSkylarkObject[] | null,
+  modifiedAvailabilityObjects: {
+    added: ParsedSkylarkObject[];
+    removed: string[];
+  } | null,
 ) => {
-  if (
-    !object ||
-    !object.operations.update ||
-    !originalAvailabilityObjects ||
-    !updatedAvailabilityObjects
-  ) {
+  if (!object || !object.operations.update || !modifiedAvailabilityObjects) {
     return null;
   }
 
-  const originalObjectUids = originalAvailabilityObjects.map(({ uid }) => uid);
-  const updatedObjectUids = updatedAvailabilityObjects.map(({ uid }) => uid);
-
-  const uidsToLink = updatedObjectUids.filter(
-    (uid) => !originalObjectUids.includes(uid),
-  );
-  const uidsToUnlink = originalObjectUids.filter(
-    (uid) => !updatedObjectUids.includes(uid),
-  );
+  const uidsToLink = modifiedAvailabilityObjects.added.map(({ uid }) => uid);
 
   const mutation = {
     mutation: {
@@ -381,7 +366,7 @@ export const createUpdateObjectAvailability = (
           [object.operations.update.argName]: {
             availability: {
               link: uidsToLink,
-              unlink: uidsToUnlink,
+              unlink: modifiedAvailabilityObjects.removed,
             },
           },
         },

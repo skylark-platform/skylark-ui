@@ -163,7 +163,7 @@ describe("Content Library - Search", () => {
   it("searches for got winter is coming, clicks the en-GB version, then the pt-PT version", () => {
     cy.get('input[name="search-query-input"]').type("got winter is coming");
 
-    cy.contains("tr", "GOT S01E1 - Winter");
+    cy.contains("div", "GOT S01E1 - Winter");
     cy.openContentLibraryObjectPanelByText("en-GB");
 
     cy.get("[data-testid=panel-metadata]").within(() => {
@@ -176,6 +176,7 @@ describe("Content Library - Search", () => {
     });
 
     // Change to pt-PT and verify
+    cy.get("[data-testid=object-search-results]").scrollTo(0, 0);
     cy.openContentLibraryObjectPanelByText("pt-PT");
 
     cy.get("[data-testid=panel-header]").within(() => {

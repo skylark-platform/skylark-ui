@@ -15,7 +15,6 @@ import { FlatfileTemplate } from "src/interfaces/flatfile/template";
 import {
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
-  SkylarkGraphQLObjectConfig,
 } from "src/interfaces/skylark";
 import {
   createFlatfileObjectsInSkylark,
