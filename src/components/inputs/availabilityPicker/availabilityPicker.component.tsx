@@ -8,10 +8,7 @@ import { GrClose } from "react-icons/gr";
 import { Button } from "src/components/button";
 import { InputLabel } from "src/components/inputs/label/label.component";
 import { Select } from "src/components/inputs/select";
-import {
-  PanelFieldTitle,
-  PanelSectionTitle,
-} from "src/components/panel/panelTypography";
+import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { ParsedSkylarkDimensionsWithValues } from "src/interfaces/skylark";
 import { parseDateTimeForHTMLForm } from "src/lib/skylark/parsers";
@@ -224,6 +221,7 @@ export const AvailabilityPicker = ({
       <Popover.Panel
         ref={refs.setFloating}
         style={floatingStyles}
+        data-testid="availability-picker"
         className="bg-manatee z-[50] flex max-h-96 flex-grow flex-col justify-between overflow-y-scroll rounded bg-white px-6 py-6 text-sm shadow-lg shadow-manatee-500 md:-left-20"
       >
         {({ close }) => (

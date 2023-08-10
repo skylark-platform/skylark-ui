@@ -12,7 +12,6 @@ export const createSkylarkClient = (uri: string, token: string) =>
   new GraphQLClient(uri, {
     headers: {
       [REQUEST_HEADERS.apiKey]: token,
-      [REQUEST_HEADERS.bypassCache]: "1",
     },
   });
 

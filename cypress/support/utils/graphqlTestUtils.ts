@@ -1,6 +1,53 @@
 // https://docs.cypress.io/guides/end-to-end-testing/working-with-graphql
 import { CyHttpMessages } from "cypress/types/net-stubbing";
 
+const isObject = (input: unknown): input is Record<string, unknown> => {
+  return typeof input === "object" && input !== null && !Array.isArray(input);
+};
+
+const isArraysDeepEqual = (arr1: unknown[], arr2: unknown[]) =>
+  arr1.length == arr2.length &&
+  arr1.every((el1, index) => {
+    const el2 = arr2[index];
+    const isObjects = isObject(el1) && isObject(el2);
+    if (isObjects) {
+      return isObjectsDeepEqual(el1, el2);
+    }
+
+    return el1 === el2;
+  });
+
+const isObjectsDeepEqual = (
+  obj1: Record<string, unknown>,
+  obj2: Record<string, unknown>,
+): boolean => {
+  const objKeys1 = Object.keys(obj1);
+
+  if (objKeys1.length !== Object.keys(obj2).length) {
+    return false;
+  }
+
+  for (const key of objKeys1) {
+    const value1 = obj1[key];
+    const value2 = obj2[key];
+
+    const isObjects = isObject(value1) && isObject(value2);
+    if (isObjects) {
+      return !isObjectsDeepEqual(value1, value2);
+    }
+
+    const isArrays = Array.isArray(value1) && Array.isArray(value2);
+    if (isArrays) {
+      return isArraysDeepEqual(value1, value2);
+    }
+
+    if (value1 !== value2) {
+      return false;
+    }
+  }
+  return true;
+};
+
 // Utility to get the GraphQL Operation name from the request if it exists
 export const getOperationName = (
   req: CyHttpMessages.IncomingHttpRequest,
@@ -57,12 +104,22 @@ export const hasMatchingVariable = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   variableValue: any,
 ) => {
-  const { body } = req;
+  if (!hasVariable(req, variableName)) {
+    return false;
+  }
 
-  return (
-    hasVariable(req, variableName) &&
-    body.variables[variableName] === variableValue
-  );
+  const { body } = req;
+  const bodyVariableValue = body.variables[variableName];
+
+  if (Array.isArray(variableValue)) {
+    return isArraysDeepEqual(bodyVariableValue, variableValue);
+  }
+
+  if (isObject(variableValue)) {
+    return isObjectsDeepEqual(bodyVariableValue, variableValue);
+  }
+
+  return bodyVariableValue === variableValue;
 };
 
 // Alias query if operationName matches

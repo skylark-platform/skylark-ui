@@ -383,7 +383,9 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             cy.get('input[name="search-query-input"]').type("Homepage");
             cy.contains("Homepage").should("exist");
             cy.openContentLibraryObjectPanelByText("Homepage");
-            cy.contains("button", "Availability").click();
+            cy.get("[data-testid=panel-tabs]").within(() => {
+              cy.contains("button", "Availability").click();
+            });
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
             cy.get('input[name="search-query-input"]')
@@ -438,7 +440,9 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             cy.get('input[name="search-query-input"]').type("Homepage");
             cy.contains("Homepage").should("exist");
             cy.openContentLibraryObjectPanelByText("Homepage");
-            cy.contains("button", "Availability").click();
+            cy.get("[data-testid=panel-tabs]").within(() => {
+              cy.contains("button", "Availability").click();
+            });
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
             cy.get('input[name="search-query-input"]')
@@ -523,7 +527,9 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             cy.get('input[name="search-query-input"]').type("Homepage");
             cy.contains("Homepage").should("exist");
             cy.openContentLibraryObjectPanelByText("Homepage");
-            cy.contains("button", "Availability").click();
+            cy.get("[data-testid=panel-tabs]").within(() => {
+              cy.contains("button", "Availability").click();
+            });
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");

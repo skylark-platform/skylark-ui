@@ -493,7 +493,10 @@ export const Panel = ({
         navigateToForwardPanelObject={navigateToForwardPanelObject}
       />
       <div className="border-b-2 border-gray-200">
-        <div className="scrollbar-hidden mx-auto w-full max-w-7xl flex-none overflow-x-auto">
+        <div
+          className="scrollbar-hidden mx-auto w-full max-w-7xl flex-none overflow-x-auto"
+          data-testid="panel-tabs"
+        >
           <Tabs
             tabs={tabs}
             selectedTab={selectedTab}

@@ -739,7 +739,9 @@ describe("Content Library - Object Panel", () => {
         "Fantastic Mr Fox (All Availabilities)",
       );
 
-      cy.contains("button", "Availability").click();
+      cy.get("[data-testid=panel-tabs]").within(() => {
+        cy.contains("button", "Availability").click();
+      });
 
       cy.contains("Active in the past");
       cy.contains("Time Window");
@@ -766,7 +768,9 @@ describe("Content Library - Object Panel", () => {
             "Fantastic Mr Fox (All Availabilities)",
           );
 
-          cy.contains("button", "Availability").click();
+          cy.get("[data-testid=panel-tabs]").within(() => {
+            cy.contains("button", "Availability").click();
+          });
 
           cy.get(`[data-cy=panel-for-${objectType}-${objectUid}]`);
 
@@ -800,7 +804,9 @@ describe("Content Library - Object Panel", () => {
           "Fantastic Mr Fox (All Availabilities)",
         );
 
-        cy.contains("button", "Availability").click();
+        cy.get("[data-testid=panel-tabs]").within(() => {
+          cy.contains("button", "Availability").click();
+        });
 
         // Check default Availability view shows
         cy.contains("Time Window");

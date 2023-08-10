@@ -68,7 +68,6 @@ export const GraphiQLEditor = ({
           Accept: "application/json",
           "Content-Type": "application/json",
           [REQUEST_HEADERS.apiKey]: token,
-          [REQUEST_HEADERS.bypassCache]: "1",
           ...opts?.headers,
         },
         body: JSON.stringify(graphQLParams),
@@ -94,6 +93,8 @@ export const GraphiQLEditor = ({
       onEditQuery={setExplorerQuery}
       plugins={[explorerPlugin]}
       fetcher={fetcher}
+      shouldPersistHeaders={true}
+      defaultHeaders={JSON.stringify({ [REQUEST_HEADERS.bypassCache]: "1" })}
     >
       <GraphiQL.Logo>Query Editor</GraphiQL.Logo>
     </GraphiQL>

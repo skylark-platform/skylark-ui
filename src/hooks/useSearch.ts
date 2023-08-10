@@ -2,6 +2,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { RequestDocument, Variables } from "graphql-request";
 import { useEffect, useMemo } from "react";
 
+import { REQUEST_HEADERS } from "src/constants/skylark";
 import { useUser } from "src/contexts/useUser";
 import { QueryKeys } from "src/enums/graphql";
 import {
@@ -10,6 +11,7 @@ import {
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
+  convertAvailabilityDimensionsObjectToGQLDimensions,
   createSearchObjectsQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
@@ -38,34 +40,38 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { query } = useMemo(() => {
     const query = createSearchObjectsQuery(searchableObjects, {
       typesToRequest: objectTypes || [],
-      availabilityDimensions: availability.dimensions,
     });
     return {
       query,
     };
-  }, [searchableObjects, objectTypes, availability.dimensions]);
+  }, [searchableObjects, objectTypes]);
+
+  const dimensions = convertAvailabilityDimensionsObjectToGQLDimensions(
+    availability.dimensions,
+  );
 
   const variables: Variables = {
     queryString,
     limit: SEARCH_PAGE_SIZE,
     offset: 0,
     language: language || null,
+    dimensions,
   };
 
   const headers: HeadersInit = {
-    "x-ignore-availability": "true",
+    [REQUEST_HEADERS.ignoreAvailability]: "true",
   };
 
   if (
     filters.availability.dimensions &&
     Object.keys(filters.availability.dimensions).length > 0
   ) {
-    headers["x-ignore-availability"] = "false";
-    headers["x-ignore-time"] = "true";
+    headers[REQUEST_HEADERS.ignoreAvailability] = "false";
+    headers[REQUEST_HEADERS.ignoreTime] = "true";
 
     if (filters.availability.timeTravel) {
-      headers["x-ignore-availability"] = "false";
-      headers["x-time-travel"] = filters.availability.timeTravel;
+      headers[REQUEST_HEADERS.ignoreTime] = "false";
+      headers[REQUEST_HEADERS.timeTravel] = filters.availability.timeTravel;
     }
   }
 

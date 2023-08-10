@@ -17,6 +17,9 @@ export const CLOUDINARY_ENVIRONMENT = process.env
 export const REQUEST_HEADERS = {
   apiKey: "Authorization",
   bypassCache: "x-bypass-cache",
+  ignoreAvailability: "x-ignore-availability",
+  ignoreTime: "x-ignore-time",
+  timeTravel: "x-time-travel",
 };
 export const OBJECT_LIST_TABLE = {
   columnIds: {
