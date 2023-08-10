@@ -175,13 +175,15 @@ export const AvailabilityPicker = ({
   });
 
   return (
-    <Popover className="relative">
-      <Popover.Button ref={refs.setReference} as="div" className="relative">
-        <Button
+    <Popover>
+      <div className="group/availability-picker-button relative w-full md:w-52">
+        <Popover.Button
+          ref={refs.setReference}
+          as={Button}
           data-testid="open-availability-picker"
           variant="neutral"
           className={clsx(
-            "relative w-full justify-start text-left font-normal md:w-52",
+            "w-full justify-start text-left font-normal group-hover/availability-picker-button:bg-manatee-100",
             !activeValues.dimensions &&
               !activeValues.timeTravel &&
               "text-manatee-400",
@@ -204,20 +206,19 @@ export const AvailabilityPicker = ({
           >
             <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
           </div>
-        </Button>
-        <div className="absolute inset-y-0 right-8 flex items-center">
-          {activeValues.dimensions && (
-            <button
-              onClick={(e) => {
-                save({ dimensions: null, timeTravel: null });
-                e.stopPropagation();
-              }}
-            >
-              <GrClose className="text-xs" />
-            </button>
-          )}
-        </div>
-      </Popover.Button>
+        </Popover.Button>
+        {activeValues.dimensions && (
+          <button
+            className="absolute inset-y-0 right-8 z-[1] flex items-center px-0.5"
+            onClick={(e) => {
+              save({ dimensions: null, timeTravel: null });
+              e.stopPropagation();
+            }}
+          >
+            <GrClose className="text-xs" />
+          </button>
+        )}
+      </div>
       <Popover.Panel
         ref={refs.setFloating}
         style={floatingStyles}
