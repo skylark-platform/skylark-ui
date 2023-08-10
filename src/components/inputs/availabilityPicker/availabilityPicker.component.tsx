@@ -1,11 +1,12 @@
 import { useFloating, offset, flip, size } from "@floating-ui/react";
 import { Popover } from "@headlessui/react";
 import clsx from "clsx";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { GoTriangleDown } from "react-icons/go";
 import { GrClose } from "react-icons/gr";
 
 import { Button } from "src/components/button";
+import { InputLabel } from "src/components/inputs/label/label.component";
 import { Select } from "src/components/inputs/select";
 import {
   PanelFieldTitle,
@@ -71,7 +72,6 @@ const AvailabilitySelectors = ({
       <div className="flex h-full w-full flex-grow flex-col gap-4 md:flex-row">
         <div className="">
           <PanelSectionTitle text={"Dimensions"} />
-          <p className="-mt-4 mb-3 text-xs text-manatee-300">Required</p>
           <div
             className={clsx(
               "grid w-max gap-4",
@@ -80,7 +80,7 @@ const AvailabilitySelectors = ({
           >
             {dimensions?.map(({ title, slug, values }) => (
               <div key={slug} className="w-72">
-                <PanelFieldTitle text={title || slug} />
+                <InputLabel text={title || slug} isRequired />
                 <Select
                   variant="primary"
                   options={values.map((value) => ({
@@ -105,14 +105,16 @@ const AvailabilitySelectors = ({
         </div>
         <div className="mb-6 w-72">
           <PanelSectionTitle text={"Time"} />
-          <p className="-mt-4 mb-3 text-xs text-manatee-300">Optional</p>
-          <PanelFieldTitle text="Time Travel" />
+          <InputLabel text="Time Travel" />
           <input
             onChange={(e) => setActiveTimeTravel(e.target.value)}
             value={activeTimeTravel || ""}
             type="datetime-local"
             step="1"
-            className="h-8 w-full rounded bg-manatee-50 px-4 md:h-10"
+            className={clsx(
+              "h-8 w-full rounded bg-manatee-50 px-4 md:h-10",
+              activeTimeTravel ? "text-black" : "text-manatee-400",
+            )}
           />
         </div>
       </div>
@@ -175,12 +177,18 @@ export const AvailabilityPicker = ({
     <Popover className="relative">
       <Popover.Button
         ref={refs.setReference}
+        as={Button}
+        data-testid="open-availability-picker"
+        variant="neutral"
         className={clsx(
-          "relative flex h-8 w-full items-center justify-start rounded-full px-3 text-sm md:h-10 md:w-52 md:px-6",
-          activeValues.dimensions
-            ? "bg-success bg-opacity-20 text-success"
-            : "bg-manatee-50 text-manatee-400",
+          "relative w-full md:w-52",
+          !activeValues.dimensions &&
+            !activeValues.timeTravel &&
+            "text-manatee-400",
         )}
+        textAlign="left"
+        fontWeight="normal"
+        animated={false}
       >
         {!activeValues.dimensions && !activeValues.timeTravel && (
           <>Availability Filters</>
@@ -203,7 +211,7 @@ export const AvailabilityPicker = ({
               <GrClose className="text-xs" />
             </button>
           )}
-          <button className={clsx("ml-1 h-full")}>
+          <button className={clsx("ml-1 h-full text-black")}>
             <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
           </button>
         </span>
