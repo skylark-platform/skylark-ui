@@ -97,7 +97,6 @@ export const GraphiQLEditor = ({
       defaultHeaders={JSON.stringify({
         [REQUEST_HEADERS.bypassCache]: "1",
         [REQUEST_HEADERS.ignoreAvailability]: "false",
-        [REQUEST_HEADERS.ignoreTime]: "false",
         [REQUEST_HEADERS.timeTravel]: "",
       })}
     >
