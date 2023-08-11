@@ -14,6 +14,7 @@ import { Button } from "src/components/button";
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 import { ExternalLink } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
+import { InputLabel } from "src/components/inputs/label/label.component";
 import { Select } from "src/components/inputs/select";
 import { Skeleton } from "src/components/skeleton";
 import { WYSIWYGEditor } from "src/components/wysiwygEditor";
@@ -53,12 +54,10 @@ const createHtmlForId = (
   field: SkylarkObjectFieldInputProps["field"],
 ) => `${prefix}-skylark-object-field-input-${field}`;
 
-const SkylarkObjectFieldInputLabel = ({
+export const SkylarkObjectFieldInputLabel = ({
   field,
-  isRequired,
-  copyValue,
-  href,
   idPrefix,
+  ...props
 }: {
   field: SkylarkObjectFieldInputProps["field"];
   isRequired?: boolean;
@@ -66,26 +65,11 @@ const SkylarkObjectFieldInputLabel = ({
   href?: string;
   idPrefix: string;
 }) => (
-  <label
-    className="mb-2 flex items-center font-bold"
+  <InputLabel
+    text={field}
     htmlFor={createHtmlForId(idPrefix, field)}
-  >
-    {formatObjectField(field)}
-    {isRequired && <span className="pl-0.5 text-error">*</span>}
-    {href && (
-      <Button
-        Icon={<ExternalLink className="h-4 w-4" />}
-        className="ml-2 hover:text-brand-primary"
-        variant="form"
-        href={href}
-        newTab
-      />
-    )}
-    <CopyToClipboard
-      value={copyValue}
-      className="invisible group-hover/input-field:visible"
-    />
-  </label>
+    {...props}
+  />
 );
 
 const SkylarkObjectFieldInputEnum = ({

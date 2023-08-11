@@ -1,5 +1,5 @@
 import { ComponentStory } from "@storybook/react";
-import { userEvent, within } from "@storybook/testing-library";
+import { userEvent, waitFor, within } from "@storybook/testing-library";
 
 import GQLGameOfThronesSearchResults from "src/__tests__/fixtures/skylark/queries/search/gotPage1.json";
 
@@ -20,14 +20,13 @@ export const WithFiltersOpen = Template.bind({});
 WithFiltersOpen.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
-  const filtersButton = canvas.getByRole("button", { name: /Filters/i });
+  const filtersButton = canvas.getByRole("button", {
+    name: "open-search-filters",
+  });
 
-  // Not all of the UID will be shown so just search for the first 10 characters
-  const uidRegex = new RegExp(
-    GQLGameOfThronesSearchResults.data.search.objects[0].uid.substring(0, 10),
-    "i",
-  );
-  await canvas.findAllByText(uidRegex);
+  await waitFor(() => {
+    canvas.findAllByText("GOT Highest Rated Episodes");
+  });
 
   await userEvent.click(filtersButton);
 };

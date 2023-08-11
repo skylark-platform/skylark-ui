@@ -3,63 +3,21 @@
     "listDimensions": {
       "objects": [
         {
-          "uid": "01H0EQ3JEF85TDY2HQBVEWPE3G",
-          "external_id": null,
-          "title": "Affiliates",
-          "slug": "affiliates",
-          "description": null
-        },
-        {
-          "uid": "01H0EQ3JGK82CS46X89343SA27",
+          "uid": "01H7ER1M26N71GHDBXX9JS303D",
           "external_id": null,
           "title": "Customer Type",
           "slug": "customer-types",
           "description": null
         },
         {
-          "uid": "01H0EQ3JHWPEV6JX4FXVWX95HZ",
+          "uid": "01H7ER1M2GW8DQ3QJJF3T8RX3H",
           "external_id": null,
           "title": "Device Type",
           "slug": "device-types",
           "description": null
-        },
-        {
-          "uid": "01H0EQ3JHE7QFZGDPD02EQEBY3",
-          "external_id": null,
-          "title": "Languages",
-          "slug": "languages",
-          "description": null
-        },
-        {
-          "uid": "01H0EQ3JFBNHZQNNP21E5DB0C0",
-          "external_id": null,
-          "title": "Locales",
-          "slug": "locales",
-          "description": null
-        },
-        {
-          "uid": "01H0EQ3JJH21MSXNK31DB08KES",
-          "external_id": null,
-          "title": "Operating Systems",
-          "slug": "operating-systems",
-          "description": null
-        },
-        {
-          "uid": "01H0EQ3JCRYZ4SVZ1EJPW5BZS9",
-          "external_id": null,
-          "title": "Regions",
-          "slug": "regions",
-          "description": null
-        },
-        {
-          "uid": "01H0EQ3JESJNGCGWGNVC537C1V",
-          "external_id": null,
-          "title": "Viewing Context",
-          "slug": "viewing-context",
-          "description": null
         }
       ],
-      "count": 8,
+      "count": 2,
       "next_token": null
     }
   }

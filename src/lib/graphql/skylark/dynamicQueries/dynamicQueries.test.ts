@@ -23,7 +23,6 @@ describe("createSearchObjectsQuery", () => {
   test("returns null when no objects are given", () => {
     const got = createSearchObjectsQuery([], {
       typesToRequest: [],
-      availabilityDimensions: null,
     });
 
     expect(got).toBeNull();
@@ -100,11 +99,11 @@ describe("createSearchObjectsQuery", () => {
           isImage: false,
         },
       ],
-      { typesToRequest: [], availabilityDimensions: null },
+      { typesToRequest: [] },
     );
 
     expect(got?.loc?.source.body).toEqual(
-      `query SEARCH ($ignoreAvailability: Boolean = true, $language: String, $queryString: String!, $offset: Int, $limit: Int) { search (ignore_availability: $ignoreAvailability, language: $language, query: $queryString, offset: $offset, limit: $limit, dimensions: []) { __typename total_count objects { ... on Episode { __typename _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } } __Episode__title: title __Episode__episode_number: episode_number } ... on Brand { __typename _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } } __Brand__title: title __Brand__synopsis: synopsis } } } }`,
+      `query SEARCH ($language: String, $queryString: String!, $offset: Int, $limit: Int, $dimensions: [UserDimension]) { search (language: $language, query: $queryString, offset: $offset, limit: $limit, dimensions: $dimensions) { __typename total_count objects { ... on Episode { __typename _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } } __Episode__title: title __Episode__episode_number: episode_number } ... on Brand { __typename _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } } __Brand__title: title __Brand__synopsis: synopsis } } } }`,
     );
   });
 });

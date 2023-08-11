@@ -85,7 +85,7 @@ export const generateVariablesAndArgs = (
 } => {
   const language = getLanguageVariableAndArg(addLanguageVariable);
   const ignoreAvailability = getIgnoreAvailabilityVariableAndArg(
-    operationType === "Query",
+    operationType === "Query" && objectType !== "search",
   );
   if (objectType === BuiltInSkylarkObjectType.Availability) {
     return {

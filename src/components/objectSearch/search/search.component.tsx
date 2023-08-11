@@ -6,9 +6,9 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 
 import {
-  AvailabilityDimensionsPicker,
-  AvailabilityDimensionsPickerValues,
-} from "src/components/inputs/availabilityDimensionsPicker/availabilityDimensionsPicker.component";
+  AvailabilityPicker,
+  AvailabilityPickerValues,
+} from "src/components/inputs/availabilityPicker/availabilityPicker.component";
 import { LanguageSelect } from "src/components/inputs/select";
 import { SearchFilter } from "src/components/objectSearch/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
@@ -24,7 +24,6 @@ interface SearchBarProps {
   columns: ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[];
   columnIds: string[];
   visibleColumns: VisibilityState;
-  activeDimensions: AvailabilityDimensionsPickerValues;
   className?: string;
   isSearching: boolean;
   graphqlQuery: {
@@ -36,7 +35,7 @@ interface SearchBarProps {
   onColumnVisibilityChange: (c: VisibilityState) => void;
   onLanguageChange: (l: SearchFilters["language"]) => void;
   onObjectTypeChange: (o: SearchFilters["objectTypes"]) => void;
-  onActiveDimensionsChange: (args: AvailabilityDimensionsPickerValues) => void;
+  onActiveAvailabilityChange: (args: AvailabilityPickerValues) => void;
   onRefresh: () => void;
 }
 
@@ -54,7 +53,7 @@ export const Search = ({
   onColumnVisibilityChange,
   onLanguageChange,
   onObjectTypeChange,
-  onActiveDimensionsChange,
+  onActiveAvailabilityChange,
   onRefresh,
 }: SearchBarProps) => {
   const { query } = useRouter();
@@ -144,27 +143,23 @@ export const Search = ({
         </AnimatePresence>
       </div>
       <div
-        className="mt-2 w-full sm:ml-2 sm:mt-0 sm:w-auto"
+        className="mt-2 grid w-full grid-cols-2 gap-2 sm:ml-2 sm:mt-0 sm:flex sm:w-auto md:gap-0"
         data-testid="object-listing-language-select-container"
       >
         <LanguageSelect
           variant="primary"
           name="object-listing-language-select"
-          className="w-full md:w-36"
+          className="w-full sm:mr-2 md:w-36"
           selected={activeFilters.language}
           onChange={onLanguageChange}
           useDefaultLanguage
           onValueClear={() => onLanguageChange(null)}
         />
+        <AvailabilityPicker
+          activeValues={activeFilters.availability}
+          setActiveAvailability={onActiveAvailabilityChange}
+        />
       </div>
-      {hasProperty(query, "next") && (
-        <div>
-          <AvailabilityDimensionsPicker
-            activeDimensions={activeFilters.availabilityDimensions}
-            setActiveDimensions={onActiveDimensionsChange}
-          />
-        </div>
-      )}
     </div>
   );
 };

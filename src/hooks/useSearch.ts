@@ -2,6 +2,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { RequestDocument, Variables } from "graphql-request";
 import { useEffect, useMemo } from "react";
 
+import { REQUEST_HEADERS } from "src/constants/skylark";
 import { useUser } from "src/contexts/useUser";
 import { QueryKeys } from "src/enums/graphql";
 import {
@@ -10,6 +11,7 @@ import {
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
+  convertAvailabilityDimensionsObjectToGQLDimensions,
   createSearchObjectsQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
@@ -20,14 +22,17 @@ import { useAllObjectsMeta } from "./useSkylarkObjectTypes";
 export interface SearchFilters {
   objectTypes: string[] | null;
   language?: string | null;
-  availabilityDimensions: Record<string, string> | null;
+  availability: {
+    dimensions: Record<string, string> | null;
+    timeTravel: string | null;
+  };
 }
 
 export const SEARCH_PAGE_SIZE = 25;
 
 export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta(true);
-  const { objectTypes, language, availabilityDimensions } = filters;
+  const { objectTypes, language, availability } = filters;
 
   // Used to rerender search results when the search changes but objects are the same
   const searchHash = `${queryString}-${language}-${objectTypes?.join("-")}`;
@@ -35,25 +40,39 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
   const { query } = useMemo(() => {
     const query = createSearchObjectsQuery(searchableObjects, {
       typesToRequest: objectTypes || [],
-      availabilityDimensions,
     });
     return {
       query,
     };
-  }, [searchableObjects, objectTypes, availabilityDimensions]);
+  }, [searchableObjects, objectTypes]);
+
+  const dimensions = convertAvailabilityDimensionsObjectToGQLDimensions(
+    availability.dimensions,
+  );
 
   const variables: Variables = {
     queryString,
     limit: SEARCH_PAGE_SIZE,
     offset: 0,
     language: language || null,
+    dimensions,
+  };
+
+  const headers: HeadersInit = {
+    [REQUEST_HEADERS.ignoreAvailability]: "true",
   };
 
   if (
-    filters.availabilityDimensions &&
-    Object.keys(filters.availabilityDimensions).length > 0
+    filters.availability.dimensions &&
+    Object.keys(filters.availability.dimensions).length > 0
   ) {
-    variables.ignoreAvailability = false;
+    headers[REQUEST_HEADERS.ignoreAvailability] = "false";
+    headers[REQUEST_HEADERS.ignoreTime] = "true";
+
+    if (filters.availability.timeTravel) {
+      headers[REQUEST_HEADERS.ignoreTime] = "false";
+      headers[REQUEST_HEADERS.timeTravel] = filters.availability.timeTravel;
+    }
   }
 
   const {
@@ -66,12 +85,22 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     refetch,
     fetchNextPage,
   } = useInfiniteQuery<GQLSkylarkSearchResponse>({
-    queryKey: [QueryKeys.Search, ...Object.values(variables), query],
+    queryKey: [
+      QueryKeys.Search,
+      ...Object.values(variables),
+      ...Object.values(headers),
+      query,
+    ],
     queryFn: async ({ pageParam: offset = 0 }) =>
-      skylarkRequest(query as RequestDocument, {
-        ...variables,
-        offset,
-      }),
+      skylarkRequest(
+        query as RequestDocument,
+        {
+          ...variables,
+          offset,
+        },
+        {},
+        headers,
+      ),
     getNextPageParam: (lastPage, pages): number | undefined => {
       const totalNumObjects = pages.flatMap(
         (page) => page.search.objects,

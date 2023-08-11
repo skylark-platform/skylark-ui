@@ -12,7 +12,6 @@ export const createSkylarkClient = (uri: string, token: string) =>
   new GraphQLClient(uri, {
     headers: {
       [REQUEST_HEADERS.apiKey]: token,
-      [REQUEST_HEADERS.bypassCache]: "1",
     },
   });
 
@@ -29,6 +28,7 @@ export const skylarkRequest = <T>(
   query: RequestDocument | string,
   variables?: object,
   opts?: SkylarkRequestOpts,
+  argHeaders?: HeadersInit,
 ) => {
   // get the authentication token from local storage if it exists
   const uri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri);
@@ -40,10 +40,11 @@ export const skylarkRequest = <T>(
 
   const headers: HeadersInit = {
     [REQUEST_HEADERS.apiKey]: tokenToSend,
+    ...argHeaders,
   };
 
   if (!opts?.useCache) {
-    headers[REQUEST_HEADERS.bypassCache] = "1";
+    headers[REQUEST_HEADERS.bypassCache as keyof HeadersInit] = "1";
   }
 
   return request<T>(uri || SAAS_API_ENDPOINT, query, variables, headers);

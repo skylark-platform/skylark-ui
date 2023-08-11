@@ -6,7 +6,7 @@ import { CgSpinner } from "react-icons/cg";
 export interface ButtonProps {
   onClick?: () => void;
   children?: ReactNode;
-  variant: "primary" | "outline" | "ghost" | "link" | "form";
+  variant: "primary" | "neutral" | "outline" | "ghost" | "link" | "form";
   loading?: boolean;
   success?: boolean;
   danger?: boolean;
@@ -18,6 +18,7 @@ export interface ButtonProps {
   downloadName?: string;
   type?: "button" | "submit" | "reset";
   newTab?: boolean;
+  animated?: boolean;
 }
 
 export const Button = forwardRef(
@@ -37,6 +38,7 @@ export const Button = forwardRef(
       downloadName,
       type,
       newTab,
+      animated = true,
       ...props
     }: ButtonProps,
     ref: Ref<HTMLButtonElement>,
@@ -44,11 +46,13 @@ export const Button = forwardRef(
     const iconOnly = Icon && !children;
 
     const combinedClassName = clsx(
-      "btn flex-nowrap",
+      "btn flex-nowrap min-h-8 h-8 md:h-10",
       Icon && children && "gap-x-2",
-      !iconOnly && "min-h-8 text-xs normal-case h-8 md:h-10 md:text-sm",
+      !iconOnly && "text-xs normal-case md:text-sm",
       variant !== "ghost" && variant !== "form" && "min-w-24 rounded-full",
       variant === "primary" && "btn-primary shadow",
+      variant === "neutral" &&
+        "btn-neutral bg-manatee-50 hover:bg-manatee-100 border-none",
       variant === "outline" &&
         "btn-outline btn-primary disabled:border-none disabled:shadow",
       variant === "ghost" && "btn-ghost text-black hover:bg-transparent p-0",
@@ -64,8 +68,9 @@ export const Button = forwardRef(
       (iconOnly || variant === "link") &&
         disabled &&
         "btn-disabled bg-transparent disabled:bg-transparent",
-      iconOnly && "min-h-8 h-8 md:h-10",
+      !iconOnly && variant !== "ghost" && "px-5",
       block && "btn-block",
+      !animated && "no-animation",
       className,
     );
 

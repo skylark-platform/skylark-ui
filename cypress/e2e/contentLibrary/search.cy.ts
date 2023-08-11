@@ -25,7 +25,20 @@ describe("Content Library - Search", () => {
         });
       }
       if (hasOperationName(req, "SEARCH")) {
-        if (hasMatchingVariable(req, "queryString", "got winter is coming")) {
+        console.log({ req });
+        if (
+          hasMatchingVariable(req, "dimensions", [
+            { dimension: "customer-types", value: "kids" },
+            { dimension: "device-types", value: "pc" },
+          ])
+        ) {
+          console.log("SEARCH DIMENSIONS ");
+          req.reply({
+            fixture: "./skylark/queries/search/dimensionsKids.json",
+          });
+        } else if (
+          hasMatchingVariable(req, "queryString", "got winter is coming")
+        ) {
           req.reply({
             fixture: "./skylark/queries/search/gotWinterIsComing.json",
           });
@@ -64,6 +77,16 @@ describe("Content Library - Search", () => {
             fixture: "./skylark/queries/getObject/gots01e01.json",
           });
         }
+      }
+      if (hasOperationName(req, "LIST_AVAILABILITY_DIMENSIONS")) {
+        req.reply({
+          fixture: "./skylark/queries/listDimensions.json",
+        });
+      }
+      if (hasOperationName(req, "LIST_AVAILABILITY_DIMENSION_VALUES")) {
+        req.reply({
+          fixture: "./skylark/queries/listDimensionValues.json",
+        });
       }
     });
 
@@ -182,5 +205,35 @@ describe("Content Library - Search", () => {
     cy.get("[data-testid=panel-header]").within(() => {
       cy.contains("pt-PT");
     });
+  });
+
+  it("uses the Availability Picker to return kids content", () => {
+    cy.get("[data-testid=open-availability-picker]").click();
+
+    // Select Customer type
+    cy.get("[data-testid=availability-picker]").within(() => {
+      cy.contains("Customer type");
+      cy.get('input[placeholder="Select Customer Type value"]').click();
+    });
+    cy.contains("Kids").click();
+
+    // Select Device type
+    cy.get("[data-testid=availability-picker]").within(() => {
+      cy.contains("Device type");
+      cy.get('input[placeholder="Select Device Type value"]').click();
+    });
+    cy.contains("PC").click();
+
+    cy.get("[data-testid=availability-picker]").within(() => {
+      cy.contains("Save").click();
+    });
+
+    cy.get("[data-testid=open-availability-picker]").contains(
+      "Dimensions only",
+    );
+
+    cy.contains("Classic kids shows");
+
+    cy.percySnapshot("Homepage - Filtered By Availability Dimensions (kids)");
   });
 });

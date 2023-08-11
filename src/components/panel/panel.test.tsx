@@ -1635,7 +1635,7 @@ describe("availabity dimensions view", () => {
     );
 
     expect(screen.getByText("Standard")).toBeInTheDocument();
-    expect(screen.queryByText("HYBRID")).not.toBeInTheDocument();
+    expect(screen.queryByText("Kids")).not.toBeInTheDocument();
   });
 
   describe("dimensions view - edit", () => {
@@ -1670,12 +1670,12 @@ describe("availabity dimensions view", () => {
       expect(screen.queryAllByText("Standard")).toHaveLength(2);
 
       // Select new option
-      expect(screen.queryByText("HYBRID")).toBeInTheDocument();
-      expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(0);
-      fireEvent.click(screen.getByText("HYBRID"));
+      expect(screen.queryByText("Kids")).toBeInTheDocument();
+      expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(0);
+      fireEvent.click(screen.getByText("Kids"));
 
       // Check Pill is added
-      expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(1);
+      expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(1);
       expect(screen.getByText("Editing")).toBeInTheDocument();
 
       // Cancel
@@ -1683,7 +1683,7 @@ describe("availabity dimensions view", () => {
       fireEvent.click(cancelButton);
 
       await waitFor(() =>
-        expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(0),
+        expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(0),
       );
     });
 
@@ -1754,12 +1754,12 @@ describe("availabity dimensions view", () => {
       expect(screen.queryAllByText("Standard")).toHaveLength(2);
 
       // Select new option
-      expect(screen.queryByText("HYBRID")).toBeInTheDocument();
-      expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(0);
-      fireEvent.click(screen.getByText("HYBRID"));
+      expect(screen.queryByText("Kids")).toBeInTheDocument();
+      expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(0);
+      fireEvent.click(screen.getByText("Kids"));
 
       // Check Pill is added
-      expect(within(displayDiv).queryAllByText("HYBRID")).toHaveLength(1);
+      expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(1);
       expect(screen.getByText("Editing")).toBeInTheDocument();
 
       // Save
