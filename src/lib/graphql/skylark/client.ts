@@ -25,6 +25,7 @@ export const createSkylarkReactQueryClient = () =>
   });
 
 export const skylarkRequest = <T>(
+  type: "query" | "mutation",
   query: RequestDocument | string,
   variables?: object,
   opts?: SkylarkRequestOpts,
@@ -43,7 +44,12 @@ export const skylarkRequest = <T>(
     ...argHeaders,
   };
 
-  if (!opts?.useCache) {
+  const bypassCache =
+    typeof opts?.useCache === "undefined"
+      ? type !== "mutation"
+      : !opts.useCache;
+
+  if (bypassCache) {
     headers[REQUEST_HEADERS.bypassCache as keyof HeadersInit] = "1";
   }
 

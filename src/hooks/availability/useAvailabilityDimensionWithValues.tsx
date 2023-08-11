@@ -48,7 +48,7 @@ export const useAvailabilityDimensionsWithValues = () => {
           dimensionsWithoutValues,
           nextTokens,
         );
-        return skylarkRequest(query as DocumentNode);
+        return skylarkRequest("query", query as DocumentNode);
       },
       getNextPageParam,
       enabled: !!dimensionsWithoutValues,

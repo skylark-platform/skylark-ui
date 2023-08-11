@@ -64,7 +64,7 @@ const generateQueryFunctionAndKey = ({
     GQLSkylarkGetObjectContentResponse,
     QueryKey
   > = async ({ pageParam: nextToken }) => {
-    return skylarkRequest(query as RequestDocument, {
+    return skylarkRequest("query", query as RequestDocument, {
       ...variables,
       nextToken,
     });

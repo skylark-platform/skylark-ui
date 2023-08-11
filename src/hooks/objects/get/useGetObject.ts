@@ -61,7 +61,8 @@ export const useGetObject = (
   >({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: createGetObjectKeyPrefix({ objectType, uid, language }),
-    queryFn: async () => skylarkRequest(query as DocumentNode, variables),
+    queryFn: async () =>
+      skylarkRequest("query", query as DocumentNode, variables),
     enabled: query !== null,
     select: useCallback(
       (data: GQLSkylarkGetObjectResponse) =>

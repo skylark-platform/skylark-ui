@@ -40,6 +40,7 @@ export const useUpdateObjectMetadata = ({
         objectOperations?.isTranslatable,
       );
       return skylarkRequest<GQLSkylarkUpdateObjectMetadataResponse>(
+        "mutation",
         updateObjectMetadataMutation as RequestDocument,
         { uid, language },
       );

@@ -16,7 +16,7 @@ export const useAvailabilityDimensions = () => {
         LIST_AVAILABILITY_DIMENSIONS,
       ],
       queryFn: async ({ pageParam: nextToken }) =>
-        skylarkRequest(LIST_AVAILABILITY_DIMENSIONS, {
+        skylarkRequest("query", LIST_AVAILABILITY_DIMENSIONS, {
           nextToken,
         }),
       getNextPageParam: (lastPage): string | undefined => {
