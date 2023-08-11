@@ -70,7 +70,8 @@ export const useGetObjectRelationships = (
   >({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: createGetObjectRelationshipsKeyPrefix({ objectType, uid }),
-    queryFn: async () => skylarkRequest(query as DocumentNode, variables),
+    queryFn: async () =>
+      skylarkRequest("query", query as DocumentNode, variables),
     enabled: query !== null,
   });
 

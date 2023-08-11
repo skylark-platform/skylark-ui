@@ -34,7 +34,7 @@ export const useUserAccount = () => {
     { account: SkylarkAccount; user: SkylarkUser }
   >({
     queryKey: [QueryKeys.Account, GET_USER_AND_ACCOUNT],
-    queryFn: async () => skylarkRequest(GET_USER_AND_ACCOUNT),
+    queryFn: async () => skylarkRequest("query", GET_USER_AND_ACCOUNT),
     select,
   });
 

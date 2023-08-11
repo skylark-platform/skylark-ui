@@ -22,6 +22,7 @@ export const useSkylarkSchemaIntrospection = <
     queryKey: [QueryKeys.Schema, SKYLARK_SCHEMA_INTROSPECTION_QUERY],
     queryFn: async () =>
       skylarkRequest(
+        "query",
         SKYLARK_SCHEMA_INTROSPECTION_QUERY,
         {},
         { useCache: true },

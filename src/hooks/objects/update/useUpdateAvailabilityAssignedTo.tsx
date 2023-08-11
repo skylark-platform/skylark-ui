@@ -30,6 +30,7 @@ export const useUpdateAvailabilityAssignedTo = ({
           modifiedAvailabilityAssignedTo.added,
         );
       return skylarkRequest(
+        "mutation",
         updateAvailabilityObjectDimensionsMutation as RequestDocument,
       );
     },

@@ -41,6 +41,7 @@ export const useUpdateObjectRelationships = ({
         );
 
       return skylarkRequest<GQLSkylarkUpdateRelationshipsResponse>(
+        "mutation",
         updateObjectRelationshipsMutation as RequestDocument,
         { uid },
       );

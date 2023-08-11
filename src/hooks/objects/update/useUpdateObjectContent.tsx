@@ -40,6 +40,7 @@ export const useUpdateObjectContent = ({
       );
 
       return skylarkRequest<GQLSkylarkUpdateObjectContentResponse>(
+        "mutation",
         updateObjectContentMutation as RequestDocument,
         { uid },
       );

@@ -32,7 +32,7 @@ export const useUpdateObjectAvailability = ({
         modifiedAvailabilityObjects,
       );
 
-      return skylarkRequest(mutation as RequestDocument, { uid });
+      return skylarkRequest("mutation", mutation as RequestDocument, { uid });
     },
     onSuccess: async (_, { uid }) => {
       await queryClient.refetchQueries({

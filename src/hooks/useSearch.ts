@@ -93,6 +93,7 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
     ],
     queryFn: async ({ pageParam: offset = 0 }) =>
       skylarkRequest(
+        "query",
         query as RequestDocument,
         {
           ...variables,

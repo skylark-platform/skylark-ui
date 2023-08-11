@@ -33,10 +33,14 @@ export const useDeleteObject = ({
 
   const { mutate, isLoading } = useMutation({
     mutationFn: ({ uid, language }: { uid: string; language?: string }) => {
-      return skylarkRequest(deleteObjectMutation as RequestDocument, {
-        uid,
-        language,
-      });
+      return skylarkRequest(
+        "mutation",
+        deleteObjectMutation as RequestDocument,
+        {
+          uid,
+          language,
+        },
+      );
     },
     onSuccess: (_, { uid, language }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.Search] });

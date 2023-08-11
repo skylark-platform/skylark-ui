@@ -37,6 +37,7 @@ export const useUpdateAvailabilityObjectDimensions = ({
         );
 
       return skylarkRequest(
+        "mutation",
         updateAvailabilityObjectDimensionsMutation as RequestDocument,
         { uid },
       );
