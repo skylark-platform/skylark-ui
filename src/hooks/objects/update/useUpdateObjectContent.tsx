@@ -4,17 +4,20 @@ import { RequestDocument } from "graphql-request";
 import { createGetObjectContentKeyPrefix } from "src/hooks/objects/get/useGetObjectContent";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
+  ModifiedSkylarkObjectContentObject,
   GQLSkylarkUpdateObjectContentResponse,
-  ParsedSkylarkObjectContentObject,
   SkylarkObjectType,
+  ParsedSkylarkObjectContentObject,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
 interface MutationArgs {
   uid: string;
-  originalContentObjects: ParsedSkylarkObjectContentObject[] | null;
-  updatedContentObjects: ParsedSkylarkObjectContentObject[] | null;
+  modifiedContentObjects: {
+    objects: ModifiedSkylarkObjectContentObject[];
+    removed: ParsedSkylarkObjectContentObject[];
+  } | null;
 }
 
 export const useUpdateObjectContent = ({
@@ -28,15 +31,10 @@ export const useUpdateObjectContent = ({
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const { mutate, isLoading } = useMutation({
-    mutationFn: ({
-      uid,
-      originalContentObjects,
-      updatedContentObjects,
-    }: MutationArgs) => {
+    mutationFn: ({ uid, modifiedContentObjects }: MutationArgs) => {
       const updateObjectContentMutation = createUpdateObjectContentMutation(
         objectOperations,
-        originalContentObjects,
-        updatedContentObjects,
+        modifiedContentObjects,
       );
 
       return skylarkRequest<GQLSkylarkUpdateObjectContentResponse>(

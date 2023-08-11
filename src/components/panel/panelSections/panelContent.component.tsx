@@ -3,6 +3,7 @@ import { Reorder } from "framer-motion";
 import { useEffect, useState } from "react";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { HandleDropError } from "src/components/panel/panel.lib";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
@@ -14,7 +15,7 @@ import { Skeleton } from "src/components/skeleton";
 import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
 import {
   ParsedSkylarkObjectContentObject,
-  AddedSkylarkObjectContentObject,
+  ModifiedSkylarkObjectContentObject,
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
@@ -24,15 +25,44 @@ import { PanelSectionLayout } from "./panelSectionLayout.component";
 
 interface PanelContentProps extends SkylarkObjectIdentifier {
   isPage?: boolean;
-  objects: AddedSkylarkObjectContentObject[] | null;
-  setContentObjects: (contentObjects: {
-    original: ParsedSkylarkObjectContentObject[] | null;
-    updated: AddedSkylarkObjectContentObject[] | null;
-  }) => void;
+  modifiedContentObjects: {
+    objects: ModifiedSkylarkObjectContentObject[];
+    removed: ParsedSkylarkObjectContentObject[];
+  } | null;
+  setContentObjects: (
+    c: {
+      objects: ModifiedSkylarkObjectContentObject[];
+      removed: ParsedSkylarkObjectContentObject[];
+    },
+    errors: HandleDropError[],
+  ) => void;
   inEditMode?: boolean;
+  droppedObjects?: ParsedSkylarkObject[];
   showDropZone?: boolean;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }
+
+const mergeServerAndModifiedContent = (
+  serverContentObjects: ParsedSkylarkObjectContentObject[] | undefined,
+  modifiedContentObjects: PanelContentProps["modifiedContentObjects"],
+) => {
+  if (!serverContentObjects) {
+    return [];
+  }
+
+  if (!modifiedContentObjects) {
+    return serverContentObjects;
+  }
+
+  const removedUids = modifiedContentObjects.removed.map(
+    ({ object }) => object.uid,
+  );
+
+  const parsedModifiedContentObjects = modifiedContentObjects.objects.filter(
+    ({ object }) => !removedUids.includes(object.uid),
+  );
+  return parsedModifiedContentObjects;
+};
 
 export const PanelContentItemOrderInput = ({
   hasMoved,
@@ -103,7 +133,7 @@ export const PanelContentItemOrderInput = ({
 
 export const PanelContent = ({
   isPage,
-  objects: updatedObjects,
+  modifiedContentObjects,
   inEditMode,
   showDropZone,
   objectType,
@@ -118,22 +148,16 @@ export const PanelContent = ({
     { language },
   );
 
-  const objects = inEditMode ? updatedObjects : data;
+  const objects = mergeServerAndModifiedContent(data, modifiedContentObjects);
 
-  useEffect(() => {
-    if (!inEditMode && data) {
-      setContentObjects({
-        original: data,
-        updated: data,
-      });
-    }
-  }, [data, inEditMode, setContentObjects]);
-
-  const onReorder = (updated: AddedSkylarkObjectContentObject[]) =>
-    setContentObjects({
-      original: data,
-      updated,
-    });
+  const onReorder = (updated: ModifiedSkylarkObjectContentObject[]) =>
+    setContentObjects(
+      {
+        objects: updated,
+        removed: modifiedContentObjects?.removed || [],
+      },
+      [],
+    );
 
   const removeItem = (uid: string) => {
     if (objects) {

@@ -3,6 +3,7 @@ import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
 
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
+  ModifiedSkylarkObjectContentObject,
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
   ParsedSkylarkObjectContentObject,
@@ -179,29 +180,22 @@ export const createUpdateObjectMetadataMutation = (
 
 export const createUpdateObjectContentMutation = (
   object: SkylarkObjectMeta | null,
-  originalContentObjects: ParsedSkylarkObjectContentObject[] | null,
-  updatedContentObjects: ParsedSkylarkObjectContentObject[] | null,
+  modifiedContentObjects: {
+    objects: ModifiedSkylarkObjectContentObject[];
+    removed: ParsedSkylarkObjectContentObject[];
+  } | null,
 ) => {
-  if (
-    !object ||
-    !object.operations.update ||
-    !originalContentObjects ||
-    !updatedContentObjects
-  ) {
+  if (!object || !object.operations.update || !modifiedContentObjects) {
     return null;
   }
 
-  const originalContentObjectUids = originalContentObjects.map(
-    ({ object }) => object.uid,
-  );
-  const updatedContentObjectUids = updatedContentObjects.map(
-    ({ object }) => object.uid,
-  );
-
-  const linkOrRepositionOperations = updatedContentObjects.map(
-    ({ objectType, object: { uid } }, index): SetContentOperation => {
+  const linkOrRepositionOperations = modifiedContentObjects.objects.map(
+    (
+      { objectType, object: { uid }, isNewObject },
+      index,
+    ): SetContentOperation => {
       const position = index + 1;
-      if (originalContentObjectUids.includes(uid)) {
+      if (!isNewObject) {
         return {
           operation: "reposition",
           objectType,
@@ -218,16 +212,16 @@ export const createUpdateObjectContentMutation = (
     },
   );
 
-  const deleteOperations = originalContentObjects
-    .filter(({ object: { uid } }) => !updatedContentObjectUids.includes(uid))
-    .map(({ objectType, object: { uid } }): SetContentOperation => {
+  const deleteOperations = modifiedContentObjects.removed.map(
+    ({ objectType, object: { uid } }): SetContentOperation => {
       return {
         operation: "unlink",
         objectType,
         uid,
         position: -1,
       };
-    });
+    },
+  );
 
   const objectContentOperations = [
     ...linkOrRepositionOperations,

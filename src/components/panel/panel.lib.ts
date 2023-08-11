@@ -1,7 +1,7 @@
 import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
-  AddedSkylarkObjectContentObject,
+  ModifiedSkylarkObjectContentObject,
   ParsedSkylarkObjectRelationships,
   BuiltInSkylarkObjectType,
   SkylarkObjectMeta,
@@ -162,11 +162,11 @@ export const handleDroppedContents = ({
   panelObject,
   droppedObjects,
 }: {
-  existingObjects: AddedSkylarkObjectContentObject[];
+  existingObjects: ModifiedSkylarkObjectContentObject[];
   panelObject: ParsedSkylarkObject;
   droppedObjects: ParsedSkylarkObject[];
 }): {
-  updatedContentObjects: AddedSkylarkObjectContentObject[];
+  updatedContentObjects: ModifiedSkylarkObjectContentObject[];
   errors: HandleDropError[];
 } => {
   const { updatedContentObjects, errors } = droppedObjects.reduce(
@@ -175,7 +175,7 @@ export const handleDroppedContents = ({
       droppedObject,
       index,
     ): {
-      updatedContentObjects: AddedSkylarkObjectContentObject[];
+      updatedContentObjects: ModifiedSkylarkObjectContentObject[];
       errors: HandleDropError[];
     } => {
       if (droppedObject.objectType === BuiltInSkylarkObjectType.Availability) {

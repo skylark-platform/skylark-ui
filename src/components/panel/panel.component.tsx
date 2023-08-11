@@ -17,7 +17,7 @@ import { PanelTab } from "src/hooks/state";
 import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
-  AddedSkylarkObjectContentObject,
+  ModifiedSkylarkObjectContentObject,
   SkylarkObjectMetadataField,
   SkylarkSystemField,
   SkylarkObjectIdentifier,
@@ -178,13 +178,10 @@ export const Panel = ({
 
   const [panelInEditMode, setEditMode] = useState(false);
 
-  const [contentObjects, setContentObjects] = useState<{
-    original: ParsedSkylarkObjectContentObject[] | null;
-    updated: AddedSkylarkObjectContentObject[] | null;
-  }>({
-    original: null,
-    updated: null,
-  });
+  const [modifiedContentObjects, setModifiedContentObjects] = useState<{
+    objects: ModifiedSkylarkObjectContentObject[];
+    removed: ParsedSkylarkObjectContentObject[];
+  } | null>(null);
 
   const [modifiedRelationships, setModifiedRelationships] = useState<Record<
     string,
@@ -269,33 +266,33 @@ export const Panel = ({
     ],
   );
 
-  useEffect(() => {
-    if (
-      data &&
-      droppedObjects &&
-      droppedObjects.length > 0 &&
-      tabsWithDropZones.includes(selectedTab)
-    ) {
-      setEditMode(true);
+  // useEffect(() => {
+  //   if (
+  //     data &&
+  //     droppedObjects &&
+  //     droppedObjects.length > 0 &&
+  //     tabsWithDropZones.includes(selectedTab)
+  //   ) {
+  //     setEditMode(true);
 
-      if (selectedTab === PanelTab.Content && contentObjects.updated) {
-        const { updatedContentObjects, errors } = handleDroppedContents({
-          droppedObjects,
-          panelObject: data,
-          existingObjects: contentObjects.updated,
-        });
+  //     if (selectedTab === PanelTab.Content && modifiedContentObjects) {
+  //       const { updatedContentObjects, errors } = handleDroppedContents({
+  //         droppedObjects,
+  //         panelObject: data,
+  //         modifiedContentObjects.objects,
+  //       });
 
-        displayHandleDroppedErrors(errors, selectedTab, data);
+  //       displayHandleDroppedErrors(errors, selectedTab, data);
 
-        setContentObjects({
-          ...contentObjects,
-          updated: updatedContentObjects,
-        });
-      }
+  //       setContentObjects({
+  //         ...contentObjects,
+  //         updated: updatedContentObjects,
+  //       });
+  //     }
 
-      clearDroppedObjects?.();
-    }
-  }, [clearDroppedObjects, contentObjects, data, droppedObjects, selectedTab]);
+  //     clearDroppedObjects?.();
+  //   }
+  // }, [clearDroppedObjects, contentObjects, data, droppedObjects, selectedTab]);
 
   const { updateObjectRelationships, isUpdatingObjectRelationships } =
     useUpdateObjectRelationships({
@@ -351,11 +348,10 @@ export const Panel = ({
     });
 
   const saveActiveTabChanges = () => {
-    if (selectedTab === PanelTab.Content && contentObjects.updated) {
+    if (selectedTab === PanelTab.Content && modifiedContentObjects) {
       updateObjectContent({
         uid,
-        originalContentObjects: contentObjects.original,
-        updatedContentObjects: contentObjects.updated,
+        modifiedContentObjects,
       });
     } else if (
       selectedTab === PanelTab.Relationships &&
@@ -399,6 +395,18 @@ export const Panel = ({
     } else {
       setEditMode(false);
     }
+  };
+
+  const handleContentObjectsModified = (
+    updatedModifiedContent: {
+      objects: ModifiedSkylarkObjectContentObject[];
+      removed: ParsedSkylarkObjectContentObject[];
+    },
+    errors: HandleDropError[],
+  ) => {
+    setModifiedContentObjects(updatedModifiedContent);
+    displayHandleDroppedErrors(errors, selectedTab, data);
+    clearDroppedObjects?.();
   };
 
   const handleRelationshipsObjectsModified = (
@@ -471,10 +479,7 @@ export const Panel = ({
         toggleEditMode={() => {
           if (inEditMode) {
             resetMetadataForm(formParsedMetadata || {});
-            setContentObjects({
-              original: contentObjects.original,
-              updated: contentObjects.original,
-            });
+            setModifiedContentObjects(null);
             setModifiedRelationships(null);
             setModifiedAvailabilityObjects(null);
             setAvailabilityDimensionValues({
@@ -567,9 +572,10 @@ export const Panel = ({
               objectType={objectType}
               uid={uid}
               language={language}
-              objects={contentObjects.updated}
+              modifiedContentObjects={modifiedContentObjects}
               inEditMode={inEditMode}
-              setContentObjects={setContentObjects}
+              setContentObjects={handleContentObjectsModified}
+              droppedObjects={droppedObjects}
               showDropZone={isDraggedObject}
               setPanelObject={setPanelObject}
             />
