@@ -18,7 +18,10 @@ import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
 import { PanelTab, usePanelObjectState } from "src/hooks/state";
 import { useCheckedObjectsState } from "src/hooks/state";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import {
+  BuiltInSkylarkObjectType,
+  ParsedSkylarkObject,
+} from "src/interfaces/skylark";
 import {
   Active,
   DragEndEvent,
@@ -298,8 +301,19 @@ export const ContentLibrary = () => {
     if (type === DragType.CONTENT_LIBRARY_OBJECT) {
       setActiveDragged(event.active);
 
-      if (activePanelTab === PanelTab.Metadata) {
-        setPanelTab(PanelTab.Relationships);
+      if (
+        [PanelTab.Metadata, PanelTab.Imagery, PanelTab.Playback].includes(
+          activePanelTab,
+        )
+      ) {
+        if (
+          event.active.data.current.object.objectType ===
+          BuiltInSkylarkObjectType.Availability
+        ) {
+          setPanelTab(PanelTab.Availability);
+        } else {
+          setPanelTab(PanelTab.Relationships);
+        }
       }
     }
 

@@ -9,6 +9,7 @@ import { LazyMotion } from "framer-motion";
 import PlausibleProvider from "next-plausible";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import Script from "next/script";
 import "react-toastify/dist/ReactToastify.css";
 
 import { Navigation } from "src/components/navigation";
@@ -62,6 +63,10 @@ export default function App({ Component, pageProps }: AppProps) {
             <Component {...pageProps} />
           </LazyMotion>
         </UserProvider>
+        <Script
+          strategy="lazyOnload"
+          src="https://status.skylarkplatform.com/embed/script.js"
+        />
       </QueryClientProvider>
     </PlausibleProvider>
   );
