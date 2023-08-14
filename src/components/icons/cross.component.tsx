@@ -49,3 +49,77 @@ export const Cross = ({ className }: IconProps) => {
     </IconBase>
   );
 };
+
+export const CrossCircle = ({ className }: IconProps) => {
+  return (
+    <IconBase
+      className={clsx("stroke-black", className)}
+      width="30"
+      height="28"
+      viewBox="0 0 30 24"
+    >
+      <g filter="url(#filter0_d_308_1217)">
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M15 22C20.5228 22 25 17.5228 25 12C25 6.47715 20.5228 2 15 2C9.47715 2 5 6.47715 5 12C5 17.5228 9.47715 22 15 22Z"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M18 9L12 15"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M12 9L18 15"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </g>
+      {/* <defs>
+        <filter
+          id="filter0_d_308_1217"
+          x="-1"
+          y="0"
+          width="32"
+          height="32"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feColorMatrix
+            in="SourceAlpha"
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+            result="hardAlpha"
+          />
+          <feOffset dy="4" />
+          <feGaussianBlur stdDeviation="2" />
+          <feComposite in2="hardAlpha" operator="out" />
+          <feColorMatrix
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
+          />
+          <feBlend
+            mode="normal"
+            in2="BackgroundImageFix"
+            result="effect1_dropShadow_308_1217"
+          />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="effect1_dropShadow_308_1217"
+            result="shape"
+          />
+        </filter>
+      </defs> */}
+    </IconBase>
+  );
+};

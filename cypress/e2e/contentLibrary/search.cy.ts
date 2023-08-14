@@ -25,14 +25,12 @@ describe("Content Library - Search", () => {
         });
       }
       if (hasOperationName(req, "SEARCH")) {
-        console.log({ req });
         if (
           hasMatchingVariable(req, "dimensions", [
             { dimension: "customer-types", value: "kids" },
             { dimension: "device-types", value: "pc" },
           ])
         ) {
-          console.log("SEARCH DIMENSIONS ");
           req.reply({
             fixture: "./skylark/queries/search/dimensionsKids.json",
           });

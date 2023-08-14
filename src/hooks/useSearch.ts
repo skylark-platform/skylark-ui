@@ -20,6 +20,7 @@ import { parseSkylarkObject } from "src/lib/skylark/parsers";
 import { useAllObjectsMeta } from "./useSkylarkObjectTypes";
 
 export interface SearchFilters {
+  query: string;
   objectTypes: string[] | null;
   language?: string | null;
   availability: {
@@ -30,9 +31,13 @@ export interface SearchFilters {
 
 export const SEARCH_PAGE_SIZE = 25;
 
-export const useSearch = (queryString: string, filters: SearchFilters) => {
+export const useSearch = ({
+  query: queryString,
+  objectTypes,
+  language,
+  availability,
+}: SearchFilters) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta(true);
-  const { objectTypes, language, availability } = filters;
 
   // Used to rerender search results when the search changes but objects are the same
   const searchHash = `${queryString}-${language}-${objectTypes?.join("-")}`;
@@ -63,15 +68,15 @@ export const useSearch = (queryString: string, filters: SearchFilters) => {
   };
 
   if (
-    filters.availability.dimensions &&
-    Object.keys(filters.availability.dimensions).length > 0
+    availability.dimensions &&
+    Object.keys(availability.dimensions).length > 0
   ) {
     headers[REQUEST_HEADERS.ignoreAvailability] = "false";
     headers[REQUEST_HEADERS.ignoreTime] = "true";
 
-    if (filters.availability.timeTravel) {
+    if (availability.timeTravel) {
       headers[REQUEST_HEADERS.ignoreTime] = "false";
-      headers[REQUEST_HEADERS.timeTravel] = filters.availability.timeTravel;
+      headers[REQUEST_HEADERS.timeTravel] = availability.timeTravel;
     }
   }
 

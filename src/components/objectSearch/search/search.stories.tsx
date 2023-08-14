@@ -51,13 +51,14 @@ const Template: ComponentStory<typeof Search> = (args) => {
 export const Default = Template.bind({});
 Default.args = {
   className: "w-[600px]",
-  activeFilters: {
+  filters: {
     objectTypes,
     language: "",
     availability: {
       dimensions: null,
       timeTravel: null,
     },
+    query: "",
   },
   columns,
   columnIds,

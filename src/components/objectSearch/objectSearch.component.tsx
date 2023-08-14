@@ -35,12 +35,13 @@ export interface ObjectSearchProps {
   withObjectSelect?: boolean;
   isPanelOpen?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
-  defaultObjectTypes?: SkylarkObjectTypes;
+  initialFilters?: Partial<SearchFilters>;
   defaultColumns?: string[];
   hideSearchFilters?: boolean;
   setPanelObject?: ObjectSearchResultsProps["setPanelObject"];
   checkedObjects?: ObjectSearchResultsProps["checkedObjects"];
   onObjectCheckedChanged?: ObjectSearchResultsProps["onObjectCheckedChanged"];
+  onFilterChange?: (f: SearchFilters) => void;
 }
 
 const initialFrozenColumns = [
@@ -83,35 +84,44 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     withCreateButtons,
     setPanelObject,
     isPanelOpen,
-    defaultObjectTypes,
+    initialFilters,
     defaultColumns,
     onObjectCheckedChanged,
     withObjectSelect,
+    onFilterChange,
   } = props;
 
   const withPanel = typeof setPanelObject !== "undefined";
 
   const { objectTypes } = useSkylarkObjectTypes(true);
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchLanguage, setSearchLanguage] =
-    // undefined initially as null is a valid language
-    useState<SearchFilters["language"]>(undefined);
-  const [searchObjectTypes, setSearchObjectTypes] = useState<
-    SearchFilters["objectTypes"]
-  >(defaultObjectTypes || null);
-  const [searchAvailability, setSearchAvailability] = useState<
-    SearchFilters["availability"]
-  >({
-    dimensions: null,
-    timeTravel: null,
+  const [searchFilters, setSearchFilters] = useState<SearchFilters>({
+    query: initialFilters?.query || "",
+    language: initialFilters?.language,
+    objectTypes: initialFilters?.objectTypes || null,
+    availability: initialFilters?.availability || {
+      dimensions: null,
+      timeTravel: null,
+    },
   });
 
-  useEffect(() => {
-    if (objectTypes && objectTypes.length !== 0 && searchObjectTypes === null) {
-      setSearchObjectTypes(objectTypes);
-    }
-  }, [objectTypes, searchObjectTypes]);
+  const setSearchFiltersWrapper = (updatedFilters: SearchFilters) => {
+    setSearchFilters(updatedFilters);
+    onFilterChange?.(updatedFilters);
+  };
+
+  // useEffect(() => {
+  //   if (objectTypes && objectTypes.length !== 0 && searchObjectTypes === null) {
+  //     setSearchObjectTypes(objectTypes);
+  //   }
+  // }, [objectTypes, searchObjectTypes]);
+
+  // const searchTab = {
+  //   query: searchQuery,
+  //   language: searchLanguage,
+  //   objectTypes: searchObjectTypes,
+  //   availability: searchAvailability,
+  // };
 
   const {
     data: searchData,
@@ -127,10 +137,13 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-  } = useSearch(searchQuery, {
-    language: searchLanguage === undefined ? defaultLanguage : searchLanguage,
-    objectTypes: searchObjectTypes || objectTypes || null,
-    availability: searchAvailability,
+  } = useSearch({
+    ...searchFilters,
+    language:
+      searchFilters.language === undefined
+        ? defaultLanguage
+        : searchFilters.language,
+    objectTypes: searchFilters.objectTypes || objectTypes || null,
   });
 
   useEffect(() => {
@@ -227,7 +240,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   return (
     <div
       className={clsx(
-        "flex h-full flex-col space-y-2",
+        "flex h-full w-full flex-col space-y-2",
         isPanelOpen ? "lg:space-y-2" : "md:space-y-2",
       )}
     >
@@ -239,33 +252,28 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
       >
         <div
           className={clsx(
-            "flex w-full flex-1 flex-col items-center justify-start space-x-0.5 md:space-x-1",
+            "flex w-full flex-col items-center justify-start space-x-0.5 md:space-x-1",
             withCreateButtons &&
               "md:max-w-[50vw] lg:max-w-[45vw] xl:max-w-[40vw]",
           )}
         >
           <Search
-            searchQuery={searchQuery}
             graphqlQuery={{
               query: graphqlSearchQuery,
               variables: graphqlSearchQueryVariables,
             }}
             isSearching={isSearching || searchRefetching}
-            onRefresh={refetch}
-            onQueryChange={setSearchQuery}
-            activeFilters={{
-              objectTypes: searchObjectTypes,
-              language: searchLanguage,
-              availability: searchAvailability,
+            filters={{
+              ...searchFilters,
+              objectTypes: searchFilters.objectTypes || objectTypes || null,
             }}
+            onFiltersChange={setSearchFiltersWrapper}
+            onRefresh={refetch}
             columns={parsedTableColumns}
             columnIds={sortedHeaders}
             visibleColumns={columnVisibility}
             hideFilters={props.hideSearchFilters}
             onColumnVisibilityChange={setColumnVisibility}
-            onLanguageChange={setSearchLanguage}
-            onObjectTypeChange={setSearchObjectTypes}
-            onActiveAvailabilityChange={setSearchAvailability}
           />
           <div className="mt-2 flex w-full justify-start pl-3 md:pl-7">
             <p className="text-xs font-medium text-manatee-400">

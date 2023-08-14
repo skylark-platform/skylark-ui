@@ -13,7 +13,6 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
-import { MemoizedObjectSearch } from "src/components/objectSearch";
 import { Panel } from "src/components/panel";
 import { DROPPABLE_ID } from "src/constants/skylark";
 import { PanelTab, usePanelObjectState } from "src/hooks/state";
@@ -28,6 +27,8 @@ import {
   DragStartEvent,
   DragType,
 } from "src/lib/dndkit/dndkit";
+
+import { TabbedObjectSearch } from "./tabbedObjectSearch/tabbedObjectSearch.component";
 
 const INITIAL_PANEL_PERCENTAGE = 70;
 const MINIMUM_SIZES = {
@@ -221,7 +222,7 @@ export const ContentLibrary = () => {
       >
         <m.div
           className={clsx(
-            "relative w-full max-w-full pl-2 pt-2 md:pl-6 md:pt-6 lg:pl-10",
+            "relative h-full w-full max-w-full",
             activePanelObject && "md:w-1/2 lg:w-5/12 xl:w-3/5",
             isDraggingObject && "pointer-events-none",
           )}
@@ -230,7 +231,7 @@ export const ContentLibrary = () => {
           {isDraggingObject && (
             <div className="absolute inset-0 z-[100] block bg-black/5"></div>
           )}
-          <MemoizedObjectSearch
+          <TabbedObjectSearch
             withCreateButtons
             panelObject={activePanelObject}
             setPanelObject={setPanelObject}

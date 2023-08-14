@@ -2,25 +2,19 @@ import { ColumnDef, VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
 import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode } from "graphql";
-import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 
-import {
-  AvailabilityPicker,
-  AvailabilityPickerValues,
-} from "src/components/inputs/availabilityPicker/availabilityPicker.component";
+import { AvailabilityPicker } from "src/components/inputs/availabilityPicker/availabilityPicker.component";
 import { LanguageSelect } from "src/components/inputs/select";
 import { SearchFilter } from "src/components/objectSearch/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
-import { hasProperty } from "src/lib/utils";
 
 import { SearchInput } from "./searchInput/searchInput.component";
 
 interface SearchBarProps {
-  searchQuery: string;
-  activeFilters: SearchFilters;
+  filters: SearchFilters;
   columns: ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[];
   columnIds: string[];
   visibleColumns: VisibilityState;
@@ -31,11 +25,11 @@ interface SearchBarProps {
     variables: object;
   };
   hideFilters?: boolean;
-  onQueryChange: (str: string) => void;
+  onFiltersChange: (f: SearchFilters) => void;
   onColumnVisibilityChange: (c: VisibilityState) => void;
-  onLanguageChange: (l: SearchFilters["language"]) => void;
-  onObjectTypeChange: (o: SearchFilters["objectTypes"]) => void;
-  onActiveAvailabilityChange: (args: AvailabilityPickerValues) => void;
+  // onLanguageChange: (l: SearchFilters["language"]) => void;
+  // onObjectTypeChange: (o: SearchFilters["objectTypes"]) => void;
+  // onActiveAvailabilityChange: (args: AvailabilityPickerValues) => void;
   onRefresh: () => void;
 }
 
@@ -44,20 +38,14 @@ export const Search = ({
   columns,
   columnIds,
   visibleColumns,
-  searchQuery,
   graphqlQuery,
   isSearching,
-  activeFilters,
+  filters,
   hideFilters,
-  onQueryChange,
+  onFiltersChange,
   onColumnVisibilityChange,
-  onLanguageChange,
-  onObjectTypeChange,
-  onActiveAvailabilityChange,
   onRefresh,
 }: SearchBarProps) => {
-  const { query } = useRouter();
-
   const [isFilterOpen, setFilterOpen] = useState(false);
 
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
@@ -85,12 +73,21 @@ export const Search = ({
     };
   }, [setFilterOpen]);
 
+  const handleFilterChange = (updatedFilters: Partial<SearchFilters>) => {
+    onFiltersChange({
+      ...filters,
+      ...updatedFilters,
+    });
+  };
+
   const onFilterSaveWrapper = (
     objectTypes: SearchFilters["objectTypes"],
     columnVisibility: VisibilityState,
   ) => {
     setFilterOpen(false);
-    onObjectTypeChange(objectTypes);
+    handleFilterChange({
+      objectTypes,
+    });
     onColumnVisibilityChange(columnVisibility);
   };
 
@@ -110,8 +107,8 @@ export const Search = ({
     >
       <div className="relative flex h-full w-full flex-grow flex-row">
         <SearchInput
-          onQueryChange={onQueryChange}
-          searchQuery={searchQuery}
+          onQueryChange={(query) => handleFilterChange({ query })}
+          searchQuery={filters.query}
           isSearching={isSearching}
           hideFilters={hideFilters}
           toggleFilterOpen={() => setFilterOpen(!isFilterOpen)}
@@ -129,7 +126,7 @@ export const Search = ({
               className="absolute left-0 top-10 z-50 w-full md:top-14 md:w-auto"
             >
               <SearchFilter
-                activeObjectTypes={activeFilters.objectTypes}
+                activeObjectTypes={filters.objectTypes}
                 columns={columnOptions}
                 visibleColumns={Object.keys(visibleColumns).filter(
                   (column) => visibleColumns[column],
@@ -150,14 +147,16 @@ export const Search = ({
           variant="primary"
           name="object-listing-language-select"
           className="w-full sm:mr-2 md:w-36"
-          selected={activeFilters.language}
-          onChange={onLanguageChange}
+          selected={filters.language}
+          onChange={(language) => handleFilterChange({ language })}
           useDefaultLanguage
-          onValueClear={() => onLanguageChange(null)}
+          onValueClear={() => handleFilterChange({ language: null })}
         />
         <AvailabilityPicker
-          activeValues={activeFilters.availability}
-          setActiveAvailability={onActiveAvailabilityChange}
+          activeValues={filters.availability}
+          setActiveAvailability={(availability) =>
+            handleFilterChange({ availability })
+          }
         />
       </div>
     </div>

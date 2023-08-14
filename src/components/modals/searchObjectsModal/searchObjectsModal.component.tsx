@@ -67,7 +67,7 @@ export const SearchObjectsModal = ({
           </div>
           <div className="ml-4 flex-grow overflow-auto pl-4 pr-0 pt-2">
             <ObjectSearch
-              defaultObjectTypes={objectTypes}
+              initialFilters={{ objectTypes }}
               defaultColumns={columns}
               checkedObjects={checkedObjects}
               onObjectCheckedChanged={setCheckedObjects}

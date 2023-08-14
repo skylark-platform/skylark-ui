@@ -4,6 +4,7 @@ export const LOCAL_STORAGE = {
     token: "skylark_beta_auth_token",
   },
   usedLanguages: "skylark:usedLanguages",
+  contentLibraryTabs: "skylark:contentLibraryTabs",
   graphiql: {
     theme: "graphiql:theme",
     tabState: "graphiql:tabState",

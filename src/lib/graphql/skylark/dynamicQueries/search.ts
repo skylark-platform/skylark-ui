@@ -60,13 +60,13 @@ export const createSearchObjectsQuery = (
             return {
               __typeName: object.name,
               __typename: true, // To remove the alias later
-              ...common.fields,
               ...generateFieldsToReturn(
                 object.fields,
                 object.name,
                 `__${object.name}__`,
               ),
               ...generateRelationshipsToReturn(object, true),
+              ...common.fields,
             };
           }),
         },
