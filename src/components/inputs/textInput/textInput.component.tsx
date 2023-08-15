@@ -28,7 +28,7 @@ export const TextInput = ({
       </label>
     )}
     <input
-      className={clsx("rounded bg-manatee-50 p-2", className)}
+      className={clsx("rounded bg-manatee-50 p-1 md:p-2", className)}
       type="text"
       id={label}
       name={label}

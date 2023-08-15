@@ -500,8 +500,9 @@ export const Panel = ({
           <Tabs
             tabs={tabs}
             selectedTab={selectedTab}
-            onChange={(t) => setSelectedTab(t as PanelTab)}
+            onChange={({ index }) => setSelectedTab(tabs[index])}
             disabled={tabs.length === 0 || inEditMode || isError}
+            className="px-2 md:px-4"
           />
         </div>
       </div>

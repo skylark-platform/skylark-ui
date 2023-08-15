@@ -281,7 +281,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             </p>
           </div>
         </div>
-        {withCreateButtons && (
+        {/* {withCreateButtons && (
           <CreateButtons
             className={clsx(
               "mb-2 justify-end md:mb-0",
@@ -291,7 +291,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
               setPanelObject?.(obj);
             }}
           />
-        )}
+        )} */}
       </div>
       {sortedHeaders.length > 0 && (
         <div

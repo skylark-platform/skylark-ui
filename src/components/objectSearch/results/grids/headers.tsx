@@ -43,7 +43,8 @@ export const HeaderCell = ({
   return (
     <div
       className={clsx(
-        "absolute left-0 top-0 flex h-10 select-none items-center bg-white font-medium",
+        // Height is required for before the content loads
+        "absolute left-0 top-0 flex h-8 select-none items-center bg-white font-medium",
       )}
       style={{
         width: header.getSize(),

@@ -265,8 +265,8 @@ export const ObjectSearchResults = ({
   const rowVirtualizer = useVirtual({
     parentRef: tableContainerRef,
     size: formattedSearchData?.length ? formattedSearchData.length : 0,
-    estimateSize: useCallback(() => 42, []),
-    paddingStart: 42, // Padding to handle the sticky headers, same as estimateSize
+    estimateSize: useCallback((index: number) => (index === 0 ? 32 : 42), []),
+    paddingStart: 32, // Padding to handle the sticky headers, same as estimateSize
     rangeExtractor: (range) => {
       const rangeAsSet = new Set([0, ...defaultRangeExtractor(range)]);
       return [...rangeAsSet];

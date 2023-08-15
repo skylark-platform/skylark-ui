@@ -1,14 +1,26 @@
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 import { Button } from "src/components/button";
-import { CrossCircle, Plus } from "src/components/icons";
+import {
+  CheckSquare,
+  CrossCircle,
+  CrossSquare,
+  Edit,
+  Plus,
+} from "src/components/icons";
+import { TextInput } from "src/components/inputs/textInput";
 import {
   MemoizedObjectSearch,
   ObjectSearchProps,
 } from "src/components/objectSearch";
+import { CreateButtons } from "src/components/objectSearch/createButtons";
+import { Tabs } from "src/components/tabs/tabs.component";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { SearchFilters } from "src/hooks/useSearch";
+import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
+import { formatReadableDate } from "src/lib/skylark/availability";
 
 interface Tab {
   name?: string;
@@ -35,13 +47,144 @@ const readTabStateFromStorage = () => {
   }
 };
 
-const generateTabName = (filters: SearchFilters) => {
-  if (filters.objectTypes?.length === 1) {
-    return `"${filters.objectTypes[0]}"`;
+const prettifyStrArr = (arr: string[]): string => {
+  if (arr.length === 0) {
+    return "";
   }
+
+  if (arr.length === 1) {
+    return arr[0];
+  }
+
+  return `${arr.slice(0, arr.length - 1).join(", ")} & ${arr[arr.length - 1]}`;
 };
 
-const blankTab: Tab = {
+const TabDescription = ({
+  filters: {
+    objectTypes,
+    language,
+    query,
+    availability: { dimensions, timeTravel },
+  },
+}: {
+  filters: SearchFilters;
+}) => {
+  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+
+  const { dimensions: allDimensionsWithValues } =
+    useAvailabilityDimensionsWithValues();
+
+  let objectTypeStr = <>Objects </>;
+
+  if (objectTypes) {
+    const parsedObjectTypes = objectTypes.map((objectType) => {
+      const objectTypeWithConfig = objectTypesWithConfig?.find(
+        ({ objectType: name }) => name === objectType,
+      );
+      return objectTypeWithConfig?.config.objectTypeDisplayName || objectType;
+    });
+
+    objectTypeStr =
+      objectTypes.length < 10 ? (
+        <>
+          <strong>{prettifyStrArr(parsedObjectTypes)}</strong> objects{" "}
+        </>
+      ) : (
+        <>
+          <strong>
+            {objectTypesWithConfig?.length === objectTypes.length
+              ? "All"
+              : objectTypes.length}
+          </strong>{" "}
+          object types{" "}
+        </>
+      );
+  }
+
+  // const languageStr = language ? `in "${language}"` : "";
+  const translationStr = language ? (
+    <>
+      translated to <strong>{language}</strong>{" "}
+    </>
+  ) : (
+    <></>
+  );
+
+  const queryStr = query ? (
+    <>
+      filtered by <strong>{query}</strong>{" "}
+    </>
+  ) : (
+    <></>
+  );
+
+  let availabilityStr = <></>;
+
+  if (dimensions || timeTravel) {
+    const strDimensions =
+      dimensions &&
+      Object.entries(dimensions).map(([dimension, value]) => {
+        const foundDimension = allDimensionsWithValues?.find(
+          (d) => dimension === d.slug,
+        );
+        const foundValue = foundDimension?.values.find((v) => value === v.slug);
+
+        return foundValue?.title || value;
+      });
+
+    const renderedDimensions = strDimensions ? (
+      <>
+        to <strong>{prettifyStrArr(strDimensions)}</strong>
+      </>
+    ) : (
+      <></>
+    );
+
+    const renderedTimeTravel = timeTravel ? (
+      <>
+        at <strong>{formatReadableDate(timeTravel)}</strong>
+      </>
+    ) : (
+      <></>
+    );
+
+    availabilityStr =
+      renderedDimensions && renderedTimeTravel ? (
+        <>
+          available {renderedDimensions} {renderedTimeTravel}{" "}
+        </>
+      ) : (
+        <>available {renderedDimensions || renderedTimeTravel} </>
+      );
+  }
+
+  return (
+    <p
+      className={clsx(
+        "text-sm text-manatee-500",
+        "[&>strong]:font-medium [&>strong]:text-black",
+        "after:-ml-0.5 after:content-['.']",
+      )}
+    >
+      {/* {[objectTypeStr, queryStr, availabilityStr, translationStr].filter(
+        (str) => !!str,
+      )} */}
+      {objectTypeStr}
+      {queryStr}
+      {availabilityStr}
+      {translationStr}
+    </p>
+  );
+
+  // `"Episode" filtered by "search query"`
+  // `"Episode, Movie, Season" found for "search query"`
+  // "5 Object types" in "en-GB" filtered by "search query"
+  // "5 Object types" in "en-GB" filtered by "search query" available to "Premium, PC"
+  // "5 Object types" in "en-GB" filtered by "search query" available to "Premium, PC" at "27th August 2020"
+};
+
+const generateNewTab = (name: string): Tab => ({
+  name,
   filters: {
     query: "",
     objectTypes: null,
@@ -50,7 +193,7 @@ const blankTab: Tab = {
       timeTravel: null,
     },
   },
-};
+});
 
 const Tab = ({
   active,
@@ -86,8 +229,73 @@ const Tab = ({
   );
 };
 
+const TabOverview = ({
+  className,
+  tab,
+  onTabRename,
+}: {
+  className?: string;
+  tab: Tab | null;
+  onTabRename: (name: string) => void;
+}) => {
+  const [updatedName, setUpdatedName] = useState<string | null>(null);
+
+  return (
+    <div className={className}>
+      {tab && (
+        <>
+          <div className="flex items-center space-x-2">
+            {updatedName !== null ? (
+              <>
+                <TextInput
+                  onChange={setUpdatedName}
+                  value={updatedName}
+                  className="text-sm md:w-80 md:text-base lg:w-96"
+                />
+                <Button
+                  variant="ghost"
+                  className="text-success"
+                  onClick={() => {
+                    onTabRename(updatedName);
+                    setUpdatedName(null);
+                  }}
+                >
+                  <CheckSquare className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="text-error"
+                  onClick={() => {
+                    setUpdatedName(null);
+                  }}
+                >
+                  <CrossSquare className="h-4 w-4" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <h2 className="text-lg font-bold">{tab.name}</h2>
+                <Button
+                  variant="ghost"
+                  className="text-manatee-400 hover:text-black"
+                  onClick={() => {
+                    setUpdatedName(tab.name || "");
+                  }}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+          </div>
+          <TabDescription filters={tab.filters} />
+        </>
+      )}
+    </div>
+  );
+};
+
 export const TabbedObjectSearch = (props: ObjectSearchProps) => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTabIndex, setActiveTab] = useState(0);
 
   const [tabs, setTabs] = useState<Tab[] | undefined>(undefined);
 
@@ -97,19 +305,19 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
     setTabs(
       tabsFromStorage && tabsFromStorage.length > 0
         ? tabsFromStorage
-        : [blankTab],
+        : [generateNewTab("Default view")],
     );
   }, []);
 
-  const activeFilters = tabs?.[activeTab]?.filters;
+  const activeTab = tabs?.[activeTabIndex];
 
-  const onFilterChange = (filters: SearchFilters) => {
+  const onActiveTabChange = (updatedTab: Partial<Tab>) => {
     const updatedTabs = tabs?.map((tab, index) => {
-      if (index !== activeTab) return tab;
+      if (index !== activeTabIndex) return tab;
 
       return {
         ...tab,
-        filters,
+        ...updatedTab,
       };
     });
 
@@ -121,32 +329,60 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
     <>
       {tabs && (
         <div className="flex h-full max-h-full w-full flex-col">
-          <div className="flex items-end space-x-px border-b border-b-manatee-50 pl-2 pt-2 text-sm md:pl-6 md:pt-4 lg:pl-10">
-            {tabs.map(({ name, filters }, i) => (
+          <div className="ml-2 mr-10 flex items-end justify-between space-x-px border-b border-b-manatee-50 pt-2 text-sm md:ml-6 md:pt-6 lg:ml-10">
+            {/* {tabs.map(({ name, filters }, i) => (
               <Tab
                 key={i}
                 name={name || `Search ${i + 1}`}
-                active={activeTab === i}
+                active={activeTabIndex === i}
                 onClick={() => setActiveTab(i)}
               />
-            ))}
+            ))} */}
+            <div className="scrollbar-hidden overflow-scroll">
+              <Tabs
+                tabs={tabs.map((tab, i) => tab?.name || `Search ${i + 1}`)}
+                selectedTab={activeTab?.name || `Search ${activeTabIndex + 1}`}
+                onChange={({ index }) => setActiveTab(index)}
+              />
+            </div>
             <button
-              className="flex h-8 w-8 items-center justify-start rounded rounded-b-none border bg-manatee-200 px-2"
-              onClick={() =>
-                setTabs((existingTabs) =>
-                  existingTabs ? [...existingTabs, blankTab] : [blankTab],
-                )
-              }
+              className="flex items-center justify-start whitespace-nowrap rounded rounded-b-none px-2 pb-3 pt-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black"
+              onClick={() => {
+                setTabs((existingTabs) => {
+                  const newTab = generateNewTab(
+                    `View ${existingTabs ? existingTabs.length + 1 : 1}`,
+                  );
+                  return existingTabs ? [...existingTabs, newTab] : [newTab];
+                });
+                setActiveTab(tabs.length);
+              }}
             >
-              <Plus />
+              <Plus className="mr-2 h-3 w-3" />
+              <span>Add view</span>
             </button>
           </div>
-          <div className="relative flex w-full grow overflow-hidden pl-2 pt-2 md:pl-6 md:pt-4 lg:pl-10">
+          <div className="mb-2 mr-8 mt-4 flex justify-between">
+            <TabOverview
+              tab={activeTab || null}
+              className="ml-16"
+              onTabRename={(name) => onActiveTabChange({ name })}
+            />
+            <CreateButtons
+              className={clsx(
+                "mb-2 mt-2 justify-end md:mb-0",
+                props.isPanelOpen ? "pr-2 lg:w-auto lg:pr-4" : "md:w-auto",
+              )}
+              onObjectCreated={(obj) => {
+                props.setPanelObject?.(obj);
+              }}
+            />
+          </div>
+          <div className="relative flex w-full grow overflow-hidden pl-2 pt-2 md:pl-6 md:pt-6 lg:pl-10">
             <MemoizedObjectSearch
-              key={activeTab}
+              key={activeTabIndex}
               {...props}
-              initialFilters={activeFilters}
-              onFilterChange={onFilterChange}
+              initialFilters={activeTab?.filters}
+              onFilterChange={(filters) => onActiveTabChange({ filters })}
             />
           </div>
         </div>

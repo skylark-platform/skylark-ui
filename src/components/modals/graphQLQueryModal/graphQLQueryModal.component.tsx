@@ -237,7 +237,8 @@ export const DisplayGraphQLQueryModal = ({
             <Tabs
               tabs={["Query", "Variables"]}
               selectedTab={activeTab}
-              onChange={setTab}
+              onChange={({ tab }) => setTab(tab)}
+              className="px-4 md:px-8"
             />
 
             <div className="absolute right-0 z-50 w-auto">

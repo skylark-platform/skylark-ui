@@ -10,12 +10,14 @@ export const CheckSquare = ({ className }: IconProps) => {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        stroke="currentColor"
       />
       <path
         d="M20 12V19C20 20.1046 19.1046 21 18 21H4C2.89543 21 2 20.1046 2 19V5C2 3.89543 2.89543 3 4 3H15"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        stroke="currentColor"
       />
     </IconBase>
   );
