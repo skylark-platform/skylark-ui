@@ -399,13 +399,14 @@ export const createObjectListingColumns = (
   ];
 
   if (opts.withObjectSelect) {
-    if (opts.withPanel) {
-      return [dragIconColumn, selectColumn, ...orderedColumnArray] as ColumnDef<
-        ParsedSkylarkObject,
-        ParsedSkylarkObject
-      >[];
-    }
-    return [selectColumn, ...orderedColumnArray] as ColumnDef<
+    // TODO eventually remove this option and rename dragIconColumn once the design is finalised
+    // if (opts.withPanel) {
+    //   return [dragIconColumn, selectColumn, ...orderedColumnArray] as ColumnDef<
+    //     ParsedSkylarkObject,
+    //     ParsedSkylarkObject
+    //   >[];
+    // }
+    return [dragIconColumn, selectColumn, ...orderedColumnArray] as ColumnDef<
       ParsedSkylarkObject,
       ParsedSkylarkObject
     >[];

@@ -28,6 +28,7 @@ import {
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
+  SkylarkAvailabilityField,
 } from "src/interfaces/skylark";
 import {
   formatReadableDate,
@@ -316,18 +317,22 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                 }[] = [
                   {
                     label: "Start",
-                    key: "start",
-                    value: formatReadableDate(obj.start),
+                    key: SkylarkAvailabilityField.Start,
+                    value: formatReadableDate(
+                      obj[SkylarkAvailabilityField.Start],
+                    ),
                   },
                   {
                     label: "End",
-                    key: "end",
-                    value: neverExpires ? "Never" : formatReadableDate(obj.end),
+                    key: SkylarkAvailabilityField.Start,
+                    value: neverExpires
+                      ? "Never"
+                      : formatReadableDate(obj[SkylarkAvailabilityField.End]),
                   },
                   {
                     label: "Timezone",
-                    key: "timezone",
-                    value: obj.timezone || "",
+                    key: SkylarkAvailabilityField.Timezone,
+                    value: obj[SkylarkAvailabilityField.Timezone] || "",
                   },
                 ];
                 return (

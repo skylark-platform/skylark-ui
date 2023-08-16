@@ -3,7 +3,11 @@ import React from "react";
 import { GrClose } from "react-icons/gr";
 
 import { Button } from "src/components/button";
-import { ObjectSearch } from "src/components/objectSearch";
+import {
+  ObjectSearch,
+  ObjectSearchColumnsState,
+} from "src/components/objectSearch";
+import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useCheckedObjectsState } from "src/hooks/state";
 import {
   ParsedSkylarkObject,
@@ -34,6 +38,18 @@ export const SearchObjectsModal = ({
     onModalClose({ checkedObjects });
     closeModal();
     setCheckedObjects([]);
+  };
+
+  const initialColumnState: Partial<ObjectSearchColumnsState> = {
+    visibility: columns
+      ? Object.fromEntries(
+          [OBJECT_LIST_TABLE.columnIds.displayField, ...columns].map(
+            (column) => [column, true],
+          ),
+        )
+      : undefined,
+    order: columns,
+    frozen: [OBJECT_LIST_TABLE.columnIds.displayField],
   };
 
   return (
@@ -68,7 +84,7 @@ export const SearchObjectsModal = ({
           <div className="ml-4 flex-grow overflow-auto pl-4 pr-0 pt-2">
             <ObjectSearch
               initialFilters={{ objectTypes }}
-              defaultColumns={columns}
+              initialColumnState={initialColumnState}
               checkedObjects={checkedObjects}
               onObjectCheckedChanged={setCheckedObjects}
               hideSearchFilters

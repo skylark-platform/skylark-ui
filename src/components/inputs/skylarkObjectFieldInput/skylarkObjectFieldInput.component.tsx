@@ -15,7 +15,7 @@ import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.
 import { ExternalLink } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { InputLabel } from "src/components/inputs/label/label.component";
-import { Select } from "src/components/inputs/select";
+import { Select, TimezoneSelect } from "src/components/inputs/select";
 import { Skeleton } from "src/components/skeleton";
 import { WYSIWYGEditor } from "src/components/wysiwygEditor";
 import { INPUT_REGEX, SYSTEM_FIELDS } from "src/constants/skylark";
@@ -95,6 +95,31 @@ const SkylarkObjectFieldInputEnum = ({
           variant="primary"
           selected={selected}
           options={options}
+          placeholder={`Select ${formatObjectField(field.name)}`}
+          onChange={field.onChange}
+          aria-invalid={error ? "true" : "false"}
+        />
+      );
+    }}
+  />
+);
+
+const SkylarkObjectFieldInputTimezone = ({
+  field,
+  control,
+  error,
+}: SkylarkObjectFieldInputComponentProps) => (
+  <Controller
+    name={field}
+    control={control}
+    render={({ field }) => {
+      const selected = (field.value as string) || "";
+
+      return (
+        <TimezoneSelect
+          className="w-full"
+          variant="primary"
+          selected={selected}
           placeholder={`Select ${formatObjectField(field.name)}`}
           onChange={field.onChange}
           aria-invalid={error ? "true" : "false"}
@@ -289,6 +314,11 @@ export const SkylarkObjectFieldInput = (
             fieldConfigFromObject?.fieldType === "WYSIWYG"
           ) {
             return <SkylarkObjectFieldInputWYSIWYG {...inputProps} />;
+          } else if (
+            config.type === "string" &&
+            fieldConfigFromObject?.fieldType === "TIMEZONE"
+          ) {
+            return <SkylarkObjectFieldInputTimezone {...inputProps} />;
           } else if (
             config.type === "string" &&
             (fieldConfigFromObject?.fieldType === "TEXTAREA" ||

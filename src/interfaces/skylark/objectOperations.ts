@@ -19,6 +19,12 @@ export enum SkylarkSystemField {
   Type = "type",
 }
 
+export enum SkylarkAvailabilityField {
+  Start = "start",
+  End = "end",
+  Timezone = "timezone",
+}
+
 export enum SkylarkSystemGraphQLType {
   SkylarkImageListing = "SkylarkImageListing",
 }

@@ -6,6 +6,7 @@ import {
   ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
   ParsedSkylarkObjectMetadata,
+  SkylarkAvailabilityField,
 } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 
@@ -29,10 +30,12 @@ export const getSingleAvailabilityStatus = (
 export const getAvailabilityStatusForAvailabilityObject = (
   metadata: ParsedSkylarkObjectMetadata,
 ): ParsedSkylarkObjectAvailability["status"] => {
-  const start = hasProperty(metadata, "start")
+  const start = hasProperty(metadata, SkylarkAvailabilityField.Start)
     ? (metadata.start as string)
     : "";
-  const end = hasProperty(metadata, "end") ? (metadata.end as string) : "";
+  const end = hasProperty(metadata, SkylarkAvailabilityField.End)
+    ? (metadata.end as string)
+    : "";
 
   if (!start && !end) {
     return AvailabilityStatus.Unavailable;
@@ -67,6 +70,26 @@ export const getObjectAvailabilityStatus = (
 
 export const formatReadableDate = (date?: string | null) =>
   date ? dayjs(date).format("llll") : "";
+
+export const formatTimezone = (
+  date?: string,
+  timeZoneName?:
+    | "short"
+    | "long"
+    | "shortOffset"
+    | "longOffset"
+    | "shortGeneric"
+    | "longGeneric",
+) => {
+  return date
+    ? new Date(date)
+        .toLocaleDateString("en", {
+          day: "2-digit",
+          timeZoneName,
+        })
+        .slice(4)
+    : "";
+};
 
 export const is2038Problem = (date: string) => {
   return dayjs(date).isSame("2038-01-19T03:14:07.000Z");

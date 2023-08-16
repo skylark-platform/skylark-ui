@@ -12,6 +12,7 @@ import {
 import { TextInput } from "src/components/inputs/textInput";
 import {
   MemoizedObjectSearch,
+  ObjectSearchColumnsState,
   ObjectSearchProps,
 } from "src/components/objectSearch";
 import { CreateButtons } from "src/components/objectSearch/createButtons";
@@ -20,11 +21,16 @@ import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { SearchFilters } from "src/hooks/useSearch";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
-import { formatReadableDate } from "src/lib/skylark/availability";
+import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
+import {
+  formatReadableDate,
+  formatTimezone,
+} from "src/lib/skylark/availability";
 
 interface Tab {
   name?: string;
   filters: SearchFilters;
+  columnsState?: ObjectSearchColumnsState;
 }
 
 const saveTabStateToStorage = (tabs: Tab[]) => {
@@ -101,7 +107,6 @@ const TabDescription = ({
       );
   }
 
-  // const languageStr = language ? `in "${language}"` : "";
   const translationStr = language ? (
     <>
       translated to <strong>{language}</strong>{" "}
@@ -112,7 +117,7 @@ const TabDescription = ({
 
   const queryStr = query ? (
     <>
-      filtered by <strong>{query}</strong>{" "}
+      filtered by <strong>query &ldquo;{query}&rdquo;</strong>{" "}
     </>
   ) : (
     <></>
@@ -140,9 +145,14 @@ const TabDescription = ({
       <></>
     );
 
+    console.log({ timeTravel });
     const renderedTimeTravel = timeTravel ? (
       <>
-        at <strong>{formatReadableDate(timeTravel)}</strong>
+        on{" "}
+        <strong>
+          {formatReadableDate(timeTravel)} (
+          {formatTimezone(timeTravel, "short")})
+        </strong>
       </>
     ) : (
       <></>
@@ -163,7 +173,7 @@ const TabDescription = ({
       className={clsx(
         "text-sm text-manatee-500",
         "[&>strong]:font-medium [&>strong]:text-black",
-        "after:-ml-0.5 after:content-['.']",
+        "after:-ml-1 after:content-['.']",
       )}
     >
       {/* {[objectTypeStr, queryStr, availabilityStr, translationStr].filter(
@@ -183,7 +193,10 @@ const TabDescription = ({
   // "5 Object types" in "en-GB" filtered by "search query" available to "Premium, PC" at "27th August 2020"
 };
 
-const generateNewTab = (name: string): Tab => ({
+const generateNewTab = (
+  name: string,
+  filters?: Partial<SearchFilters>,
+): Tab => ({
   name,
   filters: {
     query: "",
@@ -192,42 +205,21 @@ const generateNewTab = (name: string): Tab => ({
       dimensions: null,
       timeTravel: null,
     },
+    ...filters,
   },
+  columnsState: undefined,
 });
 
-const Tab = ({
-  active,
-  name,
-  onClick,
-}: {
-  active?: boolean;
-  name?: string;
-  onClick: () => void;
-}) => {
-  return (
-    <div className={clsx("group relative", active && "z-10")}>
-      <button
-        className={clsx(
-          "group flex w-20 min-w-32 items-center justify-start rounded rounded-b-none border px-2 pr-1",
-          active
-            ? "h-9 border-b-transparent bg-manatee-50 text-black shadow-sm"
-            : "h-8 bg-manatee-200 text-manatee-600 transition-colors group-hover:bg-manatee-300 group-hover:text-black",
-        )}
-        onClick={onClick}
-      >
-        {name || `Tab 1`}
-      </button>
-      <div className="absolute bottom-0 right-2 top-0 hidden items-center pl-1 group-hover:flex">
-        <Button
-          variant="ghost"
-          className="group/circle text-manatee-700 hover:text-black"
-        >
-          <CrossCircle className="h-5 w-5 rounded-full bg-manatee-300 transition-colors group-hover/circle:bg-manatee-400" />
-        </Button>
-      </div>
-    </div>
-  );
-};
+const initialTabs = [
+  generateNewTab("Default View"),
+  // generateNewTab("Images", {
+  //   objectTypes: [BuiltInSkylarkObjectType.SkylarkImage],
+  // }),
+  generateNewTab("Availability", {
+    objectTypes: [BuiltInSkylarkObjectType.Availability],
+    language: null,
+  }),
+];
 
 const TabOverview = ({
   className,
@@ -305,7 +297,7 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
     setTabs(
       tabsFromStorage && tabsFromStorage.length > 0
         ? tabsFromStorage
-        : [generateNewTab("Default view")],
+        : initialTabs,
     );
   }, []);
 
@@ -325,19 +317,13 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
     setTabs(updatedTabs || []);
   };
 
+  console.log({ activeTab });
+
   return (
     <>
       {tabs && (
         <div className="flex h-full max-h-full w-full flex-col">
           <div className="ml-2 mr-10 flex items-end justify-between space-x-px border-b border-b-manatee-50 pt-2 text-sm md:ml-6 md:pt-6 lg:ml-10">
-            {/* {tabs.map(({ name, filters }, i) => (
-              <Tab
-                key={i}
-                name={name || `Search ${i + 1}`}
-                active={activeTabIndex === i}
-                onClick={() => setActiveTab(i)}
-              />
-            ))} */}
             <div className="scrollbar-hidden overflow-scroll">
               <Tabs
                 tabs={tabs.map((tab, i) => tab?.name || `Search ${i + 1}`)}
@@ -377,12 +363,16 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
               }}
             />
           </div>
-          <div className="relative flex w-full grow overflow-hidden pl-2 pt-2 md:pl-6 md:pt-6 lg:pl-10">
+          <div className="relative flex w-full grow overflow-hidden pl-2 pt-1 md:pl-6 md:pt-2 lg:pl-10">
             <MemoizedObjectSearch
               key={activeTabIndex}
               {...props}
               initialFilters={activeTab?.filters}
+              initialColumnState={activeTab?.columnsState}
               onFilterChange={(filters) => onActiveTabChange({ filters })}
+              onColumnStateChange={(columnsState) =>
+                onActiveTabChange({ columnsState })
+              }
             />
           </div>
         </div>

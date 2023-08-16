@@ -1,4 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { RequestDocument, Variables } from "graphql-request";
 import { useEffect, useMemo } from "react";
 
@@ -18,6 +20,8 @@ import {
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 import { useAllObjectsMeta } from "./useSkylarkObjectTypes";
+
+dayjs.extend(utc);
 
 export interface SearchFilters {
   query: string;
@@ -76,7 +80,10 @@ export const useSearch = ({
 
     if (availability.timeTravel) {
       headers[REQUEST_HEADERS.ignoreTime] = "false";
-      headers[REQUEST_HEADERS.timeTravel] = availability.timeTravel;
+      // Send as UTC
+      headers[REQUEST_HEADERS.timeTravel] = dayjs(availability.timeTravel)
+        .utc()
+        .format();
     }
   }
 
