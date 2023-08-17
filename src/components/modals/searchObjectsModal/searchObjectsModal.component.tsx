@@ -5,8 +5,12 @@ import { GrClose } from "react-icons/gr";
 import { Button } from "src/components/button";
 import {
   ObjectSearch,
-  ObjectSearchColumnsState,
+  ObjectSearchInitialColumnsState,
 } from "src/components/objectSearch";
+import {
+  OBJECT_SEARCH_HARDCODED_COLUMNS,
+  OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+} from "src/components/objectSearch/results/columnConfiguration";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useCheckedObjectsState } from "src/hooks/state";
 import {
@@ -40,16 +44,16 @@ export const SearchObjectsModal = ({
     setCheckedObjects([]);
   };
 
-  const initialColumnState: Partial<ObjectSearchColumnsState> = {
-    visibility: columns
-      ? Object.fromEntries(
-          [OBJECT_LIST_TABLE.columnIds.displayField, ...columns].map(
-            (column) => [column, true],
-          ),
-        )
-      : undefined,
-    order: columns,
-    frozen: [OBJECT_LIST_TABLE.columnIds.displayField],
+  const initialColumnState: Partial<ObjectSearchInitialColumnsState> = {
+    columns: [
+      ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+      OBJECT_LIST_TABLE.columnIds.displayField,
+      ...(columns || []),
+    ],
+    frozen: [
+      ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+      OBJECT_LIST_TABLE.columnIds.displayField,
+    ],
   };
 
   return (

@@ -23,6 +23,7 @@ export enum SkylarkAvailabilityField {
   Start = "start",
   End = "end",
   Timezone = "timezone",
+  Title = "title",
 }
 
 export enum SkylarkSystemGraphQLType {

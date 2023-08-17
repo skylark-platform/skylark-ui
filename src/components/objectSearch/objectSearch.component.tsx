@@ -1,5 +1,6 @@
 import {
   ColumnOrderState,
+  ColumnSizingState,
   Updater,
   VisibilityState,
 } from "@tanstack/react-table";
@@ -34,10 +35,11 @@ import {
 } from "./results/objectSearchResults.component";
 import { Search } from "./search";
 
-export interface ObjectSearchColumnsState {
-  visibility: VisibilityState;
-  order: ColumnOrderState;
+export interface ObjectSearchInitialColumnsState {
+  columns: string[];
+  order?: string[];
   frozen: string[];
+  sizes?: ColumnSizingState;
 }
 
 export interface ObjectSearchProps {
@@ -46,13 +48,13 @@ export interface ObjectSearchProps {
   isPanelOpen?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
   initialFilters?: Partial<SearchFilters>;
-  initialColumnState?: Partial<ObjectSearchColumnsState>;
+  initialColumnState?: Partial<ObjectSearchInitialColumnsState>;
   hideSearchFilters?: boolean;
   setPanelObject?: ObjectSearchResultsProps["setPanelObject"];
   checkedObjects?: ObjectSearchResultsProps["checkedObjects"];
   onObjectCheckedChanged?: ObjectSearchResultsProps["onObjectCheckedChanged"];
   onFilterChange?: (f: SearchFilters) => void;
-  onColumnStateChange?: (c: ObjectSearchColumnsState) => void;
+  onColumnStateChange?: (c: ObjectSearchInitialColumnsState) => void;
 }
 
 const initialFrozenColumns = [
@@ -64,20 +66,13 @@ const initialFrozenColumns = [
 const generateColumnVisibility = (
   sortedHeaders: string[],
   existingColumnVisibility: Record<string, boolean>,
-  initialColumnVisibility?: Record<string, boolean>,
-  newColumnVisibility?: boolean,
+  initialVisibleColumns?: string[],
 ): VisibilityState => {
-  const defaultVisibility: boolean =
-    newColumnVisibility !== undefined ? newColumnVisibility : true;
-
   if (Object.keys(existingColumnVisibility).length === 0) {
     const columnVisibility = Object.fromEntries(
       sortedHeaders.map((header) => [
         header,
-        initialColumnVisibility
-          ? hasProperty(initialColumnVisibility, header) &&
-            initialColumnVisibility[header]
-          : defaultVisibility,
+        initialVisibleColumns ? initialVisibleColumns.includes(header) : true,
       ]),
     );
 
@@ -89,84 +84,15 @@ const generateColumnVisibility = (
       header,
       hasProperty(existingColumnVisibility, header)
         ? existingColumnVisibility[header]
-        : defaultVisibility,
+        : true,
     ]),
   );
 
   return columnVisibility;
 };
 
-const parseInitialColumnState = (
-  sortedHeaders: string[],
-  initialState?: Partial<ObjectSearchColumnsState>,
-): ObjectSearchColumnsState => {
-  const visibility = generateColumnVisibility(
-    sortedHeaders,
-    {},
-    initialState?.visibility,
-    initialState?.visibility ? false : undefined,
-  );
-
-  const frozen = initialState?.frozen
-    ? [
-        ...new Set([
-          ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
-          ...initialState.frozen,
-        ]),
-      ]
-    : initialFrozenColumns;
-
-  const order = initialState?.order
-    ? [...new Set([...frozen, ...initialState.order])]
-    : [];
-  console.log("init", {
-    visibility,
-    frozen,
-    order,
-  });
-  return {
-    visibility,
-    frozen,
-    order,
-  };
-};
-
-const handleUpdatedColumnState = (
-  updaters: Partial<{
-    visibility: Updater<VisibilityState>;
-    order: Updater<ColumnOrderState>;
-    frozen: string[];
-  }>,
-  previousState: ObjectSearchColumnsState,
-): ObjectSearchColumnsState => {
-  const updatedState: Partial<ObjectSearchColumnsState> = {};
-
-  if (updaters.visibility) {
-    const visibility =
-      updaters.visibility instanceof Function
-        ? updaters.visibility(previousState.visibility)
-        : updaters.visibility;
-
-    updatedState.visibility = visibility;
-  }
-
-  if (updaters.order) {
-    const order =
-      updaters.order instanceof Function
-        ? updaters.order(previousState.order)
-        : updaters.order;
-
-    updatedState.order = order;
-  }
-
-  if (updaters.frozen) {
-    updatedState.frozen = updaters.frozen;
-  }
-
-  return {
-    ...previousState,
-    ...updatedState,
-  };
+const handleUpdater = function <T>(updater: Updater<T>, prevValue: T) {
+  return updater instanceof Function ? updater(prevValue) : updater;
 };
 
 export const ObjectSearch = (props: ObjectSearchProps) => {
@@ -284,21 +210,85 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     [sortedHeaders, withObjectSelect, withPanel],
   );
 
-  const [columnState, setColumnState] = useState<ObjectSearchColumnsState>(
-    parseInitialColumnState(sortedHeaders, initialColumnState),
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    // Object.fromEntries(
+    //   sortedHeaders.map((header) => [
+    //     header,
+    //     initialColumnState?.visible
+    //       ? initialColumnState.visible.includes(header)
+    //       : true,
+    //   ]),
+    // ),
+    generateColumnVisibility(sortedHeaders, {}, initialColumnState?.columns),
   );
 
-  const setColumnStateWrapper = (
-    updaters: Partial<{
-      visibility: Updater<VisibilityState>;
-      order: Updater<ColumnOrderState>;
-      frozen: string[];
-    }>,
-  ) => {
-    const updatedState = handleUpdatedColumnState(updaters, columnState);
+  const [frozenColumns, setFrozenColumns] = useState<string[]>(
+    initialColumnState?.frozen || initialFrozenColumns,
+  );
 
-    setColumnState(updatedState);
-    onColumnStateChange?.(updatedState);
+  const [stateColumnOrder, setColumnOrder] = useState<ColumnOrderState>(
+    initialColumnState?.order || initialColumnState?.columns || [],
+  );
+
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(
+    initialColumnState?.sizes || {},
+  );
+
+  const handleColumnStateChange = ({
+    columnOrderUpdater,
+    columnVisibilityUpdater,
+    columnSizingUpdater,
+    updatedFrozenColumns,
+  }: Partial<{
+    columnOrderUpdater: Updater<ColumnOrderState>;
+    columnVisibilityUpdater: Updater<VisibilityState>;
+    columnSizingUpdater: Updater<ColumnSizingState>;
+    updatedFrozenColumns: string[];
+  }>) => {
+    if (columnOrderUpdater) {
+      setColumnOrder((prevColumnOrder) =>
+        handleUpdater(columnOrderUpdater, prevColumnOrder),
+      );
+    }
+
+    if (columnVisibilityUpdater) {
+      setColumnVisibility((prevVisibility) =>
+        handleUpdater(columnVisibilityUpdater, prevVisibility),
+      );
+    }
+
+    if (columnSizingUpdater) {
+      setColumnSizing((prevColumnSizing) =>
+        handleUpdater(columnSizingUpdater, prevColumnSizing),
+      );
+    }
+
+    if (updatedFrozenColumns) {
+      setFrozenColumns(updatedFrozenColumns);
+    }
+
+    if (onColumnStateChange) {
+      const visibleColumns = Object.entries(
+        columnVisibilityUpdater
+          ? handleUpdater(columnVisibilityUpdater, columnVisibility)
+          : columnVisibility,
+      )
+        .filter(([, value]) => !!value)
+        .map(([key]) => key);
+
+      const updatedColumnState: ObjectSearchInitialColumnsState = {
+        order: columnOrderUpdater
+          ? handleUpdater(columnOrderUpdater, columnOrder)
+          : columnOrder,
+        columns: visibleColumns,
+        frozen: updatedFrozenColumns ? updatedFrozenColumns : frozenColumns,
+        sizes: columnSizingUpdater
+          ? handleUpdater(columnSizingUpdater, columnSizing)
+          : columnSizing,
+      };
+
+      onColumnStateChange(updatedColumnState);
+    }
   };
 
   const defaultColumnOrder = useMemo(
@@ -306,21 +296,19 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     [parsedTableColumns],
   );
   const columnOrder: ColumnOrderState =
-    columnState.order.length > 0 ? columnState.order : defaultColumnOrder;
+    stateColumnOrder.length > 0 ? stateColumnOrder : defaultColumnOrder;
 
   useEffect(() => {
-    const columnVisibility = columnState.visibility;
-
     // Update the column visibility when new fields are added / removed
     if (sortedHeaders && sortedHeaders.length !== 0) {
       if (Object.keys(columnVisibility).length === 0) {
-        setColumnStateWrapper({
-          visibility: generateColumnVisibility(
+        setColumnVisibility(
+          generateColumnVisibility(
             sortedHeaders,
             columnVisibility,
-            initialColumnState?.visibility,
+            initialColumnState?.columns,
           ),
-        });
+        );
         return;
       }
 
@@ -329,11 +317,11 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         columnVisibility,
       );
       if (!isObjectsDeepEqual(newColumnVisibility, columnVisibility)) {
-        setColumnStateWrapper({ visibility: newColumnVisibility });
+        setColumnVisibility(newColumnVisibility);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortedHeaders, columnState.visibility, initialColumnState?.visibility]);
+  }, [sortedHeaders, setColumnVisibility, initialColumnState?.columns]);
 
   if (searchError) console.error("Search Errors:", { searchError });
 
@@ -371,10 +359,10 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             onRefresh={refetch}
             columns={parsedTableColumns}
             columnIds={sortedHeaders}
-            visibleColumns={columnState.visibility}
+            visibleColumns={columnVisibility}
             hideFilters={props.hideSearchFilters}
-            onColumnVisibilityChange={(visibility) =>
-              setColumnStateWrapper({ visibility })
+            onColumnVisibilityChange={(columnVisibilityUpdater) =>
+              handleColumnStateChange({ columnVisibilityUpdater })
             }
           />
           <div className="mt-2 flex w-full justify-start pl-3 md:pl-7">
@@ -412,14 +400,22 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
             searchData={searchData}
-            columnVisibility={columnState.visibility}
-            setColumnVisibility={(visibility) =>
-              setColumnStateWrapper({ visibility })
+            columnVisibility={columnVisibility}
+            setColumnVisibility={(columnVisibilityUpdater) =>
+              handleColumnStateChange({ columnVisibilityUpdater })
             }
-            frozenColumns={columnState.frozen}
-            setFrozenColumns={(frozen) => setColumnStateWrapper({ frozen })}
-            columnOrder={columnState.order}
-            setColumnOrder={(order) => setColumnStateWrapper({ order })}
+            frozenColumns={frozenColumns}
+            setFrozenColumns={(updatedFrozenColumns) =>
+              handleColumnStateChange({ updatedFrozenColumns })
+            }
+            columnOrder={columnOrder}
+            setColumnOrder={(columnOrderUpdater) =>
+              handleColumnStateChange({ columnOrderUpdater })
+            }
+            columnSizing={columnSizing}
+            setColumnSizing={(columnSizingUpdater) =>
+              handleColumnStateChange({ columnSizingUpdater })
+            }
           />
         </div>
       )}

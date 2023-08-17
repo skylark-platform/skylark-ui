@@ -8,6 +8,7 @@ import {
   Header,
   ColumnOrderState,
   OnChangeFn,
+  ColumnSizingState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useRef, useState, useMemo, useCallback, memo } from "react";
@@ -49,10 +50,12 @@ export interface ObjectSearchResultsProps {
   columnVisibility: VisibilityState;
   columnOrder: ColumnOrderState;
   frozenColumns: string[];
+  columnSizing: ColumnSizingState;
   checkedObjects?: ParsedSkylarkObject[];
   setColumnVisibility: OnChangeFn<VisibilityState>;
   setColumnOrder: OnChangeFn<ColumnOrderState>;
   setFrozenColumns: (cols: string[]) => void;
+  setColumnSizing: OnChangeFn<ColumnSizingState>;
   onObjectCheckedChanged?: (o: ParsedSkylarkObject[]) => void;
 }
 
@@ -82,6 +85,7 @@ export const ObjectSearchResults = ({
   columnVisibility,
   columnOrder,
   frozenColumns,
+  columnSizing,
   panelObject,
   setPanelObject,
   searchData,
@@ -94,6 +98,7 @@ export const ObjectSearchResults = ({
   setColumnVisibility,
   setColumnOrder,
   setFrozenColumns,
+  setColumnSizing,
 }: ObjectSearchResultsProps) => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -247,9 +252,11 @@ export const ObjectSearchResults = ({
           showObjectTypeIndicator,
       },
       columnOrder,
+      columnSizing,
     },
     onColumnOrderChange: setColumnOrder,
     onColumnVisibilityChange: setColumnVisibility,
+    onColumnSizingChange: setColumnSizing,
     meta: {
       activeObject: panelObject || null,
       checkedRows,
@@ -291,14 +298,6 @@ export const ObjectSearchResults = ({
         .filter((num) => num > -1),
     [frozenColumns, visibleColumns],
   );
-
-  console.log({
-    frozenColumns,
-    frozenColumnsParsedColumnsIndexes,
-    visibleColumns,
-    tableColumns,
-    columnOrder,
-  });
 
   const headers = table.getHeaderGroups()[0].headers as Header<
     ParsedSkylarkObject,
@@ -357,7 +356,6 @@ export const ObjectSearchResults = ({
 
       if (type === "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS") {
         setShowFrozenColumnDropZones(true);
-        console.log("OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS", "start");
         setDisableTableEvents({
           hover: true,
           overflow: false,
@@ -375,7 +373,6 @@ export const ObjectSearchResults = ({
         event.active.data.current.type === "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS"
       ) {
         const dropzoneColumnId = event.over?.data.current?.columnId;
-        console.log({ event });
         if (dropzoneColumnId) {
           // When the frozen columns are changed, unfreeze any hidden columns and move to the right of the frozen columns
           const orderedVisibleColumns = [...visibleColumns].sort(

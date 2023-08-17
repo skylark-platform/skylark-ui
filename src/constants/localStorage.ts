@@ -4,7 +4,15 @@ export const LOCAL_STORAGE = {
     token: "skylark_beta_auth_token",
   },
   usedLanguages: "skylark:usedLanguages",
-  contentLibraryTabs: "skylark:contentLibraryTabs",
+  accountPrefixed: (accountId: string) => {
+    const prefix = `skylark:${accountId}`;
+    return {
+      contentLibrary: {
+        tabState: `${prefix}:contentLibrary:tabState`,
+        activeTabIndex: `${prefix}:contentLibrary:activeTabIndex`,
+      },
+    };
+  },
   graphiql: {
     theme: "graphiql:theme",
     tabState: "graphiql:tabState",

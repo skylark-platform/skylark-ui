@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 
 import { Button } from "src/components/button";
 import {
@@ -12,16 +12,23 @@ import {
 import { TextInput } from "src/components/inputs/textInput";
 import {
   MemoizedObjectSearch,
-  ObjectSearchColumnsState,
+  ObjectSearchInitialColumnsState,
   ObjectSearchProps,
 } from "src/components/objectSearch";
 import { CreateButtons } from "src/components/objectSearch/createButtons";
+import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "src/components/objectSearch/results/columnConfiguration";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { useUser } from "src/contexts/useUser";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { SearchFilters } from "src/hooks/useSearch";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
-import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
+import {
+  BuiltInSkylarkObjectType,
+  SkylarkAvailabilityField,
+  SkylarkSystemField,
+} from "src/interfaces/skylark";
 import {
   formatReadableDate,
   formatTimezone,
@@ -30,26 +37,57 @@ import {
 interface Tab {
   name?: string;
   filters: SearchFilters;
-  columnsState?: ObjectSearchColumnsState;
+  columnsState?: ObjectSearchInitialColumnsState;
 }
 
-const saveTabStateToStorage = (tabs: Tab[]) => {
-  localStorage.setItem(LOCAL_STORAGE.contentLibraryTabs, JSON.stringify(tabs));
+const saveTabStateToStorage = (
+  accountId: string,
+  { tabs, activeTabIndex }: Partial<{ tabs: Tab[]; activeTabIndex: number }>,
+) => {
+  if (tabs !== undefined) {
+    localStorage.setItem(
+      LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary.tabState,
+      JSON.stringify(tabs),
+    );
+  }
+
+  if (activeTabIndex !== undefined) {
+    localStorage.setItem(
+      LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary.activeTabIndex,
+      String(activeTabIndex),
+    );
+  }
 };
 
-const readTabStateFromStorage = () => {
-  const tabStateFromStorage = localStorage.getItem(
-    LOCAL_STORAGE.contentLibraryTabs,
+const readTabStateFromStorage = (accountId: string) => {
+  const valueFromStorage = localStorage.getItem(
+    LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary.tabState,
   );
 
-  if (!tabStateFromStorage) {
+  if (!valueFromStorage) {
     return null;
   }
 
   try {
-    return JSON.parse(tabStateFromStorage) as Tab[];
+    return JSON.parse(valueFromStorage) as Tab[];
   } catch (err) {
     return null;
+  }
+};
+
+const readActiveTabIndexFromStorage = (accountId: string): number => {
+  const valueFromStorage = localStorage.getItem(
+    LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary.activeTabIndex,
+  );
+
+  if (!valueFromStorage) {
+    return 0;
+  }
+
+  try {
+    return parseInt(valueFromStorage);
+  } catch (err) {
+    return 0;
   }
 };
 
@@ -161,10 +199,10 @@ const TabDescription = ({
     availabilityStr =
       renderedDimensions && renderedTimeTravel ? (
         <>
-          available {renderedDimensions} {renderedTimeTravel}{" "}
+          available {renderedDimensions} {renderedTimeTravel} users{" "}
         </>
       ) : (
-        <>available {renderedDimensions || renderedTimeTravel} </>
+        <>available {renderedDimensions || renderedTimeTravel} users </>
       );
   }
 
@@ -196,6 +234,7 @@ const TabDescription = ({
 const generateNewTab = (
   name: string,
   filters?: Partial<SearchFilters>,
+  columnsState?: ObjectSearchInitialColumnsState,
 ): Tab => ({
   name,
   filters: {
@@ -207,18 +246,37 @@ const generateNewTab = (
     },
     ...filters,
   },
-  columnsState: undefined,
+  columnsState,
 });
 
 const initialTabs = [
   generateNewTab("Default View"),
-  // generateNewTab("Images", {
-  //   objectTypes: [BuiltInSkylarkObjectType.SkylarkImage],
-  // }),
-  generateNewTab("Availability", {
-    objectTypes: [BuiltInSkylarkObjectType.Availability],
-    language: null,
-  }),
+  generateNewTab(
+    "Availability",
+    {
+      objectTypes: [BuiltInSkylarkObjectType.Availability],
+      language: null,
+    },
+    {
+      columns: [
+        ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+        OBJECT_LIST_TABLE.columnIds.displayField,
+        OBJECT_LIST_TABLE.columnIds.availability,
+        SkylarkAvailabilityField.Start,
+        SkylarkAvailabilityField.End,
+        SkylarkAvailabilityField.Timezone,
+        SkylarkSystemField.ExternalID,
+        SkylarkSystemField.UID,
+        SkylarkAvailabilityField.Title,
+        SkylarkSystemField.Slug,
+      ],
+      frozen: [
+        ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+        OBJECT_LIST_TABLE.columnIds.displayField,
+        OBJECT_LIST_TABLE.columnIds.availability,
+      ],
+    },
+  ),
 ];
 
 const TabOverview = ({
@@ -287,37 +345,58 @@ const TabOverview = ({
 };
 
 export const TabbedObjectSearch = (props: ObjectSearchProps) => {
-  const [activeTabIndex, setActiveTab] = useState(0);
+  const { accountId } = useUser();
 
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [tabs, setTabs] = useState<Tab[] | undefined>(undefined);
 
   useEffect(() => {
-    const tabsFromStorage = readTabStateFromStorage();
+    if (accountId) {
+      const tabsFromStorage = readTabStateFromStorage(accountId);
+      const activeIndex = readActiveTabIndexFromStorage(accountId);
 
-    setTabs(
-      tabsFromStorage && tabsFromStorage.length > 0
-        ? tabsFromStorage
-        : initialTabs,
-    );
-  }, []);
+      setTabs(
+        tabsFromStorage && tabsFromStorage.length > 0
+          ? tabsFromStorage
+          : initialTabs,
+      );
+      setActiveTabIndex(activeIndex);
+    } else {
+      setTabs(undefined);
+      setActiveTabIndex(0);
+    }
+  }, [accountId]);
 
   const activeTab = tabs?.[activeTabIndex];
 
-  const onActiveTabChange = (updatedTab: Partial<Tab>) => {
-    const updatedTabs = tabs?.map((tab, index) => {
-      if (index !== activeTabIndex) return tab;
+  const onActiveTabChange = useCallback(
+    (updatedTab: Partial<Tab>) => {
+      const updatedTabs =
+        tabs?.map((tab, index) => {
+          if (index !== activeTabIndex) return tab;
 
-      return {
-        ...tab,
-        ...updatedTab,
-      };
-    });
+          return {
+            ...tab,
+            ...updatedTab,
+          };
+        }) || [];
 
-    saveTabStateToStorage(updatedTabs || []);
-    setTabs(updatedTabs || []);
+      if (accountId) {
+        saveTabStateToStorage(accountId, { tabs: updatedTabs });
+      }
+      setTabs(updatedTabs || []);
+    },
+    [accountId, activeTabIndex, tabs],
+  );
+
+  const onActiveTabIndexChange = (newIndex: number) => {
+    if (accountId) {
+      saveTabStateToStorage(accountId, { activeTabIndex: newIndex });
+    }
+    setActiveTabIndex(newIndex);
   };
 
-  console.log({ activeTab });
+  console.log("YYY", { activeTab });
 
   return (
     <>
@@ -328,7 +407,7 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
               <Tabs
                 tabs={tabs.map((tab, i) => tab?.name || `Search ${i + 1}`)}
                 selectedTab={activeTab?.name || `Search ${activeTabIndex + 1}`}
-                onChange={({ index }) => setActiveTab(index)}
+                onChange={({ index }) => onActiveTabIndexChange(index)}
               />
             </div>
             <button
@@ -340,7 +419,7 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
                   );
                   return existingTabs ? [...existingTabs, newTab] : [newTab];
                 });
-                setActiveTab(tabs.length);
+                setActiveTabIndex(tabs.length);
               }}
             >
               <Plus className="mr-2 h-3 w-3" />
