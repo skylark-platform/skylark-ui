@@ -33,7 +33,7 @@ export const Tabs = ({
               selectedTab === tab
                 ? "border-black text-black"
                 : "border-transparent text-gray-400",
-              "max-w-52 overflow-hidden text-ellipsis",
+              "min-w-10 max-w-52 overflow-hidden text-ellipsis",
             )}
           >
             {tab}

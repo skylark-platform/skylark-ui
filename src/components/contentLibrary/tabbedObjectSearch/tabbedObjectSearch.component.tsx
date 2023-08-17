@@ -8,6 +8,7 @@ import {
   CrossSquare,
   Edit,
   Plus,
+  Trash,
 } from "src/components/icons";
 import { TextInput } from "src/components/inputs/textInput";
 import {
@@ -283,10 +284,12 @@ const TabOverview = ({
   className,
   tab,
   onTabRename,
+  onTabDelete,
 }: {
   className?: string;
   tab: Tab | null;
   onTabRename: (name: string) => void;
+  onTabDelete: () => void;
 }) => {
   const [updatedName, setUpdatedName] = useState<string | null>(null);
 
@@ -305,6 +308,7 @@ const TabOverview = ({
                 <Button
                   variant="ghost"
                   className="text-success"
+                  disabled={updatedName.length === 0}
                   onClick={() => {
                     onTabRename(updatedName);
                     setUpdatedName(null);
@@ -334,6 +338,13 @@ const TabOverview = ({
                 >
                   <Edit className="h-4 w-4" />
                 </Button>
+                <Button
+                  variant="ghost"
+                  className="text-manatee-400 hover:text-error"
+                  onClick={onTabDelete}
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
               </>
             )}
           </div>
@@ -360,7 +371,7 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
           ? tabsFromStorage
           : initialTabs,
       );
-      setActiveTabIndex(activeIndex);
+      setActiveTabIndex(activeIndex || 0);
     } else {
       setTabs(undefined);
       setActiveTabIndex(0);
@@ -384,7 +395,7 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
       if (accountId) {
         saveTabStateToStorage(accountId, { tabs: updatedTabs });
       }
-      setTabs(updatedTabs || []);
+      setTabs(updatedTabs);
     },
     [accountId, activeTabIndex, tabs],
   );
@@ -396,7 +407,22 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
     setActiveTabIndex(newIndex);
   };
 
-  console.log("YYY", { activeTab });
+  const deleteActiveTab = () => {
+    if (tabs) {
+      const updatedTabs = [...tabs];
+      updatedTabs.splice(activeTabIndex, 1);
+
+      if (updatedTabs.length === 0) {
+        updatedTabs.push(...initialTabs);
+      }
+
+      if (accountId) {
+        saveTabStateToStorage(accountId, { tabs: updatedTabs });
+      }
+      setTabs(updatedTabs);
+      setActiveTabIndex(activeTabIndex > 0 ? activeTabIndex - 1 : 0);
+    }
+  };
 
   return (
     <>
@@ -431,6 +457,7 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
               tab={activeTab || null}
               className="ml-16"
               onTabRename={(name) => onActiveTabChange({ name })}
+              onTabDelete={deleteActiveTab}
             />
             <CreateButtons
               className={clsx(

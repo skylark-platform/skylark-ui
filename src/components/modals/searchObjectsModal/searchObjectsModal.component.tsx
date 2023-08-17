@@ -7,10 +7,7 @@ import {
   ObjectSearch,
   ObjectSearchInitialColumnsState,
 } from "src/components/objectSearch";
-import {
-  OBJECT_SEARCH_HARDCODED_COLUMNS,
-  OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
-} from "src/components/objectSearch/results/columnConfiguration";
+import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "src/components/objectSearch/results/columnConfiguration";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useCheckedObjectsState } from "src/hooks/state";
 import {
