@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-table";
 
 import { AvailabilityLabel } from "src/components/availability";
+import { ExternalLink } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
@@ -431,9 +432,20 @@ export const createObjectListingColumns = (
               return <span className="text-error">{value}</span>;
             }
 
-            if (graphqlFieldConfig?.type === "url") {
+            // Make URLs clickable to a new tab, little bit hardcoded to handle the SkylarkImage object
+            if (
+              graphqlFieldConfig?.type === "url" ||
+              (object.objectType === BuiltInSkylarkObjectType.SkylarkImage &&
+                ["url", "external_url"].includes(column))
+            ) {
               return (
-                <a href={value} target="_blank" rel="noreferrer">
+                <a
+                  className="text-brand-primary hover:underline"
+                  href={value}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {value}
                 </a>
               );
