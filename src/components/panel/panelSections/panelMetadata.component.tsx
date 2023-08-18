@@ -135,37 +135,6 @@ export const PanelMetadata = ({
                   );
                 }
 
-                if (
-                  objectType === BuiltInSkylarkObjectType.Availability &&
-                  field === SkylarkAvailabilityField.Timezone
-                ) {
-                  return (
-                    <SkylarkObjectFieldInput
-                      idPrefix="panel-metadata"
-                      isLoading={isLoading}
-                      key={field}
-                      field={field}
-                      config={{
-                        name: "",
-                        type: "string",
-                        originalType: "String",
-                        isList: false,
-                        isRequired: false,
-                      }}
-                      control={control}
-                      register={register}
-                      value={getValues(field)}
-                      formState={formState}
-                      additionalRequiredFields={requiredFields}
-                      fieldConfigFromObject={{
-                        name: "",
-                        fieldType: "TIMEZONE",
-                        position: 0,
-                      }}
-                    />
-                  );
-                }
-
                 return (
                   <PanelMetadataProperty
                     key={field}

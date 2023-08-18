@@ -287,7 +287,7 @@ test("renders search results with language as null (no default)", async () => {
 });
 
 test("opens filters and deselects all object types", async () => {
-  render(<ObjectSearch defaultColumns={["uid"]} />);
+  render(<ObjectSearch initialColumnState={{ columns: ["uid"] }} />);
 
   await screen.findByText("Display field"); // Search for table header
 
@@ -329,7 +329,9 @@ test("manually filters to only en-gb translated objects", async () => {
 
   render(
     <ObjectSearch
-      defaultColumns={["uid", OBJECT_LIST_TABLE.columnIds.translation]}
+      initialColumnState={{
+        columns: ["uid", OBJECT_LIST_TABLE.columnIds.translation],
+      }}
     />,
   );
 
@@ -374,7 +376,9 @@ test("manually filters to only en-gb translated objects", async () => {
 test("automatically filters to only en-gb translated objects as its the user/account's default language", async () => {
   await render(
     <ObjectSearch
-      defaultColumns={["uid", OBJECT_LIST_TABLE.columnIds.translation]}
+      initialColumnState={{
+        columns: ["uid", OBJECT_LIST_TABLE.columnIds.translation],
+      }}
     />,
   );
 
@@ -404,7 +408,9 @@ test("clears the language filter", async () => {
   // Arrange
   render(
     <ObjectSearch
-      defaultColumns={["uid", OBJECT_LIST_TABLE.columnIds.translation]}
+      initialColumnState={{
+        columns: ["uid", OBJECT_LIST_TABLE.columnIds.translation],
+      }}
     />,
   );
 

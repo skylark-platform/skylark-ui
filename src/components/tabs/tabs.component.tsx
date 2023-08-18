@@ -106,8 +106,6 @@ export const ScrollableTabs = ({
     initialScrollPosition || 0,
   );
 
-  console.log({ scrollPosition });
-
   const containerWidth = containerRef.current?.clientWidth || 0;
   const scrollWidth = containerRef.current?.scrollWidth || containerWidth || 0;
 

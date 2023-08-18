@@ -35,6 +35,9 @@ import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObjectConfig,
   SkylarkGraphQLObjectConfig,
+  SkylarkObjectType,
+  SkylarkAvailabilityField,
+  ParsedSkylarkObjectConfigFieldConfig,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -87,6 +90,7 @@ const parseObjectInputType = (
 };
 
 export const parseObjectInputFields = (
+  objectType: SkylarkObjectType,
   introspectionFields: readonly (
     | IntrospectionField
     | IntrospectionInputValue
@@ -132,6 +136,22 @@ export const parseObjectInputFields = (
         isRequired: input.type.kind === "NON_NULL",
       };
     });
+
+  // Override for the Availability Timezone input
+  if (
+    objectType === BuiltInSkylarkObjectType.Availability &&
+    parsedInputs.findIndex(
+      ({ name }) => name === SkylarkAvailabilityField.Timezone,
+    ) === -1
+  ) {
+    parsedInputs.push({
+      name: SkylarkAvailabilityField.Timezone,
+      type: "string",
+      originalType: "String",
+      isList: false,
+      isRequired: false,
+    });
+  }
 
   return parsedInputs;
 };
@@ -184,6 +204,7 @@ const parseObjectAvailability = (
 };
 
 export const parseObjectConfig = (
+  objectType: string,
   unparsedConfig?: SkylarkGraphQLObjectConfig,
 ): ParsedSkylarkObjectConfig => {
   const fieldConfig: ParsedSkylarkObjectConfig["fieldConfig"] =
@@ -195,12 +216,42 @@ export const parseObjectConfig = (
       }))
       .sort((a, b) => a.position - b.position);
 
-  return {
+  const objectConfig = {
     colour: unparsedConfig?.colour,
     primaryField: unparsedConfig?.primary_field,
     objectTypeDisplayName: unparsedConfig?.display_name,
     fieldConfig,
   };
+
+  // Override for the Availability Timezone input
+  if (fieldConfig && objectType === BuiltInSkylarkObjectType.Availability) {
+    const timezoneConfig = fieldConfig.find(
+      ({ name }) => name === SkylarkAvailabilityField.Timezone,
+    );
+
+    if (timezoneConfig) {
+      // If timezone config is already defined, ensure its the TIMEZONE field type
+      const updatedFieldConfig = fieldConfig.map(
+        (config): ParsedSkylarkObjectConfigFieldConfig =>
+          config.name === SkylarkAvailabilityField.Timezone
+            ? { ...config, fieldType: "TIMEZONE" }
+            : config,
+      );
+
+      return {
+        ...objectConfig,
+        fieldConfig: updatedFieldConfig,
+      };
+    }
+
+    fieldConfig.push({
+      name: SkylarkAvailabilityField.Timezone,
+      fieldType: "TIMEZONE",
+      position: 50,
+    });
+  }
+
+  return objectConfig;
 };
 
 export const parseObjectRelationship = <T>(
@@ -224,7 +275,7 @@ export const parseObjectContent = (
       return {
         objectType: object.__typename,
         position,
-        config: parseObjectConfig(object._config),
+        config: parseObjectConfig(object.__typename, object._config),
         meta: {
           language: object._meta?.language_data.language || "",
           availableLanguages: object._meta?.available_languages || [],
@@ -290,7 +341,7 @@ export const parseSkylarkObject = (
     object && {
       objectType: object.__typename,
       uid: object.uid,
-      config: parseObjectConfig(object._config),
+      config: parseObjectConfig(object.__typename, object._config),
       meta: {
         language: object._meta?.language_data.language || "",
         availableLanguages: object._meta?.available_languages || [],
@@ -378,6 +429,7 @@ export const parseInputFieldValue = (
 };
 
 export const parseMetadataForGraphQLRequest = (
+  objectType: SkylarkObjectType,
   metadata: Record<string, SkylarkObjectMetadataField>,
   inputFields: NormalizedObjectField[],
 ) => {
@@ -405,6 +457,31 @@ export const parseMetadataForGraphQLRequest = (
       }
 
       const parsedFieldValue = parseInputFieldValue(value, input.type);
+
+      if (objectType === BuiltInSkylarkObjectType.Availability) {
+        // Never send the Timezone field that we add manually
+        if (input.name === SkylarkAvailabilityField.Timezone) {
+          return undefined;
+        }
+
+        // Append Timezone onto Availability Start and End values
+        if (
+          typeof parsedFieldValue === "string" &&
+          hasProperty(metadata, SkylarkAvailabilityField.Timezone) &&
+          (input.name === SkylarkAvailabilityField.Start ||
+            input.name === SkylarkAvailabilityField.End)
+        ) {
+          const parsedFieldValueWithZRemoved = parsedFieldValue
+            .toUpperCase()
+            .endsWith("Z")
+            ? parsedFieldValue.slice(0, -1)
+            : parsedFieldValue;
+
+          const parsedDateFieldWithTimezone = `${parsedFieldValueWithZRemoved}${metadata.timezone}`;
+          return [key, parsedDateFieldWithTimezone];
+        }
+      }
+
       return [key, parsedFieldValue];
     })
     .filter((value) => value !== undefined) as [string, string | EnumType][];

@@ -39,6 +39,7 @@ const defaultType = {
 };
 
 describe("parseObjectInputFields", () => {
+  const objectType = "Episode";
   describe("tests the field type parser", () => {
     [
       {
@@ -116,6 +117,7 @@ describe("parseObjectInputFields", () => {
         };
 
         const [{ type: got }] = parseObjectInputFields(
+          objectType,
           [fields] as unknown as IntrospectionField[],
           {},
         );
@@ -139,6 +141,7 @@ describe("parseObjectInputFields", () => {
     };
 
     const got = parseObjectInputFields(
+      objectType,
       [fields] as unknown as IntrospectionField[],
       {},
     );
@@ -165,6 +168,7 @@ describe("parseObjectInputFields", () => {
     };
 
     const got = parseObjectInputFields(
+      objectType,
       [fields] as unknown as IntrospectionField[],
       {},
     );
@@ -191,6 +195,7 @@ describe("parseObjectInputFields", () => {
     };
 
     const got = parseObjectInputFields(
+      objectType,
       [fields] as unknown as IntrospectionField[],
       {},
     );
@@ -217,6 +222,7 @@ describe("parseObjectInputFields", () => {
     };
 
     const got = parseObjectInputFields(
+      objectType,
       [fields] as unknown as IntrospectionField[],
       {
         MyCustomEnum: {
@@ -257,6 +263,7 @@ describe("parseObjectInputFields", () => {
     };
 
     const got = parseObjectInputFields(
+      objectType,
       [fields] as unknown as IntrospectionField[],
       {
         MyCustomEnum: {
@@ -308,6 +315,7 @@ describe("parseObjectInputFields", () => {
     ];
 
     const got = parseObjectInputFields(
+      objectType,
       fields as unknown as IntrospectionField[],
       {},
     );
@@ -692,6 +700,8 @@ describe("parseInputFieldValue", () => {
 });
 
 describe("parseMetadataForGraphQLRequest", () => {
+  const objectType = "Episode";
+
   const inputFields: NormalizedObjectField[] = [
     {
       name: "title",
@@ -730,7 +740,11 @@ describe("parseMetadataForGraphQLRequest", () => {
       int: null,
       [SkylarkSystemField.ExternalID]: "",
     };
-    const got = parseMetadataForGraphQLRequest(metadata, inputFields);
+    const got = parseMetadataForGraphQLRequest(
+      objectType,
+      metadata,
+      inputFields,
+    );
     expect(got).toEqual({
       title: "",
     });
@@ -742,7 +756,11 @@ describe("parseMetadataForGraphQLRequest", () => {
       date: "2020-11-03",
       int: 2.5,
     };
-    const got = parseMetadataForGraphQLRequest(metadata, inputFields);
+    const got = parseMetadataForGraphQLRequest(
+      objectType,
+      metadata,
+      inputFields,
+    );
     expect(got).toEqual({
       title: "string",
       date: "2020-11-03+00:00",
@@ -757,7 +775,11 @@ describe("parseMetadataForGraphQLRequest", () => {
       int: 2.5,
       invalid: true,
     };
-    const got = parseMetadataForGraphQLRequest(metadata, inputFields);
+    const got = parseMetadataForGraphQLRequest(
+      objectType,
+      metadata,
+      inputFields,
+    );
     expect(got).toEqual({
       title: "string",
       date: "2020-11-03+00:00",

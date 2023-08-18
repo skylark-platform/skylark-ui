@@ -30,10 +30,7 @@ import {
   SkylarkAvailabilityField,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-import {
-  formatReadableDate,
-  formatTimezone,
-} from "src/lib/skylark/availability";
+import { formatReadableDate } from "src/lib/skylark/availability";
 
 interface Tab {
   id: string;
@@ -199,14 +196,9 @@ const TabDescription = ({
       <></>
     );
 
-    console.log({ timeTravel });
     const renderedTimeTravel = timeTravel ? (
       <>
-        on{" "}
-        <strong>
-          {formatReadableDate(timeTravel)} (
-          {formatTimezone(timeTravel, "short")})
-        </strong>
+        on <strong>{formatReadableDate(timeTravel)} (</strong>
       </>
     ) : (
       <></>

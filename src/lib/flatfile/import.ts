@@ -92,6 +92,7 @@ export const createFlatfileObjectsInSkylark = async (
         const operations = flatfileRows.reduce(
           (previousOperations, { id, data }) => {
             const parsedData = parseMetadataForGraphQLRequest(
+              objectType,
               data,
               skylarkObjectOperations.create.inputs,
             );
