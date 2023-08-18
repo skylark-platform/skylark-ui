@@ -10,9 +10,6 @@ import {
   ValidationRule,
 } from "react-hook-form";
 
-import { Button } from "src/components/button";
-import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
-import { ExternalLink } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { InputLabel } from "src/components/inputs/label/label.component";
 import { Select, TimezoneSelect } from "src/components/inputs/select";

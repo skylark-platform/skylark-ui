@@ -1,10 +1,10 @@
 import clsx from "clsx";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 import { Button } from "src/components/button";
 import {
   CheckSquare,
-  CrossCircle,
   CrossSquare,
   Edit,
   Plus,
@@ -18,7 +18,7 @@ import {
 } from "src/components/objectSearch";
 import { CreateButtons } from "src/components/objectSearch/createButtons";
 import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "src/components/objectSearch/results/columnConfiguration";
-import { Tabs } from "src/components/tabs/tabs.component";
+import { ScrollableTabs } from "src/components/tabs/tabs.component";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useUser } from "src/contexts/useUser";
@@ -36,6 +36,7 @@ import {
 } from "src/lib/skylark/availability";
 
 interface Tab {
+  id: string;
   name?: string;
   filters: SearchFilters;
   columnsState?: ObjectSearchInitialColumnsState;
@@ -43,7 +44,15 @@ interface Tab {
 
 const saveTabStateToStorage = (
   accountId: string,
-  { tabs, activeTabIndex }: Partial<{ tabs: Tab[]; activeTabIndex: number }>,
+  {
+    tabs,
+    activeTabIndex,
+    tabsScrollPosition,
+  }: Partial<{
+    tabs: Tab[];
+    activeTabIndex: number;
+    tabsScrollPosition: number;
+  }>,
 ) => {
   if (tabs !== undefined) {
     localStorage.setItem(
@@ -56,6 +65,14 @@ const saveTabStateToStorage = (
     localStorage.setItem(
       LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary.activeTabIndex,
       String(activeTabIndex),
+    );
+  }
+
+  if (tabsScrollPosition !== undefined) {
+    localStorage.setItem(
+      LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary
+        .tabsScrollPosition,
+      String(tabsScrollPosition),
     );
   }
 };
@@ -76,10 +93,8 @@ const readTabStateFromStorage = (accountId: string) => {
   }
 };
 
-const readActiveTabIndexFromStorage = (accountId: string): number => {
-  const valueFromStorage = localStorage.getItem(
-    LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary.activeTabIndex,
-  );
+const readIntFromLocalStorage = (name: string): number => {
+  const valueFromStorage = localStorage.getItem(name);
 
   if (!valueFromStorage) {
     return 0;
@@ -178,7 +193,7 @@ const TabDescription = ({
 
     const renderedDimensions = strDimensions ? (
       <>
-        to <strong>{prettifyStrArr(strDimensions)}</strong>
+        to <strong>{prettifyStrArr(strDimensions)}</strong> users
       </>
     ) : (
       <></>
@@ -200,17 +215,17 @@ const TabDescription = ({
     availabilityStr =
       renderedDimensions && renderedTimeTravel ? (
         <>
-          available {renderedDimensions} {renderedTimeTravel} users{" "}
+          available {renderedDimensions} {renderedTimeTravel}{" "}
         </>
       ) : (
-        <>available {renderedDimensions || renderedTimeTravel} users </>
+        <>available {renderedDimensions || renderedTimeTravel} </>
       );
   }
 
   return (
     <p
       className={clsx(
-        "text-sm text-manatee-500",
+        "text-xs text-manatee-500 md:text-sm",
         "[&>strong]:font-medium [&>strong]:text-black",
         "after:-ml-1 after:content-['.']",
       )}
@@ -234,9 +249,11 @@ const TabDescription = ({
 
 const generateNewTab = (
   name: string,
+  id?: string,
   filters?: Partial<SearchFilters>,
   columnsState?: ObjectSearchInitialColumnsState,
 ): Tab => ({
+  id: id || uuidv4(),
   name,
   filters: {
     query: "",
@@ -251,9 +268,10 @@ const generateNewTab = (
 });
 
 const initialTabs = [
-  generateNewTab("Default View"),
+  generateNewTab("Default View", "DEFAULT_VIEW"),
   generateNewTab(
     "Availability",
+    "DEFAULT_VIEW_AVAILABILITY",
     {
       objectTypes: [BuiltInSkylarkObjectType.Availability],
       language: null,
@@ -303,7 +321,7 @@ const TabOverview = ({
                 <TextInput
                   onChange={setUpdatedName}
                   value={updatedName}
-                  className="text-sm md:w-80 md:text-base lg:w-96"
+                  className="w-full text-sm md:w-80 md:text-base lg:w-96"
                 />
                 <Button
                   variant="ghost"
@@ -360,21 +378,34 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
 
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [tabs, setTabs] = useState<Tab[] | undefined>(undefined);
+  const [initialTabsScrollPosition, setInitialTabsScrollPosition] = useState(0);
 
   useEffect(() => {
     if (accountId) {
       const tabsFromStorage = readTabStateFromStorage(accountId);
-      const activeIndex = readActiveTabIndexFromStorage(accountId);
+      const activeIndex = readIntFromLocalStorage(
+        LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary.activeTabIndex,
+      );
+      const tabsScrollPosition = readIntFromLocalStorage(
+        LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary
+          .tabsScrollPosition,
+      );
 
       setTabs(
         tabsFromStorage && tabsFromStorage.length > 0
           ? tabsFromStorage
           : initialTabs,
       );
-      setActiveTabIndex(activeIndex || 0);
+      setActiveTabIndex(
+        tabsFromStorage && activeIndex && activeIndex < tabsFromStorage.length
+          ? activeIndex
+          : 0,
+      );
+      setInitialTabsScrollPosition(tabsScrollPosition || 0);
     } else {
       setTabs(undefined);
       setActiveTabIndex(0);
+      setInitialTabsScrollPosition(0);
     }
   }, [accountId]);
 
@@ -424,38 +455,53 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
     }
   };
 
+  const beforeSeparatorClassname =
+    "before:absolute before:left-0 before:h-6 before:w-px before:bg-manatee-200 before:content-['']";
+
   return (
     <>
       {tabs && (
         <div className="flex h-full max-h-full w-full flex-col">
-          <div className="ml-2 mr-10 flex items-end justify-between space-x-px border-b border-b-manatee-50 pt-2 text-sm md:ml-6 md:pt-6 lg:ml-10">
-            <div className="scrollbar-hidden overflow-scroll">
-              <Tabs
-                tabs={tabs.map((tab, i) => tab?.name || `Search ${i + 1}`)}
-                selectedTab={activeTab?.name || `Search ${activeTabIndex + 1}`}
+          <div className="md:mx-6 md:pt-4 lg:mx-10">
+            <div className="flex w-full items-end justify-between space-x-px border-b border-b-manatee-50 text-sm">
+              <ScrollableTabs
+                key={accountId}
+                initialScrollPosition={initialTabsScrollPosition}
+                tabs={tabs.map((tab, i) => ({
+                  name: tab?.name || `View ${i + 1}`,
+                  id: tab.id,
+                }))}
+                selectedTab={activeTab?.name || `View ${activeTabIndex + 1}`}
                 onChange={({ index }) => onActiveTabIndexChange(index)}
+                onScroll={({ scrollLeft: tabsScrollPosition }) =>
+                  accountId &&
+                  saveTabStateToStorage(accountId, { tabsScrollPosition })
+                }
               />
+              <button
+                className={clsx(
+                  "relative flex items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 pb-3 pt-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black",
+                  beforeSeparatorClassname,
+                )}
+                onClick={() => {
+                  setTabs((existingTabs) => {
+                    const newTab = generateNewTab(
+                      `View ${existingTabs ? existingTabs.length + 1 : 1}`,
+                    );
+                    return existingTabs ? [...existingTabs, newTab] : [newTab];
+                  });
+                  setActiveTabIndex(tabs.length);
+                }}
+              >
+                <Plus className="h-3 w-3 sm:mr-2" />
+                <span className="hidden sm:inline">Add view</span>
+              </button>
             </div>
-            <button
-              className="flex items-center justify-start whitespace-nowrap rounded rounded-b-none px-2 pb-3 pt-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black"
-              onClick={() => {
-                setTabs((existingTabs) => {
-                  const newTab = generateNewTab(
-                    `View ${existingTabs ? existingTabs.length + 1 : 1}`,
-                  );
-                  return existingTabs ? [...existingTabs, newTab] : [newTab];
-                });
-                setActiveTabIndex(tabs.length);
-              }}
-            >
-              <Plus className="mr-2 h-3 w-3" />
-              <span>Add view</span>
-            </button>
           </div>
-          <div className="mb-2 mr-8 mt-4 flex justify-between">
+          <div className="mb-2 mr-2 mt-4 flex justify-between md:mr-8">
             <TabOverview
               tab={activeTab || null}
-              className="ml-16"
+              className="ml-2 md:ml-12 lg:ml-16"
               onTabRename={(name) => onActiveTabChange({ name })}
               onTabDelete={deleteActiveTab}
             />

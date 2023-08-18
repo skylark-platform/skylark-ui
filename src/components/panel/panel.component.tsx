@@ -257,7 +257,7 @@ export const Panel = ({
           PanelTab.AvailabilityDimensions,
         objectMeta?.name === BuiltInSkylarkObjectType.Availability &&
           PanelTab.AvailabilityAssignedTo,
-      ].filter((tab) => !!tab) as PanelTab[],
+      ].filter((tab): tab is PanelTab => !!tab),
     [
       objectMeta?.hasAvailability,
       objectMeta?.hasContent,
@@ -500,7 +500,7 @@ export const Panel = ({
           <Tabs
             tabs={tabs}
             selectedTab={selectedTab}
-            onChange={({ index }) => setSelectedTab(tabs[index])}
+            onChange={({ name }) => setSelectedTab(name as PanelTab)}
             disabled={tabs.length === 0 || inEditMode || isError}
             className="px-2 md:px-4"
           />

@@ -5,11 +5,12 @@ export const LOCAL_STORAGE = {
   },
   usedLanguages: "skylark:usedLanguages",
   accountPrefixed: (accountId: string) => {
-    const prefix = `skylark:${accountId}`;
+    const prefix = `skylark:${accountId}:contentLibrary`;
     return {
       contentLibrary: {
-        tabState: `${prefix}:contentLibrary:tabState`,
-        activeTabIndex: `${prefix}:contentLibrary:activeTabIndex`,
+        tabState: `${prefix}:tabState`,
+        activeTabIndex: `${prefix}:activeTabIndex`,
+        tabsScrollPosition: `${prefix}:tabsScrollPosition`,
       },
     };
   },
