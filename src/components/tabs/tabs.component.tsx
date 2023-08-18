@@ -45,7 +45,7 @@ export const Tabs = ({
               className={clsx(
                 "-mb-[2px] w-full whitespace-nowrap rounded-t border-b-2 p-1 pb-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary md:pb-3",
                 !disabled && "hover:border-black hover:text-black",
-                selectedTab === (tab?.id || tab.name)
+                selectedTab === tab.id
                   ? "border-black text-black"
                   : "border-transparent text-gray-400",
                 "min-w-10 max-w-52 overflow-hidden text-ellipsis",

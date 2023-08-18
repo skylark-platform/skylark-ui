@@ -198,7 +198,7 @@ const TabDescription = ({
 
     const renderedTimeTravel = timeTravel ? (
       <>
-        on <strong>{formatReadableDate(timeTravel)} (</strong>
+        on <strong>{formatReadableDate(timeTravel)}</strong>
       </>
     ) : (
       <></>
@@ -222,9 +222,6 @@ const TabDescription = ({
         "after:-ml-1 after:content-['.']",
       )}
     >
-      {/* {[objectTypeStr, queryStr, availabilityStr, translationStr].filter(
-        (str) => !!str,
-      )} */}
       {objectTypeStr}
       {queryStr}
       {availabilityStr}
@@ -463,7 +460,7 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
                   name: tab?.name || `View ${i + 1}`,
                   id: tab.id,
                 }))}
-                selectedTab={activeTab?.name || `View ${activeTabIndex + 1}`}
+                selectedTab={activeTab?.id || ""}
                 onChange={({ index }) => onActiveTabIndexChange(index)}
                 onScroll={({ scrollLeft: tabsScrollPosition }) =>
                   accountId &&

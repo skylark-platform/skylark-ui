@@ -16,8 +16,12 @@ import {
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectImageRelationship,
+  SkylarkAvailabilityField,
 } from "src/interfaces/skylark";
-import { formatReadableDate } from "src/lib/skylark/availability";
+import {
+  formatReadableDate,
+  is2038Problem,
+} from "src/lib/skylark/availability";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
   addCloudinaryOnTheFlyImageTransformation,
@@ -25,6 +29,8 @@ import {
   getObjectDisplayName,
   hasProperty,
 } from "src/lib/utils";
+
+type ObjectSearchTableData = ParsedSkylarkObject & Record<string, string>;
 
 export const OBJECT_SEARCH_HARDCODED_COLUMNS = [
   OBJECT_LIST_TABLE.columnIds.displayField,
@@ -59,10 +65,12 @@ export const columnsWithoutResize = [
   OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
 ];
 
-const isRowChecked = (cell: Cell<object, unknown>, table: Table<object>) =>
-  Boolean(table.options.meta?.checkedRows?.includes(cell.row.index));
+const isRowChecked = (
+  cell: Cell<ObjectSearchTableData, unknown>,
+  table: Table<ObjectSearchTableData>,
+) => Boolean(table.options.meta?.checkedRows?.includes(cell.row.index));
 
-const columnHelper = createColumnHelper<object>();
+const columnHelper = createColumnHelper<ObjectSearchTableData>();
 
 // Issues with Safari means its safe to allow the drag icon have it's own column than use a pseudo field
 const dragIconColumn = columnHelper.display({
@@ -78,7 +86,7 @@ const dragIconColumn = columnHelper.display({
       .getColumn(OBJECT_LIST_TABLE.columnIds.objectTypeIndicator)
       ?.getIsVisible();
 
-    const original = row.original as ParsedSkylarkObject;
+    const original = row.original;
     const cellContext = cell.getContext();
 
     const { config }: { config: ParsedSkylarkObjectConfig | null } =
@@ -380,7 +388,60 @@ export const createObjectListingColumns = (
         header: formatObjectField(column),
         size: 200,
         minSize: 100,
-        cell: (props) => <>{props.cell.getValue() as string}</>,
+        cell: ({ cell, table, row: { original: object } }) => {
+          const allObjectsMeta = table.options.meta?.objectsMeta;
+          const value = cell.getValue();
+
+          if (allObjectsMeta) {
+            const objectMeta = allObjectsMeta?.find(
+              ({ name }) => name === object.objectType,
+            );
+            const graphqlFieldConfig =
+              objectMeta?.operations.create.inputs.find(
+                ({ name }) => name === column,
+              ) || objectMeta?.fields.find(({ name }) => name === column);
+
+            // Pretty format dates
+            if (
+              graphqlFieldConfig?.type === "datetime" ||
+              graphqlFieldConfig?.type === "date" ||
+              graphqlFieldConfig?.type === "timestamp"
+            ) {
+              return (
+                <>
+                  {is2038Problem(value) ? "Never" : formatReadableDate(value)}
+                </>
+              );
+            }
+
+            // Align numbers to the right
+            if (
+              graphqlFieldConfig?.type === "float" ||
+              graphqlFieldConfig?.type === "int"
+            ) {
+              return <span className="mr-1 block text-right">{value}</span>;
+            }
+
+            // Its possible for enum values to be removed from the Schema but exist as values, we can flag these as red
+            if (
+              graphqlFieldConfig?.type === "enum" &&
+              graphqlFieldConfig.enumValues &&
+              !graphqlFieldConfig.enumValues.includes(value)
+            ) {
+              return <span className="text-error">{value}</span>;
+            }
+
+            if (graphqlFieldConfig?.type === "url") {
+              return (
+                <a href={value} target="_blank" rel="noreferrer">
+                  {value}
+                </a>
+              );
+            }
+          }
+
+          return <>{value}</>;
+        },
       }),
     );
 

@@ -16,7 +16,10 @@ import { VirtualItem, defaultRangeExtractor, useVirtual } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { PanelTab } from "src/hooks/state";
-import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
+import {
+  useAllObjectsMeta,
+  useSkylarkObjectTypesWithConfig,
+} from "src/hooks/useSkylarkObjectTypes";
 import {
   SkylarkObjectIdentifier,
   ParsedSkylarkObject,
@@ -103,6 +106,8 @@ export const ObjectSearchResults = ({
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+
+  const { objects: objectsMeta } = useAllObjectsMeta(true);
 
   const formattedSearchData = useMemo(() => {
     const searchDataWithDisplayField = searchData?.map((obj) => {
@@ -261,6 +266,7 @@ export const ObjectSearchResults = ({
       activeObject: panelObject || null,
       checkedRows,
       objectTypesWithConfig,
+      objectsMeta,
       onRowCheckChange,
       batchCheckRows,
       onObjectClick: setPanelObject,
