@@ -92,6 +92,7 @@ export const GraphiQLEditor = ({
       query={query}
       onEditQuery={setExplorerQuery}
       plugins={[explorerPlugin]}
+      // storage={}
       fetcher={fetcher}
       shouldPersistHeaders={true}
       defaultHeaders={JSON.stringify({

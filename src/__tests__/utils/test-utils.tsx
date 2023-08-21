@@ -26,17 +26,32 @@ const AllTheProviders = ({ children }: { children: ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <PlausibleProvider domain={""} enabled={false}>
-        <DndContext>
-          <UserProvider>
-            <LazyMotion features={domMax}>{children}</LazyMotion>
-          </UserProvider>
-        </DndContext>
+        <UserProvider>
+          <LazyMotion features={domMax}>{children}</LazyMotion>
+        </UserProvider>
       </PlausibleProvider>
     </QueryClientProvider>
   );
 };
 
+const AllTheProvidersPlusDND = ({ children }: { children: ReactNode }) => {
+  return (
+    <AllTheProviders>
+      <DndContext>{children}</DndContext>
+    </AllTheProviders>
+  );
+};
+
 const customRender = (
+  ui: ReactElement,
+  options?: Omit<RenderOptions, "wrapper">,
+) => ({
+  user: userEvent.setup(),
+  ...render(ui, { wrapper: AllTheProvidersPlusDND, ...options }),
+});
+
+// When checking text content, the DNDKit provider can confuse tests
+const renderWithMinimalProviders = (
   ui: ReactElement,
   options?: Omit<RenderOptions, "wrapper">,
 ) => ({
@@ -48,4 +63,4 @@ const customRender = (
 export * from "@testing-library/react";
 
 // override render method
-export { customRender as render };
+export { customRender as render, renderWithMinimalProviders };

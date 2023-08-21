@@ -27,9 +27,6 @@ interface SearchBarProps {
   hideFilters?: boolean;
   onFiltersChange: (f: SearchFilters) => void;
   onColumnVisibilityChange: (c: VisibilityState) => void;
-  // onLanguageChange: (l: SearchFilters["language"]) => void;
-  // onObjectTypeChange: (o: SearchFilters["objectTypes"]) => void;
-  // onActiveAvailabilityChange: (args: AvailabilityPickerValues) => void;
   onRefresh: () => void;
 }
 

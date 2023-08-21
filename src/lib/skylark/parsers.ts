@@ -244,11 +244,17 @@ export const parseObjectConfig = (
       };
     }
 
-    fieldConfig.push({
-      name: SkylarkAvailabilityField.Timezone,
-      fieldType: "TIMEZONE",
-      position: 50,
-    });
+    return {
+      ...objectConfig,
+      fieldConfig: [
+        ...(objectConfig.fieldConfig || []),
+        {
+          name: SkylarkAvailabilityField.Timezone,
+          fieldType: "TIMEZONE",
+          position: 50,
+        },
+      ],
+    };
   }
 
   return objectConfig;

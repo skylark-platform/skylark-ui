@@ -5,24 +5,20 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useState, useMemo, memo, useCallback } from "react";
+import { useEffect, useState, useMemo, memo } from "react";
 
 import { Spinner } from "src/components/icons";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useUser } from "src/contexts/useUser";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
-import {
-  SkylarkObjectIdentifier,
-  SkylarkObjectTypes,
-} from "src/interfaces/skylark";
+import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 import {
   hasProperty,
   isObjectsDeepEqual,
   shallowCompareObjects,
 } from "src/lib/utils";
 
-import { CreateButtons } from "./createButtons";
 import {
   OBJECT_SEARCH_HARDCODED_COLUMNS,
   OBJECT_SEARCH_ORDERED_KEYS,
@@ -128,19 +124,6 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     onFilterChange?.(updatedFilters);
   };
 
-  // useEffect(() => {
-  //   if (objectTypes && objectTypes.length !== 0 && searchObjectTypes === null) {
-  //     setSearchObjectTypes(objectTypes);
-  //   }
-  // }, [objectTypes, searchObjectTypes]);
-
-  // const searchTab = {
-  //   query: searchQuery,
-  //   language: searchLanguage,
-  //   objectTypes: searchObjectTypes,
-  //   availability: searchAvailability,
-  // };
-
   const {
     data: searchData,
     error: searchError,
@@ -211,14 +194,6 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   );
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    // Object.fromEntries(
-    //   sortedHeaders.map((header) => [
-    //     header,
-    //     initialColumnState?.visible
-    //       ? initialColumnState.visible.includes(header)
-    //       : true,
-    //   ]),
-    // ),
     generateColumnVisibility(sortedHeaders, {}, initialColumnState?.columns),
   );
 

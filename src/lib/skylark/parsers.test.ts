@@ -7,10 +7,12 @@ import { EnumType } from "json-to-graphql-query";
 
 import {
   AvailabilityStatus,
+  BuiltInSkylarkObjectType,
   NormalizedObjectField,
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
   ParsedSkylarkObjectRelationships,
+  SkylarkAvailabilityField,
   SkylarkGraphQLObject,
   SkylarkObjectMetadataField,
   SkylarkObjectRelationship,
@@ -581,6 +583,74 @@ describe("parseSkylarkObject", () => {
 
     expect(parseSkylarkObject(skylarkObject)).toEqual(expectedParsedObject);
   });
+
+  test("should parse Availability object", () => {
+    const skylarkObject: SkylarkGraphQLObject = {
+      __typename: BuiltInSkylarkObjectType.Availability,
+      _config: {
+        primary_field: "title",
+        colour: "#9c27b0",
+        display_name: "",
+        field_config: [
+          {
+            name: "title",
+            ui_position: 1,
+            ui_field_type: "STRING",
+          },
+          {
+            name: SkylarkAvailabilityField.Start,
+            ui_position: 2,
+            ui_field_type: "STRING",
+          },
+        ],
+      },
+      uid: "avail_123",
+      external_id: "",
+      slug: "avail-123",
+      title: "Always Avail",
+      [SkylarkAvailabilityField.Start]: "",
+      [SkylarkAvailabilityField.End]: "",
+      [SkylarkAvailabilityField.Timezone]: "",
+    };
+
+    const expectedParsedObject: ParsedSkylarkObject = {
+      objectType: BuiltInSkylarkObjectType.Availability,
+      uid: "avail_123",
+      config: {
+        colour: "#9c27b0",
+        primaryField: "title",
+        objectTypeDisplayName: "",
+        fieldConfig: [
+          {
+            name: "title",
+            position: 1,
+            fieldType: "STRING",
+          },
+          {
+            name: SkylarkAvailabilityField.Start,
+            position: 2,
+            fieldType: "STRING",
+          },
+          // TIMEZONE is auto added
+          {
+            name: SkylarkAvailabilityField.Timezone,
+            position: 50,
+            fieldType: "TIMEZONE",
+          },
+        ],
+      },
+      meta: expect.any(Object),
+      metadata: expect.any(Object),
+      availability: {
+        status: AvailabilityStatus.Unavailable,
+        objects: [],
+      },
+      images: [],
+      content: undefined,
+    };
+
+    expect(parseSkylarkObject(skylarkObject)).toEqual(expectedParsedObject);
+  });
 });
 
 describe("parseInputFieldValue", () => {
@@ -787,8 +857,8 @@ describe("parseMetadataForGraphQLRequest", () => {
     });
   });
 
-  describe("parseMetadataForHTMLForm", () => {
-    const inputFields: NormalizedObjectField[] = [
+  describe("Availability object type", () => {
+    const availabilityInputFields: NormalizedObjectField[] = [
       {
         name: "title",
         type: "string",
@@ -797,78 +867,158 @@ describe("parseMetadataForGraphQLRequest", () => {
         isRequired: false,
       },
       {
-        name: "date",
-        type: "date",
-        originalType: "AWSDate",
+        name: SkylarkSystemField.ExternalID,
+        type: "string",
+        originalType: "String",
         isList: false,
         isRequired: false,
       },
       {
-        name: "datetime",
+        name: SkylarkAvailabilityField.Start,
         type: "datetime",
         originalType: "AWSDateTime",
         isList: false,
         isRequired: false,
       },
       {
-        name: "time",
-        type: "time",
-        originalType: "AWSTime",
+        name: SkylarkAvailabilityField.End,
+        type: "datetime",
+        originalType: "AWSDateTime",
         isList: false,
         isRequired: false,
       },
     ];
 
-    test("returns a string without any formatting", () => {
+    test("removes timezone field from request", () => {
       const metadata: Record<string, SkylarkObjectMetadataField> = {
         title: "string",
-        any: "string",
+        [SkylarkAvailabilityField.Timezone]: "+01:00",
       };
-      const got = parseMetadataForHTMLForm(metadata, inputFields);
+      const got = parseMetadataForGraphQLRequest(
+        BuiltInSkylarkObjectType.Availability,
+        metadata,
+        availabilityInputFields,
+      );
+      expect(got).toEqual({ title: "string" });
+    });
+
+    test("does not change the start and end fields when no value is given", () => {
+      const metadata: Record<string, SkylarkObjectMetadataField> = {
+        title: "string",
+        [SkylarkAvailabilityField.Timezone]: "+01:00",
+        [SkylarkAvailabilityField.Start]: "",
+        [SkylarkAvailabilityField.End]: "",
+      };
+      const got = parseMetadataForGraphQLRequest(
+        BuiltInSkylarkObjectType.Availability,
+        metadata,
+        availabilityInputFields,
+      );
+      expect(got).toEqual({ title: "string" });
+    });
+
+    test("appends the timezone onto start and end fields", () => {
+      const metadata: Record<string, SkylarkObjectMetadataField> = {
+        title: "string",
+        [SkylarkAvailabilityField.Timezone]: "+01:00",
+        [SkylarkAvailabilityField.Start]: "2022-10-30T12:30:00",
+        [SkylarkAvailabilityField.End]: "2022-05-20T12:30:00Z",
+      };
+      const got = parseMetadataForGraphQLRequest(
+        BuiltInSkylarkObjectType.Availability,
+        metadata,
+        availabilityInputFields,
+      );
       expect(got).toEqual({
         title: "string",
-        any: "string",
+        [SkylarkAvailabilityField.Start]: "2022-10-30T12:30:00.000+01:00",
+        [SkylarkAvailabilityField.End]: "2022-05-20T12:30:00.000+01:00",
       });
     });
+  });
+});
 
-    test("reformats a date input", () => {
-      const metadata: Record<string, SkylarkObjectMetadataField> = {
-        date: "2020-11-20+00:00",
-      };
-      const got = parseMetadataForHTMLForm(metadata, inputFields);
-      expect(got).toEqual({
-        date: "2020-11-20",
-      });
+describe("parseMetadataForHTMLForm", () => {
+  const inputFields: NormalizedObjectField[] = [
+    {
+      name: "title",
+      type: "string",
+      originalType: "String",
+      isList: false,
+      isRequired: false,
+    },
+    {
+      name: "date",
+      type: "date",
+      originalType: "AWSDate",
+      isList: false,
+      isRequired: false,
+    },
+    {
+      name: "datetime",
+      type: "datetime",
+      originalType: "AWSDateTime",
+      isList: false,
+      isRequired: false,
+    },
+    {
+      name: "time",
+      type: "time",
+      originalType: "AWSTime",
+      isList: false,
+      isRequired: false,
+    },
+  ];
+
+  test("returns a string without any formatting", () => {
+    const metadata: Record<string, SkylarkObjectMetadataField> = {
+      title: "string",
+      any: "string",
+    };
+    const got = parseMetadataForHTMLForm(metadata, inputFields);
+    expect(got).toEqual({
+      title: "string",
+      any: "string",
     });
+  });
 
-    test("reformats a time input", () => {
-      const metadata: Record<string, SkylarkObjectMetadataField> = {
-        time: "16:30:00.000+00:00",
-      };
-      const got = parseMetadataForHTMLForm(metadata, inputFields);
-      expect(got).toEqual({
-        time: "16:30:00.000",
-      });
+  test("reformats a date input", () => {
+    const metadata: Record<string, SkylarkObjectMetadataField> = {
+      date: "2020-11-20+00:00",
+    };
+    const got = parseMetadataForHTMLForm(metadata, inputFields);
+    expect(got).toEqual({
+      date: "2020-11-20",
     });
+  });
 
-    test("reformats a datetime input", () => {
-      const metadata: Record<string, SkylarkObjectMetadataField> = {
-        datetime: "2020-11-20T16:30:00.000+00:00",
-      };
-      const got = parseMetadataForHTMLForm(metadata, inputFields);
-      expect(got).toEqual({
-        datetime: "2020-11-20T16:30:00.000",
-      });
+  test("reformats a time input", () => {
+    const metadata: Record<string, SkylarkObjectMetadataField> = {
+      time: "16:30:00.000+00:00",
+    };
+    const got = parseMetadataForHTMLForm(metadata, inputFields);
+    expect(got).toEqual({
+      time: "16:30:00.000",
     });
+  });
 
-    test("reformats a null to an empty string", () => {
-      const metadata: Record<string, SkylarkObjectMetadataField> = {
-        title: null,
-      };
-      const got = parseMetadataForHTMLForm(metadata, inputFields);
-      expect(got).toEqual({
-        title: "",
-      });
+  test("reformats a datetime input", () => {
+    const metadata: Record<string, SkylarkObjectMetadataField> = {
+      datetime: "2020-11-20T16:30:00.000+00:00",
+    };
+    const got = parseMetadataForHTMLForm(metadata, inputFields);
+    expect(got).toEqual({
+      datetime: "2020-11-20T16:30:00.000",
+    });
+  });
+
+  test("reformats a null to an empty string", () => {
+    const metadata: Record<string, SkylarkObjectMetadataField> = {
+      title: null,
+    };
+    const got = parseMetadataForHTMLForm(metadata, inputFields);
+    expect(got).toEqual({
+      title: "",
     });
   });
 });

@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
+import { AvailabilitySummary } from "src/components/availability";
 import { Button } from "src/components/button";
 import {
   CheckSquare,
@@ -22,15 +23,12 @@ import { ScrollableTabs } from "src/components/tabs/tabs.component";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useUser } from "src/contexts/useUser";
-import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { SearchFilters } from "src/hooks/useSearch";
-import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import {
   BuiltInSkylarkObjectType,
   SkylarkAvailabilityField,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-import { formatReadableDate } from "src/lib/skylark/availability";
 
 interface Tab {
   id: string;
@@ -102,138 +100,6 @@ const readIntFromLocalStorage = (name: string): number => {
   } catch (err) {
     return 0;
   }
-};
-
-const prettifyStrArr = (arr: string[]): string => {
-  if (arr.length === 0) {
-    return "";
-  }
-
-  if (arr.length === 1) {
-    return arr[0];
-  }
-
-  return `${arr.slice(0, arr.length - 1).join(", ")} & ${arr[arr.length - 1]}`;
-};
-
-const TabDescription = ({
-  filters: {
-    objectTypes,
-    language,
-    query,
-    availability: { dimensions, timeTravel },
-  },
-}: {
-  filters: SearchFilters;
-}) => {
-  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
-
-  const { dimensions: allDimensionsWithValues } =
-    useAvailabilityDimensionsWithValues();
-
-  let objectTypeStr = <>Objects </>;
-
-  if (objectTypes) {
-    const parsedObjectTypes = objectTypes.map((objectType) => {
-      const objectTypeWithConfig = objectTypesWithConfig?.find(
-        ({ objectType: name }) => name === objectType,
-      );
-      return objectTypeWithConfig?.config.objectTypeDisplayName || objectType;
-    });
-
-    objectTypeStr =
-      objectTypes.length < 10 ? (
-        <>
-          <strong>{prettifyStrArr(parsedObjectTypes)}</strong> objects{" "}
-        </>
-      ) : (
-        <>
-          <strong>
-            {objectTypesWithConfig?.length === objectTypes.length
-              ? "All"
-              : objectTypes.length}
-          </strong>{" "}
-          object types{" "}
-        </>
-      );
-  }
-
-  const translationStr = language ? (
-    <>
-      translated to <strong>{language}</strong>{" "}
-    </>
-  ) : (
-    <></>
-  );
-
-  const queryStr = query ? (
-    <>
-      filtered by <strong>query &ldquo;{query}&rdquo;</strong>{" "}
-    </>
-  ) : (
-    <></>
-  );
-
-  let availabilityStr = <></>;
-
-  if (dimensions || timeTravel) {
-    const strDimensions =
-      dimensions &&
-      Object.entries(dimensions).map(([dimension, value]) => {
-        const foundDimension = allDimensionsWithValues?.find(
-          (d) => dimension === d.slug,
-        );
-        const foundValue = foundDimension?.values.find((v) => value === v.slug);
-
-        return foundValue?.title || value;
-      });
-
-    const renderedDimensions = strDimensions ? (
-      <>
-        to <strong>{prettifyStrArr(strDimensions)}</strong> users
-      </>
-    ) : (
-      <></>
-    );
-
-    const renderedTimeTravel = timeTravel ? (
-      <>
-        on <strong>{formatReadableDate(timeTravel)}</strong>
-      </>
-    ) : (
-      <></>
-    );
-
-    availabilityStr =
-      renderedDimensions && renderedTimeTravel ? (
-        <>
-          available {renderedDimensions} {renderedTimeTravel}{" "}
-        </>
-      ) : (
-        <>available {renderedDimensions || renderedTimeTravel} </>
-      );
-  }
-
-  return (
-    <p
-      className={clsx(
-        "text-xs text-manatee-500 md:text-sm",
-        "[&>strong]:font-medium [&>strong]:text-black",
-        "after:-ml-1 after:content-['.']",
-      )}
-    >
-      {objectTypeStr}
-      {queryStr}
-      {availabilityStr}
-      {translationStr}
-    </p>
-  );
-
-  // `"Episode" filtered by "search query"`
-  // `"Episode, Movie, Season" found for "search query"`
-  // "5 Object types" in "en-GB" filtered by "search query"
-  // "5 Object types" in "en-GB" filtered by "search query" available to "Premium, PC"
-  // "5 Object types" in "en-GB" filtered by "search query" available to "Premium, PC" at "27th August 2020"
 };
 
 const generateNewTab = (
@@ -355,7 +221,7 @@ const TabOverview = ({
               </>
             )}
           </div>
-          <TabDescription filters={tab.filters} />
+          <AvailabilitySummary {...tab.filters} />
         </>
       )}
     </div>
