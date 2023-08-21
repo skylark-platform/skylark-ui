@@ -232,7 +232,6 @@ export const ContentLibrary = () => {
             <div className="absolute inset-0 z-[100] block bg-black/5"></div>
           )}
           <TabbedObjectSearch
-            withCreateButtons
             panelObject={activePanelObject}
             setPanelObject={setPanelObject}
             isPanelOpen={!!activePanelObject}

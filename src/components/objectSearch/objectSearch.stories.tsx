@@ -1,8 +1,6 @@
 import { ComponentStory } from "@storybook/react";
 import { userEvent, waitFor, within } from "@storybook/testing-library";
 
-import GQLGameOfThronesSearchResults from "src/__tests__/fixtures/skylark/queries/search/gotPage1.json";
-
 import { ObjectSearch } from "./objectSearch.component";
 
 export default {
@@ -31,13 +29,7 @@ WithFiltersOpen.play = async ({ canvasElement }) => {
   await userEvent.click(filtersButton);
 };
 
-export const WithCreateButtons = Template.bind({});
-WithCreateButtons.args = {
-  withCreateButtons: true,
-};
-
 export const KitchenSink = Template.bind({});
 KitchenSink.args = {
-  withCreateButtons: true,
   withObjectSelect: true,
 };

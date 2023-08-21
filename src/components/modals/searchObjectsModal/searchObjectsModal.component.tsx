@@ -67,7 +67,7 @@ export const SearchObjectsModal = ({
       />
 
       <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
-        <Dialog.Panel className="relative mx-auto flex h-full max-h-[90%] w-full max-w-6xl flex-col overflow-y-auto rounded bg-white pb-4 pt-6 md:w-4/5 md:pb-8 md:pt-10">
+        <Dialog.Panel className="max-w-8xl relative mx-auto flex h-full max-h-[90%] w-full flex-col overflow-y-auto rounded bg-white pb-4 pt-6 md:pb-8 md:pt-10 lg:w-11/12 xl:w-4/5">
           <button
             aria-label="close"
             className="absolute right-4 top-4 sm:right-8 sm:top-9"
@@ -82,7 +82,7 @@ export const SearchObjectsModal = ({
               {title}
             </Dialog.Title>
           </div>
-          <div className="ml-4 flex-grow overflow-auto pl-4 pr-0 pt-2">
+          <div className="ml-2 flex-grow overflow-auto pr-0 pt-2 md:ml-4 md:pl-4">
             <ObjectSearch
               initialFilters={{ objectTypes }}
               initialColumnState={initialColumnState}
