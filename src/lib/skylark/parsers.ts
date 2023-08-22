@@ -49,6 +49,7 @@ import {
 import {
   getObjectAvailabilityStatus,
   getAvailabilityStatusForAvailabilityObject,
+  convertToUTCDate,
 } from "./availability";
 
 dayjs.extend(customParseFormat);
@@ -477,13 +478,12 @@ export const parseMetadataForGraphQLRequest = (
           (input.name === SkylarkAvailabilityField.Start ||
             input.name === SkylarkAvailabilityField.End)
         ) {
-          const parsedFieldValueWithZRemoved = parsedFieldValue
-            .toUpperCase()
-            .endsWith("Z")
-            ? parsedFieldValue.slice(0, -1)
-            : parsedFieldValue;
-
-          const parsedDateFieldWithTimezone = `${parsedFieldValueWithZRemoved}${metadata.timezone}`;
+          console.log({ input, metadata, parsedFieldValue });
+          const parsedDateFieldWithTimezone = convertToUTCDate(
+            parsedFieldValue,
+            metadata.timezone as string,
+          );
+          console.log({ parsedDateFieldWithTimezone });
           return [key, parsedDateFieldWithTimezone];
         }
       }

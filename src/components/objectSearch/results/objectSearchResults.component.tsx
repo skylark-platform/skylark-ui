@@ -9,6 +9,8 @@ import {
   ColumnOrderState,
   OnChangeFn,
   ColumnSizingState,
+  TableState,
+  Updater,
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useRef, useState, useMemo, useCallback, memo } from "react";
@@ -50,15 +52,9 @@ export interface ObjectSearchResultsProps {
   searchData?: ParsedSkylarkObject[];
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
-  columnVisibility: VisibilityState;
-  columnOrder: ColumnOrderState;
-  frozenColumns: string[];
-  columnSizing: ColumnSizingState;
+  tableState: TableState;
   checkedObjects?: ParsedSkylarkObject[];
-  setColumnVisibility: OnChangeFn<VisibilityState>;
-  setColumnOrder: OnChangeFn<ColumnOrderState>;
-  setFrozenColumns: (cols: string[]) => void;
-  setColumnSizing: OnChangeFn<ColumnSizingState>;
+  setTableState: (updater: Updater<TableState>) => void;
   onObjectCheckedChanged?: (o: ParsedSkylarkObject[]) => void;
 }
 
@@ -85,10 +81,7 @@ const splitVirtualColumns = (
 
 export const ObjectSearchResults = ({
   tableColumns,
-  columnVisibility,
-  columnOrder,
-  frozenColumns,
-  columnSizing,
+  tableState,
   panelObject,
   setPanelObject,
   searchData,
@@ -98,10 +91,7 @@ export const ObjectSearchResults = ({
   checkedObjects,
   isFetchingNextPage,
   onObjectCheckedChanged,
-  setColumnVisibility,
-  setColumnOrder,
-  setFrozenColumns,
-  setColumnSizing,
+  setTableState,
 }: ObjectSearchResultsProps) => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -238,8 +228,13 @@ export const ObjectSearchResults = ({
     hover: boolean;
   } | null>(null);
 
+  const frozenColumns = useMemo(
+    () => tableState.columnPinning.left || [],
+    [tableState.columnPinning.left],
+  );
+
   const showObjectTypeIndicator =
-    !columnVisibility[OBJECT_LIST_TABLE.columnIds.objectType] ||
+    !tableState.columnVisibility[OBJECT_LIST_TABLE.columnIds.objectType] ||
     frozenColumns.indexOf(OBJECT_LIST_TABLE.columnIds.objectTypeIndicator) +
       1 !==
       frozenColumns.indexOf(OBJECT_LIST_TABLE.columnIds.objectType);
@@ -251,17 +246,14 @@ export const ObjectSearchResults = ({
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: "onChange",
     state: {
+      ...tableState,
       columnVisibility: {
-        ...columnVisibility,
+        ...tableState.columnVisibility,
         [OBJECT_LIST_TABLE.columnIds.objectTypeIndicator]:
           showObjectTypeIndicator,
       },
-      columnOrder,
-      columnSizing,
     },
-    onColumnOrderChange: setColumnOrder,
-    onColumnVisibilityChange: setColumnVisibility,
-    onColumnSizingChange: setColumnSizing,
+    onStateChange: setTableState,
     meta: {
       activeObject: panelObject || null,
       checkedRows,
@@ -288,7 +280,11 @@ export const ObjectSearchResults = ({
 
   const visibleColumns = table
     .getVisibleFlatColumns()
-    .sort((a, b) => columnOrder.indexOf(a.id) - columnOrder.indexOf(b.id));
+    .sort(
+      (a, b) =>
+        tableState.columnOrder.indexOf(a.id) -
+        tableState.columnOrder.indexOf(b.id),
+    );
 
   const frozenColumnsParsedColumnsIndexes = useMemo(
     () =>
@@ -382,7 +378,9 @@ export const ObjectSearchResults = ({
         if (dropzoneColumnId) {
           // When the frozen columns are changed, unfreeze any hidden columns and move to the right of the frozen columns
           const orderedVisibleColumns = [...visibleColumns].sort(
-            (a, b) => columnOrder.indexOf(a.id) - columnOrder.indexOf(b.id),
+            (a, b) =>
+              tableState.columnOrder.indexOf(a.id) -
+              tableState.columnOrder.indexOf(b.id),
           );
 
           const columnIndex = orderedVisibleColumns.findIndex(
@@ -405,7 +403,7 @@ export const ObjectSearchResults = ({
           );
 
           if (columnsToBeUnfrozen.length > 0) {
-            const unfrozenColumns = columnOrder.filter(
+            const unfrozenColumns = tableState.columnOrder.filter(
               (col) => !updatedFrozenColumns.includes(col),
             );
 
@@ -414,10 +412,21 @@ export const ObjectSearchResults = ({
               ...unfrozenColumns,
             ];
 
-            setColumnOrder(updatedColumnOrder);
+            setTableState((prev) => ({
+              ...prev,
+              columnOrder: updatedColumnOrder,
+              columnPinning: {
+                left: updatedFrozenColumns,
+              },
+            }));
+          } else {
+            setTableState((prev) => ({
+              ...prev,
+              columnPinning: {
+                left: updatedFrozenColumns,
+              },
+            }));
           }
-
-          setFrozenColumns(updatedFrozenColumns);
         }
       }
 

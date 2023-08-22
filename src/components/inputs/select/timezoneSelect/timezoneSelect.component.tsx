@@ -8,6 +8,8 @@ import {
 
 type TimezoneSelectProps = Omit<SelectProps, "options">;
 
+export const GMT_UTC_OFFSET = "+00:00";
+
 // https://en.wikipedia.org/wiki/List_of_UTC_offsets
 // https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations
 const UTC_OFFSETS = [
@@ -25,7 +27,7 @@ const UTC_OFFSETS = [
   "-03:00",
   "-02:00",
   "-01:00",
-  "+00:00",
+  GMT_UTC_OFFSET,
   "+01:00",
   "+02:00",
   "+03:00",

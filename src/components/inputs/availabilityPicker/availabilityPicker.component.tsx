@@ -7,7 +7,11 @@ import { GrClose } from "react-icons/gr";
 
 import { Button } from "src/components/button";
 import { InputLabel } from "src/components/inputs/label/label.component";
-import { Select } from "src/components/inputs/select";
+import {
+  GMT_UTC_OFFSET,
+  Select,
+  TimezoneSelect,
+} from "src/components/inputs/select";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { ParsedSkylarkDimensionsWithValues } from "src/interfaces/skylark";
@@ -15,7 +19,10 @@ import { parseDateTimeForHTMLForm } from "src/lib/skylark/parsers";
 
 export type AvailabilityDimensionsPickerValues = Record<string, string> | null;
 
-export type TimeTravelPickerValues = string | null;
+export type TimeTravelPickerValues = {
+  datetime: string;
+  offset: string;
+} | null;
 
 export type AvailabilityPickerValues = {
   dimensions: AvailabilityDimensionsPickerValues;
@@ -44,14 +51,25 @@ const AvailabilitySelectors = ({
     useState<AvailabilityDimensionsPickerValues>(initialValues.dimensions);
   const [activeTimeTravel, setActiveTimeTravel] = useState(
     initialValues.timeTravel
-      ? parseDateTimeForHTMLForm("datetime-local", initialValues.timeTravel)
+      ? parseDateTimeForHTMLForm(
+          "datetime-local",
+          initialValues.timeTravel.datetime,
+        )
       : "",
+  );
+  const [activeTimeTravelOffset, setActiveTimeTravelOffset] = useState(
+    initialValues.timeTravel ? initialValues.timeTravel.offset : GMT_UTC_OFFSET,
   );
 
   const onSave = () => {
     save({
       dimensions: activeDimensions,
-      timeTravel: activeTimeTravel || null,
+      timeTravel: activeTimeTravel
+        ? {
+            datetime: activeTimeTravel,
+            offset: activeTimeTravelOffset,
+          }
+        : null,
     });
     close();
   };
@@ -102,21 +120,40 @@ const AvailabilitySelectors = ({
         </div>
         <div className="mb-6 w-72">
           <PanelSectionTitle text={"Time"} />
-          <InputLabel
-            text="Time Travel"
-            htmlFor="availability-picker-time-travel-input"
-          />
-          <input
-            onChange={(e) => setActiveTimeTravel(e.target.value)}
-            id="availability-picker-time-travel-input"
-            value={activeTimeTravel || ""}
-            type="datetime-local"
-            step="1"
-            className={clsx(
-              "h-8 w-full rounded bg-manatee-50 px-4 md:h-10",
-              activeTimeTravel ? "text-black" : "text-manatee-400",
-            )}
-          />
+          <div className="flex flex-col gap-4">
+            <div>
+              <InputLabel
+                text="Time Travel"
+                htmlFor="availability-picker-time-travel-input"
+              />
+              <input
+                onChange={(e) => setActiveTimeTravel(e.target.value)}
+                id="availability-picker-time-travel-input"
+                value={activeTimeTravel || ""}
+                type="datetime-local"
+                step="1"
+                className={clsx(
+                  "h-8 w-full rounded bg-manatee-50 px-4 md:h-10",
+                  activeTimeTravel ? "text-black" : "text-manatee-400",
+                )}
+              />
+            </div>
+            <TimezoneSelect
+              label="Timezone"
+              labelVariant="form"
+              disabled={!activeTimeTravel}
+              selected={activeTimeTravelOffset}
+              variant="primary"
+              placeholder="Select Timezone"
+              renderInPortal
+              onChange={setActiveTimeTravelOffset}
+              onValueClear={
+                activeTimeTravelOffset !== GMT_UTC_OFFSET
+                  ? () => setActiveTimeTravelOffset(GMT_UTC_OFFSET)
+                  : undefined
+              }
+            />
+          </div>
         </div>
       </div>
       <div className="flex justify-end space-x-2">
@@ -211,7 +248,10 @@ export const AvailabilityPicker = ({
           <button
             className="absolute inset-y-0 right-8 z-[1] flex items-center px-0.5"
             onClick={(e) => {
-              save({ dimensions: null, timeTravel: null });
+              save({
+                dimensions: null,
+                timeTravel: null,
+              });
               e.stopPropagation();
             }}
           >

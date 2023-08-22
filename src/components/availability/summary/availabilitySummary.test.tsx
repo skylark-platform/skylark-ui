@@ -12,7 +12,7 @@ const defaultProps: {
   language?: string | null;
   availability: {
     dimensions: Record<string, string> | null;
-    timeTravel: string | null;
+    timeTravel: { datetime: string; offset: string } | null;
   };
 } = {
   query: "",
@@ -106,7 +106,10 @@ test("shows Availability time travel", () => {
       {...defaultProps}
       availability={{
         dimensions: null,
-        timeTravel: "2022-10-30T10:30",
+        timeTravel: {
+          datetime: "2022-10-30T10:30",
+          offset: "+00:00",
+        },
       }}
     />,
   );
@@ -122,7 +125,10 @@ test("shows Availability dimensions and time travel", () => {
       {...defaultProps}
       availability={{
         dimensions: { "customer-types": "premium", "device-types": "pc" },
-        timeTravel: "2022-10-30T10:30",
+        timeTravel: {
+          datetime: "2022-10-30T10:30",
+          offset: "+00:00",
+        },
       }}
     />,
   );
@@ -143,7 +149,10 @@ test("shows all props", () => {
       language={"en-GB"}
       availability={{
         dimensions: { "customer-types": "premium", "device-types": "pc" },
-        timeTravel: "2022-10-30T10:30",
+        timeTravel: {
+          datetime: "2022-10-30T10:30",
+          offset: "+00:00",
+        },
       }}
     />,
   );
@@ -164,7 +173,7 @@ test("Loads the UI config and shows the display object type and Dimension titles
       language={"en-GB"}
       availability={{
         dimensions: { "customer-types": "premium", "device-types": "pc" },
-        timeTravel: "2022-10-30T10:30",
+        timeTravel: { datetime: "2022-10-30T10:30", offset: "+00:00" },
       }}
     />,
   );
@@ -177,6 +186,6 @@ test("Loads the UI config and shows the display object type and Dimension titles
   expect(container).toHaveTextContent(
     `Episode, Setˢˡ & Movie objects filtered by query “My search query” available to Premium & PC users on ${formatReadableDate(
       "2022-10-30T10:30",
-    )}`,
+    )} (+00:00)`,
   );
 });

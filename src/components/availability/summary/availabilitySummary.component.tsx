@@ -33,7 +33,7 @@ export const AvailabilitySummary = ({
   language?: string | null;
   availability: {
     dimensions: Record<string, string> | null;
-    timeTravel: string | null;
+    timeTravel: { datetime: string; offset: string } | null;
   };
 }) => {
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
@@ -108,7 +108,10 @@ export const AvailabilitySummary = ({
 
     const renderedTimeTravel = timeTravel ? (
       <>
-        on <strong>{formatReadableDate(timeTravel)}</strong>
+        on{" "}
+        <strong>
+          {formatReadableDate(timeTravel.datetime)} ({timeTravel.offset})
+        </strong>
       </>
     ) : (
       <></>

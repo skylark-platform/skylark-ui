@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc";
 
 import {
   ParsedSkylarkObjectAvailability,
@@ -12,6 +13,7 @@ import { hasProperty } from "src/lib/utils";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
+dayjs.extend(utc);
 
 export const getSingleAvailabilityStatus = (
   now: dayjs.Dayjs,
@@ -91,4 +93,16 @@ export const getRelativeTimeFromDate = (
     return `Expires ${dayjs(end).fromNow()}`;
   }
   return `Expired ${dayjs(end).fromNow()}`;
+};
+
+export const convertToUTCDate = (date: string, offset: string | null) => {
+  if (offset) {
+    const parsedFieldValueWithZRemoved = date.toUpperCase().endsWith("Z")
+      ? date.slice(0, -1)
+      : date;
+    return `${parsedFieldValueWithZRemoved}${offset}`;
+  }
+
+  const utcDate = dayjs(date).utc().format();
+  return utcDate;
 };

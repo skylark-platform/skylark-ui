@@ -1,11 +1,14 @@
 import {
   ColumnOrderState,
+  ColumnSizingInfoState,
   ColumnSizingState,
+  PaginationState,
+  TableState,
   Updater,
   VisibilityState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useEffect, useState, useMemo, memo } from "react";
+import { useEffect, useState, useMemo, memo, useCallback } from "react";
 
 import { Spinner } from "src/components/icons";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
@@ -191,97 +194,75 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     [sortedHeaders, withObjectSelect, withPanel],
   );
 
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    generateColumnVisibility(sortedHeaders, {}, initialColumnState?.columns),
+  const [tableState, setTableState] = useState<TableState>({
+    columnVisibility: generateColumnVisibility(
+      sortedHeaders,
+      {},
+      initialColumnState?.columns,
+    ),
+    columnOrder: initialColumnState?.order || initialColumnState?.columns || [],
+    columnSizing: initialColumnState?.sizes || {},
+    columnPinning: {
+      left: initialColumnState?.frozen || initialFrozenColumns,
+    },
+    columnFilters: [],
+    globalFilter: {},
+    sorting: [],
+    expanded: {},
+    grouping: [],
+    columnSizingInfo: {} as ColumnSizingInfoState,
+    pagination: {} as PaginationState,
+    rowSelection: {},
+  });
+
+  const handleTableStateChange = useCallback(
+    (tableStateUpdater: Updater<TableState>) => {
+      setTableState(tableStateUpdater);
+
+      if (onColumnStateChange) {
+        const updatedTableState = handleUpdater(tableStateUpdater, tableState);
+
+        const visibleColumns = Object.entries(
+          updatedTableState.columnVisibility,
+        )
+          .filter(([, value]) => !!value)
+          .map(([key]) => key);
+
+        onColumnStateChange({
+          order: updatedTableState.columnOrder,
+          columns: visibleColumns,
+          frozen: updatedTableState.columnPinning.left || [],
+        });
+      }
+    },
+    [onColumnStateChange, tableState],
   );
-
-  const [frozenColumns, setFrozenColumns] = useState<string[]>(
-    initialColumnState?.frozen || initialFrozenColumns,
-  );
-
-  const [stateColumnOrder, setColumnOrder] = useState<ColumnOrderState>(
-    initialColumnState?.order || initialColumnState?.columns || [],
-  );
-
-  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(
-    initialColumnState?.sizes || {},
-  );
-
-  const handleColumnStateChange = ({
-    columnOrderUpdater,
-    columnVisibilityUpdater,
-    columnSizingUpdater,
-    updatedFrozenColumns,
-  }: Partial<{
-    columnOrderUpdater: Updater<ColumnOrderState>;
-    columnVisibilityUpdater: Updater<VisibilityState>;
-    columnSizingUpdater: Updater<ColumnSizingState>;
-    updatedFrozenColumns: string[];
-  }>) => {
-    if (columnOrderUpdater) {
-      setColumnOrder((prevColumnOrder) =>
-        handleUpdater(columnOrderUpdater, prevColumnOrder),
-      );
-    }
-
-    if (columnVisibilityUpdater) {
-      setColumnVisibility((prevVisibility) =>
-        handleUpdater(columnVisibilityUpdater, prevVisibility),
-      );
-    }
-
-    if (columnSizingUpdater) {
-      setColumnSizing((prevColumnSizing) =>
-        handleUpdater(columnSizingUpdater, prevColumnSizing),
-      );
-    }
-
-    if (updatedFrozenColumns) {
-      setFrozenColumns(updatedFrozenColumns);
-    }
-
-    if (onColumnStateChange) {
-      const visibleColumns = Object.entries(
-        columnVisibilityUpdater
-          ? handleUpdater(columnVisibilityUpdater, columnVisibility)
-          : columnVisibility,
-      )
-        .filter(([, value]) => !!value)
-        .map(([key]) => key);
-
-      const updatedColumnState: ObjectSearchInitialColumnsState = {
-        order: columnOrderUpdater
-          ? handleUpdater(columnOrderUpdater, columnOrder)
-          : columnOrder,
-        columns: visibleColumns,
-        frozen: updatedFrozenColumns ? updatedFrozenColumns : frozenColumns,
-        sizes: columnSizingUpdater
-          ? handleUpdater(columnSizingUpdater, columnSizing)
-          : columnSizing,
-      };
-
-      onColumnStateChange(updatedColumnState);
-    }
-  };
 
   const defaultColumnOrder = useMemo(
     () => parsedTableColumns.map((column) => column.id as string),
     [parsedTableColumns],
   );
-  const columnOrder: ColumnOrderState =
-    stateColumnOrder.length > 0 ? stateColumnOrder : defaultColumnOrder;
+  const columnOrder: ColumnOrderState = useMemo(
+    () =>
+      tableState.columnOrder.length > 0
+        ? tableState.columnOrder
+        : defaultColumnOrder,
+    [defaultColumnOrder, tableState.columnOrder],
+  );
 
   useEffect(() => {
     // Update the column visibility when new fields are added / removed
+    const { columnVisibility } = tableState;
     if (sortedHeaders && sortedHeaders.length !== 0) {
       if (Object.keys(columnVisibility).length === 0) {
-        setColumnVisibility(
-          generateColumnVisibility(
+        handleTableStateChange({
+          ...tableState,
+          columnVisibility: generateColumnVisibility(
             sortedHeaders,
             columnVisibility,
             initialColumnState?.columns,
           ),
-        );
+        });
         return;
       }
 
@@ -290,11 +271,18 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         columnVisibility,
       );
       if (!isObjectsDeepEqual(newColumnVisibility, columnVisibility)) {
-        setColumnVisibility(newColumnVisibility);
+        handleTableStateChange({
+          ...tableState,
+          columnVisibility: newColumnVisibility,
+        });
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortedHeaders, setColumnVisibility, initialColumnState?.columns]);
+  }, [
+    handleTableStateChange,
+    initialColumnState?.columns,
+    sortedHeaders,
+    tableState,
+  ]);
 
   if (searchError) console.error("Search Errors:", { searchError });
 
@@ -331,10 +319,13 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             onRefresh={refetch}
             columns={parsedTableColumns}
             columnIds={sortedHeaders}
-            visibleColumns={columnVisibility}
+            visibleColumns={tableState.columnVisibility}
             hideFilters={props.hideSearchFilters}
-            onColumnVisibilityChange={(columnVisibilityUpdater) =>
-              handleColumnStateChange({ columnVisibilityUpdater })
+            onColumnVisibilityChange={(columnVisibility) =>
+              setTableState((prev) => ({
+                ...prev,
+                columnVisibility,
+              }))
             }
           />
           <div className="mt-2 flex w-full justify-start pl-3 md:pl-7">
@@ -361,22 +352,14 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
             searchData={searchData}
-            columnVisibility={columnVisibility}
-            setColumnVisibility={(columnVisibilityUpdater) =>
-              handleColumnStateChange({ columnVisibilityUpdater })
-            }
-            frozenColumns={frozenColumns}
-            setFrozenColumns={(updatedFrozenColumns) =>
-              handleColumnStateChange({ updatedFrozenColumns })
-            }
-            columnOrder={columnOrder}
-            setColumnOrder={(columnOrderUpdater) =>
-              handleColumnStateChange({ columnOrderUpdater })
-            }
-            columnSizing={columnSizing}
-            setColumnSizing={(columnSizingUpdater) =>
-              handleColumnStateChange({ columnSizingUpdater })
-            }
+            tableState={{
+              ...tableState,
+              columnOrder:
+                tableState.columnOrder.length > 0
+                  ? tableState.columnOrder
+                  : defaultColumnOrder,
+            }}
+            setTableState={handleTableStateChange}
           />
         </div>
       )}

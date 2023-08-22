@@ -118,7 +118,7 @@ test("selects dimensions, time travel and saves", async () => {
       "customer-types": "premium",
       "device-types": "pc",
     },
-    timeTravel: "2023-11-11T12:30",
+    timeTravel: { datetime: "2023-11-11T12:30", offset: "+00:00" },
   });
 });
 
