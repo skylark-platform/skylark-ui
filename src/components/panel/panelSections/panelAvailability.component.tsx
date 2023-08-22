@@ -19,6 +19,7 @@ import {
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
+import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
@@ -427,7 +428,10 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
           title={`Add Availability`}
           isOpen={objectSearchModalOpen}
           objectTypes={[BuiltInSkylarkObjectType.Availability]}
-          columns={availabilityObjectMeta.fields.map(({ name }) => name)}
+          columns={[
+            OBJECT_LIST_TABLE.columnIds.displayField,
+            ...availabilityObjectMeta.fields.map(({ name }) => name),
+          ]}
           closeModal={() => setObjectSearchModalOpen(false)}
           onModalClose={({ checkedObjects }) => {
             const { addedObjects, errors } = handleDroppedAvailabilities({

@@ -38,7 +38,7 @@ export const Tabs = ({
     >
       {tabs.map((tab, index) => {
         return (
-          <li key={`tab-${tab.id}`} className=" px-2 md:px-3">
+          <li key={`tab-${tab.id}`} className="px-2 md:px-3">
             <button
               disabled={disabled}
               onClick={disabled ? undefined : () => onChange({ ...tab, index })}
@@ -117,10 +117,12 @@ export const ScrollableTabs = ({
       scrollWidth <= containerWidth);
 
   const scroll = (position: number, behavior?: "smooth" | "instant") => {
-    containerRef.current?.scrollTo({
-      left: position,
-      behavior: behavior || "smooth",
-    });
+    if (containerRef.current && containerRef.current?.scrollTo) {
+      containerRef.current.scrollTo({
+        left: position,
+        behavior: behavior || "smooth",
+      });
+    }
   };
 
   useEffect(() => {

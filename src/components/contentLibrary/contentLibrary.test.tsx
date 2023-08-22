@@ -29,6 +29,10 @@ beforeEach(() => {
 test("open metadata panel, check information and close", async () => {
   render(<ContentLibrary />);
 
+  await waitFor(() => {
+    expect(screen.getByTestId("object-search-results")).toBeInTheDocument();
+  });
+
   const input = screen.getByPlaceholderText("Search for an object(s)");
   fireEvent.change(input, { target: { value: "AllAvailTestMovie" } });
 

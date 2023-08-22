@@ -10,6 +10,7 @@ import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.
 import { PanelLoading } from "src/components/panel/panelLoading";
 import { PanelSeparator } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
+import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
 import {
   ParsedSkylarkObjectRelationships,
@@ -358,7 +359,14 @@ export const PanelRelationships = ({
               ? [searchObjectsModalState?.relationship.objectType]
               : undefined
           }
-          columns={searchObjectsModalState?.fields}
+          columns={
+            searchObjectsModalState?.fields
+              ? [
+                  OBJECT_LIST_TABLE.columnIds.displayField,
+                  ...searchObjectsModalState?.fields,
+                ]
+              : undefined
+          }
           closeModal={() => setSearchObjectsModalState(null)}
           onModalClose={({ checkedObjects }) => {
             const { addedObjects, errors } = handleDroppedRelationships({

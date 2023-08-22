@@ -1,6 +1,5 @@
 import {
   fireEvent,
-  prettyDOM,
   render,
   screen,
   waitFor,

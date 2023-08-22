@@ -103,7 +103,7 @@ describe("createSearchObjectsQuery", () => {
     );
 
     expect(got?.loc?.source.body).toEqual(
-      `query SEARCH ($language: String, $queryString: String!, $offset: Int, $limit: Int, $dimensions: [UserDimension]) { search (language: $language, query: $queryString, offset: $offset, limit: $limit, dimensions: $dimensions) { __typename total_count objects { ... on Episode { __typename _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } } __Episode__title: title __Episode__episode_number: episode_number } ... on Brand { __typename _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } } __Brand__title: title __Brand__synopsis: synopsis } } } }`,
+      `query SEARCH ($language: String, $queryString: String!, $offset: Int, $limit: Int, $dimensions: [UserDimension]) { search (language: $language, query: $queryString, offset: $offset, limit: $limit, dimensions: $dimensions) { __typename total_count objects { ... on Episode { __typename __Episode__title: title __Episode__episode_number: episode_number _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } } } ... on Brand { __typename __Brand__title: title __Brand__synopsis: synopsis _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } } } } } }`,
     );
   });
 });

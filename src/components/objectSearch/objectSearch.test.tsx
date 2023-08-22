@@ -396,7 +396,11 @@ test("clears the language filter", async () => {
   await screen.findByText(
     GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
   );
-  expect(screen.queryAllByText("en-GB").length).toBeGreaterThan(1);
+
+  await waitFor(() => {
+    expect(screen.queryAllByText("en-GB").length).toBeGreaterThan(1);
+  });
+
   expect(screen.queryAllByText("pt-PT")).toHaveLength(0);
 
   // Act

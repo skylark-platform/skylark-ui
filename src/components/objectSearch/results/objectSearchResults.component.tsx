@@ -316,6 +316,7 @@ export const ObjectSearchResults = ({
         ...frozenColumnsParsedColumnsIndexes,
         ...defaultRangeExtractor(range),
       ]);
+
       return [...rangeAsSet];
     },
   });

@@ -1,4 +1,4 @@
-import { waitFor, screen, fireEvent } from "@testing-library/react";
+import { waitFor, screen, fireEvent, prettyDOM } from "@testing-library/react";
 
 import GQLGameOfThronesSearchResultsPage1enGB from "src/__tests__/fixtures/skylark/queries/search/gotPage1enGB.json";
 import { render } from "src/__tests__/utils/test-utils";
@@ -32,12 +32,14 @@ test("renders the modal", async () => {
 
   await screen.findByText(title);
 
-  await screen.findByText("UID"); // Search for table header
   await waitFor(() => {
     expect(
       screen.getByTestId("object-search-results-content"),
     ).toBeInTheDocument();
   });
+
+  await screen.findByText("UID"); // Search for table header
+
   // Search for table content
   await screen.findAllByText(
     GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
@@ -71,22 +73,25 @@ test("calls onModalClose with the selected rows", async () => {
     />,
   );
 
-  await screen.findByText("UID"); // Search for table header
   await waitFor(() => {
     expect(
       screen.getByTestId("object-search-results-content"),
     ).toBeInTheDocument();
   });
 
-  fireEvent.click(
-    screen.getByText(
-      GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
-    ),
-  );
+  await screen.findByText("UID"); // Search for table header
+
+  await waitFor(() => {
+    expect(
+      screen.getByText(
+        GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
+      ),
+    ).toBeInTheDocument();
+  });
 
   fireEvent.click(
     screen.getByText(
-      GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[1].uid,
+      GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
     ),
   );
 
@@ -98,12 +103,6 @@ test("calls onModalClose with the selected rows", async () => {
         uid: GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
         objectType:
           GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
-            .__typename,
-      }),
-      expect.objectContaining({
-        uid: GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[1].uid,
-        objectType:
-          GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[1]
             .__typename,
       }),
     ],

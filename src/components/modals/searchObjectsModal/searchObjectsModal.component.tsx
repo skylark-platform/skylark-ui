@@ -1,5 +1,5 @@
 import { Dialog } from "@headlessui/react";
-import React from "react";
+import React, { useMemo } from "react";
 import { GrClose } from "react-icons/gr";
 
 import { Button } from "src/components/button";
@@ -28,7 +28,7 @@ export const SearchObjectsModal = ({
   title,
   isOpen,
   objectTypes,
-  columns,
+  columns: propColumns,
   closeModal,
   onModalClose,
 }: SearchObjectsModalProps) => {
@@ -41,17 +41,20 @@ export const SearchObjectsModal = ({
     setCheckedObjects([]);
   };
 
-  const initialColumnState: Partial<ObjectSearchInitialColumnsState> = {
-    columns: [
-      ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
-      OBJECT_LIST_TABLE.columnIds.displayField,
-      ...(columns || []),
-    ],
-    frozen: [
-      ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
-      OBJECT_LIST_TABLE.columnIds.displayField,
-    ],
-  };
+  const initialColumnState: Partial<ObjectSearchInitialColumnsState> =
+    useMemo(() => {
+      const columns = propColumns || [];
+
+      return {
+        columns: [...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS, ...columns],
+        frozen: columns.includes(OBJECT_LIST_TABLE.columnIds.displayField)
+          ? [
+              ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+              OBJECT_LIST_TABLE.columnIds.displayField,
+            ]
+          : OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+      };
+    }, [propColumns]);
 
   return (
     <Dialog
