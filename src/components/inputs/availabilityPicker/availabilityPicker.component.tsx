@@ -61,6 +61,8 @@ const AvailabilitySelectors = ({
     initialValues.timeTravel ? initialValues.timeTravel.offset : GMT_UTC_OFFSET,
   );
 
+  const hasDimensions = dimensions.length > 0;
+
   const onSave = () => {
     save({
       dimensions: activeDimensions,
@@ -85,39 +87,41 @@ const AvailabilitySelectors = ({
   return (
     <>
       <div className="flex h-full w-full flex-grow flex-col gap-4 md:flex-row">
-        <div className="">
-          <PanelSectionTitle text={"Dimensions"} />
-          <div
-            className={clsx(
-              "grid w-max gap-4",
-              dimensions.length > 3 ? "grid-cols-2" : "grid-cols-1",
-            )}
-          >
-            {dimensions?.map(({ title, slug, values }) => (
-              <div key={slug} className="w-72">
-                <InputLabel text={title || slug} isRequired />
-                <Select
-                  variant="primary"
-                  options={values.map((value) => ({
-                    label: value.title || value.slug,
-                    value: value.slug,
-                  }))}
-                  selected={activeDimensions?.[slug]}
-                  onChange={(updatedValue) =>
-                    setActiveDimensions({
-                      ...activeDimensions,
-                      [slug]: updatedValue,
-                    })
-                  }
-                  disabled={isLoadingDimensions}
-                  placeholder={`Select ${title || slug || "Dimension"} value`}
-                  className="mt-1"
-                  renderInPortal
-                />
-              </div>
-            ))}
+        {(isLoadingDimensions || hasDimensions) && (
+          <div className="">
+            <PanelSectionTitle text={"Dimensions"} />
+            <div
+              className={clsx(
+                "grid w-max gap-4",
+                dimensions.length > 3 ? "grid-cols-2" : "grid-cols-1",
+              )}
+            >
+              {dimensions?.map(({ title, slug, values }) => (
+                <div key={slug} className="w-72">
+                  <InputLabel text={title || slug} isRequired />
+                  <Select
+                    variant="primary"
+                    options={values.map((value) => ({
+                      label: value.title || value.slug,
+                      value: value.slug,
+                    }))}
+                    selected={activeDimensions?.[slug]}
+                    onChange={(updatedValue) =>
+                      setActiveDimensions({
+                        ...activeDimensions,
+                        [slug]: updatedValue,
+                      })
+                    }
+                    disabled={isLoadingDimensions}
+                    placeholder={`Select ${title || slug || "Dimension"} value`}
+                    className="mt-1"
+                    renderInPortal
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
         <div className="mb-6 w-72">
           <PanelSectionTitle text={"Time"} />
           <div className="flex flex-col gap-4">
@@ -125,6 +129,7 @@ const AvailabilitySelectors = ({
               <InputLabel
                 text="Time Travel"
                 htmlFor="availability-picker-time-travel-input"
+                isRequired={!hasDimensions}
               />
               <input
                 onChange={(e) => setActiveTimeTravel(e.target.value)}
@@ -171,11 +176,13 @@ const AvailabilitySelectors = ({
           className="-mt-2"
           type="submit"
           disabled={
-            isLoadingDimensions ||
-            !dimensions ||
-            !activeDimensions ||
-            Object.values(activeDimensions).length !==
-              Object.values(dimensions).length
+            hasDimensions
+              ? isLoadingDimensions ||
+                !dimensions ||
+                !activeDimensions ||
+                Object.values(activeDimensions).length !==
+                  Object.values(dimensions).length
+              : !activeTimeTravel
           }
           onClick={onSave}
           success
@@ -233,6 +240,9 @@ export const AvailabilityPicker = ({
           {activeValues.dimensions && !activeValues.timeTravel && (
             <>Dimensions only</>
           )}
+          {!activeValues.dimensions && activeValues.timeTravel && (
+            <>Time travel only</>
+          )}
           {activeValues.dimensions && activeValues.timeTravel && (
             <>Dimensions & Time</>
           )}
@@ -254,6 +264,7 @@ export const AvailabilityPicker = ({
               });
               e.stopPropagation();
             }}
+            aria-label="clear availability"
           >
             <GrClose className="text-xs" />
           </button>
