@@ -30,12 +30,20 @@ import {
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 
-interface Tab {
+export interface ObjectSearchTab {
   id: string;
   name?: string;
   filters: SearchFilters;
   columnsState?: ObjectSearchInitialColumnsState;
 }
+
+type TabbedObjectSearchProps = Omit<
+  ObjectSearchProps,
+  | "initialFilters"
+  | "initialColumnState"
+  | "onFilterChange"
+  | "onColumnStateChange"
+>;
 
 const saveTabStateToStorage = (
   accountId: string,
@@ -44,7 +52,7 @@ const saveTabStateToStorage = (
     activeTabIndex,
     tabsScrollPosition,
   }: Partial<{
-    tabs: Tab[];
+    tabs: ObjectSearchTab[];
     activeTabIndex: number;
     tabsScrollPosition: number;
   }>,
@@ -82,7 +90,7 @@ const readTabStateFromStorage = (accountId: string) => {
   }
 
   try {
-    return JSON.parse(valueFromStorage) as Tab[];
+    return JSON.parse(valueFromStorage) as ObjectSearchTab[];
   } catch (err) {
     return null;
   }
@@ -107,7 +115,7 @@ const generateNewTab = (
   id?: string,
   filters?: Partial<SearchFilters>,
   columnsState?: ObjectSearchInitialColumnsState,
-): Tab => ({
+): ObjectSearchTab => ({
   id: id || uuidv4(),
   name,
   filters: {
@@ -160,7 +168,7 @@ const TabOverview = ({
   onTabDelete,
 }: {
   className?: string;
-  tab: Tab | null;
+  tab: ObjectSearchTab | null;
   onTabRename: (name: string) => void;
   onTabDelete: () => void;
 }) => {
@@ -177,10 +185,18 @@ const TabOverview = ({
                   onChange={setUpdatedName}
                   value={updatedName}
                   className="w-full text-sm md:w-80 md:text-base lg:w-96"
+                  aria-label="tab name input"
+                  onEnterKeyPress={() => {
+                    if (updatedName.length > 0) {
+                      onTabRename(updatedName);
+                      setUpdatedName(null);
+                    }
+                  }}
                 />
                 <Button
                   variant="ghost"
                   className="text-success"
+                  aria-label="save tab rename"
                   disabled={updatedName.length === 0}
                   onClick={() => {
                     onTabRename(updatedName);
@@ -192,6 +208,7 @@ const TabOverview = ({
                 <Button
                   variant="ghost"
                   className="text-error"
+                  aria-label="cancel tab rename"
                   onClick={() => {
                     setUpdatedName(null);
                   }}
@@ -208,6 +225,7 @@ const TabOverview = ({
                   onClick={() => {
                     setUpdatedName(tab.name || "");
                   }}
+                  aria-label="Rename active tab"
                 >
                   <Edit className="h-4 w-4" />
                 </Button>
@@ -215,6 +233,7 @@ const TabOverview = ({
                   variant="ghost"
                   className="text-manatee-400 hover:text-error"
                   onClick={onTabDelete}
+                  aria-label="Delete active tab"
                 >
                   <Trash className="h-4 w-4" />
                 </Button>
@@ -228,11 +247,11 @@ const TabOverview = ({
   );
 };
 
-export const TabbedObjectSearch = (props: ObjectSearchProps) => {
+export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
   const { accountId } = useUser();
 
   const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const [tabs, setTabs] = useState<Tab[] | undefined>(undefined);
+  const [tabs, setTabs] = useState<ObjectSearchTab[] | undefined>(undefined);
   const [initialTabsScrollPosition, setInitialTabsScrollPosition] = useState(0);
 
   useEffect(() => {
@@ -267,7 +286,7 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
   const activeTab = tabs?.[activeTabIndex];
 
   const onActiveTabChange = useCallback(
-    (updatedTab: Partial<Tab>) => {
+    (updatedTab: Partial<ObjectSearchTab>) => {
       const updatedTabs =
         tabs?.map((tab, index) => {
           if (index !== activeTabIndex) return tab;
@@ -318,7 +337,10 @@ export const TabbedObjectSearch = (props: ObjectSearchProps) => {
       {tabs && (
         <div className="flex h-full max-h-full w-full flex-col">
           <div className="md:mx-6 md:pt-4 lg:mx-10">
-            <div className="flex w-full items-end justify-between space-x-px border-b border-b-manatee-50 text-sm">
+            <div
+              data-testid="object-search-tabs"
+              className="flex w-full items-end justify-between space-x-px border-b border-b-manatee-50 text-sm"
+            >
               <ScrollableTabs
                 key={accountId}
                 initialScrollPosition={initialTabsScrollPosition}
