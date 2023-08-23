@@ -1,8 +1,8 @@
 import {
-  Cell,
   ColumnDef,
   Table,
   createColumnHelper,
+  Cell as ReactTableCell,
 } from "@tanstack/react-table";
 
 import { AvailabilityLabel } from "src/components/availability";
@@ -30,6 +30,8 @@ import {
   getObjectDisplayName,
   hasProperty,
 } from "src/lib/utils";
+
+import { Cell } from "./grids/cell.component";
 
 type ObjectSearchTableData = ParsedSkylarkObject & Record<string, string>;
 
@@ -67,7 +69,7 @@ export const columnsWithoutResize = [
 ];
 
 const isRowChecked = (
-  cell: Cell<ObjectSearchTableData, unknown>,
+  cell: ReactTableCell<ObjectSearchTableData, unknown>,
   table: Table<ObjectSearchTableData>,
 ) => Boolean(table.options.meta?.checkedRows?.includes(cell.row.index));
 
@@ -378,11 +380,10 @@ const selectColumn = columnHelper.display({
 
 export const createObjectListingColumns = (
   columns: string[],
-  hardcodedColumns: string[],
   opts: { withObjectSelect?: boolean; withPanel: boolean },
 ): ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[] => {
   const createdColumns = columns
-    .filter((column) => !hardcodedColumns.includes(column))
+    .filter((column) => !OBJECT_SEARCH_HARDCODED_COLUMNS.includes(column))
     .map((column) =>
       columnHelper.accessor(column, {
         id: column,
@@ -397,57 +398,19 @@ export const createObjectListingColumns = (
             const objectMeta = allObjectsMeta?.find(
               ({ name }) => name === object.objectType,
             );
-            const graphqlFieldConfig =
+            const normalisedField =
               objectMeta?.operations.create.inputs.find(
                 ({ name }) => name === column,
               ) || objectMeta?.fields.find(({ name }) => name === column);
 
-            // Pretty format dates
-            if (
-              graphqlFieldConfig?.type === "datetime" ||
-              graphqlFieldConfig?.type === "date" ||
-              graphqlFieldConfig?.type === "timestamp"
-            ) {
+            if (normalisedField) {
               return (
-                <>
-                  {is2038Problem(value) ? "Never" : formatReadableDate(value)}
-                </>
-              );
-            }
-
-            // Align numbers to the right
-            if (
-              graphqlFieldConfig?.type === "float" ||
-              graphqlFieldConfig?.type === "int"
-            ) {
-              return <span className="mr-1 block text-right">{value}</span>;
-            }
-
-            // Its possible for enum values to be removed from the Schema but exist as values, we can flag these as red
-            if (
-              graphqlFieldConfig?.type === "enum" &&
-              graphqlFieldConfig.enumValues &&
-              !graphqlFieldConfig.enumValues.includes(value)
-            ) {
-              return <span className="text-error">{value}</span>;
-            }
-
-            // Make URLs clickable to a new tab, little bit hardcoded to handle the SkylarkImage object
-            if (
-              graphqlFieldConfig?.type === "url" ||
-              (object.objectType === BuiltInSkylarkObjectType.SkylarkImage &&
-                ["url", "external_url"].includes(column))
-            ) {
-              return (
-                <a
-                  className="text-brand-primary hover:underline"
-                  href={value}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {value}
-                </a>
+                <Cell
+                  field={normalisedField}
+                  columnId={column}
+                  objectType={object.objectType}
+                  value={value}
+                />
               );
             }
           }

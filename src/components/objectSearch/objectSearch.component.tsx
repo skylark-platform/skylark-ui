@@ -183,14 +183,10 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
 
   const parsedTableColumns = useMemo(
     () =>
-      createObjectListingColumns(
-        sortedHeaders,
-        OBJECT_SEARCH_HARDCODED_COLUMNS,
-        {
-          withObjectSelect,
-          withPanel,
-        },
-      ),
+      createObjectListingColumns(sortedHeaders, {
+        withObjectSelect,
+        withPanel,
+      }),
     [sortedHeaders, withObjectSelect, withPanel],
   );
 

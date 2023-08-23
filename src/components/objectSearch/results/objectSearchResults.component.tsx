@@ -1,14 +1,10 @@
 import { CheckedState } from "@radix-ui/react-checkbox";
 import {
-  VisibilityState,
   ColumnDef,
   useReactTable,
   getCoreRowModel,
   Row,
   Header,
-  ColumnOrderState,
-  OnChangeFn,
-  ColumnSizingState,
   TableState,
   Updater,
 } from "@tanstack/react-table";

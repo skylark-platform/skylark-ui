@@ -38,7 +38,7 @@ const columnIds = [
   "synopsis_long",
 ];
 
-const columns = createObjectListingColumns(columnIds, [], { withPanel: false });
+const columns = createObjectListingColumns(columnIds, { withPanel: false });
 
 const visibleColumns: VisibilityState = Object.fromEntries(
   columnIds.map((column) => [column, true]),
