@@ -254,7 +254,7 @@ export const AvailabilityPicker = ({
             <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
           </div>
         </Popover.Button>
-        {activeValues.dimensions && (
+        {(activeValues.dimensions || activeValues.timeTravel) && (
           <button
             className="absolute inset-y-0 right-8 z-[1] flex items-center px-0.5"
             onClick={(e) => {

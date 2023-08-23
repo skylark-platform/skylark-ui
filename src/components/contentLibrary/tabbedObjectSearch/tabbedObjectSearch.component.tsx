@@ -248,7 +248,7 @@ const TabOverview = ({
 };
 
 export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
-  const { accountId } = useUser();
+  const { accountId, isLoading: isAccountLoading } = useUser();
 
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [tabs, setTabs] = useState<ObjectSearchTab[] | undefined>(undefined);
@@ -404,6 +404,13 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
               }
             />
           </div>
+        </div>
+      )}
+      {!tabs && !accountId && !isAccountLoading && (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-4 text-base">
+          <p className="text-3xl font-semibold">Something went wrong...</p>
+          <p>We are having trouble accessing your Skylark Account ID.</p>
+          <p>Please contact our Customer Success team.</p>
         </div>
       )}
     </>

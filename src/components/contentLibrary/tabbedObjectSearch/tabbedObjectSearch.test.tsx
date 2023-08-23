@@ -1,4 +1,7 @@
+import { graphql } from "msw";
+
 import AccountFixture from "src/__tests__/fixtures/skylark/queries/getUserAndAccount.json";
+import { server } from "src/__tests__/mocks/server";
 import {
   fireEvent,
   render,
@@ -7,6 +10,7 @@ import {
   within,
 } from "src/__tests__/utils/test-utils";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
 
 import {
   ObjectSearchTab,
@@ -227,6 +231,43 @@ test("Loads values from localStorage", async () => {
       2,
     );
   });
+});
+
+test("Shows error message when Account ID can't be loaded", async () => {
+  mockLocalStorage();
+
+  server.use(
+    // Override GET_USER_AND_ACCOUNT query so the Account ID empty
+    graphql.query("GET_USER_AND_ACCOUNT", (req, res, ctx) => {
+      const data: GQLSkylarkAccountResponse = {
+        getAccount: {
+          config: null,
+          account_id: "",
+          skylark_version: "latest",
+        },
+      };
+      return res(ctx.data(data));
+    }),
+  );
+
+  render(<TabbedObjectSearch />);
+
+  await waitFor(() => {
+    expect(screen.getByText("Something went wrong...")).toBeInTheDocument();
+  });
+
+  await waitFor(() => {
+    expect(screen.queryByText("Default View")).not.toBeInTheDocument();
+  });
+
+  expect(
+    screen.getByText(
+      "We are having trouble accessing your Skylark Account ID.",
+    ),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText("Please contact our Customer Success team."),
+  ).toBeInTheDocument();
 });
 
 describe("create button", () => {
