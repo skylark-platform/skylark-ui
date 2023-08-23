@@ -143,7 +143,8 @@ const AvailabilitySelectors = ({
                 )}
               />
             </div>
-            <TimezoneSelect
+            {/*  TODO TIMEZONE - enable after fixing datetime-local input */}
+            {/* <TimezoneSelect
               label="Timezone"
               labelVariant="form"
               disabled={!activeTimeTravel}
@@ -157,7 +158,7 @@ const AvailabilitySelectors = ({
                   ? () => setActiveTimeTravelOffset(GMT_UTC_OFFSET)
                   : undefined
               }
-            />
+            /> */}
           </div>
         </div>
       </div>
