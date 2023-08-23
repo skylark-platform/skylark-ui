@@ -375,7 +375,10 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
               </button>
             </div>
           </div>
-          <div className="mb-2 mr-2 mt-4 flex justify-between md:mr-8">
+          <div
+            className="mb-2 mr-2 mt-4 flex justify-between md:mr-8"
+            data-testid="object-search-tab-overview"
+          >
             <TabOverview
               tab={activeTab || null}
               className="ml-2 md:ml-12 lg:ml-16"
