@@ -71,7 +71,7 @@ export const Search = ({
     };
   }, [setFilterOpen]);
 
-  const onChangeWrapper = (
+  const onFilterSave = (
     updatedFilters: Partial<SearchFilters>,
     updatedColumnVisibility?: VisibilityState,
   ) => {
@@ -101,7 +101,9 @@ export const Search = ({
     >
       <div className="relative flex h-full w-full flex-grow flex-row">
         <SearchInput
-          onQueryChange={(query) => onChangeWrapper({ query })}
+          onQueryChange={(query) =>
+            onChange({ filters: { ...filters, query }, visibleColumns })
+          }
           searchQuery={filters.query}
           isSearching={isSearching}
           hideFilters={hideFilters}
@@ -127,7 +129,7 @@ export const Search = ({
                 )}
                 graphqlQuery={graphqlQuery}
                 objectTypesWithConfig={objectTypesWithConfig || []}
-                onFilterSave={onChangeWrapper}
+                onFilterSave={onFilterSave}
               />
             </m.div>
           )}
@@ -142,14 +144,21 @@ export const Search = ({
           name="object-listing-language-select"
           className="w-full sm:mr-2 md:w-36"
           selected={filters.language}
-          onChange={(language) => onChangeWrapper({ language })}
+          onChange={(language) =>
+            onChange({ filters: { ...filters, language }, visibleColumns })
+          }
           useDefaultLanguage
-          onValueClear={() => onChangeWrapper({ language: null })}
+          onValueClear={() =>
+            onChange({
+              filters: { ...filters, language: null },
+              visibleColumns,
+            })
+          }
         />
         <AvailabilityPicker
           activeValues={filters.availability}
           setActiveAvailability={(availability) =>
-            onChangeWrapper({ availability })
+            onChange({ filters: { ...filters, availability }, visibleColumns })
           }
         />
       </div>

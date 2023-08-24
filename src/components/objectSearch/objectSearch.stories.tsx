@@ -18,12 +18,12 @@ export const WithFiltersOpen = Template.bind({});
 WithFiltersOpen.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
-  const filtersButton = canvas.getByRole("button", {
-    name: "open-search-filters",
-  });
-
   await waitFor(() => {
     canvas.findAllByText("GOT Highest Rated Episodes");
+  });
+
+  const filtersButton = canvas.getByRole("button", {
+    name: "open-search-filters",
   });
 
   await userEvent.click(filtersButton);
