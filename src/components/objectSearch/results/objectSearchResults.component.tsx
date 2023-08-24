@@ -1,13 +1,12 @@
 import { CheckedState } from "@radix-ui/react-checkbox";
 import {
-  VisibilityState,
   ColumnDef,
   useReactTable,
   getCoreRowModel,
   Row,
   Header,
-  ColumnOrderState,
-  OnChangeFn,
+  TableState,
+  Updater,
 } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useRef, useState, useMemo, useCallback, memo } from "react";
@@ -15,7 +14,10 @@ import { VirtualItem, defaultRangeExtractor, useVirtual } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { PanelTab } from "src/hooks/state";
-import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
+import {
+  useAllObjectsMeta,
+  useSkylarkObjectTypesWithConfig,
+} from "src/hooks/useSkylarkObjectTypes";
 import {
   SkylarkObjectIdentifier,
   ParsedSkylarkObject,
@@ -46,13 +48,9 @@ export interface ObjectSearchResultsProps {
   searchData?: ParsedSkylarkObject[];
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
-  columnVisibility: VisibilityState;
-  columnOrder: ColumnOrderState;
-  frozenColumns: string[];
+  tableState: TableState;
   checkedObjects?: ParsedSkylarkObject[];
-  setColumnVisibility: OnChangeFn<VisibilityState>;
-  setColumnOrder: OnChangeFn<ColumnOrderState>;
-  setFrozenColumns: (cols: string[]) => void;
+  setTableState: (updater: Updater<TableState>) => void;
   onObjectCheckedChanged?: (o: ParsedSkylarkObject[]) => void;
 }
 
@@ -79,9 +77,7 @@ const splitVirtualColumns = (
 
 export const ObjectSearchResults = ({
   tableColumns,
-  columnVisibility,
-  columnOrder,
-  frozenColumns,
+  tableState,
   panelObject,
   setPanelObject,
   searchData,
@@ -91,13 +87,13 @@ export const ObjectSearchResults = ({
   checkedObjects,
   isFetchingNextPage,
   onObjectCheckedChanged,
-  setColumnVisibility,
-  setColumnOrder,
-  setFrozenColumns,
+  setTableState,
 }: ObjectSearchResultsProps) => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+
+  const { objects: objectsMeta } = useAllObjectsMeta(true);
 
   const formattedSearchData = useMemo(() => {
     const searchDataWithDisplayField = searchData?.map((obj) => {
@@ -228,8 +224,13 @@ export const ObjectSearchResults = ({
     hover: boolean;
   } | null>(null);
 
+  const frozenColumns = useMemo(
+    () => tableState.columnPinning.left || [],
+    [tableState.columnPinning.left],
+  );
+
   const showObjectTypeIndicator =
-    !columnVisibility[OBJECT_LIST_TABLE.columnIds.objectType] ||
+    !tableState.columnVisibility[OBJECT_LIST_TABLE.columnIds.objectType] ||
     frozenColumns.indexOf(OBJECT_LIST_TABLE.columnIds.objectTypeIndicator) +
       1 !==
       frozenColumns.indexOf(OBJECT_LIST_TABLE.columnIds.objectType);
@@ -241,19 +242,19 @@ export const ObjectSearchResults = ({
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: "onChange",
     state: {
+      ...tableState,
       columnVisibility: {
-        ...columnVisibility,
+        ...tableState.columnVisibility,
         [OBJECT_LIST_TABLE.columnIds.objectTypeIndicator]:
           showObjectTypeIndicator,
       },
-      columnOrder,
     },
-    onColumnOrderChange: setColumnOrder,
-    onColumnVisibilityChange: setColumnVisibility,
+    onStateChange: setTableState,
     meta: {
       activeObject: panelObject || null,
       checkedRows,
       objectTypesWithConfig,
+      objectsMeta,
       onRowCheckChange,
       batchCheckRows,
       onObjectClick: setPanelObject,
@@ -266,7 +267,7 @@ export const ObjectSearchResults = ({
     parentRef: tableContainerRef,
     size: formattedSearchData?.length ? formattedSearchData.length : 0,
     estimateSize: useCallback(() => 42, []),
-    paddingStart: 42, // Padding to handle the sticky headers, same as estimateSize
+    paddingStart: 32, // Padding to handle the sticky headers, same as estimateSize
     rangeExtractor: (range) => {
       const rangeAsSet = new Set([0, ...defaultRangeExtractor(range)]);
       return [...rangeAsSet];
@@ -275,7 +276,11 @@ export const ObjectSearchResults = ({
 
   const visibleColumns = table
     .getVisibleFlatColumns()
-    .sort((a, b) => columnOrder.indexOf(a.id) - columnOrder.indexOf(b.id));
+    .sort(
+      (a, b) =>
+        tableState.columnOrder.indexOf(a.id) -
+        tableState.columnOrder.indexOf(b.id),
+    );
 
   const frozenColumnsParsedColumnsIndexes = useMemo(
     () =>
@@ -307,6 +312,7 @@ export const ObjectSearchResults = ({
         ...frozenColumnsParsedColumnsIndexes,
         ...defaultRangeExtractor(range),
       ]);
+
       return [...rangeAsSet];
     },
   });
@@ -369,7 +375,9 @@ export const ObjectSearchResults = ({
         if (dropzoneColumnId) {
           // When the frozen columns are changed, unfreeze any hidden columns and move to the right of the frozen columns
           const orderedVisibleColumns = [...visibleColumns].sort(
-            (a, b) => columnOrder.indexOf(a.id) - columnOrder.indexOf(b.id),
+            (a, b) =>
+              tableState.columnOrder.indexOf(a.id) -
+              tableState.columnOrder.indexOf(b.id),
           );
 
           const columnIndex = orderedVisibleColumns.findIndex(
@@ -392,7 +400,7 @@ export const ObjectSearchResults = ({
           );
 
           if (columnsToBeUnfrozen.length > 0) {
-            const unfrozenColumns = columnOrder.filter(
+            const unfrozenColumns = tableState.columnOrder.filter(
               (col) => !updatedFrozenColumns.includes(col),
             );
 
@@ -401,10 +409,21 @@ export const ObjectSearchResults = ({
               ...unfrozenColumns,
             ];
 
-            setColumnOrder(updatedColumnOrder);
+            setTableState((prev) => ({
+              ...prev,
+              columnOrder: updatedColumnOrder,
+              columnPinning: {
+                left: updatedFrozenColumns,
+              },
+            }));
+          } else {
+            setTableState((prev) => ({
+              ...prev,
+              columnPinning: {
+                left: updatedFrozenColumns,
+              },
+            }));
           }
-
-          setFrozenColumns(updatedFrozenColumns);
         }
       }
 

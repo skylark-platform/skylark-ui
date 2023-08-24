@@ -1,11 +1,12 @@
 import {
-  Cell,
   ColumnDef,
   Table,
   createColumnHelper,
+  Cell as ReactTableCell,
 } from "@tanstack/react-table";
 
 import { AvailabilityLabel } from "src/components/availability";
+import { ExternalLink } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
@@ -16,8 +17,12 @@ import {
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectImageRelationship,
+  SkylarkAvailabilityField,
 } from "src/interfaces/skylark";
-import { formatReadableDate } from "src/lib/skylark/availability";
+import {
+  formatReadableDate,
+  is2038Problem,
+} from "src/lib/skylark/availability";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
   addCloudinaryOnTheFlyImageTransformation,
@@ -25,6 +30,10 @@ import {
   getObjectDisplayName,
   hasProperty,
 } from "src/lib/utils";
+
+import { Cell } from "./grids/cell.component";
+
+type ObjectSearchTableData = ParsedSkylarkObject & Record<string, string>;
 
 export const OBJECT_SEARCH_HARDCODED_COLUMNS = [
   OBJECT_LIST_TABLE.columnIds.displayField,
@@ -59,10 +68,12 @@ export const columnsWithoutResize = [
   OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
 ];
 
-const isRowChecked = (cell: Cell<object, unknown>, table: Table<object>) =>
-  Boolean(table.options.meta?.checkedRows?.includes(cell.row.index));
+const isRowChecked = (
+  cell: ReactTableCell<ObjectSearchTableData, unknown>,
+  table: Table<ObjectSearchTableData>,
+) => Boolean(table.options.meta?.checkedRows?.includes(cell.row.index));
 
-const columnHelper = createColumnHelper<object>();
+const columnHelper = createColumnHelper<ObjectSearchTableData>();
 
 // Issues with Safari means its safe to allow the drag icon have it's own column than use a pseudo field
 const dragIconColumn = columnHelper.display({
@@ -78,7 +89,7 @@ const dragIconColumn = columnHelper.display({
       .getColumn(OBJECT_LIST_TABLE.columnIds.objectTypeIndicator)
       ?.getIsVisible();
 
-    const original = row.original as ParsedSkylarkObject;
+    const original = row.original;
     const cellContext = cell.getContext();
 
     const { config }: { config: ParsedSkylarkObjectConfig | null } =
@@ -369,18 +380,43 @@ const selectColumn = columnHelper.display({
 
 export const createObjectListingColumns = (
   columns: string[],
-  hardcodedColumns: string[],
   opts: { withObjectSelect?: boolean; withPanel: boolean },
 ): ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[] => {
   const createdColumns = columns
-    .filter((column) => !hardcodedColumns.includes(column))
+    .filter((column) => !OBJECT_SEARCH_HARDCODED_COLUMNS.includes(column))
     .map((column) =>
       columnHelper.accessor(column, {
         id: column,
         header: formatObjectField(column),
         size: 200,
         minSize: 100,
-        cell: (props) => <>{props.cell.getValue() as string}</>,
+        cell: ({ cell, table, row: { original: object } }) => {
+          const allObjectsMeta = table.options.meta?.objectsMeta;
+          const value = cell.getValue();
+
+          if (allObjectsMeta) {
+            const objectMeta = allObjectsMeta?.find(
+              ({ name }) => name === object.objectType,
+            );
+            const normalisedField =
+              objectMeta?.operations.create.inputs.find(
+                ({ name }) => name === column,
+              ) || objectMeta?.fields.find(({ name }) => name === column);
+
+            if (normalisedField) {
+              return (
+                <Cell
+                  field={normalisedField}
+                  columnId={column}
+                  objectType={object.objectType}
+                  value={value}
+                />
+              );
+            }
+          }
+
+          return <>{value}</>;
+        },
       }),
     );
 
@@ -399,13 +435,14 @@ export const createObjectListingColumns = (
   ];
 
   if (opts.withObjectSelect) {
-    if (opts.withPanel) {
-      return [dragIconColumn, selectColumn, ...orderedColumnArray] as ColumnDef<
-        ParsedSkylarkObject,
-        ParsedSkylarkObject
-      >[];
-    }
-    return [selectColumn, ...orderedColumnArray] as ColumnDef<
+    // TODO eventually remove this option and rename dragIconColumn once the design is finalised
+    // if (opts.withPanel) {
+    //   return [dragIconColumn, selectColumn, ...orderedColumnArray] as ColumnDef<
+    //     ParsedSkylarkObject,
+    //     ParsedSkylarkObject
+    //   >[];
+    // }
+    return [dragIconColumn, selectColumn, ...orderedColumnArray] as ColumnDef<
       ParsedSkylarkObject,
       ParsedSkylarkObject
     >[];

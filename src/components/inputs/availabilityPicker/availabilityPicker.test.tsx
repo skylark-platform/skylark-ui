@@ -1,10 +1,16 @@
+import { graphql } from "msw";
+
+import { server } from "src/__tests__/mocks/server";
 import {
   fireEvent,
-  prettyDOM,
   render,
   screen,
   waitFor,
 } from "src/__tests__/utils/test-utils";
+import {
+  GQLSkylarkGetAvailabilityDimensions,
+  GQLSkylarkListAvailabilityDimensionsResponse,
+} from "src/interfaces/skylark";
 
 import { AvailabilityPicker } from "./availabilityPicker.component";
 
@@ -38,7 +44,9 @@ test("opens the Availability Picker when the button is clicked", async () => {
 
   fireEvent.click(screen.getByTestId("open-availability-picker"));
 
-  expect(screen.getByText("Dimensions")).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText("Dimensions")).toBeInTheDocument();
+  });
   expect(screen.getByText("Time travel")).toBeInTheDocument();
 
   await waitFor(() => {
@@ -118,7 +126,7 @@ test("selects dimensions, time travel and saves", async () => {
       "customer-types": "premium",
       "device-types": "pc",
     },
-    timeTravel: "2023-11-11T12:30",
+    timeTravel: { datetime: "2023-11-11T12:30", offset: "+00:00" },
   });
 });
 
@@ -147,5 +155,118 @@ test("clears existing values", async () => {
   expect(setActiveAvailability).toHaveBeenCalledWith({
     dimensions: null,
     timeTravel: null,
+  });
+});
+
+test("clears existing values using the select clear", async () => {
+  const setActiveAvailability = jest.fn();
+
+  render(
+    <AvailabilityPicker
+      activeValues={{
+        dimensions: { "customer-types": "premium", "device-types": "pc" },
+        timeTravel: null,
+      }}
+      setActiveAvailability={setActiveAvailability}
+    />,
+  );
+
+  fireEvent.click(screen.getByLabelText("clear availability"));
+
+  expect(setActiveAvailability).toHaveBeenCalledWith({
+    dimensions: null,
+    timeTravel: null,
+  });
+});
+
+test("shows Dimensions & Time when both dimensions and time travel are set", () => {
+  render(
+    <AvailabilityPicker
+      activeValues={{
+        dimensions: {
+          "customer-types": "premium",
+          "device-types": "pc",
+        },
+        timeTravel: { datetime: "2023-11-11T12:30", offset: "+00:00" },
+      }}
+      setActiveAvailability={jest.fn()}
+    />,
+  );
+
+  expect(screen.getByText("Dimensions & Time")).toBeInTheDocument();
+});
+
+test("does not show Dimensions when account has none", async () => {
+  server.use(
+    graphql.query("LIST_AVAILABILITY_DIMENSIONS", (req, res, ctx) => {
+      const data: GQLSkylarkListAvailabilityDimensionsResponse = {
+        listDimensions: {
+          next_token: "",
+          objects: [],
+        },
+      };
+      return res(ctx.data(data));
+    }),
+  );
+
+  render(
+    <AvailabilityPicker
+      activeValues={{
+        dimensions: null,
+        timeTravel: { datetime: "2023-11-11T12:30", offset: "+00:00" },
+      }}
+      setActiveAvailability={jest.fn()}
+    />,
+  );
+
+  expect(screen.getByText("Time travel only")).toBeInTheDocument();
+
+  fireEvent.click(screen.getByTestId("open-availability-picker"));
+
+  await waitFor(() => {
+    expect(screen.queryByText("Dimensions")).not.toBeInTheDocument();
+    expect(screen.queryByText("Device type")).not.toBeInTheDocument();
+    expect(screen.queryByText("Customer type")).not.toBeInTheDocument();
+  });
+});
+
+test("selects time travel when no Dimensions exist", () => {
+  const setActiveAvailability = jest.fn();
+
+  server.use(
+    graphql.query("LIST_AVAILABILITY_DIMENSIONS", (req, res, ctx) => {
+      const data: GQLSkylarkListAvailabilityDimensionsResponse = {
+        listDimensions: {
+          next_token: "",
+          objects: [],
+        },
+      };
+      return res(ctx.data(data));
+    }),
+  );
+
+  render(
+    <AvailabilityPicker
+      activeValues={{
+        dimensions: null,
+        timeTravel: null,
+      }}
+      setActiveAvailability={setActiveAvailability}
+    />,
+  );
+
+  fireEvent.click(screen.getByTestId("open-availability-picker"));
+
+  const saveButton = screen.getByText("Save");
+  expect(saveButton).toBeDisabled();
+
+  fireEvent.change(screen.getByLabelText("Time travel*"), {
+    target: { value: "2023-11-11T12:30" },
+  });
+  expect(saveButton).toBeEnabled();
+  fireEvent.click(saveButton);
+  expect(setActiveAvailability).toHaveBeenCalledWith({
+    dimensions: null,
+    timeTravel: { datetime: "2023-11-11T12:30", offset: "+00:00" },
   });
 });

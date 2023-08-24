@@ -10,6 +10,7 @@ import {
   getSingleAvailabilityStatus,
   getRelativeTimeFromDate,
   is2038Problem,
+  convertToUTCDate,
 } from "./availability";
 
 const now = dayjs();
@@ -169,5 +170,23 @@ describe("getRelativeTimeFromDate", () => {
       "2022-01-19T03:14:07.000Z",
     );
     expect(got).toEqual("Expired a year ago");
+  });
+});
+
+describe("convertToUTCDate", () => {
+  const date = "2022-10-30T12:30:00";
+  test("returns UTC date with GMT offset", () => {
+    const got = convertToUTCDate(date, null);
+    expect(got).toBe("2022-10-30T12:30:00+00:00");
+  });
+
+  test("returns UTC date with given offset", () => {
+    const got = convertToUTCDate(date, "-06:30");
+    expect(got).toBe("2022-10-30T12:30:00-06:30");
+  });
+
+  test("returns UTC date with given offset (where initial date has Z offset)", () => {
+    const got = convertToUTCDate(`${date}Z`, "-06:30");
+    expect(got).toBe("2022-10-30T12:30:00-06:30");
   });
 });

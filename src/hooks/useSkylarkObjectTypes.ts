@@ -58,7 +58,7 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
     () =>
       objectTypes?.map((objectType) => ({
         objectType,
-        config: parseObjectConfig(data?.[objectType]),
+        config: parseObjectConfig(objectType, data?.[objectType]),
       })),
     [data, objectTypes],
   );

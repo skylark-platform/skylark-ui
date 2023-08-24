@@ -12,6 +12,7 @@ import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObjectConfig,
+  SkylarkAvailabilityField,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,

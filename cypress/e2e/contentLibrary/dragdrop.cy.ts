@@ -42,6 +42,11 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             "./skylark/queries/getObject/allDevicesAllCustomersAvailability.json",
         });
       }
+      if (hasOperationName(req, "GET_USER_AND_ACCOUNT")) {
+        req.reply({
+          fixture: "./skylark/queries/getUserAndAccount.json",
+        });
+      }
 
       if (hasOperationName(req, "SEARCH")) {
         if (hasMatchingVariable(req, "queryString", "Homepage")) {

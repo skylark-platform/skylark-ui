@@ -25,14 +25,12 @@ describe("Content Library - Search", () => {
         });
       }
       if (hasOperationName(req, "SEARCH")) {
-        console.log({ req });
         if (
           hasMatchingVariable(req, "dimensions", [
             { dimension: "customer-types", value: "kids" },
             { dimension: "device-types", value: "pc" },
           ])
         ) {
-          console.log("SEARCH DIMENSIONS ");
           req.reply({
             fixture: "./skylark/queries/search/dimensionsKids.json",
           });
@@ -86,6 +84,11 @@ describe("Content Library - Search", () => {
       if (hasOperationName(req, "LIST_AVAILABILITY_DIMENSION_VALUES")) {
         req.reply({
           fixture: "./skylark/queries/listDimensionValues.json",
+        });
+      }
+      if (hasOperationName(req, "GET_USER_AND_ACCOUNT")) {
+        req.reply({
+          fixture: "./skylark/queries/getUserAndAccount.json",
         });
       }
     });
@@ -175,6 +178,38 @@ describe("Content Library - Search", () => {
   });
 
   it("filters to en-GB only got content", () => {
+    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
+      if (hasOperationName(req, "GET_USER_AND_ACCOUNT")) {
+        req.alias = "getUserAndAccountNoLanguage";
+        req.reply({
+          data: {
+            getUser: {
+              account: "testtest",
+              role: "ADMIN",
+              permissions: [
+                "READ",
+                "WRITE",
+                "IGNORE_AVAILABILITY",
+                "TIME_TRAVEL",
+                "ACCOUNT_SETUP",
+                "SELF_CONFIG",
+              ],
+            },
+            getAccount: {
+              config: {
+                default_language: null,
+              },
+              account_id: "testtest",
+              skylark_version: "230714.7.2",
+            },
+          },
+        });
+      }
+    });
+
+    cy.visit("/");
+    cy.wait("@introspectionQuery");
+
     cy.get('[role="combobox"]').type("en-GB");
     cy.get("[data-testid=select-options]").within(() => {
       cy.contains("en-GB").click();

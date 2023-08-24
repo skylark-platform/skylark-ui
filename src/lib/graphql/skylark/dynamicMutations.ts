@@ -88,6 +88,7 @@ export const createCreateObjectMutation = (
   }
 
   const parsedMetadata = parseMetadataForGraphQLRequest(
+    objectMeta.name,
     metadata,
     objectMeta.operations.update.inputs,
   );
@@ -147,6 +148,7 @@ export const createUpdateObjectMetadataMutation = (
     : metadata;
 
   const parsedMetadata = parseMetadataForGraphQLRequest(
+    objectMeta.name,
     metadataWithHiddenFieldsRemoved,
     objectMeta.operations.update.inputs,
   );

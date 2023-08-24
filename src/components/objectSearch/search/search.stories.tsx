@@ -38,7 +38,7 @@ const columnIds = [
   "synopsis_long",
 ];
 
-const columns = createObjectListingColumns(columnIds, [], { withPanel: false });
+const columns = createObjectListingColumns(columnIds, { withPanel: false });
 
 const visibleColumns: VisibilityState = Object.fromEntries(
   columnIds.map((column) => [column, true]),
@@ -51,13 +51,14 @@ const Template: ComponentStory<typeof Search> = (args) => {
 export const Default = Template.bind({});
 Default.args = {
   className: "w-[600px]",
-  activeFilters: {
+  filters: {
     objectTypes,
     language: "",
     availability: {
       dimensions: null,
       timeTravel: null,
     },
+    query: "",
   },
   columns,
   columnIds,

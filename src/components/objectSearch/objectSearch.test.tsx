@@ -58,37 +58,6 @@ test("renders search bar, filters with no objects returned", async () => {
   ).toBeInTheDocument();
 });
 
-describe("create button", () => {
-  test("renders create button", () => {
-    render(<ObjectSearch withCreateButtons setPanelObject={jest.fn()} />);
-
-    const createButton = screen.getByText("Create");
-
-    fireEvent.click(createButton);
-
-    const csvImportButton = screen.getByText("Import (CSV)");
-    expect(csvImportButton).toBeInTheDocument();
-    expect(csvImportButton.closest("a")).toHaveAttribute("href", "import/csv");
-  });
-
-  test("opens the create object modal", async () => {
-    render(<ObjectSearch withCreateButtons setPanelObject={jest.fn()} />);
-
-    const createButton = screen.getByText("Create");
-
-    fireEvent.click(createButton);
-
-    const createObjectButton = screen.getByText("Create Object");
-    expect(createObjectButton).toBeInTheDocument();
-
-    fireEvent.click(createObjectButton);
-
-    await waitFor(() =>
-      expect(screen.getByTestId("create-object-modal")).toBeInTheDocument(),
-    );
-  });
-});
-
 test("renders the info button on row hover when setPanelObject is given", async () => {
   render(<ObjectSearch setPanelObject={() => ""} />);
 
@@ -287,7 +256,7 @@ test("renders search results with language as null (no default)", async () => {
 });
 
 test("opens filters and deselects all object types", async () => {
-  render(<ObjectSearch defaultColumns={["uid"]} />);
+  render(<ObjectSearch initialColumnState={{ columns: ["uid"] }} />);
 
   await screen.findByText("Display field"); // Search for table header
 
@@ -329,7 +298,9 @@ test("manually filters to only en-gb translated objects", async () => {
 
   render(
     <ObjectSearch
-      defaultColumns={["uid", OBJECT_LIST_TABLE.columnIds.translation]}
+      initialColumnState={{
+        columns: ["uid", OBJECT_LIST_TABLE.columnIds.translation],
+      }}
     />,
   );
 
@@ -374,7 +345,9 @@ test("manually filters to only en-gb translated objects", async () => {
 test("automatically filters to only en-gb translated objects as its the user/account's default language", async () => {
   await render(
     <ObjectSearch
-      defaultColumns={["uid", OBJECT_LIST_TABLE.columnIds.translation]}
+      initialColumnState={{
+        columns: ["uid", OBJECT_LIST_TABLE.columnIds.translation],
+      }}
     />,
   );
 
@@ -404,7 +377,9 @@ test("clears the language filter", async () => {
   // Arrange
   render(
     <ObjectSearch
-      defaultColumns={["uid", OBJECT_LIST_TABLE.columnIds.translation]}
+      initialColumnState={{
+        columns: ["uid", OBJECT_LIST_TABLE.columnIds.translation],
+      }}
     />,
   );
 
@@ -421,7 +396,11 @@ test("clears the language filter", async () => {
   await screen.findByText(
     GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
   );
-  expect(screen.queryAllByText("en-GB").length).toBeGreaterThan(1);
+
+  await waitFor(() => {
+    expect(screen.queryAllByText("en-GB").length).toBeGreaterThan(1);
+  });
+
   expect(screen.queryAllByText("pt-PT")).toHaveLength(0);
 
   // Act

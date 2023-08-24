@@ -10,7 +10,7 @@ export const Hamburger = ({ onClick, className }: Props) => (
   <button
     onClick={onClick}
     id="mobile-nav-toggle"
-    className={clsx("z-50 text-3xl", className)}
+    className={clsx("z-50 text-2xl", className)}
   >
     <SlMenu />
   </button>

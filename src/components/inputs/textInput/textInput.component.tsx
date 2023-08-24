@@ -9,6 +9,7 @@ interface TextInputProps {
   label?: string;
   tabIndex?: number;
   withCopy?: boolean;
+  onEnterKeyPress?: () => void;
 }
 
 export const TextInput = ({
@@ -17,6 +18,8 @@ export const TextInput = ({
   className,
   label,
   withCopy,
+  onEnterKeyPress,
+  ...props
 }: TextInputProps) => (
   <div className="relative flex flex-col">
     {label && (
@@ -28,12 +31,22 @@ export const TextInput = ({
       </label>
     )}
     <input
-      className={clsx("rounded bg-manatee-50 p-2", className)}
+      className={clsx("rounded bg-manatee-50 p-1 md:p-2", className)}
       type="text"
       id={label}
       name={label}
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      onKeyDown={
+        onEnterKeyPress
+          ? (e) => {
+              if (e.key === "Enter") {
+                onEnterKeyPress();
+              }
+            }
+          : undefined
+      }
+      {...props}
     />
     {withCopy && (
       <CopyToClipboard value={value} className="absolute right-3 top-9" />

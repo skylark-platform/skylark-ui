@@ -10,6 +10,7 @@ export type SkylarkObjectConfigFieldType =
   | "STRING"
   | "TEXTAREA"
   | "WYSIWYG"
+  | "TIMEZONE"
   | null;
 
 export interface SkylarkGraphQLObjectConfig {

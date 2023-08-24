@@ -19,6 +19,7 @@ import {
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
+import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
@@ -28,6 +29,7 @@ import {
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
+  SkylarkAvailabilityField,
 } from "src/interfaces/skylark";
 import {
   formatReadableDate,
@@ -316,18 +318,22 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                 }[] = [
                   {
                     label: "Start",
-                    key: "start",
-                    value: formatReadableDate(obj.start),
+                    key: SkylarkAvailabilityField.Start,
+                    value: formatReadableDate(
+                      obj[SkylarkAvailabilityField.Start],
+                    ),
                   },
                   {
                     label: "End",
-                    key: "end",
-                    value: neverExpires ? "Never" : formatReadableDate(obj.end),
+                    key: SkylarkAvailabilityField.End,
+                    value: neverExpires
+                      ? "Never"
+                      : formatReadableDate(obj[SkylarkAvailabilityField.End]),
                   },
                   {
                     label: "Timezone",
-                    key: "timezone",
-                    value: obj.timezone || "",
+                    key: SkylarkAvailabilityField.Timezone,
+                    value: obj[SkylarkAvailabilityField.Timezone] || "",
                   },
                 ];
                 return (
@@ -422,7 +428,10 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
           title={`Add Availability`}
           isOpen={objectSearchModalOpen}
           objectTypes={[BuiltInSkylarkObjectType.Availability]}
-          columns={availabilityObjectMeta.fields.map(({ name }) => name)}
+          columns={[
+            OBJECT_LIST_TABLE.columnIds.displayField,
+            ...availabilityObjectMeta.fields.map(({ name }) => name),
+          ]}
           closeModal={() => setObjectSearchModalOpen(false)}
           onModalClose={({ checkedObjects }) => {
             const { addedObjects, errors } = handleDroppedAvailabilities({

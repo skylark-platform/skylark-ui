@@ -2,25 +2,19 @@ import { ColumnDef, VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
 import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode } from "graphql";
-import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 
-import {
-  AvailabilityPicker,
-  AvailabilityPickerValues,
-} from "src/components/inputs/availabilityPicker/availabilityPicker.component";
+import { AvailabilityPicker } from "src/components/inputs/availabilityPicker/availabilityPicker.component";
 import { LanguageSelect } from "src/components/inputs/select";
 import { SearchFilter } from "src/components/objectSearch/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
-import { hasProperty } from "src/lib/utils";
 
 import { SearchInput } from "./searchInput/searchInput.component";
 
 interface SearchBarProps {
-  searchQuery: string;
-  activeFilters: SearchFilters;
+  filters: SearchFilters;
   columns: ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[];
   columnIds: string[];
   visibleColumns: VisibilityState;
@@ -31,11 +25,12 @@ interface SearchBarProps {
     variables: object;
   };
   hideFilters?: boolean;
-  onQueryChange: (str: string) => void;
-  onColumnVisibilityChange: (c: VisibilityState) => void;
-  onLanguageChange: (l: SearchFilters["language"]) => void;
-  onObjectTypeChange: (o: SearchFilters["objectTypes"]) => void;
-  onActiveAvailabilityChange: (args: AvailabilityPickerValues) => void;
+  onChange: (
+    o: Partial<{
+      filters: SearchFilters;
+      visibleColumns: VisibilityState;
+    }>,
+  ) => void;
   onRefresh: () => void;
 }
 
@@ -44,20 +39,13 @@ export const Search = ({
   columns,
   columnIds,
   visibleColumns,
-  searchQuery,
   graphqlQuery,
   isSearching,
-  activeFilters,
+  filters,
   hideFilters,
-  onQueryChange,
-  onColumnVisibilityChange,
-  onLanguageChange,
-  onObjectTypeChange,
-  onActiveAvailabilityChange,
+  onChange,
   onRefresh,
 }: SearchBarProps) => {
-  const { query } = useRouter();
-
   const [isFilterOpen, setFilterOpen] = useState(false);
 
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
@@ -85,13 +73,18 @@ export const Search = ({
     };
   }, [setFilterOpen]);
 
-  const onFilterSaveWrapper = (
-    objectTypes: SearchFilters["objectTypes"],
-    columnVisibility: VisibilityState,
+  const onFilterSave = (
+    updatedFilters: Partial<SearchFilters>,
+    updatedColumnVisibility?: VisibilityState,
   ) => {
     setFilterOpen(false);
-    onObjectTypeChange(objectTypes);
-    onColumnVisibilityChange(columnVisibility);
+    onChange({
+      filters: {
+        ...filters,
+        ...updatedFilters,
+      },
+      visibleColumns: updatedColumnVisibility,
+    });
   };
 
   const columnOptions = columnIds.map((value) => ({
@@ -110,8 +103,10 @@ export const Search = ({
     >
       <div className="relative flex h-full w-full flex-grow flex-row">
         <SearchInput
-          onQueryChange={onQueryChange}
-          searchQuery={searchQuery}
+          onQueryChange={(query) =>
+            onChange({ filters: { ...filters, query } })
+          }
+          searchQuery={filters.query}
           isSearching={isSearching}
           hideFilters={hideFilters}
           toggleFilterOpen={() => setFilterOpen(!isFilterOpen)}
@@ -129,14 +124,14 @@ export const Search = ({
               className="absolute left-0 top-10 z-50 w-full md:top-14 md:w-auto"
             >
               <SearchFilter
-                activeObjectTypes={activeFilters.objectTypes}
+                activeObjectTypes={filters.objectTypes}
                 columns={columnOptions}
                 visibleColumns={Object.keys(visibleColumns).filter(
                   (column) => visibleColumns[column],
                 )}
                 graphqlQuery={graphqlQuery}
                 objectTypesWithConfig={objectTypesWithConfig || []}
-                onFilterSave={onFilterSaveWrapper}
+                onFilterSave={onFilterSave}
               />
             </m.div>
           )}
@@ -150,14 +145,22 @@ export const Search = ({
           variant="primary"
           name="object-listing-language-select"
           className="w-full sm:mr-2 md:w-36"
-          selected={activeFilters.language}
-          onChange={onLanguageChange}
+          selected={filters.language}
+          onChange={(language) =>
+            onChange({ filters: { ...filters, language } })
+          }
           useDefaultLanguage
-          onValueClear={() => onLanguageChange(null)}
+          onValueClear={() =>
+            onChange({
+              filters: { ...filters, language: null },
+            })
+          }
         />
         <AvailabilityPicker
-          activeValues={activeFilters.availability}
-          setActiveAvailability={onActiveAvailabilityChange}
+          activeValues={filters.availability}
+          setActiveAvailability={(availability) =>
+            onChange({ filters: { ...filters, availability } })
+          }
         />
       </div>
     </div>

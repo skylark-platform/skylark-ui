@@ -29,7 +29,6 @@ import {
   DragEndEvent,
   DragStartEvent,
   DragType,
-  useDndMonitor,
   useDraggable,
   useDroppable,
 } from "src/lib/dndkit/dndkit";

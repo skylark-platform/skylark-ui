@@ -337,6 +337,41 @@ describe("renders inputs", () => {
     );
     expect(editorTextarea).toHaveStyle({ visibility: "hidden" });
   });
+
+  test("renders the timezone select when the field config is TIMEZONE", async () => {
+    const { field } = testFieldConfigs.string;
+    render(
+      <WrappedSkylarkObjectFieldInput
+        config={{
+          ...field,
+          type: "string",
+        }}
+        fieldConfig={{
+          name: field.name,
+          fieldType: "TIMEZONE",
+          position: 0,
+        }}
+      />,
+    );
+
+    const combobox = screen.getByPlaceholderText(
+      `Select ${formatObjectField(field.name)}`,
+    );
+    expect(combobox).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(combobox).not.toBeDisabled();
+    });
+
+    expect(combobox).toHaveTextContent("");
+    fireEvent.change(combobox, {
+      target: { value: "03:00" },
+    });
+
+    const gotOptions = screen.queryAllByRole("option");
+    expect(gotOptions.length).toBe(2);
+    expect(gotOptions[1]).toHaveTextContent("+03:00");
+  });
 });
 
 test("copies the value to the clipboard", async () => {

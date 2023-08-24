@@ -55,7 +55,8 @@ export const Button = forwardRef(
         "btn-neutral bg-manatee-50 hover:bg-manatee-100 border-none",
       variant === "outline" &&
         "btn-outline btn-primary disabled:border-none disabled:shadow",
-      variant === "ghost" && "btn-ghost text-black hover:bg-transparent p-0",
+      variant === "ghost" &&
+        "btn-ghost text-black hover:bg-transparent p-0 disabled:bg-transparent",
       variant === "link" && "btn-link",
       variant === "form" &&
         "p-0 h-auto min-h-0 btn-ghost hover:bg-transparent opacity-30 transition-opacity hover:opacity-100 active:opacity-60",

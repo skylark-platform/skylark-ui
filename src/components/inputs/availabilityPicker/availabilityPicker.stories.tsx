@@ -45,7 +45,10 @@ ButtonWithDimensionsAndTimeTravel.args = {
       "customer-types": "premium",
       affiliates: "affiliate-1",
     },
-    timeTravel: "2023-11-11T12:30:00Z",
+    timeTravel: {
+      datetime: "2023-11-11T12:30:00Z",
+      offset: "+06:00",
+    },
   },
 };
 
@@ -70,7 +73,10 @@ OpenWithValues.args = {
       "customer-types": "premium",
       affiliates: "affiliate-1",
     },
-    timeTravel: "2023-11-11T12:30:00Z",
+    timeTravel: {
+      datetime: "2023-11-11T12:30:00Z",
+      offset: "+06:00",
+    },
   },
 };
 OpenWithValues.play = async ({ canvasElement }) => {

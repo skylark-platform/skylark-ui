@@ -60,11 +60,14 @@ test("changes checkboxes and calls onFilterSave when apply is clicked", async ()
 
   fireEvent.click(screen.getByText("Apply"));
 
-  expect(onFilterSave).toHaveBeenCalledWith(["Brand", "Episode"], {
-    external_id: true,
-    slug: false,
-    uid: true,
-  });
+  expect(onFilterSave).toHaveBeenCalledWith(
+    { objectTypes: ["Brand", "Episode"] },
+    {
+      external_id: true,
+      slug: false,
+      uid: true,
+    },
+  );
 });
 
 test("when reset is clicked, all filters are returned to all options checked without saving", async () => {
