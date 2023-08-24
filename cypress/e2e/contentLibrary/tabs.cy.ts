@@ -158,6 +158,11 @@ describe("Content Library - Search", () => {
       cy.contains("New tab name");
     });
 
+    // Check UID column is shown
+    cy.get("[data-testid=object-search-results-content]").within(() => {
+      cy.contains("UID").should("exist");
+    });
+
     // Select Filters
     cy.contains("Filters").click();
 
@@ -174,8 +179,7 @@ describe("Content Library - Search", () => {
     columnsFilters.contains("Toggle all").click();
     cy.contains("Apply").should("be.disabled");
     [
-      "title",
-      "uid",
+      "skylark-ui-display-field",
       "external_id",
       "title_short",
       "synopsis",
@@ -185,6 +189,11 @@ describe("Content Library - Search", () => {
     });
 
     cy.contains("Apply").click();
+
+    // Check UID column is hidden
+    cy.get("[data-testid=object-search-results-content]").within(() => {
+      cy.contains("UID").should("not.exist");
+    });
 
     // Select Language
     cy.get('[role="combobox"]').clear().type("pt-PT");
@@ -209,19 +218,26 @@ describe("Content Library - Search", () => {
     });
     cy.contains("PC").click();
 
+    // Select Time Travel
+    cy.get("[data-testid=availability-picker]").within(() => {
+      cy.get("#availability-picker-time-travel-input").type(
+        "2022-12-30T14:20:00",
+      );
+    });
+
     cy.get("[data-testid=availability-picker]").within(() => {
       cy.contains("Save").click();
     });
 
     cy.get("[data-testid=open-availability-picker]").contains(
-      "Dimensions only",
+      "Dimensions & Time",
     );
 
     // Final check for the Availability Status
     cy.get("[data-testid=object-search-tab-overview]").within(() => {
       cy.contains("New tab name");
       cy.contains(
-        "Brand, Season, Episode & Movie objects available to Kids & PC users translated to pt-PT",
+        "Brand, Season, Episode & Movie objects available to Kids & PC users on Fri, Dec 30, 2022 2:20 PM (+00:00) translated to pt-PT",
       );
     });
 
@@ -231,8 +247,61 @@ describe("Content Library - Search", () => {
     cy.get("[data-testid=object-search-tab-overview]").within(() => {
       cy.contains("New tab name");
       cy.contains(
-        "Brand, Season, Episode & Movie objects available to Kids & PC users translated to pt-PT",
+        "Brand, Season, Episode & Movie objects available to Kids & PC users on Fri, Dec 30, 2022 2:20 PM (+00:00) translated to pt-PT",
       );
+    });
+
+    // Check UID column is still hidden after refresh
+    cy.get("[data-testid=object-search-results-content]").within(() => {
+      cy.contains("UID").should("not.exist");
+    });
+  });
+
+  // This was a bug
+  it("Modifies the visible columns and reloads the page to verify state is stored", () => {
+    cy.get("[data-testid=object-search-tab-overview]").within(() => {
+      cy.contains("Default View");
+    });
+
+    // Check UID column is shown
+    cy.get("[data-testid=object-search-results-content]").within(() => {
+      cy.contains("UID").should("exist");
+    });
+
+    // Select Filters
+    cy.contains("Filters").click();
+
+    const columnsFilters = cy.get("[data-testid=checkbox-grid-columns]");
+
+    columnsFilters.contains("Toggle all").click();
+    cy.contains("Apply").should("be.disabled");
+    [
+      "skylark-ui-display-field",
+      "external_id",
+      "title_short",
+      "synopsis",
+      "synopsis_short",
+    ].forEach((field) => {
+      columnsFilters.get(`#checkbox-columns-${field}`).click();
+    });
+
+    cy.contains("Apply").click();
+
+    // Check UID column is hidden
+    cy.get("[data-testid=object-search-results-content]").within(() => {
+      cy.contains("UID").should("not.exist");
+    });
+
+    // Reload and verify
+    cy.reload();
+
+    cy.get("[data-testid=object-search-tab-overview]").within(() => {
+      cy.contains("Default View");
+    });
+
+    // Check UID column is still hidden after refresh
+    cy.get("[data-testid=object-search-results-content]").within(() => {
+      cy.contains("UID").should("not.exist");
     });
   });
 });

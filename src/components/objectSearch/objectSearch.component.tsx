@@ -318,7 +318,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             visibleColumns={tableState.columnVisibility}
             hideFilters={props.hideSearchFilters}
             onColumnVisibilityChange={(columnVisibility) =>
-              setTableState((prev) => ({
+              handleTableStateChange((prev) => ({
                 ...prev,
                 columnVisibility,
               }))
