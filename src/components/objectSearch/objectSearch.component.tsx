@@ -237,10 +237,16 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
           order: tableState.columnOrder,
           columns: visibleColumns,
           frozen: tableState.columnPinning.left || [],
+          sizes: tableState.columnSizing,
         },
       });
     },
-    [onStateChange, tableState.columnOrder, tableState.columnPinning.left],
+    [
+      onStateChange,
+      tableState.columnOrder,
+      tableState.columnPinning.left,
+      tableState.columnSizing,
+    ],
   );
 
   const handleTableStateChange = useCallback(
@@ -261,6 +267,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             order: updatedTableState.columnOrder,
             columns: visibleColumns,
             frozen: updatedTableState.columnPinning.left || [],
+            sizes: updatedTableState.columnSizing,
           },
         });
       }
