@@ -210,23 +210,30 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   const handleSearchFilterChange = useCallback(
     ({
       filters,
-      visibleColumns: columnVisibility,
-    }: {
+      visibleColumns: updatedVisibleColumns,
+    }: Partial<{
       filters: SearchFilters;
       visibleColumns: VisibilityState;
-    }) => {
-      const visibleColumns = Object.entries(columnVisibility)
-        .filter(([, value]) => !!value)
-        .map(([key]) => key);
+    }>) => {
+      const visibleColumns =
+        updatedVisibleColumns &&
+        Object.entries(updatedVisibleColumns)
+          .filter(([, value]) => !!value)
+          .map(([key]) => key);
 
-      setSearchFilters(filters);
-      setTableState((prev) => ({
-        ...prev,
-        columnVisibility,
-      }));
+      if (filters) {
+        setSearchFilters(filters);
+      }
+
+      if (updatedVisibleColumns) {
+        setTableState((prev) => ({
+          ...prev,
+          columnVisibility: updatedVisibleColumns,
+        }));
+      }
       onStateChange?.({
         filters,
-        columns: {
+        columns: visibleColumns && {
           order: tableState.columnOrder,
           columns: visibleColumns,
           frozen: tableState.columnPinning.left || [],

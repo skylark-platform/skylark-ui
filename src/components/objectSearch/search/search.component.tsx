@@ -25,10 +25,12 @@ interface SearchBarProps {
     variables: object;
   };
   hideFilters?: boolean;
-  onChange: (o: {
-    filters: SearchFilters;
-    visibleColumns: VisibilityState;
-  }) => void;
+  onChange: (
+    o: Partial<{
+      filters: SearchFilters;
+      visibleColumns: VisibilityState;
+    }>,
+  ) => void;
   onRefresh: () => void;
 }
 
@@ -81,7 +83,7 @@ export const Search = ({
         ...filters,
         ...updatedFilters,
       },
-      visibleColumns: updatedColumnVisibility || visibleColumns,
+      visibleColumns: updatedColumnVisibility,
     });
   };
 
@@ -102,7 +104,7 @@ export const Search = ({
       <div className="relative flex h-full w-full flex-grow flex-row">
         <SearchInput
           onQueryChange={(query) =>
-            onChange({ filters: { ...filters, query }, visibleColumns })
+            onChange({ filters: { ...filters, query } })
           }
           searchQuery={filters.query}
           isSearching={isSearching}
@@ -145,20 +147,19 @@ export const Search = ({
           className="w-full sm:mr-2 md:w-36"
           selected={filters.language}
           onChange={(language) =>
-            onChange({ filters: { ...filters, language }, visibleColumns })
+            onChange({ filters: { ...filters, language } })
           }
           useDefaultLanguage
           onValueClear={() =>
             onChange({
               filters: { ...filters, language: null },
-              visibleColumns,
             })
           }
         />
         <AvailabilityPicker
           activeValues={filters.availability}
           setActiveAvailability={(availability) =>
-            onChange({ filters: { ...filters, availability }, visibleColumns })
+            onChange({ filters: { ...filters, availability } })
           }
         />
       </div>
