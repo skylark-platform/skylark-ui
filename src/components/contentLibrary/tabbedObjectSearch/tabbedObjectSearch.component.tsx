@@ -293,7 +293,11 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
 
           return {
             ...tab,
-            ...updatedTab,
+            ...{
+              ...updatedTab,
+              columnsState: updatedTab.columnsState || tab.columnsState,
+              filters: updatedTab.filters || tab.filters,
+            },
           };
         }) || [];
 
@@ -401,9 +405,8 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
               {...props}
               initialFilters={activeTab?.filters}
               initialColumnState={activeTab?.columnsState}
-              onFilterChange={(filters) => onActiveTabChange({ filters })}
-              onColumnStateChange={(columnsState) =>
-                onActiveTabChange({ columnsState })
+              onStateChange={({ filters, columns: columnsState }) =>
+                onActiveTabChange({ filters, columnsState })
               }
             />
           </div>

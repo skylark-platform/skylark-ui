@@ -325,7 +325,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                   },
                   {
                     label: "End",
-                    key: SkylarkAvailabilityField.Start,
+                    key: SkylarkAvailabilityField.End,
                     value: neverExpires
                       ? "Never"
                       : formatReadableDate(obj[SkylarkAvailabilityField.End]),

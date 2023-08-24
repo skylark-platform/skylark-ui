@@ -24,7 +24,7 @@ interface SearchFilterProps {
     variables: object;
   };
   onFilterSave: (
-    objectTypes: SearchFilters["objectTypes"],
+    filters: Partial<SearchFilters>,
     columnVisibility: VisibilityState,
   ) => void;
 }
@@ -59,7 +59,7 @@ export const SearchFilter = ({
 
   const makeFiltersActive = () => {
     onFilterSave(
-      updatedObjectTypes,
+      { objectTypes: updatedObjectTypes },
       convertCheckedColumnsToVisibilityState(
         updatedVisibleColumns,
         columns.map(({ value }) => value),

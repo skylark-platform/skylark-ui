@@ -51,8 +51,10 @@ export interface ObjectSearchProps {
   setPanelObject?: ObjectSearchResultsProps["setPanelObject"];
   checkedObjects?: ObjectSearchResultsProps["checkedObjects"];
   onObjectCheckedChanged?: ObjectSearchResultsProps["onObjectCheckedChanged"];
-  onFilterChange?: (f: SearchFilters) => void;
-  onColumnStateChange?: (c: ObjectSearchInitialColumnsState) => void;
+  onStateChange?: (s: {
+    filters?: SearchFilters;
+    columns?: ObjectSearchInitialColumnsState;
+  }) => void;
 }
 
 const initialFrozenColumns = [
@@ -102,8 +104,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     initialColumnState,
     onObjectCheckedChanged,
     withObjectSelect,
-    onFilterChange,
-    onColumnStateChange,
+    onStateChange,
   } = props;
 
   const withPanel = typeof setPanelObject !== "undefined";
@@ -119,11 +120,6 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
       timeTravel: null,
     },
   });
-
-  const setSearchFiltersWrapper = (updatedFilters: SearchFilters) => {
-    setSearchFilters(updatedFilters);
-    onFilterChange?.(updatedFilters);
-  };
 
   const {
     data: searchData,
@@ -211,11 +207,40 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     rowSelection: {},
   });
 
+  const handleSearchFilterChange = useCallback(
+    ({
+      filters,
+      visibleColumns: columnVisibility,
+    }: {
+      filters: SearchFilters;
+      visibleColumns: VisibilityState;
+    }) => {
+      const visibleColumns = Object.entries(columnVisibility)
+        .filter(([, value]) => !!value)
+        .map(([key]) => key);
+
+      setSearchFilters(filters);
+      setTableState((prev) => ({
+        ...prev,
+        columnVisibility,
+      }));
+      onStateChange?.({
+        filters,
+        columns: {
+          order: tableState.columnOrder,
+          columns: visibleColumns,
+          frozen: tableState.columnPinning.left || [],
+        },
+      });
+    },
+    [onStateChange, tableState.columnOrder, tableState.columnPinning.left],
+  );
+
   const handleTableStateChange = useCallback(
     (tableStateUpdater: Updater<TableState>) => {
       setTableState(tableStateUpdater);
 
-      if (onColumnStateChange) {
+      if (onStateChange) {
         const updatedTableState = handleUpdater(tableStateUpdater, tableState);
 
         const visibleColumns = Object.entries(
@@ -224,14 +249,16 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
           .filter(([, value]) => !!value)
           .map(([key]) => key);
 
-        onColumnStateChange({
-          order: updatedTableState.columnOrder,
-          columns: visibleColumns,
-          frozen: updatedTableState.columnPinning.left || [],
+        onStateChange({
+          columns: {
+            order: updatedTableState.columnOrder,
+            columns: visibleColumns,
+            frozen: updatedTableState.columnPinning.left || [],
+          },
         });
       }
     },
-    [onColumnStateChange, tableState],
+    [onStateChange, tableState],
   );
 
   const defaultColumnOrder = useMemo(
@@ -311,18 +338,12 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
               ...searchFilters,
               objectTypes: searchFilters.objectTypes || objectTypes || null,
             }}
-            onFiltersChange={setSearchFiltersWrapper}
             onRefresh={refetch}
             columns={parsedTableColumns}
             columnIds={sortedHeaders}
             visibleColumns={tableState.columnVisibility}
             hideFilters={props.hideSearchFilters}
-            onColumnVisibilityChange={(columnVisibility) =>
-              handleTableStateChange((prev) => ({
-                ...prev,
-                columnVisibility,
-              }))
-            }
+            onChange={handleSearchFilterChange}
           />
           <div className="mt-2 flex w-full justify-start pl-3 md:pl-7">
             <p className="text-xs font-medium text-manatee-400">

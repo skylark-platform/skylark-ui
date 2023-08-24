@@ -25,8 +25,10 @@ interface SearchBarProps {
     variables: object;
   };
   hideFilters?: boolean;
-  onFiltersChange: (f: SearchFilters) => void;
-  onColumnVisibilityChange: (c: VisibilityState) => void;
+  onChange: (o: {
+    filters: SearchFilters;
+    visibleColumns: VisibilityState;
+  }) => void;
   onRefresh: () => void;
 }
 
@@ -39,8 +41,7 @@ export const Search = ({
   isSearching,
   filters,
   hideFilters,
-  onFiltersChange,
-  onColumnVisibilityChange,
+  onChange,
   onRefresh,
 }: SearchBarProps) => {
   const [isFilterOpen, setFilterOpen] = useState(false);
@@ -70,22 +71,18 @@ export const Search = ({
     };
   }, [setFilterOpen]);
 
-  const handleFilterChange = (updatedFilters: Partial<SearchFilters>) => {
-    onFiltersChange({
-      ...filters,
-      ...updatedFilters,
-    });
-  };
-
-  const onFilterSaveWrapper = (
-    objectTypes: SearchFilters["objectTypes"],
-    columnVisibility: VisibilityState,
+  const onChangeWrapper = (
+    updatedFilters: Partial<SearchFilters>,
+    updatedColumnVisibility?: VisibilityState,
   ) => {
     setFilterOpen(false);
-    handleFilterChange({
-      objectTypes,
+    onChange({
+      filters: {
+        ...filters,
+        ...updatedFilters,
+      },
+      visibleColumns: updatedColumnVisibility || visibleColumns,
     });
-    onColumnVisibilityChange(columnVisibility);
   };
 
   const columnOptions = columnIds.map((value) => ({
@@ -104,7 +101,7 @@ export const Search = ({
     >
       <div className="relative flex h-full w-full flex-grow flex-row">
         <SearchInput
-          onQueryChange={(query) => handleFilterChange({ query })}
+          onQueryChange={(query) => onChangeWrapper({ query })}
           searchQuery={filters.query}
           isSearching={isSearching}
           hideFilters={hideFilters}
@@ -130,7 +127,7 @@ export const Search = ({
                 )}
                 graphqlQuery={graphqlQuery}
                 objectTypesWithConfig={objectTypesWithConfig || []}
-                onFilterSave={onFilterSaveWrapper}
+                onFilterSave={onChangeWrapper}
               />
             </m.div>
           )}
@@ -145,14 +142,14 @@ export const Search = ({
           name="object-listing-language-select"
           className="w-full sm:mr-2 md:w-36"
           selected={filters.language}
-          onChange={(language) => handleFilterChange({ language })}
+          onChange={(language) => onChangeWrapper({ language })}
           useDefaultLanguage
-          onValueClear={() => handleFilterChange({ language: null })}
+          onValueClear={() => onChangeWrapper({ language: null })}
         />
         <AvailabilityPicker
           activeValues={filters.availability}
           setActiveAvailability={(availability) =>
-            handleFilterChange({ availability })
+            onChangeWrapper({ availability })
           }
         />
       </div>
