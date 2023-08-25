@@ -340,7 +340,7 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
     <>
       {tabs && (
         <div className="flex h-full max-h-full w-full flex-col">
-          <div className="w-full md:px-6 md:pt-4 lg:px-10">
+          <div className="w-full pt-2 md:px-6 md:pt-4 lg:px-10">
             <div className="flex w-full justify-between space-x-0.5 sm:space-x-1 md:space-x-2 lg:space-x-4">
               <div
                 data-testid="object-search-tabs"
@@ -382,10 +382,7 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
                 </button>
               </div>
               <CreateButtons
-                className={clsx(
-                  "mb-1 justify-end",
-                  // props.isPanelOpen ? "pr-2 lg:w-auto lg:pr-4" : "md:w-auto",
-                )}
+                className={clsx("mb-1 justify-end pr-1 md:pr-0")}
                 onObjectCreated={(obj) => {
                   props.setPanelObject?.(obj);
                 }}
@@ -402,15 +399,6 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
               onTabRename={(name) => onActiveTabChange({ name })}
               onTabDelete={deleteActiveTab}
             />
-            {/* <CreateButtons
-              className={clsx(
-                "mb-2 mt-2 justify-end md:mb-0",
-                props.isPanelOpen ? "pr-2 lg:w-auto lg:pr-4" : "md:w-auto",
-              )}
-              onObjectCreated={(obj) => {
-                props.setPanelObject?.(obj);
-              }}
-            /> */}
           </div>
           <div className="relative flex w-full grow overflow-hidden pl-2 pt-1 md:pl-6 md:pt-2 lg:pl-10">
             <MemoizedObjectSearch
