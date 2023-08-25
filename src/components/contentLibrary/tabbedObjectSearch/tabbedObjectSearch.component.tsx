@@ -340,43 +340,56 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
     <>
       {tabs && (
         <div className="flex h-full max-h-full w-full flex-col">
-          <div className="md:mx-6 md:pt-4 lg:mx-10">
-            <div
-              data-testid="object-search-tabs"
-              className="flex w-full items-end justify-between space-x-px border-b border-b-manatee-50 text-sm"
-            >
-              <ScrollableTabs
-                key={accountId}
-                initialScrollPosition={initialTabsScrollPosition}
-                tabs={tabs.map((tab, i) => ({
-                  name: tab?.name || `View ${i + 1}`,
-                  id: tab.id,
-                }))}
-                selectedTab={activeTab?.id || ""}
-                onChange={({ index }) => onActiveTabIndexChange(index)}
-                onScroll={({ scrollLeft: tabsScrollPosition }) =>
-                  accountId &&
-                  saveTabStateToStorage(accountId, { tabsScrollPosition })
-                }
-              />
-              <button
-                className={clsx(
-                  "relative flex items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 pb-3 pt-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black",
-                  beforeSeparatorClassname,
-                )}
-                onClick={() => {
-                  setTabs((existingTabs) => {
-                    const newTab = generateNewTab(
-                      `View ${existingTabs ? existingTabs.length + 1 : 1}`,
-                    );
-                    return existingTabs ? [...existingTabs, newTab] : [newTab];
-                  });
-                  setActiveTabIndex(tabs.length);
-                }}
+          <div className="w-full md:px-6 md:pt-4 lg:px-10">
+            <div className="flex w-full justify-between space-x-0.5 sm:space-x-1 md:space-x-2 lg:space-x-4">
+              <div
+                data-testid="object-search-tabs"
+                className="flex grow items-end space-x-px overflow-x-hidden border-b border-b-manatee-50 text-sm"
               >
-                <Plus className="h-3 w-3 sm:mr-2" />
-                <span className="hidden sm:inline">Add view</span>
-              </button>
+                <ScrollableTabs
+                  key={accountId}
+                  initialScrollPosition={initialTabsScrollPosition}
+                  tabs={tabs.map((tab, i) => ({
+                    name: tab?.name || `View ${i + 1}`,
+                    id: tab.id,
+                  }))}
+                  selectedTab={activeTab?.id || ""}
+                  onChange={({ index }) => onActiveTabIndexChange(index)}
+                  onScroll={({ scrollLeft: tabsScrollPosition }) =>
+                    accountId &&
+                    saveTabStateToStorage(accountId, { tabsScrollPosition })
+                  }
+                />
+                <button
+                  className={clsx(
+                    "relative flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 pb-3 pt-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black",
+                    beforeSeparatorClassname,
+                  )}
+                  onClick={() => {
+                    setTabs((existingTabs) => {
+                      const newTab = generateNewTab(
+                        `View ${existingTabs ? existingTabs.length + 1 : 1}`,
+                      );
+                      return existingTabs
+                        ? [...existingTabs, newTab]
+                        : [newTab];
+                    });
+                    setActiveTabIndex(tabs.length);
+                  }}
+                  aria-label="add tab"
+                >
+                  <Plus className="h-3 w-3" />
+                </button>
+              </div>
+              <CreateButtons
+                className={clsx(
+                  "mb-1 justify-end",
+                  // props.isPanelOpen ? "pr-2 lg:w-auto lg:pr-4" : "md:w-auto",
+                )}
+                onObjectCreated={(obj) => {
+                  props.setPanelObject?.(obj);
+                }}
+              />
             </div>
           </div>
           <div
@@ -389,7 +402,7 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
               onTabRename={(name) => onActiveTabChange({ name })}
               onTabDelete={deleteActiveTab}
             />
-            <CreateButtons
+            {/* <CreateButtons
               className={clsx(
                 "mb-2 mt-2 justify-end md:mb-0",
                 props.isPanelOpen ? "pr-2 lg:w-auto lg:pr-4" : "md:w-auto",
@@ -397,7 +410,7 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
               onObjectCreated={(obj) => {
                 props.setPanelObject?.(obj);
               }}
-            />
+            /> */}
           </div>
           <div className="relative flex w-full grow overflow-hidden pl-2 pt-1 md:pl-6 md:pt-2 lg:pl-10">
             <MemoizedObjectSearch
