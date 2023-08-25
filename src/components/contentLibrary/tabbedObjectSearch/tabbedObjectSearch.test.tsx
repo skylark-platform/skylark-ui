@@ -177,7 +177,7 @@ test("Add new view", async () => {
   const tabsContainer = screen.getByTestId("object-search-tabs");
   expect(tabsContainer.children.length).toBe(2);
 
-  fireEvent.click(screen.getByText("Add view"));
+  screen.getByLabelText("add tab").click();
 
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(1);

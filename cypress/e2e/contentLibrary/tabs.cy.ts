@@ -104,7 +104,7 @@ describe("Content Library - Search", () => {
       cy.contains("Default View");
     });
 
-    cy.contains("Add view").click();
+    cy.get(`[aria-label="add tab"]`).click();
 
     cy.get("[data-testid=object-search-tab-overview]").within(() => {
       cy.contains("View 3");

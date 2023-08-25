@@ -49,7 +49,9 @@ export const Button = forwardRef(
       "btn flex-nowrap min-h-8 h-8 md:h-10",
       Icon && children && "gap-x-2",
       !iconOnly && "text-xs normal-case md:text-sm",
-      variant !== "ghost" && variant !== "form" && "min-w-24 rounded-full",
+      variant !== "ghost" &&
+        variant !== "form" &&
+        "min-w-16 sm:min-w-20 md:min-w-24 rounded-full",
       variant === "primary" && "btn-primary shadow",
       variant === "neutral" &&
         "btn-neutral bg-manatee-50 hover:bg-manatee-100 border-none",
@@ -69,7 +71,7 @@ export const Button = forwardRef(
       (iconOnly || variant === "link") &&
         disabled &&
         "btn-disabled bg-transparent disabled:bg-transparent",
-      !iconOnly && variant !== "ghost" && "px-5",
+      !iconOnly && variant !== "ghost" && "px-2 md:px-5",
       block && "btn-block",
       !animated && "no-animation",
       className,
