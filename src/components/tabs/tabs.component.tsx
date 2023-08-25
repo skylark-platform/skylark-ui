@@ -43,7 +43,7 @@ export const Tabs = ({
               disabled={disabled}
               onClick={disabled ? undefined : () => onChange({ ...tab, index })}
               className={clsx(
-                "-mb-[2px] w-full whitespace-nowrap rounded-t border-b-2 p-1 pb-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary md:pb-3",
+                "-mb-[2px] w-full whitespace-nowrap rounded-t border-b-2 p-1 pb-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary md:pb-2.5",
                 !disabled && "hover:border-black hover:text-black",
                 selectedTab === tab.id
                   ? "border-black text-black"
@@ -131,9 +131,9 @@ export const ScrollableTabs = ({
   }, []);
 
   return (
-    <div className="relative grow overflow-x-hidden">
+    <div className="relative h-full overflow-x-hidden">
       <div
-        className="scrollbar-hidden flex h-10 w-full items-end overflow-scroll"
+        className="scrollbar-hidden flex h-full w-full items-end overflow-scroll"
         ref={containerRef}
         onScroll={(e) => {
           const scrollLeft = e.currentTarget.scrollLeft;

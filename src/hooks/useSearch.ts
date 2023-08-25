@@ -1,5 +1,4 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import dayjs from "dayjs";
 import { RequestDocument, Variables } from "graphql-request";
 import { useEffect, useMemo } from "react";
 

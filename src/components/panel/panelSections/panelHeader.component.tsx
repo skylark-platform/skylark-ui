@@ -163,7 +163,7 @@ export const PanelHeader = ({
         "relative mx-auto flex w-full max-w-7xl flex-col px-4 py-2 md:px-8",
         isPage
           ? "md:flex-row-reverse md:justify-between md:py-8 md:pt-12"
-          : "md:py-6",
+          : "md:py-4",
       )}
     >
       <div className="flex flex-row items-center pb-2 md:pb-4">

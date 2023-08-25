@@ -584,9 +584,7 @@ describe("parseSkylarkObject", () => {
     expect(parseSkylarkObject(skylarkObject)).toEqual(expectedParsedObject);
   });
 
-  // TODO TIMEZONE - enable after fixing datetime-local input
-  // eslint-disable-next-line jest/no-disabled-tests
-  test.skip("should parse Availability object", () => {
+  test("should parse Availability object", () => {
     const skylarkObject: SkylarkGraphQLObject = {
       __typename: BuiltInSkylarkObjectType.Availability,
       _config: {
@@ -919,9 +917,7 @@ describe("parseMetadataForGraphQLRequest", () => {
       expect(got).toEqual({ title: "string" });
     });
 
-    // TODO TIMEZONE - enable after fixing datetime-local input
-    // eslint-disable-next-line jest/no-disabled-tests
-    test.skip("appends the timezone onto start and end fields", () => {
+    test("appends the timezone onto start and end fields", () => {
       const metadata: Record<string, SkylarkObjectMetadataField> = {
         title: "string",
         [SkylarkAvailabilityField.Timezone]: "+01:00",

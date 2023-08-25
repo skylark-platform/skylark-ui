@@ -12,7 +12,6 @@ import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObjectConfig,
-  SkylarkAvailabilityField,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
@@ -118,6 +117,16 @@ export const PanelMetadata = ({
                 );
 
                 if (config) {
+                  const value = getValues(field);
+
+                  // if (
+                  //   objectType === BuiltInSkylarkObjectType.Availability &&
+                  //   field === SkylarkAvailabilityField.Start
+                  // ) {
+                  //   value = offsetUTCDate(value, metadata.timezone);
+                  //   console.log("overriding value", value);
+                  // }
+
                   return (
                     <SkylarkObjectFieldInput
                       idPrefix="panel-metadata"
@@ -127,7 +136,7 @@ export const PanelMetadata = ({
                       config={config}
                       control={control}
                       register={register}
-                      value={getValues(field)}
+                      value={value}
                       formState={formState}
                       additionalRequiredFields={requiredFields}
                       fieldConfigFromObject={fieldConfigFromObject}

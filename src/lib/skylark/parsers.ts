@@ -49,7 +49,7 @@ import {
 import {
   getObjectAvailabilityStatus,
   getAvailabilityStatusForAvailabilityObject,
-  convertToUTCDate,
+  convertDateAndTimezoneToISO,
 } from "./availability";
 
 dayjs.extend(customParseFormat);
@@ -138,25 +138,24 @@ export const parseObjectInputFields = (
       };
     });
 
-  // TODO TIMEZONE - enable after fixing datetime-local input
   // // Override for the Availability Timezone input
-  // if (
-  //   objectType === BuiltInSkylarkObjectType.Availability &&
-  //   parsedInputs.findIndex(
-  //     ({ name }) => name === SkylarkAvailabilityField.Timezone,
-  //   ) === -1
-  // ) {
-  //   return [
-  //     ...parsedInputs,
-  //     {
-  //       name: SkylarkAvailabilityField.Timezone,
-  //       type: "string",
-  //       originalType: "String",
-  //       isList: false,
-  //       isRequired: false,
-  //     },
-  //   ];
-  // }
+  if (
+    objectType === BuiltInSkylarkObjectType.Availability &&
+    parsedInputs.findIndex(
+      ({ name }) => name === SkylarkAvailabilityField.Timezone,
+    ) === -1
+  ) {
+    return [
+      ...parsedInputs,
+      {
+        name: SkylarkAvailabilityField.Timezone,
+        type: "string",
+        originalType: "String",
+        isList: false,
+        isRequired: false,
+      },
+    ];
+  }
 
   return parsedInputs;
 };
@@ -228,40 +227,39 @@ export const parseObjectConfig = (
     fieldConfig,
   };
 
-  // TODO TIMEZONE - enable after fixing datetime-local input
-  // // Override for the Availability Timezone input
-  // if (fieldConfig && objectType === BuiltInSkylarkObjectType.Availability) {
-  //   const timezoneConfig = fieldConfig.find(
-  //     ({ name }) => name === SkylarkAvailabilityField.Timezone,
-  //   );
+  // Override for the Availability Timezone input
+  if (fieldConfig && objectType === BuiltInSkylarkObjectType.Availability) {
+    const timezoneConfig = fieldConfig.find(
+      ({ name }) => name === SkylarkAvailabilityField.Timezone,
+    );
 
-  //   if (timezoneConfig) {
-  //     // If timezone config is already defined, ensure its the TIMEZONE field type
-  //     const updatedFieldConfig = fieldConfig.map(
-  //       (config): ParsedSkylarkObjectConfigFieldConfig =>
-  //         config.name === SkylarkAvailabilityField.Timezone
-  //           ? { ...config, fieldType: "TIMEZONE" }
-  //           : config,
-  //     );
+    if (timezoneConfig) {
+      // If timezone config is already defined, ensure its the TIMEZONE field type
+      const updatedFieldConfig = fieldConfig.map(
+        (config): ParsedSkylarkObjectConfigFieldConfig =>
+          config.name === SkylarkAvailabilityField.Timezone
+            ? { ...config, fieldType: "TIMEZONE" }
+            : config,
+      );
 
-  //     return {
-  //       ...objectConfig,
-  //       fieldConfig: updatedFieldConfig,
-  //     };
-  //   }
+      return {
+        ...objectConfig,
+        fieldConfig: updatedFieldConfig,
+      };
+    }
 
-  //   return {
-  //     ...objectConfig,
-  //     fieldConfig: [
-  //       ...(objectConfig.fieldConfig || []),
-  //       {
-  //         name: SkylarkAvailabilityField.Timezone,
-  //         fieldType: "TIMEZONE",
-  //         position: 50,
-  //       },
-  //     ],
-  //   };
-  // }
+    return {
+      ...objectConfig,
+      fieldConfig: [
+        ...(objectConfig.fieldConfig || []),
+        {
+          name: SkylarkAvailabilityField.Timezone,
+          fieldType: "TIMEZONE",
+          position: 50,
+        },
+      ],
+    };
+  }
 
   return objectConfig;
 };
@@ -307,10 +305,9 @@ export const parseObjectContent = (
   };
 };
 
-export const parseSkylarkObject = (
+const parseObjectMetadata = (
   object: SkylarkGraphQLObject,
-  objectMeta?: SkylarkObjectMeta | null,
-): ParsedSkylarkObject => {
+): ParsedSkylarkObjectMetadata => {
   const metadata: ParsedSkylarkObjectMetadata = {
     ...Object.keys(object).reduce((prev, key) => {
       return {
@@ -323,6 +320,33 @@ export const parseSkylarkObject = (
     uid: object.uid,
     external_id: object.external_id || "",
   };
+
+  // if (
+  //   object.__typename === BuiltInSkylarkObjectType.Availability &&
+  //   hasProperty(object, SkylarkAvailabilityField.Timezone) &&
+  //   typeof object[SkylarkAvailabilityField.Timezone] === "string"
+  // ) {
+  //   const start = object[SkylarkAvailabilityField.Start];
+  //   const end = object[SkylarkAvailabilityField.End];
+  //   const timezone = object[SkylarkAvailabilityField.Timezone];
+
+  //   if (typeof start === "string") {
+  //     metadata[SkylarkAvailabilityField.Start] = offsetUTCDate(start, timezone);
+  //   }
+
+  //   if (typeof end === "string") {
+  //     metadata[SkylarkAvailabilityField.End] = offsetUTCDate(end, timezone);
+  //   }
+  // }
+
+  return metadata;
+};
+
+export const parseSkylarkObject = (
+  object: SkylarkGraphQLObject,
+  objectMeta?: SkylarkObjectMeta | null,
+): ParsedSkylarkObject => {
+  const metadata = parseObjectMetadata(object);
 
   const availability = parseObjectAvailability(object?.availability);
   const availabilityStatus =
@@ -470,29 +494,28 @@ export const parseMetadataForGraphQLRequest = (
 
       const parsedFieldValue = parseInputFieldValue(value, input.type);
 
-      // TODO TIMEZONE - enable after fixing datetime-local input
-      // if (objectType === BuiltInSkylarkObjectType.Availability) {
-      //   // Never send the Timezone field that we add manually
-      //   if (input.name === SkylarkAvailabilityField.Timezone) {
-      //     return undefined;
-      //   }
+      if (objectType === BuiltInSkylarkObjectType.Availability) {
+        // Never send the Timezone field that we add manually
+        if (input.name === SkylarkAvailabilityField.Timezone) {
+          return undefined;
+        }
 
-      //   // Append Timezone onto Availability Start and End values
-      //   if (
-      //     typeof parsedFieldValue === "string" &&
-      //     hasProperty(metadata, SkylarkAvailabilityField.Timezone) &&
-      //     (input.name === SkylarkAvailabilityField.Start ||
-      //       input.name === SkylarkAvailabilityField.End)
-      //   ) {
-      //     console.log({ input, metadata, parsedFieldValue });
-      //     const parsedDateFieldWithTimezone = convertToUTCDate(
-      //       parsedFieldValue,
-      //       metadata.timezone as string,
-      //     );
-      //     console.log({ parsedDateFieldWithTimezone });
-      //     return [key, parsedDateFieldWithTimezone];
-      //   }
-      // }
+        // Append Timezone onto Availability Start and End values
+        if (
+          typeof parsedFieldValue === "string" &&
+          hasProperty(metadata, SkylarkAvailabilityField.Timezone) &&
+          (input.name === SkylarkAvailabilityField.Start ||
+            input.name === SkylarkAvailabilityField.End)
+        ) {
+          console.log({ input, metadata, parsedFieldValue });
+          const parsedDateFieldWithTimezone = convertDateAndTimezoneToISO(
+            parsedFieldValue,
+            metadata.timezone as string,
+          );
+          console.log({ parsedDateFieldWithTimezone });
+          return [key, parsedDateFieldWithTimezone];
+        }
+      }
 
       return [key, parsedFieldValue];
     })

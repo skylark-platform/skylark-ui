@@ -1,4 +1,5 @@
 import {
+  BuiltInSkylarkObjectType,
   SkylarkObjectMetadataField,
   SkylarkSystemField,
 } from "./objectOperations";

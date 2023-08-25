@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
+import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 
 import {
@@ -14,6 +15,7 @@ import { hasProperty } from "src/lib/utils";
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const getSingleAvailabilityStatus = (
   now: dayjs.Dayjs,
@@ -96,6 +98,7 @@ export const getRelativeTimeFromDate = (
 };
 
 export const convertToUTCDate = (date: string, offset: string | null) => {
+  // console.log({ date, offset });
   if (offset) {
     const parsedFieldValueWithZRemoved = date.toUpperCase().endsWith("Z")
       ? date.slice(0, -1)
@@ -105,4 +108,18 @@ export const convertToUTCDate = (date: string, offset: string | null) => {
 
   const utcDate = dayjs(date).utc().format();
   return utcDate;
+};
+
+export const convertDateAndTimezoneToISO = (str: string, timezone: string) => {
+  const strWithoutTz = dayjs(str).format("YYYY-MM-DDTHH:mm:ss");
+  const date = dayjs.tz(strWithoutTz, timezone);
+
+  console.log("convertDateAndTimezoneToISO", {
+    d: date.format(),
+    withoutTZ: strWithoutTz,
+    str,
+    timezone,
+  });
+
+  return date.toISOString();
 };

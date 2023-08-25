@@ -1,4 +1,6 @@
+import { getTimeZones, TimeZone, timeZonesNames } from "@vvo/tzdb";
 import clsx from "clsx";
+import { time } from "console";
 
 import {
   Select,
@@ -6,74 +8,94 @@ import {
   SelectProps,
 } from "src/components/inputs/select";
 
-type TimezoneSelectProps = Omit<SelectProps, "options">;
+type TimezoneSelectProps = Omit<SelectProps, "options" | "onChange"> & {
+  onChange: (timezone: string | null) => void;
+};
 
 export const GMT_UTC_OFFSET = "+00:00";
 
-// https://en.wikipedia.org/wiki/List_of_UTC_offsets
-// https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations
-const UTC_OFFSETS = [
-  "-12:00",
-  "-11:00",
-  "-10:00",
-  "-09:30",
-  "-09:00",
-  "-08:00",
-  "-07:00",
-  "-06:00",
-  "-05:00",
-  "-04:00",
-  "-03:30",
-  "-03:00",
-  "-02:00",
-  "-01:00",
-  GMT_UTC_OFFSET,
-  "+01:00",
-  "+02:00",
-  "+03:00",
-  "+03:30",
-  "+04:00",
-  "+04:30",
-  "+05:00",
-  "+05:30",
-  "+05:45",
-  "+06:00",
-  "+06:30",
-  "+07:00",
-  "+08:00",
-  "+08:45",
-  "+09:00",
-  "+09:30",
-  "+10:00",
-  "+10:30",
-  "+11:00",
-  "+12:00",
-  "+12:45",
-  "+13:00",
-  "+14:00",
-];
+const convertMinutesToOffset = (offsetMinutes: number) => {
+  const sign = offsetMinutes >= 0 ? "+" : "-";
 
-const options = UTC_OFFSETS.map((offset): SelectOption => {
-  return {
-    value: offset,
-    label: offset,
-  };
-});
+  const absOffsetMinutes = Math.abs(offsetMinutes);
+  const hours = (absOffsetMinutes / 60).toFixed(0);
+  const minutes = (absOffsetMinutes % 60).toFixed(0);
+
+  return `${sign}${hours.length === 1 ? `0${hours}` : hours}:${
+    minutes.length === 1 ? `0${minutes}` : minutes
+  }`;
+};
 
 export const TimezoneSelect = ({
   selected,
   onChange,
   ...props
 }: TimezoneSelectProps) => {
+  const timeZones = getTimeZones({ includeUtc: true });
+
+  const abbreviations = timeZones.reduce((prev, timezone) => {
+    const findExisting = prev.find(
+      (tz) => tz.abbreviation === timezone.abbreviation,
+    );
+
+    if (findExisting) {
+      return prev;
+    }
+
+    return [...prev, timezone];
+  }, [] as TimeZone[]);
+
+  const offsets = timeZones.reduce((prev, timezone) => {
+    const findExisting = prev.find(
+      (tz) =>
+        tz.currentTimeOffsetInMinutes === timezone.currentTimeOffsetInMinutes,
+    );
+
+    if (findExisting) {
+      return prev;
+    }
+
+    return [...prev, timezone];
+  }, [] as TimeZone[]);
+
+  const options: SelectOption[] = timeZones.map(
+    ({ currentTimeFormat, name }) => ({
+      label: currentTimeFormat,
+      value: name,
+    }),
+  );
+
+  // console.log({ timeZones, abbreviations, offsets });
+
+  const onChangeWrapper = (value: string) => {
+    console.log({ value });
+
+    const selectedTimezone = timeZones.find(({ name }) => name === value);
+
+    onChange?.(selectedTimezone?.name || null);
+  };
+
+  const selectedTimezone = timeZones.find((timeZone) => {
+    return (
+      selected &&
+      (selected === timeZone.name || timeZone.group.includes(selected))
+    );
+  });
+
   return (
     <Select
       {...props}
-      selected={selected || ""}
-      onChange={onChange}
+      selected={
+        selectedTimezone?.name ||
+        (typeof selected === "string" && selected) ||
+        ""
+      }
+      onChange={onChangeWrapper}
       options={options}
       className={clsx(props.variant === "pill" ? "w-32" : props.className)}
       placeholder={props.placeholder || "Timezone"}
       searchable={props.variant !== "pill"}
+      displayRawSelectedValue
     />
   );
 };
