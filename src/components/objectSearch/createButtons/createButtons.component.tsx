@@ -45,7 +45,7 @@ export const CreateButtons = ({
               variant="primary"
               Icon={<Plus className="h-4 w-4 stroke-success-content" />}
             >
-              Create
+              <span className="hidden sm:inline">Create</span>
             </Button>
           </DropdownMenuButton>
         </DropdownMenu>
