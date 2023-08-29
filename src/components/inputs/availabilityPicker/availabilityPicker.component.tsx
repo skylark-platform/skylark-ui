@@ -1,17 +1,14 @@
 import { useFloating, offset, flip, size } from "@floating-ui/react";
 import { Popover } from "@headlessui/react";
+import { TimeZone } from "@vvo/tzdb";
 import clsx from "clsx";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { GoTriangleDown } from "react-icons/go";
 import { GrClose } from "react-icons/gr";
 
 import { Button } from "src/components/button";
 import { InputLabel } from "src/components/inputs/label/label.component";
-import {
-  GMT_UTC_OFFSET,
-  Select,
-  TimezoneSelect,
-} from "src/components/inputs/select";
+import { UTC_NAME, Select, TimezoneSelect } from "src/components/inputs/select";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { ParsedSkylarkDimensionsWithValues } from "src/interfaces/skylark";
@@ -21,7 +18,7 @@ export type AvailabilityDimensionsPickerValues = Record<string, string> | null;
 
 export type TimeTravelPickerValues = {
   datetime: string;
-  offset: string;
+  timezone: string;
 } | null;
 
 export type AvailabilityPickerValues = {
@@ -58,7 +55,7 @@ const AvailabilitySelectors = ({
       : "",
   );
   const [activeTimeTravelOffset, setActiveTimeTravelOffset] = useState(
-    initialValues.timeTravel ? initialValues.timeTravel.offset : GMT_UTC_OFFSET,
+    initialValues.timeTravel ? initialValues.timeTravel.timezone : UTC_NAME,
   );
 
   const hasDimensions = dimensions.length > 0;
@@ -69,7 +66,7 @@ const AvailabilitySelectors = ({
       timeTravel: activeTimeTravel
         ? {
             datetime: activeTimeTravel,
-            offset: activeTimeTravelOffset,
+            timezone: activeTimeTravelOffset,
           }
         : null,
     });
@@ -143,8 +140,7 @@ const AvailabilitySelectors = ({
                 )}
               />
             </div>
-            {/*  TODO TIMEZONE - enable after fixing datetime-local input */}
-            {/* <TimezoneSelect
+            <TimezoneSelect
               label="Timezone"
               labelVariant="form"
               disabled={!activeTimeTravel}
@@ -152,13 +148,13 @@ const AvailabilitySelectors = ({
               variant="primary"
               placeholder="Select Timezone"
               renderInPortal
-              onChange={setActiveTimeTravelOffset}
+              onChange={(t) => setActiveTimeTravelOffset(t || UTC_NAME)}
               onValueClear={
-                activeTimeTravelOffset !== GMT_UTC_OFFSET
-                  ? () => setActiveTimeTravelOffset(GMT_UTC_OFFSET)
+                activeTimeTravelOffset !== UTC_NAME
+                  ? () => setActiveTimeTravelOffset(UTC_NAME)
                   : undefined
               }
-            /> */}
+            />
           </div>
         </div>
       </div>

@@ -507,12 +507,10 @@ export const parseMetadataForGraphQLRequest = (
           (input.name === SkylarkAvailabilityField.Start ||
             input.name === SkylarkAvailabilityField.End)
         ) {
-          console.log({ input, metadata, parsedFieldValue });
           const parsedDateFieldWithTimezone = convertDateAndTimezoneToISO(
             parsedFieldValue,
             metadata.timezone as string,
           );
-          console.log({ parsedDateFieldWithTimezone });
           return [key, parsedDateFieldWithTimezone];
         }
       }

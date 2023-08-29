@@ -15,7 +15,10 @@ import {
   createSearchObjectsQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
-import { convertToUTCDate } from "src/lib/skylark/availability";
+import {
+  convertDateAndTimezoneToISO,
+  convertToUTCDate,
+} from "src/lib/skylark/availability";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 import { useAllObjectsMeta } from "./useSkylarkObjectTypes";
@@ -28,7 +31,7 @@ export interface SearchFilters {
     dimensions: Record<string, string> | null;
     timeTravel: {
       datetime: string;
-      offset: string;
+      timezone: string;
     } | null;
   };
 }
@@ -81,9 +84,9 @@ export const useSearch = ({
     if (availability.timeTravel) {
       headers[REQUEST_HEADERS.ignoreTime] = "false";
       // Send as UTC
-      headers[REQUEST_HEADERS.timeTravel] = convertToUTCDate(
+      headers[REQUEST_HEADERS.timeTravel] = convertDateAndTimezoneToISO(
         availability.timeTravel.datetime,
-        availability.timeTravel.offset,
+        availability.timeTravel.timezone,
       );
     }
   }

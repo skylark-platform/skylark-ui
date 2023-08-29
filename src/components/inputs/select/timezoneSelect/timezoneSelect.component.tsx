@@ -12,7 +12,7 @@ type TimezoneSelectProps = Omit<SelectProps, "options" | "onChange"> & {
   onChange: (timezone: string | null) => void;
 };
 
-export const GMT_UTC_OFFSET = "+00:00";
+export const UTC_NAME = "Etc/UTC";
 
 const convertMinutesToOffset = (offsetMinutes: number) => {
   const sign = offsetMinutes >= 0 ? "+" : "-";
@@ -33,43 +33,12 @@ export const TimezoneSelect = ({
 }: TimezoneSelectProps) => {
   const timeZones = getTimeZones({ includeUtc: true });
 
-  const abbreviations = timeZones.reduce((prev, timezone) => {
-    const findExisting = prev.find(
-      (tz) => tz.abbreviation === timezone.abbreviation,
-    );
-
-    if (findExisting) {
-      return prev;
-    }
-
-    return [...prev, timezone];
-  }, [] as TimeZone[]);
-
-  const offsets = timeZones.reduce((prev, timezone) => {
-    const findExisting = prev.find(
-      (tz) =>
-        tz.currentTimeOffsetInMinutes === timezone.currentTimeOffsetInMinutes,
-    );
-
-    if (findExisting) {
-      return prev;
-    }
-
-    return [...prev, timezone];
-  }, [] as TimeZone[]);
-
-  const options: SelectOption[] = timeZones.map(
-    ({ currentTimeFormat, name }) => ({
-      label: currentTimeFormat,
-      value: name,
-    }),
-  );
-
-  // console.log({ timeZones, abbreviations, offsets });
+  const options: SelectOption[] = timeZones.map(({ name }) => ({
+    label: `${name}`,
+    value: name,
+  }));
 
   const onChangeWrapper = (value: string) => {
-    console.log({ value });
-
     const selectedTimezone = timeZones.find(({ name }) => name === value);
 
     onChange?.(selectedTimezone?.name || null);

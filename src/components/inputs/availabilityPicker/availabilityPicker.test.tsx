@@ -7,10 +7,8 @@ import {
   screen,
   waitFor,
 } from "src/__tests__/utils/test-utils";
-import {
-  GQLSkylarkGetAvailabilityDimensions,
-  GQLSkylarkListAvailabilityDimensionsResponse,
-} from "src/interfaces/skylark";
+import { UTC_NAME } from "src/components/inputs/select";
+import { GQLSkylarkListAvailabilityDimensionsResponse } from "src/interfaces/skylark";
 
 import { AvailabilityPicker } from "./availabilityPicker.component";
 
@@ -126,7 +124,7 @@ test("selects dimensions, time travel and saves", async () => {
       "customer-types": "premium",
       "device-types": "pc",
     },
-    timeTravel: { datetime: "2023-11-11T12:30", offset: "+00:00" },
+    timeTravel: { datetime: "2023-11-11T12:30", timezone: UTC_NAME },
   });
 });
 
@@ -187,7 +185,7 @@ test("shows Dimensions & Time when both dimensions and time travel are set", () 
           "customer-types": "premium",
           "device-types": "pc",
         },
-        timeTravel: { datetime: "2023-11-11T12:30", offset: "+00:00" },
+        timeTravel: { datetime: "2023-11-11T12:30", timezone: UTC_NAME },
       }}
       setActiveAvailability={jest.fn()}
     />,
@@ -213,7 +211,7 @@ test("does not show Dimensions when account has none", async () => {
     <AvailabilityPicker
       activeValues={{
         dimensions: null,
-        timeTravel: { datetime: "2023-11-11T12:30", offset: "+00:00" },
+        timeTravel: { datetime: "2023-11-11T12:30", timezone: UTC_NAME },
       }}
       setActiveAvailability={jest.fn()}
     />,
@@ -267,6 +265,6 @@ test("selects time travel when no Dimensions exist", () => {
   fireEvent.click(saveButton);
   expect(setActiveAvailability).toHaveBeenCalledWith({
     dimensions: null,
-    timeTravel: { datetime: "2023-11-11T12:30", offset: "+00:00" },
+    timeTravel: { datetime: "2023-11-11T12:30", timezone: UTC_NAME },
   });
 });

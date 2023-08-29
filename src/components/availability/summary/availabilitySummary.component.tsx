@@ -33,7 +33,7 @@ export const AvailabilitySummary = ({
   language?: string | null;
   availability: {
     dimensions: Record<string, string> | null;
-    timeTravel: { datetime: string; offset: string } | null;
+    timeTravel: { datetime: string; timezone: string } | null;
   };
 }) => {
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
@@ -110,7 +110,8 @@ export const AvailabilitySummary = ({
       <>
         on{" "}
         <strong>
-          {formatReadableDate(timeTravel.datetime)} ({timeTravel.offset})
+          {formatReadableDate(timeTravel.datetime)}
+          {timeTravel.timezone ? ` (${timeTravel.timezone})` : ""}
         </strong>
       </>
     ) : (
