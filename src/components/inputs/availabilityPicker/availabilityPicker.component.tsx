@@ -102,7 +102,7 @@ const AvailabilitySelectors = ({
                       label: value.title || value.slug,
                       value: value.slug,
                     }))}
-                    selected={activeDimensions?.[slug]}
+                    selected={activeDimensions?.[slug] || ""}
                     onChange={(updatedValue) =>
                       setActiveDimensions({
                         ...activeDimensions,

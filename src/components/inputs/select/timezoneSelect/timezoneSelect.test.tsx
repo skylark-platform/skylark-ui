@@ -4,7 +4,7 @@ import { render, screen } from "src/__tests__/utils/test-utils";
 
 import { TimezoneSelect } from "./timezoneSelect.component";
 
-test('searches for the "+03:00" offset', async () => {
+test('searches for the "Europe/London" timezone', async () => {
   const onChange = jest.fn();
 
   render(
@@ -24,14 +24,14 @@ test('searches for the "+03:00" offset', async () => {
 
   expect(combobox).toHaveTextContent("");
   fireEvent.change(combobox, {
-    target: { value: "03:00" },
+    target: { value: "london" },
   });
 
   const gotOptions = screen.queryAllByRole("option");
-  expect(gotOptions.length).toBe(2);
-  expect(gotOptions[1]).toHaveTextContent("+03:00");
+  expect(gotOptions.length).toBe(1);
+  expect(gotOptions[0]).toHaveTextContent("Europe/London");
 
-  fireEvent.click(screen.getByText("+03:00"));
+  fireEvent.click(screen.getByText("Europe/London"));
 
-  expect(onChange).toHaveBeenCalledWith("+03:00");
+  expect(onChange).toHaveBeenCalledWith("Europe/London");
 });

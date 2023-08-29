@@ -112,14 +112,25 @@ export const convertToUTCDate = (date: string, offset: string | null) => {
 
 export const convertDateAndTimezoneToISO = (str: string, timezone: string) => {
   const strWithoutTz = dayjs(str).format("YYYY-MM-DDTHH:mm:ss");
-  const date = dayjs.tz(strWithoutTz, timezone);
 
-  console.log("convertDateAndTimezoneToISO", {
-    d: date.format(),
-    withoutTZ: strWithoutTz,
-    str,
-    timezone,
-  });
+  try {
+    const date = dayjs.tz(strWithoutTz, timezone);
 
-  return date.toISOString();
+    return date.toISOString();
+  } catch (err) {
+    // TODO remove when BE stores/sends the Timezone name?
+    if (
+      hasProperty(err, "message") &&
+      typeof err.message === "string" &&
+      err.message.startsWith("Invalid time zone specified") &&
+      (timezone.startsWith("+") || timezone.startsWith("-"))
+    ) {
+      // Likely that timezone is actually the offset
+      const parsedFieldValueWithZRemoved = str.toUpperCase().endsWith("Z")
+        ? str.slice(0, -1)
+        : str;
+      return `${parsedFieldValueWithZRemoved}${timezone}`;
+    }
+    throw err;
+  }
 };
