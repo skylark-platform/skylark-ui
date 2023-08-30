@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { LazyMotion, domMax } from "framer-motion";
 import PlausibleProvider from "next-plausible";
 import { ReactElement, ReactNode } from "react";
+import { ToastContainer } from "react-toastify";
 
 import { UserProvider } from "src/contexts/useUser";
 
@@ -27,7 +28,11 @@ const AllTheProviders = ({ children }: { children: ReactNode }) => {
     <QueryClientProvider client={queryClient}>
       <PlausibleProvider domain={""} enabled={false}>
         <UserProvider>
-          <LazyMotion features={domMax}>{children}</LazyMotion>
+          <LazyMotion features={domMax}>
+            {" "}
+            <ToastContainer />
+            {children}
+          </LazyMotion>
         </UserProvider>
       </PlausibleProvider>
     </QueryClientProvider>

@@ -126,7 +126,7 @@ export const CreateObjectModal = ({
       toast.error(
         <Toast
           title={`Error creating ${
-            object.language ? `"${object.language} "` : ""
+            object.language ? `"${object.language}" ` : ""
           }translation`}
           message={[
             `Reason(s):`,

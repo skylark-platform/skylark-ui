@@ -80,7 +80,7 @@ export const Toast = ({
   messageClassName,
 }: ToastProps) => {
   return (
-    <div data-cy="toast">
+    <div data-testid="toast">
       <div className="flex flex-row">
         <h4 className="flex-grow pr-2 text-base font-medium md:text-base">
           {title}
