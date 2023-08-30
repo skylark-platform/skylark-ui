@@ -237,7 +237,7 @@ describe("Content Library - Search", () => {
     cy.get("[data-testid=object-search-tab-overview]").within(() => {
       cy.contains("New tab name");
       cy.contains(
-        "Brand, Season, Episode & Movie objects available to Kids & PC users on Fri, Dec 30, 2022 2:20 PM (+00:00) translated to pt-PT",
+        "Brand, Season, Episode & Movie objects available to Kids & PC users on Fri, Dec 30, 2022 2:20 PM (Etc/UTC) translated to pt-PT",
       );
     });
 
@@ -247,7 +247,7 @@ describe("Content Library - Search", () => {
     cy.get("[data-testid=object-search-tab-overview]").within(() => {
       cy.contains("New tab name");
       cy.contains(
-        "Brand, Season, Episode & Movie objects available to Kids & PC users on Fri, Dec 30, 2022 2:20 PM (+00:00) translated to pt-PT",
+        "Brand, Season, Episode & Movie objects available to Kids & PC users on Fri, Dec 30, 2022 2:20 PM (Etc/UTC) translated to pt-PT",
       );
     });
 

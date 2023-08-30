@@ -1,6 +1,5 @@
-import { getTimeZones, TimeZone, timeZonesNames } from "@vvo/tzdb";
+import { getTimeZones } from "@vvo/tzdb";
 import clsx from "clsx";
-import { time } from "console";
 
 import {
   Select,

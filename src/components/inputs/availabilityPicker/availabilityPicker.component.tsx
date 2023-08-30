@@ -1,6 +1,5 @@
 import { useFloating, offset, flip, size } from "@floating-ui/react";
 import { Popover } from "@headlessui/react";
-import { TimeZone } from "@vvo/tzdb";
 import clsx from "clsx";
 import { useState } from "react";
 import { GoTriangleDown } from "react-icons/go";

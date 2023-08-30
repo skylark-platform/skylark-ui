@@ -857,6 +857,21 @@ describe("parseMetadataForGraphQLRequest", () => {
     });
   });
 
+  test("removes timezone field from Availability object", () => {
+    const metadata: Record<string, SkylarkObjectMetadataField> = {
+      title: "string",
+      timezone: "Europe/London",
+    };
+    const got = parseMetadataForGraphQLRequest(
+      BuiltInSkylarkObjectType.Availability,
+      metadata,
+      inputFields,
+    );
+    expect(got).toEqual({
+      title: "string",
+    });
+  });
+
   describe("Availability object type", () => {
     const availabilityInputFields: NormalizedObjectField[] = [
       {

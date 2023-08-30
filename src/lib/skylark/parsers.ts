@@ -321,6 +321,8 @@ const parseObjectMetadata = (
     external_id: object.external_id || "",
   };
 
+  console.log({ metadata });
+
   // if (
   //   object.__typename === BuiltInSkylarkObjectType.Availability &&
   //   hasProperty(object, SkylarkAvailabilityField.Timezone) &&
