@@ -111,7 +111,7 @@ const validateErrorToastShown = async () => {
   const withinToast = within(screen.getByTestId("toast"));
   expect(withinToast.getByText("Error saving changes")).toBeInTheDocument();
   expect(withinToast.getByText("Reason(s):")).toBeInTheDocument();
-  expect(withinToast.getByText("invalid input")).toBeInTheDocument();
+  expect(withinToast.getByText("- invalid input")).toBeInTheDocument();
 };
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires

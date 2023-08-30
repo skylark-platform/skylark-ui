@@ -1,10 +1,13 @@
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 import { Tabs } from "src/components/tabs/tabs.component";
-import { Toast } from "src/components/toast/toast.component";
+import {
+  GraphQLRequestErrorToast,
+  Toast,
+} from "src/components/toast/toast.component";
 import { useGetObject } from "src/hooks/objects/get/useGetObject";
 import { useGetObjectPrefetchQueries } from "src/hooks/objects/get/useGetObjectPrefetchQueries";
 import { useUpdateAvailabilityAssignedTo } from "src/hooks/objects/update/useUpdateAvailabilityAssignedTo";
@@ -159,13 +162,7 @@ const displayHandleDroppedErrors = (
 
 const showUpdateErrorToast = (error: GQLSkylarkErrorResponse) =>
   toast.error(
-    <Toast
-      title={`Error saving changes`}
-      message={[
-        `Reason(s):`,
-        ...error.response.errors.map(({ message }) => message),
-      ]}
-    />,
+    <GraphQLRequestErrorToast title={`Error saving changes`} error={error} />,
     { autoClose: 10000 },
   );
 

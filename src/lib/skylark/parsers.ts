@@ -38,6 +38,7 @@ import {
   SkylarkObjectType,
   SkylarkAvailabilityField,
   ParsedSkylarkObjectConfigFieldConfig,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -50,6 +51,8 @@ import {
   getObjectAvailabilityStatus,
   getAvailabilityStatusForAvailabilityObject,
   convertToUTCDate,
+  AWS_EARLIEST_DATE,
+  AWS_LATEST_DATE,
 } from "./availability";
 
 dayjs.extend(customParseFormat);
@@ -447,25 +450,53 @@ export const parseMetadataForGraphQLRequest = (
 ) => {
   const keyValuePairs = Object.entries(metadata)
     .map(([key, value]) => {
+      // Never send UID as it cannot be changed
+      if (key === SkylarkSystemField.UID) {
+        return undefined;
+      }
+
+      // Can make an External ID blank https://skylarkplatform.atlassian.net/browse/SL-2620
+      if (key === SkylarkSystemField.ExternalID && !value) {
+        return undefined;
+      }
+
       const input = inputFields.find((createInput) => createInput.name === key);
       if (!input) {
         return undefined;
       }
 
-      // Empty strings are allowed unless its a system field
-      const emptyStringAllowed =
-        input.type === "string" && !SYSTEM_FIELDS.includes(key);
       const isInvalidDate =
         ["date", "datetime", "time", "timestamp"].includes(input.type) &&
         value === "Invalid Date";
 
+      if (objectType === BuiltInSkylarkObjectType.Availability) {
+        if (
+          key === SkylarkAvailabilityField.Start &&
+          (value === "" || isInvalidDate)
+        ) {
+          return [key, AWS_EARLIEST_DATE];
+        }
+
+        if (
+          key === SkylarkAvailabilityField.End &&
+          (value === "" || isInvalidDate)
+        ) {
+          return [key, AWS_LATEST_DATE];
+        }
+      }
+
       if (
         value === null ||
-        (value === "" && !emptyStringAllowed) ||
+        value === undefined ||
+        value === "" ||
         isInvalidDate
       ) {
-        // Empty strings will not work with AWSDateTime, or AWSURL so don't send them
-        return undefined;
+        // TODO delete this when values can be reset using null, currently a workaround to clear strings
+        if (input.type === "string") {
+          return [key, ""];
+        }
+
+        return [key, null];
       }
 
       const parsedFieldValue = parseInputFieldValue(value, input.type);

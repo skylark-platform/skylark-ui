@@ -195,7 +195,7 @@ test("GraphQL returns an error when deleting object, shows toast", async () => {
   const withinToast = within(screen.getByTestId("toast"));
   expect(withinToast.getByText("Error deleting object")).toBeInTheDocument();
   expect(withinToast.getByText("Reason(s):")).toBeInTheDocument();
-  expect(withinToast.getByText("invalid input")).toBeInTheDocument();
+  expect(withinToast.getByText("- invalid input")).toBeInTheDocument();
 
   expect(onDeleteSuccess).not.toHaveBeenCalled();
 });
