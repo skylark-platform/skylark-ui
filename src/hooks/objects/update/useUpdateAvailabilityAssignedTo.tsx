@@ -3,14 +3,19 @@ import { RequestDocument } from "graphql-request";
 
 import { createGetObjectAvailabilityKeyPrefix } from "src/hooks/objects/get/useGetObjectAvailability";
 import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import {
+  GQLSkylarkErrorResponse,
+  ParsedSkylarkObject,
+} from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateAvailabilityAssignedToMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
 export const useUpdateAvailabilityAssignedTo = ({
   onSuccess,
+  onError,
 }: {
   onSuccess: () => void;
+  onError: (e: GQLSkylarkErrorResponse) => void;
 }) => {
   const queryClient = useQueryClient();
   const { objects: allObjectsMeta } = useAllObjectsMeta();
@@ -48,6 +53,7 @@ export const useUpdateAvailabilityAssignedTo = ({
 
       onSuccess();
     },
+    onError,
   });
 
   return {

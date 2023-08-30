@@ -20,5 +20,6 @@ export const LOCAL_STORAGE = {
     queries: "graphiql:queries",
     query: "graphiql:query",
     variables: "graphiql:variables",
+    headers: "graphiql:headers",
   },
 };

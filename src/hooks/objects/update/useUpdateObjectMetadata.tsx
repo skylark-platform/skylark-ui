@@ -5,6 +5,7 @@ import { createGetObjectKeyPrefix } from "src/hooks/objects/get/useGetObject";
 import { refetchSearchQueriesAfterUpdate } from "src/hooks/objects/useCreateObject";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
+  GQLSkylarkErrorResponse,
   GQLSkylarkGetObjectResponse,
   GQLSkylarkUpdateObjectMetadataResponse,
   SkylarkObjectIdentifier,
@@ -14,26 +15,29 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectMetadataMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
+interface MutationVariables {
+  uid: string;
+  language?: string;
+  metadata: Record<string, SkylarkObjectMetadataField>;
+}
+
 export const useUpdateObjectMetadata = ({
   objectType,
   onSuccess,
+  onError,
 }: {
   objectType: SkylarkObjectType;
   onSuccess: (o: SkylarkObjectIdentifier) => void;
+  onError: (
+    e: GQLSkylarkErrorResponse<GQLSkylarkUpdateObjectMetadataResponse>,
+    variables: MutationVariables,
+  ) => void;
 }) => {
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const { mutate, isLoading } = useMutation({
-    mutationFn: ({
-      uid,
-      language,
-      metadata,
-    }: {
-      uid: string;
-      language?: string;
-      metadata: Record<string, SkylarkObjectMetadataField>;
-    }) => {
+    mutationFn: ({ uid, language, metadata }: MutationVariables) => {
       const updateObjectMetadataMutation = createUpdateObjectMetadataMutation(
         objectOperations,
         metadata,
@@ -59,6 +63,7 @@ export const useUpdateObjectMetadata = ({
       onSuccess({ uid, language: language || "", objectType });
       refetchSearchQueriesAfterUpdate(queryClient);
     },
+    onError,
   });
 
   const updateObjectMetadata = ({

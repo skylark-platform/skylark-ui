@@ -494,7 +494,8 @@ export const parseMetadataForGraphQLRequest = (
       //   }
       // }
 
-      return [key, parsedFieldValue];
+      // If parsedFieldValue is returned as invalid, return the original value - GraphQL will handle the error
+      return [key, parsedFieldValue || value];
     })
     .filter((value) => value !== undefined) as [string, string | EnumType][];
 

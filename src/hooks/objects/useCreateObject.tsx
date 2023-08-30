@@ -9,6 +9,7 @@ import { QueryKeys } from "src/enums/graphql";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkCreateObjectMetadataResponse,
+  GQLSkylarkErrorResponse,
   SkylarkObjectIdentifier,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
@@ -33,9 +34,11 @@ export const refetchSearchQueriesAfterUpdate = (queryClient: QueryClient) => {
 export const useCreateObject = ({
   objectType,
   onSuccess,
+  onError,
 }: {
   objectType: SkylarkObjectType;
   onSuccess: ({ uid, objectType, language }: SkylarkObjectIdentifier) => void;
+  onError: (e: GQLSkylarkErrorResponse) => void;
 }) => {
   const queryClient = useQueryClient();
 
@@ -68,6 +71,7 @@ export const useCreateObject = ({
       });
       refetchSearchQueriesAfterUpdate(queryClient);
     },
+    onError,
   });
 
   const createObject = (

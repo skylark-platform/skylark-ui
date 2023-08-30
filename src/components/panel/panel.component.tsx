@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -22,6 +22,7 @@ import {
   SkylarkSystemField,
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,
+  GQLSkylarkErrorResponse,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
@@ -155,6 +156,18 @@ const displayHandleDroppedErrors = (
     );
   }
 };
+
+const showUpdateErrorToast = (error: GQLSkylarkErrorResponse) =>
+  toast.error(
+    <Toast
+      title={`Error saving changes`}
+      message={[
+        `Reason(s):`,
+        ...error.response.errors.map(({ message }) => message),
+      ]}
+    />,
+    { autoClose: 10000 },
+  );
 
 export const Panel = ({
   isPage,
@@ -304,6 +317,7 @@ export const Panel = ({
         setModifiedRelationships(null);
         if (panelInEditMode) setEditMode(false);
       },
+      onError: showUpdateErrorToast,
     });
 
   const { updateObjectMetadata, isUpdatingObjectMetadata } =
@@ -314,6 +328,7 @@ export const Panel = ({
 
         if (panelInEditMode) setEditMode(false);
       },
+      onError: showUpdateErrorToast,
     });
 
   const { updateObjectContent, isUpdatingObjectContent } =
@@ -322,6 +337,7 @@ export const Panel = ({
       onSuccess: () => {
         if (panelInEditMode) setEditMode(false);
       },
+      onError: showUpdateErrorToast,
     });
 
   const { updateObjectAvailability, isUpdatingObjectAvailability } =
@@ -331,6 +347,7 @@ export const Panel = ({
         setModifiedAvailabilityObjects(null);
         if (panelInEditMode) setEditMode(false);
       },
+      onError: showUpdateErrorToast,
     });
 
   const {
@@ -340,6 +357,7 @@ export const Panel = ({
     onSuccess: () => {
       if (panelInEditMode) setEditMode(false);
     },
+    onError: showUpdateErrorToast,
   });
 
   const { updateAvailabilityAssignedTo, isUpdatingAvailabilityAssignedTo } =
@@ -348,6 +366,7 @@ export const Panel = ({
         setModifiedAvailabilityAssignedTo(null);
         if (panelInEditMode) setEditMode(false);
       },
+      onError: showUpdateErrorToast,
     });
 
   const saveActiveTabChanges = () => {
