@@ -204,8 +204,7 @@ const SkylarkObjectFieldInputGeneric = ({
     })}
     id={createHtmlForId(idPrefix, field)}
     aria-invalid={error ? "true" : "false"}
-    // type={convertFieldTypeToHTMLInputType(config.type)}
-    type="string"
+    type={convertFieldTypeToHTMLInputType(config.type)}
     step={
       (["int", "datetime", "time"].includes(config.type) && "1") ||
       (config.type === "float" && "any") ||
