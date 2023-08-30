@@ -202,6 +202,7 @@ export const useSearch = ({
     properties: allFieldNames,
     query,
     variables,
+    headers,
     searchHash,
   };
 };

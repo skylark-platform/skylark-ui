@@ -17,7 +17,7 @@ export interface GQLSkylarkError<T> {
   path: string[];
 }
 
-export interface GQLSkylarkErrorResponse<T> {
+export interface GQLSkylarkErrorResponse<T = unknown> {
   response: {
     data: T | null;
     errors: GQLSkylarkError<T>[];

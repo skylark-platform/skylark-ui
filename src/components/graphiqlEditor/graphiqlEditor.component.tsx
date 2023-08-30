@@ -95,11 +95,6 @@ export const GraphiQLEditor = ({
       // storage={}
       fetcher={fetcher}
       shouldPersistHeaders={true}
-      defaultHeaders={JSON.stringify({
-        [REQUEST_HEADERS.bypassCache]: "1",
-        [REQUEST_HEADERS.ignoreAvailability]: "false",
-        [REQUEST_HEADERS.timeTravel]: "",
-      })}
     >
       <GraphiQL.Logo>Query Editor</GraphiQL.Logo>
     </GraphiQL>

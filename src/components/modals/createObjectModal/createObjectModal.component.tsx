@@ -89,6 +89,18 @@ export const CreateObjectModal = ({
       onObjectCreated?.(object);
       closeModal();
     },
+    onError: (error) => {
+      toast.error(
+        <Toast
+          title={`Error creating object`}
+          message={[
+            `Reason(s):`,
+            ...error.response.errors.map(({ message }) => message),
+          ]}
+        />,
+        { autoClose: 10000 },
+      );
+    },
   });
 
   const {
@@ -109,6 +121,20 @@ export const CreateObjectModal = ({
         />,
       );
       closeModal();
+    },
+    onError: (error, object) => {
+      toast.error(
+        <Toast
+          title={`Error creating ${
+            object.language ? `"${object.language} "` : ""
+          }translation`}
+          message={[
+            `Reason(s):`,
+            ...error.response.errors.map(({ message }) => message),
+          ]}
+        />,
+        { autoClose: 10000 },
+      );
     },
   });
 

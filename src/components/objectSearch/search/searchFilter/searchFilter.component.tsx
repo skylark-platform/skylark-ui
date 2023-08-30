@@ -22,6 +22,7 @@ interface SearchFilterProps {
   graphqlQuery: {
     query: DocumentNode | null;
     variables: object;
+    headers: HeadersInit;
   };
   onFilterSave: (
     filters: Partial<SearchFilters>,
@@ -109,6 +110,7 @@ export const SearchFilter = ({
           label="Content Library Search"
           query={graphqlQuery.query}
           variables={graphqlQuery.variables}
+          headers={graphqlQuery.headers}
         />
       </div>
       <div className="relative flex-grow overflow-scroll border-none p-2 px-4 [&>section]:border-b-2 [&>section]:border-b-manatee-100 [&>section]:pb-3 [&>section]:pt-3 first:[&>section]:pt-0 last:[&>section]:border-none last:[&>section]:pb-0">

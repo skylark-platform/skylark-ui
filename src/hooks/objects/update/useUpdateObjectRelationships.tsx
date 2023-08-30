@@ -4,6 +4,7 @@ import { RequestDocument } from "graphql-request";
 import { createGetObjectRelationshipsKeyPrefix } from "src/hooks/objects/get/useGetObjectRelationships";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
+  GQLSkylarkErrorResponse,
   GQLSkylarkUpdateRelationshipsResponse,
   ParsedSkylarkObject,
   SkylarkObjectType,
@@ -25,9 +26,11 @@ interface MutationArgs {
 export const useUpdateObjectRelationships = ({
   objectType,
   onSuccess,
+  onError,
 }: {
   objectType: SkylarkObjectType;
   onSuccess: () => void;
+  onError: (e: GQLSkylarkErrorResponse) => void;
 }) => {
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
@@ -53,6 +56,7 @@ export const useUpdateObjectRelationships = ({
 
       onSuccess();
     },
+    onError,
   });
 
   return {

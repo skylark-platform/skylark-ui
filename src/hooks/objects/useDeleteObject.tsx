@@ -4,6 +4,7 @@ import { RequestDocument } from "graphql-request";
 import { QueryKeys } from "src/enums/graphql";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
+  GQLSkylarkErrorResponse,
   SkylarkObjectIdentifier,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -17,10 +18,12 @@ export const useDeleteObject = ({
   objectType,
   isDeleteTranslation,
   onSuccess,
+  onError,
 }: {
   objectType: SkylarkObjectType;
   isDeleteTranslation: boolean;
   onSuccess: (o: SkylarkObjectIdentifier) => void;
+  onError: (e: GQLSkylarkErrorResponse) => void;
 }) => {
   const queryClient = useQueryClient();
 
@@ -50,6 +53,7 @@ export const useDeleteObject = ({
       refetchSearchQueriesAfterUpdate(queryClient);
       onSuccess({ objectType, uid, language: language || "" });
     },
+    onError,
   });
 
   return {

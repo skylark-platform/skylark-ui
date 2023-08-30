@@ -129,6 +129,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     properties,
     query: graphqlSearchQuery,
     variables: graphqlSearchQueryVariables,
+    headers: graphqlSearchQueryHeaders,
     isRefetching: searchRefetching,
     searchHash,
     refetch,
@@ -346,6 +347,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             graphqlQuery={{
               query: graphqlSearchQuery,
               variables: graphqlSearchQueryVariables,
+              headers: graphqlSearchQueryHeaders,
             }}
             isSearching={isSearching || searchRefetching}
             filters={{

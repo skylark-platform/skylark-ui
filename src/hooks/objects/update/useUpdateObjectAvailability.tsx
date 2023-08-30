@@ -3,7 +3,11 @@ import { RequestDocument } from "graphql-request";
 
 import { createGetObjectAvailabilityKeyPrefix } from "src/hooks/objects/get/useGetObjectAvailability";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
-import { ParsedSkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
+import {
+  GQLSkylarkErrorResponse,
+  ParsedSkylarkObject,
+  SkylarkObjectType,
+} from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectAvailability } from "src/lib/graphql/skylark/dynamicMutations";
 
@@ -18,9 +22,11 @@ interface MutationFnArgs {
 export const useUpdateObjectAvailability = ({
   objectType,
   onSuccess,
+  onError,
 }: {
   objectType: SkylarkObjectType;
   onSuccess: () => void;
+  onError: (e: GQLSkylarkErrorResponse) => void;
 }) => {
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
@@ -41,6 +47,7 @@ export const useUpdateObjectAvailability = ({
 
       onSuccess();
     },
+    onError,
   });
 
   return {

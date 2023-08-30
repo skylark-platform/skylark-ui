@@ -3,7 +3,10 @@ import { RequestDocument } from "graphql-request";
 
 import { createGetAvailabilityObjectDimensionsKeyPrefix } from "src/hooks/availability/useAvailabilityObjectDimensions";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
-import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
+import {
+  BuiltInSkylarkObjectType,
+  GQLSkylarkErrorResponse,
+} from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateAvailabilityDimensionsMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
@@ -15,8 +18,10 @@ interface MutationArgs {
 
 export const useUpdateAvailabilityObjectDimensions = ({
   onSuccess,
+  onError,
 }: {
   onSuccess: () => void;
+  onError: (e: GQLSkylarkErrorResponse) => void;
 }) => {
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(
@@ -49,6 +54,7 @@ export const useUpdateAvailabilityObjectDimensions = ({
 
       onSuccess();
     },
+    onError,
   });
 
   return {

@@ -58,6 +58,18 @@ export const DeleteObjectModal = ({
       );
       onDeleteSuccess();
     },
+    onError: (error) => {
+      toast.error(
+        <Toast
+          title={`Error deleting object`}
+          message={[
+            `Reason(s):`,
+            ...error.response.errors.map(({ message }) => message),
+          ]}
+        />,
+        { autoClose: 10000 },
+      );
+    },
   });
 
   return (

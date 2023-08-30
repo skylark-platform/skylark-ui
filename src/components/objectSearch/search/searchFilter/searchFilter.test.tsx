@@ -18,6 +18,7 @@ const columnOpts = columns.map((id) => ({ value: id }));
 const graphqlQuery = {
   query: GET_SKYLARK_OBJECT_TYPES,
   variables: {},
+  headers: {},
 };
 
 test("renders with all checkboxes checked", async () => {

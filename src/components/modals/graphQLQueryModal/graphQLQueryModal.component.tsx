@@ -13,7 +13,7 @@ import { HREFS } from "src/constants/skylark";
 
 interface GraphiQLTabStateTab {
   hash: null;
-  headers: null;
+  headers: string | null;
   id: string;
   operationName: string;
   query: string;
@@ -65,6 +65,7 @@ const updateGraphiQLLocalStorage = (
   query: DocumentNode,
   formattedQuery: string,
   variables: object = {},
+  headers?: HeadersInit,
 ) => {
   const operation = getOperationAST(query as DocumentNode);
   const operationName = operation && operation.name?.value;
@@ -72,12 +73,12 @@ const updateGraphiQLLocalStorage = (
   const newTab: GraphiQLTabStateTab = {
     id: "dynamically-generated-query",
     hash: null,
-    headers: null,
     operationName: operationName || "",
     query: formattedQuery,
     response: null,
     title: operationName || "",
     variables: JSON.stringify(variables),
+    headers: headers ? JSON.stringify(headers) : null,
   };
 
   localStorage.setItem(LOCAL_STORAGE.graphiql.query, formattedQuery);
@@ -85,6 +86,13 @@ const updateGraphiQLLocalStorage = (
     LOCAL_STORAGE.graphiql.variables,
     JSON.stringify(variables),
   );
+
+  if (headers) {
+    localStorage.setItem(
+      LOCAL_STORAGE.graphiql.headers,
+      JSON.stringify(headers),
+    );
+  }
 
   const tabState = getGraphiQLLocalStorageObject<GraphiQLTabState>("tabState");
   if (tabState) {
@@ -108,7 +116,7 @@ const updateGraphiQLLocalStorage = (
   const newQuery: GraphiQLQueriesStateQuery = {
     query: formattedQuery,
     variables: JSON.stringify(variables),
-    headers: "",
+    headers: headers ? JSON.stringify(headers) : "",
     operationName: operationName || "",
   };
 
@@ -152,6 +160,7 @@ interface GraphQLQueryModalProps {
   query: DocumentNode | null;
   buttonClassName?: string;
   variables?: object;
+  headers?: HeadersInit;
 }
 
 export const DisplayGraphQLQueryModal = ({
@@ -159,6 +168,7 @@ export const DisplayGraphQLQueryModal = ({
   label,
   query,
   variables,
+  headers,
 }: { close: () => void } & GraphQLQueryModalProps) => {
   const [activeTab, setTab] = useState("Query");
 
@@ -173,7 +183,8 @@ export const DisplayGraphQLQueryModal = ({
   };
 
   const openQueryInGraphQLEditor = () => {
-    query && updateGraphiQLLocalStorage(query, formattedQuery, variables);
+    query &&
+      updateGraphiQLLocalStorage(query, formattedQuery, variables, headers);
   };
 
   return (
@@ -235,7 +246,7 @@ export const DisplayGraphQLQueryModal = ({
             </div>
 
             <Tabs
-              tabs={["Query", "Variables"]}
+              tabs={["Query", "Variables", "Headers"]}
               selectedTab={activeTab}
               onChange={({ name }) => setTab(name)}
               className="px-4 md:px-8"
@@ -255,14 +266,24 @@ export const DisplayGraphQLQueryModal = ({
           </div>
 
           <div className="flex-grow overflow-y-scroll">
-            <DynamicSyntaxHighlighter
-              language={activeTab === "Query" ? "graphql" : "json"}
-              value={
-                activeTab === "Query"
-                  ? formattedQuery
-                  : JSON.stringify(variables || {}, null, 4)
-              }
-            />
+            {activeTab === "Query" && (
+              <DynamicSyntaxHighlighter
+                language={"graphql"}
+                value={formattedQuery}
+              />
+            )}
+            {activeTab === "Variables" && (
+              <DynamicSyntaxHighlighter
+                language={"json"}
+                value={JSON.stringify(variables || {}, null, 4)}
+              />
+            )}
+            {activeTab === "Headers" && (
+              <DynamicSyntaxHighlighter
+                language={"json"}
+                value={JSON.stringify(headers || {}, null, 4)}
+              />
+            )}
           </div>
         </Dialog.Panel>
       </m.div>
