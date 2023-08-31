@@ -71,3 +71,52 @@ export const GET_USER_AND_ACCOUNT = gql`
     }
   }
 `;
+
+export const GET_ACCOUNT_STATUS = gql`
+  fragment listSkylarkBackgroundTaskFields on SkylarkBackgroundTaskListing {
+    next_token
+    objects {
+      created_at
+      messages
+      object_uid
+      status
+      task_type
+      task_id
+      updated_at
+    }
+  }
+
+  query GET_ACCOUNT_STATUS(
+    $queuedNextToken: String
+    $inProgressNextToken: String
+    $failedNextToken: String
+    $backgroundTaskLimit: Int = 10
+  ) {
+    getActivationStatus {
+      active_version
+      update_in_progress
+      update_started_at
+    }
+    queuedBackgroundTasks: listSkylarkBackgroundTask(
+      next_token: $queuedNextToken
+      limit: $backgroundTaskLimit
+      status: QUEUED
+    ) {
+      ...listSkylarkBackgroundTaskFields
+    }
+    inProgressBackgroundTasks: listSkylarkBackgroundTask(
+      next_token: $inProgressNextToken
+      limit: $backgroundTaskLimit
+      status: IN_PROGRESS
+    ) {
+      ...listSkylarkBackgroundTaskFields
+    }
+    failedBackgroundTasks: listSkylarkBackgroundTask(
+      next_token: $failedNextToken
+      limit: $backgroundTaskLimit
+      status: FAILED
+    ) {
+      ...listSkylarkBackgroundTaskFields
+    }
+  }
+`;

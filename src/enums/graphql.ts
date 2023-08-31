@@ -2,6 +2,7 @@ export enum QueryKeys {
   Schema = "schema",
   ObjectTypesConfig = "objectTypesConfig",
   Account = "account",
+  AccountStatus = "accountStatus",
   Search = "search",
   AvailabilityDimensions = "availabilityDimensions",
   GetObject = "getObject",

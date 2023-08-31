@@ -1,16 +1,20 @@
+import { Menu } from "@headlessui/react";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { sentenceCase } from "sentence-case";
 
+import { AccountStatus } from "src/components/account";
 import { Button } from "src/components/button";
+import { DropdownMenu } from "src/components/dropdown/dropdown.component";
+import { Edit } from "src/components/icons";
 import { AddAuthTokenModal } from "src/components/modals";
 import { Hamburger } from "src/components/navigation/hamburger";
 import { NavigationLinks } from "src/components/navigation/links";
 import { UserAvatar } from "src/components/user";
-import { useUser } from "src/contexts/useUser";
-import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
+import { useAccountStatus } from "src/hooks/useAccountStatus";
+import { getSkylarkCredsFromLocalStorage } from "src/hooks/useConnectedToSkylark";
 
 import Logo from "public/images/skylark.png";
 
@@ -52,21 +56,27 @@ export const Navigation = () => {
   const [open, setOpen] = useState(false);
   const [customerIdentifier, setCustomerIdentifier] = useState("");
 
-  const { isConnected, currentCreds } = useConnectedToSkylark();
+  const { isConnected } = useAccountStatus();
+
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
 
-  const { accountId } = useUser();
+  const updateCustomerIdentifier = useCallback(() => {
+    const creds = getSkylarkCredsFromLocalStorage(true);
+    setCustomerIdentifier(creds.uri ? getCustomerIdentifier(creds.uri) : "");
+  }, []);
 
   useEffect(() => {
-    // Have to use a useEffect here to prevent https://nextjs.org/docs/messages/react-hydration-error
-    const newCustomerIdenfitier = currentCreds?.uri
-      ? getCustomerIdentifier(currentCreds.uri)
-      : "";
+    updateCustomerIdentifier();
+  }, [updateCustomerIdentifier]);
 
-    if (newCustomerIdenfitier !== customerIdentifier) {
-      setCustomerIdentifier(newCustomerIdenfitier);
+  const handleModalOpenState = (open: boolean) => {
+    setAuthModalOpen(open);
+
+    // If closing the modal, update the customer identifier as the creds in storage may have changed
+    if (!open) {
+      updateCustomerIdentifier();
     }
-  }, [customerIdentifier, currentCreds?.uri]);
+  };
 
   return (
     <>
@@ -89,25 +99,37 @@ export const Navigation = () => {
         </nav>
 
         <div className="z-50 flex flex-grow flex-row items-center justify-end space-x-1 md:flex-grow-0 md:space-x-5">
-          <Button
-            variant="outline"
-            success={isConnected}
-            onClick={() => setAuthModalOpen(true)}
+          {isConnected ? (
+            <AccountStatus />
+          ) : (
+            <Button variant="outline" onClick={() => setAuthModalOpen(true)}>
+              Connect to Skylark
+            </Button>
+          )}
+          <DropdownMenu
+            options={[
+              {
+                id: "change-skylark",
+                text: "Change Skylark Account",
+                onClick: () => setAuthModalOpen(true),
+                Icon: <Edit className="h-5 w-5" />,
+              },
+            ]}
+            align="right"
           >
-            {isConnected ? "Connected" : "Connect to Skylark"}
-          </Button>
-          <div className="hidden items-center text-sm md:flex">
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                accountId && navigator.clipboard.writeText(`${accountId}`);
-              }}
-              className="mr-3 hidden font-semibold md:inline lg:mr-4"
-            >
-              {customerIdentifier}
-            </button>
-            <UserAvatar name={customerIdentifier || "S"} src="" />
-          </div>
+            <Menu.Button className="flex w-full items-center justify-center space-x-3 text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:space-x-4 md:text-sm">
+              <span
+                className="hidden font-semibold md:inline"
+                // TODO enable if Tayler wants
+                // onClick={() => {
+                //   accountId && navigator.clipboard.writeText(`${accountId}`);
+                // }}
+              >
+                {customerIdentifier}
+              </span>
+              <UserAvatar name={customerIdentifier || "S"} src="" />
+            </Menu.Button>
+          </DropdownMenu>
         </div>
 
         <Hamburger
@@ -118,7 +140,7 @@ export const Navigation = () => {
       {/* This should be removed after beta when we implement real authentication */}
       <AddAuthTokenModal
         isOpen={isAuthModalOpen || !isConnected}
-        setIsOpen={setAuthModalOpen}
+        setIsOpen={handleModalOpenState}
       />
     </>
   );

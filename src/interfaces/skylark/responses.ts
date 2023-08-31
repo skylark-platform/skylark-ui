@@ -34,6 +34,55 @@ export interface GQLSkylarkAccountResponse {
   };
 }
 
+export interface GQLSkylarkActivationStatusResponse {
+  getActivationStatus: {
+    active_version: string;
+    update_in_progress: boolean | null;
+    update_started_at: string | null;
+  };
+}
+
+// https://github.com/skylark-platform/skylark/blob/7cf217d549a327ed9139ca11109d086bf577a378/components/object-registry/src/tasks/tasks.py#L20
+export enum BackgroundTaskType {
+  POST_CREATE = "post_create",
+  POST_UPDATE = "post_update",
+  POST_AVAILABILITY_UPDATE = "post_update_availability",
+  POST_AVAILABILITY_DELETE = "post_delete_availability",
+  AVAILABILITY_DELETE_OBJECT_PROCESSING = "availability_delete",
+  AVAILABILITY_UPDATE_OBJECT_PROCESSING = "availability_update",
+}
+
+export enum BackgroundTaskStatus {
+  QUEUED = "QUEUED",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETE = "COMPLETE",
+  FAILED = "FAILED",
+}
+
+export interface GQLSkylarkBackgroundTask {
+  created_at: string;
+  messages: string[];
+  object_uid: string;
+  status: BackgroundTaskStatus;
+  task_type: BackgroundTaskType;
+  task_id: string;
+  updated_at: string;
+}
+
+interface GQLSkylarkListBackGroundTaskResponse {
+  listSkylarkBackgroundTask: {
+    next_token: NextToken;
+    objects: GQLSkylarkBackgroundTask[];
+  };
+}
+
+export interface GQLSkylarkStatusResponse
+  extends GQLSkylarkActivationStatusResponse {
+  queuedBackgroundTasks: GQLSkylarkListBackGroundTaskResponse["listSkylarkBackgroundTask"];
+  inProgressBackgroundTasks: GQLSkylarkListBackGroundTaskResponse["listSkylarkBackgroundTask"];
+  failedBackgroundTasks: GQLSkylarkListBackGroundTaskResponse["listSkylarkBackgroundTask"];
+}
+
 export interface GQLSkylarkUserResponse {
   getUser: {
     account: string;

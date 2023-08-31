@@ -10,6 +10,7 @@ export interface ButtonProps {
   loading?: boolean;
   success?: boolean;
   danger?: boolean;
+  warning?: boolean;
   disabled?: boolean;
   className?: string;
   block?: boolean;
@@ -30,6 +31,7 @@ export const Button = forwardRef(
       loading,
       success,
       danger,
+      warning,
       disabled,
       className,
       block,
@@ -58,12 +60,13 @@ export const Button = forwardRef(
       variant === "outline" &&
         "btn-outline btn-primary disabled:border-none disabled:shadow",
       variant === "ghost" &&
-        "btn-ghost text-black hover:bg-transparent p-0 disabled:bg-transparent",
+        "btn-ghost text-black hover:bg-transparent p-0 disabled:bg-transparent bg-transparent",
       variant === "link" && "btn-link",
       variant === "form" &&
         "p-0 h-auto min-h-0 btn-ghost hover:bg-transparent opacity-30 transition-opacity hover:opacity-100 active:opacity-60",
       success && !disabled && !loading && "btn-success text-white",
       danger && "btn-error",
+      warning && "btn-warning",
       !iconOnly &&
         variant !== "link" &&
         (disabled || loading) &&
