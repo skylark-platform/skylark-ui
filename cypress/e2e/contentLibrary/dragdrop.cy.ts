@@ -20,6 +20,11 @@ describe("Drag and Drop - Content and Relationship tab", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
+      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+        req.reply({
+          fixture: "./skylark/queries/getAccountStatus/default.json",
+        });
+      }
       if (hasOperationName(req, "GET_SkylarkSet_RELATIONSHIPS")) {
         req.reply({
           fixture: "./skylark/queries/getObjectRelationships/homepage.json",
