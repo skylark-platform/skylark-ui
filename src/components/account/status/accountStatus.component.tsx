@@ -82,7 +82,7 @@ const StatusText = ({
             className="self-end"
             onClick={onClick}
           >
-            Hide message
+            Hide Background Tasks message
           </Button>
         )}
       </div>
@@ -98,7 +98,7 @@ const StatusText = ({
         />
       )}
       {success && (
-        <button onClick={onClick}>
+        <button onClick={onClick} aria-label="Clear Background Task Status">
           <FiCheck className="text-xl text-success" />
         </button>
       )}
