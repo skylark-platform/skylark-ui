@@ -43,7 +43,7 @@ export const useAccountStatus = (poll?: boolean) => {
       }),
       [],
     ),
-    refetchInterval: poll ? 10000 : false,
+    refetchInterval: poll ? 5000 : false,
   });
 
   const isUnauthenticated =

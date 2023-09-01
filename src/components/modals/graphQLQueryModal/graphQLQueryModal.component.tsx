@@ -8,6 +8,7 @@ import { GrClose, GrCopy, GrGraphQl } from "react-icons/gr";
 import { Button } from "src/components/button";
 import { Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
+import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { HREFS } from "src/constants/skylark";
 
@@ -296,18 +297,26 @@ export const DisplayGraphQLQuery = (props: GraphQLQueryModalProps) => {
 
   return (
     <>
-      <Button
-        variant="ghost"
-        Icon={
-          <GrGraphQl
-            className="text-base md:text-xl"
-            data-testid="graphql-query-modal-button"
-          />
+      <Tooltip
+        tooltip={
+          <span>
+            {`Open the GraphQL Editor preloaded with the Query for ${props.label}.`}
+          </span>
         }
-        onClick={() => setOpen(true)}
-        disabled={!props.query}
-        className={props.buttonClassName}
-      />
+      >
+        <Button
+          variant="ghost"
+          Icon={
+            <GrGraphQl
+              className="text-base md:text-xl"
+              data-testid="graphql-query-modal-button"
+            />
+          }
+          onClick={() => setOpen(true)}
+          disabled={!props.query}
+          className={props.buttonClassName}
+        />
+      </Tooltip>
       <AnimatePresence>
         {isOpen && (
           <DisplayGraphQLQueryModal

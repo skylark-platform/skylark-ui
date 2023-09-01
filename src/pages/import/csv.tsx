@@ -1,4 +1,5 @@
 import { useState, useReducer, useEffect } from "react";
+import { FiDownload, FiUpload } from "react-icons/fi";
 
 import { Button } from "src/components/button";
 import { ObjectTypeSelect } from "src/components/inputs/select";
@@ -314,6 +315,7 @@ export default function CSVImportPage() {
             state.prep !== statusType.pending
           }
           onClick={onClick}
+          Icon={<FiUpload className="text-xl" />}
         >
           Import
         </Button>
@@ -332,6 +334,7 @@ export default function CSVImportPage() {
             !objectOperations ||
             state.prep !== statusType.pending
           }
+          Icon={<FiDownload className="text-xl" />}
         >
           Download Example CSV
         </Button>

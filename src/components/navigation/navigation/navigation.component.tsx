@@ -3,6 +3,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { FiLogOut } from "react-icons/fi";
 import { sentenceCase } from "sentence-case";
 
 import { AccountStatus } from "src/components/account";
@@ -112,7 +113,7 @@ export const Navigation = () => {
                 id: "change-skylark",
                 text: "Change Skylark Account",
                 onClick: () => setAuthModalOpen(true),
-                Icon: <Edit className="h-5 w-5" />,
+                Icon: <FiLogOut className="text-xl" />,
               },
             ]}
             align="right"

@@ -1,12 +1,13 @@
 import clsx from "clsx";
 import { Fragment, useState } from "react";
+import { FiUpload } from "react-icons/fi";
 
 import { Button } from "src/components/button";
 import {
   DropdownMenu,
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
-import { Edit3, Plus, Upload } from "src/components/icons";
+import { Edit3, Plus } from "src/components/icons";
 import { CreateObjectModal } from "src/components/modals";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 
@@ -32,7 +33,7 @@ export const CreateButtons = ({
       id: "import-csv",
       text: "Import (CSV)",
       href: "import/csv",
-      Icon: <Upload className="h-5" />,
+      Icon: <FiUpload className="text-xl" />,
     },
   ];
 
