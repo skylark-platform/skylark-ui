@@ -8,6 +8,11 @@ describe("Auth", () => {
           statusCode: 401,
         });
       }
+      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+        req.reply({
+          statusCode: 401,
+        });
+      }
     });
     cy.visit("/");
   });
@@ -42,6 +47,11 @@ describe("Auth", () => {
             fixture: "./skylark/queries/introspection/objectTypes.json",
           });
         }
+        if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+          req.reply({
+            fixture: "./skylark/queries/getAccountStatus/default.json",
+          });
+        }
       });
       cy.contains("Validating").should("not.exist");
       cy.get("button").should("be.enabled");
@@ -72,7 +82,7 @@ describe("Auth", () => {
     });
   });
 
-  it("when already logged in, can open using the Connected button and close by clicking outside", () => {
+  it("when already logged in, can open using the user settings dropdown and close by clicking outside", () => {
     cy.login();
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
       if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
@@ -80,10 +90,16 @@ describe("Auth", () => {
           fixture: "./skylark/queries/introspection/objectTypes.json",
         });
       }
+      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+        req.reply({
+          fixture: "./skylark/queries/getAccountStatus/default.json",
+        });
+      }
     });
     cy.visit("/");
     cy.get('*[id^="headlessui-dialog-panel-"]').should("not.exist");
-    cy.contains("Connected").click();
+    cy.get(`[aria-label="User Settings Dropdown"]`).click();
+    cy.contains("Change Skylark Account").click();
     cy.get('*[id^="headlessui-dialog-panel-"]').should("exist");
     cy.clickOutside();
     cy.get('*[id^="headlessui-dialog-panel-"]').should("not.exist");

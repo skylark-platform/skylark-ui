@@ -16,6 +16,11 @@ describe("Import/CSV", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
+      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+        req.reply({
+          fixture: "./skylark/queries/getAccountStatus/default.json",
+        });
+      }
       if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
         req.alias = "getObjectsConfig";
         req.reply({

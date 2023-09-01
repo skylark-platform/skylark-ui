@@ -118,7 +118,10 @@ export const Navigation = () => {
             ]}
             align="right"
           >
-            <Menu.Button className="flex w-full items-center justify-center space-x-3 text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:space-x-4 md:text-sm">
+            <Menu.Button
+              aria-label="User Settings Dropdown"
+              className="flex w-full items-center justify-center space-x-3 text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:space-x-4 md:text-sm"
+            >
               <span
                 className="hidden font-semibold md:inline"
                 // TODO enable if Tayler wants
