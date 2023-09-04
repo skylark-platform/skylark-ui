@@ -1,6 +1,9 @@
 import { render, screen } from "src/__tests__/utils/test-utils";
 import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
-import { formatReadableDateTime } from "src/lib/skylark/availability";
+import {
+  formatReadableDate,
+  formatReadableDateTime,
+} from "src/lib/skylark/availability";
 
 import { Cell, CellProps } from "./cell.component";
 
@@ -33,7 +36,7 @@ test("returns pretty printed date for date field", () => {
   );
 
   expect(
-    screen.getByText(formatReadableDateTime("2022-12-30")),
+    screen.getByText(formatReadableDate("2022-12-30")),
   ).toBeInTheDocument();
 });
 

@@ -15,10 +15,7 @@ import {
   createSearchObjectsQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
-import {
-  convertDateAndTimezoneToISO,
-  convertToUTCDate,
-} from "src/lib/skylark/availability";
+import { convertDateAndTimezoneToISO } from "src/lib/skylark/availability";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 import { useAllObjectsMeta } from "./useSkylarkObjectTypes";

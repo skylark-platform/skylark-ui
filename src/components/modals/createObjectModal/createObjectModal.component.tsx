@@ -301,7 +301,7 @@ const CreateObjectModalBody = forwardRef(
                           labelVariant="form"
                           useDefaultLanguage={!isCreateTranslationModal}
                           rounded={false}
-                          selected={(field.value as string | undefined) || ""}
+                          selected={field.value as string | undefined}
                           onChange={(str: string) => {
                             field.onChange(str);
                           }}

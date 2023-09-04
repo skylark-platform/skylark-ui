@@ -408,12 +408,21 @@ export const parseSkylarkObject = (
 const validateAndParseDate = (
   type: string,
   value: string,
-  formats?: string[],
-  ignoreError?: boolean,
+  {
+    formats,
+    ignoreError,
+    isTimestamp,
+  }: {
+    formats?: string[];
+    ignoreError?: boolean;
+    isTimestamp?: boolean;
+  },
 ) => {
   const validFormat = formats?.find((format) => dayjs(value, format).isValid());
   if (validFormat) {
-    return dayjs.tz(value, validFormat, UTC_NAME);
+    return isTimestamp
+      ? dayjs(value, validFormat)
+      : dayjs.tz(value, validFormat, UTC_NAME);
   }
 
   if (!ignoreError && !dayjs(value).isValid()) {
@@ -437,25 +446,23 @@ export const parseInputFieldValue = (
     return new EnumType(value as string);
   }
   if (type === "datetime") {
-    return validateAndParseDate(type, value as string).toISOString();
+    return validateAndParseDate(type, value as string, {}).toISOString();
   }
   if (type === "date") {
-    return validateAndParseDate(
-      type,
-      value as string,
-      VALID_DATE_FORMATS,
-    ).format("YYYY-MM-DDZ");
+    return validateAndParseDate(type, value as string, {
+      formats: VALID_DATE_FORMATS,
+    }).format("YYYY-MM-DDZ");
   }
   if (type === "time") {
-    return validateAndParseDate(type, value as string, [
-      "HH:mm:ss",
-      "HH:mm",
-      "HH:mm:ssZ",
-      "HH:mmZ",
-    ]).format("HH:mm:ss.SSSZ");
+    return validateAndParseDate(type, value as string, {
+      formats: ["HH:mm:ss", "HH:mm", "HH:mm:ssZ", "HH:mmZ"],
+    }).format("HH:mm:ss.SSSZ");
   }
   if (type === "timestamp") {
-    return validateAndParseDate(type, value as string, ["X", "x"]).unix();
+    return validateAndParseDate(type, value as string, {
+      formats: ["X"],
+      isTimestamp: true,
+    }).unix();
   }
   if (type === "int") {
     return parseInt(value as string);
@@ -563,22 +570,18 @@ export const parseDateTimeForHTMLForm = (
   }
 
   if (type === "date") {
-    const validDate = validateAndParseDate(
-      type,
-      `${value}`,
-      VALID_DATE_FORMATS,
-      true,
-    ).format("YYYY-MM-DD");
+    const validDate = validateAndParseDate(type, `${value}`, {
+      formats: VALID_DATE_FORMATS,
+      ignoreError: true,
+    }).format("YYYY-MM-DD");
     return validDate;
   }
 
   if (type === "time") {
-    const validTime = validateAndParseDate(
-      type,
-      `${value}`,
-      ["HH:mm:ss", "HH:mm:ss.SSS", "HH:mm:ss.SSSZ"],
-      true,
-    ).format("HH:mm:ss.SSS");
+    const validTime = validateAndParseDate(type, `${value}`, {
+      formats: ["HH:mm:ss", "HH:mm:ss.SSS", "HH:mm:ss.SSSZ"],
+      ignoreError: true,
+    }).format("HH:mm:ss.SSS");
     return validTime;
   }
 };

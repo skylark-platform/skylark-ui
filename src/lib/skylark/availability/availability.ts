@@ -105,18 +105,6 @@ export const getRelativeTimeFromDate = (
   return `Expired ${dayjs(end).fromNow()}`;
 };
 
-export const convertToUTCDate = (date: string, offset: string | null) => {
-  if (offset) {
-    const parsedFieldValueWithZRemoved = date.toUpperCase().endsWith("Z")
-      ? date.slice(0, -1)
-      : date;
-    return `${parsedFieldValueWithZRemoved}${offset}`;
-  }
-
-  const utcDate = dayjs(date).utc().format();
-  return utcDate;
-};
-
 export const convertDateAndTimezoneToISO = (str: string, timezone: string) => {
   const date = dayjs.tz(str, timezone);
   return date.toISOString();
