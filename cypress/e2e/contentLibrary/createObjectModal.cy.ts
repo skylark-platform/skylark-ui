@@ -16,6 +16,11 @@ describe("Create Object Modal", () => {
           fixture: "./skylark/queries/getUserAndAccount.json",
         });
       }
+      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+        req.reply({
+          fixture: "./skylark/queries/getAccountStatus/default.json",
+        });
+      }
       if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
         req.reply({
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",

@@ -21,6 +21,11 @@ describe("Object Page", () => {
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
         });
       }
+      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+        req.reply({
+          fixture: "./skylark/queries/getAccountStatus/default.json",
+        });
+      }
       if (hasOperationName(req, "GET_Episode")) {
         if (hasMatchingVariable(req, "language", "pt-PT")) {
           req.reply({

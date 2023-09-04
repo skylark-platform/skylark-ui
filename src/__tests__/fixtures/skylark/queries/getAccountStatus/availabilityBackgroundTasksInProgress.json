@@ -1,0 +1,482 @@
+{
+  "data": {
+    "getActivationStatus": {
+      "active_version": "2",
+      "update_in_progress": false,
+      "update_started_at": null
+    },
+    "queuedBackgroundTasks": {
+      "next_token": "eyJfaWQiOiAiVHw1a2xtbm81eWxqYXVwbTRwdGNjdDU2YWlhcSNmYWUwOThlYi04ZmM0LTQwMjAtOGZiYS02YTEwMzk1Y2NjZGEiLCAiX3NrIjogIjIwMjMtMDktMDFUMTQ6MzE6MTUuODI5MDQzKzAwOjAwIiwgIl9wb3NfcmVsX2lkIjogIlR8NWtsbW5vNXlsamF1cG00cHRjY3Q1NmFpYXEjUVVFVUVEIiwgInBvc2l0aW9uIjogbnVsbH0=",
+      "objects": [
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CJBVN63CY560JBY2T4PV2",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "a868dff3-9265-443e-a770-40d399e7cdd5",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK93TKKGXNPXHMG9NDJWE",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "3db9308d-d39f-4fa2-9dca-8c8a74ec3684",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CKK0D4K48WWW0YQYBQH4F",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "6539b5ff-d8d8-4e8c-ae24-356e525cfa05",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK61JEK06M3AVYN7HA85N",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "fc4892cc-b722-471c-b6dd-d95b4f970469",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK85HGG7TY55ZD66VHBST",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "db5af671-151c-4153-b584-df6d81a4ad35",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CM11Y39SMFEKSKWP0V7R4",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "69e6cdae-341b-4cd6-9bb9-80d99fbcb146",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK85SZTZ99DXJTK2NE657",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "96bf2da8-57a7-4875-ba3c-d04640767015",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CKYZVJSRMGSJYC9AYYDRR",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "ec5e77a7-72b3-4805-bf52-f222da4e4bc1",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CKPDRWTAS17W7XA616SAQ",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "db15c8a4-9403-4a55-90d0-d64b957ba269",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK30AH97F92XS4P0X5TVT",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "630749e9-ca0c-49b5-96fe-5e6561369b89",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK98HTSBRQ9T7T4N3VAH2",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "8b532bfd-563e-4c26-8e7f-ee14a8e0aa73",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CGQ17QR7SEVBSZ3H58X94",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "7c441894-0261-4d94-bbb9-bffaf9d4ec2b",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK93H6DTAAPA1X2ATA8NY",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "072197a0-10c5-4157-b7b7-5a2e00e56077",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CKYZQHCQHFBAGW936AFTF",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "a563e60b-b7aa-4fa9-8b12-4eafd81b6de4",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CJXXX1CN9662G97JR1VDC",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "e83d6dd8-24d6-4027-9632-0815ee448c50",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK0BXZS359ET82F8BGW01",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "e2c18bd6-ab37-49c1-9c95-7abcda274bff",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CH2EAFVFCBD5X0ECZXTF7",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "0fc29422-7bee-4bbd-9c03-b1bd44015427",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CG6X36GA2AJC8QZFFYYXW",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "2e89326f-ae9d-45ce-84d0-30a64a7459c9",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CM16S4MCR9GS00YVQPHYM",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "9c7105f1-2c5c-4d60-a81d-095bb4f8f24c",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK77BRFGC4T2TD7CCDQ21",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "8dfe9cef-eac8-46fb-a5e2-2703432d12f9",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CJY0B9SFQ2AKA3BS9Z0P1",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "152e73c7-2252-428c-b6ab-f3c1378880fa",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CJX9TGQN68Y1PTSM5TD3R",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "34cf27db-6668-430f-9e7a-f83f5513b88d",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CKX3SP4PTDC08BDG9TARE",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "6a8954ca-be9f-48a3-8e39-531d43dc6d48",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CGQ8P1FQ6E7S6BK42WGDA",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "823b16a3-11d6-4b68-a27f-43be64b01bb8",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK938D4SK5Q6ERFAG0HGN",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "cdbb5f88-4120-4747-a495-c5593c88ed83",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK61RSMZGDR25RXYZXTA4",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "14e1cd8d-242f-4866-9c0a-4ea1421e9c1c",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CKX9EC5YRYA8G21SFQR2X",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "b0431004-13d4-4def-a6ff-424a1db0bc2d",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CGQ8R7VY48QHRCW1NN00V",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "942cea19-e97d-46d6-a0e3-8f244d63bc6a",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK65BT4Y57TBT1SZ3V2AD",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "e3555da3-b1eb-4f3d-8692-40c4e2b43e71",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK93TG0HF8K3VK5PKMKQ8",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "2d7b4321-350a-4839-b733-bfaf099a313d",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CJX6VDK8QFVV8PK4CXEWJ",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "711a0725-9171-4f68-939a-dcb9160c36b4",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CJY416QT8TT74KVZDG8DA",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "d9fc91e8-4c43-4952-a0e0-50e4a3a6096e",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CJX7GAKVZ2ZBTE83QH2ES",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "0a22359f-bcbb-4c52-826b-430565ad1a8c",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CJF0XRSR1TT8F2YWK1Y83",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "53c7e766-4a4e-47d9-a77e-9c05c766d660",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CFXBJJMSBDX11JGSVSEB1",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "014901ea-a2ee-4536-b213-55178a97ed8d",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CJZNX9HVFRC66R5662CKK",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "ebe69dca-8311-48c9-8e1a-c3101ed2cf37",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK67YR12DQBSA19MZEM6N",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "1a8d4efe-1587-40ad-a5f6-12ae39b109f7",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CKS9NZTNAVYE0DBX7BRFK",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "e76918ee-af55-4a57-904b-c36f86b93a17",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK75HXAK9B9GJQV4RRTVR",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "7a0da3fd-cc9f-45d2-8cc2-af89e9e7e308",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK85NJDD7H8CMA07PF46Q",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "747b7b3f-c2cf-4f11-a235-418700f14c46",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CKS9HZFYVBX1J5T9VGX34",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "9b43e208-6b7c-4e13-ad0d-472afc2873fa",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CJ0VNXP3WRRJ3BJMBS709",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "cda1c89e-de55-4de4-be7c-fddbf810f726",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK615CM1PEASBNT8D6EYB",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "ceae2224-079e-41b8-89e2-5e7019d04740",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CKSGNCWSA99AY1H76AWA0",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "067b4da8-d603-4ba3-9ed8-74af8e838d3d",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CM12DEV6WCT2QZZ88K18A",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "3e663ab7-be61-41f6-a852-8169736c1cf9",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CJY2HST7C5K6GZK6XMN8K",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "21464276-0a84-4939-b3e7-197e3e301693",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CJ0T9WB4MSWE70QTYE5C7",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "b0fd0c91-2eff-4eea-bb0d-56ad8192bac6",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CJBXKG6DFM3Z3G3XMNKHG",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "d6cc63ad-99e0-4d7c-9713-4ba29aba5f37",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CK78MHX2YEDKPCQFJZQV0",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "66eb13d9-6b56-4439-bc12-c55129d2ecb0",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        },
+        {
+          "created_at": "2023-09-01T14:31:15.829043+00:00",
+          "messages": [],
+          "object_uid": "01H97CJXXYFN2YYBHJN45F9FVD",
+          "status": "QUEUED",
+          "task_type": "availability_update",
+          "task_id": "fae098eb-8fc4-4020-8fba-6a10395cccda",
+          "updated_at": "2023-09-01T14:31:15.829043+00:00"
+        }
+      ]
+    },
+    "inProgressBackgroundTasks": {
+      "next_token": null,
+      "objects": [
+        {
+          "created_at": "2023-09-01T14:31:12.131350+00:00",
+          "messages": ["Job started", "Processing availability relationships"],
+          "object_uid": "01H97CFEFA5AA2MSXRWVK33K5F",
+          "status": "IN_PROGRESS",
+          "task_type": "post_update_availability",
+          "task_id": "d03d99bd-7fd0-459b-9bb4-219a0ceeb5a1",
+          "updated_at": "2023-09-01T14:31:15.828565+00:00"
+        }
+      ]
+    },
+    "failedBackgroundTasks": {
+      "next_token": null,
+      "objects": []
+    }
+  }
+}

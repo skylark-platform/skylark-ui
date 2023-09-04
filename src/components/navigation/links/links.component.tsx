@@ -2,11 +2,11 @@ import { Menu } from "@headlessui/react";
 import clsx from "clsx";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
+import { FiFileText } from "react-icons/fi";
 import { GrGraphQl } from "react-icons/gr";
 import { TbBooks, TbTerminal2 } from "react-icons/tb";
 
 import { DropdownMenu } from "src/components/dropdown/dropdown.component";
-import { FileText } from "src/components/icons";
 import { HREFS } from "src/constants/skylark";
 
 interface LinkProps {
@@ -37,7 +37,7 @@ const navigationItems = [
         id: "api-docs",
         text: "API Documentation",
         href: HREFS.external.apiDocs,
-        Icon: <FileText className="h-5" />,
+        Icon: <FiFileText className="text-xl" />,
       },
       {
         id: "graphql-ide",

@@ -147,7 +147,6 @@ export const AddAuthTokenModal = ({
                 debouncedSetCreds({ token: inputToken, uri });
               }}
               label="GraphQL URL"
-              tabIndex={-1}
               className={clsx(
                 "pr-9",
                 debouncedUri && "border-2 outline-none",
