@@ -321,9 +321,9 @@ export const Select = forwardRef(
         disabled={disabled}
         onChange={onChangeWrapper}
         value={
-          displayRawSelectedValue && selected
+          (displayRawSelectedValue && selected
             ? { label: selected, value: selected }
-            : selectedOption
+            : selectedOption) || ""
         }
         name={name}
       >

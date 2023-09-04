@@ -32,7 +32,7 @@ import {
   SkylarkAvailabilityField,
 } from "src/interfaces/skylark";
 import {
-  formatReadableDate,
+  formatReadableDateTime,
   getAvailabilityStatusForAvailabilityObject,
   getRelativeTimeFromDate,
   getSingleAvailabilityStatus,
@@ -319,7 +319,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                   {
                     label: "Start",
                     key: SkylarkAvailabilityField.Start,
-                    value: formatReadableDate(
+                    value: formatReadableDateTime(
                       obj[SkylarkAvailabilityField.Start],
                     ),
                   },
@@ -328,7 +328,9 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                     key: SkylarkAvailabilityField.End,
                     value: neverExpires
                       ? "Never"
-                      : formatReadableDate(obj[SkylarkAvailabilityField.End]),
+                      : formatReadableDateTime(
+                          obj[SkylarkAvailabilityField.End],
+                        ),
                   },
                   {
                     label: "Timezone",

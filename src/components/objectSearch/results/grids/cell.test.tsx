@@ -1,6 +1,6 @@
 import { render, screen } from "src/__tests__/utils/test-utils";
 import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
-import { formatReadableDate } from "src/lib/skylark/availability";
+import { formatReadableDateTime } from "src/lib/skylark/availability";
 
 import { Cell, CellProps } from "./cell.component";
 
@@ -33,7 +33,7 @@ test("returns pretty printed date for date field", () => {
   );
 
   expect(
-    screen.getByText(formatReadableDate("2022-12-30")),
+    screen.getByText(formatReadableDateTime("2022-12-30")),
   ).toBeInTheDocument();
 });
 
@@ -47,7 +47,7 @@ test("returns pretty printed date for datetime field", () => {
   );
 
   expect(
-    screen.getByText(formatReadableDate("2022-12-30T13:30:00")),
+    screen.getByText(formatReadableDateTime("2022-12-30T13:30:00")),
   ).toBeInTheDocument();
 });
 
@@ -61,7 +61,7 @@ test("returns pretty printed date for timestamp field", () => {
   );
 
   expect(
-    screen.getByText(formatReadableDate("1692753495")),
+    screen.getByText(formatReadableDateTime("1692753495")),
   ).toBeInTheDocument();
 });
 

@@ -9,16 +9,21 @@ import {
 } from "src/components/dropdown/dropdown.component";
 import { Edit3, Plus } from "src/components/icons";
 import { CreateObjectModal } from "src/components/modals";
-import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
+import {
+  SkylarkObjectIdentifier,
+  SkylarkObjectType,
+} from "src/interfaces/skylark";
 
 interface CreateButtonProps {
   className?: string;
   onObjectCreated?: (o: SkylarkObjectIdentifier) => void;
+  preselectedObjectType?: SkylarkObjectType;
 }
 
 export const CreateButtons = ({
   className,
   onObjectCreated,
+  preselectedObjectType,
 }: CreateButtonProps) => {
   const [createObjectModalOpen, setCreateObjectModalOpen] = useState(false);
 
@@ -58,6 +63,7 @@ export const CreateButtons = ({
           setCreateObjectModalOpen(false);
           onObjectCreated?.(obj);
         }}
+        objectType={preselectedObjectType}
       />
     </>
   );

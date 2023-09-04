@@ -3,7 +3,7 @@ import {
   waitFor,
 } from "src/__tests__/utils/test-utils";
 import { UTC_NAME } from "src/components/inputs/select";
-import { formatReadableDate } from "src/lib/skylark/availability";
+import { formatReadableDateTime } from "src/lib/skylark/availability";
 
 import { AvailabilitySummary } from "./availabilitySummary.component";
 
@@ -116,7 +116,7 @@ test("shows Availability time travel", () => {
   );
 
   expect(container).toHaveTextContent(
-    `Objects available on ${formatReadableDate("2022-10-30T10:30")}`,
+    `Objects available on ${formatReadableDateTime("2022-10-30T10:30")}`,
   );
 });
 
@@ -135,7 +135,7 @@ test("shows Availability dimensions and time travel", () => {
   );
 
   expect(container).toHaveTextContent(
-    `Objects available to premium & pc users on ${formatReadableDate(
+    `Objects available to premium & pc users on ${formatReadableDateTime(
       "2022-10-30T10:30",
     )}`,
   );
@@ -159,7 +159,7 @@ test("shows all props", () => {
   );
 
   expect(container).toHaveTextContent(
-    `Episode, SkylarkSet & Movie objects filtered by query “My search query” available to premium & pc users on ${formatReadableDate(
+    `Episode, SkylarkSet & Movie objects filtered by query “My search query” available to premium & pc users on ${formatReadableDateTime(
       "2022-10-30T10:30",
     )}`,
   );
@@ -185,7 +185,7 @@ test("Loads the UI config and shows the display object type and Dimension titles
   });
 
   expect(container).toHaveTextContent(
-    `Episode, Setˢˡ & Movie objects filtered by query “My search query” available to Premium & PC users on ${formatReadableDate(
+    `Episode, Setˢˡ & Movie objects filtered by query “My search query” available to Premium & PC users on ${formatReadableDateTime(
       "2022-10-30T10:30",
     )} (Etc/UTC)`,
   );

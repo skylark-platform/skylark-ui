@@ -2,7 +2,7 @@ import clsx from "clsx";
 
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
-import { formatReadableDate } from "src/lib/skylark/availability";
+import { formatReadableDateTime } from "src/lib/skylark/availability";
 
 const prettifyStrArr = (arr: string[]): string => {
   if (arr.length === 0) {
@@ -110,7 +110,7 @@ export const AvailabilitySummary = ({
       <>
         on{" "}
         <strong>
-          {formatReadableDate(timeTravel.datetime)}
+          {formatReadableDateTime(timeTravel.datetime)}
           {timeTravel.timezone ? ` (${timeTravel.timezone})` : ""}
         </strong>
       </>

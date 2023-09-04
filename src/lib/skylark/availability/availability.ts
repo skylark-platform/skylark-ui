@@ -4,12 +4,14 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 
+import { UTC_NAME } from "src/components/inputs/select";
 import {
   ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
   ParsedSkylarkObjectMetadata,
   SkylarkAvailabilityField,
 } from "src/interfaces/skylark";
+import { VALID_DATE_FORMATS } from "src/lib/skylark/parsers";
 import { hasProperty } from "src/lib/utils";
 
 dayjs.extend(localizedFormat);
@@ -75,8 +77,11 @@ export const getObjectAvailabilityStatus = (
   return isFuture ? AvailabilityStatus.Future : AvailabilityStatus.Active;
 };
 
-export const formatReadableDate = (date?: string | null) =>
+export const formatReadableDateTime = (date?: string | null) =>
   date ? dayjs(date).format("llll") : "";
+
+export const formatReadableDate = (date?: string | null) =>
+  date ? dayjs(date, VALID_DATE_FORMATS).format("MMM D, YYYY") : "";
 
 export const is2038Problem = (date: string) => {
   return dayjs(date).isSame(AWS_LATEST_DATE);
@@ -101,7 +106,6 @@ export const getRelativeTimeFromDate = (
 };
 
 export const convertToUTCDate = (date: string, offset: string | null) => {
-  // console.log({ date, offset });
   if (offset) {
     const parsedFieldValueWithZRemoved = date.toUpperCase().endsWith("Z")
       ? date.slice(0, -1)
@@ -114,26 +118,17 @@ export const convertToUTCDate = (date: string, offset: string | null) => {
 };
 
 export const convertDateAndTimezoneToISO = (str: string, timezone: string) => {
-  const strWithoutTz = dayjs(str).format("YYYY-MM-DDTHH:mm:ss");
+  const date = dayjs.tz(str, timezone);
+  return date.toISOString();
+};
 
-  try {
-    const date = dayjs.tz(strWithoutTz, timezone);
+// Converts a date to a given timezone and removes the offset so that it plays nicely forms and pretty printing
+export const convertDateToTimezoneAndRemoveOffset = (
+  str: string,
+  timezone: string,
+) => {
+  const offsetDate = dayjs(str).tz(timezone || UTC_NAME);
+  const dateWithoutOffset = offsetDate.format("YYYY-MM-DDTHH:mm:ss.SSS");
 
-    return date.toISOString();
-  } catch (err) {
-    // TODO remove when BE stores/sends the Timezone name?
-    if (
-      hasProperty(err, "message") &&
-      typeof err.message === "string" &&
-      err.message.startsWith("Invalid time zone specified") &&
-      (timezone.startsWith("+") || timezone.startsWith("-"))
-    ) {
-      // Likely that timezone is actually the offset
-      const parsedFieldValueWithZRemoved = str.toUpperCase().endsWith("Z")
-        ? str.slice(0, -1)
-        : str;
-      return `${parsedFieldValueWithZRemoved}${timezone}`;
-    }
-    throw err;
-  }
+  return dateWithoutOffset;
 };

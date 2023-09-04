@@ -233,7 +233,10 @@ export const Panel = ({
     () =>
       (data &&
         objectMeta &&
-        parseMetadataForHTMLForm(data.metadata, objectMeta.fields)) ||
+        parseMetadataForHTMLForm(
+          data.metadata,
+          objectMeta.operations.create.inputs,
+        )) ||
       null,
     [data, objectMeta],
   );

@@ -47,8 +47,6 @@ export const PanelMetadata = ({
   objectFieldConfig: objectFieldConfigArr,
   form: { register, getValues, control, formState },
 }: PanelMetadataProps) => {
-  console.log({ metadata });
-
   const {
     systemMetadataFields,
     translatableMetadataFields,
@@ -121,14 +119,6 @@ export const PanelMetadata = ({
 
                 if (config) {
                   const value = getValues(field);
-
-                  if (
-                    objectType === BuiltInSkylarkObjectType.Availability &&
-                    field === SkylarkAvailabilityField.Start
-                  ) {
-                    // value = offsetUTCDate(value, metadata.timezone);
-                    console.log("overriding value", value);
-                  }
 
                   return (
                     <SkylarkObjectFieldInput
