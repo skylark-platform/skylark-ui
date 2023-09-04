@@ -3,28 +3,25 @@ import { hasOperationName } from "../support/utils/graphqlTestUtils";
 describe("Auth", () => {
   beforeEach(() => {
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
-        req.reply({
-          statusCode: 401,
-        });
-      }
-      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
-        req.reply({
-          statusCode: 401,
-        });
-      }
+      req.reply({
+        statusCode: 401,
+      });
     });
     cy.visit("/");
   });
 
   it("shows the connect modal when not connected", () => {
+    // Login just to set localStorage
+    cy.login();
+
     cy.get('*[id^="headlessui-dialog-panel-"]').within(() => {
       cy.contains("Connect to Skylark");
+      cy.contains("Enter your GraphQL URI and API Key below");
+      cy.contains("Validating").should("not.exist");
       const uriInput = cy.get('input[name="GraphQL URL"]');
       const tokenInput = cy.get('input[name="API Key"]');
       uriInput.clear();
       tokenInput.clear();
-      cy.contains("Validating").should("not.exist");
       cy.get("button").should("be.disabled");
 
       cy.percySnapshot("Auth - modal - no input");
