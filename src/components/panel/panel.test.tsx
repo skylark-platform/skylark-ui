@@ -1,4 +1,10 @@
-import { graphql } from "msw";
+import {
+  DefaultBodyType,
+  GraphQLContext,
+  MockedRequest,
+  ResponseResolver,
+  graphql,
+} from "msw";
 import { useState } from "react";
 
 import GQLSkylarkGetAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allDevicesAllCustomersAvailability.json";
@@ -91,6 +97,21 @@ const defaultProps = {
   setPanelObject: jest.fn(),
   setTab: jest.fn(),
   tab: PanelTab.Metadata,
+};
+
+const saveGraphQLError: ResponseResolver<
+  MockedRequest<DefaultBodyType>,
+  GraphQLContext<Record<string, unknown>>
+> = (_, res, ctx) => {
+  return res(ctx.errors([{ errorType: "error", message: "invalid input" }]));
+};
+
+const validateErrorToastShown = async () => {
+  await waitFor(() => expect(screen.getByTestId("toast")).toBeInTheDocument());
+  const withinToast = within(screen.getByTestId("toast"));
+  expect(withinToast.getByText("Error saving changes")).toBeInTheDocument();
+  expect(withinToast.getByText("Reason(s):")).toBeInTheDocument();
+  expect(withinToast.getByText("- invalid input")).toBeInTheDocument();
 };
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -629,14 +650,7 @@ describe("metadata view", () => {
 
     test("does not exit edit mode when the update mutation fails", async () => {
       server.use(
-        graphql.mutation(
-          "UPDATE_OBJECT_METADATA_SkylarkSet",
-          (req, res, ctx) => {
-            return res(
-              ctx.errors([{ errorType: "error", message: "invalid input" }]),
-            );
-          },
-        ),
+        graphql.mutation("UPDATE_OBJECT_METADATA_SkylarkSet", saveGraphQLError),
       );
 
       const { user } = render(
@@ -663,7 +677,9 @@ describe("metadata view", () => {
       );
 
       const saveButton = screen.getByText("Save");
-      fireEvent.click(saveButton);
+      await fireEvent.click(saveButton);
+
+      await validateErrorToastShown();
 
       await waitFor(() => expect(screen.getByText("Save")).toBeInTheDocument());
 
@@ -900,6 +916,34 @@ describe("relationships view", () => {
 
       await waitFor(() =>
         expect(screen.getByText("Edit Relationships")).toBeInTheDocument(),
+      );
+    });
+
+    test("removes an item, saves but GraphQL returns an error", async () => {
+      server.use(
+        graphql.mutation(
+          "UPDATE_OBJECT_RELATIONSHIPS_Season",
+          saveGraphQLError,
+        ),
+      );
+
+      await renderAndSwitchToEditView();
+
+      const withinPanelObjectRelationshipItem1 = within(
+        screen.getByTestId("panel-relationship-episodes-item-1"),
+      );
+      const removeButton = withinPanelObjectRelationshipItem1.getByTestId(
+        "object-identifier-delete",
+      );
+      fireEvent.click(removeButton);
+
+      const saveButton = screen.getByText("Save");
+      fireEvent.click(saveButton);
+
+      await validateErrorToastShown();
+
+      await waitFor(() =>
+        expect(screen.queryByText("Editing")).toBeInTheDocument(),
       );
     });
   });
@@ -1249,6 +1293,36 @@ describe("content view", () => {
         expect(screen.getByText("Edit Content")).toBeInTheDocument(),
       );
     });
+
+    test("moves an item, removes an item and saves but GraphQL returns an error", async () => {
+      server.use(
+        graphql.mutation("UPDATE_OBJECT_CONTENT_SkylarkSet", saveGraphQLError),
+      );
+
+      await renderAndSwitchToEditView();
+
+      const withinPanelObjectContentItem1 = within(
+        screen.getByTestId("panel-object-content-item-1"),
+      );
+      const removeButton = withinPanelObjectContentItem1.getByTestId(
+        "object-identifier-delete",
+      );
+      fireEvent.click(removeButton);
+
+      const input = screen.getByDisplayValue(2);
+      input.focus();
+      fireEvent.change(input, { target: { value: "3" } });
+      fireEvent.blur(input);
+
+      const saveButton = screen.getByText("Save");
+      fireEvent.click(saveButton);
+
+      await validateErrorToastShown();
+
+      await waitFor(() =>
+        expect(screen.queryByText("Editing")).toBeInTheDocument(),
+      );
+    });
   });
 });
 
@@ -1583,6 +1657,56 @@ describe("availability view", () => {
         ).toBeInTheDocument(),
       );
     });
+
+    test("removes an availability and saves, but GraphQL returns an error", async () => {
+      server.use(
+        graphql.mutation("UPDATE_OBJECT_AVAILABILITY_Movie", saveGraphQLError),
+      );
+
+      const firstAvailabilityObjectTitle =
+        GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+          .title;
+      render(
+        <Panel
+          {...defaultProps}
+          object={movieObject}
+          tab={PanelTab.Availability}
+        />,
+      );
+
+      expect(
+        screen.queryAllByText(
+          GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+            .title,
+        ),
+      ).toHaveLength(0);
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(firstAvailabilityObjectTitle),
+        ).toBeInTheDocument(),
+      );
+
+      fireEvent.click(screen.getByText("Edit Availability"));
+
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      fireEvent.click(screen.getAllByTestId("object-identifier-delete")[0]);
+
+      expect(screen.queryAllByText(firstAvailabilityObjectTitle)).toHaveLength(
+        0,
+      );
+
+      // Save
+      const saveButton = screen.getByText("Save");
+      fireEvent.click(saveButton);
+
+      await validateErrorToastShown();
+
+      expect(screen.queryAllByText(firstAvailabilityObjectTitle)).toHaveLength(
+        0,
+      );
+    });
   });
 });
 
@@ -1772,6 +1896,60 @@ describe("availabity dimensions view", () => {
 
       await waitFor(() =>
         expect(screen.getByText("Edit Dimensions")).toBeInTheDocument(),
+      );
+    });
+
+    test("edits and saves, but GraphQL returns an error", async () => {
+      server.use(
+        graphql.mutation("UPDATE_AVAILABILITY_DIMENSIONS", saveGraphQLError),
+      );
+
+      render(
+        <Panel
+          {...defaultProps}
+          object={availabilityObject}
+          tab={PanelTab.AvailabilityDimensions}
+        />,
+      );
+
+      expect(screen.queryAllByText("Device type")).toHaveLength(0);
+
+      await waitFor(() =>
+        expect(screen.getByText("Dimensions")).toBeInTheDocument(),
+      );
+      fireEvent.click(screen.getByText("Dimensions"));
+
+      await waitFor(() =>
+        expect(screen.getByText("Premium")).toBeInTheDocument(),
+      );
+
+      const displayDiv = screen.getByText("Premium").parentElement
+        ?.parentElement as HTMLDivElement;
+      const wrapper = displayDiv?.parentElement as HTMLDivElement;
+      fireEvent.click(wrapper);
+
+      const combobox = within(wrapper).getByRole("combobox");
+      fireEvent.click(combobox);
+
+      expect(screen.queryAllByText("Standard")).toHaveLength(2);
+
+      // Select new option
+      expect(screen.queryByText("Kids")).toBeInTheDocument();
+      expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(0);
+      fireEvent.click(screen.getByText("Kids"));
+
+      // Check Pill is added
+      expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(1);
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      // Save
+      const saveButton = screen.getByText("Save");
+      fireEvent.click(saveButton);
+
+      await validateErrorToastShown();
+
+      await waitFor(() =>
+        expect(screen.queryByText("Editing")).toBeInTheDocument(),
       );
     });
   });

@@ -19,6 +19,7 @@ import {
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 
+import { AWS_EARLIEST_DATE, AWS_LATEST_DATE } from "./availability";
 import {
   parseInputFieldValue,
   parseMetadataForGraphQLRequest,
@@ -803,11 +804,12 @@ describe("parseMetadataForGraphQLRequest", () => {
     },
   ];
 
-  test("returns empty object values when either null or empty string is given unless if type is a string and not a system field", () => {
+  test("returns nulled object values when either null or empty string is given unless field is UID", () => {
     const metadata: Record<string, SkylarkObjectMetadataField> = {
       title: "",
       date: "",
       int: null,
+      [SkylarkSystemField.UID]: "",
       [SkylarkSystemField.ExternalID]: "",
     };
     const got = parseMetadataForGraphQLRequest(
@@ -817,6 +819,8 @@ describe("parseMetadataForGraphQLRequest", () => {
     );
     expect(got).toEqual({
       title: "",
+      date: null,
+      int: null,
     });
   });
 
@@ -917,7 +921,7 @@ describe("parseMetadataForGraphQLRequest", () => {
       expect(got).toEqual({ title: "string" });
     });
 
-    test("does not change the start and end fields when no value is given", () => {
+    test("sends the largest and smallest AWS date values for the start and end fields when no value is given", () => {
       const metadata: Record<string, SkylarkObjectMetadataField> = {
         title: "string",
         [SkylarkAvailabilityField.Timezone]: "+01:00",
@@ -929,7 +933,11 @@ describe("parseMetadataForGraphQLRequest", () => {
         metadata,
         availabilityInputFields,
       );
-      expect(got).toEqual({ title: "string" });
+      expect(got).toEqual({
+        title: "string",
+        start: AWS_EARLIEST_DATE,
+        end: AWS_LATEST_DATE,
+      });
     });
 
     test("appends the timezone onto start and end fields", () => {

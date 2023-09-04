@@ -20,6 +20,11 @@ describe("Drag and Drop - Content and Relationship tab", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
+      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+        req.reply({
+          fixture: "./skylark/queries/getAccountStatus/default.json",
+        });
+      }
       if (hasOperationName(req, "GET_SkylarkSet_RELATIONSHIPS")) {
         req.reply({
           fixture: "./skylark/queries/getObjectRelationships/homepage.json",
@@ -196,7 +201,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .trigger("mouseup", { force: true })
               .wait(250)
               .then(() => {
-                cy.get("[data-cy=toast]").within(() => {
+                cy.get("[data-testid=toast]").within(() => {
                   cy.contains("Existing Linked Object").should("exist");
                 });
               });
@@ -322,7 +327,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .trigger("mouseup", { force: true })
               .wait(250)
               .then(() => {
-                cy.get("[data-cy=toast]").within(() => {
+                cy.get("[data-testid=toast]").within(() => {
                   cy.contains("Existing Linked Object").should("exist");
                 });
               });
@@ -369,7 +374,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .trigger("mouseup", { force: true })
               .wait(250)
               .then(() => {
-                cy.get("[data-cy=toast]").within(() => {
+                cy.get("[data-testid=toast]").within(() => {
                   cy.contains("Invalid Object Type").should("exist");
                 });
               });
@@ -515,7 +520,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .trigger("mouseup", { force: true })
               .wait(250)
               .then(() => {
-                cy.get("[data-cy=toast]").within(() => {
+                cy.get("[data-testid=toast]").within(() => {
                   cy.contains(`Existing Linked Object`).should("exist");
                 });
               });
@@ -564,7 +569,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .trigger("mouseup", { force: true })
               .wait(250)
               .then(() => {
-                cy.get("[data-cy=toast]").within(() => {
+                cy.get("[data-testid=toast]").within(() => {
                   cy.contains("Invalid Object Type").should("exist");
                 });
               });
@@ -661,7 +666,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
           .trigger("mouseup", { force: true })
           .wait(250)
           .then(() => {
-            cy.get("[data-cy=toast]").within(() => {
+            cy.get("[data-testid=toast]").within(() => {
               cy.contains("Invalid Object Type").should("exist");
             });
           });

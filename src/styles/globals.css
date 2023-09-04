@@ -13,11 +13,11 @@
 
 @layer components {
   .h-nav {
-    @apply h-12 lg:h-14;
+    @apply h-12 md:h-14;
   }
 
   .pt-nav {
-    @apply pt-12 lg:pt-14;
+    @apply pt-12 md:pt-14;
   }
 }
 

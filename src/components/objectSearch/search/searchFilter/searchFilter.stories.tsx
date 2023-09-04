@@ -12,6 +12,7 @@ export default {
 const graphqlQuery = {
   query: GET_SKYLARK_OBJECT_TYPES,
   variables: {},
+  headers: {},
 };
 
 const objectTypes = [

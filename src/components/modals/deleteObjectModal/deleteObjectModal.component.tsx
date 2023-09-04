@@ -4,7 +4,10 @@ import { GrClose } from "react-icons/gr";
 import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
-import { Toast } from "src/components/toast/toast.component";
+import {
+  GraphQLRequestErrorToast,
+  Toast,
+} from "src/components/toast/toast.component";
 import { useDeleteObject } from "src/hooks/objects/useDeleteObject";
 
 interface DeleteObjectModalProps {
@@ -57,6 +60,15 @@ export const DeleteObjectModal = ({
         />,
       );
       onDeleteSuccess();
+    },
+    onError: (error) => {
+      toast.error(
+        <GraphQLRequestErrorToast
+          title={`Error deleting object`}
+          error={error}
+        />,
+        { autoClose: 10000 },
+      );
     },
   });
 

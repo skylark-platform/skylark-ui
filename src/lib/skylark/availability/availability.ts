@@ -17,6 +17,9 @@ dayjs.extend(relativeTime);
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+export const AWS_EARLIEST_DATE = "1970-01-01T00:00:00.000Z";
+export const AWS_LATEST_DATE = "2038-01-19T03:14:07.000Z"; // Also the 2038 problem
+
 export const getSingleAvailabilityStatus = (
   now: dayjs.Dayjs,
   start: string,
@@ -76,7 +79,7 @@ export const formatReadableDate = (date?: string | null) =>
   date ? dayjs(date).format("llll") : "";
 
 export const is2038Problem = (date: string) => {
-  return dayjs(date).isSame("2038-01-19T03:14:07.000Z");
+  return dayjs(date).isSame(AWS_LATEST_DATE);
 };
 
 export const getRelativeTimeFromDate = (

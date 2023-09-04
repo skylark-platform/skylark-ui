@@ -23,6 +23,7 @@ interface SearchBarProps {
   graphqlQuery: {
     query: DocumentNode | null;
     variables: object;
+    headers: HeadersInit;
   };
   hideFilters?: boolean;
   onChange: (

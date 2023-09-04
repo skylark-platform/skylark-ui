@@ -7,6 +7,7 @@ import {
 } from "react-toastify";
 
 import { Cross } from "src/components/icons";
+import { GQLSkylarkErrorResponse } from "src/interfaces/skylark";
 
 export interface ToastProps extends Partial<ToastContentProps> {
   title: string;
@@ -80,7 +81,7 @@ export const Toast = ({
   messageClassName,
 }: ToastProps) => {
   return (
-    <div data-cy="toast">
+    <div data-testid="toast">
       <div className="flex flex-row">
         <h4 className="flex-grow pr-2 text-base font-medium md:text-base">
           {title}
@@ -95,5 +96,23 @@ export const Toast = ({
         </div>
       )}
     </div>
+  );
+};
+
+export const GraphQLRequestErrorToast = ({
+  title,
+  error,
+}: {
+  title: ToastProps["title"];
+  error: GQLSkylarkErrorResponse;
+}) => {
+  return (
+    <Toast
+      title={title}
+      message={[
+        `Reason(s):`,
+        ...error.response.errors.map(({ message }) => `- ${message}`),
+      ]}
+    />
   );
 };

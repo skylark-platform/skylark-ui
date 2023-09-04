@@ -1,10 +1,33 @@
-import { waitFor, screen, fireEvent } from "@testing-library/react";
+import { waitFor, screen, fireEvent, within } from "@testing-library/react";
+import {
+  DefaultBodyType,
+  GraphQLContext,
+  MockedRequest,
+  ResponseResolver,
+  graphql,
+} from "msw";
 
 import GQLSkylarkGetObjectGOTS01E01QueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01.json";
 import GQLSkylarkUserAccountFixture from "src/__tests__/fixtures/skylark/queries/getUserAndAccount.json";
+import { server } from "src/__tests__/mocks/server";
 import { render } from "src/__tests__/utils/test-utils";
 
 import { CreateObjectModal } from "./createObjectModal.component";
+
+const saveGraphQLError: ResponseResolver<
+  MockedRequest<DefaultBodyType>,
+  GraphQLContext<Record<string, unknown>>
+> = (_, res, ctx) => {
+  return res(ctx.errors([{ errorType: "error", message: "invalid input" }]));
+};
+
+const validateErrorToastShown = async (message: string) => {
+  await waitFor(() => expect(screen.getByTestId("toast")).toBeInTheDocument());
+  const withinToast = within(screen.getByTestId("toast"));
+  expect(withinToast.getByText(message)).toBeInTheDocument();
+  expect(withinToast.getByText("Reason(s):")).toBeInTheDocument();
+  expect(withinToast.getByText("- invalid input")).toBeInTheDocument();
+};
 
 describe("Create Object (new object)", () => {
   test("renders the modal", async () => {
@@ -130,6 +153,52 @@ describe("Create Object (new object)", () => {
       uid: GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.uid,
     });
     expect(setIsOpen).toHaveBeenCalledWith(false);
+  });
+
+  test("adds a field value and saves, but GraphQL returns an error", async () => {
+    server.use(graphql.mutation("CREATE_OBJECT_Episode", saveGraphQLError));
+
+    const setIsOpen = jest.fn();
+    const onObjectCreated = jest.fn();
+
+    const { user } = render(
+      <CreateObjectModal
+        isOpen={true}
+        setIsOpen={setIsOpen}
+        onObjectCreated={onObjectCreated}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("create-object-modal")).toBeInTheDocument(),
+    );
+
+    expect(screen.queryAllByText("External id")).toHaveLength(0);
+
+    user.click(screen.getByTestId("select"));
+
+    await waitFor(() =>
+      expect(screen.queryAllByText("Episode")).toHaveLength(1),
+    );
+    user.click(screen.getByText("Episode"));
+
+    await waitFor(() =>
+      expect(screen.queryAllByText("External id")).toHaveLength(1),
+    );
+
+    const createButton = screen.getByRole("button", { name: "Create Episode" });
+    expect(createButton).toBeDisabled();
+
+    await user.type(screen.getByLabelText("External id"), "my-external-id");
+
+    await waitFor(() => expect(createButton).not.toBeDisabled());
+
+    await user.click(createButton);
+
+    await validateErrorToastShown("Error creating object");
+
+    expect(onObjectCreated).not.toHaveBeenCalled();
+    expect(setIsOpen).not.toHaveBeenCalled();
   });
 });
 
@@ -295,5 +364,56 @@ describe("Create Translation (existing object)", () => {
         uid: "123",
       }),
     );
+  });
+
+  test("selects a new language, adds a title and creates, but GraphQL returns an error", async () => {
+    server.use(
+      graphql.mutation("UPDATE_OBJECT_METADATA_SkylarkSet", saveGraphQLError),
+    );
+
+    const onObjectCreated = jest.fn();
+
+    render(
+      <CreateObjectModal
+        isOpen={true}
+        setIsOpen={jest.fn()}
+        onObjectCreated={onObjectCreated}
+        createTranslation={{
+          objectType: "SkylarkSet",
+          objectTypeDisplayName: "Set",
+          objectDisplayName: "GOT Rail",
+          uid: "123",
+          language: "en-GB",
+          existingLanguages: [],
+        }}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByPlaceholderText("Language")).toBeInTheDocument(),
+    );
+
+    fireEvent.change(screen.getByPlaceholderText("Language"), {
+      target: { value: "pt-P" },
+    });
+
+    fireEvent.click(screen.getByText("pt-PT"));
+
+    const createButton = screen.getByRole("button", {
+      name: "Create Translation",
+    });
+    expect(createButton).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("Title"), {
+      target: { value: "GOT Rail Title" },
+    });
+
+    expect(createButton).toBeEnabled();
+
+    fireEvent.click(createButton);
+
+    await validateErrorToastShown(`Error creating "pt-PT" translation`);
+
+    expect(onObjectCreated).not.toHaveBeenCalled();
   });
 });

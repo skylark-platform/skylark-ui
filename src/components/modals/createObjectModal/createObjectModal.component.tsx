@@ -7,7 +7,10 @@ import { toast } from "react-toastify";
 import { Button } from "src/components/button";
 import { SkylarkObjectFieldInput } from "src/components/inputs";
 import { LanguageSelect, ObjectTypeSelect } from "src/components/inputs/select";
-import { Toast } from "src/components/toast/toast.component";
+import {
+  GraphQLRequestErrorToast,
+  Toast,
+} from "src/components/toast/toast.component";
 import { useUpdateObjectMetadata } from "src/hooks/objects/update/useUpdateObjectMetadata";
 import { useCreateObject } from "src/hooks/objects/useCreateObject";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
@@ -89,6 +92,15 @@ export const CreateObjectModal = ({
       onObjectCreated?.(object);
       closeModal();
     },
+    onError: (error) => {
+      toast.error(
+        <GraphQLRequestErrorToast
+          title={`Error creating object`}
+          error={error}
+        />,
+        { autoClose: 10000 },
+      );
+    },
   });
 
   const {
@@ -109,6 +121,17 @@ export const CreateObjectModal = ({
         />,
       );
       closeModal();
+    },
+    onError: (error, object) => {
+      toast.error(
+        <GraphQLRequestErrorToast
+          title={`Error creating ${
+            object.language ? `"${object.language}" ` : ""
+          }translation`}
+          error={error}
+        />,
+        { autoClose: 10000 },
+      );
     },
   });
 

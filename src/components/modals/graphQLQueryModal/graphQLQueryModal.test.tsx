@@ -13,24 +13,29 @@ const variables = {
   variable1: "value1",
 };
 
+const headers = {
+  header1: "value1",
+};
+
 const stringifiedVariables = JSON.stringify(variables);
+const stringifiedHeaders = JSON.stringify(headers);
 const formattedQuery = print(GET_SKYLARK_OBJECT_TYPES);
 
 const newTab = {
   id: "dynamically-generated-query",
   hash: null,
-  headers: null,
   operationName: "GET_SKYLARK_OBJECT_TYPES",
   query: formattedQuery,
   response: null,
   title: "GET_SKYLARK_OBJECT_TYPES",
-  variables: JSON.stringify(variables),
+  variables: stringifiedVariables,
+  headers: stringifiedHeaders,
 };
 
 const newQuery = {
   query: formattedQuery,
   variables: stringifiedVariables,
-  headers: "",
+  headers: stringifiedHeaders,
   operationName: "GET_SKYLARK_OBJECT_TYPES",
 };
 
@@ -82,6 +87,7 @@ test("renders the button", () => {
       label={label}
       query={GET_SKYLARK_OBJECT_TYPES}
       variables={variables}
+      headers={headers}
     />,
   );
 
@@ -94,6 +100,7 @@ test("opens the modal to the query tab", async () => {
       label={label}
       query={GET_SKYLARK_OBJECT_TYPES}
       variables={variables}
+      headers={headers}
     />,
   );
 
@@ -111,6 +118,7 @@ test("opens the modal and switches to the variables tab", async () => {
       label={label}
       query={GET_SKYLARK_OBJECT_TYPES}
       variables={variables}
+      headers={headers}
     />,
   );
 
@@ -125,6 +133,27 @@ test("opens the modal and switches to the variables tab", async () => {
   expect(screen.queryByText('"value1"')).toBeInTheDocument();
 });
 
+test("opens the modal and switches to the headers tab", async () => {
+  render(
+    <DisplayGraphQLQuery
+      label={label}
+      query={GET_SKYLARK_OBJECT_TYPES}
+      variables={variables}
+      headers={headers}
+    />,
+  );
+
+  await fireEvent.click(screen.getByRole("button"));
+
+  await screen.findByTestId("syntax-highlighter");
+  expect(screen.queryByText("Query for Schema")).toBeInTheDocument();
+
+  await fireEvent.click(screen.getByText("Headers"));
+
+  expect(screen.queryByText("GET_SKYLARK_OBJECT_TYPES")).toBeFalsy();
+  expect(screen.queryByText('"header1"')).toBeInTheDocument();
+});
+
 test("copies the active tab to the clipboard", async () => {
   jest.spyOn(navigator.clipboard, "writeText");
 
@@ -133,6 +162,7 @@ test("copies the active tab to the clipboard", async () => {
       label={label}
       query={GET_SKYLARK_OBJECT_TYPES}
       variables={variables}
+      headers={headers}
     />,
   );
 
@@ -174,6 +204,7 @@ test("clicks the open query in editor button which sets the GraphiQL localStorag
       label={label}
       query={GET_SKYLARK_OBJECT_TYPES}
       variables={variables}
+      headers={headers}
     />,
   );
 
@@ -185,7 +216,7 @@ test("clicks the open query in editor button which sets the GraphiQL localStorag
   );
 
   await fireEvent.click(screen.getByRole("link"));
-  expect(localStorage.setItem).toHaveBeenCalledTimes(4);
+  expect(localStorage.setItem).toHaveBeenCalledTimes(5);
 
   expect(localStorage.setItem).toHaveBeenCalledWith(
     LOCAL_STORAGE.graphiql.query,
@@ -196,12 +227,18 @@ test("clicks the open query in editor button which sets the GraphiQL localStorag
     stringifiedVariables,
   );
   expect(localStorage.setItem).toHaveBeenCalledWith(
-    LOCAL_STORAGE.graphiql.queries,
-    JSON.stringify({ queries: [newQuery] }),
+    LOCAL_STORAGE.graphiql.headers,
+    stringifiedHeaders,
   );
-  expect(localStorage.setItem).toHaveBeenCalledWith(
+  expect(localStorage.setItem).toHaveBeenNthCalledWith(
+    4,
     LOCAL_STORAGE.graphiql.tabState,
     JSON.stringify({ tabs: [newTab], activeTabIndex: 0 }),
+  );
+  expect(localStorage.setItem).toHaveBeenNthCalledWith(
+    5,
+    LOCAL_STORAGE.graphiql.queries,
+    JSON.stringify({ queries: [newQuery] }),
   );
 });
 
@@ -223,6 +260,7 @@ test("clicks the open query in editor button which updates the GraphiQL localSto
       label={label}
       query={GET_SKYLARK_OBJECT_TYPES}
       variables={variables}
+      headers={headers}
     />,
   );
 
@@ -234,7 +272,7 @@ test("clicks the open query in editor button which updates the GraphiQL localSto
   );
 
   await fireEvent.click(screen.getByRole("link"));
-  expect(localStorage.setItem).toHaveBeenCalledTimes(4);
+  expect(localStorage.setItem).toHaveBeenCalledTimes(5);
 
   expect(localStorage.setItem).toHaveBeenCalledWith(
     LOCAL_STORAGE.graphiql.query,
@@ -243,6 +281,10 @@ test("clicks the open query in editor button which updates the GraphiQL localSto
   expect(localStorage.setItem).toHaveBeenCalledWith(
     LOCAL_STORAGE.graphiql.variables,
     stringifiedVariables,
+  );
+  expect(localStorage.setItem).toHaveBeenCalledWith(
+    LOCAL_STORAGE.graphiql.headers,
+    stringifiedHeaders,
   );
   expect(localStorage.setItem).toHaveBeenCalledWith(
     LOCAL_STORAGE.graphiql.queries,

@@ -24,6 +24,11 @@ describe("Content Library - Search", () => {
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
         });
       }
+      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+        req.reply({
+          fixture: "./skylark/queries/getAccountStatus/default.json",
+        });
+      }
       if (hasOperationName(req, "SEARCH")) {
         if (
           hasMatchingVariable(req, "dimensions", [

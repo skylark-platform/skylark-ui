@@ -1,0 +1,21 @@
+{
+  "data": {
+    "getActivationStatus": {
+      "active_version": "2",
+      "update_in_progress": false,
+      "update_started_at": null
+    },
+    "queuedBackgroundTasks": {
+      "next_token": null,
+      "objects": []
+    },
+    "inProgressBackgroundTasks": {
+      "next_token": null,
+      "objects": []
+    },
+    "failedBackgroundTasks": {
+      "next_token": null,
+      "objects": []
+    }
+  }
+}

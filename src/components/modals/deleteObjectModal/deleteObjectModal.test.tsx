@@ -1,5 +1,7 @@
-import { waitFor, screen } from "@testing-library/react";
+import { waitFor, screen, within } from "@testing-library/react";
+import { graphql } from "msw";
 
+import { server } from "src/__tests__/mocks/server";
 import { render } from "src/__tests__/utils/test-utils";
 
 import { DeleteObjectModal } from "./deleteObjectModal.component";
@@ -155,4 +157,45 @@ test("successfully deletes the translation and calls the onSuccess callback", as
   await user.click(cancelButton);
 
   await waitFor(() => expect(onDeleteSuccess).toHaveBeenCalled());
+});
+
+test("GraphQL returns an error when deleting object, shows toast", async () => {
+  server.use(
+    graphql.mutation("DELETE_Episode", (_, res, ctx) => {
+      return res(
+        ctx.errors([{ errorType: "error", message: "invalid input" }]),
+      );
+    }),
+  );
+
+  const onDeleteSuccess = jest.fn();
+
+  const { user } = render(
+    <DeleteObjectModal
+      isOpen={true}
+      setIsOpen={jest.fn()}
+      onDeleteSuccess={onDeleteSuccess}
+      uid="123"
+      objectType="Episode"
+      language="en-GB"
+      objectDisplayName="My Episode"
+      objectTypeDisplayName="Episode"
+      availableLanguages={["en-GB", "pt-PT"]}
+    />,
+  );
+
+  await waitFor(() =>
+    expect(screen.getByTestId("delete-object-modal")).toBeInTheDocument(),
+  );
+
+  const cancelButton = screen.getByText("Delete translation");
+  await user.click(cancelButton);
+
+  await waitFor(() => expect(screen.getByTestId("toast")).toBeInTheDocument());
+  const withinToast = within(screen.getByTestId("toast"));
+  expect(withinToast.getByText("Error deleting object")).toBeInTheDocument();
+  expect(withinToast.getByText("Reason(s):")).toBeInTheDocument();
+  expect(withinToast.getByText("- invalid input")).toBeInTheDocument();
+
+  expect(onDeleteSuccess).not.toHaveBeenCalled();
 });
