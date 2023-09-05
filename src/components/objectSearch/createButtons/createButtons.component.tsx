@@ -61,7 +61,10 @@ export const CreateButtons = ({
         setIsOpen={setCreateObjectModalOpen}
         onObjectCreated={(obj) => {
           setCreateObjectModalOpen(false);
-          onObjectCreated?.(obj);
+          onObjectCreated?.({
+            ...obj,
+            language: obj.language || "",
+          });
         }}
         objectType={preselectedObjectType}
       />
