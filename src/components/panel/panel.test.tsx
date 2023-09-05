@@ -129,8 +129,10 @@ describe("header (tab independent)", () => {
       <Panel {...defaultProps} object={movieObject} closePanel={closePanel} />,
     );
 
-    await waitFor(() => expect(screen.getByText("Close")).toBeInTheDocument());
-    fireEvent.click(screen.getByText("Close"));
+    await waitFor(() =>
+      expect(screen.getByLabelText("Close Panel")).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByLabelText("Close Panel"));
 
     expect(closePanel).toHaveBeenCalled();
   });

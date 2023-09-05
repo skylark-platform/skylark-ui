@@ -1,13 +1,12 @@
 import clsx from "clsx";
 import { Fragment, useState } from "react";
-import { FiUpload } from "react-icons/fi";
+import { FiEdit3, FiPlus, FiUpload } from "react-icons/fi";
 
 import { Button } from "src/components/button";
 import {
   DropdownMenu,
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
-import { Edit3, Plus } from "src/components/icons";
 import { CreateObjectModal } from "src/components/modals";
 import {
   SkylarkObjectIdentifier,
@@ -31,14 +30,14 @@ export const CreateButtons = ({
     {
       id: "create",
       text: "Create Object",
-      Icon: <Edit3 className="h-5" />,
+      Icon: <FiEdit3 className="text-lg" />,
       onClick: () => setCreateObjectModalOpen(true),
     },
     {
       id: "import-csv",
       text: "Import (CSV)",
       href: "import/csv",
-      Icon: <FiUpload className="text-xl" />,
+      Icon: <FiUpload className="text-lg" />,
     },
   ];
 
@@ -49,7 +48,7 @@ export const CreateButtons = ({
           <DropdownMenuButton as={Fragment}>
             <Button
               variant="primary"
-              Icon={<Plus className="h-4 w-4 stroke-success-content" />}
+              Icon={<FiPlus className="stroke-success-content text-xl" />}
             >
               <span className="hidden sm:inline">Create</span>
             </Button>

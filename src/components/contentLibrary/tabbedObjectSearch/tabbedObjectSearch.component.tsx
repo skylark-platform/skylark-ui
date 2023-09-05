@@ -1,16 +1,16 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useState } from "react";
+import {
+  FiCheckSquare,
+  FiEdit,
+  FiPlus,
+  FiTrash2,
+  FiXSquare,
+} from "react-icons/fi";
 import { v4 as uuidv4 } from "uuid";
 
 import { AvailabilitySummary } from "src/components/availability";
 import { Button } from "src/components/button";
-import {
-  CheckSquare,
-  CrossSquare,
-  Edit,
-  Plus,
-  Trash,
-} from "src/components/icons";
 import { TextInput } from "src/components/inputs/textInput";
 import {
   MemoizedObjectSearch,
@@ -203,7 +203,7 @@ const TabOverview = ({
                     setUpdatedName(null);
                   }}
                 >
-                  <CheckSquare className="h-4 w-4" />
+                  <FiCheckSquare className="text-lg" />
                 </Button>
                 <Button
                   variant="ghost"
@@ -213,7 +213,7 @@ const TabOverview = ({
                     setUpdatedName(null);
                   }}
                 >
-                  <CrossSquare className="h-4 w-4" />
+                  <FiXSquare className="text-lg" />
                 </Button>
               </>
             ) : (
@@ -227,7 +227,7 @@ const TabOverview = ({
                   }}
                   aria-label="Rename active tab"
                 >
-                  <Edit className="h-4 w-4" />
+                  <FiEdit className="text-lg" />
                 </Button>
                 <Button
                   variant="ghost"
@@ -235,7 +235,7 @@ const TabOverview = ({
                   onClick={onTabDelete}
                   aria-label="Delete active tab"
                 >
-                  <Trash className="h-4 w-4" />
+                  <FiTrash2 className="text-lg" />
                 </Button>
               </>
             )}
@@ -378,7 +378,7 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
                   }}
                   aria-label="add tab"
                 >
-                  <Plus className="h-3 w-3" />
+                  <FiPlus className="h-4 w-4" />
                 </button>
               </div>
               <CreateButtons

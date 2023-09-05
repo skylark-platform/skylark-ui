@@ -1,7 +1,7 @@
 import clsx from "clsx";
+import { FiPlus } from "react-icons/fi";
 
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
-import { Plus } from "src/components/icons";
 
 interface PanelHeaderProps {
   text: string;
@@ -79,6 +79,6 @@ export const PanelPlusButton = ({ onClick }: { onClick: () => void }) => (
     className="mb-4 px-2 py-1 text-manatee-500 transition-colors hover:text-brand-primary"
     onClick={onClick}
   >
-    <Plus className="h-3 w-3" />
+    <FiPlus className="h-4 w-4" />
   </button>
 );

@@ -9,7 +9,6 @@ import { sentenceCase } from "sentence-case";
 import { AccountStatus } from "src/components/account";
 import { Button } from "src/components/button";
 import { DropdownMenu } from "src/components/dropdown/dropdown.component";
-import { Edit } from "src/components/icons";
 import { AddAuthTokenModal } from "src/components/modals";
 import { Hamburger } from "src/components/navigation/hamburger";
 import { NavigationLinks } from "src/components/navigation/links";

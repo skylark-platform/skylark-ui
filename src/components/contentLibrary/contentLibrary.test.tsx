@@ -75,8 +75,10 @@ test("open metadata panel, check information and close", async () => {
     ).toBeInTheDocument(),
   );
 
-  await waitFor(() => expect(screen.getByText("Close")).toBeInTheDocument());
-  fireEvent.click(screen.getByText("Close"));
+  await waitFor(() =>
+    expect(screen.getByLabelText("Close Panel")).toBeInTheDocument(),
+  );
+  fireEvent.click(screen.getByLabelText("Close Panel"));
 
   await waitFor(() =>
     expect(screen.queryByTestId("panel-header")).not.toBeInTheDocument(),

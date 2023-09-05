@@ -1,8 +1,6 @@
 import clsx from "clsx";
+import { FiAlertCircle, FiCheckCircle, FiCircle } from "react-icons/fi";
 
-import { AlertCircle } from "src/components/icons";
-import { CheckCircle } from "src/components/icons";
-import { Circle } from "src/components/icons";
 import { Spinner } from "src/components/icons";
 
 export enum statusType {
@@ -33,11 +31,15 @@ const getSVGColor = (status: statusType) => {
 const getIcon = (status: statusType) => {
   switch (status) {
     case statusType.success:
-      return <CheckCircle className={getSVGColor(status)} />;
+      return (
+        <FiCheckCircle className={clsx(getSVGColor(status), "text-2xl")} />
+      );
     case statusType.pending:
-      return <Circle className={getSVGColor(status)} />;
+      return <FiCircle className={clsx(getSVGColor(status), "text-2xl")} />;
     case statusType.error:
-      return <AlertCircle className={getSVGColor(status)} />;
+      return (
+        <FiAlertCircle className={clsx(getSVGColor(status), "text-2xl")} />
+      );
     case statusType.inProgress:
       return (
         <Spinner

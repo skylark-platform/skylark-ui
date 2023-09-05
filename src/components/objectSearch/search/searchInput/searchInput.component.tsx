@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import { useState } from "react";
-import { FiRefreshCw, FiX } from "react-icons/fi";
+import { FiRefreshCw, FiSearch, FiX } from "react-icons/fi";
 import { useDebouncedCallback } from "use-debounce";
 
-import { Filter, Search } from "src/components/icons";
+import { Filter } from "src/components/icons";
 
 interface SearchInputProps {
   searchQuery: string;
@@ -48,7 +48,7 @@ export const SearchInput = ({
           hideFilters && "rounded-r-full",
         )}
       >
-        <Search className="ml-2 h-4 md:ml-5 md:h-5" />
+        <FiSearch className="ml-2 text-lg md:ml-5 md:text-xl" />
         <input
           name="search-query-input"
           value={query}

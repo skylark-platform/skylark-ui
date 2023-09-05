@@ -1,8 +1,8 @@
 import { Row } from "@tanstack/react-table";
 import Link from "next/link";
+import { FiExternalLink, FiInfo } from "react-icons/fi";
 import { VirtualItem } from "react-virtual";
 
-import { InfoCircle, ExternalLink } from "src/components/icons";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 interface RowActionsProps {
@@ -37,7 +37,7 @@ export const RowActions = ({
         height: activeVirtualRow.size,
         transform,
       }}
-      className="absolute right-0 z-[3] hidden items-center justify-center space-x-0.5 bg-manatee-50 text-center sm:flex sm:px-0.5 md:px-1"
+      className="absolute right-0 z-[3] hidden items-center justify-center space-x-2 bg-manatee-50 text-center sm:flex sm:px-1 md:px-2"
     >
       {onInfoClick && (
         <button
@@ -46,7 +46,7 @@ export const RowActions = ({
           }}
           aria-label="object-info"
         >
-          <InfoCircle className="h-4 stroke-brand-primary transition-colors hover:stroke-brand-primary/60" />
+          <FiInfo className="stroke-brand-primary text-base transition-colors hover:stroke-brand-primary/60" />
         </button>
       )}
       <Link
@@ -58,7 +58,7 @@ export const RowActions = ({
         rel="noopener noreferrer"
         target="_blank"
       >
-        <ExternalLink className="h-4 transition-colors hover:text-brand-primary" />
+        <FiExternalLink className="text-base transition-colors hover:text-brand-primary" />
       </Link>
     </div>
   );

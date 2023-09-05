@@ -1,6 +1,7 @@
+import { FiExternalLink } from "react-icons/fi";
+
 import { Button } from "src/components/button";
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
-import { ExternalLink } from "src/components/icons";
 import { formatObjectField } from "src/lib/utils";
 
 export const InputLabel = ({
@@ -21,7 +22,7 @@ export const InputLabel = ({
     {isRequired && <span className="pl-0.5 text-error">*</span>}
     {href && (
       <Button
-        Icon={<ExternalLink className="h-4 w-4" />}
+        Icon={<FiExternalLink className="text-lg" />}
         className="ml-2 hover:text-brand-primary"
         variant="form"
         href={href}
