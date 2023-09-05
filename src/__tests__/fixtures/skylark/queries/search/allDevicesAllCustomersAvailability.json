@@ -17,7 +17,7 @@
           "__Availability__slug": "always-all-devices-all-customer-types",
           "__Availability__start": "2022-01-01T00:00:00+00:00",
           "__Availability__end": "2038-01-19T03:14:07+00:00",
-          "__Availability__timezone": "+00:00"
+          "__Availability__timezone": "UTC"
         }
       ]
     }

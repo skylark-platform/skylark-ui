@@ -86,7 +86,7 @@
             "slug": "active-in-the-past",
             "start": "2000-01-01T15:15:00+00:00",
             "end": "2020-01-01T15:15:00+00:00",
-            "timezone": "+00:00"
+            "timezone": "UTC"
           },
           {
             "uid": "01H4MMB058XJR2EMZ9N3WE0MNS",
@@ -95,7 +95,7 @@
             "slug": "active-next-sunday",
             "start": "2023-07-09T00:00:00+00:00",
             "end": "2038-01-19T03:14:07+00:00",
-            "timezone": "+00:00"
+            "timezone": "UTC"
           },
           {
             "uid": "01H4MMB068TWWK04H4XRFD4BQ3",
@@ -104,7 +104,7 @@
             "slug": "premium",
             "start": "2022-01-01T00:00:00+00:00",
             "end": "2038-01-19T03:14:07+00:00",
-            "timezone": "+00:00"
+            "timezone": "UTC"
           },
           {
             "uid": "01H4MMB06BGXN91JK2T5A16N45",
@@ -113,7 +113,7 @@
             "slug": "active-until-next-sunday",
             "start": "2000-01-01T00:00:00+00:00",
             "end": "2023-07-09T00:00:00+00:00",
-            "timezone": "+00:00"
+            "timezone": "UTC"
           }
         ]
       },
