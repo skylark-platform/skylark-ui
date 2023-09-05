@@ -463,6 +463,7 @@ export const Panel = ({
       className="mx-auto flex h-full w-full flex-col overflow-y-hidden break-words"
       data-cy={`panel-for-${objectType}-${uid}`}
       data-testid="panel"
+      data-tab={selectedTab}
     >
       <PanelHeader
         isPage={isPage}
