@@ -6,7 +6,6 @@ import {
 } from "@tanstack/react-table";
 
 import { AvailabilityLabel } from "src/components/availability";
-import { ExternalLink } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
@@ -17,12 +16,8 @@ import {
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectImageRelationship,
-  SkylarkAvailabilityField,
 } from "src/interfaces/skylark";
-import {
-  formatReadableDateTime,
-  is2038Problem,
-} from "src/lib/skylark/availability";
+import { formatReadableDateTime } from "src/lib/skylark/availability";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
   addCloudinaryOnTheFlyImageTransformation,

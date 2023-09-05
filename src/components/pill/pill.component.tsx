@@ -1,6 +1,5 @@
 import clsx from "clsx";
-
-import { Cross } from "src/components/icons";
+import { FiX } from "react-icons/fi";
 
 export interface PillProps {
   label: string;
@@ -27,7 +26,7 @@ export const Pill = ({ label, bgColor, className, onDelete }: PillProps) => (
     <span className="overflow-hidden text-clip">{label}</span>
     {onDelete && (
       <button className="ml-1" onClick={onDelete}>
-        <Cross className="h-4 w-4 text-xs text-white" />
+        <FiX className="h-4 w-4 text-white" />
       </button>
     )}
   </div>

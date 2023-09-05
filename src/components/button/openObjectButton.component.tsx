@@ -1,4 +1,4 @@
-import { ArrowRight } from "src/components/icons";
+import { FiArrowRight } from "react-icons/fi";
 
 interface GetOpenButtonProps {
   disabled?: boolean;
@@ -12,6 +12,6 @@ export const OpenObjectButton = ({ disabled, onClick }: GetOpenButtonProps) => (
     aria-label="Open Object"
     disabled={disabled}
   >
-    <ArrowRight />
+    <FiArrowRight className="text-xl" />
   </button>
 );

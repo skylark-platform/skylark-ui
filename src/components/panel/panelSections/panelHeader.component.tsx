@@ -2,6 +2,15 @@ import clsx from "clsx";
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  FiArrowLeft,
+  FiArrowRight,
+  FiEdit,
+  FiExternalLink,
+  FiMoreVertical,
+  FiTrash2,
+  FiX,
+} from "react-icons/fi";
 import { GrGraphQl } from "react-icons/gr";
 
 import { AvailabilityLabelPill } from "src/components/availability";
@@ -10,14 +19,6 @@ import {
   DropdownMenu,
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
-import {
-  Edit,
-  Trash,
-  MoreVertical,
-  ArrowLeft,
-  ExternalLink,
-  ArrowRight,
-} from "src/components/icons";
 import { LanguageSelect } from "src/components/inputs/select";
 import {
   CreateObjectModal,
@@ -115,7 +116,7 @@ export const PanelHeader = ({
           existingLanguages.length < 2
             ? `Delete ${objectTypeDisplayName}`
             : `Delete "${actualLanguage}" translation`,
-        Icon: <Trash className="w-5 fill-error stroke-error" />,
+        Icon: <FiTrash2 className="stroke-error text-xl" />,
         danger: true,
         onClick: () => setDeleteObjectConfirmationModalOpen(true),
       },
@@ -171,21 +172,21 @@ export const PanelHeader = ({
           {!isPage && (
             <>
               <Button
-                Icon={<ArrowLeft />}
+                Icon={<FiArrowLeft className="text-2xl" />}
                 variant="ghost"
                 disabled={!navigateToPreviousPanelObject || inEditMode}
                 onClick={navigateToPreviousPanelObject}
                 aria-label="Click to go back"
               />
               <Button
-                Icon={<ArrowRight />}
+                Icon={<FiArrowRight className="text-2xl" />}
                 variant="ghost"
                 disabled={!navigateToForwardPanelObject || inEditMode}
                 onClick={navigateToForwardPanelObject}
                 aria-label="Click to go forward"
               />
               <Button
-                Icon={<ExternalLink />}
+                Icon={<FiExternalLink className="text-2xl" />}
                 variant="ghost"
                 href={
                   actualLanguage
@@ -201,7 +202,7 @@ export const PanelHeader = ({
               className="flex focus:outline-none focus-visible:ring-2 group-hover:text-black"
               aria-label="Open Panel Menu"
             >
-              <MoreVertical className="h-6 w-6" />
+              <FiMoreVertical className="text-2xl" />
             </DropdownMenuButton>
           </DropdownMenu>
 
@@ -230,7 +231,7 @@ export const PanelHeader = ({
             <>
               <Button
                 variant="primary"
-                Icon={<Edit className="h-4 w-4 stroke-success-content" />}
+                Icon={<FiEdit className="h-4 w-4 stroke-success-content" />}
                 onClick={toggleEditMode}
                 disabled={!tabsWithEditMode.includes(currentTab)}
               >
@@ -241,9 +242,12 @@ export const PanelHeader = ({
         </div>
 
         {!isPage && closePanel && (
-          <Button variant="ghost" onClick={closePanel}>
-            Close
-          </Button>
+          <Button
+            variant="ghost"
+            onClick={closePanel}
+            Icon={<FiX className="text-2xl" />}
+            aria-label="Close Panel"
+          />
         )}
       </div>
       <div className="flex flex-col items-start pb-2">

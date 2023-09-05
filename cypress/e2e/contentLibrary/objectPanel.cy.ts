@@ -222,7 +222,7 @@ describe("Content Library - Object Panel", () => {
     cy.openContentLibraryObjectPanelByText("GOT S01E1 - Winter");
 
     cy.contains("Edit Metadata").should("exist");
-    cy.get("button").contains("Close").click();
+    cy.get('[aria-label="Close Panel"]').click();
     cy.contains("Edit Metadata").should("not.exist");
   });
 

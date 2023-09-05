@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { FiX } from "react-icons/fi";
 import {
   ToastContainer as ReactToastifyContainer,
   ToastContentProps,
@@ -6,7 +7,6 @@ import {
   Slide,
 } from "react-toastify";
 
-import { Cross } from "src/components/icons";
 import { GQLSkylarkErrorResponse } from "src/interfaces/skylark";
 
 export interface ToastProps extends Partial<ToastContentProps> {
@@ -87,7 +87,7 @@ export const Toast = ({
           {title}
         </h4>
         <button onClick={() => closeToast?.()}>
-          <Cross />
+          <FiX className="text-xl" />
         </button>
       </div>
       {message && (

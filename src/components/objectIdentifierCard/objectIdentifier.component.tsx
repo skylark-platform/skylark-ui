@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import { ReactNode } from "react";
+import { FiTrash, FiTrash2 } from "react-icons/fi";
 
 import { OpenObjectButton } from "src/components/button";
-import { Trash } from "src/components/icons";
 import { ObjectTypePill } from "src/components/pill";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import {
@@ -68,10 +68,10 @@ export const ObjectIdentifierCard = ({
           )}
           onClick={onDeleteClick}
         >
-          <Trash
+          <FiTrash2
             className={clsx(
-              "flex h-6 text-manatee-500 transition-all hover:text-error",
-              !disableDeleteClick ? "w-6" : "w-0",
+              "flex h-5 text-manatee-500 transition-all hover:text-error",
+              !disableDeleteClick ? "w-5" : "w-0",
             )}
           />
         </button>

@@ -1,8 +1,7 @@
 import clsx from "clsx";
 import { AnimatePresence, m } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
-
-import { ChevronLeft, ChevronRight } from "src/components/icons";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 type Tab = { id: string; name: string };
 
@@ -84,9 +83,9 @@ const ScrollableTabScrollButton = ({
       transition={{ bounce: 0 }}
     >
       {type === "left" ? (
-        <ChevronLeft className="h-5 w-5" />
+        <FiChevronLeft className="h-5 w-5" />
       ) : (
-        <ChevronRight className="h-5 w-5" />
+        <FiChevronRight className="h-5 w-5" />
       )}
     </m.button>
   );
