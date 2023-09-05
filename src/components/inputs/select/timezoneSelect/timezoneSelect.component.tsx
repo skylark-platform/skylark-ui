@@ -51,6 +51,7 @@ export const TimezoneSelect = ({
       className={clsx(props.variant === "pill" ? "w-32" : props.className)}
       placeholder={props.placeholder || "Timezone"}
       searchable={props.variant !== "pill"}
+      displayRawSelectedValue
     />
   );
 };

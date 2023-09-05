@@ -144,25 +144,6 @@ export const parseObjectInputFields = (
       };
     });
 
-  // // Override for the Availability Timezone input
-  if (
-    objectType === BuiltInSkylarkObjectType.Availability &&
-    parsedInputs.findIndex(
-      ({ name }) => name === SkylarkAvailabilityField.Timezone,
-    ) === -1
-  ) {
-    return [
-      ...parsedInputs,
-      {
-        name: SkylarkAvailabilityField.Timezone,
-        type: "string",
-        originalType: "String",
-        isList: false,
-        isRequired: false,
-      },
-    ];
-  }
-
   return parsedInputs;
 };
 

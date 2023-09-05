@@ -91,6 +91,9 @@ export interface GQLSkylarkUserResponse {
   };
 }
 
+export type GQLSkylarkUserAndAccountResponse = GQLSkylarkAccountResponse &
+  GQLSkylarkUserResponse;
+
 export interface GQLSkylarkGetObjectResponse {
   getObject: SkylarkGraphQLObject;
 }
