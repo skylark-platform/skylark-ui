@@ -365,12 +365,12 @@ describe("renders inputs", () => {
 
     expect(combobox).toHaveTextContent("");
     fireEvent.change(combobox, {
-      target: { value: "03:00" },
+      target: { value: "London" },
     });
 
     const gotOptions = screen.queryAllByRole("option");
-    expect(gotOptions.length).toBe(2);
-    expect(gotOptions[1]).toHaveTextContent("+03:00");
+    expect(gotOptions.length).toBe(1);
+    expect(gotOptions[0]).toHaveTextContent("Europe/London");
   });
 });
 

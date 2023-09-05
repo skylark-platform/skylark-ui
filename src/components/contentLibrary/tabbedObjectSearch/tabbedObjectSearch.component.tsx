@@ -386,6 +386,11 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
                 onObjectCreated={(obj) => {
                   props.setPanelObject?.(obj);
                 }}
+                preselectedObjectType={
+                  activeTab?.filters.objectTypes?.length === 1
+                    ? activeTab.filters.objectTypes[0]
+                    : undefined
+                }
               />
             </div>
           </div>

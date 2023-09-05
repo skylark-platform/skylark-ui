@@ -20,7 +20,7 @@ describe("getObjectOperations", () => {
     expect(got.name).toEqual("SkylarkAsset");
 
     // Check fields
-    expect(got.fields.length).toBe(9);
+    expect(got.fields.length).toBe(19);
     expect(got.fields).toContainEqual({
       enumValues: undefined,
       isList: false,
@@ -38,8 +38,23 @@ describe("getObjectOperations", () => {
       originalType: "String",
     });
     expect(got.fieldConfig).toEqual({
-      global: ["type", "url", "ingest_file"],
-      translatable: ["title", "slug", "duration", "release_date"],
+      global: [
+        "provider",
+        "internal_title",
+        "title_sort",
+        "type",
+        "url",
+        "ingest_file",
+        "release_date",
+        "hls_id",
+        "hls_url",
+        "hls_dashboard",
+        "dash_id",
+        "dash_url",
+        "dash_dashboard",
+        "status",
+      ],
+      translatable: ["title", "slug", "duration"],
     });
     expect(got.isTranslatable).toBeTruthy();
 
@@ -52,9 +67,18 @@ describe("getObjectOperations", () => {
         objectType: "Brand",
         relationshipName: "brands",
       },
+      { objectType: "Credit", relationshipName: "credits" },
       {
         objectType: "Episode",
         relationshipName: "episodes",
+      },
+      {
+        objectType: "Genre",
+        relationshipName: "genres",
+      },
+      {
+        objectType: "LiveStream",
+        relationshipName: "live_streams",
       },
       {
         objectType: "Movie",
@@ -69,24 +93,8 @@ describe("getObjectOperations", () => {
         relationshipName: "seasons",
       },
       {
-        objectType: "SkylarkAudioTrack",
-        relationshipName: "audio_tracks",
-      },
-      {
-        objectType: "SkylarkDRMProvider",
-        relationshipName: "drm_providers",
-      },
-      {
         objectType: "SkylarkImage",
         relationshipName: "images",
-      },
-      {
-        objectType: "SkylarkPlaybackDetail",
-        relationshipName: "playback_details",
-      },
-      {
-        objectType: "SkylarkPlaybackProvider",
-        relationshipName: "playback_providers",
       },
       {
         objectType: "SkylarkSet",
@@ -95,14 +103,6 @@ describe("getObjectOperations", () => {
       {
         objectType: "SkylarkTag",
         relationshipName: "tags",
-      },
-      {
-        objectType: "SkylarkTextTrack",
-        relationshipName: "text_tracks",
-      },
-      {
-        objectType: "SkylarkVideoTrack",
-        relationshipName: "video_tracks",
       },
     ]);
     expect(got.images?.relationshipNames).toEqual(["images"]);
@@ -137,7 +137,7 @@ describe("getObjectOperations", () => {
     expect(got.name).toEqual("SkylarkSet");
 
     // Check fields
-    expect(got.fields.length).toBe(11);
+    expect(got.fields.length).toBe(12);
     expect(got.fields).toContainEqual({
       enumValues: undefined,
       isList: false,
@@ -155,15 +155,13 @@ describe("getObjectOperations", () => {
       originalType: "String",
     });
     expect(got.fieldConfig).toEqual({
-      global: ["type"],
+      global: ["internal_title", "type", "title_sort", "release_date"],
       translatable: [
         "slug",
         "title",
         "title_short",
-        "title_sort",
         "synopsis",
         "synopsis_short",
-        "release_date",
         "description",
       ],
     });
@@ -174,6 +172,10 @@ describe("getObjectOperations", () => {
     expect(got.hasContent).toBeTruthy();
     expect(got.hasRelationships).toBeTruthy();
     expect(got.relationships).toEqual([
+      {
+        objectType: "CallToAction",
+        relationshipName: "call_to_actions",
+      },
       {
         objectType: "Credit",
         relationshipName: "credits",
@@ -313,7 +315,7 @@ describe("getObjectOperations", () => {
     expect(got.images).toBeTruthy();
     expect(got.images?.relationshipNames).toEqual(["images"]);
     expect(got.images?.objectMeta.name).toEqual("SkylarkImage");
-    expect(got.images?.objectMeta.fields.length).toEqual(12);
+    expect(got.images?.objectMeta.fields.length).toEqual(14);
   });
 
   test("throws when an object type doesn't exist", () => {
@@ -344,6 +346,6 @@ describe("getAllObjectsMeta", () => {
     ]);
     expect(got.length).toEqual(1);
     expect(got[0].name).toEqual("Episode");
-    expect(got[0].fields.length).toEqual(10);
+    expect(got[0].fields.length).toEqual(12);
   });
 });

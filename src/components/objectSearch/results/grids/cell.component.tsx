@@ -5,6 +5,7 @@ import {
 } from "src/interfaces/skylark";
 import {
   is2038Problem,
+  formatReadableDateTime,
   formatReadableDate,
 } from "src/lib/skylark/availability";
 
@@ -22,8 +23,14 @@ export const Cell = ({
   columnId,
 }: CellProps) => {
   // Pretty format dates
-  if (type === "datetime" || type === "date" || type === "timestamp") {
-    return <>{is2038Problem(value) ? "Never" : formatReadableDate(value)}</>;
+  if (type === "datetime" || type === "timestamp") {
+    return (
+      <>{is2038Problem(value) ? "Never" : formatReadableDateTime(value)}</>
+    );
+  }
+
+  if (type === "date") {
+    return <>{formatReadableDate(value)}</>;
   }
 
   // Align numbers to the right

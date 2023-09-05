@@ -233,7 +233,10 @@ export const Panel = ({
     () =>
       (data &&
         objectMeta &&
-        parseMetadataForHTMLForm(data.metadata, objectMeta.fields)) ||
+        parseMetadataForHTMLForm(
+          data.metadata,
+          objectMeta.operations.create.inputs,
+        )) ||
       null,
     [data, objectMeta],
   );
@@ -460,6 +463,7 @@ export const Panel = ({
       className="mx-auto flex h-full w-full flex-col overflow-y-hidden break-words"
       data-cy={`panel-for-${objectType}-${uid}`}
       data-testid="panel"
+      data-tab={selectedTab}
     >
       <PanelHeader
         isPage={isPage}

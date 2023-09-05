@@ -3,8 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { QueryKeys } from "src/enums/graphql";
 import {
   GQLSkylarkErrorResponse,
-  GQLSkylarkAccountResponse,
-  GQLSkylarkUserResponse,
+  GQLSkylarkUserAndAccountResponse,
 } from "src/interfaces/skylark";
 import {
   SkylarkAccount,
@@ -12,9 +11,6 @@ import {
 } from "src/interfaces/skylark/environment";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { GET_USER_AND_ACCOUNT } from "src/lib/graphql/skylark/queries";
-
-type GQLSkylarkUserAndAccountResponse = GQLSkylarkAccountResponse &
-  GQLSkylarkUserResponse;
 
 const select = (
   data: GQLSkylarkUserAndAccountResponse,

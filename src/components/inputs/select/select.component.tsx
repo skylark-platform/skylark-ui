@@ -44,6 +44,7 @@ export interface SelectProps {
   rounded?: boolean;
   withBasicSort?: boolean;
   renderInPortal?: boolean;
+  displayRawSelectedValue?: boolean;
   onChange?: (value: string) => void;
   onValueClear?: () => void;
 }
@@ -247,6 +248,7 @@ export const Select = forwardRef(
       onValueClear,
       withBasicSort,
       renderInPortal,
+      displayRawSelectedValue,
     } = props;
 
     const [query, setQuery] = useState("");
@@ -294,7 +296,9 @@ export const Select = forwardRef(
     );
 
     const sizingClassName =
-      variant === "pill" ? "h-5 pl-3 pr-2" : "h-8 pl-3 pr-2 sm:h-10 sm:pl-6";
+      variant === "pill"
+        ? "h-5 pl-3 pr-2"
+        : clsx("h-8 pl-3 pr-2 sm:h-10", rounded ? "sm:pl-6" : "sm:pl-4");
     const roundedClassName =
       rounded || variant === "pill" ? "rounded-full" : "rounded-sm";
     const selectClassName = clsx(
@@ -316,7 +320,11 @@ export const Select = forwardRef(
       <Combobox
         disabled={disabled}
         onChange={onChangeWrapper}
-        value={selectedOption || ""}
+        value={
+          (displayRawSelectedValue && selected
+            ? { label: selected, value: selected }
+            : selectedOption) || ""
+        }
         name={name}
       >
         {({ open }) => (

@@ -2,7 +2,8 @@ import {
   renderWithMinimalProviders,
   waitFor,
 } from "src/__tests__/utils/test-utils";
-import { formatReadableDate } from "src/lib/skylark/availability";
+import { UTC_NAME } from "src/components/inputs/select";
+import { formatReadableDateTime } from "src/lib/skylark/availability";
 
 import { AvailabilitySummary } from "./availabilitySummary.component";
 
@@ -12,7 +13,7 @@ const defaultProps: {
   language?: string | null;
   availability: {
     dimensions: Record<string, string> | null;
-    timeTravel: { datetime: string; offset: string } | null;
+    timeTravel: { datetime: string; timezone: string } | null;
   };
 } = {
   query: "",
@@ -108,14 +109,14 @@ test("shows Availability time travel", () => {
         dimensions: null,
         timeTravel: {
           datetime: "2022-10-30T10:30",
-          offset: "+00:00",
+          timezone: UTC_NAME,
         },
       }}
     />,
   );
 
   expect(container).toHaveTextContent(
-    `Objects available on ${formatReadableDate("2022-10-30T10:30")}`,
+    `Objects available on ${formatReadableDateTime("2022-10-30T10:30")}`,
   );
 });
 
@@ -127,14 +128,14 @@ test("shows Availability dimensions and time travel", () => {
         dimensions: { "customer-types": "premium", "device-types": "pc" },
         timeTravel: {
           datetime: "2022-10-30T10:30",
-          offset: "+00:00",
+          timezone: UTC_NAME,
         },
       }}
     />,
   );
 
   expect(container).toHaveTextContent(
-    `Objects available to premium & pc users on ${formatReadableDate(
+    `Objects available to premium & pc users on ${formatReadableDateTime(
       "2022-10-30T10:30",
     )}`,
   );
@@ -151,14 +152,14 @@ test("shows all props", () => {
         dimensions: { "customer-types": "premium", "device-types": "pc" },
         timeTravel: {
           datetime: "2022-10-30T10:30",
-          offset: "+00:00",
+          timezone: UTC_NAME,
         },
       }}
     />,
   );
 
   expect(container).toHaveTextContent(
-    `Episode, SkylarkSet & Movie objects filtered by query “My search query” available to premium & pc users on ${formatReadableDate(
+    `Episode, SkylarkSet & Movie objects filtered by query “My search query” available to premium & pc users on ${formatReadableDateTime(
       "2022-10-30T10:30",
     )}`,
   );
@@ -173,7 +174,7 @@ test("Loads the UI config and shows the display object type and Dimension titles
       language={"en-GB"}
       availability={{
         dimensions: { "customer-types": "premium", "device-types": "pc" },
-        timeTravel: { datetime: "2022-10-30T10:30", offset: "+00:00" },
+        timeTravel: { datetime: "2022-10-30T10:30", timezone: UTC_NAME },
       }}
     />,
   );
@@ -184,8 +185,8 @@ test("Loads the UI config and shows the display object type and Dimension titles
   });
 
   expect(container).toHaveTextContent(
-    `Episode, Setˢˡ & Movie objects filtered by query “My search query” available to Premium & PC users on ${formatReadableDate(
+    `Episode, Setˢˡ & Movie objects filtered by query “My search query” available to Premium & PC users on ${formatReadableDateTime(
       "2022-10-30T10:30",
-    )} (+00:00)`,
+    )} (Etc/UTC)`,
   );
 });

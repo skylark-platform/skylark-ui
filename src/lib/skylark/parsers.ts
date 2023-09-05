@@ -14,7 +14,7 @@ import {
 import { EnumType } from "json-to-graphql-query";
 import { HTMLInputTypeAttribute } from "react";
 
-import { SYSTEM_FIELDS } from "src/constants/skylark";
+import { UTC_NAME } from "src/components/inputs/select";
 import { GQLScalars } from "src/interfaces/graphql/introspection";
 import {
   NormalizedObjectFieldType,
@@ -50,9 +50,10 @@ import {
 import {
   getObjectAvailabilityStatus,
   getAvailabilityStatusForAvailabilityObject,
-  convertToUTCDate,
+  convertDateAndTimezoneToISO,
   AWS_EARLIEST_DATE,
   AWS_LATEST_DATE,
+  convertDateToTimezoneAndRemoveOffset,
 } from "./availability";
 
 dayjs.extend(customParseFormat);
@@ -92,6 +93,8 @@ const parseObjectInputType = (
       return "string";
   }
 };
+
+export const VALID_DATE_FORMATS = ["YYYY-MM-DD", "YYYY-MM-DDZ", "DD/MM/YYYY"];
 
 export const parseObjectInputFields = (
   objectType: SkylarkObjectType,
@@ -140,26 +143,6 @@ export const parseObjectInputFields = (
         isRequired: input.type.kind === "NON_NULL",
       };
     });
-
-  // TODO TIMEZONE - enable after fixing datetime-local input
-  // // Override for the Availability Timezone input
-  // if (
-  //   objectType === BuiltInSkylarkObjectType.Availability &&
-  //   parsedInputs.findIndex(
-  //     ({ name }) => name === SkylarkAvailabilityField.Timezone,
-  //   ) === -1
-  // ) {
-  //   return [
-  //     ...parsedInputs,
-  //     {
-  //       name: SkylarkAvailabilityField.Timezone,
-  //       type: "string",
-  //       originalType: "String",
-  //       isList: false,
-  //       isRequired: false,
-  //     },
-  //   ];
-  // }
 
   return parsedInputs;
 };
@@ -231,40 +214,39 @@ export const parseObjectConfig = (
     fieldConfig,
   };
 
-  // TODO TIMEZONE - enable after fixing datetime-local input
-  // // Override for the Availability Timezone input
-  // if (fieldConfig && objectType === BuiltInSkylarkObjectType.Availability) {
-  //   const timezoneConfig = fieldConfig.find(
-  //     ({ name }) => name === SkylarkAvailabilityField.Timezone,
-  //   );
+  // Override for the Availability Timezone input
+  if (fieldConfig && objectType === BuiltInSkylarkObjectType.Availability) {
+    const timezoneConfig = fieldConfig.find(
+      ({ name }) => name === SkylarkAvailabilityField.Timezone,
+    );
 
-  //   if (timezoneConfig) {
-  //     // If timezone config is already defined, ensure its the TIMEZONE field type
-  //     const updatedFieldConfig = fieldConfig.map(
-  //       (config): ParsedSkylarkObjectConfigFieldConfig =>
-  //         config.name === SkylarkAvailabilityField.Timezone
-  //           ? { ...config, fieldType: "TIMEZONE" }
-  //           : config,
-  //     );
+    if (timezoneConfig) {
+      // If timezone config is already defined, ensure its the TIMEZONE field type
+      const updatedFieldConfig = fieldConfig.map(
+        (config): ParsedSkylarkObjectConfigFieldConfig =>
+          config.name === SkylarkAvailabilityField.Timezone
+            ? { ...config, fieldType: "TIMEZONE" }
+            : config,
+      );
 
-  //     return {
-  //       ...objectConfig,
-  //       fieldConfig: updatedFieldConfig,
-  //     };
-  //   }
+      return {
+        ...objectConfig,
+        fieldConfig: updatedFieldConfig,
+      };
+    }
 
-  //   return {
-  //     ...objectConfig,
-  //     fieldConfig: [
-  //       ...(objectConfig.fieldConfig || []),
-  //       {
-  //         name: SkylarkAvailabilityField.Timezone,
-  //         fieldType: "TIMEZONE",
-  //         position: 50,
-  //       },
-  //     ],
-  //   };
-  // }
+    return {
+      ...objectConfig,
+      fieldConfig: [
+        ...(objectConfig.fieldConfig || []),
+        {
+          name: SkylarkAvailabilityField.Timezone,
+          fieldType: "TIMEZONE",
+          position: 50,
+        },
+      ],
+    };
+  }
 
   return objectConfig;
 };
@@ -310,10 +292,9 @@ export const parseObjectContent = (
   };
 };
 
-export const parseSkylarkObject = (
+const parseObjectMetadata = (
   object: SkylarkGraphQLObject,
-  objectMeta?: SkylarkObjectMeta | null,
-): ParsedSkylarkObject => {
+): ParsedSkylarkObjectMetadata => {
   const metadata: ParsedSkylarkObjectMetadata = {
     ...Object.keys(object).reduce((prev, key) => {
       return {
@@ -326,6 +307,35 @@ export const parseSkylarkObject = (
     uid: object.uid,
     external_id: object.external_id || "",
   };
+
+  if (
+    object.__typename === BuiltInSkylarkObjectType.Availability &&
+    hasProperty(object, SkylarkAvailabilityField.Timezone) &&
+    typeof object[SkylarkAvailabilityField.Timezone] === "string"
+  ) {
+    const start = object[SkylarkAvailabilityField.Start];
+    const end = object[SkylarkAvailabilityField.End];
+    const timezone = object[SkylarkAvailabilityField.Timezone];
+
+    if (typeof start === "string") {
+      metadata[SkylarkAvailabilityField.Start] =
+        convertDateToTimezoneAndRemoveOffset(start, timezone);
+    }
+
+    if (typeof end === "string") {
+      metadata[SkylarkAvailabilityField.End] =
+        convertDateToTimezoneAndRemoveOffset(end, timezone);
+    }
+  }
+
+  return metadata;
+};
+
+export const parseSkylarkObject = (
+  object: SkylarkGraphQLObject,
+  objectMeta?: SkylarkObjectMeta | null,
+): ParsedSkylarkObject => {
+  const metadata = parseObjectMetadata(object);
 
   const availability = parseObjectAvailability(object?.availability);
   const availabilityStatus =
@@ -379,12 +389,21 @@ export const parseSkylarkObject = (
 const validateAndParseDate = (
   type: string,
   value: string,
-  formats?: string[],
-  ignoreError?: boolean,
+  {
+    formats,
+    ignoreError,
+    isTimestamp,
+  }: {
+    formats?: string[];
+    ignoreError?: boolean;
+    isTimestamp?: boolean;
+  },
 ) => {
   const validFormat = formats?.find((format) => dayjs(value, format).isValid());
   if (validFormat) {
-    return dayjs(value, validFormat);
+    return isTimestamp
+      ? dayjs(value, validFormat)
+      : dayjs.tz(value, validFormat, UTC_NAME);
   }
 
   if (!ignoreError && !dayjs(value).isValid()) {
@@ -408,25 +427,23 @@ export const parseInputFieldValue = (
     return new EnumType(value as string);
   }
   if (type === "datetime") {
-    return validateAndParseDate(type, value as string).toISOString();
+    return validateAndParseDate(type, value as string, {}).toISOString();
   }
   if (type === "date") {
-    return validateAndParseDate(type, value as string, [
-      "YYYY-MM-DD",
-      "YYYY-MM-DDZ",
-      "DD/MM/YYYY",
-    ]).format("YYYY-MM-DDZ");
+    return validateAndParseDate(type, value as string, {
+      formats: VALID_DATE_FORMATS,
+    }).format("YYYY-MM-DDZ");
   }
   if (type === "time") {
-    return validateAndParseDate(type, value as string, [
-      "HH:mm:ss",
-      "HH:mm",
-      "HH:mm:ssZ",
-      "HH:mmZ",
-    ]).format("HH:mm:ss.SSSZ");
+    return validateAndParseDate(type, value as string, {
+      formats: ["HH:mm:ss", "HH:mm", "HH:mm:ssZ", "HH:mmZ"],
+    }).format("HH:mm:ss.SSSZ");
   }
   if (type === "timestamp") {
-    return validateAndParseDate(type, value as string, ["X", "x"]).unix();
+    return validateAndParseDate(type, value as string, {
+      formats: ["X"],
+      isTimestamp: true,
+    }).unix();
   }
   if (type === "int") {
     return parseInt(value as string);
@@ -491,39 +508,26 @@ export const parseMetadataForGraphQLRequest = (
         value === "" ||
         isInvalidDate
       ) {
-        // TODO delete this when values can be reset using null, currently a workaround to clear strings
-        if (input.type === "string") {
-          return [key, ""];
-        }
-
         return [key, null];
       }
 
       const parsedFieldValue = parseInputFieldValue(value, input.type);
 
-      // TODO TIMEZONE - enable after fixing datetime-local input
-      // if (objectType === BuiltInSkylarkObjectType.Availability) {
-      //   // Never send the Timezone field that we add manually
-      //   if (input.name === SkylarkAvailabilityField.Timezone) {
-      //     return undefined;
-      //   }
-
-      //   // Append Timezone onto Availability Start and End values
-      //   if (
-      //     typeof parsedFieldValue === "string" &&
-      //     hasProperty(metadata, SkylarkAvailabilityField.Timezone) &&
-      //     (input.name === SkylarkAvailabilityField.Start ||
-      //       input.name === SkylarkAvailabilityField.End)
-      //   ) {
-      //     console.log({ input, metadata, parsedFieldValue });
-      //     const parsedDateFieldWithTimezone = convertToUTCDate(
-      //       parsedFieldValue,
-      //       metadata.timezone as string,
-      //     );
-      //     console.log({ parsedDateFieldWithTimezone });
-      //     return [key, parsedDateFieldWithTimezone];
-      //   }
-      // }
+      if (objectType === BuiltInSkylarkObjectType.Availability) {
+        // Append Timezone onto Availability Start and End values
+        if (
+          typeof value === "string" &&
+          hasProperty(metadata, SkylarkAvailabilityField.Timezone) &&
+          (input.name === SkylarkAvailabilityField.Start ||
+            input.name === SkylarkAvailabilityField.End)
+        ) {
+          const parsedDateFieldWithTimezone = convertDateAndTimezoneToISO(
+            value,
+            metadata.timezone as string,
+          );
+          return [key, parsedDateFieldWithTimezone];
+        }
+      }
 
       // If parsedFieldValue is returned as invalid, return the original value - GraphQL will handle the error
       return [key, parsedFieldValue || value];
@@ -547,22 +551,18 @@ export const parseDateTimeForHTMLForm = (
   }
 
   if (type === "date") {
-    const validDate = validateAndParseDate(
-      type,
-      `${value}`,
-      ["YYYY-MM-DD", "YYYY-MM-DD+Z"],
-      true,
-    ).format("YYYY-MM-DD");
+    const validDate = validateAndParseDate(type, `${value}`, {
+      formats: VALID_DATE_FORMATS,
+      ignoreError: true,
+    }).format("YYYY-MM-DD");
     return validDate;
   }
 
   if (type === "time") {
-    const validTime = validateAndParseDate(
-      type,
-      `${value}`,
-      ["HH:mm:ss", "HH:mm:ss.SSS", "HH:mm:ss.SSS+Z"],
-      true,
-    ).format("HH:mm:ss.SSS");
+    const validTime = validateAndParseDate(type, `${value}`, {
+      formats: ["HH:mm:ss", "HH:mm:ss.SSS", "HH:mm:ss.SSSZ"],
+      ignoreError: true,
+    }).format("HH:mm:ss.SSS");
     return validTime;
   }
 };
@@ -574,6 +574,7 @@ export const parseMetadataForHTMLForm = (
 ): Record<string, SkylarkObjectMetadataField> => {
   const keyValuePairs = Object.entries(metadata).map(([key, value]) => {
     const input = inputFields.find((createInput) => createInput.name === key);
+
     if (input) {
       const htmlInputType = convertFieldTypeToHTMLInputType(input.type);
 

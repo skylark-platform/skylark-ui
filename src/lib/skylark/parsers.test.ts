@@ -5,6 +5,7 @@ import {
 } from "graphql";
 import { EnumType } from "json-to-graphql-query";
 
+import { UTC_NAME } from "src/components/inputs/select";
 import {
   AvailabilityStatus,
   BuiltInSkylarkObjectType,
@@ -585,9 +586,7 @@ describe("parseSkylarkObject", () => {
     expect(parseSkylarkObject(skylarkObject)).toEqual(expectedParsedObject);
   });
 
-  // TODO TIMEZONE - enable after fixing datetime-local input
-  // eslint-disable-next-line jest/no-disabled-tests
-  test.skip("should parse Availability object", () => {
+  test("should parse Availability object", () => {
     const skylarkObject: SkylarkGraphQLObject = {
       __typename: BuiltInSkylarkObjectType.Availability,
       _config: {
@@ -820,7 +819,7 @@ describe("parseMetadataForGraphQLRequest", () => {
       inputFields,
     );
     expect(got).toEqual({
-      title: "",
+      title: null,
       date: null,
       int: null,
     });
@@ -863,6 +862,21 @@ describe("parseMetadataForGraphQLRequest", () => {
     });
   });
 
+  test("removes timezone field from Availability object", () => {
+    const metadata: Record<string, SkylarkObjectMetadataField> = {
+      title: "string",
+      timezone: "Europe/London",
+    };
+    const got = parseMetadataForGraphQLRequest(
+      BuiltInSkylarkObjectType.Availability,
+      metadata,
+      inputFields,
+    );
+    expect(got).toEqual({
+      title: "string",
+    });
+  });
+
   describe("Availability object type", () => {
     const availabilityInputFields: NormalizedObjectField[] = [
       {
@@ -893,25 +907,19 @@ describe("parseMetadataForGraphQLRequest", () => {
         isList: false,
         isRequired: false,
       },
+      {
+        name: SkylarkAvailabilityField.Timezone,
+        type: "string",
+        originalType: "String",
+        isList: false,
+        isRequired: false,
+      },
     ];
-
-    test("removes timezone field from request", () => {
-      const metadata: Record<string, SkylarkObjectMetadataField> = {
-        title: "string",
-        [SkylarkAvailabilityField.Timezone]: "+01:00",
-      };
-      const got = parseMetadataForGraphQLRequest(
-        BuiltInSkylarkObjectType.Availability,
-        metadata,
-        availabilityInputFields,
-      );
-      expect(got).toEqual({ title: "string" });
-    });
 
     test("sends the largest and smallest AWS date values for the start and end fields when no value is given", () => {
       const metadata: Record<string, SkylarkObjectMetadataField> = {
         title: "string",
-        [SkylarkAvailabilityField.Timezone]: "+01:00",
+        [SkylarkAvailabilityField.Timezone]: UTC_NAME,
         [SkylarkAvailabilityField.Start]: "",
         [SkylarkAvailabilityField.End]: "",
       };
@@ -922,29 +930,31 @@ describe("parseMetadataForGraphQLRequest", () => {
       );
       expect(got).toEqual({
         title: "string",
+        timezone: UTC_NAME,
         start: AWS_EARLIEST_DATE,
         end: AWS_LATEST_DATE,
       });
     });
 
-    // TODO TIMEZONE - enable after fixing datetime-local input
-    // eslint-disable-next-line jest/no-disabled-tests
-    test.skip("appends the timezone onto start and end fields", () => {
+    test("shifts the start and end dates to UTC from the given timezone", () => {
       const metadata: Record<string, SkylarkObjectMetadataField> = {
         title: "string",
-        [SkylarkAvailabilityField.Timezone]: "+01:00",
-        [SkylarkAvailabilityField.Start]: "2022-10-30T12:30:00",
-        [SkylarkAvailabilityField.End]: "2022-05-20T12:30:00Z",
+        [SkylarkAvailabilityField.Timezone]: "America/Anchorage",
+        [SkylarkAvailabilityField.Start]: "2022-10-30T12:30:00+00:00",
+        [SkylarkAvailabilityField.End]: "2022-05-20T12:30:00+00:00",
       };
       const got = parseMetadataForGraphQLRequest(
         BuiltInSkylarkObjectType.Availability,
         metadata,
         availabilityInputFields,
       );
+
+      // America/Anchorage is -08:00
       expect(got).toEqual({
         title: "string",
-        [SkylarkAvailabilityField.Start]: "2022-10-30T12:30:00.000+01:00",
-        [SkylarkAvailabilityField.End]: "2022-05-20T12:30:00.000+01:00",
+        [SkylarkAvailabilityField.Start]: "2022-10-30T20:30:00.000Z",
+        [SkylarkAvailabilityField.End]: "2022-05-20T20:30:00.000Z",
+        [SkylarkAvailabilityField.Timezone]: "America/Anchorage",
       });
     });
   });

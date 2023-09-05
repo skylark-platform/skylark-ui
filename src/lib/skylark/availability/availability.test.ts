@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 
+import { UTC_NAME } from "src/components/inputs/select";
 import {
   AvailabilityStatus,
   ParsedSkylarkObjectAvailability,
@@ -10,7 +11,7 @@ import {
   getSingleAvailabilityStatus,
   getRelativeTimeFromDate,
   is2038Problem,
-  convertToUTCDate,
+  convertDateAndTimezoneToISO,
 } from "./availability";
 
 const now = dayjs();
@@ -173,20 +174,24 @@ describe("getRelativeTimeFromDate", () => {
   });
 });
 
-describe("convertToUTCDate", () => {
-  const date = "2022-10-30T12:30:00";
-  test("returns UTC date with GMT offset", () => {
-    const got = convertToUTCDate(date, null);
-    expect(got).toBe("2022-10-30T12:30:00+00:00");
+describe("convertDateAndTimezoneToISO", () => {
+  const date = "2022-07-30T12:30:00";
+
+  test("converts the given date to the timezone (UTC)", () => {
+    const got = convertDateAndTimezoneToISO(date, UTC_NAME);
+    expect(got).toEqual("2022-07-30T12:30:00.000Z");
   });
 
-  test("returns UTC date with given offset", () => {
-    const got = convertToUTCDate(date, "-06:30");
-    expect(got).toBe("2022-10-30T12:30:00-06:30");
+  test("converts the given date to the timezone (London in Summer time)", () => {
+    const got = convertDateAndTimezoneToISO(date, "Europe/London");
+    expect(got).toEqual("2022-07-30T11:30:00.000Z");
   });
 
-  test("returns UTC date with given offset (where initial date has Z offset)", () => {
-    const got = convertToUTCDate(`${date}Z`, "-06:30");
-    expect(got).toBe("2022-10-30T12:30:00-06:30");
+  test("converts the given date to the timezone (London in Winter time)", () => {
+    const got = convertDateAndTimezoneToISO(
+      "2022-12-30T12:30:00",
+      "Europe/London",
+    );
+    expect(got).toEqual("2022-12-30T12:30:00.000Z");
   });
 });

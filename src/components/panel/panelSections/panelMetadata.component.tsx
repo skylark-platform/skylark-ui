@@ -118,6 +118,8 @@ export const PanelMetadata = ({
                 );
 
                 if (config) {
+                  const value = getValues(field);
+
                   return (
                     <SkylarkObjectFieldInput
                       idPrefix="panel-metadata"
@@ -127,7 +129,7 @@ export const PanelMetadata = ({
                       config={config}
                       control={control}
                       register={register}
-                      value={getValues(field)}
+                      value={value}
                       formState={formState}
                       additionalRequiredFields={requiredFields}
                       fieldConfigFromObject={fieldConfigFromObject}

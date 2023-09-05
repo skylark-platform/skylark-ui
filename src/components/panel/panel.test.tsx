@@ -39,7 +39,7 @@ import {
   createGetObjectQueryName,
 } from "src/lib/graphql/skylark/dynamicQueries";
 import {
-  formatReadableDate,
+  formatReadableDateTime,
   getRelativeTimeFromDate,
 } from "src/lib/skylark/availability";
 import {
@@ -1473,8 +1473,8 @@ describe("availability view", () => {
     const { start, end } =
       GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
         .availability.objects[0];
-    const startReadable = formatReadableDate(start);
-    const endReadable = formatReadableDate(end);
+    const startReadable = formatReadableDateTime(start);
+    const endReadable = formatReadableDateTime(end);
     expect(screen.getByText(startReadable)).toBeInTheDocument();
     expect(screen.getByText(endReadable)).toBeInTheDocument();
     expect(screen.queryByText(start)).not.toBeInTheDocument();

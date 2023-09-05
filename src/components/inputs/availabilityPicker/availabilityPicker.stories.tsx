@@ -2,6 +2,8 @@ import { ComponentStory } from "@storybook/react";
 import { userEvent, within } from "@storybook/testing-library";
 import clsx from "clsx";
 
+import { UTC_NAME } from "src/components/inputs/select";
+
 import { AvailabilityPicker } from "./availabilityPicker.component";
 
 export default {
@@ -47,7 +49,7 @@ ButtonWithDimensionsAndTimeTravel.args = {
     },
     timeTravel: {
       datetime: "2023-11-11T12:30:00Z",
-      offset: "+06:00",
+      timezone: UTC_NAME,
     },
   },
 };
@@ -75,7 +77,7 @@ OpenWithValues.args = {
     },
     timeTravel: {
       datetime: "2023-11-11T12:30:00Z",
-      offset: "+06:00",
+      timezone: UTC_NAME,
     },
   },
 };

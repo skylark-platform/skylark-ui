@@ -20,7 +20,7 @@ import {
   SkylarkAvailabilityField,
 } from "src/interfaces/skylark";
 import {
-  formatReadableDate,
+  formatReadableDateTime,
   is2038Problem,
 } from "src/lib/skylark/availability";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
@@ -229,7 +229,7 @@ const dateCreated = columnHelper.accessor("meta.created", {
   minSize: 100,
   cell: ({ getValue }) => {
     const value = getValue();
-    return <>{value ? formatReadableDate(value) : null}</>;
+    return <>{value ? formatReadableDateTime(value) : null}</>;
   },
 });
 
@@ -240,7 +240,7 @@ const dateModified = columnHelper.accessor("meta.modified", {
   minSize: 100,
   cell: ({ getValue }) => {
     const value = getValue();
-    return <>{value ? formatReadableDate(value) : null}</>;
+    return <>{value ? formatReadableDateTime(value) : null}</>;
   },
 });
 

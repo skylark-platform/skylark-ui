@@ -43,7 +43,7 @@
                 "slug": "premium",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -91,7 +91,7 @@
                 "slug": "premium",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -138,7 +138,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -208,7 +208,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -278,7 +278,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -348,7 +348,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -418,7 +418,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -488,7 +488,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -558,7 +558,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -628,7 +628,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -698,7 +698,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -768,7 +768,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -839,7 +839,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -910,7 +910,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -981,7 +981,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -1052,7 +1052,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -1123,7 +1123,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -1194,7 +1194,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -1265,7 +1265,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -1358,7 +1358,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -1451,7 +1451,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -1522,7 +1522,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -1593,7 +1593,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -1686,7 +1686,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -1779,7 +1779,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -1850,7 +1850,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -1921,7 +1921,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -1992,7 +1992,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -2063,7 +2063,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -2134,7 +2134,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -2205,7 +2205,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -2276,7 +2276,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -2347,7 +2347,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -2418,7 +2418,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -2489,7 +2489,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -2560,7 +2560,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -2631,7 +2631,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -2702,7 +2702,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -2773,7 +2773,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -2866,7 +2866,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -2959,7 +2959,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -3030,7 +3030,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -3101,7 +3101,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -3172,7 +3172,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -3243,7 +3243,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -3314,7 +3314,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -3385,7 +3385,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -3456,7 +3456,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -3527,7 +3527,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },
@@ -3598,7 +3598,7 @@
                 "slug": "always-all-devices-all-customer-types",
                 "start": "2022-01-01T00:00:00+00:00",
                 "end": "2038-01-19T03:14:07+00:00",
-                "timezone": "+00:00"
+                "timezone": "UTC"
               }
             ]
           },

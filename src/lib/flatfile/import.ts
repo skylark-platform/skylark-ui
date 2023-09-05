@@ -191,8 +191,8 @@ const generateExampleFieldData = (
       "10:30:11",
     ],
     timestamp: [
-      parseInputFieldValue(now.unix(), type),
-      parseInputFieldValue("1678101125", type),
+      parseInputFieldValue(now.unix(), "timestamp"),
+      parseInputFieldValue("1678101125", "timestamp"),
     ],
     email: ["customer@email.com", "mail@email.co.uk"],
     ipaddress: ["0.0.0.0", "9.255.255.255", "21DA:D3:0:2F3B:2AA:FF:FE28:9C5A"],

@@ -6,6 +6,7 @@ import { server } from "src/__tests__/mocks/server";
 import {
   act,
   fireEvent,
+  prettyDOM,
   render,
   screen,
   waitFor,
@@ -311,11 +312,14 @@ test("manually filters to only en-gb translated objects", async () => {
     screen.getByTestId("object-search-results-content");
   });
 
-  expect(
-    screen.queryAllByText(
-      GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid as string,
-    ),
-  ).toHaveLength(2);
+  await waitFor(() => {
+    expect(
+      screen.queryAllByText(
+        GQLGameOfThronesSearchResultsPage1.data.search.objects[0].uid as string,
+      ),
+    ).toHaveLength(2);
+  });
+
   expect(screen.queryAllByText("en-GB").length).toBeGreaterThanOrEqual(1);
   expect(screen.queryAllByText("pt-PT").length).toBeGreaterThanOrEqual(1);
 
