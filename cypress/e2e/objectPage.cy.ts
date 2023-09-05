@@ -102,19 +102,7 @@ describe("Object Page", () => {
         },
       );
     });
-  });
 
-  describe("Movie", () => {
-    beforeEach(() => {
-      cy.fixture(
-        "./skylark/queries/getObject/fantasticMrFox_All_Availabilities.json",
-      ).then((objectJson) => {
-        cy.visit(
-          `/object/${objectJson.data.getObject.__typename}/${objectJson.data.getObject.uid}`,
-        );
-        cy.wait("@introspectionQuery");
-      });
-    });
     it("scrolls to Global Metadata using the side navigation", () => {
       cy.get("[data-testid=panel-metadata]").within(() => {
         cy.contains("Global Metadata").should("not.be.visible");
