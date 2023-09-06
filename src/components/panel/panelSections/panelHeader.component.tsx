@@ -9,7 +9,6 @@ import {
   FiExternalLink,
   FiMoreVertical,
   FiTrash2,
-  FiX,
 } from "react-icons/fi";
 import { GrGraphQl } from "react-icons/gr";
 
@@ -19,6 +18,7 @@ import {
   DropdownMenu,
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
+import { FiX } from "src/components/icons";
 import { LanguageSelect } from "src/components/inputs/select";
 import {
   CreateObjectModal,
@@ -245,7 +245,7 @@ export const PanelHeader = ({
           <Button
             variant="ghost"
             onClick={closePanel}
-            Icon={<FiX className="text-2xl" />}
+            Icon={<FiX className="text-lg" />}
             aria-label="Close Panel"
           />
         )}

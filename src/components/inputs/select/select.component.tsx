@@ -16,10 +16,10 @@ import React, {
   Ref,
   ReactNode,
 } from "react";
-import { GoTriangleDown } from "react-icons/go";
-import { GrClose } from "react-icons/gr";
+import { FiChevronDown } from "react-icons/fi";
 import { useVirtual } from "react-virtual";
 
+import { FiX } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { formatObjectField, mergeRefs } from "src/lib/utils";
 
@@ -371,16 +371,16 @@ export const Select = forwardRef(
                       }}
                       data-testid="select-clear-value"
                     >
-                      <GrClose className="text-xs" />
+                      <FiX className="text-xs" />
                     </button>
                   )}
                   <button
                     className={clsx(
                       "h-full",
-                      variant === "pill" ? "mx-2" : "ml-1 mr-4",
+                      variant === "pill" ? "mx-2" : "ml-0.5 mr-3.5",
                     )}
                   >
-                    <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
+                    <FiChevronDown className="text-xl" aria-hidden="true" />
                   </button>
                 </span>
               </Combobox.Button>
@@ -405,10 +405,10 @@ export const Select = forwardRef(
                 <span
                   className={clsx(
                     "pointer-events-none absolute inset-y-0 right-0 flex items-center",
-                    variant === "pill" ? "pr-2" : "pr-4",
+                    variant === "pill" ? "pr-2" : "pr-3.5",
                   )}
                 >
-                  <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
+                  <FiChevronDown className="text-xl" aria-hidden="true" />
                 </span>
               </Combobox.Button>
             )}
