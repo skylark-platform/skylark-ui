@@ -80,8 +80,6 @@ describe("Create Object Modal", () => {
 
   it("opens the create object modal", () => {
     openModal();
-
-    cy.percySnapshot("Homepage - create object modal");
   });
 
   it("displays an objects display_name in a select", () => {
@@ -93,8 +91,6 @@ describe("Create Object Modal", () => {
       cy.get("[data-testid=select-options]").within(() => {
         cy.contains("Set");
       });
-
-      cy.percySnapshot("Homepage - create object modal - object type select");
     });
   });
 
@@ -109,7 +105,7 @@ describe("Create Object Modal", () => {
 
       cy.contains("button", "Create Episode").should("be.disabled");
 
-      cy.percySnapshot("Homepage - create object modal - object type selected");
+      cy.percySnapshot("Create Object Modal");
     });
   });
 

@@ -3,10 +3,11 @@ import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode, print, getOperationAST } from "graphql";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
-import { GrClose, GrCopy, GrGraphQl } from "react-icons/gr";
+import { FiCopy } from "react-icons/fi";
+import { GrGraphQl } from "react-icons/gr";
 
 import { Button } from "src/components/button";
-import { Spinner } from "src/components/icons";
+import { FiX, Spinner } from "src/components/icons";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
@@ -221,7 +222,7 @@ export const DisplayGraphQLQueryModal = ({
               className="absolute right-4 top-4 sm:right-8 sm:top-9"
               onClick={close}
             >
-              <GrClose className="text-xl" />
+              <FiX className="text-lg" />
             </button>
 
             <div className="mb-2 px-4 md:mb-4 md:px-8">
@@ -260,7 +261,7 @@ export const DisplayGraphQLQueryModal = ({
                   className="rounded border bg-manatee-100 p-2 shadow transition-colors hover:bg-brand-primary hover:stroke-white sm:p-3"
                   onClick={copyActiveTab}
                 >
-                  <GrCopy className="text-lg md:text-xl" />
+                  <FiCopy className="text-lg md:text-xl" />
                 </button>
               </div>
             </div>

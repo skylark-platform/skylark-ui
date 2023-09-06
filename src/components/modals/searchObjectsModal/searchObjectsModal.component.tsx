@@ -1,8 +1,8 @@
 import { Dialog } from "@headlessui/react";
 import React, { useMemo } from "react";
-import { GrClose } from "react-icons/gr";
 
 import { Button } from "src/components/button";
+import { FiX } from "src/components/icons";
 import {
   ObjectSearch,
   ObjectSearchInitialColumnsState,
@@ -77,7 +77,7 @@ export const SearchObjectsModal = ({
             onClick={closeModal}
             tabIndex={-1}
           >
-            <GrClose className="text-xl" />
+            <FiX className="text-lg" />
           </button>
 
           <div className="px-6 md:px-10">

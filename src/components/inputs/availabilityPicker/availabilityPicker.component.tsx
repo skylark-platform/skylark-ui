@@ -2,10 +2,10 @@ import { useFloating, offset, flip, size } from "@floating-ui/react";
 import { Popover } from "@headlessui/react";
 import clsx from "clsx";
 import { useState } from "react";
-import { GoTriangleDown } from "react-icons/go";
-import { GrClose } from "react-icons/gr";
+import { FiChevronDown } from "react-icons/fi";
 
 import { Button } from "src/components/button";
+import { FiX } from "src/components/icons";
 import { InputLabel } from "src/components/inputs/label/label.component";
 import { UTC_NAME, Select, TimezoneSelect } from "src/components/inputs/select";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
@@ -244,10 +244,10 @@ export const AvailabilityPicker = ({
           )}
           <div
             className={clsx(
-              "absolute inset-y-0 right-4 ml-1 flex items-center text-black",
+              "absolute inset-y-0 right-3.5 ml-1 flex items-center text-black",
             )}
           >
-            <GoTriangleDown className="h-3 w-3" aria-hidden="true" />
+            <FiChevronDown className="text-xl" aria-hidden="true" />
           </div>
         </Popover.Button>
         {(activeValues.dimensions || activeValues.timeTravel) && (
@@ -262,7 +262,7 @@ export const AvailabilityPicker = ({
             }}
             aria-label="clear availability"
           >
-            <GrClose className="text-xs" />
+            <FiX className="mr-0.5 text-xs" />
           </button>
         )}
       </div>

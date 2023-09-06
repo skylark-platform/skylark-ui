@@ -1,5 +1,5 @@
 import { ComponentStory } from "@storybook/react";
-import { BsPlusLg, BsPlusCircle } from "react-icons/bs";
+import { FiPlus, FiPlusCircle } from "react-icons/fi";
 
 import { Button } from "./button.component";
 
@@ -94,7 +94,7 @@ GhostIconOnly.args = {
   ...defaultProps,
   variant: "ghost",
   children: undefined,
-  Icon: <BsPlusCircle className="text-xl" />,
+  Icon: <FiPlusCircle className="text-xl" />,
 };
 
 export const Link = Template.bind({});
@@ -138,5 +138,5 @@ FullWidth.args = {
 export const WithIcon = Template.bind({});
 WithIcon.args = {
   ...defaultProps,
-  Icon: <BsPlusLg />,
+  Icon: <FiPlus className="text-xl" />,
 };

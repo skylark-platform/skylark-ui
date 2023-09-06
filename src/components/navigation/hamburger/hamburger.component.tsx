@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { SlMenu } from "react-icons/sl";
+import { FiMenu } from "react-icons/fi";
 
 interface Props {
   onClick: () => void;
@@ -12,6 +12,6 @@ export const Hamburger = ({ onClick, className }: Props) => (
     id="mobile-nav-toggle"
     className={clsx("z-50 text-2xl", className)}
   >
-    <SlMenu />
+    <FiMenu />
   </button>
 );

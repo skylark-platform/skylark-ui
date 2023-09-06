@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { GrCopy } from "react-icons/gr";
+import { FiCopy } from "react-icons/fi";
 
 interface CopyToClipboardProps {
   value?: string | number | true | JSX.Element | string[];
@@ -8,7 +8,7 @@ interface CopyToClipboardProps {
 
 export const CopyToClipboard = ({ value, className }: CopyToClipboardProps) =>
   value ? (
-    <GrCopy
+    <FiCopy
       aria-label={`Copy ${value} to clipboard`}
       onClick={(e) => {
         e.preventDefault();

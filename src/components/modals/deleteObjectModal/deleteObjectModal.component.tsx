@@ -1,9 +1,9 @@
 import { Dialog } from "@headlessui/react";
 import React from "react";
-import { GrClose } from "react-icons/gr";
 import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
+import { FiX } from "src/components/icons";
 import {
   GraphQLRequestErrorToast,
   Toast,
@@ -93,7 +93,7 @@ export const DeleteObjectModal = ({
             onClick={closeModal}
             tabIndex={-1}
           >
-            <GrClose className="text-xl" />
+            <FiX className="text-lg" />
           </button>
 
           <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">

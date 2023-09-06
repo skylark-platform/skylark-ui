@@ -3,11 +3,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { usePlausible } from "next-plausible";
 import React, { useEffect, useState } from "react";
-import { GrClose } from "react-icons/gr";
 import { useDebouncedCallback } from "use-debounce";
 
 import { Button } from "src/components/button";
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
+import { FiX } from "src/components/icons";
 import { TextInput } from "src/components/inputs/textInput";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { QueryKeys } from "src/enums/graphql";
@@ -89,6 +89,9 @@ export const AddAuthTokenModal = ({
         queryKey: [QueryKeys.Schema],
         type: "active",
       });
+      await queryClient.refetchQueries({
+        queryKey: [QueryKeys.AccountStatus],
+      });
 
       setIsOpen(false);
     }
@@ -118,7 +121,7 @@ export const AddAuthTokenModal = ({
             onClick={closeModal}
             tabIndex={-1}
           >
-            <GrClose className="text-xl" />
+            <FiX className="text-lg" />
           </button>
 
           <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">

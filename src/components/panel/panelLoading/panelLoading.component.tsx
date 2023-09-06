@@ -22,7 +22,7 @@ export const PanelLoading = ({
             data-chromatic="ignore"
             className="flex w-full items-center justify-center py-10"
           >
-            <Spinner className="h-10 w-10  animate-spin md:h-14 md:w-14" />
+            <Spinner className="h-10 w-10 animate-spin md:h-14 md:w-14" />
           </div>
         )}
       </div>

@@ -4,7 +4,7 @@ import {
   CheckboxProps as RadixCheckboxProps,
 } from "@radix-ui/react-checkbox";
 import clsx from "clsx";
-import { GoCheck, GoX } from "react-icons/go";
+import { FiCheck, FiX } from "react-icons/fi";
 
 interface CheckboxProps extends RadixCheckboxProps {
   label?: string;
@@ -39,8 +39,8 @@ export const Checkbox = ({
         {...props}
       >
         <Indicator>
-          {checked === "indeterminate" && <GoX />}
-          {checked === true && <GoCheck />}
+          {checked === "indeterminate" && <FiX className="text-lg" />}
+          {checked === true && <FiCheck className="text-lg" />}
         </Indicator>
       </Root>
       {label && (
