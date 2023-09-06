@@ -8,12 +8,14 @@ import {
   FiEdit,
   FiExternalLink,
   FiMoreVertical,
+  FiSave,
   FiTrash2,
 } from "react-icons/fi";
 import { GrGraphQl } from "react-icons/gr";
 
 import { AvailabilityLabelPill } from "src/components/availability";
 import { Button } from "src/components/button";
+import { ButtonWithDropdown } from "src/components/buttonWithDropdown";
 import {
   DropdownMenu,
   DropdownMenuButton,
@@ -28,6 +30,7 @@ import {
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { ObjectTypePill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
+import { PanelTab } from "src/hooks/state";
 import {
   AvailabilityStatus,
   ParsedSkylarkObject,
@@ -208,15 +211,34 @@ export const PanelHeader = ({
 
           {inEditMode ? (
             <>
-              <Button
-                ref={saveButtonRef}
-                variant="primary"
-                success
-                onClick={save}
-                disabled={isSaving}
-              >
-                Save
-              </Button>
+              {currentTab === PanelTab.Metadata ? (
+                <ButtonWithDropdown
+                  ref={saveButtonRef}
+                  success
+                  onClick={save}
+                  disabled={isSaving}
+                  variant="primary"
+                  options={[
+                    {
+                      id: "save-draft",
+                      text: "Save as Draft",
+                      Icon: <FiSave className="text-xl" />,
+                    },
+                  ]}
+                >
+                  Save
+                </ButtonWithDropdown>
+              ) : (
+                <Button
+                  ref={saveButtonRef}
+                  variant="primary"
+                  success
+                  onClick={save}
+                  disabled={isSaving}
+                >
+                  Save
+                </Button>
+              )}
               <Button
                 ref={cancelButtonRef}
                 variant="outline"
@@ -289,17 +311,20 @@ export const PanelHeader = ({
           )}
         </div>
         <div className="flex flex-row items-end justify-end space-x-2">
-          {inEditMode && (
+          {(inEditMode || currentTab === PanelTab.Metadata) && (
             <div
               className={clsx(
                 "absolute -bottom-16 left-1/2 z-10 -translate-x-1/2",
                 isPage ? "md:fixed md:bottom-auto md:top-24" : " md:-bottom-18",
               )}
             >
-              <PanelLabel
-                text={isSaving ? "Saving" : "Editing"}
-                loading={isSaving}
-              />
+              {inEditMode && (
+                <PanelLabel
+                  text={isSaving ? "Saving" : "Editing"}
+                  loading={isSaving}
+                />
+              )}
+              {!inEditMode && <PanelLabel text="Draft" warning />}
             </div>
           )}
         </div>

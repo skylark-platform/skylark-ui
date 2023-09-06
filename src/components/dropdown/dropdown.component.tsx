@@ -17,7 +17,7 @@ export interface DropdownMenuOption {
 interface DropdownMenuProps {
   children: JSX.Element;
   options: DropdownMenuOption[];
-  align: "left" | "right";
+  align: "left" | "right" | "center";
   mobileAlign?: "center";
 }
 
@@ -46,9 +46,10 @@ export const DropdownMenu = ({
       >
         <Menu.Items
           className={clsx(
-            "absolute z-50 mx-auto mt-2 w-60 select-none divide-y divide-manatee-100 rounded-sm bg-white shadow-lg ring-1 ring-manatee-700 ring-opacity-5 focus:outline-none",
-            align === "left" && "-left-4 origin-top-left",
-            align === "right" && "-right-4 origin-top-right",
+            "absolute z-50 mx-auto mt-2 w-max select-none divide-y divide-manatee-100 rounded-sm bg-white shadow-lg ring-1 ring-manatee-700 ring-opacity-5 focus:outline-none",
+            align === "left" && "-left-3 origin-top-left",
+            align === "right" && "-right-0 origin-top-right",
+            align === "center" && "left-1/2 origin-center -translate-x-1/2",
             mobileAlign === "center" &&
               "max-md:left-1/2 max-md:origin-center max-md:-translate-x-1/2",
           )}
@@ -57,7 +58,7 @@ export const DropdownMenu = ({
             <Menu.Item key={option.id} as="div">
               {({ close }) => {
                 const className = clsx(
-                  "flex w-full items-center space-x-1 md:space-x-1.5 rounded-sm pl-3 pr-2 py-2 md:py-3",
+                  "flex w-full items-center space-x-1 md:space-x-1.5 rounded-sm pl-3 pr-2 py-2 md:py-3 md:pr-4",
                   !option.disabled &&
                     "ui-active:bg-manatee-200 ui-active:text-gray-900",
                   option.disabled && "bg-manatee-100 text-manatee-500",
@@ -80,7 +81,9 @@ export const DropdownMenu = ({
                     disabled={option.disabled}
                   >
                     {option.Icon}
-                    <span className="text-left">{option.text}</span>
+                    <span className="whitespace-nowrap text-left">
+                      {option.text}
+                    </span>
                   </button>
                 );
               }}
