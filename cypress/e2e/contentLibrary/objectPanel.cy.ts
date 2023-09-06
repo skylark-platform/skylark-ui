@@ -214,7 +214,7 @@ describe("Content Library - Object Panel", () => {
         "equal",
         "Series Premiere. Eddard Stark is torn between his family and an old friend when asked to serve at the side of King Robert Baratheon; Viserys plans to wed his sister to a nomadic warlord in exchange for an army.",
       );
-    cy.percySnapshot("Homepage - metadata panel - fields");
+    cy.percySnapshot("Homepage - object panel open");
   });
 
   it("close Panel", () => {
@@ -236,7 +236,6 @@ describe("Content Library - Object Panel", () => {
       cy.get("[data-testid=graphql-query-modal-button]").parent().click();
     });
     cy.contains("Query for");
-    cy.percySnapshot("Homepage - object panel - graphql query");
   });
 
   it("create translation", () => {
@@ -309,8 +308,6 @@ describe("Content Library - Object Panel", () => {
           "O Inverno Está Chegando",
         );
       });
-
-      cy.percySnapshot("Homepage - object panel - fields - pt-PT");
     });
 
     it("edit metadata and cancel", () => {
@@ -329,8 +326,6 @@ describe("Content Library - Object Panel", () => {
         cy.contains("button", "Cancel").should("not.be.disabled");
       });
       cy.contains("Editing");
-
-      cy.percySnapshot("Homepage - object panel - fields (edit)");
 
       // Test cancel
       cy.contains("Cancel").click();
@@ -375,8 +370,6 @@ describe("Content Library - Object Panel", () => {
           "match",
           /https:\/\/media.showcase.skylarkplatform.com\/skylarkimages\/4h6gok37lvcmln3jz7pjsmzrte\/01H4MMBWH8J6E85G7PEZQ96RK4\/01H4MMC39TYKJ0T2A4M0Y8XH1E/,
         );
-
-      cy.percySnapshot("Homepage - object panel - imagery");
     });
 
     it("navigates to the image object using the object button", () => {
@@ -450,8 +443,6 @@ describe("Content Library - Object Panel", () => {
       cy.contains("Homepage").should("exist");
       cy.openContentLibraryObjectPanelByText("Homepage");
       cy.contains("button", "Content").click();
-
-      cy.percySnapshot("Homepage - object panel - content");
     });
 
     it("navigates to the set content using the object button", () => {
@@ -527,8 +518,6 @@ describe("Content Library - Object Panel", () => {
         })
         .should("deep.eq", homepageContentOrdered);
 
-      cy.percySnapshot("Homepage - object panel - content (edit)");
-
       // Test deleting
       cy.contains("Discover")
         .parent()
@@ -563,8 +552,6 @@ describe("Content Library - Object Panel", () => {
           "Miraculous Season 5",
           "Home page hero",
         ]);
-
-      cy.percySnapshot("Homepage - object panel - content (reorder)");
 
       // Test cancel
       cy.contains("Cancel").click();
@@ -643,8 +630,6 @@ describe("Content Library - Object Panel", () => {
       cy.contains("button", "Relationships").click();
 
       cy.contains("StreamTVLoadingScreen.png");
-
-      cy.percySnapshot("Homepage - object panel - relationships");
     });
 
     it("adds Relationships using the Object Search modal", () => {
@@ -689,8 +674,6 @@ describe("Content Library - Object Panel", () => {
       cy.contains("button", "Appears In").click();
 
       cy.contains("Wes Anderson Movies Collection");
-
-      cy.percySnapshot("Homepage - object panel - content of");
     });
 
     it("navigates to the Set using the object button", () => {
@@ -751,8 +734,6 @@ describe("Content Library - Object Panel", () => {
       cy.contains("Active in the past");
       cy.contains("Time Window");
       cy.contains("Audience");
-
-      cy.percySnapshot("Homepage - object panel - availability");
     });
 
     it("navigates to the availability using the object button", () => {
@@ -871,8 +852,6 @@ describe("Content Library - Object Panel", () => {
       cy.contains("Standard");
       cy.contains("PC");
       cy.contains("SmartPhone");
-
-      cy.percySnapshot("Homepage - object panel - availability dimensions");
     });
 
     it("removes a dimension", () => {

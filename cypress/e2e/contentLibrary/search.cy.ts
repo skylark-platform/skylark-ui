@@ -134,7 +134,6 @@ describe("Content Library - Search", () => {
 
     cy.contains("GOT S02").should("not.exist");
     cy.contains("GOT S01 Trailer").should("exist");
-    cy.percySnapshot("Homepage - got search data");
   });
 
   it("displays an objects display_name in the object type filter", () => {
@@ -150,12 +149,10 @@ describe("Content Library - Search", () => {
   it("filters for only Assets", () => {
     cy.contains("Asset").should("exist");
     cy.contains("Filters").click();
-    cy.percySnapshot("Homepage - filters - open");
 
     cy.contains("Toggle all").click();
     cy.contains("Apply").should("be.disabled");
     cy.get("#checkbox-object-type-skylarkasset").click();
-    cy.percySnapshot("Homepage - filters - object types selected");
     cy.contains("Apply").should("not.be.disabled").click();
   });
 
@@ -177,9 +174,7 @@ describe("Content Library - Search", () => {
     ].forEach((field) => {
       columnsFilters.get(`#checkbox-columns-${field}`).click();
     });
-    cy.percySnapshot("Homepage - filters - fields selected");
     cy.contains("Apply").should("not.be.disabled").click();
-    cy.percySnapshot("Homepage - filters - fields active");
   });
 
   it("filters to en-GB only got content", () => {

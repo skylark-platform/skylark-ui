@@ -64,7 +64,7 @@ describe("Object Page", () => {
 
     it("loads page", () => {
       cy.contains("Homepage");
-      cy.percySnapshot("Object page - metadata");
+      cy.percySnapshot("Object page");
     });
 
     it("navigates to Content tab, opens an object and checks the URL has updated", () => {

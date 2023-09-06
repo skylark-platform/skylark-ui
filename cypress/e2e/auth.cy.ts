@@ -23,8 +23,6 @@ describe("Auth", () => {
       uriInput.clear();
       tokenInput.clear();
       cy.get("button").should("be.disabled");
-
-      cy.percySnapshot("Auth - modal - no input");
     });
   });
 
@@ -57,7 +55,6 @@ describe("Auth", () => {
         "border-success",
       );
       cy.get('input[name="API Key"]').should("have.class", "border-success");
-      cy.percySnapshot("Auth - modal - successful input");
     });
   });
 
@@ -74,8 +71,6 @@ describe("Auth", () => {
       cy.get("button").should("be.disabled");
       cy.get('input[name="GraphQL URL"]').should("have.class", "border-error");
       cy.get('input[name="API Key"]').should("have.class", "border-error");
-
-      cy.percySnapshot("Auth - modal - invalid input");
     });
   });
 

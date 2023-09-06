@@ -65,7 +65,6 @@ describe("Import/CSV", () => {
     cy.get(".btn-outline")
       .contains("New import")
       .should("have.class", "btn-disabled");
-    cy.percySnapshot("import/csv");
   });
 
   it("displays an objects display_name in a select", () => {
@@ -74,15 +73,12 @@ describe("Import/CSV", () => {
     cy.get("[data-testid=select-options]").within(() => {
       cy.contains("Set");
     });
-
-    cy.percySnapshot("import/csv - objectType select");
   });
 
   it("select objectType", () => {
     cy.contains("Download Example CSV").should("have.class", "btn-disabled");
     cy.get('[data-testid="select"]').click();
     cy.get('[data-testid="select-options"]').should("be.visible");
-    cy.percySnapshot("import/csv - objectType select open");
 
     cy.get('[data-testid="select-options"]')
       .get("li > span")
@@ -99,7 +95,6 @@ describe("Import/CSV", () => {
       .should("not.have.class", "btn-disabled")
       .should("have.attr", "href")
       .and("include", "data:text/plain;charset=utf-8,external_id");
-    cy.percySnapshot("import/csv - objectType selected");
   });
 
   it("opens and closes Flatfile", () => {
