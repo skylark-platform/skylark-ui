@@ -221,12 +221,12 @@ export const PanelHeader = ({
                   options={[
                     {
                       id: "save-draft",
-                      text: "Save as Draft",
+                      text: "Save and Publish",
                       Icon: <FiSave className="text-xl" />,
                     },
                   ]}
                 >
-                  Save
+                  Save Draft
                 </ButtonWithDropdown>
               ) : (
                 <Button
@@ -310,7 +310,7 @@ export const PanelHeader = ({
             </>
           )}
         </div>
-        <div className="flex flex-row items-end justify-end space-x-2">
+        <div className="flex flex-row items-end justify-end">
           {(inEditMode || currentTab === PanelTab.Metadata) && (
             <div
               className={clsx(
@@ -321,12 +321,21 @@ export const PanelHeader = ({
               {inEditMode && (
                 <PanelLabel
                   text={isSaving ? "Saving" : "Editing"}
+                  warning
                   loading={isSaving}
                 />
               )}
               {!inEditMode && <PanelLabel text="Draft" warning />}
             </div>
           )}
+          {/* {currentTab === PanelTab.Metadata && (
+            <div className="absolute -bottom-[4.1rem] left-0 right-0 z-10 -mt-1 flex h-7 items-center justify-center bg-warning text-sm text-warning-content shadow">
+              <p>Draft</p>
+            </div>
+            // <div className="absolute -bottom-[4.1rem] left-0 right-0 z-10 -mt-1 flex h-7 items-center justify-center bg-brand-primary text-sm text-white shadow">
+            //   <p>Published</p>
+            // </div>
+          )} */}
         </div>
       </div>
       <AnimatePresence>

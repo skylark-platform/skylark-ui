@@ -11,7 +11,9 @@ export const PanelLabel = ({ loading, text, warning }: PanelLabelProps) => (
   <span
     className={clsx(
       "flex items-center justify-center rounded  py-1 text-xs  md:text-sm",
-      warning ? "bg-brand-primary text-white" : "bg-black text-white",
+      warning
+        ? "bg-warning font-medium text-warning-content"
+        : "bg-black text-white",
       loading ? "px-2 md:px-3" : "px-3 md:px-4",
     )}
   >

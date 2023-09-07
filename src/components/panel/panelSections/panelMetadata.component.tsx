@@ -103,6 +103,7 @@ export const PanelMetadata = ({
           alt={metadata?.title as string}
         />
       )}
+      {/* <div className="absolute left-0 right-0 top-0 h-10 bg-warning"></div> */}
       <form
         className="h-full"
         data-testid="panel-metadata"
