@@ -1,10 +1,12 @@
 import { useState, useReducer, useEffect } from "react";
 import { FiDownload, FiUpload } from "react-icons/fi";
+import { useReadLocalStorage } from "usehooks-ts";
 
 import { Button } from "src/components/button";
 import { ObjectTypeSelect } from "src/components/inputs/select";
 import { StatusCard, statusType } from "src/components/statusCard";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { useCredsFromLocalStorage } from "src/hooks/useCredsFromLocalStorage";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   ApiRouteFlatfileImportRequestBody,
@@ -167,12 +169,12 @@ export default function CSVImportPage() {
     numErrored: 0,
   });
 
+  const [creds] = useCredsFromLocalStorage();
+
   const createObjectsInSkylark = async (batchId: string) => {
     dispatch({ stage: "import", status: statusType.success });
     dispatch({ stage: "create", status: statusType.inProgress });
-    const graphQLUri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri);
-    const graphQLToken = localStorage.getItem(LOCAL_STORAGE.betaAuth.token);
-    if (!graphQLUri || !graphQLToken) {
+    if (!creds?.uri || !creds?.token) {
       dispatch({ stage: "create", status: statusType.error });
       throw new Error(
         "Skylark GraphQL URI or Access Key not found in local storage",
@@ -210,7 +212,7 @@ export default function CSVImportPage() {
         acceptedData.push(...flattenedAdditionalRows);
       }
 
-      const skylarkClient = createSkylarkClient(graphQLUri, graphQLToken);
+      const skylarkClient = createSkylarkClient(creds.uri, creds.token);
 
       const skylarkObjects = await createFlatfileObjectsInSkylark(
         skylarkClient,
@@ -247,15 +249,14 @@ export default function CSVImportPage() {
       objectOperations?.operations.create.inputs as NormalizedObjectField[],
     );
 
-    const graphQLUri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri);
-    if (!graphQLUri) {
+    if (!creds) {
       dispatch({ stage: "prep", status: statusType.error });
       throw new Error(
         "Skylark GraphQL URI or Access Key not found in local storage",
       );
     }
 
-    const accountIdentifier = createAccountIdentifier(graphQLUri);
+    const accountIdentifier = createAccountIdentifier(creds.uri);
     const template = await createFlatfileTemplate(
       objectType,
       schema,

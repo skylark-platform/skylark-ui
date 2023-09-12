@@ -15,6 +15,12 @@ beforeAll(() => {
     if (key === LOCAL_STORAGE.betaAuth.token) {
       return "token";
     }
+    if (key === LOCAL_STORAGE.auth.active) {
+      return JSON.stringify({
+        uri: "http://localhost:3000",
+        token: "token",
+      });
+    }
   });
   return server.listen();
 });

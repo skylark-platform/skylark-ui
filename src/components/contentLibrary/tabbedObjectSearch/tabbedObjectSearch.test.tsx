@@ -20,10 +20,8 @@ import {
 const mockLocalStorage = (initialTabs?: ObjectSearchTab[]) => {
   Storage.prototype.getItem = jest.fn().mockImplementation((param) => {
     switch (param) {
-      case LOCAL_STORAGE.betaAuth.uri:
-        return "http://localhost:3000";
-      case LOCAL_STORAGE.betaAuth.token:
-        return "token";
+      case LOCAL_STORAGE.auth.active:
+        return JSON.stringify({ uri: "http://localhost:3000", token: "token" });
       case LOCAL_STORAGE.accountPrefixed(
         AccountFixture.data.getAccount.account_id,
       ).contentLibrary.tabState:

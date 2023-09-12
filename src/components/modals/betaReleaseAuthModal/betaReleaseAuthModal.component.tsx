@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { usePlausible } from "next-plausible";
 import React, { useEffect, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import { useEffectOnce, useLocalStorage } from "usehooks-ts";
 
 import { Button } from "src/components/button";
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
@@ -13,9 +14,9 @@ import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { QueryKeys } from "src/enums/graphql";
 import {
   SkylarkCreds,
-  getSkylarkCredsFromLocalStorage,
   useConnectedToSkylark,
 } from "src/hooks/useConnectedToSkylark";
+import { useCredsFromLocalStorage } from "src/hooks/useCredsFromLocalStorage";
 import { useUserAccount } from "src/hooks/useUserAccount";
 
 interface AddAuthTokenModalProps {
@@ -35,18 +36,20 @@ export const AddAuthTokenModal = ({
 
   const { account } = useUserAccount();
 
+  const [credsFromLocalStorage, saveCreds] = useCredsFromLocalStorage();
+
   const [{ uri: inputUri, token: inputToken }, setInputCreds] =
-    useState<SkylarkCreds>(() => getSkylarkCredsFromLocalStorage(true));
+    useState<SkylarkCreds>({ uri: "", token: "" });
 
   const [{ uri: debouncedUri, token: debouncedToken }, setDebouncedCreds] =
-    useState<SkylarkCreds>(() => getSkylarkCredsFromLocalStorage(true));
+    useState<SkylarkCreds>({ uri: "", token: "" });
 
   const debouncedSetCreds = useDebouncedCallback((creds: SkylarkCreds) => {
     setDebouncedCreds(creds);
     if (creds.uri) {
       setCreds(creds);
     } else {
-      setCreds({ uri: null, token: null });
+      setCreds(null);
     }
   }, 750);
 
@@ -58,17 +61,11 @@ export const AddAuthTokenModal = ({
   }
 
   useEffect(() => {
-    const updateInputsFromLocalStorage = () => {
-      const creds = getSkylarkCredsFromLocalStorage(true);
-      setInputCreds(creds);
-      setDebouncedCreds(creds);
-    };
-
-    window.addEventListener("storage", updateInputsFromLocalStorage);
-    return () => {
-      window.removeEventListener("storage", updateInputsFromLocalStorage);
-    };
-  }, []);
+    if (credsFromLocalStorage) {
+      setInputCreds(credsFromLocalStorage);
+      setDebouncedCreds(credsFromLocalStorage);
+    }
+  }, [credsFromLocalStorage]);
 
   // Show loading state before the debounced values have been updated
   const requestLoading =
@@ -79,12 +76,12 @@ export const AddAuthTokenModal = ({
   const updateLocalStorage = async () => {
     if (debouncedUri && debouncedToken) {
       plausible("connectedToSkylark", { props: { skylark_url: debouncedUri } });
-      localStorage.setItem(LOCAL_STORAGE.betaAuth.uri, debouncedUri);
-      localStorage.setItem(LOCAL_STORAGE.betaAuth.token, debouncedToken);
-      // storage events are not picked up in the same tab, so dispatch it for the current one
-      window.dispatchEvent(new Event("storage"));
+      saveCreds({
+        uri: debouncedUri,
+        token: debouncedToken,
+      });
 
-      queryClient.resetQueries({ queryKey: [] });
+      queryClient.clear();
       await queryClient.refetchQueries({
         queryKey: [QueryKeys.Schema],
         type: "active",

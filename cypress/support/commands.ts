@@ -18,10 +18,12 @@ import { LOCAL_STORAGE } from "../../src/constants/localStorage";
 // -- This is a parent command --
 Cypress.Commands.add("login", () => {
   window.localStorage.setItem(
-    LOCAL_STORAGE.betaAuth.uri,
-    Cypress.env("skylark_graphql_uri"),
+    LOCAL_STORAGE.auth.active,
+    JSON.stringify({
+      uri: Cypress.env("skylark_graphql_uri"),
+      token: "token",
+    }),
   );
-  window.localStorage.setItem(LOCAL_STORAGE.betaAuth.token, "token");
 });
 
 Cypress.Commands.add("clickOutside", () => {

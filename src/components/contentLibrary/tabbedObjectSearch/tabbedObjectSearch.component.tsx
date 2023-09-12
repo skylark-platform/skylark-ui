@@ -255,32 +255,42 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
   const [initialTabsScrollPosition, setInitialTabsScrollPosition] = useState(0);
 
   useEffect(() => {
-    if (accountId) {
-      const tabsFromStorage = readTabStateFromStorage(accountId);
-      const activeIndex = readIntFromLocalStorage(
-        LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary.activeTabIndex,
-      );
-      const tabsScrollPosition = readIntFromLocalStorage(
-        LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary
-          .tabsScrollPosition,
-      );
+    const setValuesFromLocalStorage = () => {
+      if (accountId) {
+        const tabsFromStorage = readTabStateFromStorage(accountId);
+        const activeIndex = readIntFromLocalStorage(
+          LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary
+            .activeTabIndex,
+        );
+        const tabsScrollPosition = readIntFromLocalStorage(
+          LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary
+            .tabsScrollPosition,
+        );
 
-      setTabs(
-        tabsFromStorage && tabsFromStorage.length > 0
-          ? tabsFromStorage
-          : initialTabs,
-      );
-      setActiveTabIndex(
-        tabsFromStorage && activeIndex && activeIndex < tabsFromStorage.length
-          ? activeIndex
-          : 0,
-      );
-      setInitialTabsScrollPosition(tabsScrollPosition || 0);
-    } else {
-      setTabs(undefined);
-      setActiveTabIndex(0);
-      setInitialTabsScrollPosition(0);
-    }
+        setTabs(
+          tabsFromStorage && tabsFromStorage.length > 0
+            ? tabsFromStorage
+            : initialTabs,
+        );
+        setActiveTabIndex(
+          tabsFromStorage && activeIndex && activeIndex < tabsFromStorage.length
+            ? activeIndex
+            : 0,
+        );
+        setInitialTabsScrollPosition(tabsScrollPosition || 0);
+      } else {
+        setTabs(undefined);
+        setActiveTabIndex(0);
+        setInitialTabsScrollPosition(0);
+      }
+    };
+
+    setValuesFromLocalStorage();
+
+    window.addEventListener("storage", setValuesFromLocalStorage);
+    return () => {
+      window.removeEventListener("storage", setValuesFromLocalStorage);
+    };
   }, [accountId]);
 
   const activeTab = tabs?.[activeTabIndex];

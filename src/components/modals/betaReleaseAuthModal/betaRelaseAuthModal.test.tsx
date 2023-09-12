@@ -177,10 +177,9 @@ test("when GraphQL is valid, updates local storage", async () => {
   fireEvent.click(connect);
 
   expect(setItem).toHaveBeenCalledWith(
-    LOCAL_STORAGE.betaAuth.uri,
-    "http://valid.com",
+    LOCAL_STORAGE.auth.active,
+    JSON.stringify({ uri: "http://valid.com", token: "token" }),
   );
-  expect(setItem).toHaveBeenCalledWith(LOCAL_STORAGE.betaAuth.token, "token");
 });
 
 test("shows the user's account when connected", async () => {

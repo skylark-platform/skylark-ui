@@ -21,22 +21,18 @@ test("displays help text when URI or API Key not given", () => {
 
 test("updates localStorage when URI and API key are given", () => {
   const uri = "skylark.com/graphql";
-  const apikey = "da2-asfsdf";
-  const router = { push: jest.fn(), query: { uri, apikey } };
+  const token = "da2-asfsdf";
+  const router = { push: jest.fn(), query: { uri, apikey: token } };
   useRouter.mockReturnValue(router);
   Storage.prototype.setItem = jest.fn();
 
   render(<ConnectPage />);
 
   expect(screen.getByText("URI and API Key found in URL.")).toBeInTheDocument();
-  expect(localStorage.setItem).toHaveBeenCalledTimes(2);
+  expect(localStorage.setItem).toHaveBeenCalledTimes(1);
   expect(localStorage.setItem).toHaveBeenCalledWith(
-    LOCAL_STORAGE.betaAuth.uri,
-    uri,
-  );
-  expect(localStorage.setItem).toHaveBeenCalledWith(
-    LOCAL_STORAGE.betaAuth.token,
-    apikey,
+    LOCAL_STORAGE.auth.active,
+    JSON.stringify({ uri, token }),
   );
   expect(router.push).toHaveBeenCalledWith("/");
 });

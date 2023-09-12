@@ -1,23 +1,29 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { useCredsFromLocalStorage } from "src/hooks/useCredsFromLocalStorage";
 
 export default function BetaConnect() {
   const { query, push: navigateTo } = useRouter();
+  const queryClient = useQueryClient();
+
+  const [, saveCreds] = useCredsFromLocalStorage();
 
   useEffect(() => {
     if (query.uri && query.apikey) {
-      localStorage.setItem(LOCAL_STORAGE.betaAuth.uri, query.uri as string);
-      localStorage.setItem(
-        LOCAL_STORAGE.betaAuth.token,
-        query.apikey as string,
-      );
+      saveCreds({
+        uri: query.uri as string,
+        token: query.apikey as string,
+      });
+
+      queryClient.clear();
+
       // storage events are not picked up in the same tab, so dispatch it for the current one
       window.dispatchEvent(new Event("storage"));
       navigateTo("/");
     }
-  }, [query, navigateTo]);
+  }, [query, navigateTo, queryClient, saveCreds]);
 
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center space-y-2">

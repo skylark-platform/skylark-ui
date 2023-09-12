@@ -3,6 +3,7 @@ import { GraphQLClient, RequestDocument, request } from "graphql-request";
 
 import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { SAAS_API_ENDPOINT, REQUEST_HEADERS } from "src/constants/skylark";
+import { SkylarkCreds } from "src/hooks/useConnectedToSkylark";
 
 interface SkylarkRequestOpts {
   useCache?: boolean;
@@ -32,11 +33,11 @@ export const skylarkRequest = <T>(
   argHeaders?: HeadersInit,
 ) => {
   // get the authentication token from local storage if it exists
-  const uri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri);
-  const token = localStorage.getItem(LOCAL_STORAGE.betaAuth.token);
+  const localStorageCreds = localStorage.getItem(LOCAL_STORAGE.auth.active);
+  const { uri, token }: SkylarkCreds = localStorageCreds
+    ? JSON.parse(localStorageCreds)
+    : { uri: "", token: "" };
 
-  // return the headers to the context so httpLink can read them
-  // In Beta, only set the token when we have a URI so that it fires a failing request when the URI is invalid/missing
   const tokenToSend = uri ? token || "" : "";
 
   const headers: HeadersInit = {
