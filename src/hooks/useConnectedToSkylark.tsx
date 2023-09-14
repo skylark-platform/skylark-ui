@@ -12,7 +12,7 @@ import {
 import { GQLSkylarkObjectTypesResponse } from "src/interfaces/graphql/introspection";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
-import { useCredsFromLocalStorage } from "./useCredsFromLocalStorage";
+import { useSkylarkCreds } from "./localStorage/useCreds";
 
 export interface SkylarkCreds {
   uri: string;
@@ -39,7 +39,7 @@ export interface SkylarkCreds {
 export const useConnectedToSkylark = () => {
   const [overrideCreds, setOverrideCreds] = useState<SkylarkCreds | null>(null);
 
-  const [localStorageCreds] = useCredsFromLocalStorage();
+  const [localStorageCreds] = useSkylarkCreds();
 
   const currentCreds: SkylarkCreds = overrideCreds ||
     localStorageCreds || {
@@ -47,14 +47,17 @@ export const useConnectedToSkylark = () => {
       token: "",
     };
 
-  console.log({ currentCreds });
-
   const { data, error, isError, isLoading, isSuccess, refetch } = useQuery<
     GQLSkylarkObjectTypesResponse,
     { response?: { errors?: { errorType?: string; message?: string }[] } }
   >({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ["credentialValidator", GET_SKYLARK_OBJECT_TYPES],
+    queryKey: [
+      "credentialValidator",
+      GET_SKYLARK_OBJECT_TYPES,
+      currentCreds.uri,
+      currentCreds.token,
+      REQUEST_HEADERS.apiKey,
+    ],
     queryFn: async () => {
       return request(
         currentCreds.uri || "",
@@ -66,9 +69,7 @@ export const useConnectedToSkylark = () => {
         },
       );
     },
-    enabled: Boolean(
-      localStorageCreds && localStorageCreds.uri && localStorageCreds.token,
-    ),
+    enabled: Boolean(currentCreds.uri && currentCreds.token),
     retry: false,
     cacheTime: 0,
   });

@@ -14,7 +14,7 @@ import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
 
 import {
   ObjectSearchTab,
-  TabbedObjectSearch,
+  TabbedObjectSearchWithAccount,
 } from "./tabbedObjectSearch.component";
 
 const mockLocalStorage = (initialTabs?: ObjectSearchTab[]) => {
@@ -44,7 +44,7 @@ afterEach(() => {
 test("Loads the default tabs when localStorage is empty", async () => {
   mockLocalStorage();
 
-  render(<TabbedObjectSearch />);
+  render(<TabbedObjectSearchWithAccount />);
 
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
@@ -58,7 +58,7 @@ test("Loads the default tabs when localStorage is empty", async () => {
 test("Changing tabs", async () => {
   mockLocalStorage();
 
-  render(<TabbedObjectSearch />);
+  render(<TabbedObjectSearchWithAccount />);
 
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
@@ -75,7 +75,7 @@ test("Changing tabs", async () => {
 test("Rename active tab (save)", async () => {
   mockLocalStorage();
 
-  render(<TabbedObjectSearch />);
+  render(<TabbedObjectSearchWithAccount />);
 
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
@@ -104,7 +104,7 @@ test("Rename active tab (save)", async () => {
 test("Rename active tab (save with enter key)", async () => {
   mockLocalStorage();
 
-  render(<TabbedObjectSearch />);
+  render(<TabbedObjectSearchWithAccount />);
 
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
@@ -137,7 +137,7 @@ test("Rename active tab (save with enter key)", async () => {
 test("Rename active tab (cancel)", async () => {
   mockLocalStorage();
 
-  render(<TabbedObjectSearch />);
+  render(<TabbedObjectSearchWithAccount />);
 
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
@@ -166,7 +166,7 @@ test("Rename active tab (cancel)", async () => {
 test("Add new view", async () => {
   mockLocalStorage();
 
-  render(<TabbedObjectSearch />);
+  render(<TabbedObjectSearchWithAccount />);
 
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
@@ -218,7 +218,7 @@ test("Loads values from localStorage", async () => {
 
   mockLocalStorage(initialTabs);
 
-  render(<TabbedObjectSearch />);
+  render(<TabbedObjectSearchWithAccount />);
 
   await waitFor(() => {
     expect(screen.queryByText("Default View")).not.toBeInTheDocument();
@@ -248,7 +248,7 @@ test("Shows error message when Account ID can't be loaded", async () => {
     }),
   );
 
-  render(<TabbedObjectSearch />);
+  render(<TabbedObjectSearchWithAccount />);
 
   await waitFor(() => {
     expect(screen.getByText("Something went wrong...")).toBeInTheDocument();
@@ -272,7 +272,7 @@ describe("create button", () => {
   test("renders create button", async () => {
     mockLocalStorage();
 
-    render(<TabbedObjectSearch />);
+    render(<TabbedObjectSearchWithAccount />);
     await waitFor(() => {
       expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
     });
@@ -289,7 +289,7 @@ describe("create button", () => {
   test("opens the create object modal", async () => {
     mockLocalStorage();
 
-    render(<TabbedObjectSearch />);
+    render(<TabbedObjectSearchWithAccount />);
 
     await waitFor(() => {
       expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active

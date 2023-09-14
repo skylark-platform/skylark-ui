@@ -2,13 +2,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-import { useCredsFromLocalStorage } from "src/hooks/useCredsFromLocalStorage";
+import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 
 export default function BetaConnect() {
   const { query, push: navigateTo } = useRouter();
   const queryClient = useQueryClient();
 
-  const [, saveCreds] = useCredsFromLocalStorage();
+  const [, saveCreds] = useSkylarkCreds();
 
   useEffect(() => {
     if (query.uri && query.apikey) {

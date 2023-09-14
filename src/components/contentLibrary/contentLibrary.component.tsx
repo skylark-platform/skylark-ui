@@ -28,7 +28,7 @@ import {
   DragType,
 } from "src/lib/dndkit/dndkit";
 
-import { TabbedObjectSearch } from "./tabbedObjectSearch/tabbedObjectSearch.component";
+import { TabbedObjectSearchWithAccount } from "./tabbedObjectSearch/tabbedObjectSearch.component";
 
 const INITIAL_PANEL_PERCENTAGE = 70;
 const MINIMUM_SIZES = {
@@ -231,7 +231,7 @@ export const ContentLibrary = () => {
           {isDraggingObject && (
             <div className="absolute inset-0 z-[100] block bg-black/5"></div>
           )}
-          <TabbedObjectSearch
+          <TabbedObjectSearchWithAccount
             panelObject={activePanelObject}
             setPanelObject={setPanelObject}
             isPanelOpen={!!activePanelObject}

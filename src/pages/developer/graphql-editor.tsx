@@ -5,8 +5,8 @@ import { useReadLocalStorage } from "usehooks-ts";
 import { DEFAULT_QUERY } from "src/components/graphiqlEditor/graphiqlEditor.component";
 import { Spinner } from "src/components/icons";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
-import { useCredsFromLocalStorage } from "src/hooks/useCredsFromLocalStorage";
 
 const DynamicGraphiQLEditor = dynamic(
   () =>
@@ -26,7 +26,7 @@ export default function GraphQLQueryEditor() {
   const { isConnected } = useConnectedToSkylark();
   const [defaultQuery, setDefaultQuery] = useState(DEFAULT_QUERY);
 
-  const [creds] = useCredsFromLocalStorage();
+  const [creds] = useSkylarkCreds();
 
   useEffect(() => {
     // Default to light theme https://github.com/graphql/graphiql/issues/2924

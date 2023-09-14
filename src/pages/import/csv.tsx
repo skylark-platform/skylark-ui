@@ -6,7 +6,7 @@ import { Button } from "src/components/button";
 import { ObjectTypeSelect } from "src/components/inputs/select";
 import { StatusCard, statusType } from "src/components/statusCard";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
-import { useCredsFromLocalStorage } from "src/hooks/useCredsFromLocalStorage";
+import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   ApiRouteFlatfileImportRequestBody,
@@ -169,7 +169,7 @@ export default function CSVImportPage() {
     numErrored: 0,
   });
 
-  const [creds] = useCredsFromLocalStorage();
+  const [creds] = useSkylarkCreds();
 
   const createObjectsInSkylark = async (batchId: string) => {
     dispatch({ stage: "import", status: statusType.success });

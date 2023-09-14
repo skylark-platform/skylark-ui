@@ -1,11 +1,6 @@
 import { createContext, ReactNode, useContext, useReducer } from "react";
 
 import { LOCAL_STORAGE } from "src/constants/localStorage";
-import { useUserAccount } from "src/hooks/useUserAccount";
-import {
-  SkylarkAccount,
-  SkylarkUser,
-} from "src/interfaces/skylark/environment";
 import { getJSONFromLocalStorage } from "src/lib/utils";
 
 type State = {
@@ -14,16 +9,11 @@ type State = {
 type Action = { type: "addUsedLanguages"; value: string[] };
 type Dispatch = (action: Action) => void;
 
-const UserContext = createContext<
-  | {
-      state: State;
-      account?: SkylarkAccount;
-      user?: SkylarkUser;
-      isLoading: boolean;
-      dispatch: Dispatch;
-    }
-  | undefined
->(undefined);
+type UserContextType = {
+  dispatch: Dispatch;
+} & State;
+
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
 const userReducer = (state: State, action: Action) => {
   switch (action.type) {
@@ -60,10 +50,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         : [],
   });
 
-  const { account, user, isLoading } = useUserAccount();
-
   return (
-    <UserContext.Provider value={{ state, account, user, isLoading, dispatch }}>
+    <UserContext.Provider
+      value={{
+        ...state,
+        dispatch,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );
@@ -75,16 +68,5 @@ export const useUser = () => {
     throw new Error("useUser must be used within a UserProvider");
   }
 
-  const { state, account, user, dispatch, isLoading } = context;
-
-  return {
-    ...state,
-    accountId: account?.accountId || user?.account,
-    // In the future a user will have their own custom default language
-    defaultLanguage: account?.defaultLanguage,
-    permissions: user?.permissions,
-    role: user?.role,
-    isLoading,
-    dispatch,
-  };
+  return context;
 };

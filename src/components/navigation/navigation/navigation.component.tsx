@@ -14,8 +14,8 @@ import { AddAuthTokenModal } from "src/components/modals";
 import { Hamburger } from "src/components/navigation/hamburger";
 import { NavigationLinks } from "src/components/navigation/links";
 import { UserAvatar } from "src/components/user";
+import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { useAccountStatus } from "src/hooks/useAccountStatus";
-import { useCredsFromLocalStorage } from "src/hooks/useCredsFromLocalStorage";
 
 import Logo from "public/images/skylark.png";
 
@@ -66,7 +66,7 @@ export const Navigation = () => {
 
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
 
-  const [creds] = useCredsFromLocalStorage();
+  const [creds] = useSkylarkCreds();
   const customerIdentifier = isClient
     ? getCustomerIdentifier(creds?.uri || "")
     : "";

@@ -154,8 +154,9 @@ export const useGetObjectContent = (
 
   const content = useMemo(() => {
     const contentObjects =
-      data?.pages?.flatMap((page) => page.getObjectContent.content.objects) ||
-      [];
+      data?.pages?.flatMap(
+        (page) => page.getObjectContent.content?.objects || [],
+      ) || [];
 
     const parsedContent = parseObjectContent({ objects: contentObjects });
     return parsedContent;
