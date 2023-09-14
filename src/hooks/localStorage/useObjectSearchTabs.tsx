@@ -4,6 +4,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { ObjectSearchInitialColumnsState } from "src/components/objectSearch";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { SearchFilters } from "src/hooks/useSearch";
+import { readIntFromLocalStorage } from "src/lib/utils";
 
 export interface ObjectSearchTab {
   id: string;
@@ -62,20 +63,6 @@ const readTabsFromStorage = (accountId: string) => {
     return JSON.parse(valueFromStorage) as ObjectSearchTab[];
   } catch (err) {
     return null;
-  }
-};
-
-const readIntFromLocalStorage = (name: string): number => {
-  const valueFromStorage = localStorage.getItem(name);
-
-  if (!valueFromStorage) {
-    return 0;
-  }
-
-  try {
-    return parseInt(valueFromStorage);
-  } catch (err) {
-    return 0;
   }
 };
 

@@ -184,6 +184,56 @@ test("Add new view", async () => {
   expect(screen.queryAllByText("View 3")).toHaveLength(2);
 });
 
+test("Deletes active tab", async () => {
+  mockLocalStorage();
+
+  render(<TabbedObjectSearchWithAccount />);
+
+  await waitFor(() => {
+    expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
+  });
+
+  const deleteActiveTabButton = screen.getByLabelText("Delete active tab");
+
+  fireEvent.click(deleteActiveTabButton);
+
+  expect(screen.queryAllByText("Default View")).toHaveLength(0);
+  expect(screen.queryAllByText("Availability")).toHaveLength(3);
+});
+
+test("Adds the initial tabs when all tabs are deleted", async () => {
+  mockLocalStorage([
+    {
+      id: "mytab",
+      name: "mytab",
+      filters: {
+        query: "GOT",
+        objectTypes: ["Episode"],
+        availability: {
+          dimensions: null,
+          timeTravel: null,
+        },
+      },
+    },
+  ]);
+
+  render(<TabbedObjectSearchWithAccount />);
+
+  await waitFor(() => {
+    expect(screen.queryAllByText("mytab")).toHaveLength(2); // Length 2 as active
+  });
+  expect(screen.queryAllByText("Default View")).toHaveLength(0);
+  expect(screen.queryAllByText("Availability")).toHaveLength(0);
+
+  const deleteActiveTabButton = screen.getByLabelText("Delete active tab");
+
+  fireEvent.click(deleteActiveTabButton);
+
+  expect(screen.queryAllByText("Default View")).toHaveLength(2);
+  expect(screen.queryAllByText("Availability")).toHaveLength(1);
+  expect(screen.queryAllByText("mytab")).toHaveLength(0);
+});
+
 test("Loads values from localStorage", async () => {
   const initialTabs: ObjectSearchTab[] = [
     {
