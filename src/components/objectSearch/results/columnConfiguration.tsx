@@ -144,13 +144,13 @@ const objectTypeIndicatorColumn = columnHelper.display({
   maxSize: 0,
   minSize: 0,
   cell: ({ cell, row }) => {
-    const original = row.original as ParsedSkylarkObject;
-    const cellContext = cell.getContext();
+    // const original = row.original as ParsedSkylarkObject;
+    // const cellContext = cell.getContext();
 
-    const { config }: { config: ParsedSkylarkObjectConfig | null } =
-      cellContext.table.options.meta?.objectTypesWithConfig?.find(
-        ({ objectType }) => objectType === original.objectType,
-      ) || { config: null };
+    // const { config }: { config: ParsedSkylarkObjectConfig | null } =
+    //   cellContext.table.options.meta?.objectTypesWithConfig?.find(
+    //     ({ objectType }) => objectType === original.objectType,
+    //   ) || { config: null };
 
     return (
       // <div

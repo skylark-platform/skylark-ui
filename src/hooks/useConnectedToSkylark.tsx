@@ -1,14 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import request from "graphql-request";
 import { useEffect, useState } from "react";
-import { useReadLocalStorage } from "usehooks-ts";
 
-import { LOCAL_STORAGE } from "src/constants/localStorage";
-import {
-  REQUEST_HEADERS,
-  SAAS_API_ENDPOINT,
-  SAAS_API_KEY,
-} from "src/constants/skylark";
+import { REQUEST_HEADERS } from "src/constants/skylark";
 import { GQLSkylarkObjectTypesResponse } from "src/interfaces/graphql/introspection";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
@@ -18,23 +12,6 @@ export interface SkylarkCreds {
   uri: string;
   token: string;
 }
-
-/**
- * 
- * @returns   if (withDevelopmentDefault) {
-    const { origin } = window.location;
-    // Timesaving in development to connect to sl-develop-10 when available unless in Storybook.
-    const useDevelopmentDefaults =
-      (origin.includes("http://localhost") &&
-        !origin.includes("http://localhost:6006")) ||
-      origin.includes("vercel.app");
-
-    if (useDevelopmentDefaults) {
-      fallbackUri = SAAS_API_ENDPOINT || null;
-      fallbackToken = SAAS_API_KEY || null;
-    }
-  }
- */
 
 export const useConnectedToSkylark = () => {
   const [overrideCreds, setOverrideCreds] = useState<SkylarkCreds | null>(null);

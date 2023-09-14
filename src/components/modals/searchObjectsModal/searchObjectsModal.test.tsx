@@ -1,4 +1,4 @@
-import { waitFor, screen, fireEvent, prettyDOM } from "@testing-library/react";
+import { waitFor, screen, fireEvent } from "@testing-library/react";
 
 import GQLGameOfThronesSearchResultsPage1enGB from "src/__tests__/fixtures/skylark/queries/search/gotPage1enGB.json";
 import { render } from "src/__tests__/utils/test-utils";
