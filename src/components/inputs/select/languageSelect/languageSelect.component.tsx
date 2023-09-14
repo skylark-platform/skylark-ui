@@ -7,6 +7,7 @@ import {
   SelectProps,
 } from "src/components/inputs/select";
 import { useUser } from "src/contexts/useUser";
+import { useUserAccount } from "src/hooks/useUserAccount";
 
 // Downloaded from https://datahub.io/core/language-codes "ietf-language-tags"
 import IetfLanguageTags from "./ietf-language-tags.json";
@@ -36,7 +37,8 @@ export const LanguageSelect = ({
   onChange,
   ...props
 }: LanguageSelectProps) => {
-  const { usedLanguages, defaultLanguage } = useUser();
+  const { usedLanguages } = useUser();
+  const { defaultLanguage } = useUserAccount();
 
   useEffect(() => {
     if (

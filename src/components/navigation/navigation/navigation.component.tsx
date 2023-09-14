@@ -2,9 +2,10 @@ import { Menu } from "@headlessui/react";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { FiLogOut } from "react-icons/fi";
 import { sentenceCase } from "sentence-case";
+import { useIsClient } from "usehooks-ts";
 
 import { AccountStatus } from "src/components/account";
 import { Button } from "src/components/button";
@@ -13,12 +14,16 @@ import { AddAuthTokenModal } from "src/components/modals";
 import { Hamburger } from "src/components/navigation/hamburger";
 import { NavigationLinks } from "src/components/navigation/links";
 import { UserAvatar } from "src/components/user";
+import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { useAccountStatus } from "src/hooks/useAccountStatus";
-import { getSkylarkCredsFromLocalStorage } from "src/hooks/useConnectedToSkylark";
 
 import Logo from "public/images/skylark.png";
 
-const getCustomerIdentifier = (uri: string) => {
+const getCustomerIdentifier = (uri: string | null) => {
+  if (!uri) {
+    return "";
+  }
+
   const isIo = uri.includes("skylarkplatform.io");
   const isCom = uri.includes("skylarkplatform.com");
   const isValid = isIo || isCom;
@@ -53,29 +58,21 @@ const getCustomerIdentifier = (uri: string) => {
 };
 
 export const Navigation = () => {
+  const isClient = useIsClient();
+
   const [open, setOpen] = useState(false);
-  const [customerIdentifier, setCustomerIdentifier] = useState("");
 
   const { isConnected } = useAccountStatus();
 
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
 
-  const updateCustomerIdentifier = useCallback(() => {
-    const creds = getSkylarkCredsFromLocalStorage(true);
-    setCustomerIdentifier(creds.uri ? getCustomerIdentifier(creds.uri) : "");
-  }, []);
-
-  useEffect(() => {
-    updateCustomerIdentifier();
-  }, [updateCustomerIdentifier]);
+  const [creds] = useSkylarkCreds();
+  const customerIdentifier = isClient
+    ? getCustomerIdentifier(creds?.uri || "")
+    : "";
 
   const handleModalOpenState = (open: boolean) => {
     setAuthModalOpen(open);
-
-    // If closing the modal, update the customer identifier as the creds in storage may have changed
-    if (!open) {
-      updateCustomerIdentifier();
-    }
   };
 
   return (

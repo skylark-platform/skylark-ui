@@ -150,6 +150,21 @@ export const getJSONFromLocalStorage = <T>(key: string) => {
   }
 };
 
+export const readIntFromLocalStorage = (name: string): number => {
+  const valueFromStorage = localStorage.getItem(name);
+
+  if (!valueFromStorage) {
+    return 0;
+  }
+
+  try {
+    const int = parseInt(valueFromStorage);
+    return Number.isNaN(int) ? 0 : int;
+  } catch (err) {
+    return 0;
+  }
+};
+
 export const addCloudinaryOnTheFlyImageTransformation = (
   imageUrl: string,
   opts: { height?: number; width?: number },

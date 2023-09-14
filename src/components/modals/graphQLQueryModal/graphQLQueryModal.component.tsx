@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { FiCopy } from "react-icons/fi";
 import { GrGraphQl } from "react-icons/gr";
+import { v4 as uuidv4 } from "uuid";
 
 import { Button } from "src/components/button";
 import { FiX, Spinner } from "src/components/icons";
@@ -73,7 +74,7 @@ const updateGraphiQLLocalStorage = (
   const operationName = operation && operation.name?.value;
 
   const newTab: GraphiQLTabStateTab = {
-    id: "dynamically-generated-query",
+    id: uuidv4(),
     hash: null,
     operationName: operationName || "",
     query: formattedQuery,

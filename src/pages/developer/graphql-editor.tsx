@@ -1,9 +1,11 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { useIsClient, useReadLocalStorage } from "usehooks-ts";
 
 import { DEFAULT_QUERY } from "src/components/graphiqlEditor/graphiqlEditor.component";
 import { Spinner } from "src/components/icons";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { useConnectedToSkylark } from "src/hooks/useConnectedToSkylark";
 
 const DynamicGraphiQLEditor = dynamic(
@@ -20,16 +22,12 @@ const DynamicGraphiQLEditor = dynamic(
   },
 );
 
-const getEnvironmentFromLocalStorage = () => {
-  const uri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) || "";
-  const token = localStorage.getItem(LOCAL_STORAGE.betaAuth.token) || "";
-  return { uri, token };
-};
-
 export default function GraphQLQueryEditor() {
   const { isConnected } = useConnectedToSkylark();
-  const [{ uri, token }, setEnvironment] = useState({ uri: "", token: "" });
   const [defaultQuery, setDefaultQuery] = useState(DEFAULT_QUERY);
+  const isClient = useIsClient();
+
+  const [creds] = useSkylarkCreds();
 
   useEffect(() => {
     // Default to light theme https://github.com/graphql/graphiql/issues/2924
@@ -55,23 +53,14 @@ export default function GraphQLQueryEditor() {
         console.warn("GraphiQL TabState set but invalid JSON", tabStateJSON);
       }
     }
-
-    const refresh = () => {
-      setEnvironment(getEnvironmentFromLocalStorage());
-    };
-    refresh();
-    window.addEventListener("storage", refresh);
-    return () => {
-      window.removeEventListener("storage", refresh);
-    };
   }, []);
 
   return (
     <div className="pt-nav h-full w-full">
-      {isConnected && uri && token && (
+      {isClient && isConnected && creds?.uri && creds.token && (
         <DynamicGraphiQLEditor
-          uri={uri}
-          token={token}
+          uri={creds.uri}
+          token={creds.token}
           defaultQuery={defaultQuery}
         />
       )}

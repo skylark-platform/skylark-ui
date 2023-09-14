@@ -2,59 +2,27 @@ import { useQuery } from "@tanstack/react-query";
 import request from "graphql-request";
 import { useEffect, useState } from "react";
 
-import { LOCAL_STORAGE } from "src/constants/localStorage";
-import {
-  REQUEST_HEADERS,
-  SAAS_API_ENDPOINT,
-  SAAS_API_KEY,
-} from "src/constants/skylark";
+import { REQUEST_HEADERS } from "src/constants/skylark";
 import { GQLSkylarkObjectTypesResponse } from "src/interfaces/graphql/introspection";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
+import { useSkylarkCreds } from "./localStorage/useCreds";
+
 export interface SkylarkCreds {
-  uri: string | null;
-  token: string | null;
+  uri: string;
+  token: string;
 }
 
-export const getSkylarkCredsFromLocalStorage = (
-  withDevelopmentDefault?: boolean,
-): SkylarkCreds => {
-  if (typeof window === "undefined") {
-    return {
-      uri: null,
-      token: null,
-    };
-  }
-
-  let fallbackUri = null;
-  let fallbackToken = null;
-
-  if (withDevelopmentDefault) {
-    const { origin } = window.location;
-    // Timesaving in development to connect to sl-develop-10 when available unless in Storybook.
-    const useDevelopmentDefaults =
-      (origin.includes("http://localhost") &&
-        !origin.includes("http://localhost:6006")) ||
-      origin.includes("vercel.app");
-
-    if (useDevelopmentDefaults) {
-      fallbackUri = SAAS_API_ENDPOINT || null;
-      fallbackToken = SAAS_API_KEY || null;
-    }
-  }
-
-  const uri = localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) || fallbackUri;
-  const token =
-    localStorage.getItem(LOCAL_STORAGE.betaAuth.token) || fallbackToken;
-
-  return {
-    uri,
-    token,
-  };
-};
-
 export const useConnectedToSkylark = () => {
-  const [currentCreds, setCreds] = useState<SkylarkCreds | null>(null);
+  const [overrideCreds, setOverrideCreds] = useState<SkylarkCreds | null>(null);
+
+  const [localStorageCreds] = useSkylarkCreds();
+
+  const currentCreds: SkylarkCreds = overrideCreds ||
+    localStorageCreds || {
+      uri: "",
+      token: "",
+    };
 
   const { data, error, isError, isLoading, isSuccess, refetch } = useQuery<
     GQLSkylarkObjectTypesResponse,
@@ -63,44 +31,34 @@ export const useConnectedToSkylark = () => {
     queryKey: [
       "credentialValidator",
       GET_SKYLARK_OBJECT_TYPES,
-      currentCreds?.uri,
-      currentCreds?.token,
+      currentCreds.uri,
+      currentCreds.token,
+      REQUEST_HEADERS.apiKey,
     ],
-    queryFn: currentCreds?.uri
-      ? async () => {
-          const token =
-            currentCreds?.token ||
-            localStorage.getItem(LOCAL_STORAGE.betaAuth.token) ||
-            "";
-          return request(
-            currentCreds?.uri ||
-              localStorage.getItem(LOCAL_STORAGE.betaAuth.uri) ||
-              "",
-            GET_SKYLARK_OBJECT_TYPES,
-            {},
-            {
-              [REQUEST_HEADERS.apiKey]: token,
-              [REQUEST_HEADERS.bypassCache]: "1",
-            },
-          );
-        }
-      : undefined,
-    enabled: !!currentCreds?.uri,
+    queryFn: async () => {
+      return request(
+        currentCreds.uri || "",
+        GET_SKYLARK_OBJECT_TYPES,
+        {},
+        {
+          [REQUEST_HEADERS.apiKey]: currentCreds.token || "",
+          [REQUEST_HEADERS.bypassCache]: "1",
+        },
+      );
+    },
+    enabled: Boolean(currentCreds.uri && currentCreds.token),
     retry: false,
     cacheTime: 0,
   });
 
   useEffect(() => {
-    // We have to use a useEffect to load credentials from local storage otherwise we hit a hydration error
-    // https://nextjs.org/docs/messages/react-hydration-error
-    setCreds(getSkylarkCredsFromLocalStorage());
-  }, []);
+    // Reset if storage changes in another tab
 
-  useEffect(() => {
     const refresh = () => {
       refetch();
-      setCreds(getSkylarkCredsFromLocalStorage());
+      setOverrideCreds(null);
     };
+
     window.addEventListener("storage", refresh);
     return () => {
       window.removeEventListener("storage", refresh);
@@ -123,6 +81,6 @@ export const useConnectedToSkylark = () => {
     invalidUri,
     invalidToken,
     currentCreds,
-    setCreds,
+    setCreds: setOverrideCreds,
   };
 };

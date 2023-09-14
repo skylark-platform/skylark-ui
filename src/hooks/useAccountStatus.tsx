@@ -1,18 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import request from "graphql-request";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 
-import { LOCAL_STORAGE } from "src/constants/localStorage";
-import {
-  REQUEST_HEADERS,
-  SAAS_API_ENDPOINT,
-  SAAS_API_KEY,
-} from "src/constants/skylark";
 import { QueryKeys } from "src/enums/graphql";
-import { GQLSkylarkObjectTypesResponse } from "src/interfaces/graphql/introspection";
 import {
-  GQLSkylarkActivationStatusResponse,
-  GQLSkylarkBackgroundTask,
   GQLSkylarkErrorResponse,
   GQLSkylarkStatusResponse,
 } from "src/interfaces/skylark";

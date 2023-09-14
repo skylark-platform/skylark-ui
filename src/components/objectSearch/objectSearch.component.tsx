@@ -12,9 +12,9 @@ import { useEffect, useState, useMemo, memo, useCallback } from "react";
 
 import { Spinner } from "src/components/icons";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { useUser } from "src/contexts/useUser";
 import { SearchFilters, useSearch } from "src/hooks/useSearch";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
+import { useUserAccount } from "src/hooks/useUserAccount";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 import {
   hasProperty,
@@ -96,7 +96,8 @@ const handleUpdater = function <T>(updater: Updater<T>, prevValue: T) {
 };
 
 export const ObjectSearch = (props: ObjectSearchProps) => {
-  const { defaultLanguage, isLoading: isUserLoading } = useUser();
+  const { defaultLanguage, isLoading: isUserLoading } = useUserAccount();
+
   const {
     setPanelObject,
     isPanelOpen,

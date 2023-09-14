@@ -9,11 +9,11 @@ import { LOCAL_STORAGE } from "./src/constants/localStorage";
 // Establish API mocking before all tests.
 beforeAll(() => {
   Storage.prototype.getItem = jest.fn().mockImplementation((key) => {
-    if (key === LOCAL_STORAGE.betaAuth.uri) {
-      return "http://localhost:3000";
-    }
-    if (key === LOCAL_STORAGE.betaAuth.token) {
-      return "token";
+    if (key === LOCAL_STORAGE.auth.active) {
+      return JSON.stringify({
+        uri: "http://localhost:3000",
+        token: "token",
+      });
     }
   });
   return server.listen();

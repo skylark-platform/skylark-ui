@@ -51,7 +51,7 @@ export const useAvailabilityDimensionsWithValues = () => {
         return skylarkRequest("query", query as DocumentNode);
       },
       getNextPageParam,
-      enabled: !!dimensionsWithoutValues,
+      enabled: dimensionsWithoutValues && dimensionsWithoutValues.length > 0,
     });
 
   // This if statement ensures that all data is fetched

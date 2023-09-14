@@ -3,6 +3,9 @@ export const LOCAL_STORAGE = {
     uri: "skylark_beta_uri",
     token: "skylark_beta_auth_token",
   },
+  auth: {
+    active: "skylark:auth:active",
+  },
   usedLanguages: "skylark:usedLanguages",
   accountPrefixed: (accountId: string) => {
     const prefix = `skylark:${accountId}:contentLibrary`;

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import {
   FiCheckSquare,
   FiEdit,
@@ -20,10 +20,11 @@ import {
 import { CreateButtons } from "src/components/objectSearch/createButtons";
 import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "src/components/objectSearch/results/columnConfiguration";
 import { ScrollableTabs } from "src/components/tabs/tabs.component";
-import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { useUser } from "src/contexts/useUser";
+import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
+import { useObjectSearchTabs } from "src/hooks/localStorage/useObjectSearchTabs";
 import { SearchFilters } from "src/hooks/useSearch";
+import { useUserAccount } from "src/hooks/useUserAccount";
 import {
   BuiltInSkylarkObjectType,
   SkylarkAvailabilityField,
@@ -43,72 +44,7 @@ type TabbedObjectSearchProps = Omit<
   | "initialColumnState"
   | "onFilterChange"
   | "onColumnStateChange"
->;
-
-const saveTabStateToStorage = (
-  accountId: string,
-  {
-    tabs,
-    activeTabIndex,
-    tabsScrollPosition,
-  }: Partial<{
-    tabs: ObjectSearchTab[];
-    activeTabIndex: number;
-    tabsScrollPosition: number;
-  }>,
-) => {
-  if (tabs !== undefined) {
-    localStorage.setItem(
-      LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary.tabState,
-      JSON.stringify(tabs),
-    );
-  }
-
-  if (activeTabIndex !== undefined) {
-    localStorage.setItem(
-      LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary.activeTabIndex,
-      String(activeTabIndex),
-    );
-  }
-
-  if (tabsScrollPosition !== undefined) {
-    localStorage.setItem(
-      LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary
-        .tabsScrollPosition,
-      String(tabsScrollPosition),
-    );
-  }
-};
-
-const readTabStateFromStorage = (accountId: string) => {
-  const valueFromStorage = localStorage.getItem(
-    LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary.tabState,
-  );
-
-  if (!valueFromStorage) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(valueFromStorage) as ObjectSearchTab[];
-  } catch (err) {
-    return null;
-  }
-};
-
-const readIntFromLocalStorage = (name: string): number => {
-  const valueFromStorage = localStorage.getItem(name);
-
-  if (!valueFromStorage) {
-    return 0;
-  }
-
-  try {
-    return parseInt(valueFromStorage);
-  } catch (err) {
-    return 0;
-  }
-};
+> & { accountId: string };
 
 const generateNewTab = (
   name: string,
@@ -247,91 +183,21 @@ const TabOverview = ({
   );
 };
 
-export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
-  const { accountId, isLoading: isAccountLoading } = useUser();
-
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const [tabs, setTabs] = useState<ObjectSearchTab[] | undefined>(undefined);
-  const [initialTabsScrollPosition, setInitialTabsScrollPosition] = useState(0);
-
-  useEffect(() => {
-    if (accountId) {
-      const tabsFromStorage = readTabStateFromStorage(accountId);
-      const activeIndex = readIntFromLocalStorage(
-        LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary.activeTabIndex,
-      );
-      const tabsScrollPosition = readIntFromLocalStorage(
-        LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary
-          .tabsScrollPosition,
-      );
-
-      setTabs(
-        tabsFromStorage && tabsFromStorage.length > 0
-          ? tabsFromStorage
-          : initialTabs,
-      );
-      setActiveTabIndex(
-        tabsFromStorage && activeIndex && activeIndex < tabsFromStorage.length
-          ? activeIndex
-          : 0,
-      );
-      setInitialTabsScrollPosition(tabsScrollPosition || 0);
-    } else {
-      setTabs(undefined);
-      setActiveTabIndex(0);
-      setInitialTabsScrollPosition(0);
-    }
-  }, [accountId]);
-
-  const activeTab = tabs?.[activeTabIndex];
-
-  const onActiveTabChange = useCallback(
-    (updatedTab: Partial<ObjectSearchTab>) => {
-      const updatedTabs =
-        tabs?.map((tab, index) => {
-          if (index !== activeTabIndex) return tab;
-
-          return {
-            ...tab,
-            ...{
-              ...updatedTab,
-              columnsState: updatedTab.columnsState || tab.columnsState,
-              filters: updatedTab.filters || tab.filters,
-            },
-          };
-        }) || [];
-
-      if (accountId) {
-        saveTabStateToStorage(accountId, { tabs: updatedTabs });
-      }
-      setTabs(updatedTabs);
-    },
-    [accountId, activeTabIndex, tabs],
-  );
-
-  const onActiveTabIndexChange = (newIndex: number) => {
-    if (accountId) {
-      saveTabStateToStorage(accountId, { activeTabIndex: newIndex });
-    }
-    setActiveTabIndex(newIndex);
-  };
-
-  const deleteActiveTab = () => {
-    if (tabs) {
-      const updatedTabs = [...tabs];
-      updatedTabs.splice(activeTabIndex, 1);
-
-      if (updatedTabs.length === 0) {
-        updatedTabs.push(...initialTabs);
-      }
-
-      if (accountId) {
-        saveTabStateToStorage(accountId, { tabs: updatedTabs });
-      }
-      setTabs(updatedTabs);
-      setActiveTabIndex(activeTabIndex > 0 ? activeTabIndex - 1 : 0);
-    }
-  };
+const TabbedObjectSearch = ({
+  accountId,
+  ...props
+}: TabbedObjectSearchProps) => {
+  const {
+    tabs,
+    activeTab,
+    initialTabsScrollPosition,
+    setTabs,
+    modifyActiveTab,
+    setActiveTabIndex,
+    deleteActiveTab,
+    changeActiveTabIndex,
+    saveScrollPosition,
+  } = useObjectSearchTabs(accountId, initialTabs);
 
   const beforeSeparatorClassname =
     "before:absolute before:left-0 before:h-6 before:w-px before:bg-manatee-200 before:content-['']";
@@ -354,10 +220,9 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
                     id: tab.id,
                   }))}
                   selectedTab={activeTab?.id || ""}
-                  onChange={({ index }) => onActiveTabIndexChange(index)}
+                  onChange={({ index }) => changeActiveTabIndex(index)}
                   onScroll={({ scrollLeft: tabsScrollPosition }) =>
-                    accountId &&
-                    saveTabStateToStorage(accountId, { tabsScrollPosition })
+                    saveScrollPosition(tabsScrollPosition)
                   }
                 />
                 <button
@@ -370,9 +235,11 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
                       const newTab = generateNewTab(
                         `View ${existingTabs ? existingTabs.length + 1 : 1}`,
                       );
-                      return existingTabs
+                      const updatedTabs = existingTabs
                         ? [...existingTabs, newTab]
                         : [newTab];
+
+                      return updatedTabs;
                     });
                     setActiveTabIndex(tabs.length);
                   }}
@@ -401,24 +268,43 @@ export const TabbedObjectSearch = (props: TabbedObjectSearchProps) => {
             <TabOverview
               tab={activeTab || null}
               className="ml-2 md:ml-12 lg:ml-16"
-              onTabRename={(name) => onActiveTabChange({ name })}
+              onTabRename={(name) => modifyActiveTab({ name })}
               onTabDelete={deleteActiveTab}
             />
           </div>
           <div className="relative flex w-full grow overflow-hidden pl-2 pt-1 md:pl-6 md:pt-2 lg:pl-10">
             <MemoizedObjectSearch
-              key={activeTabIndex}
+              key={`${accountId}-${activeTab?.id || -1}`}
               {...props}
               initialFilters={activeTab?.filters}
               initialColumnState={activeTab?.columnsState}
               onStateChange={({ filters, columns: columnsState }) =>
-                onActiveTabChange({ filters, columnsState })
+                modifyActiveTab({ filters, columnsState })
               }
             />
           </div>
         </div>
       )}
-      {!tabs && !accountId && !isAccountLoading && (
+    </>
+  );
+};
+
+export const TabbedObjectSearchWithAccount = (
+  props: Omit<TabbedObjectSearchProps, "accountId">,
+) => {
+  const [creds] = useSkylarkCreds();
+  const { accountId, isLoading: isAccountLoading } = useUserAccount();
+
+  return (
+    <>
+      {accountId && !isAccountLoading && (
+        <TabbedObjectSearch
+          key={`${creds?.uri}-${accountId}`}
+          accountId={accountId}
+          {...props}
+        />
+      )}
+      {!accountId && !isAccountLoading && (
         <div className="flex h-full w-full flex-col items-center justify-center gap-4 text-base">
           <p className="text-3xl font-semibold">Something went wrong...</p>
           <p>We are having trouble accessing your Skylark Account ID.</p>
