@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { useReadLocalStorage } from "usehooks-ts";
+import { useIsClient, useReadLocalStorage } from "usehooks-ts";
 
 import { DEFAULT_QUERY } from "src/components/graphiqlEditor/graphiqlEditor.component";
 import { Spinner } from "src/components/icons";
@@ -25,6 +25,7 @@ const DynamicGraphiQLEditor = dynamic(
 export default function GraphQLQueryEditor() {
   const { isConnected } = useConnectedToSkylark();
   const [defaultQuery, setDefaultQuery] = useState(DEFAULT_QUERY);
+  const isClient = useIsClient();
 
   const [creds] = useSkylarkCreds();
 
@@ -56,7 +57,7 @@ export default function GraphQLQueryEditor() {
 
   return (
     <div className="pt-nav h-full w-full">
-      {isConnected && creds?.uri && creds.token && (
+      {isClient && isConnected && creds?.uri && creds.token && (
         <DynamicGraphiQLEditor
           uri={creds.uri}
           token={creds.token}
