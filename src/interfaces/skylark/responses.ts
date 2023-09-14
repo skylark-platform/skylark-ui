@@ -104,7 +104,7 @@ export interface GQLSkylarkGetObjectRelationshipsResponse {
 
 export interface GQLSkylarkGetObjectContentResponse {
   getObjectContent: {
-    content: SkylarkGraphQLObjectContent;
+    content: SkylarkGraphQLObjectContent | null;
   };
 }
 

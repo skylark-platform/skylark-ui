@@ -4,19 +4,17 @@ import clsx from "clsx";
 import { usePlausible } from "next-plausible";
 import React, { useEffect, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { useEffectOnce, useLocalStorage } from "usehooks-ts";
 
 import { Button } from "src/components/button";
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 import { FiX } from "src/components/icons";
 import { TextInput } from "src/components/inputs/textInput";
-import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { QueryKeys } from "src/enums/graphql";
+import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import {
   SkylarkCreds,
   useConnectedToSkylark,
 } from "src/hooks/useConnectedToSkylark";
-import { useCredsFromLocalStorage } from "src/hooks/useCredsFromLocalStorage";
 import { useUserAccount } from "src/hooks/useUserAccount";
 
 interface AddAuthTokenModalProps {
@@ -34,9 +32,9 @@ export const AddAuthTokenModal = ({
   const { isConnected, isLoading, invalidUri, invalidToken, setCreds } =
     useConnectedToSkylark();
 
-  const { account } = useUserAccount();
+  const { accountId } = useUserAccount();
 
-  const [credsFromLocalStorage, saveCreds] = useCredsFromLocalStorage();
+  const [credsFromLocalStorage, saveCreds] = useSkylarkCreds();
 
   const [{ uri: inputUri, token: inputToken }, setInputCreds] =
     useState<SkylarkCreds>({ uri: "", token: "" });
@@ -53,10 +51,7 @@ export const AddAuthTokenModal = ({
     }
   }, 750);
 
-  if (
-    (!isOpen && !isLoading && !isConnected) ||
-    (!isOpen && (!debouncedUri || !debouncedToken))
-  ) {
+  if (!isOpen && !isLoading && !isConnected) {
     setIsOpen(true);
   }
 
@@ -80,14 +75,13 @@ export const AddAuthTokenModal = ({
         uri: debouncedUri,
         token: debouncedToken,
       });
+      setCreds(null);
 
       queryClient.clear();
+      await queryClient.invalidateQueries();
       await queryClient.refetchQueries({
-        queryKey: [QueryKeys.Schema],
-        type: "active",
-      });
-      await queryClient.refetchQueries({
-        queryKey: [QueryKeys.AccountStatus],
+        queryKey: [QueryKeys.Account],
+        type: "all",
       });
 
       setIsOpen(false);
@@ -128,15 +122,15 @@ export const AddAuthTokenModal = ({
             Enter your GraphQL URI and API Key below to connect to your Skylark
             account.
           </Dialog.Description>
-          {account?.accountId && (
+          {accountId && (
             <div className="mt-2 flex items-center">
               <p>
                 Currently connected to:{" "}
                 <code className="rounded-sm bg-manatee-200 p-1">
-                  {account?.accountId}
+                  {accountId}
                 </code>
               </p>
-              <CopyToClipboard value={account?.accountId} />
+              <CopyToClipboard value={accountId} />
             </div>
           )}
           <div className="my-4 flex flex-col space-y-2 md:my-10">
@@ -172,7 +166,9 @@ export const AddAuthTokenModal = ({
                 requestLoading && "border-warning",
                 !requestLoading &&
                   debouncedUri &&
-                  (invalidToken ? "border-error" : "border-success"),
+                  (invalidToken || debouncedToken === ""
+                    ? "border-error"
+                    : "border-success"),
               )}
               withCopy
             />

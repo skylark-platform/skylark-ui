@@ -10,6 +10,8 @@ import { QueryKeys } from "src/enums/graphql";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { SKYLARK_SCHEMA_INTROSPECTION_QUERY } from "src/lib/graphql/skylark/queries";
 
+import { useSkylarkCreds } from "./localStorage/useCreds";
+
 export const selectSchema = (data: IntrospectionQuery) => data.__schema;
 
 export const useSkylarkSchemaIntrospection = <
@@ -18,8 +20,15 @@ export const useSkylarkSchemaIntrospection = <
 >(
   select?: (data: IntrospectionQuery) => TData,
 ) => {
+  const [creds] = useSkylarkCreds();
+
   const { data, isError } = useQuery<IntrospectionQuery, Error, TData>({
-    queryKey: [QueryKeys.Schema, SKYLARK_SCHEMA_INTROSPECTION_QUERY],
+    // refetch when creds.uri changes
+    queryKey: [
+      QueryKeys.Schema,
+      SKYLARK_SCHEMA_INTROSPECTION_QUERY,
+      creds?.uri,
+    ],
     queryFn: async () =>
       skylarkRequest(
         "query",

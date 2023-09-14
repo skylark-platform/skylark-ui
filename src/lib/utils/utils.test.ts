@@ -5,12 +5,14 @@ import {
   addCloudinaryOnTheFlyImageTransformation,
   createAccountIdentifier,
   formatObjectField,
+  getJSONFromLocalStorage,
   getObjectDisplayName,
   getPrimaryKeyField,
   hasProperty,
   isObject,
   isObjectsDeepEqual,
   pause,
+  readIntFromLocalStorage,
 } from "./utils";
 
 describe("hasProperty", () => {
@@ -255,5 +257,54 @@ describe("addCloudinaryOnTheFlyImageTransformation", () => {
     expect(got).toEqual(
       "https://res.cloudinary.com/test/image/fetch/h_40,w_20,c_fill/https://skylark.com",
     );
+  });
+});
+
+describe("getJSONFromLocalStorage", () => {
+  test("parses JSON from LocalStorage", () => {
+    Storage.prototype.getItem = jest
+      .fn()
+      .mockImplementation(() => '{"key": "value"}');
+
+    const got = getJSONFromLocalStorage("key");
+    console.log(got);
+    expect(got).toStrictEqual({ key: "value" });
+  });
+
+  test("returns null when the value cannot be parsed", () => {
+    Storage.prototype.getItem = jest.fn().mockImplementation(() => "string");
+
+    const got = getJSONFromLocalStorage("key");
+    expect(got).toBe(null);
+  });
+
+  test("returns null when the key does not exist", () => {
+    Storage.prototype.getItem = jest.fn().mockImplementation(() => null);
+
+    const got = getJSONFromLocalStorage("key");
+    expect(got).toBe(null);
+  });
+});
+
+describe("readIntFromLocalStorage", () => {
+  test("reads an int from LocalStorage", () => {
+    Storage.prototype.getItem = jest.fn().mockImplementation(() => "6");
+
+    const got = readIntFromLocalStorage("key");
+    expect(got).toBe(6);
+  });
+
+  test("returns 0 when the value cannot be converted to an int", () => {
+    Storage.prototype.getItem = jest.fn().mockImplementation(() => "string");
+
+    const got = readIntFromLocalStorage("key");
+    expect(got).toBe(0);
+  });
+
+  test("returns 0 when the key does not exist", () => {
+    Storage.prototype.getItem = jest.fn().mockImplementation(() => null);
+
+    const got = readIntFromLocalStorage("key");
+    expect(got).toBe(0);
   });
 });

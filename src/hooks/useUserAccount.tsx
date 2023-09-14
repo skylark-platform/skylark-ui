@@ -12,22 +12,27 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { GET_USER_AND_ACCOUNT } from "src/lib/graphql/skylark/queries";
 
-const select = (
-  data: GQLSkylarkUserAndAccountResponse,
-): { account: SkylarkAccount; user: SkylarkUser } => ({
-  account: {
-    accountId: data?.getAccount.account_id,
-    skylarkVersion: data?.getAccount.skylark_version,
-    defaultLanguage: data?.getAccount.config?.default_language,
-  },
-  user: data.getUser,
+type UseUserAccount = {
+  accountId?: SkylarkAccount["accountId"];
+  skylarkVersion?: SkylarkAccount["skylarkVersion"];
+  defaultLanguage?: SkylarkAccount["defaultLanguage"];
+  permissions?: SkylarkUser["permissions"];
+  role?: SkylarkUser["role"];
+};
+
+const select = (data: GQLSkylarkUserAndAccountResponse): UseUserAccount => ({
+  accountId: data?.getAccount.account_id || data.getUser.account,
+  skylarkVersion: data?.getAccount.skylark_version,
+  defaultLanguage: data?.getAccount.config?.default_language,
+  permissions: data.getUser.permissions,
+  role: data.getUser.role,
 });
 
 export const useUserAccount = () => {
   const { data, isLoading } = useQuery<
     GQLSkylarkUserAndAccountResponse,
     GQLSkylarkErrorResponse<GQLSkylarkUserAndAccountResponse>,
-    { account: SkylarkAccount; user: SkylarkUser }
+    UseUserAccount
   >({
     queryKey: [QueryKeys.Account, GET_USER_AND_ACCOUNT],
     queryFn: async () => skylarkRequest("query", GET_USER_AND_ACCOUNT),
@@ -35,8 +40,7 @@ export const useUserAccount = () => {
   });
 
   return {
-    account: data?.account,
-    user: data?.user,
+    ...data,
     isLoading,
   };
 };
