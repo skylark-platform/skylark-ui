@@ -822,6 +822,7 @@ describe("parseMetadataForGraphQLRequest", () => {
       title: null,
       date: null,
       int: null,
+      external_id: null,
     });
   });
 
