@@ -472,11 +472,6 @@ export const parseMetadataForGraphQLRequest = (
         return undefined;
       }
 
-      // Can make an External ID blank https://skylarkplatform.atlassian.net/browse/SL-2620
-      if (key === SkylarkSystemField.ExternalID && !value) {
-        return undefined;
-      }
-
       const input = inputFields.find((createInput) => createInput.name === key);
       if (!input) {
         return undefined;
