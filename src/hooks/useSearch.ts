@@ -33,7 +33,7 @@ export interface SearchFilters {
   };
 }
 
-export const SEARCH_PAGE_SIZE = 25;
+export const SEARCH_PAGE_SIZE = 100;
 
 export const useSearch = ({
   query: queryString,
