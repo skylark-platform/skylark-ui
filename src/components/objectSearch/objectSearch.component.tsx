@@ -341,7 +341,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         <div
           className={clsx(
             "flex w-full flex-col items-center justify-start space-x-0.5 md:space-x-1",
-            "md:max-w-[50vw] lg:max-w-[45vw] xl:max-w-[40vw]",
+            "md:max-w-full lg:max-w-[850px]",
           )}
         >
           <Search

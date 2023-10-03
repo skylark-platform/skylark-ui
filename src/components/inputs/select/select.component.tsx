@@ -130,8 +130,9 @@ export const SelectOptionsContainer = forwardRef(
       ref={ref}
       data-testid="select-options"
       className={clsx(
-        "absolute z-[60] mt-1 max-h-48 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
+        "absolute z-[60] mt-1 max-h-48 overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
         className,
+        !className?.includes(" w-") && !className?.startsWith("w-") && "w-full",
       )}
     >
       {children}
