@@ -15,7 +15,6 @@ import {
   ParsedSkylarkObject,
   ParsedSkylarkObjectAvailability,
   ParsedSkylarkObjectConfig,
-  ParsedSkylarkObjectImageRelationship,
 } from "src/interfaces/skylark";
 import { formatReadableDateTime } from "src/lib/skylark/availability";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
@@ -267,8 +266,7 @@ const imagesColumn = columnHelper.accessor(OBJECT_LIST_TABLE.columnIds.images, {
   size: 100,
   minSize: 80,
   cell: (props) => {
-    const imageRelationships =
-      props.getValue<ParsedSkylarkObjectImageRelationship[]>();
+    const imageRelationships = props.getValue<ParsedSkylarkObject["images"]>();
     const imageObj = props.row.original as ParsedSkylarkObject;
 
     const cloudinaryConfig = { height: 50 };
@@ -295,9 +293,10 @@ const imagesColumn = columnHelper.accessor(OBJECT_LIST_TABLE.columnIds.images, {
       );
     }
 
-    const allImages = imageRelationships
-      .flatMap(({ objects }) => objects)
-      .filter((obj) => obj);
+    const allImages =
+      imageRelationships
+        ?.flatMap(({ objects }) => objects)
+        .filter((obj) => obj) || [];
 
     if (allImages.length === 0) {
       return "";

@@ -12,7 +12,11 @@ import { useEffect, useState, useMemo, memo, useCallback } from "react";
 
 import { Spinner } from "src/components/icons";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { SearchFilters, useSearch } from "src/hooks/useSearch";
+import { SearchFilters } from "src/hooks/useSearch";
+import {
+  SearchType,
+  useSearchWithLookupType,
+} from "src/hooks/useSearchWithLookupType";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import { useUserAccount } from "src/hooks/useUserAccount";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
@@ -45,6 +49,7 @@ export interface ObjectSearchProps {
   withObjectSelect?: boolean;
   isPanelOpen?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
+  initialSearchType?: SearchType;
   initialFilters?: Partial<SearchFilters>;
   initialColumnState?: Partial<ObjectSearchInitialColumnsState>;
   hideSearchFilters?: boolean;
@@ -54,6 +59,7 @@ export interface ObjectSearchProps {
   onStateChange?: (s: {
     filters?: SearchFilters;
     columns?: ObjectSearchInitialColumnsState;
+    searchType?: SearchType;
   }) => void;
 }
 
@@ -95,12 +101,38 @@ const handleUpdater = function <T>(updater: Updater<T>, prevValue: T) {
   return updater instanceof Function ? updater(prevValue) : updater;
 };
 
+const getSearchResultsText = ({
+  searchType,
+  isSearching,
+  totalHits,
+  searchQuery,
+}: {
+  searchType: SearchType;
+  totalHits?: number;
+  isSearching: boolean;
+  searchQuery: string;
+}) => {
+  if (isSearching) {
+    return "Loading...";
+  }
+
+  if (searchType === SearchType.UIDExtIDLookup) {
+    if (!searchQuery) {
+      return "Enter a lookup value";
+    }
+    return totalHits ? "Exact match found" : "No UID or External ID match";
+  }
+
+  return `${totalHits || 0} results`;
+};
+
 export const ObjectSearch = (props: ObjectSearchProps) => {
   const { defaultLanguage, isLoading: isUserLoading } = useUserAccount();
 
   const {
     setPanelObject,
     isPanelOpen,
+    initialSearchType,
     initialFilters,
     initialColumnState,
     onObjectCheckedChanged,
@@ -111,6 +143,10 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   const withPanel = typeof setPanelObject !== "undefined";
 
   const { objectTypes } = useSkylarkObjectTypes(true);
+
+  const [searchType, setSearchType] = useState<SearchType>(
+    initialSearchType || SearchType.Search,
+  );
 
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     query: initialFilters?.query || "",
@@ -128,22 +164,26 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     isLoading,
     totalHits,
     properties,
-    query: graphqlSearchQuery,
-    variables: graphqlSearchQueryVariables,
-    headers: graphqlSearchQueryHeaders,
+    // query: graphqlSearchQuery,
+    // variables: graphqlSearchQueryVariables,
+    // headers: graphqlSearchQueryHeaders,
+    graphqlSearchQuery,
     isRefetching: searchRefetching,
     searchHash,
     refetch,
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-  } = useSearch({
-    ...searchFilters,
-    language:
-      searchFilters.language === undefined
-        ? defaultLanguage
-        : searchFilters.language,
-    objectTypes: searchFilters.objectTypes || objectTypes || null,
+  } = useSearchWithLookupType({
+    type: searchType,
+    filters: {
+      ...searchFilters,
+      language:
+        searchFilters.language === undefined
+          ? defaultLanguage
+          : searchFilters.language,
+      objectTypes: searchFilters.objectTypes || objectTypes || null,
+    },
   });
 
   useEffect(() => {
@@ -213,9 +253,11 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     ({
       filters,
       visibleColumns: updatedVisibleColumns,
+      searchType,
     }: Partial<{
       filters: SearchFilters;
       visibleColumns: VisibilityState;
+      searchType: SearchType;
     }>) => {
       const visibleColumns =
         updatedVisibleColumns &&
@@ -233,7 +275,13 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
           columnVisibility: updatedVisibleColumns,
         }));
       }
+
+      if (searchType) {
+        setSearchType(searchType);
+      }
+
       onStateChange?.({
+        searchType,
         filters,
         columns: visibleColumns && {
           order: tableState.columnOrder,
@@ -345,16 +393,13 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
           )}
         >
           <Search
-            graphqlQuery={{
-              query: graphqlSearchQuery,
-              variables: graphqlSearchQueryVariables,
-              headers: graphqlSearchQueryHeaders,
-            }}
+            graphqlQuery={graphqlSearchQuery}
             isSearching={isSearching || searchRefetching}
             filters={{
               ...searchFilters,
               objectTypes: searchFilters.objectTypes || objectTypes || null,
             }}
+            searchType={searchType}
             onRefresh={refetch}
             columns={parsedTableColumns}
             columnIds={sortedHeaders}
@@ -364,7 +409,12 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
           />
           <div className="mt-2 flex w-full justify-start pl-3 md:pl-7">
             <p className="text-xs font-medium text-manatee-400">
-              {isSearching ? "Loading..." : `${totalHits || 0} results`}
+              {getSearchResultsText({
+                searchQuery: searchFilters.query,
+                searchType,
+                isSearching,
+                totalHits,
+              })}
             </p>
           </div>
         </div>

@@ -1,8 +1,9 @@
 import clsx from "clsx";
-import { useState } from "react";
+import { Dispatch, Fragment, SetStateAction, useState } from "react";
 import {
   FiCheckSquare,
   FiEdit,
+  FiEdit3,
   FiPlus,
   FiTrash2,
   FiXSquare,
@@ -11,6 +12,10 @@ import { v4 as uuidv4 } from "uuid";
 
 import { AvailabilitySummary } from "src/components/availability";
 import { Button } from "src/components/button";
+import {
+  DropdownMenu,
+  DropdownMenuButton,
+} from "src/components/dropdown/dropdown.component";
 import { TextInput } from "src/components/inputs/textInput";
 import {
   MemoizedObjectSearch,
@@ -22,21 +27,18 @@ import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "src/components/objectSea
 import { ScrollableTabs } from "src/components/tabs/tabs.component";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
-import { useObjectSearchTabs } from "src/hooks/localStorage/useObjectSearchTabs";
+import {
+  ObjectSearchTab,
+  useObjectSearchTabs,
+} from "src/hooks/localStorage/useObjectSearchTabs";
 import { SearchFilters } from "src/hooks/useSearch";
+import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { useUserAccount } from "src/hooks/useUserAccount";
 import {
   BuiltInSkylarkObjectType,
   SkylarkAvailabilityField,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-
-export interface ObjectSearchTab {
-  id: string;
-  name?: string;
-  filters: SearchFilters;
-  columnsState?: ObjectSearchInitialColumnsState;
-}
 
 type TabbedObjectSearchProps = Omit<
   ObjectSearchProps,
@@ -54,6 +56,7 @@ const generateNewTab = (
 ): ObjectSearchTab => ({
   id: id || uuidv4(),
   name,
+  searchType: SearchType.Search,
   filters: {
     query: "",
     objectTypes: null,
@@ -176,10 +179,83 @@ const TabOverview = ({
               </>
             )}
           </div>
-          <AvailabilitySummary {...tab.filters} />
+          <AvailabilitySummary
+            {...tab.filters}
+            searchType={tab.searchType || SearchType.Search}
+          />
         </>
       )}
     </div>
+  );
+};
+
+const NewTabButton = ({
+  tabs,
+  setTabs,
+  setActiveTabIndex,
+}: {
+  tabs: ObjectSearchTab[];
+  setTabs: Dispatch<SetStateAction<ObjectSearchTab[] | undefined>>;
+  setActiveTabIndex: Dispatch<SetStateAction<number>>;
+}) => {
+  const beforeSeparatorClassname =
+    "before:absolute before:left-0 before:h-6 before:w-px before:bg-manatee-200 before:content-['']";
+
+  const addTab = () => {
+    setTabs((existingTabs) => {
+      const newTab = generateNewTab(
+        `View ${existingTabs ? existingTabs.length + 1 : 1}`,
+      );
+      const updatedTabs = existingTabs ? [...existingTabs, newTab] : [newTab];
+
+      return updatedTabs;
+    });
+    setActiveTabIndex(tabs.length);
+  };
+
+  const createOptions = [
+    {
+      id: "create",
+      text: "Create Object",
+      Icon: <FiEdit3 className="text-lg" />,
+      // onClick: () => setCreateObjectModalOpen(true),
+    },
+    {
+      id: "import-csv",
+      text: "Import (CSV)",
+      href: "import/csv",
+      // Icon: <FiUpload className="text-lg" />,
+    },
+  ];
+
+  return (
+    // <button
+    //   className={clsx(
+    //     "relative flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black md:pb-3 md:pt-2",
+    //     beforeSeparatorClassname,
+    //   )}
+    //   onClick={addTab}
+    //   aria-label="add tab"
+    // >
+    //   <FiPlus className="h-4 w-4" />
+    // </button>
+    <DropdownMenu
+      // options={[{ id: "new", text: "Episode", onClick: addTab }]}
+      options={createOptions}
+      align="left"
+      renderInPortal
+    >
+      <DropdownMenuButton
+        className={clsx(
+          "relative flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black md:pb-3 md:pt-2",
+          beforeSeparatorClassname,
+        )}
+        // onClick={addTab}
+        aria-label="add tab"
+      >
+        <FiPlus className="h-4 w-4" />
+      </DropdownMenuButton>
+    </DropdownMenu>
   );
 };
 
@@ -198,9 +274,6 @@ const TabbedObjectSearch = ({
     changeActiveTabIndex,
     saveScrollPosition,
   } = useObjectSearchTabs(accountId, initialTabs);
-
-  const beforeSeparatorClassname =
-    "before:absolute before:left-0 before:h-6 before:w-px before:bg-manatee-200 before:content-['']";
 
   return (
     <>
@@ -225,28 +298,11 @@ const TabbedObjectSearch = ({
                     saveScrollPosition(tabsScrollPosition)
                   }
                 />
-                <button
-                  className={clsx(
-                    "relative flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 pb-3 pt-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black",
-                    beforeSeparatorClassname,
-                  )}
-                  onClick={() => {
-                    setTabs((existingTabs) => {
-                      const newTab = generateNewTab(
-                        `View ${existingTabs ? existingTabs.length + 1 : 1}`,
-                      );
-                      const updatedTabs = existingTabs
-                        ? [...existingTabs, newTab]
-                        : [newTab];
-
-                      return updatedTabs;
-                    });
-                    setActiveTabIndex(tabs.length);
-                  }}
-                  aria-label="add tab"
-                >
-                  <FiPlus className="h-4 w-4" />
-                </button>
+                <NewTabButton
+                  setActiveTabIndex={setActiveTabIndex}
+                  tabs={tabs}
+                  setTabs={setTabs}
+                />
               </div>
               <CreateButtons
                 className={clsx("mb-1 justify-end pr-1 md:pr-0")}
@@ -276,10 +332,11 @@ const TabbedObjectSearch = ({
             <MemoizedObjectSearch
               key={`${accountId}-${activeTab?.id || -1}`}
               {...props}
+              initialSearchType={activeTab?.searchType || SearchType.Search}
               initialFilters={activeTab?.filters}
               initialColumnState={activeTab?.columnsState}
-              onStateChange={({ filters, columns: columnsState }) =>
-                modifyActiveTab({ filters, columnsState })
+              onStateChange={({ columns: columnsState, ...state }) =>
+                modifyActiveTab({ ...state, columnsState })
               }
             />
           </div>

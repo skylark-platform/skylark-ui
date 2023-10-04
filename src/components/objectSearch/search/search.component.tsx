@@ -8,6 +8,7 @@ import { AvailabilityPicker } from "src/components/inputs/availabilityPicker/ava
 import { LanguageSelect } from "src/components/inputs/select";
 import { SearchFilter } from "src/components/objectSearch/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
+import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
@@ -20,6 +21,7 @@ interface SearchBarProps {
   visibleColumns: VisibilityState;
   className?: string;
   isSearching: boolean;
+  searchType: SearchType;
   graphqlQuery: {
     query: DocumentNode | null;
     variables: object;
@@ -30,6 +32,7 @@ interface SearchBarProps {
     o: Partial<{
       filters: SearchFilters;
       visibleColumns: VisibilityState;
+      searchType: SearchType;
     }>,
   ) => void;
   onRefresh: () => void;
@@ -42,6 +45,7 @@ export const Search = ({
   visibleColumns,
   graphqlQuery,
   isSearching,
+  searchType,
   filters,
   hideFilters,
   onChange,
@@ -74,17 +78,23 @@ export const Search = ({
     };
   }, [setFilterOpen]);
 
-  const onFilterSave = (
-    updatedFilters: Partial<SearchFilters>,
-    updatedColumnVisibility?: VisibilityState,
-  ) => {
+  const onFilterSave = ({
+    filters: updatedFilters,
+    columnVisibility: visibleColumns,
+    searchType,
+  }: {
+    filters: Partial<SearchFilters>;
+    columnVisibility?: VisibilityState;
+    searchType: SearchType;
+  }) => {
     setFilterOpen(false);
     onChange({
       filters: {
         ...filters,
         ...updatedFilters,
       },
-      visibleColumns: updatedColumnVisibility,
+      visibleColumns,
+      searchType,
     });
   };
 
@@ -107,6 +117,7 @@ export const Search = ({
           onQueryChange={(query) =>
             onChange({ filters: { ...filters, query } })
           }
+          searchType={searchType}
           searchQuery={filters.query}
           isSearching={isSearching}
           hideFilters={hideFilters}
@@ -125,6 +136,7 @@ export const Search = ({
               className="absolute left-0 top-10 z-50 w-full md:top-14 md:w-auto"
             >
               <SearchFilter
+                searchType={searchType}
                 activeObjectTypes={filters.objectTypes}
                 columns={columnOptions}
                 visibleColumns={Object.keys(visibleColumns).filter(

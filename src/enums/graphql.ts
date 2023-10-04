@@ -6,6 +6,7 @@ export enum QueryKeys {
   Search = "search",
   AvailabilityDimensions = "availabilityDimensions",
   GetObject = "getObject",
+  GetObjectGeneric = "getObjectGeneric",
   GetObjectAvailability = "getObjectAvailability",
   GetObjectRelationships = "getObjectRelationships",
   GetObjectDimensions = "getObjectDimensions",

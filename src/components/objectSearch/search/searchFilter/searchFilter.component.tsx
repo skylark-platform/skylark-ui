@@ -7,11 +7,14 @@ import {
   CheckboxGrid,
   createCheckboxOptions,
 } from "src/components/checkboxGrid/checkboxGrid.component";
+import { RadioGroup } from "src/components/inputs/radioGroup/radioGroup.component";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { SearchFilters } from "src/hooks/useSearch";
+import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { ParsedSkylarkObjectConfig } from "src/interfaces/skylark";
 
 interface SearchFilterProps {
+  searchType: SearchType;
   activeObjectTypes: SearchFilters["objectTypes"];
   objectTypesWithConfig: {
     objectType: string;
@@ -24,10 +27,11 @@ interface SearchFilterProps {
     variables: object;
     headers: HeadersInit;
   };
-  onFilterSave: (
-    filters: Partial<SearchFilters>,
-    columnVisibility: VisibilityState,
-  ) => void;
+  onFilterSave: (f: {
+    filters: Partial<SearchFilters>;
+    columnVisibility: VisibilityState;
+    searchType: SearchType;
+  }) => void;
 }
 
 const convertCheckedColumnsToVisibilityState = (
@@ -44,7 +48,16 @@ const convertCheckedColumnsToVisibilityState = (
       )
     : {};
 
+const searchTypeOptions = [
+  { label: "Search", value: SearchType.Search },
+  {
+    label: "UID & External ID",
+    value: SearchType.UIDExtIDLookup,
+  },
+];
+
 export const SearchFilter = ({
+  searchType: activeSearchType,
   activeObjectTypes,
   objectTypesWithConfig,
   columns,
@@ -52,6 +65,14 @@ export const SearchFilter = ({
   graphqlQuery,
   onFilterSave,
 }: SearchFilterProps) => {
+  const [searchType, updateSearchType] = useState<{
+    label: string;
+    value: SearchType;
+  }>(
+    searchTypeOptions.find(({ value }) => value === activeSearchType) ||
+      searchTypeOptions[0],
+  );
+  console.log({ searchType });
   const [updatedObjectTypes, updateObjectTypes] = useState(
     activeObjectTypes || [],
   );
@@ -59,13 +80,14 @@ export const SearchFilter = ({
     useState<string[]>(visibleColumns);
 
   const makeFiltersActive = () => {
-    onFilterSave(
-      { objectTypes: updatedObjectTypes },
-      convertCheckedColumnsToVisibilityState(
+    onFilterSave({
+      filters: { objectTypes: updatedObjectTypes },
+      columnVisibility: convertCheckedColumnsToVisibilityState(
         updatedVisibleColumns,
         columns.map(({ value }) => value),
       ),
-    );
+      searchType: searchType.value,
+    });
   };
 
   const resetAllFilters = () => {
@@ -114,6 +136,13 @@ export const SearchFilter = ({
         />
       </div>
       <div className="relative flex-grow overflow-scroll border-none p-2 px-4 [&>section]:border-b-2 [&>section]:border-b-manatee-100 [&>section]:pb-3 [&>section]:pt-3 first:[&>section]:pt-0 last:[&>section]:border-none last:[&>section]:pb-0">
+        <RadioGroup
+          label="Lookup type"
+          options={searchTypeOptions}
+          selected={searchType}
+          as="section"
+          onChange={updateSearchType}
+        />
         <CheckboxGrid
           label="Object type"
           withToggleAll

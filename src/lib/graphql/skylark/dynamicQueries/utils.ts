@@ -75,7 +75,7 @@ const getIgnoreAvailabilityVariableAndArg = (shouldAdd: boolean) => {
 };
 
 export const generateVariablesAndArgs = (
-  objectType: SkylarkObjectType | "search",
+  objectType: SkylarkObjectType | "search" | "genericGetObject",
   operationType: "Query" | "Mutation",
   addLanguageVariable = false,
 ): {
@@ -85,7 +85,9 @@ export const generateVariablesAndArgs = (
 } => {
   const language = getLanguageVariableAndArg(addLanguageVariable);
   const ignoreAvailability = getIgnoreAvailabilityVariableAndArg(
-    operationType === "Query" && objectType !== "search",
+    operationType === "Query" &&
+      objectType !== "search" &&
+      objectType !== "genericGetObject",
   );
   if (objectType === BuiltInSkylarkObjectType.Availability) {
     return {

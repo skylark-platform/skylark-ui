@@ -267,7 +267,6 @@ describe("getJSONFromLocalStorage", () => {
       .mockImplementation(() => '{"key": "value"}');
 
     const got = getJSONFromLocalStorage("key");
-    console.log(got);
     expect(got).toStrictEqual({ key: "value" });
   });
 

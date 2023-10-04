@@ -508,7 +508,10 @@ export const ObjectSearchResults = ({
         )}
 
         {formattedSearchData && formattedSearchData.length === 0 && (
-          <p className="absolute left-2 right-5 top-14 text-manatee-600 md:left-8">{`No results containing all your search terms were found.`}</p>
+          <>
+            <p className="absolute left-2 right-5 top-14 text-manatee-600 md:left-8">{`We couldn't find matches for the search term.`}</p>
+            <p className="absolute left-2 right-5 top-20 text-manatee-600 md:left-8">{`Try changing the lookup type or adjusting search filters for better results.`}</p>
+          </>
         )}
       </div>
     </>
