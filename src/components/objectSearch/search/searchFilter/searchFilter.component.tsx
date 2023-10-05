@@ -72,7 +72,6 @@ export const SearchFilter = ({
     searchTypeOptions.find(({ value }) => value === activeSearchType) ||
       searchTypeOptions[0],
   );
-  console.log({ searchType });
   const [updatedObjectTypes, updateObjectTypes] = useState(
     activeObjectTypes || [],
   );

@@ -40,7 +40,6 @@ const select = (data: GQLSkylarkGetObjectResponse) => {
     data.getObject,
   );
   const parsedObject = parseSkylarkObject(normalised);
-  console.log("SELECT RUN");
   return parsedObject;
 };
 
@@ -56,13 +55,12 @@ export const useGetObjectGeneric = ({
 
   const { query } = useMemo(() => {
     const query = createGetObjectGenericQuery(objectMeta, {
-      // typesToRequest: objectTypes || [],
-      typesToRequest: [], // TODO should we ever filter out object types? even if the search tab is filtered down
+      typesToRequest: objectTypes || [],
     });
     return {
       query,
     };
-  }, [objectMeta]);
+  }, [objectMeta, objectTypes]);
 
   const dimensions = convertAvailabilityDimensionsObjectToGQLDimensions(
     availability.dimensions,
@@ -94,8 +92,6 @@ export const useGetObjectGeneric = ({
     enabled: query !== null && (!!uid || !!externalId) && !disabled,
     retry: false,
   });
-
-  console.log("HERE", { data, error });
 
   return {
     isLoading: isLoading && (!!uid || !!externalId),

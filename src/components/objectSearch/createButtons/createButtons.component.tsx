@@ -44,7 +44,7 @@ export const CreateButtons = ({
   return (
     <>
       <div className={clsx("flex flex-row", className)}>
-        <DropdownMenu options={createOptions} align="right">
+        <DropdownMenu options={createOptions} placement="bottom-end">
           <DropdownMenuButton as={Fragment}>
             <Button
               variant="primary"

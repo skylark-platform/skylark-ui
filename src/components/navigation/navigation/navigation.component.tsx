@@ -112,7 +112,7 @@ export const Navigation = () => {
                 Icon: <FiLogOut className="text-xl" />,
               },
             ]}
-            align="right"
+            placement="bottom-end"
           >
             <Menu.Button
               aria-label="User Settings Dropdown"

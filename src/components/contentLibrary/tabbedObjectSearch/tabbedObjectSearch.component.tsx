@@ -2,9 +2,10 @@ import clsx from "clsx";
 import { Dispatch, Fragment, SetStateAction, useState } from "react";
 import {
   FiCheckSquare,
+  FiCrosshair,
   FiEdit,
-  FiEdit3,
   FiPlus,
+  FiSearch,
   FiTrash2,
   FiXSquare,
 } from "react-icons/fi";
@@ -19,7 +20,6 @@ import {
 import { TextInput } from "src/components/inputs/textInput";
 import {
   MemoizedObjectSearch,
-  ObjectSearchInitialColumnsState,
   ObjectSearchProps,
 } from "src/components/objectSearch";
 import { CreateButtons } from "src/components/objectSearch/createButtons";
@@ -50,13 +50,18 @@ type TabbedObjectSearchProps = Omit<
 
 const generateNewTab = (
   name: string,
-  id?: string,
-  filters?: Partial<SearchFilters>,
-  columnsState?: ObjectSearchInitialColumnsState,
+  {
+    id,
+    filters,
+    columnsState,
+    searchType,
+  }: Partial<Omit<ObjectSearchTab, "name" | "filters">> & {
+    filters?: Partial<SearchFilters>;
+  },
 ): ObjectSearchTab => ({
   id: id || uuidv4(),
   name,
-  searchType: SearchType.Search,
+  searchType: searchType || SearchType.Search,
   filters: {
     query: "",
     objectTypes: null,
@@ -70,15 +75,14 @@ const generateNewTab = (
 });
 
 const initialTabs = [
-  generateNewTab("Default View", "DEFAULT_VIEW"),
-  generateNewTab(
-    "Availability",
-    "DEFAULT_VIEW_AVAILABILITY",
-    {
+  generateNewTab("Default View", { id: "DEFAULT_VIEW" }),
+  generateNewTab("Availability", {
+    id: "DEFAULT_VIEW_AVAILABILITY",
+    filters: {
       objectTypes: [BuiltInSkylarkObjectType.Availability],
       language: null,
     },
-    {
+    columnsState: {
       columns: [
         ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
         OBJECT_LIST_TABLE.columnIds.displayField,
@@ -97,7 +101,7 @@ const initialTabs = [
         OBJECT_LIST_TABLE.columnIds.availability,
       ],
     },
-  ),
+  }),
 ];
 
 const TabOverview = ({
@@ -201,48 +205,50 @@ const NewTabButton = ({
   const beforeSeparatorClassname =
     "before:absolute before:left-0 before:h-6 before:w-px before:bg-manatee-200 before:content-['']";
 
-  const addTab = () => {
+  const addTab = (argTab?: Partial<ObjectSearchTab>) => {
     setTabs((existingTabs) => {
+      const tabsNum = existingTabs ? existingTabs.length + 1 : 1;
+
       const newTab = generateNewTab(
-        `View ${existingTabs ? existingTabs.length + 1 : 1}`,
+        argTab?.name?.replace("{tabNum}", `${tabsNum}`) || `View ${tabsNum}`,
+        argTab || {},
       );
+
       const updatedTabs = existingTabs ? [...existingTabs, newTab] : [newTab];
+
+      console.log({ updatedTabs });
 
       return updatedTabs;
     });
     setActiveTabIndex(tabs.length);
   };
 
-  const createOptions = [
+  const newTabOptions = [
     {
-      id: "create",
-      text: "Create Object",
-      Icon: <FiEdit3 className="text-lg" />,
-      // onClick: () => setCreateObjectModalOpen(true),
+      id: "blank-search-tab",
+      text: "Search",
+      Icon: <FiSearch className="text-lg" />,
+      onClick: () =>
+        addTab({
+          name: `Search {tabNum}`,
+        }),
     },
     {
-      id: "import-csv",
-      text: "Import (CSV)",
-      href: "import/csv",
-      // Icon: <FiUpload className="text-lg" />,
+      id: "blank-uid-extid-tab",
+      text: "UID & External ID Lookup",
+      Icon: <FiCrosshair className="text-lg" />,
+      onClick: () =>
+        addTab({
+          name: `Lookup {tabNum}`,
+          searchType: SearchType.UIDExtIDLookup,
+        }),
     },
   ];
 
   return (
-    // <button
-    //   className={clsx(
-    //     "relative flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black md:pb-3 md:pt-2",
-    //     beforeSeparatorClassname,
-    //   )}
-    //   onClick={addTab}
-    //   aria-label="add tab"
-    // >
-    //   <FiPlus className="h-4 w-4" />
-    // </button>
     <DropdownMenu
-      // options={[{ id: "new", text: "Episode", onClick: addTab }]}
-      options={createOptions}
-      align="left"
+      options={newTabOptions}
+      placement="bottom-start"
       renderInPortal
     >
       <DropdownMenuButton
@@ -250,7 +256,6 @@ const NewTabButton = ({
           "relative flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black md:pb-3 md:pt-2",
           beforeSeparatorClassname,
         )}
-        // onClick={addTab}
         aria-label="add tab"
       >
         <FiPlus className="h-4 w-4" />

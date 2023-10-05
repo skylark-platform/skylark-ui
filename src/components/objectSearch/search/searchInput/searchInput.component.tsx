@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useState } from "react";
-import { FiEye, FiRefreshCw, FiSearch, FiSliders } from "react-icons/fi";
+import { FiCrosshair, FiRefreshCw, FiSearch, FiSliders } from "react-icons/fi";
 import { useDebouncedCallback } from "use-debounce";
 
 import { FiX } from "src/components/icons";
@@ -55,7 +55,7 @@ export const SearchInput = ({
           <FiSearch className="ml-2 text-lg md:ml-5 md:text-xl" />
         )}
         {searchType === SearchType.UIDExtIDLookup && (
-          <FiEye className="ml-2 text-lg md:ml-5 md:text-xl" />
+          <FiCrosshair className="ml-2 text-lg md:ml-5 md:text-xl" />
         )}
         <input
           name="search-query-input"

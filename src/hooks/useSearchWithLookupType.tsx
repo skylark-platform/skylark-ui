@@ -93,8 +93,6 @@ const useGetObjectGenericWrapper = ({
       disabled: type !== SearchType.UIDExtIDLookup,
     });
 
-  console.log({ data, filters });
-
   const dataArr = useMemo(() => (data ? [data] : []), [data]);
 
   return {
