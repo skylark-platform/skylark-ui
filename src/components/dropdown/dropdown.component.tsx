@@ -85,7 +85,11 @@ const MenuItems = ({
       <div ref={refs.setReference}>{children}</div>
       {isMounted && (
         <DropdownMenuPortalWrapper usePortal={!!renderInPortal}>
-          <div ref={refs.setFloating} style={{ ...floatingStyles }}>
+          <div
+            ref={refs.setFloating}
+            style={{ ...floatingStyles }}
+            className="z-50"
+          >
             <Menu.Items
               className={clsx(
                 "mx-auto mt-2 w-60 select-none divide-y divide-manatee-100 rounded-sm bg-white text-sm font-bold shadow-lg ring-1 ring-manatee-700 ring-opacity-5 focus:outline-none",

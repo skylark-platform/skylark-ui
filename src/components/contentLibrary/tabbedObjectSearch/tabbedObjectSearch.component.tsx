@@ -302,6 +302,7 @@ const TabbedObjectSearch = ({
                   onScroll={({ scrollLeft: tabsScrollPosition }) =>
                     saveScrollPosition(tabsScrollPosition)
                   }
+                  onDelete={() => deleteActiveTab()}
                 />
                 <NewTabButton
                   setActiveTabIndex={setActiveTabIndex}

@@ -197,7 +197,7 @@ export const PanelHeader = ({
               />
             </>
           )}
-          <DropdownMenu options={objectMenuOptions} align="left">
+          <DropdownMenu options={objectMenuOptions} placement="bottom-end">
             <DropdownMenuButton
               className="flex focus:outline-none focus-visible:ring-2 group-hover:text-black"
               aria-label="Open Panel Menu"

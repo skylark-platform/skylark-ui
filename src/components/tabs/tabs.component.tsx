@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { AnimatePresence, m } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight, FiX } from "react-icons/fi";
 
 type Tab = { id: string; name: string };
 
@@ -11,6 +11,7 @@ interface TabProps {
   onChange: (t: Tab & { index: number }) => void;
   disabled?: boolean;
   className?: string;
+  onDelete?: (t: Tab & { index: number }) => void;
 }
 
 export const Tabs = ({
@@ -19,6 +20,7 @@ export const Tabs = ({
   disabled,
   className,
   onChange,
+  onDelete,
 }: TabProps) => {
   const tabs: Tab[] = useMemo(
     () =>
@@ -37,7 +39,7 @@ export const Tabs = ({
     >
       {tabs.map((tab, index) => {
         return (
-          <li key={`tab-${tab.id}`} className="px-2 md:px-3">
+          <li key={`tab-${tab.id}`} className="relative px-2 md:px-3">
             <button
               disabled={disabled}
               onClick={disabled ? undefined : () => onChange({ ...tab, index })}
@@ -52,6 +54,17 @@ export const Tabs = ({
             >
               {tab.name}
             </button>
+            {onDelete && !disabled && selectedTab === tab.id && (
+              <div className="absolute bottom-1.5 right-0.5 top-0.5 flex w-5/12 justify-end bg-gradient-to-r from-transparent via-white/90 to-white">
+                <button
+                  className="group rounded-full p-1 hover:bg-gray-100/20 hover:shadow-inner"
+                  onClick={() => onDelete({ ...tab, index })}
+                  aria-label="delete active tab"
+                >
+                  <FiX className="text-base font-bold text-gray-600 group-hover:text-gray-800" />
+                </button>
+              </div>
+            )}
           </li>
         );
       })}
