@@ -17,6 +17,7 @@ import {
   AddedSkylarkObjectContentObject,
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
+  AvailabilityStatus,
 } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 
@@ -115,8 +116,10 @@ export const PanelContent = ({
   const { data, isLoading, hasNextPage } = useGetObjectContent(
     objectType,
     uid,
-    { language },
+    { language, fetchAvailability: true },
   );
+
+  console.log({ data });
 
   const objects = inEditMode ? updatedObjects : data;
 
@@ -203,12 +206,16 @@ export const PanelContent = ({
                 <ObjectIdentifierCard
                   object={
                     {
-                      objectType: object.__typename,
+                      objectType: object.__typename as string,
                       uid: object.uid,
                       metadata: object,
                       config,
                       meta,
-                    } as ParsedSkylarkObject
+                      availability: {
+                        status: meta.availabilityStatus,
+                        objects: [],
+                      },
+                    } satisfies ParsedSkylarkObject
                   }
                   onForwardClick={setPanelObject}
                   disableForwardClick={inEditMode}

@@ -39,6 +39,7 @@ const generateQueryFunctionAndKey = ({
   objectType,
   uid,
   variables,
+  fetchAvailability,
 }: {
   objectMeta: SkylarkObjectMeta | null;
   contentObjectsMeta: SkylarkObjectMeta[] | null;
@@ -49,6 +50,7 @@ const generateQueryFunctionAndKey = ({
     nextToken: string;
     uid: string;
   };
+  fetchAvailability?: boolean;
 }): {
   queryFn: QueryFunction<GQLSkylarkGetObjectContentResponse, QueryKey>;
   queryKey: QueryKey;
@@ -58,6 +60,7 @@ const generateQueryFunctionAndKey = ({
     objectMeta,
     contentObjectsMeta,
     !!variables.language,
+    { fetchAvailability },
   );
 
   const queryFn: QueryFunction<
@@ -118,9 +121,15 @@ export const prefetchGetObjectContent = async ({
 export const useGetObjectContent = (
   objectType: SkylarkObjectType,
   uid: string,
-  opts?: GetObjectOptions,
+  opts?: GetObjectOptions & { fetchAvailability?: boolean },
 ) => {
-  const { language }: GetObjectOptions = opts || { language: null };
+  const {
+    language,
+    fetchAvailability,
+  }: GetObjectOptions & { fetchAvailability?: boolean } = opts || {
+    language: null,
+    fetchAvailability: false,
+  };
 
   const { objectOperations: objectMeta } =
     useSkylarkObjectOperations(objectType);
@@ -135,6 +144,7 @@ export const useGetObjectContent = (
     objectType,
     uid,
     variables,
+    fetchAvailability,
   });
 
   const { data, hasNextPage, fetchNextPage, isLoading } = useInfiniteQuery<

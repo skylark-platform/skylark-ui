@@ -10,12 +10,11 @@ import {
   within,
 } from "src/__tests__/utils/test-utils";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { ObjectSearchTab } from "src/hooks/localStorage/useObjectSearchTabs";
+import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
 
-import {
-  ObjectSearchTab,
-  TabbedObjectSearchWithAccount,
-} from "./tabbedObjectSearch.component";
+import { TabbedObjectSearchWithAccount } from "./tabbedObjectSearch.component";
 
 const mockLocalStorage = (initialTabs?: ObjectSearchTab[]) => {
   Storage.prototype.getItem = jest.fn().mockImplementation((param) => {
@@ -206,6 +205,7 @@ test("Adds the initial tabs when all tabs are deleted", async () => {
     {
       id: "mytab",
       name: "mytab",
+      searchType: SearchType.Search,
       filters: {
         query: "GOT",
         objectTypes: ["Episode"],
@@ -239,6 +239,7 @@ test("Loads values from localStorage", async () => {
     {
       id: "123",
       name: "Initial tab 1",
+      searchType: SearchType.Search,
       filters: {
         query: "GOT",
         objectTypes: ["Episode"],
@@ -251,6 +252,7 @@ test("Loads values from localStorage", async () => {
     {
       id: "456",
       name: "Another tab",
+      searchType: SearchType.Search,
       filters: {
         query: "",
         objectTypes: ["Season"],

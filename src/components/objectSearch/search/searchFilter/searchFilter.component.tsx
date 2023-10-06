@@ -95,6 +95,7 @@ export const SearchFilter = ({
         objectTypesWithConfig.map(({ objectType }) => objectType),
       );
     updateVisibleColumns(columns.map(({ value }) => value));
+    updateSearchType(searchTypeOptions[0]);
   };
 
   const objectTypeOptions = useMemo(

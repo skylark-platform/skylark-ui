@@ -436,6 +436,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
             searchData={searchData}
+            isSearching={isSearching}
             tableState={{
               ...tableState,
               columnOrder:

@@ -74,7 +74,7 @@ WithFiltersOpen.args = {
 WithFiltersOpen.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
-  const filtersButton = canvas.getByLabelText("open-search-filters");
+  const filtersButton = canvas.getByLabelText("Open Search Options");
 
   await userEvent.click(filtersButton);
 };

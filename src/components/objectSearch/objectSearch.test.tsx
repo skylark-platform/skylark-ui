@@ -262,7 +262,7 @@ test("opens filters and deselects all object types", async () => {
 
   fireEvent.click(
     screen.getByRole("button", {
-      name: /open-search-filters/i,
+      name: /Open Search Options/i,
     }),
   );
 

@@ -47,6 +47,7 @@ export interface ObjectSearchResultsProps {
   fetchNextPage?: () => void;
   searchData?: ParsedSkylarkObject[];
   hasNextPage?: boolean;
+  isSearching?: boolean;
   isFetchingNextPage?: boolean;
   tableState: TableState;
   checkedObjects?: ParsedSkylarkObject[];
@@ -83,6 +84,7 @@ export const ObjectSearchResults = ({
   searchData,
   withObjectSelect,
   hasNextPage,
+  isSearching,
   fetchNextPage,
   checkedObjects,
   isFetchingNextPage,
@@ -507,12 +509,14 @@ export const ObjectSearchResults = ({
           </div>
         )}
 
-        {formattedSearchData && formattedSearchData.length === 0 && (
-          <>
-            <p className="absolute left-2 right-5 top-14 text-manatee-600 md:left-8">{`We couldn't find matches for the search term.`}</p>
-            <p className="absolute left-2 right-5 top-20 text-manatee-600 md:left-8">{`Try changing the lookup type or adjusting search filters for better results.`}</p>
-          </>
-        )}
+        {!isSearching &&
+          formattedSearchData &&
+          formattedSearchData.length === 0 && (
+            <>
+              <p className="absolute left-2 right-5 top-14 text-manatee-600 md:left-8">{`We couldn't find matches for the search term.`}</p>
+              <p className="absolute left-2 right-5 top-20 text-manatee-600 md:left-8">{`Try changing the lookup type or adjusting search filters for better results.`}</p>
+            </>
+          )}
       </div>
     </>
   );

@@ -99,7 +99,7 @@ export const SearchInput = ({
         <button
           className="flex h-full items-center justify-center space-x-2 rounded-r-full bg-manatee-200 pl-6 pr-7 focus:outline-brand-primary md:pl-9 md:pr-10"
           onClick={toggleFilterOpen}
-          aria-label="open-search-filters"
+          aria-label="Open Search Options"
           type="button"
         >
           <FiSliders className="h-4 w-4" />
