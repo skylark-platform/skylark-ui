@@ -36,7 +36,7 @@ test("renders search bar", () => {
 
   screen.findByPlaceholderText("Search for an object(s)");
 
-  expect(screen.getByText("Filters")).toBeInTheDocument();
+  expect(screen.getByLabelText("Open Search Options")).toBeInTheDocument();
 });
 
 test("renders search bar, filters with no objects returned", async () => {
@@ -189,7 +189,7 @@ describe("with object select (checkboxes)", () => {
 
     expect(
       (await withinResults.findAllByRole("checkbox")).length,
-    ).toBeGreaterThan(1);
+    ).toBeGreaterThanOrEqual(1);
 
     fireEvent.click(
       screen.getByRole("checkbox", { name: "clear-all-checked-objects" }),

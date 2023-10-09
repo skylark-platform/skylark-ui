@@ -61,17 +61,19 @@ test("changes checkboxes and calls onFilterSave when apply is clicked", async ()
 
   fireEvent.click(screen.getByRole("checkbox", { name: "Season" }));
   fireEvent.click(screen.getByRole("checkbox", { name: "slug" }));
+  fireEvent.click(screen.getByText("UID & External ID"));
 
   fireEvent.click(screen.getByText("Apply"));
 
-  expect(onFilterSave).toHaveBeenCalledWith(
-    { objectTypes: ["Brand", "Episode"] },
-    {
+  expect(onFilterSave).toHaveBeenCalledWith({
+    filters: { objectTypes: ["Brand", "Episode"] },
+    columnVisibility: {
       external_id: true,
       slug: false,
       uid: true,
     },
-  );
+    searchType: SearchType.UIDExtIDLookup,
+  });
 });
 
 test("when reset is clicked, all filters are returned to all options checked without saving", async () => {

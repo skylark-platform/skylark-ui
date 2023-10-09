@@ -73,7 +73,10 @@ export const useGetObjectGeneric = ({
     dimensions,
   };
 
-  const headers = generateAvailabilityHeaders(availability);
+  const headers = {
+    ...generateAvailabilityHeaders(availability),
+    "x-force-get": "true",
+  };
 
   const { data, error, isLoading, isError, refetch, isRefetching } = useQuery<
     GQLSkylarkGetObjectResponse,

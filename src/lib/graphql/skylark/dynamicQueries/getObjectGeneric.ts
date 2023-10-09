@@ -44,7 +44,7 @@ export const createGetObjectGenericQuery = (
       __variables: {
         ...variables,
         uid: "String",
-        // externalId: "String",
+        externalId: "String",
         dimensions: "[UserDimension]",
       },
       getObject: {
@@ -53,7 +53,7 @@ export const createGetObjectGenericQuery = (
           ...args,
           dimensions: new VariableType("dimensions"),
           uid: new VariableType("uid"),
-          // external_id: new VariableType("externalId"),
+          external_id: new VariableType("externalId"),
         },
         __typename: true,
         __on: objectsToRequest.map((object) => {

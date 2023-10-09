@@ -162,3 +162,9 @@ export const getObjectContentOfHandlers = [
     return res(ctx.data(GQLSkylarkGetMovieContentOfFixture.data));
   }),
 ];
+
+export const getObjectGenericHandlers = [
+  graphql.query("GET_OBJECT_GENERIC", (_, res, ctx) => {
+    return res(ctx.data(GQLSkylarkGetMovieContentOfFixture.data));
+  }),
+];

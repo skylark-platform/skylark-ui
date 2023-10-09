@@ -191,6 +191,18 @@ export const PanelContent = ({
             const { object, config, meta, position } = item;
             const isNewObject = hasProperty(item, "isNewObject");
 
+            const parsedObject: ParsedSkylarkObject = {
+              objectType: object.__typename as string,
+              uid: object.uid,
+              metadata: object,
+              config,
+              meta,
+              availability: {
+                status: meta.availabilityStatus,
+                objects: [],
+              },
+            };
+
             return (
               <Reorder.Item
                 key={`panel-${uid}-content-item-${object.uid}`}
@@ -204,19 +216,7 @@ export const PanelContent = ({
                 dragListener={inEditMode}
               >
                 <ObjectIdentifierCard
-                  object={
-                    {
-                      objectType: object.__typename as string,
-                      uid: object.uid,
-                      metadata: object,
-                      config,
-                      meta,
-                      availability: {
-                        status: meta.availabilityStatus,
-                        objects: [],
-                      },
-                    } satisfies ParsedSkylarkObject
-                  }
+                  object={parsedObject}
                   onForwardClick={setPanelObject}
                   disableForwardClick={inEditMode}
                   disableDeleteClick={!inEditMode}
