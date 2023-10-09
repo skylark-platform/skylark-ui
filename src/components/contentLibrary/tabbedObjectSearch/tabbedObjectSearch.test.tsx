@@ -162,27 +162,62 @@ test("Rename active tab (cancel)", async () => {
   });
 });
 
-test("Add new view", async () => {
-  mockLocalStorage();
+describe("Adding new tabs", () => {
+  test("Add new blank search view", async () => {
+    mockLocalStorage();
 
-  render(<TabbedObjectSearchWithAccount />);
+    render(<TabbedObjectSearchWithAccount />);
 
-  await waitFor(() => {
-    expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
+    await waitFor(() => {
+      expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
+    });
+
+    const tabsContainer = screen.getByTestId("object-search-tabs");
+    expect(tabsContainer.children.length).toBe(2);
+
+    fireEvent.click(screen.getByLabelText("add tab"));
+
+    fireEvent.click(screen.getByText("Search"));
+
+    await waitFor(() => {
+      expect(screen.queryAllByText("Default View")).toHaveLength(1);
+    });
+
+    expect(screen.queryAllByText("Search 3")).toHaveLength(2);
   });
 
-  const tabsContainer = screen.getByTestId("object-search-tabs");
-  expect(tabsContainer.children.length).toBe(2);
+  test("Add new Object Type specific view", async () => {
+    mockLocalStorage();
 
-  fireEvent.click(screen.getByLabelText("add tab"));
+    render(<TabbedObjectSearchWithAccount />);
 
-  fireEvent.click(screen.getByText("Search"));
+    await waitFor(() => {
+      expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
+    });
 
-  await waitFor(() => {
-    expect(screen.queryAllByText("Default View")).toHaveLength(1);
+    const tabsContainer = screen.getByTestId("object-search-tabs");
+    expect(tabsContainer.children.length).toBe(2);
+
+    fireEvent.click(screen.getByLabelText("add tab"));
+
+    const withinObjectTypeSearchOptions = within(
+      screen.getByTestId("dropdown-section-search-object-type-options"),
+    );
+
+    await waitFor(() => {
+      expect(
+        withinObjectTypeSearchOptions.queryAllByText("Episode"),
+      ).toHaveLength(1);
+    });
+
+    fireEvent.click(withinObjectTypeSearchOptions.getByText("Episode"));
+
+    await waitFor(() => {
+      expect(screen.queryAllByText("Default View")).toHaveLength(1);
+    });
+
+    expect(screen.queryAllByText("Episode")).toHaveLength(2);
   });
-
-  expect(screen.queryAllByText("Search 3")).toHaveLength(2);
 });
 
 test("Deletes active tab", async () => {

@@ -106,6 +106,7 @@ const MenuItems = ({
                     index > 0 && "pt-1",
                     index !== typedSections.length - 1 && "pb-0",
                   )}
+                  data-testid={`dropdown-section-${id}`}
                 >
                   {label && (
                     <p className="mx mx-3 mb-0.5 mt-2 text-xs font-semibold text-manatee-400">

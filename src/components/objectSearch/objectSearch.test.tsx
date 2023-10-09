@@ -102,6 +102,45 @@ test("does not render info button on row hover when setPanelObject is undefined"
   ).not.toBeInTheDocument();
 });
 
+test("calls setPanelObject when the row is clicked", async () => {
+  const setPanelObject = jest.fn();
+
+  render(<ObjectSearch setPanelObject={setPanelObject} />);
+
+  await screen.findAllByText(
+    GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+      .__SkylarkSet__title as string,
+  );
+
+  fireEvent.click(
+    screen.getByText(
+      GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+        .__SkylarkSet__title as string,
+    ),
+  );
+
+  expect(setPanelObject).toHaveBeenCalled();
+});
+
+test("calls window.open to open the object in a new tab when the row is clicked", async () => {
+  window.open = jest.fn();
+
+  render(<ObjectSearch setPanelObject={jest.fn()} />);
+
+  const object = GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0];
+
+  await screen.findAllByText(object.__SkylarkSet__title as string);
+
+  fireEvent.click(screen.getByText(object.__SkylarkSet__title as string), {
+    metaKey: true,
+  });
+
+  expect(window.open).toHaveBeenCalledWith(
+    `/object/${object.__typename}/${object.uid}?language=${object._meta.language_data.language}`,
+    "_blank",
+  );
+});
+
 describe("with object select (checkboxes)", () => {
   test("renders row select checkboxes", async () => {
     await render(<ObjectSearch withObjectSelect />);
