@@ -56,10 +56,20 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
 
   const objectTypesWithConfig = useMemo(
     () =>
-      objectTypes?.map((objectType) => ({
-        objectType,
-        config: parseObjectConfig(objectType, data?.[objectType]),
-      })),
+      objectTypes
+        ?.map((objectType) => ({
+          objectType,
+          config: parseObjectConfig(objectType, data?.[objectType]),
+        }))
+        .sort((a, b) => {
+          const objTypeA = (
+            a.config.objectTypeDisplayName || a.objectType
+          ).toUpperCase();
+          const objTypeB = (
+            b.config.objectTypeDisplayName || b.objectType
+          ).toUpperCase();
+          return objTypeA < objTypeB ? -1 : objTypeA > objTypeB ? 1 : 0;
+        }),
     [data, objectTypes],
   );
 

@@ -16,10 +16,12 @@ import { Button } from "src/components/button";
 import {
   DropdownMenu,
   DropdownMenuButton,
+  DropdownMenuSection,
 } from "src/components/dropdown/dropdown.component";
 import { TextInput } from "src/components/inputs/textInput";
 import {
   MemoizedObjectSearch,
+  ObjectSearchInitialColumnsState,
   ObjectSearchProps,
 } from "src/components/objectSearch";
 import { CreateButtons } from "src/components/objectSearch/createButtons";
@@ -33,6 +35,10 @@ import {
 } from "src/hooks/localStorage/useObjectSearchTabs";
 import { SearchFilters } from "src/hooks/useSearch";
 import { SearchType } from "src/hooks/useSearchWithLookupType";
+import {
+  useAllObjectsMeta,
+  useSkylarkObjectTypesWithConfig,
+} from "src/hooks/useSkylarkObjectTypes";
 import { useUserAccount } from "src/hooks/useUserAccount";
 import {
   BuiltInSkylarkObjectType,
@@ -47,6 +53,50 @@ type TabbedObjectSearchProps = Omit<
   | "onFilterChange"
   | "onColumnStateChange"
 > & { accountId: string };
+
+const generateNewTabColumnStateForObjectType = (
+  objectType: string,
+  fields: string[],
+): ObjectSearchInitialColumnsState => {
+  if (objectType === BuiltInSkylarkObjectType.Availability) {
+    return {
+      columns: [
+        ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+        OBJECT_LIST_TABLE.columnIds.displayField,
+        OBJECT_LIST_TABLE.columnIds.availability,
+        SkylarkAvailabilityField.Start,
+        SkylarkAvailabilityField.End,
+        SkylarkAvailabilityField.Timezone,
+        SkylarkSystemField.ExternalID,
+        SkylarkSystemField.UID,
+        SkylarkAvailabilityField.Title,
+        SkylarkSystemField.Slug,
+      ],
+      frozen: [
+        ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+        OBJECT_LIST_TABLE.columnIds.displayField,
+        OBJECT_LIST_TABLE.columnIds.availability,
+      ],
+    };
+  }
+
+  return {
+    columns: [
+      ...new Set([
+        ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+        OBJECT_LIST_TABLE.columnIds.displayField,
+        OBJECT_LIST_TABLE.columnIds.translation,
+        OBJECT_LIST_TABLE.columnIds.images,
+        OBJECT_LIST_TABLE.columnIds.availability,
+        ...fields,
+      ]),
+    ],
+    frozen: [
+      ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+      OBJECT_LIST_TABLE.columnIds.displayField,
+    ],
+  };
+};
 
 const generateNewTab = (
   name: string,
@@ -82,25 +132,10 @@ const initialTabs = [
       objectTypes: [BuiltInSkylarkObjectType.Availability],
       language: null,
     },
-    columnsState: {
-      columns: [
-        ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
-        OBJECT_LIST_TABLE.columnIds.displayField,
-        OBJECT_LIST_TABLE.columnIds.availability,
-        SkylarkAvailabilityField.Start,
-        SkylarkAvailabilityField.End,
-        SkylarkAvailabilityField.Timezone,
-        SkylarkSystemField.ExternalID,
-        SkylarkSystemField.UID,
-        SkylarkAvailabilityField.Title,
-        SkylarkSystemField.Slug,
-      ],
-      frozen: [
-        ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
-        OBJECT_LIST_TABLE.columnIds.displayField,
-        OBJECT_LIST_TABLE.columnIds.availability,
-      ],
-    },
+    columnsState: generateNewTabColumnStateForObjectType(
+      BuiltInSkylarkObjectType.Availability,
+      [],
+    ),
   }),
 ];
 
@@ -202,6 +237,9 @@ const NewTabButton = ({
   setTabs: Dispatch<SetStateAction<ObjectSearchTab[] | undefined>>;
   setActiveTabIndex: Dispatch<SetStateAction<number>>;
 }) => {
+  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+  const { objects: objectsMeta } = useAllObjectsMeta();
+
   const beforeSeparatorClassname =
     "before:absolute before:left-0 before:h-6 before:w-px before:bg-manatee-200 before:content-['']";
 
@@ -221,34 +259,115 @@ const NewTabButton = ({
     setActiveTabIndex(tabs.length);
   };
 
-  const newTabOptions = [
+  const newTabOptions: DropdownMenuSection[] = [
     {
-      id: "blank-search-tab",
-      text: "Search",
-      Icon: <FiSearch className="text-lg" />,
-      onClick: () =>
-        addTab({
-          name: `Search {tabNum}`,
-        }),
+      id: "blank-options",
+      options: [
+        {
+          id: "blank-search-tab",
+          text: "Search",
+          Icon: <FiSearch className="text-lg" />,
+          onClick: () =>
+            addTab({
+              name: `Search {tabNum}`,
+            }),
+        },
+        {
+          id: "blank-uid-extid-tab",
+          text: "UID & External ID Lookup",
+          Icon: <FiCrosshair className="text-lg" />,
+          onClick: () =>
+            addTab({
+              name: `Lookup {tabNum}`,
+              searchType: SearchType.UIDExtIDLookup,
+            }),
+        },
+      ],
     },
     {
-      id: "blank-uid-extid-tab",
-      text: "UID & External ID Lookup",
-      Icon: <FiCrosshair className="text-lg" />,
-      onClick: () =>
-        addTab({
-          name: `Lookup {tabNum}`,
-          searchType: SearchType.UIDExtIDLookup,
-        }),
+      id: "search-object-type-options",
+      label: "Search Object Types",
+      options:
+        objectTypesWithConfig?.map(({ objectType, config }) => {
+          const readableObjType = `${
+            config.objectTypeDisplayName || objectType
+          }`;
+
+          const objectMeta = objectsMeta?.find(
+            ({ name }) => name === objectType,
+          );
+          const objectFields = objectMeta?.fields.map(({ name }) => name);
+
+          return {
+            id: `search-${objectType}`,
+            text: `Search ${readableObjType}`,
+            Icon: <FiSearch className="text-lg" />,
+            onClick: () =>
+              addTab(
+                generateNewTab(`${readableObjType} objects`, {
+                  filters: {
+                    objectTypes: [objectType],
+                    language:
+                      objectType === BuiltInSkylarkObjectType.Availability
+                        ? null
+                        : undefined,
+                  },
+                  columnsState: generateNewTabColumnStateForObjectType(
+                    objectType,
+                    objectFields || [],
+                  ),
+                }),
+              ),
+          };
+        }) || [],
+    },
+    {
+      id: "other",
+      label: "Other",
+      options: [
+        {
+          id: `search-skylark-objects`,
+          text: `Search Skylark objects`,
+          Icon: <FiSearch className="text-lg" />,
+          onClick: () =>
+            addTab(
+              generateNewTab(`Search Skylark objects`, {
+                filters: {
+                  objectTypes:
+                    objectTypesWithConfig
+                      ?.filter(({ objectType }) =>
+                        objectType.toUpperCase().startsWith("SKYLARK"),
+                      )
+                      .map(({ objectType }) => objectType) || [],
+                },
+              }),
+            ),
+        },
+        {
+          id: `search-custom-objects`,
+          text: `Search Custom objects`,
+          Icon: <FiSearch className="text-lg" />,
+          onClick: () =>
+            addTab(
+              generateNewTab(`Search Custom objects`, {
+                filters: {
+                  objectTypes:
+                    objectTypesWithConfig
+                      ?.filter(
+                        ({ objectType }) =>
+                          !objectType.toUpperCase().startsWith("SKYLARK"),
+                      )
+                      .map(({ objectType }) => objectType) || [],
+                },
+              }),
+            ),
+        },
+      ],
     },
   ];
 
   return (
-    <DropdownMenu
-      options={newTabOptions}
-      placement="bottom-start"
-      renderInPortal
-    >
+    <DropdownMenu options={newTabOptions} placement="bottom" renderInPortal>
       <DropdownMenuButton
         className={clsx(
           "relative flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black md:pb-3 md:pt-2",

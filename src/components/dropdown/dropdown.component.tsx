@@ -12,6 +12,7 @@ import clsx from "clsx";
 import { ReactNode } from "react";
 
 import { Link } from "src/components/navigation/links";
+import { hasProperty } from "src/lib/utils";
 
 export interface DropdownMenuOption {
   id: string;
@@ -23,9 +24,15 @@ export interface DropdownMenuOption {
   onClick?: () => void;
 }
 
+export interface DropdownMenuSection {
+  id: string;
+  label?: string;
+  options: DropdownMenuOption[];
+}
+
 interface DropdownMenuProps {
   children: JSX.Element;
-  options: DropdownMenuOption[];
+  options: DropdownMenuSection[] | DropdownMenuOption[];
   placement: Placement;
   renderInPortal?: boolean;
 }
@@ -50,7 +57,7 @@ const MenuItems = ({
   placement,
   children,
   renderInPortal,
-  options,
+  options: sections,
   open,
 }: DropdownMenuProps & { open: boolean }) => {
   const { refs, floatingStyles, context } = useFloating({
@@ -80,6 +87,11 @@ const MenuItems = ({
     },
   });
 
+  const typedSections: DropdownMenuSection[] =
+    sections.length > 0 && !hasProperty(sections[0], "options")
+      ? [{ id: "options", options: sections as DropdownMenuOption[] }]
+      : (sections as DropdownMenuSection[]);
+
   return (
     <>
       <div ref={refs.setReference}>{children}</div>
@@ -92,43 +104,62 @@ const MenuItems = ({
           >
             <Menu.Items
               className={clsx(
-                "mx-auto mt-2 w-60 select-none divide-y divide-manatee-100 rounded-sm bg-white text-sm font-bold shadow-lg ring-1 ring-manatee-700 ring-opacity-5 focus:outline-none",
+                "mx-auto mt-2 w-60 select-none rounded-sm bg-white text-sm font-bold shadow-lg ring-1 ring-manatee-700 ring-opacity-5 focus:outline-none",
+                "max-h-96 overflow-y-scroll",
               )}
               style={{ ...transitionStyles }}
               static
             >
-              {options.map((option) => (
-                <Menu.Item key={option.id} as="div">
-                  {({ close }) => {
-                    const className = clsx(
-                      "flex w-full items-center space-x-1 md:space-x-1.5 rounded-sm pl-3 pr-2 py-2 md:py-3",
-                      !option.disabled &&
-                        "ui-active:bg-manatee-200 ui-active:text-gray-900",
-                      option.disabled && "bg-manatee-100 text-manatee-500",
-                      option.danger &&
-                        !option.disabled &&
-                        "bg-red-100 ui-active:bg-red-300 [&>svg]:text-error",
-                    );
-                    return option.href ? (
-                      <Link
-                        onClick={close}
-                        className={className}
-                        href={option.href as string}
-                        Icon={option.Icon}
-                        text={option.text}
-                      />
-                    ) : (
-                      <button
-                        className={className}
-                        onClick={option.onClick}
-                        disabled={option.disabled}
-                      >
-                        {option.Icon}
-                        <span className="text-left">{option.text}</span>
-                      </button>
-                    );
-                  }}
-                </Menu.Item>
+              {typedSections.map(({ id, label, options }, index) => (
+                <div
+                  key={id}
+                  className={clsx(
+                    index > 0 && "pt-1",
+                    index !== typedSections.length - 1 && "pb-0",
+                  )}
+                >
+                  {label && (
+                    <p className="mx mx-3 mb-0.5 mt-2 text-xs font-semibold text-manatee-400">
+                      {label}
+                    </p>
+                  )}
+                  <div className="divide-y divide-manatee-100">
+                    {options.map((option) => (
+                      <Menu.Item key={option.id}>
+                        {({ close }) => {
+                          const className = clsx(
+                            "flex w-full items-center space-x-1 md:space-x-1.5 rounded-sm pl-3 pr-2 py-2 md:py-3",
+                            !option.disabled &&
+                              "ui-active:bg-manatee-200 ui-active:text-gray-900",
+                            option.disabled &&
+                              "bg-manatee-100 text-manatee-500",
+                            option.danger &&
+                              !option.disabled &&
+                              "bg-red-100 ui-active:bg-red-300 [&>svg]:text-error",
+                          );
+                          return option.href ? (
+                            <Link
+                              onClick={close}
+                              className={className}
+                              href={option.href as string}
+                              Icon={option.Icon}
+                              text={option.text}
+                            />
+                          ) : (
+                            <button
+                              className={className}
+                              onClick={option.onClick}
+                              disabled={option.disabled}
+                            >
+                              {option.Icon}
+                              <span className="text-left">{option.text}</span>
+                            </button>
+                          );
+                        }}
+                      </Menu.Item>
+                    ))}
+                  </div>
+                </div>
               ))}
             </Menu.Items>
           </div>
