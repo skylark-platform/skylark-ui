@@ -103,9 +103,9 @@ describe("Content Library - Search", () => {
   });
 
   it("visits home", () => {
-    cy.contains(
-      "No results containing all your search terms were found.",
-    ).should("not.exist");
+    cy.contains("We couldn't find matches for the search term.").should(
+      "not.exist",
+    );
     cy.contains("GOT");
     cy.percySnapshot("Homepage");
   });
@@ -123,7 +123,7 @@ describe("Content Library - Search", () => {
     cy.visit("/");
 
     cy.wait("@searchQueryEmpty");
-    cy.contains("No results containing all your search terms were found.");
+    cy.contains("We couldn't find matches for the search term.");
     cy.percySnapshot("Homepage - no search data");
   });
 
@@ -138,7 +138,7 @@ describe("Content Library - Search", () => {
 
   it("displays an objects display_name in the object type filter", () => {
     cy.contains("Asset").should("exist");
-    cy.contains("Filters").click();
+    cy.get('[aria-label="Open Search Options"]').click();
 
     cy.get("[data-testid=checkbox-grid-object-type]").within(() => {
       cy.contains("Set");
@@ -148,7 +148,7 @@ describe("Content Library - Search", () => {
 
   it("filters for only Assets", () => {
     cy.contains("Asset").should("exist");
-    cy.contains("Filters").click();
+    cy.get('[aria-label="Open Search Options"]').click();
 
     cy.contains("Toggle all").click();
     cy.contains("Apply").should("be.disabled");
@@ -158,7 +158,7 @@ describe("Content Library - Search", () => {
 
   it("filters for only title, uid, external_id, title_short fields", () => {
     cy.contains("Asset").should("exist");
-    cy.contains("Filters").click();
+    cy.get('[aria-label="Open Search Options"]').click();
 
     const columnsFilters = cy.get("[data-testid=checkbox-grid-columns]");
 

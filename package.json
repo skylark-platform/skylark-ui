@@ -72,7 +72,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.19.6",
-    "@percy/cli": "^1.23.0",
+    "@percy/cli": "^1.27.3",
     "@percy/cypress": "^3.1.2",
     "@storybook/addon-actions": "^6.5.17-alpha.0",
     "@storybook/addon-essentials": "^6.5.17-alpha.0",
@@ -101,7 +101,7 @@
     "babel-loader": "^8.3.0",
     "chromatic": "^6.11.4",
     "concurrently": "^7.5.0",
-    "cypress": "^11.0.1",
+    "cypress": "^13.3.0",
     "cypress-iframe": "^1.0.1",
     "eslint": "8.26.0",
     "eslint-config-next": "^13.1.1",
