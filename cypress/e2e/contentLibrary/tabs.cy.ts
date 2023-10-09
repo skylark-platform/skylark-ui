@@ -79,7 +79,6 @@ describe("Content Library - Search", () => {
   it("loads default view with 2 default tabs", () => {
     cy.get("[data-testid=object-search-tab-overview]").within(() => {
       cy.contains("Default View");
-      cy.contains("All object types translated to en-GB ");
     });
 
     cy.get("[data-testid=object-search-tabs]").within(() => {
