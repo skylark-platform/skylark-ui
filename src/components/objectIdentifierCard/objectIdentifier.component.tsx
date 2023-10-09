@@ -84,8 +84,11 @@ export const ObjectIdentifierCard = ({
         object.objectType !== BuiltInSkylarkObjectType.Availability && (
           <div>
             <AvailabilityIcon
-              status={object.availability.status}
+              status={
+                (object.availability && object.availability.status) || null
+              }
               className="text-xl"
+              withTooltipDescription
             />
           </div>
         )}

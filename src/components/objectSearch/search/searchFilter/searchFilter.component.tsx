@@ -51,7 +51,9 @@ const convertCheckedColumnsToVisibilityState = (
 const searchTypeOptions = [
   { label: "Search", value: SearchType.Search },
   {
-    label: "UID & External ID",
+    // TODO UID & External ID Lookup when PR is merged
+    // label: "UID & External ID",
+    label: "UID",
     value: SearchType.UIDExtIDLookup,
   },
 ];

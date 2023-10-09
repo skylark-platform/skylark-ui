@@ -87,7 +87,8 @@ const useGetObjectGenericWrapper = ({
   const { error, isLoading, data, isRefetching, refetch, graphqlQuery } =
     useGetObjectGeneric({
       uid: filters.query,
-      externalId: filters.query,
+      // TODO UID & External ID Lookup when PR is merged
+      // externalId: filters.query,
       objectTypes: filters.objectTypes,
       availability: filters.availability,
       language: filters.language,

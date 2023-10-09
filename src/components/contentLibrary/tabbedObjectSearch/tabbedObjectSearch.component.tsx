@@ -274,7 +274,9 @@ const NewTabButton = ({
         },
         {
           id: "blank-uid-extid-tab",
-          text: "UID & External ID Lookup",
+          // TODO UID & External ID Lookup when PR is merged
+          // text: "UID & External ID Lookup",
+          text: "UID Lookup",
           Icon: <FiCrosshair className="text-lg" />,
           onClick: () =>
             addTab({
@@ -300,7 +302,7 @@ const NewTabButton = ({
 
           return {
             id: `search-${objectType}`,
-            text: `Search ${readableObjType}`,
+            text: readableObjType,
             Icon: <FiSearch className="text-lg" />,
             onClick: () =>
               addTab(
@@ -327,11 +329,11 @@ const NewTabButton = ({
       options: [
         {
           id: `search-skylark-objects`,
-          text: `Search Skylark objects`,
+          text: `Skylark objects`,
           Icon: <FiSearch className="text-lg" />,
           onClick: () =>
             addTab(
-              generateNewTab(`Search Skylark objects`, {
+              generateNewTab(`Skylark objects`, {
                 filters: {
                   objectTypes:
                     objectTypesWithConfig
@@ -345,11 +347,11 @@ const NewTabButton = ({
         },
         {
           id: `search-custom-objects`,
-          text: `Search Custom objects`,
+          text: `Custom objects`,
           Icon: <FiSearch className="text-lg" />,
           onClick: () =>
             addTab(
-              generateNewTab(`Search Custom objects`, {
+              generateNewTab(`Custom objects`, {
                 filters: {
                   objectTypes:
                     objectTypesWithConfig
@@ -370,7 +372,7 @@ const NewTabButton = ({
     <DropdownMenu options={newTabOptions} placement="bottom" renderInPortal>
       <DropdownMenuButton
         className={clsx(
-          "relative flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black md:pb-3 md:pt-2",
+          "relative flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 py-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black md:pb-3 md:pt-2",
           beforeSeparatorClassname,
         )}
         aria-label="add tab"

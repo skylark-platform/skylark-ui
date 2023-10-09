@@ -55,7 +55,7 @@ export const Tabs = ({
               {tab.name}
             </button>
             {onDelete && !disabled && selectedTab === tab.id && (
-              <div className="absolute bottom-1.5 right-0.5 top-0.5 flex w-5/12 justify-end bg-gradient-to-r from-transparent via-white/90 to-white">
+              <div className="absolute bottom-1.5 right-0.5 top-0 flex w-5/12 justify-end bg-gradient-to-r from-transparent via-white/90 to-white md:top-0.5">
                 <button
                   className="group rounded-full p-1 hover:bg-gray-100/20 hover:shadow-inner"
                   onClick={() => onDelete({ ...tab, index })}

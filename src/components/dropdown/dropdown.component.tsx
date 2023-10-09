@@ -6,6 +6,7 @@ import {
   autoUpdate,
   Placement,
   useTransitionStyles,
+  shift,
 } from "@floating-ui/react";
 import { Menu, Portal } from "@headlessui/react";
 import clsx from "clsx";
@@ -63,19 +64,7 @@ const MenuItems = ({
   const { refs, floatingStyles, context } = useFloating({
     open,
     placement,
-    middleware: [
-      offset({ alignmentAxis: -10 }),
-      flip(),
-      size({
-        apply({ rects, elements, availableHeight }) {
-          Object.assign(elements.floating.style, {
-            maxHeight: `${availableHeight}px`,
-            minWidth: `${rects.reference.width}px`,
-          });
-        },
-        padding: 0,
-      }),
-    ],
+    middleware: [offset({ alignmentAxis: -10 }), flip(), shift()],
     whileElementsMounted: autoUpdate,
   });
 
