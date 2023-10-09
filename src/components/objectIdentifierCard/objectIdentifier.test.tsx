@@ -85,7 +85,9 @@ test("displays AvailabilityStatus icon by default (Active)", () => {
   render(<ObjectIdentifierCard object={defaultObject} />);
 
   expect(
-    screen.getByLabelText("Object's Availability is Active"),
+    screen.getByLabelText(
+      "This object has at least one active Availability assigned.",
+    ),
   ).toBeInTheDocument();
 });
 
@@ -100,7 +102,9 @@ test("displays AvailabilityStatus icon by default (Future)", () => {
   );
 
   expect(
-    screen.getByLabelText("Object's Availability is Future"),
+    screen.getByLabelText(
+      "No active Availability assigned, at least one will be active in the future.",
+    ),
   ).toBeInTheDocument();
 });
 
@@ -110,7 +114,9 @@ test("hides AvailabilityStatus icon when hideAvailabilityStatus is passed", () =
   );
 
   expect(
-    screen.queryByLabelText("Object's Availability is Active"),
+    screen.queryByLabelText(
+      "This object has at least one active Availability assigned.",
+    ),
   ).not.toBeInTheDocument();
 });
 
@@ -125,6 +131,8 @@ test("does not show AvailabilityStatus icon when object type is Availability", (
   );
 
   expect(
-    screen.queryByLabelText("Object's Availability is Active"),
+    screen.queryByLabelText(
+      "This object has at least one active Availability assigned.",
+    ),
   ).not.toBeInTheDocument();
 });

@@ -220,7 +220,7 @@ export const generateContentsToReturn = (
     content: {
       __args: {
         order: new EnumType("ASC"),
-        limit: 100,
+        limit: 20,
         next_token: new VariableType(opts.nextTokenVariableName),
       },
       next_token: true,
