@@ -112,18 +112,14 @@ const useGetObjectGenericWrapper = ({
 export const useSearchWithLookupType = (
   opts: UseSearchWithLookupTypeOpts,
 ): UseSearchWithLookupTypeRet => {
-  const search = useSearchWrapper({ ...opts, type: SearchType.Search });
+  const search = useSearchWrapper(opts);
 
-  const getObject = useGetObjectGenericWrapper({
-    ...opts,
-    type: SearchType.UIDExtIDLookup,
-  });
+  const getObject = useGetObjectGenericWrapper(opts);
 
   const result = opts.type === SearchType.UIDExtIDLookup ? getObject : search;
 
   return {
     ...result,
-    // data: getObject.data,
     // Some values we always take from search
     searchHash: search.searchHash,
     properties: search.properties,

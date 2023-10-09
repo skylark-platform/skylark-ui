@@ -78,6 +78,8 @@ export const useGetObjectGeneric = ({
     "x-force-get": "true",
   };
 
+  const enabled = query !== null && (!!uid || !!externalId) && !disabled;
+
   const { data, error, isLoading, isError, refetch, isRefetching } = useQuery<
     GQLSkylarkGetObjectResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>,
@@ -92,7 +94,7 @@ export const useGetObjectGeneric = ({
     queryFn: async () =>
       skylarkRequest("query", query as DocumentNode, variables, {}, headers),
     select,
-    enabled: query !== null && (!!uid || !!externalId) && !disabled,
+    enabled,
     retry: false,
   });
 
