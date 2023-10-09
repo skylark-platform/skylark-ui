@@ -1,6 +1,5 @@
 import { Row, flexRender } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useRouter } from "next/router";
 import { Fragment } from "react";
 import { VirtualItem } from "react-virtual";
 
@@ -43,8 +42,6 @@ const DataRow = ({
     },
     disabled: !isDraggable,
   });
-
-  const { push } = useRouter();
 
   return (
     <div

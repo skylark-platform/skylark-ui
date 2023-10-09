@@ -216,8 +216,6 @@ const NewTabButton = ({
 
       const updatedTabs = existingTabs ? [...existingTabs, newTab] : [newTab];
 
-      console.log({ updatedTabs });
-
       return updatedTabs;
     });
     setActiveTabIndex(tabs.length);

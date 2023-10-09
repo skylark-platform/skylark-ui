@@ -1,20 +1,36 @@
 import { fireEvent, render, screen } from "src/__tests__/utils/test-utils";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import {
+  AvailabilityStatus,
+  BuiltInSkylarkObjectType,
+  ParsedSkylarkObject,
+} from "src/interfaces/skylark";
 
 import { ObjectIdentifierCard } from "./objectIdentifier.component";
 
+const defaultObject: ParsedSkylarkObject = {
+  uid: "123",
+  objectType: "SkylarkSet",
+  config: {
+    objectTypeDisplayName: "CustomObjectTypeName",
+  },
+  metadata: {
+    uid: "set-1",
+    external_id: "my-set",
+    title: "my episode",
+  },
+  meta: {
+    language: "en-GB",
+    availableLanguages: ["en-GB"],
+    availabilityStatus: AvailabilityStatus.Active,
+  },
+  availability: {
+    status: AvailabilityStatus.Active,
+    objects: [],
+  },
+};
+
 test("displays the Object's display_name when one is given", () => {
-  const object = {
-    uid: "123",
-    objectType: "SkylarkSet",
-    config: {
-      objectTypeDisplayName: "CustomObjectTypeName",
-    },
-    metadata: {
-      title: "my episode",
-    },
-  } as unknown as ParsedSkylarkObject;
-  render(<ObjectIdentifierCard object={object} />);
+  render(<ObjectIdentifierCard object={defaultObject} />);
 
   expect(screen.getByText("CustomObjectTypeName")).toBeInTheDocument();
   expect(screen.queryByText("SkylarkSet")).not.toBeInTheDocument();
@@ -22,13 +38,9 @@ test("displays the Object's display_name when one is given", () => {
 
 test("displays the Object's objectType when no display_name is given", () => {
   const object = {
-    uid: "123",
-    objectType: "SkylarkSet",
+    ...defaultObject,
     config: {
       objectTypeDisplayName: null,
-    },
-    metadata: {
-      title: "my episode",
     },
   } as unknown as ParsedSkylarkObject;
   render(<ObjectIdentifierCard object={object} />);
@@ -37,18 +49,8 @@ test("displays the Object's objectType when no display_name is given", () => {
 });
 
 test("renders children", () => {
-  const object = {
-    uid: "123",
-    objectType: "SkylarkSet",
-    config: {
-      objectTypeDisplayName: null,
-    },
-    metadata: {
-      title: "my episode",
-    },
-  } as unknown as ParsedSkylarkObject;
   render(
-    <ObjectIdentifierCard object={object}>
+    <ObjectIdentifierCard object={defaultObject}>
       <div>children</div>
     </ObjectIdentifierCard>,
   );
@@ -57,24 +59,13 @@ test("renders children", () => {
 });
 
 test("displays arrow when onForwardClick is passed as a prop and calls onForwardClick when clicked", () => {
-  const object = {
-    uid: "123",
-    objectType: "SkylarkSet",
-    config: {
-      objectTypeDisplayName: null,
-    },
-    meta: {
-      language: "en-GB",
-    },
-    metadata: {
-      title: "my episode",
-    },
-  } as unknown as ParsedSkylarkObject;
-
   const onForwardClick = jest.fn();
 
   render(
-    <ObjectIdentifierCard object={object} onForwardClick={onForwardClick} />,
+    <ObjectIdentifierCard
+      object={defaultObject}
+      onForwardClick={onForwardClick}
+    />,
   );
 
   const forwardButton = screen.getByRole("button");
@@ -88,4 +79,52 @@ test("displays arrow when onForwardClick is passed as a prop and calls onForward
     objectType: "SkylarkSet",
     language: "en-GB",
   });
+});
+
+test("displays AvailabilityStatus icon by default (Active)", () => {
+  render(<ObjectIdentifierCard object={defaultObject} />);
+
+  expect(
+    screen.getByLabelText("Object's Availability is Active"),
+  ).toBeInTheDocument();
+});
+
+test("displays AvailabilityStatus icon by default (Future)", () => {
+  render(
+    <ObjectIdentifierCard
+      object={{
+        ...defaultObject,
+        availability: { status: AvailabilityStatus.Future, objects: [] },
+      }}
+    />,
+  );
+
+  expect(
+    screen.getByLabelText("Object's Availability is Future"),
+  ).toBeInTheDocument();
+});
+
+test("hides AvailabilityStatus icon when hideAvailabilityStatus is passed", () => {
+  render(
+    <ObjectIdentifierCard object={defaultObject} hideAvailabilityStatus />,
+  );
+
+  expect(
+    screen.queryByLabelText("Object's Availability is Active"),
+  ).not.toBeInTheDocument();
+});
+
+test("does not show AvailabilityStatus icon when object type is Availability", () => {
+  render(
+    <ObjectIdentifierCard
+      object={{
+        ...defaultObject,
+        objectType: BuiltInSkylarkObjectType.Availability,
+      }}
+    />,
+  );
+
+  expect(
+    screen.queryByLabelText("Object's Availability is Active"),
+  ).not.toBeInTheDocument();
 });

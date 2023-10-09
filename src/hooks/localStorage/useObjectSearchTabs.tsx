@@ -29,7 +29,6 @@ const saveTabStateToStorage = (
 ) => {
   if (accountId) {
     if (tabs !== undefined) {
-      console.log("saveTabStateToStorage", tabs);
       localStorage.setItem(
         LOCAL_STORAGE.accountPrefixed(accountId).contentLibrary.tabState,
         JSON.stringify(tabs),
@@ -130,8 +129,6 @@ export const useObjectSearchTabs = (
             filters: updatedTab.filters || tab.filters,
           };
         }) || [];
-
-      // console.log("modifyActiveTab", updatedTabs);
 
       saveTabStateToStorage(accountId, { tabs: updatedTabs });
       setTabs(updatedTabs);

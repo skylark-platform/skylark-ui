@@ -119,8 +119,6 @@ export const PanelContent = ({
     { language, fetchAvailability: true },
   );
 
-  console.log({ data });
-
   const objects = inEditMode ? updatedObjects : data;
 
   useEffect(() => {

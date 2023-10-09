@@ -174,13 +174,15 @@ test("Add new view", async () => {
   const tabsContainer = screen.getByTestId("object-search-tabs");
   expect(tabsContainer.children.length).toBe(2);
 
-  screen.getByLabelText("add tab").click();
+  fireEvent.click(screen.getByLabelText("add tab"));
+
+  fireEvent.click(screen.getByText("Search"));
 
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(1);
   });
 
-  expect(screen.queryAllByText("View 3")).toHaveLength(2);
+  expect(screen.queryAllByText("Search 3")).toHaveLength(2);
 });
 
 test("Deletes active tab", async () => {

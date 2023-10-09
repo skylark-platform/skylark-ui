@@ -30,19 +30,24 @@ export const AvailabilityIcon = ({
 }: AvailabilityLabelProps) => {
   const textClassName = getStatusTextClassName(status);
   const className = clsx(textClassName, propClassName);
+
+  const ariaLabel = `Object's Availability is ${
+    status || AvailabilityStatus.Unavailable
+  }`;
+
   return (
     <>
       {status === AvailabilityStatus.Active && (
-        <LuCalendarCheck className={className} />
+        <LuCalendarCheck className={className} aria-label={ariaLabel} />
       )}
       {status === AvailabilityStatus.Future && (
-        <LuCalendarClock className={className} />
+        <LuCalendarClock className={className} aria-label={ariaLabel} />
       )}
       {(status === AvailabilityStatus.Unavailable || status === null) && (
-        <LuCalendarOff className={className} />
+        <LuCalendarOff className={className} aria-label={ariaLabel} />
       )}
       {status === AvailabilityStatus.Expired && (
-        <LuCalendarX className={className} />
+        <LuCalendarX className={className} aria-label={ariaLabel} />
       )}
     </>
   );
