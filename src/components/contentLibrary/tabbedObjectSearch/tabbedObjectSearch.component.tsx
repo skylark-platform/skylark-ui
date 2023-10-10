@@ -1,9 +1,11 @@
 import clsx from "clsx";
-import { useState } from "react";
+import { Dispatch, Fragment, SetStateAction, useState } from "react";
 import {
   FiCheckSquare,
+  FiCrosshair,
   FiEdit,
   FiPlus,
+  FiSearch,
   FiTrash2,
   FiXSquare,
 } from "react-icons/fi";
@@ -11,6 +13,11 @@ import { v4 as uuidv4 } from "uuid";
 
 import { AvailabilitySummary } from "src/components/availability";
 import { Button } from "src/components/button";
+import {
+  DropdownMenu,
+  DropdownMenuButton,
+  DropdownMenuSection,
+} from "src/components/dropdown/dropdown.component";
 import { TextInput } from "src/components/inputs/textInput";
 import {
   MemoizedObjectSearch,
@@ -22,21 +29,23 @@ import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "src/components/objectSea
 import { ScrollableTabs } from "src/components/tabs/tabs.component";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
-import { useObjectSearchTabs } from "src/hooks/localStorage/useObjectSearchTabs";
+import {
+  ObjectSearchTab,
+  useObjectSearchTabs,
+} from "src/hooks/localStorage/useObjectSearchTabs";
 import { SearchFilters } from "src/hooks/useSearch";
+import { SearchType } from "src/hooks/useSearchWithLookupType";
+import {
+  useAllObjectsMeta,
+  useSkylarkObjectTypesWithConfig,
+} from "src/hooks/useSkylarkObjectTypes";
 import { useUserAccount } from "src/hooks/useUserAccount";
 import {
   BuiltInSkylarkObjectType,
   SkylarkAvailabilityField,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-
-export interface ObjectSearchTab {
-  id: string;
-  name?: string;
-  filters: SearchFilters;
-  columnsState?: ObjectSearchInitialColumnsState;
-}
+import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
 
 type TabbedObjectSearchProps = Omit<
   ObjectSearchProps,
@@ -46,36 +55,12 @@ type TabbedObjectSearchProps = Omit<
   | "onColumnStateChange"
 > & { accountId: string };
 
-const generateNewTab = (
-  name: string,
-  id?: string,
-  filters?: Partial<SearchFilters>,
-  columnsState?: ObjectSearchInitialColumnsState,
-): ObjectSearchTab => ({
-  id: id || uuidv4(),
-  name,
-  filters: {
-    query: "",
-    objectTypes: null,
-    availability: {
-      dimensions: null,
-      timeTravel: null,
-    },
-    ...filters,
-  },
-  columnsState,
-});
-
-const initialTabs = [
-  generateNewTab("Default View", "DEFAULT_VIEW"),
-  generateNewTab(
-    "Availability",
-    "DEFAULT_VIEW_AVAILABILITY",
-    {
-      objectTypes: [BuiltInSkylarkObjectType.Availability],
-      language: null,
-    },
-    {
+const generateNewTabColumnStateForObjectType = (
+  objectType: string,
+  fields: string[],
+): ObjectSearchInitialColumnsState => {
+  if (objectType === BuiltInSkylarkObjectType.Availability) {
+    return {
       columns: [
         ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
         OBJECT_LIST_TABLE.columnIds.displayField,
@@ -93,8 +78,66 @@ const initialTabs = [
         OBJECT_LIST_TABLE.columnIds.displayField,
         OBJECT_LIST_TABLE.columnIds.availability,
       ],
+    };
+  }
+
+  const columnState = {
+    columns: [
+      ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+      OBJECT_LIST_TABLE.columnIds.displayField,
+      OBJECT_LIST_TABLE.columnIds.translation,
+      OBJECT_LIST_TABLE.columnIds.images,
+      OBJECT_LIST_TABLE.columnIds.availability,
+      ...fields,
+    ].filter((str, index, arr) => arr.indexOf(str) === index),
+    frozen: [
+      ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+      OBJECT_LIST_TABLE.columnIds.displayField,
+    ],
+  };
+
+  return columnState;
+};
+
+const generateNewTab = (
+  name: string,
+  {
+    id,
+    filters,
+    columnsState,
+    searchType,
+  }: Partial<Omit<ObjectSearchTab, "name" | "filters">> & {
+    filters?: Partial<SearchFilters>;
+  },
+): ObjectSearchTab => ({
+  id: id || uuidv4(),
+  name,
+  searchType: searchType || SearchType.Search,
+  filters: {
+    query: "",
+    objectTypes: null,
+    availability: {
+      dimensions: null,
+      timeTravel: null,
     },
-  ),
+    ...filters,
+  },
+  columnsState,
+});
+
+const initialTabs = [
+  generateNewTab("Default View", { id: "DEFAULT_VIEW" }),
+  generateNewTab("Availability", {
+    id: "DEFAULT_VIEW_AVAILABILITY",
+    filters: {
+      objectTypes: [BuiltInSkylarkObjectType.Availability],
+      language: null,
+    },
+    columnsState: generateNewTabColumnStateForObjectType(
+      BuiltInSkylarkObjectType.Availability,
+      [],
+    ),
+  }),
 ];
 
 const TabOverview = ({
@@ -176,10 +219,189 @@ const TabOverview = ({
               </>
             )}
           </div>
-          <AvailabilitySummary {...tab.filters} />
+          <AvailabilitySummary
+            {...tab.filters}
+            searchType={tab.searchType || SearchType.Search}
+          />
         </>
       )}
     </div>
+  );
+};
+
+const NewTabButton = ({
+  tabs,
+  setTabs,
+  setActiveTabIndex,
+}: {
+  tabs: ObjectSearchTab[];
+  setTabs: Dispatch<SetStateAction<ObjectSearchTab[] | undefined>>;
+  setActiveTabIndex: Dispatch<SetStateAction<number>>;
+}) => {
+  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+  const { objects: objectsMeta } = useAllObjectsMeta();
+
+  const beforeSeparatorClassname =
+    "before:absolute before:left-0 before:h-6 before:w-px before:bg-manatee-200 before:content-['']";
+
+  const addTab = (argTab?: Partial<ObjectSearchTab>) => {
+    setTabs((existingTabs) => {
+      const tabsNum = existingTabs ? existingTabs.length + 1 : 1;
+
+      const newTab = generateNewTab(
+        argTab?.name?.replace("{tabNum}", `${tabsNum}`) || `View ${tabsNum}`,
+        argTab || {},
+      );
+
+      const updatedTabs = existingTabs ? [...existingTabs, newTab] : [newTab];
+
+      return updatedTabs;
+    });
+    setActiveTabIndex(tabs.length);
+  };
+
+  const newTabOptions: DropdownMenuSection[] = [
+    {
+      id: "blank-options",
+      options: [
+        {
+          id: "blank-search-tab",
+          text: "Search",
+          Icon: <FiSearch className="text-lg" />,
+          onClick: () =>
+            addTab({
+              name: `Search {tabNum}`,
+            }),
+        },
+        {
+          id: "blank-uid-extid-tab",
+          // TODO UID & External ID Lookup when PR is merged
+          // text: "UID & External ID Lookup",
+          text: "UID Lookup",
+          Icon: <FiCrosshair className="text-lg" />,
+          onClick: () =>
+            addTab({
+              name: `Lookup {tabNum}`,
+              searchType: SearchType.UIDExtIDLookup,
+            }),
+        },
+      ],
+    },
+    {
+      id: "search-object-type-options",
+      label: "Search Object Types",
+      options:
+        objectTypesWithConfig?.map(({ objectType, config }) => {
+          const readableObjType = `${
+            config.objectTypeDisplayName || objectType
+          }`;
+
+          const onClick = () => {
+            const objectMeta = objectsMeta?.find(
+              ({ name }) => name === objectType,
+            );
+            const objectFields =
+              objectMeta?.fields.map(({ name }) => name) || [];
+
+            const splitFields =
+              objectMeta &&
+              splitMetadataIntoSystemTranslatableGlobal(
+                objectFields,
+                objectMeta?.fields,
+                objectMeta?.fieldConfig,
+                config.fieldConfig,
+              );
+
+            const fields = splitFields
+              ? [
+                  ...splitFields.systemMetadataFields,
+                  ...splitFields.translatableMetadataFields,
+                  ...splitFields.globalMetadataFields,
+                ].map(({ field }) => field)
+              : objectFields;
+
+            addTab(
+              generateNewTab(`${readableObjType} objects`, {
+                filters: {
+                  objectTypes: [objectType],
+                  language:
+                    objectType === BuiltInSkylarkObjectType.Availability
+                      ? null
+                      : undefined,
+                },
+                columnsState: generateNewTabColumnStateForObjectType(
+                  objectType,
+                  fields,
+                ),
+              }),
+            );
+          };
+
+          return {
+            id: `search-${objectType}`,
+            text: readableObjType,
+            Icon: <FiSearch className="text-lg" />,
+            onClick,
+          };
+        }) || [],
+    },
+    {
+      id: "other",
+      label: "Other",
+      options: [
+        {
+          id: `search-skylark-objects`,
+          text: `Skylark objects`,
+          Icon: <FiSearch className="text-lg" />,
+          onClick: () =>
+            addTab(
+              generateNewTab(`Skylark objects`, {
+                filters: {
+                  objectTypes:
+                    objectTypesWithConfig
+                      ?.filter(({ objectType }) =>
+                        objectType.toUpperCase().startsWith("SKYLARK"),
+                      )
+                      .map(({ objectType }) => objectType) || [],
+                },
+              }),
+            ),
+        },
+        {
+          id: `search-custom-objects`,
+          text: `Custom objects`,
+          Icon: <FiSearch className="text-lg" />,
+          onClick: () =>
+            addTab(
+              generateNewTab(`Custom objects`, {
+                filters: {
+                  objectTypes:
+                    objectTypesWithConfig
+                      ?.filter(
+                        ({ objectType }) =>
+                          !objectType.toUpperCase().startsWith("SKYLARK"),
+                      )
+                      .map(({ objectType }) => objectType) || [],
+                },
+              }),
+            ),
+        },
+      ],
+    },
+  ];
+
+  return (
+    <DropdownMenu options={newTabOptions} placement="bottom" renderInPortal>
+      <DropdownMenuButton
+        className={clsx(
+          "relative flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 py-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black md:pb-3 md:pt-2",
+          beforeSeparatorClassname,
+        )}
+        aria-label="add tab"
+      >
+        <FiPlus className="h-4 w-4" />
+      </DropdownMenuButton>
+    </DropdownMenu>
   );
 };
 
@@ -198,9 +420,6 @@ const TabbedObjectSearch = ({
     changeActiveTabIndex,
     saveScrollPosition,
   } = useObjectSearchTabs(accountId, initialTabs);
-
-  const beforeSeparatorClassname =
-    "before:absolute before:left-0 before:h-6 before:w-px before:bg-manatee-200 before:content-['']";
 
   return (
     <>
@@ -224,29 +443,13 @@ const TabbedObjectSearch = ({
                   onScroll={({ scrollLeft: tabsScrollPosition }) =>
                     saveScrollPosition(tabsScrollPosition)
                   }
+                  onDelete={() => deleteActiveTab()}
                 />
-                <button
-                  className={clsx(
-                    "relative flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 pb-3 pt-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black",
-                    beforeSeparatorClassname,
-                  )}
-                  onClick={() => {
-                    setTabs((existingTabs) => {
-                      const newTab = generateNewTab(
-                        `View ${existingTabs ? existingTabs.length + 1 : 1}`,
-                      );
-                      const updatedTabs = existingTabs
-                        ? [...existingTabs, newTab]
-                        : [newTab];
-
-                      return updatedTabs;
-                    });
-                    setActiveTabIndex(tabs.length);
-                  }}
-                  aria-label="add tab"
-                >
-                  <FiPlus className="h-4 w-4" />
-                </button>
+                <NewTabButton
+                  setActiveTabIndex={setActiveTabIndex}
+                  tabs={tabs}
+                  setTabs={setTabs}
+                />
               </div>
               <CreateButtons
                 className={clsx("mb-1 justify-end pr-1 md:pr-0")}
@@ -276,10 +479,11 @@ const TabbedObjectSearch = ({
             <MemoizedObjectSearch
               key={`${accountId}-${activeTab?.id || -1}`}
               {...props}
+              initialSearchType={activeTab?.searchType || SearchType.Search}
               initialFilters={activeTab?.filters}
               initialColumnState={activeTab?.columnsState}
-              onStateChange={({ filters, columns: columnsState }) =>
-                modifyActiveTab({ filters, columnsState })
+              onStateChange={({ columns: columnsState, ...state }) =>
+                modifyActiveTab({ ...state, columnsState })
               }
             />
           </div>

@@ -2,6 +2,7 @@ import { fireEvent } from "@storybook/testing-library";
 import { act } from "react-dom/test-utils";
 
 import { render, screen } from "src/__tests__/utils/test-utils";
+import { SearchType } from "src/hooks/useSearchWithLookupType";
 
 import { SearchInput } from "./searchInput.component";
 
@@ -13,6 +14,7 @@ test("renders search input with placeholder", async () => {
   render(
     <SearchInput
       searchQuery=""
+      searchType={SearchType.Search}
       onQueryChange={jest.fn()}
       toggleFilterOpen={jest.fn()}
       onRefresh={jest.fn()}
@@ -29,6 +31,7 @@ test("calls onQueryChange when the search query changes", async () => {
   render(
     <SearchInput
       searchQuery=""
+      searchType={SearchType.Search}
       onQueryChange={onQueryChange}
       toggleFilterOpen={jest.fn()}
       onRefresh={jest.fn()}
@@ -50,6 +53,7 @@ test("calls onQueryChange with an empty string when the search query is cleared"
   render(
     <SearchInput
       searchQuery="searchquery"
+      searchType={SearchType.Search}
       onQueryChange={onQueryChange}
       toggleFilterOpen={jest.fn()}
       onRefresh={jest.fn()}
@@ -70,13 +74,14 @@ test("calls toggleFilterOpen when the filter button is clicked", async () => {
   render(
     <SearchInput
       searchQuery=""
+      searchType={SearchType.Search}
       onQueryChange={jest.fn()}
       toggleFilterOpen={toggleFilterOpen}
       onRefresh={jest.fn()}
     />,
   );
 
-  fireEvent.click(screen.getByLabelText("open-search-filters"));
+  fireEvent.click(screen.getByLabelText("Open Search Options"));
 
   expect(toggleFilterOpen).toHaveBeenCalled();
 });
@@ -86,6 +91,7 @@ test("calls onRefresh when the refresh button is clicked", async () => {
   render(
     <SearchInput
       searchQuery=""
+      searchType={SearchType.Search}
       onQueryChange={jest.fn()}
       toggleFilterOpen={jest.fn()}
       onRefresh={refresh}
@@ -101,6 +107,7 @@ test("can't find/open filters when hideFilters prop is given", async () => {
   render(
     <SearchInput
       searchQuery=""
+      searchType={SearchType.Search}
       onQueryChange={jest.fn()}
       toggleFilterOpen={jest.fn()}
       onRefresh={jest.fn()}
@@ -109,6 +116,6 @@ test("can't find/open filters when hideFilters prop is given", async () => {
   );
 
   expect(
-    screen.queryByLabelText("open-search-filters"),
+    screen.queryByLabelText("Open Search Options"),
   ).not.toBeInTheDocument();
 });

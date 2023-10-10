@@ -2,9 +2,11 @@ import clsx from "clsx";
 import { ReactNode } from "react";
 import { FiTrash, FiTrash2 } from "react-icons/fi";
 
+import { AvailabilityIcon } from "src/components/availability";
 import { OpenObjectButton } from "src/components/button";
 import { ObjectTypePill } from "src/components/pill";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
+import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
 import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
@@ -18,6 +20,7 @@ interface ObjectIdentifierCardProps {
   disableDeleteClick?: boolean;
   hideObjectType?: boolean;
   className?: string;
+  hideAvailabilityStatus?: boolean;
   onForwardClick?: (o: SkylarkObjectIdentifier) => void;
   onDeleteClick?: () => void;
 }
@@ -29,6 +32,7 @@ export const ObjectIdentifierCard = ({
   disableDeleteClick,
   hideObjectType,
   className,
+  hideAvailabilityStatus,
   onForwardClick,
   onDeleteClick,
 }: ObjectIdentifierCardProps) => {
@@ -41,7 +45,7 @@ export const ObjectIdentifierCard = ({
   return (
     <div
       className={clsx(
-        "flex w-full flex-grow items-center space-x-2 py-3",
+        "flex w-full flex-grow items-center space-x-1.5 py-3",
         className,
       )}
     >
@@ -76,6 +80,18 @@ export const ObjectIdentifierCard = ({
           />
         </button>
       )}
+      {!hideAvailabilityStatus &&
+        object.objectType !== BuiltInSkylarkObjectType.Availability && (
+          <div>
+            <AvailabilityIcon
+              status={
+                (object.availability && object.availability.status) || null
+              }
+              className="text-xl"
+              withTooltipDescription
+            />
+          </div>
+        )}
       {onForwardClick && (
         <OpenObjectButton
           disabled={disableForwardClick}

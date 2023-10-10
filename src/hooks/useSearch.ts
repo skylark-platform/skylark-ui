@@ -2,7 +2,6 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { RequestDocument, Variables } from "graphql-request";
 import { useEffect, useMemo } from "react";
 
-import { REQUEST_HEADERS } from "src/constants/skylark";
 import { useUser } from "src/contexts/useUser";
 import { QueryKeys } from "src/enums/graphql";
 import {
@@ -15,8 +14,8 @@ import {
   createSearchObjectsQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
-import { convertDateAndTimezoneToISO } from "src/lib/skylark/availability";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
+import { generateAvailabilityHeaders } from "src/lib/utils/request";
 
 import { useAllObjectsMeta } from "./useSkylarkObjectTypes";
 
@@ -33,14 +32,17 @@ export interface SearchFilters {
   };
 }
 
+interface UseSearchOpts {
+  filters: SearchFilters;
+  disabled?: boolean;
+}
+
 export const SEARCH_PAGE_SIZE = 100;
 
 export const useSearch = ({
-  query: queryString,
-  objectTypes,
-  language,
-  availability,
-}: SearchFilters) => {
+  filters: { query: queryString, objectTypes, language, availability },
+  disabled,
+}: UseSearchOpts) => {
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta(true);
 
   // Used to rerender search results when the search changes but objects are the same
@@ -67,26 +69,7 @@ export const useSearch = ({
     dimensions,
   };
 
-  const headers: HeadersInit = {
-    [REQUEST_HEADERS.ignoreAvailability]: "true",
-  };
-
-  if (
-    availability.dimensions &&
-    Object.keys(availability.dimensions).length > 0
-  ) {
-    headers[REQUEST_HEADERS.ignoreAvailability] = "false";
-    headers[REQUEST_HEADERS.ignoreTime] = "true";
-
-    if (availability.timeTravel) {
-      headers[REQUEST_HEADERS.ignoreTime] = "false";
-      // Send as UTC
-      headers[REQUEST_HEADERS.timeTravel] = convertDateAndTimezoneToISO(
-        availability.timeTravel.datetime,
-        availability.timeTravel.timezone,
-      );
-    }
-  }
+  const headers = generateAvailabilityHeaders(availability);
 
   const {
     data: searchResponse,
@@ -124,7 +107,7 @@ export const useSearch = ({
         lastPage.search.objects.length > 0;
       return shouldFetchMore ? totalNumObjects : undefined;
     },
-    enabled: !!query,
+    enabled: !!query && !disabled,
   });
 
   const { dispatch } = useUser();
@@ -135,11 +118,12 @@ export const useSearch = ({
       ?.flatMap((page) => page.search.objects)
       .filter((obj) => obj !== null) as SkylarkGraphQLObject[] | undefined;
 
-    const normalisedObjects = nonNullObjects?.map(
-      removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>,
-    );
+    const normalisedObjects =
+      nonNullObjects?.map(
+        removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>,
+      ) || [];
 
-    const parsedObjects = normalisedObjects?.map((obj) => {
+    const parsedObjects = normalisedObjects.map((obj) => {
       const objectMeta = searchableObjects?.find(
         ({ name }) => name === obj.__typename,
       );

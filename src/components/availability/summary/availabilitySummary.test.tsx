@@ -3,11 +3,13 @@ import {
   waitFor,
 } from "src/__tests__/utils/test-utils";
 import { UTC_NAME } from "src/components/inputs/select";
+import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { formatReadableDateTime } from "src/lib/skylark/availability";
 
 import { AvailabilitySummary } from "./availabilitySummary.component";
 
 const defaultProps: {
+  searchType: SearchType;
   query: string;
   objectTypes: string[] | null;
   language?: string | null;
@@ -16,6 +18,7 @@ const defaultProps: {
     timeTravel: { datetime: string; timezone: string } | null;
   };
 } = {
+  searchType: SearchType.Search,
   query: "",
   objectTypes: null,
   language: undefined,
@@ -74,6 +77,20 @@ test("shows query string", () => {
 
   expect(container).toHaveTextContent(
     "Objects filtered by query “My search query”",
+  );
+});
+
+test("shows UID string when searchType is UID/ExternalID", () => {
+  const { container } = renderWithMinimalProviders(
+    <AvailabilitySummary
+      {...defaultProps}
+      searchType={SearchType.UIDExtIDLookup}
+      query="MYTESTUID"
+    />,
+  );
+
+  expect(container).toHaveTextContent(
+    "Objects filtered by UID or External ID “MYTESTUID”",
   );
 });
 

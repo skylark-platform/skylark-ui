@@ -269,6 +269,7 @@ export const parseObjectContent = (
         removeFieldPrefixFromReturnedObject<ParsedSkylarkObjectMetadata>(
           object,
         );
+      const availability = parseObjectAvailability(object?.availability);
       return {
         objectType: object.__typename,
         position,
@@ -280,7 +281,7 @@ export const parseObjectContent = (
             language: object._meta?.language_data.version,
             global: object._meta?.global_data.version,
           },
-          availabilityStatus: null,
+          availabilityStatus: availability.status,
         },
         object: normalisedObject,
       };

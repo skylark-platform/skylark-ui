@@ -21,6 +21,7 @@ export interface MultiSelectProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  rounded?: boolean;
   onChange?: (values: string[]) => void;
 }
 
@@ -82,6 +83,7 @@ export const MultiSelect = forwardRef(
       onChange,
       disabled,
       selected,
+      rounded,
     } = props;
 
     const options = unsortedOptions.sort(sortSelectOptions);
@@ -112,6 +114,7 @@ export const MultiSelect = forwardRef(
     const paddingClassName = "py-2 pl-3 pr-2 sm:py-3 sm:pl-6";
     const selectClassName = clsx(
       "relative w-full cursor-default bg-manatee-50 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 disabled:text-manatee-500 text-sm flex",
+      rounded && "rounded-full",
     );
 
     const selectedOptions = options.filter(({ value }) =>
@@ -161,7 +164,7 @@ export const MultiSelect = forwardRef(
             >
               <Combobox.Input
                 className={clsx(
-                  "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:outline-none focus:ring-0",
+                  "block w-full truncate border-none bg-manatee-50 pr-2 leading-5 text-gray-900 focus:outline-none focus:ring-0",
                 )}
                 displayValue={(option: SelectOption) =>
                   option.label || option.value
@@ -175,7 +178,7 @@ export const MultiSelect = forwardRef(
           </div>
           <Transition
             as="div"
-            className="z-50"
+            className="z-50 text-sm"
             leave="transition ease-in duration-50"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"

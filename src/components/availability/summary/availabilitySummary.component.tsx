@@ -1,6 +1,7 @@
 import clsx from "clsx";
 
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
+import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import { formatReadableDateTime } from "src/lib/skylark/availability";
 
@@ -23,11 +24,13 @@ const prettifyStrArr = (arr: string[]): string => {
 // "5 Object types" in "en-GB" filtered by "search query" available to "Premium, PC" at "27th August 2020"
 
 export const AvailabilitySummary = ({
+  searchType,
   objectTypes,
   language,
   query,
   availability: { dimensions, timeTravel },
 }: {
+  searchType: SearchType;
   query: string;
   objectTypes: string[] | null;
   language?: string | null;
@@ -84,6 +87,14 @@ export const AvailabilitySummary = ({
     <></>
   );
 
+  const lookupStr = query ? (
+    <>
+      filtered by <strong>UID or External ID &ldquo;{query}&rdquo;</strong>{" "}
+    </>
+  ) : (
+    <></>
+  );
+
   let availabilityStr = <></>;
 
   if (dimensions || timeTravel) {
@@ -131,13 +142,14 @@ export const AvailabilitySummary = ({
   return (
     <p
       className={clsx(
-        "text-xs text-manatee-500 md:text-sm",
+        "text-xs text-manatee-500 md:whitespace-nowrap md:text-sm",
         "[&>strong]:font-medium [&>strong]:text-black",
         "after:-ml-1 after:content-['.']",
       )}
     >
       {objectTypeStr}
-      {queryStr}
+      {searchType === SearchType.Search && queryStr}
+      {searchType === SearchType.UIDExtIDLookup && lookupStr}
       {availabilityStr}
       {translationStr}
     </p>

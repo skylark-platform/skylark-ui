@@ -370,15 +370,17 @@ describe("parseObjectContent", () => {
   });
 
   test("parses an objects content objects", () => {
-    const objects = [
+    const objects: { object: SkylarkGraphQLObject; position: number }[] = [
       {
         position: 1,
         object: {
           __typename: "Episode",
           uid: "episode_1",
+          external_id: "",
           _config: {
             colour: "black",
             primary_field: "uid",
+            display_name: "Episode",
             field_config: [
               { name: "title", ui_position: 1, ui_field_type: "STRING" },
             ],
@@ -393,13 +395,18 @@ describe("parseObjectContent", () => {
               version: 1,
             },
           },
-        } as SkylarkGraphQLObject,
+          availability: {
+            __typename: BuiltInSkylarkObjectType.Availability,
+            objects: [],
+          },
+        },
       },
       {
         position: 2,
         object: {
           __typename: "SkylarkSet",
           uid: "set_1",
+          external_id: "set_1",
           _config: {
             colour: "black",
             primary_field: "uid",
@@ -418,7 +425,16 @@ describe("parseObjectContent", () => {
               version: 2,
             },
           },
-        } as SkylarkGraphQLObject,
+          availability: {
+            __typename: BuiltInSkylarkObjectType.Availability,
+            objects: [
+              {
+                start: "2000-10-10T12:00:00Z",
+                end: "2030-10-10T12:00:00Z",
+              },
+            ],
+          },
+        },
       },
     ];
 
@@ -431,7 +447,7 @@ describe("parseObjectContent", () => {
           config: {
             colour: "black",
             primaryField: "uid",
-            objectTypeDisplayName: undefined,
+            objectTypeDisplayName: "Episode",
             fieldConfig: [
               {
                 name: "title",
@@ -447,7 +463,7 @@ describe("parseObjectContent", () => {
               global: 1,
               language: 2,
             },
-            availabilityStatus: null,
+            availabilityStatus: AvailabilityStatus.Unavailable,
           },
           object: objects[0].object,
           objectType: objects[0].object.__typename,
@@ -473,7 +489,7 @@ describe("parseObjectContent", () => {
               global: 2,
               language: 1,
             },
-            availabilityStatus: null,
+            availabilityStatus: AvailabilityStatus.Active,
           },
           object: objects[1].object,
           objectType: objects[1].object.__typename,

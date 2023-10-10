@@ -96,6 +96,11 @@ describe("Content Library - Search", () => {
           fixture: "./skylark/queries/getUserAndAccount.json",
         });
       }
+      if (hasOperationName(req, "GET_OBJECT_GENERIC")) {
+        req.reply({
+          fixture: "./skylark/queries/getObjectGeneric/homepage.json",
+        });
+      }
     });
 
     cy.visit("/");
@@ -103,9 +108,9 @@ describe("Content Library - Search", () => {
   });
 
   it("visits home", () => {
-    cy.contains(
-      "No results containing all your search terms were found.",
-    ).should("not.exist");
+    cy.contains("We couldn't find matches for the search term.").should(
+      "not.exist",
+    );
     cy.contains("GOT");
     cy.percySnapshot("Homepage");
   });
@@ -123,7 +128,7 @@ describe("Content Library - Search", () => {
     cy.visit("/");
 
     cy.wait("@searchQueryEmpty");
-    cy.contains("No results containing all your search terms were found.");
+    cy.contains("We couldn't find matches for the search term.");
     cy.percySnapshot("Homepage - no search data");
   });
 
@@ -138,7 +143,7 @@ describe("Content Library - Search", () => {
 
   it("displays an objects display_name in the object type filter", () => {
     cy.contains("Asset").should("exist");
-    cy.contains("Filters").click();
+    cy.get('[aria-label="Open Search Options"]').click();
 
     cy.get("[data-testid=checkbox-grid-object-type]").within(() => {
       cy.contains("Set");
@@ -148,7 +153,7 @@ describe("Content Library - Search", () => {
 
   it("filters for only Assets", () => {
     cy.contains("Asset").should("exist");
-    cy.contains("Filters").click();
+    cy.get('[aria-label="Open Search Options"]').click();
 
     cy.contains("Toggle all").click();
     cy.contains("Apply").should("be.disabled");
@@ -158,7 +163,7 @@ describe("Content Library - Search", () => {
 
   it("filters for only title, uid, external_id, title_short fields", () => {
     cy.contains("Asset").should("exist");
-    cy.contains("Filters").click();
+    cy.get('[aria-label="Open Search Options"]').click();
 
     const columnsFilters = cy.get("[data-testid=checkbox-grid-columns]");
 
@@ -270,5 +275,26 @@ describe("Content Library - Search", () => {
     cy.contains("Classic kids shows");
 
     cy.percySnapshot("Homepage - Filtered By Availability Dimensions (kids)");
+  });
+
+  it("does a lookup for streamtv_homepage with the UID & External ID", () => {
+    cy.get('[aria-label="Open Search Options"]').click();
+
+    cy.get("[data-testid=radio-group-lookup-type]").within(() => {
+      cy.contains("UID").click();
+    });
+
+    cy.contains("Apply").should("not.be.disabled").click();
+
+    cy.contains("Enter a lookup value").should("exist");
+    cy.contains("We couldn't find matches for the search term.").should(
+      "exist",
+    );
+
+    cy.get('input[name="search-query-input"]').type("streamtv_homepage");
+
+    cy.contains("StreamTV Homepage");
+
+    cy.percySnapshot("Homepage - UID & External ID Lookup");
   });
 });

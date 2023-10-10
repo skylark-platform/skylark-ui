@@ -12,6 +12,7 @@ import {
   generateRelationshipsToReturn,
   generateContentsToReturn,
   getObjectConfigFields,
+  generateAvailabilityRelationshipFields,
 } from "./utils";
 
 export const createGetObjectQueryName = (objectType: string) =>
@@ -183,7 +184,7 @@ export const createGetObjectRelationshipsQuery = (
             ...acc,
             [currentValue.relationshipName]: {
               __args: {
-                limit: 50,
+                limit: 100,
                 next_token: new VariableType("nextToken"),
               },
               __typename: true, // To get the ObjectType (Listing)
@@ -195,6 +196,13 @@ export const createGetObjectRelationshipsQuery = (
                   relationshipsFields[currentValue.objectType],
                   currentValue.objectType,
                 ),
+                ...(object.availability
+                  ? {
+                      availability: generateAvailabilityRelationshipFields(
+                        object.availability,
+                      ),
+                    }
+                  : {}),
                 ...common.fields,
               },
             },
@@ -213,6 +221,7 @@ export const createGetObjectContentQuery = (
   object: SkylarkObjectMeta | null,
   contentTypesToRequest: SkylarkObjectMeta[] | null,
   addLanguageVariable?: boolean,
+  opts?: { fetchAvailability?: boolean },
 ) => {
   if (!object || !object.operations.get || !contentTypesToRequest) {
     return null;
@@ -240,6 +249,7 @@ export const createGetObjectContentQuery = (
         __typename: true,
         ...generateContentsToReturn(object, contentTypesToRequest, {
           nextTokenVariableName: "nextToken",
+          fetchAvailability: opts?.fetchAvailability,
         }),
       },
     },
@@ -289,6 +299,13 @@ export const createGetObjectContentOfQuery = (
                 __typename: true, // To remove the alias later
                 ...common.fields,
                 ...generateFieldsToReturn(object.fields, `__${object.name}__`),
+                ...(object.availability
+                  ? {
+                      availability: generateAvailabilityRelationshipFields(
+                        object.availability,
+                      ),
+                    }
+                  : {}),
               };
             }),
           },

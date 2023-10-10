@@ -11,6 +11,7 @@ import {
   getObjectHandlers,
   getObjectRelationshipsHandlers,
   getObjectsConfigHandlers,
+  getObjectGenericHandlers,
 } from "./getObjectHandlers";
 import { introspectionHandlers } from "./introspectionHandlers";
 import { searchHandlers } from "./searchHandlers";
@@ -25,6 +26,7 @@ export const handlers = [
   ...getObjectRelationshipsHandlers,
   ...getObjectContentHandlers,
   ...getObjectContentOfHandlers,
+  ...getObjectGenericHandlers,
   ...createObjectHandlers,
   ...updateObjectHandlers,
   ...deleteObjectHandlers,

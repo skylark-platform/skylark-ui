@@ -4,11 +4,13 @@ import { useDebouncedCallback } from "use-debounce";
 import { ObjectSearchInitialColumnsState } from "src/components/objectSearch";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { SearchFilters } from "src/hooks/useSearch";
+import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { readIntFromLocalStorage } from "src/lib/utils";
 
 export interface ObjectSearchTab {
   id: string;
   name?: string;
+  searchType: SearchType;
   filters: SearchFilters;
   columnsState?: ObjectSearchInitialColumnsState;
 }
@@ -121,11 +123,10 @@ export const useObjectSearchTabs = (
 
           return {
             ...tab,
-            ...{
-              ...updatedTab,
-              columnsState: updatedTab.columnsState || tab.columnsState,
-              filters: updatedTab.filters || tab.filters,
-            },
+            ...updatedTab,
+            searchType: updatedTab.searchType || tab.searchType,
+            columnsState: updatedTab.columnsState || tab.columnsState,
+            filters: updatedTab.filters || tab.filters,
           };
         }) || [];
 

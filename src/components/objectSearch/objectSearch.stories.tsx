@@ -23,7 +23,7 @@ WithFiltersOpen.play = async ({ canvasElement }) => {
   });
 
   const filtersButton = canvas.getByRole("button", {
-    name: "open-search-filters",
+    name: "Open Search Options",
   });
 
   await userEvent.click(filtersButton);

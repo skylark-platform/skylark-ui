@@ -10,12 +10,11 @@ import {
   within,
 } from "src/__tests__/utils/test-utils";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { ObjectSearchTab } from "src/hooks/localStorage/useObjectSearchTabs";
+import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
 
-import {
-  ObjectSearchTab,
-  TabbedObjectSearchWithAccount,
-} from "./tabbedObjectSearch.component";
+import { TabbedObjectSearchWithAccount } from "./tabbedObjectSearch.component";
 
 const mockLocalStorage = (initialTabs?: ObjectSearchTab[]) => {
   Storage.prototype.getItem = jest.fn().mockImplementation((param) => {
@@ -163,25 +162,62 @@ test("Rename active tab (cancel)", async () => {
   });
 });
 
-test("Add new view", async () => {
-  mockLocalStorage();
+describe("Adding new tabs", () => {
+  test("Add new blank search view", async () => {
+    mockLocalStorage();
 
-  render(<TabbedObjectSearchWithAccount />);
+    render(<TabbedObjectSearchWithAccount />);
 
-  await waitFor(() => {
-    expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
+    await waitFor(() => {
+      expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
+    });
+
+    const tabsContainer = screen.getByTestId("object-search-tabs");
+    expect(tabsContainer.children.length).toBe(2);
+
+    fireEvent.click(screen.getByLabelText("add tab"));
+
+    fireEvent.click(screen.getByText("Search"));
+
+    await waitFor(() => {
+      expect(screen.queryAllByText("Default View")).toHaveLength(1);
+    });
+
+    expect(screen.queryAllByText("Search 3")).toHaveLength(2);
   });
 
-  const tabsContainer = screen.getByTestId("object-search-tabs");
-  expect(tabsContainer.children.length).toBe(2);
+  test("Add new Object Type specific view", async () => {
+    mockLocalStorage();
 
-  screen.getByLabelText("add tab").click();
+    render(<TabbedObjectSearchWithAccount />);
 
-  await waitFor(() => {
-    expect(screen.queryAllByText("Default View")).toHaveLength(1);
+    await waitFor(() => {
+      expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
+    });
+
+    const tabsContainer = screen.getByTestId("object-search-tabs");
+    expect(tabsContainer.children.length).toBe(2);
+
+    fireEvent.click(screen.getByLabelText("add tab"));
+
+    const withinObjectTypeSearchOptions = within(
+      screen.getByTestId("dropdown-section-search-object-type-options"),
+    );
+
+    await waitFor(() => {
+      expect(
+        withinObjectTypeSearchOptions.queryAllByText("Episode"),
+      ).toHaveLength(1);
+    });
+
+    fireEvent.click(withinObjectTypeSearchOptions.getByText("Episode"));
+
+    await waitFor(() => {
+      expect(screen.queryAllByText("Default View")).toHaveLength(1);
+    });
+
+    expect(screen.queryAllByText("Episode")).toHaveLength(2);
   });
-
-  expect(screen.queryAllByText("View 3")).toHaveLength(2);
 });
 
 test("Deletes active tab", async () => {
@@ -206,6 +242,7 @@ test("Adds the initial tabs when all tabs are deleted", async () => {
     {
       id: "mytab",
       name: "mytab",
+      searchType: SearchType.Search,
       filters: {
         query: "GOT",
         objectTypes: ["Episode"],
@@ -239,6 +276,7 @@ test("Loads values from localStorage", async () => {
     {
       id: "123",
       name: "Initial tab 1",
+      searchType: SearchType.Search,
       filters: {
         query: "GOT",
         objectTypes: ["Episode"],
@@ -251,6 +289,7 @@ test("Loads values from localStorage", async () => {
     {
       id: "456",
       name: "Another tab",
+      searchType: SearchType.Search,
       filters: {
         query: "",
         objectTypes: ["Season"],

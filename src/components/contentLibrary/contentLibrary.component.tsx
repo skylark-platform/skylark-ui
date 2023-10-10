@@ -190,6 +190,11 @@ export const ContentLibrary = () => {
     ? activeDragged.data.current.options.modifiers
     : [snapCenterToCursor];
 
+  const clearDroppedObjects = useCallback(
+    () => setDroppedObjects(undefined),
+    [],
+  );
+
   return (
     <DndContext
       onDragStart={handleDragStart}
@@ -287,7 +292,7 @@ export const ContentLibrary = () => {
                 setTab={setPanelTab}
                 navigateToPreviousPanelObject={navigateToPreviousPanelObject}
                 navigateToForwardPanelObject={navigateToForwardPanelObject}
-                clearDroppedObjects={() => setDroppedObjects(undefined)}
+                clearDroppedObjects={clearDroppedObjects}
               />
             </div>
           </m.div>
