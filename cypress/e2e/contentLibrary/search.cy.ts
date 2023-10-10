@@ -96,6 +96,11 @@ describe("Content Library - Search", () => {
           fixture: "./skylark/queries/getUserAndAccount.json",
         });
       }
+      if (hasOperationName(req, "GET_OBJECT_GENERIC")) {
+        req.reply({
+          fixture: "./skylark/queries/getObjectGeneric/homepage.json",
+        });
+      }
     });
 
     cy.visit("/");
@@ -270,5 +275,26 @@ describe("Content Library - Search", () => {
     cy.contains("Classic kids shows");
 
     cy.percySnapshot("Homepage - Filtered By Availability Dimensions (kids)");
+  });
+
+  it("does a lookup for streamtv_homepage with the UID & External ID", () => {
+    cy.get('[aria-label="Open Search Options"]').click();
+
+    cy.get("[data-testid=radio-group-lookup-type]").within(() => {
+      cy.contains("UID").click();
+    });
+
+    cy.contains("Apply").should("not.be.disabled").click();
+
+    cy.contains("Enter a lookup value").should("exist");
+    cy.contains("We couldn't find matches for the search term.").should(
+      "exist",
+    );
+
+    cy.get('input[name="search-query-input"]').type("streamtv_homepage");
+
+    cy.contains("StreamTV Homepage");
+
+    cy.percySnapshot("Homepage - UID & External ID Lookup");
   });
 });

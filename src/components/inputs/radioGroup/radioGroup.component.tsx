@@ -31,6 +31,7 @@ export function RadioGroup<ValueType extends string>({
       onChange={onChange}
       as={as}
       className={clsx("flex flex-col text-xs", className)}
+      data-testid={`radio-group-${label?.split(" ").join("-").toLowerCase()}`}
     >
       {label && (
         <HeadlessUIRadioGroup.Label className="mb-2 select-none font-semibold text-manatee-600">
