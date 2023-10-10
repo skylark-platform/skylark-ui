@@ -45,6 +45,7 @@ import {
   SkylarkAvailabilityField,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
+import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
 
 type TabbedObjectSearchProps = Omit<
   ObjectSearchProps,
@@ -80,22 +81,22 @@ const generateNewTabColumnStateForObjectType = (
     };
   }
 
-  return {
+  const columnState = {
     columns: [
-      ...new Set([
-        ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
-        OBJECT_LIST_TABLE.columnIds.displayField,
-        OBJECT_LIST_TABLE.columnIds.translation,
-        OBJECT_LIST_TABLE.columnIds.images,
-        OBJECT_LIST_TABLE.columnIds.availability,
-        ...fields,
-      ]),
-    ],
+      ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+      OBJECT_LIST_TABLE.columnIds.displayField,
+      OBJECT_LIST_TABLE.columnIds.translation,
+      OBJECT_LIST_TABLE.columnIds.images,
+      OBJECT_LIST_TABLE.columnIds.availability,
+      ...fields,
+    ].filter((str, index, arr) => arr.indexOf(str) === index),
     frozen: [
       ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
       OBJECT_LIST_TABLE.columnIds.displayField,
     ],
   };
+
+  return columnState;
 };
 
 const generateNewTab = (
@@ -295,31 +296,52 @@ const NewTabButton = ({
             config.objectTypeDisplayName || objectType
           }`;
 
-          const objectMeta = objectsMeta?.find(
-            ({ name }) => name === objectType,
-          );
-          const objectFields = objectMeta?.fields.map(({ name }) => name);
+          const onClick = () => {
+            const objectMeta = objectsMeta?.find(
+              ({ name }) => name === objectType,
+            );
+            const objectFields =
+              objectMeta?.fields.map(({ name }) => name) || [];
+
+            const splitFields =
+              objectMeta &&
+              splitMetadataIntoSystemTranslatableGlobal(
+                objectFields,
+                objectMeta?.fields,
+                objectMeta?.fieldConfig,
+                config.fieldConfig,
+              );
+
+            const fields = splitFields
+              ? [
+                  ...splitFields.systemMetadataFields,
+                  ...splitFields.translatableMetadataFields,
+                  ...splitFields.globalMetadataFields,
+                ].map(({ field }) => field)
+              : objectFields;
+
+            addTab(
+              generateNewTab(`${readableObjType} objects`, {
+                filters: {
+                  objectTypes: [objectType],
+                  language:
+                    objectType === BuiltInSkylarkObjectType.Availability
+                      ? null
+                      : undefined,
+                },
+                columnsState: generateNewTabColumnStateForObjectType(
+                  objectType,
+                  fields,
+                ),
+              }),
+            );
+          };
 
           return {
             id: `search-${objectType}`,
             text: readableObjType,
             Icon: <FiSearch className="text-lg" />,
-            onClick: () =>
-              addTab(
-                generateNewTab(`${readableObjType} objects`, {
-                  filters: {
-                    objectTypes: [objectType],
-                    language:
-                      objectType === BuiltInSkylarkObjectType.Availability
-                        ? null
-                        : undefined,
-                  },
-                  columnsState: generateNewTabColumnStateForObjectType(
-                    objectType,
-                    objectFields || [],
-                  ),
-                }),
-              ),
+            onClick,
           };
         }) || [],
     },
