@@ -43,13 +43,13 @@ export function RadioGroup<ValueType extends string>({
           <HeadlessUIRadioGroup.Option
             key={option.value}
             value={option}
-            className="group/radio flex w-full flex-row items-center"
+            className="group/radio flex w-full flex-row items-center overflow-auto"
           >
             {({ checked }) => (
               <>
                 <div
                   className={clsx(
-                    "peer flex h-5 w-5 min-w-5 items-center justify-center rounded-full group-hover/radio:cursor-pointer",
+                    "peer flex h-5 w-5 min-w-5 items-center justify-center overflow-x-auto rounded-full group-hover/radio:cursor-pointer",
                     "border-2 bg-manatee-200 ui-checked:border-brand-primary ui-checked:bg-brand-primary",
                     "text-white focus:outline-none focus-visible:ring focus-visible:ring-brand-primary focus-visible:ring-opacity-75",
                     className,
