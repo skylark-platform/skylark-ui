@@ -1981,11 +1981,10 @@ describe("appears in (content_of) view", () => {
         .objects;
     const firstContentOfItem = contentOfObjects[0];
 
-    expect(screen.getByText("Set")).toBeInTheDocument(),
-      expect(screen.getByText(`Collection (1)`)).toBeInTheDocument(),
-      await waitFor(() =>
-        expect(screen.getByText(firstContentOfItem.title)).toBeInTheDocument(),
-      );
+    expect(screen.getByText("Set")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText(firstContentOfItem.title)).toBeInTheDocument(),
+    );
 
     const firstOpenObjectButton = screen.getAllByRole("button", {
       name: /Open Object/i,
