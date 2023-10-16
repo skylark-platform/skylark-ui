@@ -36,10 +36,10 @@ export const AvailabilityLabel = ({
         status === AvailabilityStatus.Expired && "text-error",
       )}
     >
-      <AvailabilityIcon
+      {/* <AvailabilityIcon
         status={status}
         className="mr-1.5 text-base md:text-xl"
-      />
+      /> */}
       <span className="mt-px">{status || AvailabilityStatus.Unavailable}</span>
     </El>
   );

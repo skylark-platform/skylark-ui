@@ -46,7 +46,9 @@ export const useSearch = ({
   const { objects: searchableObjects, allFieldNames } = useAllObjectsMeta(true);
 
   // Used to rerender search results when the search changes but objects are the same
-  const searchHash = `${queryString}-${language}-${objectTypes?.join("-")}`;
+  const searchHash = `${queryString}-${language}-${objectTypes?.join(
+    "-",
+  )}-${JSON.stringify(availability)}`;
 
   const { query } = useMemo(() => {
     const query = createSearchObjectsQuery(searchableObjects, {

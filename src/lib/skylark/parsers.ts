@@ -39,6 +39,7 @@ import {
   SkylarkAvailabilityField,
   ParsedSkylarkObjectConfigFieldConfig,
   SkylarkSystemField,
+  AvailabilityStatus,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -54,6 +55,7 @@ import {
   AWS_EARLIEST_DATE,
   AWS_LATEST_DATE,
   convertDateToTimezoneAndRemoveOffset,
+  getSingleAvailabilityStatus,
 } from "./availability";
 
 dayjs.extend(customParseFormat);
@@ -188,7 +190,46 @@ const parseObjectAvailability = (
   const objects = (unparsedObject?.objects ||
     []) as ParsedSkylarkObjectAvailability["objects"];
 
+  const now = dayjs();
+
+  const reducedObjects = objects.reduce(
+    (prev, object) => {
+      const status = getSingleAvailabilityStatus(now, object.start, object.end);
+
+      if (status === AvailabilityStatus.Active) {
+        return {
+          ...prev,
+          active: [...prev.active, object],
+        };
+      }
+
+      if (status === AvailabilityStatus.Future) {
+        return {
+          ...prev,
+          future: [...prev.future, object],
+        };
+      }
+
+      if (status === AvailabilityStatus.Expired) {
+        return {
+          ...prev,
+          expired: [...prev.expired, object],
+        };
+      }
+
+      return prev;
+    },
+    { active: [], future: [], expired: [] } as {
+      active: ParsedSkylarkObjectAvailability["objects"];
+      future: ParsedSkylarkObjectAvailability["objects"];
+      expired: ParsedSkylarkObjectAvailability["objects"];
+    },
+  );
+
+  // console.log({ reduced });
+
   return {
+    ...reducedObjects,
     status: getObjectAvailabilityStatus(objects),
     objects,
   };
