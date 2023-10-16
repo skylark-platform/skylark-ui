@@ -75,7 +75,7 @@ const getIgnoreAvailabilityVariableAndArg = (shouldAdd: boolean) => {
 };
 
 export const generateVariablesAndArgs = (
-  objectType: SkylarkObjectType | "search",
+  objectType: SkylarkObjectType | "search" | "genericGetObject",
   operationType: "Query" | "Mutation",
   addLanguageVariable = false,
 ): {
@@ -85,7 +85,9 @@ export const generateVariablesAndArgs = (
 } => {
   const language = getLanguageVariableAndArg(addLanguageVariable);
   const ignoreAvailability = getIgnoreAvailabilityVariableAndArg(
-    operationType === "Query" && objectType !== "search",
+    operationType === "Query" &&
+      objectType !== "search" &&
+      objectType !== "genericGetObject",
   );
   if (objectType === BuiltInSkylarkObjectType.Availability) {
     return {
@@ -150,6 +152,21 @@ export const generateFieldsToReturn = (
   return fieldsToReturn;
 };
 
+export const generateAvailabilityRelationshipFields = (
+  objectAvailability: SkylarkObjectMeta,
+) => ({
+  __args: {
+    limit: 50, // max
+  },
+  next_token: true,
+  objects: {
+    ...generateFieldsToReturn(
+      objectAvailability?.fields,
+      objectAvailability.name,
+    ),
+  },
+});
+
 export const generateRelationshipsToReturn = (
   object: SkylarkObjectMeta | null,
   isSearch?: boolean,
@@ -161,18 +178,9 @@ export const generateRelationshipsToReturn = (
   const relationshipsToReturn: Record<string, object> = {};
 
   if (object.availability) {
-    relationshipsToReturn.availability = {
-      __args: {
-        limit: 50, // max
-      },
-      next_token: true,
-      objects: {
-        ...generateFieldsToReturn(
-          object.availability?.fields,
-          object.availability.name,
-        ),
-      },
-    };
+    relationshipsToReturn.availability = generateAvailabilityRelationshipFields(
+      object.availability,
+    );
   }
 
   if (object.images && object.images.objectMeta?.fields) {
@@ -201,6 +209,7 @@ export const generateContentsToReturn = (
   objectsToRequest: SkylarkObjectMeta[],
   opts: {
     nextTokenVariableName: string;
+    fetchAvailability?: boolean;
   },
 ) => {
   if (!object || !object.hasContent || objectsToRequest.length === 0) {
@@ -211,7 +220,7 @@ export const generateContentsToReturn = (
     content: {
       __args: {
         order: new EnumType("ASC"),
-        limit: 10,
+        limit: 20,
         next_token: new VariableType(opts.nextTokenVariableName),
       },
       next_token: true,
@@ -226,6 +235,13 @@ export const generateContentsToReturn = (
               object.name,
               `__${object.name}__`,
             ),
+            ...(opts.fetchAvailability && object.availability
+              ? {
+                  availability: generateAvailabilityRelationshipFields(
+                    object.availability,
+                  ),
+                }
+              : {}),
           })),
         },
         position: true,

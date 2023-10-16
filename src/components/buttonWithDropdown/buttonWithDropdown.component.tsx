@@ -27,7 +27,7 @@ export const ButtonWithDropdown = forwardRef(
         >
           {children}
         </Button>
-        <DropdownMenu options={options} align="right">
+        <DropdownMenu options={options} placement="bottom">
           <DropdownMenuButton as={Fragment}>
             <Button
               {...buttonProps}

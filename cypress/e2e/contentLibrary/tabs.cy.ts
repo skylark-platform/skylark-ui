@@ -79,7 +79,6 @@ describe("Content Library - Search", () => {
   it("loads default view with 2 default tabs", () => {
     cy.get("[data-testid=object-search-tab-overview]").within(() => {
       cy.contains("Default View");
-      cy.contains("All object types translated to en-GB ");
     });
 
     cy.get("[data-testid=object-search-tabs]").within(() => {
@@ -104,16 +103,40 @@ describe("Content Library - Search", () => {
     });
   });
 
-  it("Adds a tab", () => {
+  it("Adds a Search tab", () => {
     cy.get("[data-testid=object-search-tab-overview]").within(() => {
       cy.contains("Default View");
     });
 
     cy.get(`[aria-label="add tab"]`).click();
 
-    cy.get("[data-testid=object-search-tab-overview]").within(() => {
-      cy.contains("View 3");
+    cy.get("[data-testid=dropdown-section-blank-options]").within(() => {
+      cy.contains("Search").click();
     });
+
+    cy.get("[data-testid=object-search-tab-overview]").within(() => {
+      cy.contains("Search 3");
+    });
+  });
+
+  it("Adds a specific Object search tab", () => {
+    cy.get("[data-testid=object-search-tab-overview]").within(() => {
+      cy.contains("Default View");
+    });
+
+    cy.get(`[aria-label="add tab"]`).click();
+
+    cy.get("[data-testid=dropdown-section-search-object-type-options]").within(
+      () => {
+        cy.contains("Episode").click();
+      },
+    );
+
+    cy.get("[data-testid=object-search-tab-overview]").within(() => {
+      cy.contains("Episode objects");
+    });
+
+    cy.contains("Object type").should("not.exist");
   });
 
   it("Renames active tab, reloads the page to see the tab is still there", () => {
@@ -169,7 +192,7 @@ describe("Content Library - Search", () => {
     });
 
     // Select Filters
-    cy.contains("Filters").click();
+    cy.get('[aria-label="Open Search Options"]').click();
 
     cy.get("[data-testid=checkbox-grid-object-type]").within(() => {
       cy.contains("Toggle all").click();
@@ -274,7 +297,7 @@ describe("Content Library - Search", () => {
     });
 
     // Select Filters
-    cy.contains("Filters").click();
+    cy.get('[aria-label="Open Search Options"]').click();
 
     const columnsFilters = cy.get("[data-testid=checkbox-grid-columns]");
 

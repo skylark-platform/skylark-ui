@@ -1,0 +1,144 @@
+{
+  "data": {
+    "getObject": {
+      "__typename": "SkylarkSet",
+      "uid": "01HC97KW4C7K9D17AJD31A59YP",
+      "__SkylarkSet__slug": "media-reference-homepage",
+      "external_id": "streamtv_homepage",
+      "__SkylarkSet__type": "PAGE",
+      "__SkylarkSet__internal_title": "StreamTV Homepage",
+      "__SkylarkSet__title": "StreamTV Homepage",
+      "__SkylarkSet__title_short": null,
+      "__SkylarkSet__title_sort": null,
+      "__SkylarkSet__synopsis": null,
+      "__SkylarkSet__synopsis_short": null,
+      "__SkylarkSet__release_date": null,
+      "__SkylarkSet__description": null,
+      "availability": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01HC97CQ8A4XTR9X2Q5837X7B4",
+            "external_id": "recR7MXtwMj6MR8TK",
+            "title": "Always",
+            "slug": "always-everything",
+            "start": "2000-01-01T15:15:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "UTC"
+          }
+        ]
+      },
+      "images": {
+        "next_token": null,
+        "objects": [
+          {
+            "_meta": {
+              "available_languages": ["en-GB"],
+              "language_data": {
+                "language": "en-GB",
+                "version": 1
+              },
+              "global_data": {
+                "version": 1
+              },
+              "modified": {
+                "date": "2023-10-09T03:24:32.902464+00:00"
+              },
+              "created": {
+                "date": "2023-10-09T03:24:32.902464+00:00"
+              }
+            },
+            "uid": "01HC97E2MTB0QW64PQN07AEWZG",
+            "external_id": "reckauU2wr4Jmo3BD",
+            "slug": null,
+            "internal_title": null,
+            "title": "TopOfHomepage.png",
+            "description": null,
+            "type": "MAIN",
+            "alt_text": null,
+            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/fipoeydt2faibafg5ibxrvofg4/01HC97E2MTB0QW64PQN07AEWZG/01HC97E52P0D31CAH3C3N70BQR",
+            "external_url": null,
+            "file_name": null,
+            "content_type": "image/png"
+          },
+          {
+            "_meta": {
+              "available_languages": ["en-GB"],
+              "language_data": {
+                "language": "en-GB",
+                "version": 1
+              },
+              "global_data": {
+                "version": 1
+              },
+              "modified": {
+                "date": "2023-10-09T03:24:31.295529+00:00"
+              },
+              "created": {
+                "date": "2023-10-09T03:24:31.295529+00:00"
+              }
+            },
+            "uid": "01HC97E0THAASQ1VXE1X09G5WN",
+            "external_id": "recgkAKiElyJeSpvy",
+            "slug": null,
+            "internal_title": null,
+            "title": "StreamTVLoadingScreen.png",
+            "description": null,
+            "type": "MAIN",
+            "alt_text": null,
+            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/fipoeydt2faibafg5ibxrvofg4/01HC97E0THAASQ1VXE1X09G5WN/01HC97E37JEAF8DZHAQN9482QQ",
+            "external_url": null,
+            "file_name": null,
+            "content_type": "image/png"
+          },
+          {
+            "_meta": {
+              "available_languages": ["en-GB"],
+              "language_data": {
+                "language": "en-GB",
+                "version": 1
+              },
+              "global_data": {
+                "version": 1
+              },
+              "modified": {
+                "date": "2023-10-09T03:24:15.660068+00:00"
+              },
+              "created": {
+                "date": "2023-10-09T03:24:15.660068+00:00"
+              }
+            },
+            "uid": "01HC97DHS33YR9CJ21ZC0MJKS7",
+            "external_id": "recBiJpHfAYK1sPiI",
+            "slug": null,
+            "internal_title": null,
+            "title": "HomepageAfterCarousel.png",
+            "description": null,
+            "type": "MAIN",
+            "alt_text": null,
+            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/fipoeydt2faibafg5ibxrvofg4/01HC97DHS33YR9CJ21ZC0MJKS7/01HC97DQE6ECMTD8HBQKS4D72P",
+            "external_url": null,
+            "file_name": null,
+            "content_type": "image/png"
+          }
+        ]
+      },
+      "_meta": {
+        "available_languages": ["ar", "en-GB", "pt-PT"],
+        "language_data": {
+          "language": "en-GB",
+          "version": 1
+        },
+        "global_data": {
+          "version": 3
+        },
+        "modified": {
+          "date": "2023-10-09T03:27:43.238825+00:00"
+        },
+        "created": {
+          "date": "2023-10-09T03:27:43.238825+00:00"
+        }
+      }
+    }
+  }
+}

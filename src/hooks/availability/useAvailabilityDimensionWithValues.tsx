@@ -38,7 +38,14 @@ const getNextPageParam = (
 };
 
 export const useAvailabilityDimensionsWithValues = () => {
-  const { dimensions: dimensionsWithoutValues } = useAvailabilityDimensions();
+  const {
+    dimensions: dimensionsWithoutValues,
+    isLoading: isLoadingDimensions,
+  } = useAvailabilityDimensions();
+
+  const hasDimensions = Boolean(
+    dimensionsWithoutValues && dimensionsWithoutValues.length > 0,
+  );
 
   const { data, fetchNextPage, hasNextPage, isLoading } =
     useInfiniteQuery<GQLSkylarkListAvailabilityDimensionValuesResponse>({
@@ -51,7 +58,7 @@ export const useAvailabilityDimensionsWithValues = () => {
         return skylarkRequest("query", query as DocumentNode);
       },
       getNextPageParam,
-      enabled: dimensionsWithoutValues && dimensionsWithoutValues.length > 0,
+      enabled: hasDimensions,
     });
 
   // This if statement ensures that all data is fetched
@@ -105,6 +112,6 @@ export const useAvailabilityDimensionsWithValues = () => {
 
   return {
     dimensions: dimensionsWithValues,
-    isLoading,
+    isLoading: isLoadingDimensions || (hasDimensions && isLoading),
   };
 };

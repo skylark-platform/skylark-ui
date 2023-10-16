@@ -1,6 +1,7 @@
 import { fireEvent } from "@storybook/testing-library";
 
 import { render, screen } from "src/__tests__/utils/test-utils";
+import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
 import { SearchFilter } from "./searchFilter.component";
@@ -24,6 +25,7 @@ const graphqlQuery = {
 test("renders with all checkboxes checked", async () => {
   render(
     <SearchFilter
+      searchType={SearchType.Search}
       objectTypesWithConfig={objectTypesWithConfig}
       activeObjectTypes={objectTypes}
       columns={columnOpts}
@@ -45,6 +47,7 @@ test("changes checkboxes and calls onFilterSave when apply is clicked", async ()
 
   render(
     <SearchFilter
+      searchType={SearchType.Search}
       objectTypesWithConfig={objectTypesWithConfig}
       activeObjectTypes={objectTypes}
       columns={columnOpts}
@@ -58,17 +61,21 @@ test("changes checkboxes and calls onFilterSave when apply is clicked", async ()
 
   fireEvent.click(screen.getByRole("checkbox", { name: "Season" }));
   fireEvent.click(screen.getByRole("checkbox", { name: "slug" }));
+  // TODO UID & External ID Lookup when PR is merged
+  // fireEvent.click(screen.getByText("UID & External ID"));
+  fireEvent.click(screen.getByText("UID"));
 
   fireEvent.click(screen.getByText("Apply"));
 
-  expect(onFilterSave).toHaveBeenCalledWith(
-    { objectTypes: ["Brand", "Episode"] },
-    {
+  expect(onFilterSave).toHaveBeenCalledWith({
+    filters: { objectTypes: ["Brand", "Episode"] },
+    columnVisibility: {
       external_id: true,
       slug: false,
       uid: true,
     },
-  );
+    searchType: SearchType.UIDExtIDLookup,
+  });
 });
 
 test("when reset is clicked, all filters are returned to all options checked without saving", async () => {
@@ -76,6 +83,7 @@ test("when reset is clicked, all filters are returned to all options checked wit
 
   render(
     <SearchFilter
+      searchType={SearchType.Search}
       objectTypesWithConfig={objectTypesWithConfig}
       activeObjectTypes={[]}
       columns={columnOpts}

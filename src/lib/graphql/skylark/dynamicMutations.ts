@@ -9,6 +9,7 @@ import {
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
 import { hasProperty } from "src/lib/utils";
@@ -92,6 +93,14 @@ export const createCreateObjectMutation = (
     metadata,
     objectMeta.operations.update.inputs,
   );
+
+  // Don't send a blank External ID
+  if (
+    hasProperty(parsedMetadata, SkylarkSystemField.ExternalID) &&
+    !parsedMetadata.external_id
+  ) {
+    delete parsedMetadata.external_id;
+  }
 
   const common = generateVariablesAndArgs(
     objectMeta.name,

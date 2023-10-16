@@ -141,6 +141,19 @@ export const PanelAvailabilityDimensions = ({
             </div>
           );
         })}
+      {!dimensionsLoading && dimensions && dimensions.length === 0 && (
+        <>
+          <p>No Dimensions configured for Account.</p>
+          <a
+            className="my-2 block text-brand-primary underline"
+            href="https://docs.skylarkplatform.com/docs/dimensions"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Learn more.
+          </a>
+        </>
+      )}
       <PanelLoading isLoading={dimensionsLoading}>
         <Skeleton className="mb-2 h-5 w-48" />
         <Skeleton className="h-20 w-full" />

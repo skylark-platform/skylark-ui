@@ -17,6 +17,7 @@ import {
   AddedSkylarkObjectContentObject,
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
+  AvailabilityStatus,
 } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 
@@ -115,7 +116,7 @@ export const PanelContent = ({
   const { data, isLoading, hasNextPage } = useGetObjectContent(
     objectType,
     uid,
-    { language },
+    { language, fetchAvailability: true },
   );
 
   const objects = inEditMode ? updatedObjects : data;
@@ -188,6 +189,18 @@ export const PanelContent = ({
             const { object, config, meta, position } = item;
             const isNewObject = hasProperty(item, "isNewObject");
 
+            const parsedObject: ParsedSkylarkObject = {
+              objectType: object.__typename as string,
+              uid: object.uid,
+              metadata: object,
+              config,
+              meta,
+              availability: {
+                status: meta.availabilityStatus,
+                objects: [],
+              },
+            };
+
             return (
               <Reorder.Item
                 key={`panel-${uid}-content-item-${object.uid}`}
@@ -201,15 +214,7 @@ export const PanelContent = ({
                 dragListener={inEditMode}
               >
                 <ObjectIdentifierCard
-                  object={
-                    {
-                      objectType: object.__typename,
-                      uid: object.uid,
-                      metadata: object,
-                      config,
-                      meta,
-                    } as ParsedSkylarkObject
-                  }
+                  object={parsedObject}
                   onForwardClick={setPanelObject}
                   disableForwardClick={inEditMode}
                   disableDeleteClick={!inEditMode}

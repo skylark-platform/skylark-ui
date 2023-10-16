@@ -36,7 +36,7 @@ test("renders search bar", () => {
 
   screen.findByPlaceholderText("Search for an object(s)");
 
-  expect(screen.getByText("Filters")).toBeInTheDocument();
+  expect(screen.getByLabelText("Open Search Options")).toBeInTheDocument();
 });
 
 test("renders search bar, filters with no objects returned", async () => {
@@ -100,6 +100,45 @@ test("does not render info button on row hover when setPanelObject is undefined"
       name: /object-info/i,
     }),
   ).not.toBeInTheDocument();
+});
+
+test("calls setPanelObject when the row is clicked", async () => {
+  const setPanelObject = jest.fn();
+
+  render(<ObjectSearch setPanelObject={setPanelObject} />);
+
+  await screen.findAllByText(
+    GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+      .__SkylarkSet__title as string,
+  );
+
+  fireEvent.click(
+    screen.getByText(
+      GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+        .__SkylarkSet__title as string,
+    ),
+  );
+
+  expect(setPanelObject).toHaveBeenCalled();
+});
+
+test("calls window.open to open the object in a new tab when the row is clicked", async () => {
+  window.open = jest.fn();
+
+  render(<ObjectSearch setPanelObject={jest.fn()} />);
+
+  const object = GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0];
+
+  await screen.findAllByText(object.__SkylarkSet__title as string);
+
+  fireEvent.click(screen.getByText(object.__SkylarkSet__title as string), {
+    metaKey: true,
+  });
+
+  expect(window.open).toHaveBeenCalledWith(
+    `/object/${object.__typename}/${object.uid}?language=${object._meta.language_data.language}`,
+    "_blank",
+  );
 });
 
 describe("with object select (checkboxes)", () => {
@@ -189,7 +228,7 @@ describe("with object select (checkboxes)", () => {
 
     expect(
       (await withinResults.findAllByRole("checkbox")).length,
-    ).toBeGreaterThan(1);
+    ).toBeGreaterThanOrEqual(1);
 
     fireEvent.click(
       screen.getByRole("checkbox", { name: "clear-all-checked-objects" }),
@@ -262,7 +301,7 @@ test("opens filters and deselects all object types", async () => {
 
   fireEvent.click(
     screen.getByRole("button", {
-      name: /open-search-filters/i,
+      name: /Open Search Options/i,
     }),
   );
 

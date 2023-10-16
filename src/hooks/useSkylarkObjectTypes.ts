@@ -56,10 +56,20 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
 
   const objectTypesWithConfig = useMemo(
     () =>
-      objectTypes?.map((objectType) => ({
-        objectType,
-        config: parseObjectConfig(objectType, data?.[objectType]),
-      })),
+      objectTypes
+        ?.map((objectType) => ({
+          objectType,
+          config: parseObjectConfig(objectType, data?.[objectType]),
+        }))
+        .sort((a, b) => {
+          const objTypeA = (
+            a.config.objectTypeDisplayName || a.objectType
+          ).toUpperCase();
+          const objTypeB = (
+            b.config.objectTypeDisplayName || b.objectType
+          ).toUpperCase();
+          return objTypeA < objTypeB ? -1 : objTypeA > objTypeB ? 1 : 0;
+        }),
     [data, objectTypes],
   );
 
@@ -103,12 +113,20 @@ export const useSkylarkObjectTypesWithConfig = () => {
   return useObjectTypesConfig(objectTypes);
 };
 
-export const useSkylarkSetObjectTypes = () => {
+export const useSkylarkSetObjectTypes = (searchable: boolean) => {
+  const { objectTypes } = useSkylarkObjectTypes(searchable);
   const { data } = useSkylarkSchemaInterfaceType("Set");
 
-  const setObjectTypes = data
-    ? data?.possibleTypes.map(({ name }) => name) || []
-    : undefined;
+  const setObjectTypes = useMemo(() => {
+    const setObjectTypes =
+      data && objectTypes
+        ? data?.possibleTypes
+            .map(({ name }) => name)
+            .filter((setType) => objectTypes.includes(setType)) || []
+        : undefined;
+
+    return setObjectTypes;
+  }, [data, objectTypes]);
 
   return {
     setObjectTypes,
@@ -116,7 +134,7 @@ export const useSkylarkSetObjectTypes = () => {
 };
 
 export const useSkylarkSetObjectTypesWithConfig = () => {
-  const { setObjectTypes } = useSkylarkSetObjectTypes();
+  const { setObjectTypes } = useSkylarkSetObjectTypes(true);
   return useObjectTypesConfig(setObjectTypes);
 };
 
@@ -154,7 +172,7 @@ export const useAllObjectsMeta = (searchableOnly?: boolean) => {
 export const useAllSetObjectsMeta = () => {
   const { data: schemaResponse } = useSkylarkSchemaIntrospection(selectSchema);
 
-  const { setObjectTypes } = useSkylarkSetObjectTypes();
+  const { setObjectTypes } = useSkylarkSetObjectTypes(false);
 
   const { setObjects, allFieldNames } = useMemo(() => {
     const setObjects =

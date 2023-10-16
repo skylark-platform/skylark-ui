@@ -3,7 +3,6 @@ import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
-  PanelFieldTitle,
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
@@ -14,7 +13,7 @@ import {
   SkylarkObjectIdentifier,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
-import { formatObjectField, hasProperty } from "src/lib/utils";
+import { formatObjectField } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
@@ -49,29 +48,6 @@ const groupContentOfByObjectType = (objects?: ParsedSkylarkObject[]) => {
   );
 };
 
-const groupObjectsByType = (objects?: ParsedSkylarkObject[]) => {
-  return (
-    objects?.reduce(
-      (acc: Record<string, ParsedSkylarkObject[]>, currentValue) => {
-        if (!hasProperty(currentValue.metadata, "type")) {
-          return acc;
-        }
-        const property = currentValue.metadata.type as string;
-        if (hasProperty(acc, property))
-          return {
-            ...acc,
-            [property]: [...acc[property], currentValue],
-          };
-        return {
-          ...(acc as Record<string, ParsedSkylarkObject[]>),
-          [property]: [currentValue],
-        };
-      },
-      {} as Record<string, ParsedSkylarkObject[]>,
-    ) || {}
-  );
-};
-
 export const PanelContentOf = ({
   isPage,
   objectType,
@@ -101,10 +77,10 @@ export const PanelContentOf = ({
               title: formatObjectField(
                 config?.objectTypeDisplayName || objectType,
               ),
-              objects: groupObjectsByType(objectTypeGroupedData[objectType]),
+              objects: objectTypeGroupedData[objectType],
             };
           })
-          .filter(({ objects }) => Object.keys(objects).length > 0)
+          .filter(({ objects }) => objects && objects.length > 0)
       : [];
 
   return (
@@ -122,22 +98,13 @@ export const PanelContentOf = ({
         return (
           <div key={id} className="relative mb-8">
             <PanelSectionTitle text={title} id={id} sticky />
-            {Object.keys(objects).map((type) => (
-              <div key={type} className="mb-4">
-                <PanelFieldTitle
-                  sticky
-                  text={formatObjectField(type)}
-                  count={objects[type].length}
-                />
-                {objects[type].map((object) => (
-                  <ObjectIdentifierCard
-                    key={object.uid}
-                    object={object}
-                    onForwardClick={setPanelObject}
-                    disableForwardClick={inEditMode}
-                  />
-                ))}
-              </div>
+            {objects.map((object) => (
+              <ObjectIdentifierCard
+                key={object.uid}
+                object={object}
+                onForwardClick={setPanelObject}
+                disableForwardClick={inEditMode}
+              />
             ))}
           </div>
         );

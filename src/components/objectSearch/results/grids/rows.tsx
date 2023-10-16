@@ -77,8 +77,16 @@ const DataRow = ({
               width: `${virtualColumn.size}px`,
               height: `${virtualRow.size}px`,
             }}
-            onClick={() => {
+            onClick={(e) => {
               const tableMeta = cellContext.table.options?.meta;
+
+              if (e.metaKey) {
+                window.open(
+                  `/object/${cell.row.original.objectType}/${cell.row.original.uid}?language=${cell.row.original.meta.language}`,
+                  "_blank",
+                );
+                return;
+              }
 
               if (tableMeta?.onObjectClick) {
                 tableMeta.onObjectClick?.(

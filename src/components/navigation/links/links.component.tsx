@@ -95,7 +95,7 @@ export const NavigationLinks = () => {
               )}
             >
               {links ? (
-                <DropdownMenu options={links} align="left" mobileAlign="center">
+                <DropdownMenu options={links} placement="bottom-start">
                   <Menu.Button className="flex w-full items-center justify-center space-x-1 text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:text-sm">
                     {Icon}
                     <span>{text}</span>

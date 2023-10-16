@@ -19,8 +19,8 @@ export const Tooltip = ({ children, tooltip }: TooltipProps) => {
             "radix-side-right:animate-slide-left-fade",
             "radix-side-bottom:animate-slide-up-fade",
             "radix-side-left:animate-slide-right-fade",
-            "inline-flex items-center rounded-md px-4 py-2.5",
-            "bg-manatee-800 text-xs text-white",
+            "inline-flex items-center rounded-md px-4 py-2.5 md:mx-1",
+            "relative z-50 bg-manatee-800 text-xs text-white",
           )}
         >
           <TooltipPrimitive.Arrow className="fill-current text-black" />

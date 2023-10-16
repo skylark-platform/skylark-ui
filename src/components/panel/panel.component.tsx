@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -420,43 +420,52 @@ export const Panel = ({
     }
   };
 
-  const handleRelationshipsObjectsModified = (
-    updatedModifiedRelationships: Record<
-      string,
-      {
+  const handleRelationshipsObjectsModified = useCallback(
+    (
+      updatedModifiedRelationships: Record<
+        string,
+        {
+          added: ParsedSkylarkObject[];
+          removed: string[];
+        }
+      >,
+      errors: HandleDropError[],
+    ) => {
+      setModifiedRelationships(updatedModifiedRelationships);
+      displayHandleDroppedErrors(errors, selectedTab, data);
+      clearDroppedObjects?.();
+    },
+    [clearDroppedObjects, data, selectedTab],
+  );
+
+  const handleAvailabilityObjectsModified = useCallback(
+    (
+      updatedModifiedAvailabilities: {
         added: ParsedSkylarkObject[];
         removed: string[];
-      }
-    >,
-    errors: HandleDropError[],
-  ) => {
-    setModifiedRelationships(updatedModifiedRelationships);
-    displayHandleDroppedErrors(errors, selectedTab, data);
-    clearDroppedObjects?.();
-  };
-
-  const handleAvailabilityObjectsModified = (
-    updatedModifiedAvailabilities: {
-      added: ParsedSkylarkObject[];
-      removed: string[];
+      },
+      errors: HandleDropError[],
+    ) => {
+      setModifiedAvailabilityObjects(updatedModifiedAvailabilities);
+      displayHandleDroppedErrors(errors, selectedTab, data);
+      clearDroppedObjects?.();
     },
-    errors: HandleDropError[],
-  ) => {
-    setModifiedAvailabilityObjects(updatedModifiedAvailabilities);
-    displayHandleDroppedErrors(errors, selectedTab, data);
-    clearDroppedObjects?.();
-  };
+    [clearDroppedObjects, data, selectedTab],
+  );
 
-  const handleAvailabilityAssignedToModified = (
-    updatedAssignedToObjects: {
-      added: ParsedSkylarkObject[];
+  const handleAvailabilityAssignedToModified = useCallback(
+    (
+      updatedAssignedToObjects: {
+        added: ParsedSkylarkObject[];
+      },
+      errors?: HandleDropError[],
+    ) => {
+      setModifiedAvailabilityAssignedTo(updatedAssignedToObjects);
+      if (errors) displayHandleDroppedErrors(errors, selectedTab, data);
+      clearDroppedObjects?.();
     },
-    errors?: HandleDropError[],
-  ) => {
-    setModifiedAvailabilityAssignedTo(updatedAssignedToObjects);
-    if (errors) displayHandleDroppedErrors(errors, selectedTab, data);
-    clearDroppedObjects?.();
-  };
+    [clearDroppedObjects, data, selectedTab],
+  );
 
   return (
     <section

@@ -1,11 +1,13 @@
 import clsx from "clsx";
 import { useState } from "react";
-import { FiRefreshCw, FiSearch } from "react-icons/fi";
+import { FiCrosshair, FiRefreshCw, FiSearch, FiSliders } from "react-icons/fi";
 import { useDebouncedCallback } from "use-debounce";
 
-import { FiX, Filter } from "src/components/icons";
+import { FiX } from "src/components/icons";
+import { SearchType } from "src/hooks/useSearchWithLookupType";
 
 interface SearchInputProps {
+  searchType: SearchType;
   searchQuery: string;
   className?: string;
   isSearching?: boolean;
@@ -17,6 +19,7 @@ interface SearchInputProps {
 
 export const SearchInput = ({
   className,
+  searchType,
   searchQuery,
   isSearching,
   hideFilters,
@@ -48,7 +51,12 @@ export const SearchInput = ({
           hideFilters && "rounded-r-full",
         )}
       >
-        <FiSearch className="ml-2 text-lg md:ml-5 md:text-xl" />
+        {searchType === SearchType.Search && (
+          <FiSearch className="ml-2 text-lg md:ml-5 md:text-xl" />
+        )}
+        {searchType === SearchType.UIDExtIDLookup && (
+          <FiCrosshair className="ml-2 text-lg md:ml-5 md:text-xl" />
+        )}
         <input
           name="search-query-input"
           value={query}
@@ -89,13 +97,12 @@ export const SearchInput = ({
       </div>
       {!hideFilters && (
         <button
-          className="flex h-full items-center justify-center space-x-2 rounded-r-full bg-manatee-200 pl-4 pr-5 focus:outline-brand-primary md:pl-6 md:pr-8"
+          className="flex h-full items-center justify-center space-x-2 rounded-r-full bg-manatee-200 pl-6 pr-7 focus:outline-brand-primary md:pl-9 md:pr-10"
           onClick={toggleFilterOpen}
-          aria-label="open-search-filters"
+          aria-label="Open Search Options"
           type="button"
         >
-          <Filter />
-          <span className="font-medium">Filters</span>
+          <FiSliders className="h-4 w-4" />
         </button>
       )}
     </div>

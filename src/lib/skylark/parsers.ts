@@ -269,6 +269,7 @@ export const parseObjectContent = (
         removeFieldPrefixFromReturnedObject<ParsedSkylarkObjectMetadata>(
           object,
         );
+      const availability = parseObjectAvailability(object?.availability);
       return {
         objectType: object.__typename,
         position,
@@ -280,7 +281,7 @@ export const parseObjectContent = (
             language: object._meta?.language_data.version,
             global: object._meta?.global_data.version,
           },
-          availabilityStatus: null,
+          availabilityStatus: availability.status,
         },
         object: normalisedObject,
       };
@@ -469,11 +470,6 @@ export const parseMetadataForGraphQLRequest = (
     .map(([key, value]) => {
       // Never send UID as it cannot be changed
       if (key === SkylarkSystemField.UID) {
-        return undefined;
-      }
-
-      // Can make an External ID blank https://skylarkplatform.atlassian.net/browse/SL-2620
-      if (key === SkylarkSystemField.ExternalID && !value) {
         return undefined;
       }
 
