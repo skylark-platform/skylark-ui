@@ -229,6 +229,8 @@ export const Panel = ({
     error,
   } = useGetObject(objectType, uid, { language });
 
+  console.log({ data });
+
   const formParsedMetadata = useMemo(
     () =>
       (data &&
@@ -369,7 +371,7 @@ export const Panel = ({
       onError: showUpdateErrorToast,
     });
 
-  const saveActiveTabChanges = () => {
+  const saveActiveTabChanges = (opts?: { draft?: boolean }) => {
     if (selectedTab === PanelTab.Content && contentObjects.updated) {
       updateObjectContent({
         uid,
@@ -413,7 +415,12 @@ export const Panel = ({
           // Remove External ID when it hasn't changed
           delete values[SkylarkSystemField.ExternalID];
         }
-        updateObjectMetadata({ uid, language, metadata: values });
+        updateObjectMetadata({
+          uid,
+          language,
+          metadata: values,
+          draft: opts?.draft,
+        });
       })();
     } else {
       setEditMode(false);

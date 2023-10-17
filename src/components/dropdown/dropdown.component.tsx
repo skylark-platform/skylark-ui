@@ -118,7 +118,7 @@ const MenuItems = ({
                       <Menu.Item key={option.id}>
                         {({ close }) => {
                           const className = clsx(
-                            "flex w-full items-center space-x-1 md:space-x-1.5 rounded-sm pl-3 pr-2 py-2 md:py-3",
+                            "flex w-full items-center space-x-1 md:space-x-1.5 rounded-sm pl-3 pr-2 py-2 md:py-3 md:pr-4",
                             !option.disabled &&
                               "hover:bg-manatee-200 ui-active:bg-manatee-200 hover:text-gray-900 ui-active:text-gray-900",
                             option.disabled &&

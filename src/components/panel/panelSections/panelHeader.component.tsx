@@ -54,7 +54,7 @@ interface PanelHeaderProps {
   availabilityStatus?: AvailabilityStatus | null;
   toggleEditMode: () => void;
   closePanel?: () => void;
-  save: () => void;
+  save: (opts?: { draft?: boolean }) => void;
   setLanguage: (l: string) => void;
   navigateToPreviousPanelObject?: () => void;
   navigateToForwardPanelObject?: () => void;
@@ -221,12 +221,13 @@ export const PanelHeader = ({
                   options={[
                     {
                       id: "save-draft",
-                      text: "Save and Publish",
+                      text: "Save as Draft",
                       Icon: <FiSave className="text-xl" />,
+                      onClick: () => save({ draft: true }),
                     },
                   ]}
                 >
-                  Save Draft
+                  Save
                 </ButtonWithDropdown>
               ) : (
                 <Button
@@ -251,14 +252,17 @@ export const PanelHeader = ({
             </>
           ) : (
             <>
-              <Button
-                variant="primary"
-                Icon={<FiEdit className="h-4 w-4 stroke-success-content" />}
-                onClick={toggleEditMode}
-                disabled={!tabsWithEditMode.includes(currentTab)}
-              >
-                Edit {currentTab}
-              </Button>
+              {tabsWithEditMode.includes(currentTab) && (
+                <Button
+                  variant="primary"
+                  Icon={<FiEdit className="h-4 w-4 stroke-success-content" />}
+                  onClick={toggleEditMode}
+                  disabled={!tabsWithEditMode.includes(currentTab)}
+                  animated={false}
+                >
+                  Edit {currentTab}
+                </Button>
+              )}
             </>
           )}
         </div>
