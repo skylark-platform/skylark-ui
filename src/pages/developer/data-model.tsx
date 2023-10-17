@@ -1,4 +1,3 @@
-import { useScroll } from "framer-motion";
 import dynamic from "next/dynamic";
 import { FiDownload, FiArrowUp } from "react-icons/fi";
 
@@ -23,7 +22,7 @@ const DynamicSyntaxHighlighter = dynamic(
 export default function DataModel() {
   const { dataModel } = useGenerateDataModelFromSkylarkSchema();
 
-  const stringifiedDataModel = JSON.stringify(dataModel || {}, null, 4);
+  const stringifiedDataModel = JSON.stringify(dataModel || {}, null, 2);
 
   return (
     <div className="mx-auto mt-32 flex w-full max-w-5xl flex-col justify-center text-sm">
@@ -31,7 +30,10 @@ export default function DataModel() {
       <div className="mx-20">
         <p className="mb-1 mt-2">Missing support for:</p>
         <ul className="mb-4 ml-8 list-disc">
-          <li>Default relationship sort fields</li>
+          <li>
+            Default relationship sort fields (Current implementation takes a
+            best guessed approach using previously known sort fields)
+          </li>
           <li>Handling multiple relationships to the same Object Type</li>
         </ul>
       </div>
@@ -50,7 +52,7 @@ export default function DataModel() {
       <div className="mt-4 pb-10 shadow">
         <DynamicSyntaxHighlighter
           language={"json"}
-          value={stringifiedDataModel}
+          value={JSON.stringify(dataModel || {}, null, 4)}
         />
       </div>
       <div className="fixed bottom-20 right-20 flex items-center justify-center rounded">

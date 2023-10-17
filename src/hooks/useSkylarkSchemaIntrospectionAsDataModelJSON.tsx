@@ -167,6 +167,36 @@ const unparseObjectConfig = (
   };
 };
 
+const getRelationshipsConfigDefaultSortField = (
+  relationshipObjectMeta?: SkylarkObjectMeta,
+) => {
+  if (!relationshipObjectMeta) {
+    return "";
+  }
+
+  // Fields we've used as sort fields previously, ordered by their preference to be used as a sort field
+  const orderedKnownSortFields = [
+    "episode_number",
+    "season_number",
+    "movie_number",
+    "title_sort",
+    "name_sort",
+    "position",
+    "value",
+    "file_name",
+    "internal_title",
+  ];
+
+  const defaultSortFields = relationshipObjectMeta.fieldConfig.global
+    .filter((field) => orderedKnownSortFields.includes(field))
+    .sort(
+      (a, b) =>
+        orderedKnownSortFields.indexOf(a) - orderedKnownSortFields.indexOf(b),
+    );
+
+  return defaultSortFields?.[0] || "";
+};
+
 const unparseRelationships = (
   objectMeta: SkylarkObjectMeta,
   allObjectMeta: SkylarkObjectMeta[],
@@ -187,7 +217,8 @@ const unparseRelationships = (
           reverse_relationship_name:
             reverseObjectRelationship?.relationshipName || "",
           config: {
-            default_sort_field: "", // TODO fetch sort fields and add
+            default_sort_field:
+              getRelationshipsConfigDefaultSortField(reverseObject),
           },
         },
       };
@@ -367,8 +398,6 @@ export const useGenerateDataModelFromSkylarkSchema = () => {
     allObjectMeta && objectTypesWithConfig
       ? parseDataModel(allObjectMeta, objectTypesWithConfig, creds?.uri)
       : undefined;
-
-  console.log({ parsedDataModel });
 
   return { dataModel: parsedDataModel };
 };
