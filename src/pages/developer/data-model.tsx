@@ -29,18 +29,10 @@ export default function DataModel() {
     <div className="mx-auto mt-32 flex w-full max-w-5xl flex-col justify-center text-sm">
       <h1 className="mb-8 text-center font-heading text-4xl">Data Model</h1>
       <div className="mx-20">
-        <p className="mb-1">Need to check:</p>
-        <ul className="ml-8 list-disc">
-          <li>
-            The values for the field type is correctly formatted (they appear to
-            be different from AppSync)
-          </li>
-        </ul>
-        <p className="mb-1 mt-2">Still missing support for:</p>
+        <p className="mb-1 mt-2">Missing support for:</p>
         <ul className="mb-4 ml-8 list-disc">
-          <li>Custom enums</li>
-          <li>Handling multiple relationships to the same Object Type</li>
           <li>Default relationship sort fields</li>
+          <li>Handling multiple relationships to the same Object Type</li>
         </ul>
       </div>
       <Button

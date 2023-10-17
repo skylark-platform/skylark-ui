@@ -2,9 +2,9 @@
  * Still need to:
  * - Add relationship default sort fields
  * - Handle multiple relationships to the same object
- * - Add support for Enums
  */
 import {
+  NormalizedObjectField,
   ParsedSkylarkObjectConfig,
   SkylarkObjectMeta,
   SkylarkObjectType,
@@ -25,13 +25,29 @@ type Relationship = {
   };
 };
 
+type DataModelFieldType =
+  | "string"
+  | "integer"
+  | "float"
+  | "boolean"
+  | "enum"
+  | "datetime"
+  | "date"
+  | "email"
+  | "ip_address"
+  | "json"
+  | "phone"
+  | "time"
+  | "timestamp"
+  | "url";
+
 type ObjectTypeConfig = {
   display_name: string;
   primary_field: string | null;
   colour: string | null;
   field_config: {
     name: string;
-    type: string;
+    type: DataModelFieldType;
     ui_position: number;
     ui_field_type?: string;
   }[];
@@ -43,8 +59,8 @@ interface SystemObjectType {
 }
 
 interface CustomObjectType extends SystemObjectType {
-  global_fields: Record<string, string>;
-  language_fields: Record<string, string>;
+  global_fields: Record<string, DataModelFieldType>;
+  language_fields: Record<string, DataModelFieldType>;
 }
 
 interface DataModel {
@@ -56,13 +72,67 @@ interface DataModel {
   types: Record<string, CustomObjectType>;
 }
 
-const initialDataModel: DataModel = {
-  info: {
-    name: "",
-  },
-  enums: {},
-  system_types: {},
-  types: {},
+const camelToSnakeCase = (str: string) => {
+  const snakeCase = str.replace(
+    /[A-Z]/g,
+    (letter: string) => `_${letter.toLowerCase()}`,
+  );
+  return snakeCase.startsWith("_") ? snakeCase.substring(1) : snakeCase;
+};
+
+/**
+ * Convert the original GraphQL field into what the data model service expects
+ * Should reverse this list
+ * type_mapping = {
+    'string': GraphQLString,
+    'integer': GraphQLInt,
+    'float': GraphQLFloat,
+    'boolean': GraphQLBoolean,
+    'enum': GraphQLString,
+    'datetime': GraphQLScalarType('AWSDateTime'),
+    'date': GraphQLScalarType('AWSDate'),
+    'email': GraphQLScalarType('AWSEmail'),
+    'ip_address': GraphQLScalarType('AWSIPAddress'),
+    'json': GraphQLScalarType('AWSJSON'),
+    'phone': GraphQLScalarType('AWSPhone'),
+    'time': GraphQLScalarType('AWSTime'),
+    'timestamp': GraphQLScalarType('AWSTimestamp'),
+    'url': GraphQLScalarType('AWSURL'),
+}
+ */
+const convertFieldTypeToDataModelFieldType = (
+  field: NormalizedObjectField,
+): DataModelFieldType => {
+  switch (field.originalType) {
+    case "String":
+      return "string";
+    case "Int":
+      return "integer";
+    case "Float":
+      return "float";
+    case "Boolean":
+      return "boolean";
+    case "AWSDateTime":
+      return "datetime";
+    case "AWSDate":
+      return "date";
+    case "AWSEmail":
+      return "email";
+    case "AWSIPAddress":
+      return "ip_address";
+    case "AWSJSON":
+      return "json";
+    case "AWSPhone":
+      return "phone";
+    case "AWSTime":
+      return "time";
+    case "AWSTimestamp":
+      return "timestamp";
+    case "AWSURL":
+      return "url";
+    default:
+      return "string";
+  }
 };
 
 const unparseObjectConfig = (
@@ -79,7 +149,7 @@ const unparseObjectConfig = (
       const obj: ObjectTypeConfig["field_config"][0] = {
         name,
         ui_position: position,
-        type: field?.originalType.toLowerCase() || "",
+        type: field ? convertFieldTypeToDataModelFieldType(field) : "string",
       };
 
       if (fieldType) {
@@ -134,8 +204,6 @@ const unparseGlobalAndLanguageFields = (
   global_fields: Record<string, string>;
   language_fields: Record<string, string>;
 } => {
-  console.log(objectMeta);
-
   const fields = objectMeta.operations.create.inputs.reduce(
     (prev, field) => {
       const isGlobalField = objectMeta.fieldConfig.global.includes(field.name);
@@ -143,9 +211,10 @@ const unparseGlobalAndLanguageFields = (
         field.name,
       );
 
-      let fieldType: string = field.originalType;
+      let fieldType: string = convertFieldTypeToDataModelFieldType(field);
       if (field.enumValues) {
-        fieldType = `Enum__${fieldType}`;
+        // Enum is a special case where we don't return the DataModelFieldType
+        fieldType = `Enum__${field.originalType}`;
       }
       if (field.isRequired) {
         fieldType = `${fieldType}!`;
@@ -182,6 +251,112 @@ const unparseGlobalAndLanguageFields = (
   return fields;
 };
 
+const getEnumsForCustomObjects = (
+  allObjectMeta: SkylarkObjectMeta[],
+): DataModel["enums"] => {
+  const enumInputFields = allObjectMeta.reduce((prev, objectMeta) => {
+    if (objectMeta.name.toUpperCase().startsWith("SKYLARK")) {
+      return prev;
+    }
+
+    const enumInputs = objectMeta.operations.create.inputs.filter(
+      (field) => !!field.enumValues,
+    );
+
+    return [...prev, ...enumInputs];
+  }, [] as NormalizedObjectField[]);
+
+  const dataModelEnums = enumInputFields.reduce((prev, field) => {
+    return {
+      ...prev,
+      [camelToSnakeCase(field.originalType)]: field.enumValues || [],
+    };
+  }, {} as DataModel["enums"]);
+
+  return dataModelEnums;
+};
+
+const parseDataModel = (
+  allObjectMeta: SkylarkObjectMeta[],
+  objectTypesWithConfig: {
+    objectType: string;
+    config: ParsedSkylarkObjectConfig;
+  }[],
+  accountUri?: string,
+) => {
+  const { systemTypes, customTypes } = allObjectMeta.reduce(
+    (
+      prev,
+      objectMeta,
+    ): {
+      systemTypes: DataModel["system_types"];
+      customTypes: DataModel["types"];
+    } => {
+      const isSystemObject = objectMeta.name
+        .toUpperCase()
+        .startsWith("SKYLARK");
+
+      const objectTypeWithParsedConfig = objectTypesWithConfig.find(
+        ({ objectType }) => objectType === objectMeta.name,
+      );
+      const parsedConfig = objectTypeWithParsedConfig?.config;
+
+      if (isSystemObject) {
+        return {
+          ...prev,
+          systemTypes: {
+            ...prev.systemTypes,
+            [objectMeta.name]: {
+              config: unparseObjectConfig(objectMeta, parsedConfig),
+              relationships: unparseRelationships(objectMeta, allObjectMeta),
+            },
+          },
+        };
+      }
+
+      const { language_fields, global_fields } =
+        unparseGlobalAndLanguageFields(objectMeta);
+
+      return {
+        ...prev,
+        customTypes: {
+          ...prev.customTypes,
+          [objectMeta.name]: {
+            config: unparseObjectConfig(objectMeta, parsedConfig),
+            global_fields,
+            language_fields,
+            relationships: unparseRelationships(objectMeta, allObjectMeta),
+          },
+        },
+      };
+    },
+    {
+      systemTypes: {},
+      customTypes: {},
+    },
+  );
+
+  const name = (
+    (accountUri &&
+      formatUriAsCustomerIdentifer(accountUri).replaceAll(" ", "-")) ||
+    accountUri ||
+    ""
+  ).toLowerCase();
+
+  const enums = getEnumsForCustomObjects(allObjectMeta);
+
+  const parsedDataModel: DataModel = {
+    info: {
+      name,
+    },
+    enums,
+    system_types: systemTypes,
+    types: customTypes,
+  };
+
+  return parsedDataModel;
+};
+
 export const useGenerateDataModelFromSkylarkSchema = () => {
   const [creds] = useSkylarkCreds();
 
@@ -190,67 +365,10 @@ export const useGenerateDataModelFromSkylarkSchema = () => {
 
   const parsedDataModel =
     allObjectMeta && objectTypesWithConfig
-      ? allObjectMeta.reduce((prev, objectMeta): DataModel => {
-          const isSystemObject = objectMeta.name
-            .toUpperCase()
-            .startsWith("SKYLARK");
-
-          const objectTypeWithParsedConfig = objectTypesWithConfig.find(
-            ({ objectType }) => objectType === objectMeta.name,
-          );
-          const parsedConfig = objectTypeWithParsedConfig?.config;
-
-          if (isSystemObject) {
-            return {
-              ...prev,
-              system_types: {
-                ...prev.system_types,
-                [objectMeta.name]: {
-                  config: unparseObjectConfig(objectMeta, parsedConfig),
-                  relationships: unparseRelationships(
-                    objectMeta,
-                    allObjectMeta,
-                  ),
-                },
-              },
-            };
-          }
-
-          const { language_fields, global_fields } =
-            unparseGlobalAndLanguageFields(objectMeta);
-
-          return {
-            ...prev,
-            types: {
-              ...prev.types,
-              [objectMeta.name]: {
-                config: unparseObjectConfig(objectMeta, parsedConfig),
-                relationships: unparseRelationships(objectMeta, allObjectMeta),
-                language_fields,
-                global_fields,
-              },
-            },
-          };
-        }, initialDataModel)
+      ? parseDataModel(allObjectMeta, objectTypesWithConfig, creds?.uri)
       : undefined;
 
-  const name = (
-    (creds?.uri &&
-      formatUriAsCustomerIdentifer(creds.uri).replaceAll(" ", "-")) ||
-    creds?.uri ||
-    ""
-  ).toLowerCase();
+  console.log({ parsedDataModel });
 
-  const parsedDataModelWithName = parsedDataModel
-    ? {
-        ...parsedDataModel,
-        info: {
-          name,
-        },
-      }
-    : undefined;
-
-  console.log({ parsedDataModelWithName });
-
-  return { dataModel: parsedDataModelWithName };
+  return { dataModel: parsedDataModel };
 };
