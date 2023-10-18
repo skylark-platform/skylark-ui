@@ -61,9 +61,7 @@ test("changes checkboxes and calls onFilterSave when apply is clicked", async ()
 
   fireEvent.click(screen.getByRole("checkbox", { name: "Season" }));
   fireEvent.click(screen.getByRole("checkbox", { name: "slug" }));
-  // TODO UID & External ID Lookup when PR is merged
-  // fireEvent.click(screen.getByText("UID & External ID"));
-  fireEvent.click(screen.getByText("UID"));
+  fireEvent.click(screen.getByText("UID & External ID"));
 
   fireEvent.click(screen.getByText("Apply"));
 

@@ -275,9 +275,7 @@ const NewTabButton = ({
         },
         {
           id: "blank-uid-extid-tab",
-          // TODO UID & External ID Lookup when PR is merged
-          // text: "UID & External ID Lookup",
-          text: "UID Lookup",
+          text: "UID & External ID Lookup",
           Icon: <FiCrosshair className="text-lg" />,
           onClick: () =>
             addTab({
