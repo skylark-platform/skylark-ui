@@ -334,14 +334,6 @@ export const PanelHeader = ({
               {!inEditMode && isDraft && <PanelLabel text="Draft" warning />}
             </div>
           )}
-          {/* {currentTab === PanelTab.Metadata && (
-            <div className="absolute -bottom-[4.1rem] left-0 right-0 z-10 -mt-1 flex h-7 items-center justify-center bg-warning text-sm text-warning-content shadow">
-              <p>Draft</p>
-            </div>
-            // <div className="absolute -bottom-[4.1rem] left-0 right-0 z-10 -mt-1 flex h-7 items-center justify-center bg-brand-primary text-sm text-white shadow">
-            //   <p>Published</p>
-            // </div>
-          )} */}
         </div>
       </div>
       <AnimatePresence>
