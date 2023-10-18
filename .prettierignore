@@ -12,3 +12,6 @@ public/mockServiceWorker.js
 
 # Storybook
 storybook-static
+
+# Renovate
+renovate.json
