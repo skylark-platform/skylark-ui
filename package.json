@@ -47,7 +47,7 @@
     "graphiql": "2.2.0",
     "graphql": "16.6.0",
     "graphql-request": "5.1.0",
-    "graphql-tag": "^2.12.6",
+    "graphql-tag": "2.12.6",
     "json-to-graphql-query": "2.2.4",
     "jsonwebtoken": "8.5.1",
     "next": "13.1.1",
