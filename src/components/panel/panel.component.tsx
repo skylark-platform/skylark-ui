@@ -229,8 +229,6 @@ export const Panel = ({
     error,
   } = useGetObject(objectType, uid, { language });
 
-  console.log({ data });
-
   const formParsedMetadata = useMemo(
     () =>
       (data &&

@@ -22,7 +22,7 @@ export const ButtonWithDropdown = forwardRef(
         <Button
           {...buttonProps}
           onClick={onClick}
-          className="rounded-r-none pr-0 md:pr-0"
+          className="rounded-r-none pr-1 md:pr-2"
           ref={buttonRef}
         >
           {children}
@@ -32,7 +32,7 @@ export const ButtonWithDropdown = forwardRef(
             <Button
               {...buttonProps}
               Icon={<FiChevronDown className="text-lg" />}
-              className="rounded-l-none border-l-2 border-l-white/30 px-2"
+              className="rounded-l-none border-l-2 border-l-white/40 pl-0.5 pr-1 hover:border-l-white/40 md:pl-1 md:pr-2"
               animated={false}
             />
           </DropdownMenuButton>

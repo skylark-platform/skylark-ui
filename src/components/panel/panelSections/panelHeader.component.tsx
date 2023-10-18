@@ -160,6 +160,8 @@ export const PanelHeader = ({
     }
   }, [inEditMode]);
 
+  const isDraft = object?.meta.published === false;
+
   return (
     <div
       data-testid="panel-header"
@@ -215,19 +217,19 @@ export const PanelHeader = ({
                 <ButtonWithDropdown
                   ref={saveButtonRef}
                   success
-                  onClick={save}
+                  onClick={() => save({ draft: isDraft })}
                   disabled={isSaving}
                   variant="primary"
                   options={[
                     {
-                      id: "save-draft",
-                      text: "Save as Draft",
+                      id: "save-alternative",
+                      text: !isDraft ? "Save as Draft" : "Save & Publish",
                       Icon: <FiSave className="text-xl" />,
-                      onClick: () => save({ draft: true }),
+                      onClick: () => save({ draft: !isDraft }),
                     },
                   ]}
                 >
-                  Save
+                  {isDraft ? "Save Draft" : "Save"}
                 </ButtonWithDropdown>
               ) : (
                 <Button
@@ -325,11 +327,11 @@ export const PanelHeader = ({
               {inEditMode && (
                 <PanelLabel
                   text={isSaving ? "Saving" : "Editing"}
-                  warning
+                  warning={isDraft}
                   loading={isSaving}
                 />
               )}
-              {!inEditMode && <PanelLabel text="Draft" warning />}
+              {!inEditMode && isDraft && <PanelLabel text="Draft" warning />}
             </div>
           )}
           {/* {currentTab === PanelTab.Metadata && (
