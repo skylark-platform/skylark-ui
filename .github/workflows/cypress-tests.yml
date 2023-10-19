@@ -18,7 +18,12 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      - run: yarn
+      # Install yarn dependencies and cache for later
+      # pass runTests: false to the Cypress GitHub Action to instruct it only to install and cache Cypress and npm dependencies without running the tests
+      # https://docs.cypress.io/guides/continuous-integration/github-actions#Parallelization
+      - uses: cypress-io/github-action@v4
+        with:
+          runTests: false
       - run: yarn build
       - name: Save build folder
         uses: actions/upload-artifact@v3
@@ -27,22 +32,11 @@ jobs:
           if-no-files-found: error
           path: .next
 
-  install-cypress:
-    name: Install Cypress
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      # pass runTests: false to the Cypress GitHub Action to instruct it only to install and cache Cypress and npm dependencies without running the tests
-      # https://docs.cypress.io/guides/continuous-integration/github-actions#Parallelization
-      - uses: cypress-io/github-action@v4
-        with:
-          runTests: false
-
   tests:
     name: Run Cypress Tests
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    needs: [build, install-cypress]
+    needs: build
     strategy:
       fail-fast: false
       matrix:
