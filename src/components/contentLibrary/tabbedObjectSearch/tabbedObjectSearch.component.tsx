@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { AnimatePresence, m } from "framer-motion";
+import { m } from "framer-motion";
 import { Dispatch, Fragment, SetStateAction, useState } from "react";
 import {
   FiCheckSquare,
@@ -56,7 +56,12 @@ type TabbedObjectSearchProps = Omit<
   | "initialColumnState"
   | "onFilterChange"
   | "onColumnStateChange"
-> & { accountId: string; skipLogoAnimation?: boolean };
+> & {
+  accountId: string;
+  skipLogoAnimation?: boolean;
+  animate: object;
+  initial: object;
+};
 
 const generateNewTabColumnStateForObjectType = (
   objectType: string,
@@ -408,6 +413,8 @@ const NewTabButton = ({
 
 const TabbedObjectSearch = ({
   accountId,
+  initial,
+  animate,
   ...props
 }: TabbedObjectSearchProps) => {
   const {
@@ -425,7 +432,11 @@ const TabbedObjectSearch = ({
   return (
     <>
       {tabs && (
-        <div className="flex h-full max-h-full w-full flex-col">
+        <m.div
+          initial={initial}
+          animate={animate}
+          className="flex h-full max-h-full w-full flex-col"
+        >
           <div className="w-full pt-2 md:px-6 md:pt-4 lg:px-10">
             <div className="flex w-full justify-between space-x-0.5 sm:space-x-1 md:space-x-2 lg:space-x-4">
               <div
@@ -488,7 +499,7 @@ const TabbedObjectSearch = ({
               }
             />
           </div>
-        </div>
+        </m.div>
       )}
     </>
   );
@@ -497,7 +508,7 @@ const TabbedObjectSearch = ({
 export const TabbedObjectSearchWithAccount = ({
   skipLogoAnimation,
   ...props
-}: Omit<TabbedObjectSearchProps, "accountId">) => {
+}: Omit<TabbedObjectSearchProps, "accountId" | "animate" | "initial">) => {
   const [creds] = useSkylarkCreds();
   const { accountId, isLoading: isAccountLoading } = useUserAccount();
   const [animationState, setAnimationState] = useState<
@@ -519,16 +530,13 @@ export const TabbedObjectSearchWithAccount = ({
         />
       )}
       {accountId && !isAccountLoading && (
-        <m.div
+        <TabbedObjectSearch
           initial={{ opacity: 0 }}
           animate={{ opacity: animationState === "running" ? 0 : 1 }}
-        >
-          <TabbedObjectSearch
-            key={`${creds?.uri}-${accountId}`}
-            accountId={accountId}
-            {...props}
-          />
-        </m.div>
+          key={`${creds?.uri}-${accountId}`}
+          accountId={accountId}
+          {...props}
+        />
       )}
       {!accountId && !isAccountLoading && animationState !== "running" && (
         <div className="flex h-full w-full flex-col items-center justify-center gap-4 text-base">
