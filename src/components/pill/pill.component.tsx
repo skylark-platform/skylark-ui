@@ -22,6 +22,7 @@ export const Pill = ({ label, bgColor, className, onDelete }: PillProps) => (
         "bg-manatee-300",
     )}
     style={bgColor ? { backgroundColor: bgColor } : undefined}
+    data-cy="pill"
   >
     <span className="overflow-hidden text-clip">{label}</span>
     {onDelete && (

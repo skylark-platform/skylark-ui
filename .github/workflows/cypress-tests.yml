@@ -6,32 +6,24 @@ on:
       - main
   pull_request:
 
-env:
-  percy-comment-title: Percy Snapshot Comparison
-  percy-comment-id: percy-status
-
 jobs:
   build:
     name: Build UI
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Comment Percy status on PR
-        uses: skylark-platform/comment-url-on-pr@v1
-        with:
-          title: ${{ env.percy-comment-title }}
-          comment_id: ${{ env.percy-comment-id }}
-          status: building
-          github_token: ${{ github.token }}
-      - uses: cypress-io/github-action@v4
-        with:
-          runTests: false
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - run: vercel env pull --yes --environment=development --token=${{ secrets.VERCEL_TOKEN }} .env
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      # Install yarn dependencies and cache for later
+      # pass runTests: false to the Cypress GitHub Action to instruct it only to install and cache Cypress and npm dependencies without running the tests
+      # https://docs.cypress.io/guides/continuous-integration/github-actions#Parallelization
+      - uses: cypress-io/github-action@v4
+        with:
+          runTests: false
       - run: yarn build
       - name: Save build folder
         uses: actions/upload-artifact@v3
@@ -48,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        containers: [1, 2, 3, 4]
+        containers: [1, 2, 3, 4, 5]
     steps:
       - uses: actions/checkout@v3
       - name: Download the build folders
@@ -64,7 +56,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       - name: Load environment variables from .env
         uses: xom9ikk/dotenv@v2
-      - name: UI Tests
+      - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
           start: yarn start
@@ -80,7 +72,7 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-          PERCY_PARALLEL_TOTAL: 4
+          PERCY_PARALLEL_TOTAL: 5
           # overwrite commit message sent to Dashboard
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           # re-enable PR comment bot

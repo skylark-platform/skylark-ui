@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 
 import { AvailabilityLabel } from "src/components/availability";
 import { OpenObjectButton } from "src/components/button";
@@ -213,9 +213,9 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
 
   const now = dayjs();
 
-  const availabilityObjects = mergeServerAndModifiedAvailability(
-    data,
-    modifiedAvailabilityObjects,
+  const availabilityObjects = useMemo(
+    () => mergeServerAndModifiedAvailability(data, modifiedAvailabilityObjects),
+    [data, modifiedAvailabilityObjects],
   );
 
   const removeAvailabilityObject = (uidToRemove: string) => {

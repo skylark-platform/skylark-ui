@@ -33,7 +33,15 @@ test("shows a default string when minimal props are given", () => {
     <AvailabilitySummary {...defaultProps} />,
   );
 
-  expect(container).toHaveTextContent("Objects");
+  expect(container).toHaveTextContent("All object types");
+});
+
+test("shows all object types when objectTypes are null (haven't been fetched yet)", () => {
+  const { container } = renderWithMinimalProviders(
+    <AvailabilitySummary {...defaultProps} objectTypes={null} />,
+  );
+
+  expect(container).toHaveTextContent("All object types");
 });
 
 test("shows object types when under 10 are given", () => {
@@ -76,7 +84,7 @@ test("shows query string", () => {
   );
 
   expect(container).toHaveTextContent(
-    "Objects filtered by query “My search query”",
+    "All object types filtered by query “My search query”",
   );
 });
 
@@ -90,7 +98,7 @@ test("shows UID string when searchType is UID/ExternalID", () => {
   );
 
   expect(container).toHaveTextContent(
-    "Objects filtered by UID or External ID “MYTESTUID”",
+    "All object types filtered by UID or External ID “MYTESTUID”",
   );
 });
 
@@ -99,7 +107,7 @@ test("shows language", () => {
     <AvailabilitySummary {...defaultProps} language={"en-GB"} />,
   );
 
-  expect(container).toHaveTextContent("Objects translated to en-GB");
+  expect(container).toHaveTextContent("All object types translated to en-GB");
 });
 
 test("shows Availability dimensions", () => {
@@ -114,7 +122,7 @@ test("shows Availability dimensions", () => {
   );
 
   expect(container).toHaveTextContent(
-    "Objects available to premium & pc users",
+    "All object types available to premium & pc users",
   );
 });
 
@@ -133,7 +141,9 @@ test("shows Availability time travel", () => {
   );
 
   expect(container).toHaveTextContent(
-    `Objects available on ${formatReadableDateTime("2022-10-30T10:30")}`,
+    `All object types available on ${formatReadableDateTime(
+      "2022-10-30T10:30",
+    )}`,
   );
 });
 
@@ -152,7 +162,7 @@ test("shows Availability dimensions and time travel", () => {
   );
 
   expect(container).toHaveTextContent(
-    `Objects available to premium & pc users on ${formatReadableDateTime(
+    `All object types available to premium & pc users on ${formatReadableDateTime(
       "2022-10-30T10:30",
     )}`,
   );
