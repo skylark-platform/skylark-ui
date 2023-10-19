@@ -19,7 +19,7 @@ describe("Content Library - Search", () => {
         });
       }
       if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
-        req.alias = "introspectionQuery";
+        req.alias = "getObjectConfig";
         req.reply({
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
         });
@@ -105,6 +105,7 @@ describe("Content Library - Search", () => {
 
     cy.visit("/");
     cy.wait("@introspectionQuery");
+    cy.wait("@getObjectConfig");
   });
 
   it("visits home", () => {
