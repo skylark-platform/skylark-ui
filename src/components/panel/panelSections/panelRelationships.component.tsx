@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { sentenceCase } from "sentence-case";
 
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
@@ -200,12 +200,16 @@ export const PanelRelationships = ({
     variables,
   } = useGetObjectRelationships(objectType, uid, { language });
 
-  const relationships = inEditMode
-    ? addModifiedRelationshipsOntoRelationships(
-        serverRelationships,
-        modifiedRelationships,
-      )
-    : serverRelationships;
+  const relationships = useMemo(
+    () =>
+      inEditMode
+        ? addModifiedRelationshipsOntoRelationships(
+            serverRelationships,
+            modifiedRelationships,
+          )
+        : serverRelationships,
+    [inEditMode, modifiedRelationships, serverRelationships],
+  );
 
   useEffect(() => {
     if (
