@@ -26,12 +26,16 @@ const buildObjectTypesStr = (
     config: ParsedSkylarkObjectConfig;
   }[],
 ) => {
-  if (!filteredObjectTypes) {
-    return <>Objects </>;
-  }
-
-  if (filteredObjectTypes.length === numObjectTypes) {
-    return <>All object types </>;
+  // If object types are null, search will fetch all
+  if (
+    filteredObjectTypes === null ||
+    filteredObjectTypes.length === numObjectTypes
+  ) {
+    return (
+      <>
+        <strong>All</strong> object types{" "}
+      </>
+    );
   }
 
   const parsedObjectTypes = filteredObjectTypes.map((objectType) => {
@@ -49,7 +53,11 @@ const buildObjectTypesStr = (
     );
   }
 
-  return <>{filteredObjectTypes.length} object types </>;
+  return (
+    <>
+      <strong>{filteredObjectTypes.length}</strong> object types{" "}
+    </>
+  );
 };
 
 // `"Episode" filtered by "search query"`
