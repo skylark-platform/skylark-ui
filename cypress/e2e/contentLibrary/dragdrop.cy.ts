@@ -327,11 +327,9 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .trigger("mouseup", { force: true })
               .wait(250)
               .then(() => {
-                cy.get("[data-testid=toast]")
-                  .first()
-                  .within(() => {
-                    cy.contains("Existing Linked Object").should("exist");
-                  });
+                cy.get("[data-testid=toast]").within(() => {
+                  cy.contains("Existing Linked Object").should("exist");
+                });
               });
           },
         );

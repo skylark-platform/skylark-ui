@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { sentenceCase } from "sentence-case";
 
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
@@ -200,12 +200,32 @@ export const PanelRelationships = ({
     variables,
   } = useGetObjectRelationships(objectType, uid, { language });
 
-  const relationships = inEditMode
-    ? addModifiedRelationshipsOntoRelationships(
-        serverRelationships,
-        modifiedRelationships,
-      )
-    : serverRelationships;
+  const relationships = useMemo(
+    () =>
+      inEditMode
+        ? addModifiedRelationshipsOntoRelationships(
+            serverRelationships,
+            modifiedRelationships,
+          )
+        : serverRelationships,
+    [inEditMode, modifiedRelationships, serverRelationships],
+  );
+
+  useEffect(
+    () => console.log("modifiedRelationships"),
+    [modifiedRelationships],
+  );
+  useEffect(() => console.log("droppedObjects"), [droppedObjects]);
+  useEffect(
+    () => console.log("objectMetaRelationships"),
+    [objectMetaRelationships],
+  );
+  useEffect(() => console.log("relationships"), [relationships]);
+  useEffect(
+    () => console.log("setModifiedRelationships"),
+    [setModifiedRelationships],
+  );
+  useEffect(() => console.log("uid"), [uid]);
 
   useEffect(() => {
     if (
@@ -214,6 +234,7 @@ export const PanelRelationships = ({
       objectMetaRelationships &&
       relationships
     ) {
+      console.log("*** HANDLE");
       const { addedObjects, errors } = handleDroppedRelationships({
         droppedObjects,
         activeObjectUid: uid,

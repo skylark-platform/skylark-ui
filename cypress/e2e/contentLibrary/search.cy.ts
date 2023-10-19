@@ -112,6 +112,8 @@ describe("Content Library - Search", () => {
       "not.exist",
     );
     cy.contains("GOT");
+    cy.contains("All object types translated to en-GB");
+
     cy.percySnapshot("Homepage");
   });
 
@@ -129,6 +131,9 @@ describe("Content Library - Search", () => {
 
     cy.wait("@searchQueryEmpty");
     cy.contains("We couldn't find matches for the search term.");
+
+    cy.contains("All object types translated to en-GB");
+
     cy.percySnapshot("Homepage - no search data");
   });
 
@@ -273,6 +278,9 @@ describe("Content Library - Search", () => {
     );
 
     cy.contains("Classic kids shows");
+
+    // Wait for second page of search results to load before Percy screenshot
+    cy.get(`[data-cy=pill]`).should("exist").should("have.length.at.least", 15);
 
     cy.percySnapshot("Homepage - Filtered By Availability Dimensions (kids)");
   });
