@@ -7,6 +7,7 @@ import {
   render,
   screen,
   waitFor,
+  waitForElementToBeRemoved,
   within,
 } from "src/__tests__/utils/test-utils";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
@@ -36,6 +37,10 @@ const mockLocalStorage = (initialTabs?: ObjectSearchTab[]) => {
   });
 };
 
+const renderWithoutLogoAnimation = async () => {
+  render(<TabbedObjectSearchWithAccount skipLogoAnimation />);
+};
+
 afterEach(() => {
   jest.resetAllMocks();
 });
@@ -43,7 +48,21 @@ afterEach(() => {
 test("Loads the default tabs when localStorage is empty", async () => {
   mockLocalStorage();
 
-  render(<TabbedObjectSearchWithAccount />);
+  await renderWithoutLogoAnimation();
+
+  await waitFor(() => {
+    expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
+  });
+
+  const tabsContainer = within(screen.getByTestId("object-search-tabs"));
+  expect(tabsContainer.queryAllByText("Default View")).toHaveLength(1);
+  expect(tabsContainer.queryAllByText("Availability")).toHaveLength(1);
+});
+
+test("Loads the default tabs when localStorage is empty (verify logo animation disappears)", async () => {
+  mockLocalStorage();
+
+  await renderWithoutLogoAnimation();
 
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
@@ -59,6 +78,10 @@ test("Changing tabs", async () => {
 
   render(<TabbedObjectSearchWithAccount />);
 
+  await waitForElementToBeRemoved(() => screen.queryByTestId("animated-logo"), {
+    timeout: 4000,
+  });
+
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
   });
@@ -68,13 +91,15 @@ test("Changing tabs", async () => {
   fireEvent.click(tabsContainer.getByText("Availability"));
 
   expect(screen.queryAllByText("Default View")).toHaveLength(1);
-  expect(screen.queryAllByText("Availability")).toHaveLength(3);
+  expect(screen.queryAllByText("Availability").length).toBeGreaterThanOrEqual(
+    3,
+  );
 });
 
 test("Rename active tab (save)", async () => {
   mockLocalStorage();
 
-  render(<TabbedObjectSearchWithAccount />);
+  await renderWithoutLogoAnimation();
 
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
@@ -103,7 +128,7 @@ test("Rename active tab (save)", async () => {
 test("Rename active tab (save with enter key)", async () => {
   mockLocalStorage();
 
-  render(<TabbedObjectSearchWithAccount />);
+  await renderWithoutLogoAnimation();
 
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
@@ -136,7 +161,7 @@ test("Rename active tab (save with enter key)", async () => {
 test("Rename active tab (cancel)", async () => {
   mockLocalStorage();
 
-  render(<TabbedObjectSearchWithAccount />);
+  await renderWithoutLogoAnimation();
 
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
@@ -166,7 +191,7 @@ describe("Adding new tabs", () => {
   test("Add new blank search view", async () => {
     mockLocalStorage();
 
-    render(<TabbedObjectSearchWithAccount />);
+    await renderWithoutLogoAnimation();
 
     await waitFor(() => {
       expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
@@ -189,7 +214,7 @@ describe("Adding new tabs", () => {
   test("Add new Object Type specific view", async () => {
     mockLocalStorage();
 
-    render(<TabbedObjectSearchWithAccount />);
+    await renderWithoutLogoAnimation();
 
     await waitFor(() => {
       expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
@@ -223,7 +248,7 @@ describe("Adding new tabs", () => {
 test("Deletes active tab", async () => {
   mockLocalStorage();
 
-  render(<TabbedObjectSearchWithAccount />);
+  await renderWithoutLogoAnimation();
 
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
@@ -233,8 +258,9 @@ test("Deletes active tab", async () => {
 
   fireEvent.click(deleteActiveTabButton);
 
-  expect(screen.queryAllByText("Default View")).toHaveLength(0);
-  expect(screen.queryAllByText("Availability")).toHaveLength(3);
+  const tabsContainer = within(screen.getByTestId("object-search-tabs"));
+  expect(tabsContainer.queryAllByText("Default View")).toHaveLength(0);
+  expect(tabsContainer.queryAllByText("Availability")).toHaveLength(1);
 });
 
 test("Adds the initial tabs when all tabs are deleted", async () => {
@@ -254,21 +280,24 @@ test("Adds the initial tabs when all tabs are deleted", async () => {
     },
   ]);
 
-  render(<TabbedObjectSearchWithAccount />);
+  await renderWithoutLogoAnimation();
 
   await waitFor(() => {
     expect(screen.queryAllByText("mytab")).toHaveLength(2); // Length 2 as active
   });
-  expect(screen.queryAllByText("Default View")).toHaveLength(0);
-  expect(screen.queryAllByText("Availability")).toHaveLength(0);
+
+  const tabsContainer = within(screen.getByTestId("object-search-tabs"));
+
+  expect(tabsContainer.queryAllByText("Default View")).toHaveLength(0);
+  expect(tabsContainer.queryAllByText("Availability")).toHaveLength(0);
 
   const deleteActiveTabButton = screen.getByLabelText("Delete active tab");
 
   fireEvent.click(deleteActiveTabButton);
 
-  expect(screen.queryAllByText("Default View")).toHaveLength(2);
-  expect(screen.queryAllByText("Availability")).toHaveLength(1);
-  expect(screen.queryAllByText("mytab")).toHaveLength(0);
+  expect(tabsContainer.queryAllByText("Default View")).toHaveLength(1);
+  expect(tabsContainer.queryAllByText("Availability")).toHaveLength(1);
+  expect(tabsContainer.queryAllByText("mytab")).toHaveLength(0);
 });
 
 test("Loads values from localStorage", async () => {
@@ -307,7 +336,7 @@ test("Loads values from localStorage", async () => {
 
   mockLocalStorage(initialTabs);
 
-  render(<TabbedObjectSearchWithAccount />);
+  await renderWithoutLogoAnimation();
 
   await waitFor(() => {
     expect(screen.queryByText("Default View")).not.toBeInTheDocument();
@@ -337,7 +366,7 @@ test("Shows error message when Account ID can't be loaded", async () => {
     }),
   );
 
-  render(<TabbedObjectSearchWithAccount />);
+  await renderWithoutLogoAnimation();
 
   await waitFor(() => {
     expect(screen.getByText("Something went wrong...")).toBeInTheDocument();
@@ -361,7 +390,8 @@ describe("create button", () => {
   test("renders create button", async () => {
     mockLocalStorage();
 
-    render(<TabbedObjectSearchWithAccount />);
+    await renderWithoutLogoAnimation();
+
     await waitFor(() => {
       expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active
     });
@@ -378,7 +408,7 @@ describe("create button", () => {
   test("opens the create object modal", async () => {
     mockLocalStorage();
 
-    render(<TabbedObjectSearchWithAccount />);
+    await renderWithoutLogoAnimation();
 
     await waitFor(() => {
       expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active

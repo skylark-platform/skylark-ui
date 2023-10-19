@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { AnimatePresence, m } from "framer-motion";
 import { Dispatch, Fragment, SetStateAction, useState } from "react";
 import {
   FiCheckSquare,
@@ -11,6 +12,7 @@ import {
 } from "react-icons/fi";
 import { v4 as uuidv4 } from "uuid";
 
+import { AnimatedLogo } from "src/components/animatedLogo/animatedLogo.component";
 import { AvailabilitySummary } from "src/components/availability";
 import { Button } from "src/components/button";
 import {
@@ -53,7 +55,7 @@ type TabbedObjectSearchProps = Omit<
   | "initialColumnState"
   | "onFilterChange"
   | "onColumnStateChange"
-> & { accountId: string };
+> & { accountId: string; skipLogoAnimation?: boolean };
 
 const generateNewTabColumnStateForObjectType = (
   objectType: string,
@@ -491,22 +493,38 @@ const TabbedObjectSearch = ({
   );
 };
 
-export const TabbedObjectSearchWithAccount = (
-  props: Omit<TabbedObjectSearchProps, "accountId">,
-) => {
+export const TabbedObjectSearchWithAccount = ({
+  skipLogoAnimation,
+  ...props
+}: Omit<TabbedObjectSearchProps, "accountId">) => {
   const [creds] = useSkylarkCreds();
   const { accountId, isLoading: isAccountLoading } = useUserAccount();
+  const [animationState, setAnimationState] = useState<
+    "waiting" | "running" | "completed"
+  >(skipLogoAnimation ? "completed" : "waiting");
 
   return (
     <>
-      {accountId && !isAccountLoading && (
-        <TabbedObjectSearch
-          key={`${creds?.uri}-${accountId}`}
-          accountId={accountId}
-          {...props}
+      {!skipLogoAnimation && (
+        <AnimatedLogo
+          show={
+            (!accountId && isAccountLoading) || animationState === "running"
+          }
+          speed="fast"
+          onAnimationStart={() => setAnimationState("running")}
+          onAnimationComplete={() => setAnimationState("completed")}
         />
       )}
-      {!accountId && !isAccountLoading && (
+      {accountId && !isAccountLoading && animationState !== "running" && (
+        <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <TabbedObjectSearch
+            key={`${creds?.uri}-${accountId}`}
+            accountId={accountId}
+            {...props}
+          />
+        </m.div>
+      )}
+      {!accountId && !isAccountLoading && animationState !== "running" && (
         <div className="flex h-full w-full flex-col items-center justify-center gap-4 text-base">
           <p className="text-3xl font-semibold">Something went wrong...</p>
           <p>We are having trouble accessing your Skylark Account ID.</p>

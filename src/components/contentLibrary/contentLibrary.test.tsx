@@ -11,6 +11,7 @@ import {
   render,
   screen,
   waitFor,
+  waitForElementToBeRemoved,
   within,
 } from "src/__tests__/utils/test-utils";
 
@@ -28,6 +29,10 @@ beforeEach(() => {
 
 test("open metadata panel, check information and close", async () => {
   render(<ContentLibrary />);
+
+  await waitForElementToBeRemoved(() => screen.queryByTestId("animated-logo"), {
+    timeout: 4000,
+  });
 
   await waitFor(() => {
     expect(screen.getByTestId("object-search-results")).toBeInTheDocument();
@@ -103,7 +108,7 @@ test("displays the number of search results", async () => {
     }),
   );
 
-  render(<ContentLibrary />);
+  render(<ContentLibrary skipLogoAnimation />);
 
   await waitFor(() =>
     expect(
