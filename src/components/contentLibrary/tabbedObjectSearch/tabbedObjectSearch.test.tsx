@@ -78,9 +78,12 @@ test("Changing tabs", async () => {
 
   render(<TabbedObjectSearchWithAccount />);
 
-  await waitForElementToBeRemoved(() => screen.queryByTestId("animated-logo"), {
-    timeout: 4000,
-  });
+  await waitForElementToBeRemoved(
+    () => screen.queryByTestId("animated-skylark-logo"),
+    {
+      timeout: 4000,
+    },
+  );
 
   await waitFor(() => {
     expect(screen.queryAllByText("Default View")).toHaveLength(2); // Length 2 as active

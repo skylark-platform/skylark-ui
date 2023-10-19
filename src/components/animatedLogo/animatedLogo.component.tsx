@@ -176,7 +176,7 @@ export const AnimatedLogo = ({
     <AnimatePresence>
       {show && (
         <m.div
-          data-testid="animated-logo"
+          data-testid="animated-skylark-logo"
           className="absolute top-0 z-[99999999999] flex h-full w-full flex-col items-center justify-center pb-32"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
