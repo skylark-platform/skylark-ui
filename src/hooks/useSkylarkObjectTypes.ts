@@ -47,7 +47,7 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
   const { data } = useQuery<GQLSkylarkObjectTypesWithConfig>({
     queryKey: [QueryKeys.ObjectTypesConfig, query],
     queryFn: async () => skylarkRequest("query", query as DocumentNode),
-    enabled: query !== null,
+    enabled: objectTypes && query !== null,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -75,6 +75,7 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
 
   return {
     objectTypesWithConfig,
+    numObjectTypes: objectTypes?.length,
   };
 };
 

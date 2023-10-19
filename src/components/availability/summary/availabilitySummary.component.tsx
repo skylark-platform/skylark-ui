@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
+import { ParsedSkylarkObjectConfig } from "src/interfaces/skylark";
 import { formatReadableDateTime } from "src/lib/skylark/availability";
 
 const prettifyStrArr = (arr: string[]): string => {
@@ -15,6 +16,40 @@ const prettifyStrArr = (arr: string[]): string => {
   }
 
   return `${arr.slice(0, arr.length - 1).join(", ")} & ${arr[arr.length - 1]}`;
+};
+
+const buildObjectTypesStr = (
+  filteredObjectTypes: string[] | null,
+  numObjectTypes?: number,
+  allObjectTypesWithConfig?: {
+    objectType: string;
+    config: ParsedSkylarkObjectConfig;
+  }[],
+) => {
+  if (!filteredObjectTypes) {
+    return <>Objects </>;
+  }
+
+  if (filteredObjectTypes.length === numObjectTypes) {
+    return <>All object types </>;
+  }
+
+  const parsedObjectTypes = filteredObjectTypes.map((objectType) => {
+    const objectTypeWithConfig = allObjectTypesWithConfig?.find(
+      ({ objectType: name }) => name === objectType,
+    );
+    return objectTypeWithConfig?.config.objectTypeDisplayName || objectType;
+  });
+
+  if (filteredObjectTypes.length < 10) {
+    return (
+      <>
+        <strong>{prettifyStrArr(parsedObjectTypes)}</strong> objects{" "}
+      </>
+    );
+  }
+
+  return <>{filteredObjectTypes.length} object types </>;
 };
 
 // `"Episode" filtered by "search query"`
@@ -39,37 +74,17 @@ export const AvailabilitySummary = ({
     timeTravel: { datetime: string; timezone: string } | null;
   };
 }) => {
-  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+  const { objectTypesWithConfig, numObjectTypes } =
+    useSkylarkObjectTypesWithConfig();
 
   const { dimensions: allDimensionsWithValues } =
     useAvailabilityDimensionsWithValues();
 
-  let objectTypeStr = <>Objects </>;
-
-  if (objectTypes) {
-    const parsedObjectTypes = objectTypes.map((objectType) => {
-      const objectTypeWithConfig = objectTypesWithConfig?.find(
-        ({ objectType: name }) => name === objectType,
-      );
-      return objectTypeWithConfig?.config.objectTypeDisplayName || objectType;
-    });
-
-    objectTypeStr =
-      objectTypes.length < 10 ? (
-        <>
-          <strong>{prettifyStrArr(parsedObjectTypes)}</strong> objects{" "}
-        </>
-      ) : (
-        <>
-          <strong>
-            {objectTypesWithConfig?.length === objectTypes.length
-              ? "All"
-              : objectTypes.length}
-          </strong>{" "}
-          object types{" "}
-        </>
-      );
-  }
+  const objectTypeStr = buildObjectTypesStr(
+    objectTypes,
+    numObjectTypes,
+    objectTypesWithConfig,
+  );
 
   const translationStr = language ? (
     <>
