@@ -10,6 +10,7 @@ import {
   FiTrash2,
   FiXSquare,
 } from "react-icons/fi";
+import { useIsClient } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
 
 import { AnimatedLogo } from "src/components/animatedLogo/animatedLogo.component";
@@ -503,9 +504,11 @@ export const TabbedObjectSearchWithAccount = ({
     "waiting" | "running" | "completed"
   >(skipLogoAnimation ? "completed" : "waiting");
 
+  const isClient = useIsClient();
+
   return (
     <>
-      {!skipLogoAnimation && creds?.uri && (
+      {!skipLogoAnimation && creds?.uri && isClient && (
         <AnimatedLogo
           show={
             (!accountId && isAccountLoading) || animationState === "running"
@@ -515,8 +518,11 @@ export const TabbedObjectSearchWithAccount = ({
           onAnimationComplete={() => setAnimationState("completed")}
         />
       )}
-      {accountId && !isAccountLoading && animationState !== "running" && (
-        <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      {accountId && !isAccountLoading && (
+        <m.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: animationState === "running" ? 0 : 1 }}
+        >
           <TabbedObjectSearch
             key={`${creds?.uri}-${accountId}`}
             accountId={accountId}
