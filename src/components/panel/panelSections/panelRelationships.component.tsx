@@ -211,22 +211,6 @@ export const PanelRelationships = ({
     [inEditMode, modifiedRelationships, serverRelationships],
   );
 
-  useEffect(
-    () => console.log("modifiedRelationships"),
-    [modifiedRelationships],
-  );
-  useEffect(() => console.log("droppedObjects"), [droppedObjects]);
-  useEffect(
-    () => console.log("objectMetaRelationships"),
-    [objectMetaRelationships],
-  );
-  useEffect(() => console.log("relationships"), [relationships]);
-  useEffect(
-    () => console.log("setModifiedRelationships"),
-    [setModifiedRelationships],
-  );
-  useEffect(() => console.log("uid"), [uid]);
-
   useEffect(() => {
     if (
       droppedObjects &&
@@ -234,7 +218,6 @@ export const PanelRelationships = ({
       objectMetaRelationships &&
       relationships
     ) {
-      console.log("*** HANDLE");
       const { addedObjects, errors } = handleDroppedRelationships({
         droppedObjects,
         activeObjectUid: uid,
