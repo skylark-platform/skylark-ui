@@ -42,7 +42,7 @@
     "autoprefixer": "10.4.13",
     "clsx": "1.2.1",
     "daisyui": "2.41.0",
-    "dayjs": "1.11.7",
+    "dayjs": "1.11.10",
     "framer-motion": "9.0.2",
     "graphiql": "2.2.0",
     "graphql": "16.6.0",
