@@ -505,7 +505,7 @@ export const TabbedObjectSearchWithAccount = ({
 
   return (
     <>
-      {!skipLogoAnimation && (
+      {!skipLogoAnimation && creds?.uri && (
         <AnimatedLogo
           show={
             (!accountId && isAccountLoading) || animationState === "running"
