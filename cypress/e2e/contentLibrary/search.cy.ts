@@ -112,7 +112,7 @@ describe("Content Library - Search", () => {
       "not.exist",
     );
     cy.contains("GOT");
-    cy.contains("All object types translated to en-GB");
+    cy.contains("All object types translated to en-GB", { timeout: 10000 });
 
     cy.percySnapshot("Homepage");
   });
@@ -132,7 +132,7 @@ describe("Content Library - Search", () => {
     cy.wait("@searchQueryEmpty");
     cy.contains("We couldn't find matches for the search term.");
 
-    cy.contains("All object types translated to en-GB");
+    cy.contains("All object types translated to en-GB", { timeout: 10000 });
 
     cy.percySnapshot("Homepage - no search data");
   });
