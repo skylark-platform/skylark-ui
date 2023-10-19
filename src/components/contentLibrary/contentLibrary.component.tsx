@@ -73,7 +73,11 @@ const ContentLibraryDragOverlay = ({
   return null;
 };
 
-export const ContentLibrary = () => {
+export const ContentLibrary = ({
+  skipLogoAnimation,
+}: {
+  skipLogoAnimation?: boolean;
+}) => {
   const {
     activePanelObject,
     activePanelTab,
@@ -243,6 +247,7 @@ export const ContentLibrary = () => {
             withObjectSelect
             checkedObjects={checkedObjects}
             onObjectCheckedChanged={setCheckedObjects}
+            skipLogoAnimation={skipLogoAnimation}
           />
         </m.div>
         {activePanelObject && (

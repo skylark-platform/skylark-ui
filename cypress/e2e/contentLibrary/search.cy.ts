@@ -106,6 +106,8 @@ describe("Content Library - Search", () => {
     cy.visit("/");
     cy.wait("@introspectionQuery");
     cy.wait("@getObjectConfig");
+
+    cy.get("[data-testid=animated-skylark-logo]").should("not.exist");
   });
 
   it("visits home", () => {
@@ -131,6 +133,9 @@ describe("Content Library - Search", () => {
     cy.visit("/");
 
     cy.wait("@searchQueryEmpty");
+
+    cy.get("[data-testid=animated-skylark-logo]").should("not.exist");
+
     cy.contains("We couldn't find matches for the search term.");
 
     cy.contains("All object types translated to en-GB", { timeout: 10000 });

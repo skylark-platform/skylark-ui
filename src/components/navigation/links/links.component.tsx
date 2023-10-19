@@ -91,7 +91,7 @@ export const NavigationLinks = () => {
               className={clsx(
                 "group flex items-center py-6 text-black md:h-full md:px-4 md:py-0 lg:px-6",
                 !isActiveLink &&
-                  "[&>a]:text-black/50 [&>div>button]:text-black/50",
+                  "[&>a]:text-black/50 [&>div>div>button]:text-black/50",
               )}
             >
               {links ? (
