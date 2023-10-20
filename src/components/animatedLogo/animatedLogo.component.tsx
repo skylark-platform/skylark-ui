@@ -181,7 +181,10 @@ export const AnimatedLogo = ({
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <AnimatedSkylarkLogoSVG {...props} />
+          <AnimatedSkylarkLogoSVG
+            {...props}
+            className="h-16 md:h-28 xl:h-32 2xl:h-36"
+          />
           {children && (
             <m.div
               initial={{ opacity: 0 }}
