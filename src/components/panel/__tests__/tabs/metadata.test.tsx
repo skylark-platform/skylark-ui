@@ -1,6 +1,7 @@
 import { graphql } from "msw";
 import { useState } from "react";
 
+import GQLSkylarkGetMovieDraftQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/draftObject.json";
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetObjectImageQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gotImage.json";
 import GQLSkylarkGetObjectGOTS01E01QueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01.json";
@@ -13,6 +14,7 @@ import {
   waitFor,
   fireEvent,
   within,
+  act,
 } from "src/__tests__/utils/test-utils";
 import {
   defaultProps,
@@ -23,6 +25,7 @@ import {
   setObjectWithContent,
   saveGraphQLError,
   validateErrorToastShown,
+  draftMovieObject,
 } from "src/components/panel/__tests__/utils/test-utils";
 import { Panel } from "src/components/panel/panel.component";
 import { QueryErrorMessages } from "src/enums/graphql";
@@ -59,6 +62,16 @@ describe("metadata view", () => {
         GQLSkylarkGetObjectQueryFixture.data.getObject.title_short,
       ),
     );
+  });
+
+  test("renders a draft label", async () => {
+    render(<Panel {...defaultProps} object={draftMovieObject} />);
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    await waitFor(() => expect(screen.getByText("Draft")).toBeInTheDocument());
   });
 
   test("renders three sections system, translatable, global", async () => {
@@ -410,6 +423,122 @@ describe("metadata view", () => {
 
       const saveButton = screen.getByText("Save");
       fireEvent.click(saveButton);
+
+      await waitFor(() =>
+        expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+      );
+
+      expect(input).toHaveValue(changedValue);
+    });
+
+    test("edits and saves as draft", async () => {
+      const changedValue = "this has changed";
+
+      server.use(
+        graphql.mutation(
+          "UPDATE_OBJECT_METADATA_SkylarkSet",
+          (req, res, ctx) => {
+            return res(
+              ctx.data({
+                updateObjectMetadata: {
+                  ...GQLSkylarkGetHomepageSetQueryFixture.data.getObject,
+                  title_short: changedValue,
+                },
+              }),
+            );
+          },
+        ),
+      );
+
+      const { user } = render(
+        <Panel {...defaultProps} object={setObjectWithContent} />,
+      );
+
+      await waitFor(() =>
+        expect(screen.getByLabelText("Title short")).toBeInTheDocument(),
+      );
+
+      const input = screen.getByLabelText("Title short");
+
+      await waitFor(() => {
+        expect(input).toHaveValue(
+          GQLSkylarkGetHomepageSetQueryFixture.data.getObject.title_short,
+        );
+      });
+
+      await user.click(input);
+      await user.clear(input);
+      await user.type(input, changedValue);
+
+      await waitFor(() =>
+        expect(screen.getByText("Editing")).toBeInTheDocument(),
+      );
+
+      fireEvent.click(
+        screen.getByLabelText("save changes - see alternate options"),
+      );
+      fireEvent.click(screen.getByText("Save as Draft"));
+
+      await waitFor(() =>
+        expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
+      );
+
+      expect(input).toHaveValue(changedValue);
+    });
+
+    test("edits a draft version to save & publish", async () => {
+      const changedValue = "this has changed";
+
+      server.use(
+        graphql.mutation("UPDATE_OBJECT_METADATA_Movie", (req, res, ctx) => {
+          return res(
+            ctx.data({
+              updateObjectMetadata: {
+                ...GQLSkylarkGetMovieDraftQueryFixture.data.getObject,
+                title_short: changedValue,
+              },
+            }),
+          );
+        }),
+      );
+
+      const { user } = render(
+        <Panel {...defaultProps} object={draftMovieObject} />,
+      );
+
+      await waitFor(() =>
+        expect(screen.getByText("Draft")).toBeInTheDocument(),
+      );
+
+      await waitFor(() =>
+        expect(screen.getByLabelText("Title short")).toBeInTheDocument(),
+      );
+
+      const input = screen.getByLabelText("Title short");
+
+      await waitFor(() => {
+        expect(input).toHaveValue(
+          GQLSkylarkGetMovieDraftQueryFixture.data.getObject.title_short,
+        );
+      });
+
+      await user.click(input);
+      await user.clear(input);
+      await user.type(input, changedValue);
+
+      await waitFor(() =>
+        expect(screen.getByText("Editing")).toBeInTheDocument(),
+      );
+
+      fireEvent.click(
+        screen.getByLabelText("save changes - see alternate options"),
+      );
+
+      await screen.findByText("Save & Publish");
+
+      await act(() => {
+        fireEvent.click(screen.getByText("Save & Publish"));
+      });
 
       await waitFor(() =>
         expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),

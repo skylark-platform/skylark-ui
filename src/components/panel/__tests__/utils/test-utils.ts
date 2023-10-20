@@ -6,6 +6,7 @@ import {
 } from "msw";
 
 import GQLSkylarkGetAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allDevicesAllCustomersAvailability.json";
+import GQLSkylarkGetMovieDraftQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/draftObject.json";
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetObjectImageQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gotImage.json";
 import GQLSkylarkGetObjectGOTS01E01QueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01.json";
@@ -24,6 +25,14 @@ export const movieObject: SkylarkObjectIdentifier = {
   objectType: "Movie",
   language:
     GQLSkylarkGetObjectQueryFixture.data.getObject._meta.language_data.language,
+};
+
+export const draftMovieObject: SkylarkObjectIdentifier = {
+  uid: GQLSkylarkGetMovieDraftQueryFixture.data.getObject.uid,
+  objectType: "Movie",
+  language:
+    GQLSkylarkGetMovieDraftQueryFixture.data.getObject._meta.language_data
+      .language,
 };
 
 export const imageObject: SkylarkObjectIdentifier = {

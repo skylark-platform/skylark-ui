@@ -1,5 +1,4 @@
 import { ComponentStory } from "@storybook/react";
-import { FiPlus, FiPlusCircle } from "react-icons/fi";
 
 import { ButtonWithDropdown } from "./buttonWithDropdown.component";
 

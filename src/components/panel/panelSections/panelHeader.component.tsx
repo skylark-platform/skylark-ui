@@ -228,6 +228,7 @@ export const PanelHeader = ({
                       onClick: () => save({ draft: !isDraft }),
                     },
                   ]}
+                  aria-label="save changes"
                 >
                   {isDraft ? "Save Draft" : "Save"}
                 </ButtonWithDropdown>
