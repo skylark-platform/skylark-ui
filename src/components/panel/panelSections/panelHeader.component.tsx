@@ -33,6 +33,7 @@ import { Skeleton } from "src/components/skeleton";
 import { PanelTab } from "src/hooks/state";
 import {
   AvailabilityStatus,
+  BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -213,7 +214,8 @@ export const PanelHeader = ({
 
           {inEditMode ? (
             <>
-              {currentTab === PanelTab.Metadata ? (
+              {currentTab === PanelTab.Metadata &&
+              objectType !== BuiltInSkylarkObjectType.Availability ? (
                 <ButtonWithDropdown
                   ref={saveButtonRef}
                   success
