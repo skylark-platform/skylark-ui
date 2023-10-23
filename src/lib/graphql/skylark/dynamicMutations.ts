@@ -162,20 +162,30 @@ export const createUpdateObjectMetadataMutation = (
     objectMeta.operations.update.inputs,
   );
 
+  const draftVariableObj =
+    objectMeta.name === BuiltInSkylarkObjectType.Availability
+      ? {}
+      : { draft: "Boolean = false" };
+
+  const draftArgObj =
+    objectMeta.name === BuiltInSkylarkObjectType.Availability
+      ? {}
+      : { draft: new VariableType("draft") };
+
   const mutation = {
     mutation: {
       __name: `UPDATE_OBJECT_METADATA_${objectMeta.name}`,
       __variables: {
         ...common.variables,
+        ...draftVariableObj,
         uid: "String!",
-        draft: "Boolean = false",
       },
       updateObjectMetadata: {
         __aliasFor: objectMeta.operations.update.name,
         __args: {
           ...common.args,
+          ...draftArgObj,
           uid: new VariableType("uid"),
-          draft: new VariableType("draft"),
           [objectMeta.operations.update.argName]: parsedMetadata,
         },
         __typename: true,
