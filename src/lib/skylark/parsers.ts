@@ -39,6 +39,8 @@ import {
   SkylarkAvailabilityField,
   ParsedSkylarkObjectConfigFieldConfig,
   SkylarkSystemField,
+  SkylarkGraphQLObjectMeta,
+  AvailabilityStatus,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -194,6 +196,22 @@ const parseObjectAvailability = (
   };
 };
 
+const parseObjectMeta = (
+  meta: SkylarkGraphQLObjectMeta | undefined,
+  availabilityStatus: AvailabilityStatus | null,
+) => ({
+  availabilityStatus,
+  language: meta?.language_data.language || "",
+  availableLanguages: meta?.available_languages || [],
+  versions: {
+    language: meta?.language_data.version,
+    global: meta?.global_data.version,
+  },
+  created: meta?.created?.date,
+  modified: meta?.modified?.date,
+  published: meta?.published,
+});
+
 export const parseObjectConfig = (
   objectType: string,
   unparsedConfig?: SkylarkGraphQLObjectConfig,
@@ -274,15 +292,7 @@ export const parseObjectContent = (
         objectType: object.__typename,
         position,
         config: parseObjectConfig(object.__typename, object._config),
-        meta: {
-          language: object._meta?.language_data.language || "",
-          availableLanguages: object._meta?.available_languages || [],
-          versions: {
-            language: object._meta?.language_data.version,
-            global: object._meta?.global_data.version,
-          },
-          availabilityStatus: availability.status,
-        },
+        meta: parseObjectMeta(object._meta, availability.status),
         object: normalisedObject,
       };
     },
@@ -368,17 +378,7 @@ export const parseSkylarkObject = (
       objectType: object.__typename,
       uid: object.uid,
       config: parseObjectConfig(object.__typename, object._config),
-      meta: {
-        language: object._meta?.language_data.language || "",
-        availableLanguages: object._meta?.available_languages || [],
-        versions: {
-          language: object._meta?.language_data.version,
-          global: object._meta?.global_data.version,
-        },
-        availabilityStatus,
-        created: object._meta?.created?.date,
-        modified: object._meta?.modified?.date,
-      },
+      meta: parseObjectMeta(object._meta, availabilityStatus),
       metadata,
       availability,
       images,

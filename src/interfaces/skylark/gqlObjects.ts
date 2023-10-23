@@ -39,6 +39,7 @@ export interface SkylarkGraphQLObjectMeta {
   created?: {
     date?: string;
   };
+  published?: boolean;
 }
 
 export interface SkylarkGraphQLAvailabilityDimensionValue {

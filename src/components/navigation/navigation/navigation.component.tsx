@@ -16,46 +16,9 @@ import { NavigationLinks } from "src/components/navigation/links";
 import { UserAvatar } from "src/components/user";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { useAccountStatus } from "src/hooks/useAccountStatus";
+import { formatUriAsCustomerIdentifer } from "src/lib/utils";
 
 import Logo from "public/images/skylark.png";
-
-const getCustomerIdentifier = (uri: string | null) => {
-  if (!uri) {
-    return "";
-  }
-
-  const isIo = uri.includes("skylarkplatform.io");
-  const isCom = uri.includes("skylarkplatform.com");
-  const isValid = isIo || isCom;
-
-  if (!isValid) {
-    return "";
-  }
-
-  const isIntEnvironment = uri.includes(".api.int.development.");
-  if (isIntEnvironment) {
-    const identifier = uri.split("/")[2].split(".api.int.development.")[0];
-    return `${sentenceCase(identifier)} (int)`;
-  }
-
-  const isProductionEnvironment = uri.includes(
-    ".api.skylarkplatform.com/graphql",
-  );
-  if (isProductionEnvironment) {
-    const identifier = uri.split("/")[2].split(".api.skylarkplatform.com")[0];
-    return sentenceCase(identifier);
-  }
-
-  const path = uri.split(
-    isCom ? "skylarkplatform.com" : "skylarkplatform.io",
-  )[1];
-  const splitPath = path.split("/").filter((p) => p);
-  if (splitPath[0] !== "graphql") {
-    return sentenceCase(splitPath[0]);
-  }
-
-  return sentenceCase(uri.split(".")[1]);
-};
 
 export const Navigation = () => {
   const isClient = useIsClient();
@@ -68,7 +31,7 @@ export const Navigation = () => {
 
   const [creds] = useSkylarkCreds();
   const customerIdentifier = isClient
-    ? getCustomerIdentifier(creds?.uri || "")
+    ? formatUriAsCustomerIdentifer(creds?.uri || "")
     : "";
 
   const handleModalOpenState = (open: boolean) => {

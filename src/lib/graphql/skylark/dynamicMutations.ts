@@ -168,12 +168,14 @@ export const createUpdateObjectMetadataMutation = (
       __variables: {
         ...common.variables,
         uid: "String!",
+        draft: "Boolean = false",
       },
       updateObjectMetadata: {
         __aliasFor: objectMeta.operations.update.name,
         __args: {
           ...common.args,
           uid: new VariableType("uid"),
+          draft: new VariableType("draft"),
           [objectMeta.operations.update.argName]: parsedMetadata,
         },
         __typename: true,

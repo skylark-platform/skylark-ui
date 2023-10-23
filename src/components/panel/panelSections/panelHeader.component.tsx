@@ -8,12 +8,14 @@ import {
   FiEdit,
   FiExternalLink,
   FiMoreVertical,
+  FiSave,
   FiTrash2,
 } from "react-icons/fi";
 import { GrGraphQl } from "react-icons/gr";
 
 import { AvailabilityLabelPill } from "src/components/availability";
 import { Button } from "src/components/button";
+import { ButtonWithDropdown } from "src/components/buttonWithDropdown";
 import {
   DropdownMenu,
   DropdownMenuButton,
@@ -28,6 +30,7 @@ import {
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { ObjectTypePill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
+import { PanelTab } from "src/hooks/state";
 import {
   AvailabilityStatus,
   ParsedSkylarkObject,
@@ -51,7 +54,7 @@ interface PanelHeaderProps {
   availabilityStatus?: AvailabilityStatus | null;
   toggleEditMode: () => void;
   closePanel?: () => void;
-  save: () => void;
+  save: (opts?: { draft?: boolean }) => void;
   setLanguage: (l: string) => void;
   navigateToPreviousPanelObject?: () => void;
   navigateToForwardPanelObject?: () => void;
@@ -157,6 +160,8 @@ export const PanelHeader = ({
     }
   }, [inEditMode]);
 
+  const isDraft = object?.meta.published === false;
+
   return (
     <div
       data-testid="panel-header"
@@ -208,15 +213,36 @@ export const PanelHeader = ({
 
           {inEditMode ? (
             <>
-              <Button
-                ref={saveButtonRef}
-                variant="primary"
-                success
-                onClick={save}
-                disabled={isSaving}
-              >
-                Save
-              </Button>
+              {currentTab === PanelTab.Metadata ? (
+                <ButtonWithDropdown
+                  ref={saveButtonRef}
+                  success
+                  onClick={() => save({ draft: isDraft })}
+                  disabled={isSaving}
+                  variant="primary"
+                  options={[
+                    {
+                      id: "save-alternative",
+                      text: !isDraft ? "Save as Draft" : "Save & Publish",
+                      Icon: <FiSave className="text-xl" />,
+                      onClick: () => save({ draft: !isDraft }),
+                    },
+                  ]}
+                  aria-label="save changes"
+                >
+                  {isDraft ? "Save Draft" : "Save"}
+                </ButtonWithDropdown>
+              ) : (
+                <Button
+                  ref={saveButtonRef}
+                  variant="primary"
+                  success
+                  onClick={save}
+                  disabled={isSaving}
+                >
+                  Save
+                </Button>
+              )}
               <Button
                 ref={cancelButtonRef}
                 variant="outline"
@@ -229,14 +255,17 @@ export const PanelHeader = ({
             </>
           ) : (
             <>
-              <Button
-                variant="primary"
-                Icon={<FiEdit className="h-4 w-4 stroke-success-content" />}
-                onClick={toggleEditMode}
-                disabled={!tabsWithEditMode.includes(currentTab)}
-              >
-                Edit {currentTab}
-              </Button>
+              {tabsWithEditMode.includes(currentTab) && (
+                <Button
+                  variant="primary"
+                  Icon={<FiEdit className="h-4 w-4 stroke-success-content" />}
+                  onClick={toggleEditMode}
+                  disabled={!tabsWithEditMode.includes(currentTab)}
+                  animated={false}
+                >
+                  Edit {currentTab}
+                </Button>
+              )}
             </>
           )}
         </div>
@@ -288,18 +317,22 @@ export const PanelHeader = ({
             </>
           )}
         </div>
-        <div className="flex flex-row items-end justify-end space-x-2">
-          {inEditMode && (
+        <div className="flex flex-row items-end justify-end">
+          {(inEditMode || currentTab === PanelTab.Metadata) && (
             <div
               className={clsx(
                 "absolute -bottom-16 left-1/2 z-10 -translate-x-1/2",
                 isPage ? "md:fixed md:bottom-auto md:top-24" : " md:-bottom-18",
               )}
             >
-              <PanelLabel
-                text={isSaving ? "Saving" : "Editing"}
-                loading={isSaving}
-              />
+              {inEditMode && (
+                <PanelLabel
+                  text={isSaving ? "Saving" : "Editing"}
+                  warning={isDraft}
+                  loading={isSaving}
+                />
+              )}
+              {!inEditMode && isDraft && <PanelLabel text="Draft" warning />}
             </div>
           )}
         </div>

@@ -50,6 +50,7 @@ const commonGraphQLOpts = {
       created: {
         date: true,
       },
+      published: true,
     },
   },
 };

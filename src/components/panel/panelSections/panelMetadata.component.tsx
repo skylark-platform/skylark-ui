@@ -151,7 +151,14 @@ export const PanelMetadata = ({
         )}
 
         {objectType === BuiltInSkylarkObjectType.SkylarkImage && (
-          <CalculatedImageSize src={metadata?.url as string | null} />
+          <>
+            <CalculatedImageSize src={metadata?.url as string | null} />
+            <PanelMetadataProperty
+              property={"URL"}
+              value={metadata?.url}
+              isUrl
+            />
+          </>
         )}
       </form>
       <PanelLoading isLoading={!objectMeta}>

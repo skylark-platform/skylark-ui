@@ -1,0 +1,147 @@
+{
+  "data": {
+    "getObject": {
+      "__typename": "Movie",
+      "_meta": {
+        "available_languages": ["ar", "en-GB", "pt-PT"],
+        "language_data": {
+          "language": "en-GB",
+          "version": 3
+        },
+        "global_data": {
+          "version": 5
+        },
+        "modified": {
+          "date": "2023-10-19T18:09:22.968752+00:00"
+        },
+        "created": {
+          "date": "2023-10-19T18:09:22.968752+00:00"
+        },
+        "published": false
+      },
+      "_config": {
+        "primary_field": "internal_title",
+        "colour": "#009688",
+        "display_name": "Movie",
+        "field_config": [
+          {
+            "name": "release_date",
+            "ui_field_type": null,
+            "ui_position": 6
+          },
+          {
+            "name": "title_sort",
+            "ui_field_type": null,
+            "ui_position": 8
+          },
+          {
+            "name": "title_short",
+            "ui_field_type": null,
+            "ui_position": 2
+          },
+          {
+            "name": "internal_title",
+            "ui_field_type": null,
+            "ui_position": 0
+          },
+          {
+            "name": "year_of_release",
+            "ui_field_type": null,
+            "ui_position": 7
+          },
+          {
+            "name": "movie_number",
+            "ui_field_type": null,
+            "ui_position": 5
+          },
+          {
+            "name": "synopsis_short",
+            "ui_field_type": "TEXTAREA",
+            "ui_position": 4
+          },
+          {
+            "name": "synopsis",
+            "ui_field_type": "TEXTAREA",
+            "ui_position": 3
+          },
+          {
+            "name": "title",
+            "ui_field_type": null,
+            "ui_position": 1
+          }
+        ]
+      },
+      "uid": "01HD4J1E1QFP8WP2NA39EDCXDX",
+      "external_id": "rec4S20yM31JXDhQV",
+      "slug": "mank",
+      "synopsis": "1930s Hollywood is re-evaluated through the eyes of scathing social critic and alcoholic screenwriter Herman J. Mankiewicz as he races to finish the screenplay of Citizen Kane (1941).",
+      "synopsis_short": null,
+      "title": "Mank - draft",
+      "title_short": "Mank - draft short",
+      "internal_title": "Mank",
+      "movie_number": null,
+      "release_date": "2020-11-13+00:00",
+      "title_sort": null,
+      "year_of_release": null,
+      "availability": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01HD4HW61ANGQXFYB5K5NQ6BHD",
+            "external_id": "rec9zC5XQf7TV9CQs",
+            "title": "Always - Premium/Standard, MENA",
+            "slug": "always-mena",
+            "start": "2000-01-01T00:00:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "UTC"
+          },
+          {
+            "uid": "01HD4HW63XB4S5ARMKW9GYDAA4",
+            "external_id": "recXNjJNyc6nKQIYa",
+            "title": "Always - Premium/Standard, Europe/North America",
+            "slug": "always-all-devices-all-customer-types",
+            "start": "2022-01-01T00:00:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "UTC"
+          }
+        ]
+      },
+      "images": {
+        "next_token": null,
+        "objects": [
+          {
+            "_meta": {
+              "available_languages": ["en-GB"],
+              "language_data": {
+                "language": "en-GB",
+                "version": 1
+              },
+              "global_data": {
+                "version": 1
+              },
+              "modified": {
+                "date": "2023-10-19T18:06:57.982068+00:00"
+              },
+              "created": {
+                "date": "2023-10-19T18:06:57.982068+00:00"
+              },
+              "published": true
+            },
+            "uid": "01HD4HX0V0V3271YAAQ14MHF3N",
+            "external_id": "recE0IWPOEd4HZQIK",
+            "slug": null,
+            "internal_title": null,
+            "title": "Movie 4.jpg",
+            "description": null,
+            "type": "THUMBNAIL",
+            "alt_text": null,
+            "url": "https://media.sl-b-sl-2878.development.skylarkplatform.com/skylarkimages/377tmtsyufbkzbpt5ugoj4di6y/01HD4HX0V0V3271YAAQ14MHF3N/01HD4HX4F07AC9364QHNXDS0X3",
+            "external_url": null,
+            "file_name": null,
+            "content_type": "image/jpeg"
+          }
+        ]
+      }
+    }
+  }
+}
