@@ -11,7 +11,7 @@ jobs:
     name: Build UI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - run: vercel env pull --yes --environment=development --token=${{ secrets.VERCEL_TOKEN }} .env
@@ -42,7 +42,7 @@ jobs:
       matrix:
         containers: [1, 2, 3, 4, 5]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Download the build folders
         uses: actions/download-artifact@v3
         with:
