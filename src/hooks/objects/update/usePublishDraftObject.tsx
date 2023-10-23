@@ -14,21 +14,16 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import {
-  createPublishVersionMutation,
-  createUpdateObjectMetadataMutation,
-} from "src/lib/graphql/skylark/dynamicMutations";
+import { createUpdateObjectMetadataMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
 interface MutationVariables {
   uid: string;
   language?: string;
-  metadata: Record<string, SkylarkObjectMetadataField> | null;
+  metadata: Record<string, SkylarkObjectMetadataField>;
   draft?: boolean;
-  languageVersion?: number;
-  globalVersion?: number;
 }
 
-export const useUpdateObjectMetadata = ({
+export const usePublishDraftObject = ({
   objectType,
   onSuccess,
   onError,
@@ -44,29 +39,16 @@ export const useUpdateObjectMetadata = ({
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const { mutate, isLoading } = useMutation({
-    mutationFn: ({
-      uid,
-      language,
-      metadata,
-      draft,
-      languageVersion,
-      globalVersion,
-    }: MutationVariables) => {
-      const updateObjectMetadataMutation =
-        metadata === null
-          ? createPublishVersionMutation(
-              objectOperations,
-              objectOperations?.isTranslatable,
-            )
-          : createUpdateObjectMetadataMutation(
-              objectOperations,
-              metadata,
-              objectOperations?.isTranslatable,
-            );
+    mutationFn: ({ uid, language, metadata, draft }: MutationVariables) => {
+      const updateObjectMetadataMutation = createUpdateObjectMetadataMutation(
+        objectOperations,
+        metadata,
+        objectOperations?.isTranslatable,
+      );
       return skylarkRequest<GQLSkylarkUpdateObjectMetadataResponse>(
         "mutation",
         updateObjectMetadataMutation as RequestDocument,
-        { uid, language, draft, languageVersion, globalVersion },
+        { uid, language, draft },
       );
     },
     onSuccess: (data, { uid, language }) => {

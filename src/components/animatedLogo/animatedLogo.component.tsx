@@ -1,5 +1,8 @@
+import clsx from "clsx";
 import { AnimatePresence, Transition, m } from "framer-motion";
 import { ReactNode, useMemo } from "react";
+
+import { Spinner } from "src/components/icons";
 
 interface AnimatedLogoProps {
   show: boolean;
@@ -170,14 +173,22 @@ const AnimatedSkylarkLogoSVG = ({
 export const AnimatedLogo = ({
   show,
   children,
+  withLoadingSpinner,
+  hideLoadingSpinner,
   ...props
-}: AnimatedLogoProps) => {
+}: AnimatedLogoProps & {
+  withLoadingSpinner?: boolean;
+  hideLoadingSpinner?: boolean;
+}) => {
   return (
     <AnimatePresence>
       {show && (
         <m.div
           data-testid="animated-skylark-logo"
-          className="absolute top-0 z-[99999999999] flex h-full w-full flex-col items-center justify-center pb-32"
+          className={clsx(
+            "fixed left-0 right-0 top-0 z-[99999999999] flex h-full w-full flex-col items-center justify-center pb-10",
+            withLoadingSpinner ? "pb-8" : "pb-32",
+          )}
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
@@ -197,6 +208,14 @@ export const AnimatedLogo = ({
             >
               {children}
             </m.div>
+          )}
+          {withLoadingSpinner && (
+            <Spinner
+              className={clsx(
+                "mt-10 h-14 w-14 animate-spin transition-opacity",
+                hideLoadingSpinner ? "opacity-0" : "opacity-100",
+              )}
+            />
           )}
         </m.div>
       )}

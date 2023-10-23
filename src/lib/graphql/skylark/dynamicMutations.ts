@@ -190,6 +190,50 @@ export const createUpdateObjectMetadataMutation = (
   return gql(graphQLQuery);
 };
 
+export const createPublishVersionMutation = (
+  objectMeta: SkylarkObjectMeta | null,
+  addLanguageVariable = false,
+) => {
+  if (!objectMeta || !objectMeta.operations.update) {
+    return null;
+  }
+
+  const common = generateVariablesAndArgs(
+    objectMeta.name,
+    "Mutation",
+    addLanguageVariable,
+  );
+
+  const mutation = {
+    mutation: {
+      __name: `PUBLISH_${objectMeta.name}`,
+      __variables: {
+        ...common.variables,
+        uid: "String!",
+        languageVersion: "Int",
+        globalVersion: "Int",
+      },
+      updateObjectMetadata: {
+        __aliasFor: objectMeta.operations.update.name,
+        __args: {
+          ...common.args,
+          uid: new VariableType("uid"),
+          draft: false,
+          language_version: new VariableType("languageVersion"),
+          global_version: new VariableType("globalVersion"),
+        },
+        __typename: true,
+        ...common.fields,
+        ...generateFieldsToReturn(objectMeta.fields, objectMeta.name),
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(mutation);
+
+  return gql(graphQLQuery);
+};
+
 export const createUpdateObjectContentMutation = (
   object: SkylarkObjectMeta | null,
   originalContentObjects: ParsedSkylarkObjectContentObject[] | null,
