@@ -1,4 +1,3 @@
-import { Dialog } from "@headlessui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { usePlausible } from "next-plausible";
@@ -7,8 +6,8 @@ import { useDebouncedCallback } from "use-debounce";
 
 import { Button } from "src/components/button";
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
-import { FiX } from "src/components/icons";
 import { TextInput } from "src/components/inputs/textInput";
+import { Modal } from "src/components/modals/base/modal";
 import { QueryKeys } from "src/enums/graphql";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import {
@@ -93,99 +92,73 @@ export const AddAuthTokenModal = ({
   };
 
   return (
-    <Dialog
-      open={isOpen}
-      onClose={closeModal}
-      className="font-body relative z-50"
+    <Modal
+      title="Connect to Skylark"
+      description="Enter your GraphQL URI and API Key below to connect to your Skylark account."
+      isOpen={isOpen}
+      size="small"
+      closeModal={closeModal}
     >
-      <div
-        className="fixed inset-0 bg-black/40"
-        aria-hidden="true"
-        data-testid="dialog-background"
-      />
-
-      <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
-        <Dialog.Panel className="relative mx-auto max-w-lg rounded bg-white p-6 md:p-10">
-          <button
-            aria-label="close"
-            className="absolute right-4 top-4 sm:right-8 sm:top-9"
-            onClick={closeModal}
-            tabIndex={-1}
-          >
-            <FiX className="text-lg" />
-          </button>
-
-          <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">
-            Connect to Skylark
-          </Dialog.Title>
-          <Dialog.Description>
-            Enter your GraphQL URI and API Key below to connect to your Skylark
-            account.
-          </Dialog.Description>
-          {accountId && (
-            <div className="mt-2 flex items-center">
-              <p>
-                Currently connected to:{" "}
-                <code className="rounded-sm bg-manatee-200 p-1">
-                  {accountId}
-                </code>
-              </p>
-              <CopyToClipboard value={accountId} />
-            </div>
+      {accountId && (
+        <div className="mt-2 flex items-center">
+          <p>
+            Currently connected to:{" "}
+            <code className="rounded-sm bg-manatee-200 p-1">{accountId}</code>
+          </p>
+          <CopyToClipboard value={accountId} />
+        </div>
+      )}
+      <div className="my-4 flex flex-col space-y-2 md:my-10">
+        <TextInput
+          value={inputUri || ""}
+          onChange={(uri) => {
+            setInputCreds((prev) => ({ ...prev, uri }));
+            debouncedSetCreds({ token: inputToken, uri });
+          }}
+          label="GraphQL URL"
+          className={clsx(
+            "pr-9",
+            debouncedUri && "border-2 outline-none",
+            requestLoading && "border-warning",
+            !requestLoading &&
+              debouncedUri &&
+              (invalidUri ? "border-error" : "border-success"),
           )}
-          <div className="my-4 flex flex-col space-y-2 md:my-10">
-            <TextInput
-              value={inputUri || ""}
-              onChange={(uri) => {
-                setInputCreds((prev) => ({ ...prev, uri }));
-                debouncedSetCreds({ token: inputToken, uri });
-              }}
-              label="GraphQL URL"
-              className={clsx(
-                "pr-9",
-                debouncedUri && "border-2 outline-none",
-                requestLoading && "border-warning",
-                !requestLoading &&
-                  debouncedUri &&
-                  (invalidUri ? "border-error" : "border-success"),
-              )}
-              withCopy
-            />
+          withCopy
+        />
 
-            <TextInput
-              value={inputToken || ""}
-              onChange={(token) => {
-                setInputCreds((prev) => ({ ...prev, token }));
-                debouncedSetCreds({ uri: inputUri, token });
-              }}
-              label="API Key"
-              tabIndex={-1}
-              className={clsx(
-                "pr-9",
-                debouncedUri && "border-2 outline-none",
-                requestLoading && "border-warning",
-                !requestLoading &&
-                  debouncedUri &&
-                  (invalidToken || debouncedToken === ""
-                    ? "border-error"
-                    : "border-success"),
-              )}
-              withCopy
-            />
-          </div>
-          <div className="flex w-full flex-row justify-end">
-            <Button
-              variant="primary"
-              disabled={!isConnected || !debouncedUri || !debouncedToken}
-              onClick={() => updateLocalStorage()}
-              loading={requestLoading}
-              type="button"
-            >
-              {requestLoading ? "Validating" : "Connect"}
-            </Button>
-          </div>
-        </Dialog.Panel>
+        <TextInput
+          value={inputToken || ""}
+          onChange={(token) => {
+            setInputCreds((prev) => ({ ...prev, token }));
+            debouncedSetCreds({ uri: inputUri, token });
+          }}
+          label="API Key"
+          tabIndex={-1}
+          className={clsx(
+            "pr-9",
+            debouncedUri && "border-2 outline-none",
+            requestLoading && "border-warning",
+            !requestLoading &&
+              debouncedUri &&
+              (invalidToken || debouncedToken === ""
+                ? "border-error"
+                : "border-success"),
+          )}
+          withCopy
+        />
       </div>
-    </Dialog>
+      <div className="flex w-full flex-row justify-end">
+        <Button
+          variant="primary"
+          disabled={!isConnected || !debouncedUri || !debouncedToken}
+          onClick={() => updateLocalStorage()}
+          loading={requestLoading}
+          type="button"
+        >
+          {requestLoading ? "Validating" : "Connect"}
+        </Button>
+      </div>
+    </Modal>
   );
 };

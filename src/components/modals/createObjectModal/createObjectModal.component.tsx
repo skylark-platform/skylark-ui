@@ -14,6 +14,7 @@ import { Button } from "src/components/button";
 import { FiX } from "src/components/icons";
 import { SkylarkObjectFieldInput } from "src/components/inputs";
 import { LanguageSelect, ObjectTypeSelect } from "src/components/inputs/select";
+import { Modal } from "src/components/modals/base/modal";
 import {
   GraphQLRequestErrorToast,
   Toast,
@@ -247,26 +248,23 @@ const CreateObjectModalBody = forwardRef(
         : false;
 
     return (
-      <Dialog.Panel className="relative mx-auto h-full max-h-[90%] w-full max-w-3xl overflow-y-auto rounded bg-white p-6 md:w-4/5 md:p-10">
-        <button
-          aria-label="close"
-          className="absolute right-4 top-4 sm:right-8 sm:top-9"
-          onClick={closeModal}
-          tabIndex={-1}
-        >
-          <FiX className="text-lg" />
-        </button>
-
-        <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">
-          {isCreateTranslationModal
+      <Modal
+        title={
+          isCreateTranslationModal
             ? `Create ${objectTypeDisplayName} Translation`
-            : `Create ${objectTypeDisplayName || "Object"}`}
-        </Dialog.Title>
-        <Dialog.Description>
-          {isCreateTranslationModal
+            : `Create ${objectTypeDisplayName || "Object"}`
+        }
+        description={
+          isCreateTranslationModal
             ? "Select language and add translatable data."
-            : "Select Object Type to get started."}
-        </Dialog.Description>
+            : "Select Object Type to get started."
+        }
+        isOpen={isOpen}
+        closeModal={closeModal}
+        data-testid="search-objects-modal"
+        size="medium"
+        growHeight
+      >
         <form
           className="mt-8 flex w-full flex-col justify-end gap-4"
           onSubmit={handleSubmit(onSubmit)}
@@ -385,6 +383,22 @@ const CreateObjectModalBody = forwardRef(
             </div>
           )}
         </form>
+      </Modal>
+    );
+
+    return (
+      <Dialog.Panel className="relative mx-auto h-full max-h-[90%] w-full max-w-3xl overflow-y-auto rounded bg-white p-6 md:w-4/5 md:p-10">
+        <button
+          aria-label="close"
+          className="absolute right-4 top-4 sm:right-8 sm:top-9"
+          onClick={closeModal}
+          tabIndex={-1}
+        >
+          <FiX className="text-lg" />
+        </button>
+
+        <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl"></Dialog.Title>
+        <Dialog.Description></Dialog.Description>
       </Dialog.Panel>
     );
   },

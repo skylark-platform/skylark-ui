@@ -26,6 +26,7 @@ import {
   shallowCompareObjects,
 } from "src/lib/utils";
 
+import { BulkObjectOptions } from "./bulkObjectOptions/bulkObjectOptions.component";
 import {
   OBJECT_SEARCH_HARDCODED_COLUMNS,
   OBJECT_SEARCH_ORDERED_KEYS,
@@ -380,7 +381,8 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
       <div
         className={clsx(
           "flex w-full flex-col-reverse items-end space-x-2 md:flex-row md:items-start md:justify-between",
-          isPanelOpen ? "lg:flex-row" : "pr-2 md:flex-row md:pr-8",
+          // isPanelOpen ? "lg:flex-row" : "pr-2 md:flex-row md:pr-8",
+          "pr-2 md:flex-row md:pr-8",
         )}
       >
         <div
@@ -415,6 +417,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             </p>
           </div>
         </div>
+        <BulkObjectOptions selectedObjects={props.checkedObjects || []} />
       </div>
       {sortedHeaders.length > 0 && (
         <div

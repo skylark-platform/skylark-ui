@@ -31,7 +31,11 @@ export const TextInput = ({
       </label>
     )}
     <input
-      className={clsx("rounded bg-manatee-50 p-1 md:p-2", className)}
+      className={clsx(
+        "rounded bg-manatee-50 p-1 md:p-2",
+        withCopy && "pr-6 md:pr-8",
+        className,
+      )}
       type="text"
       id={label}
       name={label}
@@ -49,7 +53,10 @@ export const TextInput = ({
       {...props}
     />
     {withCopy && (
-      <CopyToClipboard value={value} className="absolute right-3 top-9" />
+      <CopyToClipboard
+        value={value}
+        className="absolute bottom-2 right-2 md:bottom-3 md:right-3"
+      />
     )}
   </div>
 );
