@@ -1,0 +1,50 @@
+yarn add v1.22.19
+[1/4] Resolving packages...
+warning storybook > @storybook/cli > jscodeshift > @babel/plugin-proposal-class-properties@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-class-properties instead.
+warning storybook > @storybook/cli > jscodeshift > @babel/plugin-proposal-nullish-coalescing-operator@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-nullish-coalescing-operator instead.
+warning storybook > @storybook/cli > jscodeshift > @babel/plugin-proposal-optional-chaining@7.21.0: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-optional-chaining instead.
+[2/4] Fetching packages...
+warning Pattern ["strip-ansi@^6.0.1"] is trying to unpack in the same destination "/Users/jameswallis/Library/Caches/Yarn/v6/npm-strip-ansi-cjs-6.0.1-9e26c63d30f53443e9489495b2105d37b67a85d9-integrity/node_modules/strip-ansi-cjs" as pattern ["strip-ansi-cjs@npm:strip-ansi@^6.0.1"]. This could result in non-deterministic behavior, skipping.
+warning Pattern ["string-width@^4.1.0"] is trying to unpack in the same destination "/Users/jameswallis/Library/Caches/Yarn/v6/npm-string-width-cjs-4.2.3-269c7117d27b05ad2e536830a8ec895ef9c6d010-integrity/node_modules/string-width-cjs" as pattern ["string-width-cjs@npm:string-width@^4.2.0"]. This could result in non-deterministic behavior, skipping.
+warning Pattern ["strip-ansi@^6.0.0"] is trying to unpack in the same destination "/Users/jameswallis/Library/Caches/Yarn/v6/npm-strip-ansi-cjs-6.0.1-9e26c63d30f53443e9489495b2105d37b67a85d9-integrity/node_modules/strip-ansi-cjs" as pattern ["strip-ansi-cjs@npm:strip-ansi@^6.0.1"]. This could result in non-deterministic behavior, skipping.
+warning Pattern ["string-width@^4.2.0"] is trying to unpack in the same destination "/Users/jameswallis/Library/Caches/Yarn/v6/npm-string-width-cjs-4.2.3-269c7117d27b05ad2e536830a8ec895ef9c6d010-integrity/node_modules/string-width-cjs" as pattern ["string-width-cjs@npm:string-width@^4.2.0"]. This could result in non-deterministic behavior, skipping.
+warning Pattern ["wrap-ansi@^7.0.0"] is trying to unpack in the same destination "/Users/jameswallis/Library/Caches/Yarn/v6/npm-wrap-ansi-cjs-7.0.0-67e145cff510a6a6984bdf1152911d69d2eb9e43-integrity/node_modules/wrap-ansi-cjs" as pattern ["wrap-ansi-cjs@npm:wrap-ansi@^7.0.0"]. This could result in non-deterministic behavior, skipping.
+warning Pattern ["string-width@^4.2.3"] is trying to unpack in the same destination "/Users/jameswallis/Library/Caches/Yarn/v6/npm-string-width-cjs-4.2.3-269c7117d27b05ad2e536830a8ec895ef9c6d010-integrity/node_modules/string-width-cjs" as pattern ["string-width-cjs@npm:string-width@^4.2.0"]. This could result in non-deterministic behavior, skipping.
+[3/4] Linking dependencies...
+warning " > @graphiql/plugin-explorer@0.3.5" has unmet peer dependency "@graphiql/react@^0.19.4".
+warning "@graphiql/plugin-explorer > graphiql-explorer@0.9.0" has incorrect peer dependency "graphql@^0.6.0 || ^0.7.0 || ^0.8.0-b || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0".
+warning "@graphiql/plugin-explorer > graphiql-explorer@0.9.0" has incorrect peer dependency "react@^15.6.0 || ^16.0.0".
+warning "@graphiql/plugin-explorer > graphiql-explorer@0.9.0" has incorrect peer dependency "react-dom@^15.6.0 || ^16.0.0".
+warning "graphiql > @graphiql/react > codemirror-graphql@2.0.10" has unmet peer dependency "@codemirror/language@6.0.0".
+warning " > react-virtual@2.10.4" has incorrect peer dependency "react@^16.6.3 || ^17.0.0".
+warning " > @typescript-eslint/eslint-plugin@5.62.0" has unmet peer dependency "@typescript-eslint/parser@^5.0.0".
+warning " > cypress-iframe@1.0.1" has unmet peer dependency "@types/cypress@^1.1.0".
+warning Workspaces can only be enabled in private projects.
+warning Workspaces can only be enabled in private projects.
+warning Workspaces can only be enabled in private projects.
+[4/4] Building fresh packages...
+error /Users/jameswallis/github/ostmodern/skylark-ui/node_modules/cypress: Command failed.
+Exit code: 1
+Command: node index.js --exec install
+Arguments: 
+Directory: /Users/jameswallis/github/ostmodern/skylark-ui/node_modules/cypress
+Output:
+/Users/jameswallis/github/ostmodern/skylark-ui/node_modules/cli-truncate/index.js:3
+const stringWidth = require('string-width');
+                    ^
+
+Error [ERR_REQUIRE_ESM]: require() of ES Module /Users/jameswallis/github/ostmodern/skylark-ui/node_modules/string-width/index.js from /Users/jameswallis/github/ostmodern/skylark-ui/node_modules/cli-truncate/index.js not supported.
+Instead change the require of /Users/jameswallis/github/ostmodern/skylark-ui/node_modules/string-width/index.js in /Users/jameswallis/github/ostmodern/skylark-ui/node_modules/cli-truncate/index.js to a dynamic import() which is available in all CommonJS modules.
+    at Object.<anonymous> (/Users/jameswallis/github/ostmodern/skylark-ui/node_modules/cli-truncate/index.js:3:21)
+    at Object.<anonymous> (/Users/jameswallis/github/ostmodern/skylark-ui/node_modules/cypress/node_modules/listr2/dist/renderer/default.renderer.js:4:21)
+    at Object.<anonymous> (/Users/jameswallis/github/ostmodern/skylark-ui/node_modules/cypress/node_modules/listr2/dist/utils/renderer.js:4:28)
+    at Object.<anonymous> (/Users/jameswallis/github/ostmodern/skylark-ui/node_modules/cypress/node_modules/listr2/dist/lib/task.js:11:20)
+    at Object.<anonymous> (/Users/jameswallis/github/ostmodern/skylark-ui/node_modules/cypress/node_modules/listr2/dist/listr.js:7:16)
+    at Object.<anonymous> (/Users/jameswallis/github/ostmodern/skylark-ui/node_modules/cypress/node_modules/listr2/dist/index.js:13:14)
+    at Object.<anonymous> (/Users/jameswallis/github/ostmodern/skylark-ui/node_modules/cypress/lib/tasks/install.js:10:5)
+    at Object.<anonymous> (/Users/jameswallis/github/ostmodern/skylark-ui/node_modules/cypress/index.js:12:5) {
+  code: 'ERR_REQUIRE_ESM'
+}
+
+Node.js v18.13.0
+info Visit https://yarnpkg.com/en/docs/cli/add for documentation about this command.

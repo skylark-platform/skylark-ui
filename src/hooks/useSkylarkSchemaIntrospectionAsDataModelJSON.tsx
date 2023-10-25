@@ -297,12 +297,15 @@ const getEnumsForCustomObjects = (
     return [...prev, ...enumInputs];
   }, [] as NormalizedObjectField[]);
 
-  const dataModelEnums = enumInputFields.reduce((prev, field) => {
-    return {
-      ...prev,
-      [camelToSnakeCase(field.originalType)]: field.enumValues || [],
-    };
-  }, {} as DataModel["enums"]);
+  const dataModelEnums = enumInputFields.reduce(
+    (prev, field) => {
+      return {
+        ...prev,
+        [camelToSnakeCase(field.originalType)]: field.enumValues || [],
+      };
+    },
+    {} as DataModel["enums"],
+  );
 
   return dataModelEnums;
 };
