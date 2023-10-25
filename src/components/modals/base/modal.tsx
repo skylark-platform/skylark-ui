@@ -4,7 +4,7 @@ import { MutableRefObject, ReactNode } from "react";
 import { FiX } from "react-icons/fi";
 
 interface ModalProps {
-  title: string;
+  title: string | null;
   description?: string;
   children: ReactNode;
   size: "small" | "medium" | "large";
@@ -14,6 +14,35 @@ interface ModalProps {
   closeModal: () => void;
   initialFocus?: MutableRefObject<HTMLElement | null> | undefined;
 }
+
+export const ModalTitle = ({
+  withoutBodyPadding,
+  children,
+}: {
+  withoutBodyPadding?: ModalProps["withoutBodyPadding"];
+  children: ReactNode;
+}) => (
+  <Dialog.Title
+    className={clsx(
+      "mb-2 font-heading text-2xl md:mb-4 md:text-3xl",
+      withoutBodyPadding && "px-6 md:px-10",
+    )}
+  >
+    {children}
+  </Dialog.Title>
+);
+
+export const ModalDescription = ({
+  withoutBodyPadding,
+  children,
+}: {
+  withoutBodyPadding?: ModalProps["withoutBodyPadding"];
+  children: ReactNode;
+}) => (
+  <Dialog.Description className={clsx(withoutBodyPadding && "px-6 md:px-10")}>
+    {children}
+  </Dialog.Description>
+);
 
 export const Modal = ({
   isOpen,
@@ -58,20 +87,15 @@ export const Modal = ({
             <FiX className={clsx(size === "small" ? "text-2xl" : "text-3xl")} />
           </button>
 
-          <Dialog.Title
-            className={clsx(
-              "mb-2 font-heading text-2xl md:mb-4 md:text-3xl",
-              withoutBodyPadding && "px-6 md:px-10",
-            )}
-          >
-            {title}
-          </Dialog.Title>
+          {title && (
+            <ModalTitle withoutBodyPadding={withoutBodyPadding}>
+              {title}
+            </ModalTitle>
+          )}
           {description && (
-            <Dialog.Description
-              className={clsx(withoutBodyPadding && "px-6 md:px-10")}
-            >
+            <ModalDescription withoutBodyPadding={withoutBodyPadding}>
               {description}
-            </Dialog.Description>
+            </ModalDescription>
           )}
           {children}
         </Dialog.Panel>

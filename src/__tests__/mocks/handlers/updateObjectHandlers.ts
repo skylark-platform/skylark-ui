@@ -1,5 +1,6 @@
 import { graphql } from "msw";
 
+import GQLPublishEpisodeMutationFixture from "src/__tests__/fixtures/skylark/mutations/publishObject/publishEpisode.json";
 import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
 
 export const updateObjectHandlers = [
@@ -49,5 +50,9 @@ export const updateObjectHandlers = [
         },
       }),
     );
+  }),
+
+  graphql.mutation(`PUBLISH_Episode`, (req, res, ctx) => {
+    return res(ctx.data(GQLPublishEpisodeMutationFixture.data));
   }),
 ];

@@ -204,6 +204,12 @@ export const configurePanelSkylarkIntercepts = () => {
         });
       }
     }
+    if (hasOperationName(req, "PUBLISH_Episode")) {
+      req.alias = "publishEpisode";
+      req.reply({
+        fixture: "./skylark/mutations/publishObject/publishEpisode.json",
+      });
+    }
     if (hasOperationName(req, "UPDATE_AVAILABILITY_DIMENSIONS")) {
       req.alias = "updateAvailabilityDimensions";
       req.reply({
