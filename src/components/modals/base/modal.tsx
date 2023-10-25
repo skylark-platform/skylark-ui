@@ -1,6 +1,6 @@
 import { Dialog } from "@headlessui/react";
 import clsx from "clsx";
-import { ReactNode } from "react";
+import { MutableRefObject, ReactNode } from "react";
 import { FiX } from "react-icons/fi";
 
 interface ModalProps {
@@ -12,6 +12,7 @@ interface ModalProps {
   isOpen: boolean;
   growHeight?: boolean;
   closeModal: () => void;
+  initialFocus?: MutableRefObject<HTMLElement | null> | undefined;
 }
 
 export const Modal = ({

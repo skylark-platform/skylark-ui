@@ -9,7 +9,7 @@ import {
   GraphQLRequestErrorToast,
   Toast,
 } from "src/components/toast/toast.component";
-import { useDeleteObject } from "src/hooks/objects/useDeleteObject";
+import { useDeleteObject } from "src/hooks/objects/delete/useDeleteObject";
 
 interface DeleteObjectModalProps {
   isOpen: boolean;
