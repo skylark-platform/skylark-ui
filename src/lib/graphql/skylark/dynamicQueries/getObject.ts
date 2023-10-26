@@ -298,7 +298,12 @@ export const createGetObjectContentOfQuery = (
                 __typeName: object.name,
                 __typename: true, // To remove the alias later
                 ...common.fields,
-                ...generateFieldsToReturn(object.fields, `__${object.name}__`),
+                ...generateFieldsToReturn(
+                  object.fields,
+                  object.name,
+                  false,
+                  `__${object.name}__`,
+                ),
                 ...(object.availability
                   ? {
                       availability: generateAvailabilityRelationshipFields(

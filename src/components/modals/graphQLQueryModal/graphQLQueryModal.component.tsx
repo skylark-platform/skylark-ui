@@ -300,9 +300,7 @@ export const DisplayGraphQLQuery = (props: GraphQLQueryModalProps) => {
   return (
     <>
       <Tooltip
-        tooltip={
-          <span>{`View the actual GraphQL Query for ${props.label}.`}</span>
-        }
+        tooltip={<span>{`View the GraphQL Query for ${props.label}.`}</span>}
       >
         <Button
           variant="ghost"
