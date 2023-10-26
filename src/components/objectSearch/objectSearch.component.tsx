@@ -244,6 +244,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     columnSizingInfo: {} as ColumnSizingInfoState,
     pagination: {} as PaginationState,
     rowSelection: {},
+    rowPinning: {},
   });
 
   const handleSearchFilterChange = useCallback(

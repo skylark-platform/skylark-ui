@@ -1,9 +1,9 @@
-import { useExplorerPlugin } from "@graphiql/plugin-explorer";
+import { explorerPlugin } from "@graphiql/plugin-explorer";
 import "@graphiql/plugin-explorer/dist/style.css";
-import { Fetcher } from "@graphiql/toolkit";
+import { createGraphiQLFetcher } from "@graphiql/toolkit";
 import { GraphiQL } from "graphiql";
 import "graphiql/graphiql.min.css";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { REQUEST_HEADERS } from "src/constants/skylark";
 
@@ -51,47 +51,26 @@ interface GraphiQLEditorProps {
   defaultQuery: string;
 }
 
+const explorer = explorerPlugin({ showAttribution: true });
+
 export const GraphiQLEditor = ({
   uri,
   token,
   defaultQuery,
 }: GraphiQLEditorProps) => {
-  // We only update the GraphiQL query when the explorer changes to stop the cursor jumping around
-  const [query, setQuery] = useState(defaultQuery);
-  const [explorerQuery, setExplorerQuery] = useState(query);
-
-  const fetcher: Fetcher = useMemo(
-    () => async (graphQLParams, opts) => {
-      const data = await fetch(uri, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          [REQUEST_HEADERS.apiKey]: token,
-          ...opts?.headers,
-        },
-        body: JSON.stringify(graphQLParams),
-        credentials: "same-origin",
-      });
-      return data.json().catch(() => data.text());
-    },
+  const fetcher = useMemo(
+    () =>
+      createGraphiQLFetcher({
+        url: uri,
+        headers: { [REQUEST_HEADERS.apiKey]: token },
+      }),
     [token, uri],
   );
 
-  const explorerPlugin = useExplorerPlugin({
-    query: explorerQuery,
-    onEdit: (updatedQuery: string) => {
-      setExplorerQuery(updatedQuery);
-      setQuery(updatedQuery);
-    },
-    showAttribution: false,
-  });
-
   return (
     <GraphiQL
-      query={query}
-      onEditQuery={setExplorerQuery}
-      plugins={[explorerPlugin]}
+      defaultQuery={defaultQuery}
+      plugins={[explorer]}
       // storage={}
       fetcher={fetcher}
       shouldPersistHeaders={true}

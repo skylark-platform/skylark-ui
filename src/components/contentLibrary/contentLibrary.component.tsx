@@ -207,21 +207,23 @@ export const ContentLibrary = ({
       sensors={sensors}
       modifiers={dndModifiers}
     >
-      {typeof window !== "undefined" &&
-        document?.body &&
-        createPortal(
-          <DragOverlay zIndex={99999999} dropAnimation={null}>
-            {activeDragged ? (
-              <ContentLibraryDragOverlay
-                activeDragged={activeDragged}
-                checkedObjects={checkedObjects}
-                checkedUids={checkedUids}
-                checkedObjectTypesForDisplay={checkedObjectTypesForDisplay}
-              />
-            ) : null}
-          </DragOverlay>,
-          document.body,
-        )}
+      {typeof window !== "undefined" && document?.body && (
+        <>
+          {createPortal(
+            <DragOverlay zIndex={99999999} dropAnimation={null}>
+              {activeDragged ? (
+                <ContentLibraryDragOverlay
+                  activeDragged={activeDragged}
+                  checkedObjects={checkedObjects}
+                  checkedUids={checkedUids}
+                  checkedObjectTypesForDisplay={checkedObjectTypesForDisplay}
+                />
+              ) : null}
+            </DragOverlay>,
+            document.body,
+          )}
+        </>
+      )}
       <div
         className="flex h-screen w-full flex-row overflow-x-hidden"
         ref={containerRef}

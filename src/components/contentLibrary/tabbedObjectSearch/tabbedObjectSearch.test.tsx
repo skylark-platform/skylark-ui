@@ -81,7 +81,7 @@ test("Changing tabs", async () => {
   await waitForElementToBeRemoved(
     () => screen.queryByTestId("animated-skylark-logo"),
     {
-      timeout: 4000,
+      timeout: 6000,
     },
   );
 

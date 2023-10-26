@@ -1,6 +1,11 @@
 import { rest } from "msw";
 import { NextApiRequest, NextApiResponse } from "next";
-import { createMocks, Mocks } from "node-mocks-http";
+import {
+  createMocks,
+  createRequest,
+  createResponse,
+  Mocks,
+} from "node-mocks-http";
 
 import {
   erroredFlatfileAccessKeyExchangeHandler,
@@ -9,8 +14,10 @@ import {
 } from "src/__tests__/mocks/handlers/flatfile";
 import { server } from "src/__tests__/mocks/server";
 import * as constants from "src/constants/flatfile";
-import { ApiRouteFlatfileImportResponse } from "src/interfaces/apiRoutes";
 import handler from "src/pages/api/flatfile/import";
+
+type ApiRequest = NextApiRequest & ReturnType<typeof createRequest>;
+type ApiResponse = NextApiResponse & ReturnType<typeof createResponse>;
 
 const mockConstants = constants as {
   FLATFILE_ACCESS_KEY_ID: string | null;
@@ -32,7 +39,7 @@ afterEach(() => {
 
 describe("request validation", () => {
   test("returns 501 when the method is not POST", async () => {
-    const { req, res } = createMocks({
+    const { req, res } = createMocks<ApiRequest, ApiResponse>({
       method: "GET",
     });
 
@@ -42,7 +49,7 @@ describe("request validation", () => {
   });
 
   test("returns 400 when a request body is missing", async () => {
-    const { req, res } = createMocks({
+    const { req, res } = createMocks<ApiRequest, ApiResponse>({
       method: "POST",
     });
 
@@ -55,7 +62,7 @@ describe("request validation", () => {
   test("returns 500 when FLATFILE_ACCESS_KEY_ID or FLATFILE_SECRET_KEY are falsy", async () => {
     mockConstants.FLATFILE_ACCESS_KEY_ID = null;
 
-    const { req, res } = createMocks({
+    const { req, res } = createMocks<ApiRequest, ApiResponse>({
       method: "POST",
       body: {
         batchId: "123",
@@ -68,7 +75,7 @@ describe("request validation", () => {
   });
 
   test("returns 500 when the limit isn't given in the request body", async () => {
-    const { req, res } = createMocks({
+    const { req, res } = createMocks<ApiRequest, ApiResponse>({
       method: "POST",
       body: {
         batchId: "",
@@ -83,17 +90,11 @@ describe("request validation", () => {
 });
 
 describe("validated request", () => {
-  let req: Mocks<
-    NextApiRequest,
-    NextApiResponse<string | ApiRouteFlatfileImportResponse>
-  >["req"];
-  let res: Mocks<
-    NextApiRequest,
-    NextApiResponse<string | ApiRouteFlatfileImportResponse>
-  >["res"];
+  let req: Mocks<ApiRequest, ApiResponse>["req"];
+  let res: Mocks<ApiRequest, ApiResponse>["res"];
 
   beforeEach(() => {
-    const requestMocks = createMocks({
+    const requestMocks = createMocks<ApiRequest, ApiResponse>({
       method: "POST",
       body: {
         batchId: "batchId",
@@ -152,7 +153,7 @@ describe("validated request", () => {
 
   test("returns 200 status and Flatfile import data when offset is given", async () => {
     // Arrange
-    const requestMocks = createMocks({
+    const requestMocks = createMocks<ApiRequest, ApiResponse>({
       method: "POST",
       body: {
         batchId: "batchId",

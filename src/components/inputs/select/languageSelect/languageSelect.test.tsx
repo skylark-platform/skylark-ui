@@ -5,7 +5,7 @@ import { render, screen, waitFor } from "src/__tests__/utils/test-utils";
 
 import { LanguageSelect } from "./languageSelect.component";
 
-test("searches for en-GB", () => {
+test("searches for en-GB", async () => {
   const onChange = jest.fn();
 
   render(<LanguageSelect variant="primary" selected="" onChange={onChange} />);
@@ -15,7 +15,7 @@ test("searches for en-GB", () => {
     target: { value: "en-G" },
   });
 
-  const gotOptions = screen.queryAllByRole("option");
+  const gotOptions = await screen.findAllByRole("option");
   expect(gotOptions.length).toBe(6);
   expect(gotOptions[0]).toHaveTextContent("en-GB");
 
@@ -40,7 +40,7 @@ test("lists only custom languages", async () => {
   expect(screen.getByRole("combobox")).toHaveTextContent("");
   await fireEvent.click(screen.getByRole("button"));
 
-  const gotOptions = screen.queryAllByRole("option");
+  const gotOptions = await screen.findAllByRole("option");
   gotOptions.forEach((_, i) => {
     expect(gotOptions[i]).toHaveTextContent(languages[i]);
   });

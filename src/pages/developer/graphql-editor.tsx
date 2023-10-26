@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { useIsClient, useReadLocalStorage } from "usehooks-ts";
+import { useIsClient } from "usehooks-ts";
 
 import { DEFAULT_QUERY } from "src/components/graphiqlEditor/graphiqlEditor.component";
 import { Spinner } from "src/components/icons";

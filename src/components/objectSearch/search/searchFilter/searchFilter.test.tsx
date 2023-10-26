@@ -59,11 +59,18 @@ test("changes checkboxes and calls onFilterSave when apply is clicked", async ()
 
   await screen.findAllByRole("checkbox");
 
-  fireEvent.click(screen.getByRole("checkbox", { name: "Season" }));
-  fireEvent.click(screen.getByRole("checkbox", { name: "slug" }));
-  fireEvent.click(screen.getByText("UID & External ID"));
+  const seasonCheckbox = await screen.findByRole("checkbox", {
+    name: "Season",
+  });
+  await fireEvent.click(seasonCheckbox);
 
-  fireEvent.click(screen.getByText("Apply"));
+  const slugCheckbox = await screen.findByRole("checkbox", { name: "slug" });
+  await fireEvent.click(slugCheckbox);
+
+  const uidLookup = await screen.findByText("UID & External ID");
+  await fireEvent.click(uidLookup);
+
+  await fireEvent.click(await screen.findByText("Apply"));
 
   expect(onFilterSave).toHaveBeenCalledWith({
     filters: { objectTypes: ["Brand", "Episode"] },
@@ -93,9 +100,10 @@ test("when reset is clicked, all filters are returned to all options checked wit
 
   await screen.findAllByRole("checkbox");
 
-  fireEvent.click(screen.getByText("Reset"));
+  await fireEvent.click(await screen.findByText("Reset"));
 
-  screen.getAllByRole("checkbox").map((el) => {
+  const allCheckboxes = await screen.findAllByRole("checkbox");
+  allCheckboxes.map((el) => {
     expect(el).toHaveAttribute("aria-checked", "true");
   });
   expect(onFilterSave).not.toHaveBeenCalled();

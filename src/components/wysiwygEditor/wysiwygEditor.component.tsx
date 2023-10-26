@@ -1,6 +1,5 @@
 import { Editor } from "@tinymce/tinymce-react";
 import React, { useState } from "react";
-import { RawEditorOptions } from "tinymce";
 
 import { Skeleton } from "src/components/skeleton";
 
@@ -13,10 +12,7 @@ interface WYSIWYGEditorProps {
 
 const WYSIWYG_DEFAULT_HEIGHT = 500;
 
-const WYSIWYG_INIT: RawEditorOptions & {
-  selector?: undefined;
-  target?: undefined;
-} = {
+const WYSIWYG_INIT = {
   height: WYSIWYG_DEFAULT_HEIGHT,
   promotion: false,
   menubar: "file edit view insert format table",
