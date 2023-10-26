@@ -8,7 +8,7 @@ module.exports = {
     "@storybook/addon-interactions",
   ],
   framework: {
-    name: "@storybook/nextjs", // Add this
+    name: "@storybook/nextjs",
     options: {
       nextConfigPath: path.resolve(__dirname, "../next.config.js"),
     },
