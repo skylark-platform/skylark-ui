@@ -69,7 +69,7 @@ MetadataEditing.play = async ({ canvasElement }) => {
     userEvent.click(editButton);
   });
 
-  const openSaveOptions = canvas.getByLabelText(
+  const openSaveOptions = await canvas.findByLabelText(
     "save changes - see alternate options",
   );
 
@@ -110,7 +110,7 @@ MetadataDraftModeEditing.play = async ({ canvasElement }) => {
     userEvent.click(editButton);
   });
 
-  const openSaveOptions = canvas.getByLabelText(
+  const openSaveOptions = await canvas.findByLabelText(
     "save changes - see alternate options",
   );
 
