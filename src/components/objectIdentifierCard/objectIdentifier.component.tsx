@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { ReactNode } from "react";
-import { FiTrash, FiTrash2 } from "react-icons/fi";
+import { FiTrash, FiTrash2, FiX } from "react-icons/fi";
 
 import { AvailabilityIcon } from "src/components/availability";
 import { OpenObjectButton } from "src/components/button";
@@ -18,6 +18,7 @@ interface ObjectIdentifierCardProps {
   children?: ReactNode;
   disableForwardClick?: boolean;
   disableDeleteClick?: boolean;
+  deleteIconVariant?: "trash" | "x";
   hideObjectType?: boolean;
   className?: string;
   hideAvailabilityStatus?: boolean;
@@ -32,6 +33,7 @@ export const ObjectIdentifierCard = ({
   disableDeleteClick,
   hideObjectType,
   className,
+  deleteIconVariant = "trash",
   hideAvailabilityStatus,
   onForwardClick,
   onDeleteClick,
@@ -62,24 +64,6 @@ export const ObjectIdentifierCard = ({
         </span>
       </p>
       {children}
-      {onDeleteClick && (
-        <button
-          disabled={disableDeleteClick}
-          data-testid="object-identifier-delete"
-          className={clsx(
-            "transition-width",
-            !disableDeleteClick ? "w-6 pl-1" : "w-0",
-          )}
-          onClick={onDeleteClick}
-        >
-          <FiTrash2
-            className={clsx(
-              "flex h-5 text-manatee-500 transition-all hover:text-error",
-              !disableDeleteClick ? "w-5" : "w-0",
-            )}
-          />
-        </button>
-      )}
       {!hideAvailabilityStatus &&
         object.objectType !== BuiltInSkylarkObjectType.Availability && (
           <div>
@@ -92,6 +76,34 @@ export const ObjectIdentifierCard = ({
             />
           </div>
         )}
+      {onDeleteClick && (
+        <button
+          disabled={disableDeleteClick}
+          data-testid="object-identifier-delete"
+          className={clsx(
+            "transition-width",
+            !disableDeleteClick ? "w-6 pl-1" : "w-0",
+          )}
+          onClick={onDeleteClick}
+        >
+          {deleteIconVariant === "trash" && (
+            <FiTrash2
+              className={clsx(
+                "flex h-5 text-manatee-500 transition-all hover:text-error",
+                !disableDeleteClick ? "w-5" : "w-0",
+              )}
+            />
+          )}
+          {deleteIconVariant === "x" && (
+            <FiX
+              className={clsx(
+                "flex h-4 text-manatee-500 transition-all hover:text-error",
+                !disableDeleteClick ? "w-4" : "w-0",
+              )}
+            />
+          )}
+        </button>
+      )}
       {onForwardClick && (
         <OpenObjectButton
           disabled={disableForwardClick}

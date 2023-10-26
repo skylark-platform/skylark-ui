@@ -524,6 +524,8 @@ export const TabbedObjectSearchWithAccount = ({
           show={
             (!accountId && isAccountLoading) || animationState === "running"
           }
+          withLoadingSpinner
+          hideLoadingSpinner={animationState !== "completed"}
           speed="fast"
           onAnimationStart={() => setAnimationState("running")}
           onAnimationComplete={() => setAnimationState("completed")}

@@ -382,6 +382,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         className={clsx(
           "flex w-full flex-col-reverse items-end space-x-2 md:flex-row md:items-start md:justify-between",
           isPanelOpen ? "lg:flex-row" : "pr-2 md:flex-row md:pr-8",
+          // "pr-2 md:flex-row md:pr-8", // TODO remove line above and uncomment this line when bulk options is added
         )}
       >
         <div
@@ -416,6 +417,10 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             </p>
           </div>
         </div>
+        {/* <BulkObjectOptions
+          selectedObjects={props.checkedObjects || []}
+          onSelectedObjectChange={onObjectCheckedChanged}
+        /> */}
       </div>
       {sortedHeaders.length > 0 && (
         <div

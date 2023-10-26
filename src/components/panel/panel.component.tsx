@@ -254,6 +254,10 @@ export const Panel = ({
     modifiedAvailabilityObjects !== null ||
     modifiedAvailabilityAssignedTo !== null;
 
+  // When an object is in draft and no values have changed, we want to publish the version on save without creating another version
+  const onlyPublishOnSave =
+    data?.meta.published === false && !metadataForm.formState.isDirty;
+
   const tabs: PanelTab[] = useMemo(
     () =>
       [
@@ -404,22 +408,33 @@ export const Panel = ({
         modifiedAvailabilityAssignedTo,
       });
     } else if (selectedTab === PanelTab.Metadata) {
-      metadataForm.handleSubmit((values) => {
-        if (
-          hasProperty(values, SkylarkSystemField.ExternalID) &&
-          values[SkylarkSystemField.ExternalID] ===
-            data?.metadata[SkylarkSystemField.ExternalID]
-        ) {
-          // Remove External ID when it hasn't changed
-          delete values[SkylarkSystemField.ExternalID];
-        }
+      if (onlyPublishOnSave) {
         updateObjectMetadata({
           uid,
           language,
-          metadata: values,
-          draft: opts?.draft,
+          metadata: null,
+          draft: false,
+          languageVersion: data.meta.versions?.language,
+          globalVersion: data.meta.versions?.global,
         });
-      })();
+      } else {
+        metadataForm.handleSubmit((values) => {
+          if (
+            hasProperty(values, SkylarkSystemField.ExternalID) &&
+            values[SkylarkSystemField.ExternalID] ===
+              data?.metadata[SkylarkSystemField.ExternalID]
+          ) {
+            // Remove External ID when it hasn't changed
+            delete values[SkylarkSystemField.ExternalID];
+          }
+          updateObjectMetadata({
+            uid,
+            language,
+            metadata: values,
+            draft: opts?.draft,
+          });
+        })();
+      }
     } else {
       setEditMode(false);
     }
@@ -502,6 +517,7 @@ export const Panel = ({
         }
         isTranslatable={objectMeta?.isTranslatable}
         availabilityStatus={data?.meta.availabilityStatus}
+        objectMetadataHasChanged={metadataForm.formState.isDirty}
         toggleEditMode={() => {
           if (inEditMode) {
             resetMetadataForm(formParsedMetadata || {});
