@@ -5,7 +5,7 @@ import { render, screen, waitFor } from "src/__tests__/utils/test-utils";
 
 import { LanguageSelect } from "./languageSelect.component";
 
-test("searches for en-GB", async() => {
+test("searches for en-GB", async () => {
   const onChange = jest.fn();
 
   render(<LanguageSelect variant="primary" selected="" onChange={onChange} />);

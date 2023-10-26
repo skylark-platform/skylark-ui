@@ -59,13 +59,15 @@ test("changes checkboxes and calls onFilterSave when apply is clicked", async ()
 
   await screen.findAllByRole("checkbox");
 
-  const seasonCheckbox = await screen.findByRole("checkbox", { name: "Season" })
+  const seasonCheckbox = await screen.findByRole("checkbox", {
+    name: "Season",
+  });
   await fireEvent.click(seasonCheckbox);
 
-  const slugCheckbox = await screen.findByRole("checkbox", { name: "slug" })
+  const slugCheckbox = await screen.findByRole("checkbox", { name: "slug" });
   await fireEvent.click(slugCheckbox);
 
-  const uidLookup = await screen.findByText("UID & External ID")
+  const uidLookup = await screen.findByText("UID & External ID");
   await fireEvent.click(uidLookup);
 
   await fireEvent.click(await screen.findByText("Apply"));
@@ -100,7 +102,7 @@ test("when reset is clicked, all filters are returned to all options checked wit
 
   await fireEvent.click(await screen.findByText("Reset"));
 
-  const allCheckboxes = await screen.findAllByRole("checkbox")
+  const allCheckboxes = await screen.findAllByRole("checkbox");
   allCheckboxes.map((el) => {
     expect(el).toHaveAttribute("aria-checked", "true");
   });
