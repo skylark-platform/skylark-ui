@@ -118,6 +118,7 @@ export const generateVariablesAndArgs = (
 export const generateFieldsToReturn = (
   fields: SkylarkObjectMeta["fields"],
   objectType: string | null,
+  ignoreUid?: boolean,
   fieldAliasPrefix?: string,
 ) => {
   const fieldsToReturn = fields.reduce((previous, field) => {
@@ -128,6 +129,10 @@ export const generateFieldsToReturn = (
       : null;
 
     if (options && options.hiddenFields.includes(field.name)) {
+      return previous;
+    }
+
+    if (ignoreUid && field.name.toLowerCase() === "uid") {
       return previous;
     }
 
@@ -227,6 +232,7 @@ export const generateContentsToReturn = (
       next_token: true,
       objects: {
         object: {
+          uid: true,
           __on: objectsToRequest.map((object) => ({
             __typeName: object.name,
             __typename: true, // To remove the alias later
@@ -234,6 +240,7 @@ export const generateContentsToReturn = (
             ...generateFieldsToReturn(
               object.fields,
               object.name,
+              true,
               `__${object.name}__`,
             ),
             ...(opts.fetchAvailability && object.availability

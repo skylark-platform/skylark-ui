@@ -56,6 +56,7 @@ export const createGetObjectGenericQuery = (
           external_id: new VariableType("externalId"),
         },
         __typename: true,
+        uid: true,
         __on: objectsToRequest.map((object) => {
           const common = generateVariablesAndArgs(object.name, "Query");
           return {
@@ -64,6 +65,7 @@ export const createGetObjectGenericQuery = (
             ...generateFieldsToReturn(
               object.fields,
               object.name,
+              true,
               `__${object.name}__`,
             ),
             ...generateRelationshipsToReturn(object, true),

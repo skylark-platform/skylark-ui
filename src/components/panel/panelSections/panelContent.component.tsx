@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { Reorder } from "framer-motion";
 import { useEffect, useState } from "react";
 
+import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
@@ -113,11 +114,8 @@ export const PanelContent = ({
   setContentObjects,
   setPanelObject,
 }: PanelContentProps) => {
-  const { data, isLoading, hasNextPage } = useGetObjectContent(
-    objectType,
-    uid,
-    { language, fetchAvailability: true },
-  );
+  const { data, isLoading, hasNextPage, query, variables } =
+    useGetObjectContent(objectType, uid, { language, fetchAvailability: true });
 
   const objects = inEditMode ? updatedObjects : data;
 
@@ -253,6 +251,12 @@ export const PanelContent = ({
           })}
         </Reorder.Group>
       )}
+      <DisplayGraphQLQuery
+        label="Get Object Content"
+        query={query}
+        variables={variables}
+        buttonClassName="absolute right-2 top-0"
+      />
       <PanelLoading isLoading={isLoading || hasNextPage}>
         {Array.from({ length: 6 }, (_, i) => (
           <Skeleton
