@@ -69,7 +69,7 @@ test("calls onChange when a new item is selected", async () => {
   expect(screen.getByRole("button")).toHaveTextContent("Object Type");
   await fireEvent.click(screen.getByRole("button"));
 
-  const gotOptions = screen.queryAllByRole("option");
+  const gotOptions = await screen.findAllByRole("option");
   gotOptions.forEach((_, i) => {
     expect(gotOptions[i]).toHaveTextContent(options[i].label);
   });
@@ -98,7 +98,7 @@ test("searches for Episode", async () => {
     target: { value: "Epis" },
   });
 
-  const gotOptions = screen.queryAllByRole("option");
+  const gotOptions = await screen.findAllByRole("option");
   expect(gotOptions.length).toBe(1);
   expect(gotOptions[0]).toHaveTextContent("Episode");
 
@@ -126,8 +126,7 @@ test("shows not found when not found", async () => {
     target: { value: "Custom Value" },
   });
 
-  const gotOptions = screen.queryAllByRole("option");
-  expect(gotOptions.length).toBe(0);
+  await screen.findAllByText("Nothing found.");
   expect(screen.getByText("Nothing found.")).toBeInTheDocument();
 });
 
@@ -151,7 +150,7 @@ test("adds a custom value when allowCustomValue is true and the option is not fo
     target: { value: "Custom Value" },
   });
 
-  const gotOptions = screen.queryAllByRole("option");
+  const gotOptions = await screen.findAllByRole("option");
   expect(gotOptions.length).toBe(1);
   expect(gotOptions[0]).toHaveTextContent('Use "Custom Value"');
 

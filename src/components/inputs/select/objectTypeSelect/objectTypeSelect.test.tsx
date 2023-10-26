@@ -27,7 +27,7 @@ test("searches for Episode", async () => {
     target: { value: "Epis" },
   });
 
-  const gotOptions = screen.queryAllByRole("option");
+  const gotOptions = await screen.findAllByRole("option");
   expect(gotOptions.length).toBe(1);
   expect(gotOptions[0]).toHaveTextContent("Episode");
 
