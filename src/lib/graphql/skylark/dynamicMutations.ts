@@ -200,6 +200,50 @@ export const createUpdateObjectMetadataMutation = (
   return gql(graphQLQuery);
 };
 
+export const createPublishVersionMutation = (
+  objectMeta: SkylarkObjectMeta | null,
+  addLanguageVariable = false,
+) => {
+  if (!objectMeta || !objectMeta.operations.update) {
+    return null;
+  }
+
+  const common = generateVariablesAndArgs(
+    objectMeta.name,
+    "Mutation",
+    addLanguageVariable,
+  );
+
+  const mutation = {
+    mutation: {
+      __name: `PUBLISH_${objectMeta.name}`,
+      __variables: {
+        ...common.variables,
+        uid: "String!",
+        languageVersion: "Int",
+        globalVersion: "Int",
+      },
+      updateObjectMetadata: {
+        __aliasFor: objectMeta.operations.update.name,
+        __args: {
+          ...common.args,
+          uid: new VariableType("uid"),
+          draft: false,
+          language_version: new VariableType("languageVersion"),
+          global_version: new VariableType("globalVersion"),
+        },
+        __typename: true,
+        ...common.fields,
+        ...generateFieldsToReturn(objectMeta.fields, objectMeta.name),
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(mutation);
+
+  return gql(graphQLQuery);
+};
+
 export const createUpdateObjectContentMutation = (
   object: SkylarkObjectMeta | null,
   originalContentObjects: ParsedSkylarkObjectContentObject[] | null,
@@ -570,6 +614,65 @@ export const createUpdateAvailabilityAssignedToMutation = (
   const mutation = {
     mutation: {
       __name: `UPDATE_AVAILABILITY_ASSIGNED_TO`,
+      ...operations,
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(mutation);
+
+  return gql(graphQLQuery);
+};
+
+export const createBulkDeleteObjectsMutation = (
+  allObjectsMeta: SkylarkObjectMeta[] | null,
+  objects: ParsedSkylarkObject[],
+) => {
+  if (!allObjectsMeta || objects.length === 0) {
+    return null;
+  }
+
+  const operations = objects.reduce((previous, object) => {
+    const objectMeta = allObjectsMeta.find(
+      ({ name }) => name === object.objectType,
+    );
+    if (!objectMeta) {
+      return previous;
+    }
+
+    const availableLanguages = object.meta.availableLanguages;
+    const allLanguageVersionsToDelete = objects.filter(
+      (_obj) => _obj.uid === object.uid,
+    );
+
+    const deleteWholeObject =
+      availableLanguages.length === allLanguageVersionsToDelete.length;
+
+    const key = deleteWholeObject
+      ? `delete_${object.uid}`
+      : `delete_${object.uid}_${object.meta.language.replaceAll("-", "_")}`;
+
+    const operation = {
+      [key]: {
+        __aliasFor: objectMeta.operations.delete.name,
+        __args: deleteWholeObject
+          ? { uid: object.uid }
+          : {
+              uid: object.uid,
+              language: object.meta.language,
+            },
+        uid: true,
+      },
+    };
+
+    return {
+      ...previous,
+      ...operation,
+    };
+  }, {});
+
+  const mutation = {
+    mutation: {
+      __name: `BULK_DELETE_OBJECTS`,
       ...operations,
     },
   };

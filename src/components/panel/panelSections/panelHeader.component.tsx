@@ -53,6 +53,7 @@ interface PanelHeaderProps {
   isSaving?: boolean;
   isTranslatable?: boolean;
   availabilityStatus?: AvailabilityStatus | null;
+  objectMetadataHasChanged: boolean;
   toggleEditMode: () => void;
   closePanel?: () => void;
   save: (opts?: { draft?: boolean }) => void;
@@ -62,6 +63,21 @@ interface PanelHeaderProps {
 }
 
 const ADD_LANGUAGE_OPTION = "Create Translation";
+
+const getAlternateSaveButtonText = (
+  isDraft: boolean,
+  objectMetadataHasChanged: boolean,
+) => {
+  if (!isDraft) {
+    return "Save as Draft";
+  }
+
+  if (objectMetadataHasChanged) {
+    return "Save & Publish";
+  }
+
+  return "Publish";
+};
 
 export const PanelHeader = ({
   isPage,
@@ -77,6 +93,7 @@ export const PanelHeader = ({
   isSaving,
   isTranslatable,
   availabilityStatus,
+  objectMetadataHasChanged,
   toggleEditMode,
   closePanel,
   save,
@@ -225,7 +242,10 @@ export const PanelHeader = ({
                   options={[
                     {
                       id: "save-alternative",
-                      text: !isDraft ? "Save as Draft" : "Save & Publish",
+                      text: getAlternateSaveButtonText(
+                        isDraft,
+                        objectMetadataHasChanged,
+                      ),
                       Icon: <FiSave className="text-xl" />,
                       onClick: () => save({ draft: !isDraft }),
                     },

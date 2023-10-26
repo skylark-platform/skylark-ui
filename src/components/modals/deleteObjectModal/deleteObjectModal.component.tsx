@@ -4,11 +4,12 @@ import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
 import { FiX } from "src/components/icons";
+import { Modal } from "src/components/modals/base/modal";
 import {
   GraphQLRequestErrorToast,
   Toast,
 } from "src/components/toast/toast.component";
-import { useDeleteObject } from "src/hooks/objects/useDeleteObject";
+import { useDeleteObject } from "src/hooks/objects/delete/useDeleteObject";
 
 interface DeleteObjectModalProps {
   isOpen: boolean;
@@ -73,58 +74,37 @@ export const DeleteObjectModal = ({
   });
 
   return (
-    <Dialog
-      open={isOpen}
-      onClose={closeModal}
-      className="font-body relative z-50"
+    <Modal
+      title={
+        isDeleteTranslation
+          ? `Delete "${language}" translation`
+          : `Delete ${objectTypeDisplayName}`
+      }
+      size="small"
       data-testid="delete-object-modal"
+      description={`Are you sure you want to delete the ${
+        isDeleteTranslation ? `"${language}" translation for the ` : ""
+      }${objectTypeDisplayName} "${objectDisplayName}"?`}
+      isOpen={isOpen}
+      closeModal={closeModal}
     >
-      <div
-        className="fixed inset-0 bg-black/40"
-        aria-hidden="true"
-        data-testid="dialog-background"
-      />
-
-      <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
-        <Dialog.Panel className="relative mx-auto w-full max-w-xl overflow-y-auto rounded bg-white p-6 md:w-1/2 md:p-10 lg:w-2/5">
-          <button
-            aria-label="close"
-            className="absolute right-4 top-4 sm:right-8 sm:top-9"
-            onClick={closeModal}
-            tabIndex={-1}
-          >
-            <FiX className="text-lg" />
-          </button>
-
-          <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">
-            {isDeleteTranslation
-              ? `Delete "${language}" translation`
-              : `Delete ${objectTypeDisplayName}`}
-          </Dialog.Title>
-          <Dialog.Description>
-            {`Are you sure you want to delete the ${
-              isDeleteTranslation ? `"${language}" translation for the ` : ""
-            }${objectTypeDisplayName} "${objectDisplayName}"?`}
-          </Dialog.Description>
-          <p className="my-2">This cannot be undone.</p>
-          <div className="mt-6 flex justify-end space-x-2">
-            <Button
-              variant="primary"
-              type="button"
-              danger
-              loading={isDeleting}
-              onClick={() => {
-                deleteObject({ uid, language });
-              }}
-            >
-              {`Delete ${isDeleteTranslation ? "translation" : "object"}`}
-            </Button>
-            <Button variant="outline" type="button" onClick={closeModal}>
-              Cancel
-            </Button>
-          </div>
-        </Dialog.Panel>
+      <p className="my-2">This cannot be undone.</p>
+      <div className="mt-6 flex justify-end space-x-2">
+        <Button
+          variant="primary"
+          type="button"
+          danger
+          loading={isDeleting}
+          onClick={() => {
+            deleteObject({ uid, language });
+          }}
+        >
+          {`Delete ${isDeleteTranslation ? "translation" : "object"}`}
+        </Button>
+        <Button variant="outline" type="button" onClick={closeModal}>
+          Cancel
+        </Button>
       </div>
-    </Dialog>
+    </Modal>
   );
 };
