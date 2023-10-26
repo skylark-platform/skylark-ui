@@ -129,13 +129,12 @@
     "whatwg-fetch": "3.6.19"
   },
   "resolutions": {
-    "webpack": "5.89.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "@types/react": "18.2.32",
     "@types/react-dom": "18.2.14",
     "string-width": "^4",
-    "wrap-ansi": "7.0.0",
+    "wrap-ansi": "^7",
     "jackspeak": "^2",
     "strip-ansi": "^6"
   },
