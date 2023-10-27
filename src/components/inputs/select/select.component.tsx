@@ -16,15 +16,17 @@ import React, {
   Ref,
   ReactNode,
 } from "react";
-import { FiChevronDown } from "react-icons/fi";
+import { FiChevronDown, FiInfo } from "react-icons/fi";
 import { useVirtual } from "react-virtual";
 
 import { FiX } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
+import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { formatObjectField, mergeRefs } from "src/lib/utils";
 
 export interface SelectOption {
   label: string;
+  description?: string;
   value: string;
 }
 
@@ -78,6 +80,14 @@ export const SelectLabel = ({
   </Combobox.Label>
 );
 
+const SelectOptionTooltip = ({ tooltip }: { tooltip: ReactNode }) => (
+  <Tooltip tooltip={tooltip}>
+    <span className="block">
+      <FiInfo className="text-sm" />
+    </span>
+  </Tooltip>
+);
+
 export const SelectOptionComponent = ({
   variant,
   option,
@@ -112,12 +122,13 @@ export const SelectOptionComponent = ({
     {withCheckbox && <Checkbox checked={isSelected} className="mr-2" />}
     <span
       className={clsx(
-        "block truncate",
+        "block truncate flex-grow",
         isSelected ? "font-medium" : "font-normal",
       )}
     >
       {option.label}
     </span>
+    {option.description && <SelectOptionTooltip tooltip={option.description} />}
   </Combobox.Option>
 );
 
@@ -351,7 +362,7 @@ export const Select = forwardRef(
               >
                 <Combobox.Input
                   className={clsx(
-                    "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0",
+                    "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0 disabled:text-manatee-500",
                     sizingClassName,
                     roundedClassName,
                     showClearValueButton ? "pr-12" : "pr-8",
@@ -364,6 +375,9 @@ export const Select = forwardRef(
                   ref={propRef as Ref<HTMLInputElement> | undefined}
                 />
                 <span className="absolute inset-y-0 right-0 flex items-center">
+                  {selectedOption?.description && (
+                    <SelectOptionTooltip tooltip={selectedOption.description} />
+                  )}
                   {showClearValueButton && (
                     <button
                       onClick={(e) => {
@@ -372,7 +386,9 @@ export const Select = forwardRef(
                       }}
                       data-testid="select-clear-value"
                     >
-                      <FiX className="text-xs" />
+                      <FiX
+                        className={clsx("text-xs", disabled && "opacity-25")}
+                      />
                     </button>
                   )}
                   <button
@@ -381,7 +397,10 @@ export const Select = forwardRef(
                       variant === "pill" ? "mx-2" : "ml-0.5 mr-3.5",
                     )}
                   >
-                    <FiChevronDown className="text-xl" aria-hidden="true" />
+                    <FiChevronDown
+                      className={clsx("text-xl", disabled && "opacity-25")}
+                      aria-hidden="true"
+                    />
                   </button>
                 </span>
               </Combobox.Button>
