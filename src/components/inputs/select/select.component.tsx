@@ -21,12 +21,12 @@ import { useVirtual } from "react-virtual";
 
 import { FiX } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
-import { Tooltip } from "src/components/tooltip/tooltip.component";
+import { Tooltip, TooltipSide } from "src/components/tooltip/tooltip.component";
 import { formatObjectField, mergeRefs } from "src/lib/utils";
 
 export interface SelectOption {
   label: string;
-  description?: string;
+  infoTooltip?: ReactNode;
   value: string;
 }
 
@@ -80,8 +80,14 @@ export const SelectLabel = ({
   </Combobox.Label>
 );
 
-const SelectOptionTooltip = ({ tooltip }: { tooltip: ReactNode }) => (
-  <Tooltip tooltip={tooltip}>
+const SelectOptionTooltip = ({
+  tooltip,
+  side,
+}: {
+  tooltip: ReactNode;
+  side?: TooltipSide;
+}) => (
+  <Tooltip tooltip={tooltip} side={side}>
     <span className="block">
       <FiInfo className="text-sm" />
     </span>
@@ -128,7 +134,9 @@ export const SelectOptionComponent = ({
     >
       {option.label}
     </span>
-    {option.description && <SelectOptionTooltip tooltip={option.description} />}
+    {option.infoTooltip && (
+      <SelectOptionTooltip tooltip={option.infoTooltip} side="right" />
+    )}
   </Combobox.Option>
 );
 
@@ -375,8 +383,11 @@ export const Select = forwardRef(
                   ref={propRef as Ref<HTMLInputElement> | undefined}
                 />
                 <span className="absolute inset-y-0 right-0 flex items-center">
-                  {selectedOption?.description && (
-                    <SelectOptionTooltip tooltip={selectedOption.description} />
+                  {selectedOption?.infoTooltip && (
+                    <SelectOptionTooltip
+                      tooltip={selectedOption.infoTooltip}
+                      side="top"
+                    />
                   )}
                   {showClearValueButton && (
                     <button

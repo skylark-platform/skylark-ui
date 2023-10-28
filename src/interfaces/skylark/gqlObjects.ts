@@ -14,9 +14,9 @@ export type SkylarkObjectConfigFieldType =
   | null;
 
 export interface SkylarkGraphQLObjectConfig {
-  colour: string;
-  primary_field: string;
-  display_name: string;
+  colour: string | null;
+  primary_field: string | null;
+  display_name: string | null;
   field_config?: {
     name: string;
     ui_field_type: SkylarkObjectConfigFieldType;

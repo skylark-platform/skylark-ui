@@ -17,7 +17,7 @@ import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
   createPublishVersionMutation,
   createUpdateObjectMetadataMutation,
-} from "src/lib/graphql/skylark/dynamicMutations";
+} from "src/lib/graphql/skylark/dynamicMutations/objects";
 
 interface MutationVariables {
   uid: string;

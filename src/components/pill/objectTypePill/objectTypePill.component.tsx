@@ -25,7 +25,7 @@ export const ObjectTypePill = ({
   return (
     <Pill
       label={config?.objectTypeDisplayName || type}
-      bgColor={config?.colour}
+      bgColor={config?.colour || undefined}
       className={className}
     />
   );

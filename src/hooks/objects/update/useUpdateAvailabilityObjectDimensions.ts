@@ -8,7 +8,7 @@ import {
   GQLSkylarkErrorResponse,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import { createUpdateAvailabilityDimensionsMutation } from "src/lib/graphql/skylark/dynamicMutations";
+import { createUpdateAvailabilityDimensionsMutation } from "src/lib/graphql/skylark/dynamicMutations/objects";
 
 interface MutationArgs {
   uid: string;

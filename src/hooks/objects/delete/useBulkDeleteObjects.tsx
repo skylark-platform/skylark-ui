@@ -18,7 +18,7 @@ import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
   createBulkDeleteObjectsMutation,
   createDeleteObjectMutation,
-} from "src/lib/graphql/skylark/dynamicMutations";
+} from "src/lib/graphql/skylark/dynamicMutations/objects";
 
 export const useBulkDeleteObjects = ({
   onSuccess,

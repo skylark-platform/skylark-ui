@@ -21,7 +21,18 @@ export const EnumSelect = forwardRef(
         enums?.map(({ name, enumValues }) => ({
           value: name,
           label: name,
-          description: enumValues.map(({ name }) => name).join(", "),
+          infoTooltip: (
+            <div className="z-[51]">
+              <p className="font-medium -ml-1 mb-1">Enum values:</p>
+              <ul className="pl-2">
+                {enumValues.map(({ name }) => (
+                  <li key={name} className="list-disc">
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ),
         })) || [],
       [enums],
     );

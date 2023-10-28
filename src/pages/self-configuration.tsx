@@ -15,6 +15,7 @@ import skylarkObjectFieldInputStories from "src/components/inputs/skylarkObjectF
 import { TextInput } from "src/components/inputs/textInput";
 import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { SYSTEM_FIELDS } from "src/constants/skylark";
+import { useUpdateObjectTypeConfig } from "src/hooks/schema/update/useUpdateObjectTypeConfig";
 import {
   useAllObjectsMeta,
   useAllSetObjectsMeta,
@@ -24,6 +25,7 @@ import {
 } from "src/hooks/useSkylarkObjectTypes";
 import { GQLScalars } from "src/interfaces/graphql/introspection";
 import {
+  BuiltInSkylarkObjectType,
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectConfigFieldConfig,
@@ -46,6 +48,7 @@ type FieldSectionObject = Record<
 >;
 
 const isSkylarkObjectType = (objectType: string) =>
+  objectType === BuiltInSkylarkObjectType.Availability ||
   objectType.toUpperCase().startsWith("SKYLARK");
 
 const graphQLFields: (GQLScalars | "Enum")[] = [
@@ -203,7 +206,7 @@ const ObjectTypeNavigationSection = ({
         >
           <span
             className="w-4 h-4 block rounded mr-1"
-            style={{ backgroundColor: config.colour }}
+            style={{ backgroundColor: config.colour || undefined }}
           />
           {config.objectTypeDisplayName &&
           config.objectTypeDisplayName !== objectType ? (
@@ -460,7 +463,7 @@ const FieldSection = ({
   objectMeta: SkylarkObjectMeta;
   objectConfig?: ParsedSkylarkObjectConfig;
   disableReorder?: boolean;
-  primaryField?: string;
+  primaryField?: string | null;
   onChange: (fields: InputFieldWithFieldConfig[]) => void;
   onPrimaryFieldChange: (field: string) => void;
 }) => {
@@ -603,55 +606,63 @@ const ObjectTypeEditor = ({
 }) => {
   const form = useForm<{
     fieldSections: FieldSectionObject;
-    objectTypeMask: string;
-    primaryField: string | undefined;
+    objectTypeDisplayName: string;
+    primaryField: string | undefined | null;
+    colour: string | undefined | null;
   }>({
     // Can't use onSubmit because we don't have a submit button within the form
     mode: "onTouched",
     values: {
       fieldSections: createFieldSections(objectMeta, objectConfig),
-      objectTypeMask: objectConfig?.objectTypeDisplayName || objectMeta.name,
+      objectTypeDisplayName:
+        objectConfig?.objectTypeDisplayName || objectMeta.name,
       primaryField: objectConfig?.primaryField,
+      colour: objectConfig?.colour,
     },
   });
 
-  // const [fieldSections, setFieldSections] = useState(
-  //   createFieldSections(objectMeta, objectConfig),
-  // );
-
-  // const [objectTypeMask, setObjectTypeMask] = useState(
-  //   objectConfig?.objectTypeDisplayName || objectMeta.name,
-  // );
-
-  // const [primaryField, setPrimaryField] = useState(objectConfig?.primaryField);
+  const { updateObjectTypeConfig, isUpdatingObjectTypeConfig } =
+    useUpdateObjectTypeConfig({
+      onSuccess: console.log,
+      onError: console.error,
+    });
 
   const onSave = () => {
     console.log("onSave", form.formState.isDirty, form.formState.dirtyFields);
-    form.handleSubmit(({ fieldSections, primaryField, objectTypeMask }) => {
-      const fieldConfig: ParsedSkylarkObjectConfigFieldConfig[] = [
-        ...fieldSections.system.fields,
-        ...fieldSections.translatable.fields,
-        ...fieldSections.global.fields,
-      ].map(
-        (fieldWithConfig, index): ParsedSkylarkObjectConfigFieldConfig => ({
-          name: fieldWithConfig.field.name,
-          fieldType: fieldWithConfig.config?.fieldType || null,
-          position: index + 1,
-        }),
-      );
-      const parsedConfig: ParsedSkylarkObjectConfig = {
-        ...objectConfig,
-        primaryField,
-        fieldConfig,
-        objectTypeDisplayName: objectTypeMask,
-        // colour: "",
-      };
-      console.log("onSave", { parsedConfig });
-    }, console.error)();
+    form.handleSubmit(
+      ({ fieldSections, primaryField, objectTypeDisplayName, colour }) => {
+        const fieldConfig: ParsedSkylarkObjectConfigFieldConfig[] = [
+          ...fieldSections.system.fields,
+          ...fieldSections.translatable.fields,
+          ...fieldSections.global.fields,
+        ].map(
+          (fieldWithConfig, index): ParsedSkylarkObjectConfigFieldConfig => ({
+            name: fieldWithConfig.field.name,
+            fieldType: fieldWithConfig.config?.fieldType || null,
+            position: index + 1,
+          }),
+        );
+        const parsedConfig: ParsedSkylarkObjectConfig = {
+          ...objectConfig,
+          primaryField,
+          fieldConfig,
+          objectTypeDisplayName,
+          colour,
+        };
+        console.log("onSave", { parsedConfig });
+
+        updateObjectTypeConfig({
+          objectType: objectMeta.name,
+          objectTypeConfig: parsedConfig,
+        });
+      },
+      console.error,
+    )();
   };
 
   // TODO improve by passing form into components so that we don't have to use a watch this high
-  const { fieldSections, objectTypeMask, primaryField } = form.watch();
+  const { fieldSections, objectTypeDisplayName, primaryField, colour } =
+    form.watch();
 
   const onFieldChange = useCallback(
     (id: FieldSection, reorderedFields: InputFieldWithFieldConfig[]) => {
@@ -684,13 +695,13 @@ const ObjectTypeEditor = ({
             {/* <h3 className="text-2xl font-semibold">
               {objectConfig?.objectTypeDisplayName || objectMeta.name}
             </h3> */}
-            <div
-              className="bg-manatee-300 h-6 w-6 rounded"
-              style={{ backgroundColor: objectConfig?.colour }}
-            ></div>
+            <ColourPicker
+              colour={colour || ""}
+              onChange={(colour) => form.setValue("colour", colour)}
+            />
             <ObjectTypeHeading
-              onRename={(name) => form.setValue("objectTypeMask", name)}
-              name={objectTypeMask}
+              onRename={(name) => form.setValue("objectTypeDisplayName", name)}
+              name={objectTypeDisplayName}
             />
           </div>
           <div className="flex space-x-2 font-normal text-sm text-manatee-300">
@@ -699,10 +710,18 @@ const ObjectTypeEditor = ({
           </div>
         </div>
         <div className="space-x-2">
-          <Button variant="outline" danger>
+          <Button
+            variant="outline"
+            danger
+            disabled={isUpdatingObjectTypeConfig}
+          >
             Cancel
           </Button>
-          <Button variant="primary" onClick={onSave}>
+          <Button
+            variant="primary"
+            onClick={onSave}
+            loading={isUpdatingObjectTypeConfig}
+          >
             Save
           </Button>
         </div>

@@ -2,7 +2,6 @@ import {
   useFloating,
   offset,
   flip,
-  size,
   autoUpdate,
   Placement,
   useTransitionStyles,

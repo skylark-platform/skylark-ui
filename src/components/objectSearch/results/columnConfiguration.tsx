@@ -97,7 +97,7 @@ const dragIconColumn = columnHelper.display({
       <div className="flex h-full items-center justify-center">
         <div
           className="h-2 w-2 rounded-full bg-manatee-300"
-          style={{ background: config ? config.colour : undefined }}
+          style={{ background: config?.colour || undefined }}
         />
       </div>
     ) : (
@@ -126,7 +126,7 @@ const objectTypeColumn = columnHelper.accessor(
         <div className="flex h-full w-full items-center pr-0.5">
           <Pill
             label={config?.objectTypeDisplayName || original.objectType}
-            bgColor={config?.colour}
+            bgColor={config?.colour || undefined}
             className="w-full"
           />
         </div>

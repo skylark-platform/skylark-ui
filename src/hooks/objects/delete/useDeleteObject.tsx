@@ -11,7 +11,7 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import { createDeleteObjectMutation } from "src/lib/graphql/skylark/dynamicMutations";
+import { createDeleteObjectMutation } from "src/lib/graphql/skylark/dynamicMutations/objects";
 
 export const useDeleteObject = ({
   objectType,
