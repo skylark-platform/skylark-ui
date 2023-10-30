@@ -32,6 +32,7 @@ import {
   SkylarkObjectConfigFieldType,
   SkylarkObjectMeta,
   SkylarkObjectType,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
 
@@ -74,13 +75,21 @@ const objectConfigFieldTypes: SkylarkObjectConfigFieldType[] = [
   "TEXTAREA",
   "WYSIWYG",
   "TIMEZONE",
+  "COLOURPICKER",
 ];
 
 const combineFieldAndFieldConfigAndSortByConfigPostion = (
   inputFields: NormalizedObjectField[],
+  getFields: NormalizedObjectField[],
   objectFieldConfig?: ParsedSkylarkObjectConfig,
 ): InputFieldWithFieldConfig[] => {
-  const inputFieldsWithFieldConfig = inputFields
+  // Some fields are not in input fields but we need to display them anyway, e.g. UID
+  const inputFieldNames = inputFields.map(({ name }) => name);
+  const missingInputFields = getFields.filter(
+    ({ name }) => !inputFieldNames.includes(name),
+  );
+
+  const inputFieldsWithFieldConfig = [...inputFields, ...missingInputFields]
     .map((field) => {
       const config = objectFieldConfig?.fieldConfig?.find(
         ({ name }) => name === field.name,
@@ -150,6 +159,7 @@ const createFieldSections = (
 ) => {
   const fieldsWithConfig = combineFieldAndFieldConfigAndSortByConfigPostion(
     objectMeta.operations.create.inputs,
+    objectMeta.fields,
     objectFieldConfig,
   );
 
@@ -272,6 +282,14 @@ const ObjectTypeNavigation = ({
   );
 };
 
+const InfoTooltip = ({ tooltip }: { tooltip: ReactNode }) => (
+  <Tooltip tooltip={tooltip}>
+    <div className="ml-1">
+      <FiInfo className="text-base" />
+    </div>
+  </Tooltip>
+);
+
 const FieldHeader = ({
   children,
   className,
@@ -283,15 +301,51 @@ const FieldHeader = ({
 }) => (
   <div className={clsx("flex items-center whitespace-pre", className)}>
     <p>{children}</p>
-    {tooltip && (
-      <Tooltip tooltip={tooltip}>
-        <div className="ml-2">
-          <FiInfo className="text-base" />
-        </div>
-      </Tooltip>
-    )}
+    {tooltip && <InfoTooltip tooltip={tooltip} />}
   </div>
 );
+
+const FieldNameTooltip = ({ field }: { field: string }) => {
+  let tooltip = null;
+
+  if (field === SkylarkSystemField.UID) {
+    tooltip = (
+      <div className="">
+        <p>Auto-generated field when an object is created.</p>
+        <p>Can be used to fetch an object. See more here:</p>
+      </div>
+    );
+  }
+
+  if (field === SkylarkSystemField.ExternalID) {
+    tooltip = (
+      <div className="">
+        <p>Special field, you can look stuff up using this</p>
+        <p>Can be used to fetch an object. See more here:</p>
+      </div>
+    );
+  }
+
+  if (field === SkylarkSystemField.Type) {
+    tooltip = (
+      <div className="">
+        <p>Special field, wondering why this is displayed in System Fields?</p>
+        <p>When the field `type` is used, you can filter search using it</p>
+      </div>
+    );
+  }
+
+  if (field === SkylarkSystemField.Slug) {
+    tooltip = (
+      <div className="">
+        <p>Special field, always added to an object as translatable metadata</p>
+        <p>Might have use in the future...</p>
+      </div>
+    );
+  }
+
+  return tooltip ? <InfoTooltip tooltip={tooltip} /> : null;
+};
 
 const FieldRow = ({
   fieldWithConfig,
@@ -354,12 +408,14 @@ const FieldRow = ({
         {/* <p className="mr-1 text-brand-primary font-light">
           {fieldConfig?.position}
         </p> */}
-        <p>{sentenceCase(field.name)}</p>
-        <Tooltip tooltip={`GraphQL field: ${field.name}`}>
+        {/* <p>{sentenceCase(field.name)}</p> */}
+        <p>{field.name}</p>
+        <FieldNameTooltip field={field.name} />
+        {/* <Tooltip tooltip={`GraphQL field: ${field.name}`}>
           <div className="ml-2">
             <FiInfo className="text-base" />
           </div>
-        </Tooltip>
+        </Tooltip> */}
       </div>
       <div className="flex justify-start items-center h-full col-span-2">
         {field && !isSkylarkObjectType(objectMeta.name) ? (
@@ -379,28 +435,31 @@ const FieldRow = ({
         )}
       </div>
       <div className="flex justify-start items-center h-full col-span-2 w-full">
-        {field.originalType.toUpperCase() === "STRING" && (
-          <Select
-            className="w-full"
-            options={(objectConfigFieldTypes as string[]).map((value) => ({
-              value,
-              label: value,
-            }))}
-            variant="primary"
-            selected={fieldConfig?.fieldType as string | undefined}
-            placeholder=""
-            onChange={(fieldType) =>
-              handleFieldConfigChange({
-                fieldType: fieldType as SkylarkObjectConfigFieldType,
-              })
-            }
-            onValueClear={() =>
-              handleFieldConfigChange({
-                fieldType: null,
-              })
-            }
-          />
-        )}
+        {!(
+          [SkylarkSystemField.UID, SkylarkSystemField.ExternalID] as string[]
+        ).includes(field.name) &&
+          field.originalType.toUpperCase() === "STRING" && (
+            <Select
+              className="w-full"
+              options={(objectConfigFieldTypes as string[]).map((value) => ({
+                value,
+                label: value,
+              }))}
+              variant="primary"
+              selected={fieldConfig?.fieldType as string | undefined}
+              placeholder=""
+              onChange={(fieldType) =>
+                handleFieldConfigChange({
+                  fieldType: fieldType as SkylarkObjectConfigFieldType,
+                })
+              }
+              onValueClear={() =>
+                handleFieldConfigChange({
+                  fieldType: null,
+                })
+              }
+            />
+          )}
         {isEnum && (
           <>
             {!isSkylarkObjectType(objectMeta.name) ? (
@@ -436,7 +495,11 @@ const FieldRow = ({
         )}
       </div>
       <div className="flex justify-center items-center">
-        <Checkbox checked={field.isRequired} disabled />
+        <Checkbox
+          checked={field.isRequired}
+          disabled
+          // disabled={field.name === SkylarkSystemField.UID}
+        />
       </div>
       <div className="flex justify-center items-center">
         <Checkbox

@@ -24,7 +24,7 @@ export const ColourPicker = ({ colour, onChange }: ColourPickerProps) => {
   const { refs, floatingStyles, context } = useFloating({
     open,
     placement: "bottom",
-    middleware: [offset(5), flip(), shift()],
+    middleware: [offset(5), flip(), shift({ padding: 5 })],
     whileElementsMounted: autoUpdate,
     onOpenChange: setOpen,
   });

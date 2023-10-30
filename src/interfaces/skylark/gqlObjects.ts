@@ -11,6 +11,7 @@ export type SkylarkObjectConfigFieldType =
   | "TEXTAREA"
   | "WYSIWYG"
   | "TIMEZONE"
+  | "COLOURPICKER"
   | null;
 
 export interface SkylarkGraphQLObjectConfig {
