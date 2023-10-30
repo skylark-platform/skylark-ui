@@ -1,11 +1,11 @@
 import { HTMLInputTypeAttribute } from "react";
-import { sentenceCase } from "sentence-case";
 
 import {
   CLOUDINARY_ENVIRONMENT,
   DISPLAY_NAME_PRIORITY,
 } from "src/constants/skylark";
 import {
+  BuiltInSkylarkObjectType,
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
@@ -220,3 +220,7 @@ export function mergeRefs<T = unknown>(
 
 export const userIsOnMac = () =>
   navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+
+export const isSkylarkObjectType = (objectType: string) =>
+  objectType === BuiltInSkylarkObjectType.Availability ||
+  objectType.toUpperCase().startsWith("SKYLARK");

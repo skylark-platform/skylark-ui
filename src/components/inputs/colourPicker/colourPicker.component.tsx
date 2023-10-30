@@ -48,6 +48,7 @@ export const ColourPicker = ({ colour, onChange }: ColourPickerProps) => {
         ref={refs.setReference}
         className="bg-manatee-300 h-6 w-6 rounded border border-manatee-100"
         style={{ backgroundColor: colour }}
+        data-testid="colour-picker-button"
         {...getReferenceProps()}
       />
       {isMounted && (

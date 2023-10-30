@@ -372,6 +372,28 @@ describe("renders inputs", () => {
     expect(gotOptions.length).toBe(1);
     expect(gotOptions[0]).toHaveTextContent("Europe/London");
   });
+
+  test("renders the colourPicker when the field config is COLOURPICKER", async () => {
+    const { field } = testFieldConfigs.string;
+    render(
+      <WrappedSkylarkObjectFieldInput
+        config={{
+          ...field,
+          type: "string",
+        }}
+        fieldConfig={{
+          name: field.name,
+          fieldType: "COLOURPICKER",
+          position: 0,
+        }}
+      />,
+    );
+
+    const button = screen.getByTestId("colour-picker-button");
+    await fireEvent.click(button);
+    const input = await screen.findByPlaceholderText("#");
+    expect(input).toBeInTheDocument();
+  });
 });
 
 test("copies the value to the clipboard", async () => {
