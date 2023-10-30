@@ -3,7 +3,6 @@ import { Reorder, useDragControls } from "framer-motion";
 import { ReactNode, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiCheckSquare, FiEdit, FiInfo, FiXSquare } from "react-icons/fi";
-import { sentenceCase } from "sentence-case";
 
 import { Button } from "src/components/button";
 import { Spinner } from "src/components/icons";
@@ -11,15 +10,12 @@ import { Checkbox } from "src/components/inputs/checkbox";
 import { ColourPicker } from "src/components/inputs/colourPicker";
 import { Select } from "src/components/inputs/select";
 import { EnumSelect } from "src/components/inputs/select/enumSelect/enumSelect.component";
-import skylarkObjectFieldInputStories from "src/components/inputs/skylarkObjectFieldInput/skylarkObjectFieldInput.stories";
 import { TextInput } from "src/components/inputs/textInput";
 import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { SYSTEM_FIELDS } from "src/constants/skylark";
 import { useUpdateObjectTypeConfig } from "src/hooks/schema/update/useUpdateObjectTypeConfig";
 import {
   useAllObjectsMeta,
-  useAllSetObjectsMeta,
-  useSkylarkObjectTypes,
   useSkylarkObjectTypesWithConfig,
   useSkylarkSetObjectTypes,
 } from "src/hooks/useSkylarkObjectTypes";
@@ -34,7 +30,6 @@ import {
   SkylarkObjectType,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
 
 type InputFieldWithFieldConfig = {
   field: NormalizedObjectField;
