@@ -41,6 +41,7 @@ export const OBJECT_LIST_TABLE = {
 export const HREFS = {
   relative: {
     graphqlEditor: "/developer/graphql-editor",
+    contentModel: "/content-model",
   },
   external: {
     apiDocs: "https://docs.skylarkplatform.com/",

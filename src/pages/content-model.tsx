@@ -418,7 +418,7 @@ const FieldRow = ({
         </Tooltip> */}
       </div>
       <div className="flex justify-start items-center h-full col-span-2">
-        {field && !isSkylarkObjectType(objectMeta.name) ? (
+        {/* {field && !isSkylarkObjectType(objectMeta.name) ? (
           <Select
             options={graphQLFields.map((value) => ({
               value,
@@ -432,7 +432,8 @@ const FieldRow = ({
           />
         ) : (
           <p>{isEnum ? "Enum" : field.originalType}</p>
-        )}
+        )} */}
+        <p>{isEnum ? "Enum" : field.originalType}</p>
       </div>
       <div className="flex justify-start items-center h-full col-span-2 w-full">
         {!(
@@ -560,7 +561,7 @@ const FieldSection = ({
           Required
         </FieldHeader>
         <FieldHeader tooltip="A config property that instructs the UI which field it should use when displaying an object on listing pages.">
-          Primary field
+          UI Display field
         </FieldHeader>
       </div>
       <Reorder.Group onReorder={onChange} values={fields}>
