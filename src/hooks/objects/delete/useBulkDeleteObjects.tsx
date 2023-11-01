@@ -4,21 +4,14 @@ import { RequestDocument } from "graphql-request";
 import { QueryKeys } from "src/enums/graphql";
 import { createGetObjectKeyPrefix } from "src/hooks/objects/get/useGetObject";
 import { refetchSearchQueriesAfterUpdate } from "src/hooks/objects/useCreateObject";
-import {
-  useAllObjectsMeta,
-  useSkylarkObjectOperations,
-} from "src/hooks/useSkylarkObjectTypes";
+import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkErrorResponse,
   ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
-  SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import {
-  createBulkDeleteObjectsMutation,
-  createDeleteObjectMutation,
-} from "src/lib/graphql/skylark/dynamicMutations";
+import { createBulkDeleteObjectsMutation } from "src/lib/graphql/skylark/dynamicMutations";
+import { BATCH_DELETE } from "src/lib/graphql/skylark/mutations";
 
 export const useBulkDeleteObjects = ({
   onSuccess,
@@ -29,19 +22,15 @@ export const useBulkDeleteObjects = ({
 }) => {
   const queryClient = useQueryClient();
 
-  const { objects: allObjectsMeta } = useAllObjectsMeta(true);
-
   const { mutate, isLoading } = useMutation({
     mutationFn: ({ objects }: { objects: ParsedSkylarkObject[] }) => {
-      const bulkDeleteObjectMutation = createBulkDeleteObjectsMutation(
-        allObjectsMeta,
-        objects,
-      );
-
-      return skylarkRequest(
-        "mutation",
-        bulkDeleteObjectMutation as RequestDocument,
-      );
+      const formattedObjects = objects.map(({ uid, meta: { language } }) => ({
+        uid,
+        language,
+      }));
+      return skylarkRequest("mutation", BATCH_DELETE, {
+        objects: formattedObjects,
+      });
     },
     onSuccess: (_, { objects }) => {
       queryClient.invalidateQueries({ queryKey: [QueryKeys.Search] });

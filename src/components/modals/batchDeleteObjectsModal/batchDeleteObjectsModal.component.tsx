@@ -1,15 +1,17 @@
 import clsx from "clsx";
 import { useCallback, useRef, useState } from "react";
+import { toast } from "react-toastify";
 import { useDebouncedCallback } from "use-debounce";
 
 import { Button } from "src/components/button";
 import { Modal } from "src/components/modals/base/modal";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { Toast } from "src/components/toast/toast.component";
 import { useBulkDeleteObjects } from "src/hooks/objects/delete/useBulkDeleteObjects";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 
-const DELETION_LIMIT = 20;
+const DELETION_LIMIT = 100;
 
 interface BatchDeleteObjectsModalProps {
   objectsToBeDeleted: ParsedSkylarkObject[];
@@ -113,8 +115,29 @@ const BatchDeleteObjectsModalContent = ({
   onDeletionComplete: BatchDeleteObjectsModalProps["onDeletionComplete"];
 }) => {
   const { deleteObjects, isDeleting } = useBulkDeleteObjects({
-    onSuccess: onDeletionComplete,
-    onError: console.log,
+    onSuccess: (deletedObjects) => {
+      toast.success(
+        <Toast
+          title={`Batch deletion triggered`}
+          message={[
+            "The selected objects have been marked for deletion.",
+            "It may take a moment before they become unavailable and disappear from Search results.",
+          ]}
+        />,
+      );
+      onDeletionComplete(deletedObjects);
+    },
+    onError: () => {
+      toast.success(
+        <Toast
+          title={`Batch deletion failed to trigger`}
+          message={[
+            "Unable to trigger a deletion for the selected objects.",
+            "Please try again later.",
+          ]}
+        />,
+      );
+    },
   });
 
   const [objects, setObjects] = useState(propObjects);
@@ -139,10 +162,12 @@ const BatchDeleteObjectsModalContent = ({
   const orderedObjects = Object.values(groupedObjectsByUID).flatMap(
     (arr) => arr,
   );
-  const firstTwentyObjectsToBeDeleted = orderedObjects.slice(0, 20);
+  const objectsWithinDeletionLimit = orderedObjects.slice(0, DELETION_LIMIT);
 
   const firstObjectOverTheLimit =
-    orderedObjects.length > 20 ? orderedObjects[20] : null;
+    orderedObjects.length > DELETION_LIMIT
+      ? orderedObjects[DELETION_LIMIT]
+      : null;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [showScrollShadow, setShowScrollShadow] = useState(false);
@@ -187,7 +212,9 @@ const BatchDeleteObjectsModalContent = ({
                         </p>
                       </div>
                     )}
-                    <div className={clsx(index >= 20 && "opacity-30")}>
+                    <div
+                      className={clsx(index >= DELETION_LIMIT && "opacity-30")}
+                    >
                       <ObjectIdentifierCard
                         key={`${uid}-${obj.meta.language}`}
                         object={obj}
@@ -208,14 +235,22 @@ const BatchDeleteObjectsModalContent = ({
           );
         })}
       </div>
-      <DeleteButtonWithConfirmation
-        confirmationMessage={`Permanently delete ${firstTwentyObjectsToBeDeleted.length} object(s)`}
-        onCancel={closeModal}
-        isDeleting={isDeleting}
-        onConfirmed={() =>
-          deleteObjects({ objects: firstTwentyObjectsToBeDeleted })
-        }
-      />
+      {objects.length > 0 ? (
+        <DeleteButtonWithConfirmation
+          confirmationMessage={`Permanently delete ${objectsWithinDeletionLimit.length} object(s)`}
+          onCancel={closeModal}
+          isDeleting={isDeleting}
+          onConfirmed={() =>
+            deleteObjects({ objects: objectsWithinDeletionLimit })
+          }
+        />
+      ) : (
+        <div className="flex justify-end">
+          <Button variant="primary" type="button" onClick={closeModal}>
+            Cancel
+          </Button>
+        </div>
+      )}
     </>
   );
 };
