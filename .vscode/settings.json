@@ -9,5 +9,8 @@
     "className",
     ".*ClassName*",
     ".*ClassNames*"
+  ],
+  "tailwindCSS.experimental.classRegex": [
+    ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ]
 }

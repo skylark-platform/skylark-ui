@@ -14,7 +14,7 @@ import GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture from "src/__tests__/fixtures
 import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots04.json";
 import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
 import { screen, waitFor, within } from "src/__tests__/utils/test-utils";
-import { PanelTab } from "src/hooks/state";
+import { PanelTab, PanelTabState } from "src/hooks/state";
 import {
   BuiltInSkylarkObjectType,
   SkylarkObjectIdentifier,
@@ -71,11 +71,19 @@ export const availabilityObject: SkylarkObjectIdentifier = {
   language: "",
 };
 
+const tabState: PanelTabState = {
+  Relationships: {
+    expanded: {},
+  },
+};
+
 export const defaultProps = {
   closePanel: jest.fn(),
   setPanelObject: jest.fn(),
   setTab: jest.fn(),
+  updateActivePanelTabState: jest.fn(),
   tab: PanelTab.Metadata,
+  tabState,
 };
 
 export const saveGraphQLError: ResponseResolver<

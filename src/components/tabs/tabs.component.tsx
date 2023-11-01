@@ -39,29 +39,42 @@ export const Tabs = ({
     >
       {tabs.map((tab, index) => {
         return (
-          <li key={`tab-${tab.id}`} className="relative px-2 md:px-3">
+          <li
+            key={`tab-${tab.id}`}
+            className={clsx(
+              "flex relative border-b-2 -mb-[2px] group/tab-container",
+              onDelete ? "mx-1 md:mx-2" : "mx-2 md:mx-3",
+              !disabled && "hover:border-black hover:text-black",
+              selectedTab === tab.id
+                ? "border-black text-black"
+                : "border-transparent text-gray-400",
+            )}
+          >
             <button
               disabled={disabled}
               onClick={disabled ? undefined : () => onChange({ ...tab, index })}
               className={clsx(
-                "-mb-[2px] w-full whitespace-nowrap rounded-t border-b-2 p-1 pb-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary md:pb-2.5",
-                !disabled && "hover:border-black hover:text-black",
-                selectedTab === tab.id
-                  ? "border-black text-black"
-                  : "border-transparent text-gray-400",
+                "w-full whitespace-nowrap rounded-t  focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary p-1 pb-1.5 pr-0.5 md:pb-2.5",
                 "min-w-10 max-w-52 overflow-hidden text-ellipsis",
               )}
             >
               {tab.name}
             </button>
-            {onDelete && !disabled && selectedTab === tab.id && (
-              <div className="absolute bottom-1.5 right-0.5 top-0 flex w-5/12 justify-end bg-gradient-to-r from-transparent via-white/90 to-white md:top-0.5">
+            {onDelete && !disabled && (
+              <div className="flex justify-end bg-gradient-to-r from-transparent via-white/90 to-white pb-1.5 pt-1 md:pb-2.5">
                 <button
-                  className="group rounded-full p-1 hover:bg-gray-100/20 hover:shadow-inner"
+                  className="group/button rounded-full ml-0.5 p-0.5 hover:bg-gray-100/20 hover:shadow-inner"
                   onClick={() => onDelete({ ...tab, index })}
                   aria-label="delete active tab"
                 >
-                  <FiX className="text-base font-bold text-gray-600 group-hover:text-gray-800" />
+                  <FiX
+                    className={clsx(
+                      "text-base font-bold group-hover/button:text-black",
+                      tab.id === selectedTab
+                        ? "text-gray-600"
+                        : "text-gray-400 group-hover/tab-container:text-gray-600",
+                    )}
+                  />
                 </button>
               </div>
             )}

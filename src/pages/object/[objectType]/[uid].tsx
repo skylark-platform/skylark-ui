@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 
 import { Panel } from "src/components/panel";
-import { PanelTab } from "src/hooks/state";
+import { PanelTab, PanelTabState, mergedPanelTabStates } from "src/hooks/state";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 
 const Object = () => {
@@ -11,6 +11,12 @@ const Object = () => {
   const { objectType, uid, language } = router.query;
 
   const [tab, setTab] = useState<PanelTab>(PanelTab.Metadata);
+
+  const [tabState, setTabState] = useState<PanelTabState>({
+    [PanelTab.Relationships]: {
+      expanded: {},
+    },
+  });
 
   const object = useMemo(
     () =>
@@ -52,8 +58,14 @@ const Object = () => {
             isPage
             object={object}
             tab={tab}
+            tabState={tabState}
             setPanelObject={setPanelObject}
             setTab={setTab}
+            updateActivePanelTabState={(newTabState) =>
+              setTabState((prevTabState) =>
+                mergedPanelTabStates(prevTabState, newTabState),
+              )
+            }
           />
         </div>
       )}
