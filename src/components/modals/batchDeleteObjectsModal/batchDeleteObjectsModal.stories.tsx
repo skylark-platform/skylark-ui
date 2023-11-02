@@ -1,4 +1,5 @@
 import { ComponentStory, Story } from "@storybook/react";
+import { userEvent, waitFor, within } from "@storybook/testing-library";
 
 import {
   AvailabilityStatus,
@@ -57,4 +58,26 @@ Default.args = {
       metadata: { uid: "246", external_id: "", title: "My Movie" },
     },
   ],
+};
+
+export const Confirmation = Template.bind({});
+Confirmation.args = {
+  isOpen: true,
+  closeModal: () => "",
+  objectsToBeDeleted: [
+    object,
+    {
+      ...object,
+      objectType: "Movie",
+      uid: "246",
+      metadata: { uid: "246", external_id: "", title: "My Movie" },
+    },
+  ],
+};
+Confirmation.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  await userEvent.click(canvas.getByText("Delete objects"));
+
+  await canvas.findByPlaceholderText(/permanently delete/);
 };
