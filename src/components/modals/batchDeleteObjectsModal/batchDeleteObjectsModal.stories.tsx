@@ -1,5 +1,5 @@
 import { ComponentStory, Story } from "@storybook/react";
-import { userEvent, waitFor, within } from "@storybook/testing-library";
+import { userEvent, within } from "@storybook/testing-library";
 
 import {
   AvailabilityStatus,
@@ -74,10 +74,12 @@ Confirmation.args = {
     },
   ],
 };
-Confirmation.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
+Confirmation.play = async () => {
+  const headlessPortalRoot = document.querySelector("#headlessui-portal-root");
+  const headlessCanvas = within(headlessPortalRoot as HTMLElement);
 
-  await userEvent.click(canvas.getByText("Delete objects"));
+  const buttom = await headlessCanvas.findByText("Delete objects");
+  await userEvent.click(buttom);
 
-  await canvas.findByPlaceholderText(/permanently delete/);
+  await headlessCanvas.findByPlaceholderText(/permanently delete/);
 };
