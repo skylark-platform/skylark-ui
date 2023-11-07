@@ -50,7 +50,6 @@ export const useBulkDeleteObjects = ({
 
   return {
     deleteObjects: mutate,
-    // deleteObjects: (props: any) => console.log("fired"),
     isDeleting: isLoading,
   };
 };

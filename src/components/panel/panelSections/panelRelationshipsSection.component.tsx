@@ -61,7 +61,11 @@ export const PanelRelationshipSection = ({
     objects?.length > 2 && !isExpanded ? objects.slice(0, 3) : objects;
 
   return (
-    <div key={relationshipName} className="relative mb-6">
+    <div
+      key={relationshipName}
+      className="relative mb-6"
+      data-testid={relationshipName}
+    >
       <div className="flex items-center ">
         <PanelSectionTitle
           text={formatObjectField(relationshipName)}

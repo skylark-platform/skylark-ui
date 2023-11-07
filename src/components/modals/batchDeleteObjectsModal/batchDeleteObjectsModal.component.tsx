@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useCallback, useRef, useState } from "react";
+import { Fragment, useCallback, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -207,6 +207,10 @@ const BatchDeleteObjectsModalContent = ({
         ref={containerRef}
         onScroll={debouncedOnScroll}
       >
+        {objects.length === 0 && propObjects.length !== 0 && (
+          <p>No objects selected for deletion.</p>
+        )}
+
         {Object.entries(groupedObjectsByUID).map(([uid, objects]) => {
           return (
             <div
@@ -220,7 +224,7 @@ const BatchDeleteObjectsModalContent = ({
               {objects.map((obj) => {
                 const index = orderedObjects.findIndex((_obj) => obj === _obj);
                 return (
-                  <>
+                  <Fragment key={obj.meta.language}>
                     {obj === firstObjectOverTheLimit && (
                       <div className="mt-8 border-t-2 border-error pb-6 pt-8">
                         <p className="font-medium">
@@ -244,7 +248,7 @@ const BatchDeleteObjectsModalContent = ({
                         <p className="pr-1 text-manatee-500">{`${obj.meta.language}`}</p>
                       </ObjectIdentifierCard>
                     </div>
-                  </>
+                  </Fragment>
                 );
               })}
             </div>
