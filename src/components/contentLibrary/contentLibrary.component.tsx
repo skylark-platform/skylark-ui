@@ -81,11 +81,13 @@ export const ContentLibrary = ({
   const {
     activePanelObject,
     activePanelTab,
+    activePanelTabState,
     setPanelObject,
     setPanelTab,
     navigateToPreviousPanelObject,
     navigateToForwardPanelObject,
     resetPanelObjectState,
+    updateActivePanelTabState,
   } = usePanelObjectState();
 
   const {
@@ -292,6 +294,7 @@ export const ContentLibrary = ({
                 key={`${activePanelObject.objectType}-${activePanelObject.uid}-${activePanelObject.language}`}
                 object={activePanelObject}
                 tab={activePanelTab}
+                tabState={activePanelTabState}
                 closePanel={closePanel}
                 isDraggedObject={isDraggingObject}
                 droppedObjects={droppedObjects}
@@ -300,6 +303,7 @@ export const ContentLibrary = ({
                 navigateToPreviousPanelObject={navigateToPreviousPanelObject}
                 navigateToForwardPanelObject={navigateToForwardPanelObject}
                 clearDroppedObjects={clearDroppedObjects}
+                updateActivePanelTabState={updateActivePanelTabState}
               />
             </div>
           </m.div>

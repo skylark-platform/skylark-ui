@@ -11,17 +11,22 @@ import {
   GQLSkylarkBackgroundTask,
 } from "src/interfaces/skylark";
 
-type GenericTaskType = "availability" | "other";
+type GenericTaskType = "availability" | "deletion" | "other";
 
 const stringifyCount = (count: number) => (count >= 50 ? "50+" : `${count}`);
 
-const getGenericBackgroundTaskType = (task: GQLSkylarkBackgroundTask) => {
+const getGenericBackgroundTaskType = (
+  task: GQLSkylarkBackgroundTask,
+): GenericTaskType => {
   switch (task.task_type) {
     case BackgroundTaskType.AVAILABILITY_UPDATE_OBJECT_PROCESSING:
     case BackgroundTaskType.AVAILABILITY_DELETE_OBJECT_PROCESSING:
     case BackgroundTaskType.POST_AVAILABILITY_UPDATE:
     case BackgroundTaskType.POST_AVAILABILITY_DELETE:
       return "availability";
+    case BackgroundTaskType.BATCH_DELETE:
+    case BackgroundTaskType.DELETE_POST_PROCESSING:
+      return "deletion";
     case BackgroundTaskType.POST_CREATE:
     case BackgroundTaskType.POST_UPDATE:
     default:
@@ -43,6 +48,10 @@ const getBackgroundTaskTypeText = (tasks: GQLSkylarkBackgroundTask[]) => {
 
     if (type === "availability") {
       return `${count} Availability Rules`;
+    }
+
+    if (type === "deletion") {
+      return `${count} Deletion Requests`;
     }
   }
 

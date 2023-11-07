@@ -37,7 +37,10 @@ Default.play = async ({ canvasElement }) => {
 
   await userEvent.click(graphqlButton);
 
+  const headlessPortalRoot = document.querySelector("#headlessui-portal-root");
+  const headlessCanvas = within(headlessPortalRoot as HTMLElement);
+
   await waitFor(async () => {
-    canvas.findAllByText("Query for Schema");
+    headlessCanvas.findAllByText("Query for Schema");
   });
 };

@@ -97,6 +97,37 @@ describe("relationships view", () => {
     });
   });
 
+  test("calls updateActivePanelTabState with the selected relationship info as true when its expanded", async () => {
+    const updateActivePanelTabState = jest.fn();
+    render(
+      <Panel
+        {...defaultProps}
+        object={seasonWithRelationships}
+        tab={PanelTab.Relationships}
+        updateActivePanelTabState={updateActivePanelTabState}
+      />,
+    );
+
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
+
+    const withinEpisodesRelationship = within(screen.getByTestId("episodes"));
+
+    const showMoreButton = withinEpisodesRelationship.getByText("Show more");
+    fireEvent.click(showMoreButton);
+
+    await waitFor(() =>
+      expect(screen.getAllByText("Episode")).toHaveLength(10),
+    );
+
+    expect(updateActivePanelTabState).toHaveBeenCalledWith({
+      Relationships: {
+        expanded: {
+          episodes: true,
+        },
+      },
+    });
+  });
+
   describe("relationships view - edit", () => {
     const renderAndSwitchToEditView = async () => {
       render(
