@@ -1,4 +1,3 @@
-import { Dialog } from "@headlessui/react";
 import React, {
   Ref,
   forwardRef,
@@ -11,7 +10,6 @@ import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
-import { FiX } from "src/components/icons";
 import { SkylarkObjectFieldInput } from "src/components/inputs";
 import { LanguageSelect, ObjectTypeSelect } from "src/components/inputs/select";
 import {

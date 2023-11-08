@@ -18,6 +18,7 @@ module.exports = {
       "error",
       { allowSameFolder: true },
     ],
+    "@typescript-eslint/no-unused-vars": ["warn"],
   },
   overrides: [
     {
