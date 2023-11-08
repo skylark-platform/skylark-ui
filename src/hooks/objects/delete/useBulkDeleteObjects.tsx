@@ -4,21 +4,13 @@ import { RequestDocument } from "graphql-request";
 import { QueryKeys } from "src/enums/graphql";
 import { createGetObjectKeyPrefix } from "src/hooks/objects/get/useGetObject";
 import { refetchSearchQueriesAfterUpdate } from "src/hooks/objects/useCreateObject";
-import {
-  useAllObjectsMeta,
-  useSkylarkObjectOperations,
-} from "src/hooks/useSkylarkObjectTypes";
+import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkErrorResponse,
   ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
-  SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import {
-  createBulkDeleteObjectsMutation,
-  createDeleteObjectMutation,
-} from "src/lib/graphql/skylark/dynamicMutations";
+import { createBulkDeleteObjectsMutation } from "src/lib/graphql/skylark/dynamicMutations";
 
 export const useBulkDeleteObjects = ({
   onSuccess,

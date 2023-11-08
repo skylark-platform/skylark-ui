@@ -1,6 +1,5 @@
 import { ComponentStory } from "@storybook/react";
 import { userEvent, waitFor, within } from "@storybook/testing-library";
-import { graphql } from "msw";
 
 import { Tooltip } from "./tooltip.component";
 

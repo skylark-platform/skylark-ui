@@ -1,8 +1,6 @@
-import { Dialog } from "@headlessui/react";
 import React, { useMemo } from "react";
 
 import { Button } from "src/components/button";
-import { FiX } from "src/components/icons";
 import { Modal } from "src/components/modals/base/modal";
 import {
   ObjectSearch,

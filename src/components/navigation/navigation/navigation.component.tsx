@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { FiLogOut } from "react-icons/fi";
-import { sentenceCase } from "sentence-case";
 import { useIsClient } from "usehooks-ts";
 
 import { AccountStatus } from "src/components/account";

@@ -1,5 +1,4 @@
 import { HTMLInputTypeAttribute } from "react";
-import { sentenceCase } from "sentence-case";
 
 import {
   CLOUDINARY_ENVIRONMENT,
