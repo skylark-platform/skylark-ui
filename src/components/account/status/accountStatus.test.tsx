@@ -4,6 +4,7 @@ import { graphql } from "msw";
 import GQLSkylarkAccountStatusAvailabilityBackgroundTasksFixture from "src/__tests__/fixtures/skylark/queries/getAccountStatus/availabilityBackgroundTasksInProgress.json";
 import GQLSkylarkAccountStatusBackgroundTasksFixture from "src/__tests__/fixtures/skylark/queries/getAccountStatus/backgroundTasksInProgress.json";
 import GQLSkylarkAccountStatusDefault from "src/__tests__/fixtures/skylark/queries/getAccountStatus/default.json";
+import GQLSkylarkAccountStatusDeletionBackgroundTasksFixture from "src/__tests__/fixtures/skylark/queries/getAccountStatus/deletionBackgroundTasksInProgress.json";
 import GQLSkylarkAccountStatusSchemaUpdate from "src/__tests__/fixtures/skylark/queries/getAccountStatus/schemaUpdateInProgress.json";
 import { server } from "src/__tests__/mocks/server";
 import { render, screen, waitFor } from "src/__tests__/utils/test-utils";
@@ -31,6 +32,24 @@ test("renders showing Availability processing", async () => {
   });
 });
 
+test("renders showing Delete processing", async () => {
+  server.use(
+    graphql.query(GET_ACCOUNT_STATUS, (req, res, ctx) => {
+      return res(
+        ctx.data(GQLSkylarkAccountStatusDeletionBackgroundTasksFixture.data),
+      );
+    }),
+  );
+
+  render(<AccountStatus />);
+
+  await waitFor(() => {
+    expect(
+      screen.getByText("Processing 3 Deletion Requests"),
+    ).toBeInTheDocument();
+  });
+});
+
 test("renders showing Background tasks processing when more than one task_type exist", async () => {
   server.use(
     graphql.query(GET_ACCOUNT_STATUS, (req, res, ctx) => {
@@ -42,7 +61,7 @@ test("renders showing Background tasks processing when more than one task_type e
 
   await waitFor(() => {
     expect(
-      screen.getByText("Processing 38 Background Tasks"),
+      screen.getByText("Processing 20 Background Tasks"),
     ).toBeInTheDocument();
   });
 });

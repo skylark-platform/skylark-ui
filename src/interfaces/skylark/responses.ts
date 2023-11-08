@@ -42,8 +42,10 @@ export interface GQLSkylarkActivationStatusResponse {
   };
 }
 
-// https://github.com/skylark-platform/skylark/blob/7cf217d549a327ed9139ca11109d086bf577a378/components/object-registry/src/tasks/tasks.py#L20
+// https://github.com/skylark-platform/skylark/blob/d5bbe3624eb5341823975d4068f9332c502607b6/components/object-registry/src/tasks/tasks.py#L24C1-L31C62
 export enum BackgroundTaskType {
+  BATCH_DELETE = "batch_delete",
+  DELETE_POST_PROCESSING = "delete_post_processing",
   POST_CREATE = "post_create",
   POST_UPDATE = "post_update",
   POST_AVAILABILITY_UPDATE = "post_update_availability",

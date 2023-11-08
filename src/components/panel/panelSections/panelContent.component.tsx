@@ -18,7 +18,6 @@ import {
   AddedSkylarkObjectContentObject,
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
-  AvailabilityStatus,
 } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 

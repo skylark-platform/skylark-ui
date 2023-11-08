@@ -47,7 +47,6 @@ export const skylarkRequest = <T>(
 
   const headers: HeadersInit = {
     [REQUEST_HEADERS.apiKey]: tokenToSend,
-    [REQUEST_HEADERS.draft]: "true",
     ...argHeaders,
   };
 
@@ -58,6 +57,10 @@ export const skylarkRequest = <T>(
 
   if (bypassCache) {
     headers[REQUEST_HEADERS.bypassCache as keyof HeadersInit] = "1";
+  }
+
+  if (type === "query") {
+    headers[REQUEST_HEADERS.draft as keyof HeadersInit] = "true";
   }
 
   return request<T>(uri || SAAS_API_ENDPOINT, query, variables, headers);

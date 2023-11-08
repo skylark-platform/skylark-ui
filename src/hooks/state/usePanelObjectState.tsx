@@ -1,4 +1,10 @@
-import { useState, useCallback, useMemo } from "react";
+import {
+  useState,
+  useCallback,
+  useMemo,
+  Dispatch,
+  SetStateAction,
+} from "react";
 
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 
@@ -14,9 +20,38 @@ export enum PanelTab {
   Relationships = "Relationships",
 }
 
+export interface PanelTabState {
+  [PanelTab.Relationships]: {
+    expanded: Record<string, boolean>;
+  };
+}
+
 export interface PanelObject extends SkylarkObjectIdentifier {
   tab: PanelTab;
+  tabState: PanelTabState;
 }
+
+const defaultPanelTabState: PanelTabState = {
+  [PanelTab.Relationships]: {
+    expanded: {},
+  },
+};
+
+export const mergedPanelTabStates = (
+  previousState: PanelTabState,
+  newState?: Partial<PanelTabState>,
+): PanelTabState => {
+  return {
+    [PanelTab.Relationships]: {
+      ...previousState[PanelTab.Relationships],
+      ...newState?.[PanelTab.Relationships],
+      expanded: {
+        ...previousState[PanelTab.Relationships].expanded,
+        ...newState?.[PanelTab.Relationships]?.expanded,
+      },
+    },
+  };
+};
 
 export const usePanelObjectState = (initialPanelState?: PanelObject) => {
   const [panelState, setPanelState] = useState<{
@@ -30,7 +65,11 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
   });
 
   const setPanelObject = useCallback(
-    (newPanelObject: SkylarkObjectIdentifier, tab?: PanelTab) => {
+    (
+      newPanelObject: SkylarkObjectIdentifier,
+      tab?: PanelTab,
+      tabState?: Partial<PanelTabState>,
+    ) => {
       setPanelState((oldState) => ({
         forwardPanelStates: [],
         previousPanelStates: oldState.activePanelState
@@ -39,25 +78,53 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
         activePanelState: {
           ...newPanelObject,
           tab: tab || PanelTab.Metadata,
+          tabState: mergedPanelTabStates(defaultPanelTabState, tabState),
         },
       }));
     },
     [],
   );
 
-  const setPanelTab = useCallback((newTab: PanelTab) => {
-    setPanelState((oldState) =>
-      oldState.activePanelState
-        ? {
-            ...oldState,
-            activePanelState: {
-              ...oldState.activePanelState,
-              tab: newTab,
-            },
-          }
-        : oldState,
-    );
-  }, []);
+  const setPanelTab = useCallback(
+    (newTab: PanelTab, tabState?: Partial<PanelTabState>) => {
+      setPanelState((oldState) =>
+        oldState.activePanelState
+          ? {
+              ...oldState,
+              activePanelState: {
+                ...oldState.activePanelState,
+                tab: newTab,
+                tabState: mergedPanelTabStates(
+                  oldState.activePanelState.tabState,
+                  tabState,
+                ),
+              },
+            }
+          : oldState,
+      );
+    },
+    [],
+  );
+
+  const updateActivePanelTabState = useCallback(
+    (tabState: Partial<PanelTabState>) => {
+      setPanelState((oldState) =>
+        oldState.activePanelState
+          ? {
+              ...oldState,
+              activePanelState: {
+                ...oldState.activePanelState,
+                tabState: {
+                  ...oldState.activePanelState.tabState,
+                  ...tabState,
+                },
+              },
+            }
+          : oldState,
+      );
+    },
+    [],
+  );
 
   const navigateToPreviousPanelObject = useCallback(() => {
     setPanelState((oldState) =>
@@ -116,6 +183,8 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
   return {
     activePanelObject,
     activePanelTab: panelState.activePanelState?.tab || PanelTab.Metadata,
+    activePanelTabState:
+      panelState.activePanelState?.tabState || defaultPanelTabState,
     setPanelObject,
     setPanelTab,
     navigateToPreviousPanelObject:
@@ -127,5 +196,6 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
         ? navigateToForwardPanelObject
         : undefined,
     resetPanelObjectState,
+    updateActivePanelTabState,
   };
 };

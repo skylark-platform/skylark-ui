@@ -13,6 +13,7 @@ import {
 } from "src/__tests__/utils/test-utils";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import {
+  AvailabilityStatus,
   GQLSkylarkAccountResponse,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
@@ -154,6 +155,20 @@ describe("with object select (checkboxes)", () => {
     ).toBeGreaterThan(0);
   });
 
+  test("bulk options are disabled when nothing is checked", async () => {
+    await render(<ObjectSearch withObjectSelect />);
+
+    const results = await screen.findByTestId("object-search-results-content");
+
+    const withinResults = within(results);
+
+    expect(
+      (await withinResults.findAllByRole("checkbox")).length,
+    ).toBeGreaterThan(0);
+
+    expect(screen.getByRole("button", { name: "Bulk Options" })).toBeDisabled();
+  });
+
   test("fires on rowCheckChange callback when a checkbox is checked", async () => {
     const onRowCheckChange = jest.fn();
 
@@ -218,7 +233,11 @@ describe("with object select (checkboxes)", () => {
       <ObjectSearch
         withObjectSelect
         onObjectCheckedChanged={onRowCheckChange}
-        checkedObjects={[{} as ParsedSkylarkObject]}
+        checkedObjects={[
+          {
+            meta: { language: "en-GB", availableLanguages: [] },
+          } as unknown as ParsedSkylarkObject,
+        ]}
       />,
     );
 
@@ -235,6 +254,29 @@ describe("with object select (checkboxes)", () => {
     );
 
     expect(onRowCheckChange).toHaveBeenCalledWith([]);
+  });
+
+  test("bulk options are enabled when objects are checked", async () => {
+    await render(
+      <ObjectSearch
+        withObjectSelect
+        checkedObjects={[
+          {
+            meta: { language: "en-GB", availableLanguages: [] },
+          } as unknown as ParsedSkylarkObject,
+        ]}
+      />,
+    );
+
+    const results = await screen.findByTestId("object-search-results-content");
+
+    const withinResults = within(results);
+
+    expect(
+      (await withinResults.findAllByRole("checkbox")).length,
+    ).toBeGreaterThan(0);
+
+    expect(screen.getByRole("button", { name: "Bulk Options" })).toBeEnabled();
   });
 });
 
@@ -471,4 +513,57 @@ test("clears the language filter", async () => {
   ).toHaveLength(2);
   expect(screen.queryAllByText("en-GB").length).toBeGreaterThanOrEqual(1);
   expect(screen.queryAllByText("pt-PT").length).toBeGreaterThanOrEqual(1);
+});
+
+describe("batch options", () => {
+  test("opens delete objects modal", async () => {
+    await render(
+      <ObjectSearch
+        withObjectSelect
+        checkedObjects={[
+          {
+            uid: "123",
+            objectType: "Episode",
+            meta: {
+              language: "en-GB",
+              availableLanguages: [],
+              availabilityStatus: AvailabilityStatus.Unavailable,
+            },
+            metadata: {
+              uid: "123",
+              external_id: "",
+              title: "my episode",
+            },
+            config: { primaryField: "title" },
+            availability: {
+              status: AvailabilityStatus.Unavailable,
+              objects: [],
+            },
+          } as ParsedSkylarkObject,
+        ]}
+      />,
+    );
+
+    const results = await screen.findByTestId("object-search-results-content");
+
+    const withinResults = within(results);
+
+    expect(
+      (await withinResults.findAllByRole("checkbox")).length,
+    ).toBeGreaterThan(0);
+
+    const button = screen.getByRole("button", { name: "Bulk Options" });
+    expect(button).toBeEnabled();
+    fireEvent.click(button);
+
+    const dropdownButton = await screen.findByText("Delete Selected Objects");
+    fireEvent.click(dropdownButton);
+
+    expect(await screen.findByText("Bulk Delete")).toBeInTheDocument();
+
+    const modal = within(screen.getByTestId("batch-delete-objects-modal"));
+
+    expect(modal.getByText("my episode")).toBeInTheDocument();
+    expect(modal.getByText("en-GB")).toBeInTheDocument();
+  });
 });

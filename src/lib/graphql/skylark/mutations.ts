@@ -20,3 +20,14 @@ export const UPDATE_OBJECT_TYPE_CONFIG = gql`
     }
   }
 `;
+
+export const BATCH_DELETE = gql`
+  mutation BATCH_DELETE($objects: [DeleteInput]) {
+    batchDeleteObjects(objects: $objects) {
+      language
+      removed_relationships
+      message
+      task_id
+    }
+  }
+`;

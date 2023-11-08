@@ -142,7 +142,8 @@ const objectTypeIndicatorColumn = columnHelper.display({
   size: 0,
   maxSize: 0,
   minSize: 0,
-  cell: ({ cell, row }) => {
+  cell: () => {
+    // cell: ({ cell, row }) => {
     // const original = row.original as ParsedSkylarkObject;
     // const cellContext = cell.getContext();
 

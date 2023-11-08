@@ -1,15 +1,19 @@
 import clsx from "clsx";
-import { useCallback, useRef, useState } from "react";
+import { Fragment, useCallback, useRef, useState } from "react";
+import { toast } from "react-toastify";
 import { useDebouncedCallback } from "use-debounce";
 
 import { Button } from "src/components/button";
+import { TextInput } from "src/components/inputs/textInput";
 import { Modal } from "src/components/modals/base/modal";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { Toast } from "src/components/toast/toast.component";
 import { useBulkDeleteObjects } from "src/hooks/objects/delete/useBulkDeleteObjects";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 
-const DELETION_LIMIT = 20;
+const DELETION_LIMIT = 100;
+const VERIFICATION_TEXT = "permanently delete";
 
 interface BatchDeleteObjectsModalProps {
   objectsToBeDeleted: ParsedSkylarkObject[];
@@ -53,52 +57,66 @@ const DeleteButtonWithConfirmation = ({
   isDeleting: boolean;
 }) => {
   const [showDeleteVerification, setShowDeleteVerficiation] = useState(false);
-  const [deleteButtonDisabled, setDeleteButtonDisabled] = useState(true);
+  const [input, setInput] = useState("");
 
   return (
-    <div className="mt-6 flex justify-end space-x-2">
-      {showDeleteVerification ? (
-        <>
-          <Button
-            variant="primary"
-            type="button"
-            danger
-            loading={isDeleting}
-            disabled={deleteButtonDisabled}
-            onClick={() => {
-              onConfirmed();
-            }}
-          >
-            {confirmationMessage}
-          </Button>
-          <Button
-            variant="outline"
-            type="button"
-            onClick={() => setShowDeleteVerficiation(false)}
-          >
-            Go back
-          </Button>
-        </>
-      ) : (
-        <>
-          <Button
-            variant="primary"
-            type="button"
-            danger
-            loading={false}
-            onClick={() => {
-              setDeleteButtonDisabled(true);
-              setTimeout(() => setDeleteButtonDisabled(false), 2000);
-              setShowDeleteVerficiation(true);
-            }}
-          >
-            {`Delete objects`}
-          </Button>
-          <Button variant="outline" type="button" onClick={onCancel}>
-            Cancel
-          </Button>
-        </>
+    <div className="mt-6">
+      {showDeleteVerification && (
+        <div>
+          <p className="mb-2">
+            {`To confirm deletion, enter "${VERIFICATION_TEXT}" in the text input
+            field.`}
+          </p>
+          <TextInput
+            value={input}
+            onChange={setInput}
+            placeholder={VERIFICATION_TEXT}
+          />
+        </div>
       )}
+      <div className="mt-4 flex justify-end space-x-2">
+        {showDeleteVerification ? (
+          <>
+            <Button
+              variant="primary"
+              type="button"
+              danger
+              loading={isDeleting}
+              disabled={input !== VERIFICATION_TEXT}
+              onClick={() => {
+                onConfirmed();
+              }}
+            >
+              {confirmationMessage}
+            </Button>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => setShowDeleteVerficiation(false)}
+            >
+              Go back
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              variant="primary"
+              type="button"
+              danger
+              loading={false}
+              onClick={() => {
+                setInput("");
+                setShowDeleteVerficiation(true);
+              }}
+            >
+              {`Delete objects`}
+            </Button>
+            <Button variant="outline" type="button" onClick={onCancel}>
+              Cancel
+            </Button>
+          </>
+        )}
+      </div>
     </div>
   );
 };
@@ -113,8 +131,29 @@ const BatchDeleteObjectsModalContent = ({
   onDeletionComplete: BatchDeleteObjectsModalProps["onDeletionComplete"];
 }) => {
   const { deleteObjects, isDeleting } = useBulkDeleteObjects({
-    onSuccess: onDeletionComplete,
-    onError: console.log,
+    onSuccess: (deletedObjects) => {
+      toast.success(
+        <Toast
+          title={`Batch deletion triggered`}
+          message={[
+            "The selected objects have been marked for deletion.",
+            "It may take a moment before they become unavailable and disappear from Search results.",
+          ]}
+        />,
+      );
+      onDeletionComplete(deletedObjects);
+    },
+    onError: () => {
+      toast.success(
+        <Toast
+          title={`Batch deletion failed to trigger`}
+          message={[
+            "Unable to trigger a deletion for the selected objects.",
+            "Please try again later.",
+          ]}
+        />,
+      );
+    },
   });
 
   const [objects, setObjects] = useState(propObjects);
@@ -139,10 +178,12 @@ const BatchDeleteObjectsModalContent = ({
   const orderedObjects = Object.values(groupedObjectsByUID).flatMap(
     (arr) => arr,
   );
-  const firstTwentyObjectsToBeDeleted = orderedObjects.slice(0, 20);
+  const objectsWithinDeletionLimit = orderedObjects.slice(0, DELETION_LIMIT);
 
   const firstObjectOverTheLimit =
-    orderedObjects.length > 20 ? orderedObjects[20] : null;
+    orderedObjects.length > DELETION_LIMIT
+      ? orderedObjects[DELETION_LIMIT]
+      : null;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [showScrollShadow, setShowScrollShadow] = useState(false);
@@ -166,6 +207,10 @@ const BatchDeleteObjectsModalContent = ({
         ref={containerRef}
         onScroll={debouncedOnScroll}
       >
+        {objects.length === 0 && propObjects.length !== 0 && (
+          <p>No objects selected for deletion.</p>
+        )}
+
         {Object.entries(groupedObjectsByUID).map(([uid, objects]) => {
           return (
             <div
@@ -179,7 +224,7 @@ const BatchDeleteObjectsModalContent = ({
               {objects.map((obj) => {
                 const index = orderedObjects.findIndex((_obj) => obj === _obj);
                 return (
-                  <>
+                  <Fragment key={obj.meta.language}>
                     {obj === firstObjectOverTheLimit && (
                       <div className="mt-8 border-t-2 border-error pb-6 pt-8">
                         <p className="font-medium">
@@ -187,7 +232,9 @@ const BatchDeleteObjectsModalContent = ({
                         </p>
                       </div>
                     )}
-                    <div className={clsx(index >= 20 && "opacity-30")}>
+                    <div
+                      className={clsx(index >= DELETION_LIMIT && "opacity-30")}
+                    >
                       <ObjectIdentifierCard
                         key={`${uid}-${obj.meta.language}`}
                         object={obj}
@@ -201,21 +248,29 @@ const BatchDeleteObjectsModalContent = ({
                         <p className="pr-1 text-manatee-500">{`${obj.meta.language}`}</p>
                       </ObjectIdentifierCard>
                     </div>
-                  </>
+                  </Fragment>
                 );
               })}
             </div>
           );
         })}
       </div>
-      <DeleteButtonWithConfirmation
-        confirmationMessage={`Permanently delete ${firstTwentyObjectsToBeDeleted.length} object(s)`}
-        onCancel={closeModal}
-        isDeleting={isDeleting}
-        onConfirmed={() =>
-          deleteObjects({ objects: firstTwentyObjectsToBeDeleted })
-        }
-      />
+      {objects.length > 0 ? (
+        <DeleteButtonWithConfirmation
+          confirmationMessage={`Permanently delete ${objectsWithinDeletionLimit.length} object(s)`}
+          onCancel={closeModal}
+          isDeleting={isDeleting}
+          onConfirmed={() =>
+            deleteObjects({ objects: objectsWithinDeletionLimit })
+          }
+        />
+      ) : (
+        <div className="flex justify-end">
+          <Button variant="primary" type="button" onClick={closeModal}>
+            Cancel
+          </Button>
+        </div>
+      )}
     </>
   );
 };
