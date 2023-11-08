@@ -7,9 +7,15 @@ import GQLSkylarkGetMovieDraftQueryFixture from "src/__tests__/fixtures/skylark/
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetSeasonQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots04.json";
 import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
-import { PanelTab } from "src/hooks/state";
+import { PanelTab, PanelTabState } from "src/hooks/state";
 
 import { Panel } from "./panel.component";
+
+const defaultPanelTabState: PanelTabState = {
+  [PanelTab.Relationships]: {
+    expanded: {},
+  },
+};
 
 export default {
   title: "Components/Panel",
@@ -23,6 +29,7 @@ const Template: ComponentStory<typeof Panel> = (args) => {
       {...args}
       closePanel={() => alert("Close clicked")}
       setPanelObject={() => ""}
+      tabState={args.tabState || defaultPanelTabState}
     />
   );
 };

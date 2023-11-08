@@ -16,7 +16,7 @@ import { useUpdateObjectAvailability } from "src/hooks/objects/update/useUpdateO
 import { useUpdateObjectContent } from "src/hooks/objects/update/useUpdateObjectContent";
 import { useUpdateObjectMetadata } from "src/hooks/objects/update/useUpdateObjectMetadata";
 import { useUpdateObjectRelationships } from "src/hooks/objects/update/useUpdateObjectRelationships";
-import { PanelTab } from "src/hooks/state";
+import { PanelTab, PanelTabState } from "src/hooks/state";
 import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
@@ -59,11 +59,13 @@ interface PanelProps {
   isDraggedObject?: boolean;
   droppedObjects?: ParsedSkylarkObject[];
   tab: PanelTab;
+  tabState: PanelTabState;
   clearDroppedObjects?: () => void;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
   setTab: (t: PanelTab) => void;
   navigateToPreviousPanelObject?: () => void;
   navigateToForwardPanelObject?: () => void;
+  updateActivePanelTabState: (s: Partial<PanelTabState>) => void;
 }
 
 const tabsWithDropZones = [PanelTab.Content, PanelTab.Availability];
@@ -173,11 +175,13 @@ export const Panel = ({
   closePanel,
   isDraggedObject,
   droppedObjects,
+  tabState,
   clearDroppedObjects,
   setTab: setSelectedTab,
   navigateToPreviousPanelObject,
   navigateToForwardPanelObject,
   setPanelObject,
+  updateActivePanelTabState,
 }: PanelProps) => {
   useGetObjectPrefetchQueries({
     ...object,
@@ -634,9 +638,11 @@ export const Panel = ({
               setModifiedRelationships={handleRelationshipsObjectsModified}
               inEditMode={inEditMode}
               language={language}
+              tabState={tabState[PanelTab.Relationships]}
               showDropZone={isDraggedObject}
               droppedObjects={droppedObjects}
               setPanelObject={setPanelObject}
+              updateActivePanelTabState={updateActivePanelTabState}
             />
           )}
           {selectedTab === PanelTab.ContentOf && (

@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { FiTrash2, FiMoreVertical } from "react-icons/fi";
+import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
 import {
@@ -7,6 +8,7 @@ import {
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
 import { BatchDeleteObjectsModal } from "src/components/modals";
+import { Toast } from "src/components/toast/toast.component";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 interface BulkObjectOptionsProps {
@@ -18,8 +20,6 @@ export const BulkObjectOptions = ({
   selectedObjects,
   onSelectedObjectChange,
 }: BulkObjectOptionsProps) => {
-  console.log({ selectedObjects });
-
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const removeObject = useCallback(

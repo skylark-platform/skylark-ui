@@ -1,8 +1,13 @@
 import clsx from "clsx";
+import { DetailedHTMLProps, InputHTMLAttributes } from "react";
 
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 
-interface TextInputProps {
+interface TextInputProps
+  extends Omit<
+    DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
+    "onChange"
+  > {
   value: string;
   onChange: (str: string) => void;
   className?: string;
