@@ -47,3 +47,5 @@ cypress/downloads
 
 # tinymce
 /public/tinymce/
+
+.idea/

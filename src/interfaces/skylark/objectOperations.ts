@@ -24,6 +24,8 @@ export enum SkylarkAvailabilityField {
   End = "end",
   Timezone = "timezone",
   Title = "title",
+  InheritedFrom = "inherited_from",
+  InheritedVia = "inherited_via",
 }
 
 export enum SkylarkSystemGraphQLType {

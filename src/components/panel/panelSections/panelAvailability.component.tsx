@@ -110,6 +110,8 @@ const convertAvailabilityToParsedObjects = (
       title,
       slug,
       timezone,
+      inherited_from,
+      inherited_via
     }): ParsedSkylarkObject => ({
       uid,
       config: {},
@@ -131,6 +133,8 @@ const convertAvailabilityToParsedObjects = (
         title,
         slug,
         timezone,
+        inherited_from,
+        inherited_via
       },
     }),
   );
@@ -316,6 +320,16 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                   label: string;
                   value: string;
                 }[] = [
+                  {
+                    label: "Inherited from",
+                    key: SkylarkAvailabilityField.InheritedFrom,
+                    value: SkylarkAvailabilityField.InheritedFrom,
+                  },
+                  {
+                    label: "Inherited Via",
+                    key: SkylarkAvailabilityField.InheritedVia,
+                    value: SkylarkAvailabilityField.InheritedVia,
+                  },
                   {
                     label: "Start",
                     key: SkylarkAvailabilityField.Start,
