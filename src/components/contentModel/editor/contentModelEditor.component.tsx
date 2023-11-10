@@ -21,7 +21,6 @@ import {
 } from "src/interfaces/skylark";
 import { isSkylarkObjectType } from "src/lib/utils";
 
-import { ContentModelEditorHeader } from "./contentModelEditorHeader.component";
 import { ObjectTypeFieldInput } from "./contentModelRowInput.component";
 
 type FieldSection = "system" | "translatable" | "global";
@@ -349,7 +348,12 @@ export const ObjectTypeEditor = ({
     <div key={objectMeta.name} className="">
       <div className="flex justify-between mb-10">
         <div className="flex flex-col items-start">
-          <ContentModelEditorHeader objectType={objectMeta.name} />
+          <h3 className="text-2xl font-semibold">{objectMeta.name}</h3>
+          <p className="text-sm text-manatee-400">
+            {isSkylarkObjectType(objectMeta.name)
+              ? "System Object"
+              : "Custom Object"}
+          </p>
         </div>
         <div className="space-x-2">
           <Button
