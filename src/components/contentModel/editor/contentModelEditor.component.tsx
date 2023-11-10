@@ -3,9 +3,12 @@ import { Reorder } from "framer-motion";
 import { ReactNode, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { FiInfo } from "react-icons/fi";
+import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
 import { ColourPicker } from "src/components/inputs/colourPicker";
+import { TextInput } from "src/components/inputs/textInput";
+import { Toast } from "src/components/toast/toast.component";
 import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { SYSTEM_FIELDS } from "src/constants/skylark";
 import { useUpdateObjectTypeConfig } from "src/hooks/schema/update/useUpdateObjectTypeConfig";
@@ -27,6 +30,11 @@ type FieldSectionObject = Record<
   "system" | "translatable" | "global",
   { title: string; fields: InputFieldWithFieldConfig[] }
 >;
+
+const sectionClassName = "my-10 border-t pt-10";
+
+const uiDisplayFieldTooltip =
+  "A config property that instructs the UI which field it should use when displaying an object on listing pages.";
 
 const combineFieldAndFieldConfigAndSortByConfigPostion = (
   inputFields: NormalizedObjectField[],
@@ -144,6 +152,10 @@ const InfoTooltip = ({ tooltip }: { tooltip: ReactNode }) => (
   </Tooltip>
 );
 
+const SectionHeader = ({ children }: { children: ReactNode }) => (
+  <h3 className="text-xl">{children}</h3>
+);
+
 const FieldHeader = ({
   children,
   className,
@@ -207,7 +219,7 @@ const FieldSection = ({
         <FieldHeader tooltip="When creating an object of this type, this field will be required to be added.">
           Required
         </FieldHeader>
-        <FieldHeader tooltip="A config property that instructs the UI which field it should use when displaying an object on listing pages.">
+        <FieldHeader tooltip={uiDisplayFieldTooltip}>
           UI Display field
         </FieldHeader>
       </div>
@@ -263,8 +275,29 @@ export const ObjectTypeEditor = ({
 
   const { updateObjectTypeConfig, isUpdatingObjectTypeConfig } =
     useUpdateObjectTypeConfig({
-      onSuccess: console.log,
-      onError: console.error,
+      onSuccess: () => {
+        form.reset(undefined, { keepValues: true });
+        toast.success(
+          <Toast
+            title={`${objectMeta.name} updated`}
+            message={[
+              "The Object Type has been updated.",
+              "You may have to refresh for the configuration changes to take effect.",
+            ]}
+          />,
+        );
+      },
+      onError: () => {
+        toast.error(
+          <Toast
+            title={`Batch deletion failed to trigger`}
+            message={[
+              "Unable to trigger a deletion for the selected objects.",
+              "Please try again later.",
+            ]}
+          />,
+        );
+      },
     });
 
   const onSave = () => {
@@ -293,10 +326,9 @@ export const ObjectTypeEditor = ({
 
         updateObjectTypeConfig({
           objectType: objectMeta.name,
-          objectTypeConfig: parsedConfig,
+          ...parsedConfig,
         });
       },
-      console.error,
     )();
   };
 
@@ -306,23 +338,9 @@ export const ObjectTypeEditor = ({
 
   const onFieldChange = useCallback(
     (id: FieldSection, reorderedFields: InputFieldWithFieldConfig[]) => {
-      // setFieldSections((prevSections) => {
-      //   return {
-      //     ...prevSections,
-      //     [id]: {
-      //       ...prevSections[id],
-      //       fields: reorderedFields,
-      //     },
-      //   };
-      // });
-      // form.setValue("fieldSections", {
-      //   ...fieldSections,
-      //   [id]: {
-      //     ...fieldSections[id],
-      //     fields: reorderedFields,
-      //   },
-      // });
-      form.setValue(`fieldSections.${id}.fields`, reorderedFields);
+      form.setValue(`fieldSections.${id}.fields`, reorderedFields, {
+        shouldDirty: true,
+      });
     },
     [form],
   );
@@ -332,42 +350,86 @@ export const ObjectTypeEditor = ({
       <div className="flex justify-between mb-10">
         <div className="flex flex-col items-start">
           <ContentModelEditorHeader objectType={objectMeta.name} />
-          <p>UI Config:</p>
         </div>
         <div className="space-x-2">
           <Button
             variant="outline"
             danger
-            disabled={isUpdatingObjectTypeConfig}
+            disabled={isUpdatingObjectTypeConfig || !form.formState.isDirty}
           >
-            Cancel
+            Reset
           </Button>
           <Button
             variant="primary"
             onClick={onSave}
             loading={isUpdatingObjectTypeConfig}
+            disabled={!form.formState.isDirty}
           >
             Save
           </Button>
         </div>
       </div>
-      <h4 className="text-xl">Fields</h4>
-      {/* TODO add Skeleton here with hardcoded headings as sections headers can be filtered out when no fields exist */}
-      {Object.entries(fieldSections).map(([id, { title, fields }]) => (
-        <FieldSection
-          key={id}
-          title={title}
-          fields={fields}
-          objectMeta={objectMeta}
-          objectConfig={objectConfig}
-          disableReorder={id === "system"}
-          primaryField={primaryField}
-          onChange={(fieldsWithConfig) =>
-            onFieldChange(id as FieldSection, fieldsWithConfig)
-          }
-          onPrimaryFieldChange={(field) => form.setValue("primaryField", field)}
-        />
-      ))}
+      <section className={sectionClassName}>
+        <SectionHeader>UI Config</SectionHeader>
+        <div className="grid grid-cols-3 items-center auto-rows-fr gap-x-2 text-sm text-manatee-600 mt-4 w-fit gap-y-1">
+          <FieldHeader
+            className="col-span-1"
+            tooltip="A mask for the Object Type, in case you want it to display differently in the UI. Useful when you have Object Types with many characters."
+          >
+            Display name
+          </FieldHeader>
+          {/* <p className="text-black">{objectTypeDisplayName}</p> */}
+          <div className="col-span-2">
+            <TextInput
+              value={objectTypeDisplayName}
+              onChange={(str) =>
+                form.setValue("objectTypeDisplayName", str, {
+                  shouldDirty: true,
+                })
+              }
+            />
+          </div>
+          <FieldHeader className="col-span-1" tooltip={uiDisplayFieldTooltip}>
+            Display field
+          </FieldHeader>
+          <p className="text-black col-span-2">{primaryField}</p>
+          <FieldHeader
+            className="col-span-1"
+            tooltip="Colour to represent the Object Type in the UI. Useful to identify an Object Type at a glance."
+          >
+            Colour
+          </FieldHeader>
+          <div className="col-span-2">
+            <ColourPicker
+              colour={colour || ""}
+              onChange={(colour) =>
+                form.setValue("colour", colour, { shouldDirty: true })
+              }
+            />
+          </div>
+        </div>
+      </section>
+      <section className={sectionClassName}>
+        <SectionHeader>Fields</SectionHeader>
+        {/* TODO add Skeleton here with hardcoded headings as sections headers can be filtered out when no fields exist */}
+        {Object.entries(fieldSections).map(([id, { title, fields }]) => (
+          <FieldSection
+            key={id}
+            title={title}
+            fields={fields}
+            objectMeta={objectMeta}
+            objectConfig={objectConfig}
+            disableReorder={id === "system"}
+            primaryField={primaryField}
+            onChange={(fieldsWithConfig) =>
+              onFieldChange(id as FieldSection, fieldsWithConfig)
+            }
+            onPrimaryFieldChange={(field) =>
+              form.setValue("primaryField", field, { shouldDirty: true })
+            }
+          />
+        ))}
+      </section>
     </div>
   );
 };

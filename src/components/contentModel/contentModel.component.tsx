@@ -12,7 +12,8 @@ import { ObjectTypeNavigation } from "./navigation/contentModelNavigation.compon
 
 export const ContentModel = () => {
   const { objects: allObjectsMeta } = useAllObjectsMeta(true); // TODO do we want to show the Favourite List?
-  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+  const { objectTypesWithConfig, isLoading: isLoadingObjectTypesWithConfig } =
+    useSkylarkObjectTypesWithConfig();
 
   const [activeObjectType, setObjectType] = useState<SkylarkObjectType | null>(
     null,
@@ -35,13 +36,15 @@ export const ContentModel = () => {
             activeObjectType={activeObjectType}
           />
           <div className="col-span-3">
-            {objectMeta && objectTypesWithConfig && (
-              <ObjectTypeEditor
-                key={`${activeObjectType}-${config}`}
-                objectMeta={objectMeta}
-                objectConfig={config}
-              />
-            )}
+            {objectMeta &&
+              !isLoadingObjectTypesWithConfig &&
+              objectTypesWithConfig && (
+                <ObjectTypeEditor
+                  key={`${activeObjectType}-${config}`}
+                  objectMeta={objectMeta}
+                  objectConfig={config}
+                />
+              )}
           </div>
         </div>
       ) : (

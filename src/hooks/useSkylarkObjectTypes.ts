@@ -44,7 +44,7 @@ export const useSkylarkObjectTypes = (searchable: boolean) => {
 const useObjectTypesConfig = (objectTypes?: string[]) => {
   const query = createGetAllObjectsConfigQuery(objectTypes);
 
-  const { data } = useQuery<GQLSkylarkObjectTypesWithConfig>({
+  const { data, isLoading } = useQuery<GQLSkylarkObjectTypesWithConfig>({
     queryKey: [QueryKeys.ObjectTypesConfig, query],
     queryFn: async () => skylarkRequest("query", query as DocumentNode),
     enabled: objectTypes && query !== null,
@@ -76,6 +76,7 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
   return {
     objectTypesWithConfig,
     numObjectTypes: objectTypes?.length,
+    isLoading,
   };
 };
 
@@ -111,7 +112,11 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
 
 export const useSkylarkObjectTypesWithConfig = () => {
   const { objectTypes } = useSkylarkObjectTypes(true);
-  return useObjectTypesConfig(objectTypes);
+  const ret = useObjectTypesConfig(objectTypes);
+  return {
+    ...ret,
+    isLoading: !objectTypes || ret.isLoading,
+  };
 };
 
 export const useSkylarkSetObjectTypes = (searchable: boolean) => {

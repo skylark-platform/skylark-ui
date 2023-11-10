@@ -144,7 +144,7 @@ const BatchDeleteObjectsModalContent = ({
       onDeletionComplete(deletedObjects);
     },
     onError: () => {
-      toast.success(
+      toast.error(
         <Toast
           title={`Batch deletion failed to trigger`}
           message={[

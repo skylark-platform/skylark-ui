@@ -3,11 +3,19 @@ import gql from "graphql-tag";
 export const UPDATE_OBJECT_TYPE_CONFIG = gql`
   mutation UPDATE_OBJECT_TYPE_CONFIG(
     $objectType: VisibleObjectTypes!
-    $objectTypeConfig: ObjectConfigInput!
+    $displayName: String
+    $primaryField: String
+    $colour: String
+    $fieldConfig: [FieldConfigInput]
   ) {
     setObjectTypeConfiguration(
       object_type: $objectType
-      object_type_config: $objectTypeConfig
+      object_type_config: {
+        display_name: $displayName
+        primary_field: $primaryField
+        colour: $colour
+        field_config: $fieldConfig
+      }
     ) {
       display_name
       primary_field

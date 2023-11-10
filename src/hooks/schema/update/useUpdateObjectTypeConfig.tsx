@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { EnumType } from "json-to-graphql-query";
 
 import { QueryKeys } from "src/enums/graphql";
 import {
@@ -10,9 +9,8 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { UPDATE_OBJECT_TYPE_CONFIG } from "src/lib/graphql/skylark/mutations";
 
-interface MutationArgs {
+interface MutationArgs extends ParsedSkylarkObjectConfig {
   objectType: string;
-  objectTypeConfig: ParsedSkylarkObjectConfig;
 }
 
 export const useUpdateObjectTypeConfig = ({
@@ -27,32 +25,33 @@ export const useUpdateObjectTypeConfig = ({
   const { mutate, isLoading } = useMutation({
     mutationFn: ({
       objectType,
-      objectTypeConfig: parsedObjectTypeConfig,
+      objectTypeDisplayName,
+      primaryField,
+      colour,
+      fieldConfig,
     }: MutationArgs) => {
-      const objectTypeConfig: SkylarkGraphQLObjectConfig = {
-        display_name: parsedObjectTypeConfig.objectTypeDisplayName || null,
-        primary_field: parsedObjectTypeConfig.primaryField || null,
-        colour: parsedObjectTypeConfig.colour || null,
-        field_config:
-          parsedObjectTypeConfig.fieldConfig?.map(
-            ({ name, fieldType, position }) => ({
-              name,
-              ui_field_type: fieldType,
-              ui_position: position,
-            }),
-          ) || [],
-      };
+      const parsedFieldConfig =
+        fieldConfig?.map(({ name, fieldType, position }) => ({
+          name,
+          ui_field_type: fieldType,
+          ui_position: position,
+        })) || [];
 
       return skylarkRequest<{
         setObjectTypeConfiguration: SkylarkGraphQLObjectConfig;
       }>("mutation", UPDATE_OBJECT_TYPE_CONFIG, {
         objectType,
-        objectTypeConfig,
+        displayName: objectTypeDisplayName || null,
+        primaryField: primaryField || null,
+        colour: colour || null,
+        // fieldConfig: parsedFieldConfig,
       });
     },
     onSuccess: async () => {
       await queryClient.refetchQueries({
         queryKey: [QueryKeys.ObjectTypesConfig],
+        exact: false,
+        type: "active",
       });
 
       onSuccess();
