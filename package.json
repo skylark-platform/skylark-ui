@@ -100,7 +100,7 @@
     "babel-jest": "29.7.0",
     "babel-loader": "8.3.0",
     "chromatic": "6.24.1",
-    "concurrently": "7.6.0",
+    "concurrently": "8.2.2",
     "cypress": "13.3.3",
     "cypress-iframe": "1.0.1",
     "eslint": "8.52.0",
