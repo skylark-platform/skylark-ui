@@ -8,7 +8,7 @@ import {
   useDismiss,
   useInteractions,
 } from "@floating-ui/react";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 
 import { TextInput } from "src/components/inputs/textInput";
@@ -16,9 +16,14 @@ import { TextInput } from "src/components/inputs/textInput";
 interface ColourPickerProps {
   colour: string;
   onChange: (c: string) => void;
+  children?: ReactNode;
 }
 
-export const ColourPicker = ({ colour, onChange }: ColourPickerProps) => {
+export const ColourPicker = ({
+  colour,
+  onChange,
+  children,
+}: ColourPickerProps) => {
   const [open, setOpen] = useState(false);
 
   const { refs, floatingStyles, context } = useFloating({
@@ -46,11 +51,16 @@ export const ColourPicker = ({ colour, onChange }: ColourPickerProps) => {
       <button
         onClick={() => setOpen(!open)}
         ref={refs.setReference}
-        className="bg-manatee-300 h-6 w-6 rounded border border-manatee-100"
-        style={{ backgroundColor: colour }}
+        className="flex items-center space-x-1 group/colour-picker"
         data-testid="colour-picker-button"
         {...getReferenceProps()}
-      />
+      >
+        <span
+          className="bg-manatee-300 h-6 w-6 rounded border border-manatee-100 block"
+          style={{ backgroundColor: colour }}
+        ></span>
+        {children}
+      </button>
       {isMounted && (
         <div
           className="z-50"

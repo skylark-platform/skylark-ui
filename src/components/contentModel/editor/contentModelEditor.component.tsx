@@ -358,6 +358,7 @@ export const ObjectTypeEditor = ({
             variant="outline"
             danger
             disabled={isUpdatingObjectTypeConfig || !form.formState.isDirty}
+            onClick={() => form.reset()}
           >
             Reset
           </Button>
@@ -407,7 +408,11 @@ export const ObjectTypeEditor = ({
               onChange={(colour) =>
                 form.setValue("colour", colour, { shouldDirty: true })
               }
-            />
+            >
+              <span className="group-hover/colour-picker:text-brand-primary text-xs group-hover/colour-picker:underline text-manatee-400">
+                Change
+              </span>
+            </ColourPicker>
           </div>
         </div>
       </section>

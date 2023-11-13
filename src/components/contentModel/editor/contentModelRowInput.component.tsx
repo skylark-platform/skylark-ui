@@ -214,7 +214,7 @@ export const ObjectTypeFieldInput = ({
                 variant="primary"
                 selected={field.originalType}
                 placeholder=""
-                // disabled
+                disabled
                 className="w-full"
               />
             ) : (
