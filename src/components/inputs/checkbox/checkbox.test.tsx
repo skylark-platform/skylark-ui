@@ -35,3 +35,14 @@ test("calls onOnlyClick when 'Only' is checked", async () => {
 
   expect(onOnlyClick).toHaveBeenCalled();
 });
+
+test("doesn't call onCheckedChange when disabled", async () => {
+  const onChange = jest.fn();
+
+  render(<Checkbox label={label} onCheckedChange={onChange} disabled />);
+
+  await screen.findByLabelText(label);
+  await fireEvent.click(screen.getByLabelText(label));
+
+  expect(onChange).not.toHaveBeenCalled();
+});

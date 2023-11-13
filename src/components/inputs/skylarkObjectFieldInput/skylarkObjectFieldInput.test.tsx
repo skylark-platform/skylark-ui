@@ -312,6 +312,31 @@ describe("renders inputs", () => {
     expect(input).toBeInTheDocument();
   });
 
+  test("renders the text input when the field config is STRING", async () => {
+    const { field } = testFieldConfigs.string;
+    render(
+      <WrappedSkylarkObjectFieldInput
+        config={{
+          ...field,
+          type: "string",
+        }}
+        fieldConfig={{
+          name: field.name,
+          fieldType: "STRING",
+          position: 0,
+        }}
+      />,
+    );
+
+    const input = screen.getByLabelText("Stringfield");
+    expect(input).toBeInTheDocument();
+    expect(input).toHaveAttribute(
+      "id",
+      "test-skylark-object-field-input-stringfield",
+    );
+    expect(input).toHaveAttribute("type", "text");
+  });
+
   test("renders the wysiwyg editor when the field config is WYSIWYG", async () => {
     const { field } = testFieldConfigs.string;
     render(

@@ -1,4 +1,4 @@
-import { screen, fireEvent } from "@testing-library/react";
+import { screen, fireEvent, waitFor } from "@testing-library/react";
 
 import { allObjectTypes, render } from "src/__tests__/utils/test-utils";
 
@@ -17,7 +17,7 @@ test("renders the navigation and finds all Object Types", async () => {
   );
 });
 
-test("calls setObjectType when an object type is clicked", async () => {
+test("calls setObjectType on initial load when activeObjectType is null", async () => {
   const setObjectType = jest.fn();
 
   render(
@@ -27,8 +27,26 @@ test("calls setObjectType when an object type is clicked", async () => {
     />,
   );
 
+  await waitFor(() => {
+    expect(setObjectType).toHaveBeenCalledTimes(1);
+  });
+
+  expect(setObjectType).toHaveBeenCalledWith("SkylarkSet");
+});
+
+test("calls setObjectType when an object type is clicked", async () => {
+  const setObjectType = jest.fn();
+
+  render(
+    <ObjectTypeNavigation
+      activeObjectType={"SkylarkSet"}
+      setObjectType={setObjectType}
+    />,
+  );
+
   const episode = await screen.findByText("Episode");
   fireEvent.click(episode);
 
+  expect(setObjectType).toHaveBeenCalledTimes(1);
   expect(setObjectType).toHaveBeenCalledWith("Episode");
 });

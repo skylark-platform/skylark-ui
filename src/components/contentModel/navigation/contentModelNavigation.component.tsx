@@ -85,25 +85,14 @@ export const ObjectTypeNavigation = ({
   useEffect(() => {
     // On first load activeObjectType should be null, we want to make the first item in the list active
     if (activeObjectType === null && objectTypesWithConfig) {
-      if (setObjectTypesWithConfig && setObjectTypesWithConfig?.length > 0) {
-        setObjectType(setObjectTypesWithConfig[0].objectType);
-        return;
-      }
+      const initialObjectType = (
+        setObjectTypesWithConfig?.[0] ||
+        customObjectTypesWithConfig?.[0] ||
+        systemObjectTypesWithConfig?.[0]
+      )?.objectType;
 
-      if (
-        customObjectTypesWithConfig &&
-        customObjectTypesWithConfig?.length > 0
-      ) {
-        setObjectType(customObjectTypesWithConfig[0].objectType);
-        return;
-      }
-
-      if (
-        systemObjectTypesWithConfig &&
-        systemObjectTypesWithConfig?.length > 0
-      ) {
-        setObjectType(systemObjectTypesWithConfig[0].objectType);
-        return;
+      if (initialObjectType) {
+        setObjectType(initialObjectType);
       }
     }
   }, [
