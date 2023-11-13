@@ -88,7 +88,7 @@ const SelectOptionTooltip = ({
   side?: TooltipSide;
 }) => (
   <Tooltip tooltip={tooltip} side={side}>
-    <span className="block">
+    <span className="block" data-testid="select-tooltip-trigger">
       <FiInfo className="text-sm" />
     </span>
   </Tooltip>

@@ -2,7 +2,7 @@ import { fireEvent } from "@storybook/testing-library";
 
 import { render, screen } from "src/__tests__/utils/test-utils";
 
-import { Select } from "./select.component";
+import { Select, SelectOption } from "./select.component";
 
 const options = ["Episode", "Season", "Brand"].map((val) => ({
   label: val,
@@ -177,4 +177,34 @@ test("clears the value", () => {
   fireEvent.click(screen.getByTestId("select-clear-value"));
 
   expect(onValueClear).toHaveBeenCalled();
+});
+
+test("renders options with tooltips", async () => {
+  const tooltipOptions: SelectOption[] = ["Episode", "Season", "Brand"].map(
+    (val) => ({
+      label: val,
+      value: val,
+      infoTooltip: `Tooltip for ${val}`,
+    }),
+  );
+
+  render(
+    <Select
+      variant="primary"
+      options={tooltipOptions}
+      selected={tooltipOptions[0].label}
+      placeholder="Object Type"
+    />,
+  );
+
+  const tooltipTrigger = screen.getByTestId("select-tooltip-trigger");
+  expect(tooltipTrigger).toBeInTheDocument();
+
+  await fireEvent.click(screen.getByRole("button"));
+
+  const gotOptions = await screen.findAllByRole("option");
+
+  const allToolTipTriggers = screen.getAllByTestId("select-tooltip-trigger");
+
+  expect(allToolTipTriggers.length).toEqual(gotOptions.length + 1);
 });
