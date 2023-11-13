@@ -44,7 +44,7 @@ export const useUpdateObjectTypeConfig = ({
         displayName: objectTypeDisplayName || null,
         primaryField: primaryField || null,
         colour: colour || null,
-        // fieldConfig: parsedFieldConfig,
+        fieldConfig: parsedFieldConfig,
       });
     },
     onSuccess: async () => {

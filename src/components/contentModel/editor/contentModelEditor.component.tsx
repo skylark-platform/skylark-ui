@@ -289,9 +289,9 @@ export const ObjectTypeEditor = ({
       onError: () => {
         toast.error(
           <Toast
-            title={`Batch deletion failed to trigger`}
+            title={`${objectMeta.name} failed to update`}
             message={[
-              "Unable to trigger a deletion for the selected objects.",
+              "Unable to update the Object Type.",
               "Please try again later.",
             ]}
           />,
@@ -300,7 +300,6 @@ export const ObjectTypeEditor = ({
     });
 
   const onSave = () => {
-    console.log("onSave", form.formState.isDirty, form.formState.dirtyFields);
     form.handleSubmit(
       ({ fieldSections, primaryField, objectTypeDisplayName, colour }) => {
         const fieldConfig: ParsedSkylarkObjectConfigFieldConfig[] = [
@@ -321,7 +320,6 @@ export const ObjectTypeEditor = ({
           objectTypeDisplayName,
           colour,
         };
-        console.log("onSave", { parsedConfig });
 
         updateObjectTypeConfig({
           objectType: objectMeta.name,
