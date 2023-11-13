@@ -80,7 +80,7 @@ export const Navigation = () => {
               aria-label="User Settings Dropdown"
               className="flex w-full items-center justify-center space-x-3 text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:space-x-4 md:text-sm"
             >
-              <span className="hidden font-semibold md:inline">
+              <span className="hidden font-semibold md:inline capitalize">
                 {customerIdentifier}
               </span>
               <UserAvatar name={customerIdentifier || "S"} src="" />

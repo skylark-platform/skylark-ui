@@ -1,5 +1,34 @@
 import gql from "graphql-tag";
 
+export const UPDATE_OBJECT_TYPE_CONFIG = gql`
+  mutation UPDATE_OBJECT_TYPE_CONFIG(
+    $objectType: VisibleObjectTypes!
+    $displayName: String
+    $primaryField: String
+    $colour: String
+    $fieldConfig: [FieldConfigInput]
+  ) {
+    setObjectTypeConfiguration(
+      object_type: $objectType
+      object_type_config: {
+        display_name: $displayName
+        primary_field: $primaryField
+        colour: $colour
+        field_config: $fieldConfig
+      }
+    ) {
+      display_name
+      primary_field
+      colour
+      field_config {
+        name
+        ui_field_type
+        ui_position
+      }
+    }
+  }
+`;
+
 export const BATCH_DELETE = gql`
   mutation BATCH_DELETE($objects: [DeleteInput]) {
     batchDeleteObjects(objects: $objects) {

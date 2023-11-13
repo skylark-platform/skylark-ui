@@ -76,9 +76,9 @@ export interface ParsedSkylarkObjectConfigFieldConfig {
 }
 
 export interface ParsedSkylarkObjectConfig {
-  colour?: string;
-  primaryField?: string;
-  objectTypeDisplayName?: string;
+  colour?: string | null;
+  primaryField?: string | null;
+  objectTypeDisplayName?: string | null;
   fieldConfig?: ParsedSkylarkObjectConfigFieldConfig[];
 }
 

@@ -11,13 +11,12 @@ import {
   SkylarkObjectType,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
-import { hasProperty } from "src/lib/utils";
-
 import {
   generateFieldsToReturn,
   generateVariablesAndArgs,
-} from "./dynamicQueries";
+} from "src/lib/graphql/skylark/dynamicQueries";
+import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
+import { hasProperty } from "src/lib/utils";
 
 interface SetContentOperation {
   operation: "link" | "unlink" | "reposition";

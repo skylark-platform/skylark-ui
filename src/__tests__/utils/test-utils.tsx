@@ -7,6 +7,7 @@ import PlausibleProvider from "next-plausible";
 import { ReactElement, ReactNode } from "react";
 import { ToastContainer } from "react-toastify";
 
+import introspectionQuery from "src/__tests__/fixtures/skylark/queries/introspection/introspectionQuery.json";
 import { UserProvider } from "src/contexts/useUser";
 
 const AllTheProviders = ({ children }: { children: ReactNode }) => {
@@ -63,6 +64,10 @@ const renderWithMinimalProviders = (
   user: userEvent.setup(),
   ...render(ui, { wrapper: AllTheProviders, ...options }),
 });
+
+export const allObjectTypes = introspectionQuery.data.__schema.types
+  .find((type) => type.name === "VisibleObject")
+  ?.possibleTypes?.map(({ name }) => name) as string[];
 
 // re-export everything
 export * from "@testing-library/react";

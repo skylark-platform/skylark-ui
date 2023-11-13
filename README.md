@@ -71,9 +71,9 @@ Skylark UI is the offical frontend app for Skylark. It provides a user interface
 
 We made the decision to Open Source the repository so that users are able to take the UI and modify it to fit their needs. This can be anywhere from adding their logo, to crafting new features that are currently missing. All we ask in return is that when you create these features, you raise a pull request so that other users can benefit too!
 
-Additionally, all requests that are made to Skylark from the UI are using the official Skylark GraphQL API meaning you can use this repository as an aid when developing your own Skylark applications. If this sounds like you, you may also want to check out our [StreamTV application][saas-streamtv] - a demo Streaming App built on Skylark.
+Additionally, all requests that are made to Skylark from the UI are using the official Skylark GraphQL API meaning you can use this repository as an aid when developing your own Skylark applications. If this sounds like you, you may also want to check out our [StreamTV application][streamtv] - a demo Streaming App built on Skylark.
 
-[StreamTV][saas-streamtv]: https://github.com/skylark-platform/reference-apps
+[StreamTV][streamtv]: https://github.com/skylark-platform/reference-apps
 
 ---
 
@@ -227,4 +227,4 @@ Project Link: [https://github.com/skylark-platform/skylark-ui](https://github.co
 [vercel-cli-url]: https://vercel.com/docs/cli
 [nextjs-deploy-url]: https://nextjs.org/docs/deployment
 [vercel-deploy-button]: https://vercel.com/docs/deploy-button
-[saas-streamtv]: https://saas.apps.skylark-dev.skylarkplatform.io/
+[streamtv]: https://streamtv.skylarkplatform.com/

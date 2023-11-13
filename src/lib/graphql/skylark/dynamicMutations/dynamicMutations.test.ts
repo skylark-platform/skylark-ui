@@ -10,7 +10,7 @@ import {
 import {
   createDeleteObjectMutation,
   createUpdateObjectContentMutation,
-} from "./dynamicMutations";
+} from "./objects";
 
 describe("createDeleteObjectMutation", () => {
   test("returns null when the object doesn't have a delete operation", () => {

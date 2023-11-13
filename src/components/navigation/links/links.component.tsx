@@ -2,9 +2,9 @@ import { Menu } from "@headlessui/react";
 import clsx from "clsx";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { FiFileText } from "react-icons/fi";
+import { FiFileText, FiLayout, FiTool } from "react-icons/fi";
 import { GrGraphQl } from "react-icons/gr";
-import { TbBooks, TbTerminal2 } from "react-icons/tb";
+import { TbTerminal2 } from "react-icons/tb";
 
 import { DropdownMenu } from "src/components/dropdown/dropdown.component";
 import { HREFS } from "src/constants/skylark";
@@ -21,7 +21,9 @@ const navigationItems = [
   {
     text: "Content Library",
     href: "/",
-    Icon: <TbBooks className="text-xl" />,
+    Icon: (
+      <FiLayout style={{ transform: "rotateY(180deg)" }} className="text-xl" />
+    ),
     shouldMarkAsActive: (path: string) => path.startsWith("/object"),
   },
   // {
@@ -44,6 +46,12 @@ const navigationItems = [
         text: "GraphQL Editor",
         href: HREFS.relative.graphqlEditor,
         Icon: <GrGraphQl className="text-xl" />,
+      },
+      {
+        id: "content-model",
+        text: "Content Model (Alpha)",
+        href: HREFS.relative.contentModel,
+        Icon: <FiTool className="text-xl" />,
       },
     ],
   },

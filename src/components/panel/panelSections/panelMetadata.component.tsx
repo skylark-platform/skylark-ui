@@ -106,6 +106,7 @@ export const PanelMetadata = ({
         className="h-full"
         data-testid="panel-metadata"
         data-loading={isLoading}
+        onSubmit={(e) => e.preventDefault()}
       >
         {sections.map(
           ({ id, title, metadataFields }, index, { length: numSections }) => (

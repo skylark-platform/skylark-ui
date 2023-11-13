@@ -1,5 +1,7 @@
 import { GQLScalars } from "src/interfaces/graphql/introspection";
 
+import { ParsedSkylarkObjectConfigFieldConfig } from "./parsedObjects";
+
 export enum BuiltInSkylarkObjectType {
   Availability = "Availability",
   SkylarkImage = "SkylarkImage",
@@ -63,6 +65,11 @@ export interface NormalizedObjectField {
   isList: boolean;
   isRequired: boolean;
 }
+
+export type InputFieldWithFieldConfig = {
+  field: NormalizedObjectField;
+  config?: ParsedSkylarkObjectConfigFieldConfig;
+};
 
 interface BaseQueryMutation {
   type: "Query" | "Mutation";

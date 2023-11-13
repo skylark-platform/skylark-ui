@@ -10,7 +10,7 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynamicMutations";
+import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynamicMutations/objects";
 
 interface MutationArgs {
   uid: string;

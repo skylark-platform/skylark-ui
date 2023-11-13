@@ -14,6 +14,7 @@ interface TextInputProps
   label?: string;
   tabIndex?: number;
   withCopy?: boolean;
+  placeholder?: string;
   onEnterKeyPress?: () => void;
 }
 
@@ -23,6 +24,7 @@ export const TextInput = ({
   className,
   label,
   withCopy,
+  placeholder,
   onEnterKeyPress,
   ...props
 }: TextInputProps) => (
@@ -46,6 +48,7 @@ export const TextInput = ({
       name={label}
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
       onKeyDown={
         onEnterKeyPress
           ? (e) => {

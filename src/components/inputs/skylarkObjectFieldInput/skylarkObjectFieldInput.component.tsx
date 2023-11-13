@@ -11,6 +11,7 @@ import {
 } from "react-hook-form";
 
 import { Checkbox } from "src/components/inputs/checkbox";
+import { ColourPicker } from "src/components/inputs/colourPicker";
 import { InputLabel } from "src/components/inputs/label/label.component";
 import { Select, TimezoneSelect } from "src/components/inputs/select";
 import { Skeleton } from "src/components/skeleton";
@@ -118,6 +119,26 @@ const SkylarkObjectFieldInputTimezone = ({
           variant="primary"
           selected={selected}
           placeholder={`Select ${formatObjectField(field.name)}`}
+          onChange={field.onChange}
+          aria-invalid={error ? "true" : "false"}
+        />
+      );
+    }}
+  />
+);
+
+const SkylarkObjectFieldInputColourPicker = ({
+  field,
+  control,
+  error,
+}: SkylarkObjectFieldInputComponentProps) => (
+  <Controller
+    name={field}
+    control={control}
+    render={({ field }) => {
+      return (
+        <ColourPicker
+          colour={(field.value || "") as string}
           onChange={field.onChange}
           aria-invalid={error ? "true" : "false"}
         />
@@ -304,28 +325,39 @@ export const SkylarkObjectFieldInput = (
         (() => {
           if (config.type === "enum") {
             return <SkylarkObjectFieldInputEnum {...inputProps} />;
-          } else if (config.type === "boolean") {
-            return <SkylarkObjectFieldInputBoolean {...inputProps} />;
-          } else if (
-            config.type === "string" &&
-            fieldConfigFromObject?.fieldType === "WYSIWYG"
-          ) {
-            return <SkylarkObjectFieldInputWYSIWYG {...inputProps} />;
-          } else if (
-            config.type === "string" &&
-            fieldConfigFromObject?.fieldType === "TIMEZONE"
-          ) {
-            return <SkylarkObjectFieldInputTimezone {...inputProps} />;
-          } else if (
-            config.type === "string" &&
-            (fieldConfigFromObject?.fieldType === "TEXTAREA" ||
-              (!SYSTEM_FIELDS.includes(field) &&
-                fieldConfigFromObject === undefined))
-          ) {
-            return <SkylarkObjectFieldInputTextArea {...inputProps} />;
-          } else {
-            return <SkylarkObjectFieldInputGeneric {...inputProps} />;
           }
+
+          if (config.type === "boolean") {
+            return <SkylarkObjectFieldInputBoolean {...inputProps} />;
+          }
+
+          if (config.type === "string") {
+            if (fieldConfigFromObject?.fieldType === "WYSIWYG") {
+              return <SkylarkObjectFieldInputWYSIWYG {...inputProps} />;
+            }
+
+            if (fieldConfigFromObject?.fieldType === "TIMEZONE") {
+              return <SkylarkObjectFieldInputTimezone {...inputProps} />;
+            }
+
+            if (fieldConfigFromObject?.fieldType === "COLOURPICKER") {
+              return <SkylarkObjectFieldInputColourPicker {...inputProps} />;
+            }
+
+            if (fieldConfigFromObject?.fieldType === "STRING") {
+              return <SkylarkObjectFieldInputGeneric {...inputProps} />;
+            }
+
+            if (
+              fieldConfigFromObject?.fieldType === "TEXTAREA" ||
+              (!SYSTEM_FIELDS.includes(field) &&
+                fieldConfigFromObject === undefined)
+            ) {
+              return <SkylarkObjectFieldInputTextArea {...inputProps} />;
+            }
+          }
+
+          return <SkylarkObjectFieldInputGeneric {...inputProps} />;
         })()
       )}
       {error && (

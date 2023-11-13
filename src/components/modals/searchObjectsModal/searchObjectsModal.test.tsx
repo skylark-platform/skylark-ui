@@ -5,6 +5,11 @@ import { render } from "src/__tests__/utils/test-utils";
 
 import { SearchObjectsModal } from "./searchObjectsModal.component";
 
+// Mock window size so that the UID column is rendered
+window.Element.prototype.getBoundingClientRect = jest
+  .fn()
+  .mockReturnValue({ height: 4000, width: 4000 });
+
 const title = "Select Relationships";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires

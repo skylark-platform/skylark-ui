@@ -18,3 +18,12 @@ export const Checked = Template.bind({});
 Checked.args = {
   checked: true,
 };
+
+export const Disabled = Template.bind({});
+Disabled.args = { disabled: true };
+
+export const DisabledChecked = Template.bind({});
+DisabledChecked.args = {
+  checked: true,
+  disabled: true,
+};
