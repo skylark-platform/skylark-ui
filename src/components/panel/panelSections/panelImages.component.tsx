@@ -1,34 +1,57 @@
-import { OpenObjectButton } from "src/components/button";
+import { useMemo } from "react";
+
+import { DisplayGraphQLQuery } from "src/components/modals";
+import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
   PanelFieldTitle,
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
+import { Skeleton } from "src/components/skeleton";
+import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
 import { useImageSize } from "src/hooks/useImageSize";
 import {
   BuiltInSkylarkObjectType,
-  ParsedSkylarkObjectImageRelationship,
-  SkylarkGraphQLObjectImage,
+  ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import {
   addCloudinaryOnTheFlyImageTransformation,
   formatObjectField,
+  getObjectDisplayName,
+  hasProperty,
 } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
-const groupImagesByType = (images: SkylarkGraphQLObjectImage[]) => {
+interface PanelImagesProps {
+  uid: string;
+  objectType: string;
+  language: string;
+  isPage?: boolean;
+  inEditMode: boolean;
+  setPanelObject: (o: SkylarkObjectIdentifier) => void;
+}
+
+const groupImagesByType = (images: ParsedSkylarkObject[]) => {
   return images.reduce(
-    (acc: { [key: string]: SkylarkGraphQLObjectImage[] }, currentValue) => {
-      if (acc && acc[currentValue.type])
+    (acc: { [key: string]: ParsedSkylarkObject[] }, currentValue) => {
+      const key = hasProperty<ParsedSkylarkObject["metadata"], "type", string>(
+        currentValue.metadata,
+        "type",
+      )
+        ? currentValue.metadata.type
+        : "other (no type field)";
+
+      if (acc && acc[key])
         return {
           ...acc,
-          [currentValue.type]: [...acc[currentValue.type], currentValue],
+          [key]: [...acc[key], currentValue],
         };
       return {
         ...acc,
-        [currentValue.type]: [currentValue],
+        [key]: [currentValue],
       };
     },
     {},
@@ -36,54 +59,65 @@ const groupImagesByType = (images: SkylarkGraphQLObjectImage[]) => {
 };
 
 const PanelImage = ({
-  src,
-  alt,
-  title,
   object,
-  inEditMode,
   setPanelObject,
 }: {
-  src: string;
-  title?: string;
-  alt?: string;
-  object: SkylarkObjectIdentifier;
+  object: ParsedSkylarkObject;
   inEditMode: boolean;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }) => {
+  const { displayName, src } = useMemo(() => {
+    const displayName = getObjectDisplayName(object);
+
+    const src =
+      hasProperty(object.metadata, "url") &&
+      typeof object.metadata.url === "string"
+        ? object.metadata.url
+        : "";
+
+    return { displayName, src };
+  }, [object]);
+
   const { size } = useImageSize(src);
+
   return (
     <div className="mb-4 break-words">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         className="max-h-64"
         src={addCloudinaryOnTheFlyImageTransformation(src, {})}
-        alt={title || alt || ""}
+        alt={displayName}
       />
-      <div className="flex">
-        <div className="mr-2 flex grow flex-col">
-          {title && <p className="mt-1">Title: {title}</p>}
-          <p>Original size: {size ? `${size.h}x${size.w}` : ""}</p>
-        </div>
-        <OpenObjectButton
-          disabled={inEditMode}
-          onClick={() => setPanelObject(object)}
-        />
-      </div>
+      <ObjectIdentifierCard
+        hideObjectType
+        className="max-w-xl"
+        object={object}
+        onForwardClick={setPanelObject}
+      >
+        <span className="text-manatee-500 text-sm">
+          {size ? `(${size.h}x${size.w})` : ""}
+        </span>
+      </ObjectIdentifierCard>
     </div>
   );
 };
 
 export const PanelImages = ({
-  images,
+  uid,
+  objectType,
+  language,
   isPage,
   inEditMode,
   setPanelObject,
-}: {
-  isPage?: boolean;
-  images: ParsedSkylarkObjectImageRelationship[];
-  inEditMode: boolean;
-  setPanelObject: (o: SkylarkObjectIdentifier) => void;
-}) => {
+}: PanelImagesProps) => {
+  const { relationships, isLoading, query, variables } =
+    useGetObjectRelationships(objectType, uid, { language });
+
+  const images =
+    relationships?.filter(
+      (rel) => rel.objectType === BuiltInSkylarkObjectType.SkylarkImage,
+    ) || [];
+
   return (
     <PanelSectionLayout
       sections={images.map(({ relationshipName }) => ({
@@ -118,16 +152,10 @@ export const PanelImages = ({
                     text={formatObjectField(type)}
                     count={imagesGroupedByType[type].length}
                   />
-                  {imagesGroupedByType[type].map((image) => (
+                  {imagesGroupedByType[type].map((object) => (
                     <PanelImage
-                      key={image.uid}
-                      src={image.url}
-                      title={image.title}
-                      object={{
-                        uid: image.uid,
-                        objectType: BuiltInSkylarkObjectType.SkylarkImage,
-                        language: image._meta?.language_data.language || "",
-                      }}
+                      key={object.uid}
+                      object={object}
                       inEditMode={inEditMode}
                       setPanelObject={setPanelObject}
                     />
@@ -138,6 +166,21 @@ export const PanelImages = ({
           </div>
         );
       })}
+      <PanelLoading isLoading={isLoading}>
+        <Skeleton className="mb-4 h-6 w-52 mt-4 md:mt-8" />
+        {Array.from({ length: 2 }, (_, i) => (
+          <div key={`content-of-skeleton-${i}`} className="mb-8">
+            <Skeleton className="mb-2 h-40 w-full max-w-xl" />
+            <Skeleton className="mb-2 h-11 w-full max-w-xl" />
+          </div>
+        ))}
+      </PanelLoading>
+      <DisplayGraphQLQuery
+        label="Get Object Relationships"
+        query={query}
+        variables={variables}
+        buttonClassName="absolute right-2 top-0"
+      />
     </PanelSectionLayout>
   );
 };

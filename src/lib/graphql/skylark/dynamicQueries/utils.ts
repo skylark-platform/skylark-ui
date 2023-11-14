@@ -189,22 +189,31 @@ export const generateRelationshipsToReturn = (
     );
   }
 
-  if (object.images && object.images.objectMeta?.fields) {
-    object.images.relationshipNames.forEach((relationshipName) => {
-      relationshipsToReturn[relationshipName] = {
-        __args: {
-          limit: isSearch ? 5 : 50, // max
-        },
-        next_token: true,
-        objects: {
-          ...commonGraphQLOpts.objectMeta,
-          ...generateFieldsToReturn(
-            object.images?.objectMeta.fields || [],
-            object.images?.objectMeta.name || null,
-          ),
-        },
-      };
-    });
+  const builtinObjectRelationships = object.builtinObjectRelationships;
+
+  if (
+    isSearch &&
+    builtinObjectRelationships &&
+    builtinObjectRelationships.images &&
+    builtinObjectRelationships.images.objectMeta?.fields
+  ) {
+    builtinObjectRelationships.images.relationshipNames.forEach(
+      (relationshipName) => {
+        relationshipsToReturn[relationshipName] = {
+          __args: {
+            limit: 5, // Fetch 5 images when Searching
+          },
+          next_token: true,
+          objects: {
+            ...commonGraphQLOpts.objectMeta,
+            ...generateFieldsToReturn(
+              builtinObjectRelationships.images?.objectMeta.fields || [],
+              builtinObjectRelationships.images?.objectMeta.name || null,
+            ),
+          },
+        };
+      },
+    );
   }
 
   return relationshipsToReturn;
