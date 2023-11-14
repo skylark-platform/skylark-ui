@@ -4,7 +4,7 @@ import { FiTrash2, FiX } from "react-icons/fi";
 
 import { AvailabilityIcon } from "src/components/availability";
 import { OpenObjectButton } from "src/components/button";
-import { ObjectTypePill } from "src/components/pill";
+import { ObjectTypePill, Pill } from "src/components/pill";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
 import {
@@ -22,6 +22,7 @@ interface ObjectIdentifierCardProps {
   hideObjectType?: boolean;
   className?: string;
   hideAvailabilityStatus?: boolean;
+  forceConfigFromObject?: boolean;
   onForwardClick?: (o: SkylarkObjectIdentifier) => void;
   onDeleteClick?: () => void;
 }
@@ -35,14 +36,17 @@ export const ObjectIdentifierCard = ({
   className,
   deleteIconVariant = "trash",
   hideAvailabilityStatus,
+  forceConfigFromObject,
   onForwardClick,
   onDeleteClick,
 }: ObjectIdentifierCardProps) => {
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
 
-  const { config } = objectTypesWithConfig?.find(
-    ({ objectType }) => objectType === object.objectType,
-  ) || { config: object.config };
+  const { config } = forceConfigFromObject
+    ? { config: object.config }
+    : objectTypesWithConfig?.find(
+        ({ objectType }) => objectType === object.objectType,
+      ) || { config: object.config };
 
   return (
     <div
@@ -52,9 +56,9 @@ export const ObjectIdentifierCard = ({
       )}
     >
       {!hideObjectType && (
-        <ObjectTypePill
-          type={object.objectType}
-          defaultConfig={object.config}
+        <Pill
+          label={config?.objectTypeDisplayName || object.objectType}
+          bgColor={config?.colour || undefined}
           className="w-20 min-w-20 max-w-20"
         />
       )}

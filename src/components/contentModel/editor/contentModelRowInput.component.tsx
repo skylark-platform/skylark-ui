@@ -134,7 +134,7 @@ export const ObjectTypeFieldInput = ({
       dragListener={false}
       dragControls={dragControls}
       as="div"
-      className="my-2 bg-white z-30 border shadow border-manatee-300 rounded-lg items-center h-14 px-2 grid gap-4 grid-cols-8"
+      className="my-2 bg-white z-30 border shadow border-manatee-300 rounded-lg items-center h-14 px-2 grid gap-4 grid-cols-7"
     >
       <div
         className={clsx(
@@ -248,12 +248,12 @@ export const ObjectTypeFieldInput = ({
           // disabled={field.name === SkylarkSystemField.UID}
         />
       </div>
-      <div className="flex justify-center items-center">
+      {/* <div className="flex justify-center items-center">
         <Checkbox
           checked={isPrimaryField}
           onCheckedChange={onPrimaryFieldCheckedChange}
         />
-      </div>
+      </div> */}
     </Reorder.Item>
   );
 };
