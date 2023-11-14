@@ -41,13 +41,13 @@
               "available_languages": ["ar", "en-GB", "pt-PT"],
               "language_data": {
                 "language": "en-GB",
-                "version": 1
+                "version": 2
               },
               "global_data": {
-                "version": 3
+                "version": 5
               },
               "modified": {
-                "date": "2023-11-14T10:06:37.517459+00:00"
+                "date": "2023-11-14T13:49:16.974935+00:00"
               },
               "created": {
                 "date": "2023-11-14T10:06:37.517459+00:00"
@@ -88,13 +88,13 @@
               "available_languages": ["ar", "en-GB", "pt-PT"],
               "language_data": {
                 "language": "en-GB",
-                "version": 1
+                "version": 2
               },
               "global_data": {
-                "version": 3
+                "version": 6
               },
               "modified": {
-                "date": "2023-11-14T10:06:14.474591+00:00"
+                "date": "2023-11-14T13:48:57.850403+00:00"
               },
               "created": {
                 "date": "2023-11-14T10:06:14.474591+00:00"
@@ -129,13 +129,13 @@
               "available_languages": ["ar", "en-GB", "pt-PT"],
               "language_data": {
                 "language": "en-GB",
-                "version": 1
+                "version": 2
               },
               "global_data": {
-                "version": 3
+                "version": 5
               },
               "modified": {
-                "date": "2023-11-14T10:06:14.347759+00:00"
+                "date": "2023-11-14T13:48:57.864886+00:00"
               },
               "created": {
                 "date": "2023-11-14T10:06:14.347759+00:00"
@@ -170,13 +170,13 @@
               "available_languages": ["ar", "en-GB", "pt-PT"],
               "language_data": {
                 "language": "en-GB",
-                "version": 1
+                "version": 2
               },
               "global_data": {
-                "version": 3
+                "version": 6
               },
               "modified": {
-                "date": "2023-11-14T10:06:14.449222+00:00"
+                "date": "2023-11-14T13:48:58.124262+00:00"
               },
               "created": {
                 "date": "2023-11-14T10:06:14.449222+00:00"
@@ -211,13 +211,13 @@
               "available_languages": ["ar", "en-GB", "pt-PT"],
               "language_data": {
                 "language": "en-GB",
-                "version": 1
-              },
-              "global_data": {
                 "version": 2
               },
+              "global_data": {
+                "version": 4
+              },
               "modified": {
-                "date": "2023-11-14T10:06:14.614673+00:00"
+                "date": "2023-11-14T13:48:57.855324+00:00"
               },
               "created": {
                 "date": "2023-11-14T10:06:14.614673+00:00"
@@ -230,7 +230,88 @@
       "assets": {
         "__typename": "SkylarkAssetListing",
         "next_token": null,
-        "objects": []
+        "objects": [
+          {
+            "uid": "01HF71GV8Q7KSF1VGKF8KF9MK3",
+            "__typename": "SkylarkAsset",
+            "external_id": "recE1YyS7vXphRcmN",
+            "slug": "fantastic-mr-fox-trailer",
+            "internal_title": "Fantastic Mr Fox Trailer",
+            "title": null,
+            "title_sort": null,
+            "type": "TRAILER",
+            "release_date": "2009-11-23",
+            "url": "https://www.youtube.com/watch?v=n2igjYFojUo",
+            "ingest_file": null,
+            "duration": null,
+            "provider": null,
+            "hls_id": null,
+            "hls_url": null,
+            "hls_dashboard": null,
+            "dash_id": null,
+            "dash_url": null,
+            "dash_dashboard": null,
+            "status": null,
+            "availability": {
+              "next_token": null,
+              "objects": [
+                {
+                  "uid": "01HF6MKC31MHEY3JT41J0D925J",
+                  "external_id": "recQzQ8ZUyh6VzVAw",
+                  "title": "Active Next Sunday @ 9PM, Europe/North America",
+                  "slug": "active-next-sunday",
+                  "start": "2023-11-19T00:00:00+00:00",
+                  "end": "2038-01-19T03:14:07+00:00",
+                  "timezone": "UTC"
+                },
+                {
+                  "uid": "01HF6MKC49PV2HDAG60ZE669QJ",
+                  "external_id": "recN2Jf4j9UCblsIc",
+                  "title": "Active in the past - all dimension values",
+                  "slug": "active-in-the-past",
+                  "start": "2000-01-01T15:15:00+00:00",
+                  "end": "2020-01-01T15:15:00+00:00",
+                  "timezone": "UTC"
+                },
+                {
+                  "uid": "01HF6MKC74TVEEJ3G8J5KZYB4N",
+                  "external_id": "recMdBZyVPsIGqAYq",
+                  "title": "Always - Premium, Europe/North America",
+                  "slug": "premium",
+                  "start": "2022-01-01T00:00:00+00:00",
+                  "end": "2038-01-19T03:14:07+00:00",
+                  "timezone": "UTC"
+                },
+                {
+                  "uid": "01HF6MKC8ZVYW45WH6EPGF1JKH",
+                  "external_id": "recX0Ztue3iBQR7rl",
+                  "title": "Active Until Next Sunday @ 9PM, Europe/North America",
+                  "slug": "active-until-next-sunday",
+                  "start": "2000-01-01T00:00:00+00:00",
+                  "end": "2023-11-19T00:00:00+00:00",
+                  "timezone": "UTC"
+                }
+              ]
+            },
+            "_meta": {
+              "available_languages": ["en-GB"],
+              "language_data": {
+                "language": "en-GB",
+                "version": 1
+              },
+              "global_data": {
+                "version": 1
+              },
+              "modified": {
+                "date": "2023-11-14T13:49:47.121583+00:00"
+              },
+              "created": {
+                "date": "2023-11-14T13:49:47.121583+00:00"
+              },
+              "published": true
+            }
+          }
+        ]
       },
       "images": {
         "__typename": "SkylarkImageListing",
@@ -246,7 +327,7 @@
             "description": null,
             "type": "THUMBNAIL",
             "alt_text": null,
-            "url": "https://media.sl-develop.development.skylarkplatform.com/skylarkimages/pscimysu7bhxji72g45z4u6gvy/01HF6MNY67QHBFZAJ7XTSVGBGZ/01HF6MQ588WE03GPQZQ7VC8EHW",
+            "url": "https://media.sl-develop.development.skylarkplatform.com/skylarkimages/pscimysu7bhxji72g45z4u6gvy/01HF6MNY67QHBFZAJ7XTSVGBGZ/01HF71HQQR6TVGTJ2ZMT2QTP1Y",
             "external_url": null,
             "file_name": null,
             "content_type": "image/jpeg",
@@ -268,13 +349,13 @@
               "available_languages": ["en-GB"],
               "language_data": {
                 "language": "en-GB",
-                "version": 1
+                "version": 2
               },
               "global_data": {
-                "version": 1
+                "version": 2
               },
               "modified": {
-                "date": "2023-11-14T10:05:24.168210+00:00"
+                "date": "2023-11-14T13:48:45.738833+00:00"
               },
               "created": {
                 "date": "2023-11-14T10:05:24.168210+00:00"
@@ -316,13 +397,13 @@
               "available_languages": ["en-GB"],
               "language_data": {
                 "language": "en-GB",
-                "version": 1
+                "version": 2
               },
               "global_data": {
-                "version": 1
+                "version": 2
               },
               "modified": {
-                "date": "2023-11-14T10:06:15.630682+00:00"
+                "date": "2023-11-14T13:48:59.657217+00:00"
               },
               "created": {
                 "date": "2023-11-14T10:06:15.630682+00:00"
@@ -368,13 +449,13 @@
               "available_languages": ["ar", "en-GB", "pt-PT"],
               "language_data": {
                 "language": "en-GB",
-                "version": 1
+                "version": 2
               },
               "global_data": {
-                "version": 3
+                "version": 5
               },
               "modified": {
-                "date": "2023-11-14T10:06:13.437653+00:00"
+                "date": "2023-11-14T13:48:56.435248+00:00"
               },
               "created": {
                 "date": "2023-11-14T10:06:13.437653+00:00"
@@ -409,13 +490,13 @@
               "available_languages": ["ar", "en-GB", "pt-PT"],
               "language_data": {
                 "language": "en-GB",
-                "version": 1
+                "version": 2
               },
               "global_data": {
-                "version": 3
+                "version": 5
               },
               "modified": {
-                "date": "2023-11-14T10:06:13.376404+00:00"
+                "date": "2023-11-14T13:48:56.180997+00:00"
               },
               "created": {
                 "date": "2023-11-14T10:06:13.376404+00:00"
@@ -450,13 +531,13 @@
               "available_languages": ["ar", "en-GB", "pt-PT"],
               "language_data": {
                 "language": "en-GB",
-                "version": 1
+                "version": 2
               },
               "global_data": {
-                "version": 3
+                "version": 5
               },
               "modified": {
-                "date": "2023-11-14T10:06:13.319915+00:00"
+                "date": "2023-11-14T13:48:56.278119+00:00"
               },
               "created": {
                 "date": "2023-11-14T10:06:13.319915+00:00"
@@ -491,13 +572,13 @@
               "available_languages": ["ar", "en-GB", "pt-PT"],
               "language_data": {
                 "language": "en-GB",
-                "version": 1
+                "version": 2
               },
               "global_data": {
-                "version": 3
+                "version": 5
               },
               "modified": {
-                "date": "2023-11-14T10:06:13.322857+00:00"
+                "date": "2023-11-14T13:48:56.530699+00:00"
               },
               "created": {
                 "date": "2023-11-14T10:06:13.322857+00:00"
@@ -532,13 +613,13 @@
               "available_languages": ["ar", "en-GB", "pt-PT"],
               "language_data": {
                 "language": "en-GB",
-                "version": 1
+                "version": 2
               },
               "global_data": {
-                "version": 3
+                "version": 5
               },
               "modified": {
-                "date": "2023-11-14T10:06:13.416836+00:00"
+                "date": "2023-11-14T13:48:56.200307+00:00"
               },
               "created": {
                 "date": "2023-11-14T10:06:13.416836+00:00"

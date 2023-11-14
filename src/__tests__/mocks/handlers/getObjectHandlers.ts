@@ -14,6 +14,7 @@ import GQLSkylarkGetObjectGOTS01E01QueryFixture from "src/__tests__/fixtures/sky
 import GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01ptPT.json";
 import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots04.json";
 import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
+import GQLSkylarkGetAssetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/skylarkAsset.json";
 import GQLSkylarkGetMovieQueryAvailabilityFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetHomepageSetContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectContent/homepage.json";
 import GQLSkylarkGetMovieContentOfFixture from "src/__tests__/fixtures/skylark/queries/getObjectContentOf/fantasticMrFox_All_Availabilities.json";
@@ -118,6 +119,15 @@ export const getObjectHandlers = [
       }
     },
   ),
+
+  graphql.query(
+    createGetObjectQueryName("SkylarkAsset"),
+    ({ variables }, res, ctx) => {
+      if (variables.uid === GQLSkylarkGetAssetQueryFixture.data.getObject.uid) {
+        return res(ctx.data(GQLSkylarkGetAssetQueryFixture.data));
+      }
+    },
+  ),
 ];
 
 const movieAvailabilityHandler = (
@@ -135,6 +145,7 @@ export const getObjectAvailabilityHandlers = [
   "Season",
   "SkylarkSet",
   "SkylarkImage",
+  "SkylarkAsset",
 ].map((objectType) =>
   graphql.query(
     createGetObjectAvailabilityQueryName(objectType),

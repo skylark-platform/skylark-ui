@@ -187,8 +187,6 @@ const RelationshipPlayback = ({
               objects.map((object) => {
                 const sections = getVideoTypeSections(object.metadata, false);
 
-                console.log("SDF", object, sections);
-
                 return (
                   <Fragment key={uid}>
                     {sections.map(({ url, id }) => (

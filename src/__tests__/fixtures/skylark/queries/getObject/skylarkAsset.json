@@ -1,0 +1,121 @@
+{
+  "data": {
+    "getObject": {
+      "__typename": "SkylarkAsset",
+      "_meta": {
+        "available_languages": ["en-GB"],
+        "language_data": {
+          "language": "en-GB",
+          "version": 1
+        },
+        "global_data": {
+          "version": 1
+        },
+        "modified": {
+          "date": "2023-11-14T13:49:47.121583+00:00"
+        },
+        "created": {
+          "date": "2023-11-14T13:49:47.121583+00:00"
+        },
+        "published": true
+      },
+      "_config": {
+        "primary_field": "internal_title",
+        "colour": "#6F5060",
+        "display_name": "Assetˢˡ",
+        "field_config": [
+          {
+            "name": "release_date",
+            "ui_field_type": null,
+            "ui_position": 4
+          },
+          {
+            "name": "duration",
+            "ui_field_type": null,
+            "ui_position": 2
+          },
+          {
+            "name": "title_sort",
+            "ui_field_type": null,
+            "ui_position": 5
+          },
+          {
+            "name": "title",
+            "ui_field_type": null,
+            "ui_position": 1
+          },
+          {
+            "name": "url",
+            "ui_field_type": null,
+            "ui_position": 3
+          },
+          {
+            "name": "internal_title",
+            "ui_field_type": null,
+            "ui_position": 0
+          }
+        ]
+      },
+      "uid": "01HF71GV8Q7KSF1VGKF8KF9MK3",
+      "external_id": "recE1YyS7vXphRcmN",
+      "slug": "fantastic-mr-fox-trailer",
+      "internal_title": "Fantastic Mr Fox Trailer",
+      "title": null,
+      "title_sort": null,
+      "type": "TRAILER",
+      "release_date": "2009-11-23",
+      "url": "https://www.youtube.com/watch?v=n2igjYFojUo",
+      "ingest_file": null,
+      "duration": null,
+      "provider": null,
+      "hls_id": null,
+      "hls_url": null,
+      "hls_dashboard": null,
+      "dash_id": null,
+      "dash_url": null,
+      "dash_dashboard": null,
+      "status": null,
+      "availability": {
+        "next_token": null,
+        "objects": [
+          {
+            "uid": "01HF6MKC31MHEY3JT41J0D925J",
+            "external_id": "recQzQ8ZUyh6VzVAw",
+            "title": "Active Next Sunday @ 9PM, Europe/North America",
+            "slug": "active-next-sunday",
+            "start": "2023-11-19T00:00:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "UTC"
+          },
+          {
+            "uid": "01HF6MKC49PV2HDAG60ZE669QJ",
+            "external_id": "recN2Jf4j9UCblsIc",
+            "title": "Active in the past - all dimension values",
+            "slug": "active-in-the-past",
+            "start": "2000-01-01T15:15:00+00:00",
+            "end": "2020-01-01T15:15:00+00:00",
+            "timezone": "UTC"
+          },
+          {
+            "uid": "01HF6MKC74TVEEJ3G8J5KZYB4N",
+            "external_id": "recMdBZyVPsIGqAYq",
+            "title": "Always - Premium, Europe/North America",
+            "slug": "premium",
+            "start": "2022-01-01T00:00:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "UTC"
+          },
+          {
+            "uid": "01HF6MKC8ZVYW45WH6EPGF1JKH",
+            "external_id": "recX0Ztue3iBQR7rl",
+            "title": "Active Until Next Sunday @ 9PM, Europe/North America",
+            "slug": "active-until-next-sunday",
+            "start": "2000-01-01T00:00:00+00:00",
+            "end": "2023-11-19T00:00:00+00:00",
+            "timezone": "UTC"
+          }
+        ]
+      }
+    }
+  }
+}
