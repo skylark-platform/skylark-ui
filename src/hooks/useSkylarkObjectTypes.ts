@@ -5,6 +5,7 @@ import { useCallback, useMemo } from "react";
 import { QueryKeys } from "src/enums/graphql";
 import {
   GQLSkylarkObjectTypesWithConfig,
+  ParsedSkylarkObjectConfig,
   SkylarkObjectMeta,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -22,6 +23,25 @@ import {
   useSkylarkSchemaInterfaceType,
   useSkylarkSchemaIntrospection,
 } from "./useSkylarkSchemaIntrospection";
+
+export const sortObjectTypesWithConfig = (
+  a: {
+    objectType: string;
+    config?: ParsedSkylarkObjectConfig;
+  },
+  b: {
+    objectType: string;
+    config?: ParsedSkylarkObjectConfig;
+  },
+) => {
+  const objTypeA = (
+    a.config?.objectTypeDisplayName || a.objectType
+  ).toUpperCase();
+  const objTypeB = (
+    b.config?.objectTypeDisplayName || b.objectType
+  ).toUpperCase();
+  return objTypeA < objTypeB ? -1 : objTypeA > objTypeB ? 1 : 0;
+};
 
 export const useSkylarkObjectTypes = (searchable: boolean) => {
   // VisibleObject Interface contains all items that appear in Search, whereas Metadata can all be added into Sets
@@ -61,15 +81,7 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
           objectType,
           config: parseObjectConfig(objectType, data?.[objectType]),
         }))
-        .sort((a, b) => {
-          const objTypeA = (
-            a.config.objectTypeDisplayName || a.objectType
-          ).toUpperCase();
-          const objTypeB = (
-            b.config.objectTypeDisplayName || b.objectType
-          ).toUpperCase();
-          return objTypeA < objTypeB ? -1 : objTypeA > objTypeB ? 1 : 0;
-        }),
+        .sort(sortObjectTypesWithConfig),
     [data, objectTypes],
   );
 

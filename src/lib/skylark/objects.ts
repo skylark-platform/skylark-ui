@@ -509,9 +509,9 @@ export const getAllObjectsMeta = (
   return objectOperations;
 };
 
-const sortFieldsByConfigPosition = (
-  { field: fieldA }: { field: string },
-  { field: fieldB }: { field: string },
+export const sortFieldsByConfigPosition = (
+  fieldA: string,
+  fieldB: string,
   objectFieldConfig?: ParsedSkylarkObjectConfig["fieldConfig"],
 ) => {
   const aFieldConfig = objectFieldConfig?.find(({ name }) => fieldA === name);
@@ -581,10 +581,14 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
 
   const globalMetadataFields = otherFields
     .filter(({ field }) => fieldConfig.global.includes(field))
-    .sort((a, b) => sortFieldsByConfigPosition(a, b, objectFieldConfig));
+    .sort((a, b) =>
+      sortFieldsByConfigPosition(a.field, b.field, objectFieldConfig),
+    );
   const translatableMetadataFields = otherFields
     .filter(({ field }) => fieldConfig.translatable.includes(field))
-    .sort((a, b) => sortFieldsByConfigPosition(a, b, objectFieldConfig));
+    .sort((a, b) =>
+      sortFieldsByConfigPosition(a.field, b.field, objectFieldConfig),
+    );
 
   return {
     systemMetadataFields,
