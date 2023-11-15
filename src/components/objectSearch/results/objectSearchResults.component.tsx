@@ -276,13 +276,7 @@ export const ObjectSearchResults = ({
     },
   });
 
-  const visibleColumns = table
-    .getVisibleFlatColumns()
-    .sort(
-      (a, b) =>
-        tableState.columnOrder.indexOf(a.id) -
-        tableState.columnOrder.indexOf(b.id),
-    );
+  const visibleColumns = table.getVisibleLeafColumns();
 
   const frozenColumnsParsedColumnsIndexes = useMemo(
     () =>
@@ -376,11 +370,7 @@ export const ObjectSearchResults = ({
         const dropzoneColumnId = event.over?.data.current?.columnId;
         if (dropzoneColumnId) {
           // When the frozen columns are changed, unfreeze any hidden columns and move to the right of the frozen columns
-          const orderedVisibleColumns = [...visibleColumns].sort(
-            (a, b) =>
-              tableState.columnOrder.indexOf(a.id) -
-              tableState.columnOrder.indexOf(b.id),
-          );
+          const orderedVisibleColumns = [...visibleColumns];
 
           const columnIndex = orderedVisibleColumns.findIndex(
             (col) => col.id === dropzoneColumnId,
