@@ -96,7 +96,7 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
         </div>
         <div className="flex justify-center items-center">
           <div className="flex justify-center flex-col w-full pr-4">
-            <p className="mb-2">Resulting Object Type overview:</p>
+            <p className="mb-2">Preview:</p>
             <ObjectIdentifierCard
               forceConfigFromObject
               className="shadow px-2"
