@@ -150,8 +150,8 @@ export const PanelContent = ({
         updatedIndex <= 0
           ? 0
           : updatedIndex >= objects.length
-          ? objects.length - 1
-          : updatedIndex;
+            ? objects.length - 1
+            : updatedIndex;
       const updatedObjects = [...objects];
 
       const objToMove = updatedObjects.splice(currentIndex, 1)[0];

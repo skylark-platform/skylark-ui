@@ -71,8 +71,8 @@ const sortDimensionsByTitleOrSlug = (
   (a.title || a.slug) > (b.title || b.slug)
     ? 1
     : (b.title || b.slug) > (a.title || a.slug)
-    ? -1
-    : 0;
+      ? -1
+      : 0;
 
 const AvailabilityValueGrid = ({
   header,

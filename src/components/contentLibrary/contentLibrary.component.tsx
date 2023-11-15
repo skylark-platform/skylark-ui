@@ -114,8 +114,8 @@ export const ContentLibrary = ({
     width === undefined
       ? undefined
       : windowSize < MINIMUM_SIZES.panel
-      ? windowSize
-      : windowSize - width,
+        ? windowSize
+        : windowSize - width,
   );
   const lastPanelWidth = useMotionValue<number | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
