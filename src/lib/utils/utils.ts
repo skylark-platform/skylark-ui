@@ -10,10 +10,10 @@ import {
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
 
-export const hasProperty = <T, K extends PropertyKey>(
+export const hasProperty = <T, K extends PropertyKey, V = unknown>(
   object: T,
   property: K,
-): object is T & Record<K, unknown> => {
+): object is T & Record<K, V> => {
   return Object.prototype.hasOwnProperty.call(object, property);
 };
 

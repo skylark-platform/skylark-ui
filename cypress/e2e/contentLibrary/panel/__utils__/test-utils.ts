@@ -75,6 +75,12 @@ export const configurePanelSkylarkIntercepts = () => {
           "./skylark/queries/getObject/fantasticMrFox_All_Availabilities.json",
       });
     }
+    if (hasOperationName(req, "GET_Movie_RELATIONSHIPS")) {
+      req.reply({
+        fixture:
+          "./skylark/queries/getObjectRelationships/fantasticMrFox_All_Availabilities.json",
+      });
+    }
     if (hasOperationName(req, "GET_Movie_AVAILABILITY")) {
       req.reply({
         fixture:

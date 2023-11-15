@@ -355,7 +355,7 @@ export const parseSkylarkObject = (
       : availability.status;
 
   const images =
-    objectMeta?.images?.relationshipNames.map(
+    objectMeta?.builtinObjectRelationships?.images?.relationshipNames.map(
       (imageField): ParsedSkylarkObjectImageRelationship => {
         const parsedImages =
           hasProperty(object, imageField) &&

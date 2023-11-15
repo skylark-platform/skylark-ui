@@ -1,4 +1,5 @@
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
+import GQLSkylarkGetObjectRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/fantasticMrFox_All_Availabilities.json";
 import {
   render,
   screen,
@@ -39,32 +40,39 @@ describe("imagery view", () => {
     expect(
       screen.getAllByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
     ).toHaveLength(1);
-    expect(
-      screen.getByText(
-        `Title: ${GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].title}`,
-      ),
-    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          GQLSkylarkGetObjectRelationshipsQueryFixture.data
+            .getObjectRelationships.images.objects[0].title,
+        ),
+      ).toBeInTheDocument();
+    });
 
     const thumbnailCount =
-      GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects.filter(
+      GQLSkylarkGetObjectRelationshipsQueryFixture.data.getObjectRelationships.images.objects.filter(
         ({ type }) => type === "THUMBNAIL",
       ).length;
     expect(
       screen.getByText(
         `${formatObjectField(
-          GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].type,
+          GQLSkylarkGetObjectRelationshipsQueryFixture.data
+            .getObjectRelationships.images.objects[0].type,
         )} (${thumbnailCount})`,
       ),
     ).toBeInTheDocument();
 
     const image = screen.getByAltText(
-      GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].title,
+      GQLSkylarkGetObjectRelationshipsQueryFixture.data.getObjectRelationships
+        .images.objects[0].title,
     );
 
     expect(image).toHaveAttribute(
       "src",
       addCloudinaryOnTheFlyImageTransformation(
-        GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].url,
+        GQLSkylarkGetObjectRelationshipsQueryFixture.data.getObjectRelationships
+          .images.objects[0].url,
         {},
       ),
     );
@@ -87,9 +95,14 @@ describe("imagery view", () => {
       ).toBeInTheDocument(),
     );
 
-    expect(
-      screen.getAllByText(GQLSkylarkGetObjectQueryFixture.data.getObject.title),
-    ).toHaveLength(1);
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          GQLSkylarkGetObjectRelationshipsQueryFixture.data
+            .getObjectRelationships.images.objects[0].title,
+        ),
+      ).toBeInTheDocument();
+    });
 
     const firstOpenObjectButton = screen.getAllByRole("button", {
       name: /Open Object/i,
@@ -98,7 +111,8 @@ describe("imagery view", () => {
 
     expect(setPanelObject).toHaveBeenCalledWith({
       objectType: "SkylarkImage",
-      uid: GQLSkylarkGetObjectQueryFixture.data.getObject.images.objects[0].uid,
+      uid: GQLSkylarkGetObjectRelationshipsQueryFixture.data
+        .getObjectRelationships.images.objects[0].uid,
       language: "en-GB",
     });
   });

@@ -47,7 +47,9 @@ describe("appears in (content_of) view", () => {
 
     expect(screen.getByText("Set")).toBeInTheDocument();
     await waitFor(() =>
-      expect(screen.getByText(firstContentOfItem.title)).toBeInTheDocument(),
+      expect(
+        screen.getByText(firstContentOfItem.__SkylarkSet__title),
+      ).toBeInTheDocument(),
     );
 
     const firstOpenObjectButton = screen.getAllByRole("button", {

@@ -5,6 +5,7 @@ import {
   GQLSkylarkErrorResponse,
   ParsedSkylarkObjectConfig,
   SkylarkGraphQLObjectConfig,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { UPDATE_OBJECT_TYPE_CONFIG } from "src/lib/graphql/skylark/mutations";
@@ -42,7 +43,7 @@ export const useUpdateObjectTypeConfig = ({
       }>("mutation", UPDATE_OBJECT_TYPE_CONFIG, {
         objectType,
         displayName: objectTypeDisplayName || null,
-        primaryField: primaryField || null,
+        primaryField: primaryField || SkylarkSystemField.UID,
         colour: colour || null,
         fieldConfig: parsedFieldConfig,
       });

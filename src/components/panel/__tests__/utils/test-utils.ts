@@ -13,6 +13,7 @@ import GQLSkylarkGetObjectGOTS01E01QueryFixture from "src/__tests__/fixtures/sky
 import GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots01e01ptPT.json";
 import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots04.json";
 import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
+import GQLSkylarkGetSkylarkAssetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/skylarkAsset.json";
 import { screen, waitFor, within } from "src/__tests__/utils/test-utils";
 import { PanelTab, PanelTabState } from "src/hooks/state";
 import {
@@ -69,6 +70,12 @@ export const availabilityObject: SkylarkObjectIdentifier = {
   uid: GQLSkylarkGetAvailabilityQueryFixture.data.getObject.uid,
   objectType: BuiltInSkylarkObjectType.Availability,
   language: "",
+};
+
+export const skylarkAssetObject: SkylarkObjectIdentifier = {
+  uid: GQLSkylarkGetSkylarkAssetQueryFixture.data.getObject.uid,
+  objectType: BuiltInSkylarkObjectType.SkylarkAsset,
+  language: "en-GB",
 };
 
 const tabState: PanelTabState = {

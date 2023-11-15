@@ -11,6 +11,16 @@ describe("Navigation", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
+      if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
+        req.reply({
+          fixture: "./skylark/queries/introspection/objectTypes.json",
+        });
+      }
+      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+        req.reply({
+          fixture: "./skylark/queries/getAccountStatus/default.json",
+        });
+      }
     });
 
     cy.visit("/");

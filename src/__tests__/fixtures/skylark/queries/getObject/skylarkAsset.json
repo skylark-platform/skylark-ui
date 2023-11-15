@@ -1,7 +1,7 @@
 {
   "data": {
     "getObject": {
-      "__typename": "Movie",
+      "__typename": "SkylarkAsset",
       "_meta": {
         "available_languages": ["en-GB"],
         "language_data": {
@@ -12,77 +12,69 @@
           "version": 1
         },
         "modified": {
-          "date": "2023-11-14T10:07:18.513034+00:00"
+          "date": "2023-11-14T13:49:47.121583+00:00"
         },
         "created": {
-          "date": "2023-11-14T10:07:18.513034+00:00"
+          "date": "2023-11-14T13:49:47.121583+00:00"
         },
         "published": true
       },
       "_config": {
         "primary_field": "internal_title",
-        "colour": "#009688",
-        "display_name": "Movie",
+        "colour": "#6F5060",
+        "display_name": "Assetˢˡ",
         "field_config": [
           {
             "name": "release_date",
             "ui_field_type": null,
-            "ui_position": 6
+            "ui_position": 4
           },
           {
-            "name": "title_sort",
-            "ui_field_type": null,
-            "ui_position": 8
-          },
-          {
-            "name": "title_short",
+            "name": "duration",
             "ui_field_type": null,
             "ui_position": 2
           },
           {
-            "name": "internal_title",
-            "ui_field_type": null,
-            "ui_position": 0
-          },
-          {
-            "name": "year_of_release",
-            "ui_field_type": null,
-            "ui_position": 7
-          },
-          {
-            "name": "movie_number",
+            "name": "title_sort",
             "ui_field_type": null,
             "ui_position": 5
-          },
-          {
-            "name": "synopsis_short",
-            "ui_field_type": "TEXTAREA",
-            "ui_position": 4
-          },
-          {
-            "name": "synopsis",
-            "ui_field_type": "TEXTAREA",
-            "ui_position": 3
           },
           {
             "name": "title",
             "ui_field_type": null,
             "ui_position": 1
+          },
+          {
+            "name": "url",
+            "ui_field_type": null,
+            "ui_position": 3
+          },
+          {
+            "name": "internal_title",
+            "ui_field_type": null,
+            "ui_position": 0
           }
         ]
       },
-      "uid": "01HF6MSDFQP7ED8TE4Z5KS6GVM",
-      "external_id": "recudCnvsnLP4PEeJ",
-      "slug": "fantastic-mr-fox",
-      "synopsis": "Mr Fox, a family man, goes back to his ways of stealing, unable to resist his animal instincts. However, he finds himself trapped when three farmers decide to kill him and his kind.\n\nThis test movie is configured with an expired, active and future availability.",
-      "synopsis_short": "Mr Fox, a family man, goes back to his ways of stealing, unable to resist his animal instincts. However, he finds himself trapped when three farmers decide to kill him and his kind.",
-      "title": "Fantastic Mr Fox (All Availabilities)",
-      "title_short": "Fantastic Mr Fox (All)",
-      "internal_title": "Fantastic Mr Fox (All Availabilities)",
-      "movie_number": null,
-      "release_date": "2009-11-23",
+      "uid": "01HF71GV8Q7KSF1VGKF8KF9MK3",
+      "external_id": "recE1YyS7vXphRcmN",
+      "slug": "fantastic-mr-fox-trailer",
+      "internal_title": "Fantastic Mr Fox Trailer",
+      "title": null,
       "title_sort": null,
-      "year_of_release": null,
+      "type": "TRAILER",
+      "release_date": "2009-11-23",
+      "url": "https://www.youtube.com/watch?v=n2igjYFojUo",
+      "ingest_file": null,
+      "duration": null,
+      "provider": null,
+      "hls_id": null,
+      "hls_url": null,
+      "hls_dashboard": null,
+      "dash_id": null,
+      "dash_url": null,
+      "dash_dashboard": null,
+      "status": null,
       "availability": {
         "next_token": null,
         "objects": [

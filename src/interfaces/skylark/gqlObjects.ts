@@ -115,7 +115,6 @@ export type SkylarkGraphQLObject = {
   [SkylarkSystemField.DataSourceID]?: string | null;
   [SkylarkSystemField.DataSourceFields]?: string | string[] | null;
   availability?: SkylarkGraphQLObjectRelationship;
-  images?: SkylarkGraphQLObjectRelationship;
   _config?: SkylarkGraphQLObjectConfig;
   _meta?: SkylarkGraphQLObjectMeta;
   content?: SkylarkGraphQLObjectContent;

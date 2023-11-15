@@ -3,15 +3,10 @@
     "getObjectContentOf": {
       "content_of": {
         "next_token": null,
-        "count": 1,
+        "count": 2,
         "objects": [
           {
             "__typename": "SkylarkSet",
-            "_config": {
-              "primary_field": "internal_title",
-              "colour": "#000000",
-              "display_name": "Setˢˡ"
-            },
             "_meta": {
               "available_languages": ["en-GB", "pt-PT"],
               "language_data": {
@@ -20,20 +15,87 @@
               },
               "global_data": {
                 "version": 2
-              }
+              },
+              "modified": {
+                "date": "2023-11-14T10:08:00.445772+00:00"
+              },
+              "created": {
+                "date": "2023-11-14T10:08:00.445772+00:00"
+              },
+              "published": true
             },
-            "uid": "01H4MMF4SDYPY60D7YCA3WQJWF",
-            "slug": "wes-anderson-movies-collection",
+            "uid": "01HF6MTNPBKMXKSVFFRY4W8TYX",
+            "__SkylarkSet__slug": "set-in-europe",
+            "external_id": "streamtv_set_in_europe",
+            "__SkylarkSet__type": "RAIL",
+            "__SkylarkSet__internal_title": "Set Across the Pond",
+            "__SkylarkSet__title": "Set Across the Pond",
+            "__SkylarkSet__title_short": null,
+            "__SkylarkSet__title_sort": null,
+            "__SkylarkSet__synopsis": "A collection of Movies set in Europe",
+            "__SkylarkSet__synopsis_short": null,
+            "__SkylarkSet__release_date": null,
+            "__SkylarkSet__description": null,
+            "availability": {
+              "next_token": null,
+              "objects": [
+                {
+                  "uid": "01HF6MKC4T1C04PMSNZWYAHCZM",
+                  "external_id": "reczW6DevRsPsJtQL",
+                  "title": "Always - Premium/Standard, North America",
+                  "slug": "always-north-america",
+                  "start": "2000-01-01T00:00:00+00:00",
+                  "end": "2038-01-19T03:14:07+00:00",
+                  "timezone": "UTC"
+                }
+              ]
+            }
+          },
+          {
+            "__typename": "SkylarkSet",
+            "_meta": {
+              "available_languages": ["en-GB", "pt-PT"],
+              "language_data": {
+                "language": "en-GB",
+                "version": 1
+              },
+              "global_data": {
+                "version": 2
+              },
+              "modified": {
+                "date": "2023-11-14T10:07:48.133756+00:00"
+              },
+              "created": {
+                "date": "2023-11-14T10:07:48.133756+00:00"
+              },
+              "published": true
+            },
+            "uid": "01HF6MT8VCDKY9HSJ6J8BS6R3P",
+            "__SkylarkSet__slug": "wes-anderson-movies-collection",
             "external_id": "streamtv_wes_anderson_movies",
-            "type": "COLLECTION",
-            "internal_title": null,
-            "title": "Wes Anderson Movies Collection",
-            "title_short": "Wes Anderson",
-            "title_sort": null,
-            "synopsis": "Wesley Wales Anderson is an American filmmaker. His films are known for their eccentricity and unique visual and narrative styles. They often contain themes of grief, loss of innocence, and dysfunctional families.",
-            "synopsis_short": null,
-            "release_date": null,
-            "description": null
+            "__SkylarkSet__type": "COLLECTION",
+            "__SkylarkSet__internal_title": "Wes Anderson Movies Collection",
+            "__SkylarkSet__title": "Wes Anderson Movies Collection",
+            "__SkylarkSet__title_short": "Wes Anderson",
+            "__SkylarkSet__title_sort": null,
+            "__SkylarkSet__synopsis": "Wesley Wales Anderson is an American filmmaker. His films are known for their eccentricity and unique visual and narrative styles. They often contain themes of grief, loss of innocence, and dysfunctional families.",
+            "__SkylarkSet__synopsis_short": null,
+            "__SkylarkSet__release_date": null,
+            "__SkylarkSet__description": null,
+            "availability": {
+              "next_token": null,
+              "objects": [
+                {
+                  "uid": "01HF6MKC45G7SC961T1E7SZ903",
+                  "external_id": "recXNjJNyc6nKQIYa",
+                  "title": "Always - Premium/Standard, Europe/North America",
+                  "slug": "always-all-devices-all-customer-types",
+                  "start": "2022-01-01T00:00:00+00:00",
+                  "end": "2038-01-19T03:14:07+00:00",
+                  "timezone": "UTC"
+                }
+              ]
+            }
           }
         ]
       }
