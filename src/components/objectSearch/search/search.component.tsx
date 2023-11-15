@@ -1,8 +1,18 @@
+import {
+  useFloating,
+  offset,
+  flip,
+  shift,
+  autoUpdate,
+  useDismiss,
+  useInteractions,
+} from "@floating-ui/react";
+import { Portal } from "@headlessui/react";
 import { ColumnDef, VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
 import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode } from "graphql";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import { AvailabilityPicker } from "src/components/inputs/availabilityPicker/availabilityPicker.component";
 import { LanguageSelect } from "src/components/inputs/select";
@@ -55,29 +65,6 @@ export const Search = ({
 
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
 
-  const filtersDivRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const closeFilterOnClickOutside = (e: MouseEvent) => {
-      // If the GraphQL Query Modal is open, don't close the filters
-      const graphqlQueryModalIsOpen = !!document.getElementById(
-        "graphql-query-modal",
-      );
-      if (
-        filtersDivRef.current &&
-        !filtersDivRef.current.contains(e.target as Node) &&
-        !graphqlQueryModalIsOpen
-      ) {
-        setFilterOpen(false);
-      }
-    };
-
-    document.addEventListener("mouseup", closeFilterOnClickOutside);
-    return () => {
-      document.removeEventListener("mouseup", closeFilterOnClickOutside);
-    };
-  }, [setFilterOpen]);
-
   const onFilterSave = ({
     filters: updatedFilters,
     columnVisibility: visibleColumns,
@@ -104,13 +91,26 @@ export const Search = ({
       columns.find((col) => col?.id === value)?.header?.toString() || value,
   }));
 
+  const { refs, floatingStyles, context } = useFloating({
+    open: isFilterOpen,
+    placement: "bottom",
+    middleware: [offset(5), flip(), shift({ padding: 5 })],
+    whileElementsMounted: autoUpdate,
+    onOpenChange: setFilterOpen,
+  });
+
+  const dismiss = useDismiss(context);
+
+  const { getReferenceProps, getFloatingProps } = useInteractions([dismiss]);
+
   return (
     <div
       className={clsx(
         "flex w-full flex-col items-center sm:h-10 sm:flex-row",
         className,
       )}
-      ref={filtersDivRef}
+      ref={refs.setReference}
+      {...getReferenceProps()}
     >
       <div className="relative flex h-full w-full flex-grow flex-row">
         <SearchInput
@@ -124,29 +124,36 @@ export const Search = ({
           toggleFilterOpen={() => setFilterOpen(!isFilterOpen)}
           onRefresh={onRefresh}
         />
-
         <AnimatePresence>
           {isFilterOpen && (
-            <m.div
-              key="search-filter"
-              initial={{ opacity: 0, y: -50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3, type: "spring", bounce: 0.2 }}
-              className="absolute left-0 top-10 z-50 w-full md:top-14 md:w-auto"
-            >
-              <SearchFilter
-                searchType={searchType}
-                activeObjectTypes={filters.objectTypes}
-                columns={columnOptions}
-                visibleColumns={Object.keys(visibleColumns).filter(
-                  (column) => visibleColumns[column],
-                )}
-                graphqlQuery={graphqlQuery}
-                objectTypesWithConfig={objectTypesWithConfig || []}
-                onFilterSave={onFilterSave}
-              />
-            </m.div>
+            <Portal>
+              <div
+                key="search-filter"
+                ref={refs.setFloating}
+                style={{ ...floatingStyles }}
+                {...getFloatingProps()}
+                className="z-20"
+              >
+                <m.div
+                  initial={{ opacity: 0, y: -50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, type: "spring", bounce: 0.2 }}
+                >
+                  <SearchFilter
+                    searchType={searchType}
+                    activeObjectTypes={filters.objectTypes}
+                    columns={columnOptions}
+                    visibleColumns={Object.keys(visibleColumns).filter(
+                      (column) => visibleColumns[column],
+                    )}
+                    graphqlQuery={graphqlQuery}
+                    objectTypesWithConfig={objectTypesWithConfig || []}
+                    onFilterSave={onFilterSave}
+                  />
+                </m.div>
+              </div>
+            </Portal>
           )}
         </AnimatePresence>
       </div>
