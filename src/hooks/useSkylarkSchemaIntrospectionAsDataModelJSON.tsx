@@ -6,12 +6,17 @@
 import {
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
+  ParsedSkylarkObjectTypeRelationshipConfiguration,
   SkylarkObjectMeta,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import { formatUriAsCustomerIdentifer } from "src/lib/utils";
+import { formatUriAsCustomerIdentifer, hasProperty } from "src/lib/utils";
 
 import { useSkylarkCreds } from "./localStorage/useCreds";
+import {
+  useAllObjectTypesRelationshipConfiguration,
+  useObjectTypeRelationshipConfiguration,
+} from "./useObjectTypeRelationshipConfiguration";
 import {
   useAllObjectsMeta,
   useSkylarkObjectTypesWithConfig,
@@ -200,6 +205,7 @@ const getRelationshipsConfigDefaultSortField = (
 const unparseRelationships = (
   objectMeta: SkylarkObjectMeta,
   allObjectMeta: SkylarkObjectMeta[],
+  objectTypeRelationshipConfig?: ParsedSkylarkObjectTypeRelationshipConfiguration[],
 ): SystemObjectType["relationships"] => {
   const relationships = objectMeta.relationships.reduce(
     (prev, relationship): SystemObjectType["relationships"] => {
@@ -210,6 +216,12 @@ const unparseRelationships = (
         ({ objectType }) => objectType === objectMeta.name,
       );
 
+      const { config } = objectTypeRelationshipConfig?.find(
+        (relationshipConfiguration) =>
+          relationshipConfiguration.relationshipName ===
+          relationship.relationshipName,
+      ) || { config: null };
+
       return {
         ...prev,
         [relationship.relationshipName]: {
@@ -218,6 +230,7 @@ const unparseRelationships = (
             reverseObjectRelationship?.relationshipName || "",
           config: {
             default_sort_field:
+              config?.defaultSortField ||
               getRelationshipsConfigDefaultSortField(reverseObject),
           },
         },
@@ -317,6 +330,10 @@ const parseDataModel = (
     config: ParsedSkylarkObjectConfig;
   }[],
   accountUri?: string,
+  relationshipConfiguration?: Record<
+    string,
+    ParsedSkylarkObjectTypeRelationshipConfiguration[]
+  >,
 ) => {
   const { systemTypes, customTypes } = allObjectMeta.reduce(
     (
@@ -335,6 +352,12 @@ const parseDataModel = (
       );
       const parsedConfig = objectTypeWithParsedConfig?.config;
 
+      const objectTypeRelationshipConfig =
+        (relationshipConfiguration &&
+          hasProperty(relationshipConfiguration, objectMeta.name) &&
+          relationshipConfiguration[objectMeta.name]) ||
+        undefined;
+
       if (isSystemObject) {
         return {
           ...prev,
@@ -342,7 +365,11 @@ const parseDataModel = (
             ...prev.systemTypes,
             [objectMeta.name]: {
               config: unparseObjectConfig(objectMeta, parsedConfig),
-              relationships: unparseRelationships(objectMeta, allObjectMeta),
+              relationships: unparseRelationships(
+                objectMeta,
+                allObjectMeta,
+                objectTypeRelationshipConfig,
+              ),
             },
           },
         };
@@ -359,7 +386,11 @@ const parseDataModel = (
             config: unparseObjectConfig(objectMeta, parsedConfig),
             global_fields,
             language_fields,
-            relationships: unparseRelationships(objectMeta, allObjectMeta),
+            relationships: unparseRelationships(
+              objectMeta,
+              allObjectMeta,
+              objectTypeRelationshipConfig,
+            ),
           },
         },
       };
@@ -396,10 +427,22 @@ export const useGenerateDataModelFromSkylarkSchema = () => {
 
   const { objects: allObjectMeta } = useAllObjectsMeta(false);
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig(); // TODO don't just get searchable
+  const {
+    objectTypeRelationshipConfig,
+    isLoading: isLoadingRelationshipConfig,
+    enabled: isEnabledRelationshipConfig,
+  } = useAllObjectTypesRelationshipConfiguration();
 
   const parsedDataModel =
-    allObjectMeta && objectTypesWithConfig
-      ? parseDataModel(allObjectMeta, objectTypesWithConfig, creds?.uri)
+    allObjectMeta &&
+    objectTypesWithConfig &&
+    (!isLoadingRelationshipConfig || !isEnabledRelationshipConfig)
+      ? parseDataModel(
+          allObjectMeta,
+          objectTypesWithConfig,
+          creds?.uri,
+          objectTypeRelationshipConfig,
+        )
       : undefined;
 
   return { dataModel: parsedDataModel };

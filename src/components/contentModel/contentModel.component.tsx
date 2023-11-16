@@ -43,6 +43,7 @@ export const ContentModel = () => {
                   key={`${activeObjectType}-${config}`}
                   objectMeta={objectMeta}
                   objectConfig={config}
+                  allObjectsMeta={allObjectsMeta}
                 />
               )}
           </div>

@@ -1,6 +1,7 @@
 export enum QueryKeys {
   Schema = "schema",
   ObjectTypesConfig = "objectTypesConfig",
+  ObjectTypeRelationshipConfig = "objectTypesRelationshipConfig",
   Account = "account",
   AccountStatus = "accountStatus",
   Search = "search",

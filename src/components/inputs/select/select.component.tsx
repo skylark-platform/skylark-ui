@@ -37,7 +37,7 @@ export interface SelectProps {
   options: SelectOption[];
   label?: string;
   labelVariant?: "default" | "form";
-  placeholder: string;
+  placeholder: string | null;
   className?: string;
   optionsClassName?: string;
   disabled?: boolean;
@@ -379,7 +379,11 @@ export const Select = forwardRef(
                     option.label || option.value
                   }
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder={placeholder || "Select option"}
+                  placeholder={
+                    placeholder === null
+                      ? undefined
+                      : placeholder || "Select option"
+                  }
                   ref={propRef as Ref<HTMLInputElement> | undefined}
                 />
                 <span className="absolute inset-y-0 right-0 flex items-center">

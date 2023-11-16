@@ -11,6 +11,7 @@ import {
   SkylarkObjectMeta,
   ParsedSkylarkObjectConfigFieldConfig,
   InputFieldWithFieldConfig,
+  SkylarkObjectConfigFieldType,
 } from "src/interfaces/skylark";
 import { isSkylarkObjectType } from "src/lib/utils";
 
@@ -133,9 +134,11 @@ const createFieldSections = (
 export const ObjectTypeEditor = ({
   objectMeta,
   objectConfig,
+  allObjectsMeta,
 }: {
   objectMeta: SkylarkObjectMeta;
   objectConfig?: ParsedSkylarkObjectConfig;
+  allObjectsMeta: SkylarkObjectMeta[];
 }) => {
   const form = useForm<ContentModelEditorForm>({
     // Can't use onSubmit because we don't have a submit button within the form
@@ -242,7 +245,11 @@ export const ObjectTypeEditor = ({
         objectMeta={objectMeta}
         objectConfig={objectConfig}
       />
-      <RelationshipsSection form={form} objectMeta={objectMeta} />
+      <RelationshipsSection
+        form={form}
+        objectMeta={objectMeta}
+        allObjectsMeta={allObjectsMeta}
+      />
     </div>
   );
 };
