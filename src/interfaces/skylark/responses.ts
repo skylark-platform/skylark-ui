@@ -115,7 +115,7 @@ export interface GQLSkylarkGetObjectAvailabilityResponse {
     availability: {
       next_token: NextToken;
       objects: SkylarkGraphQLAvailability[];
-    };
+    } | null;
   };
 }
 

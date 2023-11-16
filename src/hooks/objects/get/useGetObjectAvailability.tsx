@@ -140,7 +140,9 @@ export const useGetObjectAvailability = (
     useMemo(
       () =>
         data?.pages
-          ?.flatMap((page) => page.getObjectAvailability.availability.objects)
+          ?.flatMap(
+            (page) => page.getObjectAvailability.availability?.objects || [],
+          )
           .map((object): ParsedSkylarkObjectAvailabilityObject => {
             return {
               ...object,
@@ -149,6 +151,10 @@ export const useGetObjectAvailability = (
               start: object.start || "",
               end: object.end || "",
               timezone: object.timezone || "",
+              inherited: {
+                from: object.inherited_from,
+                via: object.inherited_via,
+              },
               dimensions: object.dimensions.objects,
             };
           }),

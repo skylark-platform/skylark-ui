@@ -405,6 +405,24 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                           key: dimension.uid,
                         }))}
                     />
+
+                    {(obj.inherited.from || obj.inherited.via) && (
+                      <AvailabilityValueGrid
+                        header="Inheritance"
+                        data={[
+                          {
+                            label: "From",
+                            key: "from",
+                            value: obj.inherited.from || "",
+                          },
+                          {
+                            label: "Via",
+                            key: "via",
+                            value: obj.inherited.via || "",
+                          },
+                        ]}
+                      />
+                    )}
                   </div>
                 );
               })

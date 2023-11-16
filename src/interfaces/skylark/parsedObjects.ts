@@ -39,6 +39,7 @@ export interface ParsedSkylarkObjectAvailabilityObject {
   start: string;
   end: string;
   timezone: string;
+  inherited: { from: string | null; via: string | null };
   dimensions: SkylarkGraphQLAvailabilityDimensionWithValues[];
 }
 
