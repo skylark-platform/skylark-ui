@@ -95,6 +95,7 @@ export const createFlatfileObjectsInSkylark = async (
               objectType,
               data,
               skylarkObjectOperations.create.inputs,
+              true,
             );
 
             const operation = {
