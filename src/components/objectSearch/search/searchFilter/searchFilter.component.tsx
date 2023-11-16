@@ -150,7 +150,7 @@ const FilterColumns = ({
   }, [allObjectsMeta, columns, objectTypesWithConfig, updatedVisibleColumns]);
 
   return (
-    <section>
+    <section data-cy="column-filters">
       <div className="flex mb-2 text-manatee-600 justify-between">
         <h4 className="select-none font-semibold mr-2">Columns</h4>
         <div className="flex justify-center">
@@ -177,7 +177,7 @@ const FilterColumns = ({
               System & Special Columns
             </h4>
             <CheckboxGrid
-              label="special"
+              label="columns-special"
               hideLabel
               withToggleAll
               className="mt-2"
@@ -194,7 +194,7 @@ const FilterColumns = ({
                   {config?.objectTypeDisplayName || objectType} fields
                 </h4>
                 <CheckboxGrid
-                  label={objectType}
+                  label={`columns-${objectType}`}
                   hideLabel
                   withToggleAll
                   options={options}

@@ -46,7 +46,11 @@ const visibleColumns: VisibilityState = Object.fromEntries(
 );
 
 const Template: ComponentStory<typeof Search> = (args) => {
-  return <Search {...args} />;
+  return (
+    <div className="w-full h-[500px]">
+      <Search {...args} />
+    </div>
+  );
 };
 
 export const Default = Template.bind({});

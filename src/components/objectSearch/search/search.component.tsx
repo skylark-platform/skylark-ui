@@ -93,7 +93,7 @@ export const Search = ({
 
   const { refs, floatingStyles, context } = useFloating({
     open: isFilterOpen,
-    placement: "bottom",
+    placement: "bottom-start",
     middleware: [offset(5), flip(), shift({ padding: 5 })],
     whileElementsMounted: autoUpdate,
     onOpenChange: setFilterOpen,

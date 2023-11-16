@@ -176,7 +176,28 @@ describe("Content Library - Search", () => {
     cy.contains("Asset").should("exist");
     cy.get('[aria-label="Open Search Options"]').click();
 
-    const columnsFilters = cy.get("[data-testid=checkbox-grid-columns]");
+    cy.get("#checkbox-sectioned-by-object-types-toggle-all").click();
+
+    const columnsFilters = cy.get("[data-cy=column-filters]");
+
+    cy.contains("Apply").should("be.disabled");
+
+    columnsFilters
+      .get(`#checkbox-columns-special-skylark-ui-display-field`)
+      .click();
+    columnsFilters.get(`#checkbox-columns-special-uid`).click();
+    columnsFilters.get(`#checkbox-columns-skylarkasset-internal_title`).click();
+
+    cy.contains("Apply").should("not.be.disabled").click();
+  });
+
+  it("filters for only title, uid, external_id, title_short fields (old column filters - all fields in a single Checkbox)", () => {
+    cy.contains("Asset").should("exist");
+    cy.get('[aria-label="Open Search Options"]').click();
+
+    cy.get('button[role="switch"]').click({ force: true });
+
+    const columnsFilters = cy.get("[data-cy=column-filters]");
 
     columnsFilters.contains("Toggle all").click();
     cy.contains("Apply").should("be.disabled");
@@ -188,7 +209,7 @@ describe("Content Library - Search", () => {
       "synopsis",
       "synopsis_short",
     ].forEach((field) => {
-      columnsFilters.get(`#checkbox-columns-${field}`).click();
+      columnsFilters.get(`#checkbox-all-fields-${field}`).click();
     });
     cy.contains("Apply").should("not.be.disabled").click();
   });
