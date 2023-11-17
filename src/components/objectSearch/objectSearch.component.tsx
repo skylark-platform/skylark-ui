@@ -276,7 +276,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             prev.columnOrder.length > 0
               ? [...new Set([...prev.columnOrder, ...sortedHeaders])]
               : prev.columnOrder;
-          console.log({ prev, newColumnOrder, updatedVisibleColumns });
+
           return {
             ...prev,
             columnVisibility: updatedVisibleColumns,
