@@ -118,7 +118,7 @@ export const FieldsSection = ({
   const { fieldSections, primaryField } = form.watch();
 
   return (
-    <SectionWrapper>
+    <SectionWrapper data-testid="fields-editor">
       <SectionHeader>Fields</SectionHeader>
       {/* TODO add Skeleton here with hardcoded headings as sections headers can be filtered out when no fields exist */}
       {Object.entries(fieldSections).map(([id, { title, fields }]) => (

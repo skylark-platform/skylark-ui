@@ -5,6 +5,11 @@ on:
     branches:
       - main
   pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
 
 jobs:
   build:
@@ -66,7 +71,7 @@ jobs:
           record: true
           parallel: true
           config-file: cypress.config.ts
-          command-prefix: "percy exec --parallel -- npx"
+          command-prefix: ${{ github.event.pull_request.draft == false && 'percy exec --parallel -- npx' || '' }}
           group: "Skylark UI"
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}

@@ -30,7 +30,40 @@ export const createGetAllObjectsConfigQuery = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(query, { pretty: true });
+  const graphQLQuery = jsonToGraphQLQuery(query);
+
+  return gql(graphQLQuery);
+};
+
+export const createGetAllObjectsRelationshipConfigurationQuery = (
+  objectTypes?: SkylarkObjectType[],
+) => {
+  if (!objectTypes) {
+    return null;
+  }
+
+  const query = {
+    query: {
+      __name: "LIST_ALL_OBJECT_TYPES_RELATIONSHIP_CONFIGURATION",
+      ...objectTypes.reduce((acc, objectType) => {
+        return {
+          ...acc,
+          [objectType]: {
+            __aliasFor: "listRelationshipConfiguration",
+            __args: {
+              object_type: new EnumType(objectType),
+            },
+            relationship_name: true,
+            config: {
+              default_sort_field: true,
+            },
+          },
+        };
+      }, {}),
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(query);
 
   return gql(graphQLQuery);
 };
