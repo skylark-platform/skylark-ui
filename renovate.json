@@ -10,5 +10,6 @@
       "groupSlug": "all-minor-patch"
     }
   ],
-  "schedule": ["before 4am on Monday"]
+  "schedule": ["before 4am on Monday"],
+  "draftPR": true
 }
