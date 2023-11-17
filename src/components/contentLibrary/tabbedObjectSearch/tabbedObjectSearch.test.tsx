@@ -38,7 +38,7 @@ const mockLocalStorage = (initialTabs?: ObjectSearchTab[]) => {
 };
 
 const renderWithoutLogoAnimation = async () => {
-  render(<TabbedObjectSearchWithAccount skipLogoAnimation />);
+  render(<TabbedObjectSearchWithAccount skipLogoAnimation id="test" />);
 };
 
 afterEach(() => {
@@ -76,7 +76,7 @@ test("Loads the default tabs when localStorage is empty (verify logo animation d
 test("Changing tabs", async () => {
   mockLocalStorage();
 
-  render(<TabbedObjectSearchWithAccount />);
+  render(<TabbedObjectSearchWithAccount id="test" />);
 
   await waitForElementToBeRemoved(
     () => screen.queryByTestId("animated-skylark-logo"),

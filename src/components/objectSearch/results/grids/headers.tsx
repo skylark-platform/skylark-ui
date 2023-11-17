@@ -8,12 +8,14 @@ import { ParsedSkylarkObject } from "src/interfaces/skylark";
 import { DragType, useDraggable, useDroppable } from "src/lib/dndkit/dndkit";
 
 export const HeaderCell = ({
+  tableId,
   header,
   virtualColumn,
   paddingLeft = 0,
   isDraggable,
   onMouseEnter,
 }: {
+  tableId: string;
   header: Header<ParsedSkylarkObject, string>;
   virtualColumn: VirtualItem;
   paddingLeft?: number;
@@ -24,7 +26,7 @@ export const HeaderCell = ({
 
   const { setNodeRef: setDropRef } = useDroppable({
     type: DragType.OBJECT_SEARCH_REORDER_COLUMNS,
-    id: `drop-${column.id}`,
+    id: `${tableId}-column-reorder-drop-${column.id}`,
     data: {
       column,
     },
@@ -33,7 +35,7 @@ export const HeaderCell = ({
 
   const { attributes, listeners, setNodeRef } = useDraggable({
     type: DragType.OBJECT_SEARCH_REORDER_COLUMNS,
-    id: `drag-${column.id}`,
+    id: `${tableId}-column-reorder-drag-${column.id}`,
     data: {
       column,
     },

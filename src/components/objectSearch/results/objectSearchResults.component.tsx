@@ -39,6 +39,7 @@ import {
 } from "./grids";
 
 export interface ObjectSearchResultsProps {
+  tableId: string;
   tableColumns: ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[];
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
@@ -77,6 +78,7 @@ const splitVirtualColumns = (
 };
 
 export const ObjectSearchResults = ({
+  tableId,
   tableColumns,
   tableState,
   panelObject,
@@ -449,6 +451,7 @@ export const ObjectSearchResults = ({
             {virtualColumns.left.length > 0 && (
               <ObjectSearchResultsLeftGrid
                 table={table}
+                tableId={tableId}
                 virtualColumns={virtualColumns.left}
                 virtualRows={rowVirtualizer.virtualItems}
                 headers={headers}
@@ -470,12 +473,14 @@ export const ObjectSearchResults = ({
               />
             )}
             <ObjectSearchResultGridDivider
+              tableId={tableId}
               leftGridSize={leftGridTotalSize}
               totalVirtualSizes={totalVirtualSizes}
             />
             {virtualColumns.right.length > 0 && (
               <ObjectSearchResultsRightGrid
                 table={table}
+                tableId={tableId}
                 totalVirtualSizes={totalVirtualSizes}
                 hasScrolledRight={hasScrolledRight}
                 virtualColumns={virtualColumns.right}

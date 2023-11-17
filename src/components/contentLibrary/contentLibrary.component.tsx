@@ -245,6 +245,7 @@ export const ContentLibrary = ({
             <div className="absolute inset-0 z-[100] block bg-black/5"></div>
           )}
           <TabbedObjectSearchWithAccount
+            id="content-library-search"
             panelObject={activePanelObject}
             setPanelObject={setPanelObject}
             isPanelOpen={!!activePanelObject}
