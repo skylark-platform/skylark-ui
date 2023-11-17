@@ -91,15 +91,8 @@ export const createCreateObjectMutation = (
     objectMeta.name,
     metadata,
     objectMeta.operations.update.inputs,
+    true,
   );
-
-  // Don't send a blank External ID
-  if (
-    hasProperty(parsedMetadata, SkylarkSystemField.ExternalID) &&
-    !parsedMetadata.external_id
-  ) {
-    delete parsedMetadata.external_id;
-  }
 
   const common = generateVariablesAndArgs(
     objectMeta.name,

@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -188,8 +187,6 @@ export const Panel = ({
     selectedTab,
   });
 
-  const { query: urlQuery } = useRouter();
-
   const [panelInEditMode, setEditMode] = useState(false);
 
   const [contentObjects, setContentObjects] = useState<{
@@ -267,11 +264,15 @@ export const Panel = ({
       [
         PanelTab.Metadata,
         objectMeta?.hasContent && PanelTab.Content,
-        hasProperty(urlQuery, "next") &&
-          objectMeta?.name === BuiltInSkylarkObjectType.SkylarkAsset &&
+        (objectMeta?.name === BuiltInSkylarkObjectType.SkylarkAsset ||
+          objectMeta?.name === BuiltInSkylarkObjectType.SkylarkLiveAsset) &&
           PanelTab.Playback,
         objectMeta?.hasRelationships && PanelTab.Relationships,
-        objectMeta?.images && PanelTab.Imagery,
+        // If relationship, put Playback tab after Relationships
+        (objectMeta?.builtinObjectRelationships?.hasAssets ||
+          objectMeta?.builtinObjectRelationships?.hasLiveAssets) &&
+          PanelTab.Playback,
+        objectMeta?.builtinObjectRelationships?.images && PanelTab.Imagery,
         objectMeta?.hasContentOf && PanelTab.ContentOf,
         objectMeta?.hasAvailability && PanelTab.Availability,
         objectMeta?.name === BuiltInSkylarkObjectType.Availability &&
@@ -284,9 +285,8 @@ export const Panel = ({
       objectMeta?.hasContent,
       objectMeta?.hasContentOf,
       objectMeta?.hasRelationships,
-      objectMeta?.images,
+      objectMeta?.builtinObjectRelationships,
       objectMeta?.name,
-      urlQuery,
     ],
   );
 
@@ -589,7 +589,9 @@ export const Panel = ({
           {selectedTab === PanelTab.Imagery && data?.images && (
             <PanelImages
               isPage={isPage}
-              images={data.images}
+              objectType={objectType}
+              uid={uid}
+              language={language}
               setPanelObject={setPanelObject}
               inEditMode={inEditMode}
             />
@@ -597,6 +599,10 @@ export const Panel = ({
           {selectedTab === PanelTab.Playback && (
             <PanelPlayback
               isPage={isPage}
+              objectType={objectType}
+              uid={uid}
+              language={language}
+              objectMeta={objectMeta}
               metadata={formParsedMetadata}
               setPanelObject={setPanelObject}
               inEditMode={inEditMode}
@@ -606,7 +612,7 @@ export const Panel = ({
             <PanelAvailability
               isPage={isPage}
               objectType={objectType}
-              objectUid={uid}
+              uid={uid}
               language={language}
               setPanelObject={setPanelObject}
               inEditMode={inEditMode}

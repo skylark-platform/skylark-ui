@@ -105,7 +105,9 @@ describe("getObjectOperations", () => {
         relationshipName: "tags",
       },
     ]);
-    expect(got.images?.relationshipNames).toEqual(["images"]);
+    expect(got.builtinObjectRelationships?.images?.relationshipNames).toEqual([
+      "images",
+    ]);
 
     // Check operations
     expect(got.operations.get).toBeTruthy();
@@ -205,7 +207,12 @@ describe("getObjectOperations", () => {
         relationshipName: "themes",
       },
     ]);
-    expect(got.images?.relationshipNames).toEqual(["images"]);
+    expect(got.builtinObjectRelationships?.images?.relationshipNames).toEqual([
+      "images",
+    ]);
+
+    expect(got.builtinObjectRelationships?.hasAssets).toBeTruthy();
+    expect(got.builtinObjectRelationships?.hasLiveAssets).toBeFalsy();
 
     // Check operations
     expect(got.operations.get).toBeTruthy();
@@ -273,7 +280,9 @@ describe("getObjectOperations", () => {
     expect(got.hasContent).toBeFalsy();
     expect(got.hasRelationships).toBeFalsy();
     expect(got.relationships).toEqual([]);
-    expect(got.images?.relationshipNames).toBeUndefined();
+    expect(
+      got.builtinObjectRelationships?.images?.relationshipNames,
+    ).toBeUndefined();
 
     // Check operations
     expect(got.operations.get).toBeTruthy();
@@ -312,10 +321,18 @@ describe("getObjectOperations", () => {
       "SkylarkAsset",
       GQLSkylarkSchemaQueryFixture.data.__schema,
     );
-    expect(got.images).toBeTruthy();
-    expect(got.images?.relationshipNames).toEqual(["images"]);
-    expect(got.images?.objectMeta.name).toEqual("SkylarkImage");
-    expect(got.images?.objectMeta.fields.length).toEqual(14);
+    expect(
+      got.builtinObjectRelationships?.images?.relationshipNames,
+    ).toBeTruthy();
+    expect(got.builtinObjectRelationships?.images?.relationshipNames).toEqual([
+      "images",
+    ]);
+    expect(got.builtinObjectRelationships?.images?.objectMeta.name).toEqual(
+      "SkylarkImage",
+    );
+    expect(
+      got.builtinObjectRelationships?.images?.objectMeta.fields.length,
+    ).toEqual(14);
   });
 
   test("throws when an object type doesn't exist", () => {

@@ -120,3 +120,14 @@ export const GET_ACCOUNT_STATUS = gql`
     }
   }
 `;
+
+export const LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION = gql`
+  query LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION($objectType: ObjectTypes!) {
+    listRelationshipConfiguration(object_type: $objectType) {
+      relationship_name
+      config {
+        default_sort_field
+      }
+    }
+  }
+`;

@@ -178,7 +178,7 @@ describe("availability view", () => {
 
     const { start, end } =
       GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
-        .availability.objects[0];
+        .availability.objects[1];
     const startReadable = formatReadableDateTime(start);
     const endReadable = formatReadableDateTime(end);
     expect(screen.getByText(startReadable)).toBeInTheDocument();

@@ -83,6 +83,50 @@ test("changes checkboxes and calls onFilterSave when apply is clicked", async ()
   });
 });
 
+test("changes checkboxes and calls onFilterSave when apply is clicked (old column filter - all fields in a single CheckboxGrid)", async () => {
+  const onFilterSave = jest.fn();
+
+  render(
+    <SearchFilter
+      searchType={SearchType.Search}
+      objectTypesWithConfig={objectTypesWithConfig}
+      activeObjectTypes={objectTypes}
+      columns={columnOpts}
+      visibleColumns={columns}
+      onFilterSave={onFilterSave}
+      graphqlQuery={graphqlQuery}
+    />,
+  );
+
+  await screen.findAllByRole("checkbox");
+
+  const columnFilterSwitch = await screen.findByRole("switch");
+  fireEvent.click(columnFilterSwitch);
+
+  const seasonCheckbox = await screen.findByRole("checkbox", {
+    name: "Season",
+  });
+  await fireEvent.click(seasonCheckbox);
+
+  const slugCheckbox = await screen.findByRole("checkbox", { name: "slug" });
+  await fireEvent.click(slugCheckbox);
+
+  const uidLookup = await screen.findByText("UID & External ID");
+  await fireEvent.click(uidLookup);
+
+  await fireEvent.click(await screen.findByText("Apply"));
+
+  expect(onFilterSave).toHaveBeenCalledWith({
+    filters: { objectTypes: ["Brand", "Episode"] },
+    columnVisibility: {
+      external_id: true,
+      slug: false,
+      uid: true,
+    },
+    searchType: SearchType.UIDExtIDLookup,
+  });
+});
+
 test("when reset is clicked, all filters are returned to all options checked without saving", async () => {
   const onFilterSave = jest.fn();
 

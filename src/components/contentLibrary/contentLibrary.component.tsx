@@ -114,8 +114,8 @@ export const ContentLibrary = ({
     width === undefined
       ? undefined
       : windowSize < MINIMUM_SIZES.panel
-      ? windowSize
-      : windowSize - width,
+        ? windowSize
+        : windowSize - width,
   );
   const lastPanelWidth = useMotionValue<number | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -245,6 +245,7 @@ export const ContentLibrary = ({
             <div className="absolute inset-0 z-[100] block bg-black/5"></div>
           )}
           <TabbedObjectSearchWithAccount
+            id="content-library-search"
             panelObject={activePanelObject}
             setPanelObject={setPanelObject}
             isPanelOpen={!!activePanelObject}

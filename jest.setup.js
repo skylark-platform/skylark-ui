@@ -6,6 +6,13 @@ import "whatwg-fetch";
 import { server } from "./src/__tests__/mocks/server";
 import { LOCAL_STORAGE } from "./src/constants/localStorage";
 
+// Replace react-player/lazy with react-player
+// Fix Segmentation Fault when using 'react-player/lazy' in tests
+// Learn more: https://github.com/cookpete/react-player/issues/1391
+jest.mock("react-player/lazy", () => {
+  return jest.requireActual("react-player");
+});
+
 // Establish API mocking before all tests.
 beforeAll(() => {
   Storage.prototype.getItem = jest.fn().mockImplementation((key) => {

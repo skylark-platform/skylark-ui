@@ -45,7 +45,7 @@ import { PanelSectionLayout } from "./panelSectionLayout.component";
 interface PanelAvailabilityProps {
   isPage?: boolean;
   objectType: string;
-  objectUid: string;
+  uid: string;
   language: string;
   inEditMode: boolean;
   droppedObjects?: ParsedSkylarkObject[];
@@ -71,8 +71,8 @@ const sortDimensionsByTitleOrSlug = (
   (a.title || a.slug) > (b.title || b.slug)
     ? 1
     : (b.title || b.slug) > (a.title || a.slug)
-    ? -1
-    : 0;
+      ? -1
+      : 0;
 
 const AvailabilityValueGrid = ({
   header,
@@ -193,7 +193,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
   const {
     isPage,
     objectType,
-    objectUid,
+    uid,
     language,
     inEditMode,
     setPanelObject,
@@ -204,7 +204,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
   } = props;
 
   const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
-    useGetObjectAvailability(objectType, objectUid, { language });
+    useGetObjectAvailability(objectType, uid, { language });
 
   const [objectSearchModalOpen, setObjectSearchModalOpen] = useState(false);
 
@@ -248,7 +248,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
       const { addedObjects, errors } = handleDroppedAvailabilities({
         droppedObjects,
         existingObjects: availabilityObjects,
-        activeObjectUid: objectUid,
+        activeObjectUid: uid,
       });
 
       setAvailabilityObjects(
@@ -267,7 +267,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
     droppedObjects,
     modifiedAvailabilityObjects?.added,
     modifiedAvailabilityObjects?.removed,
-    objectUid,
+    uid,
     setAvailabilityObjects,
   ]);
 
@@ -439,7 +439,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
             const { addedObjects, errors } = handleDroppedAvailabilities({
               droppedObjects: checkedObjects,
               existingObjects: availabilityObjects,
-              activeObjectUid: objectUid,
+              activeObjectUid: uid,
             });
 
             setAvailabilityObjects(

@@ -842,6 +842,26 @@ describe("parseMetadataForGraphQLRequest", () => {
     });
   });
 
+  test("removes a blank external_id from the parsedMetadata when create is true", () => {
+    const metadata: Record<string, SkylarkObjectMetadataField> = {
+      title: "",
+      date: "",
+      int: null,
+      [SkylarkSystemField.ExternalID]: "",
+    };
+    const got = parseMetadataForGraphQLRequest(
+      objectType,
+      metadata,
+      inputFields,
+      true,
+    );
+    expect(got).toEqual({
+      title: null,
+      date: null,
+      int: null,
+    });
+  });
+
   test("returns metadata with formatted values", () => {
     const metadata: Record<string, SkylarkObjectMetadataField> = {
       title: "string",

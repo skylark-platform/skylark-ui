@@ -355,7 +355,7 @@ export const parseSkylarkObject = (
       : availability.status;
 
   const images =
-    objectMeta?.images?.relationshipNames.map(
+    objectMeta?.builtinObjectRelationships?.images?.relationshipNames.map(
       (imageField): ParsedSkylarkObjectImageRelationship => {
         const parsedImages =
           hasProperty(object, imageField) &&
@@ -465,11 +465,17 @@ export const parseMetadataForGraphQLRequest = (
   objectType: SkylarkObjectType,
   metadata: Record<string, SkylarkObjectMetadataField>,
   inputFields: NormalizedObjectField[],
+  isCreate?: boolean,
 ) => {
   const keyValuePairs = Object.entries(metadata)
     .map(([key, value]) => {
       // Never send UID as it cannot be changed
       if (key === SkylarkSystemField.UID) {
+        return undefined;
+      }
+
+      // Never send blank ExternalID on create
+      if (key === SkylarkSystemField.ExternalID && isCreate && !value) {
         return undefined;
       }
 
