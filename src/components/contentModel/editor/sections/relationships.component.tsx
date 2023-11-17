@@ -29,7 +29,7 @@ export const RelationshipsSection = ({
   } = useObjectTypeRelationshipConfiguration(objectMeta.name);
 
   return (
-    <SectionWrapper>
+    <SectionWrapper data-testid="relationships-editor">
       <SectionHeader>Relationships</SectionHeader>
       <div className="grid grid-cols-7 gap-4 text-manatee-400 font-normal text-sm mt-4">
         <FieldHeader className="col-span-2">Object Type</FieldHeader>
@@ -53,6 +53,7 @@ export const RelationshipsSection = ({
           <div
             key={relationshipName}
             className="my-2 bg-white z-30 border shadow border-manatee-300 rounded-lg items-center h-14 px-2 grid gap-4 grid-cols-7"
+            data-testid={`relationships-editor-row-${relationshipName}`}
           >
             <ObjectTypePill
               type={objectType}
@@ -61,9 +62,9 @@ export const RelationshipsSection = ({
             />
             <p className="col-span-2">{relationshipName}</p>
             {isRelationshipConfigEnabled && (
-              <p className="col-span-2">
+              <div className="col-span-2">
                 {isLoadingRelationshipConfig ? (
-                  <span className="text-sm text-manatee-700">Loading...</span>
+                  <p className="text-sm text-manatee-700">Loading...</p>
                 ) : (
                   <Select
                     variant="primary"
@@ -87,7 +88,7 @@ export const RelationshipsSection = ({
                     }
                   />
                 )}
-              </p>
+              </div>
             )}
           </div>
         );

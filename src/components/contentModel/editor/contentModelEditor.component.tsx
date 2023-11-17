@@ -210,7 +210,7 @@ export const ObjectTypeEditor = ({
   };
 
   return (
-    <div key={objectMeta.name} className="">
+    <div key={objectMeta.name} className="" data-testid="content-model-editor">
       <div className="flex justify-between mb-10">
         <div className="flex flex-col items-start">
           <h3 className="text-2xl font-semibold">{objectMeta.name}</h3>

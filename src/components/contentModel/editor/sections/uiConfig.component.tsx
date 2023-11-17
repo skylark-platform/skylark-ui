@@ -28,7 +28,7 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
     form.watch();
 
   return (
-    <SectionWrapper>
+    <SectionWrapper data-testid="uiconfig-editor">
       <SectionHeader>UI Config</SectionHeader>
       <div className="flex flex-col md:grid md:space-x-8 max-md:space-y-8 grid-cols-2 text-sm text-manatee-600">
         <div className="grid grid-cols-3 w-full items-center auto-rows-fr gap-x-2 mt-4 gap-y-1">
@@ -47,6 +47,7 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
                   shouldDirty: true,
                 })
               }
+              placeholder={objectMeta.name}
             />
           </div>
           <FieldHeader className="col-span-1" tooltip={uiDisplayFieldTooltip}>
@@ -95,7 +96,10 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
           <p className="col-span-2">Drag the fields below to reorder.</p>
         </div>
         <div className="flex justify-center items-center">
-          <div className="flex justify-center flex-col w-full pr-4">
+          <div
+            className="flex justify-center flex-col w-full pr-4"
+            data-testid="uiconfig-editor-preview"
+          >
             <p className="mb-2">Preview:</p>
             <ObjectIdentifierCard
               forceConfigFromObject

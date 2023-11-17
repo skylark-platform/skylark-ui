@@ -1,0 +1,60 @@
+{
+  "data": {
+    "listRelationshipConfiguration": [
+      {
+        "relationship_name": "assets",
+        "config": {
+          "default_sort_field": "title_sort"
+        }
+      },
+      {
+        "relationship_name": "brands",
+        "config": {
+          "default_sort_field": "title_sort"
+        }
+      },
+      {
+        "relationship_name": "call_to_actions",
+        "config": {
+          "default_sort_field": "internal_title"
+        }
+      },
+      {
+        "relationship_name": "credits",
+        "config": {
+          "default_sort_field": "position"
+        }
+      },
+      {
+        "relationship_name": "genres",
+        "config": {
+          "default_sort_field": "title_sort"
+        }
+      },
+      {
+        "relationship_name": "images",
+        "config": {
+          "default_sort_field": "file_name"
+        }
+      },
+      {
+        "relationship_name": "ratings",
+        "config": {
+          "default_sort_field": "value"
+        }
+      },
+      {
+        "relationship_name": "tags",
+        "config": {
+          "default_sort_field": "name_sort"
+        }
+      },
+      {
+        "relationship_name": "themes",
+        "config": {
+          "default_sort_field": "name_sort"
+        }
+      }
+    ]
+  }
+}

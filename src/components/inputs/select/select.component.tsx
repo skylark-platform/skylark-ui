@@ -385,6 +385,7 @@ export const Select = forwardRef(
                       : placeholder || "Select option"
                   }
                   ref={propRef as Ref<HTMLInputElement> | undefined}
+                  data-value={selected}
                 />
                 <span className="absolute inset-y-0 right-0 flex items-center">
                   {selectedOption?.infoTooltip && (
