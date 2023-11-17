@@ -114,6 +114,7 @@ export const createGetObjectAvailabilityQuery = (
             timezone: true,
             inherited_from: true,
             inherited_via: true,
+            active: true,
             dimensions: {
               __args: {
                 limit: 50,

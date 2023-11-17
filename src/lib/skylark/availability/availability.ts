@@ -26,7 +26,12 @@ export const getSingleAvailabilityStatus = (
   now: dayjs.Dayjs,
   start: string,
   end: string,
+  active?: boolean,
 ): ParsedSkylarkObjectAvailability["status"] => {
+  if (active === false) {
+    return AvailabilityStatus.Disabled;
+  }
+
   if (now.isAfter(end)) {
     return AvailabilityStatus.Expired;
   }

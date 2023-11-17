@@ -151,6 +151,7 @@ export const useGetObjectAvailability = (
               start: object.start || "",
               end: object.end || "",
               timezone: object.timezone || "",
+              active: object.active === false ? false : true,
               inherited: {
                 from: object.inherited_from,
                 via: object.inherited_via,

@@ -306,6 +306,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                   now,
                   obj.start || "",
                   obj.end || "",
+                  obj.active,
                 );
 
                 const availabilityInfo: {
@@ -348,6 +349,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                       status === AvailabilityStatus.Expired && "border-l-error",
                       status === AvailabilityStatus.Future &&
                         "border-l-warning",
+                      !obj.active && "opacity-40",
                     )}
                   >
                     <div className="flex items-start">
