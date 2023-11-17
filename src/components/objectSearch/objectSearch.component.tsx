@@ -272,6 +272,8 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         setTableState((prev) => ({
           ...prev,
           columnVisibility: updatedVisibleColumns,
+          // When updating columns, always include any non-ordered columns in the column order or reorder columns breaks
+          columnOrder: [...new Set([...prev.columnOrder, ...sortedHeaders])],
         }));
       }
 

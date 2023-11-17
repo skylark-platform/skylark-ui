@@ -60,7 +60,7 @@ export const HeaderCell = ({
       <div
         ref={setDropRef}
         className={clsx("absolute bottom-0 left-0 right-0 top-0")}
-      ></div>
+      />
       <div
         ref={setNodeRef}
         {...listeners}
