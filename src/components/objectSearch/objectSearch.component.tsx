@@ -271,12 +271,19 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
       }
 
       if (updatedVisibleColumns) {
-        setTableState((prev) => ({
-          ...prev,
-          columnVisibility: updatedVisibleColumns,
-          // When updating columns, always include any non-ordered columns in the column order or reorder columns breaks
-          columnOrder: [...new Set([...prev.columnOrder, ...sortedHeaders])],
-        }));
+        setTableState((prev) => {
+          // When updating columns, include any non-ordered columns in the column order or reorder columns breaks (unless its currently empty/not set)
+          const newColumnOrder =
+            prev.columnOrder.length > 0
+              ? [...new Set([...prev.columnOrder, ...sortedHeaders])]
+              : prev.columnOrder;
+
+          return {
+            ...prev,
+            columnVisibility: updatedVisibleColumns,
+            columnOrder: newColumnOrder,
+          };
+        });
       }
 
       if (searchType) {
