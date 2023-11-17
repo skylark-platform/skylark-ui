@@ -202,19 +202,16 @@ describe("Content Library - Search", () => {
       cy.contains("Movie").click();
     });
 
-    const columnsFilters = cy.get("[data-testid=checkbox-grid-columns]");
+    const columnsFilters = cy.get("[data-cy=column-filters]");
 
-    columnsFilters.contains("Toggle all").click();
+    cy.get("#checkbox-sectioned-by-object-types-toggle-all").click();
     cy.contains("Apply").should("be.disabled");
-    [
-      "skylark-ui-display-field",
-      "external_id",
-      "title_short",
-      "synopsis",
-      "synopsis_short",
-    ].forEach((field) => {
-      columnsFilters.get(`#checkbox-columns-${field}`).click();
-    });
+
+    columnsFilters
+      .get(`#checkbox-columns-special-skylark-ui-display-field`)
+      .click();
+    columnsFilters.get(`#checkbox-columns-special-external_id`).click();
+    columnsFilters.get(`#checkbox-columns-episode-internal_title`).click();
 
     cy.contains("Apply").click();
 
@@ -299,7 +296,9 @@ describe("Content Library - Search", () => {
     // Select Filters
     cy.get('[aria-label="Open Search Options"]').click();
 
-    const columnsFilters = cy.get("[data-testid=checkbox-grid-columns]");
+    cy.get('button[role="switch"]').click({ force: true });
+
+    const columnsFilters = cy.get("[data-cy=column-filters]");
 
     columnsFilters.contains("Toggle all").click();
     cy.contains("Apply").should("be.disabled");
@@ -310,7 +309,7 @@ describe("Content Library - Search", () => {
       "synopsis",
       "synopsis_short",
     ].forEach((field) => {
-      columnsFilters.get(`#checkbox-columns-${field}`).click();
+      columnsFilters.get(`#checkbox-all-fields-${field}`).click();
     });
 
     cy.contains("Apply").click();

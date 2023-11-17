@@ -39,6 +39,7 @@ import {
 } from "./grids";
 
 export interface ObjectSearchResultsProps {
+  tableId: string;
   tableColumns: ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[];
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
@@ -77,6 +78,7 @@ const splitVirtualColumns = (
 };
 
 export const ObjectSearchResults = ({
+  tableId,
   tableColumns,
   tableState,
   panelObject,
@@ -276,13 +278,7 @@ export const ObjectSearchResults = ({
     },
   });
 
-  const visibleColumns = table
-    .getVisibleFlatColumns()
-    .sort(
-      (a, b) =>
-        tableState.columnOrder.indexOf(a.id) -
-        tableState.columnOrder.indexOf(b.id),
-    );
+  const visibleColumns = table.getVisibleLeafColumns();
 
   const frozenColumnsParsedColumnsIndexes = useMemo(
     () =>
@@ -376,11 +372,7 @@ export const ObjectSearchResults = ({
         const dropzoneColumnId = event.over?.data.current?.columnId;
         if (dropzoneColumnId) {
           // When the frozen columns are changed, unfreeze any hidden columns and move to the right of the frozen columns
-          const orderedVisibleColumns = [...visibleColumns].sort(
-            (a, b) =>
-              tableState.columnOrder.indexOf(a.id) -
-              tableState.columnOrder.indexOf(b.id),
-          );
+          const orderedVisibleColumns = [...visibleColumns];
 
           const columnIndex = orderedVisibleColumns.findIndex(
             (col) => col.id === dropzoneColumnId,
@@ -459,6 +451,7 @@ export const ObjectSearchResults = ({
             {virtualColumns.left.length > 0 && (
               <ObjectSearchResultsLeftGrid
                 table={table}
+                tableId={tableId}
                 virtualColumns={virtualColumns.left}
                 virtualRows={rowVirtualizer.virtualItems}
                 headers={headers}
@@ -480,12 +473,14 @@ export const ObjectSearchResults = ({
               />
             )}
             <ObjectSearchResultGridDivider
+              tableId={tableId}
               leftGridSize={leftGridTotalSize}
               totalVirtualSizes={totalVirtualSizes}
             />
             {virtualColumns.right.length > 0 && (
               <ObjectSearchResultsRightGrid
                 table={table}
+                tableId={tableId}
                 totalVirtualSizes={totalVirtualSizes}
                 hasScrolledRight={hasScrolledRight}
                 virtualColumns={virtualColumns.right}

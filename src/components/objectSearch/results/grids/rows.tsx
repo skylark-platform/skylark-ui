@@ -13,6 +13,7 @@ import { DragType, useDraggable } from "src/lib/dndkit/dndkit";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
 interface DataRowProps {
+  tableId: string;
   virtualRow: VirtualItem;
   row: Row<ParsedSkylarkObject>;
   virtualColumns: VirtualItem[];
@@ -27,16 +28,17 @@ interface LayoutRowProps extends DataRowProps {
 }
 
 const DataRow = ({
+  tableId,
   virtualRow,
   row,
   virtualColumns,
   isDraggable,
   isLeft,
 }: DataRowProps & { isDraggable: boolean }) => {
-  const draggableId = `row-${row.id}-${isLeft ? "left" : ""}`;
+  const draggableId = `${tableId}-row-${row.id}-${isLeft ? "left" : ""}`;
   const { attributes, listeners, setNodeRef } = useDraggable({
     type: DragType.CONTENT_LIBRARY_OBJECT,
-    id: `row-${row.id}-${isLeft ? "left" : ""}`,
+    id: draggableId,
     data: {
       object: row.original,
     },
