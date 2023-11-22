@@ -45,7 +45,9 @@ const Object = () => {
   return (
     <div className="pt-nav flex w-full">
       <Head>
-        <title>{`Skylark | ${objectType} ${uid} (${language})`}</title>
+        <title>{`Skylark | ${objectType || "Object"} ${uid || ""} ${
+          language ? `(${language})` : ""
+        }`}</title>
       </Head>
       {object && (
         <div

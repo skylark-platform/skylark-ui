@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
@@ -8,13 +9,14 @@ import {
   FiEdit,
   FiExternalLink,
   FiMoreVertical,
+  FiRefreshCw,
   FiSave,
   FiTrash2,
 } from "react-icons/fi";
 import { GrGraphQl } from "react-icons/gr";
 
 import { AvailabilityLabelPill } from "src/components/availability";
-import { Button } from "src/components/button";
+import { Button, ButtonProps } from "src/components/button";
 import { ButtonWithDropdown } from "src/components/buttonWithDropdown";
 import {
   DropdownMenu,
@@ -30,6 +32,7 @@ import {
 import { PanelLabel } from "src/components/panel/panelLabel";
 import { ObjectTypePill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
+import { QueryKeys } from "src/enums/graphql";
 import { PanelTab } from "src/hooks/state";
 import {
   AvailabilityStatus,
@@ -79,6 +82,32 @@ const getAlternateSaveButtonText = (
   return "Publish";
 };
 
+const getObjectQueryKeys = Object.values(QueryKeys).filter((key) =>
+  key.startsWith(QueryKeys.GetObject),
+);
+
+const RefreshPanelQueries = (props: Omit<ButtonProps, "variant">) => {
+  const client = useQueryClient();
+
+  const onClick = () => {
+    getObjectQueryKeys.map((key) =>
+      client.refetchQueries({
+        queryKey: [key],
+      }),
+    );
+  };
+
+  return (
+    <Button
+      {...props}
+      Icon={<FiRefreshCw className="text-xl" />}
+      variant="ghost"
+      onClick={onClick}
+      aria-label="Refresh Panel"
+    />
+  );
+};
+
 export const PanelHeader = ({
   isPage,
   objectUid,
@@ -121,6 +150,16 @@ export const PanelHeader = ({
   const objectMenuOptions = useMemo(
     () => [
       {
+        id: "open-in-new-tab",
+        text: "Open in new tab",
+        Icon: <FiExternalLink className="text-lg" />,
+        onClick: () => setGraphQLModalOpen(true),
+        href: actualLanguage
+          ? `/object/${objectType}/${objectUid}?language=${actualLanguage}`
+          : `/object/${objectType}/${objectUid}`,
+        newTab: true,
+      },
+      {
         id: "graphql-query",
         text: `Get ${objectTypeDisplayName} Query`,
         Icon: (
@@ -142,7 +181,13 @@ export const PanelHeader = ({
         onClick: () => setDeleteObjectConfirmationModalOpen(true),
       },
     ],
-    [existingLanguages.length, objectTypeDisplayName, actualLanguage],
+    [
+      actualLanguage,
+      objectType,
+      objectUid,
+      objectTypeDisplayName,
+      existingLanguages.length,
+    ],
   );
 
   const changeLanguage = (val: string) => {
@@ -208,16 +253,7 @@ export const PanelHeader = ({
                 onClick={navigateToForwardPanelObject}
                 aria-label="Click to go forward"
               />
-              <Button
-                Icon={<FiExternalLink className="text-2xl" />}
-                variant="ghost"
-                href={
-                  actualLanguage
-                    ? `/object/${objectType}/${objectUid}?language=${actualLanguage}`
-                    : `/object/${objectType}/${objectUid}`
-                }
-                newTab
-              />
+              <RefreshPanelQueries disabled={inEditMode} />
             </>
           )}
           <DropdownMenu options={objectMenuOptions} placement="bottom-end">
