@@ -165,7 +165,6 @@ export const PanelHeader = ({
         id: "open-in-new-tab",
         text: "Open in new tab",
         Icon: <FiExternalLink className="text-lg" />,
-        onClick: () => setGraphQLModalOpen(true),
         href: actualLanguage
           ? `/object/${objectType}/${objectUid}?language=${actualLanguage}`
           : `/object/${objectType}/${objectUid}`,
