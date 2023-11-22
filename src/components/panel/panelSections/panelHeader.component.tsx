@@ -89,18 +89,30 @@ const getObjectQueryKeys = Object.values(QueryKeys).filter((key) =>
 const RefreshPanelQueries = (props: Omit<ButtonProps, "variant">) => {
   const client = useQueryClient();
 
-  const onClick = () => {
-    getObjectQueryKeys.map((key) =>
-      client.refetchQueries({
-        queryKey: [key],
-      }),
+  const [isFetching, setIsFetching] = useState(false);
+
+  const onClick = async () => {
+    setIsFetching(true);
+
+    await Promise.all(
+      getObjectQueryKeys.map((key) =>
+        client.refetchQueries({
+          queryKey: [key],
+        }),
+      ),
     );
+
+    setIsFetching(false);
   };
 
   return (
     <Button
       {...props}
-      Icon={<FiRefreshCw className="text-xl" />}
+      Icon={
+        <FiRefreshCw
+          className={clsx("text-xl", isFetching && "animate-spin")}
+        />
+      }
       variant="ghost"
       onClick={onClick}
       aria-label="Refresh Panel"
