@@ -31,7 +31,7 @@ export const BulkObjectOptions = ({
   );
 
   return (
-    <div>
+    <div className="max-sm:hidden">
       <DropdownMenu
         options={[
           {
