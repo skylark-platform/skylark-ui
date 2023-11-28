@@ -17,7 +17,7 @@ import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { useAccountStatus } from "src/hooks/useAccountStatus";
 import { formatUriAsCustomerIdentifer } from "src/lib/utils";
 
-import Logo from "public/images/skylark.png";
+import Logo from "public/images/skylark-christmas.png";
 
 export const Navigation = () => {
   const isClient = useIsClient();
