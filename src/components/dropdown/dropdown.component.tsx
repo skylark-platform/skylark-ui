@@ -21,6 +21,7 @@ export interface DropdownMenuOption {
   danger?: boolean;
   href?: string;
   disabled?: boolean;
+  newTab?: boolean;
   onClick?: () => void;
 }
 
@@ -133,6 +134,7 @@ const MenuItems = ({
                               href={option.href as string}
                               Icon={option.Icon}
                               text={option.text}
+                              newTab={option.newTab}
                             />
                           ) : (
                             <button

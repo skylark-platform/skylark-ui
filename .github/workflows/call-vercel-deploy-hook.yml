@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Set deploy hook secret name
         id: set-secret-name
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         env:
           INPUT_ENVIRONMENT: ${{ github.event.inputs.environment }}
         with:
