@@ -340,6 +340,7 @@ export const PanelRelationships = ({
 
           return (
             <PanelRelationshipSection
+              isEmptySection
               key={relationship.relationshipName}
               relationship={relationship}
               config={config}

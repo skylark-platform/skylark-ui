@@ -1,4 +1,5 @@
 import { useState, Fragment } from "react";
+import { sentenceCase } from "sentence-case";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import {
@@ -17,6 +18,7 @@ import {
 import { formatObjectField, hasProperty } from "src/lib/utils";
 
 interface PanelRelationshipsSectionProps {
+  isEmptySection?: boolean;
   relationship: ParsedSkylarkObjectRelationships;
   inEditMode: boolean;
   newUids: string[];
@@ -35,6 +37,7 @@ interface PanelRelationshipsSectionProps {
 }
 
 export const PanelRelationshipSection = ({
+  isEmptySection,
   relationship,
   inEditMode,
   newUids,
@@ -83,8 +86,10 @@ export const PanelRelationshipSection = ({
             }
           />
         </div>
-        {config?.defaultSortField && (
-          <p className="text-manatee-300 text-xs mb-4 hover:text-manatee-600 transition-colors cursor-default">{`Sorted by: ${config?.defaultSortField}`}</p>
+        {!isEmptySection && config?.defaultSortField && (
+          <p className="text-manatee-300 text-xs mb-4 hover:text-manatee-600 transition-colors cursor-default">{`Sorted by: ${sentenceCase(
+            config.defaultSortField,
+          )}`}</p>
         )}
       </div>
 
@@ -118,7 +123,9 @@ export const PanelRelationshipSection = ({
                   >
                     {config?.defaultSortField && (
                       <Tooltip
-                        tooltip={`${config.defaultSortField}: ${defaultSortFieldValue}`}
+                        tooltip={`${sentenceCase(
+                          config.defaultSortField,
+                        )}: ${defaultSortFieldValue}`}
                       >
                         <p className="flex max-w-8 overflow-hidden whitespace-nowrap text-sm text-manatee-500 cursor-default">
                           <span className="overflow-hidden text-ellipsis">
