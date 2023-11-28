@@ -47,7 +47,7 @@ export const Navigation = () => {
               alt="Skylark Logo"
               width="30"
               height="30"
-              className="-mt-2"
+              className="-mt-1.5 md:-mt-2"
             />
             <p className="ml-3 font-heading text-xl md:block lg:ml-4">
               Skylark
