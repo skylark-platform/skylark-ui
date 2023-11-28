@@ -127,7 +127,10 @@ export const PanelRelationshipSection = ({
                           config.defaultSortField,
                         )}: ${defaultSortFieldValue}`}
                       >
-                        <p className="flex max-w-8 overflow-hidden whitespace-nowrap text-sm text-manatee-500 cursor-default">
+                        <p
+                          className="flex max-w-8 overflow-hidden whitespace-nowrap text-sm text-manatee-500 cursor-default"
+                          data-testid="object-sort-field"
+                        >
                           <span className="overflow-hidden text-ellipsis">
                             {defaultSortFieldValue}
                           </span>

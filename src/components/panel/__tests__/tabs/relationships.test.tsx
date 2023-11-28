@@ -54,6 +54,48 @@ describe("relationships view", () => {
     );
   });
 
+  test("displays the relationship sort field", async () => {
+    render(
+      <Panel
+        {...defaultProps}
+        object={seasonWithRelationships}
+        tab={PanelTab.Relationships}
+      />,
+    );
+
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
+
+    const withinEpisodesRelationship = within(screen.getByTestId("episodes"));
+
+    await waitFor(() => {
+      expect(
+        withinEpisodesRelationship.getByText("Sorted by: Episode number"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  test("displays the value of the relationship sort field", async () => {
+    render(
+      <Panel
+        {...defaultProps}
+        object={seasonWithRelationships}
+        tab={PanelTab.Relationships}
+      />,
+    );
+
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
+
+    const withinFirstEpisodeCard = within(
+      screen.getByTestId("panel-relationship-episodes-item-1"),
+    );
+
+    await waitFor(() => {
+      expect(
+        withinFirstEpisodeCard.getByTestId("object-sort-field"),
+      ).toHaveTextContent("1");
+    });
+  });
+
   test("edit view", async () => {
     render(
       <Panel

@@ -1,6 +1,7 @@
 import { graphql } from "msw";
 
 import GQLSkylarkRelationshipConfigMovie from "src/__tests__/fixtures/skylark/queries/getObjectTypeRelationshipConfiguration/movie.json";
+import GQLSkylarkRelationshipConfigSeason from "src/__tests__/fixtures/skylark/queries/getObjectTypeRelationshipConfiguration/season.json";
 import GQLSkylarkRelationshipConfigSkylarkSet from "src/__tests__/fixtures/skylark/queries/getObjectTypeRelationshipConfiguration/skylarkSet.json";
 import GQLSkylarkIntrospectionQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/introspectionQuery.json";
 import GQLSkylarkObjectTypes from "src/__tests__/fixtures/skylark/queries/introspection/objectTypes.json";
@@ -20,6 +21,9 @@ export const introspectionHandlers = [
     ({ variables }, res, ctx) => {
       if (variables.objectType === "Movie") {
         return res(ctx.data(GQLSkylarkRelationshipConfigMovie.data));
+      }
+      if (variables.objectType === "Season") {
+        return res(ctx.data(GQLSkylarkRelationshipConfigSeason.data));
       }
       return res(ctx.data(GQLSkylarkRelationshipConfigSkylarkSet.data));
     },

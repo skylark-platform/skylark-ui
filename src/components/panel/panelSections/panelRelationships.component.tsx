@@ -303,7 +303,6 @@ export const PanelRelationships = ({
               relationshipName === relationship.relationshipName,
           ) || { config: null };
 
-          console.log({ objectTypeRelationshipConfig, config });
           return (
             <PanelRelationshipSection
               key={relationship.relationshipName}
