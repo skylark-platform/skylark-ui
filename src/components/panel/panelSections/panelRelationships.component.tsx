@@ -13,6 +13,7 @@ import { Skeleton } from "src/components/skeleton";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
 import { PanelTab, PanelTabState } from "src/hooks/state";
+import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectType,
@@ -205,6 +206,9 @@ export const PanelRelationships = ({
     variables,
   } = useGetObjectRelationships(objectType, uid, { language });
 
+  const { objectTypeRelationshipConfig } =
+    useObjectTypeRelationshipConfiguration(objectType);
+
   const relationships = useMemo(
     () =>
       inEditMode
@@ -294,10 +298,16 @@ export const PanelRelationships = ({
     >
       <div>
         {orderedRelationships?.map((relationship) => {
+          const { config } = objectTypeRelationshipConfig?.find(
+            ({ relationshipName }) =>
+              relationshipName === relationship.relationshipName,
+          ) || { config: null };
+
           return (
             <PanelRelationshipSection
               key={relationship.relationshipName}
               relationship={relationship}
+              config={config}
               inEditMode={inEditMode}
               newUids={getNewUidsForRelationship(
                 relationship.relationshipName,
@@ -322,10 +332,17 @@ export const PanelRelationships = ({
           )}
 
         {emptyOrderedRelationships?.map((relationship) => {
+          const { config } = objectTypeRelationshipConfig?.find(
+            ({ relationshipName }) =>
+              relationshipName === relationship.relationshipName,
+          ) || { config: null };
+
           return (
             <PanelRelationshipSection
+              isEmptySection
               key={relationship.relationshipName}
               relationship={relationship}
+              config={config}
               inEditMode={inEditMode}
               initialExpanded={
                 tabState.expanded?.[relationship.relationshipName]
