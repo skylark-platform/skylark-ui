@@ -25,4 +25,7 @@ export const LOCAL_STORAGE = {
     variables: "graphiql:variables",
     headers: "graphiql:headers",
   },
+  search: {
+    columnFilterVariant: "skylark:search:filter:column",
+  },
 };

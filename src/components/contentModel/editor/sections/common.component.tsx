@@ -30,8 +30,8 @@ export const InfoTooltip = ({ tooltip }: { tooltip: ReactNode }) => (
   </Tooltip>
 );
 
-export const SectionWrapper = ({ children }: { children: ReactNode }) => (
-  <section className="my-10 border-t pt-10">{children}</section>
+export const SectionWrapper = (props: { children: ReactNode }) => (
+  <section {...props} className="my-10 border-t pt-10" />
 );
 
 export const SectionHeader = ({ children }: { children: ReactNode }) => (

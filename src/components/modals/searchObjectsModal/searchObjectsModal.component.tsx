@@ -67,6 +67,7 @@ export const SearchObjectsModal = ({
     >
       <div className="ml-2 flex-grow overflow-auto pr-0 pt-2 md:ml-4 md:pl-4">
         <ObjectSearch
+          id={`search-object-modal-${objectTypes?.join("-")}`}
           initialFilters={{ objectTypes }}
           initialColumnState={initialColumnState}
           checkedObjects={checkedObjects}

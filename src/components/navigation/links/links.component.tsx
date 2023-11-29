@@ -14,6 +14,7 @@ interface LinkProps {
   href: string;
   Icon?: JSX.Element;
   className?: string;
+  newTab?: boolean;
   onClick?: () => void;
 }
 
@@ -57,8 +58,15 @@ const navigationItems = [
   },
 ];
 
-export const Link = ({ href, Icon, text, className, onClick }: LinkProps) => {
-  if (href.startsWith("http")) {
+export const Link = ({
+  href,
+  Icon,
+  text,
+  className,
+  newTab,
+  onClick,
+}: LinkProps) => {
+  if (href.startsWith("http") || newTab) {
     return (
       <a
         href={href}

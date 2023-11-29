@@ -39,6 +39,7 @@ import { LayoutRow } from "./rows";
 
 interface GridProps {
   table: Table<ParsedSkylarkObject>;
+  tableId: string;
   totalVirtualSizes: { height: number; width: number };
   rows: Row<ParsedSkylarkObject>[];
   virtualRows: VirtualItem[];
@@ -128,6 +129,7 @@ const GridSkeleton = ({
 
 export const ObjectSearchResultsLeftGrid = ({
   table,
+  tableId,
   totalVirtualSizes,
   virtualRows,
   leftGridSize: width,
@@ -170,6 +172,7 @@ export const ObjectSearchResultsLeftGrid = ({
     >
       {showFrozenColumnDropZones && (
         <FrozenColumnDropzone
+          tableId={tableId}
           columnId={unfreezeAllDropzone.id}
           height={totalVirtualSizes.height}
           leftGridSize={0}
@@ -178,6 +181,7 @@ export const ObjectSearchResultsLeftGrid = ({
         />
       )}
       <FrozenColumnDropzones
+        tableId={tableId}
         show={showFrozenColumnDropZones}
         dropzoneColumns={unfreezableVirtualColumns}
         leftGridSize={0}
@@ -210,6 +214,7 @@ export const ObjectSearchResultsLeftGrid = ({
           return (
             <HeaderCell
               key={`left-grid-header-${header.id}`}
+              tableId={tableId}
               header={header}
               virtualColumn={virtualColumn}
               onMouseEnter={() => setHoveredRow?.(null)}
@@ -228,6 +233,7 @@ export const ObjectSearchResultsLeftGrid = ({
         return (
           <LayoutRow
             key={key}
+            tableId={tableId}
             row={row}
             virtualRow={virtualRow}
             virtualColumns={virtualColumns}
@@ -271,9 +277,11 @@ const FrozenColumnDragPill = ({
 );
 
 export const ObjectSearchResultGridDivider = ({
+  tableId,
   leftGridSize,
   totalVirtualSizes,
 }: {
+  tableId: string;
   leftGridSize: number;
   totalVirtualSizes: { height: number; width: number };
 }) => {
@@ -282,7 +290,7 @@ export const ObjectSearchResultGridDivider = ({
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       type: DragType.OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS,
-      id: "MODIFY_FROZEN_COLUMNS",
+      id: `${tableId}-MODIFY_FROZEN_COLUMNS`,
       options: {
         modifiers: [snapCenterToCursor],
         dragOverlay: <FrozenColumnDragPill isDragging />,
@@ -339,12 +347,14 @@ export const ObjectSearchResultGridDivider = ({
 };
 
 const FrozenColumnDropzone = ({
+  tableId,
   columnId,
   height,
   width,
   virtualColumn,
   leftGridSize,
 }: {
+  tableId: string;
   columnId: string;
   height: number;
   width: number;
@@ -353,7 +363,7 @@ const FrozenColumnDropzone = ({
 }) => {
   const { isOver, setNodeRef } = useDroppable({
     type: DragType.OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS,
-    id: `FROZEN_COLUMN_${virtualColumn.index}`,
+    id: `${tableId}-FROZEN_COLUMN_${virtualColumn.index}`,
     data: {
       columnId,
     },
@@ -381,6 +391,7 @@ const FrozenColumnDropzones = ({
   headers,
   ...props
 }: {
+  tableId: string;
   height: number;
   dropzoneColumns: VirtualItem[];
   leftGridSize: number;
@@ -413,6 +424,7 @@ const FrozenColumnDropzones = ({
 
 export const ObjectSearchResultsRightGrid = ({
   table,
+  tableId,
   totalVirtualSizes,
   rows,
   virtualRows,
@@ -462,6 +474,7 @@ export const ObjectSearchResultsRightGrid = ({
   return (
     <div className="relative" data-testid="object-search-results-grid-right">
       <FrozenColumnDropzones
+        tableId={tableId}
         show={showFrozenColumnDropZones}
         dropzoneColumns={virtualColumns.slice(
           0,
@@ -503,6 +516,7 @@ export const ObjectSearchResultsRightGrid = ({
             return (
               <HeaderCell
                 key={key}
+                tableId={tableId}
                 header={header}
                 virtualColumn={virtualColumn}
                 paddingLeft={leftGridSize}
@@ -526,6 +540,7 @@ export const ObjectSearchResultsRightGrid = ({
           <LayoutRow
             key={key}
             row={row}
+            tableId={tableId}
             virtualRow={virtualRow}
             virtualColumns={virtualColumns}
             panelObject={panelObject}

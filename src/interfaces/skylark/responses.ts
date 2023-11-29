@@ -179,3 +179,17 @@ export type GQLSkylarkListAvailabilityDimensionValuesResponse = Record<
 export interface GQLSkylarkGetAvailabilityDimensions {
   getAvailability: SkylarkGraphQLAvailability;
 }
+
+export interface GQLSkylarkListObjectTypeRelationshipConfiguration {
+  listRelationshipConfiguration: {
+    relationship_name: string;
+    config: {
+      default_sort_field: string;
+    };
+  }[];
+}
+
+export type GQLSkylarkListAllObjectTypesRelationshipConfiguration = Record<
+  string,
+  GQLSkylarkListObjectTypeRelationshipConfiguration["listRelationshipConfiguration"]
+>;

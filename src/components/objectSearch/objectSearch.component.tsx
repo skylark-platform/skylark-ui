@@ -47,6 +47,7 @@ export interface ObjectSearchInitialColumnsState {
 }
 
 export interface ObjectSearchProps {
+  id: string;
   withObjectSelect?: boolean;
   isPanelOpen?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
@@ -131,6 +132,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   const { defaultLanguage, isLoading: isUserLoading } = useUserAccount();
 
   const {
+    id: tableId,
     setPanelObject,
     isPanelOpen,
     initialSearchType,
@@ -269,10 +271,19 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
       }
 
       if (updatedVisibleColumns) {
-        setTableState((prev) => ({
-          ...prev,
-          columnVisibility: updatedVisibleColumns,
-        }));
+        setTableState((prev) => {
+          // When updating columns, include any non-ordered columns in the column order or reorder columns breaks (unless its currently empty/not set)
+          const newColumnOrder =
+            prev.columnOrder.length > 0
+              ? [...new Set([...prev.columnOrder, ...sortedHeaders])]
+              : prev.columnOrder;
+
+          return {
+            ...prev,
+            columnVisibility: updatedVisibleColumns,
+            columnOrder: newColumnOrder,
+          };
+        });
       }
 
       if (searchType) {
@@ -292,6 +303,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     },
     [
       onStateChange,
+      sortedHeaders,
       tableState.columnOrder,
       tableState.columnPinning.left,
       tableState.columnSizing,
@@ -434,6 +446,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
           <MemoizedObjectSearchResults
             {...props}
             key={searchHash} // This will rerender all results when the searchHash changes - importantly clearing the checkboxes back to an unchecked state
+            tableId={tableId}
             tableColumns={parsedTableColumns}
             fetchNextPage={fetchNextPage}
             hasNextPage={hasNextPage}

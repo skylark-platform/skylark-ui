@@ -1,5 +1,6 @@
 import { CheckedState } from "@radix-ui/react-checkbox";
 import clsx from "clsx";
+import { ElementType } from "react";
 
 import { Checkbox } from "src/components/inputs/checkbox";
 
@@ -13,8 +14,17 @@ export type CheckboxOptionState = {
   state: CheckedState;
 };
 
+interface CheckboxGridToggleAllProps {
+  name: string;
+  options: CheckboxOptionState[];
+  checkedOptions: string[];
+  onChange: (checkedOptions: string[]) => void;
+}
+
 export interface CheckboxGridProps {
-  label?: string;
+  as?: ElementType;
+  label: string;
+  hideLabel?: boolean;
   options: CheckboxOptionState[];
   checkedOptions: string[];
   className?: string;
@@ -34,18 +44,47 @@ export const createCheckboxOptions = (
   );
 };
 
+export const CheckboxGridToggleAll = ({
+  name,
+  options,
+  checkedOptions,
+  onChange,
+}: CheckboxGridToggleAllProps) => {
+  const values = options.map(({ option: { value } }) => value);
+
+  const allOptionsChecked = options.every(({ option }) =>
+    checkedOptions.includes(option.value),
+  );
+
+  const handleToggleAll = () => {
+    onChange(
+      allOptionsChecked
+        ? checkedOptions.filter((option) => !values.includes(option))
+        : [...new Set([...checkedOptions, ...values])],
+    );
+  };
+
+  return (
+    <Checkbox
+      label="Toggle all"
+      className="mb-2"
+      onCheckedChange={handleToggleAll}
+      name={name}
+      checked={allOptionsChecked}
+    />
+  );
+};
+
 export const CheckboxGrid = ({
+  as,
   label,
+  hideLabel,
   className,
   withToggleAll,
   options,
   checkedOptions,
   onChange,
 }: CheckboxGridProps) => {
-  const allOptionsChecked = options.every(({ option }) =>
-    checkedOptions.includes(option.value),
-  );
-
   const handleChange = (option: CheckboxOption, checkedState: CheckedState) => {
     const updatedCheckedOptions = checkedState
       ? [...checkedOptions, option.value]
@@ -53,31 +92,28 @@ export const CheckboxGrid = ({
     onChange(updatedCheckedOptions);
   };
 
-  const handleToggleAll = () => {
-    onChange(
-      allOptionsChecked ? [] : options.map(({ option: { value } }) => value),
-    );
-  };
-
   const handleToggleOnly = (onlyOption: CheckboxOption) => {
     onChange([onlyOption.value]);
   };
 
+  const El = as || "div";
+
   return (
-    <section
+    <El
       className={clsx("flex flex-col text-xs", className)}
       data-testid={`checkbox-grid-${label?.split(" ").join("-").toLowerCase()}`}
     >
-      <h4 className="mb-2 select-none font-semibold text-manatee-600">
-        {label}
-      </h4>
+      {!hideLabel && (
+        <h4 className="mb-2 select-none font-semibold text-manatee-600">
+          {label}
+        </h4>
+      )}
       {withToggleAll && (
-        <Checkbox
-          label="Toggle all"
-          className="mb-2"
-          onCheckedChange={handleToggleAll}
+        <CheckboxGridToggleAll
+          onChange={onChange}
           name={`toggle-all-${label}`}
-          checked={allOptionsChecked}
+          options={options}
+          checkedOptions={checkedOptions}
         />
       )}
       <div className="columns-2 space-y-2 md:columns-4 lg:columns-5 xl:columns-6">
@@ -94,6 +130,6 @@ export const CheckboxGrid = ({
           />
         ))}
       </div>
-    </section>
+    </El>
   );
 };

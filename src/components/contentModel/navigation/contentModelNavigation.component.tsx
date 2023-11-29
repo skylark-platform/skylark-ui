@@ -105,7 +105,10 @@ export const ObjectTypeNavigation = ({
   ]);
 
   return (
-    <div className="flex flex-col text-left items-start">
+    <div
+      className="flex flex-col text-left items-start"
+      data-testid="content-editor-navigation"
+    >
       <ObjectTypeNavigationSection
         title="Sets"
         activeObjectType={activeObjectType}

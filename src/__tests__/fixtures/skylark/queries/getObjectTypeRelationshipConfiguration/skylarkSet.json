@@ -1,0 +1,24 @@
+{
+  "data": {
+    "listRelationshipConfiguration": [
+      {
+        "relationship_name": "assets",
+        "config": {
+          "default_sort_field": "title_sort"
+        }
+      },
+      {
+        "relationship_name": "images",
+        "config": {
+          "default_sort_field": "file_name"
+        }
+      },
+      {
+        "relationship_name": "tags",
+        "config": {
+          "default_sort_field": "name_sort"
+        }
+      }
+    ]
+  }
+}

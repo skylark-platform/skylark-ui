@@ -120,3 +120,10 @@ export interface ParsedSkylarkObjectRelationships {
   nextToken?: string | null;
   objects: ParsedSkylarkObject[];
 }
+
+export interface ParsedSkylarkObjectTypeRelationshipConfiguration {
+  relationshipName: string;
+  config: {
+    defaultSortField: string;
+  };
+}
