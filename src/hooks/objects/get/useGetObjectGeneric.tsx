@@ -25,7 +25,7 @@ export interface GetObjectGenericOptions {
   externalId?: string;
   objectTypes: string[] | null;
   language?: string | null;
-  availability: {
+  availability?: {
     dimensions: Record<string, string> | null;
     timeTravel: {
       datetime: string;
@@ -43,28 +43,37 @@ const select = (data: GQLSkylarkGetObjectResponse) => {
   return parsedObject;
 };
 
-export const useGetObjectGeneric = ({
-  uid,
-  externalId,
-  objectTypes,
-  language,
-  availability,
-  disabled,
-}: GetObjectGenericOptions) => {
+export const useGetObjectGeneric = (
+  {
+    uid,
+    externalId,
+    objectTypes,
+    language,
+    availability,
+    disabled,
+  }: GetObjectGenericOptions,
+  ignoreLanguage?: boolean,
+) => {
   const { objects: objectMeta } = useAllObjectsMeta(true);
 
   const { query } = useMemo(() => {
-    const query = createGetObjectGenericQuery(objectMeta, {
-      typesToRequest: objectTypes || [],
-    });
+    const query = createGetObjectGenericQuery(
+      objectMeta,
+      {
+        typesToRequest: objectTypes || [],
+      },
+      ignoreLanguage,
+    );
     return {
       query,
     };
-  }, [objectMeta, objectTypes]);
+  }, [ignoreLanguage, objectMeta, objectTypes]);
 
-  const dimensions = convertAvailabilityDimensionsObjectToGQLDimensions(
-    availability.dimensions,
-  );
+  const dimensions = availability
+    ? convertAvailabilityDimensionsObjectToGQLDimensions(
+        availability.dimensions,
+      )
+    : null;
 
   const variables: Variables = {
     uid,

@@ -24,7 +24,6 @@ export enum AvailabilityStatus {
   Future = "Future",
   Expired = "Expired",
   Unavailable = "Unavailable",
-  Disabled = "Disabled",
 }
 
 export interface ParsedSkylarkDimensionsWithValues
@@ -41,6 +40,7 @@ export interface ParsedSkylarkObjectAvailabilityObject {
   end: string;
   timezone: string;
   active: boolean;
+  hasInheritance: boolean;
   inherited: { from: string | null; via: string | null };
   dimensions: SkylarkGraphQLAvailabilityDimensionWithValues[];
 }

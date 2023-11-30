@@ -16,6 +16,7 @@ export const createGetObjectGenericQuery = (
   }: {
     typesToRequest: string[];
   },
+  ignoreLanguage?: boolean,
 ) => {
   // Default to showing all objects when no types are requested
   const objectsToRequest =
@@ -35,7 +36,7 @@ export const createGetObjectGenericQuery = (
   const { args, variables } = generateVariablesAndArgs(
     "genericGetObject",
     "Query",
-    true,
+    !ignoreLanguage,
   );
 
   const query = {

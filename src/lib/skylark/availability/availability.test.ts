@@ -44,10 +44,12 @@ describe("getObjectAvailabilityStatus", () => {
     external_id: "",
     title: "",
     slug: "",
+    hasInheritance: false,
     inherited: {
       from: "",
       via: "",
     },
+    active: true,
     dimensions: [],
   };
 

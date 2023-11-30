@@ -115,7 +115,7 @@ describe("availability view", () => {
       ),
     ).toHaveLength(0);
 
-    await waitFor(() => expect(screen.getByText("None")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getAllByText("None")).toHaveLength(2));
   });
 
   it("finds the status of each availability", async () => {
