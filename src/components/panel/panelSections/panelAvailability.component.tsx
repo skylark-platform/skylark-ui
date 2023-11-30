@@ -77,6 +77,19 @@ const sortDimensionsByTitleOrSlug = (
       ? -1
       : 0;
 
+const AvailabilitySectionWrapperAndTitle = ({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) => (
+  <div className="mb-8">
+    <h3 className="mb-2 font-semibold">{title}</h3>
+    {children}
+  </div>
+);
+
 const AvailabilityValueGrid = ({
   header,
   data,
@@ -183,16 +196,18 @@ const mergeServerAndModifiedAvailability = (
   return [...filteredServerObjects, ...modifiedAvailabilityObjects.added];
 };
 
-const PanelAvailabilityEditView = ({
+const PanelAvailabilityEditViewSection = ({
+  title,
   availabilityObjects,
   inEditMode,
   setPanelObject,
   removeAvailabilityObject,
 }: {
-  removeAvailabilityObject: (uid: string) => void;
+  title: string;
   availabilityObjects: ParsedSkylarkObject[];
+  removeAvailabilityObject: (uid: string) => void;
 } & PanelAvailabilityProps) => (
-  <div>
+  <AvailabilitySectionWrapperAndTitle title={title}>
     {availabilityObjects?.map((obj) => {
       return (
         <div key={obj.uid} className="flex items-center">
@@ -211,8 +226,38 @@ const PanelAvailabilityEditView = ({
         </div>
       );
     })}
-  </div>
+    {availabilityObjects.length === 0 && <PanelEmptyDataText />}
+  </AvailabilitySectionWrapperAndTitle>
 );
+
+const PanelAvailabilityEditView = ({
+  availabilityObjects,
+  inheritedUids,
+  ...props
+}: {
+  removeAvailabilityObject: (uid: string) => void;
+  availabilityObjects: ParsedSkylarkObject[];
+  inheritedUids: string[];
+} & PanelAvailabilityProps) => {
+  return (
+    <div>
+      <PanelAvailabilityEditViewSection
+        title="Assigned"
+        availabilityObjects={availabilityObjects.filter(
+          ({ uid }) => !inheritedUids.includes(uid),
+        )}
+        {...props}
+      />
+      <PanelAvailabilityEditViewSection
+        title="Inherited"
+        availabilityObjects={availabilityObjects.filter(({ uid }) =>
+          inheritedUids.includes(uid),
+        )}
+        {...props}
+      />
+    </div>
+  );
+};
 
 const PanelAvailabilityItemInheritanceGrid = ({
   availability,
@@ -299,8 +344,7 @@ const PanelAvailabilityReadOnlyList = ({
   now: Dayjs;
 } & PanelAvailabilityProps) => {
   return (
-    <div className="mb-8">
-      <h3 className="mb-2 font-semibold">{title}</h3>
+    <AvailabilitySectionWrapperAndTitle title={title}>
       {availabilityObjects.map((obj) => {
         const neverExpires = !!(obj.end && is2038Problem(obj.end));
         const status = getSingleAvailabilityStatus(
@@ -404,7 +448,7 @@ const PanelAvailabilityReadOnlyList = ({
         );
       })}
       {availabilityObjects.length === 0 && <PanelEmptyDataText />}
-    </div>
+    </AvailabilitySectionWrapperAndTitle>
   );
 };
 
@@ -568,6 +612,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
               <PanelAvailabilityEditView
                 {...props}
                 availabilityObjects={availabilityObjects}
+                inheritedUids={inheritedUids}
                 removeAvailabilityObject={removeAvailabilityObject}
               />
             ) : (
