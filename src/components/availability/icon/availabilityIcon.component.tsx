@@ -67,7 +67,7 @@ export const AvailabilityIcon = ({
     dayjs(a.end).isBefore(b.end) ? -1 : 1,
   );
 
-  const formatted = formatReadableDateTime(end[0].end);
+  // const formatted = formatReadableDateTime(end[0].end);
 
   const Icon = (
     <>
@@ -97,9 +97,9 @@ export const AvailabilityIcon = ({
           {status === AvailabilityStatus.Active && (
             <>
               <p className="mt-2">
-                Since {formatReadableDateTime(start[0].start)}
+                Since {formatReadableDateTime(start?.[0]?.start)}
               </p>
-              <p className="">Until {formatReadableDateTime(end[0].end)}</p>
+              <p className="">Until {formatReadableDateTime(end?.[0]?.end)}</p>
             </>
           )}
         </div>

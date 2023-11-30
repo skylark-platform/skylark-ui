@@ -121,6 +121,9 @@ const convertAvailabilityToParsedObjects = (
       availability: {
         status: null,
         objects: [],
+        active: [],
+        expired: [],
+        future: [],
       },
       objectType: BuiltInSkylarkObjectType.Availability,
       metadata: {
