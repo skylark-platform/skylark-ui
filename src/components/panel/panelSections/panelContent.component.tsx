@@ -186,6 +186,8 @@ export const PanelContent = ({
             const { object, config, meta, position } = item;
             const isNewObject = hasProperty(item, "isNewObject");
 
+            console.log({ item });
+
             const parsedObject: ParsedSkylarkObject = {
               objectType: object.__typename as string,
               uid: object.uid,
@@ -195,6 +197,9 @@ export const PanelContent = ({
               availability: {
                 status: meta.availabilityStatus,
                 objects: [],
+                active: [],
+                expired: [],
+                future: [],
               },
             };
 

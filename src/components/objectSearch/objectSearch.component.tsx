@@ -190,7 +190,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     onObjectCheckedChanged?.([]);
     // We only want to trigger this useEffect when the searchHash has changed (not resetRowsChecked)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchHash]);
+  }, [searchHash, searchType]);
 
   const isSearching = isLoading || isUserLoading;
 
@@ -445,7 +445,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         >
           <MemoizedObjectSearchResults
             {...props}
-            key={searchHash} // This will rerender all results when the searchHash changes - importantly clearing the checkboxes back to an unchecked state
+            key={`${searchType}-${searchHash}`} // This will rerender all results when the searchType or searchHash changes - importantly clearing the checkboxes back to an unchecked state
             tableId={tableId}
             tableColumns={parsedTableColumns}
             fetchNextPage={fetchNextPage}

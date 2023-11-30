@@ -45,6 +45,14 @@ export interface ParsedSkylarkObjectAvailabilityObject {
 export interface ParsedSkylarkObjectAvailability {
   status: AvailabilityStatus | null;
   objects: ParsedSkylarkObjectAvailabilityObject[];
+  // objects: {
+  //   active: ParsedSkylarkObjectAvailabilityObject[];
+  //   future: ParsedSkylarkObjectAvailabilityObject[];
+  //   expired: ParsedSkylarkObjectAvailabilityObject[];
+  // };
+  active: ParsedSkylarkObjectAvailabilityObject[];
+  future: ParsedSkylarkObjectAvailabilityObject[];
+  expired: ParsedSkylarkObjectAvailabilityObject[];
 }
 
 export interface ParsedSkylarkObjectContentObject {
