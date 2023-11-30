@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
+import { useCallback } from "react";
 
 import { createGetObjectKeyPrefix } from "src/hooks/objects/get/useGetObject";
 import { refetchSearchQueriesAfterUpdate } from "src/hooks/objects/useCreateObject";
@@ -13,12 +14,18 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import { createUpdateObjectMetadataMutation } from "src/lib/graphql/skylark/dynamicMutations";
+import {
+  createPublishVersionMutation,
+  createUpdateObjectMetadataMutation,
+} from "src/lib/graphql/skylark/dynamicMutations/objects";
 
 interface MutationVariables {
   uid: string;
   language?: string;
-  metadata: Record<string, SkylarkObjectMetadataField>;
+  metadata: Record<string, SkylarkObjectMetadataField> | null;
+  draft?: boolean;
+  languageVersion?: number;
+  globalVersion?: number;
 }
 
 export const useUpdateObjectMetadata = ({
@@ -37,16 +44,29 @@ export const useUpdateObjectMetadata = ({
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const { mutate, isLoading } = useMutation({
-    mutationFn: ({ uid, language, metadata }: MutationVariables) => {
-      const updateObjectMetadataMutation = createUpdateObjectMetadataMutation(
-        objectOperations,
-        metadata,
-        objectOperations?.isTranslatable,
-      );
+    mutationFn: ({
+      uid,
+      language,
+      metadata,
+      draft,
+      languageVersion,
+      globalVersion,
+    }: MutationVariables) => {
+      const updateObjectMetadataMutation =
+        metadata === null
+          ? createPublishVersionMutation(
+              objectOperations,
+              objectOperations?.isTranslatable,
+            )
+          : createUpdateObjectMetadataMutation(
+              objectOperations,
+              metadata,
+              objectOperations?.isTranslatable,
+            );
       return skylarkRequest<GQLSkylarkUpdateObjectMetadataResponse>(
         "mutation",
         updateObjectMetadataMutation as RequestDocument,
-        { uid, language },
+        { uid, language, draft, languageVersion, globalVersion },
       );
     },
     onSuccess: (data, { uid, language }) => {
@@ -66,15 +86,10 @@ export const useUpdateObjectMetadata = ({
     onError,
   });
 
-  const updateObjectMetadata = ({
-    uid,
-    metadata,
-    language,
-  }: {
-    uid: string;
-    metadata: Record<string, SkylarkObjectMetadataField>;
-    language: string;
-  }) => mutate({ uid, metadata, language });
+  const updateObjectMetadata = useCallback(
+    (values: MutationVariables & { language: string }) => mutate(values),
+    [mutate],
+  );
 
   return {
     updateObjectMetadata,

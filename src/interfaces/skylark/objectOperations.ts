@@ -1,9 +1,12 @@
 import { GQLScalars } from "src/interfaces/graphql/introspection";
 
+import { ParsedSkylarkObjectConfigFieldConfig } from "./parsedObjects";
+
 export enum BuiltInSkylarkObjectType {
   Availability = "Availability",
   SkylarkImage = "SkylarkImage",
   SkylarkAsset = "SkylarkAsset",
+  SkylarkLiveAsset = "SkylarkLiveAsset",
   SkylarkFavoriteList = "SkylarkFavoriteList",
 }
 
@@ -28,6 +31,8 @@ export enum SkylarkAvailabilityField {
 
 export enum SkylarkSystemGraphQLType {
   SkylarkImageListing = "SkylarkImageListing",
+  SkylarkAssetListing = "SkylarkAssetListing",
+  SkylarkLiveAssetListing = "SkylarkLiveAssetListing",
 }
 
 export type SkylarkObjectType = string | BuiltInSkylarkObjectType;
@@ -63,6 +68,11 @@ export interface NormalizedObjectField {
   isList: boolean;
   isRequired: boolean;
 }
+
+export type InputFieldWithFieldConfig = {
+  field: NormalizedObjectField;
+  config?: ParsedSkylarkObjectConfigFieldConfig;
+};
 
 interface BaseQueryMutation {
   type: "Query" | "Mutation";
@@ -103,10 +113,15 @@ export interface SkylarkObjectRelationship {
 
 export interface SkylarkObjectMeta extends SkylarkObjectFields {
   availability: SkylarkObjectMeta | null;
-  images: {
-    objectMeta: SkylarkObjectMeta;
-    relationshipNames: string[];
-  } | null;
+  builtinObjectRelationships?: {
+    hasAssets: boolean;
+    hasLiveAssets: boolean;
+    // Legacy, should be changed to use boolean value only
+    images: {
+      objectMeta: SkylarkObjectMeta;
+      relationshipNames: string[];
+    } | null;
+  };
   operations: SkylarkObjectOperations;
   relationships: SkylarkObjectRelationship[];
   hasContent: boolean;

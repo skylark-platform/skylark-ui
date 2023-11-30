@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { sentenceCase } from "sentence-case";
 
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
@@ -12,6 +12,8 @@ import { PanelSeparator } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
+import { PanelTab, PanelTabState } from "src/hooks/state";
+import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectType,
@@ -27,6 +29,7 @@ interface PanelRelationshipsProps {
   isPage?: boolean;
   objectType: SkylarkObjectType;
   uid: string;
+  tabState: PanelTabState[PanelTab.Relationships];
   modifiedRelationships: Record<
     string,
     { added: ParsedSkylarkObject[]; removed: string[] }
@@ -40,6 +43,7 @@ interface PanelRelationshipsProps {
   droppedObjects?: ParsedSkylarkObject[];
   language: string;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
+  updateActivePanelTabState: (s: Partial<PanelTabState>) => void;
 }
 
 const sortByRelationshipName = (
@@ -190,7 +194,9 @@ export const PanelRelationships = ({
   language,
   droppedObjects,
   showDropZone,
+  tabState,
   setPanelObject,
+  updateActivePanelTabState,
 }: PanelRelationshipsProps) => {
   const {
     relationships: serverRelationships,
@@ -200,12 +206,19 @@ export const PanelRelationships = ({
     variables,
   } = useGetObjectRelationships(objectType, uid, { language });
 
-  const relationships = inEditMode
-    ? addModifiedRelationshipsOntoRelationships(
-        serverRelationships,
-        modifiedRelationships,
-      )
-    : serverRelationships;
+  const { objectTypeRelationshipConfig } =
+    useObjectTypeRelationshipConfiguration(objectType);
+
+  const relationships = useMemo(
+    () =>
+      inEditMode
+        ? addModifiedRelationshipsOntoRelationships(
+            serverRelationships,
+            modifiedRelationships,
+          )
+        : serverRelationships,
+    [inEditMode, modifiedRelationships, serverRelationships],
+  );
 
   useEffect(() => {
     if (
@@ -285,20 +298,30 @@ export const PanelRelationships = ({
     >
       <div>
         {orderedRelationships?.map((relationship) => {
+          const { config } = objectTypeRelationshipConfig?.find(
+            ({ relationshipName }) =>
+              relationshipName === relationship.relationshipName,
+          ) || { config: null };
+
           return (
             <PanelRelationshipSection
               key={relationship.relationshipName}
               relationship={relationship}
+              config={config}
               inEditMode={inEditMode}
               newUids={getNewUidsForRelationship(
                 relationship.relationshipName,
                 modifiedRelationships,
               )}
+              initialExpanded={
+                tabState.expanded?.[relationship.relationshipName]
+              }
               setPanelObject={setPanelObject}
               removeRelationshipObject={({ relationshipName, uid }) => {
                 modifyRelationshipObjects(relationshipName, { removed: [uid] });
               }}
               setSearchObjectsModalState={setSearchObjectsModalState}
+              updateActivePanelTabState={updateActivePanelTabState}
             />
           );
         })}
@@ -309,11 +332,21 @@ export const PanelRelationships = ({
           )}
 
         {emptyOrderedRelationships?.map((relationship) => {
+          const { config } = objectTypeRelationshipConfig?.find(
+            ({ relationshipName }) =>
+              relationshipName === relationship.relationshipName,
+          ) || { config: null };
+
           return (
             <PanelRelationshipSection
+              isEmptySection
               key={relationship.relationshipName}
               relationship={relationship}
+              config={config}
               inEditMode={inEditMode}
+              initialExpanded={
+                tabState.expanded?.[relationship.relationshipName]
+              }
               newUids={getNewUidsForRelationship(
                 relationship.relationshipName,
                 modifiedRelationships,
@@ -323,6 +356,7 @@ export const PanelRelationships = ({
                 modifyRelationshipObjects(relationshipName, { removed: [uid] });
               }}
               setSearchObjectsModalState={setSearchObjectsModalState}
+              updateActivePanelTabState={updateActivePanelTabState}
             />
           );
         })}

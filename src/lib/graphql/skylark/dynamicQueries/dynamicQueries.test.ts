@@ -14,7 +14,7 @@ describe("createGetObjectQuery", () => {
     const got = createGetObjectQuery(episodeObjectOperations);
 
     expect(got?.loc?.source.body).toEqual(
-      "query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { __typename _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } } _config { primary_field colour display_name field_config { name ui_field_type ui_position } } uid external_id slug synopsis synopsis_short title title_short episode_number internal_title release_date title_sort year_of_release availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } images (limit: 50) { next_token objects { _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } } uid external_id slug internal_title title description type alt_text url external_url file_name content_type } } } }",
+      "query GET_Episode ($ignoreAvailability: Boolean = true, $uid: String, $externalId: String) { getObject: getEpisode (ignore_availability: $ignoreAvailability, uid: $uid, external_id: $externalId) { __typename _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } published } _config { primary_field colour display_name field_config { name ui_field_type ui_position } } uid external_id slug synopsis synopsis_short title title_short episode_number internal_title release_date title_sort year_of_release availability (limit: 50) { next_token objects { uid external_id title slug start end timezone } } } }",
     );
   });
 });
@@ -53,8 +53,6 @@ describe("createSearchObjectsQuery", () => {
             translatable: ["title"],
             global: ["episode_number"],
           },
-          // TODO use real images, availability and operations
-          images: null,
           availability: null,
           operations: {} as SkylarkObjectOperations,
           relationships: [],
@@ -87,7 +85,6 @@ describe("createSearchObjectsQuery", () => {
             translatable: ["title", "synopsis"],
             global: [],
           },
-          images: null,
           availability: null,
           operations: {} as SkylarkObjectOperations,
           relationships: [],
@@ -103,7 +100,7 @@ describe("createSearchObjectsQuery", () => {
     );
 
     expect(got?.loc?.source.body).toEqual(
-      `query SEARCH ($language: String, $queryString: String!, $offset: Int, $limit: Int, $dimensions: [UserDimension]) { search (language: $language, query: $queryString, offset: $offset, limit: $limit, dimensions: $dimensions) { __typename total_count objects { ... on Episode { __typename __Episode__title: title __Episode__episode_number: episode_number _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } } } ... on Brand { __typename __Brand__title: title __Brand__synopsis: synopsis _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } } } } } }`,
+      `query SEARCH ($language: String, $queryString: String!, $offset: Int, $limit: Int, $dimensions: [UserDimension]) { search (language: $language, query: $queryString, offset: $offset, limit: $limit, dimensions: $dimensions) { __typename total_count objects { uid ... on Episode { __typename __Episode__title: title __Episode__episode_number: episode_number _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } published } } ... on Brand { __typename __Brand__title: title __Brand__synopsis: synopsis _meta { available_languages language_data { language version } global_data { version } modified { date } created { date } published } } } } }`,
     );
   });
 });

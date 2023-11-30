@@ -24,7 +24,7 @@ export const useAccountStatus = (poll?: boolean) => {
         activationStatus: data.getActivationStatus,
         backgroundTasks: {
           queued: data.queuedBackgroundTasks.objects,
-          inProgress: data.queuedBackgroundTasks.objects,
+          inProgress: data.inProgressBackgroundTasks.objects,
           failed: data.failedBackgroundTasks.objects,
           hasQueued: data.queuedBackgroundTasks.objects.length > 0,
           hasInProgress: data.inProgressBackgroundTasks.objects.length > 0,

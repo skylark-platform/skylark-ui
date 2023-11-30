@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { graphql } from "msw";
-import { createMocks } from "node-mocks-http";
+import { NextApiRequest, NextApiResponse } from "next";
+import { createMocks, createRequest, createResponse } from "node-mocks-http";
 
 import {
   erroredFlatfileAccessKeyExchangeHandler,
@@ -15,6 +16,9 @@ import {
   FlatfileGetTemplatesResponse,
 } from "src/interfaces/flatfile/responses";
 import handler from "src/pages/api/flatfile/template";
+
+type ApiRequest = NextApiRequest & ReturnType<typeof createRequest>;
+type ApiResponse = NextApiResponse & ReturnType<typeof createResponse>;
 
 const mockConstants = constants as {
   FLATFILE_ACCESS_KEY_ID: string | null;
@@ -53,7 +57,7 @@ afterEach(() => {
 });
 
 test("returns 501 when the method is not POST", async () => {
-  const { req, res } = createMocks({
+  const { req, res } = createMocks<ApiRequest, ApiResponse>({
     method: "GET",
   });
 
@@ -65,7 +69,7 @@ test("returns 501 when the method is not POST", async () => {
 test("returns 503 when FLATFILE_ACCESS_KEY_ID or FLATFILE_SECRET_KEY are falsy", async () => {
   mockConstants.FLATFILE_ACCESS_KEY_ID = null;
 
-  const { req, res } = createMocks({
+  const { req, res } = createMocks<ApiRequest, ApiResponse>({
     method: "POST",
   });
 
@@ -75,7 +79,7 @@ test("returns 503 when FLATFILE_ACCESS_KEY_ID or FLATFILE_SECRET_KEY are falsy",
 });
 
 test("returns 400 when a request body is missing", async () => {
-  const { req, res } = createMocks({
+  const { req, res } = createMocks<ApiRequest, ApiResponse>({
     method: "POST",
     body: {},
   });
@@ -89,7 +93,7 @@ test("returns 400 when a request body is missing", async () => {
 });
 
 test("returns 400 when the name is missing from the request body", async () => {
-  const { req, res } = createMocks({
+  const { req, res } = createMocks<ApiRequest, ApiResponse>({
     method: "POST",
     body: {
       template: {},
@@ -104,7 +108,7 @@ test("returns 400 when the name is missing from the request body", async () => {
 });
 
 test("returns 400 when the template is missing from the request body", async () => {
-  const { req, res } = createMocks({
+  const { req, res } = createMocks<ApiRequest, ApiResponse>({
     method: "POST",
     body: {
       name: "name",
@@ -119,7 +123,7 @@ test("returns 400 when the template is missing from the request body", async () 
 });
 
 test("returns 400 when the accountIdentifier is missing from the request body", async () => {
-  const { req, res } = createMocks({
+  const { req, res } = createMocks<ApiRequest, ApiResponse>({
     method: "POST",
     body: {
       name: "name",
@@ -136,7 +140,7 @@ test("returns 400 when the accountIdentifier is missing from the request body", 
 });
 
 test("returns 400 when the template validation fails", async () => {
-  const { req, res } = createMocks({
+  const { req, res } = createMocks<ApiRequest, ApiResponse>({
     method: "POST",
     body: {
       name: "name",
@@ -156,7 +160,7 @@ test("returns 400 when the template validation fails", async () => {
 test("returns 500 when an error occurs while getting a token from Flatfile", async () => {
   server.use(erroredFlatfileAccessKeyExchangeHandler);
 
-  const { req, res } = createMocks({
+  const { req, res } = createMocks<ApiRequest, ApiResponse>({
     method: "POST",
     body: {
       name: "name",
@@ -174,7 +178,7 @@ test("returns 500 when an error occurs while getting a token from Flatfile", asy
 test("returns 500 when the Flatfile Template or Portal creation errors", async () => {
   server.use(erroredFlatfileTemplateSearch);
 
-  const { req, res } = createMocks({
+  const { req, res } = createMocks<ApiRequest, ApiResponse>({
     method: "POST",
     body: {
       name: "name",
@@ -210,7 +214,7 @@ test("returns 500 when the Flatfile Template creation does not return an ID", as
     }),
   );
 
-  const { req, res } = createMocks({
+  const { req, res } = createMocks<ApiRequest, ApiResponse>({
     method: "POST",
     body: {
       name: "name",
@@ -253,7 +257,7 @@ test("returns 500 when the Flatfile Portal creation does not return an ID", asyn
     }),
   );
 
-  const { req, res } = createMocks({
+  const { req, res } = createMocks<ApiRequest, ApiResponse>({
     method: "POST",
     body: {
       name: "name",
@@ -291,7 +295,7 @@ test("returns 200, the created Portal ID and import token when the Flatfile Temp
     }),
   );
 
-  const { req, res } = createMocks({
+  const { req, res } = createMocks<ApiRequest, ApiResponse>({
     method: "POST",
     body: {
       name: "name",
@@ -327,7 +331,7 @@ test("returns 200, the updated Portal ID when the Flatfile Template and Portal a
   const mockedSign = jwt.sign as jest.Mock;
   mockedSign.mockReturnValue("import-token");
 
-  const { req, res } = createMocks({
+  const { req, res } = createMocks<ApiRequest, ApiResponse>({
     method: "POST",
     body: {
       name: "name",

@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { m } from "framer-motion";
 import { Dispatch, Fragment, SetStateAction, useState } from "react";
 import {
   FiCheckSquare,
@@ -9,8 +10,10 @@ import {
   FiTrash2,
   FiXSquare,
 } from "react-icons/fi";
+import { useIsClient } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
 
+import { AnimatedLogo } from "src/components/animatedLogo/animatedLogo.component";
 import { AvailabilitySummary } from "src/components/availability";
 import { Button } from "src/components/button";
 import {
@@ -53,7 +56,12 @@ type TabbedObjectSearchProps = Omit<
   | "initialColumnState"
   | "onFilterChange"
   | "onColumnStateChange"
-> & { accountId: string };
+> & {
+  accountId: string;
+  skipLogoAnimation?: boolean;
+  animate: object;
+  initial: object;
+};
 
 const generateNewTabColumnStateForObjectType = (
   objectType: string,
@@ -275,9 +283,7 @@ const NewTabButton = ({
         },
         {
           id: "blank-uid-extid-tab",
-          // TODO UID & External ID Lookup when PR is merged
-          // text: "UID & External ID Lookup",
-          text: "UID Lookup",
+          text: "UID & External ID Lookup",
           Icon: <FiCrosshair className="text-lg" />,
           onClick: () =>
             addTab({
@@ -407,6 +413,8 @@ const NewTabButton = ({
 
 const TabbedObjectSearch = ({
   accountId,
+  initial,
+  animate,
   ...props
 }: TabbedObjectSearchProps) => {
   const {
@@ -424,7 +432,11 @@ const TabbedObjectSearch = ({
   return (
     <>
       {tabs && (
-        <div className="flex h-full max-h-full w-full flex-col">
+        <m.div
+          initial={initial}
+          animate={animate}
+          className="flex h-full max-h-full w-full flex-col"
+        >
           <div className="w-full pt-2 md:px-6 md:pt-4 lg:px-10">
             <div className="flex w-full justify-between space-x-0.5 sm:space-x-1 md:space-x-2 lg:space-x-4">
               <div
@@ -487,28 +499,48 @@ const TabbedObjectSearch = ({
               }
             />
           </div>
-        </div>
+        </m.div>
       )}
     </>
   );
 };
 
-export const TabbedObjectSearchWithAccount = (
-  props: Omit<TabbedObjectSearchProps, "accountId">,
-) => {
+export const TabbedObjectSearchWithAccount = ({
+  skipLogoAnimation,
+  ...props
+}: Omit<TabbedObjectSearchProps, "accountId" | "animate" | "initial">) => {
   const [creds] = useSkylarkCreds();
   const { accountId, isLoading: isAccountLoading } = useUserAccount();
+  const [animationState, setAnimationState] = useState<
+    "waiting" | "running" | "completed"
+  >(skipLogoAnimation ? "completed" : "waiting");
+
+  const isClient = useIsClient();
 
   return (
     <>
+      {!skipLogoAnimation && creds?.uri && isClient && (
+        <AnimatedLogo
+          show={
+            (!accountId && isAccountLoading) || animationState === "running"
+          }
+          withLoadingSpinner
+          hideLoadingSpinner={animationState !== "completed"}
+          speed="fast"
+          onAnimationStart={() => setAnimationState("running")}
+          onAnimationComplete={() => setAnimationState("completed")}
+        />
+      )}
       {accountId && !isAccountLoading && (
         <TabbedObjectSearch
+          initial={{ opacity: 0 }}
+          animate={{ opacity: animationState === "running" ? 0 : 1 }}
           key={`${creds?.uri}-${accountId}`}
           accountId={accountId}
           {...props}
         />
       )}
-      {!accountId && !isAccountLoading && (
+      {!accountId && !isAccountLoading && animationState !== "running" && (
         <div className="flex h-full w-full flex-col items-center justify-center gap-4 text-base">
           <p className="text-3xl font-semibold">Something went wrong...</p>
           <p>We are having trouble accessing your Skylark Account ID.</p>

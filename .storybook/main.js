@@ -6,21 +6,20 @@ module.exports = {
     "@storybook/addon-links",
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
-    {
-      name: "storybook-addon-next",
-      options: {
-        nextConfigPath: path.resolve(__dirname, "../next.config.js"),
-      },
-    },
   ],
-  framework: "@storybook/react",
-  core: {
-    builder: "webpack5",
+  framework: {
+    name: "@storybook/nextjs",
+    options: {
+      nextConfigPath: path.resolve(__dirname, "../next.config.js"),
+    },
   },
   staticDirs: ["../public"],
   env: (config) => ({
     ...config,
-    NEXT_PUBLIC_SAAS_API_ENDPOINT: "http://localhost:3000",
+    NEXT_PUBLIC_SAAS_API_ENDPOINT: "http://localhost:6006",
     NEXT_PUBLIC_SAAS_API_KEY: "token",
   }),
+  docs: {
+    autodocs: true,
+  },
 };

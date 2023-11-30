@@ -1,0 +1,49 @@
+{
+  "data": {
+    "getActivationStatus": {
+      "active_version": "2",
+      "update_in_progress": false,
+      "update_started_at": null
+    },
+    "queuedBackgroundTasks": {
+      "next_token": null,
+      "objects": [
+        {
+          "created_at": "2023-11-06T12:36:24.663184+00:00",
+          "messages": [],
+          "object_uid": "BATCH_DELETE",
+          "status": "QUEUED",
+          "task_type": "batch_delete",
+          "task_id": "fa9bd32c-6642-4dc4-bc18-b72d94f01a9f",
+          "updated_at": "2023-11-06T12:36:24.663184+00:00"
+        },
+        {
+          "created_at": "2023-11-06T12:36:56.634055+00:00",
+          "messages": [],
+          "object_uid": "01HEJ67P1NKXEY97XGG1RAQ81H",
+          "status": "QUEUED",
+          "task_type": "delete_post_processing",
+          "task_id": "9fbe1c04-16b9-4ed7-864c-282e93055c8a",
+          "updated_at": "2023-11-06T12:36:56.634055+00:00"
+        },
+        {
+          "created_at": "2023-11-06T12:36:56.471249+00:00",
+          "messages": [],
+          "object_uid": "01HEJ67P30EPBYDQ0BEMBDY461",
+          "status": "QUEUED",
+          "task_type": "delete_post_processing",
+          "task_id": "cac594d0-f3de-4b60-aadd-182d3c34987f",
+          "updated_at": "2023-11-06T12:36:56.471249+00:00"
+        }
+      ]
+    },
+    "inProgressBackgroundTasks": {
+      "next_token": null,
+      "objects": []
+    },
+    "failedBackgroundTasks": {
+      "next_token": null,
+      "objects": []
+    }
+  }
+}

@@ -1,4 +1,3 @@
-import { Dialog } from "@headlessui/react";
 import React, {
   Ref,
   forwardRef,
@@ -11,9 +10,13 @@ import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
-import { FiX } from "src/components/icons";
 import { SkylarkObjectFieldInput } from "src/components/inputs";
 import { LanguageSelect, ObjectTypeSelect } from "src/components/inputs/select";
+import {
+  Modal,
+  ModalDescription,
+  ModalTitle,
+} from "src/components/modals/base/modal";
 import {
   GraphQLRequestErrorToast,
   Toast,
@@ -56,12 +59,14 @@ const formHasObjectPropertyValues = (values: object) => {
 const CreateObjectModalBody = forwardRef(
   (
     {
-      isOpen,
       objectType: defaultObjectType,
       createTranslation,
-      setIsOpen,
+      closeModal,
       onObjectCreated,
-    }: CreateObjectModalProps,
+    }: Omit<CreateObjectModalProps, "isOpen" | "setIsOpen"> & {
+      isCreateTranslationModal: boolean;
+      closeModal: () => void;
+    },
     objectTypeSelectRef: Ref<HTMLInputElement>,
   ) => {
     const {
@@ -94,10 +99,6 @@ const CreateObjectModalBody = forwardRef(
     const objectTypeDisplayName = isCreateTranslationModal
       ? createTranslation.objectTypeDisplayName || createTranslation.objectType
       : objectTypeConfig?.objectTypeDisplayName || objectType;
-
-    const closeModal = () => {
-      setIsOpen(false);
-    };
 
     const values = watch();
 
@@ -189,12 +190,9 @@ const CreateObjectModalBody = forwardRef(
         }
       };
 
-      if (isOpen) {
-        document.addEventListener("keydown", handleSaveKeyPress);
-        return () =>
-          document.removeEventListener("keydown", handleSaveKeyPress);
-      }
-    }, [isOpen]);
+      document.addEventListener("keydown", handleSaveKeyPress);
+      return () => document.removeEventListener("keydown", handleSaveKeyPress);
+    }, []);
 
     const {
       systemMetadataFields,
@@ -247,26 +245,17 @@ const CreateObjectModalBody = forwardRef(
         : false;
 
     return (
-      <Dialog.Panel className="relative mx-auto h-full max-h-[90%] w-full max-w-3xl overflow-y-auto rounded bg-white p-6 md:w-4/5 md:p-10">
-        <button
-          aria-label="close"
-          className="absolute right-4 top-4 sm:right-8 sm:top-9"
-          onClick={closeModal}
-          tabIndex={-1}
-        >
-          <FiX className="text-lg" />
-        </button>
-
-        <Dialog.Title className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl">
+      <>
+        <ModalTitle>
           {isCreateTranslationModal
             ? `Create ${objectTypeDisplayName} Translation`
             : `Create ${objectTypeDisplayName || "Object"}`}
-        </Dialog.Title>
-        <Dialog.Description>
+        </ModalTitle>
+        <ModalDescription>
           {isCreateTranslationModal
             ? "Select language and add translatable data."
             : "Select Object Type to get started."}
-        </Dialog.Description>
+        </ModalDescription>
         <form
           className="mt-8 flex w-full flex-col justify-end gap-4"
           onSubmit={handleSubmit(onSubmit)}
@@ -385,32 +374,39 @@ const CreateObjectModalBody = forwardRef(
             </div>
           )}
         </form>
-      </Dialog.Panel>
+      </>
     );
   },
 );
 CreateObjectModalBody.displayName = "CreateObjectModalBody";
 
-export const CreateObjectModal = (props: CreateObjectModalProps) => {
+export const CreateObjectModal = ({
+  isOpen,
+  setIsOpen,
+  ...props
+}: CreateObjectModalProps) => {
   const objectTypeSelectRef = useRef(null);
 
-  return (
-    <Dialog
-      open={props.isOpen}
-      onClose={() => props.setIsOpen(false)}
-      className="font-body relative z-50"
-      data-testid="create-object-modal"
-      initialFocus={objectTypeSelectRef}
-    >
-      <div
-        className="fixed inset-0 bg-black/40"
-        aria-hidden="true"
-        data-testid="dialog-background"
-      />
+  const isCreateTranslationModal = !!props.createTranslation;
 
-      <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
-        <CreateObjectModalBody {...props} ref={objectTypeSelectRef} />
-      </div>
-    </Dialog>
+  return (
+    <Modal
+      initialFocus={objectTypeSelectRef}
+      title={null}
+      isOpen={isOpen}
+      closeModal={() => setIsOpen(false)}
+      data-testid="create-object-modal"
+      size="medium"
+      growHeight
+    >
+      {isOpen && (
+        <CreateObjectModalBody
+          {...props}
+          ref={objectTypeSelectRef}
+          isCreateTranslationModal={isCreateTranslationModal}
+          closeModal={() => setIsOpen(false)}
+        />
+      )}
+    </Modal>
   );
 };

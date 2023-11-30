@@ -1,17 +1,27 @@
 import { VisibilityState } from "@tanstack/react-table";
 import { DocumentNode } from "graphql";
 import { useMemo, useState } from "react";
+import { useLocalStorage } from "usehooks-ts";
 
 import { Button } from "src/components/button";
 import {
   CheckboxGrid,
+  CheckboxGridToggleAll,
   createCheckboxOptions,
 } from "src/components/checkboxGrid/checkboxGrid.component";
 import { RadioGroup } from "src/components/inputs/radioGroup/radioGroup.component";
+import { Switch } from "src/components/inputs/switch/switch.component";
 import { DisplayGraphQLQuery } from "src/components/modals";
+import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { SYSTEM_FIELDS } from "src/constants/skylark";
 import { SearchFilters } from "src/hooks/useSearch";
 import { SearchType } from "src/hooks/useSearchWithLookupType";
+import {
+  sortObjectTypesWithConfig,
+  useAllObjectsMeta,
+} from "src/hooks/useSkylarkObjectTypes";
 import { ParsedSkylarkObjectConfig } from "src/interfaces/skylark";
+import { sortFieldsByConfigPosition } from "src/lib/skylark/objects";
 
 interface SearchFilterProps {
   searchType: SearchType;
@@ -51,12 +61,164 @@ const convertCheckedColumnsToVisibilityState = (
 const searchTypeOptions = [
   { label: "Search", value: SearchType.Search },
   {
-    // TODO UID & External ID Lookup when PR is merged
-    // label: "UID & External ID",
-    label: "UID",
+    label: "UID & External ID",
     value: SearchType.UIDExtIDLookup,
   },
 ];
+
+const FilterColumns = ({
+  objectTypes,
+  columns,
+  updatedVisibleColumns,
+  objectTypesWithConfig,
+  updateVisibleColumns,
+}: {
+  columns: SearchFilterProps["columns"];
+  updatedVisibleColumns: SearchFilterProps["visibleColumns"];
+  objectTypes: string[];
+  objectTypesWithConfig: SearchFilterProps["objectTypesWithConfig"];
+  updateVisibleColumns: (arr: string[]) => void;
+}) => {
+  const { objects: allObjectsMeta } = useAllObjectsMeta();
+
+  const [sectionByObjectType, setSectionByObjectType] = useLocalStorage(
+    LOCAL_STORAGE.search.columnFilterVariant,
+    true,
+  );
+
+  const allColumnOptions = useMemo(
+    () =>
+      createCheckboxOptions(
+        columns.map(({ label, value }) => ({ label: label || value, value })),
+        updatedVisibleColumns,
+      ),
+    [columns, updatedVisibleColumns],
+  );
+
+  const { columnOptionsSplitByObjectType, commonFieldOptions } = useMemo(() => {
+    const columnOptionsSplitByObjectType = allObjectsMeta
+      ?.map((objectMeta) => {
+        const config = objectTypesWithConfig.find(
+          ({ objectType }) => objectType === objectMeta.name,
+        )?.config;
+
+        const options = createCheckboxOptions(
+          objectMeta.fields
+            .filter(({ name }) => !SYSTEM_FIELDS?.includes(name))
+            .sort((a, b) =>
+              sortFieldsByConfigPosition(a.name, b.name, config?.fieldConfig),
+            )
+            .map(({ name }) => {
+              const columnField = columns.find(({ value }) => value === name);
+
+              return {
+                value: columnField?.value || name,
+                label: columnField?.label || columnField?.value || name,
+              };
+            }),
+          updatedVisibleColumns,
+        );
+
+        return {
+          objectType: objectMeta.name,
+          config,
+          options,
+        };
+      })
+      .sort(sortObjectTypesWithConfig);
+
+    const allObjectFields =
+      allObjectsMeta
+        ?.map((objectMeta) => objectMeta.fields.map(({ name }) => name))
+        .flatMap((arr) => arr) || [];
+    const unassignedColumns = columns
+      .filter(
+        ({ value }) =>
+          !allObjectFields.includes(value) || SYSTEM_FIELDS.includes(value),
+      )
+      .map(({ value, label }) => ({ value, label: label || value }));
+
+    const commonFieldOptions = createCheckboxOptions(
+      unassignedColumns || [],
+      updatedVisibleColumns,
+    );
+
+    return {
+      commonFieldOptions,
+      columnOptionsSplitByObjectType,
+    };
+  }, [allObjectsMeta, columns, objectTypesWithConfig, updatedVisibleColumns]);
+
+  return (
+    <section data-cy="column-filters">
+      <div className="flex mb-2 text-manatee-600 justify-between">
+        <h4 className="select-none font-semibold mr-2">Columns</h4>
+        <div className="flex justify-center">
+          <p className="select-none block mx-1">{`${
+            sectionByObjectType ? "Separated by Object Type" : "All fields"
+          }`}</p>
+          <Switch
+            enabled={sectionByObjectType}
+            onChange={setSectionByObjectType}
+            size="small"
+          />
+        </div>
+      </div>
+      {sectionByObjectType ? (
+        <>
+          <CheckboxGridToggleAll
+            onChange={updateVisibleColumns}
+            name={`sectioned-by-object-types-toggle-all`}
+            options={allColumnOptions}
+            checkedOptions={updatedVisibleColumns}
+          />
+          <div>
+            <h4 className="mb-2 select-none text-manatee-500">
+              System & Special Columns
+            </h4>
+            <CheckboxGrid
+              label="columns-special"
+              hideLabel
+              withToggleAll
+              className="mt-2"
+              options={commonFieldOptions}
+              checkedOptions={updatedVisibleColumns}
+              onChange={updateVisibleColumns}
+            />
+          </div>
+          {columnOptionsSplitByObjectType
+            ?.filter(({ objectType }) => objectTypes.includes(objectType))
+            .map(({ objectType, config, options }) => (
+              <div key={objectType} className="mt-2">
+                <h4 className="mb-2 select-none text-manatee-500">
+                  {config?.objectTypeDisplayName || objectType} fields
+                </h4>
+                <CheckboxGrid
+                  label={`columns-${objectType}`}
+                  hideLabel
+                  withToggleAll
+                  options={options}
+                  checkedOptions={updatedVisibleColumns}
+                  onChange={updateVisibleColumns}
+                />
+              </div>
+            ))}
+        </>
+      ) : (
+        <CheckboxGrid
+          label="all fields"
+          hideLabel
+          withToggleAll
+          options={allColumnOptions}
+          checkedOptions={updatedVisibleColumns}
+          onChange={(checkedOptions) => {
+            updateVisibleColumns(checkedOptions);
+          }}
+        />
+      )}
+    </section>
+  );
+};
 
 export const SearchFilter = ({
   searchType: activeSearchType,
@@ -118,15 +280,6 @@ export const SearchFilter = ({
     [objectTypesWithConfig, updatedObjectTypes],
   );
 
-  const columnOptions = useMemo(
-    () =>
-      createCheckboxOptions(
-        columns.map(({ label, value }) => ({ label: label || value, value })),
-        updatedVisibleColumns,
-      ),
-    [columns, updatedVisibleColumns],
-  );
-
   return (
     <div className="relative flex max-h-[60vh] w-full flex-col rounded bg-white py-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 xl:max-h-[28rem]">
       <div className="absolute right-5 top-2 z-20">
@@ -147,6 +300,7 @@ export const SearchFilter = ({
         />
         <CheckboxGrid
           label="Object type"
+          as="section"
           withToggleAll
           options={objectTypeOptions}
           checkedOptions={updatedObjectTypes}
@@ -154,14 +308,12 @@ export const SearchFilter = ({
             updateObjectTypes(checkedOptions);
           }}
         />
-        <CheckboxGrid
-          label="Columns"
-          withToggleAll
-          options={columnOptions}
-          checkedOptions={updatedVisibleColumns}
-          onChange={(checkedOptions) => {
-            updateVisibleColumns(checkedOptions);
-          }}
+        <FilterColumns
+          objectTypes={updatedObjectTypes}
+          objectTypesWithConfig={objectTypesWithConfig}
+          columns={columns}
+          updateVisibleColumns={updateVisibleColumns}
+          updatedVisibleColumns={updatedVisibleColumns}
         />
       </div>
       <div className="flex w-full justify-end space-x-4 px-4 pt-2">

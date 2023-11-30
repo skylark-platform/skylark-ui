@@ -2,6 +2,23 @@
   "data": {
     "getObject": {
       "__typename": "Movie",
+      "_meta": {
+        "available_languages": ["en-GB"],
+        "language_data": {
+          "language": "en-GB",
+          "version": 1
+        },
+        "global_data": {
+          "version": 1
+        },
+        "modified": {
+          "date": "2023-11-14T10:07:18.513034+00:00"
+        },
+        "created": {
+          "date": "2023-11-14T10:07:18.513034+00:00"
+        },
+        "published": true
+      },
       "_config": {
         "primary_field": "internal_title",
         "colour": "#009688",
@@ -54,24 +71,14 @@
           }
         ]
       },
-      "_meta": {
-        "available_languages": ["en-GB"],
-        "language_data": {
-          "language": "en-GB",
-          "version": 1
-        },
-        "global_data": {
-          "version": 1
-        }
-      },
-      "uid": "01H4MMDGJ8WRYFHF2D94CQEQJP",
+      "uid": "01HF6MSDFQP7ED8TE4Z5KS6GVM",
       "external_id": "recudCnvsnLP4PEeJ",
       "slug": "fantastic-mr-fox",
       "synopsis": "Mr Fox, a family man, goes back to his ways of stealing, unable to resist his animal instincts. However, he finds himself trapped when three farmers decide to kill him and his kind.\n\nThis test movie is configured with an expired, active and future availability.",
       "synopsis_short": "Mr Fox, a family man, goes back to his ways of stealing, unable to resist his animal instincts. However, he finds himself trapped when three farmers decide to kill him and his kind.",
       "title": "Fantastic Mr Fox (All Availabilities)",
       "title_short": "Fantastic Mr Fox (All)",
-      "internal_title": null,
+      "internal_title": "Fantastic Mr Fox (All Availabilities)",
       "movie_number": null,
       "release_date": "2009-11-23",
       "title_sort": null,
@@ -80,67 +87,40 @@
         "next_token": null,
         "objects": [
           {
-            "uid": "01H4MMB03K5NZT7RXVR26VT9PT",
+            "uid": "01HF6MKC31MHEY3JT41J0D925J",
+            "external_id": "recQzQ8ZUyh6VzVAw",
+            "title": "Active Next Sunday @ 9PM, Europe/North America",
+            "slug": "active-next-sunday",
+            "start": "2023-11-19T00:00:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "UTC"
+          },
+          {
+            "uid": "01HF6MKC49PV2HDAG60ZE669QJ",
             "external_id": "recN2Jf4j9UCblsIc",
-            "title": "Active in the past",
+            "title": "Active in the past - all dimension values",
             "slug": "active-in-the-past",
             "start": "2000-01-01T15:15:00+00:00",
             "end": "2020-01-01T15:15:00+00:00",
             "timezone": "UTC"
           },
           {
-            "uid": "01H4MMB058XJR2EMZ9N3WE0MNS",
-            "external_id": "recQzQ8ZUyh6VzVAw",
-            "title": "Active Next Sunday @ 9PM",
-            "slug": "active-next-sunday",
-            "start": "2023-07-09T00:00:00+00:00",
-            "end": "2038-01-19T03:14:07+00:00",
-            "timezone": "UTC"
-          },
-          {
-            "uid": "01H4MMB068TWWK04H4XRFD4BQ3",
+            "uid": "01HF6MKC74TVEEJ3G8J5KZYB4N",
             "external_id": "recMdBZyVPsIGqAYq",
-            "title": "Premium",
+            "title": "Always - Premium, Europe/North America",
             "slug": "premium",
             "start": "2022-01-01T00:00:00+00:00",
             "end": "2038-01-19T03:14:07+00:00",
             "timezone": "UTC"
           },
           {
-            "uid": "01H4MMB06BGXN91JK2T5A16N45",
+            "uid": "01HF6MKC8ZVYW45WH6EPGF1JKH",
             "external_id": "recX0Ztue3iBQR7rl",
-            "title": "Active Until Next Sunday @ 9PM",
+            "title": "Active Until Next Sunday @ 9PM, Europe/North America",
             "slug": "active-until-next-sunday",
             "start": "2000-01-01T00:00:00+00:00",
-            "end": "2023-07-09T00:00:00+00:00",
+            "end": "2023-11-19T00:00:00+00:00",
             "timezone": "UTC"
-          }
-        ]
-      },
-      "images": {
-        "next_token": null,
-        "objects": [
-          {
-            "_meta": {
-              "available_languages": ["en-GB"],
-              "language_data": {
-                "language": "en-GB",
-                "version": 1
-              },
-              "global_data": {
-                "version": 1
-              }
-            },
-            "uid": "01H4MMC0ZHBKSZ0KYRD4VJ23K7",
-            "external_id": "recRH4TzBhGsnXfDg",
-            "slug": null,
-            "internal_title": null,
-            "title": "wes_mrfox.jpeg",
-            "description": null,
-            "type": "THUMBNAIL",
-            "url": "https://media.showcase.skylarkplatform.com/skylarkimages/4h6gok37lvcmln3jz7pjsmzrte/01H4MMC0ZHBKSZ0KYRD4VJ23K7/01H4MMC3VS4HB0ZYRSNZSHB676",
-            "file_name": null,
-            "content_type": "image/jpeg"
           }
         ]
       }

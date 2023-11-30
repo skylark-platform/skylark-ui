@@ -2,9 +2,9 @@ import { Menu } from "@headlessui/react";
 import clsx from "clsx";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { FiFileText } from "react-icons/fi";
+import { FiFileText, FiLayout, FiTool } from "react-icons/fi";
 import { GrGraphQl } from "react-icons/gr";
-import { TbBooks, TbTerminal2 } from "react-icons/tb";
+import { TbTerminal2 } from "react-icons/tb";
 
 import { DropdownMenu } from "src/components/dropdown/dropdown.component";
 import { HREFS } from "src/constants/skylark";
@@ -14,6 +14,7 @@ interface LinkProps {
   href: string;
   Icon?: JSX.Element;
   className?: string;
+  newTab?: boolean;
   onClick?: () => void;
 }
 
@@ -21,7 +22,9 @@ const navigationItems = [
   {
     text: "Content Library",
     href: "/",
-    Icon: <TbBooks className="text-xl" />,
+    Icon: (
+      <FiLayout style={{ transform: "rotateY(180deg)" }} className="text-xl" />
+    ),
     shouldMarkAsActive: (path: string) => path.startsWith("/object"),
   },
   // {
@@ -45,12 +48,25 @@ const navigationItems = [
         href: HREFS.relative.graphqlEditor,
         Icon: <GrGraphQl className="text-xl" />,
       },
+      {
+        id: "content-model",
+        text: "Content Model (Alpha)",
+        href: HREFS.relative.contentModel,
+        Icon: <FiTool className="text-xl" />,
+      },
     ],
   },
 ];
 
-export const Link = ({ href, Icon, text, className, onClick }: LinkProps) => {
-  if (href.startsWith("http")) {
+export const Link = ({
+  href,
+  Icon,
+  text,
+  className,
+  newTab,
+  onClick,
+}: LinkProps) => {
+  if (href.startsWith("http") || newTab) {
     return (
       <a
         href={href}
@@ -91,7 +107,7 @@ export const NavigationLinks = () => {
               className={clsx(
                 "group flex items-center py-6 text-black md:h-full md:px-4 md:py-0 lg:px-6",
                 !isActiveLink &&
-                  "[&>a]:text-black/50 [&>div>button]:text-black/50",
+                  "[&>a]:text-black/50 [&>div>div>button]:text-black/50",
               )}
             >
               {links ? (

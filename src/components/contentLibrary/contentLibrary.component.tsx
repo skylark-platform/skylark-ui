@@ -73,15 +73,21 @@ const ContentLibraryDragOverlay = ({
   return null;
 };
 
-export const ContentLibrary = () => {
+export const ContentLibrary = ({
+  skipLogoAnimation,
+}: {
+  skipLogoAnimation?: boolean;
+}) => {
   const {
     activePanelObject,
     activePanelTab,
+    activePanelTabState,
     setPanelObject,
     setPanelTab,
     navigateToPreviousPanelObject,
     navigateToForwardPanelObject,
     resetPanelObjectState,
+    updateActivePanelTabState,
   } = usePanelObjectState();
 
   const {
@@ -108,8 +114,8 @@ export const ContentLibrary = () => {
     width === undefined
       ? undefined
       : windowSize < MINIMUM_SIZES.panel
-      ? windowSize
-      : windowSize - width,
+        ? windowSize
+        : windowSize - width,
   );
   const lastPanelWidth = useMotionValue<number | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -203,21 +209,23 @@ export const ContentLibrary = () => {
       sensors={sensors}
       modifiers={dndModifiers}
     >
-      {typeof window !== "undefined" &&
-        document?.body &&
-        createPortal(
-          <DragOverlay zIndex={99999999} dropAnimation={null}>
-            {activeDragged ? (
-              <ContentLibraryDragOverlay
-                activeDragged={activeDragged}
-                checkedObjects={checkedObjects}
-                checkedUids={checkedUids}
-                checkedObjectTypesForDisplay={checkedObjectTypesForDisplay}
-              />
-            ) : null}
-          </DragOverlay>,
-          document.body,
-        )}
+      {typeof window !== "undefined" && document?.body && (
+        <>
+          {createPortal(
+            <DragOverlay zIndex={99999999} dropAnimation={null}>
+              {activeDragged ? (
+                <ContentLibraryDragOverlay
+                  activeDragged={activeDragged}
+                  checkedObjects={checkedObjects}
+                  checkedUids={checkedUids}
+                  checkedObjectTypesForDisplay={checkedObjectTypesForDisplay}
+                />
+              ) : null}
+            </DragOverlay>,
+            document.body,
+          )}
+        </>
+      )}
       <div
         className="flex h-screen w-full flex-row overflow-x-hidden"
         ref={containerRef}
@@ -237,12 +245,14 @@ export const ContentLibrary = () => {
             <div className="absolute inset-0 z-[100] block bg-black/5"></div>
           )}
           <TabbedObjectSearchWithAccount
+            id="content-library-search"
             panelObject={activePanelObject}
             setPanelObject={setPanelObject}
             isPanelOpen={!!activePanelObject}
             withObjectSelect
             checkedObjects={checkedObjects}
             onObjectCheckedChanged={setCheckedObjects}
+            skipLogoAnimation={skipLogoAnimation}
           />
         </m.div>
         {activePanelObject && (
@@ -285,6 +295,7 @@ export const ContentLibrary = () => {
                 key={`${activePanelObject.objectType}-${activePanelObject.uid}-${activePanelObject.language}`}
                 object={activePanelObject}
                 tab={activePanelTab}
+                tabState={activePanelTabState}
                 closePanel={closePanel}
                 isDraggedObject={isDraggingObject}
                 droppedObjects={droppedObjects}
@@ -293,6 +304,7 @@ export const ContentLibrary = () => {
                 navigateToPreviousPanelObject={navigateToPreviousPanelObject}
                 navigateToForwardPanelObject={navigateToForwardPanelObject}
                 clearDroppedObjects={clearDroppedObjects}
+                updateActivePanelTabState={updateActivePanelTabState}
               />
             </div>
           </m.div>

@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { Reorder } from "framer-motion";
 import { useEffect, useState } from "react";
 
+import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
@@ -17,7 +18,6 @@ import {
   AddedSkylarkObjectContentObject,
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
-  AvailabilityStatus,
 } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 
@@ -113,11 +113,8 @@ export const PanelContent = ({
   setContentObjects,
   setPanelObject,
 }: PanelContentProps) => {
-  const { data, isLoading, hasNextPage } = useGetObjectContent(
-    objectType,
-    uid,
-    { language, fetchAvailability: true },
-  );
+  const { data, isLoading, hasNextPage, query, variables } =
+    useGetObjectContent(objectType, uid, { language, fetchAvailability: true });
 
   const objects = inEditMode ? updatedObjects : data;
 
@@ -153,8 +150,8 @@ export const PanelContent = ({
         updatedIndex <= 0
           ? 0
           : updatedIndex >= objects.length
-          ? objects.length - 1
-          : updatedIndex;
+            ? objects.length - 1
+            : updatedIndex;
       const updatedObjects = [...objects];
 
       const objToMove = updatedObjects.splice(currentIndex, 1)[0];
@@ -258,6 +255,12 @@ export const PanelContent = ({
           })}
         </Reorder.Group>
       )}
+      <DisplayGraphQLQuery
+        label="Get Object Content"
+        query={query}
+        variables={variables}
+        buttonClassName="absolute right-2 top-0"
+      />
       <PanelLoading isLoading={isLoading || hasNextPage}>
         {Array.from({ length: 6 }, (_, i) => (
           <Skeleton

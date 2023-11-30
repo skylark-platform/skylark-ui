@@ -109,8 +109,8 @@ test("opens the modal to the query tab", async () => {
   await fireEvent.click(screen.getByRole("button"));
 
   await screen.findByTestId("syntax-highlighter");
-  expect(screen.queryByText("Query for Schema")).toBeInTheDocument();
-  expect(screen.queryByText("GET_SKYLARK_OBJECT_TYPES")).toBeTruthy();
+  expect(await screen.findByText("Query for Schema")).toBeInTheDocument();
+  expect(await screen.findByText("GET_SKYLARK_OBJECT_TYPES")).toBeTruthy();
   expect(screen.queryByText("value1")).toBeFalsy();
 });
 

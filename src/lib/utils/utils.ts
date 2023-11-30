@@ -1,20 +1,19 @@
 import { HTMLInputTypeAttribute } from "react";
-import { sentenceCase } from "sentence-case";
 
 import {
   CLOUDINARY_ENVIRONMENT,
   DISPLAY_NAME_PRIORITY,
 } from "src/constants/skylark";
 import {
+  BuiltInSkylarkObjectType,
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
-  SkylarkSystemField,
 } from "src/interfaces/skylark";
 
-export const hasProperty = <T, K extends PropertyKey>(
+export const hasProperty = <T, K extends PropertyKey, V = unknown>(
   object: T,
   property: K,
-): object is T & Record<K, unknown> => {
+): object is T & Record<K, V> => {
   return Object.prototype.hasOwnProperty.call(object, property);
 };
 
@@ -24,18 +23,6 @@ export const isObject = (input: unknown): input is Record<string, unknown> => {
 
 export const pause = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
-
-export const formatObjectField = (field?: string) => {
-  if (!field) {
-    return "";
-  }
-
-  if (field === SkylarkSystemField.UID) {
-    return "UID";
-  }
-
-  return sentenceCase(field?.replaceAll("_", " "));
-};
 
 export const getPrimaryKeyField = (object: ParsedSkylarkObject) =>
   [object?.config?.primaryField || "", ...DISPLAY_NAME_PRIORITY].find(
@@ -233,3 +220,7 @@ export function mergeRefs<T = unknown>(
 
 export const userIsOnMac = () =>
   navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+
+export const isSkylarkObjectType = (objectType: string) =>
+  objectType === BuiltInSkylarkObjectType.Availability ||
+  objectType.toUpperCase().startsWith("SKYLARK");

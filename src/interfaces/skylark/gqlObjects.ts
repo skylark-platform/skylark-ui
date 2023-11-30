@@ -11,12 +11,13 @@ export type SkylarkObjectConfigFieldType =
   | "TEXTAREA"
   | "WYSIWYG"
   | "TIMEZONE"
+  | "COLOURPICKER"
   | null;
 
 export interface SkylarkGraphQLObjectConfig {
-  colour: string;
-  primary_field: string;
-  display_name: string;
+  colour: string | null;
+  primary_field: string | null;
+  display_name: string | null;
   field_config?: {
     name: string;
     ui_field_type: SkylarkObjectConfigFieldType;
@@ -39,6 +40,7 @@ export interface SkylarkGraphQLObjectMeta {
   created?: {
     date?: string;
   };
+  published?: boolean;
 }
 
 export interface SkylarkGraphQLAvailabilityDimensionValue {
@@ -113,7 +115,6 @@ export type SkylarkGraphQLObject = {
   [SkylarkSystemField.DataSourceID]?: string | null;
   [SkylarkSystemField.DataSourceFields]?: string | string[] | null;
   availability?: SkylarkGraphQLObjectRelationship;
-  images?: SkylarkGraphQLObjectRelationship;
   _config?: SkylarkGraphQLObjectConfig;
   _meta?: SkylarkGraphQLObjectMeta;
   content?: SkylarkGraphQLObjectContent;

@@ -11,13 +11,12 @@ import {
   SkylarkObjectType,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
-import { hasProperty } from "src/lib/utils";
-
 import {
   generateFieldsToReturn,
   generateVariablesAndArgs,
-} from "./dynamicQueries";
+} from "src/lib/graphql/skylark/dynamicQueries";
+import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
+import { hasProperty } from "src/lib/utils";
 
 interface SetContentOperation {
   operation: "link" | "unlink" | "reposition";
@@ -92,15 +91,8 @@ export const createCreateObjectMutation = (
     objectMeta.name,
     metadata,
     objectMeta.operations.update.inputs,
+    true,
   );
-
-  // Don't send a blank External ID
-  if (
-    hasProperty(parsedMetadata, SkylarkSystemField.ExternalID) &&
-    !parsedMetadata.external_id
-  ) {
-    delete parsedMetadata.external_id;
-  }
 
   const common = generateVariablesAndArgs(
     objectMeta.name,
@@ -162,19 +154,75 @@ export const createUpdateObjectMetadataMutation = (
     objectMeta.operations.update.inputs,
   );
 
+  const draftVariableObj =
+    objectMeta.name === BuiltInSkylarkObjectType.Availability
+      ? {}
+      : { draft: "Boolean = false" };
+
+  const draftArgObj =
+    objectMeta.name === BuiltInSkylarkObjectType.Availability
+      ? {}
+      : { draft: new VariableType("draft") };
+
   const mutation = {
     mutation: {
       __name: `UPDATE_OBJECT_METADATA_${objectMeta.name}`,
       __variables: {
         ...common.variables,
+        ...draftVariableObj,
         uid: "String!",
       },
       updateObjectMetadata: {
         __aliasFor: objectMeta.operations.update.name,
         __args: {
           ...common.args,
+          ...draftArgObj,
           uid: new VariableType("uid"),
           [objectMeta.operations.update.argName]: parsedMetadata,
+        },
+        __typename: true,
+        ...common.fields,
+        ...generateFieldsToReturn(objectMeta.fields, objectMeta.name),
+      },
+    },
+  };
+
+  const graphQLQuery = jsonToGraphQLQuery(mutation);
+
+  return gql(graphQLQuery);
+};
+
+export const createPublishVersionMutation = (
+  objectMeta: SkylarkObjectMeta | null,
+  addLanguageVariable = false,
+) => {
+  if (!objectMeta || !objectMeta.operations.update) {
+    return null;
+  }
+
+  const common = generateVariablesAndArgs(
+    objectMeta.name,
+    "Mutation",
+    addLanguageVariable,
+  );
+
+  const mutation = {
+    mutation: {
+      __name: `PUBLISH_${objectMeta.name}`,
+      __variables: {
+        ...common.variables,
+        uid: "String!",
+        languageVersion: "Int",
+        globalVersion: "Int",
+      },
+      updateObjectMetadata: {
+        __aliasFor: objectMeta.operations.update.name,
+        __args: {
+          ...common.args,
+          uid: new VariableType("uid"),
+          draft: false,
+          language_version: new VariableType("languageVersion"),
+          global_version: new VariableType("globalVersion"),
         },
         __typename: true,
         ...common.fields,

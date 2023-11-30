@@ -5,9 +5,101 @@
         "next_token": null,
         "objects": [
           {
-            "uid": "01H4MMB03K5NZT7RXVR26VT9PT",
+            "uid": "01HF6MKC31MHEY3JT41J0D925J",
+            "external_id": "recQzQ8ZUyh6VzVAw",
+            "title": "Active Next Sunday @ 9PM, Europe/North America",
+            "slug": "active-next-sunday",
+            "start": "2023-11-19T00:00:00+00:00",
+            "end": "2038-01-19T03:14:07+00:00",
+            "timezone": "UTC",
+            "dimensions": {
+              "next_token": null,
+              "objects": [
+                {
+                  "uid": "01HF6MK1YMG5GCCZSFCQ350T6X",
+                  "title": "Device Type",
+                  "slug": "device-types",
+                  "external_id": null,
+                  "description": null,
+                  "values": {
+                    "objects": [
+                      {
+                        "description": null,
+                        "external_id": "rec50TFQHwT76pY2K",
+                        "slug": "smartphone",
+                        "title": "SmartPhone",
+                        "uid": "01HF6MK7TMKE5PD5PXP9RHND4S"
+                      },
+                      {
+                        "description": null,
+                        "external_id": "recPOR7ivzMd90XLe",
+                        "slug": "pc",
+                        "title": "PC",
+                        "uid": "01HF6MK7W9ZQ9H2PWVC8QRJ953"
+                      }
+                    ],
+                    "next_token": null
+                  }
+                },
+                {
+                  "uid": "01HF6MK1WGC1N7S5DWHKNRM2EP",
+                  "title": "Region",
+                  "slug": "regions",
+                  "external_id": null,
+                  "description": null,
+                  "values": {
+                    "objects": [
+                      {
+                        "description": null,
+                        "external_id": "rec91RQH79i9AO3Qf",
+                        "slug": "europe",
+                        "title": "Europe",
+                        "uid": "01HF6MK84X96M2RET3TJ3F3YFN"
+                      },
+                      {
+                        "description": null,
+                        "external_id": "reclbGDlUj4Ap84cZ",
+                        "slug": "north-america",
+                        "title": "North America",
+                        "uid": "01HF6MK7W3WAGYQ37PS278E02A"
+                      }
+                    ],
+                    "next_token": null
+                  }
+                },
+                {
+                  "uid": "01HF6MK1WVWMK2FTGA9HCXNBG3",
+                  "title": "Customer Type",
+                  "slug": "customer-types",
+                  "external_id": null,
+                  "description": null,
+                  "values": {
+                    "objects": [
+                      {
+                        "description": null,
+                        "external_id": "recD4WfhAYw4gFnJh",
+                        "slug": "premium",
+                        "title": "Premium",
+                        "uid": "01HF6MK840CEFWKTB1SQMJZPFG"
+                      },
+                      {
+                        "description": null,
+                        "external_id": "recXQtdEI4DpFkw76",
+                        "slug": "standard",
+                        "title": "Standard",
+                        "uid": "01HF6MK81V2X3K6TF6N2ZEN4TP"
+                      }
+                    ],
+                    "next_token": null
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "uid": "01HF6MKC49PV2HDAG60ZE669QJ",
             "external_id": "recN2Jf4j9UCblsIc",
-            "title": "Active in the past",
+            "title": "Active in the past - all dimension values",
             "slug": "active-in-the-past",
             "start": "2000-01-01T15:15:00+00:00",
             "end": "2020-01-01T15:15:00+00:00",
@@ -16,33 +108,7 @@
               "next_token": null,
               "objects": [
                 {
-                  "uid": "01H4MM3PKPR35Z5205PAE3ZGZ8",
-                  "title": "Customer Type",
-                  "slug": "customer-types",
-                  "external_id": null,
-                  "description": null,
-                  "values": {
-                    "objects": [
-                      {
-                        "description": null,
-                        "external_id": "recD4WfhAYw4gFnJh",
-                        "slug": "premium",
-                        "title": "Premium",
-                        "uid": "01H4MMAVVYNQJE74TXV9RBMP9Y"
-                      },
-                      {
-                        "description": null,
-                        "external_id": "recXQtdEI4DpFkw76",
-                        "slug": "standard",
-                        "title": "Standard",
-                        "uid": "01H4MMAVN9ESDAP6C1V7A760A7"
-                      }
-                    ],
-                    "next_token": null
-                  }
-                },
-                {
-                  "uid": "01H4MM3PM6XRJ0ZZ2QAZR3MRSN",
+                  "uid": "01HF6MK1YMG5GCCZSFCQ350T6X",
                   "title": "Device Type",
                   "slug": "device-types",
                   "external_id": null,
@@ -54,35 +120,54 @@
                         "external_id": "rec50TFQHwT76pY2K",
                         "slug": "smartphone",
                         "title": "SmartPhone",
-                        "uid": "01H4MMAVFH4WKT38RCTSQ7P2CH"
+                        "uid": "01HF6MK7TMKE5PD5PXP9RHND4S"
                       },
                       {
                         "description": null,
                         "external_id": "recPOR7ivzMd90XLe",
                         "slug": "pc",
                         "title": "PC",
-                        "uid": "01H4MMAVWRJ0FPR1M69CCKT17X"
+                        "uid": "01HF6MK7W9ZQ9H2PWVC8QRJ953"
                       }
                     ],
                     "next_token": null
                   }
-                }
-              ]
-            }
-          },
-          {
-            "uid": "01H4MMB058XJR2EMZ9N3WE0MNS",
-            "external_id": "recQzQ8ZUyh6VzVAw",
-            "title": "Active Next Sunday @ 9PM",
-            "slug": "active-next-sunday",
-            "start": "2023-07-09T00:00:00+00:00",
-            "end": "2038-01-19T03:14:07+00:00",
-            "timezone": "UTC",
-            "dimensions": {
-              "next_token": null,
-              "objects": [
+                },
                 {
-                  "uid": "01H4MM3PKPR35Z5205PAE3ZGZ8",
+                  "uid": "01HF6MK1WGC1N7S5DWHKNRM2EP",
+                  "title": "Region",
+                  "slug": "regions",
+                  "external_id": null,
+                  "description": null,
+                  "values": {
+                    "objects": [
+                      {
+                        "description": null,
+                        "external_id": "recRZGagXS8YbkYrR",
+                        "slug": "mena",
+                        "title": "MENA",
+                        "uid": "01HF6MK80VXB4XD40XERXTCVBR"
+                      },
+                      {
+                        "description": null,
+                        "external_id": "rec91RQH79i9AO3Qf",
+                        "slug": "europe",
+                        "title": "Europe",
+                        "uid": "01HF6MK84X96M2RET3TJ3F3YFN"
+                      },
+                      {
+                        "description": null,
+                        "external_id": "reclbGDlUj4Ap84cZ",
+                        "slug": "north-america",
+                        "title": "North America",
+                        "uid": "01HF6MK7W3WAGYQ37PS278E02A"
+                      }
+                    ],
+                    "next_token": null
+                  }
+                },
+                {
+                  "uid": "01HF6MK1WVWMK2FTGA9HCXNBG3",
                   "title": "Customer Type",
                   "slug": "customer-types",
                   "external_id": null,
@@ -91,43 +176,24 @@
                     "objects": [
                       {
                         "description": null,
-                        "external_id": "recXQtdEI4DpFkw76",
-                        "slug": "standard",
-                        "title": "Standard",
-                        "uid": "01H4MMAVN9ESDAP6C1V7A760A7"
+                        "external_id": "rec4VuxS9fnyg4wqh",
+                        "slug": "kids",
+                        "title": "Kids",
+                        "uid": "01HF6MK82SWH1SGWRS9E9NS8FG"
                       },
                       {
                         "description": null,
                         "external_id": "recD4WfhAYw4gFnJh",
                         "slug": "premium",
                         "title": "Premium",
-                        "uid": "01H4MMAVVYNQJE74TXV9RBMP9Y"
-                      }
-                    ],
-                    "next_token": null
-                  }
-                },
-                {
-                  "uid": "01H4MM3PM6XRJ0ZZ2QAZR3MRSN",
-                  "title": "Device Type",
-                  "slug": "device-types",
-                  "external_id": null,
-                  "description": null,
-                  "values": {
-                    "objects": [
-                      {
-                        "description": null,
-                        "external_id": "rec50TFQHwT76pY2K",
-                        "slug": "smartphone",
-                        "title": "SmartPhone",
-                        "uid": "01H4MMAVFH4WKT38RCTSQ7P2CH"
+                        "uid": "01HF6MK840CEFWKTB1SQMJZPFG"
                       },
                       {
                         "description": null,
-                        "external_id": "recPOR7ivzMd90XLe",
-                        "slug": "pc",
-                        "title": "PC",
-                        "uid": "01H4MMAVWRJ0FPR1M69CCKT17X"
+                        "external_id": "recXQtdEI4DpFkw76",
+                        "slug": "standard",
+                        "title": "Standard",
+                        "uid": "01HF6MK81V2X3K6TF6N2ZEN4TP"
                       }
                     ],
                     "next_token": null
@@ -137,9 +203,9 @@
             }
           },
           {
-            "uid": "01H4MMB068TWWK04H4XRFD4BQ3",
+            "uid": "01HF6MKC74TVEEJ3G8J5KZYB4N",
             "external_id": "recMdBZyVPsIGqAYq",
-            "title": "Premium",
+            "title": "Always - Premium, Europe/North America",
             "slug": "premium",
             "start": "2022-01-01T00:00:00+00:00",
             "end": "2038-01-19T03:14:07+00:00",
@@ -148,26 +214,7 @@
               "next_token": null,
               "objects": [
                 {
-                  "uid": "01H4MM3PKPR35Z5205PAE3ZGZ8",
-                  "title": "Customer Type",
-                  "slug": "customer-types",
-                  "external_id": null,
-                  "description": null,
-                  "values": {
-                    "objects": [
-                      {
-                        "description": null,
-                        "external_id": "recD4WfhAYw4gFnJh",
-                        "slug": "premium",
-                        "title": "Premium",
-                        "uid": "01H4MMAVVYNQJE74TXV9RBMP9Y"
-                      }
-                    ],
-                    "next_token": null
-                  }
-                },
-                {
-                  "uid": "01H4MM3PM6XRJ0ZZ2QAZR3MRSN",
+                  "uid": "01HF6MK1YMG5GCCZSFCQ350T6X",
                   "title": "Device Type",
                   "slug": "device-types",
                   "external_id": null,
@@ -179,14 +226,59 @@
                         "external_id": "recPOR7ivzMd90XLe",
                         "slug": "pc",
                         "title": "PC",
-                        "uid": "01H4MMAVWRJ0FPR1M69CCKT17X"
+                        "uid": "01HF6MK7W9ZQ9H2PWVC8QRJ953"
                       },
                       {
                         "description": null,
                         "external_id": "rec50TFQHwT76pY2K",
                         "slug": "smartphone",
                         "title": "SmartPhone",
-                        "uid": "01H4MMAVFH4WKT38RCTSQ7P2CH"
+                        "uid": "01HF6MK7TMKE5PD5PXP9RHND4S"
+                      }
+                    ],
+                    "next_token": null
+                  }
+                },
+                {
+                  "uid": "01HF6MK1WGC1N7S5DWHKNRM2EP",
+                  "title": "Region",
+                  "slug": "regions",
+                  "external_id": null,
+                  "description": null,
+                  "values": {
+                    "objects": [
+                      {
+                        "description": null,
+                        "external_id": "rec91RQH79i9AO3Qf",
+                        "slug": "europe",
+                        "title": "Europe",
+                        "uid": "01HF6MK84X96M2RET3TJ3F3YFN"
+                      },
+                      {
+                        "description": null,
+                        "external_id": "reclbGDlUj4Ap84cZ",
+                        "slug": "north-america",
+                        "title": "North America",
+                        "uid": "01HF6MK7W3WAGYQ37PS278E02A"
+                      }
+                    ],
+                    "next_token": null
+                  }
+                },
+                {
+                  "uid": "01HF6MK1WVWMK2FTGA9HCXNBG3",
+                  "title": "Customer Type",
+                  "slug": "customer-types",
+                  "external_id": null,
+                  "description": null,
+                  "values": {
+                    "objects": [
+                      {
+                        "description": null,
+                        "external_id": "recD4WfhAYw4gFnJh",
+                        "slug": "premium",
+                        "title": "Premium",
+                        "uid": "01HF6MK840CEFWKTB1SQMJZPFG"
                       }
                     ],
                     "next_token": null
@@ -196,18 +288,70 @@
             }
           },
           {
-            "uid": "01H4MMB06BGXN91JK2T5A16N45",
+            "uid": "01HF6MKC8ZVYW45WH6EPGF1JKH",
             "external_id": "recX0Ztue3iBQR7rl",
-            "title": "Active Until Next Sunday @ 9PM",
+            "title": "Active Until Next Sunday @ 9PM, Europe/North America",
             "slug": "active-until-next-sunday",
             "start": "2000-01-01T00:00:00+00:00",
-            "end": "2023-07-09T00:00:00+00:00",
+            "end": "2023-11-19T00:00:00+00:00",
             "timezone": "UTC",
             "dimensions": {
               "next_token": null,
               "objects": [
                 {
-                  "uid": "01H4MM3PKPR35Z5205PAE3ZGZ8",
+                  "uid": "01HF6MK1YMG5GCCZSFCQ350T6X",
+                  "title": "Device Type",
+                  "slug": "device-types",
+                  "external_id": null,
+                  "description": null,
+                  "values": {
+                    "objects": [
+                      {
+                        "description": null,
+                        "external_id": "recPOR7ivzMd90XLe",
+                        "slug": "pc",
+                        "title": "PC",
+                        "uid": "01HF6MK7W9ZQ9H2PWVC8QRJ953"
+                      },
+                      {
+                        "description": null,
+                        "external_id": "rec50TFQHwT76pY2K",
+                        "slug": "smartphone",
+                        "title": "SmartPhone",
+                        "uid": "01HF6MK7TMKE5PD5PXP9RHND4S"
+                      }
+                    ],
+                    "next_token": null
+                  }
+                },
+                {
+                  "uid": "01HF6MK1WGC1N7S5DWHKNRM2EP",
+                  "title": "Region",
+                  "slug": "regions",
+                  "external_id": null,
+                  "description": null,
+                  "values": {
+                    "objects": [
+                      {
+                        "description": null,
+                        "external_id": "rec91RQH79i9AO3Qf",
+                        "slug": "europe",
+                        "title": "Europe",
+                        "uid": "01HF6MK84X96M2RET3TJ3F3YFN"
+                      },
+                      {
+                        "description": null,
+                        "external_id": "reclbGDlUj4Ap84cZ",
+                        "slug": "north-america",
+                        "title": "North America",
+                        "uid": "01HF6MK7W3WAGYQ37PS278E02A"
+                      }
+                    ],
+                    "next_token": null
+                  }
+                },
+                {
+                  "uid": "01HF6MK1WVWMK2FTGA9HCXNBG3",
                   "title": "Customer Type",
                   "slug": "customer-types",
                   "external_id": null,
@@ -219,40 +363,14 @@
                         "external_id": "recD4WfhAYw4gFnJh",
                         "slug": "premium",
                         "title": "Premium",
-                        "uid": "01H4MMAVVYNQJE74TXV9RBMP9Y"
+                        "uid": "01HF6MK840CEFWKTB1SQMJZPFG"
                       },
                       {
                         "description": null,
                         "external_id": "recXQtdEI4DpFkw76",
                         "slug": "standard",
                         "title": "Standard",
-                        "uid": "01H4MMAVN9ESDAP6C1V7A760A7"
-                      }
-                    ],
-                    "next_token": null
-                  }
-                },
-                {
-                  "uid": "01H4MM3PM6XRJ0ZZ2QAZR3MRSN",
-                  "title": "Device Type",
-                  "slug": "device-types",
-                  "external_id": null,
-                  "description": null,
-                  "values": {
-                    "objects": [
-                      {
-                        "description": null,
-                        "external_id": "rec50TFQHwT76pY2K",
-                        "slug": "smartphone",
-                        "title": "SmartPhone",
-                        "uid": "01H4MMAVFH4WKT38RCTSQ7P2CH"
-                      },
-                      {
-                        "description": null,
-                        "external_id": "recPOR7ivzMd90XLe",
-                        "slug": "pc",
-                        "title": "PC",
-                        "uid": "01H4MMAVWRJ0FPR1M69CCKT17X"
+                        "uid": "01HF6MK81V2X3K6TF6N2ZEN4TP"
                       }
                     ],
                     "next_token": null

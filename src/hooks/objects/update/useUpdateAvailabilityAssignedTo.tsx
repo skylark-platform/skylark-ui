@@ -8,7 +8,7 @@ import {
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import { createUpdateAvailabilityAssignedToMutation } from "src/lib/graphql/skylark/dynamicMutations";
+import { createUpdateAvailabilityAssignedToMutation } from "src/lib/graphql/skylark/dynamicMutations/objects";
 
 export const useUpdateAvailabilityAssignedTo = ({
   onSuccess,

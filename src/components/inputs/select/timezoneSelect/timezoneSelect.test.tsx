@@ -27,7 +27,7 @@ test('searches for the "Europe/London" timezone', async () => {
     target: { value: "london" },
   });
 
-  const gotOptions = screen.queryAllByRole("option");
+  const gotOptions = await screen.findAllByRole("option");
   expect(gotOptions.length).toBe(1);
   expect(gotOptions[0]).toHaveTextContent("Europe/London");
 

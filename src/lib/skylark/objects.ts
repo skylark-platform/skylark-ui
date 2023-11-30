@@ -10,6 +10,7 @@ import {
   IntrospectionOutputType,
   IntrospectionQuery,
   IntrospectionScalarType,
+  IntrospectionSchema,
 } from "graphql";
 
 import { OBJECT_LIST_TABLE, SYSTEM_FIELDS } from "src/constants/skylark";
@@ -259,9 +260,49 @@ const getMutationInfo = (
   };
 };
 
+const getBuiltInObjectTypeRelationships = (
+  schema: IntrospectionSchema,
+  relationships: SkylarkObjectRelationship[],
+  getObjectInterface?: IntrospectionObjectType,
+  ignoreRelationships?: boolean,
+): SkylarkObjectMeta["builtinObjectRelationships"] => {
+  if (ignoreRelationships) {
+    return;
+  }
+
+  const imageRelationships = objectRelationshipFieldsFromGraphQLType(
+    SkylarkSystemGraphQLType.SkylarkImageListing,
+    getObjectInterface,
+  );
+  const imageOperations = imageRelationships
+    ? getObjectOperations(imageRelationships.objectType, schema, true)
+    : null;
+
+  const hasAssets = relationships.some(
+    ({ objectType }) => objectType === BuiltInSkylarkObjectType.SkylarkAsset,
+  );
+  const hasLiveAssets = relationships.some(
+    ({ objectType }) =>
+      objectType === BuiltInSkylarkObjectType.SkylarkLiveAsset,
+  );
+
+  return {
+    images:
+      imageRelationships && imageOperations
+        ? {
+            objectMeta: imageOperations,
+            relationshipNames: imageRelationships.relationshipNames,
+          }
+        : null,
+    hasAssets,
+    hasLiveAssets,
+  };
+};
+
 export const getObjectOperations = (
   objectType: SkylarkObjectType,
   schema: IntrospectionQuery["__schema"],
+  ignoreRelationships?: boolean,
 ): SkylarkObjectMeta => {
   const objectTypeExists = schema.types.find(
     ({ name, kind }) => name === objectType && kind === "OBJECT",
@@ -383,14 +424,6 @@ export const getObjectOperations = (
     getObjectInterface,
   );
 
-  const imageRelationships = objectRelationshipFieldsFromGraphQLType(
-    SkylarkSystemGraphQLType.SkylarkImageListing,
-    getObjectInterface,
-  );
-  const imageOperations = imageRelationships
-    ? getObjectOperations(imageRelationships.objectType, schema)
-    : null;
-
   // Parse the relationships out of the create mutation as it has a relationships parameter
   const { relationships, ...createMeta } = getMutationInfo(
     objectType,
@@ -399,14 +432,21 @@ export const getObjectOperations = (
     createInputObjectInterface,
   );
 
+  const hasRelationships = relationships.length > 0;
+
+  const builtinObjectRelationships = getBuiltInObjectTypeRelationships(
+    schema,
+    relationships,
+    getObjectInterface,
+    ignoreRelationships,
+  );
+
   const updateMeta = getMutationInfo(
     objectType,
     schema.types,
     enums,
     updateInputObjectInterface,
   );
-
-  const hasRelationships = relationships.length > 0;
 
   const operations: SkylarkObjectOperations = {
     get: {
@@ -443,13 +483,7 @@ export const getObjectOperations = (
     name: objectType,
     fields: objectFields,
     fieldConfig,
-    images:
-      imageRelationships && imageOperations
-        ? {
-            objectMeta: imageOperations,
-            relationshipNames: imageRelationships.relationshipNames,
-          }
-        : null,
+    builtinObjectRelationships,
     operations,
     availability,
     relationships,
@@ -475,9 +509,9 @@ export const getAllObjectsMeta = (
   return objectOperations;
 };
 
-const sortFieldsByConfigPosition = (
-  { field: fieldA }: { field: string },
-  { field: fieldB }: { field: string },
+export const sortFieldsByConfigPosition = (
+  fieldA: string,
+  fieldB: string,
   objectFieldConfig?: ParsedSkylarkObjectConfig["fieldConfig"],
 ) => {
   const aFieldConfig = objectFieldConfig?.find(({ name }) => fieldA === name);
@@ -547,10 +581,14 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
 
   const globalMetadataFields = otherFields
     .filter(({ field }) => fieldConfig.global.includes(field))
-    .sort((a, b) => sortFieldsByConfigPosition(a, b, objectFieldConfig));
+    .sort((a, b) =>
+      sortFieldsByConfigPosition(a.field, b.field, objectFieldConfig),
+    );
   const translatableMetadataFields = otherFields
     .filter(({ field }) => fieldConfig.translatable.includes(field))
-    .sort((a, b) => sortFieldsByConfigPosition(a, b, objectFieldConfig));
+    .sort((a, b) =>
+      sortFieldsByConfigPosition(a.field, b.field, objectFieldConfig),
+    );
 
   return {
     systemMetadataFields,

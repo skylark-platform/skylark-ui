@@ -19,7 +19,7 @@ describe("Content Library - Search", () => {
         });
       }
       if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
-        req.alias = "introspectionQuery";
+        req.alias = "getObjectConfig";
         req.reply({
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
         });
@@ -105,6 +105,9 @@ describe("Content Library - Search", () => {
 
     cy.visit("/");
     cy.wait("@introspectionQuery");
+    cy.wait("@getObjectConfig");
+
+    cy.get("[data-testid=animated-skylark-logo]").should("not.exist");
   });
 
   it("visits home", () => {
@@ -112,6 +115,8 @@ describe("Content Library - Search", () => {
       "not.exist",
     );
     cy.contains("GOT");
+    cy.contains("All object types translated to en-GB", { timeout: 10000 });
+
     cy.percySnapshot("Homepage");
   });
 
@@ -128,7 +133,13 @@ describe("Content Library - Search", () => {
     cy.visit("/");
 
     cy.wait("@searchQueryEmpty");
+
+    cy.get("[data-testid=animated-skylark-logo]").should("not.exist");
+
     cy.contains("We couldn't find matches for the search term.");
+
+    cy.contains("All object types translated to en-GB", { timeout: 10000 });
+
     cy.percySnapshot("Homepage - no search data");
   });
 
@@ -165,7 +176,28 @@ describe("Content Library - Search", () => {
     cy.contains("Asset").should("exist");
     cy.get('[aria-label="Open Search Options"]').click();
 
-    const columnsFilters = cy.get("[data-testid=checkbox-grid-columns]");
+    cy.get("#checkbox-sectioned-by-object-types-toggle-all").click();
+
+    const columnsFilters = cy.get("[data-cy=column-filters]");
+
+    cy.contains("Apply").should("be.disabled");
+
+    columnsFilters
+      .get(`#checkbox-columns-special-skylark-ui-display-field`)
+      .click();
+    columnsFilters.get(`#checkbox-columns-special-uid`).click();
+    columnsFilters.get(`#checkbox-columns-skylarkasset-internal_title`).click();
+
+    cy.contains("Apply").should("not.be.disabled").click();
+  });
+
+  it("filters for only title, uid, external_id, title_short fields (old column filters - all fields in a single Checkbox)", () => {
+    cy.contains("Asset").should("exist");
+    cy.get('[aria-label="Open Search Options"]').click();
+
+    cy.get('button[role="switch"]').click({ force: true });
+
+    const columnsFilters = cy.get("[data-cy=column-filters]");
 
     columnsFilters.contains("Toggle all").click();
     cy.contains("Apply").should("be.disabled");
@@ -177,7 +209,7 @@ describe("Content Library - Search", () => {
       "synopsis",
       "synopsis_short",
     ].forEach((field) => {
-      columnsFilters.get(`#checkbox-columns-${field}`).click();
+      columnsFilters.get(`#checkbox-all-fields-${field}`).click();
     });
     cy.contains("Apply").should("not.be.disabled").click();
   });
@@ -273,6 +305,9 @@ describe("Content Library - Search", () => {
     );
 
     cy.contains("Classic kids shows");
+
+    // Wait for second page of search results to load before Percy screenshot
+    cy.get(`[data-cy=pill]`).should("exist").should("have.length.at.least", 15);
 
     cy.percySnapshot("Homepage - Filtered By Availability Dimensions (kids)");
   });

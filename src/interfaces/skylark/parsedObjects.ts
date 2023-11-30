@@ -84,9 +84,9 @@ export interface ParsedSkylarkObjectConfigFieldConfig {
 }
 
 export interface ParsedSkylarkObjectConfig {
-  colour?: string;
-  primaryField?: string;
-  objectTypeDisplayName?: string;
+  colour?: string | null;
+  primaryField?: string | null;
+  objectTypeDisplayName?: string | null;
   fieldConfig?: ParsedSkylarkObjectConfigFieldConfig[];
 }
 
@@ -100,6 +100,7 @@ export interface ParsedSkylarkObjectMeta {
   availabilityStatus: AvailabilityStatus | null;
   created?: string;
   modified?: string;
+  published?: boolean;
 }
 
 export interface ParsedSkylarkObjectImageRelationship {
@@ -123,4 +124,11 @@ export interface ParsedSkylarkObjectRelationships {
   objectType: SkylarkObjectType;
   nextToken?: string | null;
   objects: ParsedSkylarkObject[];
+}
+
+export interface ParsedSkylarkObjectTypeRelationshipConfiguration {
+  relationshipName: string;
+  config: {
+    defaultSortField: string;
+  };
 }

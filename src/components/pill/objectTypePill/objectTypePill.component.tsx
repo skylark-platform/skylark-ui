@@ -9,12 +9,14 @@ interface ObjectTypePillProps {
   type: SkylarkObjectType;
   defaultConfig?: ParsedSkylarkObjectConfig;
   className?: string;
+  forceActualName?: boolean;
 }
 
 export const ObjectTypePill = ({
   type,
   defaultConfig,
   className,
+  forceActualName,
 }: ObjectTypePillProps) => {
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
 
@@ -24,8 +26,8 @@ export const ObjectTypePill = ({
 
   return (
     <Pill
-      label={config?.objectTypeDisplayName || type}
-      bgColor={config?.colour}
+      label={forceActualName ? type : config?.objectTypeDisplayName || type}
+      bgColor={config?.colour || undefined}
       className={className}
     />
   );

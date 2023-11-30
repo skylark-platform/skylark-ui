@@ -32,7 +32,10 @@ export const Checkbox = ({
         aria-label={ariaLabel}
         className={clsx(
           "peer flex h-5 w-5 min-w-5 items-center justify-center rounded-sm group-hover/checkbox:cursor-pointer",
-          "border-2 radix-state-checked:border-brand-primary radix-state-checked:bg-brand-primary radix-state-indeterminate:border-error radix-state-indeterminate:bg-error radix-state-unchecked:bg-manatee-200",
+          "border-2",
+          props.disabled
+            ? "radix-state-checked:border-manatee-300 radix-state-checked:bg-manatee-300 radix-state-checked:text-manatee-500 radix-state-indeterminate:border-manatee-300 radix-state-indeterminate:bg-manatee-300 radix-state-unchecked:bg-manatee-300 radix-state-unchecked:border-manatee-300"
+            : "radix-state-checked:border-brand-primary radix-state-checked:bg-brand-primary radix-state-indeterminate:border-error radix-state-indeterminate:bg-error radix-state-unchecked:bg-manatee-200",
           "text-white focus:outline-none focus-visible:ring focus-visible:ring-brand-primary focus-visible:ring-opacity-75",
           className,
         )}

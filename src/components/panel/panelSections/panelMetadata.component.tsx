@@ -106,6 +106,7 @@ export const PanelMetadata = ({
         className="h-full"
         data-testid="panel-metadata"
         data-loading={isLoading}
+        onSubmit={(e) => e.preventDefault()}
       >
         {sections.map(
           ({ id, title, metadataFields }, index, { length: numSections }) => (
@@ -151,7 +152,14 @@ export const PanelMetadata = ({
         )}
 
         {objectType === BuiltInSkylarkObjectType.SkylarkImage && (
-          <CalculatedImageSize src={metadata?.url as string | null} />
+          <>
+            <CalculatedImageSize src={metadata?.url as string | null} />
+            <PanelMetadataProperty
+              property={"URL"}
+              value={metadata?.url}
+              isUrl
+            />
+          </>
         )}
       </form>
       <PanelLoading isLoading={!objectMeta}>

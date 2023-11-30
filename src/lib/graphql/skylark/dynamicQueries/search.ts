@@ -55,6 +55,7 @@ export const createSearchObjectsQuery = (
         __typename: true,
         total_count: true,
         objects: {
+          uid: true,
           __on: objectsToRequest.map((object) => {
             const common = generateVariablesAndArgs(object.name, "Query");
             return {
@@ -63,6 +64,7 @@ export const createSearchObjectsQuery = (
               ...generateFieldsToReturn(
                 object.fields,
                 object.name,
+                true,
                 `__${object.name}__`,
               ),
               ...generateRelationshipsToReturn(object, true),

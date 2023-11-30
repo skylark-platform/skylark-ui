@@ -1,14 +1,20 @@
 import clsx from "clsx";
+import { DetailedHTMLProps, InputHTMLAttributes } from "react";
 
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 
-interface TextInputProps {
+interface TextInputProps
+  extends Omit<
+    DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
+    "onChange"
+  > {
   value: string;
   onChange: (str: string) => void;
   className?: string;
   label?: string;
   tabIndex?: number;
   withCopy?: boolean;
+  placeholder?: string;
   onEnterKeyPress?: () => void;
 }
 
@@ -18,6 +24,7 @@ export const TextInput = ({
   className,
   label,
   withCopy,
+  placeholder,
   onEnterKeyPress,
   ...props
 }: TextInputProps) => (
@@ -31,12 +38,17 @@ export const TextInput = ({
       </label>
     )}
     <input
-      className={clsx("rounded bg-manatee-50 p-1 md:p-2", className)}
+      className={clsx(
+        "rounded bg-manatee-50 p-1 md:p-2",
+        withCopy && "pr-6 md:pr-8",
+        className,
+      )}
       type="text"
       id={label}
       name={label}
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
       onKeyDown={
         onEnterKeyPress
           ? (e) => {
@@ -49,7 +61,10 @@ export const TextInput = ({
       {...props}
     />
     {withCopy && (
-      <CopyToClipboard value={value} className="absolute right-3 top-9" />
+      <CopyToClipboard
+        value={value}
+        className="absolute bottom-2 right-2 md:bottom-3 md:right-3"
+      />
     )}
   </div>
 );

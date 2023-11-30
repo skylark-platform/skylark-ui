@@ -5,6 +5,7 @@ import { useCallback, useMemo } from "react";
 import { QueryKeys } from "src/enums/graphql";
 import {
   GQLSkylarkObjectTypesWithConfig,
+  ParsedSkylarkObjectConfig,
   SkylarkObjectMeta,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -22,6 +23,25 @@ import {
   useSkylarkSchemaInterfaceType,
   useSkylarkSchemaIntrospection,
 } from "./useSkylarkSchemaIntrospection";
+
+export const sortObjectTypesWithConfig = (
+  a: {
+    objectType: string;
+    config?: ParsedSkylarkObjectConfig;
+  },
+  b: {
+    objectType: string;
+    config?: ParsedSkylarkObjectConfig;
+  },
+) => {
+  const objTypeA = (
+    a.config?.objectTypeDisplayName || a.objectType
+  ).toUpperCase();
+  const objTypeB = (
+    b.config?.objectTypeDisplayName || b.objectType
+  ).toUpperCase();
+  return objTypeA < objTypeB ? -1 : objTypeA > objTypeB ? 1 : 0;
+};
 
 export const useSkylarkObjectTypes = (searchable: boolean) => {
   // VisibleObject Interface contains all items that appear in Search, whereas Metadata can all be added into Sets
@@ -44,10 +64,10 @@ export const useSkylarkObjectTypes = (searchable: boolean) => {
 const useObjectTypesConfig = (objectTypes?: string[]) => {
   const query = createGetAllObjectsConfigQuery(objectTypes);
 
-  const { data } = useQuery<GQLSkylarkObjectTypesWithConfig>({
+  const { data, isLoading } = useQuery<GQLSkylarkObjectTypesWithConfig>({
     queryKey: [QueryKeys.ObjectTypesConfig, query],
     queryFn: async () => skylarkRequest("query", query as DocumentNode),
-    enabled: query !== null,
+    enabled: objectTypes && query !== null,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -61,20 +81,14 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
           objectType,
           config: parseObjectConfig(objectType, data?.[objectType]),
         }))
-        .sort((a, b) => {
-          const objTypeA = (
-            a.config.objectTypeDisplayName || a.objectType
-          ).toUpperCase();
-          const objTypeB = (
-            b.config.objectTypeDisplayName || b.objectType
-          ).toUpperCase();
-          return objTypeA < objTypeB ? -1 : objTypeA > objTypeB ? 1 : 0;
-        }),
+        .sort(sortObjectTypesWithConfig),
     [data, objectTypes],
   );
 
   return {
     objectTypesWithConfig,
+    numObjectTypes: objectTypes?.length,
+    isLoading,
   };
 };
 
@@ -110,7 +124,11 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
 
 export const useSkylarkObjectTypesWithConfig = () => {
   const { objectTypes } = useSkylarkObjectTypes(true);
-  return useObjectTypesConfig(objectTypes);
+  const ret = useObjectTypesConfig(objectTypes);
+  return {
+    ...ret,
+    isLoading: !objectTypes || ret.isLoading,
+  };
 };
 
 export const useSkylarkSetObjectTypes = (searchable: boolean) => {

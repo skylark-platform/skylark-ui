@@ -1,4 +1,10 @@
 import {
+  HandleDropErrorType,
+  handleDroppedAvailabilities,
+  handleDroppedContents,
+  handleDroppedRelationships,
+} from "src/components/panel/panel.lib";
+import {
   AddedSkylarkObjectContentObject,
   AvailabilityStatus,
   BuiltInSkylarkObjectType,
@@ -6,13 +12,6 @@ import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
-
-import {
-  HandleDropErrorType,
-  handleDroppedAvailabilities,
-  handleDroppedContents,
-  handleDroppedRelationships,
-} from "./panel.lib";
 
 const objectMetaRelationships: SkylarkObjectMeta["relationships"] = [
   {

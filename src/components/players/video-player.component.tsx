@@ -28,7 +28,7 @@ export const VideoPlayer = ({ src, className }: VideoPlayerProps) => {
   };
 
   return (
-    <div className={className}>
+    <div className={className} data-testid={`video-player-for-${src}`}>
       {playerError ? (
         <div className="aspect-video h-full w-full text-white">
           {playerError === PlayerError.UNKNOWN && (

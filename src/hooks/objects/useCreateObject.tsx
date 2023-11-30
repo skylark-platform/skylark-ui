@@ -15,7 +15,7 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import { createCreateObjectMutation } from "src/lib/graphql/skylark/dynamicMutations";
+import { createCreateObjectMutation } from "src/lib/graphql/skylark/dynamicMutations/objects";
 
 export const refetchSearchQueriesAfterUpdate = (queryClient: QueryClient) => {
   void queryClient.refetchQueries({

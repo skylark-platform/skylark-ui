@@ -57,6 +57,7 @@ module.exports = {
       }),
       boxShadow: {
         "object-search-divider": "-2px 0px 10px 0px #BBB",
+        "scroll-hint": "inset 0px -11px 7px -11px rgb(0 0 0 / 0.3)",
       },
     },
   },

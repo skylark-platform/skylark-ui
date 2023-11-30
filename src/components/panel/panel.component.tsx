@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -16,7 +15,7 @@ import { useUpdateObjectAvailability } from "src/hooks/objects/update/useUpdateO
 import { useUpdateObjectContent } from "src/hooks/objects/update/useUpdateObjectContent";
 import { useUpdateObjectMetadata } from "src/hooks/objects/update/useUpdateObjectMetadata";
 import { useUpdateObjectRelationships } from "src/hooks/objects/update/useUpdateObjectRelationships";
-import { PanelTab } from "src/hooks/state";
+import { PanelTab, PanelTabState } from "src/hooks/state";
 import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
@@ -59,11 +58,13 @@ interface PanelProps {
   isDraggedObject?: boolean;
   droppedObjects?: ParsedSkylarkObject[];
   tab: PanelTab;
+  tabState: PanelTabState;
   clearDroppedObjects?: () => void;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
   setTab: (t: PanelTab) => void;
   navigateToPreviousPanelObject?: () => void;
   navigateToForwardPanelObject?: () => void;
+  updateActivePanelTabState: (s: Partial<PanelTabState>) => void;
 }
 
 const tabsWithDropZones = [PanelTab.Content, PanelTab.Availability];
@@ -173,18 +174,18 @@ export const Panel = ({
   closePanel,
   isDraggedObject,
   droppedObjects,
+  tabState,
   clearDroppedObjects,
   setTab: setSelectedTab,
   navigateToPreviousPanelObject,
   navigateToForwardPanelObject,
   setPanelObject,
+  updateActivePanelTabState,
 }: PanelProps) => {
   useGetObjectPrefetchQueries({
     ...object,
     selectedTab,
   });
-
-  const { query: urlQuery } = useRouter();
 
   const [panelInEditMode, setEditMode] = useState(false);
 
@@ -254,16 +255,24 @@ export const Panel = ({
     modifiedAvailabilityObjects !== null ||
     modifiedAvailabilityAssignedTo !== null;
 
+  // When an object is in draft and no values have changed, we want to publish the version on save without creating another version
+  const onlyPublishOnSave =
+    data?.meta.published === false && !metadataForm.formState.isDirty;
+
   const tabs: PanelTab[] = useMemo(
     () =>
       [
         PanelTab.Metadata,
         objectMeta?.hasContent && PanelTab.Content,
-        hasProperty(urlQuery, "next") &&
-          objectMeta?.name === BuiltInSkylarkObjectType.SkylarkAsset &&
+        (objectMeta?.name === BuiltInSkylarkObjectType.SkylarkAsset ||
+          objectMeta?.name === BuiltInSkylarkObjectType.SkylarkLiveAsset) &&
           PanelTab.Playback,
         objectMeta?.hasRelationships && PanelTab.Relationships,
-        objectMeta?.images && PanelTab.Imagery,
+        // If relationship, put Playback tab after Relationships
+        (objectMeta?.builtinObjectRelationships?.hasAssets ||
+          objectMeta?.builtinObjectRelationships?.hasLiveAssets) &&
+          PanelTab.Playback,
+        objectMeta?.builtinObjectRelationships?.images && PanelTab.Imagery,
         objectMeta?.hasContentOf && PanelTab.ContentOf,
         objectMeta?.hasAvailability && PanelTab.Availability,
         objectMeta?.name === BuiltInSkylarkObjectType.Availability &&
@@ -276,9 +285,8 @@ export const Panel = ({
       objectMeta?.hasContent,
       objectMeta?.hasContentOf,
       objectMeta?.hasRelationships,
-      objectMeta?.images,
+      objectMeta?.builtinObjectRelationships,
       objectMeta?.name,
-      urlQuery,
     ],
   );
 
@@ -369,7 +377,7 @@ export const Panel = ({
       onError: showUpdateErrorToast,
     });
 
-  const saveActiveTabChanges = () => {
+  const saveActiveTabChanges = (opts?: { draft?: boolean }) => {
     if (selectedTab === PanelTab.Content && contentObjects.updated) {
       updateObjectContent({
         uid,
@@ -404,17 +412,33 @@ export const Panel = ({
         modifiedAvailabilityAssignedTo,
       });
     } else if (selectedTab === PanelTab.Metadata) {
-      metadataForm.handleSubmit((values) => {
-        if (
-          hasProperty(values, SkylarkSystemField.ExternalID) &&
-          values[SkylarkSystemField.ExternalID] ===
-            data?.metadata[SkylarkSystemField.ExternalID]
-        ) {
-          // Remove External ID when it hasn't changed
-          delete values[SkylarkSystemField.ExternalID];
-        }
-        updateObjectMetadata({ uid, language, metadata: values });
-      })();
+      if (onlyPublishOnSave) {
+        updateObjectMetadata({
+          uid,
+          language,
+          metadata: null,
+          draft: false,
+          languageVersion: data.meta.versions?.language,
+          globalVersion: data.meta.versions?.global,
+        });
+      } else {
+        metadataForm.handleSubmit((values) => {
+          if (
+            hasProperty(values, SkylarkSystemField.ExternalID) &&
+            values[SkylarkSystemField.ExternalID] ===
+              data?.metadata[SkylarkSystemField.ExternalID]
+          ) {
+            // Remove External ID when it hasn't changed
+            delete values[SkylarkSystemField.ExternalID];
+          }
+          updateObjectMetadata({
+            uid,
+            language,
+            metadata: values,
+            draft: opts?.draft,
+          });
+        })();
+      }
     } else {
       setEditMode(false);
     }
@@ -497,6 +521,7 @@ export const Panel = ({
         }
         isTranslatable={objectMeta?.isTranslatable}
         availabilityStatus={data?.meta.availabilityStatus}
+        objectMetadataHasChanged={metadataForm.formState.isDirty}
         toggleEditMode={() => {
           if (inEditMode) {
             resetMetadataForm(formParsedMetadata || {});
@@ -564,7 +589,9 @@ export const Panel = ({
           {selectedTab === PanelTab.Imagery && data?.images && (
             <PanelImages
               isPage={isPage}
-              images={data.images}
+              objectType={objectType}
+              uid={uid}
+              language={language}
               setPanelObject={setPanelObject}
               inEditMode={inEditMode}
             />
@@ -572,6 +599,10 @@ export const Panel = ({
           {selectedTab === PanelTab.Playback && (
             <PanelPlayback
               isPage={isPage}
+              objectType={objectType}
+              uid={uid}
+              language={language}
+              objectMeta={objectMeta}
               metadata={formParsedMetadata}
               setPanelObject={setPanelObject}
               inEditMode={inEditMode}
@@ -581,7 +612,7 @@ export const Panel = ({
             <PanelAvailability
               isPage={isPage}
               objectType={objectType}
-              objectUid={uid}
+              uid={uid}
               language={language}
               setPanelObject={setPanelObject}
               inEditMode={inEditMode}
@@ -613,9 +644,11 @@ export const Panel = ({
               setModifiedRelationships={handleRelationshipsObjectsModified}
               inEditMode={inEditMode}
               language={language}
+              tabState={tabState[PanelTab.Relationships]}
               showDropZone={isDraggedObject}
               droppedObjects={droppedObjects}
               setPanelObject={setPanelObject}
+              updateActivePanelTabState={updateActivePanelTabState}
             />
           )}
           {selectedTab === PanelTab.ContentOf && (

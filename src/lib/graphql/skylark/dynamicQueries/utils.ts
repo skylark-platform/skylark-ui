@@ -50,6 +50,7 @@ const commonGraphQLOpts = {
       created: {
         date: true,
       },
+      published: true,
     },
   },
 };
@@ -117,6 +118,7 @@ export const generateVariablesAndArgs = (
 export const generateFieldsToReturn = (
   fields: SkylarkObjectMeta["fields"],
   objectType: string | null,
+  ignoreUid?: boolean,
   fieldAliasPrefix?: string,
 ) => {
   const fieldsToReturn = fields.reduce((previous, field) => {
@@ -127,6 +129,10 @@ export const generateFieldsToReturn = (
       : null;
 
     if (options && options.hiddenFields.includes(field.name)) {
+      return previous;
+    }
+
+    if (ignoreUid && field.name.toLowerCase() === "uid") {
       return previous;
     }
 
@@ -183,22 +189,31 @@ export const generateRelationshipsToReturn = (
     );
   }
 
-  if (object.images && object.images.objectMeta?.fields) {
-    object.images.relationshipNames.forEach((relationshipName) => {
-      relationshipsToReturn[relationshipName] = {
-        __args: {
-          limit: isSearch ? 5 : 50, // max
-        },
-        next_token: true,
-        objects: {
-          ...commonGraphQLOpts.objectMeta,
-          ...generateFieldsToReturn(
-            object.images?.objectMeta.fields || [],
-            object.images?.objectMeta.name || null,
-          ),
-        },
-      };
-    });
+  const builtinObjectRelationships = object.builtinObjectRelationships;
+
+  if (
+    isSearch &&
+    builtinObjectRelationships &&
+    builtinObjectRelationships.images &&
+    builtinObjectRelationships.images.objectMeta?.fields
+  ) {
+    builtinObjectRelationships.images.relationshipNames.forEach(
+      (relationshipName) => {
+        relationshipsToReturn[relationshipName] = {
+          __args: {
+            limit: 5, // Fetch 5 images when Searching
+          },
+          next_token: true,
+          objects: {
+            ...commonGraphQLOpts.objectMeta,
+            ...generateFieldsToReturn(
+              builtinObjectRelationships.images?.objectMeta.fields || [],
+              builtinObjectRelationships.images?.objectMeta.name || null,
+            ),
+          },
+        };
+      },
+    );
   }
 
   return relationshipsToReturn;
@@ -226,6 +241,7 @@ export const generateContentsToReturn = (
       next_token: true,
       objects: {
         object: {
+          uid: true,
           __on: objectsToRequest.map((object) => ({
             __typeName: object.name,
             __typename: true, // To remove the alias later
@@ -233,6 +249,7 @@ export const generateContentsToReturn = (
             ...generateFieldsToReturn(
               object.fields,
               object.name,
+              true,
               `__${object.name}__`,
             ),
             ...(opts.fetchAvailability && object.availability

@@ -1,5 +1,10 @@
 import { QueryClient } from "@tanstack/react-query";
-import { GraphQLClient, RequestDocument, request } from "graphql-request";
+import {
+  GraphQLClient,
+  RequestDocument,
+  Variables,
+  request,
+} from "graphql-request";
 
 import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { SAAS_API_ENDPOINT, REQUEST_HEADERS } from "src/constants/skylark";
@@ -28,7 +33,7 @@ export const createSkylarkReactQueryClient = () =>
 export const skylarkRequest = <T>(
   type: "query" | "mutation",
   query: RequestDocument | string,
-  variables?: object,
+  variables?: Variables,
   opts?: SkylarkRequestOpts,
   argHeaders?: HeadersInit,
 ) => {
@@ -52,6 +57,10 @@ export const skylarkRequest = <T>(
 
   if (bypassCache) {
     headers[REQUEST_HEADERS.bypassCache as keyof HeadersInit] = "1";
+  }
+
+  if (type === "query") {
+    headers[REQUEST_HEADERS.draft as keyof HeadersInit] = "true";
   }
 
   return request<T>(uri || SAAS_API_ENDPOINT, query, variables, headers);

@@ -3,12 +3,19 @@ import { userEvent, waitFor, within } from "@storybook/testing-library";
 import React from "react";
 
 import GQLSkylarkGetAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allDevicesAllCustomersAvailability.json";
+import GQLSkylarkGetMovieDraftQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/draftObject.json";
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetSeasonQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots04.json";
 import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
-import { PanelTab } from "src/hooks/state";
+import { PanelTab, PanelTabState } from "src/hooks/state";
 
 import { Panel } from "./panel.component";
+
+const defaultPanelTabState: PanelTabState = {
+  [PanelTab.Relationships]: {
+    expanded: {},
+  },
+};
 
 export default {
   title: "Components/Panel",
@@ -22,6 +29,7 @@ const Template: ComponentStory<typeof Panel> = (args) => {
       {...args}
       closePanel={() => alert("Close clicked")}
       setPanelObject={() => ""}
+      tabState={args.tabState || defaultPanelTabState}
     />
   );
 };
@@ -36,8 +44,8 @@ Default.args = {
   tab: PanelTab.Metadata,
 };
 
-export const PageView = Template.bind({});
-PageView.args = {
+export const Metadata = Template.bind({});
+Metadata.args = {
   object: {
     uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
     objectType: "Movie",
@@ -45,6 +53,77 @@ PageView.args = {
   },
   isPage: true,
   tab: PanelTab.Metadata,
+};
+
+export const MetadataEditing = Template.bind({});
+MetadataEditing.args = {
+  object: {
+    uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
+    objectType: "Movie",
+    language: "",
+  },
+  isPage: true,
+  tab: PanelTab.Metadata,
+};
+MetadataEditing.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  const editButton = await canvas.findByRole("button", {
+    name: /Edit Metadata/i,
+  });
+
+  await waitFor(async () => {
+    userEvent.click(editButton);
+  });
+
+  const openSaveOptions = await canvas.findByLabelText(
+    "save changes - see alternate options",
+  );
+
+  await waitFor(async () => {
+    userEvent.click(openSaveOptions);
+  });
+};
+
+export const MetadataDraft = Template.bind({});
+MetadataDraft.args = {
+  object: {
+    uid: GQLSkylarkGetMovieDraftQueryFixture.data.getObject.uid,
+    objectType: "Movie",
+    language: "",
+  },
+  isPage: true,
+  tab: PanelTab.Metadata,
+};
+
+export const MetadataDraftModeEditing = Template.bind({});
+MetadataDraftModeEditing.args = {
+  object: {
+    uid: GQLSkylarkGetMovieDraftQueryFixture.data.getObject.uid,
+    objectType: "Movie",
+    language: "",
+  },
+  isPage: true,
+  tab: PanelTab.Metadata,
+};
+MetadataDraftModeEditing.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  const editButton = await canvas.findByRole("button", {
+    name: /Edit Metadata/i,
+  });
+
+  await waitFor(async () => {
+    userEvent.click(editButton);
+  });
+
+  const openSaveOptions = await canvas.findByLabelText(
+    "save changes - see alternate options",
+  );
+
+  await waitFor(async () => {
+    userEvent.click(openSaveOptions);
+  });
 };
 
 export const Imagery = Template.bind({});
@@ -78,8 +157,9 @@ ContentEditing.args = {
 ContentEditing.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
 
-  await canvas.findByRole("button", { name: /Edit Content/i });
-  const editButton = canvas.getByRole("button", { name: /Edit Content/i });
+  const editButton = await canvas.findByRole("button", {
+    name: /Edit Content/i,
+  });
 
   await waitFor(async () => {
     userEvent.click(editButton);

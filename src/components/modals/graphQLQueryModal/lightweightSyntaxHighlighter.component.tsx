@@ -1,4 +1,4 @@
-import { PrismLight as ReactSyntaxHighlighter } from "react-syntax-highlighter";
+import { PrismAsyncLight as ReactSyntaxHighlighter } from "react-syntax-highlighter";
 import graphqlHighlight from "react-syntax-highlighter/dist/cjs/languages/prism/graphql";
 import jsonHighlight from "react-syntax-highlighter/dist/cjs/languages/prism/json";
 import highlightStyles from "react-syntax-highlighter/dist/cjs/styles/prism/one-light";

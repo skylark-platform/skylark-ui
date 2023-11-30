@@ -13,6 +13,7 @@ import {
 } from "src/__tests__/utils/test-utils";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import {
+  AvailabilityStatus,
   GQLSkylarkAccountResponse,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
@@ -32,7 +33,7 @@ afterEach(() => {
 });
 
 test("renders search bar", () => {
-  render(<ObjectSearch />);
+  render(<ObjectSearch id="test" />);
 
   screen.findByPlaceholderText("Search for an object(s)");
 
@@ -42,7 +43,7 @@ test("renders search bar", () => {
 test("renders search bar, filters with no objects returned", async () => {
   jest.useFakeTimers();
 
-  render(<ObjectSearch />);
+  render(<ObjectSearch id="test" />);
 
   const input = screen.getByPlaceholderText("Search for an object(s)");
   fireEvent.change(input, { target: { value: "AllAvailTestMovie" } });
@@ -59,7 +60,7 @@ test("renders search bar, filters with no objects returned", async () => {
 });
 
 test("renders the info button on row hover when setPanelObject is given", async () => {
-  render(<ObjectSearch setPanelObject={() => ""} />);
+  render(<ObjectSearch id="test" setPanelObject={() => ""} />);
 
   await screen.findAllByText(
     GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
@@ -81,7 +82,7 @@ test("renders the info button on row hover when setPanelObject is given", async 
 });
 
 test("does not render info button on row hover when setPanelObject is undefined", async () => {
-  render(<ObjectSearch setPanelObject={undefined} />);
+  render(<ObjectSearch id="test" setPanelObject={undefined} />);
 
   await screen.findAllByText(
     GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
@@ -105,7 +106,7 @@ test("does not render info button on row hover when setPanelObject is undefined"
 test("calls setPanelObject when the row is clicked", async () => {
   const setPanelObject = jest.fn();
 
-  render(<ObjectSearch setPanelObject={setPanelObject} />);
+  render(<ObjectSearch id="test" setPanelObject={setPanelObject} />);
 
   await screen.findAllByText(
     GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
@@ -125,7 +126,7 @@ test("calls setPanelObject when the row is clicked", async () => {
 test("calls window.open to open the object in a new tab when the row is clicked", async () => {
   window.open = jest.fn();
 
-  render(<ObjectSearch setPanelObject={jest.fn()} />);
+  render(<ObjectSearch id="test" setPanelObject={jest.fn()} />);
 
   const object = GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0];
 
@@ -143,7 +144,7 @@ test("calls window.open to open the object in a new tab when the row is clicked"
 
 describe("with object select (checkboxes)", () => {
   test("renders row select checkboxes", async () => {
-    await render(<ObjectSearch withObjectSelect />);
+    await render(<ObjectSearch id="test" withObjectSelect />);
 
     const results = await screen.findByTestId("object-search-results-content");
 
@@ -154,11 +155,26 @@ describe("with object select (checkboxes)", () => {
     ).toBeGreaterThan(0);
   });
 
+  test("bulk options are disabled when nothing is checked", async () => {
+    await render(<ObjectSearch id="test" withObjectSelect />);
+
+    const results = await screen.findByTestId("object-search-results-content");
+
+    const withinResults = within(results);
+
+    expect(
+      (await withinResults.findAllByRole("checkbox")).length,
+    ).toBeGreaterThan(0);
+
+    expect(screen.getByRole("button", { name: "Bulk Options" })).toBeDisabled();
+  });
+
   test("fires on rowCheckChange callback when a checkbox is checked", async () => {
     const onRowCheckChange = jest.fn();
 
     await render(
       <ObjectSearch
+        id="test"
         withObjectSelect
         onObjectCheckedChanged={onRowCheckChange}
         checkedObjects={[]}
@@ -187,6 +203,7 @@ describe("with object select (checkboxes)", () => {
 
     await render(
       <ObjectSearch
+        id="test"
         withObjectSelect
         onObjectCheckedChanged={onObjectCheckedChanged}
       />,
@@ -216,9 +233,14 @@ describe("with object select (checkboxes)", () => {
 
     await render(
       <ObjectSearch
+        id="test"
         withObjectSelect
         onObjectCheckedChanged={onRowCheckChange}
-        checkedObjects={[{} as ParsedSkylarkObject]}
+        checkedObjects={[
+          {
+            meta: { language: "en-GB", availableLanguages: [] },
+          } as unknown as ParsedSkylarkObject,
+        ]}
       />,
     );
 
@@ -236,10 +258,34 @@ describe("with object select (checkboxes)", () => {
 
     expect(onRowCheckChange).toHaveBeenCalledWith([]);
   });
+
+  test("bulk options are enabled when objects are checked", async () => {
+    await render(
+      <ObjectSearch
+        id="test"
+        withObjectSelect
+        checkedObjects={[
+          {
+            meta: { language: "en-GB", availableLanguages: [] },
+          } as unknown as ParsedSkylarkObject,
+        ]}
+      />,
+    );
+
+    const results = await screen.findByTestId("object-search-results-content");
+
+    const withinResults = within(results);
+
+    expect(
+      (await withinResults.findAllByRole("checkbox")).length,
+    ).toBeGreaterThan(0);
+
+    expect(screen.getByRole("button", { name: "Bulk Options" })).toBeEnabled();
+  });
 });
 
 test("renders search results (with default language)", async () => {
-  render(<ObjectSearch />);
+  render(<ObjectSearch id="test" />);
 
   await screen.findByText("Display field"); // Search for table header
   await waitFor(() => {
@@ -277,7 +323,7 @@ test("renders search results with language as null (no default)", async () => {
     }),
   );
 
-  render(<ObjectSearch />);
+  render(<ObjectSearch id="test" />);
 
   await screen.findByText("Display field"); // Search for table header
   // Search for table content
@@ -295,7 +341,7 @@ test("renders search results with language as null (no default)", async () => {
 });
 
 test("opens filters and deselects all object types", async () => {
-  render(<ObjectSearch initialColumnState={{ columns: ["uid"] }} />);
+  render(<ObjectSearch id="test" initialColumnState={{ columns: ["uid"] }} />);
 
   await screen.findByText("Display field"); // Search for table header
 
@@ -337,6 +383,7 @@ test("manually filters to only en-gb translated objects", async () => {
 
   render(
     <ObjectSearch
+      id="test"
       initialColumnState={{
         columns: ["uid", OBJECT_LIST_TABLE.columnIds.translation],
       }}
@@ -387,6 +434,7 @@ test("manually filters to only en-gb translated objects", async () => {
 test("automatically filters to only en-gb translated objects as its the user/account's default language", async () => {
   await render(
     <ObjectSearch
+      id="test"
       initialColumnState={{
         columns: ["uid", OBJECT_LIST_TABLE.columnIds.translation],
       }}
@@ -419,6 +467,7 @@ test("clears the language filter", async () => {
   // Arrange
   render(
     <ObjectSearch
+      id="test"
       initialColumnState={{
         columns: ["uid", OBJECT_LIST_TABLE.columnIds.translation],
       }}
@@ -471,4 +520,58 @@ test("clears the language filter", async () => {
   ).toHaveLength(2);
   expect(screen.queryAllByText("en-GB").length).toBeGreaterThanOrEqual(1);
   expect(screen.queryAllByText("pt-PT").length).toBeGreaterThanOrEqual(1);
+});
+
+describe("batch options", () => {
+  test("opens delete objects modal", async () => {
+    await render(
+      <ObjectSearch
+        id="test"
+        withObjectSelect
+        checkedObjects={[
+          {
+            uid: "123",
+            objectType: "Episode",
+            meta: {
+              language: "en-GB",
+              availableLanguages: [],
+              availabilityStatus: AvailabilityStatus.Unavailable,
+            },
+            metadata: {
+              uid: "123",
+              external_id: "",
+              title: "my episode",
+            },
+            config: { primaryField: "title" },
+            availability: {
+              status: AvailabilityStatus.Unavailable,
+              objects: [],
+            },
+          } as ParsedSkylarkObject,
+        ]}
+      />,
+    );
+
+    const results = await screen.findByTestId("object-search-results-content");
+
+    const withinResults = within(results);
+
+    expect(
+      (await withinResults.findAllByRole("checkbox")).length,
+    ).toBeGreaterThan(0);
+
+    const button = screen.getByRole("button", { name: "Bulk Options" });
+    expect(button).toBeEnabled();
+    fireEvent.click(button);
+
+    const dropdownButton = await screen.findByText("Delete Selected Objects");
+    fireEvent.click(dropdownButton);
+
+    expect(await screen.findByText("Bulk Delete")).toBeInTheDocument();
+
+    const modal = within(screen.getByTestId("batch-delete-objects-modal"));
+
+    expect(modal.getByText("my episode")).toBeInTheDocument();
+    expect(modal.getByText("en-GB")).toBeInTheDocument();
+  });
 });

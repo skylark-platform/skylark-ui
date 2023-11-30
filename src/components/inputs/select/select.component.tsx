@@ -16,15 +16,17 @@ import React, {
   Ref,
   ReactNode,
 } from "react";
-import { FiChevronDown } from "react-icons/fi";
+import { FiChevronDown, FiInfo } from "react-icons/fi";
 import { useVirtual } from "react-virtual";
 
 import { FiX } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
+import { Tooltip, TooltipSide } from "src/components/tooltip/tooltip.component";
 import { formatObjectField, mergeRefs } from "src/lib/utils";
 
 export interface SelectOption {
   label: string;
+  infoTooltip?: ReactNode;
   value: string;
 }
 
@@ -35,7 +37,7 @@ export interface SelectProps {
   options: SelectOption[];
   label?: string;
   labelVariant?: "default" | "form";
-  placeholder: string;
+  placeholder: string | null;
   className?: string;
   optionsClassName?: string;
   disabled?: boolean;
@@ -78,6 +80,20 @@ export const SelectLabel = ({
   </Combobox.Label>
 );
 
+const SelectOptionTooltip = ({
+  tooltip,
+  side,
+}: {
+  tooltip: ReactNode;
+  side?: TooltipSide;
+}) => (
+  <Tooltip tooltip={tooltip} side={side}>
+    <span className="block" data-testid="select-tooltip-trigger">
+      <FiInfo className="text-sm" />
+    </span>
+  </Tooltip>
+);
+
 export const SelectOptionComponent = ({
   variant,
   option,
@@ -112,12 +128,15 @@ export const SelectOptionComponent = ({
     {withCheckbox && <Checkbox checked={isSelected} className="mr-2" />}
     <span
       className={clsx(
-        "block truncate",
+        "block truncate flex-grow",
         isSelected ? "font-medium" : "font-normal",
       )}
     >
       {option.label}
     </span>
+    {option.infoTooltip && (
+      <SelectOptionTooltip tooltip={option.infoTooltip} side="right" />
+    )}
   </Combobox.Option>
 );
 
@@ -351,7 +370,7 @@ export const Select = forwardRef(
               >
                 <Combobox.Input
                   className={clsx(
-                    "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0",
+                    "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0 disabled:text-manatee-500",
                     sizingClassName,
                     roundedClassName,
                     showClearValueButton ? "pr-12" : "pr-8",
@@ -360,10 +379,21 @@ export const Select = forwardRef(
                     option.label || option.value
                   }
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder={placeholder || "Select option"}
+                  placeholder={
+                    placeholder === null
+                      ? undefined
+                      : placeholder || "Select option"
+                  }
                   ref={propRef as Ref<HTMLInputElement> | undefined}
+                  data-value={selected}
                 />
                 <span className="absolute inset-y-0 right-0 flex items-center">
+                  {selectedOption?.infoTooltip && (
+                    <SelectOptionTooltip
+                      tooltip={selectedOption.infoTooltip}
+                      side="top"
+                    />
+                  )}
                   {showClearValueButton && (
                     <button
                       onClick={(e) => {
@@ -372,7 +402,9 @@ export const Select = forwardRef(
                       }}
                       data-testid="select-clear-value"
                     >
-                      <FiX className="text-xs" />
+                      <FiX
+                        className={clsx("text-xs", disabled && "opacity-25")}
+                      />
                     </button>
                   )}
                   <button
@@ -381,7 +413,10 @@ export const Select = forwardRef(
                       variant === "pill" ? "mx-2" : "ml-0.5 mr-3.5",
                     )}
                   >
-                    <FiChevronDown className="text-xl" aria-hidden="true" />
+                    <FiChevronDown
+                      className={clsx("text-xl", disabled && "opacity-25")}
+                      aria-hidden="true"
+                    />
                   </button>
                 </span>
               </Combobox.Button>

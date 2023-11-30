@@ -39,6 +39,7 @@ import {
   SkylarkAvailabilityField,
   ParsedSkylarkObjectConfigFieldConfig,
   SkylarkSystemField,
+  SkylarkGraphQLObjectMeta,
   AvailabilityStatus,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
@@ -235,6 +236,22 @@ const parseObjectAvailability = (
   };
 };
 
+const parseObjectMeta = (
+  meta: SkylarkGraphQLObjectMeta | undefined,
+  availabilityStatus: AvailabilityStatus | null,
+) => ({
+  availabilityStatus,
+  language: meta?.language_data.language || "",
+  availableLanguages: meta?.available_languages || [],
+  versions: {
+    language: meta?.language_data.version,
+    global: meta?.global_data.version,
+  },
+  created: meta?.created?.date,
+  modified: meta?.modified?.date,
+  published: meta?.published,
+});
+
 export const parseObjectConfig = (
   objectType: string,
   unparsedConfig?: SkylarkGraphQLObjectConfig,
@@ -315,15 +332,7 @@ export const parseObjectContent = (
         objectType: object.__typename,
         position,
         config: parseObjectConfig(object.__typename, object._config),
-        meta: {
-          language: object._meta?.language_data.language || "",
-          availableLanguages: object._meta?.available_languages || [],
-          versions: {
-            language: object._meta?.language_data.version,
-            global: object._meta?.global_data.version,
-          },
-          availabilityStatus: availability.status,
-        },
+        meta: parseObjectMeta(object._meta, availability.status),
         object: normalisedObject,
       };
     },
@@ -386,7 +395,7 @@ export const parseSkylarkObject = (
       : availability.status;
 
   const images =
-    objectMeta?.images?.relationshipNames.map(
+    objectMeta?.builtinObjectRelationships?.images?.relationshipNames.map(
       (imageField): ParsedSkylarkObjectImageRelationship => {
         const parsedImages =
           hasProperty(object, imageField) &&
@@ -409,17 +418,7 @@ export const parseSkylarkObject = (
       objectType: object.__typename,
       uid: object.uid,
       config: parseObjectConfig(object.__typename, object._config),
-      meta: {
-        language: object._meta?.language_data.language || "",
-        availableLanguages: object._meta?.available_languages || [],
-        versions: {
-          language: object._meta?.language_data.version,
-          global: object._meta?.global_data.version,
-        },
-        availabilityStatus,
-        created: object._meta?.created?.date,
-        modified: object._meta?.modified?.date,
-      },
+      meta: parseObjectMeta(object._meta, availabilityStatus),
       metadata,
       availability,
       images,
@@ -506,11 +505,17 @@ export const parseMetadataForGraphQLRequest = (
   objectType: SkylarkObjectType,
   metadata: Record<string, SkylarkObjectMetadataField>,
   inputFields: NormalizedObjectField[],
+  isCreate?: boolean,
 ) => {
   const keyValuePairs = Object.entries(metadata)
     .map(([key, value]) => {
       // Never send UID as it cannot be changed
       if (key === SkylarkSystemField.UID) {
+        return undefined;
+      }
+
+      // Never send blank ExternalID on create
+      if (key === SkylarkSystemField.ExternalID && isCreate && !value) {
         return undefined;
       }
 

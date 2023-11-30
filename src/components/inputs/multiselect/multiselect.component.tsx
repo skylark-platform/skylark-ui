@@ -117,8 +117,8 @@ export const MultiSelect = forwardRef(
       rounded && "rounded-full",
     );
 
-    const selectedOptions = options.filter(({ value }) =>
-      selected?.includes(value),
+    const selectedOptions = options.filter(
+      ({ value }) => selected?.includes(value),
     );
 
     const deselectOption = (value: SelectOption["value"]) => {
