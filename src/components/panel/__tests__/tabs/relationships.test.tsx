@@ -18,6 +18,7 @@ import {
 } from "src/components/panel/__tests__/utils/test-utils";
 import { Panel } from "src/components/panel/panel.component";
 import { PanelTab } from "src/hooks/state";
+import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const useRouter = jest.spyOn(require("next/router"), "useRouter");
@@ -252,7 +253,7 @@ describe("relationships view", () => {
     test("removes an item, saves but GraphQL returns an error", async () => {
       server.use(
         graphql.mutation(
-          "UPDATE_OBJECT_RELATIONSHIPS_Season",
+          wrapQueryName("UPDATE_OBJECT_RELATIONSHIPS_Season"),
           saveGraphQLError,
         ),
       );

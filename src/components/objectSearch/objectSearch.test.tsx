@@ -17,6 +17,7 @@ import {
   GQLSkylarkAccountResponse,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
+import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { ObjectSearch } from "./objectSearch.component";
 
@@ -311,7 +312,7 @@ test("renders search results (with default language)", async () => {
 test("renders search results with language as null (no default)", async () => {
   server.use(
     // Override GET_USER_AND_ACCOUNT query so the language sent is null
-    graphql.query("GET_USER_AND_ACCOUNT", (req, res, ctx) => {
+    graphql.query(wrapQueryName("GET_USER_AND_ACCOUNT"), (req, res, ctx) => {
       const data: GQLSkylarkAccountResponse = {
         getAccount: {
           config: null,
@@ -369,7 +370,7 @@ test("manually filters to only en-gb translated objects", async () => {
   // Arrange
   server.use(
     // Override GET_USER_AND_ACCOUNT query so the language sent is null
-    graphql.query("GET_USER_AND_ACCOUNT", (req, res, ctx) => {
+    graphql.query(wrapQueryName("GET_USER_AND_ACCOUNT"), (req, res, ctx) => {
       const data: GQLSkylarkAccountResponse = {
         getAccount: {
           config: null,

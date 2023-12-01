@@ -1,8 +1,9 @@
 import gql from "graphql-tag";
-import { jsonToGraphQLQuery } from "json-to-graphql-query";
 
 import { SkylarkGraphQLAvailabilityDimension } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
+
+import { wrappedJsonQuery } from "./utils";
 
 interface DimensionWithNextToken {
   dimension: SkylarkGraphQLAvailabilityDimension;
@@ -73,7 +74,7 @@ export const createGetAvailabilityDimensionValues = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(query, { pretty: true });
+  const graphQLQuery = wrappedJsonQuery(query, { pretty: true });
 
   return gql(graphQLQuery);
 };

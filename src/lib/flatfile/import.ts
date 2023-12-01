@@ -1,7 +1,7 @@
 import { ITheme } from "@flatfile/sdk/dist/types";
 import dayjs from "dayjs";
 import { GraphQLClient } from "graphql-request";
-import { EnumType, jsonToGraphQLQuery } from "json-to-graphql-query";
+import { EnumType } from "json-to-graphql-query";
 
 import { TEMPLATE_FIELDS_TO_IGNORE } from "src/constants/flatfile";
 import {
@@ -17,6 +17,7 @@ import {
   SkylarkImportedObject,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
+import { wrappedJsonMutation } from "src/lib/graphql/skylark/dynamicQueries";
 import { getSkylarkObjectOperations } from "src/lib/skylark/introspection/introspection";
 import {
   parseInputFieldValue,
@@ -123,7 +124,7 @@ export const createFlatfileObjectsInSkylark = async (
           },
         };
 
-        const graphQLMutation = jsonToGraphQLQuery(mutation, { pretty: true });
+        const graphQLMutation = wrappedJsonMutation(mutation, { pretty: true });
 
         try {
           const responseData =

@@ -19,7 +19,10 @@ import {
 import { Panel } from "src/components/panel/panel.component";
 import { PanelTab } from "src/hooks/state";
 import { AvailabilityStatus } from "src/interfaces/skylark";
-import { createGetObjectAvailabilityQueryName } from "src/lib/graphql/skylark/dynamicQueries";
+import {
+  createGetObjectAvailabilityQueryName,
+  wrapQueryName,
+} from "src/lib/graphql/skylark/dynamicQueries";
 import {
   formatReadableDateTime,
   getRelativeTimeFromDate,
@@ -89,7 +92,7 @@ describe("availability view", () => {
   test("shows no availability found when it is empty", async () => {
     server.use(
       graphql.query(
-        createGetObjectAvailabilityQueryName("Movie"),
+        wrapQueryName(createGetObjectAvailabilityQueryName("Movie")),
         (req, res, ctx) => {
           return res(
             ctx.data({
@@ -366,7 +369,10 @@ describe("availability view", () => {
 
     test("removes an availability and saves, but GraphQL returns an error", async () => {
       server.use(
-        graphql.mutation("UPDATE_OBJECT_AVAILABILITY_Movie", saveGraphQLError),
+        graphql.mutation(
+          wrapQueryName("UPDATE_OBJECT_AVAILABILITY_Movie"),
+          saveGraphQLError,
+        ),
       );
 
       const firstAvailabilityObjectTitle =

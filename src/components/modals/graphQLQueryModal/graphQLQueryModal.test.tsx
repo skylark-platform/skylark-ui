@@ -3,6 +3,7 @@ import { print } from "graphql";
 import { fireEvent, render, screen } from "src/__tests__/utils/test-utils";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { HREFS } from "src/constants/skylark";
+import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
 import { DisplayGraphQLQuery } from "./graphQLQueryModal.component";
@@ -26,10 +27,10 @@ const formattedQuery = print(GET_SKYLARK_OBJECT_TYPES);
 const newTab = {
   id: "dynamically-generated-query",
   hash: null,
-  operationName: "GET_SKYLARK_OBJECT_TYPES",
+  operationName: wrapQueryName("GET_SKYLARK_OBJECT_TYPES"),
   query: formattedQuery,
   response: null,
-  title: "GET_SKYLARK_OBJECT_TYPES",
+  title: wrapQueryName("GET_SKYLARK_OBJECT_TYPES"),
   variables: stringifiedVariables,
   headers: stringifiedHeaders,
 };
@@ -38,7 +39,7 @@ const newQuery = {
   query: formattedQuery,
   variables: stringifiedVariables,
   headers: stringifiedHeaders,
-  operationName: "GET_SKYLARK_OBJECT_TYPES",
+  operationName: wrapQueryName("GET_SKYLARK_OBJECT_TYPES"),
 };
 
 const queries = [
@@ -110,7 +111,9 @@ test("opens the modal to the query tab", async () => {
 
   await screen.findByTestId("syntax-highlighter");
   expect(await screen.findByText("Query for Schema")).toBeInTheDocument();
-  expect(await screen.findByText("GET_SKYLARK_OBJECT_TYPES")).toBeTruthy();
+  expect(
+    await screen.findByText("SL_UI_GET_SKYLARK_OBJECT_TYPES"),
+  ).toBeTruthy();
   expect(screen.queryByText("value1")).toBeFalsy();
 });
 
@@ -131,7 +134,7 @@ test("opens the modal and switches to the variables tab", async () => {
 
   await fireEvent.click(screen.getByText("Variables"));
 
-  expect(screen.queryByText("GET_SKYLARK_OBJECT_TYPES")).toBeFalsy();
+  expect(screen.queryByText("SL_UI_GET_SKYLARK_OBJECT_TYPES")).toBeFalsy();
   expect(screen.queryByText('"value1"')).toBeInTheDocument();
 });
 

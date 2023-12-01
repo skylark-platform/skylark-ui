@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { VariableType, jsonToGraphQLQuery } from "json-to-graphql-query";
+import { VariableType } from "json-to-graphql-query";
 
 import {
   SkylarkObjectMeta,
@@ -13,6 +13,7 @@ import {
   generateContentsToReturn,
   getObjectConfigFields,
   generateAvailabilityRelationshipFields,
+  wrappedJsonQuery,
 } from "./utils";
 
 export const createGetObjectQueryName = (objectType: string) =>
@@ -63,7 +64,7 @@ export const createGetObjectQuery = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(query);
+  const graphQLQuery = wrappedJsonQuery(query);
 
   return gql(graphQLQuery);
 };
@@ -141,7 +142,7 @@ export const createGetObjectAvailabilityQuery = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(query);
+  const graphQLQuery = wrappedJsonQuery(query);
 
   return gql(graphQLQuery);
 };
@@ -212,7 +213,7 @@ export const createGetObjectRelationshipsQuery = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(query);
+  const graphQLQuery = wrappedJsonQuery(query);
 
   return gql(graphQLQuery);
 };
@@ -255,7 +256,7 @@ export const createGetObjectContentQuery = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(query);
+  const graphQLQuery = wrappedJsonQuery(query);
 
   return gql(graphQLQuery);
 };
@@ -319,7 +320,7 @@ export const createGetObjectContentOfQuery = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(query);
+  const graphQLQuery = wrappedJsonQuery(query);
 
   return gql(graphQLQuery);
 };

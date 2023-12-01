@@ -77,7 +77,7 @@ export const PanelRelationshipSection = ({
         <div className="flex items-center">
           <PanelSectionTitle
             text={formatObjectField(relationshipName)}
-            count={(objects.length >= 50 ? "50+" : objects.length) || 0}
+            count={objects.length || 0}
             id={`relationship-panel-${relationshipName}`}
           />
           <PanelPlusButton
