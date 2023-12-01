@@ -24,6 +24,7 @@ const mapGQLRelationshipConfigToParsed = ({
   relationshipName: relationship_name,
   config: {
     defaultSortField: config.default_sort_field,
+    inheritAvailability: config.inherit_availability,
   },
 });
 
@@ -48,14 +49,15 @@ const allObjectTypesSelect = (
   );
 
 export const useObjectTypeRelationshipConfiguration = (
-  objectType: SkylarkObjectType,
+  objectType: SkylarkObjectType | null,
 ) => {
   const { data: introspection } = useSkylarkSchemaIntrospection();
 
   // TODO remove this enabled check when the backend PR is merged to production
-  const enabled = !!introspection?.__schema.types.find(
-    (type) => type.name === "RelationshipConfigList",
-  );
+  const enabled =
+    !!introspection?.__schema.types.find(
+      (type) => type.name === "RelationshipConfigList",
+    ) && !!objectType;
 
   const { data, isLoading } = useQuery<
     GQLSkylarkListObjectTypeRelationshipConfiguration,

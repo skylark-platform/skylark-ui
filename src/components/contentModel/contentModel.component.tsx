@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Spinner } from "src/components/icons";
+import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import {
   useAllObjectsMeta,
   useSkylarkObjectTypesWithConfig,
@@ -11,7 +12,7 @@ import { ObjectTypeEditor } from "./editor/contentModelEditor.component";
 import { ObjectTypeNavigation } from "./navigation/contentModelNavigation.component";
 
 export const ContentModel = () => {
-  const { objects: allObjectsMeta } = useAllObjectsMeta(true); // TODO do we want to show the Favourite List?
+  const { objects: allObjectsMeta } = useAllObjectsMeta(true);
   const { objectTypesWithConfig, isLoading: isLoadingObjectTypesWithConfig } =
     useSkylarkObjectTypesWithConfig();
 
@@ -27,6 +28,12 @@ export const ContentModel = () => {
     ({ objectType }) => objectType === objectMeta?.name,
   )?.config;
 
+  const {
+    objectTypeRelationshipConfig: relationshipConfig,
+    isLoading: isLoadingRelationshipConfig,
+    enabled: isRelationshipConfigEnabled,
+  } = useObjectTypeRelationshipConfiguration(objectMeta?.name || null);
+
   return (
     <>
       {allObjectsMeta && objectTypesWithConfig ? (
@@ -38,11 +45,14 @@ export const ContentModel = () => {
           <div className="col-span-3">
             {objectMeta &&
               !isLoadingObjectTypesWithConfig &&
-              objectTypesWithConfig && (
+              objectTypesWithConfig &&
+              ((!isLoadingRelationshipConfig && relationshipConfig) ||
+                !isRelationshipConfigEnabled) && (
                 <ObjectTypeEditor
                   key={`${activeObjectType}-${config}`}
                   objectMeta={objectMeta}
                   objectConfig={config}
+                  relationshipConfig={relationshipConfig}
                   allObjectsMeta={allObjectsMeta}
                 />
               )}

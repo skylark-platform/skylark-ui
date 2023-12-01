@@ -1,5 +1,6 @@
 import { UseFormReturn } from "react-hook-form";
 
+import { Checkbox } from "src/components/inputs/checkbox";
 import { Select } from "src/components/inputs/select";
 import { ObjectTypePill } from "src/components/pill";
 import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
@@ -8,6 +9,7 @@ import { SkylarkObjectMeta } from "src/interfaces/skylark";
 import {
   ContentModelEditorForm,
   FieldHeader,
+  SectionDescription,
   SectionHeader,
   SectionWrapper,
 } from "./common.component";
@@ -19,28 +21,27 @@ interface RelationshipsSectionProps {
 }
 
 export const RelationshipsSection = ({
+  form,
   objectMeta,
   allObjectsMeta,
 }: RelationshipsSectionProps) => {
-  const {
-    objectTypeRelationshipConfig,
-    isLoading: isLoadingRelationshipConfig,
-    enabled: isRelationshipConfigEnabled,
-  } = useObjectTypeRelationshipConfiguration(objectMeta.name);
+  const relationshipConfig = form.watch("relationshipConfig");
 
   return (
     <SectionWrapper data-testid="relationships-editor">
       <SectionHeader>Relationships</SectionHeader>
+      <SectionDescription>
+        Control the sort field and whether relationships inherit availability
+        from objects of this type.
+      </SectionDescription>
       <div className="grid grid-cols-7 gap-4 text-manatee-400 font-normal text-sm mt-4">
         <FieldHeader className="col-span-2">Object Type</FieldHeader>
         <FieldHeader className="col-span-2">Name</FieldHeader>
         <FieldHeader className="col-span-2">Sort Field</FieldHeader>
-        {/* <FieldHeader tooltip={uiDisplayFieldTooltip}>
-          UI Display field
-        </FieldHeader> */}
+        <FieldHeader>Inherit Availability</FieldHeader>
       </div>
       {objectMeta.relationships.map(({ relationshipName, objectType }) => {
-        const { config } = objectTypeRelationshipConfig?.find(
+        const { config } = relationshipConfig?.find(
           (relationshipConfiguration) =>
             relationshipConfiguration.relationshipName === relationshipName,
         ) || { config: null };
@@ -61,35 +62,35 @@ export const RelationshipsSection = ({
               forceActualName
             />
             <p className="col-span-2">{relationshipName}</p>
-            {isRelationshipConfigEnabled && (
-              <div className="col-span-2">
-                {isLoadingRelationshipConfig ? (
-                  <p className="text-sm text-manatee-700">Loading...</p>
-                ) : (
-                  <Select
-                    variant="primary"
-                    placeholder={null}
-                    disabled
-                    // disabled={!relationshipObjectMeta}
-                    selected={config?.defaultSortField || ""}
-                    onChange={console.log}
-                    options={
-                      relationshipObjectMeta?.fields.map(({ name }) => ({
-                        label: name,
-                        value: name,
-                      })) ||
-                      (config?.defaultSortField && [
-                        {
-                          value: config?.defaultSortField,
-                          label: config?.defaultSortField,
-                        },
-                      ]) ||
-                      []
-                    }
-                  />
-                )}
-              </div>
-            )}
+            <div className="col-span-2">
+              <Select
+                variant="primary"
+                placeholder={null}
+                disabled
+                // disabled={!relationshipObjectMeta}
+                selected={config?.defaultSortField || ""}
+                onChange={console.log}
+                options={
+                  relationshipObjectMeta?.fields.map(({ name }) => ({
+                    label: name,
+                    value: name,
+                  })) ||
+                  (config?.defaultSortField && [
+                    {
+                      value: config?.defaultSortField,
+                      label: config?.defaultSortField,
+                    },
+                  ]) ||
+                  []
+                }
+              />
+            </div>
+            <div className="flex justify-center items-center col-span-1">
+              <Checkbox
+                checked={config?.inheritAvailability}
+                onCheckedChange={console.log}
+              />
+            </div>
           </div>
         );
       })}
