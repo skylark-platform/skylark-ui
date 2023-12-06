@@ -1,4 +1,5 @@
 import { Flatfile } from "@flatfile/sdk";
+import { GraphQLClient } from "graphql-request";
 import { graphql } from "msw";
 
 import { server } from "src/__tests__/mocks/server";
@@ -15,6 +16,8 @@ import {
   createFlatfileClient,
   FlatfileClient,
 } from "src/lib/graphql/flatfile/client";
+import { createSkylarkClient } from "src/lib/graphql/skylark/client";
+import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import {
   createFlatfileObjectsInSkylark,
@@ -56,6 +59,7 @@ describe("openFlatfileImportClient", () => {
 
 describe("createFlatfileObjectsInSkylark", () => {
   let flatfileClient: FlatfileClient;
+  let skylarkClient: GraphQLClient;
 
   const title = "the test title";
   const synopsis = "the test synopsis";
@@ -88,28 +92,32 @@ describe("createFlatfileObjectsInSkylark", () => {
 
   beforeEach(() => {
     flatfileClient = createFlatfileClient("token");
+    skylarkClient = createSkylarkClient("http://localhost:3000", "token");
 
     server.use(
-      graphql.mutation("createEpisode_batchId", (req, res, ctx) => {
-        return res(
-          ctx.data({
-            createEpisode_batchId_1: {
-              external_id: "external_1",
-              uid: "1",
-            },
-            createEpisode_batchId_2: {
-              external_id: "external_2",
-              uid: "2",
-            },
-          }),
-        );
-      }),
+      graphql.mutation(
+        wrapQueryName("createEpisode_batchId"),
+        (req, res, ctx) => {
+          return res(
+            ctx.data({
+              createEpisode_batchId_1: {
+                external_id: "external_1",
+                uid: "1",
+              },
+              createEpisode_batchId_2: {
+                external_id: "external_2",
+                uid: "2",
+              },
+            }),
+          );
+        },
+      ),
     );
   });
 
   test("the expected result is returned", async () => {
     const got = await createFlatfileObjectsInSkylark(
-      flatfileClient,
+      skylarkClient,
       "Episode",
       "batchId",
       flatfileRows,
@@ -132,7 +140,7 @@ describe("createFlatfileObjectsInSkylark", () => {
 
   test("throws an error when a date is an invalid format", async () => {
     await expect(
-      createFlatfileObjectsInSkylark(flatfileClient, "Episode", "batchId", [
+      createFlatfileObjectsInSkylark(skylarkClient, "Episode", "batchId", [
         {
           id: 1,
           status: "completed",
@@ -177,9 +185,12 @@ describe("createFlatfileObjectsInSkylark", () => {
       },
     ];
     server.use(
-      graphql.mutation("createEpisode_batchId", (req, res, ctx) => {
-        return res(ctx.errors(errors));
-      }),
+      graphql.mutation(
+        wrapQueryName("createEpisode_batchId"),
+        (req, res, ctx) => {
+          return res(ctx.errors(errors));
+        },
+      ),
     );
 
     const got = await createFlatfileObjectsInSkylark(

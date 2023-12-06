@@ -14,6 +14,7 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "src/__tests__/utils/test-utils";
+import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { ContentLibrary } from "./contentLibrary.component";
 
@@ -96,7 +97,7 @@ test("open metadata panel, check information and close", async () => {
 test("displays the number of search results", async () => {
   server.use(
     // Override GET_USER_AND_ACCOUNT query so the language sent is null
-    graphql.query("GET_USER_AND_ACCOUNT", (req, res, ctx) => {
+    graphql.query(wrapQueryName("GET_USER_AND_ACCOUNT"), (req, res, ctx) => {
       const data = {
         ...GQLSkylarkUserAccountFixture.data,
         getAccount: {

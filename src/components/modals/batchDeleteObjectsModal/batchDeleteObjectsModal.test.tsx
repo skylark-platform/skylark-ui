@@ -1,4 +1,4 @@
-import { waitFor, screen, within, fireEvent } from "@testing-library/react";
+import { waitFor, screen, fireEvent } from "@testing-library/react";
 import { graphql } from "msw";
 
 import { server } from "src/__tests__/mocks/server";
@@ -7,6 +7,7 @@ import {
   AvailabilityStatus,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
+import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { BatchDeleteObjectsModal } from "./batchDeleteObjectsModal.component";
 
@@ -274,7 +275,7 @@ describe("activated delete button", () => {
 
   test("errors while deleting objects and finds an error toast", async () => {
     server.use(
-      graphql.mutation("BATCH_DELETE", (req, res, ctx) => {
+      graphql.mutation(wrapQueryName("BATCH_DELETE"), (req, res, ctx) => {
         return res(
           ctx.errors([
             {
