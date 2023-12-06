@@ -25,10 +25,9 @@ interface UIConfigSectionProps {
 }
 
 export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
-  const {
-    fieldSections,
-    uiConfig: { objectTypeDisplayName, primaryField, colour },
-  } = form.watch();
+  const fieldSections = form.watch("fieldSections");
+  const { objectTypeDisplayName, primaryField, colour } =
+    form.watch("uiConfig");
 
   return (
     <SectionWrapper data-testid="uiconfig-editor">
