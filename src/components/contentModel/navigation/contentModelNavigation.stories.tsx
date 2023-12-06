@@ -14,5 +14,4 @@ const Template: ComponentStory<typeof ObjectTypeNavigation> = (args) => {
 export const Default = Template.bind({});
 Default.args = {
   activeObjectType: "Episode",
-  setObjectType: () => "",
 };

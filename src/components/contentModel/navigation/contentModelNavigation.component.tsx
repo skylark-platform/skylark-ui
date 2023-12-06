@@ -1,4 +1,6 @@
 import clsx from "clsx";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 import {
@@ -10,14 +12,12 @@ import { isSkylarkObjectType } from "src/lib/utils";
 
 interface ObjectTypeNavigationProps {
   activeObjectType: string | null;
-  setObjectType: (objectType: string) => void;
 }
 
 const ObjectTypeNavigationSection = ({
   title,
   activeObjectType,
   objectTypesWithConfig,
-  setObjectType,
 }: {
   title: string;
   activeObjectType: string | null;
@@ -25,38 +25,37 @@ const ObjectTypeNavigationSection = ({
     objectType: string;
     config: ParsedSkylarkObjectConfig;
   }[];
-  setObjectType: (objectType: string) => void;
 }) => (
-  <div className="flex flex-col justify-start items-start my-4">
+  <div className="flex flex-col justify-start items-start my-4 w-full">
     <p className="mb-1 font-medium text-lg">{title}</p>
     {objectTypesWithConfig?.map(({ objectType, config }) => {
       return (
-        <button
+        <Link
           key={objectType}
           className={clsx(
-            "my-1 flex items-center",
-            activeObjectType === objectType
+            "my-1 flex items-center w-full",
+            activeObjectType?.toLowerCase() === objectType.toLowerCase()
               ? "text-black font-medium"
               : "text-manatee-600",
           )}
-          onClick={() => setObjectType(objectType)}
+          href={`/content-model/${encodeURIComponent(objectType)}`}
         >
           <span
-            className="w-4 h-4 block rounded mr-1"
+            className="w-4 h-4 block rounded mr-1 whitespace-nowrap overflow-hidden text-ellipsis"
             style={{ backgroundColor: config.colour || undefined }}
           />
           {config.objectTypeDisplayName &&
           config.objectTypeDisplayName !== objectType ? (
             <>
               {objectType}{" "}
-              <span className="text-manatee-400 font-normal ml-1">
+              <span className="text-manatee-400 block text-ellipsis font-normal ml-1 whitespace-nowrap overflow-hidden">
                 ({config.objectTypeDisplayName})
               </span>
             </>
           ) : (
             objectType
           )}
-        </button>
+        </Link>
       );
     })}
   </div>
@@ -64,8 +63,9 @@ const ObjectTypeNavigationSection = ({
 
 export const ObjectTypeNavigation = ({
   activeObjectType,
-  setObjectType,
 }: ObjectTypeNavigationProps) => {
+  const { push } = useRouter();
+
   const { setObjectTypes } = useSkylarkSetObjectTypes(true);
 
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
@@ -91,41 +91,37 @@ export const ObjectTypeNavigation = ({
         systemObjectTypesWithConfig?.[0]
       )?.objectType;
 
-      if (initialObjectType) {
-        setObjectType(initialObjectType);
-      }
+      // Redirect to initialObjectType
+      push(`/content-model/${initialObjectType}`);
     }
   }, [
     activeObjectType,
     customObjectTypesWithConfig,
     objectTypesWithConfig,
-    setObjectType,
+    push,
     setObjectTypesWithConfig,
     systemObjectTypesWithConfig,
   ]);
 
   return (
     <div
-      className="flex flex-col text-left items-start"
+      className="flex flex-col text-left items-start grid-cols-1"
       data-testid="content-editor-navigation"
     >
       <ObjectTypeNavigationSection
         title="Sets"
         activeObjectType={activeObjectType}
         objectTypesWithConfig={setObjectTypesWithConfig || []}
-        setObjectType={setObjectType}
       />
       <ObjectTypeNavigationSection
         title="Custom Object Types"
         activeObjectType={activeObjectType}
         objectTypesWithConfig={customObjectTypesWithConfig || []}
-        setObjectType={setObjectType}
       />
       <ObjectTypeNavigationSection
         title="System Object Types"
         activeObjectType={activeObjectType}
         objectTypesWithConfig={systemObjectTypesWithConfig || []}
-        setObjectType={setObjectType}
       />
     </div>
   );

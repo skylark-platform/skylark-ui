@@ -77,7 +77,7 @@ export const PanelRelationshipSection = ({
         <div className="flex items-center">
           <PanelSectionTitle
             text={formatObjectField(relationshipName)}
-            count={objects.length || 0}
+            count={(objects.length >= 100 ? "100+" : objects.length) || 0}
             id={`relationship-panel-${relationshipName}`}
           />
           <PanelPlusButton
@@ -128,7 +128,7 @@ export const PanelRelationshipSection = ({
                         )}: ${defaultSortFieldValue}`}
                       >
                         <p
-                          className="flex max-w-8 overflow-hidden whitespace-nowrap text-sm text-manatee-500 cursor-default"
+                          className="flex max-w-8 min-w-3 overflow-hidden whitespace-nowrap text-sm text-manatee-500 cursor-default"
                           data-testid="object-sort-field"
                         >
                           <span className="overflow-hidden text-ellipsis">

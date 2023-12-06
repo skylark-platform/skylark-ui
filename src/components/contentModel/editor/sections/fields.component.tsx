@@ -115,7 +115,8 @@ export const FieldsSection = ({
     [form],
   );
 
-  const { fieldSections, primaryField } = form.watch();
+  const fieldSections = form.watch("fieldSections");
+  const primaryField = form.watch("uiConfig.primaryField");
 
   return (
     <SectionWrapper data-testid="fields-editor">
@@ -134,7 +135,7 @@ export const FieldsSection = ({
             onFieldChange(id as FieldSectionID, fieldsWithConfig)
           }
           onPrimaryFieldChange={(field) =>
-            form.setValue("primaryField", field, { shouldDirty: true })
+            form.setValue("uiConfig.primaryField", field, { shouldDirty: true })
           }
         />
       ))}

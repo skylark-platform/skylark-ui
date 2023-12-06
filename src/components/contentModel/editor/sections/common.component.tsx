@@ -3,7 +3,10 @@ import { ReactNode } from "react";
 import { FiInfo } from "react-icons/fi";
 
 import { Tooltip } from "src/components/tooltip/tooltip.component";
-import { InputFieldWithFieldConfig } from "src/interfaces/skylark";
+import {
+  InputFieldWithFieldConfig,
+  ParsedSkylarkObjectTypeRelationshipConfiguration,
+} from "src/interfaces/skylark";
 
 export type FieldSectionID = "system" | "translatable" | "global";
 
@@ -14,9 +17,12 @@ export type FieldSectionObject = Record<
 
 export interface ContentModelEditorForm {
   fieldSections: FieldSectionObject;
-  objectTypeDisplayName: string;
-  primaryField: string | undefined | null;
-  colour: string | undefined | null;
+  uiConfig: {
+    objectTypeDisplayName: string;
+    primaryField: string | undefined | null;
+    colour: string | undefined | null;
+  };
+  relationshipConfig?: ParsedSkylarkObjectTypeRelationshipConfiguration;
 }
 
 export const uiDisplayFieldTooltip =
@@ -35,7 +41,11 @@ export const SectionWrapper = (props: { children: ReactNode }) => (
 );
 
 export const SectionHeader = ({ children }: { children: ReactNode }) => (
-  <h3 className="text-xl">{children}</h3>
+  <h3 className="text-xl mb-1">{children}</h3>
+);
+
+export const SectionDescription = ({ children }: { children: ReactNode }) => (
+  <p className="text-sm text-manatee-500 mb-2">{children}</p>
 );
 
 export const FieldHeader = ({
