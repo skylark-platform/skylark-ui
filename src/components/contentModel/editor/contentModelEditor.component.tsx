@@ -5,6 +5,7 @@ import { Button } from "src/components/button";
 import { Toast } from "src/components/toast/toast.component";
 import { SYSTEM_FIELDS } from "src/constants/skylark";
 import { useUpdateObjectTypeConfig } from "src/hooks/schema/update/useUpdateObjectTypeConfig";
+import { useUpdateRelationshipConfig } from "src/hooks/schema/update/useUpdateRelationshipConfig";
 import {
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
@@ -140,7 +141,7 @@ export const ObjectTypeEditor = ({
   objectMeta: SkylarkObjectMeta;
   objectConfig?: ParsedSkylarkObjectConfig;
   allObjectsMeta: SkylarkObjectMeta[];
-  relationshipConfig?: ParsedSkylarkObjectTypeRelationshipConfiguration[]; // TODO this shouldn't be optional when pushed to production
+  relationshipConfig: ParsedSkylarkObjectTypeRelationshipConfiguration;
 }) => {
   const form = useForm<ContentModelEditorForm>({
     // Can't use onSubmit because we don't have a submit button within the form
@@ -163,9 +164,8 @@ export const ObjectTypeEditor = ({
         form.reset(undefined, { keepValues: true });
         toast.success(
           <Toast
-            title={`${objectMeta.name} updated`}
+            title={`Object Type config updated`}
             message={[
-              "The Object Type has been updated.",
               "You may have to refresh for the configuration changes to take effect.",
             ]}
           />,
@@ -174,9 +174,36 @@ export const ObjectTypeEditor = ({
       onError: () => {
         toast.error(
           <Toast
-            title={`${objectMeta.name} failed to update`}
+            title={`Object type config update failed`}
             message={[
               "Unable to update the Object Type.",
+              "Please try again later.",
+            ]}
+          />,
+        );
+      },
+    });
+
+  const { updateRelationshipConfig, isUpdatingRelationshipConfig } =
+    useUpdateRelationshipConfig({
+      onSuccess: () => {
+        form.reset(undefined, { keepValues: true });
+        toast.success(
+          <Toast
+            title={`Relationship config updated`}
+            message={[
+              "You may have to refresh for the configuration changes to take effect.",
+              "Additionally, sort field changes will only become active next time you modify the relationship.",
+            ]}
+          />,
+        );
+      },
+      onError: () => {
+        toast.error(
+          <Toast
+            title={`Relationship config update failed`}
+            message={[
+              "Unable to update the Relationship config.",
               "Please try again later.",
             ]}
           />,
@@ -189,6 +216,7 @@ export const ObjectTypeEditor = ({
       ({
         fieldSections,
         uiConfig: { primaryField, objectTypeDisplayName, colour },
+        relationshipConfig,
       }) => {
         const fieldConfig: ParsedSkylarkObjectConfigFieldConfig[] = [
           ...fieldSections.system.fields,
@@ -213,6 +241,13 @@ export const ObjectTypeEditor = ({
           objectType: objectMeta.name,
           ...parsedConfig,
         });
+
+        if (relationshipConfig) {
+          updateRelationshipConfig({
+            objectType: objectMeta.name,
+            relationshipConfig,
+          });
+        }
       },
     )();
   };
@@ -232,7 +267,11 @@ export const ObjectTypeEditor = ({
           <Button
             variant="outline"
             danger
-            disabled={isUpdatingObjectTypeConfig || !form.formState.isDirty}
+            disabled={
+              isUpdatingObjectTypeConfig ||
+              isUpdatingRelationshipConfig ||
+              !form.formState.isDirty
+            }
             onClick={() => form.reset()}
           >
             Reset
@@ -240,7 +279,7 @@ export const ObjectTypeEditor = ({
           <Button
             variant="primary"
             onClick={onSave}
-            loading={isUpdatingObjectTypeConfig}
+            loading={isUpdatingObjectTypeConfig || isUpdatingRelationshipConfig}
             disabled={!form.formState.isDirty}
           >
             Save

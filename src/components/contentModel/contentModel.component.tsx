@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 import { Spinner } from "src/components/icons";
@@ -12,16 +13,16 @@ import { ObjectTypeEditor } from "./editor/contentModelEditor.component";
 import { ObjectTypeNavigation } from "./navigation/contentModelNavigation.component";
 
 export const ContentModel = () => {
+  const { query } = useRouter();
+
   const { objects: allObjectsMeta } = useAllObjectsMeta(true);
   const { objectTypesWithConfig, isLoading: isLoadingObjectTypesWithConfig } =
     useSkylarkObjectTypesWithConfig();
 
-  const [activeObjectType, setObjectType] = useState<SkylarkObjectType | null>(
-    null,
-  );
+  const activeObjectType = (query?.objectType?.[0] as string) || null;
 
   const objectMeta = allObjectsMeta?.find(
-    ({ name }) => name === activeObjectType,
+    ({ name }) => name.toLowerCase() === activeObjectType?.toLowerCase(),
   );
 
   const config = objectTypesWithConfig?.find(
@@ -37,15 +38,13 @@ export const ContentModel = () => {
   return (
     <>
       {allObjectsMeta && objectTypesWithConfig ? (
-        <div className="mt-10 max-w-7xl mx-auto grid grid-cols-4 px-4">
-          <ObjectTypeNavigation
-            setObjectType={setObjectType}
-            activeObjectType={activeObjectType}
-          />
+        <div className="mt-10 max-w-7xl mx-auto grid grid-cols-4 gap-4 px-4">
+          <ObjectTypeNavigation activeObjectType={activeObjectType} />
           <div className="col-span-3">
             {objectMeta &&
               !isLoadingObjectTypesWithConfig &&
               objectTypesWithConfig &&
+              relationshipConfig &&
               ((!isLoadingRelationshipConfig && relationshipConfig) ||
                 !isRelationshipConfigEnabled) && (
                 <ObjectTypeEditor

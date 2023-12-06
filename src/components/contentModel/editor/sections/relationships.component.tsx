@@ -38,13 +38,10 @@ export const RelationshipsSection = ({
         <FieldHeader className="col-span-2">Object Type</FieldHeader>
         <FieldHeader className="col-span-2">Name</FieldHeader>
         <FieldHeader className="col-span-2">Sort Field</FieldHeader>
-        <FieldHeader>Inherit Availability</FieldHeader>
+        {/* <FieldHeader>Inherit Availability</FieldHeader> */}
       </div>
       {objectMeta.relationships.map(({ relationshipName, objectType }) => {
-        const { config } = relationshipConfig?.find(
-          (relationshipConfiguration) =>
-            relationshipConfiguration.relationshipName === relationshipName,
-        ) || { config: null };
+        const config = relationshipConfig?.[relationshipName] || null;
 
         const relationshipObjectMeta = allObjectsMeta.find(
           ({ name }) => name === objectType,
@@ -66,10 +63,15 @@ export const RelationshipsSection = ({
               <Select
                 variant="primary"
                 placeholder={null}
-                disabled
-                // disabled={!relationshipObjectMeta}
+                disabled={!relationshipObjectMeta}
                 selected={config?.defaultSortField || ""}
-                onChange={console.log}
+                onChange={(str) =>
+                  form.setValue(
+                    `relationshipConfig.${relationshipName}.defaultSortField`,
+                    str,
+                    { shouldDirty: true },
+                  )
+                }
                 options={
                   relationshipObjectMeta?.fields.map(({ name }) => ({
                     label: name,
@@ -85,12 +87,12 @@ export const RelationshipsSection = ({
                 }
               />
             </div>
-            <div className="flex justify-center items-center col-span-1">
+            {/* <div className="flex justify-center items-center col-span-1">
               <Checkbox
                 checked={config?.inheritAvailability}
                 onCheckedChange={console.log}
               />
-            </div>
+            </div> */}
           </div>
         );
       })}

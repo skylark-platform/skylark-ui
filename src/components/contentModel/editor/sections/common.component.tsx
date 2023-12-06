@@ -22,7 +22,7 @@ export interface ContentModelEditorForm {
     primaryField: string | undefined | null;
     colour: string | undefined | null;
   };
-  relationshipConfig?: ParsedSkylarkObjectTypeRelationshipConfiguration[];
+  relationshipConfig?: ParsedSkylarkObjectTypeRelationshipConfiguration;
 }
 
 export const uiDisplayFieldTooltip =

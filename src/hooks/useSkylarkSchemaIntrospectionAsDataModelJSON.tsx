@@ -205,7 +205,7 @@ const getRelationshipsConfigDefaultSortField = (
 const unparseRelationships = (
   objectMeta: SkylarkObjectMeta,
   allObjectMeta: SkylarkObjectMeta[],
-  objectTypeRelationshipConfig?: ParsedSkylarkObjectTypeRelationshipConfiguration[],
+  objectTypeRelationshipConfig?: ParsedSkylarkObjectTypeRelationshipConfiguration,
 ): SystemObjectType["relationships"] => {
   const relationships = objectMeta.relationships.reduce(
     (prev, relationship): SystemObjectType["relationships"] => {
@@ -216,11 +216,8 @@ const unparseRelationships = (
         ({ objectType }) => objectType === objectMeta.name,
       );
 
-      const { config } = objectTypeRelationshipConfig?.find(
-        (relationshipConfiguration) =>
-          relationshipConfiguration.relationshipName ===
-          relationship.relationshipName,
-      ) || { config: null };
+      const config =
+        objectTypeRelationshipConfig?.[relationship.relationshipName] || null;
 
       return {
         ...prev,
@@ -332,7 +329,7 @@ const parseDataModel = (
   accountUri?: string,
   relationshipConfiguration?: Record<
     string,
-    ParsedSkylarkObjectTypeRelationshipConfiguration[]
+    ParsedSkylarkObjectTypeRelationshipConfiguration
   >,
 ) => {
   const { systemTypes, customTypes } = allObjectMeta.reduce(

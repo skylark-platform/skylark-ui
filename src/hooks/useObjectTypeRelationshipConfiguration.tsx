@@ -30,12 +30,26 @@ const mapGQLRelationshipConfigToParsed = ({
 
 const select = (
   data: GQLSkylarkListObjectTypeRelationshipConfiguration,
-): ParsedSkylarkObjectTypeRelationshipConfiguration[] =>
-  data.listRelationshipConfiguration.map(mapGQLRelationshipConfigToParsed);
+): ParsedSkylarkObjectTypeRelationshipConfiguration =>
+  data.listRelationshipConfiguration.reduce(
+    (
+      prev,
+      { relationship_name, config },
+    ): ParsedSkylarkObjectTypeRelationshipConfiguration => {
+      return {
+        ...prev,
+        [relationship_name]: {
+          defaultSortField: config.default_sort_field,
+          inheritAvailability: config.inherit_availability,
+        },
+      };
+    },
+    {},
+  );
 
 const allObjectTypesSelect = (
   data: GQLSkylarkListAllObjectTypesRelationshipConfiguration,
-): Record<string, ParsedSkylarkObjectTypeRelationshipConfiguration[]> =>
+): Record<string, ParsedSkylarkObjectTypeRelationshipConfiguration> =>
   Object.entries(data).reduce(
     (prev, [objectType, relationshipConfiguration]) => {
       return {
@@ -62,7 +76,7 @@ export const useObjectTypeRelationshipConfiguration = (
   const { data, isLoading } = useQuery<
     GQLSkylarkListObjectTypeRelationshipConfiguration,
     GQLSkylarkErrorResponse<GQLSkylarkListObjectTypeRelationshipConfiguration>,
-    ParsedSkylarkObjectTypeRelationshipConfiguration[]
+    ParsedSkylarkObjectTypeRelationshipConfiguration
   >({
     enabled,
     queryKey: [
@@ -103,7 +117,7 @@ export const useAllObjectTypesRelationshipConfiguration = () => {
   const { data, isLoading } = useQuery<
     GQLSkylarkListAllObjectTypesRelationshipConfiguration,
     GQLSkylarkErrorResponse<GQLSkylarkListAllObjectTypesRelationshipConfiguration>,
-    Record<string, ParsedSkylarkObjectTypeRelationshipConfiguration[]>
+    Record<string, ParsedSkylarkObjectTypeRelationshipConfiguration>
   >({
     enabled: enabled && query !== null,
     queryKey: [QueryKeys.ObjectTypeRelationshipConfig, query],

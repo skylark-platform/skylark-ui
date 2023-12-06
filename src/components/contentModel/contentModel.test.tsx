@@ -1,6 +1,11 @@
-import { screen, fireEvent, waitFor, within } from "@testing-library/react";
-
-import { allObjectTypes, render } from "src/__tests__/utils/test-utils";
+import {
+  allObjectTypes,
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from "src/__tests__/utils/test-utils";
 
 import { ContentModel } from "./contentModel.component";
 
@@ -33,6 +38,14 @@ const renderAndWaitForEditorToLoad = async () => {
     withinRelationshipEditor,
   };
 };
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const useRouter = jest.spyOn(require("next/router"), "useRouter");
+
+beforeEach(() => {
+  const router = { query: { objectType: ["SkylarkSet"] }, push: jest.fn() };
+  useRouter.mockReturnValue(router);
+});
 
 test("renders the content model", async () => {
   await renderAndWaitForEditorToLoad();
