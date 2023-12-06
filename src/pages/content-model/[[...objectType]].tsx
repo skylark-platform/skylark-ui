@@ -6,8 +6,7 @@ export default function ContentModelPage() {
       <div className="fixed z-20 w-full bg-warning flex justify-center items-center text-sm flex-col h-14">
         <p>This is an Alpha feature.</p>
         <p>
-          Currently, you can only modify UI Config. Schema modifications are
-          unsupported.
+          Supported modifications: UI Configuration, Relationship Configuration.
         </p>
       </div>
       <div className="pt-14">

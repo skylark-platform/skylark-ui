@@ -5,13 +5,15 @@ import { Button } from "src/components/button";
 import { Toast } from "src/components/toast/toast.component";
 import { SYSTEM_FIELDS } from "src/constants/skylark";
 import { useUpdateObjectTypeConfig } from "src/hooks/schema/update/useUpdateObjectTypeConfig";
+import { useUpdateRelationshipConfig } from "src/hooks/schema/update/useUpdateRelationshipConfig";
 import {
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
   SkylarkObjectMeta,
   ParsedSkylarkObjectConfigFieldConfig,
   InputFieldWithFieldConfig,
-  SkylarkObjectConfigFieldType,
+  ParsedSkylarkObjectTypeRelationshipConfiguration,
+  BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import { isSkylarkObjectType } from "src/lib/utils";
 
@@ -135,20 +137,25 @@ export const ObjectTypeEditor = ({
   objectMeta,
   objectConfig,
   allObjectsMeta,
+  relationshipConfig,
 }: {
   objectMeta: SkylarkObjectMeta;
   objectConfig?: ParsedSkylarkObjectConfig;
   allObjectsMeta: SkylarkObjectMeta[];
+  relationshipConfig: ParsedSkylarkObjectTypeRelationshipConfiguration;
 }) => {
   const form = useForm<ContentModelEditorForm>({
     // Can't use onSubmit because we don't have a submit button within the form
     mode: "onTouched",
     values: {
       fieldSections: createFieldSections(objectMeta, objectConfig),
-      objectTypeDisplayName:
-        objectConfig?.objectTypeDisplayName || objectMeta.name,
-      primaryField: objectConfig?.primaryField,
-      colour: objectConfig?.colour,
+      uiConfig: {
+        objectTypeDisplayName:
+          objectConfig?.objectTypeDisplayName || objectMeta.name,
+        primaryField: objectConfig?.primaryField,
+        colour: objectConfig?.colour,
+      },
+      relationshipConfig,
     },
   });
 
@@ -158,9 +165,8 @@ export const ObjectTypeEditor = ({
         form.reset(undefined, { keepValues: true });
         toast.success(
           <Toast
-            title={`${objectMeta.name} updated`}
+            title={`Object Type config updated`}
             message={[
-              "The Object Type has been updated.",
               "You may have to refresh for the configuration changes to take effect.",
             ]}
           />,
@@ -169,7 +175,7 @@ export const ObjectTypeEditor = ({
       onError: () => {
         toast.error(
           <Toast
-            title={`${objectMeta.name} failed to update`}
+            title={`Object type config update failed`}
             message={[
               "Unable to update the Object Type.",
               "Please try again later.",
@@ -179,39 +185,85 @@ export const ObjectTypeEditor = ({
       },
     });
 
+  const { updateRelationshipConfig, isUpdatingRelationshipConfig } =
+    useUpdateRelationshipConfig({
+      onSuccess: () => {
+        form.reset(undefined, { keepValues: true });
+        toast.success(
+          <Toast
+            title={`Relationship config updated`}
+            message={[
+              "You may have to refresh for the configuration changes to take effect.",
+              "Additionally, sort field changes will only become active next time you modify the relationship.",
+            ]}
+          />,
+        );
+      },
+      onError: () => {
+        toast.error(
+          <Toast
+            title={`Relationship config update failed`}
+            message={[
+              "Unable to update the Relationship config.",
+              "Please try again later.",
+            ]}
+          />,
+        );
+      },
+    });
+
   const onSave = () => {
     form.handleSubmit(
-      ({ fieldSections, primaryField, objectTypeDisplayName, colour }) => {
-        const fieldConfig: ParsedSkylarkObjectConfigFieldConfig[] = [
-          ...fieldSections.system.fields,
-          ...fieldSections.translatable.fields,
-          ...fieldSections.global.fields,
-        ].map(
-          (fieldWithConfig, index): ParsedSkylarkObjectConfigFieldConfig => ({
-            name: fieldWithConfig.field.name,
-            fieldType: fieldWithConfig.config?.fieldType || null,
-            position: index + 1,
-          }),
-        );
-        const parsedConfig: ParsedSkylarkObjectConfig = {
-          ...objectConfig,
-          primaryField,
-          fieldConfig,
-          objectTypeDisplayName,
-          colour,
-        };
+      ({
+        fieldSections,
+        uiConfig: { primaryField, objectTypeDisplayName, colour },
+        relationshipConfig,
+      }) => {
+        if (
+          form.formState.dirtyFields.uiConfig ||
+          form.formState.dirtyFields.fieldSections
+        ) {
+          const fieldConfig: ParsedSkylarkObjectConfigFieldConfig[] = [
+            ...fieldSections.system.fields,
+            ...fieldSections.translatable.fields,
+            ...fieldSections.global.fields,
+          ].map(
+            (fieldWithConfig, index): ParsedSkylarkObjectConfigFieldConfig => ({
+              name: fieldWithConfig.field.name,
+              fieldType: fieldWithConfig.config?.fieldType || null,
+              position: index + 1,
+            }),
+          );
+          const parsedConfig: ParsedSkylarkObjectConfig = {
+            ...objectConfig,
+            primaryField,
+            fieldConfig,
+            objectTypeDisplayName,
+            colour,
+          };
 
-        updateObjectTypeConfig({
-          objectType: objectMeta.name,
-          ...parsedConfig,
-        });
+          updateObjectTypeConfig({
+            objectType: objectMeta.name,
+            ...parsedConfig,
+          });
+        }
+
+        if (
+          form.formState.dirtyFields.relationshipConfig &&
+          relationshipConfig
+        ) {
+          updateRelationshipConfig({
+            objectType: objectMeta.name,
+            relationshipConfig,
+          });
+        }
       },
     )();
   };
 
   return (
     <div key={objectMeta.name} className="" data-testid="content-model-editor">
-      <div className="flex justify-between mb-10">
+      <div className="flex justify-between mb-10 sticky top-28 bg-white z-10 py-4 px-1 w-[calc(100%+0.5rem)] -ml-1">
         <div className="flex flex-col items-start">
           <h3 className="text-2xl font-semibold">{objectMeta.name}</h3>
           <p className="text-sm text-manatee-400">
@@ -224,7 +276,11 @@ export const ObjectTypeEditor = ({
           <Button
             variant="outline"
             danger
-            disabled={isUpdatingObjectTypeConfig || !form.formState.isDirty}
+            disabled={
+              isUpdatingObjectTypeConfig ||
+              isUpdatingRelationshipConfig ||
+              !form.formState.isDirty
+            }
             onClick={() => form.reset()}
           >
             Reset
@@ -232,7 +288,7 @@ export const ObjectTypeEditor = ({
           <Button
             variant="primary"
             onClick={onSave}
-            loading={isUpdatingObjectTypeConfig}
+            loading={isUpdatingObjectTypeConfig || isUpdatingRelationshipConfig}
             disabled={!form.formState.isDirty}
           >
             Save
@@ -245,11 +301,13 @@ export const ObjectTypeEditor = ({
         objectMeta={objectMeta}
         objectConfig={objectConfig}
       />
-      <RelationshipsSection
-        form={form}
-        objectMeta={objectMeta}
-        allObjectsMeta={allObjectsMeta}
-      />
+      {objectMeta.name !== BuiltInSkylarkObjectType.Availability && (
+        <RelationshipsSection
+          form={form}
+          objectMeta={objectMeta}
+          allObjectsMeta={allObjectsMeta}
+        />
+      )}
     </div>
   );
 };

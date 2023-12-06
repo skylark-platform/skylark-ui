@@ -9,7 +9,6 @@ import {
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
-  SkylarkSystemField,
 } from "src/interfaces/skylark";
 import {
   generateFieldsToReturn,
