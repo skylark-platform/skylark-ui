@@ -218,31 +218,39 @@ export const ObjectTypeEditor = ({
         uiConfig: { primaryField, objectTypeDisplayName, colour },
         relationshipConfig,
       }) => {
-        const fieldConfig: ParsedSkylarkObjectConfigFieldConfig[] = [
-          ...fieldSections.system.fields,
-          ...fieldSections.translatable.fields,
-          ...fieldSections.global.fields,
-        ].map(
-          (fieldWithConfig, index): ParsedSkylarkObjectConfigFieldConfig => ({
-            name: fieldWithConfig.field.name,
-            fieldType: fieldWithConfig.config?.fieldType || null,
-            position: index + 1,
-          }),
-        );
-        const parsedConfig: ParsedSkylarkObjectConfig = {
-          ...objectConfig,
-          primaryField,
-          fieldConfig,
-          objectTypeDisplayName,
-          colour,
-        };
+        if (
+          form.formState.dirtyFields.uiConfig ||
+          form.formState.dirtyFields.fieldSections
+        ) {
+          const fieldConfig: ParsedSkylarkObjectConfigFieldConfig[] = [
+            ...fieldSections.system.fields,
+            ...fieldSections.translatable.fields,
+            ...fieldSections.global.fields,
+          ].map(
+            (fieldWithConfig, index): ParsedSkylarkObjectConfigFieldConfig => ({
+              name: fieldWithConfig.field.name,
+              fieldType: fieldWithConfig.config?.fieldType || null,
+              position: index + 1,
+            }),
+          );
+          const parsedConfig: ParsedSkylarkObjectConfig = {
+            ...objectConfig,
+            primaryField,
+            fieldConfig,
+            objectTypeDisplayName,
+            colour,
+          };
 
-        updateObjectTypeConfig({
-          objectType: objectMeta.name,
-          ...parsedConfig,
-        });
+          updateObjectTypeConfig({
+            objectType: objectMeta.name,
+            ...parsedConfig,
+          });
+        }
 
-        if (relationshipConfig) {
+        if (
+          form.formState.dirtyFields.relationshipConfig &&
+          relationshipConfig
+        ) {
           updateRelationshipConfig({
             objectType: objectMeta.name,
             relationshipConfig,

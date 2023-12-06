@@ -1,3 +1,6 @@
+import { graphql } from "msw";
+
+import { server } from "src/__tests__/mocks/server";
 import {
   allObjectTypes,
   render,
@@ -106,6 +109,98 @@ describe("UI Config", () => {
       target: { value: "#226DFF" },
     });
 
+    server.use(
+      graphql.query("GET_OBJECTS_CONFIG", (req, res, ctx) => {
+        return res(
+          ctx.data({
+            SkylarkSet: {
+              primary_field: "uid",
+              colour: "#226DFF",
+              display_name: "CustomSetName",
+              field_config: [
+                {
+                  name: "release_date",
+                  ui_field_type: null,
+                  ui_position: 6,
+                },
+                {
+                  name: "title_sort",
+                  ui_field_type: null,
+                  ui_position: 7,
+                },
+                {
+                  name: "title_short",
+                  ui_field_type: null,
+                  ui_position: 2,
+                },
+                {
+                  name: "internal_title",
+                  ui_field_type: null,
+                  ui_position: 0,
+                },
+                {
+                  name: "description",
+                  ui_field_type: "TEXTAREA",
+                  ui_position: 5,
+                },
+                {
+                  name: "synopsis_short",
+                  ui_field_type: "TEXTAREA",
+                  ui_position: 4,
+                },
+                {
+                  name: "synopsis",
+                  ui_field_type: "TEXTAREA",
+                  ui_position: 3,
+                },
+                {
+                  name: "title",
+                  ui_field_type: null,
+                  ui_position: 1,
+                },
+              ],
+            },
+          }),
+        );
+      }),
+    );
+
+    // Save
+    fireEvent.click(screen.getByText("Save"));
+
+    // Check success toast
+    await waitFor(() => {
+      screen.getByText("Object Type config updated");
+    });
+
+    // Check updated state of UI Config
+    const updatedObjectTypePill = preview.getByText("CustomSetName");
+    expect(updatedObjectTypePill).toBeInTheDocument();
+    expect(updatedObjectTypePill.parentElement).toHaveAttribute(
+      "style",
+      "background-color: rgb(34, 109, 255);",
+    );
+    expect(preview.getByText('Example "uid" value')).toBeInTheDocument();
+  });
+
+  test("changes UI Config and saves", async () => {
+    const { withinUIConfigEditor } = await renderAndWaitForEditorToLoad();
+
+    const preview = within(
+      withinUIConfigEditor.getByTestId("uiconfig-editor-preview"),
+    );
+
+    // Change UI Config
+    fireEvent.change(withinUIConfigEditor.getByPlaceholderText("SkylarkSet"), {
+      target: { value: "CustomSetName" },
+    });
+    fireEvent.click(withinUIConfigEditor.getByPlaceholderText("Select option"));
+    fireEvent.click(withinUIConfigEditor.getByText("uid"));
+    fireEvent.click(withinUIConfigEditor.getByTestId("colour-picker-button"));
+    fireEvent.change(withinUIConfigEditor.getByPlaceholderText("#"), {
+      target: { value: "#226DFF" },
+    });
+
     // Check updated state of UI Config
     const updatedObjectTypePill = preview.getByText("CustomSetName");
     expect(updatedObjectTypePill).toBeInTheDocument();
@@ -161,5 +256,86 @@ describe("Relationships", () => {
       "data-value",
       "file_name",
     );
+  });
+
+  test("changes Relationship config and saves", async () => {
+    const { withinRelationshipEditor } = await renderAndWaitForEditorToLoad();
+
+    const imagesRow = withinRelationshipEditor.getByTestId(
+      "relationships-editor-row-images",
+    );
+    expect(imagesRow).toBeInTheDocument();
+
+    const withinImagesRow = within(imagesRow);
+
+    await waitFor(() => {
+      expect(withinImagesRow.getByRole("combobox")).toBeInTheDocument();
+    });
+
+    const imageSortField = withinImagesRow.getByRole("combobox");
+
+    expect(imageSortField).toHaveAttribute("data-value", "file_name");
+
+    // Change relationship config
+    fireEvent.click(imageSortField);
+    fireEvent.click(withinImagesRow.getByText("title"));
+
+    // Check the status
+    expect(imageSortField).toHaveAttribute("data-value", "title");
+
+    server.use(
+      graphql.query(
+        "LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION",
+        (req, res, ctx) => {
+          return res(
+            ctx.data({
+              listRelationshipConfiguration: [
+                {
+                  relationship_name: "assets",
+                  config: {
+                    default_sort_field: "title_sort",
+                  },
+                },
+                {
+                  relationship_name: "call_to_actions",
+                  config: {
+                    default_sort_field: "uid",
+                  },
+                },
+                {
+                  relationship_name: "credits",
+                  config: {
+                    default_sort_field: "position",
+                  },
+                },
+                {
+                  relationship_name: "images",
+                  config: {
+                    default_sort_field: "title",
+                  },
+                },
+                {
+                  relationship_name: "tags",
+                  config: {
+                    default_sort_field: "name_sort",
+                  },
+                },
+              ],
+            }),
+          );
+        },
+      ),
+    );
+
+    // Save
+    fireEvent.click(screen.getByText("Save"));
+
+    // Check success toast
+    await waitFor(() => {
+      screen.getByText("Relationship config updated");
+    });
+
+    // Revalidate the sort field hasn't changed
+    expect(imageSortField).toHaveAttribute("data-value", "title");
   });
 });

@@ -16,6 +16,7 @@ import {
 import { introspectionHandlers } from "./introspectionHandlers";
 import { searchHandlers } from "./searchHandlers";
 import { updateObjectHandlers } from "./updateObjectHandlers";
+import { updateSchemaHandlers } from "./updateSchemaHandlers";
 
 export const handlers = [
   ...introspectionHandlers,
@@ -34,4 +35,5 @@ export const handlers = [
   ...availabilityDimensionHandlers,
   ...flatfileHandlers,
   ...environmentHandlers,
+  ...updateSchemaHandlers,
 ];
