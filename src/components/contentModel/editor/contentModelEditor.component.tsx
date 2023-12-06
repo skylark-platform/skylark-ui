@@ -13,6 +13,7 @@ import {
   ParsedSkylarkObjectConfigFieldConfig,
   InputFieldWithFieldConfig,
   ParsedSkylarkObjectTypeRelationshipConfiguration,
+  BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import { isSkylarkObjectType } from "src/lib/utils";
 
@@ -300,11 +301,13 @@ export const ObjectTypeEditor = ({
         objectMeta={objectMeta}
         objectConfig={objectConfig}
       />
-      <RelationshipsSection
-        form={form}
-        objectMeta={objectMeta}
-        allObjectsMeta={allObjectsMeta}
-      />
+      {objectMeta.name !== BuiltInSkylarkObjectType.Availability && (
+        <RelationshipsSection
+          form={form}
+          objectMeta={objectMeta}
+          allObjectsMeta={allObjectsMeta}
+        />
+      )}
     </div>
   );
 };

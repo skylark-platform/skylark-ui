@@ -7,7 +7,10 @@ import {
   useAllObjectsMeta,
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
-import { SkylarkObjectType } from "src/interfaces/skylark";
+import {
+  BuiltInSkylarkObjectType,
+  SkylarkObjectType,
+} from "src/interfaces/skylark";
 
 import { ObjectTypeEditor } from "./editor/contentModelEditor.component";
 import { ObjectTypeNavigation } from "./navigation/contentModelNavigation.component";
@@ -32,7 +35,6 @@ export const ContentModel = () => {
   const {
     objectTypeRelationshipConfig: relationshipConfig,
     isLoading: isLoadingRelationshipConfig,
-    enabled: isRelationshipConfigEnabled,
   } = useObjectTypeRelationshipConfiguration(objectMeta?.name || null);
 
   return (
@@ -44,14 +46,13 @@ export const ContentModel = () => {
             {objectMeta &&
               !isLoadingObjectTypesWithConfig &&
               objectTypesWithConfig &&
-              relationshipConfig &&
-              ((!isLoadingRelationshipConfig && relationshipConfig) ||
-                !isRelationshipConfigEnabled) && (
+              (!isLoadingRelationshipConfig ||
+                objectMeta.name === BuiltInSkylarkObjectType.Availability) && (
                 <ObjectTypeEditor
                   key={`${activeObjectType}-${config}`}
                   objectMeta={objectMeta}
                   objectConfig={config}
-                  relationshipConfig={relationshipConfig}
+                  relationshipConfig={relationshipConfig || {}}
                   allObjectsMeta={allObjectsMeta}
                 />
               )}

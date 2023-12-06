@@ -65,20 +65,12 @@ const allObjectTypesSelect = (
 export const useObjectTypeRelationshipConfiguration = (
   objectType: SkylarkObjectType | null,
 ) => {
-  const { data: introspection } = useSkylarkSchemaIntrospection();
-
-  // TODO remove this enabled check when the backend PR is merged to production
-  const enabled =
-    !!introspection?.__schema.types.find(
-      (type) => type.name === "RelationshipConfigList",
-    ) && !!objectType;
-
   const { data, isLoading } = useQuery<
     GQLSkylarkListObjectTypeRelationshipConfiguration,
     GQLSkylarkErrorResponse<GQLSkylarkListObjectTypeRelationshipConfiguration>,
     ParsedSkylarkObjectTypeRelationshipConfiguration
   >({
-    enabled,
+    enabled: objectType !== BuiltInSkylarkObjectType.Availability,
     queryKey: [
       QueryKeys.ObjectTypeRelationshipConfig,
       LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION,
@@ -94,7 +86,6 @@ export const useObjectTypeRelationshipConfiguration = (
   return {
     objectTypeRelationshipConfig: data,
     isLoading,
-    enabled,
   };
 };
 
