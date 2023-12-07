@@ -16,18 +16,18 @@ describe("Import/CSV", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
-      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+      if (hasOperationName(req, "SL_UI_GET_ACCOUNT_STATUS")) {
         req.reply({
           fixture: "./skylark/queries/getAccountStatus/default.json",
         });
       }
-      if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
+      if (hasOperationName(req, "SL_UI_GET_OBJECTS_CONFIG")) {
         req.alias = "getObjectsConfig";
         req.reply({
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
         });
       }
-      if (operationNameStartsWith(req, "createEpisode_")) {
+      if (operationNameStartsWith(req, "SL_UI_FLATFILE_IMPORT_EPISODE")) {
         req.reply({
           fixture: "./skylark/mutations/import/csvImportEpisodeCreation.json",
         });
@@ -201,7 +201,7 @@ describe("Import/CSV", () => {
 
     it("fail to create objects in Skylark", { retries: 0 }, () => {
       cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-        if (operationNameStartsWith(req, "createEpisode_")) {
+        if (operationNameStartsWith(req, "SL_UI_FLATFILE_IMPORT_")) {
           req.reply({
             fixture:
               "./skylark/mutations/import/csvImportEpisodeCreationErrored.json",

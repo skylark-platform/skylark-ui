@@ -96,7 +96,7 @@ describe("createFlatfileObjectsInSkylark", () => {
 
     server.use(
       graphql.mutation(
-        wrapQueryName("createEpisode_batchId"),
+        wrapQueryName("FLATFILE_IMPORT_EPISODE_BATCHID"),
         (req, res, ctx) => {
           return res(
             ctx.data({
@@ -186,7 +186,7 @@ describe("createFlatfileObjectsInSkylark", () => {
     ];
     server.use(
       graphql.mutation(
-        wrapQueryName("createEpisode_batchId"),
+        wrapQueryName("FLATFILE_IMPORT_EPISODE_BATCHID"),
         (req, res, ctx) => {
           return res(ctx.errors(errors));
         },

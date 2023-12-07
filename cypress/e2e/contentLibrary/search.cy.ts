@@ -18,18 +18,18 @@ describe("Content Library - Search", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
-      if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
+      if (hasOperationName(req, "SL_UI_GET_OBJECTS_CONFIG")) {
         req.alias = "getObjectConfig";
         req.reply({
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
         });
       }
-      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+      if (hasOperationName(req, "SL_UI_GET_ACCOUNT_STATUS")) {
         req.reply({
           fixture: "./skylark/queries/getAccountStatus/default.json",
         });
       }
-      if (hasOperationName(req, "SEARCH")) {
+      if (hasOperationName(req, "SL_UI_SEARCH")) {
         if (
           hasMatchingVariable(req, "dimensions", [
             { dimension: "customer-types", value: "kids" },
@@ -70,7 +70,7 @@ describe("Content Library - Search", () => {
           });
         }
       }
-      if (hasOperationName(req, "GET_Episode")) {
+      if (hasOperationName(req, "SL_UI_GET_EPISODE")) {
         if (hasMatchingVariable(req, "language", "pt-PT")) {
           req.reply({
             fixture: "./skylark/queries/getObject/gots01e01ptPT.json",
@@ -81,22 +81,22 @@ describe("Content Library - Search", () => {
           });
         }
       }
-      if (hasOperationName(req, "LIST_AVAILABILITY_DIMENSIONS")) {
+      if (hasOperationName(req, "SL_UI_LIST_AVAILABILITY_DIMENSIONS")) {
         req.reply({
           fixture: "./skylark/queries/listDimensions.json",
         });
       }
-      if (hasOperationName(req, "LIST_AVAILABILITY_DIMENSION_VALUES")) {
+      if (hasOperationName(req, "SL_UI_LIST_AVAILABILITY_DIMENSION_VALUES")) {
         req.reply({
           fixture: "./skylark/queries/listDimensionValues.json",
         });
       }
-      if (hasOperationName(req, "GET_USER_AND_ACCOUNT")) {
+      if (hasOperationName(req, "SL_UI_GET_USER_AND_ACCOUNT")) {
         req.reply({
           fixture: "./skylark/queries/getUserAndAccount.json",
         });
       }
-      if (hasOperationName(req, "GET_OBJECT_GENERIC")) {
+      if (hasOperationName(req, "SL_UI_GET_OBJECT_GENERIC")) {
         req.reply({
           fixture: "./skylark/queries/getObjectGeneric/homepage.json",
         });
@@ -122,7 +122,7 @@ describe("Content Library - Search", () => {
 
   it("visits home when no search data is returned", () => {
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "SEARCH")) {
+      if (hasOperationName(req, "SL_UI_SEARCH")) {
         req.alias = "searchQueryEmpty";
         req.reply({
           fixture: "./skylark/queries/search/empty.json",
@@ -216,7 +216,7 @@ describe("Content Library - Search", () => {
 
   it("filters to en-GB only got content", () => {
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "GET_USER_AND_ACCOUNT")) {
+      if (hasOperationName(req, "SL_UI_GET_USER_AND_ACCOUNT")) {
         req.alias = "getUserAndAccountNoLanguage";
         req.reply({
           data: {

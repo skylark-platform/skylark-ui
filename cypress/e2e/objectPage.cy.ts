@@ -16,17 +16,17 @@ describe("Object Page", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
-      if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
+      if (hasOperationName(req, "SL_UI_GET_OBJECTS_CONFIG")) {
         req.reply({
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
         });
       }
-      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+      if (hasOperationName(req, "SL_UI_GET_ACCOUNT_STATUS")) {
         req.reply({
           fixture: "./skylark/queries/getAccountStatus/default.json",
         });
       }
-      if (hasOperationName(req, "GET_Episode")) {
+      if (hasOperationName(req, "SL_UI_GET_EPISODE")) {
         if (hasMatchingVariable(req, "language", "pt-PT")) {
           req.reply({
             fixture: "./skylark/queries/getObject/gots01e01ptPT.json",
@@ -37,12 +37,12 @@ describe("Object Page", () => {
           });
         }
       }
-      if (hasOperationName(req, "GET_SkylarkSet")) {
+      if (hasOperationName(req, "SL_UI_GET_SKYLARKSET")) {
         req.reply({
           fixture: "./skylark/queries/getObject/homepage.json",
         });
       }
-      if (hasOperationName(req, "GET_SkylarkSet_CONTENT")) {
+      if (hasOperationName(req, "SL_UI_GET_SKYLARKSET_CONTENT")) {
         req.reply({
           fixture: "./skylark/queries/getObjectContent/homepage.json",
         });

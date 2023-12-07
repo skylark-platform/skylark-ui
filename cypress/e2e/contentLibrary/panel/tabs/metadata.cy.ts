@@ -105,7 +105,7 @@ describe("Content Library - Object Panel - Metadata tab", () => {
 
   it("opens draft and Publishes", () => {
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "GET_Episode")) {
+      if (hasOperationName(req, "SL_UI_GET_EPISODE")) {
         req.alias = "getEpisodeDraft";
         req.reply({
           data: {
@@ -157,7 +157,7 @@ describe("Content Library - Object Panel - Metadata tab", () => {
 
   it("opens draft, makes a change and Save & Publishes", () => {
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "GET_Episode")) {
+      if (hasOperationName(req, "SL_UI_GET_EPISODE")) {
         req.alias = "getEpisodeDraft";
         req.reply({
           data: {

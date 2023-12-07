@@ -49,7 +49,7 @@ describe("Content Library - Object Panel - Availability Dimensions tab", () => {
     cy.contains("Editing");
 
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "GET_AVAILABILITY_DIMENSIONS")) {
+      if (hasOperationName(req, "SL_UI_GET_AVAILABILITY_DIMENSIONS")) {
         req.alias = "getUpdatedAvailabilityDimensions";
         req.reply({
           data: {

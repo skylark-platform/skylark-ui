@@ -71,12 +71,6 @@ export const createFlatfileObjectsInSkylark = async (
   const skylarkObjectOperations: SkylarkObjectMeta["operations"] =
     await getSkylarkObjectOperations(client, objectType);
 
-  const mutationPrefix =
-    `${skylarkObjectOperations.create.name}_${flatfileBatchId}`.replace(
-      /-/g,
-      "_",
-    );
-
   const chunkedFlatfileRows = chunkArray(allFlatfileRows, 50);
 
   const dataArr = await Promise.all(
@@ -110,7 +104,10 @@ export const createFlatfileObjectsInSkylark = async (
 
             const updatedOperations = {
               ...previousOperations,
-              [`${mutationPrefix}_${id}`]: operation,
+              [`${skylarkObjectOperations.create.name}_${flatfileBatchId}_${id}`.replace(
+                /-/g,
+                "_",
+              )]: operation,
             };
             return updatedOperations;
           },
@@ -119,7 +116,10 @@ export const createFlatfileObjectsInSkylark = async (
 
         const mutation = {
           mutation: {
-            __name: mutationPrefix,
+            __name: `FLATFILE_IMPORT_${objectType}_${flatfileBatchId}`.replace(
+              /-/g,
+              "_",
+            ),
             ...operations,
           },
         };
