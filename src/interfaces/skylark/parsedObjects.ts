@@ -122,8 +122,8 @@ export interface ParsedSkylarkObjectRelationships {
 }
 
 export interface ParsedSkylarkObjectTypeRelationshipConfiguration {
-  relationshipName: string;
-  config: {
+  [relationshipName: string]: {
     defaultSortField: string;
+    inheritAvailability: boolean;
   };
 }

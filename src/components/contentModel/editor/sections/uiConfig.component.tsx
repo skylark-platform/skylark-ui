@@ -13,6 +13,7 @@ import {
 import {
   ContentModelEditorForm,
   FieldHeader,
+  SectionDescription,
   SectionHeader,
   SectionWrapper,
   uiDisplayFieldTooltip,
@@ -24,12 +25,17 @@ interface UIConfigSectionProps {
 }
 
 export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
-  const { fieldSections, objectTypeDisplayName, primaryField, colour } =
-    form.watch();
+  const fieldSections = form.watch("fieldSections");
+  const { objectTypeDisplayName, primaryField, colour } =
+    form.watch("uiConfig");
 
   return (
     <SectionWrapper data-testid="uiconfig-editor">
       <SectionHeader>UI Config</SectionHeader>
+      <SectionDescription>
+        Control how data for this Object Type is displayed in the UI including
+        field order and UI field type.
+      </SectionDescription>
       <div className="flex flex-col md:grid md:space-x-8 max-md:space-y-8 grid-cols-2 text-sm text-manatee-600">
         <div className="grid grid-cols-3 w-full items-center auto-rows-fr gap-x-2 mt-4 gap-y-1">
           <FieldHeader
@@ -43,7 +49,7 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
             <TextInput
               value={objectTypeDisplayName}
               onChange={(str) =>
-                form.setValue("objectTypeDisplayName", str, {
+                form.setValue("uiConfig.objectTypeDisplayName", str, {
                   shouldDirty: true,
                 })
               }
@@ -64,7 +70,7 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
             placeholder=""
             selected={primaryField || SkylarkSystemField.UID}
             onChange={(value) =>
-              form.setValue("primaryField", value, {
+              form.setValue("uiConfig.primaryField", value, {
                 shouldDirty: true,
               })
             }
@@ -79,7 +85,7 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
             <ColourPicker
               colour={colour || ""}
               onChange={(colour) =>
-                form.setValue("colour", colour, { shouldDirty: true })
+                form.setValue("uiConfig.colour", colour, { shouldDirty: true })
               }
             >
               <span className="group-hover/colour-picker:text-brand-primary text-xs group-hover/colour-picker:underline text-manatee-400">

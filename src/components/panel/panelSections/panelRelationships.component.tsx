@@ -298,10 +298,9 @@ export const PanelRelationships = ({
     >
       <div>
         {orderedRelationships?.map((relationship) => {
-          const { config } = objectTypeRelationshipConfig?.find(
-            ({ relationshipName }) =>
-              relationshipName === relationship.relationshipName,
-          ) || { config: null };
+          const config =
+            objectTypeRelationshipConfig?.[relationship.relationshipName] ||
+            null;
 
           return (
             <PanelRelationshipSection
@@ -332,10 +331,9 @@ export const PanelRelationships = ({
           )}
 
         {emptyOrderedRelationships?.map((relationship) => {
-          const { config } = objectTypeRelationshipConfig?.find(
-            ({ relationshipName }) =>
-              relationshipName === relationship.relationshipName,
-          ) || { config: null };
+          const config =
+            objectTypeRelationshipConfig?.[relationship.relationshipName] ||
+            null;
 
           return (
             <PanelRelationshipSection

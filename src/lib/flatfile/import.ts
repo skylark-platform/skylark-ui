@@ -1,7 +1,7 @@
 import { ITheme } from "@flatfile/sdk/dist/types";
 import dayjs from "dayjs";
 import { GraphQLClient } from "graphql-request";
-import { EnumType, jsonToGraphQLQuery } from "json-to-graphql-query";
+import { EnumType } from "json-to-graphql-query";
 
 import { TEMPLATE_FIELDS_TO_IGNORE } from "src/constants/flatfile";
 import {
@@ -17,6 +17,7 @@ import {
   SkylarkImportedObject,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
+import { wrappedJsonMutation } from "src/lib/graphql/skylark/dynamicQueries";
 import { getSkylarkObjectOperations } from "src/lib/skylark/introspection/introspection";
 import {
   parseInputFieldValue,
@@ -70,12 +71,6 @@ export const createFlatfileObjectsInSkylark = async (
   const skylarkObjectOperations: SkylarkObjectMeta["operations"] =
     await getSkylarkObjectOperations(client, objectType);
 
-  const mutationPrefix =
-    `${skylarkObjectOperations.create.name}_${flatfileBatchId}`.replace(
-      /-/g,
-      "_",
-    );
-
   const chunkedFlatfileRows = chunkArray(allFlatfileRows, 50);
 
   const dataArr = await Promise.all(
@@ -109,7 +104,10 @@ export const createFlatfileObjectsInSkylark = async (
 
             const updatedOperations = {
               ...previousOperations,
-              [`${mutationPrefix}_${id}`]: operation,
+              [`${skylarkObjectOperations.create.name}_${flatfileBatchId}_${id}`.replace(
+                /-/g,
+                "_",
+              )]: operation,
             };
             return updatedOperations;
           },
@@ -118,12 +116,15 @@ export const createFlatfileObjectsInSkylark = async (
 
         const mutation = {
           mutation: {
-            __name: mutationPrefix,
+            __name: `FLATFILE_IMPORT_${objectType}_${flatfileBatchId}`.replace(
+              /-/g,
+              "_",
+            ),
             ...operations,
           },
         };
 
-        const graphQLMutation = jsonToGraphQLQuery(mutation, { pretty: true });
+        const graphQLMutation = wrappedJsonMutation(mutation, { pretty: true });
 
         try {
           const responseData =

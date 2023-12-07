@@ -3,6 +3,7 @@ import { graphql } from "msw";
 
 import { server } from "src/__tests__/mocks/server";
 import { render } from "src/__tests__/utils/test-utils";
+import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { DeleteObjectModal } from "./deleteObjectModal.component";
 
@@ -161,7 +162,7 @@ test("successfully deletes the translation and calls the onSuccess callback", as
 
 test("GraphQL returns an error when deleting object, shows toast", async () => {
   server.use(
-    graphql.mutation("DELETE_Episode", (_, res, ctx) => {
+    graphql.mutation(wrapQueryName("DELETE_Episode"), (_, res, ctx) => {
       return res(
         ctx.errors([{ errorType: "error", message: "invalid input" }]),
       );

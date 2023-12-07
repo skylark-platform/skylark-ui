@@ -11,6 +11,7 @@ import GQLSkylarkGetObjectGOTS01E01QueryFixture from "src/__tests__/fixtures/sky
 import GQLSkylarkUserAccountFixture from "src/__tests__/fixtures/skylark/queries/getUserAndAccount.json";
 import { server } from "src/__tests__/mocks/server";
 import { render } from "src/__tests__/utils/test-utils";
+import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { CreateObjectModal } from "./createObjectModal.component";
 
@@ -156,7 +157,12 @@ describe("Create Object (new object)", () => {
   });
 
   test("adds a field value and saves, but GraphQL returns an error", async () => {
-    server.use(graphql.mutation("CREATE_OBJECT_Episode", saveGraphQLError));
+    server.use(
+      graphql.mutation(
+        wrapQueryName("CREATE_OBJECT_Episode"),
+        saveGraphQLError,
+      ),
+    );
 
     const setIsOpen = jest.fn();
     const onObjectCreated = jest.fn();
@@ -368,7 +374,10 @@ describe("Create Translation (existing object)", () => {
 
   test("selects a new language, adds a title and creates, but GraphQL returns an error", async () => {
     server.use(
-      graphql.mutation("UPDATE_OBJECT_METADATA_SkylarkSet", saveGraphQLError),
+      graphql.mutation(
+        wrapQueryName("UPDATE_OBJECT_METADATA_SkylarkSet"),
+        saveGraphQLError,
+      ),
     );
 
     const onObjectCreated = jest.fn();

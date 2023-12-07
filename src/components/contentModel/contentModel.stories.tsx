@@ -21,3 +21,12 @@ const Template: ComponentStory<typeof ContentModel> = () => {
 
 export const Default = Template.bind({});
 Default.args = {};
+Default.parameters = {
+  nextjs: {
+    router: {
+      query: {
+        objectType: ["SkylarkSet"],
+      },
+    },
+  },
+};

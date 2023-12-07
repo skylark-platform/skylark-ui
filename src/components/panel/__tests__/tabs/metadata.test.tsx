@@ -29,7 +29,10 @@ import {
 } from "src/components/panel/__tests__/utils/test-utils";
 import { Panel } from "src/components/panel/panel.component";
 import { QueryErrorMessages } from "src/enums/graphql";
-import { createGetObjectQueryName } from "src/lib/graphql/skylark/dynamicQueries";
+import {
+  createGetObjectQueryName,
+  wrapQueryName,
+} from "src/lib/graphql/skylark/dynamicQueries";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const useRouter = jest.spyOn(require("next/router"), "useRouter");
@@ -116,13 +119,16 @@ describe("metadata view", () => {
 
   test("renders object not found when the object doesn't exist", async () => {
     server.use(
-      graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
-        return res(
-          ctx.errors([
-            { errorType: QueryErrorMessages.NotFound, message: "Not found" },
-          ]),
-        );
-      }),
+      graphql.query(
+        wrapQueryName(createGetObjectQueryName("Movie")),
+        (req, res, ctx) => {
+          return res(
+            ctx.errors([
+              { errorType: QueryErrorMessages.NotFound, message: "Not found" },
+            ]),
+          );
+        },
+      ),
     );
 
     render(
@@ -162,9 +168,12 @@ describe("metadata view", () => {
 
   test("renders an error message when an unknown error occurs", async () => {
     server.use(
-      graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
-        return res(ctx.errors([{ message: "Something went wrong" }]));
-      }),
+      graphql.query(
+        wrapQueryName(createGetObjectQueryName("Movie")),
+        (req, res, ctx) => {
+          return res(ctx.errors([{ message: "Something went wrong" }]));
+        },
+      ),
     );
 
     render(<Panel {...defaultProps} object={movieObject} />);
@@ -191,9 +200,12 @@ describe("metadata view", () => {
     };
 
     server.use(
-      graphql.query(createGetObjectQueryName("Movie"), (req, res, ctx) => {
-        return res(ctx.data(withPrimaryFieldMock));
-      }),
+      graphql.query(
+        wrapQueryName(createGetObjectQueryName("Movie")),
+        (req, res, ctx) => {
+          return res(ctx.data(withPrimaryFieldMock));
+        },
+      ),
     );
 
     render(<Panel {...defaultProps} object={movieObject} />);
@@ -383,7 +395,7 @@ describe("metadata view", () => {
 
       server.use(
         graphql.mutation(
-          "UPDATE_OBJECT_METADATA_SkylarkSet",
+          wrapQueryName("UPDATE_OBJECT_METADATA_SkylarkSet"),
           (req, res, ctx) => {
             return res(
               ctx.data({
@@ -436,7 +448,7 @@ describe("metadata view", () => {
 
       server.use(
         graphql.mutation(
-          "UPDATE_OBJECT_METADATA_SkylarkSet",
+          wrapQueryName("UPDATE_OBJECT_METADATA_SkylarkSet"),
           (req, res, ctx) => {
             return res(
               ctx.data({
@@ -490,16 +502,19 @@ describe("metadata view", () => {
       const changedValue = "this has changed";
 
       server.use(
-        graphql.mutation("UPDATE_OBJECT_METADATA_Movie", (req, res, ctx) => {
-          return res(
-            ctx.data({
-              updateObjectMetadata: {
-                ...GQLSkylarkGetMovieDraftQueryFixture.data.getObject,
-                title_short: changedValue,
-              },
-            }),
-          );
-        }),
+        graphql.mutation(
+          wrapQueryName("UPDATE_OBJECT_METADATA_Movie"),
+          (req, res, ctx) => {
+            return res(
+              ctx.data({
+                updateObjectMetadata: {
+                  ...GQLSkylarkGetMovieDraftQueryFixture.data.getObject,
+                  title_short: changedValue,
+                },
+              }),
+            );
+          },
+        ),
       );
 
       const { user } = render(
@@ -549,7 +564,10 @@ describe("metadata view", () => {
 
     test("does not exit edit mode when the update mutation fails", async () => {
       server.use(
-        graphql.mutation("UPDATE_OBJECT_METADATA_SkylarkSet", saveGraphQLError),
+        graphql.mutation(
+          wrapQueryName("UPDATE_OBJECT_METADATA_SkylarkSet"),
+          saveGraphQLError,
+        ),
       );
 
       const { user } = render(

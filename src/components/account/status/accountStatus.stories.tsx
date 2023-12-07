@@ -26,7 +26,7 @@ export const ProcessingAvailabilities = Template.bind({});
 ProcessingAvailabilities.parameters = {
   msw: {
     handlers: {
-      status: graphql.query(`GET_ACCOUNT_STATUS`, (req, res, ctx) => {
+      status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
         return res(
           ctx.data(
             GQLSkylarkAccountStatusAvailabilityBackgroundTasksFixture.data,
@@ -41,7 +41,7 @@ export const ProcessingMultipleBackgroundTasks = Template.bind({});
 ProcessingMultipleBackgroundTasks.parameters = {
   msw: {
     handlers: {
-      status: graphql.query(`GET_ACCOUNT_STATUS`, (req, res, ctx) => {
+      status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
         return res(
           ctx.data(GQLSkylarkAccountStatusBackgroundTasksFixture.data),
         );
@@ -54,7 +54,7 @@ export const UpdatingSchema = Template.bind({});
 UpdatingSchema.parameters = {
   msw: {
     handlers: {
-      status: graphql.query(`GET_ACCOUNT_STATUS`, (req, res, ctx) => {
+      status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
         return res(ctx.data(GQLSkylarkAccountStatusSchemaUpdate.data));
       }),
     },
@@ -67,7 +67,7 @@ export const AfterBackgroundTasksFinished = Template.bind({});
 AfterBackgroundTasksFinished.parameters = {
   msw: {
     handlers: {
-      status: graphql.query(`GET_ACCOUNT_STATUS`, (req, res, ctx) => {
+      status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
         if (calls > 0) {
           return res(ctx.data(GQLSkylarkAccountStatusDefault.data));
         }
@@ -93,7 +93,7 @@ export const Tooltip = Template.bind({});
 Tooltip.parameters = {
   msw: {
     handlers: {
-      status: graphql.query(`GET_ACCOUNT_STATUS`, (req, res, ctx) => {
+      status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
         return res(
           ctx.data(
             GQLSkylarkAccountStatusAvailabilityBackgroundTasksFixture.data,

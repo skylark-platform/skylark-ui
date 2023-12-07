@@ -1,5 +1,5 @@
 import { gql } from "graphql-tag";
-import { jsonToGraphQLQuery, VariableType } from "json-to-graphql-query";
+import { VariableType } from "json-to-graphql-query";
 
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
@@ -9,11 +9,11 @@ import {
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
-  SkylarkSystemField,
 } from "src/interfaces/skylark";
 import {
   generateFieldsToReturn,
   generateVariablesAndArgs,
+  wrappedJsonMutation,
 } from "src/lib/graphql/skylark/dynamicQueries";
 import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
 import { hasProperty } from "src/lib/utils";
@@ -73,7 +73,7 @@ export const createDeleteObjectMutation = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(mutation);
+  const graphQLQuery = wrappedJsonMutation(mutation);
 
   return gql(graphQLQuery);
 };
@@ -116,7 +116,7 @@ export const createCreateObjectMutation = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(mutation);
+  const graphQLQuery = wrappedJsonMutation(mutation);
 
   return gql(graphQLQuery);
 };
@@ -187,7 +187,7 @@ export const createUpdateObjectMetadataMutation = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(mutation);
+  const graphQLQuery = wrappedJsonMutation(mutation);
 
   return gql(graphQLQuery);
 };
@@ -231,7 +231,7 @@ export const createPublishVersionMutation = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(mutation);
+  const graphQLQuery = wrappedJsonMutation(mutation);
 
   return gql(graphQLQuery);
 };
@@ -341,7 +341,7 @@ export const createUpdateObjectContentMutation = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(mutation);
+  const graphQLQuery = wrappedJsonMutation(mutation);
 
   return gql(graphQLQuery);
 };
@@ -394,7 +394,7 @@ export const createUpdateObjectRelationshipsMutation = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(mutation);
+  const graphQLQuery = wrappedJsonMutation(mutation);
 
   return gql(graphQLQuery);
 };
@@ -434,7 +434,7 @@ export const createUpdateObjectAvailability = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(mutation);
+  const graphQLQuery = wrappedJsonMutation(mutation);
 
   return gql(graphQLQuery);
 };
@@ -557,7 +557,7 @@ export const createUpdateAvailabilityDimensionsMutation = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(mutation);
+  const graphQLQuery = wrappedJsonMutation(mutation);
 
   return gql(graphQLQuery);
 };
@@ -610,7 +610,7 @@ export const createUpdateAvailabilityAssignedToMutation = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(mutation);
+  const graphQLQuery = wrappedJsonMutation(mutation);
 
   return gql(graphQLQuery);
 };

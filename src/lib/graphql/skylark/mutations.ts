@@ -1,7 +1,9 @@
 import gql from "graphql-tag";
 
+import { wrapQueryName } from "./dynamicQueries";
+
 export const UPDATE_OBJECT_TYPE_CONFIG = gql`
-  mutation UPDATE_OBJECT_TYPE_CONFIG(
+  mutation ${wrapQueryName("UPDATE_OBJECT_TYPE_CONFIG")}(
     $objectType: VisibleObjectTypes!
     $displayName: String
     $primaryField: String
@@ -30,7 +32,7 @@ export const UPDATE_OBJECT_TYPE_CONFIG = gql`
 `;
 
 export const BATCH_DELETE = gql`
-  mutation BATCH_DELETE($objects: [DeleteInput]) {
+  mutation ${wrapQueryName("BATCH_DELETE")}($objects: [DeleteInput]) {
     batchDeleteObjects(objects: $objects) {
       language
       removed_relationships

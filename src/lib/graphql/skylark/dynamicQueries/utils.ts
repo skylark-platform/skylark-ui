@@ -1,4 +1,9 @@
-import { EnumType, VariableType } from "json-to-graphql-query";
+import {
+  EnumType,
+  IJsonToGraphQLOptions,
+  VariableType,
+  jsonToGraphQLQuery,
+} from "json-to-graphql-query";
 
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
@@ -13,6 +18,44 @@ const fieldNamesToNeverAlias: string[] = [
   SkylarkSystemField.UID,
   SkylarkSystemField.ExternalID,
 ];
+
+export const wrapQueryName = (str: string) => `SL_UI_${str}`.toUpperCase();
+
+export const wrappedJsonQuery = (
+  obj: { query: object & { __name: string } },
+  options?: IJsonToGraphQLOptions,
+): string => {
+  const wrappedQueryName = wrapQueryName(obj.query.__name);
+
+  return jsonToGraphQLQuery(
+    {
+      ...obj,
+      query: {
+        ...obj.query,
+        __name: wrappedQueryName,
+      },
+    },
+    options,
+  );
+};
+
+export const wrappedJsonMutation = (
+  obj: { mutation: object & { __name: string } },
+  options?: IJsonToGraphQLOptions,
+): string => {
+  const wrappedQueryName = wrapQueryName(obj.mutation.__name);
+
+  return jsonToGraphQLQuery(
+    {
+      ...obj,
+      mutation: {
+        ...obj.mutation,
+        __name: wrappedQueryName,
+      },
+    },
+    options,
+  );
+};
 
 export const getObjectConfigFields = (withFieldConfig: boolean) => ({
   _config: {

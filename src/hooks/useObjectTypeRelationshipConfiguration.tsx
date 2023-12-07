@@ -24,17 +24,32 @@ const mapGQLRelationshipConfigToParsed = ({
   relationshipName: relationship_name,
   config: {
     defaultSortField: config.default_sort_field,
+    inheritAvailability: config.inherit_availability,
   },
 });
 
 const select = (
   data: GQLSkylarkListObjectTypeRelationshipConfiguration,
-): ParsedSkylarkObjectTypeRelationshipConfiguration[] =>
-  data.listRelationshipConfiguration.map(mapGQLRelationshipConfigToParsed);
+): ParsedSkylarkObjectTypeRelationshipConfiguration =>
+  data.listRelationshipConfiguration.reduce(
+    (
+      prev,
+      { relationship_name, config },
+    ): ParsedSkylarkObjectTypeRelationshipConfiguration => {
+      return {
+        ...prev,
+        [relationship_name]: {
+          defaultSortField: config.default_sort_field,
+          inheritAvailability: config.inherit_availability,
+        },
+      };
+    },
+    {},
+  );
 
 const allObjectTypesSelect = (
   data: GQLSkylarkListAllObjectTypesRelationshipConfiguration,
-): Record<string, ParsedSkylarkObjectTypeRelationshipConfiguration[]> =>
+): Record<string, ParsedSkylarkObjectTypeRelationshipConfiguration> =>
   Object.entries(data).reduce(
     (prev, [objectType, relationshipConfiguration]) => {
       return {
@@ -48,21 +63,14 @@ const allObjectTypesSelect = (
   );
 
 export const useObjectTypeRelationshipConfiguration = (
-  objectType: SkylarkObjectType,
+  objectType: SkylarkObjectType | null,
 ) => {
-  const { data: introspection } = useSkylarkSchemaIntrospection();
-
-  // TODO remove this enabled check when the backend PR is merged to production
-  const enabled = !!introspection?.__schema.types.find(
-    (type) => type.name === "RelationshipConfigList",
-  );
-
   const { data, isLoading } = useQuery<
     GQLSkylarkListObjectTypeRelationshipConfiguration,
     GQLSkylarkErrorResponse<GQLSkylarkListObjectTypeRelationshipConfiguration>,
-    ParsedSkylarkObjectTypeRelationshipConfiguration[]
+    ParsedSkylarkObjectTypeRelationshipConfiguration
   >({
-    enabled,
+    enabled: objectType !== BuiltInSkylarkObjectType.Availability,
     queryKey: [
       QueryKeys.ObjectTypeRelationshipConfig,
       LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION,
@@ -78,7 +86,6 @@ export const useObjectTypeRelationshipConfiguration = (
   return {
     objectTypeRelationshipConfig: data,
     isLoading,
-    enabled,
   };
 };
 
@@ -101,7 +108,7 @@ export const useAllObjectTypesRelationshipConfiguration = () => {
   const { data, isLoading } = useQuery<
     GQLSkylarkListAllObjectTypesRelationshipConfiguration,
     GQLSkylarkErrorResponse<GQLSkylarkListAllObjectTypesRelationshipConfiguration>,
-    Record<string, ParsedSkylarkObjectTypeRelationshipConfiguration[]>
+    Record<string, ParsedSkylarkObjectTypeRelationshipConfiguration>
   >({
     enabled: enabled && query !== null,
     queryKey: [QueryKeys.ObjectTypeRelationshipConfig, query],

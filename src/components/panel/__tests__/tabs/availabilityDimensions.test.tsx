@@ -17,6 +17,7 @@ import {
 } from "src/components/panel/__tests__/utils/test-utils";
 import { Panel } from "src/components/panel/panel.component";
 import { PanelTab } from "src/hooks/state";
+import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 import { formatObjectField } from "src/lib/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -218,7 +219,10 @@ describe("availabity dimensions view", () => {
 
     test("edits and saves, but GraphQL returns an error", async () => {
       server.use(
-        graphql.mutation("UPDATE_AVAILABILITY_DIMENSIONS", saveGraphQLError),
+        graphql.mutation(
+          wrapQueryName("UPDATE_AVAILABILITY_DIMENSIONS"),
+          saveGraphQLError,
+        ),
       );
 
       render(

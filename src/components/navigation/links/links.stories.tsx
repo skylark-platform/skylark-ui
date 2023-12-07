@@ -16,9 +16,10 @@ export const Default = Template.bind({});
 
 export const WithActivePath = Template.bind({});
 WithActivePath.parameters = {
-  nextRouter: {
-    path: "/",
-    asPath: "/",
+  nextjs: {
+    router: {
+      asPath: "/developer/graphql-editor",
+    },
   },
 };
 

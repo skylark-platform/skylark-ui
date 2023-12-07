@@ -1,9 +1,9 @@
 import gql from "graphql-tag";
-import { EnumType, jsonToGraphQLQuery } from "json-to-graphql-query";
+import { EnumType } from "json-to-graphql-query";
 
 import { SkylarkObjectType } from "src/interfaces/skylark";
 
-import { getObjectConfigFields } from "./utils";
+import { getObjectConfigFields, wrappedJsonQuery } from "./utils";
 
 export const createGetAllObjectsConfigQuery = (
   objectTypes?: SkylarkObjectType[],
@@ -30,7 +30,7 @@ export const createGetAllObjectsConfigQuery = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(query);
+  const graphQLQuery = wrappedJsonQuery(query);
 
   return gql(graphQLQuery);
 };
@@ -63,7 +63,7 @@ export const createGetAllObjectsRelationshipConfigurationQuery = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(query);
+  const graphQLQuery = wrappedJsonQuery(query);
 
   return gql(graphQLQuery);
 };

@@ -11,32 +11,32 @@ describe("Create Object Modal", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
-      if (hasOperationName(req, "GET_USER_AND_ACCOUNT")) {
+      if (hasOperationName(req, "SL_UI_GET_USER_AND_ACCOUNT")) {
         req.reply({
           fixture: "./skylark/queries/getUserAndAccount.json",
         });
       }
-      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+      if (hasOperationName(req, "SL_UI_GET_ACCOUNT_STATUS")) {
         req.reply({
           fixture: "./skylark/queries/getAccountStatus/default.json",
         });
       }
-      if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
+      if (hasOperationName(req, "SL_UI_GET_OBJECTS_CONFIG")) {
         req.reply({
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
         });
       }
-      if (hasOperationName(req, "GET_Episode")) {
+      if (hasOperationName(req, "SL_UI_GET_EPISODE")) {
         req.reply({
           fixture: "./skylark/queries/getObject/gots01e01.json",
         });
       }
-      if (hasOperationName(req, "SEARCH")) {
+      if (hasOperationName(req, "SL_UI_SEARCH")) {
         req.reply({
           fixture: "./skylark/queries/search/gotPage1.json",
         });
       }
-      if (hasOperationName(req, "CREATE_OBJECT_Episode")) {
+      if (hasOperationName(req, "SL_UI_CREATE_OBJECT_EPISODE")) {
         req.alias = "createObject";
         req.reply({
           data: {

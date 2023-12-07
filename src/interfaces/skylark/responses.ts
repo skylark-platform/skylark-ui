@@ -185,6 +185,7 @@ export interface GQLSkylarkListObjectTypeRelationshipConfiguration {
     relationship_name: string;
     config: {
       default_sort_field: string;
+      inherit_availability: boolean;
     };
   }[];
 }

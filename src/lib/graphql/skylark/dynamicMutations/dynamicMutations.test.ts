@@ -23,7 +23,7 @@ describe("createDeleteObjectMutation", () => {
     const got = createDeleteObjectMutation(episodeObjectOperations, true);
 
     expect(got?.loc?.source.body).toEqual(
-      "mutation DELETE_Episode ($uid: String!, $language: String!) { deleteObject: deleteEpisode (uid: $uid, language: $language) { uid } }",
+      "mutation SL_UI_DELETE_EPISODE ($uid: String!, $language: String!) { deleteObject: deleteEpisode (uid: $uid, language: $language) { uid } }",
     );
   });
 
@@ -37,7 +37,7 @@ describe("createDeleteObjectMutation", () => {
     );
 
     expect(got?.loc?.source.body).toEqual(
-      "mutation DELETE_Episode ($uid: String!) { deleteObject: deleteEpisode (uid: $uid) { uid } }",
+      "mutation SL_UI_DELETE_EPISODE ($uid: String!) { deleteObject: deleteEpisode (uid: $uid) { uid } }",
     );
   });
 });

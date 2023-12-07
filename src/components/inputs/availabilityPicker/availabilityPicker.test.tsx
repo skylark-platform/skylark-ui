@@ -9,6 +9,7 @@ import {
 } from "src/__tests__/utils/test-utils";
 import { UTC_NAME } from "src/components/inputs/select";
 import { GQLSkylarkListAvailabilityDimensionsResponse } from "src/interfaces/skylark";
+import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { AvailabilityPicker } from "./availabilityPicker.component";
 
@@ -196,15 +197,18 @@ test("shows Dimensions & Time when both dimensions and time travel are set", () 
 
 test("does not show Dimensions when account has none", async () => {
   server.use(
-    graphql.query("LIST_AVAILABILITY_DIMENSIONS", (req, res, ctx) => {
-      const data: GQLSkylarkListAvailabilityDimensionsResponse = {
-        listDimensions: {
-          next_token: "",
-          objects: [],
-        },
-      };
-      return res(ctx.data(data));
-    }),
+    graphql.query(
+      wrapQueryName("LIST_AVAILABILITY_DIMENSIONS"),
+      (req, res, ctx) => {
+        const data: GQLSkylarkListAvailabilityDimensionsResponse = {
+          listDimensions: {
+            next_token: "",
+            objects: [],
+          },
+        };
+        return res(ctx.data(data));
+      },
+    ),
   );
 
   render(
@@ -232,15 +236,18 @@ test("selects time travel when no Dimensions exist", () => {
   const setActiveAvailability = jest.fn();
 
   server.use(
-    graphql.query("LIST_AVAILABILITY_DIMENSIONS", (req, res, ctx) => {
-      const data: GQLSkylarkListAvailabilityDimensionsResponse = {
-        listDimensions: {
-          next_token: "",
-          objects: [],
-        },
-      };
-      return res(ctx.data(data));
-    }),
+    graphql.query(
+      wrapQueryName("LIST_AVAILABILITY_DIMENSIONS"),
+      (req, res, ctx) => {
+        const data: GQLSkylarkListAvailabilityDimensionsResponse = {
+          listDimensions: {
+            next_token: "",
+            objects: [],
+          },
+        };
+        return res(ctx.data(data));
+      },
+    ),
   );
 
   render(

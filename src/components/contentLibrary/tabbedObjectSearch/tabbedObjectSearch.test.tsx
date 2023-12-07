@@ -14,6 +14,7 @@ import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { ObjectSearchTab } from "src/hooks/localStorage/useObjectSearchTabs";
 import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { GQLSkylarkAccountResponse } from "src/interfaces/skylark";
+import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { TabbedObjectSearchWithAccount } from "./tabbedObjectSearch.component";
 
@@ -357,7 +358,7 @@ test("Shows error message when Account ID can't be loaded", async () => {
 
   server.use(
     // Override GET_USER_AND_ACCOUNT query so the Account ID empty
-    graphql.query("GET_USER_AND_ACCOUNT", (req, res, ctx) => {
+    graphql.query(wrapQueryName("GET_USER_AND_ACCOUNT"), (req, res, ctx) => {
       const data: GQLSkylarkAccountResponse = {
         getAccount: {
           config: null,

@@ -5,10 +5,11 @@ import GQLGameOfThronesSearchResultsPage1 from "src/__tests__/fixtures/skylark/q
 import GQLGameOfThronesSearchResultsPage1enGB from "src/__tests__/fixtures/skylark/queries/search/gotPage1enGB.json";
 import GQLGameOfThronesSearchResultsPage2 from "src/__tests__/fixtures/skylark/queries/search/gotPage2.json";
 import { SEARCH_PAGE_SIZE } from "src/hooks/useSearch";
+import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 export const searchHandlers = [
   graphql.query(
-    "SEARCH",
+    wrapQueryName("SEARCH"),
     ({ variables: { offset, queryString, language } }, res, ctx) => {
       if (queryString === "AllAvailTestMovie") {
         return res(ctx.data(GQLSkylarkAllAvailTestMovieSearchFixture.data));

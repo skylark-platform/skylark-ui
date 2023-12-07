@@ -18,18 +18,18 @@ describe("Content Library - Search", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
-      if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
+      if (hasOperationName(req, "SL_UI_GET_OBJECTS_CONFIG")) {
         req.alias = "introspectionQuery";
         req.reply({
           fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
         });
       }
-      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+      if (hasOperationName(req, "SL_UI_GET_ACCOUNT_STATUS")) {
         req.reply({
           fixture: "./skylark/queries/getAccountStatus/default.json",
         });
       }
-      if (hasOperationName(req, "SEARCH")) {
+      if (hasOperationName(req, "SL_UI_SEARCH")) {
         if (hasMatchingVariable(req, "queryString", "Homepage")) {
           req.reply({
             fixture: "./skylark/queries/search/homepage.json",
@@ -55,17 +55,17 @@ describe("Content Library - Search", () => {
           });
         }
       }
-      if (hasOperationName(req, "LIST_AVAILABILITY_DIMENSIONS")) {
+      if (hasOperationName(req, "SL_UI_LIST_AVAILABILITY_DIMENSIONS")) {
         req.reply({
           fixture: "./skylark/queries/listDimensions.json",
         });
       }
-      if (hasOperationName(req, "LIST_AVAILABILITY_DIMENSION_VALUES")) {
+      if (hasOperationName(req, "SL_UI_LIST_AVAILABILITY_DIMENSION_VALUES")) {
         req.reply({
           fixture: "./skylark/queries/listDimensionValues.json",
         });
       }
-      if (hasOperationName(req, "GET_USER_AND_ACCOUNT")) {
+      if (hasOperationName(req, "SL_UI_GET_USER_AND_ACCOUNT")) {
         req.reply({
           fixture: "./skylark/queries/getUserAndAccount.json",
         });
