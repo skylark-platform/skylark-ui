@@ -11,12 +11,12 @@ describe("Navigation", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
-      if (hasOperationName(req, "GET_SKYLARK_OBJECT_TYPES")) {
+      if (hasOperationName(req, "SL_UI_GET_SKYLARK_OBJECT_TYPES")) {
         req.reply({
           fixture: "./skylark/queries/introspection/objectTypes.json",
         });
       }
-      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+      if (hasOperationName(req, "SL_UI_GET_ACCOUNT_STATUS")) {
         req.reply({
           fixture: "./skylark/queries/getAccountStatus/default.json",
         });

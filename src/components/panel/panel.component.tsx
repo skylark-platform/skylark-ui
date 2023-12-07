@@ -247,17 +247,20 @@ export const Panel = ({
     mode: "onTouched",
     values: formParsedMetadata || {},
   });
+  const isMetadataFormDirty = !!Object.keys(metadataForm.formState.dirtyFields)
+    .length; // https://github.com/react-hook-form/react-hook-form/issues/3213
+
   const { reset: resetMetadataForm } = metadataForm;
   const inEditMode =
     panelInEditMode ||
-    metadataForm.formState.isDirty ||
+    isMetadataFormDirty ||
     modifiedRelationships !== null ||
     modifiedAvailabilityObjects !== null ||
     modifiedAvailabilityAssignedTo !== null;
 
   // When an object is in draft and no values have changed, we want to publish the version on save without creating another version
   const onlyPublishOnSave =
-    data?.meta.published === false && !metadataForm.formState.isDirty;
+    data?.meta.published === false && !isMetadataFormDirty;
 
   const tabs: PanelTab[] = useMemo(
     () =>
@@ -332,7 +335,7 @@ export const Panel = ({
     useUpdateObjectMetadata({
       objectType,
       onSuccess: () => {
-        resetMetadataForm(undefined, { keepValues: true });
+        resetMetadataForm(undefined, { keepValues: true, keepDirty: false });
 
         if (panelInEditMode) setEditMode(false);
       },
@@ -521,7 +524,7 @@ export const Panel = ({
         }
         isTranslatable={objectMeta?.isTranslatable}
         availabilityStatus={data?.meta.availabilityStatus}
-        objectMetadataHasChanged={metadataForm.formState.isDirty}
+        objectMetadataHasChanged={isMetadataFormDirty}
         toggleEditMode={() => {
           if (inEditMode) {
             resetMetadataForm(formParsedMetadata || {});
