@@ -20,40 +20,40 @@ describe("Drag and Drop - Content and Relationship tab", () => {
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
         });
       }
-      if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+      if (hasOperationName(req, "SL_UI_GET_ACCOUNT_STATUS")) {
         req.reply({
           fixture: "./skylark/queries/getAccountStatus/default.json",
         });
       }
-      if (hasOperationName(req, "GET_SkylarkSet_RELATIONSHIPS")) {
+      if (hasOperationName(req, "SL_UI_GET_SKYLARKSET_RELATIONSHIPS")) {
         req.reply({
           fixture: "./skylark/queries/getObjectRelationships/homepage.json",
         });
       }
-      if (hasOperationName(req, "GET_SkylarkSet_AVAILABILITY")) {
+      if (hasOperationName(req, "SL_UI_GET_SKYLARKSET_AVAILABILITY")) {
         req.reply({
           fixture:
             "./skylark/queries/getObjectAvailability/fantasticMrFox_All_Availabilities.json",
         });
       }
-      if (hasOperationName(req, "GET_SkylarkSet")) {
+      if (hasOperationName(req, "SL_UI_GET_SKYLARKSET")) {
         req.reply({
           fixture: "./skylark/queries/getObject/homepage.json",
         });
       }
-      if (hasOperationName(req, "GET_Availability")) {
+      if (hasOperationName(req, "SL_UI_GET_AVAILABILITY")) {
         req.reply({
           fixture:
             "./skylark/queries/getObject/allDevicesAllCustomersAvailability.json",
         });
       }
-      if (hasOperationName(req, "GET_USER_AND_ACCOUNT")) {
+      if (hasOperationName(req, "SL_UI_GET_USER_AND_ACCOUNT")) {
         req.reply({
           fixture: "./skylark/queries/getUserAndAccount.json",
         });
       }
 
-      if (hasOperationName(req, "SEARCH")) {
+      if (hasOperationName(req, "SL_UI_SEARCH")) {
         if (hasMatchingVariable(req, "queryString", "Homepage")) {
           req.reply({
             fixture: "./skylark/queries/search/homepage.json",

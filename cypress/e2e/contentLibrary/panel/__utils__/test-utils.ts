@@ -18,32 +18,32 @@ export const configurePanelSkylarkIntercepts = () => {
         fixture: "./skylark/queries/introspection/introspectionQuery.json",
       });
     }
-    if (hasOperationName(req, "GET_USER_AND_ACCOUNT")) {
+    if (hasOperationName(req, "SL_UI_GET_USER_AND_ACCOUNT")) {
       req.reply({
         fixture: "./skylark/queries/getUserAndAccount.json",
       });
     }
-    if (hasOperationName(req, "GET_ACCOUNT_STATUS")) {
+    if (hasOperationName(req, "SL_UI_GET_ACCOUNT_STATUS")) {
       req.reply({
         fixture: "./skylark/queries/getAccountStatus/default.json",
       });
     }
-    if (hasOperationName(req, "GET_OBJECTS_CONFIG")) {
+    if (hasOperationName(req, "SL_UI_GET_OBJECTS_CONFIG")) {
       req.reply({
         fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
       });
     }
-    if (hasOperationName(req, "LIST_AVAILABILITY_DIMENSIONS")) {
+    if (hasOperationName(req, "SL_UI_LIST_AVAILABILITY_DIMENSIONS")) {
       req.reply({
         fixture: "./skylark/queries/listDimensions.json",
       });
     }
-    if (hasOperationName(req, "LIST_AVAILABILITY_DIMENSION_VALUES")) {
+    if (hasOperationName(req, "SL_UI_LIST_AVAILABILITY_DIMENSION_VALUES")) {
       req.reply({
         fixture: "./skylark/queries/listDimensionValues.json",
       });
     }
-    if (hasOperationName(req, "GET_Episode")) {
+    if (hasOperationName(req, "SL_UI_GET_EPISODE")) {
       if (hasMatchingVariable(req, "language", "pt-PT")) {
         req.reply({
           fixture: "./skylark/queries/getObject/gots01e01ptPT.json",
@@ -54,58 +54,58 @@ export const configurePanelSkylarkIntercepts = () => {
         });
       }
     }
-    if (hasOperationName(req, "GET_SkylarkSet")) {
+    if (hasOperationName(req, "SL_UI_GET_SKYLARKSET")) {
       req.reply({
         fixture: "./skylark/queries/getObject/homepage.json",
       });
     }
-    if (hasOperationName(req, "GET_SkylarkSet_CONTENT")) {
+    if (hasOperationName(req, "SL_UI_GET_SKYLARKSET_CONTENT")) {
       req.reply({
         fixture: "./skylark/queries/getObjectContent/homepage.json",
       });
     }
-    if (hasOperationName(req, "GET_SkylarkSet_RELATIONSHIPS")) {
+    if (hasOperationName(req, "SL_UI_GET_SKYLARKSET_RELATIONSHIPS")) {
       req.reply({
         fixture: "./skylark/queries/getObjectRelationships/homepage.json",
       });
     }
-    if (hasOperationName(req, "GET_Movie")) {
+    if (hasOperationName(req, "SL_UI_GET_MOVIE")) {
       req.reply({
         fixture:
           "./skylark/queries/getObject/fantasticMrFox_All_Availabilities.json",
       });
     }
-    if (hasOperationName(req, "GET_Movie_RELATIONSHIPS")) {
+    if (hasOperationName(req, "SL_UI_GET_MOVIE_RELATIONSHIPS")) {
       req.reply({
         fixture:
           "./skylark/queries/getObjectRelationships/fantasticMrFox_All_Availabilities.json",
       });
     }
-    if (hasOperationName(req, "GET_Movie_AVAILABILITY")) {
+    if (hasOperationName(req, "SL_UI_GET_MOVIE_AVAILABILITY")) {
       req.reply({
         fixture:
           "./skylark/queries/getObjectAvailability/fantasticMrFox_All_Availabilities.json",
       });
     }
-    if (hasOperationName(req, "GET_Movie_CONTENT_OF")) {
+    if (hasOperationName(req, "SL_UI_GET_MOVIE_CONTENT_OF")) {
       req.reply({
         fixture:
           "./skylark/queries/getObjectContentOf/fantasticMrFox_All_Availabilities.json",
       });
     }
-    if (hasOperationName(req, "GET_Availability")) {
+    if (hasOperationName(req, "SL_UI_GET_AVAILABILITY")) {
       req.reply({
         fixture:
           "./skylark/queries/getObject/allDevicesAllCustomersAvailability.json",
       });
     }
-    if (hasOperationName(req, "GET_AVAILABILITY_DIMENSIONS")) {
+    if (hasOperationName(req, "SL_UI_GET_AVAILABILITY_DIMENSIONS")) {
       req.reply({
         fixture:
           "./skylark/queries/getObjectDimensions/allDevicesAllCustomersAvailability.json",
       });
     }
-    if (hasOperationName(req, "DELETE_Episode")) {
+    if (hasOperationName(req, "SL_UI_DELETE_EPISODE")) {
       req.reply({
         data: {
           deleteObject: {
@@ -114,7 +114,7 @@ export const configurePanelSkylarkIntercepts = () => {
         },
       });
     }
-    if (hasOperationName(req, "SEARCH")) {
+    if (hasOperationName(req, "SL_UI_SEARCH")) {
       if (hasMatchingVariable(req, "queryString", "got winter is coming")) {
         req.reply({
           fixture: "./skylark/queries/search/gotWinterIsComing.json",
@@ -151,13 +151,13 @@ export const configurePanelSkylarkIntercepts = () => {
         });
       }
     }
-    if (hasOperationName(req, "UPDATE_OBJECT_CONTENT_SkylarkSet")) {
+    if (hasOperationName(req, "SL_UI_UPDATE_OBJECT_CONTENT_SKYLARKSET")) {
       req.alias = "updateHomepageSetContent";
       req.reply({
         fixture: "./skylark/mutations/updateHomepageSetContent.json",
       });
     }
-    if (hasOperationName(req, "UPDATE_OBJECT_METADATA_Episode")) {
+    if (hasOperationName(req, "SL_UI_UPDATE_OBJECT_METADATA_EPISODE")) {
       const updateObjectMetadataData = {
         __typename: "Episode",
         _config: { primary_field: "title", colour: "#ff7ba8" },
@@ -210,13 +210,13 @@ export const configurePanelSkylarkIntercepts = () => {
         });
       }
     }
-    if (hasOperationName(req, "PUBLISH_Episode")) {
+    if (hasOperationName(req, "SL_UI_PUBLISH_EPISODE")) {
       req.alias = "publishEpisode";
       req.reply({
         fixture: "./skylark/mutations/publishObject/publishEpisode.json",
       });
     }
-    if (hasOperationName(req, "UPDATE_AVAILABILITY_DIMENSIONS")) {
+    if (hasOperationName(req, "SL_UI_UPDATE_AVAILABILITY_DIMENSIONS")) {
       req.alias = "updateAvailabilityDimensions";
       req.reply({
         data: {

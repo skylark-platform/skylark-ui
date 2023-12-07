@@ -29,17 +29,18 @@ import {
   createGetObjectContentQueryName,
   createGetObjectQueryName,
   createGetObjectRelationshipsQueryName,
+  wrapQueryName,
 } from "src/lib/graphql/skylark/dynamicQueries";
 
 export const getObjectsConfigHandlers = [
-  graphql.query("GET_OBJECTS_CONFIG", (req, res, ctx) => {
+  graphql.query(wrapQueryName("GET_OBJECTS_CONFIG"), (req, res, ctx) => {
     return res(ctx.data(GQLSkylarkGetObjectsConfigFixture.data));
   }),
 ];
 
 export const getObjectHandlers = [
   graphql.query(
-    createGetObjectQueryName("Movie"),
+    wrapQueryName(createGetObjectQueryName("Movie")),
     ({ variables }, res, ctx) => {
       if (
         variables.uid === GQLSkylarkGetMovieDraftQueryFixture.data.getObject.uid
@@ -54,7 +55,7 @@ export const getObjectHandlers = [
   ),
 
   graphql.query(
-    createGetObjectQueryName("SkylarkImage"),
+    wrapQueryName(createGetObjectQueryName("SkylarkImage")),
     ({ variables }, res, ctx) => {
       if (
         variables.uid ===
@@ -66,7 +67,7 @@ export const getObjectHandlers = [
   ),
 
   graphql.query(
-    createGetObjectQueryName("SkylarkSet"),
+    wrapQueryName(createGetObjectQueryName("SkylarkSet")),
     ({ variables }, res, ctx) => {
       if (
         variables.uid ===
@@ -78,7 +79,7 @@ export const getObjectHandlers = [
   ),
 
   graphql.query(
-    createGetObjectQueryName("Season"),
+    wrapQueryName(createGetObjectQueryName("Season")),
     ({ variables }, res, ctx) => {
       if (
         variables.uid ===
@@ -92,7 +93,7 @@ export const getObjectHandlers = [
   ),
 
   graphql.query(
-    createGetObjectQueryName("Episode"),
+    wrapQueryName(createGetObjectQueryName("Episode")),
     ({ variables }, res, ctx) => {
       if (
         variables.uid ===
@@ -109,7 +110,7 @@ export const getObjectHandlers = [
   ),
 
   graphql.query(
-    createGetObjectQueryName("Availability"),
+    wrapQueryName(createGetObjectQueryName("Availability")),
     ({ variables }, res, ctx) => {
       if (
         variables.uid ===
@@ -121,7 +122,7 @@ export const getObjectHandlers = [
   ),
 
   graphql.query(
-    createGetObjectQueryName("SkylarkAsset"),
+    wrapQueryName(createGetObjectQueryName("SkylarkAsset")),
     ({ variables }, res, ctx) => {
       if (variables.uid === GQLSkylarkGetAssetQueryFixture.data.getObject.uid) {
         return res(ctx.data(GQLSkylarkGetAssetQueryFixture.data));
@@ -148,26 +149,26 @@ export const getObjectAvailabilityHandlers = [
   "SkylarkAsset",
 ].map((objectType) =>
   graphql.query(
-    createGetObjectAvailabilityQueryName(objectType),
+    wrapQueryName(createGetObjectAvailabilityQueryName(objectType)),
     movieAvailabilityHandler,
   ),
 );
 
 export const getObjectAvailabilityDimensionHandlers = [
-  graphql.query("GET_AVAILABILITY_DIMENSIONS", (_, res, ctx) => {
+  graphql.query(wrapQueryName("GET_AVAILABILITY_DIMENSIONS"), (_, res, ctx) => {
     return res(ctx.data(GQLSkylarkGetAvailabilityDimensionsQueryFixture.data));
   }),
 ];
 
 export const getObjectRelationshipsHandlers = [
   graphql.query(
-    createGetObjectRelationshipsQueryName("Season"),
+    wrapQueryName(createGetObjectRelationshipsQueryName("Season")),
     (_, res, ctx) => {
       return res(ctx.data(GQLSkylarkGetSeasonRelationshipsQueryFixture.data));
     },
   ),
   graphql.query(
-    createGetObjectRelationshipsQueryName("Movie"),
+    wrapQueryName(createGetObjectRelationshipsQueryName("Movie")),
     (_, res, ctx) => {
       return res(ctx.data(GQLSkylarkGetMovieRelationshipsQueryFixture.data));
     },
@@ -176,7 +177,7 @@ export const getObjectRelationshipsHandlers = [
 
 export const getObjectContentHandlers = [
   graphql.query(
-    createGetObjectContentQueryName("SkylarkSet"),
+    wrapQueryName(createGetObjectContentQueryName("SkylarkSet")),
     (_, res, ctx) => {
       return res(ctx.data(GQLSkylarkGetHomepageSetContentQueryFixture.data));
     },
@@ -184,13 +185,16 @@ export const getObjectContentHandlers = [
 ];
 
 export const getObjectContentOfHandlers = [
-  graphql.query(createGetObjectContentOfQueryName("Movie"), (_, res, ctx) => {
-    return res(ctx.data(GQLSkylarkGetMovieContentOfFixture.data));
-  }),
+  graphql.query(
+    wrapQueryName(createGetObjectContentOfQueryName("Movie")),
+    (_, res, ctx) => {
+      return res(ctx.data(GQLSkylarkGetMovieContentOfFixture.data));
+    },
+  ),
 ];
 
 export const getObjectGenericHandlers = [
-  graphql.query("GET_OBJECT_GENERIC", (_, res, ctx) => {
+  graphql.query(wrapQueryName("GET_OBJECT_GENERIC"), (_, res, ctx) => {
     return res(ctx.data(GQLSkylarkGetObjectGenericFixture.data));
   }),
 ];

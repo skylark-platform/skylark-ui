@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { VariableType, jsonToGraphQLQuery } from "json-to-graphql-query";
+import { VariableType } from "json-to-graphql-query";
 
 import { SkylarkObjectMeta } from "src/interfaces/skylark";
 
@@ -7,6 +7,7 @@ import {
   generateVariablesAndArgs,
   generateFieldsToReturn,
   generateRelationshipsToReturn,
+  wrappedJsonQuery,
 } from "./utils";
 
 export const createSearchObjectsQuery = (
@@ -76,7 +77,7 @@ export const createSearchObjectsQuery = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(query);
+  const graphQLQuery = wrappedJsonQuery(query);
 
   return gql(graphQLQuery);
 };

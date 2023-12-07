@@ -1,10 +1,11 @@
 import gql from "graphql-tag";
-import { jsonToGraphQLQuery, EnumType } from "json-to-graphql-query";
+import { EnumType } from "json-to-graphql-query";
 
 import {
   ParsedSkylarkObjectTypeRelationshipConfiguration,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
+import { wrappedJsonMutation } from "src/lib/graphql/skylark/dynamicQueries";
 
 export const createUpdateRelationshipConfigMutation = (
   objectType: SkylarkObjectType,
@@ -37,7 +38,7 @@ export const createUpdateRelationshipConfigMutation = (
     },
   };
 
-  const graphQLQuery = jsonToGraphQLQuery(mutation);
+  const graphQLQuery = wrappedJsonMutation(mutation);
 
   return gql(graphQLQuery);
 };

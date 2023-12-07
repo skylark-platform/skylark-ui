@@ -105,7 +105,7 @@ describe("Content Library - Object Panel - Metadata tab", () => {
 
   it("opens draft and Publishes", () => {
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "GET_Episode")) {
+      if (hasOperationName(req, "SL_UI_GET_EPISODE")) {
         req.alias = "getEpisodeDraft";
         req.reply({
           data: {
@@ -157,8 +157,8 @@ describe("Content Library - Object Panel - Metadata tab", () => {
 
   it("opens draft, makes a change and Save & Publishes", () => {
     cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "GET_Episode")) {
-        req.alias = "getEpisodeDraft";
+      if (hasOperationName(req, "SL_UI_GET_EPISODE")) {
+        req.alias = "getEpisode";
         req.reply({
           data: {
             getObject: {
@@ -212,6 +212,9 @@ describe("Content Library - Object Panel - Metadata tab", () => {
     cy.contains("Publish").click();
 
     cy.wait("@updateEpisodeMetadata");
+
+    cy.wait(2000);
+
     cy.contains("Editing").should("not.exist");
     cy.contains("Draft").should("not.exist");
     cy.contains("button", "Edit Metadata").should("not.be.disabled");
