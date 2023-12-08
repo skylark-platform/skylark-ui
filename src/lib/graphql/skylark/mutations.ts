@@ -41,3 +41,18 @@ export const BATCH_DELETE = gql`
     }
   }
 `;
+
+export const EDIT_FIELD_CONFIGURATION = gql`
+mutation ${wrapQueryName(
+  "EDIT_FIELD_CONFIGURATION",
+)}($version: Int, $objectType: ObjectTypes!, $fields: [EditFieldInput]!) {
+  editFieldConfiguration(
+    fields: $fields
+    object_class: $objectType
+    version: $version
+  ) {
+    messages
+    version
+  }
+}
+`;

@@ -15,6 +15,7 @@ import {
   ParsedSkylarkObjectTypeRelationshipConfiguration,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
+import { SchemaVersionInfo } from "src/interfaces/skylark/environment";
 import { isSkylarkObjectType } from "src/lib/utils";
 
 import {
@@ -134,11 +135,13 @@ const createFieldSections = (
 };
 
 export const ObjectTypeEditor = ({
+  schemaVersionInfo,
   objectMeta,
   objectConfig,
   allObjectsMeta,
   relationshipConfig,
 }: {
+  schemaVersionInfo: SchemaVersionInfo;
   objectMeta: SkylarkObjectMeta;
   objectConfig?: ParsedSkylarkObjectConfig;
   allObjectsMeta: SkylarkObjectMeta[];
@@ -272,27 +275,38 @@ export const ObjectTypeEditor = ({
               : "Custom Object"}
           </p>
         </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            danger
-            disabled={
-              isUpdatingObjectTypeConfig ||
-              isUpdatingRelationshipConfig ||
-              !form.formState.isDirty
-            }
-            onClick={() => form.reset()}
-          >
-            Reset
-          </Button>
-          <Button
-            variant="primary"
-            onClick={onSave}
-            loading={isUpdatingObjectTypeConfig || isUpdatingRelationshipConfig}
-            disabled={!form.formState.isDirty}
-          >
-            Save
-          </Button>
+        <div className="flex flex-col items-end">
+          <div className="space-x-2">
+            <Button
+              variant="outline"
+              danger
+              disabled={
+                isUpdatingObjectTypeConfig ||
+                isUpdatingRelationshipConfig ||
+                !form.formState.isDirty
+              }
+              onClick={() => form.reset()}
+            >
+              Reset
+            </Button>
+            <Button
+              variant="primary"
+              onClick={onSave}
+              loading={
+                isUpdatingObjectTypeConfig || isUpdatingRelationshipConfig
+              }
+              disabled={!form.formState.isDirty}
+            >
+              Save
+            </Button>
+          </div>
+          <div className="mt-2">
+            <p className="text-sm text-manatee-500">
+              {`Editing Version: ${schemaVersionInfo.version} (Based on ${
+                schemaVersionInfo.baseVersion
+              }) ${!schemaVersionInfo.published && "DRAFT"}`}
+            </p>
+          </div>
         </div>
       </div>
       <UIConfigSection form={form} objectMeta={objectMeta} />

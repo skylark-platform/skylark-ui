@@ -7,6 +7,7 @@ import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeR
 import { SkylarkObjectMeta } from "src/interfaces/skylark";
 
 import {
+  AddNewButton,
   ContentModelEditorForm,
   FieldHeader,
   SectionDescription,
@@ -26,6 +27,8 @@ export const RelationshipsSection = ({
   allObjectsMeta,
 }: RelationshipsSectionProps) => {
   const relationshipConfig = form.watch("relationshipConfig");
+
+  const addNewRelationship = () => {};
 
   return (
     <SectionWrapper data-testid="relationships-editor">
@@ -96,6 +99,7 @@ export const RelationshipsSection = ({
           </div>
         );
       })}
+      <AddNewButton onClick={addNewRelationship} />
     </SectionWrapper>
   );
 };

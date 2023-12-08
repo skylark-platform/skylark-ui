@@ -194,3 +194,15 @@ export type GQLSkylarkListAllObjectTypesRelationshipConfiguration = Record<
   string,
   GQLSkylarkListObjectTypeRelationshipConfiguration["listRelationshipConfiguration"]
 >;
+
+export interface GQLSkylarkListConfigurationVersions {
+  listConfigurationVersions: {
+    next_token: string;
+    objects: {
+      active: boolean;
+      base_version: number | null;
+      published: boolean;
+      version: number;
+    }[];
+  };
+}

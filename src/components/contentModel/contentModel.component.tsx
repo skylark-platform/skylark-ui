@@ -2,21 +2,21 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 import { Spinner } from "src/components/icons";
+import { useLatestDraftSchemaVersion } from "src/hooks/schema/get/useLatestDraftSchemaVersion";
 import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import {
   useAllObjectsMeta,
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
-import {
-  BuiltInSkylarkObjectType,
-  SkylarkObjectType,
-} from "src/interfaces/skylark";
+import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
 
 import { ObjectTypeEditor } from "./editor/contentModelEditor.component";
 import { ObjectTypeNavigation } from "./navigation/contentModelNavigation.component";
 
 export const ContentModel = () => {
   const { query } = useRouter();
+
+  const { schemaVersion } = useLatestDraftSchemaVersion();
 
   const { objects: allObjectsMeta } = useAllObjectsMeta(true);
   const { objectTypesWithConfig, isLoading: isLoadingObjectTypesWithConfig } =
@@ -43,13 +43,15 @@ export const ContentModel = () => {
         <div className="mt-10 max-w-7xl mx-auto grid grid-cols-4 gap-4 px-4">
           <ObjectTypeNavigation activeObjectType={activeObjectType} />
           <div className="col-span-3">
-            {objectMeta &&
+            {schemaVersion &&
+              objectMeta &&
               !isLoadingObjectTypesWithConfig &&
               objectTypesWithConfig &&
               (!isLoadingRelationshipConfig ||
                 objectMeta.name === BuiltInSkylarkObjectType.Availability) && (
                 <ObjectTypeEditor
                   key={`${activeObjectType}-${config}`}
+                  schemaVersionInfo={schemaVersion}
                   objectMeta={objectMeta}
                   objectConfig={config}
                   relationshipConfig={relationshipConfig || {}}

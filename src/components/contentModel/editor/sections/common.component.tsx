@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { ReactNode } from "react";
-import { FiInfo } from "react-icons/fi";
+import { FiInfo, FiPlus } from "react-icons/fi";
 
 import { Tooltip } from "src/components/tooltip/tooltip.component";
 import {
@@ -62,3 +62,15 @@ export const FieldHeader = ({
     {tooltip && <InfoTooltip tooltip={tooltip} />}
   </div>
 );
+
+export const AddNewButton = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <button
+      onClick={onClick}
+      className="my-2 bg-white border shadow border-manatee-300 rounded-lg items-center h-14 px-2 flex w-full justify-center"
+    >
+      <FiPlus className="text-xl" />
+      <p>Add new</p>
+    </button>
+  );
+};

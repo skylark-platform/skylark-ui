@@ -26,3 +26,10 @@ export interface AccountStatus {
     hasInProgress: boolean;
   };
 }
+
+export interface SchemaVersionInfo {
+  baseVersion: number | null;
+  version: number;
+  active: boolean;
+  published: boolean;
+}

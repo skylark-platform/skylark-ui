@@ -137,3 +137,17 @@ export const LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION = gql`
     }
   }
 `;
+
+export const LIST_SCHEMA_VERSIONS = gql`
+  query ${wrapQueryName("LIST_SCHEMA_VERSIONS")} {
+    listConfigurationVersions {
+      next_token
+      objects {
+        active
+        base_version
+        published
+        version
+      }
+    }
+  }
+`;
