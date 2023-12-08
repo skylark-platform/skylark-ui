@@ -9,7 +9,10 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Button } from "src/components/button";
 import { FiX, Spinner } from "src/components/icons";
-import { Tabs } from "src/components/tabs/tabs.component";
+import {
+  Tabs,
+  convertStringArrToTabs,
+} from "src/components/tabs/tabs.component";
 import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { HREFS } from "src/constants/skylark";
@@ -249,7 +252,7 @@ export const DisplayGraphQLQueryModal = ({
             </div>
 
             <Tabs
-              tabs={["Query", "Variables", "Headers"]}
+              tabs={convertStringArrToTabs(["Query", "Variables", "Headers"])}
               selectedTab={activeTab}
               onChange={({ name }) => setTab(name)}
               className="px-4 md:px-8"
