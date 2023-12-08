@@ -9,7 +9,7 @@ import { readIntFromLocalStorage } from "src/lib/utils";
 
 export interface ObjectSearchTab {
   id: string;
-  name?: string;
+  name: string;
   searchType: SearchType;
   filters: SearchFilters;
   columnsState?: ObjectSearchInitialColumnsState;
@@ -115,6 +115,14 @@ export const useObjectSearchTabs = (
     };
   }, [accountId, initialTabs]);
 
+  const setTabsAndWriteToLocalStorage = useCallback(
+    (tabs: ObjectSearchTab[]) => {
+      setTabs(tabs);
+      saveTabStateToStorage(accountId, { tabs });
+    },
+    [accountId],
+  );
+
   const modifyActiveTab = useCallback(
     (updatedTab: Partial<ObjectSearchTab>) => {
       const updatedTabs =
@@ -130,10 +138,9 @@ export const useObjectSearchTabs = (
           };
         }) || [];
 
-      saveTabStateToStorage(accountId, { tabs: updatedTabs });
-      setTabs(updatedTabs);
+      setTabsAndWriteToLocalStorage(updatedTabs);
     },
-    [accountId, activeTabIndex, setTabs, tabs],
+    [activeTabIndex, setTabsAndWriteToLocalStorage, tabs],
   );
 
   const deleteActiveTab = useCallback(() => {
@@ -145,11 +152,10 @@ export const useObjectSearchTabs = (
         updatedTabs.push(...initialTabs);
       }
 
-      saveTabStateToStorage(accountId, { tabs: updatedTabs });
-      setTabs(updatedTabs);
+      setTabsAndWriteToLocalStorage(updatedTabs);
       setActiveTabIndex(activeTabIndex > 0 ? activeTabIndex - 1 : 0);
     }
-  }, [accountId, activeTabIndex, initialTabs, tabs]);
+  }, [activeTabIndex, initialTabs, setTabsAndWriteToLocalStorage, tabs]);
 
   const changeActiveTabIndex = (newIndex: number) => {
     if (accountId) {
@@ -172,7 +178,7 @@ export const useObjectSearchTabs = (
     tabs,
     initialTabsScrollPosition,
     setActiveTabIndex,
-    setTabs,
+    setTabs: setTabsAndWriteToLocalStorage,
     saveScrollPosition,
     deleteActiveTab,
     modifyActiveTab,

@@ -2,7 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
-import { Tabs } from "src/components/tabs/tabs.component";
+import {
+  Tabs,
+  convertStringArrToTabs,
+} from "src/components/tabs/tabs.component";
 import {
   GraphQLRequestErrorToast,
   Toast,
@@ -555,7 +558,7 @@ export const Panel = ({
           data-testid="panel-tabs"
         >
           <Tabs
-            tabs={tabs}
+            tabs={convertStringArrToTabs(tabs)}
             selectedTab={selectedTab}
             onChange={({ name }) => setSelectedTab(name as PanelTab)}
             disabled={tabs.length === 0 || inEditMode || isError}

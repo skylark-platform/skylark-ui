@@ -1,12 +1,14 @@
 import clsx from "clsx";
-import { AnimatePresence, m } from "framer-motion";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, Reorder, m } from "framer-motion";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight, FiX } from "react-icons/fi";
+
+import { ObjectSearchTab } from "src/hooks/localStorage/useObjectSearchTabs";
 
 type Tab = { id: string; name: string };
 
 interface TabProps {
-  tabs: Tab[] | string[];
+  tabs: Tab[];
   selectedTab: string;
   onChange: (t: Tab & { index: number }) => void;
   disabled?: boolean;
@@ -14,74 +16,127 @@ interface TabProps {
   onDelete?: (t: Tab & { index: number }) => void;
 }
 
-export const Tabs = ({
-  tabs: propTabs,
-  selectedTab,
-  disabled,
-  className,
-  onChange,
-  onDelete,
-}: TabProps) => {
-  const tabs: Tab[] = useMemo(
-    () =>
-      propTabs.map((tab) =>
-        typeof tab === "string" ? { id: tab, name: tab } : tab,
-      ),
-    [propTabs],
+interface ReorderableTabProps extends TabProps {
+  onReorder: (tabs: Tab[]) => void;
+}
+
+const generateUlClassName = (className?: string) =>
+  clsx(
+    "flex w-full items-center justify-start pb-[2px] text-xs font-medium md:text-sm",
+    className,
   );
 
+const generateLiClassName = ({
+  withDelete,
+  disabled,
+  isSelectedTab,
+}: {
+  withDelete: boolean;
+  disabled?: boolean;
+  isSelectedTab: boolean;
+}) =>
+  clsx(
+    "flex relative border-b-2 -mb-[2px] group/tab-container bg-white",
+    withDelete ? "mx-1 md:mx-2" : "mx-2 md:mx-3",
+    !disabled && "hover:border-black hover:text-black",
+    isSelectedTab
+      ? "border-black text-black"
+      : "border-transparent text-gray-400",
+  );
+
+export const convertStringArrToTabs = (arr: string[]): Tab[] =>
+  arr.map((str) => ({ id: str, name: str }));
+
+const Tab = ({
+  disabled,
+  onChange,
+  tab,
+  onDelete,
+  index,
+  selectedTab,
+}: TabProps & { tab: Tab; index: number }) => {
   return (
-    <ul
-      className={clsx(
-        "flex w-full items-center justify-start pb-[2px] text-xs font-medium md:text-sm",
-        className,
+    <>
+      <button
+        disabled={disabled}
+        onClick={disabled ? undefined : () => onChange({ ...tab, index })}
+        className={clsx(
+          "w-full whitespace-nowrap rounded-t  focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary p-1 pb-1.5 pr-0.5 md:pb-2.5",
+          "min-w-10 max-w-52 overflow-hidden text-ellipsis",
+        )}
+      >
+        {tab.name}
+      </button>
+      {onDelete && !disabled && (
+        <div className="flex justify-end bg-gradient-to-r from-transparent via-white/90 to-white pb-1.5 pt-1 md:pb-2.5">
+          <button
+            className="group/button rounded-full ml-0.5 p-0.5 hover:bg-gray-100/20 hover:shadow-inner"
+            onClick={() => onDelete({ ...tab, index })}
+            aria-label="delete active tab"
+          >
+            <FiX
+              className={clsx(
+                "text-base font-bold group-hover/button:text-black",
+                tab.id === selectedTab
+                  ? "text-gray-600"
+                  : "text-gray-400 group-hover/tab-container:text-gray-600",
+              )}
+            />
+          </button>
+        </div>
       )}
+    </>
+  );
+};
+
+export const Tabs = (props: TabProps) => {
+  const { tabs, selectedTab, disabled, onDelete } = props;
+  return (
+    <ul className={generateUlClassName(props.className)}>
+      {tabs.map((tab, index) => (
+        <li
+          key={tab.id}
+          className={generateLiClassName({
+            withDelete: !!onDelete,
+            isSelectedTab: selectedTab === tab.id,
+            disabled,
+          })}
+        >
+          <Tab {...props} tab={tab} index={index} />
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+export const ReorderableTabs = (props: ReorderableTabProps) => {
+  const { tabs, selectedTab, disabled, className, onDelete, onReorder } = props;
+
+  return (
+    <Reorder.Group
+      className={generateUlClassName(className)}
+      axis="x"
+      values={tabs}
+      onReorder={onReorder}
+      as="ul"
     >
       {tabs.map((tab, index) => {
         return (
-          <li
-            key={`tab-${tab.id}`}
-            className={clsx(
-              "flex relative border-b-2 -mb-[2px] group/tab-container",
-              onDelete ? "mx-1 md:mx-2" : "mx-2 md:mx-3",
-              !disabled && "hover:border-black hover:text-black",
-              selectedTab === tab.id
-                ? "border-black text-black"
-                : "border-transparent text-gray-400",
-            )}
+          <Reorder.Item
+            key={tab.id}
+            className={generateLiClassName({
+              withDelete: !!onDelete,
+              isSelectedTab: selectedTab === tab.id,
+              disabled,
+            })}
+            value={tab}
+            as="li"
           >
-            <button
-              disabled={disabled}
-              onClick={disabled ? undefined : () => onChange({ ...tab, index })}
-              className={clsx(
-                "w-full whitespace-nowrap rounded-t  focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary p-1 pb-1.5 pr-0.5 md:pb-2.5",
-                "min-w-10 max-w-52 overflow-hidden text-ellipsis",
-              )}
-            >
-              {tab.name}
-            </button>
-            {onDelete && !disabled && (
-              <div className="flex justify-end bg-gradient-to-r from-transparent via-white/90 to-white pb-1.5 pt-1 md:pb-2.5">
-                <button
-                  className="group/button rounded-full ml-0.5 p-0.5 hover:bg-gray-100/20 hover:shadow-inner"
-                  onClick={() => onDelete({ ...tab, index })}
-                  aria-label="delete active tab"
-                >
-                  <FiX
-                    className={clsx(
-                      "text-base font-bold group-hover/button:text-black",
-                      tab.id === selectedTab
-                        ? "text-gray-600"
-                        : "text-gray-400 group-hover/tab-container:text-gray-600",
-                    )}
-                  />
-                </button>
-              </div>
-            )}
-          </li>
+            <Tab {...props} tab={tab} index={index} />
+          </Reorder.Item>
         );
       })}
-    </ul>
+    </Reorder.Group>
   );
 };
 
@@ -124,6 +179,7 @@ export const ScrollableTabs = ({
 }: TabProps & {
   initialScrollPosition?: number;
   onScroll?: (o: { scrollLeft: number }) => void;
+  onReorder?: ReorderableTabProps["onReorder"];
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -166,7 +222,11 @@ export const ScrollableTabs = ({
           onScroll?.({ scrollLeft });
         }}
       >
-        <Tabs {...props} />
+        {props.onReorder ? (
+          <ReorderableTabs {...props} onReorder={props.onReorder} />
+        ) : (
+          <Tabs {...props} />
+        )}
       </div>
 
       <AnimatePresence>
