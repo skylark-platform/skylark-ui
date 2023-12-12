@@ -63,7 +63,7 @@ interface PanelProps {
   tab: PanelTab;
   tabState: PanelTabState;
   clearDroppedObjects?: () => void;
-  setPanelObject: (o: SkylarkObjectIdentifier) => void;
+  setPanelObject: (o: SkylarkObjectIdentifier, tab?: PanelTab) => void;
   setTab: (t: PanelTab) => void;
   navigateToPreviousPanelObject?: () => void;
   navigateToForwardPanelObject?: () => void;
@@ -547,7 +547,10 @@ export const Panel = ({
           setEditMode(!inEditMode);
         }}
         setLanguage={(newLanguage) =>
-          setPanelObject({ uid, objectType, language: newLanguage })
+          setPanelObject(
+            { uid, objectType, language: newLanguage },
+            selectedTab,
+          )
         }
         navigateToPreviousPanelObject={navigateToPreviousPanelObject}
         navigateToForwardPanelObject={navigateToForwardPanelObject}
