@@ -11,7 +11,7 @@ import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { PanelTab, PanelTabState } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ParsedSkylarkObjectRelationships,
+  ParsedSkylarkObjectRelationship,
   ParsedSkylarkObjectTypeRelationshipConfiguration,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
@@ -19,7 +19,7 @@ import { formatObjectField, hasProperty } from "src/lib/utils";
 
 interface PanelRelationshipsSectionProps {
   isEmptySection?: boolean;
-  relationship: ParsedSkylarkObjectRelationships;
+  relationship: ParsedSkylarkObjectRelationship;
   inEditMode: boolean;
   newUids: string[];
   initialExpanded: boolean;
@@ -30,7 +30,7 @@ interface PanelRelationshipsSectionProps {
     relationshipName: string;
   }) => void;
   setSearchObjectsModalState: (args: {
-    relationship: ParsedSkylarkObjectRelationships;
+    relationship: ParsedSkylarkObjectRelationship;
     fields?: string[];
   }) => void;
   updateActivePanelTabState: (s: Partial<PanelTabState>) => void;
@@ -48,7 +48,7 @@ export const PanelRelationshipSection = ({
   setSearchObjectsModalState,
   updateActivePanelTabState,
 }: PanelRelationshipsSectionProps) => {
-  const { relationshipName, objects, objectType } = relationship;
+  const { name: relationshipName, objects, objectType } = relationship;
 
   const [isExpanded, setIsExpanded] = useState(initialExpanded);
 
@@ -77,7 +77,7 @@ export const PanelRelationshipSection = ({
         <div className="flex items-center">
           <PanelSectionTitle
             text={formatObjectField(relationshipName)}
-            count={(objects.length >= 100 ? "100+" : objects.length) || 0}
+            count={objects.length || 0}
             id={`relationship-panel-${relationshipName}`}
           />
           <PanelPlusButton

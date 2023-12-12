@@ -594,22 +594,17 @@ export const parseMetadataForHTMLForm = (
 
 export const parseUpdatedRelationshipObjects = (
   relationship: SkylarkObjectRelationship,
-  updatedRelationshipObjects: ParsedSkylarkObjectRelationships[],
-  originalRelationshipObjects: ParsedSkylarkObjectRelationships[],
+  updatedRelationshipObjects: ParsedSkylarkObjectRelationships,
+  originalRelationshipObjects: ParsedSkylarkObjectRelationships,
 ) => {
   const updatedObjects: string[] =
-    updatedRelationshipObjects
-      .find(
-        ({ relationshipName }) =>
-          relationshipName === relationship?.relationshipName,
-      )
-      ?.objects.map(({ uid }) => uid) || [];
+    updatedRelationshipObjects?.[relationship?.relationshipName]?.objects.map(
+      ({ uid }) => uid,
+    ) || [];
 
   const originalObjects =
-    originalRelationshipObjects.find(
-      ({ relationshipName }) =>
-        relationshipName === relationship?.relationshipName,
-    )?.objects || [];
+    originalRelationshipObjects?.[relationship?.relationshipName]?.objects ||
+    [];
   const originalUids = originalObjects.map(({ uid }) => uid);
 
   const uidsToLink = updatedObjects.filter(

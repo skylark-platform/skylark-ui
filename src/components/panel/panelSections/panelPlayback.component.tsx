@@ -159,21 +159,23 @@ const RelationshipPlayback = ({
   const { relationships, isLoading, query, variables } =
     useGetObjectRelationships(objectType, uid, { language });
 
+  const relationshipsArr = relationships ? Object.values(relationships) : [];
+
   const assetRelationships =
-    relationships?.filter(
+    relationshipsArr?.filter(
       (rel) => rel.objectType === BuiltInSkylarkObjectType.SkylarkAsset,
     ) || [];
   const liveAssetRelationships =
-    relationships?.filter(
+    relationshipsArr?.filter(
       (rel) => rel.objectType === BuiltInSkylarkObjectType.SkylarkLiveAsset,
     ) || [];
 
   const sections = [...assetRelationships, ...liveAssetRelationships]
     .sort((a, b) => (a.objects.length > b.objects.length ? -1 : 1))
-    .map(({ objects, relationshipName }) => ({
-      id: `playback-panel-${relationshipName}`,
-      title: formatObjectField(relationshipName),
-      relationshipName: relationshipName,
+    .map(({ objects, name }) => ({
+      id: `playback-panel-${name}`,
+      title: formatObjectField(name),
+      relationshipName: name,
       objects: objects,
     }));
 

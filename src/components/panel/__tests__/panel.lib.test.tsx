@@ -66,16 +66,16 @@ const droppedObjects: ParsedSkylarkObject[] = [
 
 describe("handleDroppedRelationships", () => {
   test("receives the expected relationships and errors", () => {
-    const existingRelationships: ParsedSkylarkObjectRelationships[] = [
-      {
-        relationshipName: "seasons",
+    const existingRelationships: ParsedSkylarkObjectRelationships = {
+      seasons: {
+        name: "seasons",
         objectType: "Season",
         objects: [
           { ...panelObject, uid: "EXISTING_REL" },
           { ...panelObject, uid: "rel-2" },
         ],
       },
-    ];
+    };
 
     const got = handleDroppedRelationships({
       activeObjectUid: panelObject.uid,
@@ -92,24 +92,25 @@ describe("handleDroppedRelationships", () => {
     });
 
     // Check valid relationships
-    expect(got.updatedRelationshipObjects).toHaveLength(1);
-    expect(got.updatedRelationshipObjects[0]).toEqual({
-      relationshipName: "seasons",
+    expect(Object.keys(got.updatedRelationshipObjects)).toHaveLength(1);
+    expect(Object.keys(got.updatedRelationshipObjects)[0]).toBe("seasons");
+
+    const gotSeasons = got.updatedRelationshipObjects.seasons;
+
+    expect(gotSeasons).toEqual({
+      name: "seasons",
       objectType: "Season",
       objects: expect.any(Object),
     });
-    expect(got.updatedRelationshipObjects[0].objects).toHaveLength(3);
-    expect(got.updatedRelationshipObjects[0].objects[0]).toHaveProperty(
+    expect(gotSeasons.objects).toHaveLength(3);
+    expect(gotSeasons.objects[0]).toHaveProperty("uid", "new-season");
+    expect(gotSeasons.objects[1]).toHaveProperty(
       "uid",
-      "new-season",
+      existingRelationships.seasons.objects[0].uid,
     );
-    expect(got.updatedRelationshipObjects[0].objects[1]).toHaveProperty(
+    expect(gotSeasons.objects[2]).toHaveProperty(
       "uid",
-      existingRelationships[0].objects[0].uid,
-    );
-    expect(got.updatedRelationshipObjects[0].objects[2]).toHaveProperty(
-      "uid",
-      existingRelationships[0].objects[1].uid,
+      existingRelationships.seasons.objects[1].uid,
     );
 
     // Check errors

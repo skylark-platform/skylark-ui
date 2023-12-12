@@ -19,6 +19,7 @@ import {
   SkylarkObjectType,
   SkylarkObjectIdentifier,
   ParsedSkylarkObject,
+  ParsedSkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 import { formatObjectField, hasProperty } from "src/lib/utils";
 
@@ -48,19 +49,21 @@ interface PanelRelationshipsProps {
 
 const sortByRelationshipName = (
   relationshipNames: string[],
-  arr: ParsedSkylarkObjectRelationships[] | null,
+  arr: ParsedSkylarkObjectRelationship[] | null,
 ) =>
   arr?.sort(
     (a, b) =>
-      relationshipNames.indexOf(a.relationshipName) -
-      relationshipNames.indexOf(b.relationshipName),
+      relationshipNames.indexOf(a.name) - relationshipNames.indexOf(b.name),
   ) || [];
 
 const splitRelationshipsIntoSections = (
   relationshipNames: string[],
-  relationships: ParsedSkylarkObjectRelationships[] | null,
+  relationships: ParsedSkylarkObjectRelationships | null,
 ) =>
-  sortByRelationshipName(relationshipNames, relationships).reduce(
+  sortByRelationshipName(
+    relationshipNames,
+    relationships ? Object.values(relationships) : null,
+  ).reduce(
     (previous, relationship) => {
       if (relationship.objects.length > 0) {
         return {
@@ -84,44 +87,49 @@ const splitRelationshipsIntoSections = (
       orderedRelationships: [],
       emptyOrderedRelationships: [],
     } as {
-      orderedRelationships: ParsedSkylarkObjectRelationships[];
-      emptyOrderedRelationships: ParsedSkylarkObjectRelationships[];
+      orderedRelationships: ParsedSkylarkObjectRelationship[];
+      emptyOrderedRelationships: ParsedSkylarkObjectRelationship[];
     },
   );
 
 const addModifiedRelationshipsOntoRelationships = (
-  relationships: ParsedSkylarkObjectRelationships[] | null,
+  relationships: ParsedSkylarkObjectRelationships | null,
   modifiedRelationships: PanelRelationshipsProps["modifiedRelationships"],
-): ParsedSkylarkObjectRelationships[] | null => {
+): ParsedSkylarkObjectRelationships | null => {
   if (!relationships) {
     return null;
   }
 
-  const updatedRelationships = relationships.map((relationship) => {
-    const { relationshipName, objects } = relationship;
+  const updatedRelationships = Object.fromEntries(
+    Object.entries(relationships).map(([relationshipName, relationship]) => {
+      const { objects } = relationship;
 
-    const modifedRelations = hasProperty(
-      modifiedRelationships,
-      relationshipName,
-    )
-      ? modifiedRelationships[relationshipName]
-      : null;
+      const modifedRelations = hasProperty(
+        modifiedRelationships,
+        relationshipName,
+      )
+        ? modifiedRelationships[relationshipName]
+        : null;
 
-    if (!modifedRelations) {
-      return relationship;
-    }
+      if (!modifedRelations) {
+        return [relationshipName, relationship];
+      }
 
-    const { added, removed } = modifedRelations;
+      const { added, removed } = modifedRelations;
 
-    const withRemovedFilteredOut = [...objects, ...added].filter(
-      ({ uid }) => !removed.includes(uid),
-    );
+      const withRemovedFilteredOut = [...objects, ...added].filter(
+        ({ uid }) => !removed.includes(uid),
+      );
 
-    return {
-      ...relationship,
-      objects: withRemovedFilteredOut,
-    };
-  });
+      return [
+        relationshipName,
+        {
+          ...relationship,
+          objects: withRemovedFilteredOut,
+        },
+      ];
+    }),
+  );
 
   return updatedRelationships;
 };
@@ -280,7 +288,7 @@ export const PanelRelationships = ({
     splitRelationshipsIntoSections(relationshipNames, relationships);
 
   const [searchObjectsModalState, setSearchObjectsModalState] = useState<{
-    relationship: ParsedSkylarkObjectRelationships;
+    relationship: ParsedSkylarkObjectRelationship;
     fields?: string[];
   } | null>(null);
 
@@ -299,22 +307,19 @@ export const PanelRelationships = ({
       <div>
         {orderedRelationships?.map((relationship) => {
           const config =
-            objectTypeRelationshipConfig?.[relationship.relationshipName] ||
-            null;
+            objectTypeRelationshipConfig?.[relationship.name] || null;
 
           return (
             <PanelRelationshipSection
-              key={relationship.relationshipName}
+              key={relationship.name}
               relationship={relationship}
               config={config}
               inEditMode={inEditMode}
               newUids={getNewUidsForRelationship(
-                relationship.relationshipName,
+                relationship.name,
                 modifiedRelationships,
               )}
-              initialExpanded={
-                tabState.expanded?.[relationship.relationshipName]
-              }
+              initialExpanded={tabState.expanded?.[relationship.name]}
               setPanelObject={setPanelObject}
               removeRelationshipObject={({ relationshipName, uid }) => {
                 modifyRelationshipObjects(relationshipName, { removed: [uid] });
@@ -332,21 +337,18 @@ export const PanelRelationships = ({
 
         {emptyOrderedRelationships?.map((relationship) => {
           const config =
-            objectTypeRelationshipConfig?.[relationship.relationshipName] ||
-            null;
+            objectTypeRelationshipConfig?.[relationship.name] || null;
 
           return (
             <PanelRelationshipSection
               isEmptySection
-              key={relationship.relationshipName}
+              key={relationship.name}
               relationship={relationship}
               config={config}
               inEditMode={inEditMode}
-              initialExpanded={
-                tabState.expanded?.[relationship.relationshipName]
-              }
+              initialExpanded={tabState.expanded?.[relationship.name]}
               newUids={getNewUidsForRelationship(
-                relationship.relationshipName,
+                relationship.name,
                 modifiedRelationships,
               )}
               setPanelObject={setPanelObject}
@@ -378,12 +380,11 @@ export const PanelRelationships = ({
         variables={variables}
         buttonClassName="absolute right-2 top-0"
       />
-      {relationships && (
+      {relationships && searchObjectsModalState && (
         <SearchObjectsModal
           title={`Add ${sentenceCase(
-            formatObjectField(
-              searchObjectsModalState?.relationship.relationshipName,
-            ) || "Relationships",
+            formatObjectField(searchObjectsModalState.relationship.name) ||
+              "Relationships",
           )}`}
           isOpen={!!searchObjectsModalState}
           objectTypes={
@@ -399,6 +400,7 @@ export const PanelRelationships = ({
                 ]
               : undefined
           }
+          existingObjects={searchObjectsModalState.relationship.objects}
           closeModal={() => setSearchObjectsModalState(null)}
           onModalClose={({ checkedObjects }) => {
             const { addedObjects, errors } = handleDroppedRelationships({
@@ -406,8 +408,7 @@ export const PanelRelationships = ({
               activeObjectUid: uid,
               existingObjects: relationships,
               objectMetaRelationships,
-              relationshipName:
-                searchObjectsModalState?.relationship.relationshipName,
+              relationshipName: searchObjectsModalState.relationship.name,
             });
 
             setModifiedRelationships(

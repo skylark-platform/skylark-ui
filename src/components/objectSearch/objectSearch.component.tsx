@@ -55,9 +55,11 @@ export interface ObjectSearchProps {
   initialFilters?: Partial<SearchFilters>;
   initialColumnState?: Partial<ObjectSearchInitialColumnsState>;
   hideSearchFilters?: boolean;
+  hideBulkOptions?: boolean;
   setPanelObject?: ObjectSearchResultsProps["setPanelObject"];
   checkedObjects?: ObjectSearchResultsProps["checkedObjects"];
   onObjectCheckedChanged?: ObjectSearchResultsProps["onObjectCheckedChanged"];
+  resetCheckedObjects?: () => void;
   onStateChange?: (s: {
     filters?: SearchFilters;
     columns?: ObjectSearchInitialColumnsState;
@@ -138,7 +140,9 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     initialSearchType,
     initialFilters,
     initialColumnState,
+    hideBulkOptions,
     onObjectCheckedChanged,
+    resetCheckedObjects,
     withObjectSelect,
     onStateChange,
   } = props;
@@ -187,7 +191,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   });
 
   useEffect(() => {
-    onObjectCheckedChanged?.([]);
+    resetCheckedObjects?.();
     // We only want to trigger this useEffect when the searchHash has changed (not resetRowsChecked)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchHash]);
@@ -429,10 +433,12 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             </p>
           </div>
         </div>
-        <BulkObjectOptions
-          selectedObjects={props.checkedObjects || []}
-          onSelectedObjectChange={onObjectCheckedChanged}
-        />
+        {!hideBulkOptions && (
+          <BulkObjectOptions
+            selectedObjects={props.checkedObjects || []}
+            onSelectedObjectChange={onObjectCheckedChanged}
+          />
+        )}
       </div>
       {sortedHeaders.length > 0 && (
         <div

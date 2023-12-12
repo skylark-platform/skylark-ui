@@ -113,21 +113,22 @@ export const PanelImages = ({
   const { relationships, isLoading, query, variables } =
     useGetObjectRelationships(objectType, uid, { language });
 
-  const images =
-    relationships?.filter(
-      (rel) => rel.objectType === BuiltInSkylarkObjectType.SkylarkImage,
-    ) || [];
+  const images = relationships
+    ? Object.values(relationships)?.filter(
+        (rel) => rel.objectType === BuiltInSkylarkObjectType.SkylarkImage,
+      )
+    : [];
 
   return (
     <PanelSectionLayout
-      sections={images.map(({ relationshipName }) => ({
-        id: `image-panel-${relationshipName}`,
-        title: formatObjectField(relationshipName),
+      sections={images.map(({ name }) => ({
+        id: `image-panel-${name}`,
+        title: formatObjectField(name),
       }))}
       isPage={isPage}
       withStickyHeaders
     >
-      {images.map(({ relationshipName, objects }) => {
+      {images.map(({ name: relationshipName, objects }) => {
         const imagesGroupedByType = groupImagesByType(objects);
         return (
           <div

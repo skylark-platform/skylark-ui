@@ -19,20 +19,74 @@ interface SearchObjectsModalProps {
   objectTypes?: SkylarkObjectTypes;
   columns?: string[];
   isOpen: boolean;
+  existingObjects?: ParsedSkylarkObject[];
   closeModal: () => void;
   onModalClose: (args: { checkedObjects: ParsedSkylarkObject[] }) => void;
 }
+
+const generateSaveMessage = ({
+  checkedObjects,
+  checkedUids,
+  checkedObjectTypesForDisplay,
+  existingObjects = [],
+}: {
+  checkedObjects: ParsedSkylarkObject[];
+  checkedUids: string[];
+  checkedObjectTypesForDisplay: string[];
+  existingObjects?: ParsedSkylarkObject[];
+}) => {
+  const existingUids = existingObjects.map(({ uid }) => uid);
+
+  const addedObjects = checkedObjects.filter(
+    ({ uid }) => !existingUids.includes(uid),
+  );
+
+  const removedObjects = existingObjects.filter(
+    ({ uid }) => !checkedUids.includes(uid),
+  );
+
+  console.log({ addedObjects, removedObjects });
+
+  const objectTypeStr =
+    checkedObjectTypesForDisplay.length === 1
+      ? `${checkedObjectTypesForDisplay[0]}`
+      : "Objects";
+
+  const addStr = addedObjects.length > 0 ? `Add ${addedObjects.length}` : "";
+  const removeStr =
+    removedObjects.length > 0 ? `Remove ${removedObjects.length}` : "";
+
+  if (addStr && removeStr) {
+    return `${addStr} & ${removeStr} ${objectTypeStr}`;
+  }
+
+  if (addStr) {
+    return `${addStr} ${objectTypeStr}`;
+  }
+
+  if (removeStr) {
+    return `${removeStr} ${objectTypeStr}`;
+  }
+
+  return null;
+};
 
 export const SearchObjectsModal = ({
   title,
   isOpen,
   objectTypes,
   columns: propColumns,
+  existingObjects,
   closeModal,
   onModalClose,
 }: SearchObjectsModalProps) => {
-  const { checkedObjects, checkedObjectTypesForDisplay, setCheckedObjects } =
-    useCheckedObjectsState();
+  const {
+    checkedObjects,
+    checkedUids,
+    checkedObjectTypesForDisplay,
+    setCheckedObjects,
+    resetCheckedObjects,
+  } = useCheckedObjectsState(existingObjects);
 
   const onModalCloseWrapper = () => {
     onModalClose({ checkedObjects });
@@ -55,6 +109,13 @@ export const SearchObjectsModal = ({
       };
     }, [propColumns]);
 
+  const saveMessage = generateSaveMessage({
+    checkedObjects,
+    checkedUids,
+    checkedObjectTypesForDisplay,
+    existingObjects,
+  });
+
   return (
     <Modal
       title={title}
@@ -72,7 +133,9 @@ export const SearchObjectsModal = ({
           initialColumnState={initialColumnState}
           checkedObjects={checkedObjects}
           onObjectCheckedChanged={setCheckedObjects}
+          resetCheckedObjects={resetCheckedObjects}
           hideSearchFilters
+          hideBulkOptions
           withObjectSelect
         />
       </div>
@@ -82,15 +145,11 @@ export const SearchObjectsModal = ({
           className="mt-4"
           onClick={onModalCloseWrapper}
           type="button"
-          disabled={checkedObjects.length === 0}
+          disabled={saveMessage === null}
           success
           data-testid="search-objects-modal-save"
         >
-          {`Add ${checkedObjects.length} ${
-            checkedObjectTypesForDisplay.length === 1
-              ? `${checkedObjectTypesForDisplay[0]}`
-              : "Objects"
-          }`}
+          {saveMessage || "Save"}
         </Button>
         <Button
           variant="outline"

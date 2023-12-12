@@ -1,12 +1,18 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
-export const useCheckedObjectsState = () => {
+export const useCheckedObjectsState = (
+  initialCheckedObjects?: ParsedSkylarkObject[],
+) => {
   const [checkedObjects, setCheckedObjects] = useState<ParsedSkylarkObject[]>(
-    [],
+    initialCheckedObjects || [],
   );
+
+  const resetCheckedObjects = useCallback(() => {
+    setCheckedObjects(initialCheckedObjects || []);
+  }, [initialCheckedObjects]);
 
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
 
@@ -50,5 +56,6 @@ export const useCheckedObjectsState = () => {
     checkedObjectTypes,
     checkedObjectTypesForDisplay,
     setCheckedObjects,
+    resetCheckedObjects,
   };
 };

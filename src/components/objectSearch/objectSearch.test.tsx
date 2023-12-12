@@ -200,13 +200,13 @@ describe("with object select (checkboxes)", () => {
   test("resets the checked rows when the search changes", async () => {
     jest.useFakeTimers();
 
-    const onObjectCheckedChanged = jest.fn();
+    const resetCheckedObjects = jest.fn();
 
     await render(
       <ObjectSearch
         id="test"
         withObjectSelect
-        onObjectCheckedChanged={onObjectCheckedChanged}
+        resetCheckedObjects={resetCheckedObjects}
       />,
     );
 
@@ -225,8 +225,7 @@ describe("with object select (checkboxes)", () => {
       jest.advanceTimersByTime(2000);
     });
 
-    expect(onObjectCheckedChanged).toHaveBeenCalledTimes(3);
-    expect(onObjectCheckedChanged).toHaveBeenCalledWith([]);
+    expect(resetCheckedObjects).toHaveBeenCalledTimes(3);
   });
 
   test("clears all selected rows using the toggle all", async () => {
