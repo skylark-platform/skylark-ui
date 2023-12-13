@@ -81,6 +81,33 @@ test("displays arrow when onForwardClick is passed as a prop and calls onForward
   });
 });
 
+test("displays arrow when onForwardClick is passed as a prop and calls window.open when clicked with the metaKey pressed", async () => {
+  window.open = jest.fn();
+  const onForwardClick = jest.fn();
+
+  render(
+    <ObjectIdentifierCard
+      object={defaultObject}
+      onForwardClick={onForwardClick}
+    />,
+  );
+
+  const forwardButton = screen.getByRole("button");
+
+  expect(forwardButton).toBeInTheDocument();
+
+  fireEvent.click(forwardButton, {
+    metaKey: true,
+  });
+
+  expect(onForwardClick).not.toHaveBeenCalled();
+
+  expect(window.open).toHaveBeenCalledWith(
+    `/object/${defaultObject.objectType}/${defaultObject.uid}?language=${defaultObject.meta.language}`,
+    "_blank",
+  );
+});
+
 test("displays AvailabilityStatus icon by default (Active)", () => {
   render(<ObjectIdentifierCard object={defaultObject} />);
 

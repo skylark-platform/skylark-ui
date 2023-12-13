@@ -1,8 +1,9 @@
+import { MouseEventHandler } from "react";
 import { FiArrowRight } from "react-icons/fi";
 
 interface GetOpenButtonProps {
   disabled?: boolean;
-  onClick: () => void;
+  onClick: MouseEventHandler<HTMLButtonElement>;
 }
 
 export const OpenObjectButton = ({ disabled, onClick }: GetOpenButtonProps) => (
