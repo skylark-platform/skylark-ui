@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react";
 import { FiTrash2, FiMoreVertical } from "react-icons/fi";
-import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
 import {
@@ -8,26 +7,30 @@ import {
   DropdownMenuButton,
 } from "src/components/dropdown/dropdown.component";
 import { BatchDeleteObjectsModal } from "src/components/modals";
-import { Toast } from "src/components/toast/toast.component";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import { CheckedObjectState } from "src/hooks/state";
 
 interface BulkObjectOptionsProps {
-  selectedObjects: ParsedSkylarkObject[];
-  onSelectedObjectChange?: (o: ParsedSkylarkObject[]) => void;
+  checkedObjectsState: CheckedObjectState[];
+  onObjectCheckedChanged?: (s: CheckedObjectState[]) => void;
 }
 
 export const BulkObjectOptions = ({
-  selectedObjects,
-  onSelectedObjectChange,
+  checkedObjectsState,
+  onObjectCheckedChanged,
 }: BulkObjectOptionsProps) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const removeObject = useCallback(
     (uid: string) => {
-      const updatedObjects = selectedObjects.filter((obj) => uid !== obj.uid);
-      onSelectedObjectChange?.(updatedObjects);
+      const updatedObjects = checkedObjectsState.map(
+        ({ object, checkedState }) =>
+          object.uid === uid
+            ? { object, checkedState: false }
+            : { object, checkedState },
+      );
+      onObjectCheckedChanged?.(updatedObjects);
     },
-    [onSelectedObjectChange, selectedObjects],
+    [onObjectCheckedChanged, checkedObjectsState],
   );
 
   return (
@@ -47,7 +50,7 @@ export const BulkObjectOptions = ({
         <DropdownMenuButton
           as={Button}
           variant="neutral"
-          disabled={selectedObjects.length === 0}
+          disabled={checkedObjectsState.length === 0}
           className="whitespace-nowrap"
           Icon={<FiMoreVertical className="-mr-1 text-2xl" />}
         >
@@ -55,13 +58,17 @@ export const BulkObjectOptions = ({
         </DropdownMenuButton>
       </DropdownMenu>
       <BatchDeleteObjectsModal
-        objectsToBeDeleted={selectedObjects}
+        objectsToBeDeleted={checkedObjectsState
+          .filter(({ checkedState }) => checkedState === true)
+          .map(({ object }) => object)}
         isOpen={deleteModalOpen}
         closeModal={() => setDeleteModalOpen(false)}
         removeObject={removeObject}
         onDeletionComplete={(deletedObjects) => {
-          onSelectedObjectChange?.(
-            selectedObjects.filter((obj) => !deletedObjects.includes(obj)),
+          onObjectCheckedChanged?.(
+            checkedObjectsState.filter(
+              ({ object }) => !deletedObjects.includes(object),
+            ),
           );
           setDeleteModalOpen(false);
         }}

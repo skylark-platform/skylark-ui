@@ -23,6 +23,7 @@ import {
   formatObjectField,
   getObjectDisplayName,
   hasProperty,
+  skylarkObjectsAreSame,
 } from "src/lib/utils";
 
 import { Cell } from "./grids/cell.component";
@@ -62,10 +63,13 @@ export const columnsWithoutResize = [
   OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
 ];
 
-const isRowChecked = (
+const getRowCheckedState = (
   cell: ReactTableCell<ObjectSearchTableData, unknown>,
   table: Table<ObjectSearchTableData>,
-) => Boolean(table.options.meta?.checkedRows?.includes(cell.row.index));
+) =>
+  table.options.meta?.checkedObjectsState?.find(({ object }) =>
+    skylarkObjectsAreSame(object, cell.row.original),
+  )?.checkedState;
 
 const columnHelper = createColumnHelper<ObjectSearchTableData>();
 
@@ -342,8 +346,8 @@ const selectColumn = columnHelper.display({
       options: { meta: tableMeta },
     },
   }) =>
-    tableMeta?.checkedRows &&
-    tableMeta.checkedRows.length > 0 && (
+    tableMeta?.checkedObjectsState &&
+    tableMeta?.checkedObjectsState.length > 0 && (
       <Checkbox
         aria-label="clear-all-checked-objects"
         checked="indeterminate"
@@ -351,19 +355,20 @@ const selectColumn = columnHelper.display({
       />
     ),
   cell: ({ cell, table }) => {
-    const checked = isRowChecked(cell, table);
+    const checkedState = getRowCheckedState(cell, table);
     const tableMeta = table.options.meta;
     return (
       <Checkbox
-        checked={checked}
+        checked={checkedState}
         // Not using onCheckChanged so that we have access to the native click event
         onClick={(e) => {
           e.stopPropagation();
           if (e.shiftKey) {
             tableMeta?.batchCheckRows("shift", cell.row.index);
           } else {
+            console.log("Click", checkedState);
             tableMeta?.onRowCheckChange?.({
-              checkedState: !checked,
+              checkedState: !checkedState,
               object: cell.row.original as ParsedSkylarkObject,
             });
           }

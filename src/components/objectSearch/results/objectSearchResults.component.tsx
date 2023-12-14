@@ -13,7 +13,7 @@ import { useRef, useState, useMemo, useCallback, memo } from "react";
 import { VirtualItem, defaultRangeExtractor, useVirtual } from "react-virtual";
 
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { PanelTab } from "src/hooks/state";
+import { CheckedObjectState, PanelTab } from "src/hooks/state";
 import {
   useAllObjectsMeta,
   useSkylarkObjectTypesWithConfig,
@@ -51,9 +51,9 @@ export interface ObjectSearchResultsProps {
   isSearching?: boolean;
   isFetchingNextPage?: boolean;
   tableState: TableState;
-  checkedObjects?: ParsedSkylarkObject[];
+  checkedObjectsState?: CheckedObjectState[];
   setTableState: (updater: Updater<TableState>) => void;
-  onObjectCheckedChanged?: (o: ParsedSkylarkObject[]) => void;
+  onObjectCheckedChanged?: (s: CheckedObjectState[]) => void;
 }
 
 // https://github.com/TanStack/table/issues/4240
@@ -88,7 +88,7 @@ export const ObjectSearchResults = ({
   hasNextPage,
   isSearching,
   fetchNextPage,
-  checkedObjects,
+  checkedObjectsState,
   isFetchingNextPage,
   onObjectCheckedChanged,
   setTableState,
@@ -157,35 +157,50 @@ export const ObjectSearchResults = ({
   // }, [fetchMoreOnBottomReached]);
 
   const onRowCheckChange = useCallback(
-    ({
-      object,
-      checkedState,
-    }: {
-      object: ParsedSkylarkObject;
-      checkedState: CheckedState;
-    }) => {
-      if (onObjectCheckedChanged && checkedObjects) {
-        if (checkedState) {
-          onObjectCheckedChanged([...checkedObjects, object]);
+    (updated: { object: ParsedSkylarkObject; checkedState: CheckedState }) => {
+      if (onObjectCheckedChanged && checkedObjectsState) {
+        const existsIndex = checkedObjectsState.findIndex(
+          (c) => updated.object === c.object,
+        );
+
+        console.log({ updated, existsIndex });
+
+        if (existsIndex > -1) {
+          checkedObjectsState[existsIndex] = updated;
+          console.log({ checkedObjectsState });
+          onObjectCheckedChanged(checkedObjectsState);
         } else {
-          onObjectCheckedChanged(
-            checkedObjects.filter((obj) => !skylarkObjectsAreSame(obj, object)),
-          );
+          onObjectCheckedChanged([...checkedObjectsState, updated]);
         }
       }
     },
-    [checkedObjects, onObjectCheckedChanged],
+    [checkedObjectsState, onObjectCheckedChanged],
   );
 
-  const checkedRows = useMemo(() => {
-    return withObjectSelect && checkedObjects && searchData
-      ? checkedObjects.map((checkedObj) =>
-          searchData.findIndex((searchDataObj) =>
-            skylarkObjectsAreSame(checkedObj, searchDataObj),
-          ),
-        )
-      : [];
-  }, [checkedObjects, searchData, withObjectSelect]);
+  // const rowCheckedState: Record<number, CheckedState> = useMemo(() => {
+  //   return withObjectSelect && checkedObjectsState && searchData
+  //     ? checkedObjectsState.reduce(
+  //         (acc, { object: checkedObj, checkedState }) => {
+  //           const index = searchData.findIndex((searchDataObj) =>
+  //             skylarkObjectsAreSame(checkedObj, searchDataObj),
+  //           );
+
+  //           console.log({ index, checkedState });
+
+  //           if (index > -1) {
+  //             return {
+  //               ...acc,
+  //               [index]: checkedState,
+  //             };
+  //           }
+  //           return acc;
+  //         },
+  //         {},
+  //       )
+  //     : {};
+  // }, [checkedObjectsState, searchData, withObjectSelect]);
+
+  // console.log({ rowCheckedState, checkedObjectsState });
 
   const batchCheckRows = useCallback(
     (type: "shift" | "clear-all", rowIndex?: number) => {
@@ -193,9 +208,20 @@ export const ObjectSearchResults = ({
         if (
           type === "shift" &&
           rowIndex !== undefined &&
-          checkedObjects &&
+          checkedObjectsState &&
           searchData
         ) {
+          const checkedRows = checkedObjectsState
+            .filter(({ checkedState }) => checkedState !== false)
+            .map(({ object }) => {
+              const index = searchData.findIndex((searchDataObj) =>
+                skylarkObjectsAreSame(object, searchDataObj),
+              );
+
+              return index;
+            })
+            .filter((index) => index > -1);
+
           // We want to find the last checked row before the given index
           const reverseSortedCheckedRows = checkedRows.sort((a, b) => b - a);
           const firstSmallerIndex = reverseSortedCheckedRows.findIndex(
@@ -203,12 +229,14 @@ export const ObjectSearchResults = ({
           );
 
           // Once found, we check all boxes after the previous row until and including the given index
-          const objectsToCheck = searchData.slice(
-            reverseSortedCheckedRows[firstSmallerIndex] + 1 || 0,
-            rowIndex + 1,
-          );
+          const objectsToCheck = searchData
+            .slice(
+              reverseSortedCheckedRows[firstSmallerIndex] + 1 || 0,
+              rowIndex + 1,
+            )
+            .map((object) => ({ object, checkedState: true }));
 
-          onObjectCheckedChanged([...checkedObjects, ...objectsToCheck]);
+          onObjectCheckedChanged([...checkedObjectsState, ...objectsToCheck]);
         }
 
         if (type === "clear-all") {
@@ -216,7 +244,7 @@ export const ObjectSearchResults = ({
         }
       }
     },
-    [checkedObjects, checkedRows, onObjectCheckedChanged, searchData],
+    [checkedObjectsState, onObjectCheckedChanged, searchData],
   );
 
   // TODO we may want to refactor this so that hovering doesn't trigger a render
@@ -256,7 +284,7 @@ export const ObjectSearchResults = ({
     onStateChange: setTableState,
     meta: {
       activeObject: panelObject || null,
-      checkedRows,
+      checkedObjectsState: checkedObjectsState,
       objectTypesWithConfig,
       objectsMeta,
       onRowCheckChange,

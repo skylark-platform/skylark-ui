@@ -26,7 +26,7 @@ test("renders the modal", async () => {
       title={title}
       isOpen={true}
       closeModal={jest.fn()}
-      onModalClose={jest.fn()}
+      onSave={jest.fn()}
       columns={["uid"]}
     />,
   );
@@ -57,7 +57,7 @@ test("does not render the UID column when it isn't given in columns", async () =
       title={title}
       isOpen={true}
       closeModal={jest.fn()}
-      onModalClose={jest.fn()}
+      onSave={jest.fn()}
       columns={["external_id"]}
     />,
   );
@@ -65,15 +65,15 @@ test("does not render the UID column when it isn't given in columns", async () =
   expect(screen.queryByText("UID")).not.toBeInTheDocument();
 });
 
-test("calls onModalClose with the selected rows", async () => {
-  const onModalClose = jest.fn();
+test("calls onSave with the selected rows", async () => {
+  const onSave = jest.fn();
 
   render(
     <SearchObjectsModal
       title={title}
       isOpen={true}
       closeModal={jest.fn()}
-      onModalClose={onModalClose}
+      onSave={onSave}
       columns={["uid"]}
     />,
   );
@@ -102,7 +102,7 @@ test("calls onModalClose with the selected rows", async () => {
 
   fireEvent.click(screen.getByTestId("search-objects-modal-save"));
 
-  expect(onModalClose).toHaveBeenCalledWith({
+  expect(onSave).toHaveBeenCalledWith({
     checkedObjects: [
       expect.objectContaining({
         uid: GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,

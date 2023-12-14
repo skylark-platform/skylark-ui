@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { CgSpinner } from "react-icons/cg";
 import { FiPlus } from "react-icons/fi";
 
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
@@ -17,16 +18,22 @@ export const PanelSectionTitle = ({
   id,
   count,
   sticky,
-}: PanelHeaderProps) => (
-  <h3
-    id={id}
-    className={clsx(
-      "bg-white pb-1 text-base font-semibold underline md:pb-2 ",
-      sticky ? "sticky top-0 z-[2] pb-2 pt-4 md:pt-8" : "mb-2",
-    )}
-  >
-    {count !== undefined ? `${text} (${count})` : text}
-  </h3>
+  loading,
+}: PanelHeaderProps & { loading?: boolean }) => (
+  <>
+    <h3
+      id={id}
+      className={clsx(
+        "bg-white text-base font-semibold underline inline-block",
+        sticky ? "sticky top-0 z-[2] pb-2 pt-4 md:pt-8" : "mb-2 pb-1 md:pb-2",
+      )}
+    >
+      {count !== undefined && !loading ? `${text} (${count})` : text}
+      {loading && (
+        <CgSpinner className="inline-block ml-2 animate-spin h-4 w-4 mb-0.5" />
+      )}
+    </h3>
+  </>
 );
 
 export const PanelFieldTitle = ({

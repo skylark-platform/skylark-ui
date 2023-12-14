@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import { Button } from "src/components/button";
 import { Modal } from "src/components/modals/base/modal";
@@ -8,7 +8,7 @@ import {
 } from "src/components/objectSearch";
 import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "src/components/objectSearch/results/columnConfiguration";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { useCheckedObjectsState } from "src/hooks/state";
+import { CheckedObjectState, useCheckedObjectsState } from "src/hooks/state";
 import {
   ParsedSkylarkObject,
   SkylarkObjectTypes,
@@ -21,7 +21,7 @@ interface SearchObjectsModalProps {
   isOpen: boolean;
   existingObjects?: ParsedSkylarkObject[];
   closeModal: () => void;
-  onModalClose: (args: { checkedObjects: ParsedSkylarkObject[] }) => void;
+  onSave: (args: { checkedObjectsState: CheckedObjectState[] }) => void;
 }
 
 const generateSaveMessage = ({
@@ -78,20 +78,28 @@ export const SearchObjectsModal = ({
   columns: propColumns,
   existingObjects,
   closeModal,
-  onModalClose,
+  onSave,
 }: SearchObjectsModalProps) => {
   const {
+    checkedObjectsState,
     checkedObjects,
     checkedUids,
     checkedObjectTypesForDisplay,
-    setCheckedObjects,
+    setCheckedObjectsState,
     resetCheckedObjects,
-  } = useCheckedObjectsState(existingObjects);
+  } = useCheckedObjectsState(
+    existingObjects?.map((object) => ({
+      object,
+      checkedState: "indeterminate",
+    })),
+  );
+
+  console.log({ checkedObjectsState });
 
   const onModalCloseWrapper = () => {
-    onModalClose({ checkedObjects });
+    onSave({ checkedObjectsState });
     closeModal();
-    setCheckedObjects([]);
+    setCheckedObjectsState([]);
   };
 
   const initialColumnState: Partial<ObjectSearchInitialColumnsState> =
@@ -131,33 +139,27 @@ export const SearchObjectsModal = ({
           id={`search-object-modal-${objectTypes?.join("-")}`}
           initialFilters={{ objectTypes }}
           initialColumnState={initialColumnState}
-          checkedObjects={checkedObjects}
-          onObjectCheckedChanged={setCheckedObjects}
+          checkedObjectsState={checkedObjectsState}
+          onObjectCheckedChanged={setCheckedObjectsState}
           resetCheckedObjects={resetCheckedObjects}
           hideSearchFilters
           hideBulkOptions
           withObjectSelect
         />
       </div>
-      <div className="flex justify-end space-x-2 px-6 md:px-10">
+      <div className="flex justify-end items-center space-x-2 px-6 md:px-10 mt-4">
+        <p className="text-manatee-700 mr-2">{saveMessage}</p>
         <Button
           variant="primary"
-          className="mt-4"
           onClick={onModalCloseWrapper}
           type="button"
           disabled={saveMessage === null}
           success
           data-testid="search-objects-modal-save"
         >
-          {saveMessage || "Save"}
+          Save
         </Button>
-        <Button
-          variant="outline"
-          className="mt-4"
-          type="button"
-          danger
-          onClick={closeModal}
-        >
+        <Button variant="outline" type="button" danger onClick={closeModal}>
           Cancel
         </Button>
       </div>

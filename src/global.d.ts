@@ -1,7 +1,7 @@
 // @tanstack/react-table meta object declaration
 import { CheckedState } from "@radix-ui/react-checkbox";
 
-import { PanelTab } from "./hooks/state";
+import { CheckedObjectState, PanelTab } from "./hooks/state";
 import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
@@ -12,14 +12,8 @@ import {
 export declare module "@tanstack/table-core" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
-    checkedRows?: number[];
-    onRowCheckChange?: ({
-      object,
-      checkedState,
-    }: {
-      object: ParsedSkylarkObject;
-      checkedState: CheckedState;
-    }) => void;
+    checkedObjectsState?: CheckedObjectState[];
+    onRowCheckChange?: ({ object, checkedState }: CheckedObjectState) => void;
     batchCheckRows: (type: "shift" | "clear-all", rowIndex?: number) => void;
     onObjectClick?: (obj: SkylarkObjectIdentifier, tab?: PanelTab) => void;
     activeObject: SkylarkObjectIdentifier | null;

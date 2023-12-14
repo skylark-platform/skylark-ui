@@ -12,7 +12,6 @@ import {
   GQLSkylarkGetObjectRelationshipsResponse,
   GQLSkylarkGetObjectResponse,
   NormalizedObjectField,
-  ParsedSkylarkObject,
   ParsedSkylarkObjectRelationships,
   SkylarkGraphQLObject,
   SkylarkGraphQLObjectRelationship,
@@ -65,43 +64,44 @@ export const useGetObjectRelationships = (
   );
   const variables = { uid, language };
 
-  const { data, isLoading, hasNextPage, fetchNextPage } = useInfiniteQuery<
-    GQLSkylarkGetObjectRelationshipsResponse,
-    GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>
-  >({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: createGetObjectRelationshipsKeyPrefix({ objectType, uid }),
-    queryFn: async ({ pageParam: nextTokens }) =>
-      skylarkRequest("query", query as DocumentNode, {
-        ...variables,
-        ...nextTokens,
-      }),
-    getNextPageParam: (lastPage): Record<string, string> | undefined => {
-      const data = lastPage.getObjectRelationships;
-      const allNextTokens = Object.keys(data).reduce(
-        (prev, relationshipName) => {
-          const relationship = data[
-            relationshipName
-          ] as SkylarkGraphQLObjectRelationship;
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useInfiniteQuery<
+      GQLSkylarkGetObjectRelationshipsResponse,
+      GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>
+    >({
+      // eslint-disable-next-line @tanstack/query/exhaustive-deps
+      queryKey: createGetObjectRelationshipsKeyPrefix({ objectType, uid }),
+      queryFn: async ({ pageParam: nextTokens }) =>
+        skylarkRequest("query", query as DocumentNode, {
+          ...variables,
+          ...nextTokens,
+        }),
+      getNextPageParam: (lastPage): Record<string, string> | undefined => {
+        const data = lastPage.getObjectRelationships;
+        const allNextTokens = Object.keys(data).reduce(
+          (prev, relationshipName) => {
+            const relationship = data[
+              relationshipName
+            ] as SkylarkGraphQLObjectRelationship;
 
-          if (relationship.next_token) {
-            return {
-              ...prev,
-              [`${relationshipName}NextToken`]: relationship.next_token,
-            };
-          }
+            if (relationship.next_token) {
+              return {
+                ...prev,
+                [`${relationshipName}NextToken`]: relationship.next_token,
+              };
+            }
 
-          return prev;
-        },
-        {},
-      );
+            return prev;
+          },
+          {},
+        );
 
-      console.log({ allNextTokens });
-
-      return Object.keys(allNextTokens).length > 0 ? allNextTokens : undefined;
-    },
-    enabled: query !== null,
-  });
+        return Object.keys(allNextTokens).length > 0
+          ? allNextTokens
+          : undefined;
+      },
+      enabled: query !== null,
+    });
 
   if (hasNextPage) {
     fetchNextPage();
@@ -148,6 +148,7 @@ export const useGetObjectRelationships = (
     relationships,
     objectRelationships: objectOperations?.relationships,
     isLoading: isLoading || !query,
+    isFetchingNextPage,
     query,
     variables,
   };

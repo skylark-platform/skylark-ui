@@ -147,16 +147,17 @@ export const useGetObjectContent = (
     fetchAvailability,
   });
 
-  const { data, hasNextPage, fetchNextPage, isLoading } = useInfiniteQuery<
-    GQLSkylarkGetObjectContentResponse,
-    GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentResponse>
-  >({
-    queryFn,
-    queryKey,
-    getNextPageParam: (lastPage): string | undefined =>
-      lastPage.getObjectContent.content?.next_token || undefined,
-    enabled: !!query,
-  });
+  const { data, hasNextPage, fetchNextPage, isLoading, isFetchingNextPage } =
+    useInfiniteQuery<
+      GQLSkylarkGetObjectContentResponse,
+      GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentResponse>
+    >({
+      queryFn,
+      queryKey,
+      getNextPageParam: (lastPage): string | undefined =>
+        lastPage.getObjectContent.content?.next_token || undefined,
+      enabled: !!query,
+    });
 
   if (hasNextPage) {
     fetchNextPage();
@@ -178,5 +179,6 @@ export const useGetObjectContent = (
     query,
     variables,
     hasNextPage,
+    isFetchingNextPage,
   };
 };

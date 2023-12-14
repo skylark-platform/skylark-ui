@@ -178,7 +178,7 @@ describe("with object select (checkboxes)", () => {
         id="test"
         withObjectSelect
         onObjectCheckedChanged={onRowCheckChange}
-        checkedObjects={[]}
+        checkedObjectsState={[]}
       />,
     );
 
@@ -194,7 +194,12 @@ describe("with object select (checkboxes)", () => {
 
     await fireEvent.click(checkbox);
 
-    expect(onRowCheckChange).toHaveBeenLastCalledWith([expect.any(Object)]);
+    expect(onRowCheckChange).toHaveBeenLastCalledWith([
+      {
+        checkedState: true,
+        object: expect.any(Object),
+      },
+    ]);
   });
 
   test("resets the checked rows when the search changes", async () => {
@@ -236,10 +241,13 @@ describe("with object select (checkboxes)", () => {
         id="test"
         withObjectSelect
         onObjectCheckedChanged={onRowCheckChange}
-        checkedObjects={[
+        checkedObjectsState={[
           {
-            meta: { language: "en-GB", availableLanguages: [] },
-          } as unknown as ParsedSkylarkObject,
+            object: {
+              meta: { language: "en-GB", availableLanguages: [] },
+            } as unknown as ParsedSkylarkObject,
+            checkedState: true,
+          },
         ]}
       />,
     );
@@ -264,10 +272,13 @@ describe("with object select (checkboxes)", () => {
       <ObjectSearch
         id="test"
         withObjectSelect
-        checkedObjects={[
+        checkedObjectsState={[
           {
-            meta: { language: "en-GB", availableLanguages: [] },
-          } as unknown as ParsedSkylarkObject,
+            object: {
+              meta: { language: "en-GB", availableLanguages: [] },
+            } as unknown as ParsedSkylarkObject,
+            checkedState: true,
+          },
         ]}
       />,
     );
@@ -528,26 +539,29 @@ describe("batch options", () => {
       <ObjectSearch
         id="test"
         withObjectSelect
-        checkedObjects={[
+        checkedObjectsState={[
           {
-            uid: "123",
-            objectType: "Episode",
-            meta: {
-              language: "en-GB",
-              availableLanguages: [],
-              availabilityStatus: AvailabilityStatus.Unavailable,
-            },
-            metadata: {
+            object: {
               uid: "123",
-              external_id: "",
-              title: "my episode",
-            },
-            config: { primaryField: "title" },
-            availability: {
-              status: AvailabilityStatus.Unavailable,
-              objects: [],
-            },
-          } as ParsedSkylarkObject,
+              objectType: "Episode",
+              meta: {
+                language: "en-GB",
+                availableLanguages: [],
+                availabilityStatus: AvailabilityStatus.Unavailable,
+              },
+              metadata: {
+                uid: "123",
+                external_id: "",
+                title: "my episode",
+              },
+              config: { primaryField: "title" },
+              availability: {
+                status: AvailabilityStatus.Unavailable,
+                objects: [],
+              },
+            } as ParsedSkylarkObject,
+            checkedState: true,
+          },
         ]}
       />,
     );

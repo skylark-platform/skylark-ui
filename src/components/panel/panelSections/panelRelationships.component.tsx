@@ -210,6 +210,7 @@ export const PanelRelationships = ({
     relationships: serverRelationships,
     objectRelationships: objectMetaRelationships = [],
     isLoading,
+    isFetchingNextPage: isFetchingMoreRelationships,
     query,
     variables,
   } = useGetObjectRelationships(objectType, uid, { language });
@@ -315,6 +316,7 @@ export const PanelRelationships = ({
               relationship={relationship}
               config={config}
               inEditMode={inEditMode}
+              isFetchingMoreRelationships={isFetchingMoreRelationships}
               newUids={getNewUidsForRelationship(
                 relationship.name,
                 modifiedRelationships,
@@ -346,6 +348,7 @@ export const PanelRelationships = ({
               relationship={relationship}
               config={config}
               inEditMode={inEditMode}
+              isFetchingMoreRelationships={isFetchingMoreRelationships}
               initialExpanded={tabState.expanded?.[relationship.name]}
               newUids={getNewUidsForRelationship(
                 relationship.name,
@@ -402,9 +405,9 @@ export const PanelRelationships = ({
           }
           existingObjects={searchObjectsModalState.relationship.objects}
           closeModal={() => setSearchObjectsModalState(null)}
-          onModalClose={({ checkedObjects }) => {
+          onSave={({ checkedObjectsState }) => {
             const { addedObjects, errors } = handleDroppedRelationships({
-              droppedObjects: checkedObjects,
+              droppedObjects: checkedObjectsState,
               activeObjectUid: uid,
               existingObjects: relationships,
               objectMetaRelationships,

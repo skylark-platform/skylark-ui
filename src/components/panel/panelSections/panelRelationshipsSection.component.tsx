@@ -1,4 +1,5 @@
 import { useState, Fragment } from "react";
+import { CgSpinner } from "react-icons/cg";
 import { sentenceCase } from "sentence-case";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
@@ -21,6 +22,7 @@ interface PanelRelationshipsSectionProps {
   isEmptySection?: boolean;
   relationship: ParsedSkylarkObjectRelationship;
   inEditMode: boolean;
+  isFetchingMoreRelationships: boolean;
   newUids: string[];
   initialExpanded: boolean;
   config: ParsedSkylarkObjectTypeRelationshipConfiguration["config"] | null;
@@ -40,6 +42,7 @@ export const PanelRelationshipSection = ({
   isEmptySection,
   relationship,
   inEditMode,
+  isFetchingMoreRelationships,
   newUids,
   initialExpanded,
   config,
@@ -79,12 +82,18 @@ export const PanelRelationshipSection = ({
             text={formatObjectField(relationshipName)}
             count={objects.length || 0}
             id={`relationship-panel-${relationshipName}`}
+            loading={isFetchingMoreRelationships}
           />
-          <PanelPlusButton
-            onClick={() =>
-              setSearchObjectsModalState({ relationship, fields: objectFields })
-            }
-          />
+          {!isFetchingMoreRelationships && (
+            <PanelPlusButton
+              onClick={() =>
+                setSearchObjectsModalState({
+                  relationship,
+                  fields: objectFields,
+                })
+              }
+            />
+          )}
         </div>
         {!isEmptySection && config?.defaultSortField && (
           <p className="text-manatee-300 text-xs mb-4 hover:text-manatee-600 transition-colors cursor-default">{`Sorted by: ${sentenceCase(

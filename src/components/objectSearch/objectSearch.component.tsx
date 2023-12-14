@@ -19,7 +19,10 @@ import {
 } from "src/hooks/useSearchWithLookupType";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import { useUserAccount } from "src/hooks/useUserAccount";
-import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
+import {
+  ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
+} from "src/interfaces/skylark";
 import {
   hasProperty,
   isObjectsDeepEqual,
@@ -57,7 +60,7 @@ export interface ObjectSearchProps {
   hideSearchFilters?: boolean;
   hideBulkOptions?: boolean;
   setPanelObject?: ObjectSearchResultsProps["setPanelObject"];
-  checkedObjects?: ObjectSearchResultsProps["checkedObjects"];
+  checkedObjectsState?: ObjectSearchResultsProps["checkedObjectsState"];
   onObjectCheckedChanged?: ObjectSearchResultsProps["onObjectCheckedChanged"];
   resetCheckedObjects?: () => void;
   onStateChange?: (s: {
@@ -435,8 +438,8 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         </div>
         {!hideBulkOptions && (
           <BulkObjectOptions
-            selectedObjects={props.checkedObjects || []}
-            onSelectedObjectChange={onObjectCheckedChanged}
+            checkedObjectsState={props?.checkedObjectsState || []}
+            onObjectCheckedChanged={onObjectCheckedChanged}
           />
         )}
       </div>

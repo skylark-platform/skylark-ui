@@ -1,40 +1,53 @@
+import { CheckedState } from "@radix-ui/react-checkbox";
 import { useState, useMemo, useCallback } from "react";
 
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
+export type CheckedObjectState = {
+  checkedState: CheckedState;
+  object: ParsedSkylarkObject;
+};
+
 export const useCheckedObjectsState = (
-  initialCheckedObjects?: ParsedSkylarkObject[],
+  initialCheckedObjects?: CheckedObjectState[],
 ) => {
-  const [checkedObjects, setCheckedObjects] = useState<ParsedSkylarkObject[]>(
-    initialCheckedObjects || [],
-  );
+  const [checkedObjectsState, setCheckedObjectsState] = useState<
+    CheckedObjectState[]
+  >(initialCheckedObjects || []);
 
   const resetCheckedObjects = useCallback(() => {
-    setCheckedObjects(initialCheckedObjects || []);
+    setCheckedObjectsState(initialCheckedObjects || []);
   }, [initialCheckedObjects]);
 
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
 
-  const { checkedObjectTypes, checkedUids } = useMemo(() => {
-    const { objectTypes, uids } = checkedObjects.reduce(
-      (previous, { uid, objectType }) => {
+  const { checkedObjectTypes, checkedUids, checkedObjects } = useMemo(() => {
+    const { objectTypes, uids, objects } = checkedObjectsState.reduce(
+      (previous, { object, checkedState }) => {
+        if (checkedState !== true) {
+          return previous;
+        }
+
         return {
-          uids: [...previous.uids, uid],
-          objectTypes: [...previous.objectTypes, objectType],
+          uids: [...previous.uids, object.uid],
+          objectTypes: [...previous.objectTypes, object.objectType],
+          objects: [...previous.objects, object],
         };
       },
       {
         uids: [] as string[],
         objectTypes: [] as string[],
+        objects: [] as ParsedSkylarkObject[],
       },
     );
 
     return {
       checkedUids: uids,
       checkedObjectTypes: [...new Set(objectTypes)],
+      checkedObjects: objects,
     };
-  }, [checkedObjects]);
+  }, [checkedObjectsState]);
 
   const checkedObjectTypesForDisplay = useMemo(() => {
     const objectTypesForDisplay = objectTypesWithConfig
@@ -51,11 +64,12 @@ export const useCheckedObjectsState = (
   }, [checkedObjectTypes, objectTypesWithConfig]);
 
   return {
+    checkedObjectsState,
     checkedObjects,
     checkedUids,
     checkedObjectTypes,
     checkedObjectTypesForDisplay,
-    setCheckedObjects,
+    setCheckedObjectsState,
     resetCheckedObjects,
   };
 };
