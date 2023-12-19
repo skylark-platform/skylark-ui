@@ -82,6 +82,7 @@ test("displays arrow when onForwardClick is passed as a prop and calls onForward
 });
 
 test("displays arrow when onForwardClick is passed as a prop and calls window.open when clicked with the metaKey pressed", async () => {
+  jest.spyOn(window.navigator, "platform", "get").mockReturnValue("MacIntel");
   window.open = jest.fn();
   const onForwardClick = jest.fn();
 

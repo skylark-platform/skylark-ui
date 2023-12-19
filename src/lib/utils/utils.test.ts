@@ -1,5 +1,8 @@
 import * as constants from "src/constants/skylark";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import {
+  BuiltInSkylarkObjectType,
+  ParsedSkylarkObject,
+} from "src/interfaces/skylark";
 
 import {
   addCloudinaryOnTheFlyImageTransformation,
@@ -10,8 +13,11 @@ import {
   hasProperty,
   isObject,
   isObjectsDeepEqual,
+  isSkylarkObjectType,
   pause,
+  platformMetaKeyClicked,
   readIntFromLocalStorage,
+  userIsOnMac,
 } from "./utils";
 
 describe("hasProperty", () => {
@@ -287,5 +293,89 @@ describe("readIntFromLocalStorage", () => {
 
     const got = readIntFromLocalStorage("key");
     expect(got).toBe(0);
+  });
+});
+
+describe("userIsOnMac", () => {
+  let platformGetter: jest.SpyInstance;
+
+  beforeEach(() => {
+    platformGetter = jest.spyOn(window.navigator, "platform", "get");
+  });
+
+  it("returns true when the navigator.platform is MacIntel", () => {
+    platformGetter.mockReturnValue("MacIntel");
+
+    const got = userIsOnMac();
+
+    expect(got).toBe(true);
+  });
+
+  it("returns true when the navigator.platform is Windows", () => {
+    platformGetter.mockReturnValue("Windows");
+
+    const got = userIsOnMac();
+
+    expect(got).toBe(false);
+  });
+});
+
+describe("platformMetaKeyClicked", () => {
+  let platformGetter: jest.SpyInstance;
+
+  beforeEach(() => {
+    platformGetter = jest.spyOn(window.navigator, "platform", "get");
+  });
+
+  it("returns true when the navigator.platform is MacIntel and e.metaKey is true", () => {
+    platformGetter.mockReturnValue("MacIntel");
+
+    const got = platformMetaKeyClicked({ metaKey: true } as KeyboardEvent);
+
+    expect(got).toBe(true);
+  });
+
+  it("returns false when the navigator.platform is MacIntel and e.metaKey is false", () => {
+    platformGetter.mockReturnValue("MacIntel");
+
+    const got = platformMetaKeyClicked({ metaKey: false } as KeyboardEvent);
+
+    expect(got).toBe(false);
+  });
+
+  it("returns true when the navigator.platform is Windows and e.ctrlKey is true", () => {
+    platformGetter.mockReturnValue("Windows");
+
+    const got = platformMetaKeyClicked({ ctrlKey: true } as KeyboardEvent);
+
+    expect(got).toBe(true);
+  });
+
+  it("returns false when the navigator.platform is Windows and e.ctrlKey is false", () => {
+    platformGetter.mockReturnValue("Windows");
+
+    const got = platformMetaKeyClicked({ ctrlKey: false } as KeyboardEvent);
+
+    expect(got).toBe(false);
+  });
+});
+
+describe("isSkylarkObjectType", () => {
+  it("returns true when the Object Type is Availability", () => {
+    const got = isSkylarkObjectType(BuiltInSkylarkObjectType.Availability);
+
+    expect(got).toBe(true);
+  });
+
+  it("returns true when the Object Type starts with Skylark", () => {
+    const got = isSkylarkObjectType(BuiltInSkylarkObjectType.SkylarkImage);
+
+    expect(got).toBe(true);
+  });
+
+  it("returns false when the Object Type does not start with Skylark", () => {
+    const got = isSkylarkObjectType("Episode");
+
+    expect(got).toBe(false);
   });
 });

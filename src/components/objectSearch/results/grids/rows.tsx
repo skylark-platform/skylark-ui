@@ -11,6 +11,7 @@ import {
 } from "src/interfaces/skylark";
 import { DragType, useDraggable } from "src/lib/dndkit/dndkit";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
+import { platformMetaKeyClicked } from "src/lib/utils";
 
 interface DataRowProps {
   tableId: string;
@@ -82,7 +83,7 @@ const DataRow = ({
             onClick={(e) => {
               const tableMeta = cellContext.table.options?.meta;
 
-              if (e.metaKey) {
+              if (platformMetaKeyClicked(e)) {
                 window.open(
                   `/object/${cell.row.original.objectType}/${cell.row.original.uid}?language=${cell.row.original.meta.language}`,
                   "_blank",
