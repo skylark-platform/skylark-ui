@@ -1,4 +1,4 @@
-import { HTMLInputTypeAttribute } from "react";
+import { HTMLInputTypeAttribute, MouseEvent } from "react";
 
 import {
   CLOUDINARY_ENVIRONMENT,
@@ -220,6 +220,13 @@ export function mergeRefs<T = unknown>(
 
 export const userIsOnMac = () =>
   navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+
+export const platformMetaKeyClicked = (
+  e: KeyboardEvent | MouseEvent<unknown, unknown>,
+) => {
+  const isMac = userIsOnMac();
+  return isMac ? e.metaKey : e.ctrlKey;
+};
 
 export const isSkylarkObjectType = (objectType: string) =>
   objectType === BuiltInSkylarkObjectType.Availability ||

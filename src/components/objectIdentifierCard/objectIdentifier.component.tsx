@@ -11,7 +11,7 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark/parsedObjects";
-import { getObjectDisplayName } from "src/lib/utils";
+import { getObjectDisplayName, platformMetaKeyClicked } from "src/lib/utils";
 
 interface ObjectIdentifierCardProps {
   object: ParsedSkylarkObject;
@@ -112,7 +112,7 @@ export const ObjectIdentifierCard = ({
         <OpenObjectButton
           disabled={disableForwardClick}
           onClick={(e) => {
-            if (e.metaKey) {
+            if (platformMetaKeyClicked(e)) {
               window.open(
                 `/object/${object.objectType}/${object.uid}?language=${
                   object?.meta?.language || ""

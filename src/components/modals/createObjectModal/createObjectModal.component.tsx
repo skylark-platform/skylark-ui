@@ -34,7 +34,7 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
-import { userIsOnMac } from "src/lib/utils";
+import { platformMetaKeyClicked } from "src/lib/utils";
 
 interface CreateObjectModalProps {
   isOpen: boolean;
@@ -179,9 +179,7 @@ const CreateObjectModalBody = forwardRef(
 
     useEffect(() => {
       const handleSaveKeyPress = (e: KeyboardEvent) => {
-        const isMac = userIsOnMac();
-
-        if ((isMac ? e.metaKey : e.ctrlKey) && e.key === "s") {
+        if (platformMetaKeyClicked(e) && e.key === "s") {
           e.preventDefault();
           submitButtonRef?.current?.scrollIntoView?.();
           if (!submitButtonRef?.current?.disabled) {
