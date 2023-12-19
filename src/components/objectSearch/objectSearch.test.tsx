@@ -125,6 +125,7 @@ test("calls setPanelObject when the row is clicked", async () => {
 });
 
 test("calls window.open to open the object in a new tab when the row is clicked", async () => {
+  jest.spyOn(window.navigator, "platform", "get").mockReturnValue("MacIntel");
   window.open = jest.fn();
 
   render(<ObjectSearch id="test" setPanelObject={jest.fn()} />);
