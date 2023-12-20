@@ -16,17 +16,17 @@ import { useState } from "react";
 
 import { AvailabilityPicker } from "src/components/inputs/availabilityPicker/availabilityPicker.component";
 import { LanguageSelect } from "src/components/inputs/select";
+import { ObjectSearchTableData } from "src/components/objectSearch/results/columnConfiguration";
 import { SearchFilter } from "src/components/objectSearch/search/searchFilter/searchFilter.component";
 import { SearchFilters } from "src/hooks/useSearch";
 import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 import { SearchInput } from "./searchInput/searchInput.component";
 
 interface SearchBarProps {
   filters: SearchFilters;
-  columns: ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[];
+  columns: ColumnDef<ObjectSearchTableData, ObjectSearchTableData>[];
   columnIds: string[];
   visibleColumns: VisibilityState;
   className?: string;

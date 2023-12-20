@@ -12,6 +12,7 @@ import { useEffect, useState, useMemo, memo, useCallback } from "react";
 
 import { Spinner } from "src/components/icons";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { CheckedObjectState } from "src/hooks/state";
 import { SearchFilters } from "src/hooks/useSearch";
 import {
   SearchType,
@@ -19,10 +20,7 @@ import {
 } from "src/hooks/useSearchWithLookupType";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import { useUserAccount } from "src/hooks/useUserAccount";
-import {
-  ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
-} from "src/interfaces/skylark";
+import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 import {
   hasProperty,
   isObjectsDeepEqual,
@@ -34,6 +32,7 @@ import {
   OBJECT_SEARCH_HARDCODED_COLUMNS,
   OBJECT_SEARCH_ORDERED_KEYS,
   OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+  ObjectSearchTableData,
   createObjectListingColumns,
 } from "./results/columnConfiguration";
 import {
@@ -148,6 +147,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     resetCheckedObjects,
     withObjectSelect,
     onStateChange,
+    checkedObjectsState,
   } = props;
 
   const withPanel = typeof setPanelObject !== "undefined";
@@ -438,7 +438,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         </div>
         {!hideBulkOptions && (
           <BulkObjectOptions
-            checkedObjectsState={props?.checkedObjectsState || []}
+            checkedObjectsState={checkedObjectsState || []}
             onObjectCheckedChanged={onObjectCheckedChanged}
           />
         )}
@@ -460,7 +460,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             fetchNextPage={fetchNextPage}
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
-            searchData={searchData}
+            searchData={searchData as ObjectSearchTableData[]}
             isSearching={isSearching}
             tableState={{
               ...tableState,
@@ -497,7 +497,9 @@ const objectSearchPropsAreEqual = (
   return isShallowSame;
 };
 
-export const MemoizedObjectSearch = memo(
-  ObjectSearch,
-  objectSearchPropsAreEqual,
-);
+// export const MemoizedObjectSearch = memo(
+//   ObjectSearch,
+//   objectSearchPropsAreEqual,
+// );
+
+export const MemoizedObjectSearch = ObjectSearch;

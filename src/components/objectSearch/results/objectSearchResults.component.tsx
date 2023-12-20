@@ -3,7 +3,6 @@ import {
   ColumnDef,
   useReactTable,
   getCoreRowModel,
-  Row,
   Header,
   TableState,
   Updater,
@@ -31,7 +30,10 @@ import {
   skylarkObjectsAreSame,
 } from "src/lib/utils";
 
-import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "./columnConfiguration";
+import {
+  OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+  ObjectSearchTableData,
+} from "./columnConfiguration";
 import {
   ObjectSearchResultGridDivider,
   ObjectSearchResultsLeftGrid,
@@ -40,13 +42,13 @@ import {
 
 export interface ObjectSearchResultsProps {
   tableId: string;
-  tableColumns: ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[];
+  tableColumns: ColumnDef<ObjectSearchTableData, ObjectSearchTableData>[];
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
   setPanelObject?: (obj: SkylarkObjectIdentifier, tab?: PanelTab) => void;
   fetchNextPage?: () => void;
-  searchData?: ParsedSkylarkObject[];
+  searchData?: ObjectSearchTableData[];
   hasNextPage?: boolean;
   isSearching?: boolean;
   isFetchingNextPage?: boolean;
@@ -159,16 +161,14 @@ export const ObjectSearchResults = ({
   const onRowCheckChange = useCallback(
     (updated: { object: ParsedSkylarkObject; checkedState: CheckedState }) => {
       if (onObjectCheckedChanged && checkedObjectsState) {
-        const existsIndex = checkedObjectsState.findIndex(
-          (c) => updated.object === c.object,
+        const existsIndex = checkedObjectsState.findIndex((c) =>
+          skylarkObjectsAreSame(updated.object, c.object),
         );
 
-        console.log({ updated, existsIndex });
-
         if (existsIndex > -1) {
-          checkedObjectsState[existsIndex] = updated;
-          console.log({ checkedObjectsState });
-          onObjectCheckedChanged(checkedObjectsState);
+          const copyArr = [...checkedObjectsState];
+          copyArr[existsIndex] = updated;
+          onObjectCheckedChanged(copyArr);
         } else {
           onObjectCheckedChanged([...checkedObjectsState, updated]);
         }
@@ -177,30 +177,25 @@ export const ObjectSearchResults = ({
     [checkedObjectsState, onObjectCheckedChanged],
   );
 
-  // const rowCheckedState: Record<number, CheckedState> = useMemo(() => {
-  //   return withObjectSelect && checkedObjectsState && searchData
-  //     ? checkedObjectsState.reduce(
-  //         (acc, { object: checkedObj, checkedState }) => {
-  //           const index = searchData.findIndex((searchDataObj) =>
-  //             skylarkObjectsAreSame(checkedObj, searchDataObj),
-  //           );
+  const rowCheckedState: Record<string, boolean> =
+    withObjectSelect && checkedObjectsState && searchData
+      ? checkedObjectsState.reduce(
+          (acc, { object: checkedObj, checkedState }) => {
+            const index = searchData.findIndex((searchDataObj) =>
+              skylarkObjectsAreSame(checkedObj, searchDataObj),
+            );
 
-  //           console.log({ index, checkedState });
-
-  //           if (index > -1) {
-  //             return {
-  //               ...acc,
-  //               [index]: checkedState,
-  //             };
-  //           }
-  //           return acc;
-  //         },
-  //         {},
-  //       )
-  //     : {};
-  // }, [checkedObjectsState, searchData, withObjectSelect]);
-
-  // console.log({ rowCheckedState, checkedObjectsState });
+            if (index > -1) {
+              return {
+                ...acc,
+                [index]: Boolean(checkedState),
+              };
+            }
+            return acc;
+          },
+          {},
+        )
+      : {};
 
   const batchCheckRows = useCallback(
     (type: "shift" | "clear-all", rowIndex?: number) => {
@@ -267,12 +262,13 @@ export const ObjectSearchResults = ({
       1 !==
       frozenColumns.indexOf(OBJECT_LIST_TABLE.columnIds.objectType);
 
-  const table = useReactTable<ParsedSkylarkObject>({
+  const table = useReactTable<ObjectSearchTableData>({
     debugAll: false,
-    data: (formattedSearchData as ParsedSkylarkObject[]) || emptyArray,
+    data: (formattedSearchData as ObjectSearchTableData[]) || emptyArray,
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: "onChange",
+    enableRowSelection: true,
     state: {
       ...tableState,
       columnVisibility: {
@@ -280,6 +276,7 @@ export const ObjectSearchResults = ({
         [OBJECT_LIST_TABLE.columnIds.objectTypeIndicator]:
           showObjectTypeIndicator,
       },
+      rowSelection: rowCheckedState,
     },
     onStateChange: setTableState,
     meta: {
@@ -324,7 +321,7 @@ export const ObjectSearchResults = ({
   );
 
   const headers = table.getHeaderGroups()[0].headers as Header<
-    ParsedSkylarkObject,
+    ObjectSearchTableData,
     string
   >[];
 
@@ -484,7 +481,7 @@ export const ObjectSearchResults = ({
                 virtualRows={rowVirtualizer.virtualItems}
                 headers={headers}
                 leftGridSize={leftGridTotalSize}
-                rows={rows as Row<ParsedSkylarkObject>[]}
+                rows={rows}
                 hasScrolledRight={hasScrolledRight}
                 panelObject={panelObject || null}
                 hoveredRow={hoveredRow}
@@ -514,7 +511,7 @@ export const ObjectSearchResults = ({
                 virtualColumns={virtualColumns.right}
                 virtualRows={rowVirtualizer.virtualItems}
                 headers={headers}
-                rows={rows as Row<ParsedSkylarkObject>[]}
+                rows={rows}
                 leftGridSize={leftGridTotalSize}
                 panelObject={panelObject || null}
                 hoveredRow={hoveredRow}
@@ -553,7 +550,9 @@ const ObjectSearchResultsPropsAreEqual = (
   return isShallowSame;
 };
 
-export const MemoizedObjectSearchResults = memo(
-  ObjectSearchResults,
-  ObjectSearchResultsPropsAreEqual,
-);
+// export const MemoizedObjectSearchResults = memo(
+//   ObjectSearchResults,
+//   ObjectSearchResultsPropsAreEqual,
+// );
+
+export const MemoizedObjectSearchResults = ObjectSearchResults;

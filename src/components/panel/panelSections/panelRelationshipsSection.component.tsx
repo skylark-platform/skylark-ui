@@ -1,5 +1,4 @@
 import { useState, Fragment } from "react";
-import { CgSpinner } from "react-icons/cg";
 import { sentenceCase } from "sentence-case";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";

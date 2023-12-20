@@ -103,13 +103,17 @@ test("calls onSave with the selected rows", async () => {
   fireEvent.click(screen.getByTestId("search-objects-modal-save"));
 
   expect(onSave).toHaveBeenCalledWith({
-    checkedObjects: [
-      expect.objectContaining({
-        uid: GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
-        objectType:
-          GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
-            .__typename,
-      }),
+    checkedObjectsState: [
+      {
+        checkedState: true,
+        object: expect.objectContaining({
+          uid: GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+            .uid,
+          objectType:
+            GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+              .__typename,
+        }),
+      },
     ],
   });
 });

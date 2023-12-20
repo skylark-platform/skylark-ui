@@ -2,9 +2,11 @@ import { Header, flexRender } from "@tanstack/react-table";
 import clsx from "clsx";
 import { VirtualItem } from "react-virtual";
 
-import { columnsWithoutResize } from "src/components/objectSearch/results/columnConfiguration";
+import {
+  ObjectSearchTableData,
+  columnsWithoutResize,
+} from "src/components/objectSearch/results/columnConfiguration";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
 import { DragType, useDraggable, useDroppable } from "src/lib/dndkit/dndkit";
 
 export const HeaderCell = ({
@@ -16,7 +18,7 @@ export const HeaderCell = ({
   onMouseEnter,
 }: {
   tableId: string;
-  header: Header<ParsedSkylarkObject, string>;
+  header: Header<ObjectSearchTableData, string>;
   virtualColumn: VirtualItem;
   paddingLeft?: number;
   isDraggable?: boolean;

@@ -41,11 +41,9 @@ const generateSaveMessage = ({
     ({ uid }) => !existingUids.includes(uid),
   );
 
-  const removedObjects = existingObjects.filter(
-    ({ uid }) => !checkedUids.includes(uid),
-  );
-
-  console.log({ addedObjects, removedObjects });
+  // const removedObjects = existingObjects.filter(
+  //   ({ uid }) => !checkedUids.includes(uid),
+  // );
 
   const objectTypeStr =
     checkedObjectTypesForDisplay.length === 1
@@ -53,20 +51,20 @@ const generateSaveMessage = ({
       : "Objects";
 
   const addStr = addedObjects.length > 0 ? `Add ${addedObjects.length}` : "";
-  const removeStr =
-    removedObjects.length > 0 ? `Remove ${removedObjects.length}` : "";
+  // const removeStr =
+  //   removedObjects.length > 0 ? `Remove ${removedObjects.length}` : "";
 
-  if (addStr && removeStr) {
-    return `${addStr} & ${removeStr} ${objectTypeStr}`;
-  }
+  // if (addStr && removeStr) {
+  //   return `${addStr} & ${removeStr} ${objectTypeStr}`;
+  // }
 
   if (addStr) {
     return `${addStr} ${objectTypeStr}`;
   }
 
-  if (removeStr) {
-    return `${removeStr} ${objectTypeStr}`;
-  }
+  // if (removeStr) {
+  //   return `${removeStr} ${objectTypeStr}`;
+  // }
 
   return null;
 };
@@ -87,14 +85,11 @@ export const SearchObjectsModal = ({
     checkedObjectTypesForDisplay,
     setCheckedObjectsState,
     resetCheckedObjects,
-  } = useCheckedObjectsState(
-    existingObjects?.map((object) => ({
-      object,
-      checkedState: "indeterminate",
-    })),
-  );
-
-  console.log({ checkedObjectsState });
+  } = useCheckedObjectsState();
+  // existingObjects?.map((object) => ({
+  //   object,
+  //   checkedState: "indeterminate",
+  // })),
 
   const onModalCloseWrapper = () => {
     onSave({ checkedObjectsState });

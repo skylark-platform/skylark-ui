@@ -407,7 +407,9 @@ export const PanelRelationships = ({
           closeModal={() => setSearchObjectsModalState(null)}
           onSave={({ checkedObjectsState }) => {
             const { addedObjects, errors } = handleDroppedRelationships({
-              droppedObjects: checkedObjectsState,
+              droppedObjects: checkedObjectsState
+                .filter(({ checkedState }) => checkedState === true)
+                .map(({ object }) => object),
               activeObjectUid: uid,
               existingObjects: relationships,
               objectMetaRelationships,

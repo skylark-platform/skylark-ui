@@ -3,6 +3,8 @@ import {
   Table,
   createColumnHelper,
   Cell as ReactTableCell,
+  Row,
+  TableMeta,
 } from "@tanstack/react-table";
 
 import { AvailabilityLabel } from "src/components/availability";
@@ -28,7 +30,8 @@ import {
 
 import { Cell } from "./grids/cell.component";
 
-type ObjectSearchTableData = ParsedSkylarkObject & Record<string, string>;
+export type ObjectSearchTableData = ParsedSkylarkObject &
+  Record<string, string>;
 
 export const OBJECT_SEARCH_HARDCODED_COLUMNS = [
   OBJECT_LIST_TABLE.columnIds.displayField,
@@ -63,12 +66,12 @@ export const columnsWithoutResize = [
   OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
 ];
 
-const getRowCheckedState = (
-  cell: ReactTableCell<ObjectSearchTableData, unknown>,
-  table: Table<ObjectSearchTableData>,
+export const getObjectSearchRowCheckedState = (
+  row: Row<ObjectSearchTableData>,
+  tableMeta?: TableMeta<ObjectSearchTableData>,
 ) =>
-  table.options.meta?.checkedObjectsState?.find(({ object }) =>
-    skylarkObjectsAreSame(object, cell.row.original),
+  tableMeta?.checkedObjectsState?.find(({ object }) =>
+    skylarkObjectsAreSame(object, row.original),
   )?.checkedState;
 
 const columnHelper = createColumnHelper<ObjectSearchTableData>();
@@ -354,21 +357,22 @@ const selectColumn = columnHelper.display({
         onClick={() => tableMeta.batchCheckRows("clear-all")}
       />
     ),
-  cell: ({ cell, table }) => {
-    const checkedState = getRowCheckedState(cell, table);
+  cell: ({ cell, table, row }) => {
     const tableMeta = table.options.meta;
+    const checked = row.getIsSelected();
+
     return (
       <Checkbox
-        checked={checkedState}
+        checked={checked}
+        disabled={!row.getCanSelect()}
         // Not using onCheckChanged so that we have access to the native click event
         onClick={(e) => {
           e.stopPropagation();
           if (e.shiftKey) {
             tableMeta?.batchCheckRows("shift", cell.row.index);
           } else {
-            console.log("Click", checkedState);
             tableMeta?.onRowCheckChange?.({
-              checkedState: !checkedState,
+              checkedState: !checked,
               object: cell.row.original as ParsedSkylarkObject,
             });
           }
@@ -381,7 +385,7 @@ const selectColumn = columnHelper.display({
 export const createObjectListingColumns = (
   columns: string[],
   opts: { withObjectSelect?: boolean; withPanel: boolean },
-): ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[] => {
+): ColumnDef<ObjectSearchTableData, ObjectSearchTableData>[] => {
   const createdColumns = columns
     .filter((column) => !OBJECT_SEARCH_HARDCODED_COLUMNS.includes(column))
     .map((column) =>
@@ -443,13 +447,13 @@ export const createObjectListingColumns = (
     //   >[];
     // }
     return [dragIconColumn, selectColumn, ...orderedColumnArray] as ColumnDef<
-      ParsedSkylarkObject,
-      ParsedSkylarkObject
+      ObjectSearchTableData,
+      ObjectSearchTableData
     >[];
   }
 
   return orderedColumnArray as ColumnDef<
-    ParsedSkylarkObject,
-    ParsedSkylarkObject
+    ObjectSearchTableData,
+    ObjectSearchTableData
   >[];
 };

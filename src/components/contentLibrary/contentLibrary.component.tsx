@@ -91,15 +91,13 @@ export const ContentLibrary = ({
   } = usePanelObjectState();
 
   const {
-    checkedObjectsState,
     checkedObjects,
+    checkedObjectsState,
     checkedUids,
     checkedObjectTypesForDisplay,
     setCheckedObjectsState,
     resetCheckedObjects,
   } = useCheckedObjectsState();
-
-  console.log("Content library", { checkedObjectsState });
 
   const [activeDragged, setActiveDragged] = useState<Active | null>(null);
   const isDraggingObject =
