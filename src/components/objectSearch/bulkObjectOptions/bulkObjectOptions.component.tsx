@@ -20,19 +20,6 @@ export const BulkObjectOptions = ({
 }: BulkObjectOptionsProps) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const removeObject = useCallback(
-    (uid: string) => {
-      const updatedObjects = checkedObjectsState.map(
-        ({ object, checkedState }) =>
-          object.uid === uid
-            ? { object, checkedState: false }
-            : { object, checkedState },
-      );
-      onObjectCheckedChanged?.(updatedObjects);
-    },
-    [onObjectCheckedChanged, checkedObjectsState],
-  );
-
   return (
     <div className="max-sm:hidden">
       <DropdownMenu
@@ -67,7 +54,6 @@ export const BulkObjectOptions = ({
           .map(({ object }) => object)}
         isOpen={deleteModalOpen}
         closeModal={() => setDeleteModalOpen(false)}
-        removeObject={removeObject}
         onDeletionComplete={(deletedObjects) => {
           onObjectCheckedChanged?.(
             checkedObjectsState.filter(

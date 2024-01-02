@@ -93,14 +93,14 @@ describe("delete objects", () => {
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText("Delete objects"));
-
     return {
       onObjectCheckedChanged,
     };
   };
 
   const confirmDeletion = async (numObjects: number) => {
+    fireEvent.click(screen.getByText("Delete objects"));
+
     const confirmationButton = screen.getByText(
       `Permanently delete ${numObjects} object(s)`,
     );
@@ -150,5 +150,19 @@ describe("delete objects", () => {
       defaultCheckedObjectState[0],
       defaultCheckedObjectState[3],
     ]);
+  });
+
+  test("opens and closes bulk delete modal", async () => {
+    await renderAndOpenBulkDeleteModal();
+
+    fireEvent.click(screen.getByText("Cancel"));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(
+          "The following objects will be permanently deleted:",
+        ),
+      ).not.toBeInTheDocument();
+    });
   });
 });
