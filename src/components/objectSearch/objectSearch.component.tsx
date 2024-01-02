@@ -497,9 +497,7 @@ const objectSearchPropsAreEqual = (
   return isShallowSame;
 };
 
-// export const MemoizedObjectSearch = memo(
-//   ObjectSearch,
-//   objectSearchPropsAreEqual,
-// );
-
-export const MemoizedObjectSearch = ObjectSearch;
+export const MemoizedObjectSearch = memo(
+  ObjectSearch,
+  objectSearchPropsAreEqual,
+);

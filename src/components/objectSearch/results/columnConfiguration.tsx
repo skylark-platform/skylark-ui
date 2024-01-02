@@ -1,11 +1,4 @@
-import {
-  ColumnDef,
-  Table,
-  createColumnHelper,
-  Cell as ReactTableCell,
-  Row,
-  TableMeta,
-} from "@tanstack/react-table";
+import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 
 import { AvailabilityLabel } from "src/components/availability";
 import { Checkbox } from "src/components/inputs/checkbox";
@@ -25,7 +18,6 @@ import {
   formatObjectField,
   getObjectDisplayName,
   hasProperty,
-  skylarkObjectsAreSame,
 } from "src/lib/utils";
 
 import { Cell } from "./grids/cell.component";
@@ -65,14 +57,6 @@ export const columnsWithoutResize = [
   OBJECT_LIST_TABLE.columnIds.checkbox,
   OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
 ];
-
-export const getObjectSearchRowCheckedState = (
-  row: Row<ObjectSearchTableData>,
-  tableMeta?: TableMeta<ObjectSearchTableData>,
-) =>
-  tableMeta?.checkedObjectsState?.find(({ object }) =>
-    skylarkObjectsAreSame(object, row.original),
-  )?.checkedState;
 
 const columnHelper = createColumnHelper<ObjectSearchTableData>();
 

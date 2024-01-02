@@ -177,7 +177,13 @@ export const ObjectSearchResults = ({
     [checkedObjectsState, onObjectCheckedChanged],
   );
 
-  const rowCheckedState: Record<string, boolean> =
+  const {
+    rowCheckedState,
+    rowIndeterminateCheckedState,
+  }: {
+    rowCheckedState: Record<string, boolean>;
+    rowIndeterminateCheckedState: Record<string, boolean>;
+  } =
     withObjectSelect && checkedObjectsState && searchData
       ? checkedObjectsState.reduce(
           (acc, { object: checkedObj, checkedState }) => {
@@ -186,16 +192,26 @@ export const ObjectSearchResults = ({
             );
 
             if (index > -1) {
-              return {
-                ...acc,
+              const rowCheckedState = {
+                ...acc.rowCheckedState,
                 [index]: Boolean(checkedState),
+              };
+
+              const rowIndeterminateCheckedState = {
+                ...acc.rowIndeterminateCheckedState,
+                [index]: checkedState === "indeterminate",
+              };
+
+              return {
+                rowCheckedState,
+                rowIndeterminateCheckedState,
               };
             }
             return acc;
           },
-          {},
+          { rowCheckedState: {}, rowIndeterminateCheckedState: {} },
         )
-      : {};
+      : { rowCheckedState: {}, rowIndeterminateCheckedState: {} };
 
   const batchCheckRows = useCallback(
     (type: "shift" | "clear-all", rowIndex?: number) => {
@@ -268,7 +284,7 @@ export const ObjectSearchResults = ({
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: "onChange",
-    enableRowSelection: true,
+    enableRowSelection: (row) => !rowIndeterminateCheckedState[row.id], // Allows us to disable existing objects from being selected
     state: {
       ...tableState,
       columnVisibility: {
@@ -550,9 +566,7 @@ const ObjectSearchResultsPropsAreEqual = (
   return isShallowSame;
 };
 
-// export const MemoizedObjectSearchResults = memo(
-//   ObjectSearchResults,
-//   ObjectSearchResultsPropsAreEqual,
-// );
-
-export const MemoizedObjectSearchResults = ObjectSearchResults;
+export const MemoizedObjectSearchResults = memo(
+  ObjectSearchResults,
+  ObjectSearchResultsPropsAreEqual,
+);

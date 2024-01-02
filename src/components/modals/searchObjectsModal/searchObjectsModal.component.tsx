@@ -86,12 +86,14 @@ export const SearchObjectsModal = ({
     checkedObjectTypesForDisplay,
     setCheckedObjectsState,
     resetCheckedObjects,
-  } = useCheckedObjectsState();
-  // existingObjects?.map((object) => ({
-  //   object,
-  //   checkedState: "indeterminate",
-  // })),
-
+  } = useCheckedObjectsState(
+    existingObjects?.map(
+      (object): CheckedObjectState => ({
+        checkedState: "indeterminate",
+        object,
+      }),
+    ),
+  );
   const onModalCloseWrapper = () => {
     onSave({ checkedObjectsState });
     closeModal();
