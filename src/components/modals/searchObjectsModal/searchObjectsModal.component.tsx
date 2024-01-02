@@ -50,7 +50,8 @@ const generateSaveMessage = ({
       ? `${checkedObjectTypesForDisplay[0]}`
       : "Objects";
 
-  const addStr = addedObjects.length > 0 ? `Add ${addedObjects.length}` : "";
+  const addStr = addedObjects.length > 0 ? `${addedObjects.length}` : "";
+  // const addStr = addedObjects.length > 0 ? `Add ${addedObjects.length}` : "";
   // const removeStr =
   //   removedObjects.length > 0 ? `Remove ${removedObjects.length}` : "";
 
@@ -152,7 +153,8 @@ export const SearchObjectsModal = ({
           success
           data-testid="search-objects-modal-save"
         >
-          Save
+          {/* Save */}
+          Add
         </Button>
         <Button variant="outline" type="button" danger onClick={closeModal}>
           Cancel

@@ -104,7 +104,7 @@ describe("Content Library - Object Panel - Availability tab", () => {
 
       cy.contains(allDevicesAllCustomersAvailability).click();
 
-      cy.contains("Add 1").click();
+      cy.contains("button", "Add").click();
 
       cy.get("[data-testid=search-objects-modal-save]").should("not.exist");
 
