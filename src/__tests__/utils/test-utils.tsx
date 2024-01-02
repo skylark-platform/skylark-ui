@@ -17,12 +17,6 @@ const AllTheProviders = ({ children }: { children: ReactNode }) => {
         retry: false,
       },
     },
-    logger: {
-      log: console.log,
-      warn: console.warn,
-      // stub request errors in tests
-      error: jest.fn(),
-    },
   });
 
   return (

@@ -45,7 +45,11 @@ const generateQueryFunctionAndKey = ({
     uid: string;
   };
 }): {
-  queryFn: QueryFunction<GQLSkylarkGetObjectAvailabilityResponse, QueryKey>;
+  queryFn: QueryFunction<
+    GQLSkylarkGetObjectAvailabilityResponse,
+    QueryKey,
+    unknown
+  >;
   queryKey: QueryKey;
   query: DocumentNode | null;
 } => {
@@ -56,7 +60,8 @@ const generateQueryFunctionAndKey = ({
 
   const queryFn: QueryFunction<
     GQLSkylarkGetObjectAvailabilityResponse,
-    QueryKey
+    QueryKey,
+    unknown
   > = async ({ pageParam: nextToken }) =>
     skylarkRequest("query", query as RequestDocument, {
       ...variables,
@@ -103,7 +108,11 @@ export const prefetchGetObjectAvailability = async ({
       uid,
       variables,
     });
-    await queryClient.prefetchInfiniteQuery({ queryKey, queryFn });
+    await queryClient.prefetchInfiniteQuery({
+      queryKey,
+      queryFn,
+      initialPageParam: "",
+    });
   }
 };
 
@@ -132,6 +141,7 @@ export const useGetObjectAvailability = (
   >({
     queryFn,
     queryKey,
+    initialPageParam: "",
     getNextPageParam: (lastPage): string | undefined =>
       lastPage.getObjectAvailability.availability?.next_token || undefined,
   });

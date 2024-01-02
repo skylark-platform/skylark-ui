@@ -33,7 +33,7 @@ export const useDeleteObject = ({
     isDeleteTranslation,
   );
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: ({ uid, language }: { uid: string; language?: string }) => {
       return skylarkRequest(
         "mutation",
@@ -57,6 +57,6 @@ export const useDeleteObject = ({
 
   return {
     deleteObject: mutate,
-    isDeleting: isLoading,
+    isDeleting: isPending,
   };
 };

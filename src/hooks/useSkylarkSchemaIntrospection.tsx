@@ -38,7 +38,7 @@ export const useSkylarkSchemaIntrospection = <
       ),
     select,
     staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: Infinity,
+    gcTime: Infinity,
   });
   return {
     data: data,

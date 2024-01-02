@@ -29,6 +29,7 @@ export const useAvailabilityObjectDimensions = (uid: string) => {
       query,
       variables,
     ],
+    initialPageParam: "",
     queryFn: async ({ pageParam: nextToken }) =>
       skylarkRequest("query", query as RequestDocument, {
         ...variables,
