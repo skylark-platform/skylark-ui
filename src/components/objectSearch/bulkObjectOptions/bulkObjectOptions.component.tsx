@@ -50,7 +50,11 @@ export const BulkObjectOptions = ({
         <DropdownMenuButton
           as={Button}
           variant="neutral"
-          disabled={checkedObjectsState.length === 0}
+          disabled={
+            checkedObjectsState.filter(
+              ({ checkedState }) => checkedState === true,
+            ).length === 0
+          }
           className="whitespace-nowrap"
           Icon={<FiMoreVertical className="-mr-1 text-2xl" />}
         >

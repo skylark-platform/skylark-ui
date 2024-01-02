@@ -334,7 +334,9 @@ const selectColumn = columnHelper.display({
     },
   }) =>
     tableMeta?.checkedObjectsState &&
-    tableMeta?.checkedObjectsState.length > 0 && (
+    tableMeta.checkedObjectsState.some(
+      ({ checkedState }) => checkedState === true,
+    ) && (
       <Checkbox
         aria-label="clear-all-checked-objects"
         checked="indeterminate"
