@@ -24,7 +24,7 @@ export const useUpdateRelationshipConfig = ({
 }) => {
   const queryClient = useQueryClient();
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: ({ objectType, relationshipConfig }: MutationArgs) => {
       const mutation = createUpdateRelationshipConfigMutation(
         objectType,
@@ -51,6 +51,6 @@ export const useUpdateRelationshipConfig = ({
 
   return {
     updateRelationshipConfig: mutate,
-    isUpdatingRelationshipConfig: isLoading,
+    isUpdatingRelationshipConfig: isPending,
   };
 };

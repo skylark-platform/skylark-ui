@@ -106,7 +106,7 @@ const CreateObjectModalBody = forwardRef(
       isCreateTranslationModal ? createTranslation.objectType : objectType,
     );
 
-    const { createObject, isLoading: isCreatingObject } = useCreateObject({
+    const { createObject, isPending: isCreatingObject } = useCreateObject({
       objectType,
       onSuccess: (object) => {
         onObjectCreated?.(object);

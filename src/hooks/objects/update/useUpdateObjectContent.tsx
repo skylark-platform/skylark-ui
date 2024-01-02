@@ -30,7 +30,7 @@ export const useUpdateObjectContent = ({
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: ({
       uid,
       originalContentObjects,
@@ -60,6 +60,6 @@ export const useUpdateObjectContent = ({
 
   return {
     updateObjectContent: mutate,
-    isUpdatingObjectContent: isLoading,
+    isUpdatingObjectContent: isPending,
   };
 };

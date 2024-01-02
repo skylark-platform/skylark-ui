@@ -58,6 +58,7 @@ export const useGetObjectContentOf = (
       query,
       variables,
     ],
+    initialPageParam: "",
     queryFn: async ({ pageParam: nextToken }) =>
       skylarkRequest("query", query as RequestDocument, {
         ...variables,

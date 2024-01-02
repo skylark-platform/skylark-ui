@@ -44,7 +44,7 @@ export const useCreateObject = ({
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: ({
       language,
       metadata,
@@ -81,6 +81,6 @@ export const useCreateObject = ({
 
   return {
     createObject,
-    isLoading,
+    isPending,
   };
 };

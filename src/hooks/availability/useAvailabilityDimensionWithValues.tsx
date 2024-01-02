@@ -1,4 +1,8 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  QueryKey,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
 import { useMemo } from "react";
 
@@ -47,19 +51,25 @@ export const useAvailabilityDimensionsWithValues = () => {
     dimensionsWithoutValues && dimensionsWithoutValues.length > 0,
   );
 
-  const { data, fetchNextPage, hasNextPage, isLoading } =
-    useInfiniteQuery<GQLSkylarkListAvailabilityDimensionValuesResponse>({
-      queryKey: [QueryKeys.AvailabilityDimensions, dimensionsWithoutValues],
-      queryFn: async ({ pageParam: nextTokens }) => {
-        const query = createGetAvailabilityDimensionValues(
-          dimensionsWithoutValues,
-          nextTokens,
-        );
-        return skylarkRequest("query", query as DocumentNode);
-      },
-      getNextPageParam,
-      enabled: hasDimensions,
-    });
+  const { data, fetchNextPage, hasNextPage, isLoading } = useInfiniteQuery<
+    GQLSkylarkListAvailabilityDimensionValuesResponse,
+    Error,
+    InfiniteData<GQLSkylarkListAvailabilityDimensionValuesResponse>,
+    QueryKey,
+    Record<string, string>
+  >({
+    queryKey: [QueryKeys.AvailabilityDimensions, dimensionsWithoutValues],
+    queryFn: async ({ pageParam: nextTokens }) => {
+      const query = createGetAvailabilityDimensionValues(
+        dimensionsWithoutValues,
+        nextTokens,
+      );
+      return skylarkRequest("query", query as DocumentNode);
+    },
+    initialPageParam: {},
+    getNextPageParam,
+    enabled: hasDimensions,
+  });
 
   // This if statement ensures that all data is fetched
   if (hasNextPage) {
