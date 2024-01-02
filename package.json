@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@dnd-kit/core": "6.1.0",
-    "@dnd-kit/modifiers": "6.0.1",
+    "@dnd-kit/modifiers": "7.0.0",
     "@flatfile/sdk": "2.5.0",
     "@floating-ui/react": "0.26.4",
     "@fontsource/inter": "4.5.15",
