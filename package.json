@@ -40,7 +40,7 @@
     "@tinymce/tinymce-react": "4.3.2",
     "@vvo/tzdb": "6.123.0",
     "autoprefixer": "10.4.16",
-    "clsx": "1.2.1",
+    "clsx": "2.1.0",
     "daisyui": "2.52.0",
     "dayjs": "1.11.10",
     "framer-motion": "9.1.7",
