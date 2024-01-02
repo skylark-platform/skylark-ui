@@ -98,6 +98,7 @@ export const useSearch = ({
         {},
         headers,
       ),
+    initialPageParam: 0,
     getNextPageParam: (lastPage, pages): number | undefined => {
       const totalNumObjects = pages.flatMap(
         (page) => page.search.objects,

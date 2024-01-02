@@ -20,7 +20,7 @@ export const useUpdateAvailabilityAssignedTo = ({
   const queryClient = useQueryClient();
   const { objects: allObjectsMeta } = useAllObjectsMeta();
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: ({
       uid,
       modifiedAvailabilityAssignedTo,
@@ -58,6 +58,6 @@ export const useUpdateAvailabilityAssignedTo = ({
 
   return {
     updateAvailabilityAssignedTo: mutate,
-    isUpdatingAvailabilityAssignedTo: isLoading,
+    isUpdatingAvailabilityAssignedTo: isPending,
   };
 };

@@ -101,7 +101,7 @@ export const createGetObjectAvailabilityQuery = (
         },
         availability: {
           __args: {
-            limit: 10,
+            limit: 20,
             next_token: new VariableType("nextToken"),
           },
           next_token: true,
@@ -297,7 +297,7 @@ export const createGetObjectContentOfQuery = (
         },
         content_of: {
           __args: {
-            limit: 20,
+            limit: 100,
             next_token: new VariableType("nextToken"),
           },
           next_token: true,

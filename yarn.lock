@@ -3823,23 +3823,24 @@
   resolved "https://registry.yarnpkg.com/@swc/types/-/types-0.1.5.tgz#043b731d4f56a79b4897a3de1af35e75d56bc63a"
   integrity sha512-myfUej5naTBWnqOCc/MdVOLVjXUXtIA+NpDrDBKJtLLg2shUjBu3cZmB/85RyitKc55+lUUyl7oRfLOvkr2hsw==
 
-"@tanstack/eslint-plugin-query@4.36.1":
-  version "4.36.1"
-  resolved "https://registry.yarnpkg.com/@tanstack/eslint-plugin-query/-/eslint-plugin-query-4.36.1.tgz#dfae878104193a0ed1c2afdbea091048e1211d5e"
-  integrity sha512-qFIYV/BuwWzg0t5mSRMcb+rzrOVtCO9EizYxeClFxuFq/c54cNhAQCnDrA3iCxFz/fqRv7I9rxxnR/ZWkX15cQ==
-
-"@tanstack/query-core@4.36.1":
-  version "4.36.1"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.36.1.tgz#79f8c1a539d47c83104210be2388813a7af2e524"
-  integrity sha512-DJSilV5+ytBP1FbFcEJovv4rnnm/CokuVvrBEtW/Va9DvuJ3HksbXUJEpI0aV1KtuL4ZoO9AVE6PyNLzF7tLeA==
-
-"@tanstack/react-query@4.36.1":
-  version "4.36.1"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-4.36.1.tgz#acb589fab4085060e2e78013164868c9c785e5d2"
-  integrity sha512-y7ySVHFyyQblPl3J3eQBWpXZkliroki3ARnBKsdJchlgt7yJLRDUcf4B8soufgiYt3pEQIkBWBx1N9/ZPIeUWw==
+"@tanstack/eslint-plugin-query@5.14.6":
+  version "5.14.6"
+  resolved "https://registry.yarnpkg.com/@tanstack/eslint-plugin-query/-/eslint-plugin-query-5.14.6.tgz#aef5cabe5a4e156a81f5522c0874f826f71da953"
+  integrity sha512-vpowwoGoB9JgZy8fljf53ZTW2yYLRQ3Tjx4WQFKxiKugQOctxaTjQk7wlYzuqA/gjzfPL9qHfKW5DTT9CmIpkA==
   dependencies:
-    "@tanstack/query-core" "4.36.1"
-    use-sync-external-store "^1.2.0"
+    "@typescript-eslint/utils" "^5.62.0"
+
+"@tanstack/query-core@5.17.0":
+  version "5.17.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.17.0.tgz#3fd41e8557de9904c76e92b3820f62407223c990"
+  integrity sha512-LoBaPtbMY26kRS+ohII4thTsWkJJsXKGitOLikTo2aqPA4yy7cfFJITs8DRnuERT7tLF5xfG9Lnm33Vp/38Vmw==
+
+"@tanstack/react-query@5.17.0":
+  version "5.17.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.17.0.tgz#3a50e2eb2310cfb560ddf97fd4ffac1da092a586"
+  integrity sha512-iNSn6ZA7mHUjrT0a271eKoa1oR1HznlrGbb475awft1kuP3zrhyUCrI8tlGowOr7zRoAxJholjwxO+gfz1IObw==
+  dependencies:
+    "@tanstack/query-core" "5.17.0"
 
 "@tanstack/react-table@8.11.2":
   version "8.11.2"
@@ -4572,7 +4573,7 @@
     "@typescript-eslint/typescript-estree" "6.17.0"
     semver "^7.5.4"
 
-"@typescript-eslint/utils@^5.10.0", "@typescript-eslint/utils@^5.45.0":
+"@typescript-eslint/utils@^5.10.0", "@typescript-eslint/utils@^5.45.0", "@typescript-eslint/utils@^5.62.0":
   version "5.62.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-5.62.0.tgz#141e809c71636e4a75daa39faed2fb5f4b10df86"
   integrity sha512-n8oxjeb5aIbPFEtmQxQYOLI0i9n5ySBEY/ZEHHZqKQSFnxio1rv6dthascc9dLuwrL0RC5mPCxB7vnAVGAYWAQ==
@@ -5915,7 +5916,12 @@ clone@^1.0.2:
   resolved "https://registry.yarnpkg.com/clone/-/clone-1.0.4.tgz#da309cc263df15994c688ca902179ca3c7cd7c7e"
   integrity sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==
 
-clsx@1.2.1, clsx@^1.1.1, clsx@^1.2.1:
+clsx@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/clsx/-/clsx-2.1.0.tgz#e851283bcb5c80ee7608db18487433f7b23f77cb"
+  integrity sha512-m3iNNWpd9rl3jvvcBnu70ylMdrXt8Vlq4HYadnU5fwcOtvkSQWPmj7amUcDT2qYI7risszBjI5AUIUox9D16pg==
+
+clsx@^1.1.1, clsx@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/clsx/-/clsx-1.2.1.tgz#0ddc4a20a549b59c93a4116bb26f5294ca17dc12"
   integrity sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==
@@ -13555,11 +13561,6 @@ use-sidecar@^1.1.2:
   dependencies:
     detect-node-es "^1.1.0"
     tslib "^2.0.0"
-
-use-sync-external-store@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz#7dbefd6ef3fe4e767a0cf5d7287aacfb5846928a"
-  integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==
 
 usehooks-ts@2.9.1:
   version "2.9.1"

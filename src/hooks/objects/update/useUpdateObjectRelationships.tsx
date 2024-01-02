@@ -35,7 +35,7 @@ export const useUpdateObjectRelationships = ({
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: ({ uid, modifiedRelationships }: MutationArgs) => {
       const updateObjectRelationshipsMutation =
         createUpdateObjectRelationshipsMutation(
@@ -61,6 +61,6 @@ export const useUpdateObjectRelationships = ({
 
   return {
     updateObjectRelationships: mutate,
-    isUpdatingObjectRelationships: isLoading,
+    isUpdatingObjectRelationships: isPending,
   };
 };

@@ -1,4 +1,9 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  QueryKey,
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
 import { useMemo } from "react";
 
@@ -67,7 +72,10 @@ export const useGetObjectRelationships = (
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery<
       GQLSkylarkGetObjectRelationshipsResponse,
-      GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>
+      GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>,
+      InfiniteData<GQLSkylarkGetObjectRelationshipsResponse>,
+      QueryKey,
+      Record<string, string>
     >({
       // eslint-disable-next-line @tanstack/query/exhaustive-deps
       queryKey: createGetObjectRelationshipsKeyPrefix({ objectType, uid }),
@@ -76,6 +84,7 @@ export const useGetObjectRelationships = (
           ...variables,
           ...nextTokens,
         }),
+      initialPageParam: {},
       getNextPageParam: (lastPage): Record<string, string> | undefined => {
         const data = lastPage.getObjectRelationships;
         const allNextTokens = Object.keys(data).reduce(
@@ -93,7 +102,7 @@ export const useGetObjectRelationships = (
 
             return prev;
           },
-          {},
+          {} as Record<string, string>,
         );
 
         return Object.keys(allNextTokens).length > 0
