@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { AnimatePresence, Transition, m } from "framer-motion";
 import { ReactNode, useMemo } from "react";
-import Snowfall from "react-snowfall";
 
 import { Spinner } from "src/components/icons";
 
@@ -293,7 +292,7 @@ export const AnimatedLogo = ({
           exit={{ opacity: 0 }}
         >
           <div className="relative">
-            <Snowfall
+            {/* <Snowfall
               style={{
                 position: "fixed",
                 height: "40vh",
@@ -303,13 +302,12 @@ export const AnimatedLogo = ({
                 zIndex: 0,
               }}
               snowflakeCount={800}
-            />
+            /> */}
             <AnimatedSkylarkLogoSVG
               {...props}
-              onAnimationComplete={undefined}
               className="h-16 md:h-28 xl:h-32 2xl:h-36"
             />
-            <AnimatedChristmasHatSVG
+            {/* <AnimatedChristmasHatSVG
               {...props}
               onAnimationStart={undefined}
               onAnimationComplete={
@@ -318,7 +316,7 @@ export const AnimatedLogo = ({
                   : undefined
               }
               className="absolute -top-5 -left-2 md:-top-9 md:-left-3 xl:-top-16 xl:-left-3 2xl:-top-20 2xl:-left-4 h-20 md:h-36 xl:h-56 2xl:h-64"
-            />
+            /> */}
             {children && (
               <m.div
                 initial={{ opacity: 0 }}
