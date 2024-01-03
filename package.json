@@ -46,7 +46,7 @@
     "framer-motion": "9.1.7",
     "graphiql": "3.0.10",
     "graphql": "16.8.1",
-    "graphql-request": "5.2.0",
+    "graphql-request": "6.1.0",
     "graphql-tag": "2.12.6",
     "graphql-ws": "5.14.3",
     "json-to-graphql-query": "2.2.5",
