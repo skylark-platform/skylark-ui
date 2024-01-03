@@ -19,7 +19,6 @@ interface BatchDeleteObjectsModalProps {
   objectsToBeDeleted: ParsedSkylarkObject[];
   isOpen: boolean;
   closeModal: () => void;
-  removeObject: (uid: string) => void;
   onDeletionComplete: (deletedObjects: ParsedSkylarkObject[]) => void;
 }
 

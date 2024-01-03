@@ -11,7 +11,7 @@ import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { PanelTab, PanelTabState } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ParsedSkylarkObjectRelationships,
+  ParsedSkylarkObjectRelationship,
   ParsedSkylarkObjectTypeRelationshipConfiguration,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
@@ -19,8 +19,9 @@ import { formatObjectField, hasProperty } from "src/lib/utils";
 
 interface PanelRelationshipsSectionProps {
   isEmptySection?: boolean;
-  relationship: ParsedSkylarkObjectRelationships;
+  relationship: ParsedSkylarkObjectRelationship;
   inEditMode: boolean;
+  isFetchingMoreRelationships: boolean;
   newUids: string[];
   initialExpanded: boolean;
   config: ParsedSkylarkObjectTypeRelationshipConfiguration["config"] | null;
@@ -30,7 +31,7 @@ interface PanelRelationshipsSectionProps {
     relationshipName: string;
   }) => void;
   setSearchObjectsModalState: (args: {
-    relationship: ParsedSkylarkObjectRelationships;
+    relationship: ParsedSkylarkObjectRelationship;
     fields?: string[];
   }) => void;
   updateActivePanelTabState: (s: Partial<PanelTabState>) => void;
@@ -40,6 +41,7 @@ export const PanelRelationshipSection = ({
   isEmptySection,
   relationship,
   inEditMode,
+  isFetchingMoreRelationships,
   newUids,
   initialExpanded,
   config,
@@ -48,7 +50,7 @@ export const PanelRelationshipSection = ({
   setSearchObjectsModalState,
   updateActivePanelTabState,
 }: PanelRelationshipsSectionProps) => {
-  const { relationshipName, objects, objectType } = relationship;
+  const { name: relationshipName, objects, objectType } = relationship;
 
   const [isExpanded, setIsExpanded] = useState(initialExpanded);
 
@@ -77,14 +79,20 @@ export const PanelRelationshipSection = ({
         <div className="flex items-center">
           <PanelSectionTitle
             text={formatObjectField(relationshipName)}
-            count={(objects.length >= 100 ? "100+" : objects.length) || 0}
+            count={objects.length || 0}
             id={`relationship-panel-${relationshipName}`}
+            loading={isFetchingMoreRelationships}
           />
-          <PanelPlusButton
-            onClick={() =>
-              setSearchObjectsModalState({ relationship, fields: objectFields })
-            }
-          />
+          {!isFetchingMoreRelationships && (
+            <PanelPlusButton
+              onClick={() =>
+                setSearchObjectsModalState({
+                  relationship,
+                  fields: objectFields,
+                })
+              }
+            />
+          )}
         </div>
         {!isEmptySection && config?.defaultSortField && (
           <p className="text-manatee-300 text-xs mb-4 hover:text-manatee-600 transition-colors cursor-default">{`Sorted by: ${sentenceCase(

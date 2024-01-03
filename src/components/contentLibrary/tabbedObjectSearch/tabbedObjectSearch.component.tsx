@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { m } from "framer-motion";
-import { Dispatch, Fragment, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import {
   FiCheckSquare,
   FiCrosshair,

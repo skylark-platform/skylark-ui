@@ -3,11 +3,12 @@ import Link from "next/link";
 import { FiExternalLink, FiInfo } from "react-icons/fi";
 import { VirtualItem } from "react-virtual";
 
+import { ObjectSearchTableData } from "src/components/objectSearch/results/columnConfiguration";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 interface RowActionsProps {
   activeRowIndex: number;
-  rows: Row<ParsedSkylarkObject>[];
+  rows: Row<ObjectSearchTableData>[];
   virtualRows: VirtualItem[];
   onInfoClick?: (object: ParsedSkylarkObject) => void;
 }

@@ -24,7 +24,6 @@ const AllTheProviders = ({ children }: { children: ReactNode }) => {
       <PlausibleProvider domain={""} enabled={false}>
         <UserProvider>
           <LazyMotion features={domMax}>
-            {" "}
             <ToastContainer />
             {children}
           </LazyMotion>

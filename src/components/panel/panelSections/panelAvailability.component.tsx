@@ -435,9 +435,11 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
             ...availabilityObjectMeta.fields.map(({ name }) => name),
           ]}
           closeModal={() => setObjectSearchModalOpen(false)}
-          onModalClose={({ checkedObjects }) => {
+          onSave={({ checkedObjectsState }) => {
             const { addedObjects, errors } = handleDroppedAvailabilities({
-              droppedObjects: checkedObjects,
+              droppedObjects: checkedObjectsState
+                .filter(({ checkedState }) => checkedState === true)
+                .map(({ object }) => object),
               existingObjects: availabilityObjects,
               activeObjectUid: uid,
             });

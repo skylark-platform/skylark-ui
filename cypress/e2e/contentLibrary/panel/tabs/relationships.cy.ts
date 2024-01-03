@@ -39,7 +39,7 @@ describe("Content Library - Object Panel - Relationships Tab", () => {
 
     cy.contains("GOT S04 Trailer").click();
 
-    cy.contains("Add 1").click();
+    cy.contains("button", "Add").click();
 
     cy.get("[data-testid=search-objects-modal-save]").should("not.exist");
 

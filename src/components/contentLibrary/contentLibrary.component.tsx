@@ -92,9 +92,11 @@ export const ContentLibrary = ({
 
   const {
     checkedObjects,
+    checkedObjectsState,
     checkedUids,
     checkedObjectTypesForDisplay,
-    setCheckedObjects,
+    setCheckedObjectsState,
+    resetCheckedObjects,
   } = useCheckedObjectsState();
 
   const [activeDragged, setActiveDragged] = useState<Active | null>(null);
@@ -250,8 +252,9 @@ export const ContentLibrary = ({
             setPanelObject={setPanelObject}
             isPanelOpen={!!activePanelObject}
             withObjectSelect
-            checkedObjects={checkedObjects}
-            onObjectCheckedChanged={setCheckedObjects}
+            checkedObjectsState={checkedObjectsState}
+            onObjectCheckedChanged={setCheckedObjectsState}
+            resetCheckedObjects={resetCheckedObjects}
             skipLogoAnimation={skipLogoAnimation}
           />
         </m.div>

@@ -3,12 +3,12 @@ import clsx from "clsx";
 import { Fragment } from "react";
 import { VirtualItem } from "react-virtual";
 
-import { columnsWithoutResize } from "src/components/objectSearch/results/columnConfiguration";
-import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import {
-  ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
-} from "src/interfaces/skylark";
+  ObjectSearchTableData,
+  columnsWithoutResize,
+} from "src/components/objectSearch/results/columnConfiguration";
+import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 import { DragType, useDraggable } from "src/lib/dndkit/dndkit";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { platformMetaKeyClicked } from "src/lib/utils";
@@ -16,7 +16,7 @@ import { platformMetaKeyClicked } from "src/lib/utils";
 interface DataRowProps {
   tableId: string;
   virtualRow: VirtualItem;
-  row: Row<ParsedSkylarkObject>;
+  row: Row<ObjectSearchTableData>;
   virtualColumns: VirtualItem[];
   isLeft?: boolean;
 }
@@ -99,11 +99,8 @@ const DataRow = ({
               }
 
               if (tableMeta?.onRowCheckChange) {
-                const checked = Boolean(
-                  tableMeta?.checkedRows?.includes(row.index),
-                );
                 tableMeta.onRowCheckChange({
-                  checkedState: !checked,
+                  checkedState: !row.getIsSelected(),
                   object: row.original,
                 });
               }

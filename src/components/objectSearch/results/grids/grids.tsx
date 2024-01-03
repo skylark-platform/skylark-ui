@@ -17,14 +17,12 @@ import { VirtualItem } from "react-virtual";
 import {
   MAX_FROZEN_COLUMNS,
   OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+  ObjectSearchTableData,
 } from "src/components/objectSearch/results/columnConfiguration";
 import { RowActions } from "src/components/objectSearch/rowActions";
 import { Skeleton } from "src/components/skeleton";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import {
-  ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
-} from "src/interfaces/skylark";
+import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 import {
   DragEndEvent,
   DragStartEvent,
@@ -38,13 +36,13 @@ import { HeaderCell } from "./headers";
 import { LayoutRow } from "./rows";
 
 interface GridProps {
-  table: Table<ParsedSkylarkObject>;
+  table: Table<ObjectSearchTableData>;
   tableId: string;
   totalVirtualSizes: { height: number; width: number };
-  rows: Row<ParsedSkylarkObject>[];
+  rows: Row<ObjectSearchTableData>[];
   virtualRows: VirtualItem[];
   virtualColumns: VirtualItem[];
-  headers: Header<ParsedSkylarkObject, string>[];
+  headers: Header<ObjectSearchTableData, string>[];
   leftGridSize: number;
   panelObject: SkylarkObjectIdentifier | null;
   hoveredRow: number | null;
@@ -79,7 +77,7 @@ const GridSkeleton = ({
   virtualRows: VirtualItem[];
   virtualColumns: VirtualItem[];
   totalVirtualSizes: { height: number; width: number };
-  headers: Header<ParsedSkylarkObject, string>[];
+  headers: Header<ObjectSearchTableData, string>[];
   paddingLeft: number;
   className?: string;
 }) => {
@@ -396,7 +394,7 @@ const FrozenColumnDropzones = ({
   dropzoneColumns: VirtualItem[];
   leftGridSize: number;
   show: boolean;
-  headers: Header<ParsedSkylarkObject, string>[];
+  headers: Header<ObjectSearchTableData, string>[];
 }) => {
   return show ? (
     <>

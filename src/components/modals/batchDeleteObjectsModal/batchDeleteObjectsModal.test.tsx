@@ -33,7 +33,6 @@ test("renders the modal", async () => {
       isOpen={true}
       objectsToBeDeleted={[]}
       closeModal={jest.fn()}
-      removeObject={jest.fn()}
       onDeletionComplete={jest.fn()}
     />,
   );
@@ -54,7 +53,6 @@ test("calls closeModal when cancel is clicked", async () => {
       isOpen={true}
       objectsToBeDeleted={[]}
       closeModal={closeModal}
-      removeObject={jest.fn()}
       onDeletionComplete={jest.fn()}
     />,
   );
@@ -75,7 +73,6 @@ test("shows no objects to be deleted when objectsToBeDeleted is empty", async ()
       isOpen={true}
       objectsToBeDeleted={[]}
       closeModal={jest.fn()}
-      removeObject={jest.fn()}
       onDeletionComplete={jest.fn()}
     />,
   );
@@ -96,7 +93,6 @@ test("shows this object will be deleted and the object when all available langua
       isOpen={true}
       objectsToBeDeleted={[object]}
       closeModal={jest.fn()}
-      removeObject={jest.fn()}
       onDeletionComplete={jest.fn()}
     />,
   );
@@ -122,7 +118,6 @@ test("shows this translation will be deleted and the object when not all availab
         },
       ]}
       closeModal={jest.fn()}
-      removeObject={jest.fn()}
       onDeletionComplete={jest.fn()}
     />,
   );
@@ -151,7 +146,6 @@ test("shows this translation will be deleted and the object when not all availab
         },
       ]}
       closeModal={jest.fn()}
-      removeObject={jest.fn()}
       onDeletionComplete={jest.fn()}
     />,
   );
@@ -186,7 +180,6 @@ test("shows some objects will not be deleted when the number of objects exceeds 
       isOpen={true}
       objectsToBeDeleted={objects}
       closeModal={jest.fn()}
-      removeObject={jest.fn()}
       onDeletionComplete={jest.fn()}
     />,
   );
@@ -222,7 +215,6 @@ describe("activated delete button", () => {
           },
         ]}
         closeModal={closeModal}
-        removeObject={jest.fn()}
         onDeletionComplete={onDeletionComplete}
       />,
     );

@@ -1,7 +1,17 @@
-import { waitFor, screen, fireEvent } from "@testing-library/react";
-
 import GQLGameOfThronesSearchResultsPage1enGB from "src/__tests__/fixtures/skylark/queries/search/gotPage1enGB.json";
-import { render } from "src/__tests__/utils/test-utils";
+import {
+  render,
+  within,
+  waitFor,
+  screen,
+  fireEvent,
+} from "src/__tests__/utils/test-utils";
+import {
+  AvailabilityStatus,
+  ParsedSkylarkObject,
+  SkylarkGraphQLObject,
+} from "src/interfaces/skylark";
+import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 import { SearchObjectsModal } from "./searchObjectsModal.component";
 
@@ -26,7 +36,7 @@ test("renders the modal", async () => {
       title={title}
       isOpen={true}
       closeModal={jest.fn()}
-      onModalClose={jest.fn()}
+      onSave={jest.fn()}
       columns={["uid"]}
     />,
   );
@@ -57,7 +67,7 @@ test("does not render the UID column when it isn't given in columns", async () =
       title={title}
       isOpen={true}
       closeModal={jest.fn()}
-      onModalClose={jest.fn()}
+      onSave={jest.fn()}
       columns={["external_id"]}
     />,
   );
@@ -65,15 +75,15 @@ test("does not render the UID column when it isn't given in columns", async () =
   expect(screen.queryByText("UID")).not.toBeInTheDocument();
 });
 
-test("calls onModalClose with the selected rows", async () => {
-  const onModalClose = jest.fn();
+test("calls onSave with the selected rows", async () => {
+  const onSave = jest.fn();
 
   render(
     <SearchObjectsModal
       title={title}
       isOpen={true}
       closeModal={jest.fn()}
-      onModalClose={onModalClose}
+      onSave={onSave}
       columns={["uid"]}
     />,
   );
@@ -102,14 +112,67 @@ test("calls onModalClose with the selected rows", async () => {
 
   fireEvent.click(screen.getByTestId("search-objects-modal-save"));
 
-  expect(onModalClose).toHaveBeenCalledWith({
-    checkedObjects: [
-      expect.objectContaining({
-        uid: GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
-        objectType:
-          GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
-            .__typename,
-      }),
+  expect(onSave).toHaveBeenCalledWith({
+    checkedObjectsState: [
+      {
+        checkedState: true,
+        object: expect.objectContaining({
+          uid: GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+            .uid,
+          objectType:
+            GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0]
+              .__typename,
+        }),
+      },
     ],
   });
+});
+
+test("existing selected rows are disabled from being checked", async () => {
+  const secondEpisode =
+    GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[1];
+  render(
+    <SearchObjectsModal
+      title={title}
+      isOpen={true}
+      closeModal={jest.fn()}
+      onSave={jest.fn()}
+      columns={["uid"]}
+      existingObjects={[
+        {
+          uid: secondEpisode.uid,
+          objectType: secondEpisode.__typename,
+          meta: {
+            availableLanguages: secondEpisode._meta.available_languages,
+            language: secondEpisode._meta.language_data.language,
+            availabilityStatus: AvailabilityStatus.Active,
+          },
+          config: {},
+          metadata: {},
+        } as ParsedSkylarkObject,
+      ]}
+    />,
+  );
+
+  await waitFor(() => {
+    expect(
+      screen.getByTestId("object-search-results-content"),
+    ).toBeInTheDocument();
+  });
+
+  await screen.findByText("UID"); // Search for table header
+
+  await waitFor(() => {
+    expect(
+      screen.getByText(
+        GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  const secondRow = within(
+    screen.getAllByTestId("object-search-results-row")[1],
+  );
+  const checkbox = secondRow.getAllByRole("checkbox")[0];
+  expect(checkbox).toBeDisabled();
 });

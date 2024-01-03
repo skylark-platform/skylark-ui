@@ -1,4 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  QueryKey,
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
 import { useMemo } from "react";
 
@@ -21,7 +26,7 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectRelationshipsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
-import { getObjectTypeFromListingTypeName } from "src/lib/utils";
+import { getObjectTypeFromListingTypeName, hasProperty } from "src/lib/utils";
 
 import { GetObjectOptions } from "./useGetObject";
 
@@ -62,52 +67,97 @@ export const useGetObjectRelationships = (
     relationshipsFields,
     !!language,
   );
-  const variables = { uid, nextToken: "", language };
+  const variables = { uid, language };
 
-  const { data, isLoading } = useQuery<
-    GQLSkylarkGetObjectRelationshipsResponse,
-    GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>
-  >({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: createGetObjectRelationshipsKeyPrefix({ objectType, uid }),
-    queryFn: async () =>
-      skylarkRequest("query", query as DocumentNode, variables),
-    enabled: query !== null,
-  });
-
-  const unparsedData = data?.getObjectRelationships;
-
-  const relationships: ParsedSkylarkObjectRelationships[] | null = useMemo(
-    () =>
-      unparsedData
-        ? Object.keys(unparsedData)?.map((relation) => {
-            const relationship = unparsedData[
-              relation
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useInfiniteQuery<
+      GQLSkylarkGetObjectRelationshipsResponse,
+      GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>,
+      InfiniteData<GQLSkylarkGetObjectRelationshipsResponse>,
+      QueryKey,
+      Record<string, string>
+    >({
+      // eslint-disable-next-line @tanstack/query/exhaustive-deps
+      queryKey: createGetObjectRelationshipsKeyPrefix({ objectType, uid }),
+      queryFn: async ({ pageParam: nextTokens }) =>
+        skylarkRequest("query", query as DocumentNode, {
+          ...variables,
+          ...nextTokens,
+        }),
+      initialPageParam: {},
+      getNextPageParam: (lastPage): Record<string, string> | undefined => {
+        const data = lastPage.getObjectRelationships;
+        const allNextTokens = Object.keys(data).reduce(
+          (prev, relationshipName) => {
+            const relationship = data[
+              relationshipName
             ] as SkylarkGraphQLObjectRelationship;
 
-            const parsedObjects = relationship.objects.map((relatedObject) =>
-              parseSkylarkObject(relatedObject as SkylarkGraphQLObject),
-            );
+            if (relationship.next_token) {
+              return {
+                ...prev,
+                [`${relationshipName}NextToken`]: relationship.next_token,
+              };
+            }
 
-            const objectType = getObjectTypeFromListingTypeName(
-              relationship.__typename,
-            );
+            return prev;
+          },
+          {} as Record<string, string>,
+        );
 
-            return {
-              relationshipName: relation,
-              nextToken: relationship?.next_token,
-              objects: parsedObjects,
-              objectType,
-            };
-          })
-        : null,
-    [unparsedData],
-  );
+        return Object.keys(allNextTokens).length > 0
+          ? allNextTokens
+          : undefined;
+      },
+      enabled: query !== null,
+    });
+
+  if (hasNextPage) {
+    fetchNextPage();
+  }
+
+  const relationships: ParsedSkylarkObjectRelationships | null = useMemo(() => {
+    if (!data?.pages || data.pages.length === 0) {
+      return null;
+    }
+
+    return data.pages.reduce((aggregate, page) => {
+      const obj = Object.keys(page.getObjectRelationships).reduce(
+        (pageAggregate, name) => {
+          const relationship = page.getObjectRelationships[
+            name
+          ] as SkylarkGraphQLObjectRelationship;
+
+          const parsedObjects = relationship.objects.map((relatedObject) =>
+            parseSkylarkObject(relatedObject as SkylarkGraphQLObject),
+          );
+
+          const objectType = getObjectTypeFromListingTypeName(
+            relationship.__typename,
+          );
+
+          return {
+            ...pageAggregate,
+            [name]: hasProperty(pageAggregate, name)
+              ? {
+                  ...pageAggregate[name],
+                  objects: [...pageAggregate[name].objects, ...parsedObjects],
+                }
+              : { objectType, objects: parsedObjects, name },
+          };
+        },
+        aggregate,
+      );
+
+      return obj;
+    }, {} as ParsedSkylarkObjectRelationships);
+  }, [data?.pages]);
 
   return {
     relationships,
     objectRelationships: objectOperations?.relationships,
     isLoading: isLoading || !query,
+    isFetchingNextPage,
     query,
     variables,
   };

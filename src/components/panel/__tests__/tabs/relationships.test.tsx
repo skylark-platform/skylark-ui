@@ -1,3 +1,4 @@
+import { prettyDOM } from "@testing-library/dom";
 import { graphql } from "msw";
 
 import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots04.json";
@@ -18,7 +19,10 @@ import {
 } from "src/components/panel/__tests__/utils/test-utils";
 import { Panel } from "src/components/panel/panel.component";
 import { PanelTab } from "src/hooks/state";
-import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
+import {
+  createGetObjectRelationshipsQueryName,
+  wrapQueryName,
+} from "src/lib/graphql/skylark/dynamicQueries";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const useRouter = jest.spyOn(require("next/router"), "useRouter");
@@ -169,6 +173,78 @@ describe("relationships view", () => {
         },
       },
     });
+  });
+
+  test("paginates when a next_token is returned", async () => {
+    server.use(
+      graphql.query(
+        wrapQueryName(createGetObjectRelationshipsQueryName("Season")),
+        (req, res, ctx) => {
+          if (req.variables.episodesNextToken) {
+            // When episode next_token is found, return a slightly altered second list of 10 episodes
+            return res(
+              ctx.data({
+                getObjectRelationships: {
+                  episodes: {
+                    ...GQLSkylarkGetSeasonRelationshipsQueryFixture.data
+                      .getObjectRelationships.episodes,
+                    objects:
+                      GQLSkylarkGetSeasonRelationshipsQueryFixture.data.getObjectRelationships.episodes.objects.map(
+                        (episode, i) => {
+                          const newEpisodeNumber =
+                            episode.episode_number + i + 1;
+
+                          return {
+                            ...episode,
+                            uid: episode.uid + newEpisodeNumber,
+                            episode_number: newEpisodeNumber,
+                          };
+                        },
+                      ),
+                  },
+                },
+              }),
+            );
+          }
+
+          // Add a next token to initial response
+          return res(
+            ctx.data({
+              getObjectRelationships: {
+                ...GQLSkylarkGetSeasonRelationshipsQueryFixture.data
+                  .getObjectRelationships,
+                episodes: {
+                  ...GQLSkylarkGetSeasonRelationshipsQueryFixture.data
+                    .getObjectRelationships.episodes,
+                  next_token: "next-page",
+                },
+              },
+            }),
+          );
+        },
+      ),
+    );
+
+    render(
+      <Panel
+        {...defaultProps}
+        object={seasonWithRelationships}
+        tab={PanelTab.Relationships}
+      />,
+    );
+
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
+
+    const withinEpisodesRelationship = within(screen.getByTestId("episodes"));
+
+    const showMoreButton = withinEpisodesRelationship.getByText("Show more");
+    fireEvent.click(showMoreButton);
+
+    await waitFor(() =>
+      expect(screen.getByText("Episodes (20)")).toBeInTheDocument(),
+    );
+
+    expect(screen.getAllByText("Episode")).toHaveLength(20);
   });
 
   describe("relationships view - edit", () => {

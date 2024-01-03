@@ -5,6 +5,7 @@ import {
   ParsedSkylarkObjectRelationships,
   BuiltInSkylarkObjectType,
   SkylarkObjectMeta,
+  ParsedSkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 
@@ -38,14 +39,14 @@ export const handleDroppedRelationships = ({
   droppedObjects,
   relationshipName,
 }: {
-  existingObjects: ParsedSkylarkObjectRelationships[];
+  existingObjects: ParsedSkylarkObjectRelationships;
   objectMetaRelationships: SkylarkObjectMeta["relationships"];
   activeObjectUid: string;
   droppedObjects: ParsedSkylarkObject[];
   relationshipName?: string;
 }): {
   count: number;
-  updatedRelationshipObjects: ParsedSkylarkObjectRelationships[];
+  updatedRelationshipObjects: ParsedSkylarkObjectRelationships;
   addedObjects: Record<string, ParsedSkylarkObject[]>;
   errors: HandleDropError[];
 } => {
@@ -56,7 +57,7 @@ export const handleDroppedRelationships = ({
         droppedObject,
       ): {
         count: number;
-        updatedRelationshipObjects: ParsedSkylarkObjectRelationships[];
+        updatedRelationshipObjects: ParsedSkylarkObjectRelationships;
         addedObjects: Record<string, ParsedSkylarkObject[]>;
         errors: HandleDropError[];
       } => {
@@ -90,10 +91,8 @@ export const handleDroppedRelationships = ({
           };
         }
 
-        const droppedObjectRelationshipObjects = existingObjects.find(
-          (relationship) =>
-            relationship.relationshipName === droppedObjectRelationshipName,
-        );
+        const droppedObjectRelationshipObjects =
+          existingObjects?.[droppedObjectRelationshipName];
 
         const isAlreadyAdded = !!droppedObjectRelationshipObjects?.objects.find(
           ({ uid }) => droppedObject.uid === uid,
@@ -110,16 +109,22 @@ export const handleDroppedRelationships = ({
           };
         }
 
-        const updatedRelationshipObjects =
-          previous.updatedRelationshipObjects.map((relationship) => {
-            const { objects, relationshipName } = relationship;
-            if (relationshipName === droppedObjectRelationshipName) {
-              return {
-                ...relationship,
-                objects: [droppedObject, ...objects],
-              };
-            } else return relationship;
-          });
+        const updatedRelationshipObjects = Object.fromEntries(
+          Object.entries(previous.updatedRelationshipObjects).map(
+            ([relationshipName, relationship]) => {
+              const { objects } = relationship;
+              if (relationshipName === droppedObjectRelationshipName) {
+                return [
+                  relationshipName,
+                  {
+                    ...relationship,
+                    objects: [droppedObject, ...objects],
+                  },
+                ];
+              } else return [relationshipName, relationship];
+            },
+          ),
+        );
 
         const addedObjects = {
           ...previous.addedObjects,
