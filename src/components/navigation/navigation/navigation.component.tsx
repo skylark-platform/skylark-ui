@@ -17,7 +17,7 @@ import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { useAccountStatus } from "src/hooks/useAccountStatus";
 import { formatUriAsCustomerIdentifer } from "src/lib/utils";
 
-import Logo from "public/images/skylark-christmas.png";
+import Logo from "public/images/skylark.png";
 
 export const Navigation = () => {
   const isClient = useIsClient();
@@ -42,13 +42,7 @@ export const Navigation = () => {
       <div className="h-nav fixed left-0 right-0 top-0 z-50 flex flex-row items-center justify-start bg-nav-bar px-4 py-2 font-sans text-black md:flex-row md:justify-start md:px-6 lg:px-10">
         <Link legacyBehavior href="/">
           <a className="z-[60] flex items-center justify-start">
-            <Image
-              src={Logo}
-              alt="Skylark Logo"
-              width="30"
-              height="30"
-              className="-mt-1.5 md:-mt-2"
-            />
+            <Image src={Logo} alt="Skylark Logo" width="30" height="30" />
             <p className="ml-3 font-heading text-xl md:block lg:ml-4">
               Skylark
             </p>
