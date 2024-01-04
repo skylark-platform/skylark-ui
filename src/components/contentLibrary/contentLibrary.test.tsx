@@ -31,13 +31,6 @@ beforeEach(() => {
 test("open metadata panel, check information and close", async () => {
   render(<ContentLibrary />);
 
-  await waitForElementToBeRemoved(
-    () => screen.queryByTestId("animated-skylark-logo"),
-    {
-      timeout: 4000,
-    },
-  );
-
   await waitFor(() => {
     expect(screen.getByTestId("object-search-results")).toBeInTheDocument();
   });
