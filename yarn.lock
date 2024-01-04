@@ -1779,10 +1779,10 @@
   resolved "https://registry.yarnpkg.com/@fontsource/work-sans/-/work-sans-5.0.16.tgz#ddeb5e3cd637f4ec0e543a4b8866d823667ea51e"
   integrity sha512-NSWgUQC7MIV4ujGTZ5qxHwEZ5ttOVtY3OhVa3ESj+rB+BiN5XVxEwkUEoJ4mnWTYB3ibwn45S/V7TgjDuG21kg==
 
-"@graphiql/plugin-explorer@0.3.5":
-  version "0.3.5"
-  resolved "https://registry.yarnpkg.com/@graphiql/plugin-explorer/-/plugin-explorer-0.3.5.tgz#cb1eb364bc3f3f6487061d0a54ef12a0393d2a64"
-  integrity sha512-oHn4cuH1uPWv70zy64mpG/x99BeFOFzGJ/tZXdx8wvb6c4aBMMCo4ouVnvNReVxE9N0KAwJfPvC6laWSbQ6lkQ==
+"@graphiql/plugin-explorer@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@graphiql/plugin-explorer/-/plugin-explorer-1.0.2.tgz#aa630da20893e3f172ff9a610d33e0c7127844b0"
+  integrity sha512-9j+kg2UjtLZD5EBmGjeWHkoVVxtbShYg2DzbUVebibnZYZM/iMBEF4vaccXJIAm5KaomIPLx0aoNs4LbODyc3Q==
   dependencies:
     graphiql-explorer "^0.9.0"
 
