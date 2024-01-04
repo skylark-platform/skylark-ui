@@ -92,7 +92,11 @@ export const PanelMetadata = ({
     },
   ].filter(({ metadataFields }) => metadataFields.length > 0);
 
-  const sideBarSections = sections.map(({ id, title }) => ({ id, title }));
+  const sideBarSections = sections.map(({ id, title }) => ({
+    id,
+    title,
+    htmlId: id,
+  }));
 
   return (
     <PanelSectionLayout sections={sideBarSections} isPage={isPage}>

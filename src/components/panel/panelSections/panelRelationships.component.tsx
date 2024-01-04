@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, LayoutGroup } from "framer-motion";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { sentenceCase } from "sentence-case";
 
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
@@ -91,6 +92,16 @@ const splitRelationshipsIntoSections = (
       emptyOrderedRelationships: ParsedSkylarkObjectRelationship[];
     },
   );
+
+const filterWhenExpandedRelationship = (
+  relationships: ParsedSkylarkObjectRelationship[],
+  expandedRelationship: string | null,
+) =>
+  expandedRelationship
+    ? relationships.filter(
+        (relationship) => relationship.name === expandedRelationship,
+      )
+    : relationships;
 
 const addModifiedRelationshipsOntoRelationships = (
   relationships: ParsedSkylarkObjectRelationships | null,
@@ -208,11 +219,13 @@ export const PanelRelationships = ({
 }: PanelRelationshipsProps) => {
   const {
     relationships: serverRelationships,
+    relationshipsWithNextPage,
     objectRelationships: objectMetaRelationships = [],
     isLoading,
     isFetchingNextPage: isFetchingMoreRelationships,
     query,
     variables,
+    fetchNextPage,
   } = useGetObjectRelationships(objectType, uid, { language });
 
   const { objectTypeRelationshipConfig } =
@@ -285,6 +298,10 @@ export const PanelRelationships = ({
     ({ relationshipName }) => relationshipName,
   );
 
+  const [expandedRelationship, setExpandedRelationship] = useState<
+    string | null
+  >(null);
+
   const { orderedRelationships, emptyOrderedRelationships } =
     splitRelationshipsIntoSections(relationshipNames, relationships);
 
@@ -300,69 +317,91 @@ export const PanelRelationships = ({
   return (
     <PanelSectionLayout
       sections={relationshipNames.map((relationshipName) => ({
-        id: `relationship-panel-${relationshipName}`,
+        id: relationshipName,
+        htmlId: `relationship-panel-${relationshipName}`,
         title: formatObjectField(relationshipName),
       }))}
       isPage={isPage}
+      onSectionClick={({ id }) => setExpandedRelationship(id)}
     >
-      <div>
-        {orderedRelationships?.map((relationship) => {
-          const config =
-            objectTypeRelationshipConfig?.[relationship.name] || null;
+      <div className="relative">
+        <AnimatePresence mode="popLayout">
+          {filterWhenExpandedRelationship(
+            orderedRelationships,
+            expandedRelationship,
+          )?.map((relationship) => {
+            const config =
+              objectTypeRelationshipConfig?.[relationship.name] || null;
 
-          return (
-            <PanelRelationshipSection
-              key={relationship.name}
-              relationship={relationship}
-              config={config}
-              inEditMode={inEditMode}
-              isFetchingMoreRelationships={isFetchingMoreRelationships}
-              newUids={getNewUidsForRelationship(
-                relationship.name,
-                modifiedRelationships,
-              )}
-              initialExpanded={tabState.expanded?.[relationship.name]}
-              setPanelObject={setPanelObject}
-              removeRelationshipObject={({ relationshipName, uid }) => {
-                modifyRelationshipObjects(relationshipName, { removed: [uid] });
-              }}
-              setSearchObjectsModalState={setSearchObjectsModalState}
-              updateActivePanelTabState={updateActivePanelTabState}
-            />
-          );
-        })}
+            return (
+              <PanelRelationshipSection
+                key={relationship.name}
+                relationship={relationship}
+                config={config}
+                inEditMode={inEditMode}
+                isFetchingMoreRelationships={isFetchingMoreRelationships}
+                newUids={getNewUidsForRelationship(
+                  relationship.name,
+                  modifiedRelationships,
+                )}
+                fetchMoreRelationships={fetchNextPage}
+                hasMoreRelationships={relationshipsWithNextPage.includes(
+                  relationship.name,
+                )}
+                setExpandedRelationship={setExpandedRelationship}
+                isExpanded={!!expandedRelationship}
+                setPanelObject={setPanelObject}
+                removeRelationshipObject={({ relationshipName, uid }) => {
+                  modifyRelationshipObjects(relationshipName, {
+                    removed: [uid],
+                  });
+                }}
+                setSearchObjectsModalState={setSearchObjectsModalState}
+                updateActivePanelTabState={updateActivePanelTabState}
+              />
+            );
+          })}
 
-        {orderedRelationships.length > 0 &&
-          emptyOrderedRelationships.length > 0 && (
-            <PanelSeparator className="my-8" />
-          )}
+          {!expandedRelationship &&
+            orderedRelationships.length > 0 &&
+            emptyOrderedRelationships.length > 0 && (
+              <PanelSeparator className="my-8" />
+            )}
 
-        {emptyOrderedRelationships?.map((relationship) => {
-          const config =
-            objectTypeRelationshipConfig?.[relationship.name] || null;
+          {filterWhenExpandedRelationship(
+            emptyOrderedRelationships,
+            expandedRelationship,
+          )?.map((relationship) => {
+            const config =
+              objectTypeRelationshipConfig?.[relationship.name] || null;
 
-          return (
-            <PanelRelationshipSection
-              isEmptySection
-              key={relationship.name}
-              relationship={relationship}
-              config={config}
-              inEditMode={inEditMode}
-              isFetchingMoreRelationships={isFetchingMoreRelationships}
-              initialExpanded={tabState.expanded?.[relationship.name]}
-              newUids={getNewUidsForRelationship(
-                relationship.name,
-                modifiedRelationships,
-              )}
-              setPanelObject={setPanelObject}
-              removeRelationshipObject={({ relationshipName, uid }) => {
-                modifyRelationshipObjects(relationshipName, { removed: [uid] });
-              }}
-              setSearchObjectsModalState={setSearchObjectsModalState}
-              updateActivePanelTabState={updateActivePanelTabState}
-            />
-          );
-        })}
+            return (
+              <PanelRelationshipSection
+                isEmptySection
+                setExpandedRelationship={setExpandedRelationship}
+                isExpanded={!!expandedRelationship}
+                key={relationship.name}
+                relationship={relationship}
+                config={config}
+                inEditMode={inEditMode}
+                isFetchingMoreRelationships={isFetchingMoreRelationships}
+                newUids={getNewUidsForRelationship(
+                  relationship.name,
+                  modifiedRelationships,
+                )}
+                fetchMoreRelationships={() => ""} // TODO convert this section into PanelEmptyRelationshipSection
+                setPanelObject={setPanelObject}
+                removeRelationshipObject={({ relationshipName, uid }) => {
+                  modifyRelationshipObjects(relationshipName, {
+                    removed: [uid],
+                  });
+                }}
+                setSearchObjectsModalState={setSearchObjectsModalState}
+                updateActivePanelTabState={updateActivePanelTabState}
+              />
+            );
+          })}
+        </AnimatePresence>
       </div>
       <PanelLoading isLoading={isLoading}>
         {Array.from({ length: 2 }, (_, i) => (

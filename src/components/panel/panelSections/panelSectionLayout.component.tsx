@@ -3,19 +3,23 @@ import { ReactNode } from "react";
 
 import { hasProperty } from "src/lib/utils";
 
+type Section = {
+  title: string;
+  id: string;
+  htmlId: string;
+};
+
 interface PanelSectionLayoutProps {
   isPage?: boolean;
-  sections: {
-    title: string;
-    id: string;
-  }[];
+  sections: Section[];
   withStickyHeaders?: boolean;
   children?: ReactNode;
+  onSectionClick?: (s: Section) => void;
 }
 
 const scrollToSection = (id: string) =>
   // Smooth scrolling breaks Cypress tests, we might want to refactor this to be global if we add another smooth scroll
-  document?.getElementById(id)?.scrollIntoView({
+  document?.getElementById(`panel-section-${id}`)?.scrollIntoView({
     behavior:
       typeof window === "undefined" || hasProperty(window, "Cypress")
         ? "auto"
@@ -27,6 +31,7 @@ export const PanelSectionLayout = ({
   sections,
   withStickyHeaders,
   children,
+  onSectionClick,
 }: PanelSectionLayoutProps) => (
   <div
     className={clsx(
@@ -39,13 +44,17 @@ export const PanelSectionLayout = ({
         className="pointer hidden flex-col p-4 text-left text-sm font-semibold sm:flex md:p-8"
         data-testid="panel-page-side-navigation"
       >
-        {sections.map(({ id, title }) => (
+        {sections.map((section) => (
           <button
-            key={`panel-section-scroll-button-${id}`}
-            onClick={() => scrollToSection(id)}
+            key={`panel-section-scroll-button-${section.id}`}
+            onClick={() =>
+              onSectionClick
+                ? onSectionClick(section)
+                : scrollToSection(section.htmlId || section.id)
+            }
             className="py-3 text-left text-manatee-700 transition-colors hover:text-black"
           >
-            {title}
+            {section.title}
           </button>
         ))}
       </div>
