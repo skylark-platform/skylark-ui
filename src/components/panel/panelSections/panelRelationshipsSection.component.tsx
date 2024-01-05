@@ -95,21 +95,22 @@ export const PanelRelationshipSection = ({
 
   return (
     <m.div
-      layout
-      className={clsx(
-        "pb-6 bg-white",
-        // isExpanded ? "absolute z-10 left-0 right-0" : "relative",
-      )}
+      key={`${relationshipName}-container`}
+      // layout
+      className={clsx("pb-6 bg-white")}
       data-testid={relationshipName}
       transition={{ duration: 0.08 }}
       initial={{ opacity: 0, height: "auto" }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: "auto" }}
     >
-      <div
+      <m.div
+        key={`${relationshipName}-title`}
+        layout
         className={clsx(
           "flex items-center justify-between bg-white pt-8 -mt-8",
           isExpanded && "sticky top-0 z-10",
+          !isExpanded && "relative z-10",
         )}
       >
         <div className="flex items-center -ml-7">
@@ -146,10 +147,19 @@ export const PanelRelationshipSection = ({
             config.defaultSortField,
           )}`}</p>
         )}
-      </div>
+      </m.div>
 
-      <m.div className="" layout="position">
-        <AnimatePresence mode="sync" initial={false}>
+      <m.div
+        key={`${relationshipName}-objects`}
+        className={
+          clsx()
+          // "grid grid-rows-[1fr] transition-grid-template-rows",
+          // isExpanded && "absolute",
+        }
+        layout="position"
+      >
+        <div className="overflow-hidden">
+          {/* <AnimatePresence mode="sync" initial={false}> */}
           {displayList?.length > 0 &&
             displayList?.map((obj, index) => {
               const defaultSortFieldValue =
@@ -160,16 +170,18 @@ export const PanelRelationshipSection = ({
               return (
                 <m.div
                   key={`relationship-${obj.objectType}-${obj.uid}`}
-                  initial={{ opacity: 0, height: 0 }}
+                  // layout
+                  initial={{ opacity: 0, height: "auto" }}
                   animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
+                  exit={{ opacity: 0, height: "auto" }}
                   transition={{
                     height: { duration: 0.15 },
                     opacity: { duration: 0.06 },
+                    ease: "linear",
                   }}
                 >
                   <div
-                    className="flex items-center"
+                    className="flex items-center bg-white"
                     data-testid={`panel-relationship-${relationshipName}-item-${
                       index + 1
                     }`}
@@ -216,18 +228,17 @@ export const PanelRelationshipSection = ({
                 </m.div>
               );
             })}
-        </AnimatePresence>
+          {/* </AnimatePresence> */}
+        </div>
       </m.div>
 
       {/* {variant === "minimal" && relationship && objects.length > 3 && ( */}
-      <div
-        className="mb-3"
-        ref={isExpanded && hasMoreRelationships ? ref : null}
-      >
+      <m.div layout className="mb-3">
         {hasShowMore && toggleExpanded && (
           <>
             <PanelSeparator />
             <button
+              ref={isExpanded && hasMoreRelationships ? ref : null}
               data-testid={`expand-relationship-${relationshipName}`}
               onClick={toggleExpanded}
               className="w-full cursor-pointer p-2 text-center text-xs text-manatee-500 hover:text-manatee-700"
@@ -237,7 +248,7 @@ export const PanelRelationshipSection = ({
             </button>
           </>
         )}
-      </div>
+      </m.div>
       {/* )} */}
     </m.div>
   );

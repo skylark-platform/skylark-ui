@@ -42,6 +42,7 @@ module.exports = {
       },
       transitionProperty: {
         width: "width",
+        "grid-template-rows": "grid-template-rows",
       },
       animation: {
         "spin-fast": "spin 0.5s linear infinite",
