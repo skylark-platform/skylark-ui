@@ -64,7 +64,7 @@ module.exports = {
   daisyui: {
     themes: [
       {
-        mytheme: {
+        skylarklight: {
           primary: "#226DFF",
           "primary-content": "#FFF",
           secondary: "#D926A9",
