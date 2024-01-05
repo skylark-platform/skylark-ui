@@ -134,8 +134,8 @@ const AvailabilitySelectors = ({
                 type="datetime-local"
                 step="1"
                 className={clsx(
-                  "h-8 w-full rounded bg-manatee-50 px-4 md:h-10",
-                  activeTimeTravel ? "text-black" : "text-manatee-400",
+                  "h-8 w-full rounded bg-manatee-50 dark:bg-manatee-800 px-4 md:h-10",
+                  activeTimeTravel ? "text-base-content" : "text-manatee-400",
                 )}
               />
             </div>
@@ -223,7 +223,7 @@ export const AvailabilityPicker = ({
           data-testid="open-availability-picker"
           variant="neutral"
           className={clsx(
-            "w-full justify-start text-left font-normal group-hover/availability-picker-button:bg-manatee-100",
+            "w-full justify-start text-left font-normal group-hover/availability-picker-button:bg-manatee-100 dark:group-hover/availability-picker-button:bg-manatee-800",
             !activeValues.dimensions &&
               !activeValues.timeTravel &&
               "text-manatee-400",
@@ -244,7 +244,7 @@ export const AvailabilityPicker = ({
           )}
           <div
             className={clsx(
-              "absolute inset-y-0 right-3.5 ml-1 flex items-center text-black",
+              "absolute inset-y-0 right-3.5 ml-1 flex items-center text-base-content",
             )}
           >
             <FiChevronDown className="text-xl" aria-hidden="true" />
@@ -270,7 +270,7 @@ export const AvailabilityPicker = ({
         ref={refs.setFloating}
         style={floatingStyles}
         data-testid="availability-picker"
-        className="bg-manatee z-[50] flex max-h-96 flex-grow flex-col justify-between overflow-y-scroll rounded bg-white px-6 py-6 text-sm shadow-lg shadow-manatee-500 md:-left-20"
+        className="z-[50] flex max-h-96 flex-grow flex-col justify-between overflow-y-scroll rounded bg-base-100 px-6 py-6 text-sm shadow-lg shadow-manatee-500 md:-left-20"
       >
         {({ close }) => (
           <>

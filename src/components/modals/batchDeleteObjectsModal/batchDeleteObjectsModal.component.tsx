@@ -298,7 +298,7 @@ export const BatchDeleteObjectsModal = ({
       size="medium"
     >
       {objectsToBeDeleted.length > DELETION_LIMIT && (
-        <div className="mt-2 border-l-4 border-warning p-2 text-black">
+        <div className="mt-2 border-l-4 border-warning p-2 text-base-content">
           <p>
             {`Currently limited to deleting ${DELETION_LIMIT} objects and
           translations at a time.`}

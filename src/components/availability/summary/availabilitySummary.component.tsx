@@ -166,7 +166,7 @@ export const AvailabilitySummary = ({
     <p
       className={clsx(
         "text-xs text-manatee-500 md:whitespace-nowrap md:text-sm",
-        "[&>strong]:font-medium [&>strong]:text-black",
+        "[&>strong]:font-medium [&>strong]:text-base-content",
         "after:-ml-1 after:content-['.']",
       )}
     >

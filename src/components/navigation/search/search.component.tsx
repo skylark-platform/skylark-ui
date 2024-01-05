@@ -25,7 +25,7 @@ export const QuickSearch = ({ onSearch }: Props) => {
         className="ml-6 w-full border-b-2 border-gray-300 bg-transparent py-1 text-center text-sm placeholder-gray-400 outline-none transition-all group-focus-within:border-black group-focus-within:placeholder-transparent md:ml-0 md:w-0 md:border-gray-500 md:text-left md:group-focus-within:mr-1 md:group-focus-within:w-full md:group-focus-within:px-1 md:group-hover:mr-1 md:group-hover:w-full md:group-hover:px-1"
       />
       <button onClick={() => onSearch(value)}>
-        <FiSearch className="my-1 h-5 w-5 text-gray-400 transition-colors group-focus-within:text-black md:h-6 md:w-6 md:text-black" />
+        <FiSearch className="my-1 h-5 w-5 text-gray-400 transition-colors group-focus-within:text-base-content md:h-6 md:w-6 md:text-base-content" />
       </button>
       <span className="ml-1 hidden overflow-hidden whitespace-nowrap text-sm font-semibold transition-width md:block  md:w-full md:group-focus-within:ml-0 md:group-focus-within:w-0 md:group-hover:ml-0 md:group-hover:w-0">
         {`Quick Search`}

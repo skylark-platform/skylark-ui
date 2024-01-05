@@ -50,7 +50,7 @@ export const RelationshipsSection = ({
         return (
           <div
             key={relationshipName}
-            className="my-2 bg-white z-30 border shadow border-manatee-300 rounded-lg items-center h-14 px-2 grid gap-4 grid-cols-7"
+            className="my-2 bg-base-100 z-30 border shadow border-manatee-300 rounded-lg items-center h-14 px-2 grid gap-4 grid-cols-7"
             data-testid={`relationships-editor-row-${relationshipName}`}
           >
             <ObjectTypePill

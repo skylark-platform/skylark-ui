@@ -27,7 +27,7 @@ export const Tooltip = ({ children, tooltip, side }: TooltipProps) => {
             "relative z-50 bg-manatee-800 text-xs text-white",
           )}
         >
-          <TooltipPrimitive.Arrow className="fill-current text-black" />
+          <TooltipPrimitive.Arrow className="fill-current text-base-content" />
           {tooltip}
         </TooltipPrimitive.Content>
       </TooltipPrimitive.Root>

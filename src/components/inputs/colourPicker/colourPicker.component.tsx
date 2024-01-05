@@ -69,7 +69,7 @@ export const ColourPicker = ({
           {...getFloatingProps()}
         >
           <div
-            className="border rounded-lg z-50 w-full p-4 bg-white space-y-2 drop-shadow"
+            className="border rounded-lg z-50 w-full p-4 bg-base-100 space-y-2 drop-shadow"
             style={{ ...transitionStyles }}
           >
             <HexColorPicker color={colour} onChange={onChange} />

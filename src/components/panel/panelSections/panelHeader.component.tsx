@@ -40,11 +40,7 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import {
-  getObjectDisplayName,
-  platformMetaKeyClicked,
-  userIsOnMac,
-} from "src/lib/utils";
+import { getObjectDisplayName, platformMetaKeyClicked } from "src/lib/utils";
 
 interface PanelHeaderProps {
   isPage?: boolean;
@@ -271,7 +267,7 @@ export const PanelHeader = ({
           )}
           <DropdownMenu options={objectMenuOptions} placement="bottom-end">
             <DropdownMenuButton
-              className="flex focus:outline-none focus-visible:ring-2 group-hover:text-black"
+              className="flex focus:outline-none focus-visible:ring-2 group-hover:text-base-content"
               aria-label="Open Panel Menu"
             >
               <FiMoreVertical className="text-2xl" />
@@ -329,7 +325,7 @@ export const PanelHeader = ({
               {tabsWithEditMode.includes(currentTab) && (
                 <Button
                   variant="primary"
-                  Icon={<FiEdit className="h-4 w-4 stroke-success-content" />}
+                  Icon={<FiEdit className="h-4 w-4" />}
                   onClick={toggleEditMode}
                   disabled={!tabsWithEditMode.includes(currentTab)}
                   animated={false}

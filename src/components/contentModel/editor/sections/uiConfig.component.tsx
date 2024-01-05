@@ -44,7 +44,7 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
           >
             Display name
           </FieldHeader>
-          {/* <p className="text-black">{objectTypeDisplayName}</p> */}
+          {/* <p className="text-base-content">{objectTypeDisplayName}</p> */}
           <div className="col-span-2">
             <TextInput
               value={objectTypeDisplayName}

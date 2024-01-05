@@ -249,7 +249,7 @@ export const ObjectSearchResultsLeftGrid = ({
           headers={headers}
           totalVirtualSizes={totalVirtualSizes}
           paddingLeft={0}
-          className="bg-white"
+          className="bg-base-100"
         />
       )}
     </div>
@@ -502,7 +502,7 @@ export const ObjectSearchResultsRightGrid = ({
           style={{
             height: virtualRows[0].size,
           }}
-          className="sticky top-0 z-[3] w-full bg-white"
+          className="sticky top-0 z-[3] w-full bg-base-100"
         >
           {virtualColumns.map((virtualColumn) => {
             const header = headers[virtualColumn.index];

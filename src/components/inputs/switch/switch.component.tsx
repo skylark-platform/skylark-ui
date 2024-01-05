@@ -42,7 +42,7 @@ export const Switch = ({ size, enabled, onChange }: SwitchProps) => {
     >
       <span
         className={clsx(
-          "inline-block transform rounded-full bg-white transition",
+          "inline-block transform rounded-full bg-base-100 transition",
           classNames.dot,
           enabled
             ? classNames.translate.enabled

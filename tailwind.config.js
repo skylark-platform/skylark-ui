@@ -3,6 +3,7 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
+  darkMode: ['[data-theme="dark"]'],
   content: [
     "./app/**/*.{js,ts,jsx,tsx}",
     "./src/pages/**/*.{js,ts,jsx,tsx}",
@@ -15,8 +16,8 @@ module.exports = {
         sans: ["Inter", ...defaultTheme.fontFamily.sans],
       },
       colors: {
-        "nav-bar": "#F0F2F6",
         black: "#0E1825",
+        "nav-bar": "var(--nav-bar)",
         "brand-primary": "#226DFF",
         manatee: {
           50: "#F6F8FB",
@@ -64,13 +65,16 @@ module.exports = {
   daisyui: {
     themes: [
       {
-        skylarklight: {
+        light: {
+          ...require("daisyui/src/theming/themes")["light"],
           primary: "#226DFF",
           "primary-content": "#FFF",
           secondary: "#D926A9",
           accent: "#1FB2A6",
           neutral: "#B8BCC6",
           "base-100": "#FFFFFF",
+          // "base-200": "#F1F3F7",
+          // "base-300": "#BFC5CF",
           "base-content": "#0E1825",
           info: "#C1E5FF",
           success: "#33BD6E",
@@ -79,7 +83,19 @@ module.exports = {
           error: "#F43636",
           "error-content": "#FFF",
           disabled: "#226DFF",
+          "--nav-bar": "#F0F2F6",
           "--height-btn": "5rem",
+        },
+        dark: {
+          ...require("daisyui/src/theming/themes")["dark"],
+          primary: "#226DFF",
+          "primary-content": "#FFF",
+          "base-200": "#F1F3F7",
+          "base-300": "#BFC5CF",
+          "--nav-bar": "#0E1825",
+          success: "#33BD6E",
+          warning: "#FBBD23",
+          error: "#F43636",
         },
       },
     ],

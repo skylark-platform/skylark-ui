@@ -93,7 +93,7 @@ const MenuItems = ({
           >
             <Menu.Items
               className={clsx(
-                "mx-auto mt-2 w-60 select-none rounded-sm bg-white text-sm font-bold shadow-lg ring-1 ring-manatee-700 ring-opacity-5 focus:outline-none",
+                "mx-auto mt-2 w-60 select-none rounded-sm bg-base-100 text-sm font-bold shadow-lg ring-1 ring-manatee-700 ring-opacity-5 focus:outline-none",
                 "max-h-96 overflow-y-scroll",
               )}
               style={{ ...transitionStyles }}
@@ -120,12 +120,12 @@ const MenuItems = ({
                           const className = clsx(
                             "flex w-full items-center space-x-1 md:space-x-1.5 rounded-sm pl-3 pr-2 py-2 md:py-3 md:pr-4",
                             !option.disabled &&
-                              "hover:bg-manatee-200 ui-active:bg-manatee-200 hover:text-gray-900 ui-active:text-gray-900",
+                              "hover:bg-manatee-200 dark:bg-manatee-800 ui-active:bg-manatee-200 dark:ui-active:bg-manatee-800 hover:text-gray-900 ui-active:text-gray-900 dark:ui-active:text-base-content",
                             option.disabled &&
-                              "bg-manatee-100 text-manatee-500",
+                              "bg-manatee-100 text-manatee-500 dark:bg-manatee-900",
                             option.danger &&
                               !option.disabled &&
-                              "bg-red-100 ui-active:bg-red-300 hover:bg-red-300 [&>svg]:text-error",
+                              "bg-red-100 ui-active:bg-red-300 hover:bg-red-300 [&>svg]:text-error dark:bg-red-900 dark:hover:bg-red-800 dark:ui-active:bg-red-800",
                           );
                           return option.href ? (
                             <Link

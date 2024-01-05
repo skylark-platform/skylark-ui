@@ -105,21 +105,21 @@ export const NavigationLinks = () => {
             <li
               key={`${text}-${href}`}
               className={clsx(
-                "group flex items-center py-6 text-black md:h-full md:px-4 md:py-0 lg:px-6",
+                "group flex items-center py-6 text-base-content md:h-full md:px-4 md:py-0 lg:px-6",
                 !isActiveLink &&
-                  "[&>a]:text-black/50 [&>div>div>button]:text-black/50",
+                  "[&>a]:text-base-content/50 [&>div>div>button]:text-base-content/50",
               )}
             >
               {links ? (
                 <DropdownMenu options={links} placement="bottom-start">
-                  <Menu.Button className="flex w-full items-center justify-center space-x-1 text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:text-sm">
+                  <Menu.Button className="flex w-full items-center justify-center space-x-1 text-base focus:outline-none focus-visible:ring-2 group-hover:text-base-content ui-open:text-base-content md:text-sm">
                     {Icon}
                     <span>{text}</span>
                   </Menu.Button>
                 </DropdownMenu>
               ) : (
                 <Link
-                  className="flex flex-row items-center space-x-1 group-hover:text-black"
+                  className="flex flex-row items-center space-x-1 group-hover:text-base-content"
                   href={href}
                   Icon={Icon}
                   text={text}

@@ -53,7 +53,7 @@ const getIcon = (status: statusType) => {
 
 export const StatusCard = ({ title, description, status }: Props) => {
   const combinedClassName = clsx(
-    "flex flex-row rounded border border-t-4 border-solid bg-white p-4 px-6 w-full",
+    "flex flex-row rounded border border-t-4 border-solid bg-base-100 p-4 px-6 w-full",
     status === statusType.success && "border-t-success",
     status === statusType.inProgress && "border-t-warning",
     status === statusType.error && "border-t-error",

@@ -53,15 +53,18 @@ export const Button = forwardRef(
       !iconOnly && "text-xs normal-case md:text-sm",
       variant === "primary" && "btn-primary shadow",
       variant === "neutral" &&
-        "btn-neutral bg-manatee-50 hover:bg-manatee-100 border-none",
+        "btn-neutral bg-manatee-50 hover:bg-manatee-100 dark:bg-manatee-800 dark:hover:bg-manatee-700 border-none",
       variant === "outline" &&
         "btn-outline btn-primary disabled:border-none disabled:shadow",
       variant === "ghost" &&
-        "btn-ghost text-black hover:bg-transparent p-0 disabled:bg-transparent bg-transparent",
+        "btn-ghost text-base-content stroke-base-content hover:bg-transparent p-0 disabled:bg-transparent bg-transparent",
       variant === "link" && "btn-link",
       variant === "form" &&
         "p-0 h-auto min-h-0 btn-ghost hover:bg-transparent opacity-30 transition-opacity hover:opacity-100 active:opacity-60",
-      success && !disabled && !loading && "btn-success text-white",
+      success &&
+        !disabled &&
+        !loading &&
+        "btn-success text-base-content stroke-base-content",
       danger && "btn-error",
       warning && "btn-warning",
       !iconOnly &&

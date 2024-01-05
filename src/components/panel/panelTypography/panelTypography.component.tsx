@@ -24,7 +24,7 @@ export const PanelSectionTitle = ({
     <h3
       id={id}
       className={clsx(
-        "bg-white text-base font-semibold underline inline-block",
+        "bg-base-100 text-base font-semibold underline inline-block",
         sticky ? "sticky top-0 z-[2] pb-2 pt-4 md:pt-8" : "mb-2 pb-1 md:pb-2",
       )}
     >
@@ -47,7 +47,7 @@ export const PanelFieldTitle = ({
   <h4
     id={id}
     className={clsx(
-      "group/header mb-1 flex items-center bg-white pb-0.5 text-sm font-bold",
+      "group/header mb-1 flex items-center bg-base-100 pb-0.5 text-sm font-bold",
       sticky && "sticky top-12 pt-2 md:top-[3.6rem]",
     )}
   >

@@ -36,11 +36,11 @@ const generateLiClassName = ({
   isSelectedTab: boolean;
 }) =>
   clsx(
-    "flex relative border-b-2 -mb-[2px] group/tab-container bg-white",
+    "flex relative border-b-2 -mb-[2px] group/tab-container bg-base-100",
     withDelete ? "mx-1 md:mx-2" : "mx-2 md:mx-3",
-    !disabled && "hover:border-black hover:text-black",
+    !disabled && "hover:border-black hover:text-base-content",
     isSelectedTab
-      ? "border-black text-black"
+      ? "border-black text-base-content"
       : "border-transparent text-gray-400",
   );
 
@@ -68,7 +68,7 @@ const Tab = ({
         {tab.name}
       </button>
       {onDelete && !disabled && (
-        <div className="flex justify-end bg-gradient-to-r from-transparent via-white/90 to-white pb-1.5 pt-1 md:pb-2.5">
+        <div className="flex justify-end bg-gradient-to-r from-transparent via-base-100/90 to-base-100 pb-1.5 pt-1 md:pb-2.5">
           <button
             className="group/button rounded-full ml-0.5 p-0.5 hover:bg-gray-100/20 hover:shadow-inner"
             onClick={() => onDelete({ ...tab, index })}
@@ -76,7 +76,7 @@ const Tab = ({
           >
             <FiX
               className={clsx(
-                "text-base font-bold group-hover/button:text-black",
+                "text-base font-bold group-hover/button:text-base-content",
                 tab.id === selectedTab
                   ? "text-gray-600"
                   : "text-gray-400 group-hover/tab-container:text-gray-600",
@@ -152,7 +152,7 @@ const ScrollableTabScrollButton = ({
   return (
     <m.button
       className={clsx(
-        "absolute bottom-0 flex items-center justify-center border-b border-transparent bg-white px-0.5 py-2 text-gray-400 hover:bg-manatee-50 hover:text-black md:px-2 md:py-3",
+        "absolute bottom-0 flex items-center justify-center border-b border-transparent bg-base-100 px-0.5 py-2 text-gray-400 hover:bg-manatee-50 hover:text-base-content md:px-2 md:py-3",
         "before:absolute before:bottom-0 before:z-[2] before:h-full before:w-1 before:from-manatee-400/25 before:to-manatee-400 before:content-['']",
         type === "left" && "left-0 before:-right-1 before:bg-gradient-to-l",
         type === "right" && "right-0 before:-left-1 before:bg-gradient-to-r",

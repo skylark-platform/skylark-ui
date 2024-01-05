@@ -55,7 +55,7 @@ const ContentLibraryDragOverlay = ({
   if (activeDragged?.data.current.type === DragType.CONTENT_LIBRARY_OBJECT) {
     const draggedObject = activeDragged.data.current.object;
     return (
-      <div className="max-w-[350px] cursor-grabbing items-center rounded-sm border border-manatee-200 bg-white text-sm">
+      <div className="max-w-[350px] cursor-grabbing items-center rounded-sm border border-manatee-200 bg-base-100 text-sm">
         {checkedObjects.length > 0 &&
         checkedUids.includes(draggedObject.uid) ? (
           <p className="p-2">{`Add ${checkedObjects.length} ${
@@ -260,13 +260,13 @@ export const ContentLibrary = ({
         </m.div>
         {activePanelObject && (
           <m.div
-            className="fixed z-40 flex h-full w-full grow flex-row bg-white md:relative md:z-auto"
+            className="fixed z-40 flex h-full w-full grow flex-row bg-base-100 md:relative md:z-auto"
             style={{ width: activePanelObject ? panelWidth : 0 }}
           >
             <m.div
               data-testid="drag-bar"
               key={windowSize}
-              className="hidden w-3 cursor-pointer items-center bg-manatee-100 md:flex"
+              className="hidden w-3 cursor-pointer items-center bg-nav-bar md:flex"
               onDrag={handleDrag}
               onDragStart={() => {
                 if (containerRef.current) {

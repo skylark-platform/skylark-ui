@@ -61,7 +61,7 @@ export function RadioGroup<ValueType extends string>({
                 <HeadlessUIRadioGroup.Label
                   as="span"
                   className={clsx(
-                    "select-none overflow-hidden pl-1.5 font-medium text-manatee-500 group-hover/radio:cursor-pointer ui-checked:text-black",
+                    "select-none overflow-hidden pl-1.5 font-medium text-manatee-500 group-hover/radio:cursor-pointer ui-checked:text-base-content",
                   )}
                 >
                   {option.label || option.value}

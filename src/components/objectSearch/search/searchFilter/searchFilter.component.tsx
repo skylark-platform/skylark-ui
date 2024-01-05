@@ -281,7 +281,7 @@ export const SearchFilter = ({
   );
 
   return (
-    <div className="relative flex max-h-[60vh] w-full flex-col rounded bg-white py-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 xl:max-h-[28rem]">
+    <div className="relative flex max-h-[60vh] w-full flex-col rounded bg-base-100 py-2 text-xs shadow-lg shadow-manatee-500 md:max-h-96 xl:max-h-[28rem]">
       <div className="absolute right-5 top-2 z-20">
         <DisplayGraphQLQuery
           label="Content Library Search"

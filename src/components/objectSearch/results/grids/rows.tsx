@@ -143,9 +143,9 @@ export const LayoutRow = ({
       data-testid="object-search-results-row"
       className={clsx(
         "absolute left-0 top-0 flex outline-none",
-        !isHoveredRow && !isPanelObject && "bg-white",
-        !isPanelObject && isHoveredRow && "bg-manatee-50",
-        isPanelObject && "bg-manatee-100",
+        !isHoveredRow && !isPanelObject && "bg-base-100",
+        !isPanelObject && isHoveredRow && "bg-manatee-50 dark:bg-manatee-800",
+        isPanelObject && "bg-manatee-100 dark:bg-manatee-700",
       )}
       style={{
         transform: `translateX(${

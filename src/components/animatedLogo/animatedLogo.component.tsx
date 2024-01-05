@@ -325,7 +325,7 @@ export const AnimatedLogo = ({
                   delay: props.speed === "fast" ? 0.8 : 2,
                   duration: props.speed === "fast" ? 0.6 : 1,
                 }}
-                className="mt-8 text-center font-heading text-6xl text-black"
+                className="mt-8 text-center font-heading text-6xl text-base-content"
               >
                 {children}
               </m.div>

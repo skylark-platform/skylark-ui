@@ -46,10 +46,7 @@ export const CreateButtons = ({
       <div className={clsx("flex flex-row", className)}>
         <DropdownMenu options={createOptions} placement="bottom-end">
           <DropdownMenuButton as={Fragment}>
-            <Button
-              variant="primary"
-              Icon={<FiPlus className="stroke-success-content text-xl" />}
-            >
+            <Button variant="primary" Icon={<FiPlus className="text-xl" />}>
               <span className="hidden sm:inline">Create</span>
             </Button>
           </DropdownMenuButton>

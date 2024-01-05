@@ -70,7 +70,7 @@ export const Modal = ({
       <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
         <Dialog.Panel
           className={clsx(
-            "relative mx-auto flex max-h-[90%] w-full flex-col overflow-y-auto rounded bg-white pb-4 pt-6 md:pb-8 md:pt-10 ",
+            "relative mx-auto flex max-h-[90%] w-full flex-col overflow-y-auto rounded bg-base-100 pb-4 pt-6 md:pb-8 md:pt-10 ",
             size === "small" && "max-w-xl md:w-7/12",
             size === "medium" && "max-w-3xl md:w-4/5",
             size === "large" && "max-w-8xl lg:w-11/12 xl:w-4/5",
@@ -80,7 +80,7 @@ export const Modal = ({
         >
           <button
             aria-label="close"
-            className="absolute right-4 top-4 text-manatee-700 transition-colors hover:text-black sm:right-6 sm:top-6 md:right-6 md:top-8"
+            className="absolute right-4 top-4 text-manatee-700 transition-colors hover:text-base-content sm:right-6 sm:top-6 md:right-6 md:top-8"
             onClick={closeModal}
             tabIndex={-1}
           >

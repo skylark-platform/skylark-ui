@@ -74,7 +74,7 @@ export const WYSIWYGEditor = ({
         <div
           style={{ height: WYSIWYG_DEFAULT_HEIGHT }}
           data-testid="wysiwyg-skeleton"
-          className="absolute top-0 z-10 h-full w-full bg-white"
+          className="absolute top-0 z-10 h-full w-full bg-base-100"
         >
           <Skeleton className={`h-full w-full`} />
         </div>

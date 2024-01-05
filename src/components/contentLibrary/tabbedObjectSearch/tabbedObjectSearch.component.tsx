@@ -208,7 +208,7 @@ const TabOverview = ({
                 <h2 className="text-lg font-bold">{tab.name}</h2>
                 <Button
                   variant="ghost"
-                  className="text-manatee-400 hover:text-black"
+                  className="text-manatee-400 hover:text-base-content"
                   onClick={() => {
                     setUpdatedName(tab.name || "");
                   }}
@@ -250,7 +250,7 @@ const NewTabButton = ({
   const { objects: objectsMeta } = useAllObjectsMeta();
 
   const beforeSeparatorClassname =
-    "before:absolute before:left-0 before:h-6 before:w-px before:bg-manatee-200 before:content-['']";
+    "before:absolute before:left-0 before:h-6 before:w-px before:bg-manatee-200 dark:before:bg-orange before:content-['']";
 
   const addTab = (argTab?: Partial<ObjectSearchTab>) => {
     const tabsNum = tabs ? tabs.length + 1 : 1;
@@ -398,7 +398,7 @@ const NewTabButton = ({
     <DropdownMenu options={newTabOptions} placement="bottom" renderInPortal>
       <DropdownMenuButton
         className={clsx(
-          "relative flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 py-2 font-medium text-gray-400 hover:bg-manatee-50 hover:text-black md:pb-3 md:pt-2",
+          "relative flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-2 py-2 font-medium text-gray-400 hover:bg-manatee-50 dark:hover:bg-manatee-800 hover:text-base-content md:pb-3 md:pt-2",
           beforeSeparatorClassname,
         )}
         aria-label="add tab"

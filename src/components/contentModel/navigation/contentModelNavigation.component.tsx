@@ -35,7 +35,7 @@ const ObjectTypeNavigationSection = ({
           className={clsx(
             "my-1 flex items-center w-full",
             activeObjectType?.toLowerCase() === objectType.toLowerCase()
-              ? "text-black font-medium"
+              ? "text-base-content font-medium"
               : "text-manatee-600",
           )}
           href={`/content-model/${encodeURIComponent(objectType)}`}

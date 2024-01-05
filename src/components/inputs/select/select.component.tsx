@@ -113,9 +113,9 @@ export const SelectOptionComponent = ({
     key={option.value}
     className={({ active }) =>
       clsx(
-        "relative flex cursor-default select-none items-center text-gray-900",
+        "relative flex cursor-default select-none items-center text-base-content",
         variant === "pill" ? "px-2" : "px-4 pl-6",
-        (active || isSelected) && "bg-ultramarine-50",
+        (active || isSelected) && "bg-ultramarine-50 dark:bg-manatee-700",
         className,
       )
     }
@@ -149,7 +149,7 @@ export const SelectOptionsContainer = forwardRef(
       ref={ref}
       data-testid="select-options"
       className={clsx(
-        "absolute z-[60] mt-1 max-h-48 overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
+        "absolute z-[60] mt-1 max-h-48 overflow-auto rounded-md bg-base-100 dark:bg-manatee-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
         className,
         !className?.includes(" w-") && !className?.startsWith("w-") && "w-full",
       )}
@@ -322,7 +322,7 @@ export const Select = forwardRef(
     const roundedClassName =
       rounded || variant === "pill" ? "rounded-full" : "rounded-sm";
     const selectClassName = clsx(
-      "relative w-full cursor-default bg-manatee-50 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 disabled:text-manatee-500",
+      "relative w-full cursor-default bg-manatee-50 dark:bg-manatee-800 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 disabled:text-manatee-500",
       variant === "pill" ? "text-xs" : "text-xs sm:text-sm",
       roundedClassName,
     );
@@ -370,7 +370,7 @@ export const Select = forwardRef(
               >
                 <Combobox.Input
                   className={clsx(
-                    "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0 disabled:text-manatee-500",
+                    "block w-full truncate border-none bg-manatee-50 dark:bg-manatee-800 leading-5 text-base-content focus:ring-0 disabled:text-manatee-500",
                     sizingClassName,
                     roundedClassName,
                     showClearValueButton ? "pr-12" : "pr-8",
@@ -475,11 +475,11 @@ export const Select = forwardRef(
                       ) : (
                         <div
                           className={clsx(
-                            "absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
+                            "absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-base-100 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
                             optionsClassName,
                           )}
                         >
-                          <div className="relative cursor-default select-none bg-white px-4 py-2 text-gray-900">
+                          <div className="relative cursor-default select-none bg-base-100 px-4 py-2 text-base-content">
                             Nothing found.
                           </div>
                         </div>

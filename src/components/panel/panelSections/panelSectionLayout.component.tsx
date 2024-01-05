@@ -43,7 +43,7 @@ export const PanelSectionLayout = ({
           <button
             key={`panel-section-scroll-button-${id}`}
             onClick={() => scrollToSection(id)}
-            className="py-3 text-left text-manatee-700 transition-colors hover:text-black"
+            className="py-3 text-left text-manatee-700 transition-colors hover:text-base-content"
           >
             {title}
           </button>
