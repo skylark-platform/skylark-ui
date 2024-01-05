@@ -41,9 +41,7 @@ export const decorators = [
           <DndContext>
             <UserProvider>
               <LazyMotion features={domMax}>
-                <div data-theme="skylarklight">
-                  <Story />
-                </div>
+                <Story />
               </LazyMotion>
             </UserProvider>
           </DndContext>
