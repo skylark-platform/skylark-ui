@@ -14,7 +14,7 @@ const Object = () => {
 
   const [tabState, setTabState] = useState<PanelTabState>({
     [PanelTab.Relationships]: {
-      expanded: {},
+      active: null,
     },
   });
 

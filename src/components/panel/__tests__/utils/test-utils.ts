@@ -80,7 +80,7 @@ export const skylarkAssetObject: SkylarkObjectIdentifier = {
 
 const tabState: PanelTabState = {
   Relationships: {
-    expanded: {},
+    active: null,
   },
 };
 

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ReactNode } from "react";
+import { ReactNode, Ref, forwardRef } from "react";
 
 import { hasProperty } from "src/lib/utils";
 
@@ -26,13 +26,16 @@ const scrollToSection = (id: string) =>
         : "smooth",
   });
 
-export const PanelSectionLayout = ({
-  isPage,
-  sections,
-  withStickyHeaders,
-  children,
-  onSectionClick,
-}: PanelSectionLayoutProps) => (
+export const PanelSectionLayoutComponent = (
+  {
+    isPage,
+    sections,
+    withStickyHeaders,
+    children,
+    onSectionClick,
+  }: PanelSectionLayoutProps,
+  ref: Ref<HTMLDivElement>,
+) => (
   <div
     className={clsx(
       "mx-auto w-full max-w-7xl flex-grow overflow-y-hidden text-sm ",
@@ -59,7 +62,7 @@ export const PanelSectionLayout = ({
         ))}
       </div>
     )}
-    <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto" ref={ref}>
       <div
         className={clsx(
           "relative pb-32 md:pb-56",
@@ -71,3 +74,5 @@ export const PanelSectionLayout = ({
     </div>
   </div>
 );
+
+export const PanelSectionLayout = forwardRef(PanelSectionLayoutComponent);

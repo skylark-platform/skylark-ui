@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { Ref, forwardRef } from "react";
 import { CgSpinner } from "react-icons/cg";
 import {
   FiBookOpen,
@@ -72,14 +73,18 @@ export const PanelEmptyDataText = () => (
   <p className="text-sm text-manatee-500">None</p>
 );
 
-export const PanelSeparator = ({
-  transparent,
-  className,
-}: {
-  transparent?: boolean;
-  className?: string;
-}) => (
+export const PanelSeparatorComponent = (
+  {
+    transparent,
+    className,
+  }: {
+    transparent?: boolean;
+    className?: string;
+  },
+  ref: Ref<HTMLSpanElement>,
+) => (
   <span
+    ref={ref}
     className={clsx(
       "flex h-px w-full flex-grow",
       transparent ? "bg-transparent" : "bg-manatee-100",
@@ -87,17 +92,20 @@ export const PanelSeparator = ({
     )}
   />
 );
+export const PanelSeparator = forwardRef(PanelSeparatorComponent);
 
 export const PanelButton = ({
   onClick,
   type,
   className,
+  ...props
 }: {
   onClick: () => void;
   type: "plus" | "maximise" | "minimise" | "x";
   className?: string;
 }) => (
   <button
+    {...props}
     className={clsx(
       "mb-4 px-1 py-1 text-manatee-500 transition-colors hover:text-brand-primary",
       className,

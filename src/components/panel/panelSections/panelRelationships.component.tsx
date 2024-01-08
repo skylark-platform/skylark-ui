@@ -1,5 +1,5 @@
-import { AnimatePresence, LayoutGroup } from "framer-motion";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { sentenceCase } from "sentence-case";
 
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
@@ -298,9 +298,23 @@ export const PanelRelationships = ({
     ({ relationshipName }) => relationshipName,
   );
 
-  const [expandedRelationship, setExpandedRelationship] = useState<
-    string | null
-  >(null);
+  const scrollDivRef = useRef<HTMLDivElement | null>(null);
+
+  const [activeRelationship, setActiveRelationship] = useState<string | null>(
+    tabState.active,
+  );
+
+  const setActiveRelationshipWrapper = useCallback(
+    (name: string | null) => {
+      if (name)
+        scrollDivRef.current?.scrollTo?.({ top: 0, behavior: "instant" });
+      setActiveRelationship(name);
+      updateActivePanelTabState({
+        [PanelTab.Relationships]: { active: name },
+      });
+    },
+    [updateActivePanelTabState],
+  );
 
   const { orderedRelationships, emptyOrderedRelationships } =
     splitRelationshipsIntoSections(relationshipNames, relationships);
@@ -316,19 +330,20 @@ export const PanelRelationships = ({
 
   return (
     <PanelSectionLayout
+      ref={scrollDivRef}
       sections={relationshipNames.map((relationshipName) => ({
         id: relationshipName,
         htmlId: `relationship-panel-${relationshipName}`,
         title: formatObjectField(relationshipName),
       }))}
       isPage={isPage}
-      onSectionClick={({ id }) => setExpandedRelationship(id)}
+      onSectionClick={({ id }) => setActiveRelationshipWrapper(id)}
     >
       <div className="relative">
         <AnimatePresence mode="popLayout">
           {filterWhenExpandedRelationship(
             orderedRelationships,
-            expandedRelationship,
+            activeRelationship,
           )?.map((relationship) => {
             const config =
               objectTypeRelationshipConfig?.[relationship.name] || null;
@@ -348,8 +363,8 @@ export const PanelRelationships = ({
                 hasMoreRelationships={relationshipsWithNextPage.includes(
                   relationship.name,
                 )}
-                setExpandedRelationship={setExpandedRelationship}
-                isExpanded={!!expandedRelationship}
+                setExpandedRelationship={setActiveRelationshipWrapper}
+                isExpanded={!!activeRelationship}
                 setPanelObject={setPanelObject}
                 removeRelationshipObject={({ relationshipName, uid }) => {
                   modifyRelationshipObjects(relationshipName, {
@@ -357,12 +372,11 @@ export const PanelRelationships = ({
                   });
                 }}
                 setSearchObjectsModalState={setSearchObjectsModalState}
-                updateActivePanelTabState={updateActivePanelTabState}
               />
             );
           })}
 
-          {!expandedRelationship &&
+          {!activeRelationship &&
             orderedRelationships.length > 0 &&
             emptyOrderedRelationships.length > 0 && (
               <PanelSeparator className="my-8" />
@@ -370,7 +384,7 @@ export const PanelRelationships = ({
 
           {filterWhenExpandedRelationship(
             emptyOrderedRelationships,
-            expandedRelationship,
+            activeRelationship,
           )?.map((relationship) => {
             const config =
               objectTypeRelationshipConfig?.[relationship.name] || null;
@@ -378,8 +392,8 @@ export const PanelRelationships = ({
             return (
               <PanelRelationshipSection
                 isEmptySection
-                setExpandedRelationship={setExpandedRelationship}
-                isExpanded={!!expandedRelationship}
+                setExpandedRelationship={setActiveRelationshipWrapper}
+                isExpanded={!!activeRelationship}
                 key={relationship.name}
                 relationship={relationship}
                 config={config}
@@ -397,7 +411,6 @@ export const PanelRelationships = ({
                   });
                 }}
                 setSearchObjectsModalState={setSearchObjectsModalState}
-                updateActivePanelTabState={updateActivePanelTabState}
               />
             );
           })}

@@ -13,7 +13,7 @@ import { Panel } from "./panel.component";
 
 const defaultPanelTabState: PanelTabState = {
   [PanelTab.Relationships]: {
-    expanded: {},
+    active: null,
   },
 };
 

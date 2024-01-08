@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import { AnimatePresence, m } from "framer-motion";
-import { useState, Fragment, useEffect } from "react";
+import { Transition, m } from "framer-motion";
+import { Fragment, Ref, forwardRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { sentenceCase } from "sentence-case";
 
@@ -11,7 +11,6 @@ import {
   PanelSeparator,
 } from "src/components/panel/panelTypography";
 import { Tooltip } from "src/components/tooltip/tooltip.component";
-import { PanelTab, PanelTabState } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectRelationship,
@@ -26,7 +25,6 @@ interface PanelRelationshipsSectionProps {
   inEditMode: boolean;
   isFetchingMoreRelationships: boolean;
   newUids: string[];
-  // variant: "minimal" | "full";
   isExpanded: boolean;
   config: ParsedSkylarkObjectTypeRelationshipConfiguration["config"] | null;
   setExpandedRelationship: (r: string | null) => void;
@@ -39,41 +37,37 @@ interface PanelRelationshipsSectionProps {
     relationship: ParsedSkylarkObjectRelationship;
     fields?: string[];
   }) => void;
-  updateActivePanelTabState: (s: Partial<PanelTabState>) => void;
   hasMoreRelationships?: boolean;
   fetchMoreRelationships: () => void;
 }
 
-export const PanelRelationshipSection = ({
-  isEmptySection,
-  relationship,
-  inEditMode,
-  isFetchingMoreRelationships,
-  newUids,
-  // variant,
-  isExpanded,
-  config,
-  hasMoreRelationships,
-  setPanelObject,
-  removeRelationshipObject,
-  setSearchObjectsModalState,
-  setExpandedRelationship,
-  fetchMoreRelationships,
-}: PanelRelationshipsSectionProps) => {
+const transition: Transition = {
+  duration: 0.15,
+  ease: "linear",
+};
+
+const PanelRelationshipSectionComponent = (
+  {
+    isEmptySection,
+    relationship,
+    inEditMode,
+    isFetchingMoreRelationships,
+    newUids,
+    // variant,
+    isExpanded,
+    config,
+    hasMoreRelationships,
+    setPanelObject,
+    removeRelationshipObject,
+    setSearchObjectsModalState,
+    setExpandedRelationship,
+    fetchMoreRelationships,
+  }: PanelRelationshipsSectionProps,
+  ref: Ref<HTMLDivElement>,
+) => {
   const { name: relationshipName, objects, objectType } = relationship;
 
-  // const [isExpanded, setIsExpanded] = useState(initialExpanded);
-
-  // const toggleExpanded = () => {
-  //   updateActivePanelTabState({
-  //     [PanelTab.Relationships]: {
-  //       expanded: { [relationshipName]: !isExpanded },
-  //     },
-  //   });
-  //   setIsExpanded(!isExpanded);
-  // };
-
-  const { ref, inView } = useInView();
+  const { ref: inViewRef, inView } = useInView();
 
   useEffect(() => {
     if (inView && hasMoreRelationships) {
@@ -93,13 +87,15 @@ export const PanelRelationshipSection = ({
     setExpandedRelationship(isExpanded ? null : relationshipName);
   };
 
+  const canLoadMore = isExpanded && hasMoreRelationships;
+
   return (
     <m.div
+      ref={ref}
       key={`${relationshipName}-container`}
-      // layout
       className={clsx("pb-6 bg-white")}
       data-testid={relationshipName}
-      transition={{ duration: 0.08 }}
+      transition={transition}
       initial={{ opacity: 0, height: "auto" }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: "auto" }}
@@ -107,6 +103,7 @@ export const PanelRelationshipSection = ({
       <m.div
         key={`${relationshipName}-title`}
         layout
+        transition={transition}
         className={clsx(
           "flex items-center justify-between bg-white pt-8 -mt-8",
           isExpanded && "sticky top-0 z-10",
@@ -116,6 +113,9 @@ export const PanelRelationshipSection = ({
         <div className="flex items-center -ml-7">
           {toggleExpanded && (
             <PanelButton
+              aria-label={`${
+                isExpanded ? "close" : "expand"
+              } ${relationshipName} relationship`}
               className="mx-0.5"
               type={isExpanded ? "x" : "maximise"}
               onClick={toggleExpanded}
@@ -151,15 +151,10 @@ export const PanelRelationshipSection = ({
 
       <m.div
         key={`${relationshipName}-objects`}
-        className={
-          clsx()
-          // "grid grid-rows-[1fr] transition-grid-template-rows",
-          // isExpanded && "absolute",
-        }
+        transition={transition}
         layout="position"
       >
         <div className="overflow-hidden">
-          {/* <AnimatePresence mode="sync" initial={false}> */}
           {displayList?.length > 0 &&
             displayList?.map((obj, index) => {
               const defaultSortFieldValue =
@@ -170,13 +165,11 @@ export const PanelRelationshipSection = ({
               return (
                 <m.div
                   key={`relationship-${obj.objectType}-${obj.uid}`}
-                  // layout
-                  initial={{ opacity: 0, height: "auto" }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: "auto" }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{
-                    height: { duration: 0.15 },
-                    opacity: { duration: 0.06 },
+                    duration: 0.05,
                     ease: "linear",
                   }}
                 >
@@ -228,28 +221,31 @@ export const PanelRelationshipSection = ({
                 </m.div>
               );
             })}
-          {/* </AnimatePresence> */}
         </div>
       </m.div>
 
-      {/* {variant === "minimal" && relationship && objects.length > 3 && ( */}
-      <m.div layout className="mb-3">
+      <m.div layout className="mb-3" transition={{ duration: 0.08 }}>
         {hasShowMore && toggleExpanded && (
           <>
             <PanelSeparator />
             <button
-              ref={isExpanded && hasMoreRelationships ? ref : null}
+              ref={canLoadMore ? inViewRef : null}
               data-testid={`expand-relationship-${relationshipName}`}
-              onClick={toggleExpanded}
+              onClick={canLoadMore ? fetchMoreRelationships : toggleExpanded}
               className="w-full cursor-pointer p-2 text-center text-xs text-manatee-500 hover:text-manatee-700"
             >
-              {`Show ${isExpanded ? "less" : "more"}`}
+              {canLoadMore
+                ? "Load more"
+                : `Show ${isExpanded ? "less" : "more"}`}
               {/* {isExpanded ? "Collapse" : "Expand"} */}
             </button>
           </>
         )}
       </m.div>
-      {/* )} */}
     </m.div>
   );
 };
+
+export const PanelRelationshipSection = forwardRef(
+  PanelRelationshipSectionComponent,
+);

@@ -176,8 +176,6 @@ export const useGetObjectRelationships = (
     ? getRelationshipNextTokens(data.pages[data.pages.length - 1])
     : { relationshipsWithNextPage: [] as string[] };
 
-  console.log(relationshipsWithNextPage);
-
   return {
     relationships,
     relationshipsWithNextPage,
