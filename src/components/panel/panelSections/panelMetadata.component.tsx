@@ -76,26 +76,29 @@ export const PanelMetadata = ({
 
   const sections = [
     {
-      id: "system",
+      id: "system-metadata",
       title: "System Metadata",
+      htmlId: "panel-section-system",
       metadataFields: systemMetadataFields,
     },
     {
-      id: "translatable",
+      id: "translatable-metadata",
       title: "Translatable Metadata",
+      htmlId: "panel-section-translatable",
       metadataFields: translatableMetadataFields,
     },
     {
-      id: "global",
+      id: "global-metadata",
       title: "Global Metadata",
+      htmlId: "panel-section-global",
       metadataFields: globalMetadataFields,
     },
   ].filter(({ metadataFields }) => metadataFields.length > 0);
 
-  const sideBarSections = sections.map(({ id, title }) => ({
+  const sideBarSections = sections.map(({ id, title, htmlId }) => ({
     id,
     title,
-    htmlId: id,
+    htmlId,
   }));
 
   return (
@@ -113,9 +116,13 @@ export const PanelMetadata = ({
         onSubmit={(e) => e.preventDefault()}
       >
         {sections.map(
-          ({ id, title, metadataFields }, index, { length: numSections }) => (
+          (
+            { id, title, metadataFields, htmlId },
+            index,
+            { length: numSections },
+          ) => (
             <div key={id} className="mb-8 md:mb-10">
-              <PanelSectionTitle id={id} text={title} />
+              <PanelSectionTitle id={htmlId} text={title} />
               {metadataFields.map(({ field, config }) => {
                 const fieldConfigFromObject = objectFieldConfigArr?.find(
                   ({ name }) => name === field,
