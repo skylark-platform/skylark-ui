@@ -40,6 +40,7 @@ import {
   handleDroppedContents,
   HandleDropError,
   HandleDropErrorType,
+  HandleRelationshipDropError,
 } from "./panel.lib";
 import {
   PanelAvailability,
@@ -134,7 +135,52 @@ const displayHandleDroppedErrors = (
       <Toast
         title={`Invalid Object Type${invalidObjectTypes.length > 1 ? "s" : ""}`}
         message={[
-          `Types "${invalidObjectTypes.join(", ")}" ${tabText}.`,
+          `Type${
+            invalidObjectTypes.length > 1 ? "s" : ""
+          } "${invalidObjectTypes.join(", ")}" ${tabText}.`,
+          `Affected object(s):`,
+          ...affectedObjectsMsg,
+        ]}
+      />,
+      { autoClose: 10000 },
+    );
+  }
+
+  const invalidRelationshipTypeErrors = errors.filter(
+    (error) => error.type === HandleDropErrorType.INVALID_RELATIONSHIP_TYPE,
+  );
+
+  if (invalidRelationshipTypeErrors.length > 0) {
+    const invalidObjectTypes = [
+      ...new Set(
+        invalidRelationshipTypeErrors.map(({ object }) =>
+          getObjectTypeDisplayNameFromParsedObject(object),
+        ),
+      ),
+    ];
+
+    const relationshipName = (
+      invalidRelationshipTypeErrors.find(
+        (error) =>
+          error.type === HandleDropErrorType.INVALID_RELATIONSHIP_TYPE &&
+          error.targetRelationship,
+      ) as HandleRelationshipDropError
+    )?.targetRelationship;
+
+    const relationshipTypeText = relationshipName || "Active relationship";
+
+    const affectedObjectsMsg = invalidRelationshipTypeErrors.map(
+      ({ object }) => `- ${getObjectDisplayName(object)}`,
+    );
+    toast.error(
+      <Toast
+        title={`Invalid Object Type${invalidObjectTypes.length > 1 ? "s" : ""}`}
+        message={[
+          `Type${
+            invalidObjectTypes.length > 1 ? "s" : ""
+          } "${invalidObjectTypes.join(
+            ", ",
+          )}" cannot be linked to the relationship "${relationshipTypeText}".`,
           `Affected object(s):`,
           ...affectedObjectsMsg,
         ]}

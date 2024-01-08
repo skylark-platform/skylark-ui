@@ -38,7 +38,7 @@ interface PanelRelationshipsSectionProps {
     fields?: string[];
   }) => void;
   hasMoreRelationships?: boolean;
-  fetchMoreRelationships: () => void;
+  fetchMoreRelationships?: () => void;
 }
 
 const transition: Transition = {
@@ -70,7 +70,7 @@ const PanelRelationshipSectionComponent = (
 
   useEffect(() => {
     if (inView && hasMoreRelationships) {
-      fetchMoreRelationships();
+      fetchMoreRelationships?.();
     }
   });
 

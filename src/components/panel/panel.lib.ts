@@ -5,20 +5,33 @@ import {
   ParsedSkylarkObjectRelationships,
   BuiltInSkylarkObjectType,
   SkylarkObjectMeta,
-  ParsedSkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 
 export enum HandleDropErrorType {
   "EXISTING_LINK" = "EXISTING_LINK",
   "INVALID_OBJECT_TYPE" = "INVALID_OBJECT_TYPE",
+  "INVALID_RELATIONSHIP_TYPE" = "INVALID_RELATIONSHIP_TYPE",
   "OBJECTS_ARE_SAME" = "OBJECTS_ARE_SAME",
 }
 
-export interface HandleDropError {
+export type HandleGenericDropError = {
   object: ParsedSkylarkObject;
-  type: HandleDropErrorType;
-}
+  type:
+    | HandleDropErrorType.EXISTING_LINK
+    | HandleDropErrorType.INVALID_OBJECT_TYPE
+    | HandleDropErrorType.OBJECTS_ARE_SAME;
+};
+
+export type HandleRelationshipDropError = {
+  object: ParsedSkylarkObject;
+  type: HandleDropErrorType.INVALID_RELATIONSHIP_TYPE;
+  targetRelationship: string;
+};
+
+export type HandleDropError =
+  | HandleGenericDropError
+  | HandleRelationshipDropError;
 
 const parseSkylarkObjectContent = (
   skylarkObject: ParsedSkylarkObject,
@@ -37,13 +50,13 @@ export const handleDroppedRelationships = ({
   objectMetaRelationships,
   activeObjectUid,
   droppedObjects,
-  relationshipName,
+  targetRelationship,
 }: {
   existingObjects: ParsedSkylarkObjectRelationships;
   objectMetaRelationships: SkylarkObjectMeta["relationships"];
   activeObjectUid: string;
   droppedObjects: ParsedSkylarkObject[];
-  relationshipName?: string;
+  targetRelationship?: string | null;
 }): {
   count: number;
   updatedRelationshipObjects: ParsedSkylarkObjectRelationships;
@@ -61,15 +74,39 @@ export const handleDroppedRelationships = ({
         addedObjects: Record<string, ParsedSkylarkObject[]>;
         errors: HandleDropError[];
       } => {
+        const targetRelationshipMeta =
+          (targetRelationship &&
+            objectMetaRelationships.find(
+              (relationship) =>
+                relationship.relationshipName === targetRelationship,
+            )) ||
+          null;
+
+        if (
+          targetRelationship &&
+          targetRelationshipMeta &&
+          droppedObject.objectType !== targetRelationshipMeta.objectType
+        ) {
+          const error: HandleDropError = {
+            type: HandleDropErrorType.INVALID_RELATIONSHIP_TYPE,
+            object: droppedObject,
+            targetRelationship,
+          };
+          return {
+            ...previous,
+            errors: [...previous.errors, error],
+          };
+        }
+
         // Unless the relationshipName is passed in, we make a best guess based on the object type
-        const droppedObjectRelationshipName =
-          relationshipName ||
+        const droppedObjectRelationshipMeta =
+          targetRelationshipMeta ||
           objectMetaRelationships.find(
             (relationship) =>
               relationship.objectType === droppedObject.objectType,
-          )?.relationshipName;
+          );
 
-        if (!droppedObjectRelationshipName) {
+        if (!droppedObjectRelationshipMeta) {
           const error: HandleDropError = {
             type: HandleDropErrorType.INVALID_OBJECT_TYPE,
             object: droppedObject,
@@ -79,6 +116,9 @@ export const handleDroppedRelationships = ({
             errors: [...previous.errors, error],
           };
         }
+
+        const droppedObjectRelationshipName =
+          droppedObjectRelationshipMeta?.relationshipName;
 
         if (activeObjectUid === droppedObject.uid) {
           const error: HandleDropError = {
@@ -92,7 +132,7 @@ export const handleDroppedRelationships = ({
         }
 
         const droppedObjectRelationshipObjects =
-          existingObjects?.[droppedObjectRelationshipName];
+          existingObjects?.[droppedObjectRelationshipMeta.relationshipName];
 
         const isAlreadyAdded = !!droppedObjectRelationshipObjects?.objects.find(
           ({ uid }) => droppedObject.uid === uid,
