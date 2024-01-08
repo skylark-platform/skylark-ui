@@ -131,6 +131,7 @@ const PanelRelationshipSectionComponent = (
           />
           {!isFetchingMoreRelationships && (
             <PanelButton
+              aria-label={`Open edit ${relationshipName} relationship modal`}
               className="ml-1"
               type="plus"
               onClick={() =>
