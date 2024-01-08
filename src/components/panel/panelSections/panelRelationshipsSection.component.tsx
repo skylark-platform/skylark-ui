@@ -53,7 +53,6 @@ const PanelRelationshipSectionComponent = (
     inEditMode,
     isFetchingMoreRelationships,
     newUids,
-    // variant,
     isExpanded,
     config,
     hasMoreRelationships,
@@ -238,7 +237,6 @@ const PanelRelationshipSectionComponent = (
               {canLoadMore
                 ? "Load more"
                 : `Show ${isExpanded ? "less" : "more"}`}
-              {/* {isExpanded ? "Collapse" : "Expand"} */}
             </button>
           </>
         )}

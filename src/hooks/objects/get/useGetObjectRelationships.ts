@@ -131,10 +131,6 @@ export const useGetObjectRelationships = (
       enabled: query !== null,
     });
 
-  // if (hasNextPage) {
-  //   fetchNextPage();
-  // }
-
   const relationships: ParsedSkylarkObjectRelationships | null = useMemo(() => {
     if (!data?.pages || data.pages.length === 0) {
       return null;
