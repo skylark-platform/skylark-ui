@@ -122,7 +122,8 @@ export const PanelImages = ({
   return (
     <PanelSectionLayout
       sections={images.map(({ name }) => ({
-        id: `image-panel-${name}`,
+        id: name,
+        htmlId: `image-panel-${name}`,
         title: formatObjectField(name),
       }))}
       isPage={isPage}

@@ -167,7 +167,9 @@ export const PanelContent = ({
 
   return (
     <PanelSectionLayout
-      sections={[{ id: "content-panel-title", title: "Content" }]}
+      sections={[
+        { htmlId: "content-panel-title", title: "Content", id: "content" },
+      ]}
       isPage={isPage}
     >
       <PanelSectionTitle

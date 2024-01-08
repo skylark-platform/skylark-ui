@@ -42,6 +42,7 @@ const getVideoTypeSections = (
 ): {
   type: string;
   id: string;
+  htmlId: string;
   title: string;
   properties: {
     key: string;
@@ -60,7 +61,8 @@ const getVideoTypeSections = (
             : "";
         return {
           type: videoType,
-          id: `playback-panel-external`,
+          htmlId: `playback-panel-external`,
+          id: videoType,
           title: videoType.toUpperCase(),
           properties: url
             ? [{ key: "url", property: "URL", isUrl: true, value: url }]
@@ -86,7 +88,8 @@ const getVideoTypeSections = (
 
       return {
         type: videoType,
-        id: `playback-panel-${videoType}`,
+        id: videoType,
+        htmlId: `playback-panel-${videoType}`,
         title: videoType.toUpperCase(),
         properties,
         url: hasProperty(metadata, urlKey) && metadata[urlKey],
@@ -173,7 +176,8 @@ const RelationshipPlayback = ({
   const sections = [...assetRelationships, ...liveAssetRelationships]
     .sort((a, b) => (a.objects.length > b.objects.length ? -1 : 1))
     .map(({ objects, name }) => ({
-      id: `playback-panel-${name}`,
+      id: name,
+      htmlId: `playback-panel-${name}`,
       title: formatObjectField(name),
       relationshipName: name,
       objects: objects,

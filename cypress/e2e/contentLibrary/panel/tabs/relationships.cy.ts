@@ -27,12 +27,12 @@ describe("Content Library - Object Panel - Relationships Tab", () => {
 
     cy.contains("button", "Relationships").click();
 
-    cy.get("#relationship-panel-assets").scrollIntoView();
+    cy.get("#panel-section-assets").scrollIntoView();
 
-    cy.get("#relationship-panel-assets")
+    cy.get("#panel-section-assets")
       .parent()
       .within(() => {
-        cy.get("button").click();
+        cy.get('[aria-label="Open edit assets relationship modal"]').click();
       });
 
     cy.get("[data-testid=search-objects-modal-save]").should("exist");
@@ -43,7 +43,7 @@ describe("Content Library - Object Panel - Relationships Tab", () => {
 
     cy.get("[data-testid=search-objects-modal-save]").should("not.exist");
 
-    cy.get("#relationship-panel-assets").scrollIntoView();
+    cy.get("#panel-section-assets").scrollIntoView();
 
     cy.contains("GOT S04 Trailer");
 

@@ -15,7 +15,7 @@ import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
   PanelFieldTitle,
-  PanelPlusButton,
+  PanelButton,
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
@@ -277,7 +277,13 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
 
   return (
     <PanelSectionLayout
-      sections={[{ id: "availability-panel-header", title: "Availability" }]}
+      sections={[
+        {
+          id: "availability",
+          htmlId: "availability-panel-header",
+          title: "Availability",
+        },
+      ]}
       isPage={isPage}
     >
       <div data-testid="panel-availability">
@@ -286,7 +292,10 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
             text={formatObjectField("Availability")}
             id={"availability-panel-header"}
           />
-          <PanelPlusButton onClick={() => setObjectSearchModalOpen(true)} />
+          <PanelButton
+            type="plus"
+            onClick={() => setObjectSearchModalOpen(true)}
+          />
         </div>
         {data && (
           <>
