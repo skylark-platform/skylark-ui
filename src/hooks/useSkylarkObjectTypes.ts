@@ -24,6 +24,11 @@ import {
   useSkylarkSchemaIntrospection,
 } from "./useSkylarkSchemaIntrospection";
 
+export interface ObjectTypeWithConfig {
+  objectType: string;
+  config: ParsedSkylarkObjectConfig;
+}
+
 export const sortObjectTypesWithConfig = (
   a: {
     objectType: string;
@@ -74,7 +79,7 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
     gcTime: Infinity,
   });
 
-  const objectTypesWithConfig = useMemo(
+  const objectTypesWithConfig: ObjectTypeWithConfig[] | undefined = useMemo(
     () =>
       objectTypes
         ?.map((objectType) => ({

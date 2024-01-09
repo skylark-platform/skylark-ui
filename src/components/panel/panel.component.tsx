@@ -20,7 +20,10 @@ import { useUpdateObjectContent } from "src/hooks/objects/update/useUpdateObject
 import { useUpdateObjectMetadata } from "src/hooks/objects/update/useUpdateObjectMetadata";
 import { useUpdateObjectRelationships } from "src/hooks/objects/update/useUpdateObjectRelationships";
 import { PanelTab, PanelTabState } from "src/hooks/state";
-import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
+import {
+  ObjectTypeWithConfig,
+  useSkylarkObjectTypesWithConfig,
+} from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
@@ -88,10 +91,7 @@ const displayHandleDroppedErrors = (
   errors: HandleDropError[],
   tab: PanelTab,
   panelObject?: ParsedSkylarkObject,
-  objectTypesWithConfig?: {
-    objectType: string;
-    config: ParsedSkylarkObjectConfig;
-  }[],
+  objectTypesWithConfig?: ObjectTypeWithConfig[],
 ) => {
   const objectTypeConfigObject:
     | Record<string, ParsedSkylarkObjectConfig>
