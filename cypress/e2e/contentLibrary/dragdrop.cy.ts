@@ -194,6 +194,62 @@ describe("Drag and Drop - Content and Relationship tab", () => {
         );
       });
 
+      it("expands the images relationship and adds an object by dragging", () => {
+        cy.fixture("./skylark/queries/getObject/homepage.json").then(
+          (homepageJson) => {
+            const homepageUid = homepageJson.data.getObject.uid;
+            const homepageObjectType = homepageJson.data.getObject.__typename;
+
+            searchContentLibraryAndOpenPanel("Homepage");
+            cy.contains("button", "Relationships").click();
+            cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
+
+            cy.get("[data-cy=panel-drop-zone]").should("not.exist");
+
+            // Expand images relationship
+            cy.get("#panel-section-call_to_actions").should("exist");
+            cy.get('[aria-label="expand images relationship"]').click();
+            cy.get("#panel-section-call_to_actions").should("not.exist");
+
+            dragRowIntoPanel("last").then(() => {
+              cy.get("span.bg-success")
+                .should("exist")
+                .should("have.length", 1);
+            });
+          },
+        );
+      });
+
+      it("expands the images relationship and shows an error toast when an invalid object type is dragged", () => {
+        cy.fixture("./skylark/queries/getObject/homepage.json").then(
+          (homepageJson) => {
+            const homepageUid = homepageJson.data.getObject.uid;
+            const homepageObjectType = homepageJson.data.getObject.__typename;
+
+            searchContentLibraryAndOpenPanel("Homepage");
+            cy.contains("button", "Relationships").click();
+            cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
+
+            cy.get("[data-cy=panel-drop-zone]").should("not.exist");
+
+            // Expand images relationship
+            cy.get("#panel-section-call_to_actions").should("exist");
+            cy.get('[aria-label="expand images relationship"]').click();
+            cy.get("#panel-section-call_to_actions").should("not.exist");
+
+            dragRowIntoPanel("first").then(() => {
+              cy.get("[data-testid=toast]")
+                .first()
+                .within(() => {
+                  cy.contains("Invalid Object Type for Relationship").should(
+                    "exist",
+                  );
+                });
+            });
+          },
+        );
+      });
+
       it("shows an error toast when the relationship already exists", () => {
         cy.fixture("./skylark/queries/getObject/homepage.json").then(
           (homepageJson) => {
