@@ -381,7 +381,7 @@ export const PanelRelationships = ({
           {!activeRelationship &&
             orderedRelationships.length > 0 &&
             emptyOrderedRelationships.length > 0 && (
-              <PanelSeparator className="my-8" />
+              <PanelSeparator className="mb-8" />
             )}
 
           {filterWhenExpandedRelationship(
