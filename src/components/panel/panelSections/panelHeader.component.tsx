@@ -392,7 +392,7 @@ export const PanelHeader = ({
           {(inEditMode || currentTab === PanelTab.Metadata) && (
             <div
               className={clsx(
-                "absolute -bottom-16 left-1/2 z-10 -translate-x-1/2",
+                "absolute -bottom-16 left-1/2 z-20 -translate-x-1/2",
                 isPage ? "md:fixed md:bottom-auto md:top-24" : " md:-bottom-18",
               )}
             >
