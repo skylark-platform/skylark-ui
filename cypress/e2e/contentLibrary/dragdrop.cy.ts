@@ -9,6 +9,44 @@ const allDevicesAllCustomersAvailability =
 const panelDragDeltaX = 1800;
 const panelDragDeltaY = 500;
 
+const searchContentLibrary = (str: string) => {
+  cy.get('input[name="search-query-input"]').clear().type(str);
+  cy.contains(str).should("exist");
+};
+
+const searchContentLibraryAndOpenPanel = (str: string) => {
+  searchContentLibrary(str);
+  cy.openContentLibraryObjectPanelByText(str);
+};
+
+const dragRowIntoPanel = (row: "first" | "last") => {
+  const allRows = cy.get(`[data-cy="object-search-results-row-draggable"`);
+  const cyRow = row === "first" ? allRows.first() : allRows.last();
+
+  return cyRow
+    .trigger("mousedown", {
+      button: 0,
+      release: false,
+      force: true,
+    })
+    .trigger("mousemove", {
+      force: true,
+      clientX: 20,
+      clientY: 20,
+    })
+    .wait(100)
+    .trigger("mousemove", {
+      force: true,
+      clientX: panelDragDeltaX,
+      clientY: panelDragDeltaY,
+    })
+    .then(() => {
+      cy.get("[data-cy=panel-drop-zone]").should("exist");
+    })
+    .wait(50)
+    .trigger("mouseup", { force: true });
+};
+
 describe("Drag and Drop - Content and Relationship tab", () => {
   beforeEach(() => {
     cy.login();
@@ -89,44 +127,18 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             const homepageUid = homepageJson.data.getObject.uid;
             const homepageObjectType = homepageJson.data.getObject.__typename;
 
-            cy.get('input[name="search-query-input"]').type("Homepage");
-            cy.contains("Homepage").should("exist");
-            cy.openContentLibraryObjectPanelByText("Homepage");
+            searchContentLibraryAndOpenPanel("Homepage");
             cy.contains("button", "Content").click();
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="object-search-results-row-draggable"`)
-              .last()
-              .trigger("mousedown", {
-                button: 0,
-                release: false,
-                force: true,
-              })
-              .trigger("mousemove", {
-                force: true,
-                clientX: 20,
-                clientY: 20,
-              })
-              .wait(500)
-              .trigger("mousemove", {
-                force: true,
-                clientX: panelDragDeltaX,
-                clientY: panelDragDeltaY,
-              })
-              .then(() => {
-                cy.get("[data-cy=panel-drop-zone]").should("exist");
-              })
-              .wait(100)
-              .trigger("mouseup", { force: true })
-              .wait(250)
-              .then(() => {
-                cy.contains("button", "Content").should("exist");
-                cy.get("input.bg-success")
-                  .should("exist")
-                  .should("have.length", 1);
-              });
+            dragRowIntoPanel("last").then(() => {
+              cy.contains("button", "Content").should("exist");
+              cy.get("input.bg-success")
+                .should("exist")
+                .should("have.length", 1);
+            });
           },
         );
       });
@@ -137,74 +149,24 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             const homepageUid = homepageJson.data.getObject.uid;
             const homepageObjectType = homepageJson.data.getObject.__typename;
 
-            cy.get('input[name="search-query-input"]').type("Homepage");
-            cy.contains("Homepage").should("exist");
-            cy.openContentLibraryObjectPanelByText("Homepage");
+            searchContentLibraryAndOpenPanel("Homepage");
             cy.contains("button", "Content").click();
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="object-search-results-row-draggable"`)
-              .last()
-              .trigger("mousedown", {
-                button: 0,
-                release: false,
-                force: true,
-              })
-              .trigger("mousemove", {
-                force: true,
-                clientX: 20,
-                clientY: 20,
-              })
-              .wait(500)
-              .trigger("mousemove", {
-                force: true,
-                clientX: panelDragDeltaX,
-                clientY: panelDragDeltaY,
-              })
-              .then(() => {
-                cy.get("[data-cy=panel-drop-zone]").should("exist");
-              })
-              .wait(100)
-              .trigger("mouseup", { force: true })
-              .wait(250)
-              .then(() => {
-                cy.contains("button", "Content").should("exist");
-                cy.get("input.bg-success")
-                  .should("exist")
-                  .should("have.length", 1);
-              });
+            dragRowIntoPanel("last").then(() => {
+              cy.contains("button", "Content").should("exist");
+              cy.get("input.bg-success")
+                .should("exist")
+                .should("have.length", 1);
+            });
 
-            cy.get(`[data-cy="object-search-results-row-draggable"`)
-              .last()
-              .trigger("mousedown", {
-                button: 0,
-                release: false,
-                force: true,
-              })
-              .trigger("mousemove", {
-                force: true,
-                clientX: 20,
-                clientY: 20,
-              })
-              .wait(500)
-              .trigger("mousemove", {
-                force: true,
-                clientX: panelDragDeltaX,
-                clientY: panelDragDeltaY,
-              })
-              .then(() => {
-                cy.get("[data-cy=panel-drop-zone]").should("exist");
-              })
-              .wait(100)
-              .trigger("mouseup", { force: true })
-              .wait(250)
-              .then(() => {
-                cy.get("[data-testid=toast]").within(() => {
-                  cy.contains("Existing Linked Object").should("exist");
-                });
+            dragRowIntoPanel("last").then(() => {
+              cy.get("[data-testid=toast]").within(() => {
+                cy.contains("Existing Linked Object").should("exist");
               });
+            });
           },
         );
       });
@@ -217,43 +179,17 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             const homepageUid = homepageJson.data.getObject.uid;
             const homepageObjectType = homepageJson.data.getObject.__typename;
 
-            cy.get('input[name="search-query-input"]').type("Homepage");
-            cy.contains("Homepage").should("exist");
-            cy.openContentLibraryObjectPanelByText("Homepage");
+            searchContentLibraryAndOpenPanel("Homepage");
             cy.contains("button", "Relationships").click();
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="object-search-results-row-draggable"`)
-              .last()
-              .trigger("mousedown", {
-                button: 0,
-                release: false,
-                force: true,
-              })
-              .trigger("mousemove", {
-                force: true,
-                clientX: 20,
-                clientY: 20,
-              })
-              .then(() => {
-                cy.get("[data-cy=panel-drop-zone]").should("exist");
-              })
-              .wait(500)
-              .trigger("mousemove", {
-                force: true,
-                clientX: panelDragDeltaX,
-                clientY: panelDragDeltaY,
-              })
-              .wait(100)
-              .trigger("mouseup", { force: true })
-              .wait(250)
-              .then(() => {
-                cy.get("span.bg-success")
-                  .should("exist")
-                  .should("have.length", 1);
-              });
+            dragRowIntoPanel("last").then(() => {
+              cy.get("span.bg-success")
+                .should("exist")
+                .should("have.length", 1);
+            });
           },
         );
       });
@@ -264,73 +200,23 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             const homepageUid = homepageJson.data.getObject.uid;
             const homepageObjectType = homepageJson.data.getObject.__typename;
 
-            cy.get('input[name="search-query-input"]').type("Homepage");
-            cy.contains("Homepage").should("exist");
-            cy.openContentLibraryObjectPanelByText("Homepage");
+            searchContentLibraryAndOpenPanel("Homepage");
             cy.contains("button", "Relationships").click();
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="object-search-results-row-draggable"`)
-              .last()
-              .trigger("mousedown", {
-                button: 0,
-                release: false,
-                force: true,
-              })
-              .trigger("mousemove", {
-                force: true,
-                clientX: 20,
-                clientY: 20,
-              })
-              .then(() => {
-                cy.get("[data-cy=panel-drop-zone]").should("exist");
-              })
-              .wait(500)
-              .trigger("mousemove", {
-                force: true,
-                clientX: panelDragDeltaX,
-                clientY: panelDragDeltaY,
-              })
-              .wait(100)
-              .trigger("mouseup", { force: true })
-              .wait(250)
-              .then(() => {
-                cy.get("span.bg-success")
-                  .should("exist")
-                  .should("have.length", 1);
-              });
+            dragRowIntoPanel("last").then(() => {
+              cy.get("span.bg-success")
+                .should("exist")
+                .should("have.length", 1);
+            });
 
-            cy.get(`[data-cy="object-search-results-row-draggable"`)
-              .last()
-              .trigger("mousedown", {
-                button: 0,
-                release: false,
-                force: true,
-              })
-              .trigger("mousemove", {
-                force: true,
-                clientX: 20,
-                clientY: 20,
-              })
-              .then(() => {
-                cy.get("[data-cy=panel-drop-zone]").should("exist");
-              })
-              .wait(500)
-              .trigger("mousemove", {
-                force: true,
-                clientX: panelDragDeltaX,
-                clientY: panelDragDeltaY,
-              })
-              .wait(100)
-              .trigger("mouseup", { force: true })
-              .wait(250)
-              .then(() => {
-                cy.get("[data-testid=toast]").within(() => {
-                  cy.contains("Existing Linked Object").should("exist");
-                });
+            dragRowIntoPanel("last").then(() => {
+              cy.get("[data-testid=toast]").within(() => {
+                cy.contains("Existing Linked Object").should("exist");
               });
+            });
           },
         );
       });
@@ -341,43 +227,19 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             const homepageUid = homepageJson.data.getObject.uid;
             const homepageObjectType = homepageJson.data.getObject.__typename;
 
-            cy.get('input[name="search-query-input"]').type("Homepage");
-            cy.contains("Homepage").should("exist");
-            cy.openContentLibraryObjectPanelByText("Homepage");
+            searchContentLibraryAndOpenPanel("Homepage");
             cy.contains("button", "Relationships").click();
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="object-search-results-row-draggable"`)
-              .first()
-              .trigger("mousedown", {
-                button: 0,
-                release: false,
-                force: true,
-              })
-              .trigger("mousemove", {
-                force: true,
-                clientX: 20,
-                clientY: 20,
-              })
-              .then(() => {
-                cy.get("[data-cy=panel-drop-zone]").should("exist");
-              })
-              .wait(500)
-              .trigger("mousemove", {
-                force: true,
-                clientX: panelDragDeltaX,
-                clientY: panelDragDeltaY,
-              })
-              .wait(100)
-              .trigger("mouseup", { force: true })
-              .wait(250)
-              .then(() => {
-                cy.get("[data-testid=toast]").within(() => {
+            dragRowIntoPanel("first").then(() => {
+              cy.get("[data-testid=toast]")
+                .first()
+                .within(() => {
                   cy.contains("Invalid Object Type").should("exist");
                 });
-              });
+            });
           },
         );
       });
@@ -390,53 +252,21 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             const homepageUid = homepageJson.data.getObject.uid;
             const homepageObjectType = homepageJson.data.getObject.__typename;
 
-            cy.get('input[name="search-query-input"]').type("Homepage");
-            cy.contains("Homepage").should("exist");
-            cy.openContentLibraryObjectPanelByText("Homepage");
+            searchContentLibraryAndOpenPanel("Homepage");
             cy.get("[data-testid=panel-tabs]").within(() => {
               cy.contains("button", "Availability").click();
             });
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
-            cy.get('input[name="search-query-input"]')
-              .clear()
-              .type(allDevicesAllCustomersAvailability);
-
-            cy.contains(allDevicesAllCustomersAvailability).should("exist");
+            searchContentLibrary(allDevicesAllCustomersAvailability);
 
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="object-search-results-row-draggable"`)
-              .last()
-              .trigger("mousedown", {
-                button: 0,
-                release: false,
-                force: true,
-              })
-              .trigger("mousemove", {
-                force: true,
-                clientX: 20,
-                clientY: 20,
-              })
-              .then(() => {
-                cy.get("[data-cy=panel-drop-zone]").should("exist");
-              })
-              .wait(500)
-              .trigger("mousemove", {
-                force: true,
-                clientX: panelDragDeltaX,
-                clientY: panelDragDeltaY,
-              })
-              .wait(100)
-              .trigger("mouseup", { force: true })
-              .wait(250)
-              .then(() => {
-                cy.get("[data-testid=panel]").within(() => {
-                  cy.contains(allDevicesAllCustomersAvailability).should(
-                    "exist",
-                  );
-                });
+            dragRowIntoPanel("last").then(() => {
+              cy.get("[data-testid=panel]").within(() => {
+                cy.contains(allDevicesAllCustomersAvailability).should("exist");
               });
+            });
           },
         );
       });
@@ -447,83 +277,27 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             const homepageUid = homepageJson.data.getObject.uid;
             const homepageObjectType = homepageJson.data.getObject.__typename;
 
-            cy.get('input[name="search-query-input"]').type("Homepage");
-            cy.contains("Homepage").should("exist");
-            cy.openContentLibraryObjectPanelByText("Homepage");
+            searchContentLibraryAndOpenPanel("Homepage");
             cy.get("[data-testid=panel-tabs]").within(() => {
               cy.contains("button", "Availability").click();
             });
             cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
 
-            cy.get('input[name="search-query-input"]')
-              .clear()
-              .type(allDevicesAllCustomersAvailability);
-
-            cy.contains(allDevicesAllCustomersAvailability).should("exist");
+            searchContentLibrary(allDevicesAllCustomersAvailability);
 
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="object-search-results-row-draggable"`)
-              .last()
-              .trigger("mousedown", {
-                button: 0,
-                release: false,
-                force: true,
-              })
-              .trigger("mousemove", {
-                force: true,
-                clientX: 20,
-                clientY: 20,
-              })
-              .then(() => {
-                cy.get("[data-cy=panel-drop-zone]").should("exist");
-              })
-              .wait(500)
-              .trigger("mousemove", {
-                force: true,
-                clientX: panelDragDeltaX,
-                clientY: panelDragDeltaY,
-              })
-              .wait(100)
-              .trigger("mouseup", { force: true })
-              .wait(250)
-              .then(() => {
-                cy.get("[data-testid=panel]").within(() => {
-                  cy.contains(allDevicesAllCustomersAvailability).should(
-                    "exist",
-                  );
-                });
+            dragRowIntoPanel("last").then(() => {
+              cy.get("[data-testid=panel]").within(() => {
+                cy.contains(allDevicesAllCustomersAvailability).should("exist");
               });
+            });
 
-            cy.get(`[data-cy="object-search-results-row-draggable"`)
-              .last()
-              .trigger("mousedown", {
-                button: 0,
-                release: false,
-                force: true,
-              })
-              .trigger("mousemove", {
-                force: true,
-                clientX: 20,
-                clientY: 20,
-              })
-              .then(() => {
-                cy.get("[data-cy=panel-drop-zone]").should("exist");
-              })
-              .wait(500)
-              .trigger("mousemove", {
-                force: true,
-                clientX: panelDragDeltaX,
-                clientY: panelDragDeltaY,
-              })
-              .wait(100)
-              .trigger("mouseup", { force: true })
-              .wait(250)
-              .then(() => {
-                cy.get("[data-testid=toast]").within(() => {
-                  cy.contains(`Existing Linked Object`).should("exist");
-                });
+            dragRowIntoPanel("last").then(() => {
+              cy.get("[data-testid=toast]").within(() => {
+                cy.contains(`Existing Linked Object`).should("exist");
               });
+            });
           },
         );
       });
@@ -534,9 +308,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             const homepageUid = homepageJson.data.getObject.uid;
             const homepageObjectType = homepageJson.data.getObject.__typename;
 
-            cy.get('input[name="search-query-input"]').type("Homepage");
-            cy.contains("Homepage").should("exist");
-            cy.openContentLibraryObjectPanelByText("Homepage");
+            searchContentLibraryAndOpenPanel("Homepage");
             cy.get("[data-testid=panel-tabs]").within(() => {
               cy.contains("button", "Availability").click();
             });
@@ -544,35 +316,11 @@ describe("Drag and Drop - Content and Relationship tab", () => {
 
             cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
-            cy.get(`[data-cy="object-search-results-row-draggable"`)
-              .last()
-              .trigger("mousedown", {
-                button: 0,
-                release: false,
-                force: true,
-              })
-              .trigger("mousemove", {
-                force: true,
-                clientX: 20,
-                clientY: 20,
-              })
-              .then(() => {
-                cy.get("[data-cy=panel-drop-zone]").should("exist");
-              })
-              .wait(500)
-              .trigger("mousemove", {
-                force: true,
-                clientX: panelDragDeltaX,
-                clientY: panelDragDeltaY,
-              })
-              .wait(100)
-              .trigger("mouseup", { force: true })
-              .wait(250)
-              .then(() => {
-                cy.get("[data-testid=toast]").within(() => {
-                  cy.contains("Invalid Object Type").should("exist");
-                });
+            dragRowIntoPanel("last").then(() => {
+              cy.get("[data-testid=toast]").within(() => {
+                cy.contains("Invalid Object Type").should("exist");
               });
+            });
           },
         );
       });
@@ -580,19 +328,13 @@ describe("Drag and Drop - Content and Relationship tab", () => {
 
     describe("Availability Assigned To", () => {
       it("drags an object to add it", () => {
-        cy.get('input[name="search-query-input"]')
-          .clear()
-          .type(allDevicesAllCustomersAvailability);
-        cy.openContentLibraryObjectPanelByText(
-          allDevicesAllCustomersAvailability,
-        );
+        searchContentLibraryAndOpenPanel(allDevicesAllCustomersAvailability);
 
         cy.contains("Assigned To").click();
 
         cy.contains("Assign to multiple objects dropzone");
 
-        cy.get('input[name="search-query-input"]').clear().type("Homepage");
-        cy.contains("Homepage").should("exist");
+        searchContentLibrary("Homepage");
 
         cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 
@@ -628,12 +370,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
       });
 
       it("shows an error toast when an Availability object is dragged into the drop zone", () => {
-        cy.get('input[name="search-query-input"]')
-          .clear()
-          .type(allDevicesAllCustomersAvailability);
-        cy.openContentLibraryObjectPanelByText(
-          allDevicesAllCustomersAvailability,
-        );
+        searchContentLibraryAndOpenPanel(allDevicesAllCustomersAvailability);
 
         cy.contains("Assigned To").click();
 
