@@ -4,14 +4,14 @@ import { FiTrash2, FiX } from "react-icons/fi";
 
 import { AvailabilityIcon } from "src/components/availability";
 import { OpenObjectButton } from "src/components/button";
-import { ObjectTypePill, Pill } from "src/components/pill";
+import { Pill } from "src/components/pill";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
 import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark/parsedObjects";
-import { getObjectDisplayName } from "src/lib/utils";
+import { getObjectDisplayName, platformMetaKeyClicked } from "src/lib/utils";
 
 interface ObjectIdentifierCardProps {
   object: ParsedSkylarkObject;
@@ -111,13 +111,23 @@ export const ObjectIdentifierCard = ({
       {onForwardClick && (
         <OpenObjectButton
           disabled={disableForwardClick}
-          onClick={() =>
-            onForwardClick({
-              uid: object.uid,
-              objectType: object.objectType,
-              language: object?.meta?.language || "",
-            })
-          }
+          onClick={(e) => {
+            if (platformMetaKeyClicked(e)) {
+              window.open(
+                `/object/${object.objectType}/${object.uid}?language=${
+                  object?.meta?.language || ""
+                }`,
+                "_blank",
+              );
+              return;
+            } else {
+              onForwardClick({
+                uid: object.uid,
+                objectType: object.objectType,
+                language: object?.meta?.language || "",
+              });
+            }
+          }}
         />
       )}
     </div>

@@ -6,8 +6,8 @@ import { useEffect } from "react";
 import {
   useSkylarkSetObjectTypes,
   useSkylarkObjectTypesWithConfig,
+  ObjectTypeWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
-import { ParsedSkylarkObjectConfig } from "src/interfaces/skylark";
 import { isSkylarkObjectType } from "src/lib/utils";
 
 interface ObjectTypeNavigationProps {
@@ -21,10 +21,7 @@ const ObjectTypeNavigationSection = ({
 }: {
   title: string;
   activeObjectType: string | null;
-  objectTypesWithConfig: {
-    objectType: string;
-    config: ParsedSkylarkObjectConfig;
-  }[];
+  objectTypesWithConfig?: ObjectTypeWithConfig[];
 }) => (
   <div className="flex flex-col justify-start items-start my-4 w-full">
     <p className="mb-1 font-medium text-lg">{title}</p>

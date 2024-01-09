@@ -18,6 +18,13 @@ import { PanelTab } from "src/hooks/state";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const useRouter = jest.spyOn(require("next/router"), "useRouter");
 
+jest.mock("react-player/lazy", () => {
+  return {
+    __esModule: true,
+    default: jest.fn(() => <></>),
+  };
+});
+
 beforeEach(() => {
   const router = { query: {} };
   useRouter.mockReturnValue(router);

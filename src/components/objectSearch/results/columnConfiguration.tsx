@@ -1,9 +1,4 @@
-import {
-  ColumnDef,
-  Table,
-  createColumnHelper,
-  Cell as ReactTableCell,
-} from "@tanstack/react-table";
+import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 
 import { AvailabilityLabel } from "src/components/availability";
 import { Checkbox } from "src/components/inputs/checkbox";
@@ -27,7 +22,8 @@ import {
 
 import { Cell } from "./grids/cell.component";
 
-type ObjectSearchTableData = ParsedSkylarkObject & Record<string, string>;
+export type ObjectSearchTableData = ParsedSkylarkObject &
+  Record<string, string>;
 
 export const OBJECT_SEARCH_HARDCODED_COLUMNS = [
   OBJECT_LIST_TABLE.columnIds.displayField,
@@ -61,11 +57,6 @@ export const columnsWithoutResize = [
   OBJECT_LIST_TABLE.columnIds.checkbox,
   OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
 ];
-
-const isRowChecked = (
-  cell: ReactTableCell<ObjectSearchTableData, unknown>,
-  table: Table<ObjectSearchTableData>,
-) => Boolean(table.options.meta?.checkedRows?.includes(cell.row.index));
 
 const columnHelper = createColumnHelper<ObjectSearchTableData>();
 
@@ -342,20 +333,24 @@ const selectColumn = columnHelper.display({
       options: { meta: tableMeta },
     },
   }) =>
-    tableMeta?.checkedRows &&
-    tableMeta.checkedRows.length > 0 && (
+    tableMeta?.checkedObjectsState &&
+    tableMeta.checkedObjectsState.some(
+      ({ checkedState }) => checkedState === true,
+    ) && (
       <Checkbox
         aria-label="clear-all-checked-objects"
         checked="indeterminate"
         onClick={() => tableMeta.batchCheckRows("clear-all")}
       />
     ),
-  cell: ({ cell, table }) => {
-    const checked = isRowChecked(cell, table);
+  cell: ({ cell, table, row }) => {
     const tableMeta = table.options.meta;
+    const checked = row.getIsSelected();
+
     return (
       <Checkbox
         checked={checked}
+        disabled={!row.getCanSelect()}
         // Not using onCheckChanged so that we have access to the native click event
         onClick={(e) => {
           e.stopPropagation();
@@ -376,7 +371,7 @@ const selectColumn = columnHelper.display({
 export const createObjectListingColumns = (
   columns: string[],
   opts: { withObjectSelect?: boolean; withPanel: boolean },
-): ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[] => {
+): ColumnDef<ObjectSearchTableData, ObjectSearchTableData>[] => {
   const createdColumns = columns
     .filter((column) => !OBJECT_SEARCH_HARDCODED_COLUMNS.includes(column))
     .map((column) =>
@@ -438,13 +433,13 @@ export const createObjectListingColumns = (
     //   >[];
     // }
     return [dragIconColumn, selectColumn, ...orderedColumnArray] as ColumnDef<
-      ParsedSkylarkObject,
-      ParsedSkylarkObject
+      ObjectSearchTableData,
+      ObjectSearchTableData
     >[];
   }
 
   return orderedColumnArray as ColumnDef<
-    ParsedSkylarkObject,
-    ParsedSkylarkObject
+    ObjectSearchTableData,
+    ObjectSearchTableData
   >[];
 };

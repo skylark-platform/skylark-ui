@@ -1,8 +1,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
-
-import { createObjectListingColumns } from "./columnConfiguration";
+import {
+  ObjectSearchTableData,
+  createObjectListingColumns,
+} from "./columnConfiguration";
 
 const baseColumnIds = [
   "__typename-indicator",
@@ -24,7 +25,7 @@ const objectSelectColumnIds = [
 ];
 
 const getColumnIds = (
-  columns: ColumnDef<ParsedSkylarkObject, ParsedSkylarkObject>[],
+  columns: ColumnDef<ObjectSearchTableData, ObjectSearchTableData>[],
 ) => {
   return columns.map(({ id }) => id);
 };

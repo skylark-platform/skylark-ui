@@ -125,6 +125,7 @@ test("calls setPanelObject when the row is clicked", async () => {
 });
 
 test("calls window.open to open the object in a new tab when the row is clicked", async () => {
+  jest.spyOn(window.navigator, "platform", "get").mockReturnValue("MacIntel");
   window.open = jest.fn();
 
   render(<ObjectSearch id="test" setPanelObject={jest.fn()} />);
@@ -178,7 +179,7 @@ describe("with object select (checkboxes)", () => {
         id="test"
         withObjectSelect
         onObjectCheckedChanged={onRowCheckChange}
-        checkedObjects={[]}
+        checkedObjectsState={[]}
       />,
     );
 
@@ -194,19 +195,24 @@ describe("with object select (checkboxes)", () => {
 
     await fireEvent.click(checkbox);
 
-    expect(onRowCheckChange).toHaveBeenLastCalledWith([expect.any(Object)]);
+    expect(onRowCheckChange).toHaveBeenLastCalledWith([
+      {
+        checkedState: true,
+        object: expect.any(Object),
+      },
+    ]);
   });
 
   test("resets the checked rows when the search changes", async () => {
     jest.useFakeTimers();
 
-    const onObjectCheckedChanged = jest.fn();
+    const resetCheckedObjects = jest.fn();
 
     await render(
       <ObjectSearch
         id="test"
         withObjectSelect
-        onObjectCheckedChanged={onObjectCheckedChanged}
+        resetCheckedObjects={resetCheckedObjects}
       />,
     );
 
@@ -225,8 +231,7 @@ describe("with object select (checkboxes)", () => {
       jest.advanceTimersByTime(2000);
     });
 
-    expect(onObjectCheckedChanged).toHaveBeenCalledTimes(3);
-    expect(onObjectCheckedChanged).toHaveBeenCalledWith([]);
+    expect(resetCheckedObjects).toHaveBeenCalledTimes(3);
   });
 
   test("clears all selected rows using the toggle all", async () => {
@@ -237,10 +242,13 @@ describe("with object select (checkboxes)", () => {
         id="test"
         withObjectSelect
         onObjectCheckedChanged={onRowCheckChange}
-        checkedObjects={[
+        checkedObjectsState={[
           {
-            meta: { language: "en-GB", availableLanguages: [] },
-          } as unknown as ParsedSkylarkObject,
+            object: {
+              meta: { language: "en-GB", availableLanguages: [] },
+            } as unknown as ParsedSkylarkObject,
+            checkedState: true,
+          },
         ]}
       />,
     );
@@ -265,10 +273,13 @@ describe("with object select (checkboxes)", () => {
       <ObjectSearch
         id="test"
         withObjectSelect
-        checkedObjects={[
+        checkedObjectsState={[
           {
-            meta: { language: "en-GB", availableLanguages: [] },
-          } as unknown as ParsedSkylarkObject,
+            object: {
+              meta: { language: "en-GB", availableLanguages: [] },
+            } as unknown as ParsedSkylarkObject,
+            checkedState: true,
+          },
         ]}
       />,
     );
@@ -529,26 +540,29 @@ describe("batch options", () => {
       <ObjectSearch
         id="test"
         withObjectSelect
-        checkedObjects={[
+        checkedObjectsState={[
           {
-            uid: "123",
-            objectType: "Episode",
-            meta: {
-              language: "en-GB",
-              availableLanguages: [],
-              availabilityStatus: AvailabilityStatus.Unavailable,
-            },
-            metadata: {
+            object: {
               uid: "123",
-              external_id: "",
-              title: "my episode",
-            },
-            config: { primaryField: "title" },
-            availability: {
-              status: AvailabilityStatus.Unavailable,
-              objects: [],
-            },
-          } as ParsedSkylarkObject,
+              objectType: "Episode",
+              meta: {
+                language: "en-GB",
+                availableLanguages: [],
+                availabilityStatus: AvailabilityStatus.Unavailable,
+              },
+              metadata: {
+                uid: "123",
+                external_id: "",
+                title: "my episode",
+              },
+              config: { primaryField: "title" },
+              availability: {
+                status: AvailabilityStatus.Unavailable,
+                objects: [],
+              },
+            } as ParsedSkylarkObject,
+            checkedState: true,
+          },
         ]}
       />,
     );

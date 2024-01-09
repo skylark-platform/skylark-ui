@@ -12,6 +12,7 @@ import { useEffect, useState, useMemo, memo, useCallback } from "react";
 
 import { Spinner } from "src/components/icons";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { CheckedObjectState } from "src/hooks/state";
 import { SearchFilters } from "src/hooks/useSearch";
 import {
   SearchType,
@@ -31,6 +32,7 @@ import {
   OBJECT_SEARCH_HARDCODED_COLUMNS,
   OBJECT_SEARCH_ORDERED_KEYS,
   OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+  ObjectSearchTableData,
   createObjectListingColumns,
 } from "./results/columnConfiguration";
 import {
@@ -55,9 +57,11 @@ export interface ObjectSearchProps {
   initialFilters?: Partial<SearchFilters>;
   initialColumnState?: Partial<ObjectSearchInitialColumnsState>;
   hideSearchFilters?: boolean;
+  hideBulkOptions?: boolean;
   setPanelObject?: ObjectSearchResultsProps["setPanelObject"];
-  checkedObjects?: ObjectSearchResultsProps["checkedObjects"];
+  checkedObjectsState?: ObjectSearchResultsProps["checkedObjectsState"];
   onObjectCheckedChanged?: ObjectSearchResultsProps["onObjectCheckedChanged"];
+  resetCheckedObjects?: () => void;
   onStateChange?: (s: {
     filters?: SearchFilters;
     columns?: ObjectSearchInitialColumnsState;
@@ -138,9 +142,12 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     initialSearchType,
     initialFilters,
     initialColumnState,
+    hideBulkOptions,
     onObjectCheckedChanged,
+    resetCheckedObjects,
     withObjectSelect,
     onStateChange,
+    checkedObjectsState,
   } = props;
 
   const withPanel = typeof setPanelObject !== "undefined";
@@ -187,7 +194,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
   });
 
   useEffect(() => {
-    onObjectCheckedChanged?.([]);
+    resetCheckedObjects?.();
     // We only want to trigger this useEffect when the searchHash has changed (not resetRowsChecked)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchHash]);
@@ -429,10 +436,12 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             </p>
           </div>
         </div>
-        <BulkObjectOptions
-          selectedObjects={props.checkedObjects || []}
-          onSelectedObjectChange={onObjectCheckedChanged}
-        />
+        {!hideBulkOptions && (
+          <BulkObjectOptions
+            checkedObjectsState={checkedObjectsState || []}
+            onObjectCheckedChanged={onObjectCheckedChanged}
+          />
+        )}
       </div>
       {sortedHeaders.length > 0 && (
         <div
@@ -451,7 +460,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             fetchNextPage={fetchNextPage}
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
-            searchData={searchData}
+            searchData={searchData as ObjectSearchTableData[]}
             isSearching={isSearching}
             tableState={{
               ...tableState,

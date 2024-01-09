@@ -31,7 +31,7 @@ export const useUpdateObjectAvailability = ({
   const queryClient = useQueryClient();
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: ({ uid, modifiedAvailabilityObjects }: MutationFnArgs) => {
       const mutation = createUpdateObjectAvailability(
         objectOperations,
@@ -52,6 +52,6 @@ export const useUpdateObjectAvailability = ({
 
   return {
     updateObjectAvailability: mutate,
-    isUpdatingObjectAvailability: isLoading,
+    isUpdatingObjectAvailability: isPending,
   };
 };

@@ -18,7 +18,10 @@ import {
 } from "src/components/panel/__tests__/utils/test-utils";
 import { Panel } from "src/components/panel/panel.component";
 import { PanelTab } from "src/hooks/state";
-import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
+import {
+  createGetObjectRelationshipsQueryName,
+  wrapQueryName,
+} from "src/lib/graphql/skylark/dynamicQueries";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const useRouter = jest.spyOn(require("next/router"), "useRouter");
@@ -38,7 +41,7 @@ describe("relationships view", () => {
       />,
     );
 
-    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
 
     expect(
       screen.getByTestId("expand-relationship-episodes"),
@@ -64,7 +67,7 @@ describe("relationships view", () => {
       />,
     );
 
-    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
 
     const withinEpisodesRelationship = within(screen.getByTestId("episodes"));
 
@@ -84,7 +87,7 @@ describe("relationships view", () => {
       />,
     );
 
-    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
 
     const withinFirstEpisodeCard = within(
       screen.getByTestId("panel-relationship-episodes-item-1"),
@@ -106,7 +109,7 @@ describe("relationships view", () => {
       />,
     );
 
-    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
 
     fireEvent.click(screen.getByText("Edit Relationships"));
 
@@ -126,7 +129,7 @@ describe("relationships view", () => {
       />,
     );
 
-    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
 
     const firstOpenObjectButton = screen.getAllByRole("button", {
       name: /Open Object/i,
@@ -140,7 +143,78 @@ describe("relationships view", () => {
     });
   });
 
-  test("calls updateActivePanelTabState with the selected relationship info as true when its expanded", async () => {
+  test("makes a relationship active and then closes it", async () => {
+    render(
+      <Panel
+        {...defaultProps}
+        object={seasonWithRelationships}
+        tab={PanelTab.Relationships}
+      />,
+    );
+
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
+    await waitFor(() =>
+      expect(screen.queryByText("Brands")).toBeInTheDocument(),
+    );
+
+    const withinEpisodesRelationship = within(screen.getByTestId("episodes"));
+
+    const expandButton = withinEpisodesRelationship.getByLabelText(
+      "expand episodes relationship",
+    );
+    fireEvent.click(expandButton);
+
+    await waitFor(() =>
+      expect(screen.getAllByText("Episode")).toHaveLength(10),
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByText("Brands")).not.toBeInTheDocument(),
+    );
+
+    const closeButton = withinEpisodesRelationship.getByLabelText(
+      "close episodes relationship",
+    );
+    fireEvent.click(closeButton);
+
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
+    await waitFor(() =>
+      expect(screen.queryByText("Brands")).toBeInTheDocument(),
+    );
+  });
+
+  test("makes a relationship active using the side navigation when in page mode", async () => {
+    render(
+      <Panel
+        {...defaultProps}
+        isPage
+        object={seasonWithRelationships}
+        tab={PanelTab.Relationships}
+      />,
+    );
+
+    const withinSideNavigation = within(
+      screen.getByTestId("panel-page-side-navigation"),
+    );
+
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
+    await waitFor(() =>
+      expect(screen.queryByTestId("brands")).toBeInTheDocument(),
+    );
+
+    const navigationButton = withinSideNavigation.getByText("Episodes");
+    fireEvent.click(navigationButton);
+
+    await waitFor(() =>
+      expect(screen.getAllByText("Episode")).toHaveLength(10),
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("brands")).not.toBeInTheDocument(),
+    );
+  });
+
+  test("calls updateActivePanelTabState with the selected relationship info when it is made active", async () => {
     const updateActivePanelTabState = jest.fn();
     render(
       <Panel
@@ -151,7 +225,7 @@ describe("relationships view", () => {
       />,
     );
 
-    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(3));
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
 
     const withinEpisodesRelationship = within(screen.getByTestId("episodes"));
 
@@ -164,11 +238,92 @@ describe("relationships view", () => {
 
     expect(updateActivePanelTabState).toHaveBeenCalledWith({
       Relationships: {
-        expanded: {
-          episodes: true,
-        },
+        active: "episodes",
       },
     });
+  });
+
+  test("paginates when a next_token is returned", async () => {
+    server.use(
+      graphql.query(
+        wrapQueryName(createGetObjectRelationshipsQueryName("Season")),
+        (req, res, ctx) => {
+          if (req.variables.episodesNextToken) {
+            // When episode next_token is found, return a slightly altered second list of 10 episodes
+            return res(
+              ctx.data({
+                getObjectRelationships: {
+                  episodes: {
+                    ...GQLSkylarkGetSeasonRelationshipsQueryFixture.data
+                      .getObjectRelationships.episodes,
+                    objects:
+                      GQLSkylarkGetSeasonRelationshipsQueryFixture.data.getObjectRelationships.episodes.objects.map(
+                        (episode, i) => {
+                          const newEpisodeNumber =
+                            episode.episode_number + i + 1;
+
+                          return {
+                            ...episode,
+                            uid: episode.uid + newEpisodeNumber,
+                            episode_number: newEpisodeNumber,
+                          };
+                        },
+                      ),
+                  },
+                },
+              }),
+            );
+          }
+
+          // Add a next token to initial response
+          return res(
+            ctx.data({
+              getObjectRelationships: {
+                ...GQLSkylarkGetSeasonRelationshipsQueryFixture.data
+                  .getObjectRelationships,
+                episodes: {
+                  ...GQLSkylarkGetSeasonRelationshipsQueryFixture.data
+                    .getObjectRelationships.episodes,
+                  next_token: "next-page",
+                },
+              },
+            }),
+          );
+        },
+      ),
+    );
+
+    render(
+      <Panel
+        {...defaultProps}
+        object={seasonWithRelationships}
+        tab={PanelTab.Relationships}
+      />,
+    );
+
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
+
+    const withinEpisodesRelationship = within(screen.getByTestId("episodes"));
+
+    const showMoreButton = withinEpisodesRelationship.getByText("Show more");
+    fireEvent.click(showMoreButton);
+
+    await waitFor(() =>
+      expect(screen.getByText("Episodes")).toBeInTheDocument(),
+    );
+    expect(screen.getByText("Episodes").parentNode?.textContent).toBe(
+      "Episodes (10+)",
+    );
+
+    const loadMoreButton = withinEpisodesRelationship.getByText("Load more");
+    fireEvent.click(loadMoreButton);
+
+    await waitFor(() => expect(screen.getByText("(20)")).toBeInTheDocument());
+    expect(screen.getByText("Episodes").parentNode?.textContent).toBe(
+      "Episodes (20)",
+    );
+
+    expect(screen.getAllByText("Episode")).toHaveLength(20);
   });
 
   describe("relationships view - edit", () => {
@@ -191,7 +346,7 @@ describe("relationships view", () => {
       );
 
       await waitFor(() =>
-        expect(screen.getAllByText("Episode")).toHaveLength(3),
+        expect(screen.getAllByText("Episode")).toHaveLength(5),
       );
 
       fireEvent.click(screen.getByText("Edit Relationships"));

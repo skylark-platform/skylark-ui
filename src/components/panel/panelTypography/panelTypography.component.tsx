@@ -1,5 +1,13 @@
 import clsx from "clsx";
-import { FiPlus } from "react-icons/fi";
+import { Ref, forwardRef } from "react";
+import { CgSpinner } from "react-icons/cg";
+import {
+  FiBookOpen,
+  FiMaximize2,
+  FiMinimize2,
+  FiPlus,
+  FiX,
+} from "react-icons/fi";
 
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 
@@ -17,16 +25,23 @@ export const PanelSectionTitle = ({
   id,
   count,
   sticky,
-}: PanelHeaderProps) => (
-  <h3
-    id={id}
-    className={clsx(
-      "bg-white pb-1 text-base font-semibold underline md:pb-2 ",
-      sticky ? "sticky top-0 z-[2] pb-2 pt-4 md:pt-8" : "mb-2",
-    )}
-  >
-    {count !== undefined ? `${text} (${count})` : text}
-  </h3>
+  loading,
+}: PanelHeaderProps & { loading?: boolean }) => (
+  <>
+    <h3
+      id={id}
+      className={clsx(
+        "bg-white text-base font-semibold inline-block",
+        sticky ? "sticky top-0 z-[2] pb-2 pt-4 md:pt-8" : "mb-2 pb-1 md:pb-2",
+      )}
+    >
+      <span className="underline">{text}</span>
+      {count !== undefined && !loading && ` (${count})`}
+      {loading && (
+        <CgSpinner className="inline-block ml-2 animate-spin h-4 w-4 mb-0.5" />
+      )}
+    </h3>
+  </>
 );
 
 export const PanelFieldTitle = ({
@@ -58,14 +73,18 @@ export const PanelEmptyDataText = () => (
   <p className="text-sm text-manatee-500">None</p>
 );
 
-export const PanelSeparator = ({
-  transparent,
-  className,
-}: {
-  transparent?: boolean;
-  className?: string;
-}) => (
+export const PanelSeparatorComponent = (
+  {
+    transparent,
+    className,
+  }: {
+    transparent?: boolean;
+    className?: string;
+  },
+  ref: Ref<HTMLSpanElement>,
+) => (
   <span
+    ref={ref}
     className={clsx(
       "flex h-px w-full flex-grow",
       transparent ? "bg-transparent" : "bg-manatee-100",
@@ -73,12 +92,29 @@ export const PanelSeparator = ({
     )}
   />
 );
+export const PanelSeparator = forwardRef(PanelSeparatorComponent);
 
-export const PanelPlusButton = ({ onClick }: { onClick: () => void }) => (
+export const PanelButton = ({
+  onClick,
+  type,
+  className,
+  ...props
+}: {
+  onClick: () => void;
+  type: "plus" | "maximise" | "minimise" | "x";
+  className?: string;
+}) => (
   <button
-    className="mb-4 px-2 py-1 text-manatee-500 transition-colors hover:text-brand-primary"
+    {...props}
+    className={clsx(
+      "mb-4 px-1 py-1 text-manatee-500 transition-colors hover:text-brand-primary",
+      className,
+    )}
     onClick={onClick}
   >
-    <FiPlus className="h-4 w-4" />
+    {type === "plus" && <FiPlus className="h-4 w-4" />}
+    {type === "maximise" && <FiMaximize2 className="h-4 w-4" />}
+    {type === "minimise" && <FiMinimize2 className="h-4 w-4" />}
+    {type === "x" && <FiX className="h-4 w-4" />}
   </button>
 );

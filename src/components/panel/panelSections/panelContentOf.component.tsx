@@ -73,10 +73,11 @@ export const PanelContentOf = ({
           ?.map(({ objectType, config }) => {
             return {
               objectType,
-              id: `content-of-panel-${objectType}`,
+              htmlId: `content-of-panel-${objectType}`,
               title: formatObjectField(
                 config?.objectTypeDisplayName || objectType,
               ),
+              id: objectType,
               objects: objectTypeGroupedData[objectType],
             };
           })

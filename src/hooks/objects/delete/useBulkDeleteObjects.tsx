@@ -19,7 +19,7 @@ export const useBulkDeleteObjects = ({
 }) => {
   const queryClient = useQueryClient();
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: ({ objects }: { objects: ParsedSkylarkObject[] }) => {
       const formattedObjects = objects.map(({ uid, meta: { language } }) => ({
         uid,
@@ -47,6 +47,6 @@ export const useBulkDeleteObjects = ({
 
   return {
     deleteObjects: mutate,
-    isDeleting: isLoading,
+    isDeleting: isPending,
   };
 };

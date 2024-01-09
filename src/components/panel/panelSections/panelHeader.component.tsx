@@ -40,7 +40,11 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import { getObjectDisplayName, userIsOnMac } from "src/lib/utils";
+import {
+  getObjectDisplayName,
+  platformMetaKeyClicked,
+  userIsOnMac,
+} from "src/lib/utils";
 
 interface PanelHeaderProps {
   isPage?: boolean;
@@ -211,9 +215,7 @@ export const PanelHeader = ({
 
   useEffect(() => {
     const handleSaveKeyPress = (e: KeyboardEvent) => {
-      const isMac = userIsOnMac();
-
-      if ((isMac ? e.metaKey : e.ctrlKey) && e.key === "s") {
+      if (platformMetaKeyClicked(e) && e.key === "s") {
         e.preventDefault();
         if (!saveButtonRef?.current?.disabled) {
           saveButtonRef?.current?.click();
@@ -390,7 +392,7 @@ export const PanelHeader = ({
           {(inEditMode || currentTab === PanelTab.Metadata) && (
             <div
               className={clsx(
-                "absolute -bottom-16 left-1/2 z-10 -translate-x-1/2",
+                "absolute -bottom-16 left-1/2 z-20 -translate-x-1/2",
                 isPage ? "md:fixed md:bottom-auto md:top-24" : " md:-bottom-18",
               )}
             >

@@ -12,6 +12,7 @@ import {
   NormalizedObjectField,
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
+  ParsedSkylarkObjectRelationship,
   ParsedSkylarkObjectRelationships,
   SkylarkAvailabilityField,
   SkylarkGraphQLObject,
@@ -1084,8 +1085,14 @@ describe("parseMetadataForHTMLForm", () => {
 
 describe("parseUpdatedRelationshipObjects", () => {
   const relationship: SkylarkObjectRelationship = {
-    relationshipName: "Seasons",
-    objectType: "season",
+    relationshipName: "seasons",
+    objectType: "Season",
+  };
+
+  const parsedRelationship: ParsedSkylarkObjectRelationship = {
+    name: relationship.relationshipName,
+    objectType: relationship.objectType,
+    objects: [],
   };
 
   const expectedParsedObject: ParsedSkylarkObject = {
@@ -1129,18 +1136,18 @@ describe("parseUpdatedRelationshipObjects", () => {
     content: undefined,
   };
 
-  const updatedRelationshipObjects: ParsedSkylarkObjectRelationships[] = [
-    {
-      ...relationship,
+  const updatedRelationshipObjects: ParsedSkylarkObjectRelationships = {
+    [relationship.relationshipName]: {
+      ...parsedRelationship,
       objects: [expectedParsedObject],
     },
-  ];
-  const originalRelationshipObjects: ParsedSkylarkObjectRelationships[] = [
-    {
-      ...relationship,
+  };
+  const originalRelationshipObjects: ParsedSkylarkObjectRelationships = {
+    [relationship.relationshipName]: {
+      ...parsedRelationship,
       objects: [expectedParsedObject],
     },
-  ];
+  };
 
   test("returns the correct linked and unlinked uids", () => {
     const result = parseUpdatedRelationshipObjects(
@@ -1159,7 +1166,7 @@ describe("parseUpdatedRelationshipObjects", () => {
     const result = parseUpdatedRelationshipObjects(
       relationship,
       updatedRelationshipObjects,
-      [],
+      {},
     );
     expect(result).toEqual({
       relationship: relationship,
@@ -1171,7 +1178,7 @@ describe("parseUpdatedRelationshipObjects", () => {
   test("returns the correct linked and unlinked uids when updated objects is empty", () => {
     const result = parseUpdatedRelationshipObjects(
       relationship,
-      [],
+      {},
       originalRelationshipObjects,
     );
     expect(result).toEqual({
@@ -1182,7 +1189,7 @@ describe("parseUpdatedRelationshipObjects", () => {
   });
 
   test("returns the correct linked and unlinked uids when both original and updated objects are empty", () => {
-    const result = parseUpdatedRelationshipObjects(relationship, [], []);
+    const result = parseUpdatedRelationshipObjects(relationship, {}, {});
     expect(result).toEqual({
       relationship: relationship,
       uidsToLink: [],

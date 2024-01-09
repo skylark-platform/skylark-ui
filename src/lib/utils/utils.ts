@@ -1,4 +1,4 @@
-import { HTMLInputTypeAttribute } from "react";
+import { HTMLInputTypeAttribute, MouseEvent } from "react";
 
 import {
   CLOUDINARY_ENVIRONMENT,
@@ -8,6 +8,7 @@ import {
   BuiltInSkylarkObjectType,
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
+  ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
 
 export const hasProperty = <T, K extends PropertyKey, V = unknown>(
@@ -24,25 +25,37 @@ export const isObject = (input: unknown): input is Record<string, unknown> => {
 export const pause = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-export const getPrimaryKeyField = (object: ParsedSkylarkObject) =>
-  [object?.config?.primaryField || "", ...DISPLAY_NAME_PRIORITY].find(
-    (field) => !!object.metadata[field],
-  );
+export const getPrimaryKeyField = (
+  object: ParsedSkylarkObject,
+  fallbackConfig?: Record<string, ParsedSkylarkObjectConfig>,
+) =>
+  [
+    object?.config?.primaryField ||
+      fallbackConfig?.[object.objectType]?.primaryField ||
+      "",
+    ...DISPLAY_NAME_PRIORITY,
+  ].find((field) => !!object.metadata[field]);
 
 export const getObjectDisplayName = (
   object: ParsedSkylarkObject | null,
+  fallbackConfig?: Record<string, ParsedSkylarkObjectConfig>,
 ): string => {
   if (!object) return "";
-  const primaryKeyField = getPrimaryKeyField(object);
+  const primaryKeyField = getPrimaryKeyField(object, fallbackConfig);
   const displayName = primaryKeyField && object.metadata[primaryKeyField];
   return (displayName as string) || object.uid;
 };
 
 export const getObjectTypeDisplayNameFromParsedObject = (
   object: ParsedSkylarkObject | null,
+  fallbackConfig?: Record<string, ParsedSkylarkObjectConfig>,
 ): string => {
   if (!object) return "";
-  return object?.config?.objectTypeDisplayName || object.objectType;
+  return (
+    object?.config?.objectTypeDisplayName ||
+    fallbackConfig?.[object.objectType]?.objectTypeDisplayName ||
+    object.objectType
+  );
 };
 
 // Creates an Account Identifier (used in Flatfile template)
@@ -220,6 +233,13 @@ export function mergeRefs<T = unknown>(
 
 export const userIsOnMac = () =>
   navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+
+export const platformMetaKeyClicked = (
+  e: KeyboardEvent | MouseEvent<unknown, unknown>,
+) => {
+  const isMac = userIsOnMac();
+  return isMac ? e.metaKey : e.ctrlKey;
+};
 
 export const isSkylarkObjectType = (objectType: string) =>
   objectType === BuiltInSkylarkObjectType.Availability ||

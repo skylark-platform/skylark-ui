@@ -15,7 +15,7 @@ import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
   PanelFieldTitle,
-  PanelPlusButton,
+  PanelButton,
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { ObjectTypePill } from "src/components/pill";
@@ -595,7 +595,13 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
 
   return (
     <PanelSectionLayout
-      sections={[{ id: "availability-panel-header", title: "Availability" }]}
+      sections={[
+        {
+          id: "availability",
+          htmlId: "availability-panel-header",
+          title: "Availability",
+        },
+      ]}
       isPage={isPage}
     >
       <div data-testid="panel-availability">
@@ -604,7 +610,10 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
             text={formatObjectField("Availability")}
             id={"availability-panel-header"}
           />
-          <PanelPlusButton onClick={() => setObjectSearchModalOpen(true)} />
+          <PanelButton
+            type="plus"
+            onClick={() => setObjectSearchModalOpen(true)}
+          />
         </div>
         {data && (
           <>
@@ -648,9 +657,11 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
             ...availabilityObjectMeta.fields.map(({ name }) => name),
           ]}
           closeModal={() => setObjectSearchModalOpen(false)}
-          onModalClose={({ checkedObjects }) => {
+          onSave={({ checkedObjectsState }) => {
             const { addedObjects, errors } = handleDroppedAvailabilities({
-              droppedObjects: checkedObjects,
+              droppedObjects: checkedObjectsState
+                .filter(({ checkedState }) => checkedState === true)
+                .map(({ object }) => object),
               existingObjects: availabilityObjects,
               activeObjectUid: uid,
             });

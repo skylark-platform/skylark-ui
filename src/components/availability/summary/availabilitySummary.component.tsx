@@ -2,8 +2,10 @@ import clsx from "clsx";
 
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { SearchType } from "src/hooks/useSearchWithLookupType";
-import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
-import { ParsedSkylarkObjectConfig } from "src/interfaces/skylark";
+import {
+  ObjectTypeWithConfig,
+  useSkylarkObjectTypesWithConfig,
+} from "src/hooks/useSkylarkObjectTypes";
 import { formatReadableDateTime } from "src/lib/skylark/availability";
 
 const prettifyStrArr = (arr: string[]): string => {
@@ -21,10 +23,7 @@ const prettifyStrArr = (arr: string[]): string => {
 const buildObjectTypesStr = (
   filteredObjectTypes: string[] | null,
   numObjectTypes?: number,
-  allObjectTypesWithConfig?: {
-    objectType: string;
-    config: ParsedSkylarkObjectConfig;
-  }[],
+  allObjectTypesWithConfig?: ObjectTypeWithConfig[],
 ) => {
   // If object types are null, search will fetch all
   if (

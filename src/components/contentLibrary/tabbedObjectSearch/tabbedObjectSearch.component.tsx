@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { m } from "framer-motion";
-import { Dispatch, Fragment, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import {
   FiCheckSquare,
   FiCrosshair,
@@ -243,7 +243,7 @@ const NewTabButton = ({
   setActiveTabIndex,
 }: {
   tabs: ObjectSearchTab[];
-  setTabs: Dispatch<SetStateAction<ObjectSearchTab[] | undefined>>;
+  setTabs: (tabs: ObjectSearchTab[]) => void;
   setActiveTabIndex: Dispatch<SetStateAction<number>>;
 }) => {
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
@@ -253,18 +253,16 @@ const NewTabButton = ({
     "before:absolute before:left-0 before:h-6 before:w-px before:bg-manatee-200 before:content-['']";
 
   const addTab = (argTab?: Partial<ObjectSearchTab>) => {
-    setTabs((existingTabs) => {
-      const tabsNum = existingTabs ? existingTabs.length + 1 : 1;
+    const tabsNum = tabs ? tabs.length + 1 : 1;
 
-      const newTab = generateNewTab(
-        argTab?.name?.replace("{tabNum}", `${tabsNum}`) || `View ${tabsNum}`,
-        argTab || {},
-      );
+    const newTab = generateNewTab(
+      argTab?.name?.replace("{tabNum}", `${tabsNum}`) || `View ${tabsNum}`,
+      argTab || {},
+    );
 
-      const updatedTabs = existingTabs ? [...existingTabs, newTab] : [newTab];
+    const updatedTabs = tabs ? [...tabs, newTab] : [newTab];
 
-      return updatedTabs;
-    });
+    setTabs(updatedTabs);
     setActiveTabIndex(tabs.length);
   };
 
@@ -446,16 +444,20 @@ const TabbedObjectSearch = ({
                 <ScrollableTabs
                   key={accountId}
                   initialScrollPosition={initialTabsScrollPosition}
-                  tabs={tabs.map((tab, i) => ({
-                    name: tab?.name || `View ${i + 1}`,
-                    id: tab.id,
-                  }))}
+                  tabs={tabs}
                   selectedTab={activeTab?.id || ""}
                   onChange={({ index }) => changeActiveTabIndex(index)}
                   onScroll={({ scrollLeft: tabsScrollPosition }) =>
                     saveScrollPosition(tabsScrollPosition)
                   }
                   onDelete={() => deleteActiveTab()}
+                  onReorder={(tabs) => {
+                    setTabs(tabs as ObjectSearchTab[]);
+                    const updatedTabIndex = tabs.findIndex(
+                      (tab) => activeTab?.id === tab.id,
+                    );
+                    setActiveTabIndex(updatedTabIndex || 0);
+                  }}
                 />
                 <NewTabButton
                   setActiveTabIndex={setActiveTabIndex}

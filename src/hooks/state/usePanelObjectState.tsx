@@ -16,7 +16,7 @@ export enum PanelTab {
 
 export interface PanelTabState {
   [PanelTab.Relationships]: {
-    expanded: Record<string, boolean>;
+    active: string | null;
   };
 }
 
@@ -27,7 +27,7 @@ export interface PanelObject extends SkylarkObjectIdentifier {
 
 const defaultPanelTabState: PanelTabState = {
   [PanelTab.Relationships]: {
-    expanded: {},
+    active: null,
   },
 };
 
@@ -39,10 +39,6 @@ export const mergedPanelTabStates = (
     [PanelTab.Relationships]: {
       ...previousState[PanelTab.Relationships],
       ...newState?.[PanelTab.Relationships],
-      expanded: {
-        ...previousState[PanelTab.Relationships].expanded,
-        ...newState?.[PanelTab.Relationships]?.expanded,
-      },
     },
   };
 };

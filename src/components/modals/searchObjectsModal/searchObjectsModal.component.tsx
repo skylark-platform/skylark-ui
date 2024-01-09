@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import { Button } from "src/components/button";
 import { Modal } from "src/components/modals/base/modal";
@@ -8,7 +8,7 @@ import {
 } from "src/components/objectSearch";
 import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "src/components/objectSearch/results/columnConfiguration";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { useCheckedObjectsState } from "src/hooks/state";
+import { CheckedObjectState, useCheckedObjectsState } from "src/hooks/state";
 import {
   ParsedSkylarkObject,
   SkylarkObjectTypes,
@@ -19,25 +19,85 @@ interface SearchObjectsModalProps {
   objectTypes?: SkylarkObjectTypes;
   columns?: string[];
   isOpen: boolean;
+  existingObjects?: ParsedSkylarkObject[];
   closeModal: () => void;
-  onModalClose: (args: { checkedObjects: ParsedSkylarkObject[] }) => void;
+  onSave: (args: { checkedObjectsState: CheckedObjectState[] }) => void;
 }
+
+const generateSaveMessage = ({
+  checkedObjects,
+  checkedUids,
+  checkedObjectTypesForDisplay,
+  existingObjects = [],
+}: {
+  checkedObjects: ParsedSkylarkObject[];
+  checkedUids: string[];
+  checkedObjectTypesForDisplay: string[];
+  existingObjects?: ParsedSkylarkObject[];
+}) => {
+  const existingUids = existingObjects.map(({ uid }) => uid);
+
+  const addedObjects = checkedObjects.filter(
+    ({ uid }) => !existingUids.includes(uid),
+  );
+
+  // const removedObjects = existingObjects.filter(
+  //   ({ uid }) => !checkedUids.includes(uid),
+  // );
+
+  const objectTypeStr =
+    checkedObjectTypesForDisplay.length === 1
+      ? `${checkedObjectTypesForDisplay[0]}`
+      : "Objects";
+
+  const addStr = addedObjects.length > 0 ? `${addedObjects.length}` : "";
+  // const addStr = addedObjects.length > 0 ? `Add ${addedObjects.length}` : "";
+  // const removeStr =
+  //   removedObjects.length > 0 ? `Remove ${removedObjects.length}` : "";
+
+  // if (addStr && removeStr) {
+  //   return `${addStr} & ${removeStr} ${objectTypeStr}`;
+  // }
+
+  if (addStr) {
+    return `${addStr} ${objectTypeStr}`;
+  }
+
+  // if (removeStr) {
+  //   return `${removeStr} ${objectTypeStr}`;
+  // }
+
+  return null;
+};
 
 export const SearchObjectsModal = ({
   title,
   isOpen,
   objectTypes,
   columns: propColumns,
+  existingObjects,
   closeModal,
-  onModalClose,
+  onSave,
 }: SearchObjectsModalProps) => {
-  const { checkedObjects, checkedObjectTypesForDisplay, setCheckedObjects } =
-    useCheckedObjectsState();
-
+  const {
+    checkedObjectsState,
+    checkedObjects,
+    checkedUids,
+    checkedObjectTypesForDisplay,
+    setCheckedObjectsState,
+    resetCheckedObjects,
+  } = useCheckedObjectsState(
+    existingObjects?.map(
+      (object): CheckedObjectState => ({
+        checkedState: "indeterminate",
+        object,
+      }),
+    ),
+  );
   const onModalCloseWrapper = () => {
-    onModalClose({ checkedObjects });
+    onSave({ checkedObjectsState });
     closeModal();
-    setCheckedObjects([]);
+    setCheckedObjectsState([]);
   };
 
   const initialColumnState: Partial<ObjectSearchInitialColumnsState> =
@@ -55,6 +115,13 @@ export const SearchObjectsModal = ({
       };
     }, [propColumns]);
 
+  const saveMessage = generateSaveMessage({
+    checkedObjects,
+    checkedUids,
+    checkedObjectTypesForDisplay,
+    existingObjects,
+  });
+
   return (
     <Modal
       title={title}
@@ -70,35 +137,28 @@ export const SearchObjectsModal = ({
           id={`search-object-modal-${objectTypes?.join("-")}`}
           initialFilters={{ objectTypes }}
           initialColumnState={initialColumnState}
-          checkedObjects={checkedObjects}
-          onObjectCheckedChanged={setCheckedObjects}
+          checkedObjectsState={checkedObjectsState}
+          onObjectCheckedChanged={setCheckedObjectsState}
+          resetCheckedObjects={resetCheckedObjects}
           hideSearchFilters
+          hideBulkOptions
           withObjectSelect
         />
       </div>
-      <div className="flex justify-end space-x-2 px-6 md:px-10">
+      <div className="flex justify-end items-center space-x-2 px-6 md:px-10 mt-4">
+        <p className="text-manatee-700 mr-2">{saveMessage}</p>
         <Button
           variant="primary"
-          className="mt-4"
           onClick={onModalCloseWrapper}
           type="button"
-          disabled={checkedObjects.length === 0}
+          disabled={saveMessage === null}
           success
           data-testid="search-objects-modal-save"
         >
-          {`Add ${checkedObjects.length} ${
-            checkedObjectTypesForDisplay.length === 1
-              ? `${checkedObjectTypesForDisplay[0]}`
-              : "Objects"
-          }`}
+          {/* Save */}
+          Add
         </Button>
-        <Button
-          variant="outline"
-          className="mt-4"
-          type="button"
-          danger
-          onClick={closeModal}
-        >
+        <Button variant="outline" type="button" danger onClick={closeModal}>
           Cancel
         </Button>
       </div>

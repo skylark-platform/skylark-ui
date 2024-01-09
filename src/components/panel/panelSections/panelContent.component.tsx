@@ -113,7 +113,7 @@ export const PanelContent = ({
   setContentObjects,
   setPanelObject,
 }: PanelContentProps) => {
-  const { data, isLoading, hasNextPage, query, variables } =
+  const { data, isLoading, hasNextPage, isFetchingNextPage, query, variables } =
     useGetObjectContent(objectType, uid, { language, fetchAvailability: true });
 
   const objects = inEditMode ? updatedObjects : data;
@@ -167,10 +167,17 @@ export const PanelContent = ({
 
   return (
     <PanelSectionLayout
-      sections={[{ id: "content-panel-title", title: "Content" }]}
+      sections={[
+        { htmlId: "content-panel-title", title: "Content", id: "content" },
+      ]}
       isPage={isPage}
     >
-      <PanelSectionTitle text="Content" id="content-panel-title" />
+      <PanelSectionTitle
+        text="Content"
+        id="content-panel-title"
+        count={objects?.length || 0}
+        loading={isLoading || isFetchingNextPage}
+      />
       {objects && (
         <Reorder.Group
           axis="y"

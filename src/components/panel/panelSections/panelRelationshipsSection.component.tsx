@@ -1,17 +1,19 @@
-import { useState, Fragment } from "react";
+import clsx from "clsx";
+import { Transition, m } from "framer-motion";
+import { Fragment, Ref, forwardRef, useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import { sentenceCase } from "sentence-case";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import {
-  PanelPlusButton,
+  PanelButton,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
 import { Tooltip } from "src/components/tooltip/tooltip.component";
-import { PanelTab, PanelTabState } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ParsedSkylarkObjectRelationships,
+  ParsedSkylarkObjectRelationship,
   ParsedSkylarkObjectTypeRelationshipConfiguration,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
@@ -19,155 +21,230 @@ import { formatObjectField, hasProperty } from "src/lib/utils";
 
 interface PanelRelationshipsSectionProps {
   isEmptySection?: boolean;
-  relationship: ParsedSkylarkObjectRelationships;
+  relationship: ParsedSkylarkObjectRelationship;
   inEditMode: boolean;
+  isFetchingMoreRelationships: boolean;
   newUids: string[];
-  initialExpanded: boolean;
+  isExpanded: boolean;
   config: ParsedSkylarkObjectTypeRelationshipConfiguration["config"] | null;
+  setExpandedRelationship: (r: string | null) => void;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
   removeRelationshipObject: (args: {
     uid: string;
     relationshipName: string;
   }) => void;
   setSearchObjectsModalState: (args: {
-    relationship: ParsedSkylarkObjectRelationships;
+    relationship: ParsedSkylarkObjectRelationship;
     fields?: string[];
   }) => void;
-  updateActivePanelTabState: (s: Partial<PanelTabState>) => void;
+  hasMoreRelationships?: boolean;
+  fetchMoreRelationships?: () => void;
 }
 
-export const PanelRelationshipSection = ({
-  isEmptySection,
-  relationship,
-  inEditMode,
-  newUids,
-  initialExpanded,
-  config,
-  setPanelObject,
-  removeRelationshipObject,
-  setSearchObjectsModalState,
-  updateActivePanelTabState,
-}: PanelRelationshipsSectionProps) => {
-  const { relationshipName, objects, objectType } = relationship;
+const transition: Transition = {
+  duration: 0.15,
+  ease: "linear",
+};
 
-  const [isExpanded, setIsExpanded] = useState(initialExpanded);
+const PanelRelationshipSectionComponent = (
+  {
+    isEmptySection,
+    relationship,
+    inEditMode,
+    isFetchingMoreRelationships,
+    newUids,
+    isExpanded,
+    config,
+    hasMoreRelationships,
+    setPanelObject,
+    removeRelationshipObject,
+    setSearchObjectsModalState,
+    setExpandedRelationship,
+    fetchMoreRelationships,
+  }: PanelRelationshipsSectionProps,
+  ref: Ref<HTMLDivElement>,
+) => {
+  const { name: relationshipName, objects, objectType } = relationship;
 
-  const toggleExpanded = () => {
-    updateActivePanelTabState({
-      [PanelTab.Relationships]: {
-        expanded: { [relationshipName]: !isExpanded },
-      },
-    });
-    setIsExpanded(!isExpanded);
-  };
+  const { ref: inViewRef, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasMoreRelationships) {
+      fetchMoreRelationships?.();
+    }
+  });
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
   const objectFields = objectOperations?.fields.map(({ name }) => name);
 
+  const hasShowMore = objects?.length > 4;
+
   const displayList =
-    objects?.length > 2 && !isExpanded ? objects.slice(0, 3) : objects;
+    hasShowMore && !isExpanded ? objects.slice(0, 5) : objects;
+
+  const toggleExpanded = () => {
+    setExpandedRelationship(isExpanded ? null : relationshipName);
+  };
+
+  const canLoadMore = isExpanded && hasMoreRelationships;
 
   return (
-    <div
-      key={relationshipName}
-      className="relative mb-6"
+    <m.div
+      ref={ref}
+      key={`${relationshipName}-container`}
+      className={clsx("pb-6 bg-white")}
       data-testid={relationshipName}
+      transition={transition}
+      initial={{ opacity: 0, height: "auto" }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: "auto" }}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
+      <m.div
+        key={`${relationshipName}-title`}
+        layout
+        transition={transition}
+        className={clsx(
+          "flex items-center justify-between bg-white pt-8 -mt-8",
+          isExpanded && "sticky top-0 z-10",
+          !isExpanded && "relative z-10",
+        )}
+      >
+        <div className="flex items-center -ml-7">
+          {toggleExpanded && (
+            <PanelButton
+              aria-label={`${
+                isExpanded ? "close" : "expand"
+              } ${relationshipName} relationship`}
+              className="mx-0.5"
+              type={isExpanded ? "x" : "maximise"}
+              onClick={toggleExpanded}
+            />
+          )}
           <PanelSectionTitle
             text={formatObjectField(relationshipName)}
-            count={(objects.length >= 100 ? "100+" : objects.length) || 0}
-            id={`relationship-panel-${relationshipName}`}
-          />
-          <PanelPlusButton
-            onClick={() =>
-              setSearchObjectsModalState({ relationship, fields: objectFields })
+            count={
+              hasMoreRelationships ? `${objects.length}+` : objects.length || 0
             }
+            id={`panel-section-${relationshipName}`}
+            loading={isFetchingMoreRelationships}
           />
+          {!isFetchingMoreRelationships && (
+            <PanelButton
+              aria-label={`Open edit ${relationshipName} relationship modal`}
+              className="ml-1"
+              type="plus"
+              onClick={() =>
+                setSearchObjectsModalState({
+                  relationship,
+                  fields: objectFields,
+                })
+              }
+            />
+          )}
         </div>
         {!isEmptySection && config?.defaultSortField && (
           <p className="text-manatee-300 text-xs mb-4 hover:text-manatee-600 transition-colors cursor-default">{`Sorted by: ${sentenceCase(
             config.defaultSortField,
           )}`}</p>
         )}
-      </div>
+      </m.div>
 
-      <div className="transition duration-300 ease-in-out">
-        {displayList?.length > 0 ? (
-          displayList?.map((obj, index) => {
-            const defaultSortFieldValue =
-              config?.defaultSortField &&
-              hasProperty(obj.metadata, config.defaultSortField) &&
-              obj.metadata[config.defaultSortField];
+      <m.div
+        key={`${relationshipName}-objects`}
+        transition={transition}
+        layout="position"
+      >
+        <div className="overflow-hidden">
+          {displayList?.length > 0 &&
+            displayList?.map((obj, index) => {
+              const defaultSortFieldValue =
+                config?.defaultSortField &&
+                hasProperty(obj.metadata, config.defaultSortField) &&
+                obj.metadata[config.defaultSortField];
 
-            return (
-              <Fragment key={`relationship-${obj.objectType}-${obj.uid}`}>
-                <div
-                  className="flex items-center"
-                  data-testid={`panel-relationship-${relationshipName}-item-${
-                    index + 1
-                  }`}
+              return (
+                <m.div
+                  key={`relationship-${obj.objectType}-${obj.uid}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{
+                    duration: 0.05,
+                    ease: "linear",
+                  }}
                 >
-                  <ObjectIdentifierCard
-                    object={obj}
-                    disableDeleteClick={!inEditMode}
-                    disableForwardClick={inEditMode}
-                    onDeleteClick={() =>
-                      removeRelationshipObject({
-                        uid: obj.uid,
-                        relationshipName,
-                      })
-                    }
-                    onForwardClick={setPanelObject}
+                  <div
+                    className="flex items-center bg-white"
+                    data-testid={`panel-relationship-${relationshipName}-item-${
+                      index + 1
+                    }`}
                   >
-                    {config?.defaultSortField && (
-                      <Tooltip
-                        tooltip={`${sentenceCase(
-                          config.defaultSortField,
-                        )}: ${defaultSortFieldValue}`}
-                      >
-                        <p
-                          className="flex max-w-8 min-w-3 overflow-hidden whitespace-nowrap text-sm text-manatee-500 cursor-default"
-                          data-testid="object-sort-field"
+                    <ObjectIdentifierCard
+                      object={obj}
+                      disableDeleteClick={!inEditMode}
+                      disableForwardClick={inEditMode}
+                      onDeleteClick={() =>
+                        removeRelationshipObject({
+                          uid: obj.uid,
+                          relationshipName,
+                        })
+                      }
+                      onForwardClick={setPanelObject}
+                    >
+                      {config?.defaultSortField && (
+                        <Tooltip
+                          tooltip={`${sentenceCase(
+                            config.defaultSortField,
+                          )}: ${defaultSortFieldValue}`}
                         >
-                          <span className="overflow-hidden text-ellipsis">
-                            {defaultSortFieldValue}
-                          </span>
-                        </p>
-                      </Tooltip>
-                    )}
-                    {inEditMode && newUids?.includes(obj.uid) && (
-                      <span
-                        className={
-                          "flex h-4 w-4 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
-                        }
-                      />
-                    )}
-                  </ObjectIdentifierCard>
-                </div>
+                          <p
+                            className="flex max-w-8 min-w-3 overflow-hidden whitespace-nowrap text-sm text-manatee-500 cursor-default"
+                            data-testid="object-sort-field"
+                          >
+                            <span className="overflow-hidden text-ellipsis">
+                              {defaultSortFieldValue}
+                            </span>
+                          </p>
+                        </Tooltip>
+                      )}
+                      {inEditMode && newUids?.includes(obj.uid) && (
+                        <span
+                          className={
+                            "flex h-4 w-4 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
+                          }
+                        />
+                      )}
+                    </ObjectIdentifierCard>
+                  </div>
 
-                {index < displayList.length - 1 && <PanelSeparator />}
-              </Fragment>
-            );
-          })
-        ) : (
-          <></>
-        )}
-      </div>
-
-      {relationship && objects.length > 3 && (
-        <div className="mb-3">
-          <PanelSeparator />
-          <button
-            data-testid={`expand-relationship-${relationshipName}`}
-            onClick={toggleExpanded}
-            className="w-full cursor-pointer p-2 text-center text-xs text-manatee-500 hover:text-manatee-700"
-          >
-            {`Show ${isExpanded ? "less" : "more"}`}
-          </button>
+                  {index < displayList.length - 1 && <PanelSeparator />}
+                </m.div>
+              );
+            })}
         </div>
-      )}
-    </div>
+      </m.div>
+
+      <m.div layout className="mb-3" transition={{ duration: 0.08 }}>
+        {hasShowMore && toggleExpanded && (
+          <>
+            <PanelSeparator />
+            <button
+              ref={canLoadMore ? inViewRef : null}
+              data-testid={`expand-relationship-${relationshipName}`}
+              onClick={canLoadMore ? fetchMoreRelationships : toggleExpanded}
+              className="w-full cursor-pointer p-2 text-center text-xs text-manatee-500 hover:text-manatee-700"
+            >
+              {canLoadMore
+                ? "Load more"
+                : `Show ${isExpanded ? "less" : "more"}`}
+            </button>
+          </>
+        )}
+      </m.div>
+    </m.div>
   );
 };
+
+export const PanelRelationshipSection = forwardRef(
+  PanelRelationshipSectionComponent,
+);

@@ -28,7 +28,7 @@ export const useUpdateAvailabilityObjectDimensions = ({
     BuiltInSkylarkObjectType.Availability,
   );
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: ({
       uid,
       originalAvailabilityDimensions,
@@ -59,6 +59,6 @@ export const useUpdateAvailabilityObjectDimensions = ({
 
   return {
     updateAvailabilityObjectDimensions: mutate,
-    isUpdatingAvailabilityObjectDimensions: isLoading,
+    isUpdatingAvailabilityObjectDimensions: isPending,
   };
 };

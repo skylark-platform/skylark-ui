@@ -114,12 +114,16 @@ export interface ParsedSkylarkObject {
   content?: ParsedSkylarkObjectContent;
 }
 
-export interface ParsedSkylarkObjectRelationships {
-  relationshipName: string;
+export interface ParsedSkylarkObjectRelationship {
+  name: string;
   objectType: SkylarkObjectType;
-  nextToken?: string | null;
   objects: ParsedSkylarkObject[];
 }
+
+export type ParsedSkylarkObjectRelationships = Record<
+  string,
+  ParsedSkylarkObjectRelationship
+>;
 
 export interface ParsedSkylarkObjectTypeRelationshipConfiguration {
   [relationshipName: string]: {

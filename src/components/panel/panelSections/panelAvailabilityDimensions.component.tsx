@@ -89,7 +89,8 @@ export const PanelAvailabilityDimensions = ({
   return (
     <PanelSectionLayout
       sections={(dimensions || []).map(({ uid, title, slug }) => ({
-        id: `dimensions-panel-${uid}`,
+        htmlId: `dimensions-panel-${uid}`,
+        id: uid,
         title: formatObjectField(title || slug),
       }))}
       isPage={isPage}

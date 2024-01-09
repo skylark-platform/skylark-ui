@@ -19,6 +19,7 @@ export const useAvailabilityDimensions = () => {
         skylarkRequest("query", LIST_AVAILABILITY_DIMENSIONS, {
           nextToken,
         }),
+      initialPageParam: "",
       getNextPageParam: (lastPage): string | undefined => {
         return lastPage.listDimensions.next_token || undefined;
       },

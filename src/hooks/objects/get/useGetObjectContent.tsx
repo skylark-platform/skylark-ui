@@ -52,7 +52,7 @@ const generateQueryFunctionAndKey = ({
   };
   fetchAvailability?: boolean;
 }): {
-  queryFn: QueryFunction<GQLSkylarkGetObjectContentResponse, QueryKey>;
+  queryFn: QueryFunction<GQLSkylarkGetObjectContentResponse, QueryKey, unknown>;
   queryKey: QueryKey;
   query: DocumentNode | null;
 } => {
@@ -65,7 +65,8 @@ const generateQueryFunctionAndKey = ({
 
   const queryFn: QueryFunction<
     GQLSkylarkGetObjectContentResponse,
-    QueryKey
+    QueryKey,
+    unknown
   > = async ({ pageParam: nextToken }) => {
     return skylarkRequest("query", query as RequestDocument, {
       ...variables,
@@ -115,7 +116,11 @@ export const prefetchGetObjectContent = async ({
     uid,
     variables,
   });
-  await queryClient.prefetchInfiniteQuery({ queryKey, queryFn });
+  await queryClient.prefetchInfiniteQuery({
+    queryKey,
+    queryFn,
+    initialPageParam: "",
+  });
 };
 
 export const useGetObjectContent = (
@@ -147,16 +152,18 @@ export const useGetObjectContent = (
     fetchAvailability,
   });
 
-  const { data, hasNextPage, fetchNextPage, isLoading } = useInfiniteQuery<
-    GQLSkylarkGetObjectContentResponse,
-    GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentResponse>
-  >({
-    queryFn,
-    queryKey,
-    getNextPageParam: (lastPage): string | undefined =>
-      lastPage.getObjectContent.content?.next_token || undefined,
-    enabled: !!query,
-  });
+  const { data, hasNextPage, fetchNextPage, isLoading, isFetchingNextPage } =
+    useInfiniteQuery<
+      GQLSkylarkGetObjectContentResponse,
+      GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentResponse>
+    >({
+      queryFn,
+      queryKey,
+      initialPageParam: "",
+      getNextPageParam: (lastPage): string | undefined =>
+        lastPage.getObjectContent.content?.next_token || undefined,
+      enabled: !!query,
+    });
 
   if (hasNextPage) {
     fetchNextPage();
@@ -178,5 +185,6 @@ export const useGetObjectContent = (
     query,
     variables,
     hasNextPage,
+    isFetchingNextPage,
   };
 };

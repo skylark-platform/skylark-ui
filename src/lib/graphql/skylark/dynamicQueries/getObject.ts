@@ -101,7 +101,7 @@ export const createGetObjectAvailabilityQuery = (
         },
         availability: {
           __args: {
-            limit: 10,
+            limit: 20,
             next_token: new VariableType("nextToken"),
           },
           next_token: true,
@@ -165,12 +165,20 @@ export const createGetObjectRelationshipsQuery = (
     addLanguageVariable,
   );
 
+  const relationshipNextTokenVariables = object.relationships.reduce(
+    (prev, { relationshipName }) => ({
+      ...prev,
+      [`${relationshipName}NextToken`]: "String",
+    }),
+    {},
+  );
+
   const query = {
     query: {
       __name: createGetObjectRelationshipsQueryName(object.name),
       __variables: {
         uid: "String",
-        nextToken: "String",
+        ...relationshipNextTokenVariables,
         ...common.variables,
       },
       getObjectRelationships: {
@@ -189,7 +197,9 @@ export const createGetObjectRelationshipsQuery = (
             [currentValue.relationshipName]: {
               __args: {
                 limit: 100,
-                next_token: new VariableType("nextToken"),
+                next_token: new VariableType(
+                  `${currentValue.relationshipName}NextToken`,
+                ),
               },
               __typename: true, // To get the ObjectType (Listing)
               next_token: true,
@@ -290,7 +300,7 @@ export const createGetObjectContentOfQuery = (
         },
         content_of: {
           __args: {
-            limit: 20,
+            limit: 100,
             next_token: new VariableType("nextToken"),
           },
           next_token: true,

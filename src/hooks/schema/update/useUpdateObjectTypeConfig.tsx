@@ -23,7 +23,7 @@ export const useUpdateObjectTypeConfig = ({
 }) => {
   const queryClient = useQueryClient();
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: ({
       objectType,
       objectTypeDisplayName,
@@ -62,6 +62,6 @@ export const useUpdateObjectTypeConfig = ({
 
   return {
     updateObjectTypeConfig: mutate,
-    isUpdatingObjectTypeConfig: isLoading,
+    isUpdatingObjectTypeConfig: isPending,
   };
 };
