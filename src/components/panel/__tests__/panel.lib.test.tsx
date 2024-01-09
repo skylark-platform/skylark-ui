@@ -141,6 +141,64 @@ describe("handleDroppedRelationships", () => {
     );
     expect(got.errors[3].object.metadata).toHaveProperty("uid", "EXISTING_REL");
   });
+
+  test("receives the expected relationships and errors when targetRelationship is given", () => {
+    const existingRelationships: ParsedSkylarkObjectRelationships = {
+      seasons: {
+        name: "seasons",
+        objectType: "Season",
+        objects: [],
+      },
+    };
+
+    const got = handleDroppedRelationships({
+      activeObjectUid: panelObject.uid,
+      existingObjects: existingRelationships,
+      droppedObjects: [
+        {
+          ...panelObject,
+          uid: "new-season",
+          metadata: { ...panelObject.metadata, uid: "new-season" },
+        },
+        {
+          ...panelObject,
+          objectType: "Episode",
+          uid: "invalid-episode",
+          metadata: { ...panelObject.metadata, uid: "invalid-episode" },
+        },
+      ],
+      objectMetaRelationships,
+      targetRelationship: "seasons",
+    });
+
+    // Check valid relationships
+    expect(Object.keys(got.updatedRelationshipObjects)).toHaveLength(1);
+    expect(Object.keys(got.updatedRelationshipObjects)[0]).toBe("seasons");
+
+    const gotSeasons = got.updatedRelationshipObjects.seasons;
+
+    expect(gotSeasons).toEqual({
+      name: "seasons",
+      objectType: "Season",
+      objects: expect.any(Object),
+    });
+    expect(gotSeasons.objects).toHaveLength(1);
+    expect(gotSeasons.objects[0]).toHaveProperty("uid", "new-season");
+
+    // Check errors
+    expect(got.errors).toHaveLength(1);
+    expect(got.errors).toEqual([
+      {
+        object: expect.any(Object),
+        targetRelationship: "seasons",
+        type: HandleDropErrorType.INVALID_RELATIONSHIP_TYPE,
+      },
+    ]);
+    expect(got.errors[0].object.metadata).toHaveProperty(
+      "uid",
+      "invalid-episode",
+    );
+  });
 });
 
 describe("handleDroppedContents", () => {

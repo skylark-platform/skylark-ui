@@ -3,7 +3,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { FiLogOut } from "react-icons/fi";
+import { FiGithub, FiLogOut } from "react-icons/fi";
 import { useIsClient } from "usehooks-ts";
 
 import { AccountStatus } from "src/components/account";
@@ -72,6 +72,12 @@ export const Navigation = () => {
                 text: "Change Skylark Account",
                 onClick: () => setAuthModalOpen(true),
                 Icon: <FiLogOut className="text-xl" />,
+              },
+              {
+                id: "skylark-ui-github",
+                text: "GitHub",
+                href: "https://github.com/skylark-platform/skylark-ui",
+                Icon: <FiGithub className="text-xl" />,
               },
             ]}
             placement="bottom-end"

@@ -104,7 +104,7 @@ export const useGetObjectRelationships = (
   );
   const variables = { uid, language };
 
-  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
+  const { data, isLoading, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery<
       GQLSkylarkGetObjectRelationshipsResponse,
       GQLSkylarkErrorResponse<GQLSkylarkGetObjectResponse>,

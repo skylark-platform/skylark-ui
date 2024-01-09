@@ -13,11 +13,9 @@ import {
 import { formatUriAsCustomerIdentifer, hasProperty } from "src/lib/utils";
 
 import { useSkylarkCreds } from "./localStorage/useCreds";
+import { useAllObjectTypesRelationshipConfiguration } from "./useObjectTypeRelationshipConfiguration";
 import {
-  useAllObjectTypesRelationshipConfiguration,
-  useObjectTypeRelationshipConfiguration,
-} from "./useObjectTypeRelationshipConfiguration";
-import {
+  ObjectTypeWithConfig,
   useAllObjectsMeta,
   useSkylarkObjectTypesWithConfig,
 } from "./useSkylarkObjectTypes";
@@ -322,10 +320,7 @@ const getEnumsForCustomObjects = (
 
 const parseDataModel = (
   allObjectMeta: SkylarkObjectMeta[],
-  objectTypesWithConfig: {
-    objectType: string;
-    config: ParsedSkylarkObjectConfig;
-  }[],
+  objectTypesWithConfig: ObjectTypeWithConfig[],
   accountUri?: string,
   relationshipConfiguration?: Record<
     string,

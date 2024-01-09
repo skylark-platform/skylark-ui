@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { sentenceCase } from "sentence-case";
 
 import {
   Tabs,
@@ -20,6 +21,10 @@ import { useUpdateObjectMetadata } from "src/hooks/objects/update/useUpdateObjec
 import { useUpdateObjectRelationships } from "src/hooks/objects/update/useUpdateObjectRelationships";
 import { PanelTab, PanelTabState } from "src/hooks/state";
 import {
+  ObjectTypeWithConfig,
+  useSkylarkObjectTypesWithConfig,
+} from "src/hooks/useSkylarkObjectTypes";
+import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
   AddedSkylarkObjectContentObject,
@@ -28,6 +33,7 @@ import {
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,
   GQLSkylarkErrorResponse,
+  ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
@@ -40,6 +46,7 @@ import {
   handleDroppedContents,
   HandleDropError,
   HandleDropErrorType,
+  HandleRelationshipDropError,
 } from "./panel.lib";
 import {
   PanelAvailability,
@@ -84,7 +91,19 @@ const displayHandleDroppedErrors = (
   errors: HandleDropError[],
   tab: PanelTab,
   panelObject?: ParsedSkylarkObject,
+  objectTypesWithConfig?: ObjectTypeWithConfig[],
 ) => {
+  const objectTypeConfigObject:
+    | Record<string, ParsedSkylarkObjectConfig>
+    | undefined = objectTypesWithConfig
+    ? Object.fromEntries(
+        objectTypesWithConfig.map(({ objectType, config }) => [
+          objectType,
+          config,
+        ]),
+      )
+    : undefined;
+
   const addedToSelfError = errors.find(
     (error) => error.type === HandleDropErrorType.OBJECTS_ARE_SAME,
   );
@@ -95,7 +114,11 @@ const displayHandleDroppedErrors = (
         title={`Object added to self`}
         message={`Cannot link ${getObjectTypeDisplayNameFromParsedObject(
           addedToSelfError.object,
-        )} "${getObjectDisplayName(addedToSelfError.object)}" to itself.`}
+          objectTypeConfigObject,
+        )} "${getObjectDisplayName(
+          addedToSelfError.object,
+          objectTypeConfigObject,
+        )}" to itself.`}
       />,
       { autoClose: 10000 },
     );
@@ -109,13 +132,19 @@ const displayHandleDroppedErrors = (
     const invalidObjectTypes = [
       ...new Set(
         invalidObjectTypeErrors.map(({ object }) =>
-          getObjectTypeDisplayNameFromParsedObject(object),
+          getObjectTypeDisplayNameFromParsedObject(
+            object,
+            objectTypeConfigObject,
+          ),
         ),
       ),
     ];
 
     const objectTypeText = panelObject
-      ? `"${getObjectTypeDisplayNameFromParsedObject(panelObject)}"`
+      ? `"${getObjectTypeDisplayNameFromParsedObject(
+          panelObject,
+          objectTypeConfigObject,
+        )}"`
       : "the active object";
 
     let tabText = `are not configured to link to ${objectTypeText}`;
@@ -128,13 +157,66 @@ const displayHandleDroppedErrors = (
     }
 
     const affectedObjectsMsg = invalidObjectTypeErrors.map(
-      ({ object }) => `- ${getObjectDisplayName(object)}`,
+      ({ object }) =>
+        `- ${getObjectDisplayName(object, objectTypeConfigObject)}`,
     );
     toast.error(
       <Toast
         title={`Invalid Object Type${invalidObjectTypes.length > 1 ? "s" : ""}`}
         message={[
-          `Types "${invalidObjectTypes.join(", ")}" ${tabText}.`,
+          `Type${
+            invalidObjectTypes.length > 1 ? "s" : ""
+          } "${invalidObjectTypes.join(", ")}" ${tabText}.`,
+          `Affected object(s):`,
+          ...affectedObjectsMsg,
+        ]}
+      />,
+      { autoClose: 10000 },
+    );
+  }
+
+  const invalidRelationshipTypeErrors = errors.filter(
+    (error) => error.type === HandleDropErrorType.INVALID_RELATIONSHIP_TYPE,
+  );
+
+  if (invalidRelationshipTypeErrors.length > 0) {
+    const invalidObjectTypes = [
+      ...new Set(
+        invalidRelationshipTypeErrors.map(({ object }) =>
+          getObjectTypeDisplayNameFromParsedObject(
+            object,
+            objectTypeConfigObject,
+          ),
+        ),
+      ),
+    ];
+
+    const relationshipName = (
+      invalidRelationshipTypeErrors.find(
+        (error) =>
+          error.type === HandleDropErrorType.INVALID_RELATIONSHIP_TYPE &&
+          error.targetRelationship,
+      ) as HandleRelationshipDropError
+    )?.targetRelationship;
+
+    const relationshipTypeText =
+      sentenceCase(relationshipName) || "Active relationship";
+
+    const affectedObjectsMsg = invalidRelationshipTypeErrors.map(
+      ({ object }) =>
+        `- ${getObjectDisplayName(object, objectTypeConfigObject)}`,
+    );
+    toast.error(
+      <Toast
+        title={`Invalid Object Type${
+          invalidObjectTypes.length > 1 ? "s" : ""
+        } for Relationship`}
+        message={[
+          `Type${
+            invalidObjectTypes.length > 1 ? "s" : ""
+          } "${invalidObjectTypes.join(
+            ", ",
+          )}" cannot be linked to the relationship "${relationshipTypeText}".`,
           `Affected object(s):`,
           ...affectedObjectsMsg,
         ]}
@@ -149,7 +231,8 @@ const displayHandleDroppedErrors = (
 
   if (existingLinkErrors.length > 0) {
     const affectedObjectsMsg = existingLinkErrors.map(
-      ({ object }) => `- ${getObjectDisplayName(object)}`,
+      ({ object }) =>
+        `- ${getObjectDisplayName(object, objectTypeConfigObject)}`,
     );
     toast.error(
       <Toast
@@ -233,6 +316,8 @@ export const Panel = ({
     error,
   } = useGetObject(objectType, uid, { language });
 
+  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+
   const formParsedMetadata = useMemo(
     () =>
       (data &&
@@ -312,7 +397,12 @@ export const Panel = ({
           existingObjects: contentObjects.updated,
         });
 
-        displayHandleDroppedErrors(errors, selectedTab, data);
+        displayHandleDroppedErrors(
+          errors,
+          selectedTab,
+          data,
+          objectTypesWithConfig,
+        );
 
         setContentObjects({
           ...contentObjects,
@@ -322,7 +412,14 @@ export const Panel = ({
 
       clearDroppedObjects?.();
     }
-  }, [clearDroppedObjects, contentObjects, data, droppedObjects, selectedTab]);
+  }, [
+    clearDroppedObjects,
+    contentObjects,
+    data,
+    droppedObjects,
+    objectTypesWithConfig,
+    selectedTab,
+  ]);
 
   const { updateObjectRelationships, isUpdatingObjectRelationships } =
     useUpdateObjectRelationships({
@@ -462,10 +559,15 @@ export const Panel = ({
       errors: HandleDropError[],
     ) => {
       setModifiedRelationships(updatedModifiedRelationships);
-      displayHandleDroppedErrors(errors, selectedTab, data);
+      displayHandleDroppedErrors(
+        errors,
+        selectedTab,
+        data,
+        objectTypesWithConfig,
+      );
       clearDroppedObjects?.();
     },
-    [clearDroppedObjects, data, selectedTab],
+    [clearDroppedObjects, data, objectTypesWithConfig, selectedTab],
   );
 
   const handleAvailabilityObjectsModified = useCallback(
@@ -477,10 +579,15 @@ export const Panel = ({
       errors: HandleDropError[],
     ) => {
       setModifiedAvailabilityObjects(updatedModifiedAvailabilities);
-      displayHandleDroppedErrors(errors, selectedTab, data);
+      displayHandleDroppedErrors(
+        errors,
+        selectedTab,
+        data,
+        objectTypesWithConfig,
+      );
       clearDroppedObjects?.();
     },
-    [clearDroppedObjects, data, selectedTab],
+    [clearDroppedObjects, data, objectTypesWithConfig, selectedTab],
   );
 
   const handleAvailabilityAssignedToModified = useCallback(
@@ -491,10 +598,16 @@ export const Panel = ({
       errors?: HandleDropError[],
     ) => {
       setModifiedAvailabilityAssignedTo(updatedAssignedToObjects);
-      if (errors) displayHandleDroppedErrors(errors, selectedTab, data);
+      if (errors)
+        displayHandleDroppedErrors(
+          errors,
+          selectedTab,
+          data,
+          objectTypesWithConfig,
+        );
       clearDroppedObjects?.();
     },
-    [clearDroppedObjects, data, selectedTab],
+    [clearDroppedObjects, data, objectTypesWithConfig, selectedTab],
   );
 
   return (

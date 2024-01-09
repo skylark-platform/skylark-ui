@@ -9,6 +9,7 @@ import {
   createAccountIdentifier,
   getJSONFromLocalStorage,
   getObjectDisplayName,
+  getObjectTypeDisplayNameFromParsedObject,
   getPrimaryKeyField,
   hasProperty,
   isObject,
@@ -141,9 +142,71 @@ describe("getObjectDisplayName", () => {
     expect(got).toEqual("xxx");
   });
 
+  test("falls back to additional config when given", () => {
+    const object = {
+      objectType: "Episode",
+      config: {
+        primaryField: null,
+      },
+      metadata: {
+        uid: "xxx",
+        customField: "custom",
+      },
+    } as unknown as ParsedSkylarkObject;
+    const got = getObjectDisplayName(object, {
+      Episode: { primaryField: "customField" },
+    });
+    expect(got).toEqual("custom");
+  });
+
   test("returns empty string when object is null", () => {
     const got = getObjectDisplayName(null);
     expect(got).toEqual("");
+  });
+});
+
+describe("getObjectTypeDisplayNameFromParsedObject", () => {
+  test("returns empty string when object is null", () => {
+    const got = getObjectTypeDisplayNameFromParsedObject(null);
+
+    expect(got).toBe("");
+  });
+
+  test("returns display name from object config when it exists", () => {
+    const object = {
+      objectType: "SkylarkSet",
+      config: {
+        objectTypeDisplayName: "Set",
+      },
+    } as unknown as ParsedSkylarkObject;
+
+    const got = getObjectTypeDisplayNameFromParsedObject(object);
+
+    expect(got).toBe("Set");
+  });
+
+  test("uses the fallback config when the object doesn't have config", () => {
+    const object = {
+      objectType: "SkylarkSet",
+      config: {},
+    } as unknown as ParsedSkylarkObject;
+
+    const got = getObjectTypeDisplayNameFromParsedObject(object, {
+      SkylarkSet: { objectTypeDisplayName: "CustomDisplayName" },
+    });
+
+    expect(got).toBe("CustomDisplayName");
+  });
+
+  test("defaults to ObjectType when no config is given on the object and no fallback config is given", () => {
+    const object = {
+      objectType: "SkylarkSet",
+      config: {},
+    } as unknown as ParsedSkylarkObject;
+
+    const got = getObjectTypeDisplayNameFromParsedObject(object, {});
+
+    expect(got).toBe("SkylarkSet");
   });
 });
 

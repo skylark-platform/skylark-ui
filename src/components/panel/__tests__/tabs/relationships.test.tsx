@@ -183,6 +183,37 @@ describe("relationships view", () => {
     );
   });
 
+  test("makes a relationship active using the side navigation when in page mode", async () => {
+    render(
+      <Panel
+        {...defaultProps}
+        isPage
+        object={seasonWithRelationships}
+        tab={PanelTab.Relationships}
+      />,
+    );
+
+    const withinSideNavigation = within(
+      screen.getByTestId("panel-page-side-navigation"),
+    );
+
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
+    await waitFor(() =>
+      expect(screen.queryByTestId("brands")).toBeInTheDocument(),
+    );
+
+    const navigationButton = withinSideNavigation.getByText("Episodes");
+    fireEvent.click(navigationButton);
+
+    await waitFor(() =>
+      expect(screen.getAllByText("Episode")).toHaveLength(10),
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("brands")).not.toBeInTheDocument(),
+    );
+  });
+
   test("calls updateActivePanelTabState with the selected relationship info when it is made active", async () => {
     const updateActivePanelTabState = jest.fn();
     render(

@@ -217,6 +217,10 @@ export const PanelRelationships = ({
   setPanelObject,
   updateActivePanelTabState,
 }: PanelRelationshipsProps) => {
+  const [activeRelationship, setActiveRelationship] = useState<string | null>(
+    tabState.active,
+  );
+
   const {
     relationships: serverRelationships,
     relationshipsWithNextPage,
@@ -254,6 +258,7 @@ export const PanelRelationships = ({
         activeObjectUid: uid,
         existingObjects: relationships,
         objectMetaRelationships,
+        targetRelationship: activeRelationship,
       });
 
       setModifiedRelationships(
@@ -265,6 +270,7 @@ export const PanelRelationships = ({
       );
     }
   }, [
+    activeRelationship,
     droppedObjects,
     modifiedRelationships,
     objectMetaRelationships,
@@ -299,10 +305,6 @@ export const PanelRelationships = ({
   );
 
   const scrollDivRef = useRef<HTMLDivElement | null>(null);
-
-  const [activeRelationship, setActiveRelationship] = useState<string | null>(
-    tabState.active,
-  );
 
   const setActiveRelationshipWrapper = useCallback(
     (name: string | null) => {
@@ -379,7 +381,7 @@ export const PanelRelationships = ({
           {!activeRelationship &&
             orderedRelationships.length > 0 &&
             emptyOrderedRelationships.length > 0 && (
-              <PanelSeparator className="my-8" />
+              <PanelSeparator className="mb-8" />
             )}
 
           {filterWhenExpandedRelationship(
@@ -403,7 +405,6 @@ export const PanelRelationships = ({
                   relationship.name,
                   modifiedRelationships,
                 )}
-                fetchMoreRelationships={() => ""} // TODO convert this section into PanelEmptyRelationshipSection
                 setPanelObject={setPanelObject}
                 removeRelationshipObject={({ relationshipName, uid }) => {
                   modifyRelationshipObjects(relationshipName, {
@@ -465,7 +466,7 @@ export const PanelRelationships = ({
               activeObjectUid: uid,
               existingObjects: relationships,
               objectMetaRelationships,
-              relationshipName: searchObjectsModalState.relationship.name,
+              targetRelationship: searchObjectsModalState.relationship.name,
             });
 
             setModifiedRelationships(
