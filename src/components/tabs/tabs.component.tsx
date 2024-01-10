@@ -1,11 +1,9 @@
 import clsx from "clsx";
 import { AnimatePresence, Reorder, m } from "framer-motion";
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight, FiX } from "react-icons/fi";
 
-import { ObjectSearchTab } from "src/hooks/localStorage/useObjectSearchTabs";
-
-type Tab = { id: string; name: string };
+export type Tab = { id: string; name: string };
 
 interface TabProps {
   tabs: Tab[];
@@ -36,7 +34,7 @@ const generateLiClassName = ({
   isSelectedTab: boolean;
 }) =>
   clsx(
-    "flex relative border-b-2 -mb-[2px] group/tab-container bg-white",
+    "flex relative border-b-2 -mb-[2px] group/tab-container bg-white grow",
     withDelete ? "mx-1 md:mx-2" : "mx-2 md:mx-3",
     !disabled && "hover:border-black hover:text-black",
     isSelectedTab

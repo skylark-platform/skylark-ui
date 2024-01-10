@@ -14,6 +14,7 @@ interface PanelSectionLayoutProps {
   sections: Section[];
   withStickyHeaders?: boolean;
   children?: ReactNode;
+  withoutPadding?: boolean;
   onSectionClick?: (s: Section) => void;
 }
 
@@ -34,6 +35,7 @@ export const PanelSectionLayoutComponent = (
     isPage,
     sections,
     withStickyHeaders,
+    withoutPadding,
     children,
     onSectionClick,
   }: PanelSectionLayoutProps,
@@ -68,8 +70,10 @@ export const PanelSectionLayoutComponent = (
     <div className="h-full overflow-y-auto" ref={ref}>
       <div
         className={clsx(
-          "relative pb-32 md:pb-56",
-          withStickyHeaders ? "px-4 md:px-8" : "p-4 md:p-8",
+          "relative h-full",
+          !withoutPadding && "pb-32 md:pb-56",
+          !withoutPadding && withStickyHeaders && "px-4 md:px-8",
+          !withoutPadding && !withStickyHeaders && "p-4 md:p-8",
         )}
       >
         {children}

@@ -162,12 +162,8 @@ export const useGetObjectAvailability = (
               end: object.end || "",
               timezone: object.timezone || "",
               active: object.active === false ? false : true,
-              hasInheritance:
-                object.inherited_from || object.inherited_via ? true : false,
-              inherited: {
-                from: object.inherited_from,
-                via: object.inherited_via,
-              },
+              inherited: object.inherited || false,
+              inheritanceSource: object.inheritance_source || false,
               dimensions: object.dimensions.objects,
             };
           }),

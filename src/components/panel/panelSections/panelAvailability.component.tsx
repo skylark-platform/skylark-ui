@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import dayjs, { Dayjs } from "dayjs";
+import { AnimatePresence, m } from "framer-motion";
 import { Fragment, ReactNode, useEffect, useMemo, useState } from "react";
 
 import { AvailabilityLabel } from "src/components/availability";
@@ -20,6 +21,7 @@ import {
 } from "src/components/panel/panelTypography";
 import { ObjectTypePill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
+import { Tab, Tabs } from "src/components/tabs/tabs.component";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
 import { useGetObjectGeneric } from "src/hooks/objects/get/useGetObjectGeneric";
@@ -85,7 +87,7 @@ const AvailabilitySectionWrapperAndTitle = ({
   children: ReactNode;
 }) => (
   <div className="mb-8">
-    <h3 className="mb-2 font-semibold">{title}</h3>
+    {/* <h3 className="mb-2 font-semibold">{title}</h3> */}
     {children}
   </div>
 );
@@ -259,166 +261,249 @@ const PanelAvailabilityEditView = ({
   );
 };
 
-const PanelAvailabilityItemInheritanceGrid = ({
-  availability,
-  setPanelObject,
-}: {
-  availability: ParsedSkylarkObjectAvailabilityObject;
-  setPanelObject: (o: SkylarkObjectIdentifier) => void;
-}) => {
-  const { data: fromObject } = useGetObjectGeneric(
-    {
-      uid: availability.inherited.from || "",
-      objectTypes: null,
-    },
-    true,
-  );
+// const PanelAvailabilityItemInheritanceGrid = ({
+//   availability,
+//   setPanelObject,
+// }: {
+//   availability: ParsedSkylarkObjectAvailabilityObject;
+//   setPanelObject: (o: SkylarkObjectIdentifier) => void;
+// }) => {
+//   const { data: fromObject } = useGetObjectGeneric(
+//     {
+//       uid: availability.inherited.from || "",
+//       objectTypes: null,
+//     },
+//     true,
+//   );
 
-  const { data: viaObject } = useGetObjectGeneric(
-    {
-      uid: availability.inherited.via || "",
-      objectTypes: null,
-    },
-    true,
-  );
+//   const { data: viaObject } = useGetObjectGeneric(
+//     {
+//       uid: availability.inherited.via || "",
+//       objectTypes: null,
+//     },
+//     true,
+//   );
 
-  return (
-    <AvailabilityValueGrid
-      header="Inheritance"
-      onForwardClick={setPanelObject}
-      data={[
-        {
-          label: "From",
-          key: "from",
-          value: fromObject ? (
-            <div className="overflow-hidden whitespace-nowrap text-ellipsis">
-              <ObjectTypePill
-                type={fromObject.objectType}
-                className="mr-1 w-20"
-              />
-              <span className="text-ellipsis">
-                {fromObject && getObjectDisplayName(fromObject)}
-              </span>
-            </div>
-          ) : (
-            availability.inherited.from || ""
-          ),
-          forwardObject: fromObject
-            ? convertParsedObjectToIdentifier(fromObject)
-            : undefined,
-        },
-        {
-          label: "Via",
-          key: "via",
-          value: viaObject ? (
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-              <ObjectTypePill
-                type={viaObject.objectType}
-                className="mr-1 w-20"
-              />
-              <span className="text-ellipsis overflow-hidden">
-                {viaObject && getObjectDisplayName(viaObject)}
-              </span>
-            </div>
-          ) : (
-            availability.inherited.via || ""
-          ),
-          forwardObject: viaObject
-            ? convertParsedObjectToIdentifier(viaObject)
-            : undefined,
-        },
-      ]}
-    />
-  );
-};
+//   return (
+//     <AvailabilityValueGrid
+//       header="Inheritance"
+//       onForwardClick={setPanelObject}
+//       data={[
+//         {
+//           label: "From",
+//           key: "from",
+//           value: fromObject ? (
+//             <div className="overflow-hidden whitespace-nowrap text-ellipsis">
+//               <ObjectTypePill
+//                 type={fromObject.objectType}
+//                 className="mr-1 w-20"
+//               />
+//               <span className="text-ellipsis">
+//                 {fromObject && getObjectDisplayName(fromObject)}
+//               </span>
+//             </div>
+//           ) : (
+//             availability.inherited.from || ""
+//           ),
+//           forwardObject: fromObject
+//             ? convertParsedObjectToIdentifier(fromObject)
+//             : undefined,
+//         },
+//         {
+//           label: "Via",
+//           key: "via",
+//           value: viaObject ? (
+//             <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+//               <ObjectTypePill
+//                 type={viaObject.objectType}
+//                 className="mr-1 w-20"
+//               />
+//               <span className="text-ellipsis overflow-hidden">
+//                 {viaObject && getObjectDisplayName(viaObject)}
+//               </span>
+//             </div>
+//           ) : (
+//             availability.inherited.via || ""
+//           ),
+//           forwardObject: viaObject
+//             ? convertParsedObjectToIdentifier(viaObject)
+//             : undefined,
+//         },
+//       ]}
+//     />
+//   );
+// };
 
-const PanelAvailabilityReadOnlyList = ({
-  title,
-  availabilityObjects,
-  inEditMode,
-  setPanelObject,
+const PanelAvailabilityReadonlyCard = ({
+  isActive,
   now,
+  availability,
+  setActiveAvailability,
+  setPanelObject,
 }: {
-  title: string;
-  availabilityObjects: ParsedSkylarkObjectAvailabilityObject[];
+  isActive?: boolean;
+  availability: ParsedSkylarkObjectAvailabilityObject;
+  setActiveAvailability: (
+    o: ParsedSkylarkObjectAvailabilityObject | null,
+  ) => void;
+  setPanelObject: PanelAvailabilityProps["setPanelObject"];
   now: Dayjs;
-} & PanelAvailabilityProps) => {
+}) => {
+  const [tab, setTab] = useState<Tab | null>(null);
+
+  const activeTabId = (isActive && tab?.id) || "overview";
+
+  const neverExpires = !!(availability.end && is2038Problem(availability.end));
+  const status = getSingleAvailabilityStatus(
+    now,
+    availability.start || "",
+    availability.end || "",
+  );
+
+  const availabilityInfo: {
+    key: keyof Omit<ParsedSkylarkObjectAvailabilityObject, "dimensions">;
+    label: string;
+    value: string;
+  }[] = [
+    {
+      label: "Start",
+      key: SkylarkAvailabilityField.Start,
+      value: formatReadableDateTime(
+        availability[SkylarkAvailabilityField.Start],
+      ),
+    },
+    {
+      label: "End",
+      key: SkylarkAvailabilityField.End,
+      value: neverExpires
+        ? "Never"
+        : formatReadableDateTime(availability[SkylarkAvailabilityField.End]),
+    },
+    {
+      label: "Timezone",
+      key: SkylarkAvailabilityField.Timezone,
+      value: availability[SkylarkAvailabilityField.Timezone] || "",
+    },
+  ];
   return (
-    <AvailabilitySectionWrapperAndTitle title={title}>
-      {availabilityObjects.map((obj) => {
-        const neverExpires = !!(obj.end && is2038Problem(obj.end));
-        const status = getSingleAvailabilityStatus(
-          now,
-          obj.start || "",
-          obj.end || "",
-        );
-
-        const availabilityInfo: {
-          key: keyof Omit<ParsedSkylarkObjectAvailabilityObject, "dimensions">;
-          label: string;
-          value: string;
-        }[] = [
-          {
-            label: "Start",
-            key: SkylarkAvailabilityField.Start,
-            value: formatReadableDateTime(obj[SkylarkAvailabilityField.Start]),
-          },
-          {
-            label: "End",
-            key: SkylarkAvailabilityField.End,
-            value: neverExpires
-              ? "Never"
-              : formatReadableDateTime(obj[SkylarkAvailabilityField.End]),
-          },
-          {
-            label: "Timezone",
-            key: SkylarkAvailabilityField.Timezone,
-            value: obj[SkylarkAvailabilityField.Timezone] || "",
-          },
-        ];
-        return (
-          <div
-            key={`availability-card-${obj.uid}`}
-            className={clsx(
-              "my-4 max-w-xl border border-l-4 px-4 py-4",
-              status === AvailabilityStatus.Active && "border-l-success",
-              status === AvailabilityStatus.Expired && "border-l-error",
-              status === AvailabilityStatus.Future && "border-l-warning",
-              !obj.active && "opacity-40",
-            )}
-          >
-            <div className="flex items-start">
-              <div className="flex-grow">
-                <PanelFieldTitle
-                  text={obj.title || obj.slug || obj.external_id || obj.uid}
-                />
-                <p className="text-manatee-400">
-                  {status &&
-                    getRelativeTimeFromDate(
-                      status,
-                      obj.start || "",
-                      obj.end || "",
-                    )}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-center">
-                {status && (
-                  <AvailabilityLabel status={status} className="pl-1 pr-2" />
+    <m.div
+      key={`availability-card-inner-${availability.uid}`}
+      className={clsx("flex items-start z-10 bg-white")}
+      layout
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 1 }}
+      // animate={{ opacity: 1 }}
+      transition={{ ease: "linear", duration: 0.1 }}
+      animate={
+        isActive
+          ? {
+              opacity: 1,
+              marginLeft: 0,
+              marginRight: 0,
+              height: "100%",
+            }
+          : {
+              opacity: 1,
+              marginLeft: 32,
+              marginRight: 32,
+              height: "auto",
+            }
+      }
+    >
+      {/* <PanelButton
+        type={isActive ? "x" : "maximise"}
+        className="mr-1"
+        onClick={() => setActiveAvailability(isActive ? null : availability)}
+      /> */}
+      <m.div
+        className={clsx(
+          "max-w-xl border border-l-4 py-4 h-full relative",
+          status === AvailabilityStatus.Active && "border-l-success",
+          status === AvailabilityStatus.Expired && "border-l-error",
+          status === AvailabilityStatus.Future && "border-l-warning",
+          !availability.active && "opacity-40",
+        )}
+        layout
+        initial={{ paddingLeft: 16, paddingRight: 16 }}
+        // transition={{ duration: 0.2 }}
+        animate={
+          isActive
+            ? { paddingLeft: 32, paddingRight: 32 }
+            : { paddingLeft: 16, paddingRight: 16 }
+        }
+      >
+        <m.div
+          className="-left-7 absolute"
+          animate={isActive ? { left: 8 } : { left: -28 }}
+          transition={{ ease: "linear", duration: 0.1 }}
+        >
+          <PanelButton
+            type={isActive ? "x" : "maximise"}
+            className="mr-1"
+            onClick={() =>
+              setActiveAvailability(isActive ? null : availability)
+            }
+          />
+        </m.div>
+        <div className="flex items-start">
+          <div className="flex-grow">
+            <PanelFieldTitle
+              text={
+                availability.title ||
+                availability.slug ||
+                availability.external_id ||
+                availability.uid
+              }
+            />
+            <p className="text-manatee-400">
+              {status &&
+                getRelativeTimeFromDate(
+                  status,
+                  availability.start || "",
+                  availability.end || "",
                 )}
-                <OpenObjectButton
-                  onClick={() =>
-                    setPanelObject({
-                      uid: obj.uid,
-                      objectType: BuiltInSkylarkObjectType.Availability,
-                      language: "",
-                    })
-                  }
-                  disabled={inEditMode}
-                />
-              </div>
-            </div>
+            </p>
+          </div>
 
+          <div className="flex items-center justify-center">
+            {status && (
+              <AvailabilityLabel status={status} className="pl-1 pr-2" />
+            )}
+            <OpenObjectButton
+              onClick={() =>
+                setPanelObject({
+                  uid: availability.uid,
+                  objectType: BuiltInSkylarkObjectType.Availability,
+                  language: "",
+                })
+              }
+            />
+          </div>
+        </div>
+
+        {isActive && (
+          <m.div
+            className="-mx-4 mt-4"
+            layout="size"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ ease: "linear", duration: 0.1 }}
+          >
+            <Tabs
+              tabs={[
+                { id: "overview", name: "Overview" },
+                { id: "inheritedBy", name: "Inherited by" },
+                { id: "inheritedFrom", name: "Inherited from" },
+              ]}
+              onChange={setTab}
+              selectedTab={tab?.id || "overview"}
+            />
+          </m.div>
+        )}
+
+        {activeTabId === "overview" && (
+          <>
             <AvailabilityValueGrid
               header="Time Window"
               data={availabilityInfo}
@@ -426,7 +511,7 @@ const PanelAvailabilityReadOnlyList = ({
 
             <AvailabilityValueGrid
               header="Audience"
-              data={obj.dimensions
+              data={availability.dimensions
                 .sort(sortDimensionsByTitleOrSlug)
                 .map((dimension) => ({
                   label: dimension.title || dimension.slug,
@@ -437,50 +522,146 @@ const PanelAvailabilityReadOnlyList = ({
                   key: dimension.uid,
                 }))}
             />
+          </>
+        )}
 
-            {obj.hasInheritance && (
+        {/* {obj.inherited && (
               <PanelAvailabilityItemInheritanceGrid
                 availability={obj}
                 setPanelObject={setPanelObject}
               />
-            )}
-          </div>
-        );
-      })}
-      {availabilityObjects.length === 0 && <PanelEmptyDataText />}
-    </AvailabilitySectionWrapperAndTitle>
+            )} */}
+
+        <div
+          className={clsx(
+            "text-gray-300 mt-4 text-xs",
+            (isActive && "absolute bottom-2") || "hidden",
+          )}
+        >
+          <p className="text-xs">DEBUG ONLY:</p>
+          {/* This Availability is being inherited from a related Object */}
+          <p>{`Inherited: ${availability.inherited}`}</p>
+          {/* If the Availability is being inherited by a related object / This Availability is the source of the Availability of a related object */}
+          <p>{`Inheritance source: ${availability.inheritanceSource}`}</p>
+        </div>
+      </m.div>
+    </m.div>
   );
 };
 
+// const PanelAvailabilityReadOnlyList = ({
+//   title,
+//   activeAvailability,
+//   availabilityObjects,
+//   setPanelObject,
+//   setActiveAvailability,
+//   now,
+// }: {
+//   title: string;
+//   activeAvailability: ParsedSkylarkObjectAvailabilityObject | null;
+//   availabilityObjects: ParsedSkylarkObjectAvailabilityObject[];
+//   setActiveAvailability: (
+//     o: ParsedSkylarkObjectAvailabilityObject | null,
+//   ) => void;
+//   now: Dayjs;
+// } & PanelAvailabilityProps) => {
+//   return (
+//     <AvailabilitySectionWrapperAndTitle title={title}>
+//       {availabilityObjects.map((availability) => (
+//         <PanelAvailabilityReadonlyCard
+//           key={`availability-card-${availability.uid}`}
+//           isActive={activeAvailability?.uid === availability.uid}
+//           availability={availability}
+//           setActiveAvailability={setActiveAvailability}
+//           setPanelObject={setPanelObject}
+//           now={now}
+//         />
+//       ))}
+//       {availabilityObjects.length === 0 && <PanelEmptyDataText />}
+//     </AvailabilitySectionWrapperAndTitle>
+//   );
+// };
+
 const PanelAvailabilityReadOnlyView = ({
+  activeAvailability,
   assignedAvails,
   inheritedAvails,
+  setActiveAvailability,
+  now,
   ...props
 }: {
+  activeAvailability: ParsedSkylarkObjectAvailabilityObject | null;
   assignedAvails: ParsedSkylarkObjectAvailabilityObject[];
   inheritedAvails: ParsedSkylarkObjectAvailabilityObject[];
+  setActiveAvailability: (
+    o: ParsedSkylarkObjectAvailabilityObject | null,
+  ) => void;
+  now: Dayjs;
 } & PanelAvailabilityProps) => {
-  const now = dayjs();
-
   return (
     <>
-      <PanelAvailabilityReadOnlyList
+      {!activeAvailability && (
+        <m.h3
+          layout
+          key="assigned-title"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.1 }}
+          className="mb-2 font-semibold px-4 md:px-8 pt-8 pb-2"
+        >
+          Assigned
+        </m.h3>
+      )}
+      {/* <PanelAvailabilityReadOnlyList
         {...props}
         title="Assigned"
+        activeAvailability={activeAvailability}
         availabilityObjects={assignedAvails}
+        setActiveAvailability={setActiveAvailability}
         now={now}
-      />
-      <PanelAvailabilityReadOnlyList
-        {...props}
-        title="Inherited"
-        availabilityObjects={inheritedAvails}
-        now={now}
-      />
+      /> */}
+      {assignedAvails.map((availability) => (
+        <PanelAvailabilityReadonlyCard
+          key={`availability-card-${availability.uid}`}
+          isActive={activeAvailability?.uid === availability.uid}
+          availability={availability}
+          setActiveAvailability={setActiveAvailability}
+          setPanelObject={props.setPanelObject}
+          now={now}
+        />
+      ))}
+      {!activeAvailability && (
+        <m.h3
+          key="inherited-title"
+          layout
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.1 }}
+          className="mb-2 font-semibold px-4 md:px-8 pt-8 pb-2"
+        >
+          Inherited
+        </m.h3>
+      )}
+      {inheritedAvails.map((availability) => (
+        <PanelAvailabilityReadonlyCard
+          key={`availability-card-${availability.uid}`}
+          isActive={activeAvailability?.uid === availability.uid}
+          availability={availability}
+          setActiveAvailability={setActiveAvailability}
+          setPanelObject={props.setPanelObject}
+          now={now}
+        />
+      ))}
     </>
   );
 };
 
 export const PanelAvailability = (props: PanelAvailabilityProps) => {
+  const [activeAvailability, setActiveAvailability] =
+    useState<ParsedSkylarkObjectAvailabilityObject | null>(null);
+
   const {
     isPage,
     objectType,
@@ -506,11 +687,19 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
     [data, modifiedAvailabilityObjects],
   );
 
-  const { assignedAvails, inheritedAvails, inheritedUids } = useMemo(
-    () =>
-      data?.reduce(
+  // const availabilities = activeAvailability
+  //   ? data?.filter(({ uid }) => uid === activeAvailability.uid)
+  //   : data;
+
+  const { assignedAvails, inheritedAvails, inheritedUids } = useMemo(() => {
+    const availabilities = activeAvailability
+      ? data?.filter(({ uid }) => uid === activeAvailability.uid)
+      : data;
+
+    return (
+      availabilities?.reduce(
         (prev, object) => {
-          if (object.hasInheritance) {
+          if (object.inherited) {
             return {
               ...prev,
               inheritedAvails: [...prev.inheritedAvails, object],
@@ -532,9 +721,9 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
         inheritedAvails: [],
         inheritedUids: [],
         assignedAvails: [],
-      },
-    [data],
-  );
+      }
+    );
+  }, [activeAvailability, data]);
 
   const removeAvailabilityObject = (uidToRemove: string) => {
     const uidIsNewlyAdded = modifiedAvailabilityObjects?.added.find(
@@ -593,8 +782,11 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
     return <PanelDropZone />;
   }
 
+  const now = dayjs();
+
   return (
     <PanelSectionLayout
+      withoutPadding
       sections={[
         {
           id: "availability",
@@ -604,35 +796,49 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
       ]}
       isPage={isPage}
     >
-      <div data-testid="panel-availability">
-        <div className="flex items-center">
-          <PanelSectionTitle
-            text={formatObjectField("Availability")}
-            id={"availability-panel-header"}
-          />
-          <PanelButton
-            type="plus"
-            onClick={() => setObjectSearchModalOpen(true)}
-          />
-        </div>
-        {data && (
-          <>
-            {inEditMode ? (
-              <PanelAvailabilityEditView
-                {...props}
-                availabilityObjects={availabilityObjects}
-                inheritedUids={inheritedUids}
-                removeAvailabilityObject={removeAvailabilityObject}
+      <div data-testid="panel-availability" className="h-full">
+        <AnimatePresence initial={false} mode="popLayout">
+          {/* {!activeAvailability && (
+            <m.div
+              key="the-main-title"
+              className="flex items-center"
+              layout
+              exit={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              initial={{ opacity: 0 }}
+            >
+              <PanelSectionTitle
+                text={formatObjectField("Availability")}
+                id={"availability-panel-header"}
               />
-            ) : (
-              <PanelAvailabilityReadOnlyView
-                {...props}
-                assignedAvails={assignedAvails}
-                inheritedAvails={inheritedAvails}
+              <PanelButton
+                type="plus"
+                onClick={() => setObjectSearchModalOpen(true)}
               />
-            )}
-          </>
-        )}
+            </m.div>
+          )} */}
+          {data && (
+            <>
+              {inEditMode ? (
+                <PanelAvailabilityEditView
+                  {...props}
+                  availabilityObjects={availabilityObjects}
+                  inheritedUids={inheritedUids}
+                  removeAvailabilityObject={removeAvailabilityObject}
+                />
+              ) : (
+                <PanelAvailabilityReadOnlyView
+                  {...props}
+                  activeAvailability={activeAvailability}
+                  assignedAvails={assignedAvails}
+                  inheritedAvails={inheritedAvails}
+                  setActiveAvailability={setActiveAvailability}
+                  now={now}
+                />
+              )}
+            </>
+          )}
+        </AnimatePresence>
       </div>
       <PanelLoading
         isLoading={isLoading || hasNextPage}
