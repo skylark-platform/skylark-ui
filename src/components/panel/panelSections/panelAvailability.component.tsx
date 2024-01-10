@@ -1,9 +1,10 @@
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { Fragment, useEffect, useMemo, useState } from "react";
+import { sentenceCase } from "sentence-case";
 
 import { AvailabilityLabel } from "src/components/availability";
-import { OpenObjectButton } from "src/components/button";
+import { Button, OpenObjectButton } from "src/components/button";
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import {
@@ -19,8 +20,10 @@ import {
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
+import { InfoTooltip } from "src/components/tooltip/tooltip.component";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
+import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   AvailabilityStatus,
@@ -30,6 +33,7 @@ import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
   SkylarkAvailabilityField,
+  SkylarkObjectType,
 } from "src/interfaces/skylark";
 import {
   formatReadableDateTime,
@@ -156,6 +160,78 @@ const mergeServerAndModifiedAvailability = (
     ({ uid }) => !modifiedAvailabilityObjects.removed.includes(uid),
   );
   return [...filteredServerObjects, ...modifiedAvailabilityObjects.added];
+};
+
+const InheritanceSummary = ({
+  availability,
+}: {
+  objectType: SkylarkObjectType;
+  availability: ParsedSkylarkObjectAvailabilityObject;
+}) => {
+  // const { objectTypeRelationshipConfig } =
+  //   useObjectTypeRelationshipConfiguration(objectType);
+  // const objectTypesThatInheritAvailability = objectTypeRelationshipConfig
+  //   ? Object.entries(objectTypeRelationshipConfig)
+  //       .filter(([, { inheritAvailability }]) => inheritAvailability)
+  //       .map(([relationship]) => relationship)
+  //   : [];
+
+  return (
+    (availability.inherited || availability.inheritanceSource) && (
+      <div>
+        {availability.inherited && (
+          <div className="ml-0 flex items-center whitespace-pre text-manatee-400 mt-1">
+            <p>Inherited</p>
+            <InfoTooltip
+              tooltip={
+                <div>
+                  <p>
+                    This Availability is inherited from one or more
+                    relationships.
+                  </p>
+                  <button className="mt-2 hover:text-brand-primary underline transition-colors">
+                    Show me where this is inherited from
+                  </button>
+                </div>
+              }
+            />
+          </div>
+        )}
+        {/* {availability.inheritanceSource && (
+          <div className="ml-0 flex items-center whitespace-pre text-manatee-400 mt-1">
+            <p>Inheritance source</p>
+            <InfoTooltip
+              tooltip={
+                <div>
+                  <p>
+                    Objects linked as relationships may inherit this
+                    Availability.
+                  </p>
+                  {objectTypesThatInheritAvailability.length > 0 && (
+                    <>
+                      <p className="mt-2">
+                        Relationships that will inherit this availability:
+                      </p>
+                      <ul className="list-disc ml-4 mb-2">
+                        {objectTypesThatInheritAvailability.map(
+                          (relationship) => (
+                            <li key={relationship}>
+                              {sentenceCase(relationship)}
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    </>
+                  )}
+                  <a>Read more on the docs.</a>
+                </div>
+              }
+            />
+          </div>
+        )} */}
+      </div>
+    )
+  );
 };
 
 const PanelAvailabilityEditView = ({
@@ -375,23 +451,29 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                             )}
                         </p>
                       </div>
-
-                      <div className="flex items-center justify-center">
-                        {status && (
-                          <AvailabilityLabel
-                            status={status}
-                            className="pl-1 pr-2"
+                      <div className="flex items-end flex-col">
+                        <div className="flex items-center justify-center">
+                          {status && (
+                            <AvailabilityLabel
+                              status={status}
+                              className="pl-1 pr-2"
+                            />
+                          )}
+                          <OpenObjectButton
+                            onClick={() =>
+                              setPanelObject({
+                                uid: obj.uid,
+                                objectType:
+                                  BuiltInSkylarkObjectType.Availability,
+                                language: "",
+                              })
+                            }
+                            disabled={inEditMode}
                           />
-                        )}
-                        <OpenObjectButton
-                          onClick={() =>
-                            setPanelObject({
-                              uid: obj.uid,
-                              objectType: BuiltInSkylarkObjectType.Availability,
-                              language: "",
-                            })
-                          }
-                          disabled={inEditMode}
+                        </div>
+                        <InheritanceSummary
+                          objectType={props.objectType}
+                          availability={obj}
                         />
                       </div>
                     </div>

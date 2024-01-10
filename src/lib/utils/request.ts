@@ -1,7 +1,7 @@
 import { REQUEST_HEADERS } from "src/constants/skylark";
 import { convertDateAndTimezoneToISO } from "src/lib/skylark/availability";
 
-export const generateAvailabilityHeaders = (availability: {
+export const generateAvailabilityHeaders = (availability?: {
   dimensions: Record<string, string> | null;
   timeTravel: {
     datetime: string;
@@ -12,6 +12,10 @@ export const generateAvailabilityHeaders = (availability: {
   const headers: HeadersInit = {
     [REQUEST_HEADERS.ignoreAvailability]: "true",
   };
+
+  if (!availability) {
+    return headers;
+  }
 
   if (availability.dimensions) {
     headers[REQUEST_HEADERS.ignoreAvailability] = "false";

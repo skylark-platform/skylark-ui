@@ -75,6 +75,9 @@ export interface SkylarkGraphQLAvailability {
   start: string | null;
   end: string | null;
   timezone: string | null;
+  active: boolean | null;
+  inherited: boolean | null;
+  inheritance_source: boolean | null;
   dimensions: {
     next_token: NextToken;
     objects: SkylarkGraphQLAvailabilityDimensionWithValues[];

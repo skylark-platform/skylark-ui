@@ -1,8 +1,7 @@
 import clsx from "clsx";
 import { ReactNode } from "react";
-import { FiInfo } from "react-icons/fi";
 
-import { Tooltip } from "src/components/tooltip/tooltip.component";
+import { InfoTooltip } from "src/components/tooltip/tooltip.component";
 import {
   InputFieldWithFieldConfig,
   ParsedSkylarkObjectTypeRelationshipConfiguration,
@@ -27,14 +26,6 @@ export interface ContentModelEditorForm {
 
 export const uiDisplayFieldTooltip =
   "A config property that instructs the UI which field it should use when displaying an object on listing pages.";
-
-export const InfoTooltip = ({ tooltip }: { tooltip: ReactNode }) => (
-  <Tooltip tooltip={tooltip}>
-    <div className="ml-1">
-      <FiInfo className="text-base" />
-    </div>
-  </Tooltip>
-);
 
 export const SectionWrapper = (props: { children: ReactNode }) => (
   <section {...props} className="my-10 border-t pt-10" />

@@ -143,14 +143,16 @@ export const useGetObjectAvailability = (
     queryKey,
     initialPageParam: "",
     getNextPageParam: (lastPage): string | undefined =>
-      lastPage.getObjectAvailability.availability?.next_token || undefined,
+      lastPage.getObjectAvailability?.availability?.next_token || undefined,
   });
 
   const availability: ParsedSkylarkObjectAvailabilityObject[] | undefined =
     useMemo(
       () =>
         data?.pages
-          ?.flatMap((page) => page.getObjectAvailability.availability.objects)
+          ?.flatMap(
+            (page) => page.getObjectAvailability?.availability?.objects || [],
+          )
           .map((object): ParsedSkylarkObjectAvailabilityObject => {
             return {
               ...object,
@@ -159,6 +161,9 @@ export const useGetObjectAvailability = (
               start: object.start || "",
               end: object.end || "",
               timezone: object.timezone || "",
+              active: object.active === false ? false : true,
+              inherited: object.inherited || false,
+              inheritanceSource: object.inheritance_source || false,
               dimensions: object.dimensions.objects,
             };
           }),

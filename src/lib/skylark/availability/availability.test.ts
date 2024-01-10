@@ -44,6 +44,9 @@ describe("getObjectAvailabilityStatus", () => {
     external_id: "",
     title: "",
     slug: "",
+    inherited: false,
+    inheritanceSource: false,
+    active: true,
     dimensions: [],
   };
 
