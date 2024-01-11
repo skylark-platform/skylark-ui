@@ -184,7 +184,7 @@ const InheritanceSummary = ({
   const isEnabled = availability.active;
 
   return (
-    (availability.inherited || availability.inheritanceSource) && (
+    availability.inherited && (
       <div className="flex justify-between w-full mb-2">
         {availability.inherited && (
           <div className="ml-0 flex items-center whitespace-pre mt-0 text-manatee-400">
@@ -498,7 +498,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                   <div
                     key={`availability-card-${obj.uid}`}
                     className={clsx(
-                      "my-4 max-w-xl border border-l-4 px-4 py-4 relative",
+                      "my-4 max-w-xl border border-l-4 px-4 py-4",
                       obj.active &&
                         status === AvailabilityStatus.Active &&
                         "border-l-success",
@@ -531,26 +531,23 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                             )}
                         </p>
                       </div>
-                      <div className="flex items-end flex-col">
-                        <div className="flex items-center justify-center">
-                          {status && (
-                            <AvailabilityLabel
-                              status={status}
-                              className="pl-1 pr-2"
-                            />
-                          )}
-                          <OpenObjectButton
-                            onClick={() =>
-                              setPanelObject({
-                                uid: obj.uid,
-                                objectType:
-                                  BuiltInSkylarkObjectType.Availability,
-                                language: "",
-                              })
-                            }
-                            disabled={inEditMode}
+                      <div className="flex items-center justify-center">
+                        {status && (
+                          <AvailabilityLabel
+                            status={status}
+                            className="pl-1 pr-2"
                           />
-                        </div>
+                        )}
+                        <OpenObjectButton
+                          onClick={() =>
+                            setPanelObject({
+                              uid: obj.uid,
+                              objectType: BuiltInSkylarkObjectType.Availability,
+                              language: "",
+                            })
+                          }
+                          disabled={inEditMode}
+                        />
                       </div>
                     </div>
 
