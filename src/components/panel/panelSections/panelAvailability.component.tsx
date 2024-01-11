@@ -273,19 +273,21 @@ const PanelAvailabilityEditView = ({
                   obj.metadata,
                 )}
               />
-              <div>
-                <Switch
-                  size="small"
-                  enabled={isActive}
-                  onChange={(active) =>
-                    toggleInheritedAvailability({
-                      newActive: active,
-                      parsedObject: obj,
-                      isActiveOnServer: initialActiveFromServer,
-                    })
-                  }
-                />
-              </div>
+              {isInherited && (
+                <div>
+                  <Switch
+                    size="small"
+                    enabled={isActive}
+                    onChange={(active) =>
+                      toggleInheritedAvailability({
+                        newActive: active,
+                        parsedObject: obj,
+                        isActiveOnServer: initialActiveFromServer,
+                      })
+                    }
+                  />
+                </div>
+              )}
             </ObjectIdentifierCard>
           </div>
         );
@@ -549,10 +551,6 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                             disabled={inEditMode}
                           />
                         </div>
-                        {/* <InheritanceSummary
-                          objectType={props.objectType}
-                          availability={obj}
-                        /> */}
                       </div>
                     </div>
 
