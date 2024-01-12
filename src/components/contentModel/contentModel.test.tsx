@@ -273,15 +273,18 @@ describe("Relationships", () => {
     });
 
     const imageSortField = withinImagesRow.getByRole("combobox");
+    const imageInheritAvailability = withinImagesRow.getByRole("checkbox");
 
+    // Change sort field
     expect(imageSortField).toHaveAttribute("data-value", "file_name");
-
-    // Change relationship config
     fireEvent.click(imageSortField);
     fireEvent.click(withinImagesRow.getByText("title"));
-
-    // Check the status
     expect(imageSortField).toHaveAttribute("data-value", "title");
+
+    // Change inherit availability
+    expect(imageInheritAvailability).not.toBeChecked();
+    fireEvent.click(imageInheritAvailability);
+    expect(imageInheritAvailability).toBeChecked();
 
     server.use(
       graphql.query(
@@ -291,33 +294,10 @@ describe("Relationships", () => {
             ctx.data({
               listRelationshipConfiguration: [
                 {
-                  relationship_name: "assets",
-                  config: {
-                    default_sort_field: "title_sort",
-                  },
-                },
-                {
-                  relationship_name: "call_to_actions",
-                  config: {
-                    default_sort_field: "uid",
-                  },
-                },
-                {
-                  relationship_name: "credits",
-                  config: {
-                    default_sort_field: "position",
-                  },
-                },
-                {
                   relationship_name: "images",
                   config: {
                     default_sort_field: "title",
-                  },
-                },
-                {
-                  relationship_name: "tags",
-                  config: {
-                    default_sort_field: "name_sort",
+                    inherit_availability: true,
                   },
                 },
               ],
@@ -335,7 +315,8 @@ describe("Relationships", () => {
       screen.getByText("Relationship config updated");
     });
 
-    // Revalidate the sort field hasn't changed
+    // Revalidate the relationship config to ensure it hasn't changed
     expect(imageSortField).toHaveAttribute("data-value", "title");
+    expect(imageInheritAvailability).toBeChecked();
   });
 });

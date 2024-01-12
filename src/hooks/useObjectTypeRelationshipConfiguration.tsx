@@ -39,8 +39,8 @@ const select = (
       return {
         ...prev,
         [relationship_name]: {
-          defaultSortField: config.default_sort_field,
-          inheritAvailability: config.inherit_availability,
+          defaultSortField: config.default_sort_field || null,
+          inheritAvailability: config.inherit_availability || false,
         },
       };
     },

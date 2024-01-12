@@ -180,13 +180,15 @@ export interface GQLSkylarkGetAvailabilityDimensions {
   getAvailability: SkylarkGraphQLAvailability;
 }
 
+export interface GQLObjectTypeRelationshipConfig {
+  default_sort_field: string | null;
+  inherit_availability: boolean;
+}
+
 export interface GQLSkylarkListObjectTypeRelationshipConfiguration {
   listRelationshipConfiguration: {
     relationship_name: string;
-    config: {
-      default_sort_field: string;
-      inherit_availability: boolean;
-    };
+    config: GQLObjectTypeRelationshipConfig;
   }[];
 }
 
