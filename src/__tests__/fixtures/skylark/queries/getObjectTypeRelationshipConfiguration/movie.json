@@ -4,55 +4,64 @@
       {
         "relationship_name": "assets",
         "config": {
-          "default_sort_field": "title_sort"
+          "default_sort_field": "title_sort",
+          "inherit_availability": false
         }
       },
       {
         "relationship_name": "brands",
         "config": {
-          "default_sort_field": "title_sort"
+          "default_sort_field": "title_sort",
+          "inherit_availability": false
         }
       },
       {
         "relationship_name": "call_to_actions",
         "config": {
-          "default_sort_field": "internal_title"
+          "default_sort_field": "internal_title",
+          "inherit_availability": false
         }
       },
       {
         "relationship_name": "credits",
         "config": {
-          "default_sort_field": "position"
+          "default_sort_field": null,
+          "inherit_availability": true
         }
       },
       {
         "relationship_name": "genres",
         "config": {
-          "default_sort_field": "title_sort"
+          "default_sort_field": "title_sort",
+          "inherit_availability": false
         }
       },
       {
         "relationship_name": "images",
         "config": {
-          "default_sort_field": "file_name"
+          "default_sort_field": "file_name",
+          "inherit_availability": false
         }
       },
       {
         "relationship_name": "ratings",
         "config": {
-          "default_sort_field": "value"
+          "default_sort_field": "value",
+          "inherit_availability": false
         }
       },
       {
         "relationship_name": "tags",
         "config": {
-          "default_sort_field": "name_sort"
+          "default_sort_field": null,
+          "inherit_availability": true
         }
       },
       {
         "relationship_name": "themes",
         "config": {
-          "default_sort_field": "name_sort"
+          "default_sort_field": "name_sort",
+          "inherit_availability": false
         }
       }
     ]

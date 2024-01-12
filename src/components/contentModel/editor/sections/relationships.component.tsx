@@ -3,7 +3,6 @@ import { UseFormReturn } from "react-hook-form";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { Select } from "src/components/inputs/select";
 import { ObjectTypePill } from "src/components/pill";
-import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import { SkylarkObjectMeta } from "src/interfaces/skylark";
 
 import {
@@ -38,7 +37,7 @@ export const RelationshipsSection = ({
         <FieldHeader className="col-span-2">Object Type</FieldHeader>
         <FieldHeader className="col-span-2">Name</FieldHeader>
         <FieldHeader className="col-span-2">Sort Field</FieldHeader>
-        {/* <FieldHeader>Inherit Availability</FieldHeader> */}
+        <FieldHeader>Inherit Availability</FieldHeader>
       </div>
       {objectMeta.relationships.map(({ relationshipName, objectType }) => {
         const config = relationshipConfig?.[relationshipName] || null;
@@ -87,12 +86,18 @@ export const RelationshipsSection = ({
                 }
               />
             </div>
-            {/* <div className="flex justify-center items-center col-span-1">
+            <div className="flex justify-center items-center col-span-1">
               <Checkbox
                 checked={config?.inheritAvailability}
-                onCheckedChange={console.log}
+                onCheckedChange={(checkedState) =>
+                  form.setValue(
+                    `relationshipConfig.${relationshipName}.inheritAvailability`,
+                    Boolean(checkedState),
+                    { shouldDirty: true },
+                  )
+                }
               />
-            </div> */}
+            </div>
           </div>
         );
       })}

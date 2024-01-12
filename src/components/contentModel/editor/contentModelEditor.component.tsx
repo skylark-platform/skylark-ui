@@ -25,6 +25,9 @@ import { FieldsSection } from "./sections/fields.component";
 import { RelationshipsSection } from "./sections/relationships.component";
 import { UIConfigSection } from "./sections/uiConfig.component";
 
+const reverseInheritAvailabilityErrorMessage =
+  "reverse relationship already inherits";
+
 const combineFieldAndFieldConfigAndSortByConfigPostion = (
   inputFields: NormalizedObjectField[],
   getFields: NormalizedObjectField[],
@@ -199,16 +202,44 @@ export const ObjectTypeEditor = ({
           />,
         );
       },
-      onError: () => {
-        toast.error(
-          <Toast
-            title={`Relationship config update failed`}
-            message={[
-              "Unable to update the Relationship config.",
-              "Please try again later.",
-            ]}
-          />,
+      onError: (e) => {
+        const otherErrors = e.response.errors.filter(
+          ({ message }) =>
+            message.toLowerCase() !== reverseInheritAvailabilityErrorMessage,
         );
+        const inheritAvailabilityErrs = e.response.errors.filter(
+          ({ message }) =>
+            message.toLowerCase() === reverseInheritAvailabilityErrorMessage,
+        );
+
+        if (inheritAvailabilityErrs.length > 0) {
+          const inheritAvailabilityReverseMessage =
+            'Cannot enable "inherit availability" on the following relationships as it is enabled on the reverse relationship.';
+
+          const formattedErrs = inheritAvailabilityErrs.map(
+            (err) => ` - ${err.path[0].split("_")[1]}`,
+          );
+
+          toast.error(
+            <Toast
+              title={`Relationship config update failed`}
+              message={[inheritAvailabilityReverseMessage, ...formattedErrs]}
+            />,
+          );
+        }
+
+        if (otherErrors.length > 0) {
+          toast.error(
+            <Toast
+              title={`Relationship config update failed`}
+              message={[
+                "Error when updating the Relationship config.",
+                "Please try again later.",
+                ...otherErrors.map((error) => `- ${error.message}`),
+              ]}
+            />,
+          );
+        }
       },
     });
 
