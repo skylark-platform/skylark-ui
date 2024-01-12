@@ -3,7 +3,6 @@ import { UseFormReturn } from "react-hook-form";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { Select } from "src/components/inputs/select";
 import { ObjectTypePill } from "src/components/pill";
-import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import { SkylarkObjectMeta } from "src/interfaces/skylark";
 
 import {

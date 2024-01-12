@@ -420,20 +420,17 @@ export const useGenerateDataModelFromSkylarkSchema = () => {
   const { objects: allObjectMeta } = useAllObjectsMeta(false);
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig(); // TODO don't just get searchable
   const {
-    objectTypeRelationshipConfig,
+    allObjectTypesRelationshipConfig,
     isLoading: isLoadingRelationshipConfig,
-    enabled: isEnabledRelationshipConfig,
   } = useAllObjectTypesRelationshipConfiguration();
 
   const parsedDataModel =
-    allObjectMeta &&
-    objectTypesWithConfig &&
-    (!isLoadingRelationshipConfig || !isEnabledRelationshipConfig)
+    allObjectMeta && objectTypesWithConfig && !isLoadingRelationshipConfig
       ? parseDataModel(
           allObjectMeta,
           objectTypesWithConfig,
           creds?.uri,
-          objectTypeRelationshipConfig,
+          allObjectTypesRelationshipConfig,
         )
       : undefined;
 

@@ -199,13 +199,27 @@ export const ObjectTypeEditor = ({
           />,
         );
       },
-      onError: () => {
+      onError: (e) => {
+        console.log(e.response.errors);
+
+        const errMessages = e.response.errors.map(
+          (error) => `${error.path[0].split("_")[1]}: ${error.message}`,
+        );
+        const formattedErrors =
+          errMessages.length > 0
+            ? ["Errors:", ...errMessages.map((msg) => ` - ${msg}`)]
+            : [];
+
+        const inheritAvailabilityReverseMessage =
+          "Reverse relationship has inherit availability enabled on the following relationships:";
+        // "Unable to enable Inherit Availability for the following relationships as it is enabled on the reverse relationship";
+
         toast.error(
           <Toast
             title={`Relationship config update failed`}
             message={[
               "Unable to update the Relationship config.",
-              "Please try again later.",
+              ...formattedErrors,
             ]}
           />,
         );

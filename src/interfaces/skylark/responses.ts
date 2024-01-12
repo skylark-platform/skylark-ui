@@ -194,5 +194,9 @@ export interface GQLSkylarkListObjectTypeRelationshipConfiguration {
 
 export type GQLSkylarkListAllObjectTypesRelationshipConfiguration = Record<
   string,
-  GQLSkylarkListObjectTypeRelationshipConfiguration["listRelationshipConfiguration"]
+  | {
+      relationship_name: string;
+      config: GQLObjectTypeRelationshipConfig;
+    }[]
+  | null
 >;
