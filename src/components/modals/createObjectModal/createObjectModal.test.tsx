@@ -127,12 +127,12 @@ describe("Create Object (new object)", () => {
 
     expect(screen.queryAllByText("External id")).toHaveLength(0);
 
-    user.click(screen.getByTestId("select"));
+    await user.click(screen.getByTestId("select"));
 
     await waitFor(() =>
       expect(screen.queryAllByText("Episode")).toHaveLength(1),
     );
-    user.click(screen.getByText("Episode"));
+    await user.click(screen.getByText("Episode"));
 
     await waitFor(() =>
       expect(screen.queryAllByText("External id")).toHaveLength(1),
@@ -181,12 +181,12 @@ describe("Create Object (new object)", () => {
 
     expect(screen.queryAllByText("External id")).toHaveLength(0);
 
-    user.click(screen.getByTestId("select"));
+    await user.click(screen.getByTestId("select"));
 
     await waitFor(() =>
       expect(screen.queryAllByText("Episode")).toHaveLength(1),
     );
-    user.click(screen.getByText("Episode"));
+    await user.click(screen.getByText("Episode"));
 
     await waitFor(() =>
       expect(screen.queryAllByText("External id")).toHaveLength(1),

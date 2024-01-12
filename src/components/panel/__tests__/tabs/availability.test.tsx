@@ -197,6 +197,126 @@ describe("availability view", () => {
     ).toBeInTheDocument();
   });
 
+  test("shows the inheritance summary when the availability is inherited", async () => {
+    server.use(
+      graphql.query(
+        wrapQueryName(createGetObjectAvailabilityQueryName("Movie")),
+        (req, res, ctx) => {
+          return res(
+            ctx.data({
+              getObjectAvailability: {
+                availability: {
+                  objects: [
+                    {
+                      ...GQLSkylarkGetObjectAvailabilityQueryFixture.data
+                        .getObjectAvailability.availability.objects[0],
+                      active: true,
+                      inherited: true,
+                      inherited_source: false,
+                    },
+                  ],
+                },
+              },
+            }),
+          );
+        },
+      ),
+    );
+
+    render(
+      <Panel
+        {...defaultProps}
+        object={movieObject}
+        tab={PanelTab.Availability}
+      />,
+    );
+
+    expect(
+      screen.queryAllByText(
+        GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+          .title,
+      ),
+    ).toHaveLength(0);
+
+    await waitFor(() =>
+      expect(
+        screen.getAllByText(
+          GQLSkylarkGetObjectQueryFixture.data.getObject.title,
+        ),
+      ).toHaveLength(1),
+    );
+
+    const withinAvailabilityPanel = within(
+      screen.getByTestId("panel-availability"),
+    );
+
+    expect(withinAvailabilityPanel.getByText("Inherited")).toBeInTheDocument();
+    expect(withinAvailabilityPanel.queryByText("Enabled")).toBeInTheDocument();
+    expect(
+      withinAvailabilityPanel.queryByText("Disabled"),
+    ).not.toBeInTheDocument();
+  });
+
+  test("shows the disabled in the inheritance summary when the availability is inherited but not active", async () => {
+    server.use(
+      graphql.query(
+        wrapQueryName(createGetObjectAvailabilityQueryName("Movie")),
+        (req, res, ctx) => {
+          return res(
+            ctx.data({
+              getObjectAvailability: {
+                availability: {
+                  objects: [
+                    {
+                      ...GQLSkylarkGetObjectAvailabilityQueryFixture.data
+                        .getObjectAvailability.availability.objects[0],
+                      active: false,
+                      inherited: true,
+                      inherited_source: false,
+                    },
+                  ],
+                },
+              },
+            }),
+          );
+        },
+      ),
+    );
+
+    render(
+      <Panel
+        {...defaultProps}
+        object={movieObject}
+        tab={PanelTab.Availability}
+      />,
+    );
+
+    expect(
+      screen.queryAllByText(
+        GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+          .title,
+      ),
+    ).toHaveLength(0);
+
+    await waitFor(() =>
+      expect(
+        screen.getAllByText(
+          GQLSkylarkGetObjectQueryFixture.data.getObject.title,
+        ),
+      ).toHaveLength(1),
+    );
+
+    const withinAvailabilityPanel = within(
+      screen.getByTestId("panel-availability"),
+    );
+
+    expect(withinAvailabilityPanel.getByText("Inherited")).toBeInTheDocument();
+    expect(
+      withinAvailabilityPanel.queryByText("Enabled"),
+    ).not.toBeInTheDocument();
+    expect(withinAvailabilityPanel.queryByText("Disabled")).toBeInTheDocument();
+  });
+
   test("calls setPanelObject with the selected availability info when the OpenObjectButton is clicked", async () => {
     const setPanelObject = jest.fn();
     render(
@@ -417,6 +537,73 @@ describe("availability view", () => {
 
       expect(screen.queryAllByText(firstAvailabilityObjectTitle)).toHaveLength(
         0,
+      );
+    });
+
+    test("toggles an inherited availabilities enabled state", async () => {
+      const firstAvailabilityObject =
+        GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0];
+
+      server.use(
+        graphql.query(
+          wrapQueryName(createGetObjectAvailabilityQueryName("Movie")),
+          (req, res, ctx) => {
+            return res(
+              ctx.data({
+                getObjectAvailability: {
+                  availability: {
+                    objects: [
+                      {
+                        ...GQLSkylarkGetObjectAvailabilityQueryFixture.data
+                          .getObjectAvailability.availability.objects[0],
+                        active: false,
+                        inherited: true,
+                        inherited_source: false,
+                      },
+                    ],
+                  },
+                },
+              }),
+            );
+          },
+        ),
+      );
+
+      render(
+        <Panel
+          {...defaultProps}
+          object={movieObject}
+          tab={PanelTab.Availability}
+        />,
+      );
+
+      expect(
+        screen.queryAllByText(
+          GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+            .title,
+        ),
+      ).toHaveLength(0);
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(firstAvailabilityObject.title),
+        ).toBeInTheDocument(),
+      );
+
+      fireEvent.click(screen.getByText("Edit Availability"));
+
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      fireEvent.click(screen.getAllByRole("switch")[0]);
+
+      // Save
+      const saveButton = screen.getByText("Save");
+      fireEvent.click(saveButton);
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(firstAvailabilityObject.title),
+        ).toBeInTheDocument(),
       );
     });
   });

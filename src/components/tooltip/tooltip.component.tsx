@@ -1,6 +1,7 @@
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import { ReactNode } from "react";
+import { FiInfo } from "react-icons/fi";
 
 export type TooltipSide = "top" | "right" | "bottom" | "left";
 
@@ -34,3 +35,11 @@ export const Tooltip = ({ children, tooltip, side }: TooltipProps) => {
     </TooltipPrimitive.Provider>
   );
 };
+
+export const InfoTooltip = ({ tooltip }: { tooltip: ReactNode }) => (
+  <Tooltip tooltip={tooltip}>
+    <div className="ml-1">
+      <FiInfo className="text-base" />
+    </div>
+  </Tooltip>
+);

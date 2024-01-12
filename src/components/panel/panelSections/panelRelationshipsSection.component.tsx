@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { Transition, m } from "framer-motion";
-import { Fragment, Ref, forwardRef, useEffect } from "react";
+import { Ref, forwardRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { sentenceCase } from "sentence-case";
 

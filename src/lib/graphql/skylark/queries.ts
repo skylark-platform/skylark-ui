@@ -133,6 +133,7 @@ export const LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION = gql`
       relationship_name
       config {
         default_sort_field
+        inherit_availability
       }
     }
   }
