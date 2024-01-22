@@ -4,61 +4,71 @@
       {
         "relationship_name": "assets",
         "config": {
-          "default_sort_field": "title_sort"
+          "default_sort_field": "title_sort",
+          "inherit_availability": null
         }
       },
       {
         "relationship_name": "brands",
         "config": {
-          "default_sort_field": "title_sort"
+          "default_sort_field": null,
+          "inherit_availability": true
         }
       },
       {
         "relationship_name": "call_to_actions",
         "config": {
-          "default_sort_field": "internal_title"
+          "default_sort_field": "internal_title",
+          "inherit_availability": null
         }
       },
       {
         "relationship_name": "credits",
         "config": {
-          "default_sort_field": "position"
+          "default_sort_field": null,
+          "inherit_availability": true
         }
       },
       {
         "relationship_name": "episodes",
         "config": {
-          "default_sort_field": "episode_number"
+          "default_sort_field": "episode_number",
+          "inherit_availability": null
         }
       },
       {
         "relationship_name": "genres",
         "config": {
-          "default_sort_field": "title_sort"
+          "default_sort_field": "title_sort",
+          "inherit_availability": null
         }
       },
       {
         "relationship_name": "images",
         "config": {
-          "default_sort_field": "file_name"
+          "default_sort_field": "file_name",
+          "inherit_availability": null
         }
       },
       {
         "relationship_name": "ratings",
         "config": {
-          "default_sort_field": "value"
+          "default_sort_field": "value",
+          "inherit_availability": null
         }
       },
       {
         "relationship_name": "tags",
         "config": {
-          "default_sort_field": "name_sort"
+          "default_sort_field": null,
+          "inherit_availability": true
         }
       },
       {
         "relationship_name": "themes",
         "config": {
-          "default_sort_field": "name_sort"
+          "default_sort_field": "name_sort",
+          "inherit_availability": null
         }
       }
     ]

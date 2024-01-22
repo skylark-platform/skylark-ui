@@ -9,6 +9,7 @@ import {
   waitFor,
   within,
 } from "src/__tests__/utils/test-utils";
+import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { ContentModel } from "./contentModel.component";
 
@@ -273,15 +274,18 @@ describe("Relationships", () => {
     });
 
     const imageSortField = withinImagesRow.getByRole("combobox");
+    const imageInheritAvailability = withinImagesRow.getByRole("checkbox");
 
+    // Change sort field
     expect(imageSortField).toHaveAttribute("data-value", "file_name");
-
-    // Change relationship config
     fireEvent.click(imageSortField);
     fireEvent.click(withinImagesRow.getByText("title"));
-
-    // Check the status
     expect(imageSortField).toHaveAttribute("data-value", "title");
+
+    // Change inherit availability
+    expect(imageInheritAvailability).not.toBeChecked();
+    fireEvent.click(imageInheritAvailability);
+    expect(imageInheritAvailability).toBeChecked();
 
     server.use(
       graphql.query(
@@ -291,33 +295,10 @@ describe("Relationships", () => {
             ctx.data({
               listRelationshipConfiguration: [
                 {
-                  relationship_name: "assets",
-                  config: {
-                    default_sort_field: "title_sort",
-                  },
-                },
-                {
-                  relationship_name: "call_to_actions",
-                  config: {
-                    default_sort_field: "uid",
-                  },
-                },
-                {
-                  relationship_name: "credits",
-                  config: {
-                    default_sort_field: "position",
-                  },
-                },
-                {
                   relationship_name: "images",
                   config: {
                     default_sort_field: "title",
-                  },
-                },
-                {
-                  relationship_name: "tags",
-                  config: {
-                    default_sort_field: "name_sort",
+                    inherit_availability: true,
                   },
                 },
               ],
@@ -335,7 +316,147 @@ describe("Relationships", () => {
       screen.getByText("Relationship config updated");
     });
 
-    // Revalidate the sort field hasn't changed
+    // Revalidate the relationship config to ensure it hasn't changed
     expect(imageSortField).toHaveAttribute("data-value", "title");
+    expect(imageInheritAvailability).toBeChecked();
+  });
+
+  test("saves relationship config but Skylark returns an unknown error", async () => {
+    const { withinRelationshipEditor } = await renderAndWaitForEditorToLoad();
+
+    const imagesRow = withinRelationshipEditor.getByTestId(
+      "relationships-editor-row-images",
+    );
+    expect(imagesRow).toBeInTheDocument();
+
+    const withinImagesRow = within(imagesRow);
+
+    await waitFor(() => {
+      expect(withinImagesRow.getByRole("combobox")).toBeInTheDocument();
+    });
+
+    // Change sort field
+    const imageSortField = withinImagesRow.getByRole("combobox");
+    expect(imageSortField).toHaveAttribute("data-value", "file_name");
+    fireEvent.click(imageSortField);
+    fireEvent.click(withinImagesRow.getByText("title"));
+    expect(imageSortField).toHaveAttribute("data-value", "title");
+
+    server.use(
+      graphql.mutation(
+        wrapQueryName("UPDATE_RELATIONSHIP_CONFIG_SkylarkSet"),
+        (req, res, ctx) => {
+          return res(
+            ctx.errors([
+              {
+                message: "random error",
+                locations: [
+                  {
+                    line: 2,
+                    column: 3,
+                  },
+                ],
+                path: ["SkylarkSet_assets"],
+                data: null,
+                errorType: "InvalidInput",
+                errorInfo: null,
+              },
+            ]),
+          );
+        },
+      ),
+    );
+
+    // Save
+    fireEvent.click(screen.getByText("Save"));
+
+    // Check error toasts
+    await waitFor(() => {
+      expect(
+        screen.getByText("Relationship config update failed"),
+      ).toBeInTheDocument();
+    });
+    expect(
+      screen.getByText("Error when updating the Relationship config."),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Please try again later.")).toBeInTheDocument();
+    expect(screen.getByText("- random error")).toBeInTheDocument();
+  });
+
+  test("saves relationship config but Skylark returns an inherit availability error", async () => {
+    const { withinRelationshipEditor } = await renderAndWaitForEditorToLoad();
+
+    const imagesRow = withinRelationshipEditor.getByTestId(
+      "relationships-editor-row-images",
+    );
+    expect(imagesRow).toBeInTheDocument();
+
+    const withinImagesRow = within(imagesRow);
+
+    await waitFor(() => {
+      expect(withinImagesRow.getByRole("combobox")).toBeInTheDocument();
+    });
+
+    // Change sort field
+    const imageSortField = withinImagesRow.getByRole("combobox");
+    expect(imageSortField).toHaveAttribute("data-value", "file_name");
+    fireEvent.click(imageSortField);
+    fireEvent.click(withinImagesRow.getByText("title"));
+    expect(imageSortField).toHaveAttribute("data-value", "title");
+
+    server.use(
+      graphql.mutation(
+        wrapQueryName("UPDATE_RELATIONSHIP_CONFIG_SkylarkSet"),
+        (req, res, ctx) => {
+          return res(
+            ctx.errors([
+              {
+                message: "Reverse relationship already inherits",
+                locations: [
+                  {
+                    line: 2,
+                    column: 3,
+                  },
+                ],
+                path: ["SkylarkSet_assets"],
+                data: null,
+                errorType: "InvalidInput",
+                errorInfo: null,
+              },
+              {
+                message: "Reverse relationship already inherits",
+                locations: [
+                  {
+                    line: 2,
+                    column: 3,
+                  },
+                ],
+                path: ["SkylarkSet_brands"],
+                data: null,
+                errorType: "InvalidInput",
+                errorInfo: null,
+              },
+            ]),
+          );
+        },
+      ),
+    );
+
+    // Save
+    fireEvent.click(screen.getByText("Save"));
+
+    // Check error toasts
+    await waitFor(() => {
+      expect(
+        screen.getByText("Relationship config update failed"),
+      ).toBeInTheDocument();
+    });
+    expect(
+      screen.getByText(
+        'Cannot enable "inherit availability" on the following relationships as it is enabled on the reverse relationship.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText("- assets")).toBeInTheDocument();
+    expect(screen.getByText("- brands")).toBeInTheDocument();
   });
 });

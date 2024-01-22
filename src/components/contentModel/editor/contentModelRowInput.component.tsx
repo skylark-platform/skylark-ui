@@ -1,12 +1,11 @@
 import clsx from "clsx";
 import { useDragControls, Reorder } from "framer-motion";
-import { ReactNode } from "react";
 import { FiInfo } from "react-icons/fi";
 
 import { Checkbox } from "src/components/inputs/checkbox";
 import { Select } from "src/components/inputs/select";
 import { EnumSelect } from "src/components/inputs/select/enumSelect/enumSelect.component";
-import { Tooltip } from "src/components/tooltip/tooltip.component";
+import { InfoTooltip, Tooltip } from "src/components/tooltip/tooltip.component";
 import { GQLScalars } from "src/interfaces/graphql/introspection";
 import {
   SkylarkObjectConfigFieldType,
@@ -42,14 +41,6 @@ const objectConfigFieldTypes: SkylarkObjectConfigFieldType[] = [
   "TIMEZONE",
   "COLOURPICKER",
 ];
-
-const InfoTooltip = ({ tooltip }: { tooltip: ReactNode }) => (
-  <Tooltip tooltip={tooltip}>
-    <div className="ml-1">
-      <FiInfo className="text-base" />
-    </div>
-  </Tooltip>
-);
 
 const FieldNameTooltip = ({ field }: { field: string }) => {
   let tooltip = null;
@@ -96,10 +87,8 @@ const FieldNameTooltip = ({ field }: { field: string }) => {
 export const ObjectTypeFieldInput = ({
   fieldWithConfig,
   objectMeta,
-  isPrimaryField,
   disableReorder,
   onChange,
-  onPrimaryFieldCheckedChange,
 }: {
   fieldWithConfig: InputFieldWithFieldConfig;
   objectMeta: SkylarkObjectMeta;

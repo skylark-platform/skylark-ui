@@ -143,7 +143,7 @@ export const useGetObjectAvailability = (
     queryKey,
     initialPageParam: "",
     getNextPageParam: (lastPage): string | undefined =>
-      lastPage.getObjectAvailability.availability?.next_token || undefined,
+      lastPage.getObjectAvailability?.availability?.next_token || undefined,
   });
 
   const availability: ParsedSkylarkObjectAvailabilityObject[] | undefined =
@@ -151,7 +151,7 @@ export const useGetObjectAvailability = (
       () =>
         data?.pages
           ?.flatMap(
-            (page) => page.getObjectAvailability.availability?.objects || [],
+            (page) => page.getObjectAvailability?.availability?.objects || [],
           )
           .map((object): ParsedSkylarkObjectAvailabilityObject => {
             return {

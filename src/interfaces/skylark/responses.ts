@@ -115,8 +115,8 @@ export interface GQLSkylarkGetObjectAvailabilityResponse {
     availability: {
       next_token: NextToken;
       objects: SkylarkGraphQLAvailability[];
-    } | null;
-  };
+    };
+  } | null;
 }
 
 export interface GQLSkylarkGetObjectContentOfResponse {
@@ -180,17 +180,23 @@ export interface GQLSkylarkGetAvailabilityDimensions {
   getAvailability: SkylarkGraphQLAvailability;
 }
 
+export interface GQLObjectTypeRelationshipConfig {
+  default_sort_field: string | null;
+  inherit_availability: boolean;
+}
+
 export interface GQLSkylarkListObjectTypeRelationshipConfiguration {
   listRelationshipConfiguration: {
     relationship_name: string;
-    config: {
-      default_sort_field: string;
-      inherit_availability: boolean;
-    };
+    config: GQLObjectTypeRelationshipConfig;
   }[];
 }
 
 export type GQLSkylarkListAllObjectTypesRelationshipConfiguration = Record<
   string,
-  GQLSkylarkListObjectTypeRelationshipConfiguration["listRelationshipConfiguration"]
+  | {
+      relationship_name: string;
+      config: GQLObjectTypeRelationshipConfig;
+    }[]
+  | null
 >;

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
+import { useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import {
@@ -15,7 +16,6 @@ import { createGetAllObjectsRelationshipConfigurationQuery } from "src/lib/graph
 import { LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION } from "src/lib/graphql/skylark/queries";
 
 import { useSkylarkObjectTypes } from "./useSkylarkObjectTypes";
-import { useSkylarkSchemaIntrospection } from "./useSkylarkSchemaIntrospection";
 
 const mapGQLRelationshipConfigToParsed = ({
   relationship_name,
@@ -39,8 +39,8 @@ const select = (
       return {
         ...prev,
         [relationship_name]: {
-          defaultSortField: config.default_sort_field,
-          inheritAvailability: config.inherit_availability,
+          defaultSortField: config.default_sort_field || null,
+          inheritAvailability: config.inherit_availability || false,
         },
       };
     },
@@ -54,9 +54,9 @@ const allObjectTypesSelect = (
     (prev, [objectType, relationshipConfiguration]) => {
       return {
         ...prev,
-        [objectType]: relationshipConfiguration.map(
-          mapGQLRelationshipConfigToParsed,
-        ),
+        [objectType]:
+          relationshipConfiguration?.map(mapGQLRelationshipConfigToParsed) ||
+          [],
       };
     },
     {},
@@ -90,13 +90,6 @@ export const useObjectTypeRelationshipConfiguration = (
 };
 
 export const useAllObjectTypesRelationshipConfiguration = () => {
-  const { data: introspection } = useSkylarkSchemaIntrospection();
-
-  // TODO remove this enabled check when the backend PR is merged to production
-  const enabled = !!introspection?.__schema.types.find(
-    (type) => type.name === "RelationshipConfigList",
-  );
-
   const { objectTypes } = useSkylarkObjectTypes(false);
 
   const query = createGetAllObjectsRelationshipConfigurationQuery(
@@ -105,20 +98,26 @@ export const useAllObjectTypesRelationshipConfiguration = () => {
     ),
   );
 
-  const { data, isLoading } = useQuery<
+  const { data, isLoading, error } = useQuery<
     GQLSkylarkListAllObjectTypesRelationshipConfiguration,
     GQLSkylarkErrorResponse<GQLSkylarkListAllObjectTypesRelationshipConfiguration>,
     Record<string, ParsedSkylarkObjectTypeRelationshipConfiguration>
   >({
-    enabled: enabled && query !== null,
+    enabled: query !== null,
     queryKey: [QueryKeys.ObjectTypeRelationshipConfig, query],
     queryFn: async () => skylarkRequest("query", query as DocumentNode),
     select: allObjectTypesSelect,
   });
 
+  // TODO when an Object Type not having a Config doesn't throw an error, remove this error handling
+  const allObjectTypesRelationshipConfig = useMemo(
+    () =>
+      error?.response.data ? allObjectTypesSelect(error.response.data) : data,
+    [data, error?.response.data],
+  );
+
   return {
-    objectTypeRelationshipConfig: data,
+    allObjectTypesRelationshipConfig,
     isLoading,
-    enabled,
   };
 };
