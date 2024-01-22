@@ -424,7 +424,7 @@ const PanelAvailabilityReadonlyCard = ({
   return (
     <m.div
       key={`availability-card-inner-${availability.uid}`}
-      className={clsx("flex items-start z-10 bg-white mx-8")}
+      className={clsx("flex items-start z-10 bg-white mx-4 md:mx-8")}
       layout
       initial={{ opacity: 1 }}
       exit={{ opacity: 1 }}
@@ -456,7 +456,7 @@ const PanelAvailabilityReadonlyCard = ({
             status === AvailabilityStatus.Future &&
             "border-l-warning",
           !availability.active && "opacity-50",
-          isActive ? "px-8" : "px-4 max-w-xl",
+          isActive ? "px-4 md:px-8" : "px-2 md:px-4 max-w-xl",
         )}
         layout
         transition={{ duration: 0.05 }}
@@ -464,7 +464,7 @@ const PanelAvailabilityReadonlyCard = ({
         <m.div
           className="-left-7 absolute"
           animate={isActive ? { left: 8 } : { left: -28 }}
-          transition={{ ease: "linear", duration: 0.1 }}
+          transition={{ ease: "linear", duration: 0.05 }}
         >
           <PanelButton
             type={isActive ? "x" : "maximise"}
