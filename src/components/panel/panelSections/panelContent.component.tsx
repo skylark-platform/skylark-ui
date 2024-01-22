@@ -129,7 +129,7 @@ export const PanelContent = ({
 
   const onReorder = (updated: AddedSkylarkObjectContentObject[]) =>
     setContentObjects({
-      original: data,
+      original: data || null,
       updated,
     });
 

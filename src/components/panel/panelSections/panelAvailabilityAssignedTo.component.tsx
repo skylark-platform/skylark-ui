@@ -7,17 +7,25 @@ import {
 } from "src/components/panel/panel.lib";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import { useGetAvailabilityAssignedTo } from "src/hooks/availability/useAvailabilityAssignedTo";
+import {
+  AvailabilityStatus,
+  ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
+} from "src/interfaces/skylark";
+import { parseSkylarkObject } from "src/lib/skylark/parsers";
 import { formatObjectField } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
 interface PanelAvailabilityAssignedToProps {
+  uid: string;
   isPage?: boolean;
   inEditMode: boolean;
   showDropZone?: boolean;
   droppedObjects?: ParsedSkylarkObject[];
   modifiedAvailabilityAssignedTo: { added: ParsedSkylarkObject[] } | null;
+  setPanelObject: (o: SkylarkObjectIdentifier) => void;
   setModifiedAvailabilityAssignedTo: (
     args: {
       added: ParsedSkylarkObject[];
@@ -27,13 +35,17 @@ interface PanelAvailabilityAssignedToProps {
 }
 
 export const PanelAvailabilityAssignedTo = ({
+  uid,
   isPage,
   inEditMode,
   droppedObjects,
   showDropZone,
   modifiedAvailabilityAssignedTo,
+  setPanelObject,
   setModifiedAvailabilityAssignedTo,
 }: PanelAvailabilityAssignedToProps) => {
+  const { data } = useGetAvailabilityAssignedTo(uid);
+
   useEffect(() => {
     if (droppedObjects && droppedObjects.length > 0) {
       const existingUids = modifiedAvailabilityAssignedTo?.added.map(
@@ -89,29 +101,39 @@ export const PanelAvailabilityAssignedTo = ({
             Availability.
           </p>
         )}
-      </div>
-      {inEditMode &&
-        modifiedAvailabilityAssignedTo?.added.map((obj) => (
-          <ObjectIdentifierCard
-            key={`assigned-to-card-${obj.uid}`}
-            object={obj}
-            disableDeleteClick={!inEditMode}
-            disableForwardClick={inEditMode}
-            onDeleteClick={() =>
-              setModifiedAvailabilityAssignedTo({
-                added: modifiedAvailabilityAssignedTo.added.filter(
-                  ({ uid }) => uid !== obj.uid,
-                ),
-              })
-            }
-          >
-            <span
-              className={
-                "flex h-4 w-4 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
-              }
+        {data?.map(({ object }) => {
+          return (
+            <ObjectIdentifierCard
+              key={object.uid}
+              object={object}
+              onForwardClick={setPanelObject}
+              hideAvailabilityStatus
+              disableForwardClick={inEditMode}
             />
-          </ObjectIdentifierCard>
-        ))}
+          );
+        })}
+      </div>
+      {modifiedAvailabilityAssignedTo?.added.map((obj) => (
+        <ObjectIdentifierCard
+          key={`assigned-to-card-${obj.uid}`}
+          object={obj}
+          disableDeleteClick={!inEditMode}
+          disableForwardClick={inEditMode}
+          onDeleteClick={() =>
+            setModifiedAvailabilityAssignedTo({
+              added: modifiedAvailabilityAssignedTo.added.filter(
+                ({ uid }) => uid !== obj.uid,
+              ),
+            })
+          }
+        >
+          <span
+            className={
+              "flex h-4 w-4 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
+            }
+          />
+        </ObjectIdentifierCard>
+      ))}
     </PanelSectionLayout>
   );
 };

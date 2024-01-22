@@ -1,6 +1,7 @@
 import {
   NextToken,
   SkylarkGraphQLAvailability,
+  SkylarkGraphQLAvailabilityAssignedTo,
   SkylarkGraphQLAvailabilityDimension,
   SkylarkGraphQLAvailabilityDimensionValue,
   SkylarkGraphQLObject,
@@ -200,3 +201,9 @@ export type GQLSkylarkListAllObjectTypesRelationshipConfiguration = Record<
     }[]
   | null
 >;
+
+export interface GQLSkylarkGetAvailabilityAssignedResponse {
+  getAvailability: {
+    assigned_to: SkylarkGraphQLAvailabilityAssignedTo | null;
+  };
+}

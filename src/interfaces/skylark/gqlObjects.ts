@@ -129,3 +129,12 @@ export type SkylarkGraphQLObject = {
     | SkylarkGraphQLObjectMeta
     | undefined;
 };
+
+export interface SkylarkGraphQLAvailabilityAssignedTo {
+  next_token?: NextToken;
+  objects: {
+    inherited: SkylarkGraphQLAvailability["inherited"];
+    inheritance_source: SkylarkGraphQLAvailability["inheritance_source"];
+    object: SkylarkGraphQLObject;
+  }[];
+}

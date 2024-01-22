@@ -17,7 +17,7 @@ import { formatObjectField } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
-interface PanelRelationshipsProps {
+interface PanelContentOfProps {
   isPage?: boolean;
   objectType: SkylarkObjectType;
   uid: string;
@@ -55,7 +55,7 @@ export const PanelContentOf = ({
   inEditMode,
   language,
   setPanelObject,
-}: PanelRelationshipsProps) => {
+}: PanelContentOfProps) => {
   const { objectTypesWithConfig: setObjectTypes } =
     useSkylarkSetObjectTypesWithConfig();
 

@@ -801,10 +801,12 @@ export const Panel = ({
           {selectedTab === PanelTab.AvailabilityAssignedTo && (
             <PanelAvailabilityAssignedTo
               isPage={isPage}
+              uid={uid}
               inEditMode={inEditMode}
               showDropZone={isDraggedObject}
               modifiedAvailabilityAssignedTo={modifiedAvailabilityAssignedTo}
               droppedObjects={droppedObjects}
+              setPanelObject={setPanelObject}
               setModifiedAvailabilityAssignedTo={
                 handleAvailabilityAssignedToModified
               }

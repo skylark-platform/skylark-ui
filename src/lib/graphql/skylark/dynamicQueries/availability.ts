@@ -1,9 +1,18 @@
 import gql from "graphql-tag";
+import { EnumType, VariableType } from "json-to-graphql-query";
 
-import { SkylarkGraphQLAvailabilityDimension } from "src/interfaces/skylark";
+import {
+  SkylarkGraphQLAvailabilityDimension,
+  SkylarkObjectMeta,
+} from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 
-import { wrappedJsonQuery } from "./utils";
+import {
+  generateContentsToReturn,
+  generateFieldsToReturn,
+  generateVariablesAndArgs,
+  wrappedJsonQuery,
+} from "./utils";
 
 interface DimensionWithNextToken {
   dimension: SkylarkGraphQLAvailabilityDimension;
@@ -75,6 +84,62 @@ export const createGetAvailabilityDimensionValues = (
   };
 
   const graphQLQuery = wrappedJsonQuery(query, { pretty: true });
+
+  return gql(graphQLQuery);
+};
+
+export const createGetAvailabilityAssignedTo = (
+  objectsToRequest: SkylarkObjectMeta[] | null,
+) => {
+  if (!objectsToRequest) {
+    return null;
+  }
+
+  const query = {
+    query: {
+      __name: "GET_AVAILABILITY_ASSIGNED_TO",
+      __variables: {
+        uid: "String!",
+        nextToken: "String",
+      },
+      getAvailability: {
+        __args: {
+          uid: new VariableType("uid"),
+        },
+        __typename: true,
+        assigned_to: {
+          __args: {
+            limit: 100,
+            next_token: new VariableType("nextToken"),
+          },
+          next_token: true,
+          objects: {
+            inherited: true,
+            inheritance_source: true,
+            object: {
+              uid: true,
+              __on: objectsToRequest.map((object) => {
+                const common = generateVariablesAndArgs(object.name, "Query");
+                return {
+                  __typeName: object.name,
+                  __typename: true, // To remove the alias later
+                  ...generateFieldsToReturn(
+                    object.fields,
+                    object.name,
+                    true,
+                    `__${object.name}__`,
+                  ),
+                  ...common.fields,
+                };
+              }),
+            },
+          },
+        },
+      },
+    },
+  };
+
+  const graphQLQuery = wrappedJsonQuery(query);
 
   return gql(graphQLQuery);
 };
