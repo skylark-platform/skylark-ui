@@ -72,8 +72,8 @@ export const PanelSectionLayoutComponent = (
         className={clsx(
           "relative h-full",
           !withoutPadding && "pb-32 md:pb-56",
-          !withoutPadding && withStickyHeaders && "px-4 md:px-8",
-          !withoutPadding && !withStickyHeaders && "p-4 md:p-8",
+          !withoutPadding && withStickyHeaders && "px-6 md:px-8",
+          !withoutPadding && !withStickyHeaders && "p-6 md:p-8",
         )}
       >
         {children}
