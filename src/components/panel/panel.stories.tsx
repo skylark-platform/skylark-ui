@@ -180,6 +180,22 @@ Relationships.args = {
   },
   tab: PanelTab.Relationships,
 };
+export const RelationshipsExpanded = Template.bind({});
+RelationshipsExpanded.parameters = Default.parameters;
+RelationshipsExpanded.args = {
+  ...Default.args,
+  object: {
+    objectType: "Season",
+    uid: GQLSkylarkGetSeasonQueryFixture.data.getObject.uid,
+    language: "",
+  },
+  tab: PanelTab.Relationships,
+};
+RelationshipsExpanded.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+  const openButton = canvas.getByLabelText("expand episodes relationship");
+  await userEvent.click(openButton);
+};
 
 export const Availability = Template.bind({});
 Availability.parameters = Default.parameters;
@@ -188,13 +204,13 @@ Availability.args = {
   tab: PanelTab.Availability,
 };
 
-export const AvailabilityInheritance = Template.bind({});
-AvailabilityInheritance.parameters = Default.parameters;
-AvailabilityInheritance.args = {
+export const AvailabilityActiveObject = Template.bind({});
+AvailabilityActiveObject.parameters = Default.parameters;
+AvailabilityActiveObject.args = {
   ...Default.args,
   tab: PanelTab.Availability,
 };
-AvailabilityInheritance.play = async ({ canvasElement }) => {
+AvailabilityActiveObject.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
   const openButton = canvas.getByLabelText(
     "expand availability: Active Next Sunday @ 9PM, Europe/North America",
@@ -202,13 +218,13 @@ AvailabilityInheritance.play = async ({ canvasElement }) => {
   await userEvent.click(openButton);
 };
 
-export const AvailabilityInheritanceInheritedBy = Template.bind({});
-AvailabilityInheritanceInheritedBy.parameters = Default.parameters;
-AvailabilityInheritanceInheritedBy.args = {
+export const AvailabilityActiveObjectInheritedBy = Template.bind({});
+AvailabilityActiveObjectInheritedBy.parameters = Default.parameters;
+AvailabilityActiveObjectInheritedBy.args = {
   ...Default.args,
   tab: PanelTab.Availability,
 };
-AvailabilityInheritanceInheritedBy.play = async ({ canvasElement }) => {
+AvailabilityActiveObjectInheritedBy.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
   await userEvent.click(
     canvas.getByLabelText(
