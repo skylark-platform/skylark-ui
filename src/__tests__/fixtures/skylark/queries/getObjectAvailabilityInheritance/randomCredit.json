@@ -1,0 +1,122 @@
+{
+  "data": {
+    "getObjectAvailabilityInheritance": {
+      "availability": {
+        "objects": [
+          {
+            "uid": "01HMS2GYT4ZKAQR5X7YKE65KS9",
+            "inherited": true,
+            "inheritance_source": true,
+            "inherited_from": {
+              "next_token": null,
+              "objects": [
+                {
+                  "__typename": "Movie",
+                  "_meta": {
+                    "available_languages": ["en-GB", "pt-PT"],
+                    "language_data": {
+                      "language": "en-GB",
+                      "version": 2
+                    },
+                    "global_data": {
+                      "version": 3
+                    },
+                    "modified": {
+                      "date": "2024-01-22T17:16:34.519149+00:00"
+                    },
+                    "created": {
+                      "date": "2024-01-22T17:13:53.391152+00:00"
+                    },
+                    "published": true
+                  },
+                  "uid": "01HMS2M3FPSAGC929E134NMVGB",
+                  "external_id": "recLttFVfEWZpSD63",
+                  "__Movie__slug": "kill-bill-vol-1",
+                  "__Movie__synopsis": "After awakening from a four-year coma, a former assassin wreaks vengeance on the team of assassins who betrayed her.",
+                  "__Movie__synopsis_short": null,
+                  "__Movie__title": "Kill Bill: Vol. 1",
+                  "__Movie__title_short": "Kill Bill: Vol. 1",
+                  "__Movie__internal_title": "Kill Bill: Vol. 1",
+                  "__Movie__movie_number": null,
+                  "__Movie__release_date": "2003-10-17",
+                  "__Movie__title_sort": "killbill:vol1",
+                  "__Movie__year_of_release": null
+                },
+                {
+                  "__typename": "Movie",
+                  "_meta": {
+                    "available_languages": ["en-GB", "pt-PT"],
+                    "language_data": {
+                      "language": "en-GB",
+                      "version": 2
+                    },
+                    "global_data": {
+                      "version": 3
+                    },
+                    "modified": {
+                      "date": "2024-01-22T17:16:36.116856+00:00"
+                    },
+                    "created": {
+                      "date": "2024-01-22T17:13:56.837711+00:00"
+                    },
+                    "published": true
+                  },
+                  "uid": "01HMS2M6VCJGV59XFCJGK2TN6S",
+                  "external_id": "rectREMnO8zC2W8q5",
+                  "__Movie__slug": "kill-bill-vol-2",
+                  "__Movie__synopsis": "The Bride continues her quest of vengeance against her former boss and lover Bill, the reclusive bouncer Budd, and the treacherous, one-eyed Elle.",
+                  "__Movie__synopsis_short": null,
+                  "__Movie__title": "Kill Bill: Vol. 2",
+                  "__Movie__title_short": "Kill Bill: Vol. 2",
+                  "__Movie__internal_title": "Kill Bill: Vol. 2",
+                  "__Movie__movie_number": null,
+                  "__Movie__release_date": "2004-04-20",
+                  "__Movie__title_sort": "killbill:vol2",
+                  "__Movie__year_of_release": null
+                }
+              ]
+            },
+            "inherited_by": {
+              "next_token": null,
+              "objects": [
+                {
+                  "__typename": "Person",
+                  "_meta": {
+                    "available_languages": ["en-GB"],
+                    "language_data": {
+                      "language": "en-GB",
+                      "version": 2
+                    },
+                    "global_data": {
+                      "version": 2
+                    },
+                    "modified": {
+                      "date": "2024-01-22T17:16:08.085860+00:00"
+                    },
+                    "created": {
+                      "date": "2024-01-22T17:13:06.928693+00:00"
+                    },
+                    "published": true
+                  },
+                  "uid": "01HMS2JP3PBJVKS4VFX5SFKX4K",
+                  "external_id": "recTIN33Ztdd9w0w0",
+                  "__Person__slug": "michael-madsen",
+                  "__Person__abbreviation": null,
+                  "__Person__alias": null,
+                  "__Person__bio_long": null,
+                  "__Person__bio_medium": null,
+                  "__Person__bio_short": null,
+                  "__Person__genre": null,
+                  "__Person__name": "Michael Madsen",
+                  "__Person__date_of_birth": null,
+                  "__Person__name_sort": "michaelmadsen",
+                  "__Person__place_of_birth": null
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

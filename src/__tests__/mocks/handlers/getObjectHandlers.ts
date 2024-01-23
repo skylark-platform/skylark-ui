@@ -16,6 +16,7 @@ import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixt
 import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
 import GQLSkylarkGetAssetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/skylarkAsset.json";
 import GQLSkylarkGetMovieQueryAvailabilityFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailability/fantasticMrFox_All_Availabilities.json";
+import GQLSkylarkGetAvailabilityInheritanceQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectAvailabilityInheritance/randomCredit.json";
 import GQLSkylarkGetHomepageSetContentQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectContent/homepage.json";
 import GQLSkylarkGetMovieContentOfFixture from "src/__tests__/fixtures/skylark/queries/getObjectContentOf/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetAvailabilityDimensionsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectDimensions/allDevicesAllCustomersAvailability.json";
@@ -24,6 +25,7 @@ import GQLSkylarkGetMovieRelationshipsQueryFixture from "src/__tests__/fixtures/
 import GQLSkylarkGetSeasonRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/gots04relationships.json";
 import GQLSkylarkGetObjectsConfigFixture from "src/__tests__/fixtures/skylark/queries/getObjectsConfig/allObjectsConfig.json";
 import {
+  createGetObjectAvailabilityInheritanceQueryName,
   createGetObjectAvailabilityQueryName,
   createGetObjectContentOfQueryName,
   createGetObjectContentQueryName,
@@ -153,6 +155,17 @@ export const getObjectAvailabilityHandlers = [
     movieAvailabilityHandler,
   ),
 );
+
+export const getObjectAvailabilityInheritanceHandlers = [
+  graphql.query(
+    wrapQueryName(createGetObjectAvailabilityInheritanceQueryName("Movie")),
+    (_, res, ctx) => {
+      return res(
+        ctx.data(GQLSkylarkGetAvailabilityInheritanceQueryFixture.data),
+      );
+    },
+  ),
+];
 
 export const getObjectAvailabilityDimensionHandlers = [
   graphql.query(wrapQueryName("GET_AVAILABILITY_DIMENSIONS"), (_, res, ctx) => {
