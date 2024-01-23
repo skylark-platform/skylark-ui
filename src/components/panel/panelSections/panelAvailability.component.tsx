@@ -544,6 +544,9 @@ const PanelAvailabilityReadonlyCard = ({
         >
           <PanelButton
             type={isActive ? "x" : "maximise"}
+            aria-label={`${isActive ? "close" : "expand"} availability: ${
+              availability.title || availability.slug || availability.uid
+            }`}
             className="mr-1"
             onClick={() =>
               setActiveAvailability(
@@ -615,6 +618,7 @@ const PanelAvailabilityReadonlyCard = ({
                   tabId: tab.id as TabID,
                 })
               }
+              fillWidth
               selectedTab={tabId || activeAvailabilityTabs[0].id}
             />
           </m.div>

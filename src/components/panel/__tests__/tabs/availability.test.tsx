@@ -363,6 +363,47 @@ describe("availability view", () => {
     });
   });
 
+  test("makes a relationship active and then closes it", async () => {
+    render(
+      <Panel
+        {...defaultProps}
+        object={movieObject}
+        tab={PanelTab.Availability}
+      />,
+    );
+
+    const title =
+      GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+        .title;
+
+    expect(screen.queryAllByText(title)).toHaveLength(0);
+
+    const numberOfAvailabilityInFixture =
+      GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
+        .availability.objects.length;
+    await waitFor(() =>
+      expect(screen.queryAllByText("Time Window")).toHaveLength(
+        numberOfAvailabilityInFixture,
+      ),
+    );
+
+    const expandButton = screen.getByLabelText(`expand availability: ${title}`);
+    fireEvent.click(expandButton);
+
+    await waitFor(() =>
+      expect(screen.getByText("Inherited by")).toBeInTheDocument(),
+    );
+    expect(screen.getByText("Inherited from")).toBeInTheDocument();
+
+    const closeButton = screen.getByLabelText(`close availability: ${title}`);
+    fireEvent.click(closeButton);
+
+    await waitFor(() =>
+      expect(screen.queryByText("Inherited by")).not.toBeInTheDocument(),
+    );
+    expect(screen.queryByText("Inherited from")).not.toBeInTheDocument();
+  });
+
   describe("availability view - edit", () => {
     test("uses the object identifier card in edit mode", async () => {
       render(
