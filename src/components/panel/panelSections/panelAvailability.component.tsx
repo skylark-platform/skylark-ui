@@ -920,7 +920,10 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
       ]}
       isPage={isPage}
     >
-      <div data-testid="panel-availability" className="h-full">
+      <div
+        data-testid="panel-availability"
+        className={clsx(activeAvailability && "h-full")}
+      >
         <AnimatePresence initial={false} mode="popLayout">
           {!activeAvailability && (
             <m.div
