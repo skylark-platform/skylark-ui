@@ -78,17 +78,19 @@ export interface SkylarkGraphQLAvailability {
   active: boolean | null;
   inherited: boolean | null;
   inheritance_source: boolean | null;
+  inherited_by?: SkylarkGraphQLObjectList;
+  inherited_from?: SkylarkGraphQLObjectList;
   dimensions: {
     next_token: NextToken;
     objects: SkylarkGraphQLAvailabilityDimensionWithValues[];
   };
 }
 
-export interface SkylarkGraphQLObjectRelationship {
-  __typename: string;
-  next_token?: NextToken;
-  objects: object[]; // TODO make this a Record like SkylarkGraphQLObject
-}
+// export interface SkylarkGraphQLObjectRelationship {
+//   __typename: string;
+//   next_token?: NextToken;
+//   objects: object[]; // TODO make this a Record like SkylarkGraphQLObject
+// }
 
 export interface SkylarkGraphQLObjectImage {
   _meta?: SkylarkGraphQLObjectMeta;
@@ -117,15 +119,21 @@ export type SkylarkGraphQLObject = {
   [SkylarkSystemField.Slug]?: string | null;
   [SkylarkSystemField.DataSourceID]?: string | null;
   [SkylarkSystemField.DataSourceFields]?: string | string[] | null;
-  availability?: SkylarkGraphQLObjectRelationship;
+  availability?: SkylarkGraphQLObjectList;
   _config?: SkylarkGraphQLObjectConfig;
   _meta?: SkylarkGraphQLObjectMeta;
   content?: SkylarkGraphQLObjectContent;
   [key: string]:
     | SkylarkObjectMetadataField
-    | SkylarkGraphQLObjectRelationship
+    | SkylarkGraphQLObjectList
     | SkylarkGraphQLObjectContent
     | SkylarkGraphQLObjectConfig
     | SkylarkGraphQLObjectMeta
     | undefined;
+};
+
+export type SkylarkGraphQLObjectList = {
+  __typename: string;
+  next_token: NextToken;
+  objects: SkylarkGraphQLObject[];
 };

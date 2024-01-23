@@ -15,6 +15,9 @@ const defaultPanelTabState: PanelTabState = {
   [PanelTab.Relationships]: {
     active: null,
   },
+  [PanelTab.Availability]: {
+    active: null,
+  },
 };
 
 export default {

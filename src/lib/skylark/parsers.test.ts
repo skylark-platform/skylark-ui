@@ -398,6 +398,7 @@ describe("parseObjectContent", () => {
           },
           availability: {
             __typename: BuiltInSkylarkObjectType.Availability,
+            next_token: "",
             objects: [],
           },
         },
@@ -427,11 +428,15 @@ describe("parseObjectContent", () => {
             },
           },
           availability: {
-            __typename: BuiltInSkylarkObjectType.Availability,
+            __typename: "AvailabilityList",
+            next_token: "",
             objects: [
               {
+                __typename: BuiltInSkylarkObjectType.Availability,
                 start: "2000-10-10T12:00:00Z",
                 end: "2030-10-10T12:00:00Z",
+                uid: "avail-1",
+                external_id: "",
               },
             ],
           },

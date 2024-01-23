@@ -20,7 +20,6 @@ import {
   NormalizedObjectFieldType,
   NormalizedObjectField,
   ParsedSkylarkObjectAvailability,
-  SkylarkGraphQLObjectRelationship,
   SkylarkGraphQLObjectContent,
   ParsedSkylarkObjectContent,
   ParsedSkylarkObjectMetadata,
@@ -41,6 +40,7 @@ import {
   SkylarkSystemField,
   SkylarkGraphQLObjectMeta,
   AvailabilityStatus,
+  SkylarkGraphQLObjectList,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -184,9 +184,9 @@ export const parseObjectRelationships = (
   return relationships;
 };
 
-const parseObjectAvailability = (
-  unparsedObject?: SkylarkGraphQLObjectRelationship,
-): ParsedSkylarkObjectAvailability => {
+const parseObjectAvailability = (unparsedObject?: {
+  objects: object[];
+}): ParsedSkylarkObjectAvailability => {
   const objects = (unparsedObject?.objects ||
     []) as ParsedSkylarkObjectAvailability["objects"];
 
@@ -270,7 +270,7 @@ export const parseObjectConfig = (
 };
 
 export const parseObjectRelationship = <T>(
-  unparsedObject?: SkylarkGraphQLObjectRelationship,
+  unparsedObject?: SkylarkGraphQLObjectList,
 ): T[] => {
   if (!unparsedObject) {
     return [];
@@ -360,7 +360,7 @@ export const parseSkylarkObject = (
         const parsedImages =
           hasProperty(object, imageField) &&
           parseObjectRelationship<SkylarkGraphQLObjectImage>(
-            object[imageField] as SkylarkGraphQLObjectRelationship,
+            object[imageField] as SkylarkGraphQLObjectList,
           );
         return {
           relationshipName: imageField,

@@ -1,6 +1,9 @@
 import { useState, useCallback, useMemo } from "react";
 
-import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
+import {
+  ParsedSkylarkObjectAvailabilityObject,
+  SkylarkObjectIdentifier,
+} from "src/interfaces/skylark";
 
 export enum PanelTab {
   Metadata = "Metadata",
@@ -18,6 +21,12 @@ export interface PanelTabState {
   [PanelTab.Relationships]: {
     active: string | null;
   };
+  [PanelTab.Availability]: {
+    active: {
+      object: ParsedSkylarkObjectAvailabilityObject;
+      tabId: string;
+    } | null;
+  };
 }
 
 export interface PanelObject extends SkylarkObjectIdentifier {
@@ -27,6 +36,9 @@ export interface PanelObject extends SkylarkObjectIdentifier {
 
 const defaultPanelTabState: PanelTabState = {
   [PanelTab.Relationships]: {
+    active: null,
+  },
+  [PanelTab.Availability]: {
     active: null,
   },
 };
@@ -39,6 +51,10 @@ export const mergedPanelTabStates = (
     [PanelTab.Relationships]: {
       ...previousState[PanelTab.Relationships],
       ...newState?.[PanelTab.Relationships],
+    },
+    [PanelTab.Availability]: {
+      ...previousState[PanelTab.Availability],
+      ...newState?.[PanelTab.Availability],
     },
   };
 };

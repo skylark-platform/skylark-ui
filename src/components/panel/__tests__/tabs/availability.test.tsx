@@ -250,7 +250,10 @@ describe("availability view", () => {
       screen.getByTestId("panel-availability"),
     );
 
-    expect(withinAvailabilityPanel.getByText("Inherited")).toBeInTheDocument();
+    // First Inherited is a header
+    expect(
+      withinAvailabilityPanel.getAllByText("Inherited").length,
+    ).toBeGreaterThan(1);
     expect(withinAvailabilityPanel.queryByText("Enabled")).toBeInTheDocument();
     expect(
       withinAvailabilityPanel.queryByText("Disabled"),
@@ -310,7 +313,10 @@ describe("availability view", () => {
       screen.getByTestId("panel-availability"),
     );
 
-    expect(withinAvailabilityPanel.getByText("Inherited")).toBeInTheDocument();
+    // First Inherited is a header
+    expect(
+      withinAvailabilityPanel.getAllByText("Inherited").length,
+    ).toBeGreaterThan(1);
     expect(
       withinAvailabilityPanel.queryByText("Enabled"),
     ).not.toBeInTheDocument();

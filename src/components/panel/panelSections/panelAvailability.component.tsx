@@ -25,6 +25,8 @@ import { Tab, Tabs } from "src/components/tabs/tabs.component";
 import { InfoTooltip } from "src/components/tooltip/tooltip.component";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
+import { useGetObjectAvailabilityInheritance } from "src/hooks/objects/get/useGetObjectAvailabilityInheritance";
+import { PanelTab, PanelTabState } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   AvailabilityStatus,
@@ -67,9 +69,13 @@ interface PanelAvailabilityProps {
     },
     errors: HandleDropError[],
   ) => void;
+  tabState: PanelTabState[PanelTab.Availability];
+  updateActivePanelTabState: (s: Partial<PanelTabState>) => void;
 }
 
-const activeAvailabilityTabs: Tab[] = [
+type TabID = "overview" | "inheritedBy" | "inheritedFrom";
+
+const activeAvailabilityTabs: Tab<TabID>[] = [
   { id: "overview", name: "Overview" },
   { id: "inheritedBy", name: "Inherited by" },
   { id: "inheritedFrom", name: "Inherited from" },
@@ -220,7 +226,7 @@ const InheritanceSummary = ({
   objectType: SkylarkObjectType;
   availability: ParsedSkylarkObjectAvailabilityObject;
   setActiveAvailability: (
-    a: { object: ParsedSkylarkObjectAvailabilityObject; tab: Tab } | null,
+    a: { object: ParsedSkylarkObjectAvailabilityObject; tabId: TabID } | null,
   ) => void;
 }) => {
   const isEnabled = availability.active;
@@ -243,7 +249,7 @@ const InheritanceSummary = ({
                     onClick={() =>
                       setActiveAvailability({
                         object: availability,
-                        tab: activeAvailabilityTabs[2],
+                        tabId: activeAvailabilityTabs[2].id,
                       })
                     }
                   >
@@ -382,29 +388,83 @@ const PanelAvailabilityEditView = ({
   );
 };
 
+const PanelAvailabilityInheritanceObjects = ({
+  activeTabId,
+  objectType,
+  objectUid,
+  availabilityUid,
+  setPanelObject,
+}: {
+  activeTabId: TabID;
+  objectType: string;
+  objectUid: string;
+  availabilityUid: string;
+  setPanelObject: PanelAvailabilityProps["setPanelObject"];
+}) => {
+  const {
+    data: inheritanceData,
+    hasNextPage,
+    fetchNextPage,
+    isLoading,
+  } = useGetObjectAvailabilityInheritance({
+    objectType,
+    objectUid,
+    availabilityUid,
+  });
+
+  const objects =
+    activeTabId === "inheritedBy"
+      ? inheritanceData?.inheritedBy
+      : inheritanceData?.inheritedFrom;
+
+  return (
+    <div className="h-3/4 mt-2">
+      <div className="h-full overflow-y-scroll">
+        {objects?.map((obj) => (
+          <ObjectIdentifierCard
+            key={obj.uid}
+            object={obj}
+            onForwardClick={setPanelObject}
+            hideAvailabilityStatus
+          />
+        ))}
+        {!isLoading && (!objects || objects.length === 0) && (
+          <PanelEmptyDataText />
+        )}
+        <PanelLoading
+          loadMore={fetchNextPage}
+          isLoading={hasNextPage || isLoading}
+        />
+      </div>
+    </div>
+  );
+};
+
 const PanelAvailabilityReadonlyCard = ({
   isActive,
   now,
   availability,
-  tab,
+  tabId,
+  objectType,
+  objectUid,
   setActiveAvailability,
   setPanelObject,
-  objectType,
 }: {
   isActive?: boolean;
   availability: ParsedSkylarkObjectAvailabilityObject;
-  tab?: Tab;
+  tabId?: TabID;
   setActiveAvailability: (
     a: {
       object: ParsedSkylarkObjectAvailabilityObject;
-      tab: Tab;
+      tabId: TabID;
     } | null,
   ) => void;
   setPanelObject: PanelAvailabilityProps["setPanelObject"];
   now: Dayjs;
   objectType: string;
+  objectUid: string;
 }) => {
-  const activeTabId = (isActive && tab?.id) || "overview";
+  const activeTabId: TabID = (isActive && tabId) || "overview";
 
   const neverExpires = !!(availability.end && is2038Problem(availability.end));
   const status = getSingleAvailabilityStatus(
@@ -441,7 +501,7 @@ const PanelAvailabilityReadonlyCard = ({
   return (
     <m.div
       key={`availability-card-inner-${availability.uid}`}
-      className={clsx("flex items-start z-10 bg-white")}
+      className={clsx("flex items-start z-10 bg-white mb-2")}
       layout
       initial={{ opacity: 1 }}
       exit={{ opacity: 1 }}
@@ -489,7 +549,10 @@ const PanelAvailabilityReadonlyCard = ({
               setActiveAvailability(
                 isActive
                   ? null
-                  : { object: availability, tab: activeAvailabilityTabs[0] },
+                  : {
+                      object: availability,
+                      tabId: activeAvailabilityTabs[0].id,
+                    },
               )
             }
           />
@@ -547,9 +610,12 @@ const PanelAvailabilityReadonlyCard = ({
             <Tabs
               tabs={activeAvailabilityTabs}
               onChange={(tab) =>
-                setActiveAvailability({ object: availability, tab })
+                setActiveAvailability({
+                  object: availability,
+                  tabId: tab.id as TabID,
+                })
               }
-              selectedTab={tab?.id || activeAvailabilityTabs[0].id}
+              selectedTab={tabId || activeAvailabilityTabs[0].id}
             />
           </m.div>
         )}
@@ -576,6 +642,16 @@ const PanelAvailabilityReadonlyCard = ({
             />
           </>
         )}
+        {(activeTabId === "inheritedBy" || activeTabId === "inheritedFrom") && (
+          <PanelAvailabilityInheritanceObjects
+            key={activeTabId}
+            activeTabId={activeTabId}
+            objectType={objectType}
+            objectUid={objectUid}
+            availabilityUid={availability.uid}
+            setPanelObject={setPanelObject}
+          />
+        )}
       </m.div>
     </m.div>
   );
@@ -591,12 +667,12 @@ const PanelAvailabilityReadOnlyView = ({
 }: {
   activeAvailability: {
     object: ParsedSkylarkObjectAvailabilityObject;
-    tab: Tab;
+    tabId: TabID;
   } | null;
   assignedAvails: ParsedSkylarkObjectAvailabilityObject[];
   inheritedAvails: ParsedSkylarkObjectAvailabilityObject[];
   setActiveAvailability: (
-    a: { object: ParsedSkylarkObjectAvailabilityObject; tab: Tab } | null,
+    a: { object: ParsedSkylarkObjectAvailabilityObject; tabId: TabID } | null,
   ) => void;
   now: Dayjs;
 } & PanelAvailabilityProps) => {
@@ -617,7 +693,8 @@ const PanelAvailabilityReadOnlyView = ({
           setPanelObject={props.setPanelObject}
           now={now}
           objectType={props.objectType}
-          tab={activeAvailability?.tab}
+          tabId={activeAvailability?.tabId}
+          objectUid={props.uid}
         />
       ))}
       {!activeAvailability && (
@@ -639,7 +716,8 @@ const PanelAvailabilityReadOnlyView = ({
           setPanelObject={props.setPanelObject}
           now={now}
           objectType={props.objectType}
-          tab={activeAvailability?.tab}
+          objectUid={props.uid}
+          tabId={activeAvailability?.tabId}
         />
       ))}
     </>
@@ -647,11 +725,6 @@ const PanelAvailabilityReadOnlyView = ({
 };
 
 export const PanelAvailability = (props: PanelAvailabilityProps) => {
-  const [activeAvailability, setActiveAvailability] = useState<{
-    object: ParsedSkylarkObjectAvailabilityObject;
-    tab: Tab;
-  } | null>(null);
-
   const {
     isPage,
     objectType,
@@ -661,8 +734,36 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
     droppedObjects,
     showDropZone,
     modifiedAvailabilityObjects,
+    tabState,
     setAvailabilityObjects,
+    updateActivePanelTabState,
   } = props;
+
+  const [activeAvailability, setActiveAvailability] = useState<{
+    object: ParsedSkylarkObjectAvailabilityObject;
+    tabId: TabID;
+  } | null>(
+    tabState.active
+      ? {
+          object: tabState.active.object,
+          tabId: tabState.active.tabId as TabID,
+        }
+      : null,
+  );
+
+  const setActiveAvailabilityWrapper = (
+    newActiveAvailability: {
+      object: ParsedSkylarkObjectAvailabilityObject;
+      tabId: TabID;
+    } | null,
+  ) => {
+    setActiveAvailability(newActiveAvailability);
+    updateActivePanelTabState({
+      [PanelTab.Availability]: {
+        active: newActiveAvailability,
+      },
+    });
+  };
 
   const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
     useGetObjectAvailability(objectType, uid, { language });
@@ -842,9 +943,6 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
           )}
           {data && (
             <>
-              {!isLoading && data?.length === 0 && !inEditMode && (
-                <PanelEmptyDataText />
-              )}
               {inEditMode ? (
                 <PanelAvailabilityEditView
                   {...props}
@@ -862,7 +960,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                   activeAvailability={activeAvailability}
                   assignedAvails={assignedAvails}
                   inheritedAvails={inheritedAvails}
-                  setActiveAvailability={setActiveAvailability}
+                  setActiveAvailability={setActiveAvailabilityWrapper}
                   now={now}
                 />
               )}

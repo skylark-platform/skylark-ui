@@ -16,6 +16,9 @@ const Object = () => {
     [PanelTab.Relationships]: {
       active: null,
     },
+    [PanelTab.Availability]: {
+      active: null,
+    },
   });
 
   const object = useMemo(

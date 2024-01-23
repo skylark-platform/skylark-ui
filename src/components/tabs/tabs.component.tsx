@@ -3,7 +3,7 @@ import { AnimatePresence, Reorder, m } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight, FiX } from "react-icons/fi";
 
-export type Tab = { id: string; name: string };
+export type Tab<TabID = string> = { id: TabID; name: string };
 
 interface TabProps {
   tabs: Tab[];
