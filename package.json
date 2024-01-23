@@ -12,7 +12,7 @@
     "test": "jest",
     "test:ci": "yarn test --ci --coverage",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
+    "build-storybook": "NODE_OPTIONS=--max_old_space_size=4096 storybook build",
     "tsc": "tsc",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
