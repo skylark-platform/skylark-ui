@@ -188,6 +188,37 @@ Availability.args = {
   tab: PanelTab.Availability,
 };
 
+export const AvailabilityInheritance = Template.bind({});
+AvailabilityInheritance.parameters = Default.parameters;
+AvailabilityInheritance.args = {
+  ...Default.args,
+  tab: PanelTab.Availability,
+};
+AvailabilityInheritance.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+  const openButton = canvas.getByLabelText(
+    "expand availability: Active Next Sunday @ 9PM, Europe/North America",
+  );
+  await userEvent.click(openButton);
+};
+
+export const AvailabilityInheritanceInheritedBy = Template.bind({});
+AvailabilityInheritanceInheritedBy.parameters = Default.parameters;
+AvailabilityInheritanceInheritedBy.args = {
+  ...Default.args,
+  tab: PanelTab.Availability,
+};
+AvailabilityInheritanceInheritedBy.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+  await userEvent.click(
+    canvas.getByLabelText(
+      "expand availability: Active Next Sunday @ 9PM, Europe/North America",
+    ),
+  );
+
+  await userEvent.click(canvas.getByText("Inherited by"));
+};
+
 export const AvailabilityDimensions = Template.bind({});
 AvailabilityDimensions.parameters = Default.parameters;
 AvailabilityDimensions.args = {
