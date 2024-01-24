@@ -193,7 +193,9 @@ RelationshipsExpanded.args = {
 };
 RelationshipsExpanded.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
-  const openButton = canvas.getByLabelText("expand episodes relationship");
+  const openButton = await canvas.findByLabelText(
+    "expand episodes relationship",
+  );
   await userEvent.click(openButton);
 };
 
@@ -212,7 +214,7 @@ AvailabilityActiveObject.args = {
 };
 AvailabilityActiveObject.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
-  const openButton = canvas.getByLabelText(
+  const openButton = await canvas.findByLabelText(
     "expand availability: Active Next Sunday @ 9PM, Europe/North America",
   );
   await userEvent.click(openButton);
@@ -227,7 +229,7 @@ AvailabilityActiveObjectInheritedBy.args = {
 AvailabilityActiveObjectInheritedBy.play = async ({ canvasElement }) => {
   const canvas = within(canvasElement);
   await userEvent.click(
-    canvas.getByLabelText(
+    await canvas.findByLabelText(
       "expand availability: Active Next Sunday @ 9PM, Europe/North America",
     ),
   );

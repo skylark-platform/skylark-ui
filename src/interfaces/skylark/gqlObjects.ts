@@ -86,12 +86,6 @@ export interface SkylarkGraphQLAvailability {
   };
 }
 
-// export interface SkylarkGraphQLObjectRelationship {
-//   __typename: string;
-//   next_token?: NextToken;
-//   objects: object[]; // TODO make this a Record like SkylarkGraphQLObject
-// }
-
 export interface SkylarkGraphQLObjectImage {
   _meta?: SkylarkGraphQLObjectMeta;
   uid: SkylarkUID;
