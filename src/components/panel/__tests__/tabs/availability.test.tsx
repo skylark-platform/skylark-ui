@@ -118,7 +118,7 @@ describe("availability view", () => {
       ),
     ).toHaveLength(0);
 
-    await waitFor(() => expect(screen.getByText("None")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getAllByText("None")).toHaveLength(2));
   });
 
   it("finds the status of each availability", async () => {
@@ -250,7 +250,10 @@ describe("availability view", () => {
       screen.getByTestId("panel-availability"),
     );
 
-    expect(withinAvailabilityPanel.getByText("Inherited")).toBeInTheDocument();
+    // First Inherited is a header
+    expect(
+      withinAvailabilityPanel.getAllByText("Inherited").length,
+    ).toBeGreaterThan(1);
     expect(withinAvailabilityPanel.queryByText("Enabled")).toBeInTheDocument();
     expect(
       withinAvailabilityPanel.queryByText("Disabled"),
@@ -310,7 +313,10 @@ describe("availability view", () => {
       screen.getByTestId("panel-availability"),
     );
 
-    expect(withinAvailabilityPanel.getByText("Inherited")).toBeInTheDocument();
+    // First Inherited is a header
+    expect(
+      withinAvailabilityPanel.getAllByText("Inherited").length,
+    ).toBeGreaterThan(1);
     expect(
       withinAvailabilityPanel.queryByText("Enabled"),
     ).not.toBeInTheDocument();
@@ -347,13 +353,153 @@ describe("availability view", () => {
     const firstOpenObjectButton = screen.getAllByRole("button", {
       name: /Open Object/i,
     })[0];
-    fireEvent.click(firstOpenObjectButton);
+    await fireEvent.click(firstOpenObjectButton);
 
     expect(setPanelObject).toHaveBeenCalledWith({
       objectType: "Availability",
       uid: GQLSkylarkGetObjectAvailabilityQueryFixture.data
         .getObjectAvailability.availability.objects[0].uid,
       language: "",
+    });
+  });
+
+  test("makes an availability active and then closes it", async () => {
+    render(
+      <Panel
+        {...defaultProps}
+        object={movieObject}
+        tab={PanelTab.Availability}
+      />,
+    );
+
+    const title =
+      GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+        .title;
+
+    expect(screen.queryAllByText(title)).toHaveLength(0);
+
+    const numberOfAvailabilityInFixture =
+      GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
+        .availability.objects.length;
+    await waitFor(() =>
+      expect(screen.queryAllByText("Time Window")).toHaveLength(
+        numberOfAvailabilityInFixture,
+      ),
+    );
+
+    const expandButton = screen.getByLabelText(`expand availability: ${title}`);
+    await fireEvent.click(expandButton);
+
+    await waitFor(() =>
+      expect(screen.getByText("Inherited by")).toBeInTheDocument(),
+    );
+    expect(screen.getByText("Inherited from")).toBeInTheDocument();
+
+    const closeButton = screen.getByLabelText(`close availability: ${title}`);
+    await fireEvent.click(closeButton);
+
+    await waitFor(() =>
+      expect(screen.queryByText("Inherited by")).not.toBeInTheDocument(),
+    );
+    expect(screen.queryByText("Inherited from")).not.toBeInTheDocument();
+  });
+
+  test("makes an availability active and views its inherited by tab", async () => {
+    render(
+      <Panel
+        {...defaultProps}
+        object={movieObject}
+        tab={PanelTab.Availability}
+      />,
+    );
+
+    const title =
+      GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+        .title;
+
+    expect(screen.queryAllByText(title)).toHaveLength(0);
+
+    const numberOfAvailabilityInFixture =
+      GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
+        .availability.objects.length;
+    await waitFor(() =>
+      expect(screen.queryAllByText("Time Window")).toHaveLength(
+        numberOfAvailabilityInFixture,
+      ),
+    );
+
+    const expandButton = screen.getByLabelText(`expand availability: ${title}`);
+    await fireEvent.click(expandButton);
+
+    await waitFor(() =>
+      expect(screen.getByText("Inherited by")).toBeInTheDocument(),
+    );
+
+    // Check we're on the overview tab
+    expect(screen.queryAllByText("Time Window").length).toBeGreaterThanOrEqual(
+      1,
+    );
+    expect(screen.queryAllByText("Audience").length).toBeGreaterThanOrEqual(1);
+
+    await fireEvent.click(screen.getByText("Inherited by"));
+
+    // Check we've changed tab
+    expect(screen.queryAllByText("Time Window").length).toBe(0);
+    expect(screen.queryAllByText("Audience").length).toBe(0);
+
+    // Check Inherited by object loads
+    await waitFor(() => {
+      expect(screen.getByText("Michael Madsen")).toBeInTheDocument();
+    });
+  });
+
+  test("makes an availability active and views its inherited from tab", async () => {
+    render(
+      <Panel
+        {...defaultProps}
+        object={movieObject}
+        tab={PanelTab.Availability}
+      />,
+    );
+
+    const title =
+      GQLSkylarkGetObjectQueryFixture.data.getObject.availability.objects[0]
+        .title;
+
+    expect(screen.queryAllByText(title)).toHaveLength(0);
+
+    const numberOfAvailabilityInFixture =
+      GQLSkylarkGetObjectAvailabilityQueryFixture.data.getObjectAvailability
+        .availability.objects.length;
+    await waitFor(() =>
+      expect(screen.queryAllByText("Time Window")).toHaveLength(
+        numberOfAvailabilityInFixture,
+      ),
+    );
+
+    const expandButton = screen.getByLabelText(`expand availability: ${title}`);
+    await fireEvent.click(expandButton);
+
+    await waitFor(() =>
+      expect(screen.getByText("Inherited from")).toBeInTheDocument(),
+    );
+
+    // Check we're on the overview tab
+    expect(screen.queryAllByText("Time Window").length).toBeGreaterThanOrEqual(
+      1,
+    );
+    expect(screen.queryAllByText("Audience").length).toBeGreaterThanOrEqual(1);
+
+    await fireEvent.click(screen.getByText("Inherited from"));
+
+    // Check we've changed tab
+    expect(screen.queryAllByText("Time Window").length).toBe(0);
+    expect(screen.queryAllByText("Audience").length).toBe(0);
+
+    // Check Inherited from object loads
+    await waitFor(() => {
+      expect(screen.getByText("Kill Bill: Vol. 1")).toBeInTheDocument();
+      expect(screen.getByText("Kill Bill: Vol. 2")).toBeInTheDocument();
     });
   });
 
@@ -390,7 +536,7 @@ describe("availability view", () => {
         1,
       );
 
-      fireEvent.click(screen.getByText("Edit Availability"));
+      await fireEvent.click(screen.getByText("Edit Availability"));
       expect(screen.getByText("Editing")).toBeInTheDocument();
 
       expect(screen.queryAllByText("Time Window").length).toBe(0);
@@ -422,11 +568,13 @@ describe("availability view", () => {
         ).toBeInTheDocument(),
       );
 
-      fireEvent.click(screen.getByText("Edit Availability"));
+      await fireEvent.click(screen.getByText("Edit Availability"));
 
       expect(screen.getByText("Editing")).toBeInTheDocument();
 
-      fireEvent.click(screen.getAllByTestId("object-identifier-delete")[0]);
+      await fireEvent.click(
+        screen.getAllByTestId("object-identifier-delete")[0],
+      );
 
       expect(screen.queryAllByText(firstAvailabilityObjectTitle)).toHaveLength(
         0,
@@ -434,7 +582,7 @@ describe("availability view", () => {
 
       // Cancel
       const cancelButton = screen.getByText("Cancel");
-      fireEvent.click(cancelButton);
+      await fireEvent.click(cancelButton);
 
       expect(screen.queryAllByText(firstAvailabilityObjectTitle)).toHaveLength(
         1,
@@ -466,11 +614,13 @@ describe("availability view", () => {
         ).toBeInTheDocument(),
       );
 
-      fireEvent.click(screen.getByText("Edit Availability"));
+      await fireEvent.click(screen.getByText("Edit Availability"));
 
       expect(screen.getByText("Editing")).toBeInTheDocument();
 
-      fireEvent.click(screen.getAllByTestId("object-identifier-delete")[0]);
+      await fireEvent.click(
+        screen.getAllByTestId("object-identifier-delete")[0],
+      );
 
       expect(screen.queryAllByText(firstAvailabilityObjectTitle)).toHaveLength(
         0,
@@ -478,7 +628,7 @@ describe("availability view", () => {
 
       // Save
       const saveButton = screen.getByText("Save");
-      fireEvent.click(saveButton);
+      await fireEvent.click(saveButton);
 
       await waitFor(() =>
         expect(
@@ -519,11 +669,13 @@ describe("availability view", () => {
         ).toBeInTheDocument(),
       );
 
-      fireEvent.click(screen.getByText("Edit Availability"));
+      await fireEvent.click(screen.getByText("Edit Availability"));
 
       expect(screen.getByText("Editing")).toBeInTheDocument();
 
-      fireEvent.click(screen.getAllByTestId("object-identifier-delete")[0]);
+      await fireEvent.click(
+        screen.getAllByTestId("object-identifier-delete")[0],
+      );
 
       expect(screen.queryAllByText(firstAvailabilityObjectTitle)).toHaveLength(
         0,
@@ -531,7 +683,7 @@ describe("availability view", () => {
 
       // Save
       const saveButton = screen.getByText("Save");
-      fireEvent.click(saveButton);
+      await fireEvent.click(saveButton);
 
       await validateErrorToastShown();
 
@@ -590,15 +742,15 @@ describe("availability view", () => {
         ).toBeInTheDocument(),
       );
 
-      fireEvent.click(screen.getByText("Edit Availability"));
+      await fireEvent.click(screen.getByText("Edit Availability"));
 
       expect(screen.getByText("Editing")).toBeInTheDocument();
 
-      fireEvent.click(screen.getAllByRole("switch")[0]);
+      await fireEvent.click(screen.getAllByRole("switch")[0]);
 
       // Save
       const saveButton = screen.getByText("Save");
-      fireEvent.click(saveButton);
+      await fireEvent.click(saveButton);
 
       await waitFor(() =>
         expect(

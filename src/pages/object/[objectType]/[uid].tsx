@@ -16,6 +16,9 @@ const Object = () => {
     [PanelTab.Relationships]: {
       active: null,
     },
+    [PanelTab.Availability]: {
+      active: null,
+    },
   });
 
   const object = useMemo(
@@ -43,7 +46,7 @@ const Object = () => {
   };
 
   return (
-    <div className="pt-nav flex w-full">
+    <div className="pt-nav flex w-full h-full">
       <Head>
         <title>{`Skylark | ${objectType || "Object"} ${uid || ""} ${
           language ? `(${language})` : ""

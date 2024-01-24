@@ -119,6 +119,14 @@ export interface GQLSkylarkGetObjectAvailabilityResponse {
   } | null;
 }
 
+export interface GQLSkylarkGetObjectAvailabilityInheritanceResponse {
+  getObjectAvailabilityInheritance: {
+    availability: {
+      objects: [SkylarkGraphQLAvailability | undefined | null];
+    };
+  } | null;
+}
+
 export interface GQLSkylarkGetObjectContentOfResponse {
   getObjectContentOf: {
     content_of: {

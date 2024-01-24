@@ -131,3 +131,8 @@ export interface ParsedSkylarkObjectTypeRelationshipConfiguration {
     inheritAvailability: boolean;
   };
 }
+
+export interface ParsedSkylarkObjectAvailabilityInheritance {
+  inheritedFrom: ParsedSkylarkObject[];
+  inheritedBy: ParsedSkylarkObject[];
+}

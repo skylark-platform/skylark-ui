@@ -1,11 +1,9 @@
 import clsx from "clsx";
 import { AnimatePresence, Reorder, m } from "framer-motion";
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight, FiX } from "react-icons/fi";
 
-import { ObjectSearchTab } from "src/hooks/localStorage/useObjectSearchTabs";
-
-type Tab = { id: string; name: string };
+export type Tab<TabID = string> = { id: TabID; name: string };
 
 interface TabProps {
   tabs: Tab[];
@@ -13,6 +11,7 @@ interface TabProps {
   onChange: (t: Tab & { index: number }) => void;
   disabled?: boolean;
   className?: string;
+  fillWidth?: boolean;
   onDelete?: (t: Tab & { index: number }) => void;
 }
 
@@ -30,15 +29,18 @@ const generateLiClassName = ({
   withDelete,
   disabled,
   isSelectedTab,
+  fillWidth,
 }: {
   withDelete: boolean;
   disabled?: boolean;
   isSelectedTab: boolean;
+  fillWidth?: boolean;
 }) =>
   clsx(
     "flex relative border-b-2 -mb-[2px] group/tab-container bg-white",
     withDelete ? "mx-1 md:mx-2" : "mx-2 md:mx-3",
     !disabled && "hover:border-black hover:text-black",
+    fillWidth && "grow justify-center",
     isSelectedTab
       ? "border-black text-black"
       : "border-transparent text-gray-400",
@@ -61,7 +63,7 @@ const Tab = ({
         disabled={disabled}
         onClick={disabled ? undefined : () => onChange({ ...tab, index })}
         className={clsx(
-          "w-full whitespace-nowrap rounded-t  focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary p-1 pb-1.5 pr-0.5 md:pb-2.5",
+          "w-full whitespace-nowrap rounded-t focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary p-1 pb-1.5 pr-0.5 md:pb-2.5",
           "min-w-10 max-w-52 overflow-hidden text-ellipsis",
         )}
       >
@@ -90,7 +92,7 @@ const Tab = ({
 };
 
 export const Tabs = (props: TabProps) => {
-  const { tabs, selectedTab, disabled, onDelete } = props;
+  const { tabs, selectedTab, disabled, fillWidth, onDelete } = props;
   return (
     <ul className={generateUlClassName(props.className)}>
       {tabs.map((tab, index) => (
@@ -100,6 +102,7 @@ export const Tabs = (props: TabProps) => {
             withDelete: !!onDelete,
             isSelectedTab: selectedTab === tab.id,
             disabled,
+            fillWidth,
           })}
         >
           <Tab {...props} tab={tab} index={index} />
@@ -110,7 +113,15 @@ export const Tabs = (props: TabProps) => {
 };
 
 export const ReorderableTabs = (props: ReorderableTabProps) => {
-  const { tabs, selectedTab, disabled, className, onDelete, onReorder } = props;
+  const {
+    tabs,
+    selectedTab,
+    disabled,
+    className,
+    fillWidth,
+    onDelete,
+    onReorder,
+  } = props;
 
   return (
     <Reorder.Group
@@ -128,6 +139,7 @@ export const ReorderableTabs = (props: ReorderableTabProps) => {
               withDelete: !!onDelete,
               isSelectedTab: selectedTab === tab.id,
               disabled,
+              fillWidth,
             })}
             value={tab}
             as="li"

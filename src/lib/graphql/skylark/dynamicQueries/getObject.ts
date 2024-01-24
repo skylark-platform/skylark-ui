@@ -20,6 +20,9 @@ export const createGetObjectQueryName = (objectType: string) =>
   `GET_${objectType}`;
 export const createGetObjectAvailabilityQueryName = (objectType: string) =>
   `GET_${objectType}_AVAILABILITY`;
+export const createGetObjectAvailabilityInheritanceQueryName = (
+  objectType: string,
+) => `GET_${objectType}_AVAILABILITY_INHERITANCE`;
 export const createGetObjectRelationshipsQueryName = (objectType: string) =>
   `GET_${objectType}_RELATIONSHIPS`;
 export const createGetObjectContentQueryName = (objectType: string) =>
@@ -137,6 +140,98 @@ export const createGetObjectAvailabilityQuery = (
                   },
                   next_token: true,
                 },
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+
+  const graphQLQuery = wrappedJsonQuery(query);
+
+  return gql(graphQLQuery);
+};
+
+export const createGetObjectAvailabilityInheritanceQuery = (
+  object: SkylarkObjectMeta | null,
+  allObjectsMeta: SkylarkObjectMeta[] | null,
+) => {
+  if (!object || !object.operations.get || !allObjectsMeta) {
+    return null;
+  }
+
+  const common = generateVariablesAndArgs(object.name, "Query");
+
+  const query = {
+    query: {
+      __name: createGetObjectAvailabilityInheritanceQueryName(object.name),
+      __variables: {
+        ...common.variables,
+        objectUid: "String",
+        availabilityUid: "String",
+        inheritedFromNextToken: "String",
+        inheritedByNextToken: "String",
+      },
+      getObjectAvailabilityInheritance: {
+        __aliasFor: object.operations.get.name,
+        __args: {
+          ...common.args,
+          uid: new VariableType("objectUid"),
+        },
+        availability: {
+          __args: {
+            uid: new VariableType("availabilityUid"),
+            limit: 1,
+          },
+          objects: {
+            uid: true,
+            inherited: true,
+            inheritance_source: true,
+            inherited_from: {
+              next_token: true,
+              __args: {
+                limit: 50,
+                next_token: new VariableType("inheritedFromNextToken"),
+              },
+              objects: {
+                __on: allObjectsMeta.map((object) => {
+                  const common = generateVariablesAndArgs(object.name, "Query");
+                  return {
+                    __typeName: object.name,
+                    __typename: true, // To remove the alias later
+                    ...common.fields,
+                    ...generateFieldsToReturn(
+                      object.fields,
+                      object.name,
+                      false,
+                      `__${object.name}__`,
+                    ),
+                  };
+                }),
+              },
+            },
+            inherited_by: {
+              next_token: true,
+              __args: {
+                limit: 50,
+                next_token: new VariableType("inheritedByNextToken"),
+              },
+              objects: {
+                __on: allObjectsMeta.map((object) => {
+                  const common = generateVariablesAndArgs(object.name, "Query");
+                  return {
+                    __typeName: object.name,
+                    __typename: true, // To remove the alias later
+                    ...common.fields,
+                    ...generateFieldsToReturn(
+                      object.fields,
+                      object.name,
+                      false,
+                      `__${object.name}__`,
+                    ),
+                  };
+                }),
               },
             },
           },
