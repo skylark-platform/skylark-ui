@@ -82,6 +82,9 @@ const tabState: PanelTabState = {
   Relationships: {
     active: null,
   },
+  Availability: {
+    active: null,
+  },
 };
 
 export const defaultProps = {

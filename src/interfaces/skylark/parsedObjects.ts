@@ -140,3 +140,8 @@ export interface ParsedAvailabilityAssignedToObject {
   inherited: boolean;
   inheritedSource: boolean;
 }
+
+export interface ParsedSkylarkObjectAvailabilityInheritance {
+  inheritedFrom: ParsedSkylarkObject[];
+  inheritedBy: ParsedSkylarkObject[];
+}

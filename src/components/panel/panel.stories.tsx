@@ -15,6 +15,9 @@ const defaultPanelTabState: PanelTabState = {
   [PanelTab.Relationships]: {
     active: null,
   },
+  [PanelTab.Availability]: {
+    active: null,
+  },
 };
 
 export default {
@@ -177,12 +180,61 @@ Relationships.args = {
   },
   tab: PanelTab.Relationships,
 };
+export const RelationshipsExpanded = Template.bind({});
+RelationshipsExpanded.parameters = Default.parameters;
+RelationshipsExpanded.args = {
+  ...Default.args,
+  object: {
+    objectType: "Season",
+    uid: GQLSkylarkGetSeasonQueryFixture.data.getObject.uid,
+    language: "",
+  },
+  tab: PanelTab.Relationships,
+};
+RelationshipsExpanded.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+  const openButton = await canvas.findByLabelText(
+    "expand episodes relationship",
+  );
+  await userEvent.click(openButton);
+};
 
 export const Availability = Template.bind({});
 Availability.parameters = Default.parameters;
 Availability.args = {
   ...Default.args,
   tab: PanelTab.Availability,
+};
+
+export const AvailabilityActiveObject = Template.bind({});
+AvailabilityActiveObject.parameters = Default.parameters;
+AvailabilityActiveObject.args = {
+  ...Default.args,
+  tab: PanelTab.Availability,
+};
+AvailabilityActiveObject.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+  const openButton = await canvas.findByLabelText(
+    "expand availability: Active Next Sunday @ 9PM, Europe/North America",
+  );
+  await userEvent.click(openButton);
+};
+
+export const AvailabilityActiveObjectInheritedBy = Template.bind({});
+AvailabilityActiveObjectInheritedBy.parameters = Default.parameters;
+AvailabilityActiveObjectInheritedBy.args = {
+  ...Default.args,
+  tab: PanelTab.Availability,
+};
+AvailabilityActiveObjectInheritedBy.play = async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+  await userEvent.click(
+    await canvas.findByLabelText(
+      "expand availability: Active Next Sunday @ 9PM, Europe/North America",
+    ),
+  );
+
+  await userEvent.click(canvas.getByText("Inherited by"));
 };
 
 export const AvailabilityDimensions = Template.bind({});

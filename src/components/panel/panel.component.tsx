@@ -741,7 +741,9 @@ export const Panel = ({
               droppedObjects={droppedObjects}
               showDropZone={isDraggedObject}
               modifiedAvailabilityObjects={modifiedAvailabilityObjects}
+              tabState={tabState[PanelTab.Availability]}
               setAvailabilityObjects={handleAvailabilityObjectsModified}
+              updateActivePanelTabState={updateActivePanelTabState}
             />
           )}
           {selectedTab === PanelTab.Content && (

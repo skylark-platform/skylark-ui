@@ -19,7 +19,7 @@ import {
   NormalizedObjectField,
   ParsedSkylarkObjectRelationships,
   SkylarkGraphQLObject,
-  SkylarkGraphQLObjectRelationship,
+  SkylarkGraphQLObjectList,
   SkylarkObjectMeta,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -46,9 +46,7 @@ const getRelationshipNextTokens = (
   const data = response.getObjectRelationships;
   return Object.keys(data).reduce(
     (prev, relationshipName) => {
-      const relationship = data[
-        relationshipName
-      ] as SkylarkGraphQLObjectRelationship;
+      const relationship = data[relationshipName] as SkylarkGraphQLObjectList;
 
       if (relationship.next_token) {
         return {
@@ -120,7 +118,7 @@ export const useGetObjectRelationships = (
           ...nextTokens,
         }),
       initialPageParam: {},
-      getNextPageParam: (lastPage): Record<string, string> | undefined => {
+      getNextPageParam: (lastPage): PageParam | undefined => {
         const { requestVariables, relationshipsWithNextPage } =
           getRelationshipNextTokens(lastPage);
 
@@ -141,7 +139,7 @@ export const useGetObjectRelationships = (
         (pageAggregate, name) => {
           const relationship = page.getObjectRelationships[
             name
-          ] as SkylarkGraphQLObjectRelationship;
+          ] as SkylarkGraphQLObjectList;
 
           const parsedObjects = relationship.objects.map((relatedObject) =>
             parseSkylarkObject(relatedObject as SkylarkGraphQLObject),
