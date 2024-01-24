@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
+import { createGetAvailabilityAssignedToKeyPrefix } from "src/hooks/availability/useAvailabilityAssignedTo";
 import { createGetObjectAvailabilityKeyPrefix } from "src/hooks/objects/get/useGetObjectAvailability";
 import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
 import {
@@ -26,20 +27,29 @@ export const useUpdateAvailabilityAssignedTo = ({
       modifiedAvailabilityAssignedTo,
     }: {
       uid: string;
-      modifiedAvailabilityAssignedTo: { added: ParsedSkylarkObject[] };
+      modifiedAvailabilityAssignedTo: {
+        added: ParsedSkylarkObject[];
+        removed: ParsedSkylarkObject[];
+      };
     }) => {
       const updateAvailabilityObjectDimensionsMutation =
         createUpdateAvailabilityAssignedToMutation(
           allObjectsMeta,
           uid,
           modifiedAvailabilityAssignedTo.added,
+          modifiedAvailabilityAssignedTo.removed,
         );
+      console.log(
+        allObjectsMeta,
+        updateAvailabilityObjectDimensionsMutation,
+        modifiedAvailabilityAssignedTo,
+      );
       return skylarkRequest(
         "mutation",
         updateAvailabilityObjectDimensionsMutation as RequestDocument,
       );
     },
-    onSuccess: async (_, { modifiedAvailabilityAssignedTo }) => {
+    onSuccess: async (_, { uid, modifiedAvailabilityAssignedTo }) => {
       await Promise.all(
         modifiedAvailabilityAssignedTo.added.map(({ uid, objectType }) =>
           queryClient.invalidateQueries({
@@ -50,6 +60,9 @@ export const useUpdateAvailabilityAssignedTo = ({
           }),
         ),
       );
+      await queryClient.refetchQueries({
+        queryKey: createGetAvailabilityAssignedToKeyPrefix({ uid }),
+      });
 
       onSuccess();
     },

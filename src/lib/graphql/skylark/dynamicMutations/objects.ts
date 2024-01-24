@@ -562,16 +562,13 @@ export const createUpdateAvailabilityDimensionsMutation = (
   return gql(graphQLQuery);
 };
 
-export const createUpdateAvailabilityAssignedToMutation = (
-  allObjectsMeta: SkylarkObjectMeta[] | null,
+const createAvailabilityObjectLinkUnlinkOperations = (
+  allObjectsMeta: SkylarkObjectMeta[],
   availabilityUid: string,
-  addedObjects: ParsedSkylarkObject[],
-) => {
-  if (!allObjectsMeta || !availabilityUid || addedObjects.length === 0) {
-    return null;
-  }
-
-  const operations = addedObjects.reduce((previous, object) => {
+  objects: ParsedSkylarkObject[],
+  type: "link" | "unlink",
+) =>
+  objects.reduce((previous, object) => {
     if (object.objectType === BuiltInSkylarkObjectType.Availability) {
       return previous;
     }
@@ -584,29 +581,52 @@ export const createUpdateAvailabilityAssignedToMutation = (
     }
 
     const operation = {
-      [`assign_availability_${availabilityUid}_to_${object.objectType}_${object.uid}`]:
+      [`${type}_availability_${availabilityUid}_to_${object.objectType}_${object.uid}`]:
         {
           __aliasFor: objectMeta.operations.update.name,
           __args: {
             uid: object.uid,
             [objectMeta.operations.update.argName]: {
-              availability: { link: availabilityUid },
+              availability: { [type]: availabilityUid },
             },
           },
           uid: true,
         },
     };
-
     return {
       ...previous,
       ...operation,
     };
   }, {});
 
+export const createUpdateAvailabilityAssignedToMutation = (
+  allObjectsMeta: SkylarkObjectMeta[] | null,
+  availabilityUid: string,
+  addedObjects: ParsedSkylarkObject[],
+  removedObjects: ParsedSkylarkObject[],
+) => {
+  if (!allObjectsMeta || !availabilityUid) {
+    return null;
+  }
+
+  const addOperations = createAvailabilityObjectLinkUnlinkOperations(
+    allObjectsMeta,
+    availabilityUid,
+    addedObjects,
+    "link",
+  );
+  const removeOperations = createAvailabilityObjectLinkUnlinkOperations(
+    allObjectsMeta,
+    availabilityUid,
+    removedObjects,
+    "unlink",
+  );
+
   const mutation = {
     mutation: {
       __name: `UPDATE_AVAILABILITY_ASSIGNED_TO`,
-      ...operations,
+      ...addOperations,
+      ...removeOperations,
     },
   };
 

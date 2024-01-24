@@ -134,11 +134,10 @@ export interface ParsedSkylarkObjectTypeRelationshipConfiguration {
 
 export interface ParsedAvailabilityAssignedToObject {
   objectType: SkylarkObjectType;
-  // config: ParsedSkylarkObjectConfig;
-  // meta: ParsedSkylarkObjectMeta;
   object: ParsedSkylarkObject;
   inherited: boolean;
   inheritedSource: boolean;
+  active: boolean;
 }
 
 export interface ParsedSkylarkObjectAvailabilityInheritance {

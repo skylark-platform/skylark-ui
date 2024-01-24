@@ -301,7 +301,10 @@ export const Panel = ({
     }>({ original: null, updated: null });
 
   const [modifiedAvailabilityAssignedTo, setModifiedAvailabilityAssignedTo] =
-    useState<{ added: ParsedSkylarkObject[]; removed: string[] } | null>(null);
+    useState<{
+      added: ParsedSkylarkObject[];
+      removed: ParsedSkylarkObject[];
+    } | null>(null);
 
   const { uid, objectType, language } = object;
   const {
@@ -477,7 +480,8 @@ export const Panel = ({
         setModifiedAvailabilityAssignedTo(null);
         if (panelInEditMode) setEditMode(false);
       },
-      onError: showUpdateErrorToast,
+      // onError: showUpdateErrorToast,
+      onError: (e) => console.log(e),
     });
 
   const saveActiveTabChanges = (opts?: { draft?: boolean }) => {
@@ -594,7 +598,7 @@ export const Panel = ({
     (
       updatedAssignedToObjects: {
         added: ParsedSkylarkObject[];
-        removed: string[];
+        removed: ParsedSkylarkObject[];
       },
       errors?: HandleDropError[],
     ) => {

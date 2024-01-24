@@ -37,12 +37,15 @@ const select = (
   data: InfiniteData<GQLSkylarkGetAvailabilityAssignedResponse>,
 ) =>
   data?.pages
-    ?.flatMap((page) => page.getAvailability.assigned_to?.objects || [])
+    ?.flatMap(
+      (page) => page.getAvailabilityAssignedTo.assigned_to?.objects || [],
+    )
     .map(
       ({
         object,
         inherited,
         inheritance_source,
+        active,
       }): ParsedAvailabilityAssignedToObject => {
         const normalisedObject =
           removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>(object);
@@ -53,7 +56,7 @@ const select = (
           objectType: object.__typename,
           inherited: inherited || false,
           inheritedSource: inheritance_source || false,
-          // meta: null,
+          active: active ?? true,
           object: parsedObject,
         };
       },
@@ -128,12 +131,10 @@ export const useGetAvailabilityAssignedTo = (uid: string) => {
       queryKey,
       initialPageParam: "",
       getNextPageParam: (lastPage): string | undefined =>
-        lastPage.getAvailability.assigned_to?.next_token || undefined,
+        lastPage.getAvailabilityAssignedTo.assigned_to?.next_token || undefined,
       enabled: !!query,
       select,
     });
-
-  console.log({ data });
 
   return {
     data,

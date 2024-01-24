@@ -102,7 +102,8 @@ export const createGetAvailabilityAssignedTo = (
         uid: "String!",
         nextToken: "String",
       },
-      getAvailability: {
+      getAvailabilityAssignedTo: {
+        __aliasFor: "getAvailability",
         __args: {
           uid: new VariableType("uid"),
         },
@@ -116,6 +117,7 @@ export const createGetAvailabilityAssignedTo = (
           objects: {
             inherited: true,
             inheritance_source: true,
+            active: true,
             object: {
               uid: true,
               __on: objectsToRequest.map((object) => {

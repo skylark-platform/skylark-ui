@@ -1,7 +1,9 @@
 import clsx from "clsx";
+import { ReactNode } from "react";
 import {
   LuCalendarCheck,
   LuCalendarClock,
+  LuCalendarHeart,
   LuCalendarOff,
   LuCalendarX,
 } from "react-icons/lu";
@@ -81,6 +83,32 @@ export const AvailabilityIcon = ({
       }
     >
       <div>{Icon}</div>
+    </Tooltip>
+  ) : (
+    Icon
+  );
+};
+
+export const AvailabilityInheritanceIcon = ({
+  status,
+  className: propClassName,
+  tooltip,
+}: Omit<AvailabilityIconProps, "withTooltipDescription"> & {
+  tooltip?: ReactNode;
+}) => {
+  const textClassName = getStatusTextClassName(status);
+  const className = clsx(textClassName, propClassName);
+
+  const Icon = (
+    <LuCalendarHeart
+      className={className}
+      aria-label="inherited availability"
+    />
+  );
+
+  return tooltip ? (
+    <Tooltip tooltip={tooltip}>
+      <div className="ml-1">{Icon}</div>
     </Tooltip>
   ) : (
     Icon

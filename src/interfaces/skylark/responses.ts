@@ -211,7 +211,7 @@ export type GQLSkylarkListAllObjectTypesRelationshipConfiguration = Record<
 >;
 
 export interface GQLSkylarkGetAvailabilityAssignedResponse {
-  getAvailability: {
+  getAvailabilityAssignedTo: {
     assigned_to: SkylarkGraphQLAvailabilityAssignedTo | null;
   };
 }

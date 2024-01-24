@@ -131,6 +131,7 @@ export interface SkylarkGraphQLAvailabilityAssignedTo {
   objects: {
     inherited: SkylarkGraphQLAvailability["inherited"];
     inheritance_source: SkylarkGraphQLAvailability["inheritance_source"];
+    active: SkylarkGraphQLAvailability["active"];
     object: SkylarkGraphQLObject;
   }[];
 }
