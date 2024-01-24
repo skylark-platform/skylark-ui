@@ -133,10 +133,6 @@ export const useGetAvailabilityAssignedTo = (uid: string) => {
       select,
     });
 
-  // if (hasNextPage) {
-  //   fetchNextPage();
-  // }
-
   console.log({ data });
 
   return {
@@ -146,5 +142,6 @@ export const useGetAvailabilityAssignedTo = (uid: string) => {
     variables,
     hasNextPage,
     isFetchingNextPage,
+    fetchNextPage,
   };
 };

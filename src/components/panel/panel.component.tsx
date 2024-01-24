@@ -301,7 +301,7 @@ export const Panel = ({
     }>({ original: null, updated: null });
 
   const [modifiedAvailabilityAssignedTo, setModifiedAvailabilityAssignedTo] =
-    useState<{ added: ParsedSkylarkObject[] } | null>(null);
+    useState<{ added: ParsedSkylarkObject[]; removed: string[] } | null>(null);
 
   const { uid, objectType, language } = object;
   const {
@@ -594,6 +594,7 @@ export const Panel = ({
     (
       updatedAssignedToObjects: {
         added: ParsedSkylarkObject[];
+        removed: string[];
       },
       errors?: HandleDropError[],
     ) => {

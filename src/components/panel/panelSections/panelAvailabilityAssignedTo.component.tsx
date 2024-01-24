@@ -6,10 +6,12 @@ import {
   handleDroppedObjectsToAssignToAvailability,
 } from "src/components/panel/panel.lib";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
+import { PanelLoading } from "src/components/panel/panelLoading";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { useGetAvailabilityAssignedTo } from "src/hooks/availability/useAvailabilityAssignedTo";
 import {
   AvailabilityStatus,
+  ParsedAvailabilityAssignedToObject,
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
@@ -24,15 +26,42 @@ interface PanelAvailabilityAssignedToProps {
   inEditMode: boolean;
   showDropZone?: boolean;
   droppedObjects?: ParsedSkylarkObject[];
-  modifiedAvailabilityAssignedTo: { added: ParsedSkylarkObject[] } | null;
+  modifiedAvailabilityAssignedTo: {
+    added: ParsedSkylarkObject[];
+    removed: string[];
+  } | null;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
   setModifiedAvailabilityAssignedTo: (
     args: {
       added: ParsedSkylarkObject[];
+      removed: string[];
     },
     errors?: HandleDropError[],
   ) => void;
 }
+
+const mergeServerAndModifiedAssignedTo = (
+  serverAssignedTo: ParsedAvailabilityAssignedToObject[] | undefined,
+  modifiedAvailabilityAssignedTo: PanelAvailabilityAssignedToProps["modifiedAvailabilityAssignedTo"],
+): ParsedSkylarkObject[] => {
+  if (!serverAssignedTo) {
+    return [];
+  }
+
+  const parsedServerAssignedTo: ParsedSkylarkObject[] = serverAssignedTo.map(
+    ({ object }) => object,
+  );
+
+  if (!modifiedAvailabilityAssignedTo) {
+    return parsedServerAssignedTo;
+  }
+
+  const filteredServerObjects = parsedServerAssignedTo.filter(
+    ({ uid }) => !modifiedAvailabilityAssignedTo.removed.includes(uid),
+  );
+
+  return [...filteredServerObjects, ...modifiedAvailabilityAssignedTo.added];
+};
 
 export const PanelAvailabilityAssignedTo = ({
   uid,
@@ -44,13 +73,17 @@ export const PanelAvailabilityAssignedTo = ({
   setPanelObject,
   setModifiedAvailabilityAssignedTo,
 }: PanelAvailabilityAssignedToProps) => {
-  const { data } = useGetAvailabilityAssignedTo(uid);
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
+    useGetAvailabilityAssignedTo(uid);
+
+  const objects = mergeServerAndModifiedAssignedTo(
+    data,
+    modifiedAvailabilityAssignedTo,
+  );
 
   useEffect(() => {
     if (droppedObjects && droppedObjects.length > 0) {
-      const existingUids = modifiedAvailabilityAssignedTo?.added.map(
-        ({ uid }) => uid,
-      );
+      const existingUids = objects.map(({ uid }) => uid);
       const uniqueDroppedObjects = existingUids
         ? droppedObjects.filter(({ uid }) => !existingUids.includes(uid))
         : droppedObjects;
@@ -60,14 +93,29 @@ export const PanelAvailabilityAssignedTo = ({
           newObjects: uniqueDroppedObjects,
         });
 
+      const serverAssignedToUids =
+        data?.map(({ object: { uid } }) => uid) || [];
+      const updatedAssignedToObjectsWithExistingServerObjectsFilteredOut =
+        updatedAssignedToObjects.filter(
+          ({ uid }) => !serverAssignedToUids.includes(uid),
+        );
+
+      const updatedAssignedToUids = updatedAssignedToObjects.map(
+        ({ uid }) => uid,
+      );
+
       setModifiedAvailabilityAssignedTo(
         {
           added: modifiedAvailabilityAssignedTo
             ? [
                 ...modifiedAvailabilityAssignedTo.added,
-                ...updatedAssignedToObjects,
+                ...updatedAssignedToObjectsWithExistingServerObjectsFilteredOut,
               ]
-            : updatedAssignedToObjects,
+            : updatedAssignedToObjectsWithExistingServerObjectsFilteredOut,
+          removed:
+            modifiedAvailabilityAssignedTo?.removed.filter(
+              (uid) => !updatedAssignedToUids.includes(uid),
+            ) || [],
         },
         errors,
       );
@@ -82,38 +130,56 @@ export const PanelAvailabilityAssignedTo = ({
     return <PanelDropZone />;
   }
 
+  const addedUids = modifiedAvailabilityAssignedTo?.added.map(({ uid }) => uid);
+
+  const handleDeletedAssignedTo = (object: ParsedSkylarkObject) => {
+    const isNewlyAdded = addedUids?.includes(object.uid);
+
+    const added =
+      modifiedAvailabilityAssignedTo?.added.filter(
+        ({ uid }) => uid !== object.uid,
+      ) || [];
+
+    const removed = [
+      ...new Set([
+        ...(modifiedAvailabilityAssignedTo?.removed || []),
+        object.uid,
+      ]),
+    ];
+
+    setModifiedAvailabilityAssignedTo({
+      added,
+      removed,
+    });
+  };
+
   return (
     <PanelSectionLayout sections={[]} isPage={isPage}>
-      <div data-testid="panel-availability-assigned-to">
-        <PanelSectionTitle
-          text={formatObjectField("Assign to multiple objects dropzone")}
-        />
-        <p className="my-2">
-          This tab is in an <strong>EXPERIMENTAL</strong> stage.
-        </p>
-        <p className="my-2">
-          <strong>Use with caution.</strong>
-        </p>
-        {(!modifiedAvailabilityAssignedTo?.added ||
-          modifiedAvailabilityAssignedTo.added.length === 0) && (
-          <p>
-            Drop objects from the Content Library here to assign them to this
-            Availability.
-          </p>
-        )}
-        {data?.map(({ object }) => {
+      <div data-testid="panel-availability-assigned-to" className="pb-32">
+        <PanelSectionTitle text={"Assigned to"} />
+        {objects?.map((object) => {
           return (
             <ObjectIdentifierCard
-              key={object.uid}
+              key={`assigned-to-card-${object.uid}`}
               object={object}
-              onForwardClick={setPanelObject}
-              hideAvailabilityStatus
+              disableDeleteClick={!inEditMode}
               disableForwardClick={inEditMode}
-            />
+              hideAvailabilityStatus
+              onForwardClick={setPanelObject}
+              onDeleteClick={() => handleDeletedAssignedTo(object)}
+            >
+              {addedUids?.includes(object.uid) && (
+                <span
+                  className={
+                    "flex h-4 w-4 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
+                  }
+                />
+              )}
+            </ObjectIdentifierCard>
           );
         })}
       </div>
-      {modifiedAvailabilityAssignedTo?.added.map((obj) => (
+      {/* {modifiedAvailabilityAssignedTo?.added.map((obj) => (
         <ObjectIdentifierCard
           key={`assigned-to-card-${obj.uid}`}
           object={obj}
@@ -126,14 +192,12 @@ export const PanelAvailabilityAssignedTo = ({
               ),
             })
           }
-        >
-          <span
-            className={
-              "flex h-4 w-4 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
-            }
-          />
-        </ObjectIdentifierCard>
-      ))}
+        />
+      ))} */}
+      <PanelLoading
+        isLoading={isLoading || isFetchingNextPage || hasNextPage}
+        loadMore={fetchNextPage}
+      />
     </PanelSectionLayout>
   );
 };
