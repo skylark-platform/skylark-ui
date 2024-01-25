@@ -6,6 +6,7 @@ import {
   graphql,
 } from "msw";
 
+import GQLSkylarkGetAvailabilityAssignedToFixture from "src/__tests__/fixtures/skylark/queries/getAvailabilityAssignedTo/always.json";
 import GQLSkylarkGetAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allDevicesAllCustomersAvailability.json";
 import GQLSkylarkGetMovieDraftQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/draftObject.json";
 import GQLSkylarkGetMovieQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
@@ -163,6 +164,15 @@ export const getObjectAvailabilityInheritanceHandlers = [
       return res(
         ctx.data(GQLSkylarkGetAvailabilityInheritanceQueryFixture.data),
       );
+    },
+  ),
+];
+
+export const getObjectAvailabilityAssignedToHandlers = [
+  graphql.query(
+    wrapQueryName("GET_AVAILABILITY_ASSIGNED_TO"),
+    (_, res, ctx) => {
+      return res(ctx.data(GQLSkylarkGetAvailabilityAssignedToFixture.data));
     },
   ),
 ];
