@@ -1,21 +1,15 @@
 import {
   InfiniteData,
-  QueryClient,
   QueryFunction,
   QueryKey,
   useInfiniteQuery,
 } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
 import { RequestDocument } from "graphql-request";
-import { useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
+import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
 import {
-  useAllObjectsMeta,
-  useSkylarkObjectOperations,
-} from "src/hooks/useSkylarkObjectTypes";
-import {
-  SkylarkObjectType,
   GQLSkylarkErrorResponse,
   SkylarkObjectMeta,
   GQLSkylarkGetAvailabilityAssignedResponse,
@@ -25,13 +19,9 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
   createGetAvailabilityAssignedTo,
-  createGetObjectContentQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
-import {
-  parseObjectContent,
-  parseSkylarkObject,
-} from "src/lib/skylark/parsers";
+import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 const select = (
   data: InfiniteData<GQLSkylarkGetAvailabilityAssignedResponse>,

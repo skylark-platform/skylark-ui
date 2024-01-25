@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 
 import { AvailabilityInheritanceIcon } from "src/components/availability";
+import { Checkbox } from "src/components/inputs/checkbox";
 import { ObjectTypeSelect } from "src/components/inputs/select";
+import { Switch } from "src/components/inputs/switch/switch.component";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import {
@@ -12,14 +14,13 @@ import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.
 import { PanelLoading } from "src/components/panel/panelLoading";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { useGetAvailabilityAssignedTo } from "src/hooks/availability/useAvailabilityAssignedTo";
+import { PanelTab, PanelTabState } from "src/hooks/state";
 import {
-  AvailabilityStatus,
+  BuiltInSkylarkObjectType,
   ParsedAvailabilityAssignedToObject,
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
-import { parseSkylarkObject } from "src/lib/skylark/parsers";
-import { formatObjectField } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
@@ -33,6 +34,7 @@ interface PanelAvailabilityAssignedToProps {
     added: ParsedSkylarkObject[];
     removed: ParsedSkylarkObject[];
   } | null;
+  tabState: PanelTabState[PanelTab.AvailabilityAssignedTo];
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
   setModifiedAvailabilityAssignedTo: (
     args: {
@@ -41,6 +43,7 @@ interface PanelAvailabilityAssignedToProps {
     },
     errors?: HandleDropError[],
   ) => void;
+  updateActivePanelTabState: (s: Partial<PanelTabState>) => void;
 }
 
 const mergeServerAndModifiedAssignedTo = (
@@ -59,11 +62,15 @@ const mergeServerAndModifiedAssignedTo = (
     return parsedServerAssignedTo;
   }
 
+  const inheritedUids = serverAssignedTo
+    .filter(({ inherited }) => inherited)
+    .map(({ object: { uid } }) => uid);
+
   const removedUids = modifiedAvailabilityAssignedTo.removed.map(
     ({ uid }) => uid,
   );
   const filteredServerObjects = parsedServerAssignedTo.filter(
-    ({ uid }) => !removedUids.includes(uid),
+    ({ uid }) => inheritedUids.includes(uid) || !removedUids.includes(uid),
   );
 
   return [...filteredServerObjects, ...modifiedAvailabilityAssignedTo.added];
@@ -76,10 +83,30 @@ export const PanelAvailabilityAssignedTo = ({
   droppedObjects,
   showDropZone,
   modifiedAvailabilityAssignedTo,
+  tabState,
   setPanelObject,
   setModifiedAvailabilityAssignedTo,
+  updateActivePanelTabState,
 }: PanelAvailabilityAssignedToProps) => {
-  const [{ objectType }, setObjectType] = useState({ objectType: "" });
+  const [{ objectType, hideInherited }, setFilters] = useState(
+    tabState.filters || {
+      objectType: "",
+      hideInherited: false,
+    },
+  );
+
+  const setFiltersWrapper = (
+    updated: Partial<{ objectType: string; hideInherited: boolean }>,
+  ) => {
+    const filters = { objectType, hideInherited, ...updated };
+
+    setFilters(filters);
+    updateActivePanelTabState({
+      [PanelTab.AvailabilityAssignedTo]: {
+        filters,
+      },
+    });
+  };
 
   const {
     data,
@@ -106,7 +133,9 @@ export const PanelAvailabilityAssignedTo = ({
     ?.filter(({ active }) => active)
     .map(({ object: { uid } }) => uid);
 
-  console.log({ data });
+  const toggledOffInheritedObjects = activeUids?.filter((uid) =>
+    modifiedAvailabilityAssignedTo?.removed?.find((obj) => obj.uid === uid),
+  );
 
   useEffect(() => {
     if (droppedObjects && droppedObjects.length > 0) {
@@ -148,8 +177,10 @@ export const PanelAvailabilityAssignedTo = ({
       );
     }
   }, [
+    data,
     droppedObjects,
     modifiedAvailabilityAssignedTo,
+    objects,
     setModifiedAvailabilityAssignedTo,
   ]);
 
@@ -181,20 +212,43 @@ export const PanelAvailabilityAssignedTo = ({
     });
   };
 
+  const handleEnableInheritedAssignedTo = (object: ParsedSkylarkObject) => {
+    const wasOriginallyActive = activeUids?.includes(object.uid);
+    console.log({ wasOriginallyActive });
+    const added = modifiedAvailabilityAssignedTo?.added || [];
+
+    setModifiedAvailabilityAssignedTo({
+      added: wasOriginallyActive ? added : [...added, object],
+      removed:
+        modifiedAvailabilityAssignedTo?.removed.filter(
+          ({ uid }) => uid !== object.uid,
+        ) || [],
+    });
+  };
+
   return (
     <PanelSectionLayout sections={[]} isPage={isPage} withStickyHeaders>
       <div
         data-testid="panel-availability-assigned-to"
         className="pb-32 w-full"
       >
-        <div className="w-full sticky bg-white pt-4 pb-2 top-0">
+        <div className="w-full sticky bg-white pt-4 pb-2 top-0 z-10">
           <PanelSectionTitle text={"Assigned to"} />
           <ObjectTypeSelect
-            onChange={setObjectType}
+            onChange={({ objectType }) => setFiltersWrapper({ objectType })}
             variant="primary"
             selected={objectType}
             placeholder="Filter for Object Type"
-            onValueClear={() => setObjectType({ objectType: "" })}
+            onValueClear={() => setFiltersWrapper({ objectType: "" })}
+            hiddenObjectTypes={[BuiltInSkylarkObjectType.Availability]}
+          />
+          <Checkbox
+            label="Hide objects linked via Inheritance"
+            className="mt-2 font-normal"
+            checked={hideInherited}
+            onCheckedChange={(checked) =>
+              setFiltersWrapper({ hideInherited: Boolean(checked) })
+            }
           />
           <DisplayGraphQLQuery
             label="Get Availability Assigned To"
@@ -204,8 +258,20 @@ export const PanelAvailabilityAssignedTo = ({
           />
         </div>
         {objects
-          ?.filter((o) => !objectType || o.objectType === objectType)
+          ?.filter(
+            (o) =>
+              (!objectType || o.objectType === objectType) &&
+              (!hideInherited ||
+                (hideInherited && !uidsLinkedViaInheritance?.includes(o.uid))),
+          )
           .map((object) => {
+            const isNewlyAdded = addedUids?.includes(object.uid);
+
+            const isInheited = uidsLinkedViaInheritance?.includes(object.uid);
+            const isActive = toggledOffInheritedObjects?.includes(object.uid)
+              ? false
+              : isNewlyAdded || activeUids?.includes(object.uid) || false;
+
             return (
               <ObjectIdentifierCard
                 key={`assigned-to-card-${object.uid}`}
@@ -214,21 +280,34 @@ export const PanelAvailabilityAssignedTo = ({
                 disableForwardClick={inEditMode}
                 hideAvailabilityStatus
                 onForwardClick={setPanelObject}
-                onDeleteClick={() => handleDeletedAssignedTo(object)}
+                onDeleteClick={
+                  !isInheited
+                    ? () => handleDeletedAssignedTo(object)
+                    : undefined
+                }
               >
-                {uidsLinkedViaInheritance?.includes(object.uid) && (
+                {isInheited && (
                   <>
-                    {!activeUids?.includes(object.uid) && (
-                      <p className="text-sm text-manatee-500">Disabled</p>
-                    )}
+                    <div className="relative w-6">
+                      <Switch
+                        size="small"
+                        enabled={isActive}
+                        onChange={(active) =>
+                          active
+                            ? handleEnableInheritedAssignedTo(object)
+                            : handleDeletedAssignedTo(object)
+                        }
+                      />
+                    </div>
                     <AvailabilityInheritanceIcon
                       status={null}
                       className="text-lg"
-                      tooltip="This Availability has been linked to this object via inheritance."
+                      tooltip="Linked by Availability Inheritance"
                     />
                   </>
                 )}
-                {addedUids?.includes(object.uid) && (
+
+                {isNewlyAdded && !isInheited && (
                   <span
                     className={
                       "flex h-4 w-4 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"

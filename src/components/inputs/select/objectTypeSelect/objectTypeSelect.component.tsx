@@ -16,20 +16,26 @@ type ObjectTypeSelectProps = Omit<SelectProps, "options" | "onChange"> & {
     objectType: SkylarkObjectType;
     config?: ParsedSkylarkObjectConfig;
   }) => void;
+  hiddenObjectTypes?: SkylarkObjectType[];
 };
 
 export const ObjectTypeSelect = forwardRef(
   (
-    { ...props }: ObjectTypeSelectProps,
+    { hiddenObjectTypes, ...props }: ObjectTypeSelectProps,
     ref: Ref<HTMLButtonElement | HTMLInputElement>,
   ) => {
     const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
 
     const options: SelectOption[] =
-      objectTypesWithConfig?.map(({ objectType, config }) => ({
-        value: objectType,
-        label: config?.objectTypeDisplayName || objectType,
-      })) || [];
+      objectTypesWithConfig
+        ?.filter(
+          ({ objectType }) =>
+            !hiddenObjectTypes || !hiddenObjectTypes.includes(objectType),
+        )
+        .map(({ objectType, config }) => ({
+          value: objectType,
+          label: config?.objectTypeDisplayName || objectType,
+        })) || [];
 
     const onChangeWrapper = (value: string) => {
       const objectTypeWithConfig = objectTypesWithConfig?.find(

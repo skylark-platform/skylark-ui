@@ -25,7 +25,6 @@ import {
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
 import { Tab, Tabs } from "src/components/tabs/tabs.component";
-import { InfoTooltip } from "src/components/tooltip/tooltip.component";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
 import { useGetObjectAvailabilityInheritance } from "src/hooks/objects/get/useGetObjectAvailabilityInheritance";

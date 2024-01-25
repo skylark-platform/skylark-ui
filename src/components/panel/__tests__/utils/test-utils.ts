@@ -15,7 +15,7 @@ import GQLSkylarkGetSeasonWithRelationshipsQueryFixture from "src/__tests__/fixt
 import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
 import GQLSkylarkGetSkylarkAssetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/skylarkAsset.json";
 import { screen, waitFor, within } from "src/__tests__/utils/test-utils";
-import { PanelTab, PanelTabState } from "src/hooks/state";
+import { PanelTab, PanelTabState, defaultPanelTabState } from "src/hooks/state";
 import {
   BuiltInSkylarkObjectType,
   SkylarkObjectIdentifier,
@@ -78,14 +78,7 @@ export const skylarkAssetObject: SkylarkObjectIdentifier = {
   language: "en-GB",
 };
 
-const tabState: PanelTabState = {
-  Relationships: {
-    active: null,
-  },
-  Availability: {
-    active: null,
-  },
-};
+const tabState: PanelTabState = { ...defaultPanelTabState };
 
 export const defaultProps = {
   closePanel: jest.fn(),

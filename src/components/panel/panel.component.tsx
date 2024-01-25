@@ -813,10 +813,12 @@ export const Panel = ({
               showDropZone={isDraggedObject}
               modifiedAvailabilityAssignedTo={modifiedAvailabilityAssignedTo}
               droppedObjects={droppedObjects}
+              tabState={tabState[PanelTab.AvailabilityAssignedTo]}
               setPanelObject={setPanelObject}
               setModifiedAvailabilityAssignedTo={
                 handleAvailabilityAssignedToModified
               }
+              updateActivePanelTabState={updateActivePanelTabState}
             />
           )}
         </>
