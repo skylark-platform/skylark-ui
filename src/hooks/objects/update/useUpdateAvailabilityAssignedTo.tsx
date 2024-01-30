@@ -39,11 +39,6 @@ export const useUpdateAvailabilityAssignedTo = ({
           modifiedAvailabilityAssignedTo.added,
           modifiedAvailabilityAssignedTo.removed,
         );
-      console.log(
-        allObjectsMeta,
-        updateAvailabilityObjectDimensionsMutation,
-        modifiedAvailabilityAssignedTo,
-      );
       return skylarkRequest(
         "mutation",
         updateAvailabilityObjectDimensionsMutation as RequestDocument,

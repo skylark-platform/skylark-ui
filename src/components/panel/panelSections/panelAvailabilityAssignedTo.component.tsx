@@ -73,7 +73,12 @@ const mergeServerAndModifiedAssignedTo = (
     ({ uid }) => inheritedUids.includes(uid) || !removedUids.includes(uid),
   );
 
-  return [...filteredServerObjects, ...modifiedAvailabilityAssignedTo.added];
+  // Remove any disabled inherited objects that have been enabled
+  const filteredAddedObjects = modifiedAvailabilityAssignedTo.added.filter(
+    ({ uid }) => !inheritedUids.includes(uid),
+  );
+
+  return [...filteredServerObjects, ...filteredAddedObjects];
 };
 
 export const PanelAvailabilityAssignedTo = ({
@@ -214,7 +219,6 @@ export const PanelAvailabilityAssignedTo = ({
 
   const handleEnableInheritedAssignedTo = (object: ParsedSkylarkObject) => {
     const wasOriginallyActive = activeUids?.includes(object.uid);
-    console.log({ wasOriginallyActive });
     const added = modifiedAvailabilityAssignedTo?.added || [];
 
     setModifiedAvailabilityAssignedTo({

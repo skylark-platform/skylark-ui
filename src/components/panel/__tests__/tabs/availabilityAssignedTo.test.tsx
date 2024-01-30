@@ -17,11 +17,52 @@ import {
 } from "src/components/panel/__tests__/utils/test-utils";
 import { Panel } from "src/components/panel/panel.component";
 import { PanelTab } from "src/hooks/state";
+import {
+  GQLSkylarkGetAvailabilityAssignedResponse,
+  SkylarkGraphQLAvailabilityAssignedTo,
+} from "src/interfaces/skylark";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 import { formatObjectField } from "src/lib/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const useRouter = jest.spyOn(require("next/router"), "useRouter");
+
+const generateAssignedToObjects = (
+  numObjects: number,
+  opts?: {
+    inherited?: boolean;
+    inheritanceSource?: boolean;
+    active?: boolean;
+  }[],
+) =>
+  Array.from({ length: numObjects }, (_, i) => ({
+    inherited: opts?.[i].inherited ?? false,
+    inheritance_source: opts?.[i].inheritanceSource ?? false,
+    active: opts?.[i].active ?? true,
+    object: {
+      uid: `image_${i + 1}`,
+      __typename: "SkylarkImage",
+      external_id: null,
+      __SkylarkImage__title: `Image ${i + 1}`,
+      _meta: {
+        available_languages: ["en-GB"],
+        language_data: {
+          language: "en-GB",
+          version: 1,
+        },
+        global_data: {
+          version: 1,
+        },
+        modified: {
+          date: "2024-01-24T16:34:33.821467+00:00",
+        },
+        created: {
+          date: "2024-01-24T16:34:33.821467+00:00",
+        },
+        published: true,
+      },
+    },
+  }));
 
 beforeEach(() => {
   const router = { query: {} };
@@ -202,8 +243,30 @@ describe("availabity assigned to view", () => {
     ).toBeInTheDocument();
   });
 
-  describe.skip("dimensions view - edit", () => {
-    test("selects a new value", async () => {
+  describe("dimensions view - edit", () => {
+    test("removes an object", async () => {
+      server.use(
+        graphql.query(
+          wrapQueryName("GET_AVAILABILITY_ASSIGNED_TO"),
+          (req, res, ctx) => {
+            const data: GQLSkylarkGetAvailabilityAssignedResponse = {
+              getAvailabilityAssignedTo: {
+                assigned_to: {
+                  objects: generateAssignedToObjects(5),
+                },
+              },
+            };
+            return res(ctx.data(data));
+          },
+        ),
+        graphql.mutation(
+          wrapQueryName("UPDATE_AVAILABILITY_ASSIGNED_TO"),
+          (req, res, ctx) => {
+            return res(ctx.data({}));
+          },
+        ),
+      );
+
       render(
         <Panel
           {...defaultProps}
@@ -212,46 +275,46 @@ describe("availabity assigned to view", () => {
         />,
       );
 
-      expect(screen.queryAllByText("Device type")).toHaveLength(0);
-
       await waitFor(() =>
-        expect(screen.getByText("Dimensions")).toBeInTheDocument(),
-      );
-      fireEvent.click(screen.getByText("Dimensions"));
-
-      await waitFor(() =>
-        expect(screen.getByText("Premium")).toBeInTheDocument(),
+        expect(screen.getByText("Image 2")).toBeInTheDocument(),
       );
 
-      const displayDiv = screen.getByText("Premium").parentElement
-        ?.parentElement as HTMLDivElement;
-      const wrapper = displayDiv?.parentElement as HTMLDivElement;
-      fireEvent.click(wrapper);
-
-      const combobox = within(wrapper).getByRole("combobox");
-      fireEvent.click(combobox);
-
-      expect(screen.queryAllByText("Standard")).toHaveLength(2);
-
-      // Select new option
-      expect(screen.queryByText("Kids")).toBeInTheDocument();
-      expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(0);
-      fireEvent.click(screen.getByText("Kids"));
-
-      // Check Pill is added
-      expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(1);
+      await fireEvent.click(screen.getByText("Edit Assigned To"));
       expect(screen.getByText("Editing")).toBeInTheDocument();
 
-      // Cancel
-      const cancelButton = screen.getByText("Cancel");
-      fireEvent.click(cancelButton);
+      const deleteButton = screen.getAllByTestId("object-identifier-delete")[1];
+      await fireEvent.click(deleteButton);
+      expect(screen.queryByText("Image 2")).not.toBeInTheDocument();
 
-      await waitFor(() =>
-        expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(0),
-      );
+      await fireEvent.click(screen.getByText("Save"));
     });
 
-    test("removes a value", async () => {
+    test("disables an object which is linked via inheritance", async () => {
+      let afterSave = false;
+      server.use(
+        graphql.query(
+          wrapQueryName("GET_AVAILABILITY_ASSIGNED_TO"),
+          (req, res, ctx) => {
+            const data: GQLSkylarkGetAvailabilityAssignedResponse = {
+              getAvailabilityAssignedTo: {
+                assigned_to: {
+                  objects: generateAssignedToObjects(1, [
+                    { inherited: true, active: afterSave ? false : true },
+                  ]),
+                },
+              },
+            };
+            return res(ctx.data(data));
+          },
+        ),
+        graphql.mutation(
+          wrapQueryName("UPDATE_AVAILABILITY_ASSIGNED_TO"),
+          (req, res, ctx) => {
+            return res(ctx.data({}));
+          },
+        ),
+      );
+
       render(
         <Panel
           {...defaultProps}
@@ -260,34 +323,60 @@ describe("availabity assigned to view", () => {
         />,
       );
 
-      expect(screen.queryAllByText("Device type")).toHaveLength(0);
-
       await waitFor(() =>
-        expect(screen.getByText("Dimensions")).toBeInTheDocument(),
-      );
-      fireEvent.click(screen.getByText("Dimensions"));
-
-      await waitFor(() =>
-        expect(screen.getByText("Premium")).toBeInTheDocument(),
+        expect(screen.getByText("Image 1")).toBeInTheDocument(),
       );
 
-      const deselectButton = within(
-        screen.getByText("Premium").parentElement as HTMLDivElement,
-      ).getByRole("button");
-      fireEvent.click(deselectButton);
-
-      // Check Pill is added
-      expect(screen.queryAllByText("Premium")).toHaveLength(0);
+      await fireEvent.click(screen.getByText("Edit Assigned To"));
       expect(screen.getByText("Editing")).toBeInTheDocument();
 
-      // Cancel
-      const cancelButton = screen.getByText("Cancel");
-      fireEvent.click(cancelButton);
+      let activeToggle = await screen.findByRole("switch");
+      expect(activeToggle).toHaveAttribute("aria-checked", "true");
 
-      expect(screen.queryAllByText("Premium")).toHaveLength(1);
+      await fireEvent.click(activeToggle);
+      expect(activeToggle).toHaveAttribute("aria-checked", "false");
+
+      await fireEvent.click(screen.getByText("Save"));
+      afterSave = true;
+      await waitFor(() =>
+        expect(screen.queryByText("Editing")).not.toBeInTheDocument(),
+      );
+      expect(screen.getByText("Image 1")).toBeInTheDocument();
+
+      await fireEvent.click(screen.getByText("Edit Assigned To"));
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      activeToggle = await screen.findByRole("switch");
+      expect(activeToggle).toHaveAttribute("aria-checked", "false");
     });
 
-    test("edits and saves", async () => {
+    test("enables an object which is linked via inheritance", async () => {
+      let calls = 0;
+      server.use(
+        graphql.query(
+          wrapQueryName("GET_AVAILABILITY_ASSIGNED_TO"),
+          (req, res, ctx) => {
+            const data: GQLSkylarkGetAvailabilityAssignedResponse = {
+              getAvailabilityAssignedTo: {
+                assigned_to: {
+                  objects: generateAssignedToObjects(1, [
+                    { inherited: true, active: calls > 0 ? true : false },
+                  ]),
+                },
+              },
+            };
+            calls += 1;
+            return res(ctx.data(data));
+          },
+        ),
+        graphql.mutation(
+          wrapQueryName("UPDATE_AVAILABILITY_ASSIGNED_TO"),
+          (req, res, ctx) => {
+            return res(ctx.data({}));
+          },
+        ),
+      );
+
       render(
         <Panel
           {...defaultProps}
@@ -296,53 +385,48 @@ describe("availabity assigned to view", () => {
         />,
       );
 
-      expect(screen.queryAllByText("Device type")).toHaveLength(0);
-
       await waitFor(() =>
-        expect(screen.getByText("Dimensions")).toBeInTheDocument(),
-      );
-      fireEvent.click(screen.getByText("Dimensions"));
-
-      await waitFor(() =>
-        expect(screen.getByText("Premium")).toBeInTheDocument(),
+        expect(screen.getByText("Image 1")).toBeInTheDocument(),
       );
 
-      const displayDiv = screen.getByText("Premium").parentElement
-        ?.parentElement as HTMLDivElement;
-      const wrapper = displayDiv?.parentElement as HTMLDivElement;
-      fireEvent.click(wrapper);
-
-      const combobox = within(wrapper).getByRole("combobox");
-      fireEvent.click(combobox);
-
-      expect(screen.queryAllByText("Standard")).toHaveLength(2);
-
-      // Select new option
-      expect(screen.queryByText("Kids")).toBeInTheDocument();
-      expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(0);
-      fireEvent.click(screen.getByText("Kids"));
-
-      // Check Pill is added
-      expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(1);
+      await fireEvent.click(screen.getByText("Edit Assigned To"));
       expect(screen.getByText("Editing")).toBeInTheDocument();
 
-      // Save
-      const saveButton = screen.getByText("Save");
-      fireEvent.click(saveButton);
+      let activeToggle = await screen.findByRole("switch");
+      expect(activeToggle).toHaveAttribute("aria-checked", "false");
 
+      await fireEvent.click(activeToggle);
+      expect(activeToggle).toHaveAttribute("aria-checked", "true");
+
+      await fireEvent.click(screen.getByText("Save"));
       await waitFor(() =>
         expect(screen.queryByText("Editing")).not.toBeInTheDocument(),
       );
 
-      await waitFor(() =>
-        expect(screen.getByText("Edit Dimensions")).toBeInTheDocument(),
-      );
+      await fireEvent.click(screen.getByText("Edit Assigned To"));
+      expect(screen.getByText("Editing")).toBeInTheDocument();
+
+      activeToggle = await screen.findByRole("switch");
+      expect(activeToggle).toHaveAttribute("aria-checked", "true");
     });
 
     test("edits and saves, but GraphQL returns an error", async () => {
       server.use(
+        graphql.query(
+          wrapQueryName("GET_AVAILABILITY_ASSIGNED_TO"),
+          (req, res, ctx) => {
+            const data: GQLSkylarkGetAvailabilityAssignedResponse = {
+              getAvailabilityAssignedTo: {
+                assigned_to: {
+                  objects: generateAssignedToObjects(5),
+                },
+              },
+            };
+            return res(ctx.data(data));
+          },
+        ),
         graphql.mutation(
-          wrapQueryName("UPDATE_AVAILABILITY_DIMENSIONS"),
+          wrapQueryName("UPDATE_AVAILABILITY_ASSIGNED_TO"),
           saveGraphQLError,
         ),
       );
@@ -355,39 +439,16 @@ describe("availabity assigned to view", () => {
         />,
       );
 
-      expect(screen.queryAllByText("Device type")).toHaveLength(0);
-
       await waitFor(() =>
-        expect(screen.getByText("Dimensions")).toBeInTheDocument(),
-      );
-      fireEvent.click(screen.getByText("Dimensions"));
-
-      await waitFor(() =>
-        expect(screen.getByText("Premium")).toBeInTheDocument(),
+        expect(screen.getByText("Image 1")).toBeInTheDocument(),
       );
 
-      const displayDiv = screen.getByText("Premium").parentElement
-        ?.parentElement as HTMLDivElement;
-      const wrapper = displayDiv?.parentElement as HTMLDivElement;
-      fireEvent.click(wrapper);
-
-      const combobox = within(wrapper).getByRole("combobox");
-      fireEvent.click(combobox);
-
-      expect(screen.queryAllByText("Standard")).toHaveLength(2);
-
-      // Select new option
-      expect(screen.queryByText("Kids")).toBeInTheDocument();
-      expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(0);
-      fireEvent.click(screen.getByText("Kids"));
-
-      // Check Pill is added
-      expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(1);
+      await fireEvent.click(screen.getByText("Edit Assigned To"));
       expect(screen.getByText("Editing")).toBeInTheDocument();
 
-      // Save
-      const saveButton = screen.getByText("Save");
-      fireEvent.click(saveButton);
+      const deleteButton = screen.getAllByTestId("object-identifier-delete")[0];
+      await fireEvent.click(deleteButton);
+      await fireEvent.click(screen.getByText("Save"));
 
       await validateErrorToastShown();
 

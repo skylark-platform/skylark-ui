@@ -480,8 +480,7 @@ export const Panel = ({
         setModifiedAvailabilityAssignedTo(null);
         if (panelInEditMode) setEditMode(false);
       },
-      // onError: showUpdateErrorToast,
-      onError: (e) => console.log(e),
+      onError: showUpdateErrorToast,
     });
 
   const saveActiveTabChanges = (opts?: { draft?: boolean }) => {
