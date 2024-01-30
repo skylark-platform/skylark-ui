@@ -239,3 +239,15 @@ AvailabilityDimensions.args = {
   },
   tab: PanelTab.AvailabilityDimensions,
 };
+
+export const AvailabilityAssignedTo = Template.bind({});
+AvailabilityAssignedTo.parameters = Default.parameters;
+AvailabilityAssignedTo.args = {
+  ...Default.args,
+  object: {
+    objectType: "Availability",
+    uid: GQLSkylarkGetAvailabilityQueryFixture.data.getObject.uid,
+    language: "",
+  },
+  tab: PanelTab.AvailabilityAssignedTo,
+};

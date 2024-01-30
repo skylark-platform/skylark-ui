@@ -186,9 +186,7 @@ export const PanelContent = ({
           data-testid="panel-content-items"
           className="flex-grow"
         >
-          {!isLoading && objects && objects?.length === 0 && (
-            <PanelEmptyDataText />
-          )}
+          {!isLoading && objects?.length === 0 && <PanelEmptyDataText />}
           {objects.map((item, index) => {
             const { object, config, meta, position } = item;
             const isNewObject = hasProperty(item, "isNewObject");

@@ -1,6 +1,5 @@
 import { graphql } from "msw";
 
-import GQLSkylarkListAvailabilityDimensionsQueryFixture from "src/__tests__/fixtures/skylark/queries/listDimensions.json";
 import { server } from "src/__tests__/mocks/server";
 import {
   render,
@@ -17,12 +16,8 @@ import {
 } from "src/components/panel/__tests__/utils/test-utils";
 import { Panel } from "src/components/panel/panel.component";
 import { PanelTab } from "src/hooks/state";
-import {
-  GQLSkylarkGetAvailabilityAssignedResponse,
-  SkylarkGraphQLAvailabilityAssignedTo,
-} from "src/interfaces/skylark";
+import { GQLSkylarkGetAvailabilityAssignedResponse } from "src/interfaces/skylark";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
-import { formatObjectField } from "src/lib/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const useRouter = jest.spyOn(require("next/router"), "useRouter");
