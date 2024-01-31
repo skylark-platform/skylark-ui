@@ -136,7 +136,7 @@ export interface ParsedAvailabilityAssignedToObject {
   objectType: SkylarkObjectType;
   object: ParsedSkylarkObject;
   inherited: boolean;
-  inheritedSource: boolean;
+  inheritanceSource: boolean;
   active: boolean;
 }
 

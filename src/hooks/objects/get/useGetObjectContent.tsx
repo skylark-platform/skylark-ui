@@ -190,7 +190,7 @@ export const useGetObjectContent = (
   }
 
   return {
-    data: data,
+    data,
     isLoading: isLoading || !query,
     query,
     variables,

@@ -45,7 +45,7 @@ const select = (
         return {
           objectType: object.__typename,
           inherited: inherited || false,
-          inheritedSource: inheritance_source || false,
+          inheritanceSource: inheritance_source || false,
           active: active ?? true,
           object: parsedObject,
         };
