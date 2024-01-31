@@ -50,32 +50,31 @@ const mergeServerAndModifiedAssignedTo = (
   serverAssignedTo: ParsedAvailabilityAssignedToObject[] | undefined,
   modifiedAvailabilityAssignedTo: PanelAvailabilityAssignedToProps["modifiedAvailabilityAssignedTo"],
 ): ParsedSkylarkObject[] => {
-  if (!serverAssignedTo) {
+  if (!serverAssignedTo && !modifiedAvailabilityAssignedTo) {
     return [];
   }
 
-  const parsedServerAssignedTo: ParsedSkylarkObject[] = serverAssignedTo.map(
-    ({ object }) => object,
-  );
+  const parsedServerAssignedTo: ParsedSkylarkObject[] =
+    serverAssignedTo?.map(({ object }) => object) || [];
 
   if (!modifiedAvailabilityAssignedTo) {
     return parsedServerAssignedTo;
   }
 
   const inheritedUids = serverAssignedTo
-    .filter(({ inherited }) => inherited)
+    ?.filter(({ inherited }) => inherited)
     .map(({ object: { uid } }) => uid);
 
   const removedUids = modifiedAvailabilityAssignedTo.removed.map(
     ({ uid }) => uid,
   );
   const filteredServerObjects = parsedServerAssignedTo.filter(
-    ({ uid }) => inheritedUids.includes(uid) || !removedUids.includes(uid),
+    ({ uid }) => inheritedUids?.includes(uid) || !removedUids.includes(uid),
   );
 
   // Remove any disabled inherited objects that have been enabled
   const filteredAddedObjects = modifiedAvailabilityAssignedTo.added.filter(
-    ({ uid }) => !inheritedUids.includes(uid),
+    ({ uid }) => !inheritedUids?.includes(uid),
   );
 
   return [...filteredServerObjects, ...filteredAddedObjects];

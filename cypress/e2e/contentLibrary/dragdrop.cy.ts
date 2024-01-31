@@ -388,8 +388,6 @@ describe("Drag and Drop - Content and Relationship tab", () => {
 
         cy.contains("Assigned To").click();
 
-        cy.contains("Assign to multiple objects dropzone");
-
         searchContentLibrary("Homepage");
 
         cy.get("[data-cy=panel-drop-zone]").should("not.exist");
@@ -429,8 +427,6 @@ describe("Drag and Drop - Content and Relationship tab", () => {
         searchContentLibraryAndOpenPanel(allDevicesAllCustomersAvailability);
 
         cy.contains("Assigned To").click();
-
-        cy.contains("Assign to multiple objects dropzone");
 
         cy.get("[data-cy=panel-drop-zone]").should("not.exist");
 

@@ -174,6 +174,10 @@ export const useGetObjectContent = (
     >({
       queryFn,
       queryKey,
+      initialData: {
+        pages: [{ getObjectContent: { content: { objects: [] } } }],
+        pageParams: [],
+      },
       initialPageParam: "",
       getNextPageParam: (lastPage): string | undefined =>
         lastPage.getObjectContent.content?.next_token || undefined,
@@ -186,7 +190,7 @@ export const useGetObjectContent = (
   }
 
   return {
-    data,
+    data: data,
     isLoading: isLoading || !query,
     query,
     variables,
