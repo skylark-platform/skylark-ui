@@ -27,6 +27,12 @@ export interface PanelTabState {
       tabId: string;
     } | null;
   };
+  [PanelTab.AvailabilityAssignedTo]: {
+    filters: {
+      objectType: string;
+      hideInherited: boolean;
+    } | null;
+  };
 }
 
 export interface PanelObject extends SkylarkObjectIdentifier {
@@ -34,12 +40,15 @@ export interface PanelObject extends SkylarkObjectIdentifier {
   tabState: PanelTabState;
 }
 
-const defaultPanelTabState: PanelTabState = {
+export const defaultPanelTabState: PanelTabState = {
   [PanelTab.Relationships]: {
     active: null,
   },
   [PanelTab.Availability]: {
     active: null,
+  },
+  [PanelTab.AvailabilityAssignedTo]: {
+    filters: null,
   },
 };
 
@@ -55,6 +64,10 @@ export const mergedPanelTabStates = (
     [PanelTab.Availability]: {
       ...previousState[PanelTab.Availability],
       ...newState?.[PanelTab.Availability],
+    },
+    [PanelTab.AvailabilityAssignedTo]: {
+      ...previousState[PanelTab.AvailabilityAssignedTo],
+      ...newState?.[PanelTab.AvailabilityAssignedTo],
     },
   };
 };

@@ -3,7 +3,12 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 
 import { Panel } from "src/components/panel";
-import { PanelTab, PanelTabState, mergedPanelTabStates } from "src/hooks/state";
+import {
+  PanelTab,
+  PanelTabState,
+  defaultPanelTabState,
+  mergedPanelTabStates,
+} from "src/hooks/state";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 
 const Object = () => {
@@ -12,14 +17,7 @@ const Object = () => {
 
   const [tab, setTab] = useState<PanelTab>(PanelTab.Metadata);
 
-  const [tabState, setTabState] = useState<PanelTabState>({
-    [PanelTab.Relationships]: {
-      active: null,
-    },
-    [PanelTab.Availability]: {
-      active: null,
-    },
-  });
+  const [tabState, setTabState] = useState<PanelTabState>(defaultPanelTabState);
 
   const object = useMemo(
     () =>

@@ -1,44 +1,149 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
+import { AvailabilityInheritanceIcon } from "src/components/availability";
+import { Checkbox } from "src/components/inputs/checkbox";
+import { ObjectTypeSelect } from "src/components/inputs/select";
+import { Switch } from "src/components/inputs/switch/switch.component";
+import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import {
   HandleDropError,
   handleDroppedObjectsToAssignToAvailability,
 } from "src/components/panel/panel.lib";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
+import { PanelLoading } from "src/components/panel/panelLoading";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
-import { formatObjectField } from "src/lib/utils";
+import { useGetAvailabilityAssignedTo } from "src/hooks/availability/useAvailabilityAssignedTo";
+import { PanelTab, PanelTabState } from "src/hooks/state";
+import {
+  BuiltInSkylarkObjectType,
+  ParsedAvailabilityAssignedToObject,
+  ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
+} from "src/interfaces/skylark";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
 interface PanelAvailabilityAssignedToProps {
+  uid: string;
   isPage?: boolean;
   inEditMode: boolean;
   showDropZone?: boolean;
   droppedObjects?: ParsedSkylarkObject[];
-  modifiedAvailabilityAssignedTo: { added: ParsedSkylarkObject[] } | null;
+  modifiedAvailabilityAssignedTo: {
+    added: ParsedSkylarkObject[];
+    removed: ParsedSkylarkObject[];
+  } | null;
+  tabState: PanelTabState[PanelTab.AvailabilityAssignedTo];
+  setPanelObject: (o: SkylarkObjectIdentifier) => void;
   setModifiedAvailabilityAssignedTo: (
     args: {
       added: ParsedSkylarkObject[];
+      removed: ParsedSkylarkObject[];
     },
     errors?: HandleDropError[],
   ) => void;
+  updateActivePanelTabState: (s: Partial<PanelTabState>) => void;
 }
 
+const mergeServerAndModifiedAssignedTo = (
+  serverAssignedTo: ParsedAvailabilityAssignedToObject[] | undefined,
+  modifiedAvailabilityAssignedTo: PanelAvailabilityAssignedToProps["modifiedAvailabilityAssignedTo"],
+): ParsedSkylarkObject[] => {
+  if (!serverAssignedTo && !modifiedAvailabilityAssignedTo) {
+    return [];
+  }
+
+  const parsedServerAssignedTo: ParsedSkylarkObject[] =
+    serverAssignedTo?.map(({ object }) => object) || [];
+
+  if (!modifiedAvailabilityAssignedTo) {
+    return parsedServerAssignedTo;
+  }
+
+  const inheritedUids = serverAssignedTo
+    ?.filter(({ inherited }) => inherited)
+    .map(({ object: { uid } }) => uid);
+
+  const removedUids = modifiedAvailabilityAssignedTo.removed.map(
+    ({ uid }) => uid,
+  );
+  const filteredServerObjects = parsedServerAssignedTo.filter(
+    ({ uid }) => inheritedUids?.includes(uid) || !removedUids.includes(uid),
+  );
+
+  // Remove any disabled inherited objects that have been enabled
+  const filteredAddedObjects = modifiedAvailabilityAssignedTo.added.filter(
+    ({ uid }) => !inheritedUids?.includes(uid),
+  );
+
+  return [...filteredServerObjects, ...filteredAddedObjects];
+};
+
 export const PanelAvailabilityAssignedTo = ({
+  uid,
   isPage,
   inEditMode,
   droppedObjects,
   showDropZone,
   modifiedAvailabilityAssignedTo,
+  tabState,
+  setPanelObject,
   setModifiedAvailabilityAssignedTo,
+  updateActivePanelTabState,
 }: PanelAvailabilityAssignedToProps) => {
+  const [{ objectType, hideInherited }, setFilters] = useState(
+    tabState.filters || {
+      objectType: "",
+      hideInherited: false,
+    },
+  );
+
+  const setFiltersWrapper = (
+    updated: Partial<{ objectType: string; hideInherited: boolean }>,
+  ) => {
+    const filters = { objectType, hideInherited, ...updated };
+
+    setFilters(filters);
+    updateActivePanelTabState({
+      [PanelTab.AvailabilityAssignedTo]: {
+        filters,
+      },
+    });
+  };
+
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    query,
+    variables,
+    fetchNextPage,
+  } = useGetAvailabilityAssignedTo(uid);
+
+  const objects = mergeServerAndModifiedAssignedTo(
+    data,
+    modifiedAvailabilityAssignedTo,
+  );
+
+  const objectsLinkedViaInheritance = data?.filter(
+    ({ inherited }) => inherited,
+  );
+  const uidsLinkedViaInheritance = objectsLinkedViaInheritance?.map(
+    ({ object: { uid } }) => uid,
+  );
+  const activeUids = objectsLinkedViaInheritance
+    ?.filter(({ active }) => active)
+    .map(({ object: { uid } }) => uid);
+
+  const toggledOffInheritedObjects = activeUids?.filter((uid) =>
+    modifiedAvailabilityAssignedTo?.removed?.find((obj) => obj.uid === uid),
+  );
+
   useEffect(() => {
     if (droppedObjects && droppedObjects.length > 0) {
-      const existingUids = modifiedAvailabilityAssignedTo?.added.map(
-        ({ uid }) => uid,
-      );
+      const existingUids = objects.map(({ uid }) => uid);
       const uniqueDroppedObjects = existingUids
         ? droppedObjects.filter(({ uid }) => !existingUids.includes(uid))
         : droppedObjects;
@@ -48,21 +153,38 @@ export const PanelAvailabilityAssignedTo = ({
           newObjects: uniqueDroppedObjects,
         });
 
+      const serverAssignedToUids =
+        data?.map(({ object: { uid } }) => uid) || [];
+      const updatedAssignedToObjectsWithExistingServerObjectsFilteredOut =
+        updatedAssignedToObjects.filter(
+          ({ uid }) => !serverAssignedToUids.includes(uid),
+        );
+
+      const updatedAssignedToUids = updatedAssignedToObjects.map(
+        ({ uid }) => uid,
+      );
+
       setModifiedAvailabilityAssignedTo(
         {
           added: modifiedAvailabilityAssignedTo
             ? [
                 ...modifiedAvailabilityAssignedTo.added,
-                ...updatedAssignedToObjects,
+                ...updatedAssignedToObjectsWithExistingServerObjectsFilteredOut,
               ]
-            : updatedAssignedToObjects,
+            : updatedAssignedToObjectsWithExistingServerObjectsFilteredOut,
+          removed:
+            modifiedAvailabilityAssignedTo?.removed.filter(
+              ({ uid }) => !updatedAssignedToUids.includes(uid),
+            ) || [],
         },
         errors,
       );
     }
   }, [
+    data,
     droppedObjects,
     modifiedAvailabilityAssignedTo,
+    objects,
     setModifiedAvailabilityAssignedTo,
   ]);
 
@@ -70,48 +192,139 @@ export const PanelAvailabilityAssignedTo = ({
     return <PanelDropZone />;
   }
 
+  const addedUids = modifiedAvailabilityAssignedTo?.added.map(({ uid }) => uid);
+
+  const handleDeletedAssignedTo = (object: ParsedSkylarkObject) => {
+    const isAlreadyRemoved = Boolean(
+      modifiedAvailabilityAssignedTo?.removed &&
+        modifiedAvailabilityAssignedTo.removed.findIndex(
+          ({ uid }) => object.uid === uid,
+        ) > -1,
+    );
+
+    const added = modifiedAvailabilityAssignedTo?.added.filter(
+      ({ uid }) => uid !== object.uid,
+    );
+
+    const removed = isAlreadyRemoved
+      ? modifiedAvailabilityAssignedTo?.removed
+      : [...(modifiedAvailabilityAssignedTo?.removed || []), object];
+
+    setModifiedAvailabilityAssignedTo({
+      added: added || [],
+      removed: removed || [],
+    });
+  };
+
+  const handleEnableInheritedAssignedTo = (object: ParsedSkylarkObject) => {
+    const wasOriginallyActive = activeUids?.includes(object.uid);
+    const added = modifiedAvailabilityAssignedTo?.added || [];
+
+    setModifiedAvailabilityAssignedTo({
+      added: wasOriginallyActive ? added : [...added, object],
+      removed:
+        modifiedAvailabilityAssignedTo?.removed.filter(
+          ({ uid }) => uid !== object.uid,
+        ) || [],
+    });
+  };
+
   return (
-    <PanelSectionLayout sections={[]} isPage={isPage}>
-      <div data-testid="panel-availability-assigned-to">
-        <PanelSectionTitle
-          text={formatObjectField("Assign to multiple objects dropzone")}
-        />
-        <p className="my-2">
-          This tab is in an <strong>EXPERIMENTAL</strong> stage.
-        </p>
-        <p className="my-2">
-          <strong>Use with caution.</strong>
-        </p>
-        {(!modifiedAvailabilityAssignedTo?.added ||
-          modifiedAvailabilityAssignedTo.added.length === 0) && (
-          <p>
-            Drop objects from the Content Library here to assign them to this
-            Availability.
-          </p>
-        )}
-      </div>
-      {inEditMode &&
-        modifiedAvailabilityAssignedTo?.added.map((obj) => (
-          <ObjectIdentifierCard
-            key={`assigned-to-card-${obj.uid}`}
-            object={obj}
-            disableDeleteClick={!inEditMode}
-            disableForwardClick={inEditMode}
-            onDeleteClick={() =>
-              setModifiedAvailabilityAssignedTo({
-                added: modifiedAvailabilityAssignedTo.added.filter(
-                  ({ uid }) => uid !== obj.uid,
-                ),
-              })
+    <PanelSectionLayout sections={[]} isPage={isPage} withStickyHeaders>
+      <div
+        data-testid="panel-availability-assigned-to"
+        className="pb-32 w-full"
+      >
+        <div className="w-full sticky bg-white pt-4 pb-2 top-0 z-10">
+          <PanelSectionTitle text={"Assigned to"} />
+          <ObjectTypeSelect
+            onChange={({ objectType }) => setFiltersWrapper({ objectType })}
+            variant="primary"
+            selected={objectType}
+            placeholder="Filter for Object Type"
+            onValueClear={() => setFiltersWrapper({ objectType: "" })}
+            hiddenObjectTypes={[BuiltInSkylarkObjectType.Availability]}
+          />
+          <Checkbox
+            label="Hide objects linked via Inheritance"
+            className="mt-2 font-normal"
+            checked={hideInherited}
+            onCheckedChange={(checked) =>
+              setFiltersWrapper({ hideInherited: Boolean(checked) })
             }
-          >
-            <span
-              className={
-                "flex h-4 w-4 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
-              }
-            />
-          </ObjectIdentifierCard>
-        ))}
+          />
+          <DisplayGraphQLQuery
+            label="Get Availability Assigned To"
+            query={query}
+            variables={variables}
+            buttonClassName="absolute -right-4 md:-right-6 top-0"
+          />
+        </div>
+        {objects
+          ?.filter(
+            (o) =>
+              (!objectType || o.objectType === objectType) &&
+              (!hideInherited ||
+                (hideInherited && !uidsLinkedViaInheritance?.includes(o.uid))),
+          )
+          .map((object) => {
+            const isNewlyAdded = addedUids?.includes(object.uid);
+
+            const isInheited = uidsLinkedViaInheritance?.includes(object.uid);
+            const isActive = toggledOffInheritedObjects?.includes(object.uid)
+              ? false
+              : isNewlyAdded || activeUids?.includes(object.uid) || false;
+
+            return (
+              <ObjectIdentifierCard
+                key={`assigned-to-card-${object.uid}`}
+                object={object}
+                disableDeleteClick={!inEditMode}
+                disableForwardClick={inEditMode}
+                hideAvailabilityStatus
+                onForwardClick={setPanelObject}
+                onDeleteClick={
+                  !isInheited
+                    ? () => handleDeletedAssignedTo(object)
+                    : undefined
+                }
+              >
+                {isInheited && (
+                  <>
+                    <div className="relative w-6">
+                      <Switch
+                        size="small"
+                        enabled={isActive}
+                        onChange={(active) =>
+                          active
+                            ? handleEnableInheritedAssignedTo(object)
+                            : handleDeletedAssignedTo(object)
+                        }
+                      />
+                    </div>
+                    <AvailabilityInheritanceIcon
+                      status={null}
+                      className="text-lg"
+                      tooltip="Linked by Availability Inheritance"
+                    />
+                  </>
+                )}
+
+                {isNewlyAdded && !isInheited && (
+                  <span
+                    className={
+                      "flex h-4 w-4 items-center justify-center rounded-full bg-success px-1 pb-0.5 text-center text-white transition-colors"
+                    }
+                  />
+                )}
+              </ObjectIdentifierCard>
+            );
+          })}
+      </div>
+      <PanelLoading
+        isLoading={isLoading || isFetchingNextPage || hasNextPage}
+        loadMore={fetchNextPage}
+      />
     </PanelSectionLayout>
   );
 };

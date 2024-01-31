@@ -3,4 +3,4 @@ export * from "./getObject";
 export * from "./getObjectGeneric";
 export * from "./search";
 export * from "./objectsConfig";
-export * from "./availabilityDimensions";
+export * from "./availability";

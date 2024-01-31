@@ -301,7 +301,10 @@ export const Panel = ({
     }>({ original: null, updated: null });
 
   const [modifiedAvailabilityAssignedTo, setModifiedAvailabilityAssignedTo] =
-    useState<{ added: ParsedSkylarkObject[] } | null>(null);
+    useState<{
+      added: ParsedSkylarkObject[];
+      removed: ParsedSkylarkObject[];
+    } | null>(null);
 
   const { uid, objectType, language } = object;
   const {
@@ -594,6 +597,7 @@ export const Panel = ({
     (
       updatedAssignedToObjects: {
         added: ParsedSkylarkObject[];
+        removed: ParsedSkylarkObject[];
       },
       errors?: HandleDropError[],
     ) => {
@@ -803,13 +807,17 @@ export const Panel = ({
           {selectedTab === PanelTab.AvailabilityAssignedTo && (
             <PanelAvailabilityAssignedTo
               isPage={isPage}
+              uid={uid}
               inEditMode={inEditMode}
               showDropZone={isDraggedObject}
               modifiedAvailabilityAssignedTo={modifiedAvailabilityAssignedTo}
               droppedObjects={droppedObjects}
+              tabState={tabState[PanelTab.AvailabilityAssignedTo]}
+              setPanelObject={setPanelObject}
               setModifiedAvailabilityAssignedTo={
                 handleAvailabilityAssignedToModified
               }
+              updateActivePanelTabState={updateActivePanelTabState}
             />
           )}
         </>

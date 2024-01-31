@@ -1,4 +1,5 @@
 import {
+  InfiniteData,
   QueryClient,
   QueryFunction,
   QueryKey,
@@ -6,7 +7,6 @@ import {
 } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
 import { RequestDocument } from "graphql-request";
-import { useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import {
@@ -18,12 +18,26 @@ import {
   GQLSkylarkErrorResponse,
   SkylarkObjectMeta,
   GQLSkylarkGetObjectContentResponse,
+  ParsedSkylarkObjectContent,
+  ParsedSkylarkObjectContentObject,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectContentQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import { parseObjectContent } from "src/lib/skylark/parsers";
 
 import { GetObjectOptions } from "./useGetObject";
+
+const select = (
+  data: InfiniteData<GQLSkylarkGetObjectContentResponse>,
+): ParsedSkylarkObjectContentObject[] => {
+  const contentObjects =
+    data?.pages?.flatMap(
+      (page) => page.getObjectContent.content?.objects || [],
+    ) || [];
+
+  const parsedContent = parseObjectContent({ objects: contentObjects });
+  return parsedContent.objects;
+};
 
 export const createGetObjectContentKeyPrefix = ({
   objectType,
@@ -155,32 +169,28 @@ export const useGetObjectContent = (
   const { data, hasNextPage, fetchNextPage, isLoading, isFetchingNextPage } =
     useInfiniteQuery<
       GQLSkylarkGetObjectContentResponse,
-      GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentResponse>
+      GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentResponse>,
+      ParsedSkylarkObjectContentObject[]
     >({
       queryFn,
       queryKey,
+      initialData: {
+        pages: [{ getObjectContent: { content: { objects: [] } } }],
+        pageParams: [],
+      },
       initialPageParam: "",
       getNextPageParam: (lastPage): string | undefined =>
         lastPage.getObjectContent.content?.next_token || undefined,
       enabled: !!query,
+      select,
     });
 
   if (hasNextPage) {
     fetchNextPage();
   }
 
-  const content = useMemo(() => {
-    const contentObjects =
-      data?.pages?.flatMap(
-        (page) => page.getObjectContent.content?.objects || [],
-      ) || [];
-
-    const parsedContent = parseObjectContent({ objects: contentObjects });
-    return parsedContent;
-  }, [data?.pages]);
-
   return {
-    data: content.objects,
+    data,
     isLoading: isLoading || !query,
     query,
     variables,

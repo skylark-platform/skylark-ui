@@ -126,6 +126,15 @@ export type SkylarkGraphQLObject = {
     | undefined;
 };
 
+export interface SkylarkGraphQLAvailabilityAssignedTo {
+  next_token?: NextToken;
+  objects: {
+    inherited: SkylarkGraphQLAvailability["inherited"];
+    inheritance_source: SkylarkGraphQLAvailability["inheritance_source"];
+    active: SkylarkGraphQLAvailability["active"];
+    object: SkylarkGraphQLObject;
+  }[];
+}
 export type SkylarkGraphQLObjectList = {
   __typename: string;
   next_token: NextToken;

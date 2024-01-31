@@ -3,7 +3,10 @@ import dayjs, { Dayjs } from "dayjs";
 import { AnimatePresence, m } from "framer-motion";
 import { Fragment, ReactNode, useEffect, useMemo, useState } from "react";
 
-import { AvailabilityLabel } from "src/components/availability";
+import {
+  AvailabilityInheritanceIcon,
+  AvailabilityLabel,
+} from "src/components/availability";
 import { OpenObjectButton } from "src/components/button";
 import { Switch } from "src/components/inputs/switch/switch.component";
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
@@ -22,7 +25,6 @@ import {
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
 import { Tab, Tabs } from "src/components/tabs/tabs.component";
-import { InfoTooltip } from "src/components/tooltip/tooltip.component";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
 import { useGetObjectAvailabilityInheritance } from "src/hooks/objects/get/useGetObjectAvailabilityInheritance";
@@ -221,10 +223,12 @@ const SectionHeader = ({
 
 const InheritanceSummary = ({
   availability,
+  status,
   setActiveAvailability,
 }: {
   objectType: SkylarkObjectType;
   availability: ParsedSkylarkObjectAvailabilityObject;
+  status: AvailabilityStatus | null;
   setActiveAvailability: (
     a: { object: ParsedSkylarkObjectAvailabilityObject; tabId: TabID } | null,
   ) => void;
@@ -237,7 +241,11 @@ const InheritanceSummary = ({
         {availability.inherited && (
           <div className="ml-0 flex items-center whitespace-pre mt-0 text-manatee-400">
             <p className="font-semibold">Inherited</p>
-            <InfoTooltip
+            <AvailabilityInheritanceIcon
+              className="h-4 w-4"
+              status={
+                availability.active ? status : AvailabilityStatus.Unavailable
+              }
               tooltip={
                 <div>
                   <p>
@@ -532,7 +540,7 @@ const PanelAvailabilityReadonlyCard = ({
           availability.active &&
             status === AvailabilityStatus.Future &&
             "border-l-warning",
-          !availability.active && "opacity-50",
+          !availability.active && "opacity-70",
           isActive ? "px-4 md:px-8" : "px-2 md:px-4 max-w-xl",
         )}
         layout
@@ -563,6 +571,7 @@ const PanelAvailabilityReadonlyCard = ({
         <InheritanceSummary
           objectType={objectType}
           availability={availability}
+          status={status}
           setActiveAvailability={setActiveAvailability}
         />
         <div className="flex items-start">

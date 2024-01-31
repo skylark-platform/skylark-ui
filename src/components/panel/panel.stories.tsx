@@ -7,18 +7,9 @@ import GQLSkylarkGetMovieDraftQueryFixture from "src/__tests__/fixtures/skylark/
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetSeasonQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/gots04.json";
 import GQLSkylarkGetHomepageSetQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/homepage.json";
-import { PanelTab, PanelTabState } from "src/hooks/state";
+import { PanelTab, defaultPanelTabState } from "src/hooks/state";
 
 import { Panel } from "./panel.component";
-
-const defaultPanelTabState: PanelTabState = {
-  [PanelTab.Relationships]: {
-    active: null,
-  },
-  [PanelTab.Availability]: {
-    active: null,
-  },
-};
 
 export default {
   title: "Components/Panel",
@@ -247,4 +238,16 @@ AvailabilityDimensions.args = {
     language: "",
   },
   tab: PanelTab.AvailabilityDimensions,
+};
+
+export const AvailabilityAssignedTo = Template.bind({});
+AvailabilityAssignedTo.parameters = Default.parameters;
+AvailabilityAssignedTo.args = {
+  ...Default.args,
+  object: {
+    objectType: "Availability",
+    uid: GQLSkylarkGetAvailabilityQueryFixture.data.getObject.uid,
+    language: "",
+  },
+  tab: PanelTab.AvailabilityAssignedTo,
 };

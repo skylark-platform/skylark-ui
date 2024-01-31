@@ -6,6 +6,7 @@ export enum QueryKeys {
   AccountStatus = "accountStatus",
   Search = "search",
   AvailabilityDimensions = "availabilityDimensions",
+  AvailabilityAssignedTo = "availabilityAssignedTo",
   GetObject = "getObject",
   GetObjectGeneric = "getObjectGeneric",
   GetObjectAvailability = "getObjectAvailability",
