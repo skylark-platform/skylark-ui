@@ -1,6 +1,26 @@
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  useDndMonitor,
+  DragStartEvent,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import clsx from "clsx";
 import { Reorder } from "framer-motion";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
@@ -35,7 +55,7 @@ interface PanelContentProps extends SkylarkObjectIdentifier {
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
 }
 
-export const PanelContentItemOrderInput = ({
+const PanelContentItemOrderInput = ({
   hasMoved,
   isNewObject,
   position,
@@ -102,6 +122,125 @@ export const PanelContentItemOrderInput = ({
   );
 };
 
+interface ContentObjectProps {
+  sortableId: string;
+  contentObject: ParsedSkylarkObjectContentObject;
+  inEditMode?: boolean;
+  arrIndex: number;
+  arrLength: number;
+  setPanelObject: PanelContentProps["setPanelObject"];
+  removeItem: (uid: string) => void;
+  handleManualOrderChange: (
+    currentIndex: number,
+    updatedPosition: number,
+  ) => void;
+}
+
+const ContentObject = forwardRef(
+  (
+    {
+      contentObject,
+      inEditMode,
+      arrIndex,
+      arrLength,
+      removeItem,
+      setPanelObject,
+      handleManualOrderChange,
+      ...props
+    }: ContentObjectProps,
+    ref,
+  ) => {
+    const { object, config, meta, position } = contentObject;
+    const isNewObject = hasProperty(contentObject, "isNewObject");
+
+    const parsedObject: ParsedSkylarkObject = {
+      objectType: object.__typename as string,
+      uid: object.uid,
+      metadata: object,
+      config,
+      meta,
+      availability: {
+        status: meta.availabilityStatus,
+        objects: [],
+      },
+    };
+    return (
+      <div ref={ref} {...props}>
+        <ObjectIdentifierCard
+          object={parsedObject}
+          onForwardClick={setPanelObject}
+          disableForwardClick={inEditMode}
+          disableDeleteClick={!inEditMode}
+          onDeleteClick={() => removeItem(object.uid)}
+        >
+          <div className="flex">
+            {inEditMode && (
+              <span
+                className={clsx(
+                  "flex h-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
+                  position === arrIndex + 1 || isNewObject
+                    ? "opacity-0"
+                    : "opacity-100",
+                )}
+              >
+                {position}
+              </span>
+            )}
+            <PanelContentItemOrderInput
+              disabled={!inEditMode}
+              position={arrIndex + 1}
+              hasMoved={!!inEditMode && position !== arrIndex + 1}
+              isNewObject={inEditMode && isNewObject}
+              onBlur={(updatedPosition: number) =>
+                handleManualOrderChange(arrIndex, updatedPosition)
+              }
+              maxPosition={arrLength}
+            />
+          </div>
+        </ObjectIdentifierCard>
+      </div>
+    );
+  },
+);
+ContentObject.displayName = "ContentObject";
+
+const SortableItem = (props: ContentObjectProps) => {
+  const { sortableId, inEditMode, arrIndex, arrLength } = props;
+
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: sortableId, disabled: !inEditMode });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    // <Reorder.Item
+    //   key={`panel-content-item-${object.uid}`}
+    //   value={contentObject}
+    //   data-testid={`panel-object-content-item-${arrIndex + 1}`}
+    //   data-cy={"panel-object-content-item"}
+    //   className={clsx(
+    //     "my-0 flex flex-col items-center justify-center",
+    //     inEditMode && "cursor-pointer",
+    //   )}
+    //   dragListener={inEditMode}
+    // >
+    <>
+      <ContentObject
+        {...props}
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...listeners}
+      />
+      {arrIndex < arrLength - 1 && <PanelSeparator transparent={inEditMode} />}
+    </>
+    // </Reorder.Item>
+  );
+};
+
 export const PanelContent = ({
   isPage,
   objects: updatedObjects,
@@ -113,10 +252,25 @@ export const PanelContent = ({
   setContentObjects,
   setPanelObject,
 }: PanelContentProps) => {
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const [draggedObject, setDraggedObject] =
+    useState<ParsedSkylarkObjectContentObject | null>(null);
+
   const { data, isLoading, hasNextPage, isFetchingNextPage, query, variables } =
     useGetObjectContent(objectType, uid, { language, fetchAvailability: true });
 
   const objects = inEditMode ? updatedObjects : data;
+  console.log({ updatedObjects, data });
+  const sortableObjects = objects?.map((object) => ({
+    ...object,
+    id: object.object.uid,
+  }));
 
   useEffect(() => {
     if (!inEditMode && data) {
@@ -161,6 +315,43 @@ export const PanelContent = ({
     }
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+
+    const object = objects?.find(({ object: { uid } }) => uid === active.id);
+
+    if (object) {
+      setDraggedObject(object);
+    }
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    console.log("DRAG_END", { active, over });
+
+    if (objects && over && active.id !== over.id) {
+      const oldIndex = objects.findIndex(
+        ({ object: { uid } }) => uid === active.id,
+      );
+      const newIndex = objects.findIndex(
+        ({ object: { uid } }) => uid === over.id,
+      );
+
+      console.log({ oldIndex, newIndex });
+      const newObjects = arrayMove(objects, oldIndex, newIndex);
+      console.log({ objects, newObjects });
+      onReorder(newObjects);
+    }
+
+    setDraggedObject(null);
+  };
+
+  useDndMonitor({
+    onDragStart: handleDragStart,
+    onDragEnd: handleDragEnd,
+  });
+
   if (showDropZone) {
     return <PanelDropZone />;
   }
@@ -178,82 +369,58 @@ export const PanelContent = ({
         count={objects?.length || 0}
         loading={isLoading || isFetchingNextPage}
       />
-      {objects && (
-        <Reorder.Group
-          axis="y"
-          values={objects}
-          onReorder={onReorder}
-          data-testid="panel-content-items"
-          className="flex-grow"
+      {sortableObjects && (
+        // <Reorder.Group
+        //   axis="y"
+        //   values={objects}
+        //   onReorder={onReorder}
+        //   data-testid="panel-content-items"
+        //   className="flex-grow"
+        // >
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          // onDragEnd={handleDragEnd}
         >
-          {!isLoading && objects?.length === 0 && <PanelEmptyDataText />}
-          {objects.map((item, index) => {
-            const { object, config, meta, position } = item;
-            const isNewObject = hasProperty(item, "isNewObject");
-
-            const parsedObject: ParsedSkylarkObject = {
-              objectType: object.__typename as string,
-              uid: object.uid,
-              metadata: object,
-              config,
-              meta,
-              availability: {
-                status: meta.availabilityStatus,
-                objects: [],
-              },
-            };
-
-            return (
-              <Reorder.Item
-                key={`panel-${uid}-content-item-${object.uid}`}
-                value={item}
-                data-testid={`panel-object-content-item-${index + 1}`}
-                data-cy={"panel-object-content-item"}
-                className={clsx(
-                  "my-0 flex flex-col items-center justify-center",
-                  inEditMode && "cursor-pointer",
-                )}
-                dragListener={inEditMode}
-              >
-                <ObjectIdentifierCard
-                  object={parsedObject}
-                  onForwardClick={setPanelObject}
-                  disableForwardClick={inEditMode}
-                  disableDeleteClick={!inEditMode}
-                  onDeleteClick={() => removeItem(object.uid)}
-                >
-                  <div className="flex">
-                    {inEditMode && (
-                      <span
-                        className={clsx(
-                          "flex h-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
-                          position === index + 1 || isNewObject
-                            ? "opacity-0"
-                            : "opacity-100",
-                        )}
-                      >
-                        {position}
-                      </span>
-                    )}
-                    <PanelContentItemOrderInput
-                      disabled={!inEditMode}
-                      position={index + 1}
-                      hasMoved={!!inEditMode && position !== index + 1}
-                      isNewObject={inEditMode && isNewObject}
-                      onBlur={(updatedPosition: number) =>
-                        handleManualOrderChange(index, updatedPosition)
-                      }
-                      maxPosition={objects.length}
-                    />
-                  </div>
-                </ObjectIdentifierCard>
-                {index < objects.length - 1 && (
-                  <PanelSeparator transparent={inEditMode} />
-                )}
-              </Reorder.Item>
-            );
-          })}
-        </Reorder.Group>
+          <SortableContext
+            items={sortableObjects}
+            strategy={verticalListSortingStrategy}
+          >
+            {!isLoading && objects?.length === 0 && <PanelEmptyDataText />}
+            {sortableObjects.map((contentObject, index) => {
+              return (
+                <SortableItem
+                  key={`panel-${uid}-content-item-${contentObject.id}`}
+                  sortableId={contentObject.id}
+                  contentObject={contentObject}
+                  inEditMode={inEditMode}
+                  arrIndex={index}
+                  arrLength={sortableObjects.length}
+                  removeItem={removeItem}
+                  handleManualOrderChange={handleManualOrderChange}
+                  setPanelObject={setPanelObject}
+                />
+              );
+            })}
+            {/* </Reorder.Group> */}
+          </SortableContext>
+          <DragOverlay>
+            {draggedObject ? (
+              <div className="bg-red-500 p-5">
+                <ContentObject
+                  contentObject={draggedObject}
+                  inEditMode={false}
+                  arrIndex={0}
+                  arrLength={0}
+                  removeItem={() => ""}
+                  sortableId={draggedObject.object.uid}
+                  handleManualOrderChange={() => ""}
+                  setPanelObject={() => ""}
+                />
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
       )}
       <DisplayGraphQLQuery
         label="Get Object Content"
