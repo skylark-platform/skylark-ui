@@ -5,25 +5,25 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
   useDndMonitor,
-  DragStartEvent,
   DragOverlay,
+  useDroppable,
+  useDndContext,
 } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import clsx from "clsx";
 import { Reorder } from "framer-motion";
-import { forwardRef, useEffect, useState } from "react";
+import { CSSProperties, Ref, forwardRef, useEffect, useState } from "react";
 
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { convertSkylarkObjectToContentObject } from "src/components/panel/panel.lib";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
@@ -32,6 +32,7 @@ import {
   PanelSeparator,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
+import { DROPPABLE_ID } from "src/constants/skylark";
 import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
 import {
   ParsedSkylarkObjectContentObject,
@@ -39,7 +40,15 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
-import { hasProperty } from "src/lib/utils";
+import {
+  DragEndEvent,
+  DragOverEvent,
+  DragStartEvent,
+  DragType,
+  generateSortableObjectId,
+  useSortable,
+} from "src/lib/dndkit/dndkit";
+import { hasProperty, insertAtIndex } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
@@ -128,6 +137,7 @@ interface ContentObjectProps {
   inEditMode?: boolean;
   arrIndex: number;
   arrLength: number;
+  style?: CSSProperties;
   setPanelObject: PanelContentProps["setPanelObject"];
   removeItem: (uid: string) => void;
   handleManualOrderChange: (
@@ -148,7 +158,7 @@ const ContentObject = forwardRef(
       handleManualOrderChange,
       ...props
     }: ContentObjectProps,
-    ref,
+    ref: Ref<HTMLDivElement>,
   ) => {
     const { object, config, meta, position } = contentObject;
     const isNewObject = hasProperty(contentObject, "isNewObject");
@@ -207,12 +217,28 @@ ContentObject.displayName = "ContentObject";
 const SortableItem = (props: ContentObjectProps) => {
   const { sortableId, inEditMode, arrIndex, arrLength } = props;
 
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: sortableId, disabled: !inEditMode });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: sortableId,
+    disabled: !inEditMode,
+    type: DragType.PANEL_CONTENT_REORDER_OBJECTS,
+    options: {
+      modifiers: [],
+      dragOverlay: <div className="p-1 bg-blue-400">weeeeeee</div>,
+      collisionDetection: closestCenter,
+    },
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    opacity: isDragging ? 0.5 : 1,
   };
 
   return (
@@ -252,24 +278,22 @@ export const PanelContent = ({
   setContentObjects,
   setPanelObject,
 }: PanelContentProps) => {
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
-  const [draggedObject, setDraggedObject] =
-    useState<ParsedSkylarkObjectContentObject | null>(null);
-
   const { data, isLoading, hasNextPage, isFetchingNextPage, query, variables } =
     useGetObjectContent(objectType, uid, { language, fetchAvailability: true });
 
   const objects = inEditMode ? updatedObjects : data;
-  console.log({ updatedObjects, data });
   const sortableObjects = objects?.map((object) => ({
     ...object,
-    id: object.object.uid,
+    id: hasProperty(object, "id")
+      ? (object.id as string)
+      : generateSortableObjectId(
+          {
+            uid: object.object.uid,
+            objectType: object.object.__typename as string,
+            meta: { language: object.meta.language },
+          },
+          "PANEL_CONTENT",
+        ),
   }));
 
   useEffect(() => {
@@ -315,13 +339,71 @@ export const PanelContent = ({
     }
   };
 
-  const handleDragStart = (event: DragStartEvent) => {
-    const { active } = event;
+  // const handleDragStart = (event: DragStartEvent) => {
+  //   const { active } = event;
 
-    const object = objects?.find(({ object: { uid } }) => uid === active.id);
+  //   const object = objects?.find(({ object: { uid } }) => uid === active.id);
 
-    if (object) {
-      setDraggedObject(object);
+  //   if (object) {
+  //     setDraggedObject(object);
+  //   }
+  // };
+
+  const handleDragOver = (event: DragOverEvent) => {
+    console.log("DRAG_OVER", event);
+    const { active, over } = event;
+
+    if (
+      event.active.data.current.type === DragType.CONTENT_LIBRARY_OBJECT &&
+      over &&
+      objects
+    ) {
+      const activeContainer = active.data.current?.sortable?.containerId;
+      const overContainer = over.data.current?.sortable?.containerId || over.id;
+      const activeIndex = active.data.current?.sortable?.index;
+
+      const overIndex = over?.data?.current?.sortable.index;
+      // const overIndex =
+      //   over.id in itemGroups
+      //     ? itemGroups[overContainer].length + 1
+      //     : over.data.current.sortable.index;
+
+      console.log({
+        activeContainer,
+        overContainer,
+        activeIndex,
+        overIndex,
+        over,
+      });
+
+      if (overContainer === DROPPABLE_ID.panelContentSortable) {
+        const obj: ParsedSkylarkObject = active.data.current.object;
+
+        const objIndex = objects.findIndex(
+          ({ object: { uid } }) => uid === obj.uid,
+        );
+
+        if (objIndex > -1) {
+          console.log({ objects, overIndex, obj });
+
+          onReorder(arrayMove(objects, objIndex, overIndex));
+
+          return;
+        }
+
+        const newObject = {
+          ...convertSkylarkObjectToContentObject(obj),
+          // id: active.id,
+        };
+        const updatedObjects = insertAtIndex(
+          objects,
+          overIndex || -1,
+          newObject,
+        );
+
+        console.log({ updatedObjects, objects, overIndex, newObject });
+        onReorder(updatedObjects);
+      }
     }
   };
 
@@ -330,31 +412,41 @@ export const PanelContent = ({
 
     console.log("DRAG_END", { active, over });
 
-    if (objects && over && active.id !== over.id) {
-      const oldIndex = objects.findIndex(
-        ({ object: { uid } }) => uid === active.id,
-      );
-      const newIndex = objects.findIndex(
-        ({ object: { uid } }) => uid === over.id,
-      );
+    if (objects && sortableObjects && over) {
+      const oldIndex = sortableObjects.findIndex(({ id }) => id === active.id);
+      const newIndex = sortableObjects.findIndex(({ id }) => id === over.id);
 
       console.log({ oldIndex, newIndex });
-      const newObjects = arrayMove(objects, oldIndex, newIndex);
-      console.log({ objects, newObjects });
-      onReorder(newObjects);
+
+      const updatedObjects =
+        oldIndex > -1 && newIndex > -1
+          ? arrayMove(objects, oldIndex, newIndex)
+          : objects;
+      const updatedObjectsWithIdFieldRemoved = updatedObjects.map((obj) => {
+        if (hasProperty(obj, "id")) delete obj.id;
+        return obj;
+      });
+
+      console.log({ updatedObjectsWithIdFieldRemoved });
+      onReorder(updatedObjectsWithIdFieldRemoved);
     }
 
-    setDraggedObject(null);
+    // setDraggedObject(null);
   };
 
   useDndMonitor({
-    onDragStart: handleDragStart,
+    // onDragStart: handleDragStart,
+    onDragOver: handleDragOver,
     onDragEnd: handleDragEnd,
   });
 
-  if (showDropZone) {
-    return <PanelDropZone />;
-  }
+  const { setNodeRef } = useDroppable({
+    id: DROPPABLE_ID.panelContentSortable,
+  });
+
+  // if (showDropZone) {
+  //   return <PanelDropZone />;
+  // }
 
   return (
     <PanelSectionLayout
@@ -362,6 +454,7 @@ export const PanelContent = ({
         { htmlId: "content-panel-title", title: "Content", id: "content" },
       ]}
       isPage={isPage}
+      ref={setNodeRef}
     >
       <PanelSectionTitle
         text="Content"
@@ -377,20 +470,23 @@ export const PanelContent = ({
         //   data-testid="panel-content-items"
         //   className="flex-grow"
         // >
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          // onDragEnd={handleDragEnd}
-        >
+        // <DndContext
+        //   sensors={sensors}
+        //   collisionDetection={closestCenter}
+        //   // onDragEnd={handleDragEnd}
+        // >
+        <>
           <SortableContext
+            id={DROPPABLE_ID.panelContentSortable}
             items={sortableObjects}
             strategy={verticalListSortingStrategy}
           >
+            {/* <div className="h-full w-full"> */}
             {!isLoading && objects?.length === 0 && <PanelEmptyDataText />}
             {sortableObjects.map((contentObject, index) => {
               return (
                 <SortableItem
-                  key={`panel-${uid}-content-item-${contentObject.id}`}
+                  key={contentObject.id}
                   sortableId={contentObject.id}
                   contentObject={contentObject}
                   inEditMode={inEditMode}
@@ -403,10 +499,11 @@ export const PanelContent = ({
               );
             })}
             {/* </Reorder.Group> */}
+            {/* </div> */}
           </SortableContext>
-          <DragOverlay>
+          {/* <DragOverlay>
             {draggedObject ? (
-              <div className="bg-red-500 p-5">
+              <div className="bg-white">
                 <ContentObject
                   contentObject={draggedObject}
                   inEditMode={false}
@@ -419,8 +516,9 @@ export const PanelContent = ({
                 />
               </div>
             ) : null}
-          </DragOverlay>
-        </DndContext>
+          </DragOverlay> */}
+          {/* </DndContext> */}
+        </>
       )}
       <DisplayGraphQLQuery
         label="Get Object Content"

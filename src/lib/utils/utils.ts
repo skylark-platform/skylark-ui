@@ -244,3 +244,7 @@ export const platformMetaKeyClicked = (
 export const isSkylarkObjectType = (objectType: string) =>
   objectType === BuiltInSkylarkObjectType.Availability ||
   objectType.toUpperCase().startsWith("SKYLARK");
+
+export const insertAtIndex = <T>(array: T[], index: number, item: T) => {
+  return [...array.slice(0, index), item, ...array.slice(index)];
+};

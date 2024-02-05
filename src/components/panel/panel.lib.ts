@@ -33,7 +33,7 @@ export type HandleDropError =
   | HandleGenericDropError
   | HandleRelationshipDropError;
 
-const parseSkylarkObjectContent = (
+export const convertSkylarkObjectToContentObject = (
   skylarkObject: ParsedSkylarkObject,
 ): ParsedSkylarkObjectContentObject => {
   return {
@@ -260,7 +260,8 @@ export const handleDroppedContents = ({
         };
       }
 
-      const parseDroppedContent = parseSkylarkObjectContent(droppedObject);
+      const parseDroppedContent =
+        convertSkylarkObjectToContentObject(droppedObject);
 
       return {
         ...previous,

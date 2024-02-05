@@ -9,7 +9,12 @@ import {
 } from "src/components/objectSearch/results/columnConfiguration";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
-import { DragType, useDraggable } from "src/lib/dndkit/dndkit";
+import {
+  DragType,
+  generateSortableObjectId,
+  useDraggable,
+  useSortable,
+} from "src/lib/dndkit/dndkit";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { platformMetaKeyClicked } from "src/lib/utils";
 
@@ -36,8 +41,10 @@ const DataRow = ({
   isDraggable,
   isLeft,
 }: DataRowProps & { isDraggable: boolean }) => {
-  const draggableId = `${tableId}-row-${row.id}-${isLeft ? "left" : ""}`;
-  const { attributes, listeners, setNodeRef } = useDraggable({
+  const draggableId = `${tableId}-row-${row.id}-${isLeft ? "left" : "right"}`;
+
+  // useSortable not useDraggable so that the Panel Content tab can sort when a row is dragged in
+  const { attributes, listeners, setNodeRef } = useSortable({
     type: DragType.CONTENT_LIBRARY_OBJECT,
     id: draggableId,
     data: {

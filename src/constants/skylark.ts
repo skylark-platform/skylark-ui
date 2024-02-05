@@ -60,7 +60,10 @@ export const DISPLAY_NAME_PRIORITY = [
   SkylarkSystemField.UID,
 ];
 
-export const DROPPABLE_ID = "droppable";
+export const DROPPABLE_ID = {
+  panelGeneric: "PANEL_DROPZONE",
+  panelContentSortable: "PANEL_CONTENT_SORTABLE",
+};
 
 export const INPUT_REGEX: Record<string, string | RegExp> = {
   // Skylark uses built in Appsync GraphQL Scalars from: https://docs.aws.amazon.com/appsync/latest/devguide/scalars.html

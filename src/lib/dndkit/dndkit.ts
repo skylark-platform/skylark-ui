@@ -1,4 +1,5 @@
 import * as dndkit from "@dnd-kit/core";
+import * as sortabledndkit from "@dnd-kit/sortable";
 import { Column } from "@tanstack/react-table";
 import { MutableRefObject, ReactNode } from "react";
 
@@ -10,11 +11,13 @@ export enum DragType {
   CONTENT_LIBRARY_OBJECT = "CONTENT_LIBRARY_OBJECT",
   OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS = "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS",
   OBJECT_SEARCH_REORDER_COLUMNS = "OBJECT_SEARCH_REORDER_COLUMNS",
+  PANEL_CONTENT_REORDER_OBJECTS = "PANEL_CONTENT_REORDER_OBJECTS",
 }
 
 type DragOptions = {
   dragOverlay?: ReactNode;
   modifiers?: dndkit.Modifiers;
+  collisionDetection?: dndkit.CollisionDetection;
 };
 
 type Data<T> = dndkit.Data<T> & {
@@ -31,6 +34,9 @@ type Data<T> = dndkit.Data<T> & {
     | {
         type: DragType.OBJECT_SEARCH_REORDER_COLUMNS;
         column: Column<ParsedSkylarkObject, string>;
+      }
+    | {
+        type: DragType.PANEL_CONTENT_REORDER_OBJECTS;
       }
   );
 
@@ -70,6 +76,12 @@ export interface UseDroppableArguments extends dndkit.UseDroppableArguments {
   type: DragType;
 }
 
+export interface UseSortableArguments
+  extends sortabledndkit.UseSortableArguments {
+  type: DragType;
+  options?: DragOptions;
+}
+
 export interface DndMonitorListener extends dndkit.DndMonitorListener {
   onDragStart?(event: DragStartEvent): void;
   onDragMove?(event: DragMoveEvent): void;
@@ -77,6 +89,16 @@ export interface DndMonitorListener extends dndkit.DndMonitorListener {
   onDragEnd?(event: DragEndEvent): void;
   onDragCancel?(event: DragCancelEvent): void;
 }
+
+export const generateSortableObjectId = (
+  object: Pick<ParsedSkylarkObject, "uid"> &
+    Pick<ParsedSkylarkObject, "objectType"> & {
+      meta: Pick<ParsedSkylarkObject["meta"], "language">;
+    },
+  identifier: string,
+) => {
+  return `${object.objectType}-${object.uid}-${object.meta.language}${identifier ? `-${identifier}` : ""}`;
+};
 
 export const useDraggable = ({
   type,
@@ -105,3 +127,18 @@ export const useDroppable = ({ type, ...args }: UseDroppableArguments) => {
 
 export const useDndMonitor = (listener: DndMonitorListener) =>
   dndkit.useDndMonitor(listener);
+
+export const useSortable = ({
+  type,
+  options,
+  ...args
+}: UseSortableArguments) => {
+  return sortabledndkit.useSortable({
+    ...args,
+    data: {
+      ...args.data,
+      type,
+      options,
+    },
+  });
+};

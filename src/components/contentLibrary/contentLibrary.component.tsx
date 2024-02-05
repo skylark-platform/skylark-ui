@@ -24,6 +24,7 @@ import {
 import {
   Active,
   DragEndEvent,
+  DragOverEvent,
   DragStartEvent,
   DragType,
 } from "src/lib/dndkit/dndkit";
@@ -194,6 +195,13 @@ export const ContentLibrary = ({
     }),
   );
 
+  // const sensors = useSensors(
+  //   useSensor(PointerSensor),
+  //   useSensor(KeyboardSensor, {
+  //     coordinateGetter: sortableKeyboardCoordinates,
+  //   }),
+  // );
+
   const dndModifiers = activeDragged?.data.current.options?.modifiers
     ? activeDragged.data.current.options.modifiers
     : [snapCenterToCursor];
@@ -206,10 +214,14 @@ export const ContentLibrary = ({
   return (
     <DndContext
       onDragStart={handleDragStart}
+      // onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
       onDragCancel={() => setActiveDragged(null)}
       sensors={sensors}
       modifiers={dndModifiers}
+      collisionDetection={
+        activeDragged?.data.current.options?.collisionDetection
+      }
     >
       {typeof window !== "undefined" && document?.body && (
         <>
@@ -317,6 +329,7 @@ export const ContentLibrary = ({
   );
 
   function handleDragStart(event: DragStartEvent) {
+    console.log("handleDragStartContentLibrary", event);
     const type = event.active.data.current.type;
     if (type === DragType.CONTENT_LIBRARY_OBJECT) {
       setActiveDragged(event.active);
@@ -340,12 +353,21 @@ export const ContentLibrary = ({
     if (type === DragType.OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS) {
       setActiveDragged(event.active);
     }
+
+    if (type === DragType.PANEL_CONTENT_REORDER_OBJECTS) {
+      console.log("[PANEL_CONTENT_REORDER_OBJECTS] start", type, { event });
+      setActiveDragged(event.active);
+    }
   }
+
+  // function handleDragOver(event: DragOverEvent) {
+  //   console.log("contentLibrary OVER", { event, activeDragged });
+  // }
 
   function handleDragEnd(event: DragEndEvent) {
     if (
       event.over &&
-      event.over.id === DROPPABLE_ID &&
+      event.over.id === DROPPABLE_ID.panelGeneric &&
       event.active.data.current.type === DragType.CONTENT_LIBRARY_OBJECT &&
       activeDragged?.data.current.type === DragType.CONTENT_LIBRARY_OBJECT
     ) {

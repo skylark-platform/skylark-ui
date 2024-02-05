@@ -345,6 +345,7 @@ export const Panel = ({
   const inEditMode =
     panelInEditMode ||
     isMetadataFormDirty ||
+    contentObjects.original?.length !== contentObjects.updated?.length ||
     modifiedRelationships !== null ||
     modifiedAvailabilityObjects !== null ||
     modifiedAvailabilityAssignedTo !== null;

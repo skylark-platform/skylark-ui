@@ -5,7 +5,7 @@ import { DROPPABLE_ID } from "src/constants/skylark";
 
 export const PanelDropZone = () => {
   const { isOver, setNodeRef } = useDroppable({
-    id: DROPPABLE_ID,
+    id: DROPPABLE_ID.panelGeneric,
   });
   return (
     <div
