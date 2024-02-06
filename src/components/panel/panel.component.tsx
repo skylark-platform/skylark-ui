@@ -77,10 +77,9 @@ interface PanelProps {
   updateActivePanelTabState: (s: Partial<PanelTabState>) => void;
 }
 
-const tabsWithDropZones = [PanelTab.Content, PanelTab.Availability];
-
 const tabsWithEditMode = [
-  ...tabsWithDropZones,
+  PanelTab.Content,
+  PanelTab.Availability,
   PanelTab.Metadata,
   PanelTab.Relationships,
   PanelTab.AvailabilityDimensions,
@@ -385,46 +384,6 @@ export const Panel = ({
     ],
   );
 
-  useEffect(() => {
-    if (
-      data &&
-      droppedObjects &&
-      droppedObjects.length > 0 &&
-      tabsWithDropZones.includes(selectedTab)
-    ) {
-      setEditMode(true);
-
-      if (selectedTab === PanelTab.Content && contentObjects.updated) {
-        const { updatedContentObjects, errors } = handleDroppedContents({
-          droppedObjects,
-          panelObject: data,
-          existingObjects: contentObjects.updated,
-        });
-
-        displayHandleDroppedErrors(
-          errors,
-          selectedTab,
-          data,
-          objectTypesWithConfig,
-        );
-
-        setContentObjects({
-          ...contentObjects,
-          updated: updatedContentObjects,
-        });
-      }
-
-      clearDroppedObjects?.();
-    }
-  }, [
-    clearDroppedObjects,
-    contentObjects,
-    data,
-    droppedObjects,
-    objectTypesWithConfig,
-    selectedTab,
-  ]);
-
   const { updateObjectRelationships, isUpdatingObjectRelationships } =
     useUpdateObjectRelationships({
       objectType,
@@ -550,6 +509,26 @@ export const Panel = ({
       setEditMode(false);
     }
   };
+
+  const handleContentObjectsModified = useCallback(
+    (
+      updatedContentObjects: {
+        original: ParsedSkylarkObjectContentObject[] | null;
+        updated: AddedSkylarkObjectContentObject[] | null;
+      },
+      errors: HandleDropError[],
+    ) => {
+      setContentObjects(updatedContentObjects);
+      displayHandleDroppedErrors(
+        errors,
+        selectedTab,
+        data,
+        objectTypesWithConfig,
+      );
+      clearDroppedObjects?.();
+    },
+    [clearDroppedObjects, data, objectTypesWithConfig, selectedTab],
+  );
 
   const handleRelationshipsObjectsModified = useCallback(
     (
@@ -759,7 +738,7 @@ export const Panel = ({
               language={language}
               objects={contentObjects.updated}
               inEditMode={inEditMode}
-              setContentObjects={setContentObjects}
+              setContentObjects={handleContentObjectsModified}
               showDropZone={isDraggedObject}
               setPanelObject={setPanelObject}
             />

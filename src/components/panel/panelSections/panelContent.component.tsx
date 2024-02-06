@@ -23,7 +23,11 @@ import { CSSProperties, Ref, forwardRef, useEffect, useState } from "react";
 
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
-import { convertSkylarkObjectToContentObject } from "src/components/panel/panel.lib";
+import {
+  HandleDropError,
+  convertSkylarkObjectToContentObject,
+  handleDroppedContents,
+} from "src/components/panel/panel.lib";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
@@ -55,10 +59,13 @@ import { PanelSectionLayout } from "./panelSectionLayout.component";
 interface PanelContentProps extends SkylarkObjectIdentifier {
   isPage?: boolean;
   objects: AddedSkylarkObjectContentObject[] | null;
-  setContentObjects: (contentObjects: {
-    original: ParsedSkylarkObjectContentObject[] | null;
-    updated: AddedSkylarkObjectContentObject[] | null;
-  }) => void;
+  setContentObjects: (
+    contentObjects: {
+      original: ParsedSkylarkObjectContentObject[] | null;
+      updated: AddedSkylarkObjectContentObject[] | null;
+    },
+    errors: HandleDropError[],
+  ) => void;
   inEditMode?: boolean;
   showDropZone?: boolean;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
@@ -138,6 +145,7 @@ interface ContentObjectProps {
   arrIndex: number;
   arrLength: number;
   style?: CSSProperties;
+  overIndex?: number | null;
   setPanelObject: PanelContentProps["setPanelObject"];
   removeItem: (uid: string) => void;
   handleManualOrderChange: (
@@ -153,6 +161,7 @@ const ContentObject = forwardRef(
       inEditMode,
       arrIndex,
       arrLength,
+      overIndex,
       removeItem,
       setPanelObject,
       handleManualOrderChange,
@@ -175,7 +184,13 @@ const ContentObject = forwardRef(
       },
     };
     return (
-      <div ref={ref} {...props}>
+      <div
+        ref={ref}
+        {...props}
+        className={clsx(
+          overIndex === arrIndex && "border-b-4 border-b-brand-primary",
+        )}
+      >
         <ObjectIdentifierCard
           object={parsedObject}
           onForwardClick={setPanelObject}
@@ -298,18 +313,27 @@ export const PanelContent = ({
 
   useEffect(() => {
     if (!inEditMode && data) {
-      setContentObjects({
-        original: data,
-        updated: data,
-      });
+      setContentObjects(
+        {
+          original: data,
+          updated: data,
+        },
+        [],
+      );
     }
   }, [data, inEditMode, setContentObjects]);
 
-  const onReorder = (updated: AddedSkylarkObjectContentObject[]) =>
-    setContentObjects({
-      original: data || null,
-      updated,
-    });
+  const onReorder = (
+    updated: AddedSkylarkObjectContentObject[],
+    errors?: HandleDropError[],
+  ) =>
+    setContentObjects(
+      {
+        original: data || null,
+        updated,
+      },
+      errors || [],
+    );
 
   const removeItem = (uid: string) => {
     if (objects) {
@@ -349,6 +373,8 @@ export const PanelContent = ({
   //   }
   // };
 
+  const [overRowIndex, setOverRowIndex] = useState<number | null>(null);
+
   const handleDragOver = (event: DragOverEvent) => {
     console.log("DRAG_OVER", event);
     const { active, over } = event;
@@ -367,6 +393,9 @@ export const PanelContent = ({
       //   over.id in itemGroups
       //     ? itemGroups[overContainer].length + 1
       //     : over.data.current.sortable.index;
+
+      setOverRowIndex(overIndex);
+      return;
 
       console.log({
         activeContainer,
@@ -411,8 +440,44 @@ export const PanelContent = ({
     const { active, over } = event;
 
     console.log("DRAG_END", { active, over });
+    const overContainer = over?.data.current?.sortable?.containerId || over?.id;
 
-    if (objects && sortableObjects && over) {
+    if (
+      objects &&
+      sortableObjects &&
+      over &&
+      overContainer === DROPPABLE_ID.panelContentSortable &&
+      active.data.current.type === DragType.CONTENT_LIBRARY_OBJECT
+    ) {
+      const draggedObject = active.data.current.object;
+      const checkedObjects = active.data.current.checkedObjectsState
+        .filter(({ checkedState }) => Boolean(checkedState))
+        .map(({ object }) => object);
+
+      const draggedObjectIsChecked = checkedObjects.find(
+        ({ uid }) => uid === active.data.current.object.uid,
+      );
+
+      const objectsToAdd: ParsedSkylarkObject[] = draggedObjectIsChecked
+        ? checkedObjects
+        : [draggedObject];
+
+      const { updatedContentObjects, errors } = handleDroppedContents({
+        droppedObjects: objectsToAdd,
+        activeObjectUid: uid,
+        existingObjects: objects,
+        indexToInsert: overRowIndex !== null ? overRowIndex + 1 : -1,
+      });
+
+      onReorder(updatedContentObjects, errors);
+    }
+
+    if (
+      objects &&
+      sortableObjects &&
+      over &&
+      active.data.current.type === DragType.PANEL_CONTENT_REORDER_OBJECTS
+    ) {
       const oldIndex = sortableObjects.findIndex(({ id }) => id === active.id);
       const newIndex = sortableObjects.findIndex(({ id }) => id === over.id);
 
@@ -429,7 +494,9 @@ export const PanelContent = ({
 
       console.log({ updatedObjectsWithIdFieldRemoved });
       onReorder(updatedObjectsWithIdFieldRemoved);
+      //   // insertAtIndex(objects, overRowIndex, )
     }
+    setOverRowIndex(null);
 
     // setDraggedObject(null);
   };
@@ -495,6 +562,7 @@ export const PanelContent = ({
                   removeItem={removeItem}
                   handleManualOrderChange={handleManualOrderChange}
                   setPanelObject={setPanelObject}
+                  overIndex={overRowIndex}
                 />
               );
             })}

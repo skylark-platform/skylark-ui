@@ -232,6 +232,7 @@ export const ObjectSearchResultsLeftGrid = ({
           <LayoutRow
             key={key}
             tableId={tableId}
+            tableMeta={table.options.meta}
             row={row}
             virtualRow={virtualRow}
             virtualColumns={virtualColumns}
@@ -539,6 +540,7 @@ export const ObjectSearchResultsRightGrid = ({
             key={key}
             row={row}
             tableId={tableId}
+            tableMeta={table.options.meta}
             virtualRow={virtualRow}
             virtualColumns={virtualColumns}
             panelObject={panelObject}

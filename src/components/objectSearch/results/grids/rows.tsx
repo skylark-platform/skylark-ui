@@ -1,4 +1,4 @@
-import { Row, flexRender } from "@tanstack/react-table";
+import { Row, TableMeta, flexRender } from "@tanstack/react-table";
 import clsx from "clsx";
 import { Fragment } from "react";
 import { VirtualItem } from "react-virtual";
@@ -20,6 +20,7 @@ import { platformMetaKeyClicked } from "src/lib/utils";
 
 interface DataRowProps {
   tableId: string;
+  tableMeta?: TableMeta<ObjectSearchTableData>;
   virtualRow: VirtualItem;
   row: Row<ObjectSearchTableData>;
   virtualColumns: VirtualItem[];
@@ -35,6 +36,7 @@ interface LayoutRowProps extends DataRowProps {
 
 const DataRow = ({
   tableId,
+  tableMeta,
   virtualRow,
   row,
   virtualColumns,
@@ -49,6 +51,7 @@ const DataRow = ({
     id: draggableId,
     data: {
       object: row.original,
+      checkedObjectsState: tableMeta?.checkedObjectsState || [],
     },
     disabled: !isDraggable,
   });

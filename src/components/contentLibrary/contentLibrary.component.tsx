@@ -365,22 +365,35 @@ export const ContentLibrary = ({
   // }
 
   function handleDragEnd(event: DragEndEvent) {
-    if (
-      event.over &&
-      event.over.id === DROPPABLE_ID.panelGeneric &&
-      event.active.data.current.type === DragType.CONTENT_LIBRARY_OBJECT &&
-      activeDragged?.data.current.type === DragType.CONTENT_LIBRARY_OBJECT
-    ) {
-      const draggedObject = activeDragged?.data.current.object;
-      const draggedObjectIsChecked = checkedUids.includes(
-        activeDragged.data.current.object.uid,
-      );
+    const { over } = event;
 
-      // Like Gmail, if the dragged object is not checked, just use the dragged object
-      setDroppedObjects(
-        draggedObjectIsChecked ? checkedObjects : [draggedObject],
-      );
-    }
+    // const overContainer = over?.data.current?.sortable?.containerId || over?.id;
+
+    // console.log("[contentLibrary drag end]", {
+    //   overContainer,
+    //   event,
+    //   activeDragged,
+    // });
+    // if (
+    //   (over?.id === DROPPABLE_ID.panelGeneric ||
+    //     overContainer === DROPPABLE_ID.panelContentSortable) &&
+    //   event.active.data.current.type === DragType.CONTENT_LIBRARY_OBJECT &&
+    //   activeDragged?.data.current.type === DragType.CONTENT_LIBRARY_OBJECT
+    // ) {
+    //   const draggedObject = activeDragged.data.current.object;
+    //   const checkedObjects = activeDragged.data.current.checkedObjectsState
+    //     .filter(({ checkedState }) => Boolean(checkedState))
+    //     .map(({ object }) => object);
+
+    //   const draggedObjectIsChecked = checkedObjects.find(
+    //     ({ uid }) => uid === activeDragged.data.current.object.uid,
+    //   );
+
+    //   // Like Gmail, if the dragged object is not checked, just use the dragged object
+    //   setDroppedObjects(
+    //     draggedObjectIsChecked ? checkedObjects : [draggedObject],
+    //   );
+    // }
     if (activeDragged) setActiveDragged(null);
   }
 };

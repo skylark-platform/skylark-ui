@@ -3,6 +3,7 @@ import * as sortabledndkit from "@dnd-kit/sortable";
 import { Column } from "@tanstack/react-table";
 import { MutableRefObject, ReactNode } from "react";
 
+import { CheckedObjectState } from "src/hooks/state";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
 
 declare type AnyData = Record<string, unknown>;
@@ -26,6 +27,7 @@ type Data<T> = dndkit.Data<T> & {
     | {
         type: DragType.CONTENT_LIBRARY_OBJECT;
         object: ParsedSkylarkObject;
+        checkedObjectsState: CheckedObjectState[];
       }
     | {
         type: DragType.OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS;
