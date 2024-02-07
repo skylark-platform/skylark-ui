@@ -1,6 +1,12 @@
 import { fireEvent } from "@storybook/testing-library";
 
-import { render, screen } from "src/__tests__/utils/test-utils";
+import {
+  prettyDOM,
+  render,
+  screen,
+  waitFor,
+} from "src/__tests__/utils/test-utils";
+import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
@@ -63,17 +69,35 @@ test("changes checkboxes and calls onFilterSave when apply is clicked", async ()
     name: "Season",
   });
   await fireEvent.click(seasonCheckbox);
+  await waitFor(() =>
+    expect(seasonCheckbox).toHaveAttribute("aria-checked", "false"),
+  );
+
+  const episodeCheckbox = await screen.findByRole("checkbox", {
+    name: "Episode",
+  });
+  await fireEvent.click(episodeCheckbox);
+  await waitFor(() =>
+    expect(episodeCheckbox).toHaveAttribute("aria-checked", "false"),
+  );
+
+  const uidLookup = await screen.findByLabelText("UID & External ID");
+  await fireEvent.click(uidLookup);
+  await waitFor(() =>
+    expect(uidLookup).toHaveAttribute("aria-checked", "true"),
+  );
 
   const slugCheckbox = await screen.findByRole("checkbox", { name: "slug" });
+  expect(slugCheckbox).toHaveAttribute("aria-checked", "true");
   await fireEvent.click(slugCheckbox);
-
-  const uidLookup = await screen.findByText("UID & External ID");
-  await fireEvent.click(uidLookup);
+  await waitFor(() =>
+    expect(slugCheckbox).toHaveAttribute("aria-checked", "false"),
+  );
 
   await fireEvent.click(await screen.findByText("Apply"));
 
   expect(onFilterSave).toHaveBeenCalledWith({
-    filters: { objectTypes: ["Brand", "Episode"] },
+    filters: { objectTypes: ["Brand"] },
     columnVisibility: {
       external_id: true,
       slug: false,
@@ -101,7 +125,19 @@ test("changes checkboxes and calls onFilterSave when apply is clicked (old colum
   await screen.findAllByRole("checkbox");
 
   const columnFilterSwitch = await screen.findByRole("switch");
-  fireEvent.click(columnFilterSwitch);
+  expect(columnFilterSwitch).toHaveAttribute("aria-checked", "true");
+  await fireEvent.click(columnFilterSwitch);
+  await waitFor(() =>
+    expect(columnFilterSwitch).toHaveAttribute("aria-checked", "false"),
+  );
+
+  expect(
+    screen.queryByText("Separated by Object Type"),
+  ).not.toBeInTheDocument();
+  expect(screen.getByText("All fields")).toBeInTheDocument();
+
+  const uidLookup = await screen.findByText("UID & External ID");
+  await fireEvent.click(uidLookup);
 
   const seasonCheckbox = await screen.findByRole("checkbox", {
     name: "Season",
@@ -110,9 +146,6 @@ test("changes checkboxes and calls onFilterSave when apply is clicked (old colum
 
   const slugCheckbox = await screen.findByRole("checkbox", { name: "slug" });
   await fireEvent.click(slugCheckbox);
-
-  const uidLookup = await screen.findByText("UID & External ID");
-  await fireEvent.click(uidLookup);
 
   await fireEvent.click(await screen.findByText("Apply"));
 
@@ -127,7 +160,7 @@ test("changes checkboxes and calls onFilterSave when apply is clicked (old colum
   });
 });
 
-test("when reset is clicked, all filters are returned to all options checked without saving", async () => {
+test("when reset is clicked, all filters are returned to their default values", async () => {
   const onFilterSave = jest.fn();
 
   render(
@@ -146,9 +179,15 @@ test("when reset is clicked, all filters are returned to all options checked wit
 
   await fireEvent.click(await screen.findByText("Reset"));
 
-  const allCheckboxes = await screen.findAllByRole("checkbox");
-  allCheckboxes.map((el) => {
-    expect(el).toHaveAttribute("aria-checked", "true");
+  await fireEvent.click(await screen.findByText("Apply"));
+
+  expect(onFilterSave).toHaveBeenCalledWith({
+    filters: { objectTypes: ["Brand", "Season", "Episode"] },
+    columnVisibility: {
+      external_id: true,
+      slug: true,
+      uid: true,
+    },
+    searchType: SearchType.Search,
   });
-  expect(onFilterSave).not.toHaveBeenCalled();
 });

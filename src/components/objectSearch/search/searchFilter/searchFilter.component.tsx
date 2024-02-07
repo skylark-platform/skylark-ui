@@ -1,6 +1,6 @@
 import { VisibilityState } from "@tanstack/react-table";
 import { DocumentNode } from "graphql";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
 import { Button } from "src/components/button";
@@ -66,6 +66,32 @@ const searchTypeOptions = [
   },
 ];
 
+// This is a workaround because useLocalStorage kept re-initialising in unit tests where as useState was working correctly
+const useSectionByObjectType = (): [boolean, (b: boolean) => void] => {
+  const [
+    sectionByObjectTypeFromLocalStorage,
+    setSectionByObjectTypeLocalStorage,
+  ] = useLocalStorage(LOCAL_STORAGE.search.columnFilterVariant, true);
+  const [sectionByObjectTypeState, setSectionByObjectTypeState] = useState<
+    boolean | null
+  >(null);
+
+  const sectionByObjectType =
+    sectionByObjectTypeState !== null
+      ? sectionByObjectTypeState
+      : sectionByObjectTypeFromLocalStorage;
+
+  const setSectionByObjectType = useCallback(
+    (newValue: boolean) => {
+      setSectionByObjectTypeLocalStorage(newValue);
+      setSectionByObjectTypeState(newValue);
+    },
+    [setSectionByObjectTypeLocalStorage],
+  );
+
+  return [sectionByObjectType, setSectionByObjectType];
+};
+
 const FilterColumns = ({
   objectTypes,
   columns,
@@ -81,10 +107,8 @@ const FilterColumns = ({
 }) => {
   const { objects: allObjectsMeta } = useAllObjectsMeta();
 
-  const [sectionByObjectType, setSectionByObjectType] = useLocalStorage(
-    LOCAL_STORAGE.search.columnFilterVariant,
-    true,
-  );
+  const [sectionByObjectType, setSectionByObjectType] =
+    useSectionByObjectType();
 
   const allColumnOptions = useMemo(
     () =>

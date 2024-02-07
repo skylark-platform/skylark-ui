@@ -204,9 +204,9 @@ describe("Adding new tabs", () => {
     const tabsContainer = screen.getByTestId("object-search-tabs");
     expect(tabsContainer.children.length).toBe(2);
 
-    fireEvent.click(screen.getByLabelText("add tab"));
+    await fireEvent.click(screen.getByLabelText("add tab"));
 
-    fireEvent.click(screen.getByText("Search"));
+    await fireEvent.click(screen.getByText("Search"));
 
     await waitFor(() => {
       expect(screen.queryAllByText("Default View")).toHaveLength(1);
