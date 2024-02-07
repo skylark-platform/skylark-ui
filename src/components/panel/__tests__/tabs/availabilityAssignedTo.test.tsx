@@ -119,14 +119,14 @@ describe("availabity assigned to view", () => {
       expect(objectTypeSelect).not.toBeDisabled();
     });
 
-    fireEvent.change(objectTypeSelect, {
+    await fireEvent.change(objectTypeSelect, {
       target: { value: "Genr" },
     });
 
     const gotOptions = await screen.findAllByRole("option");
     expect(gotOptions).toHaveLength(1);
 
-    await fireEvent.click(screen.getByText("Genre"));
+    await fireEvent.click(gotOptions[0]);
 
     expect(await screen.findByText("Science fiction")).toBeInTheDocument();
     expect(screen.queryByText("sound of metal.jpeg")).not.toBeInTheDocument();
