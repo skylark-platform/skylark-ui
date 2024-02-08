@@ -220,7 +220,6 @@ export const handleDroppedContents = ({
     (
       previous,
       droppedObject,
-      index,
     ): {
       newContentObjects: AddedSkylarkObjectContentObject[];
       errors: HandleDropError[];
@@ -287,7 +286,7 @@ export const handleDroppedContents = ({
 
   const updatedContentObjects = insertAtIndex(
     existingObjects,
-    indexToInsert || -1,
+    indexToInsert,
     newContentObjects,
   ).map((obj, i) => ({
     ...obj,
