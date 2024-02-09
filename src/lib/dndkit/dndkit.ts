@@ -15,6 +15,11 @@ export enum DragType {
   PANEL_CONTENT_REORDER_OBJECTS = "PANEL_CONTENT_REORDER_OBJECTS",
 }
 
+export enum DroppableType {
+  PANEL_GENERIC = "PANEL_DROPZONE",
+  PANEL_CONTENT_SORTABLE = "PANEL_CONTENT_SORTABLE",
+}
+
 type DragOptions = {
   dragOverlay?: ReactNode;
   modifiers?: dndkit.Modifiers;

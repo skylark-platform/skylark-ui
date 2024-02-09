@@ -18,7 +18,6 @@ import {
   GQLSkylarkErrorResponse,
   SkylarkObjectMeta,
   GQLSkylarkGetObjectContentResponse,
-  ParsedSkylarkObjectContent,
   ParsedSkylarkObjectContentObject,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -166,24 +165,30 @@ export const useGetObjectContent = (
     fetchAvailability,
   });
 
-  const { data, hasNextPage, fetchNextPage, isLoading, isFetchingNextPage } =
-    useInfiniteQuery<
-      GQLSkylarkGetObjectContentResponse,
-      GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentResponse>,
-      ParsedSkylarkObjectContentObject[]
-    >({
-      queryFn,
-      queryKey,
-      initialData: {
-        pages: [{ getObjectContent: { content: { objects: [] } } }],
-        pageParams: [],
-      },
-      initialPageParam: "",
-      getNextPageParam: (lastPage): string | undefined =>
-        lastPage.getObjectContent.content?.next_token || undefined,
-      enabled: !!query,
-      select,
-    });
+  const {
+    data,
+    hasNextPage,
+    fetchNextPage,
+    isLoading,
+    isFetchingNextPage,
+    isFetching,
+  } = useInfiniteQuery<
+    GQLSkylarkGetObjectContentResponse,
+    GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentResponse>,
+    ParsedSkylarkObjectContentObject[]
+  >({
+    queryFn,
+    queryKey,
+    initialData: {
+      pages: [{ getObjectContent: { content: { objects: [] } } }],
+      pageParams: [],
+    },
+    initialPageParam: "",
+    getNextPageParam: (lastPage): string | undefined =>
+      lastPage.getObjectContent.content?.next_token || undefined,
+    enabled: !!query,
+    select,
+  });
 
   if (hasNextPage) {
     fetchNextPage();
@@ -191,7 +196,8 @@ export const useGetObjectContent = (
 
   return {
     data,
-    isLoading: isLoading || !query,
+    isLoading: isLoading || isFetching || !query,
+    isFetching,
     query,
     variables,
     hasNextPage,

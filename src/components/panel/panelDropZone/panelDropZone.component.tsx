@@ -1,11 +1,11 @@
 import { useDroppable } from "@dnd-kit/core";
 import clsx from "clsx";
 
-import { DROPPABLE_ID } from "src/constants/skylark";
+import { DroppableType } from "src/lib/dndkit/dndkit";
 
 export const PanelDropZone = () => {
   const { isOver, setNodeRef } = useDroppable({
-    id: DROPPABLE_ID.panelGeneric,
+    id: DroppableType.PANEL_GENERIC,
   });
   return (
     <div

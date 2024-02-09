@@ -14,7 +14,6 @@ import { createPortal } from "react-dom";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { Panel } from "src/components/panel";
-import { DROPPABLE_ID } from "src/constants/skylark";
 import { PanelTab, usePanelObjectState } from "src/hooks/state";
 import { useCheckedObjectsState } from "src/hooks/state";
 import {
@@ -24,7 +23,6 @@ import {
 import {
   Active,
   DragEndEvent,
-  DragOverEvent,
   DragStartEvent,
   DragType,
 } from "src/lib/dndkit/dndkit";
@@ -195,13 +193,6 @@ export const ContentLibrary = ({
     }),
   );
 
-  // const sensors = useSensors(
-  //   useSensor(PointerSensor),
-  //   useSensor(KeyboardSensor, {
-  //     coordinateGetter: sortableKeyboardCoordinates,
-  //   }),
-  // );
-
   const dndModifiers = activeDragged?.data.current.options?.modifiers
     ? activeDragged.data.current.options.modifiers
     : [snapCenterToCursor];
@@ -214,7 +205,6 @@ export const ContentLibrary = ({
   return (
     <DndContext
       onDragStart={handleDragStart}
-      // onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
       onDragCancel={() => setActiveDragged(null)}
       sensors={sensors}
@@ -329,7 +319,6 @@ export const ContentLibrary = ({
   );
 
   function handleDragStart(event: DragStartEvent) {
-    console.log("handleDragStartContentLibrary", event);
     const type = event.active.data.current.type;
     if (type === DragType.CONTENT_LIBRARY_OBJECT) {
       setActiveDragged(event.active);
@@ -355,7 +344,6 @@ export const ContentLibrary = ({
     }
 
     if (type === DragType.PANEL_CONTENT_REORDER_OBJECTS) {
-      console.log("[PANEL_CONTENT_REORDER_OBJECTS] start", type, { event });
       setActiveDragged(event.active);
     }
   }
@@ -375,8 +363,8 @@ export const ContentLibrary = ({
     //   activeDragged,
     // });
     // if (
-    //   (over?.id === DROPPABLE_ID.panelGeneric ||
-    //     overContainer === DROPPABLE_ID.panelContentSortable) &&
+    //   (over?.id === DroppableType.PANEL_GENERIC ||
+    //     overContainer === DroppableType.PANEL_CONTENT_SORTABLE) &&
     //   event.active.data.current.type === DragType.CONTENT_LIBRARY_OBJECT &&
     //   activeDragged?.data.current.type === DragType.CONTENT_LIBRARY_OBJECT
     // ) {

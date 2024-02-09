@@ -282,8 +282,6 @@ export const handleDroppedContents = ({
     },
   );
 
-  console.log({ existingObjects, indexToInsert, newContentObjects });
-
   const updatedContentObjects = insertAtIndex(
     existingObjects,
     indexToInsert,

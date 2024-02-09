@@ -10,12 +10,7 @@ import {
 } from "src/components/objectSearch/results/columnConfiguration";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
-import {
-  DragType,
-  generateSortableObjectId,
-  useDraggable,
-  useSortable,
-} from "src/lib/dndkit/dndkit";
+import { DragType, useSortable } from "src/lib/dndkit/dndkit";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { platformMetaKeyClicked } from "src/lib/utils";
 
@@ -55,7 +50,7 @@ const DataRow = ({
       checkedObjectsState: tableMeta?.checkedObjectsState || [],
     },
     options: {
-      collisionDetection: closestCenter,
+      // collisionDetection: closestCenter,
     },
     disabled: !isDraggable,
   });

@@ -409,6 +409,7 @@ export const Panel = ({
     useUpdateObjectContent({
       objectType,
       onSuccess: () => {
+        setContentObjects({ original: null, updated: null });
         if (panelInEditMode) setEditMode(false);
       },
       onError: showUpdateErrorToast,
@@ -739,7 +740,6 @@ export const Panel = ({
               objects={contentObjects.updated}
               inEditMode={inEditMode}
               setContentObjects={handleContentObjectsModified}
-              showDropZone={isDraggedObject}
               setPanelObject={setPanelObject}
             />
           )}
