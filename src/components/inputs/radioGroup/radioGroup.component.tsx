@@ -55,7 +55,7 @@ export function RadioGroup<ValueType extends string>({
                     className,
                   )}
                 >
-                  {checked === true && <FiCheck className="text-lg" />}
+                  {/* {checked === true && <FiCheck className="text-lg" />} */}
                 </div>
 
                 <HeadlessUIRadioGroup.Label
