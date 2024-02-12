@@ -38,7 +38,7 @@ export function RadioGroup<ValueType extends string>({
           {label}
         </HeadlessUIRadioGroup.Label>
       )}
-      <div className="columns-2 space-y-2 md:columns-4 lg:columns-5 xl:columns-6">
+      <div className="grid grid-flow-col grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {options.map((option) => (
           <HeadlessUIRadioGroup.Option
             key={option.value}
