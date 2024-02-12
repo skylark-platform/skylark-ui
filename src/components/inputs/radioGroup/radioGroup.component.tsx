@@ -1,7 +1,6 @@
 import { RadioGroup as HeadlessUIRadioGroup } from "@headlessui/react";
 import clsx from "clsx";
 import { ElementType } from "react";
-import { FiCheck } from "react-icons/fi";
 
 export type RadioGroupOption<ValueType> = {
   value: ValueType;
@@ -49,13 +48,15 @@ export function RadioGroup<ValueType extends string>({
               <>
                 <div
                   className={clsx(
-                    "peer flex h-5 w-5 min-w-5 items-center justify-center overflow-x-auto rounded-full group-hover/radio:cursor-pointer",
-                    "border-2 bg-manatee-200 ui-checked:border-brand-primary ui-checked:bg-brand-primary",
+                    "flex h-5 w-5 min-w-5 items-center justify-center overflow-x-auto rounded-full group-hover/radio:cursor-pointer",
+                    "p-0.5 bg-manatee-200 ui-checked:bg-brand-primary",
                     "text-white focus:outline-none focus-visible:ring focus-visible:ring-brand-primary focus-visible:ring-opacity-75",
                     className,
                   )}
                 >
-                  {checked === true && <FiCheck className="text-lg" />}
+                  {checked === true && (
+                    <span className="bg-white rounded-full h-2 w-2" />
+                  )}
                 </div>
 
                 <HeadlessUIRadioGroup.Label
