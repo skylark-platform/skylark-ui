@@ -74,7 +74,11 @@ const Tab = ({
           <button
             className="group/button rounded-full ml-0.5 p-0.5 hover:bg-gray-100/20 hover:shadow-inner"
             onClick={() => onDelete({ ...tab, index })}
-            aria-label="delete active tab"
+            aria-label={
+              tab.id === selectedTab
+                ? "delete active tab"
+                : `delete tab ${tab.id}`
+            }
           >
             <FiX
               className={clsx(
