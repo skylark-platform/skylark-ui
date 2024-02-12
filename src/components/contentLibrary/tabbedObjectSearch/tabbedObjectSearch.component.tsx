@@ -423,6 +423,7 @@ const TabbedObjectSearch = ({
     modifyActiveTab,
     setActiveTabIndex,
     deleteActiveTab,
+    deleteTab,
     changeActiveTabIndex,
     saveScrollPosition,
   } = useObjectSearchTabs(accountId, initialTabs);
@@ -450,7 +451,7 @@ const TabbedObjectSearch = ({
                   onScroll={({ scrollLeft: tabsScrollPosition }) =>
                     saveScrollPosition(tabsScrollPosition)
                   }
-                  onDelete={() => deleteActiveTab()}
+                  onDelete={(tab) => deleteTab(tab.index)}
                   onReorder={(tabs) => {
                     setTabs(tabs as ObjectSearchTab[]);
                     const updatedTabIndex = tabs.findIndex(

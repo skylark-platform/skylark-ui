@@ -157,6 +157,25 @@ export const useObjectSearchTabs = (
     }
   }, [activeTabIndex, initialTabs, setTabsAndWriteToLocalStorage, tabs]);
 
+  const deleteTab = useCallback(
+    (index: number) => {
+      if (tabs) {
+        const updatedTabs = [...tabs];
+        updatedTabs.splice(index, 1);
+
+        if (updatedTabs.length === 0) {
+          updatedTabs.push(...initialTabs);
+        }
+
+        setTabsAndWriteToLocalStorage(updatedTabs);
+        if (index <= activeTabIndex) {
+          setActiveTabIndex(activeTabIndex - 1);
+        }
+      }
+    },
+    [activeTabIndex, initialTabs, setTabsAndWriteToLocalStorage, tabs],
+  );
+
   const changeActiveTabIndex = (newIndex: number) => {
     if (accountId) {
       saveTabStateToStorage(accountId, { activeTabIndex: newIndex });
@@ -181,6 +200,7 @@ export const useObjectSearchTabs = (
     setTabs: setTabsAndWriteToLocalStorage,
     saveScrollPosition,
     deleteActiveTab,
+    deleteTab,
     modifyActiveTab,
     changeActiveTabIndex,
   };
