@@ -56,7 +56,7 @@ export function RadioGroup<ValueType extends string>({
                   )}
                 >
                   {checked === true && (
-                    <FiCheck className="text-lg bg-transparent rounded-full" />
+                    <span className="bg-white rounded-full h-2 w-2"></span>
                   )}
                 </div>
 
