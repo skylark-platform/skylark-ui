@@ -143,20 +143,6 @@ export const useObjectSearchTabs = (
     [activeTabIndex, setTabsAndWriteToLocalStorage, tabs],
   );
 
-  const deleteActiveTab = useCallback(() => {
-    if (tabs) {
-      const updatedTabs = [...tabs];
-      updatedTabs.splice(activeTabIndex, 1);
-
-      if (updatedTabs.length === 0) {
-        updatedTabs.push(...initialTabs);
-      }
-
-      setTabsAndWriteToLocalStorage(updatedTabs);
-      setActiveTabIndex(activeTabIndex > 0 ? activeTabIndex - 1 : 0);
-    }
-  }, [activeTabIndex, initialTabs, setTabsAndWriteToLocalStorage, tabs]);
-
   const deleteTab = useCallback(
     (index: number) => {
       if (tabs) {
@@ -169,12 +155,17 @@ export const useObjectSearchTabs = (
 
         setTabsAndWriteToLocalStorage(updatedTabs);
         if (index <= activeTabIndex) {
-          setActiveTabIndex(activeTabIndex - 1);
+          const newIndex = activeTabIndex === 0 ? 0 : activeTabIndex - 1;
+          setActiveTabIndex(newIndex);
         }
       }
     },
     [activeTabIndex, initialTabs, setTabsAndWriteToLocalStorage, tabs],
   );
+
+  const deleteActiveTab = useCallback(() => {
+    deleteTab(activeTabIndex);
+  }, [activeTabIndex, deleteTab]);
 
   const changeActiveTabIndex = (newIndex: number) => {
     if (accountId) {
