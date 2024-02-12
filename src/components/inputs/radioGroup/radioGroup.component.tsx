@@ -1,7 +1,6 @@
 import { RadioGroup as HeadlessUIRadioGroup } from "@headlessui/react";
 import clsx from "clsx";
 import { ElementType } from "react";
-import { FiCheck } from "react-icons/fi";
 
 export type RadioGroupOption<ValueType> = {
   value: ValueType;
@@ -56,7 +55,7 @@ export function RadioGroup<ValueType extends string>({
                   )}
                 >
                   {checked === true && (
-                    <span className="bg-white rounded-full h-2 w-2"></span>
+                    <span className="bg-white rounded-full h-2 w-2" />
                   )}
                 </div>
 
