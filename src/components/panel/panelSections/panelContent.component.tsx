@@ -144,7 +144,7 @@ const SortableItem = ({
 
   return (
     <>
-      <div
+      <li
         ref={setNodeRef}
         style={style}
         {...attributes}
@@ -184,8 +184,10 @@ const SortableItem = ({
             />
           </div>
         </ObjectIdentifierCard>
-      </div>
-      {arrIndex < arrLength - 1 && <PanelSeparator transparent={inEditMode} />}
+        {arrIndex < arrLength - 1 && (
+          <PanelSeparator transparent={inEditMode} />
+        )}
+      </li>
     </>
   );
 };
@@ -421,7 +423,8 @@ export const PanelContent = ({
         items={sortableObjects}
         strategy={verticalListSortingStrategy}
       >
-        <div
+        <ul
+          data-testid="panel-content-items"
           className={clsx(
             "w-full border border-dashed flex-grow h-full",
             isLoading && objects?.length === 0 && "hidden",
@@ -445,13 +448,14 @@ export const PanelContent = ({
             if (isSortableDisplayObject(contentObject)) {
               return (
                 <>
-                  <div
+                  <li
                     className="h-10 bg-manatee-100 flex items-center justify-end w-full"
                     key={contentObject.id}
-                  ></div>
-                  {index < sortableObjects.length - 1 && (
-                    <PanelSeparator transparent={inEditMode} />
-                  )}
+                  >
+                    {index < sortableObjects.length - 1 && (
+                      <PanelSeparator transparent={inEditMode} />
+                    )}
+                  </li>
                 </>
               );
             }
@@ -469,7 +473,7 @@ export const PanelContent = ({
               />
             );
           })}
-        </div>
+        </ul>
       </SortableContext>
       <DisplayGraphQLQuery
         label="Get Object Content"

@@ -1,6 +1,17 @@
+import {
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  MouseSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { Panel } from "src/components/panel";
 import {
@@ -10,6 +21,7 @@ import {
   mergedPanelTabStates,
 } from "src/hooks/state";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
+import { Active, DragStartEvent, DragType } from "src/lib/dndkit/dndkit";
 
 const Object = () => {
   const router = useRouter();
@@ -43,6 +55,15 @@ const Object = () => {
     setTab(PanelTab.Metadata);
   };
 
+  const [activeDragged, setActiveDragged] = useState<Active | null>(null);
+
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
   return (
     <div className="pt-nav flex w-full h-full">
       <Head>
@@ -50,30 +71,62 @@ const Object = () => {
           language ? `(${language})` : ""
         }`}</title>
       </Head>
-      {object && (
-        <div
-          className="relative mx-auto w-full"
-          style={{
-            maxHeight: `calc(100vh - 4rem)`,
-          }}
-        >
-          <Panel
-            isPage
-            object={object}
-            tab={tab}
-            tabState={tabState}
-            setPanelObject={setPanelObject}
-            setTab={setTab}
-            updateActivePanelTabState={(newTabState) =>
-              setTabState((prevTabState) =>
-                mergedPanelTabStates(prevTabState, newTabState),
-              )
-            }
-          />
-        </div>
-      )}
+      <DndContext
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragCancel={handleDragEnd}
+        collisionDetection={closestCenter}
+        sensors={sensors}
+      >
+        {object && (
+          <div
+            className="relative mx-auto w-full"
+            style={{
+              maxHeight: `calc(100vh - 4rem)`,
+            }}
+          >
+            <Panel
+              isPage
+              object={object}
+              tab={tab}
+              tabState={tabState}
+              setPanelObject={setPanelObject}
+              setTab={setTab}
+              updateActivePanelTabState={(newTabState) =>
+                setTabState((prevTabState) =>
+                  mergedPanelTabStates(prevTabState, newTabState),
+                )
+              }
+            />
+            {typeof window !== "undefined" && document?.body && (
+              <>
+                {createPortal(
+                  <DragOverlay zIndex={99999999} dropAnimation={null}>
+                    {activeDragged?.data?.current?.options?.dragOverlay ? (
+                      <>{activeDragged.data.current.options.dragOverlay}</>
+                    ) : null}
+                  </DragOverlay>,
+                  document.body,
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </DndContext>
     </div>
   );
+
+  function handleDragStart(event: DragStartEvent) {
+    const type = event.active.data.current.type;
+
+    if (type === DragType.PANEL_CONTENT_REORDER_OBJECTS) {
+      setActiveDragged(event.active);
+    }
+  }
+
+  function handleDragEnd() {
+    if (activeDragged) setActiveDragged(null);
+  }
 };
 
 export default Object;
