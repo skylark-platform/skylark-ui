@@ -11,7 +11,6 @@ import {
   render,
   screen,
   waitFor,
-  waitForElementToBeRemoved,
   within,
 } from "src/__tests__/utils/test-utils";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";

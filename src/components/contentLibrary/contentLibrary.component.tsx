@@ -20,12 +20,7 @@ import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
-import {
-  Active,
-  DragEndEvent,
-  DragStartEvent,
-  DragType,
-} from "src/lib/dndkit/dndkit";
+import { Active, DragStartEvent, DragType } from "src/lib/dndkit/dndkit";
 
 import { TabbedObjectSearchWithAccount } from "./tabbedObjectSearch/tabbedObjectSearch.component";
 

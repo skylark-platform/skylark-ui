@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { FiTrash2, FiMoreVertical } from "react-icons/fi";
 
 import { Button } from "src/components/button";

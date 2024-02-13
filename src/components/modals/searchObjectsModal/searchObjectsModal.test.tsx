@@ -9,9 +9,7 @@ import {
 import {
   AvailabilityStatus,
   ParsedSkylarkObject,
-  SkylarkGraphQLObject,
 } from "src/interfaces/skylark";
-import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 import { SearchObjectsModal } from "./searchObjectsModal.component";
 

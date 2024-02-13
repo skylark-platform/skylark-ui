@@ -1,5 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { sentenceCase } from "sentence-case";
 
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
@@ -24,12 +24,7 @@ import {
   ParsedSkylarkObject,
   ParsedSkylarkObjectRelationship,
 } from "src/interfaces/skylark";
-import {
-  DragEndEvent,
-  DragType,
-  DroppableType,
-  useDndMonitor,
-} from "src/lib/dndkit/dndkit";
+import { DragType, DroppableType } from "src/lib/dndkit/dndkit";
 import { formatObjectField, hasProperty } from "src/lib/utils";
 
 import { PanelRelationshipSection } from "./panelRelationshipsSection.component";

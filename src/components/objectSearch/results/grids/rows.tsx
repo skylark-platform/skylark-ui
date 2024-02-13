@@ -1,4 +1,3 @@
-import { closestCenter } from "@dnd-kit/core";
 import { Row, TableMeta, flexRender } from "@tanstack/react-table";
 import clsx from "clsx";
 import { Fragment } from "react";
@@ -48,9 +47,6 @@ const DataRow = ({
     data: {
       object: row.original,
       checkedObjectsState: tableMeta?.checkedObjectsState || [],
-    },
-    options: {
-      // collisionDetection: closestCenter,
     },
     disabled: !isDraggable,
   });

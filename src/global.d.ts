@@ -1,9 +1,6 @@
 // @tanstack/react-table meta object declaration
-import { CheckedState } from "@radix-ui/react-checkbox";
-
 import { CheckedObjectState, PanelTab } from "./hooks/state";
 import {
-  ParsedSkylarkObject,
   SkylarkObjectIdentifier,
   SkylarkObjectMeta,
 } from "./interfaces/skylark";

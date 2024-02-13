@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 
 import { Button } from "src/components/button";
 import { Modal } from "src/components/modals/base/modal";
@@ -26,12 +26,10 @@ interface SearchObjectsModalProps {
 
 const generateSaveMessage = ({
   checkedObjects,
-  checkedUids,
   checkedObjectTypesForDisplay,
   existingObjects = [],
 }: {
   checkedObjects: ParsedSkylarkObject[];
-  checkedUids: string[];
   checkedObjectTypesForDisplay: string[];
   existingObjects?: ParsedSkylarkObject[];
 }) => {
@@ -82,7 +80,6 @@ export const SearchObjectsModal = ({
   const {
     checkedObjectsState,
     checkedObjects,
-    checkedUids,
     checkedObjectTypesForDisplay,
     setCheckedObjectsState,
     resetCheckedObjects,
@@ -117,7 +114,6 @@ export const SearchObjectsModal = ({
 
   const saveMessage = generateSaveMessage({
     checkedObjects,
-    checkedUids,
     checkedObjectTypesForDisplay,
     existingObjects,
   });

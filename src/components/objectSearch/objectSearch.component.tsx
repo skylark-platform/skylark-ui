@@ -12,7 +12,6 @@ import { useEffect, useState, useMemo, memo, useCallback } from "react";
 
 import { Spinner } from "src/components/icons";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { CheckedObjectState } from "src/hooks/state";
 import { SearchFilters } from "src/hooks/useSearch";
 import {
   SearchType,
