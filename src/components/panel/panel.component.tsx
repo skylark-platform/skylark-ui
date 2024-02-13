@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { sentenceCase } from "sentence-case";
@@ -43,7 +43,6 @@ import {
 } from "src/lib/utils";
 
 import {
-  handleDroppedContents,
   HandleDropError,
   HandleDropErrorType,
   HandleRelationshipDropError,
@@ -65,11 +64,8 @@ interface PanelProps {
   isPage?: boolean;
   closePanel?: () => void;
   object: SkylarkObjectIdentifier;
-  isDraggedObject?: boolean;
-  droppedObjects?: ParsedSkylarkObject[];
   tab: PanelTab;
   tabState: PanelTabState;
-  clearDroppedObjects?: () => void;
   setPanelObject: (o: SkylarkObjectIdentifier, tab?: PanelTab) => void;
   setTab: (t: PanelTab) => void;
   navigateToPreviousPanelObject?: () => void;
@@ -77,10 +73,9 @@ interface PanelProps {
   updateActivePanelTabState: (s: Partial<PanelTabState>) => void;
 }
 
-const tabsWithDropZones = [PanelTab.Content, PanelTab.Availability];
-
 const tabsWithEditMode = [
-  ...tabsWithDropZones,
+  PanelTab.Content,
+  PanelTab.Availability,
   PanelTab.Metadata,
   PanelTab.Relationships,
   PanelTab.AvailabilityDimensions,
@@ -258,10 +253,7 @@ export const Panel = ({
   object,
   tab: selectedTab,
   closePanel,
-  isDraggedObject,
-  droppedObjects,
   tabState,
-  clearDroppedObjects,
   setTab: setSelectedTab,
   navigateToPreviousPanelObject,
   navigateToForwardPanelObject,
@@ -345,6 +337,7 @@ export const Panel = ({
   const inEditMode =
     panelInEditMode ||
     isMetadataFormDirty ||
+    contentObjects.original?.length !== contentObjects.updated?.length ||
     modifiedRelationships !== null ||
     modifiedAvailabilityObjects !== null ||
     modifiedAvailabilityAssignedTo !== null;
@@ -384,46 +377,6 @@ export const Panel = ({
     ],
   );
 
-  useEffect(() => {
-    if (
-      data &&
-      droppedObjects &&
-      droppedObjects.length > 0 &&
-      tabsWithDropZones.includes(selectedTab)
-    ) {
-      setEditMode(true);
-
-      if (selectedTab === PanelTab.Content && contentObjects.updated) {
-        const { updatedContentObjects, errors } = handleDroppedContents({
-          droppedObjects,
-          panelObject: data,
-          existingObjects: contentObjects.updated,
-        });
-
-        displayHandleDroppedErrors(
-          errors,
-          selectedTab,
-          data,
-          objectTypesWithConfig,
-        );
-
-        setContentObjects({
-          ...contentObjects,
-          updated: updatedContentObjects,
-        });
-      }
-
-      clearDroppedObjects?.();
-    }
-  }, [
-    clearDroppedObjects,
-    contentObjects,
-    data,
-    droppedObjects,
-    objectTypesWithConfig,
-    selectedTab,
-  ]);
-
   const { updateObjectRelationships, isUpdatingObjectRelationships } =
     useUpdateObjectRelationships({
       objectType,
@@ -449,6 +402,7 @@ export const Panel = ({
     useUpdateObjectContent({
       objectType,
       onSuccess: () => {
+        setContentObjects({ original: null, updated: null });
         if (panelInEditMode) setEditMode(false);
       },
       onError: showUpdateErrorToast,
@@ -550,6 +504,25 @@ export const Panel = ({
     }
   };
 
+  const handleContentObjectsModified = useCallback(
+    (
+      updatedContentObjects: {
+        original: ParsedSkylarkObjectContentObject[] | null;
+        updated: AddedSkylarkObjectContentObject[] | null;
+      },
+      errors: HandleDropError[],
+    ) => {
+      setContentObjects(updatedContentObjects);
+      displayHandleDroppedErrors(
+        errors,
+        selectedTab,
+        data,
+        objectTypesWithConfig,
+      );
+    },
+    [data, objectTypesWithConfig, selectedTab],
+  );
+
   const handleRelationshipsObjectsModified = useCallback(
     (
       updatedModifiedRelationships: Record<
@@ -568,9 +541,8 @@ export const Panel = ({
         data,
         objectTypesWithConfig,
       );
-      clearDroppedObjects?.();
     },
-    [clearDroppedObjects, data, objectTypesWithConfig, selectedTab],
+    [data, objectTypesWithConfig, selectedTab],
   );
 
   const handleAvailabilityObjectsModified = useCallback(
@@ -588,9 +560,8 @@ export const Panel = ({
         data,
         objectTypesWithConfig,
       );
-      clearDroppedObjects?.();
     },
-    [clearDroppedObjects, data, objectTypesWithConfig, selectedTab],
+    [data, objectTypesWithConfig, selectedTab],
   );
 
   const handleAvailabilityAssignedToModified = useCallback(
@@ -609,9 +580,8 @@ export const Panel = ({
           data,
           objectTypesWithConfig,
         );
-      clearDroppedObjects?.();
     },
-    [clearDroppedObjects, data, objectTypesWithConfig, selectedTab],
+    [data, objectTypesWithConfig, selectedTab],
   );
 
   return (
@@ -659,7 +629,6 @@ export const Panel = ({
               updated: availabilityDimensionValues.original,
             });
             setModifiedAvailabilityAssignedTo(null);
-            clearDroppedObjects?.();
           }
           setEditMode(!inEditMode);
         }}
@@ -742,8 +711,6 @@ export const Panel = ({
               language={language}
               setPanelObject={setPanelObject}
               inEditMode={inEditMode}
-              droppedObjects={droppedObjects}
-              showDropZone={isDraggedObject}
               modifiedAvailabilityObjects={modifiedAvailabilityObjects}
               tabState={tabState[PanelTab.Availability]}
               setAvailabilityObjects={handleAvailabilityObjectsModified}
@@ -758,8 +725,7 @@ export const Panel = ({
               language={language}
               objects={contentObjects.updated}
               inEditMode={inEditMode}
-              setContentObjects={setContentObjects}
-              showDropZone={isDraggedObject}
+              setContentObjects={handleContentObjectsModified}
               setPanelObject={setPanelObject}
             />
           )}
@@ -773,8 +739,6 @@ export const Panel = ({
               inEditMode={inEditMode}
               language={language}
               tabState={tabState[PanelTab.Relationships]}
-              showDropZone={isDraggedObject}
-              droppedObjects={droppedObjects}
               setPanelObject={setPanelObject}
               updateActivePanelTabState={updateActivePanelTabState}
             />
@@ -809,9 +773,7 @@ export const Panel = ({
               isPage={isPage}
               uid={uid}
               inEditMode={inEditMode}
-              showDropZone={isDraggedObject}
               modifiedAvailabilityAssignedTo={modifiedAvailabilityAssignedTo}
-              droppedObjects={droppedObjects}
               tabState={tabState[PanelTab.AvailabilityAssignedTo]}
               setPanelObject={setPanelObject}
               setModifiedAvailabilityAssignedTo={

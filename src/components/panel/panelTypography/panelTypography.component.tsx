@@ -1,13 +1,7 @@
 import clsx from "clsx";
 import { Ref, forwardRef } from "react";
 import { CgSpinner } from "react-icons/cg";
-import {
-  FiBookOpen,
-  FiMaximize2,
-  FiMinimize2,
-  FiPlus,
-  FiX,
-} from "react-icons/fi";
+import { FiMaximize2, FiMinimize2, FiPlus, FiX } from "react-icons/fi";
 
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 

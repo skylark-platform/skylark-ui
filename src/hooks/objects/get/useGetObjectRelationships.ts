@@ -2,7 +2,6 @@ import {
   InfiniteData,
   QueryKey,
   useInfiniteQuery,
-  useQuery,
 } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
 import { useMemo } from "react";

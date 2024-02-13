@@ -5,6 +5,18 @@ import {
   hasOperationName,
 } from "../support/utils/graphqlTestUtils";
 
+const homepageContentOrdered = [
+  "Home page hero",
+  "Kids Home page hero",
+  "Spotlight movies",
+  "New TV Releases",
+  "Classic kids shows",
+  "Best Picture Nominees 2021",
+  "GOT Season 1",
+  "Miraculous Season 5",
+  "Discover",
+];
+
 describe("Object Page", () => {
   beforeEach(() => {
     cy.login();
@@ -99,6 +111,44 @@ describe("Object Page", () => {
                 `/object/${firstSetContentItemObjectType}/${firstSetContentItemUid}`,
               );
             });
+        },
+      );
+    });
+
+    it("moves set content to reorder", () => {
+      cy.fixture("./skylark/queries/getObject/homepage.json").then(
+        (homepageJson) => {
+          const homepageUid = homepageJson.data.getObject.uid;
+          const homepageObjectType = homepageJson.data.getObject.__typename;
+
+          cy.contains("button", "Content").click();
+          cy.get(
+            `[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`,
+          ).within(() => {
+            cy.contains("Home page hero");
+
+            cy.contains("Edit Content").click();
+            cy.contains("Editing");
+
+            cy.get("[data-testid=panel-content-items] > li p")
+              .then(($els) => {
+                const text = $els.toArray().map((el) => el.innerText.trim());
+                return text;
+              })
+              .should("deep.eq", homepageContentOrdered);
+
+            cy.contains("New TV Releases")
+              .closest("[data-cy=panel-object-content-item]")
+              .mouseMoveBy(0, 50);
+          });
+
+          // Test that the order has changed
+          cy.get("[data-testid=panel-content-items] > li p")
+            .then(($els) => {
+              const text = $els.toArray().map((el) => el.innerText.trim());
+              return text;
+            })
+            .should("not.deep.eq", homepageContentOrdered);
         },
       );
     });

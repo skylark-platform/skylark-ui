@@ -219,8 +219,9 @@ describe("handleDroppedContents", () => {
     ];
 
     const got = handleDroppedContents({
-      panelObject,
+      activeObjectUid: panelObject.uid,
       existingObjects: existingObjectContent,
+      indexToInsert: droppedObjects.length + 2,
       droppedObjects: [
         ...droppedObjects,
         {
@@ -270,6 +271,36 @@ describe("handleDroppedContents", () => {
       "uid",
       "EXISTING_OBJECT",
     );
+  });
+
+  test("receives the expected content objects, inserted at the correct place", () => {
+    const existingOb = {
+      objectType: panelObject.objectType,
+      config: panelObject.config,
+      meta: panelObject.meta,
+      object: {
+        ...panelObject.metadata,
+        uid: "EXISTING_OBJECT",
+      },
+      position: 0,
+    };
+
+    const existingObjectContent: AddedSkylarkObjectContentObject[] = [
+      existingOb,
+    ];
+
+    const got = handleDroppedContents({
+      activeObjectUid: panelObject.uid,
+      existingObjects: existingObjectContent,
+      indexToInsert: 0,
+      droppedObjects: droppedObjects,
+    });
+
+    // Check valid content objects
+    expect(got.updatedContentObjects).toHaveLength(3);
+    expect(got.updatedContentObjects[0].isNewObject).toBeTruthy();
+    expect(got.updatedContentObjects[1].isNewObject).toBeTruthy();
+    expect(got.updatedContentObjects[2].isNewObject).toBeFalsy();
   });
 });
 

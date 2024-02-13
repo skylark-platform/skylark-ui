@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
 
 import { Spinner } from "src/components/icons";
 import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
@@ -7,10 +6,7 @@ import {
   useAllObjectsMeta,
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
-import {
-  BuiltInSkylarkObjectType,
-  SkylarkObjectType,
-} from "src/interfaces/skylark";
+import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
 
 import { ObjectTypeEditor } from "./editor/contentModelEditor.component";
 import { ObjectTypeNavigation } from "./navigation/contentModelNavigation.component";

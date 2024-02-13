@@ -40,11 +40,7 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import {
-  getObjectDisplayName,
-  platformMetaKeyClicked,
-  userIsOnMac,
-} from "src/lib/utils";
+import { getObjectDisplayName, platformMetaKeyClicked } from "src/lib/utils";
 
 interface PanelHeaderProps {
   isPage?: boolean;

@@ -1,6 +1,5 @@
 import { Switch as HeadlessUiSwitch } from "@headlessui/react";
 import clsx from "clsx";
-import { useState } from "react";
 
 interface SwitchProps {
   size?: "small";

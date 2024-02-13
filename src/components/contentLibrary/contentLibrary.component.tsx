@@ -14,19 +14,13 @@ import { createPortal } from "react-dom";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { Panel } from "src/components/panel";
-import { DROPPABLE_ID } from "src/constants/skylark";
 import { PanelTab, usePanelObjectState } from "src/hooks/state";
 import { useCheckedObjectsState } from "src/hooks/state";
 import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
-import {
-  Active,
-  DragEndEvent,
-  DragStartEvent,
-  DragType,
-} from "src/lib/dndkit/dndkit";
+import { Active, DragStartEvent, DragType } from "src/lib/dndkit/dndkit";
 
 import { TabbedObjectSearchWithAccount } from "./tabbedObjectSearch/tabbedObjectSearch.component";
 
@@ -105,9 +99,6 @@ export const ContentLibrary = ({
       activeDragged.data.current.type === DragType.CONTENT_LIBRARY_OBJECT) ||
     false;
 
-  const [droppedObjects, setDroppedObjects] = useState<
-    ParsedSkylarkObject[] | undefined
-  >(undefined);
   const [windowSize, setWindowSize] = useState(0);
   const mousePosition = useRef(0);
 
@@ -198,11 +189,6 @@ export const ContentLibrary = ({
     ? activeDragged.data.current.options.modifiers
     : [snapCenterToCursor];
 
-  const clearDroppedObjects = useCallback(
-    () => setDroppedObjects(undefined),
-    [],
-  );
-
   return (
     <DndContext
       onDragStart={handleDragStart}
@@ -210,6 +196,9 @@ export const ContentLibrary = ({
       onDragCancel={() => setActiveDragged(null)}
       sensors={sensors}
       modifiers={dndModifiers}
+      collisionDetection={
+        activeDragged?.data.current.options?.collisionDetection
+      }
     >
       {typeof window !== "undefined" && document?.body && (
         <>
@@ -300,13 +289,10 @@ export const ContentLibrary = ({
                 tab={activePanelTab}
                 tabState={activePanelTabState}
                 closePanel={closePanel}
-                isDraggedObject={isDraggingObject}
-                droppedObjects={droppedObjects}
                 setPanelObject={setPanelObject}
                 setTab={setPanelTab}
                 navigateToPreviousPanelObject={navigateToPreviousPanelObject}
                 navigateToForwardPanelObject={navigateToForwardPanelObject}
-                clearDroppedObjects={clearDroppedObjects}
                 updateActivePanelTabState={updateActivePanelTabState}
               />
             </div>
@@ -340,25 +326,13 @@ export const ContentLibrary = ({
     if (type === DragType.OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS) {
       setActiveDragged(event.active);
     }
+
+    if (type === DragType.PANEL_CONTENT_REORDER_OBJECTS) {
+      setActiveDragged(event.active);
+    }
   }
 
-  function handleDragEnd(event: DragEndEvent) {
-    if (
-      event.over &&
-      event.over.id === DROPPABLE_ID &&
-      event.active.data.current.type === DragType.CONTENT_LIBRARY_OBJECT &&
-      activeDragged?.data.current.type === DragType.CONTENT_LIBRARY_OBJECT
-    ) {
-      const draggedObject = activeDragged?.data.current.object;
-      const draggedObjectIsChecked = checkedUids.includes(
-        activeDragged.data.current.object.uid,
-      );
-
-      // Like Gmail, if the dragged object is not checked, just use the dragged object
-      setDroppedObjects(
-        draggedObjectIsChecked ? checkedObjects : [draggedObject],
-      );
-    }
+  function handleDragEnd() {
     if (activeDragged) setActiveDragged(null);
   }
 };

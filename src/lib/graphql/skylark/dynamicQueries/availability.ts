@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { EnumType, VariableType } from "json-to-graphql-query";
+import { VariableType } from "json-to-graphql-query";
 
 import {
   SkylarkGraphQLAvailabilityDimension,
@@ -8,7 +8,6 @@ import {
 import { hasProperty } from "src/lib/utils";
 
 import {
-  generateContentsToReturn,
   generateFieldsToReturn,
   generateVariablesAndArgs,
   wrappedJsonQuery,

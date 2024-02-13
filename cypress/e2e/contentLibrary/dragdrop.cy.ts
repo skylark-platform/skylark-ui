@@ -9,6 +9,18 @@ const allDevicesAllCustomersAvailability =
 const panelDragDeltaX = 1800;
 const panelDragDeltaY = 500;
 
+const homepageContentOrdered = [
+  "Home page hero",
+  "Kids Home page hero",
+  "Spotlight movies",
+  "New TV Releases",
+  "Classic kids shows",
+  "Best Picture Nominees 2021",
+  "GOT Season 1",
+  "Miraculous Season 5",
+  "Discover",
+];
+
 const searchContentLibrary = (str: string) => {
   cy.get('input[name="search-query-input"]').clear().type(str);
   cy.contains(str).should("exist");
@@ -19,7 +31,10 @@ const searchContentLibraryAndOpenPanel = (str: string) => {
   cy.openContentLibraryObjectPanelByText(str);
 };
 
-const dragRowIntoPanel = (row: "first" | "last") => {
+const dragRowIntoPanel = (
+  row: "first" | "last",
+  opts?: { dropzoneSelector?: string },
+) => {
   const allRows = cy.get(`[data-cy="object-search-results-row-draggable"`);
   const cyRow = row === "first" ? allRows.first() : allRows.last();
 
@@ -41,7 +56,9 @@ const dragRowIntoPanel = (row: "first" | "last") => {
       clientY: panelDragDeltaY,
     })
     .then(() => {
-      cy.get("[data-cy=panel-drop-zone]").should("exist");
+      cy.get(opts?.dropzoneSelector || "[data-cy=panel-drop-zone]").should(
+        "exist",
+      );
     })
     .wait(50)
     .trigger("mouseup", { force: true });
@@ -56,6 +73,11 @@ describe("Drag and Drop - Content and Relationship tab", () => {
         req.alias = "introspectionQuery";
         req.reply({
           fixture: "./skylark/queries/introspection/introspectionQuery.json",
+        });
+      }
+      if (hasOperationName(req, "SL_UI_GET_OBJECTS_CONFIG")) {
+        req.reply({
+          fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
         });
       }
       if (hasOperationName(req, "SL_UI_GET_ACCOUNT_STATUS")) {
@@ -77,6 +99,11 @@ describe("Drag and Drop - Content and Relationship tab", () => {
       if (hasOperationName(req, "SL_UI_GET_SKYLARKSET")) {
         req.reply({
           fixture: "./skylark/queries/getObject/homepage.json",
+        });
+      }
+      if (hasOperationName(req, "SL_UI_GET_SKYLARKSET_CONTENT")) {
+        req.reply({
+          fixture: "./skylark/queries/getObjectContent/homepage.json",
         });
       }
       if (hasOperationName(req, "SL_UI_GET_AVAILABILITY")) {
@@ -121,6 +148,8 @@ describe("Drag and Drop - Content and Relationship tab", () => {
 
   describe("Drag & Drop", () => {
     describe("Set Content", () => {
+      const dropzoneSelector = "[data-testid=panel-content-items]";
+
       it("drags an object into Set content", () => {
         cy.fixture("./skylark/queries/getObject/homepage.json").then(
           (homepageJson) => {
@@ -129,16 +158,30 @@ describe("Drag and Drop - Content and Relationship tab", () => {
 
             searchContentLibraryAndOpenPanel("Homepage");
             cy.contains("button", "Content").click();
-            cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
+            cy.get(
+              `[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`,
+            ).within(() => {
+              cy.contains("Home page hero");
+            });
 
-            cy.get("[data-cy=panel-drop-zone]").should("not.exist");
-
-            dragRowIntoPanel("last").then(() => {
+            dragRowIntoPanel("last", {
+              dropzoneSelector,
+            }).then(() => {
               cy.contains("button", "Content").should("exist");
               cy.get("input.bg-success")
                 .should("exist")
                 .should("have.length", 1);
             });
+            cy.get("[data-testid=panel-object-content-item-10]").within(() => {
+              cy.contains("span", "9");
+              cy.get("input").should("have.value", "10");
+            });
+
+            cy.get(`[data-testid=panel-content-items]`)
+              .find("li")
+              .should("have.length", 10);
+
+            cy.percySnapshot("Panel - Content Tab - new object added");
           },
         );
       });
@@ -151,22 +194,67 @@ describe("Drag and Drop - Content and Relationship tab", () => {
 
             searchContentLibraryAndOpenPanel("Homepage");
             cy.contains("button", "Content").click();
-            cy.get(`[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`);
+            cy.get(
+              `[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`,
+            ).within(() => {
+              cy.contains("Home page hero");
+            });
 
-            cy.get("[data-cy=panel-drop-zone]").should("not.exist");
-
-            dragRowIntoPanel("last").then(() => {
+            dragRowIntoPanel("last", {
+              dropzoneSelector,
+            }).then(() => {
               cy.contains("button", "Content").should("exist");
               cy.get("input.bg-success")
                 .should("exist")
                 .should("have.length", 1);
             });
 
-            dragRowIntoPanel("last").then(() => {
+            dragRowIntoPanel("last", {
+              dropzoneSelector,
+            }).then(() => {
               cy.get("[data-testid=toast]").within(() => {
                 cy.contains("Existing Linked Object").should("exist");
               });
             });
+          },
+        );
+      });
+
+      it("moves set content to reorder", () => {
+        cy.fixture("./skylark/queries/getObject/homepage.json").then(
+          (homepageJson) => {
+            const homepageUid = homepageJson.data.getObject.uid;
+            const homepageObjectType = homepageJson.data.getObject.__typename;
+
+            searchContentLibraryAndOpenPanel("Homepage");
+            cy.contains("button", "Content").click();
+            cy.get(
+              `[data-cy=panel-for-${homepageObjectType}-${homepageUid}]`,
+            ).within(() => {
+              cy.contains("Home page hero");
+
+              cy.contains("Edit Content").click();
+              cy.contains("Editing");
+
+              cy.get("[data-testid=panel-content-items] > li p")
+                .then(($els) => {
+                  const text = $els.toArray().map((el) => el.innerText.trim());
+                  return text;
+                })
+                .should("deep.eq", homepageContentOrdered);
+
+              cy.contains("New TV Releases")
+                .closest("[data-cy=panel-object-content-item]")
+                .mouseMoveBy(0, 30);
+            });
+
+            // Test that the order has changed
+            cy.get("[data-testid=panel-content-items] > li p")
+              .then(($els) => {
+                const text = $els.toArray().map((el) => el.innerText.trim());
+                return text;
+              })
+              .should("not.deep.eq", homepageContentOrdered);
           },
         );
       });

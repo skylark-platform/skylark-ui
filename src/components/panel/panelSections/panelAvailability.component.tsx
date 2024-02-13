@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import dayjs, { Dayjs } from "dayjs";
 import { AnimatePresence, m } from "framer-motion";
-import { Fragment, ReactNode, useEffect, useMemo, useState } from "react";
+import { Fragment, ReactNode, useMemo, useState } from "react";
 
 import {
   AvailabilityInheritanceIcon,
@@ -26,6 +26,8 @@ import {
 import { Skeleton } from "src/components/skeleton";
 import { Tab, Tabs } from "src/components/tabs/tabs.component";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { useIsDragging } from "src/hooks/dnd/useIsDragging";
+import { usePanelDropzone } from "src/hooks/dnd/usePanelDropzone";
 import { useGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
 import { useGetObjectAvailabilityInheritance } from "src/hooks/objects/get/useGetObjectAvailabilityInheritance";
 import { PanelTab, PanelTabState } from "src/hooks/state";
@@ -40,6 +42,7 @@ import {
   SkylarkAvailabilityField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
+import { DragType, DroppableType } from "src/lib/dndkit/dndkit";
 import {
   formatReadableDateTime,
   getAvailabilityStatusForAvailabilityObject,
@@ -57,8 +60,6 @@ interface PanelAvailabilityProps {
   uid: string;
   language: string;
   inEditMode: boolean;
-  droppedObjects?: ParsedSkylarkObject[];
-  showDropZone?: boolean;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
   modifiedAvailabilityObjects: {
     added: ParsedSkylarkObject[];
@@ -744,8 +745,6 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
     uid,
     language,
     inEditMode,
-    droppedObjects,
-    showDropZone,
     modifiedAvailabilityObjects,
     tabState,
     setAvailabilityObjects,
@@ -886,33 +885,30 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
     );
   };
 
-  useEffect(() => {
-    if (droppedObjects && droppedObjects.length > 0) {
-      const { addedObjects, errors } = handleDroppedAvailabilities({
-        droppedObjects,
-        existingObjects: availabilityObjects,
-        activeObjectUid: uid,
-      });
+  const [showDropZone] = useIsDragging(DragType.CONTENT_LIBRARY_OBJECT);
 
-      setAvailabilityObjects(
-        {
-          removed: modifiedAvailabilityObjects?.removed || [],
-          added: [
-            ...(modifiedAvailabilityObjects?.added || []),
-            ...addedObjects,
-          ],
-        },
-        errors,
-      );
-    }
-  }, [
-    availabilityObjects,
-    droppedObjects,
-    modifiedAvailabilityObjects?.added,
-    modifiedAvailabilityObjects?.removed,
-    uid,
-    setAvailabilityObjects,
-  ]);
+  usePanelDropzone(DroppableType.PANEL_GENERIC, {
+    onObjectsDropped: (droppedObjects) => {
+      if (droppedObjects && droppedObjects.length > 0) {
+        const { addedObjects, errors } = handleDroppedAvailabilities({
+          droppedObjects,
+          existingObjects: availabilityObjects,
+          activeObjectUid: uid,
+        });
+
+        setAvailabilityObjects(
+          {
+            removed: modifiedAvailabilityObjects?.removed || [],
+            added: [
+              ...(modifiedAvailabilityObjects?.added || []),
+              ...addedObjects,
+            ],
+          },
+          errors,
+        );
+      }
+    },
+  });
 
   if (showDropZone) {
     return <PanelDropZone />;

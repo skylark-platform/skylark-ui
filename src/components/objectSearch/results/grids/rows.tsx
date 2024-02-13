@@ -1,4 +1,4 @@
-import { Row, flexRender } from "@tanstack/react-table";
+import { Row, TableMeta, flexRender } from "@tanstack/react-table";
 import clsx from "clsx";
 import { Fragment } from "react";
 import { VirtualItem } from "react-virtual";
@@ -9,12 +9,13 @@ import {
 } from "src/components/objectSearch/results/columnConfiguration";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
-import { DragType, useDraggable } from "src/lib/dndkit/dndkit";
+import { DragType, useSortable } from "src/lib/dndkit/dndkit";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { platformMetaKeyClicked } from "src/lib/utils";
 
 interface DataRowProps {
   tableId: string;
+  tableMeta?: TableMeta<ObjectSearchTableData>;
   virtualRow: VirtualItem;
   row: Row<ObjectSearchTableData>;
   virtualColumns: VirtualItem[];
@@ -30,18 +31,22 @@ interface LayoutRowProps extends DataRowProps {
 
 const DataRow = ({
   tableId,
+  tableMeta,
   virtualRow,
   row,
   virtualColumns,
   isDraggable,
   isLeft,
 }: DataRowProps & { isDraggable: boolean }) => {
-  const draggableId = `${tableId}-row-${row.id}-${isLeft ? "left" : ""}`;
-  const { attributes, listeners, setNodeRef } = useDraggable({
+  const draggableId = `${tableId}-row-${row.id}-${isLeft ? "left" : "right"}`;
+
+  // useSortable not useDraggable so that the Panel Content tab can sort when a row is dragged in
+  const { attributes, listeners, setNodeRef } = useSortable({
     type: DragType.CONTENT_LIBRARY_OBJECT,
     id: draggableId,
     data: {
       object: row.original,
+      checkedObjectsState: tableMeta?.checkedObjectsState || [],
     },
     disabled: !isDraggable,
   });

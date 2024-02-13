@@ -6,7 +6,7 @@ import {
   BuiltInSkylarkObjectType,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
-import { hasProperty } from "src/lib/utils";
+import { hasProperty, insertAtIndex } from "src/lib/utils";
 
 export enum HandleDropErrorType {
   "EXISTING_LINK" = "EXISTING_LINK",
@@ -33,7 +33,7 @@ export type HandleDropError =
   | HandleGenericDropError
   | HandleRelationshipDropError;
 
-const parseSkylarkObjectContent = (
+export const convertSkylarkObjectToContentObject = (
   skylarkObject: ParsedSkylarkObject,
 ): ParsedSkylarkObjectContentObject => {
   return {
@@ -204,23 +204,24 @@ export const handleDroppedRelationships = ({
 
 export const handleDroppedContents = ({
   existingObjects,
-  panelObject,
+  activeObjectUid,
   droppedObjects,
+  indexToInsert,
 }: {
   existingObjects: AddedSkylarkObjectContentObject[];
-  panelObject: ParsedSkylarkObject;
+  activeObjectUid: string;
   droppedObjects: ParsedSkylarkObject[];
+  indexToInsert: number;
 }): {
   updatedContentObjects: AddedSkylarkObjectContentObject[];
   errors: HandleDropError[];
 } => {
-  const { updatedContentObjects, errors } = droppedObjects.reduce(
+  const { newContentObjects, errors } = droppedObjects.reduce(
     (
       previous,
       droppedObject,
-      index,
     ): {
-      updatedContentObjects: AddedSkylarkObjectContentObject[];
+      newContentObjects: AddedSkylarkObjectContentObject[];
       errors: HandleDropError[];
     } => {
       if (droppedObject.objectType === BuiltInSkylarkObjectType.Availability) {
@@ -234,7 +235,7 @@ export const handleDroppedContents = ({
         };
       }
 
-      if (panelObject.uid === droppedObject.uid) {
+      if (activeObjectUid === droppedObject.uid) {
         const error: HandleDropError = {
           type: HandleDropErrorType.OBJECTS_ARE_SAME,
           object: droppedObject,
@@ -260,22 +261,35 @@ export const handleDroppedContents = ({
         };
       }
 
-      const parseDroppedContent = parseSkylarkObjectContent(droppedObject);
+      const parseDroppedContent =
+        convertSkylarkObjectToContentObject(droppedObject);
 
       return {
         ...previous,
-        updatedContentObjects: [
-          ...previous.updatedContentObjects,
+        newContentObjects: [
+          ...previous.newContentObjects,
           {
             ...parseDroppedContent,
-            position: existingObjects.length + index + 1,
+            position: -1,
             isNewObject: true,
           },
         ],
       };
     },
-    { updatedContentObjects: existingObjects, errors: [] as HandleDropError[] },
+    {
+      newContentObjects: [] as AddedSkylarkObjectContentObject[],
+      errors: [] as HandleDropError[],
+    },
   );
+
+  const updatedContentObjects = insertAtIndex(
+    existingObjects,
+    indexToInsert,
+    newContentObjects,
+  ).map((obj, i) => ({
+    ...obj,
+    position: obj.isNewObject ? i + 1 : obj.position,
+  }));
 
   return { updatedContentObjects, errors };
 };

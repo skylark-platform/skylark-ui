@@ -12,7 +12,6 @@ import { useEffect, useState, useMemo, memo, useCallback } from "react";
 
 import { Spinner } from "src/components/icons";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { CheckedObjectState } from "src/hooks/state";
 import { SearchFilters } from "src/hooks/useSearch";
 import {
   SearchType,
@@ -425,7 +424,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             hideFilters={props.hideSearchFilters}
             onChange={handleSearchFilterChange}
           />
-          <div className="mt-2 flex w-full justify-start pl-3 md:pl-7">
+          <div className="mt-2 flex w-full justify-start pl-3 md:pl-5">
             <p className="text-xs font-medium text-manatee-400">
               {getSearchResultsText({
                 searchQuery: searchFilters.query,
