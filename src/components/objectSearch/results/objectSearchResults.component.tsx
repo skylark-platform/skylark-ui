@@ -152,12 +152,6 @@ export const ObjectSearchResults = ({
     [hasNextPage, fetchNextPage, searchDataLength, isFetchingNextPage],
   );
 
-  // TODO enable this? Leaving this here to see if we're actually affect by the problem
-  // a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
-  // useEffect(() => {
-  //   fetchMoreOnBottomReached(tableContainerRef.current);
-  // }, [fetchMoreOnBottomReached]);
-
   const onRowCheckChange = useCallback(
     (updated: { object: ParsedSkylarkObject; checkedState: CheckedState }) => {
       if (onObjectCheckedChanged && checkedObjectsState) {

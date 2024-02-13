@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { AvailabilityInheritanceIcon } from "src/components/availability";
 import { Checkbox } from "src/components/inputs/checkbox";
@@ -14,6 +14,8 @@ import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.
 import { PanelLoading } from "src/components/panel/panelLoading";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { useGetAvailabilityAssignedTo } from "src/hooks/availability/useAvailabilityAssignedTo";
+import { useIsDragging } from "src/hooks/dnd/useIsDragging";
+import { usePanelDropzone } from "src/hooks/dnd/usePanelDropzone";
 import { PanelTab, PanelTabState } from "src/hooks/state";
 import {
   BuiltInSkylarkObjectType,
@@ -21,6 +23,7 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
+import { DragType, DroppableType } from "src/lib/dndkit/dndkit";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
@@ -28,8 +31,6 @@ interface PanelAvailabilityAssignedToProps {
   uid: string;
   isPage?: boolean;
   inEditMode: boolean;
-  showDropZone?: boolean;
-  droppedObjects?: ParsedSkylarkObject[];
   modifiedAvailabilityAssignedTo: {
     added: ParsedSkylarkObject[];
     removed: ParsedSkylarkObject[];
@@ -84,8 +85,6 @@ export const PanelAvailabilityAssignedTo = ({
   uid,
   isPage,
   inEditMode,
-  droppedObjects,
-  showDropZone,
   modifiedAvailabilityAssignedTo,
   tabState,
   setPanelObject,
@@ -141,52 +140,50 @@ export const PanelAvailabilityAssignedTo = ({
     modifiedAvailabilityAssignedTo?.removed?.find((obj) => obj.uid === uid),
   );
 
-  useEffect(() => {
-    if (droppedObjects && droppedObjects.length > 0) {
-      const existingUids = objects.map(({ uid }) => uid);
-      const uniqueDroppedObjects = existingUids
-        ? droppedObjects.filter(({ uid }) => !existingUids.includes(uid))
-        : droppedObjects;
+  const [showDropZone] = useIsDragging(DragType.CONTENT_LIBRARY_OBJECT);
 
-      const { updatedAssignedToObjects, errors } =
-        handleDroppedObjectsToAssignToAvailability({
-          newObjects: uniqueDroppedObjects,
-        });
+  usePanelDropzone(DroppableType.PANEL_GENERIC, {
+    onObjectsDropped: (droppedObjects) => {
+      if (droppedObjects && droppedObjects.length > 0) {
+        const existingUids = objects.map(({ uid }) => uid);
+        const uniqueDroppedObjects = existingUids
+          ? droppedObjects.filter(({ uid }) => !existingUids.includes(uid))
+          : droppedObjects;
 
-      const serverAssignedToUids =
-        data?.map(({ object: { uid } }) => uid) || [];
-      const updatedAssignedToObjectsWithExistingServerObjectsFilteredOut =
-        updatedAssignedToObjects.filter(
-          ({ uid }) => !serverAssignedToUids.includes(uid),
+        const { updatedAssignedToObjects, errors } =
+          handleDroppedObjectsToAssignToAvailability({
+            newObjects: uniqueDroppedObjects,
+          });
+
+        const serverAssignedToUids =
+          data?.map(({ object: { uid } }) => uid) || [];
+        const updatedAssignedToObjectsWithExistingServerObjectsFilteredOut =
+          updatedAssignedToObjects.filter(
+            ({ uid }) => !serverAssignedToUids.includes(uid),
+          );
+
+        const updatedAssignedToUids = updatedAssignedToObjects.map(
+          ({ uid }) => uid,
         );
 
-      const updatedAssignedToUids = updatedAssignedToObjects.map(
-        ({ uid }) => uid,
-      );
-
-      setModifiedAvailabilityAssignedTo(
-        {
-          added: modifiedAvailabilityAssignedTo
-            ? [
-                ...modifiedAvailabilityAssignedTo.added,
-                ...updatedAssignedToObjectsWithExistingServerObjectsFilteredOut,
-              ]
-            : updatedAssignedToObjectsWithExistingServerObjectsFilteredOut,
-          removed:
-            modifiedAvailabilityAssignedTo?.removed.filter(
-              ({ uid }) => !updatedAssignedToUids.includes(uid),
-            ) || [],
-        },
-        errors,
-      );
-    }
-  }, [
-    data,
-    droppedObjects,
-    modifiedAvailabilityAssignedTo,
-    objects,
-    setModifiedAvailabilityAssignedTo,
-  ]);
+        setModifiedAvailabilityAssignedTo(
+          {
+            added: modifiedAvailabilityAssignedTo
+              ? [
+                  ...modifiedAvailabilityAssignedTo.added,
+                  ...updatedAssignedToObjectsWithExistingServerObjectsFilteredOut,
+                ]
+              : updatedAssignedToObjectsWithExistingServerObjectsFilteredOut,
+            removed:
+              modifiedAvailabilityAssignedTo?.removed.filter(
+                ({ uid }) => !updatedAssignedToUids.includes(uid),
+              ) || [],
+          },
+          errors,
+        );
+      }
+    },
+  });
 
   if (showDropZone) {
     return <PanelDropZone />;

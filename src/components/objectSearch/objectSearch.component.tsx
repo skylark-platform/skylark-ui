@@ -425,7 +425,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
             hideFilters={props.hideSearchFilters}
             onChange={handleSearchFilterChange}
           />
-          <div className="mt-2 flex w-full justify-start pl-3 md:pl-7">
+          <div className="mt-2 flex w-full justify-start pl-3 md:pl-5">
             <p className="text-xs font-medium text-manatee-400">
               {getSearchResultsText({
                 searchQuery: searchFilters.query,

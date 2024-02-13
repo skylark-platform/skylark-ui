@@ -12,6 +12,8 @@ import { PanelLoading } from "src/components/panel/panelLoading";
 import { PanelSeparator } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { useIsDragging } from "src/hooks/dnd/useIsDragging";
+import { usePanelDropzone } from "src/hooks/dnd/usePanelDropzone";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
 import { PanelTab, PanelTabState } from "src/hooks/state";
 import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
@@ -22,6 +24,12 @@ import {
   ParsedSkylarkObject,
   ParsedSkylarkObjectRelationship,
 } from "src/interfaces/skylark";
+import {
+  DragEndEvent,
+  DragType,
+  DroppableType,
+  useDndMonitor,
+} from "src/lib/dndkit/dndkit";
 import { formatObjectField, hasProperty } from "src/lib/utils";
 
 import { PanelRelationshipSection } from "./panelRelationshipsSection.component";
@@ -41,8 +49,6 @@ interface PanelRelationshipsProps {
     errors: HandleDropError[],
   ) => void;
   inEditMode: boolean;
-  showDropZone?: boolean;
-  droppedObjects?: ParsedSkylarkObject[];
   language: string;
   setPanelObject: (o: SkylarkObjectIdentifier) => void;
   updateActivePanelTabState: (s: Partial<PanelTabState>) => void;
@@ -211,8 +217,6 @@ export const PanelRelationships = ({
   setModifiedRelationships,
   inEditMode,
   language,
-  droppedObjects,
-  showDropZone,
   tabState,
   setPanelObject,
   updateActivePanelTabState,
@@ -246,13 +250,14 @@ export const PanelRelationships = ({
     [inEditMode, modifiedRelationships, serverRelationships],
   );
 
-  useEffect(() => {
-    if (
-      droppedObjects &&
-      droppedObjects.length > 0 &&
-      objectMetaRelationships &&
-      relationships
-    ) {
+  const [showDropZone] = useIsDragging(DragType.CONTENT_LIBRARY_OBJECT);
+
+  usePanelDropzone(DroppableType.PANEL_GENERIC, {
+    onObjectsDropped: (droppedObjects) => {
+      if (!relationships) {
+        return;
+      }
+
       const { addedObjects, errors } = handleDroppedRelationships({
         droppedObjects,
         activeObjectUid: uid,
@@ -268,16 +273,8 @@ export const PanelRelationships = ({
         ),
         errors,
       );
-    }
-  }, [
-    activeRelationship,
-    droppedObjects,
-    modifiedRelationships,
-    objectMetaRelationships,
-    relationships,
-    setModifiedRelationships,
-    uid,
-  ]);
+    },
+  });
 
   const modifyRelationshipObjects = (
     relationshipName: string,

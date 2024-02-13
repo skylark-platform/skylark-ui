@@ -104,9 +104,6 @@ export const ContentLibrary = ({
       activeDragged.data.current.type === DragType.CONTENT_LIBRARY_OBJECT) ||
     false;
 
-  const [droppedObjects, setDroppedObjects] = useState<
-    ParsedSkylarkObject[] | undefined
-  >(undefined);
   const [windowSize, setWindowSize] = useState(0);
   const mousePosition = useRef(0);
 
@@ -196,11 +193,6 @@ export const ContentLibrary = ({
   const dndModifiers = activeDragged?.data.current.options?.modifiers
     ? activeDragged.data.current.options.modifiers
     : [snapCenterToCursor];
-
-  const clearDroppedObjects = useCallback(
-    () => setDroppedObjects(undefined),
-    [],
-  );
 
   return (
     <DndContext
@@ -302,13 +294,10 @@ export const ContentLibrary = ({
                 tab={activePanelTab}
                 tabState={activePanelTabState}
                 closePanel={closePanel}
-                isDraggedObject={isDraggingObject}
-                droppedObjects={droppedObjects}
                 setPanelObject={setPanelObject}
                 setTab={setPanelTab}
                 navigateToPreviousPanelObject={navigateToPreviousPanelObject}
                 navigateToForwardPanelObject={navigateToForwardPanelObject}
-                clearDroppedObjects={clearDroppedObjects}
                 updateActivePanelTabState={updateActivePanelTabState}
               />
             </div>
@@ -348,40 +337,7 @@ export const ContentLibrary = ({
     }
   }
 
-  // function handleDragOver(event: DragOverEvent) {
-  //   console.log("contentLibrary OVER", { event, activeDragged });
-  // }
-
-  function handleDragEnd(event: DragEndEvent) {
-    const { over } = event;
-
-    // const overContainer = over?.data.current?.sortable?.containerId || over?.id;
-
-    // console.log("[contentLibrary drag end]", {
-    //   overContainer,
-    //   event,
-    //   activeDragged,
-    // });
-    // if (
-    //   (over?.id === DroppableType.PANEL_GENERIC ||
-    //     overContainer === DroppableType.PANEL_CONTENT_SORTABLE) &&
-    //   event.active.data.current.type === DragType.CONTENT_LIBRARY_OBJECT &&
-    //   activeDragged?.data.current.type === DragType.CONTENT_LIBRARY_OBJECT
-    // ) {
-    //   const draggedObject = activeDragged.data.current.object;
-    //   const checkedObjects = activeDragged.data.current.checkedObjectsState
-    //     .filter(({ checkedState }) => Boolean(checkedState))
-    //     .map(({ object }) => object);
-
-    //   const draggedObjectIsChecked = checkedObjects.find(
-    //     ({ uid }) => uid === activeDragged.data.current.object.uid,
-    //   );
-
-    //   // Like Gmail, if the dragged object is not checked, just use the dragged object
-    //   setDroppedObjects(
-    //     draggedObjectIsChecked ? checkedObjects : [draggedObject],
-    //   );
-    // }
+  function handleDragEnd() {
     if (activeDragged) setActiveDragged(null);
   }
 };

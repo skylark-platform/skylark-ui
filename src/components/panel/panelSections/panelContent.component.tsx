@@ -144,7 +144,14 @@ const SortableItem = ({
 
   return (
     <>
-      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <div
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...listeners}
+        data-testid={`panel-object-content-item-${arrIndex + 1}`}
+        data-cy={"panel-object-content-item"}
+      >
         <ObjectIdentifierCard
           object={parsedObject}
           onForwardClick={setPanelObject}
