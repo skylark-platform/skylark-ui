@@ -125,6 +125,19 @@ export const GET_ACCOUNT_STATUS = gql`
   }
 `;
 
+export const LIST_SCHEMA_VERSIONS = gql`
+  query ${wrapQueryName("LIST_SCHEMA_VERSIONS")} {
+    listConfigurationVersions {
+      objects {
+        active
+        base_version
+        published
+        version
+      }
+    }
+  }
+`;
+
 export const LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION = gql`
   query ${wrapQueryName(
     "LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION",
@@ -137,4 +150,12 @@ export const LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION = gql`
       }
     }
   }
+`;
+
+export const GET_CONFIGURATION_SCHEMA = gql`
+query ${wrapQueryName(
+  "GET_CONFIGURATION_SCHEMA",
+)}($version: Int!, $query: String!) {
+  getConfigurationSchema(version: $version, query: $query)
+}
 `;

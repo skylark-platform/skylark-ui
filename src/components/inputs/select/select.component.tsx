@@ -15,6 +15,7 @@ import React, {
   forwardRef,
   Ref,
   ReactNode,
+  ReactElement,
 } from "react";
 import { FiChevronDown, FiInfo } from "react-icons/fi";
 import { useVirtual } from "react-virtual";
@@ -24,17 +25,17 @@ import { Checkbox } from "src/components/inputs/checkbox";
 import { Tooltip, TooltipSide } from "src/components/tooltip/tooltip.component";
 import { formatObjectField, mergeRefs } from "src/lib/utils";
 
-export interface SelectOption {
+export interface SelectOption<T> {
   label: string;
   infoTooltip?: ReactNode;
-  value: string;
+  value: T;
 }
 
-export interface SelectProps {
+export interface SelectProps<T> {
   variant: "primary" | "pill";
   name?: string;
-  selected?: string;
-  options: SelectOption[];
+  selected?: T;
+  options: SelectOption<T>[];
   label?: string;
   labelVariant?: "default" | "form";
   placeholder: string | null;
@@ -47,26 +48,28 @@ export interface SelectProps {
   withBasicSort?: boolean;
   renderInPortal?: boolean;
   displayRawSelectedValue?: boolean;
-  onChange?: (value: string) => void;
+  onChange?: (value: T) => void;
   onValueClear?: () => void;
 }
 
-export const sortSelectOptions = (
-  { label: labelA, value: valueA }: SelectOption,
-  { label: labelB, value: valueB }: SelectOption,
+export const sortSelectOptions = <T extends string | number>(
+  { label: labelA, value: valueA }: SelectOption<T>,
+  { label: labelB, value: valueB }: SelectOption<T>,
 ): number => ((labelA || valueA) > (labelB || valueB) ? 1 : -1);
 
-export const getSelectOptionHeight = (variant: SelectProps["variant"]) => {
+export const getSelectOptionHeight = <T extends string | number>(
+  variant: SelectProps<T>["variant"],
+) => {
   return variant === "pill" ? 30 : 40;
 };
 
-export const SelectLabel = ({
+export const SelectLabel = <T extends string | number>({
   label,
   labelVariant,
   htmlFor,
 }: {
-  label: SelectProps["label"];
-  labelVariant: SelectProps["labelVariant"];
+  label: SelectProps<T>["label"];
+  labelVariant: SelectProps<T>["labelVariant"];
   htmlFor?: string;
 }) => (
   <Combobox.Label
@@ -94,7 +97,7 @@ const SelectOptionTooltip = ({
   </Tooltip>
 );
 
-export const SelectOptionComponent = ({
+export const SelectOptionComponent = <T extends string | number>({
   variant,
   option,
   isSelected,
@@ -102,8 +105,8 @@ export const SelectOptionComponent = ({
   className,
   withCheckbox,
 }: {
-  variant: SelectProps["variant"];
-  option: SelectOption;
+  variant: SelectProps<T>["variant"];
+  option: SelectOption<T>;
   isSelected?: boolean;
   style?: CSSProperties;
   className?: string;
@@ -160,15 +163,15 @@ export const SelectOptionsContainer = forwardRef(
 );
 SelectOptionsContainer.displayName = "SelectOptionsContainer";
 
-export const Options = ({
+export const Options = <T extends string | number>({
   variant,
   options,
   currentSelected,
   className,
 }: {
-  variant: SelectProps["variant"];
-  options: SelectOption[];
-  currentSelected?: SelectOption;
+  variant: SelectProps<T>["variant"];
+  options: SelectOption<T>[];
+  currentSelected?: SelectOption<T>;
   className?: string;
 }) => (
   <SelectOptionsContainer className={className}>
@@ -183,15 +186,15 @@ export const Options = ({
   </SelectOptionsContainer>
 );
 
-export const VirtualizedOptions = ({
+export const VirtualizedOptions = <T extends string | number>({
   variant,
   options,
   currentSelected,
   className,
 }: {
-  variant: SelectProps["variant"];
-  options: SelectOption[];
-  currentSelected?: SelectOption;
+  variant: SelectProps<T>["variant"];
+  options: SelectOption<T>[];
+  currentSelected?: SelectOption<T>;
   className?: string;
 }) => {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -248,265 +251,277 @@ const OptionsPortalWrapper = ({
   return <>{children}</>;
 };
 
-export const Select = forwardRef(
-  (props: SelectProps, propRef: Ref<HTMLButtonElement | HTMLInputElement>) => {
-    const {
-      variant,
-      name,
-      options: unsortedOptions,
-      label,
-      labelVariant = "default",
-      placeholder,
-      className,
-      optionsClassName,
-      onChange,
-      disabled,
-      selected,
-      searchable = true,
-      rounded,
-      allowCustomValue,
-      onValueClear,
-      withBasicSort,
-      renderInPortal,
-      displayRawSelectedValue,
-    } = props;
+const SelectComponent = <T extends string | number>(
+  props: SelectProps<T>,
+  propRef: Ref<HTMLInputElement | HTMLButtonElement>,
+) => {
+  const {
+    variant,
+    name,
+    options: unsortedOptions,
+    label,
+    labelVariant = "default",
+    placeholder,
+    className,
+    optionsClassName,
+    onChange,
+    disabled,
+    selected,
+    searchable = true,
+    rounded,
+    allowCustomValue,
+    onValueClear,
+    withBasicSort,
+    renderInPortal,
+    displayRawSelectedValue,
+  } = props;
 
-    const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("");
 
-    const { refs, floatingStyles } = useFloating({
-      placement: "bottom-start",
-      middleware: [
-        offset(5),
-        flip({ padding: 10 }),
-        size({
-          apply({ rects, elements, availableHeight }) {
-            Object.assign(elements.floating.style, {
-              maxHeight: `${availableHeight}px`,
-              minWidth: `${rects.reference.width}px`,
-            });
-          },
-          padding: 10,
-        }),
-      ],
-      whileElementsMounted: autoUpdate,
-    });
+  const { refs, floatingStyles } = useFloating({
+    placement: "bottom-start",
+    middleware: [
+      offset(5),
+      flip({ padding: 10 }),
+      size({
+        apply({ rects, elements, availableHeight }) {
+          Object.assign(elements.floating.style, {
+            maxHeight: `${availableHeight}px`,
+            minWidth: `${rects.reference.width}px`,
+          });
+        },
+        padding: 10,
+      }),
+    ],
+    whileElementsMounted: autoUpdate,
+  });
 
-    const options = withBasicSort
-      ? unsortedOptions.sort(sortSelectOptions)
-      : unsortedOptions;
+  const options = withBasicSort
+    ? unsortedOptions.sort(sortSelectOptions)
+    : unsortedOptions;
 
-    const filteredOptions =
-      searchable && query !== ""
-        ? options.filter((option) => {
-            const lwrQuery = query.toLocaleLowerCase();
-            const lwrValue = option.value.toLocaleLowerCase();
-            const sanitisedLabel = option.label.toLocaleLowerCase();
-            return (
-              lwrValue.includes(lwrQuery) ||
-              (sanitisedLabel && sanitisedLabel.includes(lwrQuery))
-            );
-          })
-        : options;
+  const filteredOptions =
+    searchable && query !== ""
+      ? options.filter((option) => {
+          const lwrQuery = query.toLocaleLowerCase();
+          const lwrValue = `${option.value}`.toLocaleLowerCase();
+          const sanitisedLabel = option.label.toLocaleLowerCase();
+          return (
+            lwrValue.includes(lwrQuery) ||
+            (sanitisedLabel && sanitisedLabel.includes(lwrQuery))
+          );
+        })
+      : options;
 
-    const onChangeWrapper = useCallback(
-      (newSelected: SelectOption) => {
-        onChange?.(newSelected.value);
-      },
-      [onChange],
-    );
+  const onChangeWrapper = useCallback(
+    (newSelected: SelectOption<T>) => {
+      onChange?.(newSelected.value);
+    },
+    [onChange],
+  );
 
-    const sizingClassName =
-      variant === "pill"
-        ? "h-5 pl-3 pr-2"
-        : clsx("h-8 pl-3 pr-2 sm:h-10", rounded ? "sm:pl-6" : "sm:pl-4");
-    const roundedClassName =
-      rounded || variant === "pill" ? "rounded-full" : "rounded-sm";
-    const selectClassName = clsx(
-      "relative w-full cursor-default bg-manatee-50 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 disabled:text-manatee-500",
-      variant === "pill" ? "text-xs" : "text-xs sm:text-sm",
-      roundedClassName,
-    );
+  const sizingClassName =
+    variant === "pill"
+      ? "h-5 pl-3 pr-2"
+      : clsx("h-8 pl-3 pr-2 sm:h-10", rounded ? "sm:pl-6" : "sm:pl-4");
+  const roundedClassName =
+    rounded || variant === "pill" ? "rounded-full" : "rounded-sm";
+  const selectClassName = clsx(
+    "relative w-full cursor-default bg-manatee-50 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 disabled:text-manatee-500",
+    variant === "pill" ? "text-xs" : "text-xs sm:text-sm",
+    roundedClassName,
+  );
 
-    const selectedOption = selected
-      ? options.find(({ value }) => value === selected) ||
-        options.find(
-          ({ value }) => value.toLowerCase() === selected.toLowerCase(),
-        )
-      : undefined;
+  const selectedOption = selected
+    ? options.find(({ value }) => value === selected) ||
+      options.find(({ value }) => value === selected)
+    : undefined;
 
-    const showClearValueButton = onValueClear && selected;
+  const showClearValueButton = onValueClear && selected;
 
-    return (
-      <Combobox
-        disabled={disabled}
-        onChange={onChangeWrapper}
-        value={
-          (displayRawSelectedValue && selected
-            ? { label: selected, value: selected }
-            : selectedOption) || ""
-        }
-        name={name}
-      >
-        {({ open }) => (
-          <div
-            className={clsx(
-              "relative flex flex-col items-start justify-center text-xs sm:text-sm",
-              className,
-            )}
-          >
-            {label && (
-              <SelectLabel
-                htmlFor={name}
-                label={label}
-                labelVariant={labelVariant}
+  return (
+    <Combobox
+      disabled={disabled}
+      onChange={onChangeWrapper}
+      value={
+        (displayRawSelectedValue && selected
+          ? { label: selected, value: selected }
+          : selectedOption) || ""
+      }
+      name={name}
+    >
+      {({ open }) => (
+        <div
+          className={clsx(
+            "relative flex flex-col items-start justify-center text-xs sm:text-sm",
+            className,
+          )}
+        >
+          {label && (
+            <SelectLabel
+              htmlFor={name}
+              label={label}
+              labelVariant={labelVariant}
+            />
+          )}
+          {searchable ? (
+            <Combobox.Button
+              data-testid="select"
+              as="div"
+              className={clsx(selectClassName, label && "mt-2")}
+              ref={refs.setReference}
+            >
+              <Combobox.Input
+                className={clsx(
+                  "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0 disabled:text-manatee-500",
+                  sizingClassName,
+                  roundedClassName,
+                  showClearValueButton ? "pr-12" : "pr-8",
+                )}
+                displayValue={(option: SelectOption<T>) =>
+                  `${option.label || option.value}`
+                }
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder={
+                  placeholder === null
+                    ? undefined
+                    : placeholder || "Select option"
+                }
+                ref={propRef as Ref<HTMLInputElement> | undefined}
+                data-value={selected}
               />
-            )}
-            {searchable ? (
-              <Combobox.Button
-                data-testid="select"
-                as="div"
-                className={clsx(selectClassName, label && "mt-2")}
-                ref={refs.setReference}
-              >
-                <Combobox.Input
-                  className={clsx(
-                    "block w-full truncate border-none bg-manatee-50 leading-5 text-gray-900 focus:ring-0 disabled:text-manatee-500",
-                    sizingClassName,
-                    roundedClassName,
-                    showClearValueButton ? "pr-12" : "pr-8",
-                  )}
-                  displayValue={(option: SelectOption) =>
-                    option.label || option.value
-                  }
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder={
-                    placeholder === null
-                      ? undefined
-                      : placeholder || "Select option"
-                  }
-                  ref={propRef as Ref<HTMLInputElement> | undefined}
-                  data-value={selected}
-                />
-                <span className="absolute inset-y-0 right-0 flex items-center">
-                  {selectedOption?.infoTooltip && (
-                    <SelectOptionTooltip
-                      tooltip={selectedOption.infoTooltip}
-                      side="top"
-                    />
-                  )}
-                  {showClearValueButton && (
-                    <button
-                      onClick={(e) => {
-                        onValueClear();
-                        e.stopPropagation();
-                      }}
-                      data-testid="select-clear-value"
-                    >
-                      <FiX
-                        className={clsx("text-xs", disabled && "opacity-25")}
-                      />
-                    </button>
-                  )}
+              <span className="absolute inset-y-0 right-0 flex items-center">
+                {selectedOption?.infoTooltip && (
+                  <SelectOptionTooltip
+                    tooltip={selectedOption.infoTooltip}
+                    side="top"
+                  />
+                )}
+                {showClearValueButton && (
                   <button
-                    className={clsx(
-                      "h-full",
-                      variant === "pill" ? "mx-2" : "ml-0.5 mr-3.5",
-                    )}
+                    onClick={(e) => {
+                      onValueClear();
+                      e.stopPropagation();
+                    }}
+                    data-testid="select-clear-value"
                   >
-                    <FiChevronDown
-                      className={clsx("text-xl", disabled && "opacity-25")}
-                      aria-hidden="true"
+                    <FiX
+                      className={clsx("text-xs", disabled && "opacity-25")}
                     />
                   </button>
-                </span>
-              </Combobox.Button>
-            ) : (
-              <Combobox.Button
-                data-testid="select"
-                className={clsx(
-                  selectClassName,
-                  sizingClassName,
-                  label && "mt-2",
                 )}
-                ref={mergeRefs([refs.setReference, propRef])}
-              >
-                <span
+                <button
                   className={clsx(
-                    "block truncate",
-                    !selectedOption?.label && "text-gray-300",
+                    "h-full",
+                    variant === "pill" ? "mx-2" : "ml-0.5 mr-3.5",
                   )}
                 >
-                  {selectedOption?.label || placeholder || "Select option"}
-                </span>
-                <span
-                  className={clsx(
-                    "pointer-events-none absolute inset-y-0 right-0 flex items-center",
-                    variant === "pill" ? "pr-2" : "pr-3.5",
-                  )}
-                >
-                  <FiChevronDown className="text-xl" aria-hidden="true" />
-                </span>
-              </Combobox.Button>
-            )}
-
-            <Transition
-              as="div"
-              className="z-[10000]"
-              leave="transition ease-in duration-50"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-              afterLeave={() => setQuery("")}
+                  <FiChevronDown
+                    className={clsx("text-xl", disabled && "opacity-25")}
+                    aria-hidden="true"
+                  />
+                </button>
+              </span>
+            </Combobox.Button>
+          ) : (
+            <Combobox.Button
+              data-testid="select"
+              className={clsx(
+                selectClassName,
+                sizingClassName,
+                label && "mt-2",
+              )}
+              ref={mergeRefs([refs.setReference, propRef])}
             >
-              {open && (
-                <OptionsPortalWrapper usePortal={!!renderInPortal}>
-                  <Combobox.Options
-                    static
-                    ref={refs.setFloating}
-                    style={floatingStyles}
-                    className="z-50 text-xs sm:text-sm"
-                  >
-                    {filteredOptions.length === 0 && query !== "" ? (
-                      searchable && allowCustomValue ? (
-                        <Options
-                          variant={variant}
-                          options={[{ value: query, label: `Use "${query}"` }]}
-                          currentSelected={selectedOption}
-                        />
-                      ) : (
-                        <div
-                          className={clsx(
-                            "absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
-                            optionsClassName,
-                          )}
-                        >
-                          <div className="relative cursor-default select-none bg-white px-4 py-2 text-gray-900">
-                            Nothing found.
-                          </div>
-                        </div>
-                      )
-                    ) : options.length > 40 ? (
-                      <VirtualizedOptions
-                        variant={variant}
-                        options={filteredOptions ?? []}
-                        currentSelected={selectedOption}
-                        className={optionsClassName}
-                      />
-                    ) : (
+              <span
+                className={clsx(
+                  "block truncate",
+                  !selectedOption?.label && "text-gray-300",
+                )}
+              >
+                {selectedOption?.label || placeholder || "Select option"}
+              </span>
+              <span
+                className={clsx(
+                  "pointer-events-none absolute inset-y-0 right-0 flex items-center",
+                  variant === "pill" ? "pr-2" : "pr-3.5",
+                )}
+              >
+                <FiChevronDown className="text-xl" aria-hidden="true" />
+              </span>
+            </Combobox.Button>
+          )}
+
+          <Transition
+            as="div"
+            className="z-[10000]"
+            leave="transition ease-in duration-50"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+            afterLeave={() => setQuery("")}
+          >
+            {open && (
+              <OptionsPortalWrapper usePortal={!!renderInPortal}>
+                <Combobox.Options
+                  static
+                  ref={refs.setFloating}
+                  style={floatingStyles}
+                  className="z-50 text-xs sm:text-sm"
+                >
+                  {filteredOptions.length === 0 && query !== "" ? (
+                    searchable && allowCustomValue ? (
                       <Options
                         variant={variant}
-                        options={filteredOptions ?? []}
+                        options={[
+                          {
+                            value: query as T,
+                            label: `Use "${query}"`,
+                          },
+                        ]}
                         currentSelected={selectedOption}
-                        className={optionsClassName}
                       />
-                    )}
-                  </Combobox.Options>
-                </OptionsPortalWrapper>
-              )}
-            </Transition>
-          </div>
-        )}
-      </Combobox>
-    );
+                    ) : (
+                      <div
+                        className={clsx(
+                          "absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
+                          optionsClassName,
+                        )}
+                      >
+                        <div className="relative cursor-default select-none bg-white px-4 py-2 text-gray-900">
+                          Nothing found.
+                        </div>
+                      </div>
+                    )
+                  ) : options.length > 40 ? (
+                    <VirtualizedOptions
+                      variant={variant}
+                      options={filteredOptions ?? []}
+                      currentSelected={selectedOption}
+                      className={optionsClassName}
+                    />
+                  ) : (
+                    <Options
+                      variant={variant}
+                      options={filteredOptions ?? []}
+                      currentSelected={selectedOption}
+                      className={optionsClassName}
+                    />
+                  )}
+                </Combobox.Options>
+              </OptionsPortalWrapper>
+            )}
+          </Transition>
+        </div>
+      )}
+    </Combobox>
+  );
+};
+
+// Wrapper to make forwardRef work with generic
+export const Select = forwardRef(SelectComponent) as <
+  T extends string | number,
+>(
+  props: SelectProps<T> & {
+    ref?: Ref<HTMLButtonElement | HTMLInputElement>;
   },
-);
-Select.displayName = "Select";
+) => ReactElement;

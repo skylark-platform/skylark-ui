@@ -143,7 +143,7 @@ export const AccountStatus = () => {
 
   const [showCompletedText, setShowCompletedText] = useState(false);
 
-  if (activationStatus?.update_in_progress) {
+  if (activationStatus?.updateInProgress) {
     if (!showCompletedText) setShowCompletedText(true);
 
     return <StatusText loading>{`Data Model Update In Progress`}</StatusText>;

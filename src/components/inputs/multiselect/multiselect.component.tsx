@@ -13,9 +13,11 @@ import {
 } from "src/components/inputs/select";
 import { Pill } from "src/components/pill";
 
+type MultiSelectOption = SelectOption<string>;
+
 export interface MultiSelectProps {
   selected?: string[];
-  options: SelectOption[];
+  options: MultiSelectOption[];
   label?: string;
   labelVariant?: "default" | "form";
   placeholder?: string;
@@ -29,7 +31,7 @@ const VirtualizedOptions = ({
   options,
   selected,
 }: {
-  options: SelectOption[];
+  options: MultiSelectOption[];
   selected?: string[];
 }) => {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -72,148 +74,150 @@ const VirtualizedOptions = ({
   );
 };
 
-export const MultiSelect = forwardRef(
-  (props: MultiSelectProps, ref: Ref<HTMLButtonElement | HTMLInputElement>) => {
-    const {
-      options: unsortedOptions,
-      label,
-      labelVariant = "default",
-      placeholder,
-      className,
-      onChange,
-      disabled,
-      selected,
-      rounded,
-    } = props;
+const MultiSelectComponent = (
+  props: MultiSelectProps,
+  ref: Ref<HTMLButtonElement | HTMLInputElement>,
+) => {
+  const {
+    options: unsortedOptions,
+    label,
+    labelVariant = "default",
+    placeholder,
+    className,
+    onChange,
+    disabled,
+    selected,
+    rounded,
+  } = props;
 
-    const options = unsortedOptions.sort(sortSelectOptions);
+  const options = unsortedOptions.sort(sortSelectOptions);
 
-    const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("");
 
-    const filteredOptions =
-      query === ""
-        ? options
-        : options.filter((option) => {
-            const lwrQuery = query.toLocaleLowerCase();
-            const lwrValue = option.value.toLocaleLowerCase();
-            const sanitisedLabel = option.label.toLocaleLowerCase();
-            return (
-              lwrValue.includes(lwrQuery) ||
-              (sanitisedLabel && sanitisedLabel.includes(lwrQuery))
-            );
-          });
+  const filteredOptions =
+    query === ""
+      ? options
+      : options.filter((option) => {
+          const lwrQuery = query.toLocaleLowerCase();
+          const lwrValue = option.value.toLocaleLowerCase();
+          const sanitisedLabel = option.label.toLocaleLowerCase();
+          return (
+            lwrValue.includes(lwrQuery) ||
+            (sanitisedLabel && sanitisedLabel.includes(lwrQuery))
+          );
+        });
 
-    const onChangeWrapper = useCallback(
-      (newSelected: SelectOption[]) => {
-        setQuery("");
-        onChange?.(newSelected.map(({ value }) => value));
-      },
-      [onChange],
+  const onChangeWrapper = useCallback(
+    (newSelected: MultiSelectOption[]) => {
+      setQuery("");
+      onChange?.(newSelected.map(({ value }) => value));
+    },
+    [onChange],
+  );
+
+  const paddingClassName = "py-2 pl-3 pr-2 sm:py-3 sm:pl-6";
+  const selectClassName = clsx(
+    "relative w-full cursor-default bg-manatee-50 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 disabled:text-manatee-500 text-sm flex",
+    rounded && "rounded-full",
+  );
+
+  const selectedOptions = options.filter(({ value }) =>
+    selected?.includes(value),
+  );
+
+  const deselectOption = (value: MultiSelectOption["value"]) => {
+    onChangeWrapper(
+      selectedOptions.filter((selected) => selected.value !== value),
     );
+  };
 
-    const paddingClassName = "py-2 pl-3 pr-2 sm:py-3 sm:pl-6";
-    const selectClassName = clsx(
-      "relative w-full cursor-default bg-manatee-50 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 disabled:text-manatee-500 text-sm flex",
-      rounded && "rounded-full",
-    );
-
-    const selectedOptions = options.filter(({ value }) =>
-      selected?.includes(value),
-    );
-
-    const deselectOption = (value: SelectOption["value"]) => {
-      onChangeWrapper(
-        selectedOptions.filter((selected) => selected.value !== value),
-      );
-    };
-
-    return (
-      <Combobox
-        disabled={disabled}
-        onChange={onChangeWrapper}
-        value={selectedOptions}
-        multiple
+  return (
+    <Combobox
+      disabled={disabled}
+      onChange={onChangeWrapper}
+      value={selectedOptions}
+      multiple
+    >
+      <div
+        className={clsx(
+          "relative flex flex-col items-start justify-center",
+          className,
+        )}
       >
+        {label && <SelectLabel label={label} labelVariant={labelVariant} />}
         <div
           className={clsx(
-            "relative flex flex-col items-start justify-center",
-            className,
+            selectClassName,
+            label && "mt-2",
+            paddingClassName,
+            "flex-wrap gap-2",
           )}
         >
-          {label && <SelectLabel label={label} labelVariant={labelVariant} />}
-          <div
-            className={clsx(
-              selectClassName,
-              label && "mt-2",
-              paddingClassName,
-              "flex-wrap gap-2",
-            )}
-          >
-            {selectedOptions.map(({ label, value }) => (
-              <Pill
-                key={value}
-                label={label || value}
-                className="my-auto bg-brand-primary"
-                onDelete={() => deselectOption(value)}
-              />
-            ))}
-            <Combobox.Button
-              data-testid="multiselect-input"
-              as="div"
-              className="flex min-w-[6rem] flex-1"
-            >
-              <Combobox.Input
-                className={clsx(
-                  "block w-full truncate border-none bg-manatee-50 pr-2 leading-5 text-gray-900 focus:outline-none focus:ring-0",
-                )}
-                displayValue={(option: SelectOption) =>
-                  option.label || option.value
-                }
-                onChange={(event) => setQuery(event.target.value)}
-                value={query}
-                placeholder={placeholder}
-                ref={ref as Ref<HTMLInputElement> | undefined}
-              />
-            </Combobox.Button>
-          </div>
-          <Transition
+          {selectedOptions.map(({ label, value }) => (
+            <Pill
+              key={value}
+              label={label || value}
+              className="my-auto bg-brand-primary"
+              onDelete={() => deselectOption(value)}
+            />
+          ))}
+          <Combobox.Button
+            data-testid="multiselect-input"
             as="div"
-            className="z-50 text-sm"
-            leave="transition ease-in duration-50"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-            afterLeave={() => setQuery("")}
+            className="flex min-w-[6rem] flex-1"
           >
-            <Combobox.Options>
-              {filteredOptions.length === 0 ? (
-                <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <div className="relative cursor-default select-none bg-white px-4 py-2 text-sm text-gray-900">
-                    Nothing found.
-                  </div>
-                </div>
-              ) : options.length > 40 ? (
-                <VirtualizedOptions
-                  options={filteredOptions ?? []}
-                  selected={selected}
-                />
-              ) : (
-                <SelectOptionsContainer>
-                  {filteredOptions.map((option) => (
-                    <SelectOptionComponent
-                      key={option.value}
-                      isSelected={selected?.includes(option.value)}
-                      variant="primary"
-                      option={option}
-                      withCheckbox
-                    />
-                  ))}
-                </SelectOptionsContainer>
+            <Combobox.Input
+              className={clsx(
+                "block w-full truncate border-none bg-manatee-50 pr-2 leading-5 text-gray-900 focus:outline-none focus:ring-0",
               )}
-            </Combobox.Options>
-          </Transition>
+              displayValue={(option: MultiSelectOption) =>
+                option.label || option.value
+              }
+              onChange={(event) => setQuery(event.target.value)}
+              value={query}
+              placeholder={placeholder}
+              ref={ref as Ref<HTMLInputElement> | undefined}
+            />
+          </Combobox.Button>
         </div>
-      </Combobox>
-    );
-  },
-);
-MultiSelect.displayName = "MultiSelect";
+        <Transition
+          as="div"
+          className="z-50 text-sm"
+          leave="transition ease-in duration-50"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+          afterLeave={() => setQuery("")}
+        >
+          <Combobox.Options>
+            {filteredOptions.length === 0 ? (
+              <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <div className="relative cursor-default select-none bg-white px-4 py-2 text-sm text-gray-900">
+                  Nothing found.
+                </div>
+              </div>
+            ) : options.length > 40 ? (
+              <VirtualizedOptions
+                options={filteredOptions ?? []}
+                selected={selected}
+              />
+            ) : (
+              <SelectOptionsContainer>
+                {filteredOptions.map((option) => (
+                  <SelectOptionComponent
+                    key={option.value}
+                    isSelected={selected?.includes(option.value)}
+                    variant="primary"
+                    option={option}
+                    withCheckbox
+                  />
+                ))}
+              </SelectOptionsContainer>
+            )}
+          </Combobox.Options>
+        </Transition>
+      </div>
+    </Combobox>
+  );
+};
+
+export const MultiSelect = forwardRef(MultiSelectComponent);

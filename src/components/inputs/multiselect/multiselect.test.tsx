@@ -8,7 +8,7 @@ import { SelectOption } from "src/components/inputs/select";
 
 import { MultiSelect } from "./multiselect.component";
 
-const options: SelectOption[] = [
+const options: SelectOption<string>[] = [
   {
     label: "opt1",
     value: "opt1",

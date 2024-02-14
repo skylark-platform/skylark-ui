@@ -8,10 +8,12 @@ import {
   useSkylarkObjectTypesWithConfig,
   ObjectTypeWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
+import { IntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospection";
 import { isSkylarkObjectType } from "src/lib/utils";
 
 interface ObjectTypeNavigationProps {
   activeObjectType: string | null;
+  schemaOpts?: IntrospectionQueryOptions;
 }
 
 const ObjectTypeNavigationSection = ({
@@ -60,12 +62,13 @@ const ObjectTypeNavigationSection = ({
 
 export const ObjectTypeNavigation = ({
   activeObjectType,
+  schemaOpts,
 }: ObjectTypeNavigationProps) => {
   const { push } = useRouter();
 
-  const { setObjectTypes } = useSkylarkSetObjectTypes(true);
+  const { setObjectTypes } = useSkylarkSetObjectTypes(true, schemaOpts);
 
-  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig(schemaOpts);
 
   const setObjectTypesWithConfig = objectTypesWithConfig?.filter(
     ({ objectType }) => setObjectTypes?.includes(objectType),

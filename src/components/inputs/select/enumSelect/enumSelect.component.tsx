@@ -7,7 +7,7 @@ import {
 } from "src/components/inputs/select";
 import { useSkylarkSchemaEnums } from "src/hooks/useSkylarkSchemaEnums";
 
-type EnumSelectProps = Omit<SelectProps, "options">;
+type EnumSelectProps = Omit<SelectProps<string>, "options">;
 
 export const EnumSelect = forwardRef(
   (
@@ -16,7 +16,7 @@ export const EnumSelect = forwardRef(
   ) => {
     const { enums } = useSkylarkSchemaEnums();
 
-    const options: SelectOption[] = useMemo(
+    const options: SelectOption<string>[] = useMemo(
       () =>
         enums?.map(({ name, enumValues }) => ({
           value: name,

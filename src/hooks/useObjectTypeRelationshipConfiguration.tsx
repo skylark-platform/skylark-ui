@@ -70,7 +70,9 @@ export const useObjectTypeRelationshipConfiguration = (
     GQLSkylarkErrorResponse<GQLSkylarkListObjectTypeRelationshipConfiguration>,
     ParsedSkylarkObjectTypeRelationshipConfiguration
   >({
-    enabled: objectType !== BuiltInSkylarkObjectType.Availability,
+    enabled: Boolean(
+      objectType && objectType !== BuiltInSkylarkObjectType.Availability,
+    ),
     queryKey: [
       QueryKeys.ObjectTypeRelationshipConfig,
       LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION,

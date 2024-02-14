@@ -8,17 +8,25 @@ import { useCallback } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import { SKYLARK_SCHEMA_INTROSPECTION_QUERY } from "src/lib/graphql/skylark/queries";
+import {
+  GET_CONFIGURATION_SCHEMA,
+  SKYLARK_SCHEMA_INTROSPECTION_QUERY,
+} from "src/lib/graphql/skylark/queries";
 
 import { useSkylarkCreds } from "./localStorage/useCreds";
 
+export interface IntrospectionQueryOptions {
+  schemaVersion?: number;
+}
+
 export const selectSchema = (data: IntrospectionQuery) => data.__schema;
 
-export const useSkylarkSchemaIntrospection = <
+export const useSkylarkSchemaIntrospectionViaGraphQL = <
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
   TData extends unknown = IntrospectionQuery,
 >(
   select?: (data: IntrospectionQuery) => TData,
+  disabled?: boolean,
 ) => {
   const [creds] = useSkylarkCreds();
 
@@ -39,6 +47,7 @@ export const useSkylarkSchemaIntrospection = <
     select,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: Infinity,
+    enabled: !disabled,
   });
   return {
     data: data,
@@ -46,10 +55,81 @@ export const useSkylarkSchemaIntrospection = <
   };
 };
 
+export const useSkylarkSchemaIntrospectionViaSkylarkPassthrough = <
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
+  TData extends unknown = IntrospectionQuery,
+>(
+  version?: number,
+  select?: (data: IntrospectionQuery) => TData,
+  disabled?: boolean,
+) => {
+  const [creds] = useSkylarkCreds();
+
+  const { data, isError } = useQuery<
+    { getConfigurationSchema: string },
+    Error,
+    TData
+  >({
+    // refetch when creds.uri changes
+    queryKey: [QueryKeys.Schema, GET_CONFIGURATION_SCHEMA, creds?.uri, version],
+    queryFn: async () =>
+      skylarkRequest(
+        "query",
+        GET_CONFIGURATION_SCHEMA,
+        {
+          version,
+          query: SKYLARK_SCHEMA_INTROSPECTION_QUERY,
+        },
+        { useCache: true },
+      ),
+    select: useCallback(
+      (data: { getConfigurationSchema: string }) => {
+        const parsedData = JSON.parse(
+          data.getConfigurationSchema,
+        ) as IntrospectionQuery;
+        return select ? select(parsedData) : (parsedData as TData);
+      },
+      [select],
+    ),
+    enabled: !disabled,
+  });
+
+  return {
+    data: data,
+    isError,
+  };
+};
+
+export const useSkylarkSchemaIntrospection = <
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
+  TData extends unknown = IntrospectionQuery,
+>(
+  select?: (data: IntrospectionQuery) => TData,
+  opts?: IntrospectionQueryOptions,
+) => {
+  const useSkylarkPassthrough = Boolean(
+    opts?.schemaVersion && opts.schemaVersion > -1,
+  );
+
+  const gqlIntrospection = useSkylarkSchemaIntrospectionViaGraphQL(
+    select,
+    useSkylarkPassthrough,
+  );
+
+  const slPassthrough = useSkylarkSchemaIntrospectionViaSkylarkPassthrough(
+    opts?.schemaVersion,
+    select,
+    !useSkylarkPassthrough,
+  );
+
+  return !useSkylarkPassthrough ? gqlIntrospection : slPassthrough;
+};
+
 export const useSkylarkSchemaIntrospectionTypesOfKind = <
   T extends IntrospectionType,
 >(
   kind: IntrospectionType["kind"],
+  introspectionOpts?: IntrospectionQueryOptions,
 ) => {
   const { data } = useSkylarkSchemaIntrospection(
     useCallback(
@@ -59,13 +139,17 @@ export const useSkylarkSchemaIntrospectionTypesOfKind = <
           | undefined,
       [kind],
     ),
+    introspectionOpts,
   );
   return {
     data,
   };
 };
 
-export const useSkylarkSchemaInterfaceType = (typeName: string) => {
+export const useSkylarkSchemaInterfaceType = (
+  typeName: string,
+  introspectionOpts?: IntrospectionQueryOptions,
+) => {
   const { data } = useSkylarkSchemaIntrospection(
     useCallback(
       (d: IntrospectionQuery) =>
@@ -74,6 +158,7 @@ export const useSkylarkSchemaInterfaceType = (typeName: string) => {
         ) as IntrospectionInterfaceType | undefined,
       [typeName],
     ),
+    introspectionOpts,
   );
   return {
     data,
