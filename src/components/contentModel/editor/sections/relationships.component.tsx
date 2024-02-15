@@ -88,7 +88,7 @@ export const RelationshipsSection = ({
             </div>
             <div className="flex justify-center items-center col-span-1">
               <Checkbox
-                checked={config?.inheritAvailability}
+                checked={config?.inheritAvailability || false}
                 onCheckedChange={(checkedState) =>
                   form.setValue(
                     `relationshipConfig.${relationshipName}.inheritAvailability`,

@@ -33,7 +33,8 @@ export const useSchemaVersions = () => {
     queryKey: [QueryKeys.Schema, LIST_SCHEMA_VERSIONS],
     queryFn: async () => skylarkRequest("query", LIST_SCHEMA_VERSIONS),
     initialPageParam: "",
-    getNextPageParam: (lastPage): string | undefined => undefined, // lastPage.listConfigurationVersions?.next_token || undefined,
+    getNextPageParam: (lastPage): string | undefined =>
+      lastPage.listConfigurationVersions?.next_token || undefined,
     select,
   });
 

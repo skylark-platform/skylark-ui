@@ -294,7 +294,7 @@ export const ObjectTypeEditor = ({
 
   return (
     <div key={objectMeta.name} className="" data-testid="content-model-editor">
-      <div className="flex justify-between mb-10 sticky top-28 bg-white z-10 py-4 px-1 w-[calc(100%+0.5rem)] -ml-1">
+      <div className="flex justify-between mb-10 sticky top-44 bg-white z-[5] py-4 px-1 w-[calc(100%+0.5rem)] -ml-1">
         <div className="flex flex-col items-start">
           <h3 className="text-2xl font-semibold">{objectMeta.name}</h3>
           <p className="text-sm text-manatee-400">

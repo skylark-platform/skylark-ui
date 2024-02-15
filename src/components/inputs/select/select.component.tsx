@@ -37,7 +37,8 @@ export interface SelectProps<T> {
   selected?: T;
   options: SelectOption<T>[];
   label?: string;
-  labelVariant?: "default" | "form";
+  labelVariant?: "default" | "form" | "header";
+  labelPosition?: "default" | "inline";
   placeholder: string | null;
   className?: string;
   optionsClassName?: string;
@@ -66,17 +67,21 @@ export const getSelectOptionHeight = <T extends string | number>(
 export const SelectLabel = <T extends string | number>({
   label,
   labelVariant,
+  labelPosition,
   htmlFor,
 }: {
   label: SelectProps<T>["label"];
   labelVariant: SelectProps<T>["labelVariant"];
+  labelPosition: SelectProps<T>["labelPosition"];
   htmlFor?: string;
 }) => (
   <Combobox.Label
     htmlFor={htmlFor}
     className={clsx(
+      labelPosition === "inline" && "whitespace-pre",
       labelVariant === "default" && "text-sm font-light md:text-base",
       labelVariant === "form" && "block text-sm font-bold",
+      labelVariant === "header" && "text-sm md:text-base",
     )}
   >
     {labelVariant === "form" ? formatObjectField(label) : label}
@@ -261,6 +266,7 @@ const SelectComponent = <T extends string | number>(
     options: unsortedOptions,
     label,
     labelVariant = "default",
+    labelPosition = "default",
     placeholder,
     className,
     optionsClassName,
@@ -353,7 +359,10 @@ const SelectComponent = <T extends string | number>(
       {({ open }) => (
         <div
           className={clsx(
-            "relative flex flex-col items-start justify-center text-xs sm:text-sm",
+            "relative flex text-xs sm:text-sm",
+            label && labelPosition === "inline"
+              ? "flex-row items-center justify-center"
+              : "flex-col items-start justify-center",
             className,
           )}
         >
@@ -362,13 +371,18 @@ const SelectComponent = <T extends string | number>(
               htmlFor={name}
               label={label}
               labelVariant={labelVariant}
+              labelPosition={labelPosition}
             />
           )}
           {searchable ? (
             <Combobox.Button
               data-testid="select"
               as="div"
-              className={clsx(selectClassName, label && "mt-2")}
+              className={clsx(
+                selectClassName,
+                label && labelPosition === "default" && "mt-2",
+                label && labelPosition === "inline" && "ml-2",
+              )}
               ref={refs.setReference}
             >
               <Combobox.Input
@@ -379,7 +393,7 @@ const SelectComponent = <T extends string | number>(
                   showClearValueButton ? "pr-12" : "pr-8",
                 )}
                 displayValue={(option: SelectOption<T>) =>
-                  `${option.label || option.value}`
+                  `${option.label || option.value || ""}`
                 }
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={

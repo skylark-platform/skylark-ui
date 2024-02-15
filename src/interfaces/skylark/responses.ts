@@ -37,7 +37,7 @@ export interface GQLSkylarkAccountResponse {
 
 export interface GQLSkylarkActivationStatusResponse {
   getActivationStatus: {
-    active_version: string;
+    active_version: number;
     update_in_progress: boolean | null;
     update_started_at: string | null;
   };

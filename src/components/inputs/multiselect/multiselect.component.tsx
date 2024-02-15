@@ -144,7 +144,13 @@ const MultiSelectComponent = (
           className,
         )}
       >
-        {label && <SelectLabel label={label} labelVariant={labelVariant} />}
+        {label && (
+          <SelectLabel
+            label={label}
+            labelVariant={labelVariant}
+            labelPosition={"default"}
+          />
+        )}
         <div
           className={clsx(
             selectClassName,
