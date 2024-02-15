@@ -4,6 +4,7 @@ import GQLSkylarkRelationshipConfigMovie from "src/__tests__/fixtures/skylark/qu
 import GQLSkylarkRelationshipConfigSeason from "src/__tests__/fixtures/skylark/queries/getObjectTypeRelationshipConfiguration/season.json";
 import GQLSkylarkRelationshipConfigSkylarkSet from "src/__tests__/fixtures/skylark/queries/getObjectTypeRelationshipConfiguration/skylarkSet.json";
 import GQLSkylarkIntrospectionQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/introspectionQuery.json";
+import GQLSkylarkListSchemaVersionsQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/listSchemaVersions.json";
 import GQLSkylarkObjectTypes from "src/__tests__/fixtures/skylark/queries/introspection/objectTypes.json";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 import { SKYLARK_SCHEMA_INTROSPECTION_QUERY_NAME } from "src/lib/graphql/skylark/queries";
@@ -15,6 +16,10 @@ export const introspectionHandlers = [
 
   graphql.query(wrapQueryName("GET_SKYLARK_OBJECT_TYPES"), (req, res, ctx) => {
     return res(ctx.data(GQLSkylarkObjectTypes.data));
+  }),
+
+  graphql.query(wrapQueryName("LIST_SCHEMA_VERSIONS"), (req, res, ctx) => {
+    return res(ctx.data(GQLSkylarkListSchemaVersionsQueryFixture.data));
   }),
 
   graphql.query(

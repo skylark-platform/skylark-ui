@@ -1,10 +1,7 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-import { Button } from "src/components/button";
 import { Spinner } from "src/components/icons";
-import { Select } from "src/components/inputs/select";
-import { useSchemaVersions } from "src/hooks/schema/get/useSchemaVersions";
 import { useActivationStatus } from "src/hooks/useAccountStatus";
 import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import {
@@ -58,8 +55,14 @@ export const ContentModel = () => {
     isLoading: isLoadingRelationshipConfig,
   } = useObjectTypeRelationshipConfiguration(objectMeta?.name || null);
 
+  const isLoading =
+    !allObjectsMeta ||
+    isLoadingObjectTypesWithConfig ||
+    (isLoadingRelationshipConfig &&
+      objectMeta?.name !== BuiltInSkylarkObjectType.Availability);
+
   return (
-    <div className="mt-4 max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto">
       <ContentModelHeader
         activeSchemaVersion={activationStatus?.activeVersion || 0}
         schemaVersion={activeSchemaVersion}
@@ -76,19 +79,28 @@ export const ContentModel = () => {
           </div>
 
           <div className="col-span-3">
-            {objectMeta &&
-              !isLoadingObjectTypesWithConfig &&
-              objectTypesWithConfig &&
-              (!isLoadingRelationshipConfig ||
-                objectMeta.name === BuiltInSkylarkObjectType.Availability) && (
-                <ObjectTypeEditor
-                  key={`${activeObjectType}-${config}`}
-                  objectMeta={objectMeta}
-                  objectConfig={config}
-                  relationshipConfig={relationshipConfig || {}}
-                  allObjectsMeta={allObjectsMeta}
-                />
-              )}
+            {objectMeta && !isLoading && (
+              <ObjectTypeEditor
+                key={`${activeObjectType}-${config}`}
+                objectMeta={objectMeta}
+                objectConfig={config}
+                relationshipConfig={relationshipConfig || {}}
+                allObjectsMeta={allObjectsMeta}
+              />
+            )}
+            {isLoading && (
+              <div className="flex justify-center w-full mt-20 items-center">
+                <Spinner className="h-14 w-14 animate-spin" />
+              </div>
+            )}
+            {!isLoading && activeObjectType && !objectMeta && (
+              <p className="mt-10">
+                Requested Object Type &quot;
+                <span className="font-medium">{activeObjectType}</span>
+                &quot; does not exist in this schema version.
+              </p>
+              // <p>Test string</p>
+            )}
           </div>
         </div>
       ) : (

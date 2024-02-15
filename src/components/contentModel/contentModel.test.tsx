@@ -1,5 +1,6 @@
 import { graphql } from "msw";
 
+import GQLSkylarkSchemaWithoutEpisodeObjectQueryFixtureJSON from "src/__tests__/fixtures/skylark/queries/introspection/introspectionQueryWithoutEpisode.json";
 import { server } from "src/__tests__/mocks/server";
 import {
   allObjectTypes,
@@ -13,7 +14,9 @@ import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { ContentModel } from "./contentModel.component";
 
-const renderAndWaitForEditorToLoad = async () => {
+const renderAndWaitForEditorToLoad = async (
+  activeObjectType = "SkylarkSet",
+) => {
   render(<ContentModel />);
 
   await waitFor(() => {
@@ -22,23 +25,65 @@ const renderAndWaitForEditorToLoad = async () => {
 
   const withinEditor = within(screen.getByTestId("content-model-editor"));
 
-  expect(withinEditor.getByText("SkylarkSet")).toBeInTheDocument();
-  expect(withinEditor.getByText("UI Config")).toBeInTheDocument();
-  expect(withinEditor.getByText("Fields")).toBeInTheDocument();
-  expect(withinEditor.getByText("Relationships")).toBeInTheDocument();
+  expect(
+    withinEditor.getAllByText(activeObjectType).length,
+  ).toBeGreaterThanOrEqual(1);
+
+  // Check tabs have loaded
+  expect(screen.getByRole("button", { name: "UI Config" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Metadata" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Relationships" }),
+  ).toBeInTheDocument();
 
   const withinUIConfigEditor = within(
     withinEditor.getByTestId("uiconfig-editor"),
   );
-  const withinFieldEditor = within(withinEditor.getByTestId("fields-editor"));
-  const withinRelationshipEditor = within(
-    withinEditor.getByTestId("relationships-editor"),
+  expect(withinUIConfigEditor.getByText("UI Config")).toBeInTheDocument();
+
+  const withinNavigation = within(
+    screen.getByTestId("content-editor-navigation"),
   );
 
   return {
     withinEditor,
     withinUIConfigEditor,
+    withinNavigation,
+  };
+};
+
+const renderAndSwitchToMetadataTab = async () => {
+  const withins = await renderAndWaitForEditorToLoad();
+
+  const tab = screen.getByRole("button", { name: "Metadata" });
+  await fireEvent.click(tab);
+
+  const withinFieldEditor = within(
+    withins.withinEditor.getByTestId("fields-editor"),
+  );
+  expect(withinFieldEditor.getByText("Metadata")).toBeInTheDocument();
+
+  return {
+    ...withins,
     withinFieldEditor,
+  };
+};
+
+const renderAndSwitchToRelationshipsTab = async () => {
+  const withins = await renderAndWaitForEditorToLoad();
+
+  const tab = screen.getByRole("button", { name: "Relationships" });
+  await fireEvent.click(tab);
+
+  const withinRelationshipEditor = within(
+    withins.withinEditor.getByTestId("relationships-editor"),
+  );
+  expect(
+    withinRelationshipEditor.getByText("Relationships"),
+  ).toBeInTheDocument();
+
+  return {
+    ...withins,
     withinRelationshipEditor,
   };
 };
@@ -52,11 +97,7 @@ beforeEach(() => {
 });
 
 test("renders the content model", async () => {
-  await renderAndWaitForEditorToLoad();
-
-  const withinNavigation = within(
-    screen.getByTestId("content-editor-navigation"),
-  );
+  const { withinNavigation } = await renderAndWaitForEditorToLoad();
 
   await Promise.all(
     allObjectTypes.map(async (objectType) => {
@@ -213,9 +254,9 @@ describe("UI Config", () => {
   });
 });
 
-describe("Fields", () => {
+describe("Metadata", () => {
   test("renders Fields section", async () => {
-    const { withinFieldEditor } = await renderAndWaitForEditorToLoad();
+    const { withinFieldEditor } = await renderAndSwitchToMetadataTab();
 
     // Check types of field headers
     expect(withinFieldEditor.getByText("System")).toBeInTheDocument();
@@ -232,7 +273,8 @@ describe("Fields", () => {
 
 describe("Relationships", () => {
   test("renders Relationships section", async () => {
-    const { withinRelationshipEditor } = await renderAndWaitForEditorToLoad();
+    const { withinRelationshipEditor } =
+      await renderAndSwitchToRelationshipsTab();
 
     // Check column headers
     expect(withinRelationshipEditor.getAllByText("Object Type")).toHaveLength(
@@ -260,7 +302,8 @@ describe("Relationships", () => {
   });
 
   test("changes Relationship config and saves", async () => {
-    const { withinRelationshipEditor } = await renderAndWaitForEditorToLoad();
+    const { withinRelationshipEditor } =
+      await renderAndSwitchToRelationshipsTab();
 
     const imagesRow = withinRelationshipEditor.getByTestId(
       "relationships-editor-row-images",
@@ -322,7 +365,8 @@ describe("Relationships", () => {
   });
 
   test("saves relationship config but Skylark returns an unknown error", async () => {
-    const { withinRelationshipEditor } = await renderAndWaitForEditorToLoad();
+    const { withinRelationshipEditor } =
+      await renderAndSwitchToRelationshipsTab();
 
     const imagesRow = withinRelationshipEditor.getByTestId(
       "relationships-editor-row-images",
@@ -384,7 +428,8 @@ describe("Relationships", () => {
   });
 
   test("saves relationship config but Skylark returns an inherit availability error", async () => {
-    const { withinRelationshipEditor } = await renderAndWaitForEditorToLoad();
+    const { withinRelationshipEditor } =
+      await renderAndSwitchToRelationshipsTab();
 
     const imagesRow = withinRelationshipEditor.getByTestId(
       "relationships-editor-row-images",
@@ -458,5 +503,76 @@ describe("Relationships", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("- assets")).toBeInTheDocument();
     expect(screen.getByText("- brands")).toBeInTheDocument();
+  });
+});
+
+describe("Schema Version", () => {
+  beforeEach(() => {
+    server.use(
+      graphql.query(
+        wrapQueryName("GET_CONFIGURATION_SCHEMA"),
+        (req, res, ctx) => {
+          return res(
+            ctx.data({
+              getConfigurationSchema: JSON.stringify(
+                GQLSkylarkSchemaWithoutEpisodeObjectQueryFixtureJSON.data,
+              ),
+            }),
+          );
+        },
+      ),
+    );
+  });
+
+  test("changes the schema version to one without the Episode object", async () => {
+    const { withinNavigation } = await renderAndWaitForEditorToLoad();
+
+    // Verify Episode object is in the document
+    expect(withinNavigation.getByText("Episode")).toBeInTheDocument();
+
+    const schemaVersionSelect = screen.getByPlaceholderText("Schema Version");
+
+    await fireEvent.click(schemaVersionSelect);
+    await fireEvent.click(screen.getByText("1"));
+
+    // Verify Episode object is no longer in the document
+    await waitFor(() => {
+      expect(screen.getByTestId("content-model-editor")).toBeInTheDocument();
+    });
+
+    const withinEditor = within(screen.getByTestId("content-model-editor"));
+    expect(withinEditor.getByText("SkylarkSet")).toBeInTheDocument();
+    expect(withinNavigation.queryByText("Episode")).not.toBeInTheDocument();
+  });
+
+  test("when the schema is changed and the active object is not found in it, displays a not found message", async () => {
+    const router = { query: { objectType: ["Episode"] }, push: jest.fn() };
+    useRouter.mockReturnValue(router);
+
+    const { withinNavigation, withinEditor } =
+      await renderAndWaitForEditorToLoad("Episode");
+
+    await waitFor(() =>
+      expect(withinEditor.queryByText("SkylarkSet")).not.toBeInTheDocument(),
+    );
+
+    const schemaVersionSelect = screen.getByPlaceholderText("Schema Version");
+
+    await fireEvent.click(schemaVersionSelect);
+    await fireEvent.click(screen.getByText("1"));
+
+    // Verify Episode object is no longer in the document
+    await waitFor(() => {
+      expect(screen.getByText(/Requested Object Type \"/)).toBeInTheDocument();
+      expect(screen.getByText(/Episode/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/\" does not exist in this schema version./),
+      ).toBeInTheDocument();
+    });
+
+    expect(withinNavigation.queryByText("Episode")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("content-model-editor"),
+    ).not.toBeInTheDocument();
   });
 });

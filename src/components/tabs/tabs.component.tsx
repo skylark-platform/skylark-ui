@@ -5,18 +5,18 @@ import { FiChevronLeft, FiChevronRight, FiX } from "react-icons/fi";
 
 export type Tab<TabID = string> = { id: TabID; name: string };
 
-interface TabProps {
-  tabs: Tab[];
+interface TabProps<T> {
+  tabs: Tab<T>[];
   selectedTab: string;
-  onChange: (t: Tab & { index: number }) => void;
+  onChange: (t: Tab<T> & { index: number }) => void;
   disabled?: boolean;
   className?: string;
   fillWidth?: boolean;
-  onDelete?: (t: Tab & { index: number }) => void;
+  onDelete?: (t: Tab<T> & { index: number }) => void;
 }
 
-interface ReorderableTabProps extends TabProps {
-  onReorder: (tabs: Tab[]) => void;
+interface ReorderableTabProps<T> extends TabProps<T> {
+  onReorder: (tabs: Tab<T>[]) => void;
 }
 
 const generateUlClassName = (className?: string) =>
@@ -49,14 +49,14 @@ const generateLiClassName = ({
 export const convertStringArrToTabs = (arr: string[]): Tab[] =>
   arr.map((str) => ({ id: str, name: str }));
 
-const Tab = ({
+const Tab = <T,>({
   disabled,
   onChange,
   tab,
   onDelete,
   index,
   selectedTab,
-}: TabProps & { tab: Tab; index: number }) => {
+}: TabProps<T> & { tab: Tab<T>; index: number }) => {
   return (
     <>
       <button
@@ -95,7 +95,7 @@ const Tab = ({
   );
 };
 
-export const Tabs = (props: TabProps) => {
+export const Tabs = <T extends string>(props: TabProps<T>) => {
   const { tabs, selectedTab, disabled, fillWidth, onDelete } = props;
   return (
     <ul className={generateUlClassName(props.className)}>
@@ -116,7 +116,9 @@ export const Tabs = (props: TabProps) => {
   );
 };
 
-export const ReorderableTabs = (props: ReorderableTabProps) => {
+export const ReorderableTabs = <T extends string>(
+  props: ReorderableTabProps<T>,
+) => {
   const {
     tabs,
     selectedTab,
@@ -188,14 +190,14 @@ const ScrollableTabScrollButton = ({
   );
 };
 
-export const ScrollableTabs = ({
+export const ScrollableTabs = <T extends string>({
   initialScrollPosition,
   onScroll,
   ...props
-}: TabProps & {
+}: TabProps<T> & {
   initialScrollPosition?: number;
   onScroll?: (o: { scrollLeft: number }) => void;
-  onReorder?: ReorderableTabProps["onReorder"];
+  onReorder?: ReorderableTabProps<T>["onReorder"];
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 

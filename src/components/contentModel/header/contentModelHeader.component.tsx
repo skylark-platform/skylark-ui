@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useMemo } from "react";
 
 import { Button } from "src/components/button";
-import { Select } from "src/components/inputs/select";
+import { Select, SelectOption } from "src/components/inputs/select";
 import { useSchemaVersions } from "src/hooks/schema/get/useSchemaVersions";
 
 interface ContentModelHeaderProps {
@@ -19,21 +19,23 @@ export const ContentModelHeader = ({
 
   const schemaVersionOptions = useMemo(
     () =>
-      schemaVersions
-        ?.sort(({ version: va }, { version: vb }) => vb - va)
-        .map(({ active, version, published }) => ({
+      schemaVersions?.map(
+        ({
+          active,
+          version,
+          published,
+          baseVersion,
+        }): SelectOption<number> => ({
           label: `${version}${active ? " (active)" : ""}${!published ? " (draft)" : ""}`,
           value: version,
-        }))
-        .filter(
-          ({ value }, index, arr) =>
-            arr.findIndex((item) => item.value === value) == index,
-        ) || [],
+          infoTooltip: baseVersion && <p>{`Base version: ${baseVersion}`}</p>,
+        }),
+      ) || [],
     [schemaVersions],
   );
 
   return (
-    <div className="grid grid-cols-4 justify-between items-center mb-2 sticky top-28 bg-white z-10 py-4 px-1 w-[calc(100%+0.5rem)] -ml-1">
+    <div className="grid grid-cols-4 justify-between items-center sticky top-28 bg-white z-10 py-4 px-1 w-[calc(100%+0.5rem)] -ml-1">
       <h1 className="text-xl font-semibold">Content Model Editor</h1>
       <div className="col-span-3 flex items-center justify-between space-x-4 px-1">
         <Select
@@ -43,6 +45,7 @@ export const ContentModelHeader = ({
           variant="primary"
           placeholder="Schema Version"
           className="w-72 z-10"
+          selectedInfoTooltipPosition="right"
           options={schemaVersionOptions}
           selected={schemaVersion || undefined}
           onChange={setSchemaVersion}

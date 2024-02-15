@@ -1,0 +1,26 @@
+{
+  "data": {
+    "listConfigurationVersions": {
+      "objects": [
+        {
+          "active": false,
+          "base_version": null,
+          "published": true,
+          "version": 1
+        },
+        {
+          "active": true,
+          "base_version": 1,
+          "published": true,
+          "version": 2
+        },
+        {
+          "active": true,
+          "base_version": 1,
+          "published": true,
+          "version": 2
+        }
+      ]
+    }
+  }
+}

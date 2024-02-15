@@ -12,17 +12,23 @@ import { LIST_SCHEMA_VERSIONS } from "src/lib/graphql/skylark/queries";
 const select = (
   data: InfiniteData<GQLSkylarkListSchemaVersionsResponse>,
 ): SchemaVersion[] =>
-  data?.pages?.flatMap(
-    (page) =>
-      page.listConfigurationVersions.objects.map(
-        ({ active, version, base_version, published }): SchemaVersion => ({
-          active,
-          version,
-          baseVersion: base_version,
-          published,
-        }),
-      ) || [],
-  ) || [];
+  data?.pages
+    ?.flatMap(
+      (page) =>
+        page.listConfigurationVersions.objects.map(
+          ({ active, version, base_version, published }): SchemaVersion => ({
+            active,
+            version,
+            baseVersion: base_version,
+            published,
+          }),
+        ) || [],
+    )
+    .filter(
+      ({ version }, index, arr) =>
+        arr.findIndex((item) => item.version === version) == index,
+    )
+    .sort(({ version: va }, { version: vb }) => vb - va) || [];
 
 export const useSchemaVersions = () => {
   const { data, hasNextPage, fetchNextPage, isLoading } = useInfiniteQuery<

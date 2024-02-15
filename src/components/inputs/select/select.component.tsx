@@ -49,6 +49,7 @@ export interface SelectProps<T> {
   withBasicSort?: boolean;
   renderInPortal?: boolean;
   displayRawSelectedValue?: boolean;
+  selectedInfoTooltipPosition?: TooltipSide;
   onChange?: (value: T) => void;
   onValueClear?: () => void;
 }
@@ -143,7 +144,7 @@ export const SelectOptionComponent = <T extends string | number>({
       {option.label}
     </span>
     {option.infoTooltip && (
-      <SelectOptionTooltip tooltip={option.infoTooltip} side="right" />
+      <SelectOptionTooltip tooltip={option.infoTooltip} side={"right"} />
     )}
   </Combobox.Option>
 );
@@ -273,6 +274,7 @@ const SelectComponent = <T extends string | number>(
     onChange,
     disabled,
     selected,
+    selectedInfoTooltipPosition,
     searchable = true,
     rounded,
     allowCustomValue,
@@ -408,7 +410,7 @@ const SelectComponent = <T extends string | number>(
                 {selectedOption?.infoTooltip && (
                   <SelectOptionTooltip
                     tooltip={selectedOption.infoTooltip}
-                    side="top"
+                    side={selectedInfoTooltipPosition || "top"}
                   />
                 )}
                 {showClearValueButton && (

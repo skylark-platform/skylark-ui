@@ -165,7 +165,7 @@ export const ObjectTypeEditor = ({
   });
 
   const tabs = useMemo(() => {
-    const tabs: Tab[] = [
+    const tabs: Tab<"ui-config" | "metadata" | "relationships">[] = [
       { id: "ui-config", name: "UI Config" },
       { id: "metadata", name: "Metadata" },
     ];
@@ -314,7 +314,7 @@ export const ObjectTypeEditor = ({
       className="mb-24"
       data-testid="content-model-editor"
     >
-      <div className="flex flex-col mb-10 sticky top-44 bg-white z-[5] pt-4 px-1 w-[calc(100%+0.5rem)] -ml-1">
+      <div className="flex flex-col mb-10 sticky top-44 -mt-2 bg-white z-[5] pt-4 px-1 w-[calc(100%+0.5rem)] -ml-1">
         <div className="flex w-full justify-between">
           <div className="flex flex-col items-start">
             <h3 className="text-2xl font-semibold">{objectMeta.name}</h3>
