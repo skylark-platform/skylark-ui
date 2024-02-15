@@ -71,14 +71,12 @@ export const ContentModel = () => {
 
       {allObjectsMeta && objectTypesWithConfig ? (
         <div className="grid grid-cols-4 gap-4">
-          <div className="">
-            <ObjectTypeNavigation
-              activeObjectType={activeObjectType}
-              schemaOpts={schemaOpts}
-            />
-          </div>
+          <ObjectTypeNavigation
+            activeObjectType={activeObjectType}
+            schemaOpts={schemaOpts}
+          />
 
-          <div className="col-span-3">
+          <div className="col-span-3 h-full">
             {objectMeta && !isLoading && (
               <ObjectTypeEditor
                 key={`${activeObjectType}-${config}`}
@@ -99,7 +97,6 @@ export const ContentModel = () => {
                 <span className="font-medium">{activeObjectType}</span>
                 &quot; does not exist in this schema version.
               </p>
-              // <p>Test string</p>
             )}
           </div>
         </div>
