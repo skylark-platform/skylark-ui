@@ -10,6 +10,7 @@ import {
   waitFor,
   within,
 } from "src/__tests__/utils/test-utils";
+import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { ContentModel } from "./contentModel.component";
@@ -17,6 +18,9 @@ import { ContentModel } from "./contentModel.component";
 const renderAndWaitForEditorToLoad = async (
   activeObjectType = "SkylarkSet",
 ) => {
+  const router = { query: { objectType: [activeObjectType] }, push: jest.fn() };
+  useRouter.mockReturnValue(router);
+
   render(<ContentModel />);
 
   await waitFor(() => {
@@ -32,9 +36,11 @@ const renderAndWaitForEditorToLoad = async (
   // Check tabs have loaded
   expect(screen.getByRole("button", { name: "UI Config" })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Metadata" })).toBeInTheDocument();
-  expect(
-    screen.getByRole("button", { name: "Relationships" }),
-  ).toBeInTheDocument();
+  if (activeObjectType !== BuiltInSkylarkObjectType.Availability) {
+    expect(
+      screen.getByRole("button", { name: "Relationships" }),
+    ).toBeInTheDocument();
+  }
 
   const withinUIConfigEditor = within(
     withinEditor.getByTestId("uiconfig-editor"),
@@ -301,6 +307,12 @@ describe("Relationships", () => {
     );
   });
 
+  test("does not render Relationships section when object is Availability", async () => {
+    await renderAndWaitForEditorToLoad(BuiltInSkylarkObjectType.Availability);
+
+    expect(screen.queryByText("Relationships")).not.toBeInTheDocument();
+  });
+
   test("changes Relationship config and saves", async () => {
     const { withinRelationshipEditor } =
       await renderAndSwitchToRelationshipsTab();
@@ -546,9 +558,6 @@ describe("Schema Version", () => {
   });
 
   test("when the schema is changed and the active object is not found in it, displays a not found message", async () => {
-    const router = { query: { objectType: ["Episode"] }, push: jest.fn() };
-    useRouter.mockReturnValue(router);
-
     const { withinNavigation, withinEditor } =
       await renderAndWaitForEditorToLoad("Episode");
 
