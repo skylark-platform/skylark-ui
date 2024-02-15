@@ -20,18 +20,13 @@ export const ContentModelHeader = ({
   const schemaVersionOptions = useMemo(
     () =>
       schemaVersions?.map(
-        ({
-          active,
-          version,
-          published,
-          baseVersion,
-        }): SelectOption<number> => ({
-          label: `${version}${active ? " (active)" : ""}${!published ? " (draft)" : ""}`,
+        ({ version, published, baseVersion }): SelectOption<number> => ({
+          label: `${version}${version === activeSchemaVersion ? " (active)" : ""}${!published ? " (draft)" : ""}`,
           value: version,
           infoTooltip: baseVersion && <p>{`Base version: ${baseVersion}`}</p>,
         }),
       ) || [],
-    [schemaVersions],
+    [activeSchemaVersion, schemaVersions],
   );
 
   return (

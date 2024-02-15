@@ -12,12 +12,9 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { GET_ACCOUNT_STATUS } from "src/lib/graphql/skylark/queries";
 
-const parseActiveVersion = (v: string | number): number =>
-  typeof v === "string" ? parseInt(v) : v;
-
 const selectAllData = (data: GQLSkylarkStatusResponse): AccountStatus => ({
   activationStatus: {
-    activeVersion: parseActiveVersion(data.getActivationStatus.active_version),
+    activeVersion: data.getActivationStatus.active_version,
     updateInProgress: data.getActivationStatus.update_in_progress,
     updateStartedAt: data.getActivationStatus.update_started_at,
   },
@@ -34,7 +31,7 @@ const selectAllData = (data: GQLSkylarkStatusResponse): AccountStatus => ({
 const selectActivationStatus = (
   data: GQLSkylarkStatusResponse,
 ): ActivationStatus => ({
-  activeVersion: parseActiveVersion(data.getActivationStatus.active_version),
+  activeVersion: data.getActivationStatus.active_version,
   updateInProgress: data.getActivationStatus.update_in_progress,
   updateStartedAt: data.getActivationStatus.update_started_at,
 });

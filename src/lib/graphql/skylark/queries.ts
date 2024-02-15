@@ -126,14 +126,15 @@ export const GET_ACCOUNT_STATUS = gql`
 `;
 
 export const LIST_SCHEMA_VERSIONS = gql`
-  query ${wrapQueryName("LIST_SCHEMA_VERSIONS")} {
-    listConfigurationVersions {
+  query ${wrapQueryName("LIST_SCHEMA_VERSIONS")}($nextToken: String) {
+    listConfigurationVersions(order: DESC, next_token: $nextToken, limit:100) {
       objects {
         active
         base_version
         published
         version
       }
+      next_token
     }
   }
 `;

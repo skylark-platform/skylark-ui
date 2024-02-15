@@ -37,7 +37,8 @@ export const useSchemaVersions = () => {
     SchemaVersion[]
   >({
     queryKey: [QueryKeys.Schema, LIST_SCHEMA_VERSIONS],
-    queryFn: async () => skylarkRequest("query", LIST_SCHEMA_VERSIONS),
+    queryFn: async ({ pageParam: nextToken }) =>
+      skylarkRequest("query", LIST_SCHEMA_VERSIONS, { nextToken }),
     initialPageParam: "",
     getNextPageParam: (lastPage): string | undefined =>
       lastPage.listConfigurationVersions?.next_token || undefined,
