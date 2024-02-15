@@ -120,7 +120,7 @@ export const FieldsSection = ({
 
   return (
     <SectionWrapper data-testid="fields-editor">
-      <SectionHeader>Fields</SectionHeader>
+      <SectionHeader>Metadata</SectionHeader>
       {/* TODO add Skeleton here with hardcoded headings as sections headers can be filtered out when no fields exist */}
       {Object.entries(fieldSections).map(([id, { title, fields }]) => (
         <FieldSection

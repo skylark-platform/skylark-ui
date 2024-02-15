@@ -1,7 +1,9 @@
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
+import { Tabs, Tab } from "src/components/tabs/tabs.component";
 import { Toast } from "src/components/toast/toast.component";
 import { SYSTEM_FIELDS } from "src/constants/skylark";
 import { useUpdateObjectTypeConfig } from "src/hooks/schema/update/useUpdateObjectTypeConfig";
@@ -162,6 +164,20 @@ export const ObjectTypeEditor = ({
     },
   });
 
+  const tabs = useMemo(() => {
+    const tabs: Tab[] = [
+      { id: "ui-config", name: "UI Config" },
+      { id: "metadata", name: "Metadata" },
+    ];
+
+    if (objectMeta.name !== BuiltInSkylarkObjectType.Availability)
+      tabs.push({ id: "relationships", name: "Relationships" });
+
+    return tabs;
+  }, [objectMeta.name]);
+
+  const [activeTab, setActiveTab] = useState(tabs[0]);
+
   const { updateObjectTypeConfig, isUpdatingObjectTypeConfig } =
     useUpdateObjectTypeConfig({
       onSuccess: () => {
@@ -293,52 +309,71 @@ export const ObjectTypeEditor = ({
   };
 
   return (
-    <div key={objectMeta.name} className="" data-testid="content-model-editor">
-      <div className="flex justify-between mb-10 sticky top-44 bg-white z-[5] py-4 px-1 w-[calc(100%+0.5rem)] -ml-1">
-        <div className="flex flex-col items-start">
-          <h3 className="text-2xl font-semibold">{objectMeta.name}</h3>
-          <p className="text-sm text-manatee-400">
-            {isSkylarkObjectType(objectMeta.name)
-              ? "System Object"
-              : "Custom Object"}
-          </p>
+    <div
+      key={objectMeta.name}
+      className="mb-24"
+      data-testid="content-model-editor"
+    >
+      <div className="flex flex-col mb-10 sticky top-44 bg-white z-[5] pt-4 px-1 w-[calc(100%+0.5rem)] -ml-1">
+        <div className="flex w-full justify-between">
+          <div className="flex flex-col items-start">
+            <h3 className="text-2xl font-semibold">{objectMeta.name}</h3>
+            <p className="text-sm text-manatee-400">
+              {isSkylarkObjectType(objectMeta.name)
+                ? "System Object"
+                : "Custom Object"}
+            </p>
+          </div>
+          <div className="space-x-2">
+            <Button
+              variant="outline"
+              danger
+              disabled={
+                isUpdatingObjectTypeConfig ||
+                isUpdatingRelationshipConfig ||
+                !form.formState.isDirty
+              }
+              onClick={() => form.reset()}
+            >
+              Reset
+            </Button>
+            <Button
+              variant="primary"
+              onClick={onSave}
+              loading={
+                isUpdatingObjectTypeConfig || isUpdatingRelationshipConfig
+              }
+              disabled={!form.formState.isDirty}
+            >
+              Save
+            </Button>
+          </div>
         </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            danger
-            disabled={
-              isUpdatingObjectTypeConfig ||
-              isUpdatingRelationshipConfig ||
-              !form.formState.isDirty
-            }
-            onClick={() => form.reset()}
-          >
-            Reset
-          </Button>
-          <Button
-            variant="primary"
-            onClick={onSave}
-            loading={isUpdatingObjectTypeConfig || isUpdatingRelationshipConfig}
-            disabled={!form.formState.isDirty}
-          >
-            Save
-          </Button>
-        </div>
+        <Tabs
+          tabs={tabs}
+          selectedTab={activeTab.id}
+          onChange={setActiveTab}
+          className="mt-4 border-b"
+        />
       </div>
-      <UIConfigSection form={form} objectMeta={objectMeta} />
-      <FieldsSection
-        form={form}
-        objectMeta={objectMeta}
-        objectConfig={objectConfig}
-      />
-      {objectMeta.name !== BuiltInSkylarkObjectType.Availability && (
-        <RelationshipsSection
+      {activeTab.id === "ui-config" && (
+        <UIConfigSection form={form} objectMeta={objectMeta} />
+      )}
+      {activeTab.id === "metadata" && (
+        <FieldsSection
           form={form}
           objectMeta={objectMeta}
-          allObjectsMeta={allObjectsMeta}
+          objectConfig={objectConfig}
         />
       )}
+      {objectMeta.name !== BuiltInSkylarkObjectType.Availability &&
+        activeTab.id === "relationships" && (
+          <RelationshipsSection
+            form={form}
+            objectMeta={objectMeta}
+            allObjectsMeta={allObjectsMeta}
+          />
+        )}
     </div>
   );
 };
