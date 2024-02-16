@@ -73,7 +73,7 @@ jobs:
           record: true
           parallel: false
           config-file: cypress.config.ts
-          command-prefix: ${{ github.event.pull_request.draft == false && 'percy exec --parallel -- npx' || '' }}
+          # command-prefix: ${{ github.event.pull_request.draft == false && 'percy exec --parallel -- npx' || '' }}
           group: "Skylark UI"
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
