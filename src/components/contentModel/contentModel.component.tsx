@@ -36,8 +36,7 @@ export const ContentModel = () => {
         }
       : undefined;
 
-  const { objects: allObjectsMeta } = useAllObjectsMeta(true);
-
+  const { objects: allObjectsMeta } = useAllObjectsMeta(true, schemaOpts);
   const { objectTypesWithConfig, isLoading: isLoadingObjectTypesWithConfig } =
     useSkylarkObjectTypesWithConfig(schemaOpts);
 
