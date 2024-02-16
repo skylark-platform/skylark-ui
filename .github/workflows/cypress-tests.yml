@@ -39,9 +39,11 @@ jobs:
 
   tests:
     name: Run Cypress Tests
-    timeout-minutes: 15
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     needs: build
+    env:
+      ELECTRON_EXTRA_LAUNCH_ARGS: "--remote-debugging-port=9222"
     strategy:
       fail-fast: false
       matrix:
@@ -69,15 +71,15 @@ jobs:
           wait-on-timeout: 120
           browser: chrome
           record: true
-          parallel: true
+          parallel: false
           config-file: cypress.config.ts
-          # command-prefix: ${{ github.event.pull_request.draft == false && 'percy exec --parallel -- npx' || '' }}
+          command-prefix: ${{ github.event.pull_request.draft == false && 'percy exec --parallel -- npx' || '' }}
           group: "Skylark UI"
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-          PERCY_PARALLEL_TOTAL: 5
+          PERCY_PARALLEL_TOTAL: 1
           # overwrite commit message sent to Dashboard
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           # re-enable PR comment bot
