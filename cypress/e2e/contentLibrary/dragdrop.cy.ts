@@ -181,7 +181,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               .find("li")
               .should("have.length", 10);
 
-            cy.percySnapshot("Panel - Content Tab - new object added");
+            cy.takeSnapshot("Panel - Content Tab - new object added");
           },
         );
       });

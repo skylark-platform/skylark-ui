@@ -24,7 +24,7 @@ describe("404 page", () => {
       .should("have.attr", "alt")
       .should("contain", "404 pet");
 
-    cy.percySnapshot("404 page");
+    cy.takeSnapshot("404 page");
   });
 
   it("returns the user to home when they click the button", () => {

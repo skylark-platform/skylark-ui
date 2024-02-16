@@ -45,7 +45,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        containers: [1, 2, 3, 4, 5]
+        containers: [1]
     steps:
       - uses: actions/checkout@v4
       - name: Download the build folders
@@ -71,7 +71,7 @@ jobs:
           record: true
           parallel: true
           config-file: cypress.config.ts
-          command-prefix: ${{ github.event.pull_request.draft == false && 'percy exec --parallel -- npx' || '' }}
+          # command-prefix: ${{ github.event.pull_request.draft == false && 'percy exec --parallel -- npx' || '' }}
           group: "Skylark UI"
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -82,3 +82,8 @@ jobs:
           COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
           # re-enable PR comment bot
           COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha }}
+      - name: Publish to Chromatic
+        uses: chromaui/action@latest
+        with:
+          cypress: true
+          projectToken: ${{ secrets.CHROMATIC_CYPRESS_PROJECT_TOKEN }}

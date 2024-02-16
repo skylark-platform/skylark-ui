@@ -105,7 +105,7 @@ describe("Create Object Modal", () => {
 
       cy.contains("button", "Create Episode").should("be.disabled");
 
-      cy.percySnapshot("Create Object Modal");
+      cy.takeSnapshot("Create Object Modal");
     });
   });
 

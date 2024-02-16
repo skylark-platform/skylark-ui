@@ -117,7 +117,7 @@ describe("Content Library - Search", () => {
     cy.contains("GOT");
     cy.contains("All object types translated to en-GB", { timeout: 10000 });
 
-    cy.percySnapshot("Homepage");
+    cy.takeSnapshot("Homepage");
   });
 
   it("visits home when no search data is returned", () => {
@@ -140,7 +140,7 @@ describe("Content Library - Search", () => {
 
     cy.contains("All object types translated to en-GB", { timeout: 10000 });
 
-    cy.percySnapshot("Homepage - no search data");
+    cy.takeSnapshot("Homepage - no search data");
   });
 
   it("searches for GOT S01", () => {
@@ -309,7 +309,7 @@ describe("Content Library - Search", () => {
     // Wait for second page of search results to load before Percy screenshot
     cy.get(`[data-cy=pill]`).should("exist").should("have.length.at.least", 15);
 
-    cy.percySnapshot("Homepage - Filtered By Availability Dimensions (kids)");
+    cy.takeSnapshot("Homepage - Filtered By Availability Dimensions (kids)");
   });
 
   it("does a lookup for streamtv_homepage with the UID & External ID", () => {
@@ -330,6 +330,6 @@ describe("Content Library - Search", () => {
 
     cy.contains("StreamTV Homepage");
 
-    cy.percySnapshot("Homepage - UID & External ID Lookup");
+    cy.takeSnapshot("Homepage - UID & External ID Lookup");
   });
 });

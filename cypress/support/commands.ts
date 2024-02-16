@@ -1,3 +1,4 @@
+import "@chromatic-com/cypress/support";
 import "@percy/cypress";
 import "cypress-iframe";
 
@@ -132,6 +133,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
+      takeSnapshot(name?: string): void;
       login(): Chainable<void>;
       clickOutside(): Chainable<void>;
       getByLabel(l: string): Chainable<void>;
