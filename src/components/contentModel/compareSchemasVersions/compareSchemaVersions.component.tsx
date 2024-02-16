@@ -30,7 +30,9 @@ export const CompareSchemaVersions = ({
         <div className="">
           <p className="text-center font-medium mb-2">{`Comparing base version ${baseVersionNumber} to version ${updateVersionNumber}`}</p>
           <p className="text-center mb-10 text-manatee-400">{`Has differences: ${!diff.objectTypes.isEqual}`}</p>
-          <h2 className="text-2xl font-medium text-center">Object Types</h2>
+          <h2 className="text-2xl font-medium text-center mb-6">
+            Object Types
+          </h2>
           <div>
             <h3 className="text-xl my-2">Modified</h3>
             {diff.objectTypes.modified.map(
@@ -135,30 +137,34 @@ export const CompareSchemaVersions = ({
               ),
             )}
           </div>
-          <div>
-            <h3 className="text-xl my-2">Added</h3>
-            <ul className="ml-4 mb-10 list-disc">
-              {diff.objectTypes.added.map((ot) => (
-                <li key={ot}>{ot}</li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-xl my-2">Removed</h3>
-            <ul className="ml-4 mb-10 list-disc">
-              {diff.objectTypes.removed.map((ot) => (
-                <li key={ot}>{ot}</li>
-              ))}
-            </ul>
-          </div>
-          <div>
+          {diff.objectTypes.added.length > 0 && (
+            <div>
+              <h3 className="text-xl my-2">Added</h3>
+              <ul className="ml-4 mb-10 list-disc">
+                {diff.objectTypes.added.map((ot) => (
+                  <li key={ot}>{ot}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {diff.objectTypes.removed.length > 0 && (
+            <div>
+              <h3 className="text-xl my-2">Removed</h3>
+              <ul className="ml-4 mb-10 list-disc">
+                {diff.objectTypes.removed.map((ot) => (
+                  <li key={ot}>{ot}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {/* <div>
             <h3 className="text-xl my-2">Unchanged</h3>
             <ul className="ml-4 mb-10 list-disc">
               {diff.objectTypes.unmodified.map((ot) => (
                 <li key={ot.objectType}>{ot.objectType}</li>
               ))}
             </ul>
-          </div>
+          </div> */}
         </div>
       ) : (
         <p>Loading...</p>
