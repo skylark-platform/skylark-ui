@@ -28,7 +28,7 @@ export const uiDisplayFieldTooltip =
   "A config property that instructs the UI which field it should use when displaying an object on listing pages.";
 
 export const SectionWrapper = (props: { children: ReactNode }) => (
-  <section {...props} className="my-10 border-t pt-10" />
+  <section {...props} className="my-10" />
 );
 
 export const SectionHeader = ({ children }: { children: ReactNode }) => (

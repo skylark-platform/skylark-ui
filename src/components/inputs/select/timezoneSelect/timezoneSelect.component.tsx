@@ -7,7 +7,7 @@ import {
   SelectProps,
 } from "src/components/inputs/select";
 
-type TimezoneSelectProps = Omit<SelectProps, "options" | "onChange"> & {
+type TimezoneSelectProps = Omit<SelectProps<string>, "options" | "onChange"> & {
   onChange: (timezone: string | null) => void;
 };
 
@@ -20,7 +20,7 @@ export const TimezoneSelect = ({
 }: TimezoneSelectProps) => {
   const timeZones = getTimeZones({ includeUtc: true });
 
-  const options: SelectOption[] = timeZones.map(({ name }) => ({
+  const options: SelectOption<string>[] = timeZones.map(({ name }) => ({
     label: `${name}`,
     value: name,
   }));

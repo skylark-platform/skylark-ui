@@ -37,7 +37,7 @@ export interface GQLSkylarkAccountResponse {
 
 export interface GQLSkylarkActivationStatusResponse {
   getActivationStatus: {
-    active_version: string;
+    active_version: number;
     update_in_progress: boolean | null;
     update_started_at: string | null;
   };
@@ -213,5 +213,18 @@ export type GQLSkylarkListAllObjectTypesRelationshipConfiguration = Record<
 export interface GQLSkylarkGetAvailabilityAssignedResponse {
   getAvailabilityAssignedTo: {
     assigned_to: SkylarkGraphQLAvailabilityAssignedTo | null;
+  };
+}
+
+export interface GQLSkylarkListSchemaVersionsResponse {
+  listConfigurationVersions: {
+    objects: {
+      active: boolean;
+      base_version: number | null;
+      version: number;
+      published: boolean;
+    }[];
+    next_token: string | null;
+    count: number;
   };
 }

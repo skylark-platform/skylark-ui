@@ -15,8 +15,14 @@ export interface SkylarkUser {
   permissions: string[];
 }
 
+export interface ActivationStatus {
+  activeVersion: number | null;
+  updateInProgress: boolean | null;
+  updateStartedAt: string | null;
+}
+
 export interface AccountStatus {
-  activationStatus: GQLSkylarkActivationStatusResponse["getActivationStatus"];
+  activationStatus: ActivationStatus;
   backgroundTasks: {
     queued: GQLSkylarkBackgroundTask[];
     inProgress: GQLSkylarkBackgroundTask[];
@@ -25,4 +31,11 @@ export interface AccountStatus {
     hasFailed: boolean;
     hasInProgress: boolean;
   };
+}
+
+export interface SchemaVersion {
+  active: boolean;
+  version: number;
+  baseVersion: number | null;
+  published: boolean;
 }

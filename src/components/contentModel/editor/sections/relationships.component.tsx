@@ -101,6 +101,9 @@ export const RelationshipsSection = ({
           </div>
         );
       })}
+      {objectMeta.relationships.length === 0 && (
+        <p className="mt-10">Object Type has no Relationships.</p>
+      )}
     </SectionWrapper>
   );
 };

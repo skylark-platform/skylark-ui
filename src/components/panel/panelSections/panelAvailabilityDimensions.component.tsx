@@ -97,9 +97,9 @@ export const PanelAvailabilityDimensions = ({
     >
       {!dimensionsLoading &&
         dimensions?.map((dimension) => {
-          const options: SelectOption[] = dimension.values
+          const options: SelectOption<string>[] = dimension.values
             .map(
-              (value): SelectOption => ({
+              (value): SelectOption<string> => ({
                 label: value.title || value.slug,
                 value: value.slug,
               }),
