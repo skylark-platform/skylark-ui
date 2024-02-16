@@ -42,7 +42,7 @@
     "@vvo/tzdb": "6.125.0",
     "autoprefixer": "10.4.17",
     "clsx": "2.1.0",
-    "daisyui": "2.52.0",
+    "daisyui": "3.9.4",
     "dayjs": "1.11.10",
     "framer-motion": "11.0.5",
     "graphiql": "3.1.1",
