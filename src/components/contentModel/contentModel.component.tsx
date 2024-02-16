@@ -9,7 +9,13 @@ import {
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import { IntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospection";
-import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
+import {
+  BuiltInSkylarkObjectType,
+  NormalizedObjectField,
+  SkylarkObjectMeta,
+  SkylarkObjectRelationship,
+} from "src/interfaces/skylark";
+import { compareSkylarkSchemas } from "src/lib/skylark/introspection/schemaComparison";
 
 import { ObjectTypeEditor } from "./editor/contentModelEditor.component";
 import { ContentModelHeader } from "./header/contentModelHeader.component";
@@ -36,7 +42,22 @@ export const ContentModel = () => {
         }
       : undefined;
 
-  const { objects: allObjectsMeta } = useAllObjectsMeta(true, schemaOpts);
+  const { objects: allObjectsMeta } = useAllObjectsMeta(true);
+
+  const { objects: otherAllObjectsMeta } = useAllObjectsMeta(true, {
+    schemaVersion: 10,
+  });
+
+  if (allObjectsMeta && otherAllObjectsMeta) {
+    const schemaDiff = compareSkylarkSchemas(
+      otherAllObjectsMeta,
+      allObjectsMeta,
+    );
+    if (schemaDiff) {
+      console.log(schemaDiff);
+    }
+  }
+
   const { objectTypesWithConfig, isLoading: isLoadingObjectTypesWithConfig } =
     useSkylarkObjectTypesWithConfig(schemaOpts);
 
