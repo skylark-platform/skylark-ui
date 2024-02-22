@@ -1,20 +1,19 @@
 import { Disclosure } from "@headlessui/react";
 import clsx from "clsx";
 import { ReactNode, useMemo, useState } from "react";
-import { FiCheck, FiX } from "react-icons/fi";
+import { FiCheck } from "react-icons/fi";
 
-import { Tab, Tabs } from "src/components/tabs/tabs.component";
+import { Tabs } from "src/components/tabs/tabs.component";
 import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
-import { GQLScalars } from "src/interfaces/graphql/introspection";
 import {
   NormalizedObjectField,
-  NormalizedObjectFieldType,
   SkylarkObjectMeta,
   SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 import {
   SkylarkSchemaComparisonModifiedObjectType,
   compareSkylarkSchemas,
+  generateSchemaObjectTypeCountsText,
 } from "src/lib/skylark/introspection/schemaComparison";
 
 interface CompareSchemaVersionsProps {
@@ -163,75 +162,151 @@ const ModifiedObjectTypeSection = ({
     <h3 className="text-lg font-medium">
       {title} ({objectTypes.length})
     </h3>
-    {objectTypes.map(({ name, fields }) => {
-      const numChanges = fields.filter(({ type }) => type !== "equal").length;
-      return (
-        <Accordion
-          key={name}
-          buttonText={`${name}  (${numChanges} changes)`}
-          isWarning
-        >
-          <table className="w-full border">
-            <thead className="border-b text-black">
-              {["Field", "Type", "Is Required"].map((name) => (
-                <td key={name} className="p-1">
-                  {name}
-                </td>
-              ))}
-            </thead>
-            <tbody className="p-2">
-              {fields.map(
-                ({
-                  name: field,
-                  type,
-                  baseValue,
-                  updatedValue,
-                  modifiedProperties,
-                }) => {
-                  return (
-                    <tr
-                      key={field}
-                      className={clsx(
-                        type === "added" && "bg-success/20",
-                        type === "removed" && "bg-error",
-                        type === "modified" && "bg-warning",
-                      )}
-                    >
-                      <td
+    {objectTypes.map(
+      ({ name, fields, relationships, fieldCounts, relationshipCounts }) => {
+        const fieldChangesText = generateSchemaObjectTypeCountsText(
+          "field",
+          fieldCounts,
+        );
+        const relationshipChangesText = generateSchemaObjectTypeCountsText(
+          "relationship",
+          relationshipCounts,
+        );
+        const hasChanges = fieldChangesText || relationshipChangesText;
+        const title = hasChanges
+          ? `${name} - ${fieldChangesText}${fieldChangesText && relationshipChangesText ? ", " : ""}${relationshipChangesText}`
+          : name;
+        return (
+          <Accordion
+            key={name}
+            buttonText={title}
+            // isWarning
+          >
+            <table className="w-full border mb-4">
+              <thead className="border-b text-black">
+                {["Field", "Type", "Is Required"].map((name) => (
+                  <td key={name} className="p-1">
+                    {name}
+                  </td>
+                ))}
+              </thead>
+              <tbody className="p-2">
+                {fields.map(
+                  ({
+                    name: field,
+                    type,
+                    baseValue,
+                    updatedValue,
+                    modifiedProperties,
+                  }) => {
+                    return (
+                      <tr
+                        key={field}
                         className={clsx(
-                          "px-1 py-0.5",
-                          type === "removed" && "line-through",
+                          type === "added" && "bg-success/20",
+                          type === "removed" && "bg-error/20",
+                          type === "modified" && "bg-warning/20",
                         )}
                       >
-                        {field}
-                      </td>
-                      <td className="px-1 py-0.5">
-                        {type === "modified" &&
-                          (modifiedProperties?.includes("originalType")
-                            ? `${baseValue?.originalType} -> ${updatedValue?.originalType}`
-                            : baseValue?.originalType)}
-                        {type === "equal" && baseValue?.originalType}
-                        {type === "removed" && baseValue?.originalType}
-                        {type === "added" && updatedValue?.originalType}
-                      </td>
-                      <td className="px-1 py-0.5">
-                        {type === "modified" &&
-                          (modifiedProperties?.includes("isRequired")
-                            ? `${baseValue?.isRequired} -> ${updatedValue?.isRequired}`
-                            : baseValue?.isRequired && "true")}
-                        {type === "equal" && baseValue?.isRequired && "true"}
-                        {type === "removed" && baseValue?.isRequired && "true"}
-                        {type === "added" && updatedValue?.isRequired && "true"}
-                      </td>
-                    </tr>
-                  );
-                },
-              )}
-            </tbody>
-          </table>
-        </Accordion>
-      );
-    })}
+                        <td
+                          className={clsx(
+                            "px-1 py-0.5",
+                            type === "removed" && "line-through",
+                          )}
+                        >
+                          {field}
+                        </td>
+                        <td
+                          className={clsx(
+                            "px-1 py-0.5",
+                            type === "removed" && "line-through",
+                          )}
+                        >
+                          {type === "modified" &&
+                            (modifiedProperties?.includes("originalType")
+                              ? `${baseValue?.originalType} -> ${updatedValue?.originalType}`
+                              : baseValue?.originalType)}
+                          {type === "equal" && baseValue?.originalType}
+                          {type === "removed" && baseValue?.originalType}
+                          {type === "added" && updatedValue?.originalType}
+                        </td>
+                        <td
+                          className={clsx(
+                            "px-1 py-0.5",
+                            type === "removed" && "line-through",
+                          )}
+                        >
+                          {type === "modified" &&
+                            (modifiedProperties?.includes("isRequired")
+                              ? `${baseValue?.isRequired} -> ${updatedValue?.isRequired}`
+                              : baseValue?.isRequired && "true")}
+                          {type === "equal" && baseValue?.isRequired && "true"}
+                          {type === "removed" &&
+                            baseValue?.isRequired &&
+                            "true"}
+                          {type === "added" &&
+                            updatedValue?.isRequired &&
+                            "true"}
+                        </td>
+                      </tr>
+                    );
+                  },
+                )}
+              </tbody>
+            </table>
+
+            <table className="w-full border">
+              <thead className="border-b text-black">
+                {["Relationship", "Object Type"].map((name) => (
+                  <td key={name} className="p-1">
+                    {name}
+                  </td>
+                ))}
+              </thead>
+              <tbody className="p-2">
+                {relationships.map(
+                  ({ name, type, baseValue, updatedValue }) => {
+                    return (
+                      <tr
+                        key={name}
+                        className={clsx(
+                          type === "added" && "bg-success/20",
+                          type === "removed" && "bg-error/20",
+                          type === "modified" && "bg-warning/20",
+                        )}
+                      >
+                        <td
+                          className={clsx(
+                            "px-1 py-0.5",
+                            type === "removed" && "line-through",
+                          )}
+                        >
+                          {name}
+                        </td>
+                        <td
+                          className={clsx(
+                            "px-1 py-0.5",
+                            type === "removed" && "line-through",
+                          )}
+                        >
+                          {type === "modified" &&
+                            (baseValue?.objectType !== updatedValue?.objectType
+                              ? `${baseValue?.objectType} -> ${updatedValue?.objectType}`
+                              : baseValue?.objectType)}
+                          {type === "equal" && baseValue?.objectType}
+                          {type === "removed" && baseValue?.objectType}
+                          {type === "added" && updatedValue?.objectType}
+                        </td>
+                      </tr>
+                    );
+                  },
+                )}
+              </tbody>
+            </table>
+          </Accordion>
+        );
+      },
+    )}
   </div>
 );
 

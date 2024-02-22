@@ -4,32 +4,41 @@ import {
   SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 
-interface ModifiedObjectRelationship {
-  relationshipName: string;
-  baseObjectType: string;
-  updatedObjectType: string;
-  isModified: boolean;
+export type SchemaObjectTypePropertyComparisonType =
+  | "equal"
+  | "added"
+  | "removed"
+  | "modified";
+
+interface ComparedObjectProperty<T> {
+  name: string;
+  baseValue: T | null;
+  updatedValue: T | null;
+  type: SchemaObjectTypePropertyComparisonType;
 }
 
-interface ComparedObjectField {
-  name: string;
-  baseValue: NormalizedObjectField | null;
-  updatedValue: NormalizedObjectField | null;
-  type: "equal" | "added" | "removed" | "modified";
+interface ComparedObjectField
+  extends ComparedObjectProperty<NormalizedObjectField> {
   modifiedProperties?: string[];
 }
+
+interface ComparedObjectRelationship
+  extends ComparedObjectProperty<SkylarkObjectRelationship> {}
+
+export type SchemaComparedObjectTypeCounts = Record<
+  SchemaObjectTypePropertyComparisonType,
+  number
+>;
 
 export interface SkylarkSchemaComparisonModifiedObjectType {
   name: string;
   fields: ComparedObjectField[];
   fieldsIsEqual: boolean;
-  relationships: {
-    added: SkylarkObjectRelationship[];
-    removed: SkylarkObjectRelationship[];
-    unmodified: SkylarkObjectRelationship[];
-    modified: ModifiedObjectRelationship[];
-    isEqual: boolean;
-  };
+  fieldCounts: SchemaComparedObjectTypeCounts;
+  relationships: ComparedObjectRelationship[];
+  relationshipsIsEqual: boolean;
+  relationshipCounts: SchemaComparedObjectTypeCounts;
+
   isEqual: boolean;
 }
 
@@ -48,10 +57,7 @@ interface SkylarkSchemaComparison {
 const diffObjectMetasFields = (
   baseFields: NormalizedObjectField[],
   updatedFields: NormalizedObjectField[],
-): {
-  isEqual: boolean;
-  fields: SkylarkSchemaComparisonModifiedObjectType["fields"];
-} => {
+) => {
   // Calculate added and removed fields
   const addedFields = updatedFields.filter(
     (field) => !baseFields.find(({ name }) => name === field.name),
@@ -104,10 +110,14 @@ const diffObjectMetasFields = (
       Boolean(fieldDiff),
     );
 
+  const numModifiedFields = comparedFields.filter(
+    ({ type }) => type === "modified",
+  ).length;
+
   const isEqual =
     addedFields.length === 0 &&
     removedFields.length === 0 &&
-    comparedFields.filter(({ type }) => type === "modified").length === 0;
+    numModifiedFields === 0;
 
   const addedComparedFields = addedFields.map(
     (field): ComparedObjectField => ({
@@ -135,13 +145,19 @@ const diffObjectMetasFields = (
   return {
     fields,
     isEqual,
+    counts: {
+      added: addedFields.length,
+      removed: removedFields.length,
+      modified: numModifiedFields,
+      equal: comparedFields.length - numModifiedFields,
+    },
   };
 };
 
 const diffObjectMetasRelationships = (
   baseRelationships: SkylarkObjectRelationship[],
   updatedRelationships: SkylarkObjectRelationship[],
-): SkylarkSchemaComparisonModifiedObjectType["relationships"] => {
+) => {
   // Calculate added and removed relationships
   const addedRelationships = updatedRelationships.filter(
     (rel) =>
@@ -165,10 +181,9 @@ const diffObjectMetasRelationships = (
     ({ relationshipName }) => !relationshipsToIgnore.includes(relationshipName),
   );
 
-  // Calculate different field types
-  const modifiedRelationships: ModifiedObjectRelationship[] =
+  const comparedRelationships: ComparedObjectRelationship[] =
     commonRelationships
-      .map((rel): ModifiedObjectRelationship | null => {
+      .map((rel): ComparedObjectRelationship | null => {
         const baseRel = baseRelationships.find(
           ({ relationshipName }) => relationshipName === rel.relationshipName,
         );
@@ -181,49 +196,78 @@ const diffObjectMetasRelationships = (
           return null;
         }
 
+        const isModified = baseRel.objectType !== updatedRel.objectType;
+
         return {
-          relationshipName: rel.relationshipName,
-          baseObjectType: baseRel.objectType,
-          updatedObjectType: updatedRel.objectType,
-          isModified: baseRel.objectType !== updatedRel.objectType,
+          name: rel.relationshipName,
+          baseValue: baseRel,
+          updatedValue: updatedRel,
+          type: isModified ? "modified" : "equal",
         };
       })
-      .filter((relDiff): relDiff is ModifiedObjectRelationship =>
-        Boolean(relDiff && relDiff.isModified),
+      .filter((relDiff): relDiff is ComparedObjectRelationship =>
+        Boolean(relDiff),
       );
 
-  const unmodifiedRelationships = commonRelationships.filter(
-    (rel) =>
-      !modifiedRelationships.find(
-        ({ relationshipName }) => relationshipName === rel.relationshipName,
-      ),
-  );
+  const numberModifiedRelationships = comparedRelationships.filter(
+    ({ type }) => type === "modified",
+  ).length;
 
   const isEqual =
     addedRelationships.length === 0 &&
     removedRelationships.length === 0 &&
-    modifiedRelationships.length === 0 &&
-    unmodifiedRelationships.length === commonRelationships.length;
+    numberModifiedRelationships === 0;
+
+  const addedComparedFields = addedRelationships.map(
+    (rel): ComparedObjectRelationship => ({
+      name: rel.relationshipName,
+      type: "added",
+      baseValue: null,
+      updatedValue: rel,
+    }),
+  );
+  const removedComparedFields = removedRelationships.map(
+    (rel): ComparedObjectRelationship => ({
+      name: rel.relationshipName,
+      type: "removed",
+      baseValue: rel,
+      updatedValue: null,
+    }),
+  );
+
+  const relationships: ComparedObjectRelationship[] = [
+    ...comparedRelationships,
+    ...removedComparedFields,
+    ...addedComparedFields,
+  ];
 
   return {
-    added: addedRelationships,
-    removed: removedRelationships,
-    modified: modifiedRelationships,
-    unmodified: unmodifiedRelationships,
+    relationships,
     isEqual,
+    counts: {
+      added: addedRelationships.length,
+      removed: removedRelationships.length,
+      modified: numberModifiedRelationships,
+      equal: comparedRelationships.length - numberModifiedRelationships,
+    },
   };
 };
 
 const diffObjectMetas = (
   baseObjectMeta: SkylarkObjectMeta,
   updatedObjectMeta: SkylarkObjectMeta,
-) => {
-  const { fields, isEqual: fieldsIsEqual } = diffObjectMetasFields(
-    baseObjectMeta.fields,
-    updatedObjectMeta.fields,
-  );
+): Omit<SkylarkSchemaComparisonModifiedObjectType, "name"> => {
+  const {
+    fields,
+    isEqual: fieldsIsEqual,
+    counts: fieldCounts,
+  } = diffObjectMetasFields(baseObjectMeta.fields, updatedObjectMeta.fields);
 
-  const relationshipDiff = diffObjectMetasRelationships(
+  const {
+    relationships,
+    isEqual: relationshipsIsEqual,
+    counts: relationshipCounts,
+  } = diffObjectMetasRelationships(
     baseObjectMeta.relationships,
     updatedObjectMeta.relationships,
   );
@@ -231,8 +275,11 @@ const diffObjectMetas = (
   return {
     fields,
     fieldsIsEqual,
-    relationships: relationshipDiff,
-    isEqual: fieldsIsEqual && relationshipDiff.isEqual,
+    fieldCounts,
+    relationships,
+    relationshipsIsEqual,
+    relationshipCounts,
+    isEqual: fieldsIsEqual && relationshipsIsEqual,
   };
 };
 
@@ -311,4 +358,36 @@ export const compareSkylarkSchemas = (
   return {
     objectTypes,
   };
+};
+
+export const generateSchemaObjectTypeCountsText = (
+  type: "field" | "relationship",
+  countsWithEqual: SchemaComparedObjectTypeCounts,
+) => {
+  const counts = { ...countsWithEqual, equal: 0 };
+
+  const propertiesWithChanges = Object.entries(counts)
+    .map(([key, value]) => (value > 0 ? key : null))
+    .filter((key): key is SchemaObjectTypePropertyComparisonType =>
+      Boolean(key),
+    );
+
+  if (propertiesWithChanges.length === 0) {
+    return "";
+  }
+
+  if (propertiesWithChanges.length === 1) {
+    const count = counts[propertiesWithChanges[0]];
+    const plural = count > 1 ? `${type}s` : type;
+    return `${count} ${plural} ${propertiesWithChanges[0]}`;
+  }
+
+  const totalCount = Object.values(counts).reduce(
+    (prev, count) => (prev += count),
+    0,
+  );
+
+  const plural = totalCount > 1 ? `${type}s` : type;
+
+  return `${totalCount} ${plural} changed`;
 };
