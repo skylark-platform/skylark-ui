@@ -13,16 +13,16 @@ import { useUserAccount } from "src/hooks/useUserAccount";
 import IetfLanguageTags from "./ietf-language-tags.json";
 
 type LanguageSelectProps = Omit<
-  SelectProps,
+  SelectProps<string>,
   "placeholder" | "options" | "selected"
 > & {
   languages?: string[];
   useDefaultLanguage?: boolean;
-  selected: SelectProps["selected"] | null;
+  selected: SelectProps<string>["selected"] | null;
 };
 
-const defaultOptions: SelectOption[] = IetfLanguageTags.map(
-  ({ lang }): SelectOption => ({ value: lang, label: lang }),
+const defaultOptions: SelectOption<string>[] = IetfLanguageTags.map(
+  ({ lang }): SelectOption<string> => ({ value: lang, label: lang }),
 );
 
 const arrIndexOrMaxValue = (arr: string[], value: string): number => {
@@ -51,7 +51,7 @@ export const LanguageSelect = ({
     }
   }, [useDefaultLanguage, defaultLanguage, onChange, selected]);
 
-  const options: SelectOption[] = useMemo(() => {
+  const options: SelectOption<string>[] = useMemo(() => {
     const unsortedOptions = languages
       ? languages.map((lang) => ({ value: lang, label: lang }))
       : defaultOptions;

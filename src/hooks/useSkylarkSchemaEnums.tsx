@@ -1,7 +1,10 @@
 import { IntrospectionEnumType, IntrospectionQuery } from "graphql";
 import { useCallback } from "react";
 
-import { useSkylarkSchemaIntrospection } from "./useSkylarkSchemaIntrospection";
+import {
+  IntrospectionQueryOptions,
+  useSkylarkSchemaIntrospection,
+} from "./useSkylarkSchemaIntrospection";
 
 const enumsToIgnore = [
   "SkylarkBackgroundTaskStatus",
@@ -17,7 +20,9 @@ const enumsToIgnore = [
   "__DirectiveLocation",
 ];
 
-export const useSkylarkSchemaEnums = () => {
+export const useSkylarkSchemaEnums = (
+  introspectionOpts?: IntrospectionQueryOptions,
+) => {
   const { data: enums } = useSkylarkSchemaIntrospection(
     useCallback(
       (d: IntrospectionQuery) =>
@@ -27,6 +32,7 @@ export const useSkylarkSchemaEnums = () => {
         ),
       [],
     ),
+    introspectionOpts,
   );
   return {
     enums,

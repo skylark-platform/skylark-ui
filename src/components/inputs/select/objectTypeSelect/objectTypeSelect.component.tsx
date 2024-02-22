@@ -11,7 +11,10 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 
-type ObjectTypeSelectProps = Omit<SelectProps, "options" | "onChange"> & {
+type ObjectTypeSelectProps = Omit<
+  SelectProps<string>,
+  "options" | "onChange"
+> & {
   onChange: (v: {
     objectType: SkylarkObjectType;
     config?: ParsedSkylarkObjectConfig;
@@ -26,7 +29,7 @@ export const ObjectTypeSelect = forwardRef(
   ) => {
     const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
 
-    const options: SelectOption[] =
+    const options: SelectOption<string>[] =
       objectTypesWithConfig
         ?.filter(
           ({ objectType }) =>

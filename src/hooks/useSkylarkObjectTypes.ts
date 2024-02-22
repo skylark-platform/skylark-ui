@@ -19,6 +19,7 @@ import { parseObjectConfig } from "src/lib/skylark/parsers";
 import { ObjectError } from "src/lib/utils/errors";
 
 import {
+  IntrospectionQueryOptions,
   selectSchema,
   useSkylarkSchemaInterfaceType,
   useSkylarkSchemaIntrospection,
@@ -48,10 +49,14 @@ export const sortObjectTypesWithConfig = (
   return objTypeA < objTypeB ? -1 : objTypeA > objTypeB ? 1 : 0;
 };
 
-export const useSkylarkObjectTypes = (searchable: boolean) => {
+export const useSkylarkObjectTypes = (
+  searchable: boolean,
+  introspectionOpts?: IntrospectionQueryOptions | undefined,
+) => {
   // VisibleObject Interface contains all items that appear in Search, whereas Metadata can all be added into Sets
   const { data } = useSkylarkSchemaInterfaceType(
     searchable ? "VisibleObject" : "Metadata",
+    introspectionOpts,
   );
 
   const objectTypes = useMemo(() => {
@@ -98,8 +103,14 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
 };
 
 // Returns the operations for a given object (createEpisode etc for Episode)
-export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
-  const { data, isError } = useSkylarkSchemaIntrospection(selectSchema);
+export const useSkylarkObjectOperations = (
+  objectType: SkylarkObjectType,
+  introspectionOpts?: IntrospectionQueryOptions,
+) => {
+  const { data, isError } = useSkylarkSchemaIntrospection(
+    selectSchema,
+    introspectionOpts,
+  );
 
   const res: {
     objectOperations: SkylarkObjectMeta | null;
@@ -127,8 +138,10 @@ export const useSkylarkObjectOperations = (objectType: SkylarkObjectType) => {
   return res;
 };
 
-export const useSkylarkObjectTypesWithConfig = () => {
-  const { objectTypes } = useSkylarkObjectTypes(true);
+export const useSkylarkObjectTypesWithConfig = (
+  introspectionOpts?: IntrospectionQueryOptions | undefined,
+) => {
+  const { objectTypes } = useSkylarkObjectTypes(true, introspectionOpts);
   const ret = useObjectTypesConfig(objectTypes);
   return {
     ...ret,
@@ -136,9 +149,12 @@ export const useSkylarkObjectTypesWithConfig = () => {
   };
 };
 
-export const useSkylarkSetObjectTypes = (searchable: boolean) => {
-  const { objectTypes } = useSkylarkObjectTypes(searchable);
-  const { data } = useSkylarkSchemaInterfaceType("Set");
+export const useSkylarkSetObjectTypes = (
+  searchable: boolean,
+  introspectionOpts?: IntrospectionQueryOptions | undefined,
+) => {
+  const { objectTypes } = useSkylarkObjectTypes(searchable, introspectionOpts);
+  const { data } = useSkylarkSchemaInterfaceType("Set", introspectionOpts);
 
   const setObjectTypes = useMemo(() => {
     const setObjectTypes =
@@ -156,13 +172,21 @@ export const useSkylarkSetObjectTypes = (searchable: boolean) => {
   };
 };
 
-export const useSkylarkSetObjectTypesWithConfig = () => {
-  const { setObjectTypes } = useSkylarkSetObjectTypes(true);
+export const useSkylarkSetObjectTypesWithConfig = (
+  introspectionOpts?: IntrospectionQueryOptions | undefined,
+) => {
+  const { setObjectTypes } = useSkylarkSetObjectTypes(true, introspectionOpts);
   return useObjectTypesConfig(setObjectTypes);
 };
 
-export const useAllObjectsMeta = (searchableOnly?: boolean) => {
-  const { objectTypes } = useSkylarkObjectTypes(!!searchableOnly);
+export const useAllObjectsMeta = (
+  searchableOnly?: boolean,
+  introspectionOpts?: IntrospectionQueryOptions,
+) => {
+  const { objectTypes } = useSkylarkObjectTypes(
+    !!searchableOnly,
+    introspectionOpts,
+  );
 
   const { data } = useSkylarkSchemaIntrospection(
     useCallback(
@@ -184,6 +208,7 @@ export const useAllObjectsMeta = (searchableOnly?: boolean) => {
       },
       [objectTypes],
     ),
+    introspectionOpts,
   );
 
   return {
@@ -192,8 +217,13 @@ export const useAllObjectsMeta = (searchableOnly?: boolean) => {
   };
 };
 
-export const useAllSetObjectsMeta = () => {
-  const { data: schemaResponse } = useSkylarkSchemaIntrospection(selectSchema);
+export const useAllSetObjectsMeta = (
+  introspectionOpts?: IntrospectionQueryOptions,
+) => {
+  const { data: schemaResponse } = useSkylarkSchemaIntrospection(
+    selectSchema,
+    introspectionOpts,
+  );
 
   const { setObjectTypes } = useSkylarkSetObjectTypes(false);
 

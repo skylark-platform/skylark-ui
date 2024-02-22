@@ -52,6 +52,20 @@ test("renders a selected Select", async () => {
   expect(screen.getByRole("button")).toHaveTextContent("Episode");
 });
 
+test("renders with numbers used as values and a selected Select", async () => {
+  render(
+    <Select
+      variant="primary"
+      options={[1, 2, 3].map((n) => ({ label: `${n}`, value: n }))}
+      selected={1}
+      placeholder="Number"
+      searchable={false}
+    />,
+  );
+
+  expect(screen.getByRole("button")).toHaveTextContent("1");
+});
+
 test("calls onChange when a new item is selected", async () => {
   const onChange = jest.fn();
 
@@ -180,13 +194,15 @@ test("clears the value", () => {
 });
 
 test("renders options with tooltips", async () => {
-  const tooltipOptions: SelectOption[] = ["Episode", "Season", "Brand"].map(
-    (val) => ({
-      label: val,
-      value: val,
-      infoTooltip: `Tooltip for ${val}`,
-    }),
-  );
+  const tooltipOptions: SelectOption<string>[] = [
+    "Episode",
+    "Season",
+    "Brand",
+  ].map((val) => ({
+    label: val,
+    value: val,
+    infoTooltip: `Tooltip for ${val}`,
+  }));
 
   render(
     <Select

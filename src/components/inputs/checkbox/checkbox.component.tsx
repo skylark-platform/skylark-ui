@@ -2,6 +2,7 @@ import {
   Root,
   Indicator,
   CheckboxProps as RadixCheckboxProps,
+  CheckedState,
 } from "@radix-ui/react-checkbox";
 import clsx from "clsx";
 import { FiCheck, FiX } from "react-icons/fi";
@@ -19,7 +20,7 @@ export const Checkbox = ({
   "aria-label": ariaLabel,
   ...props
 }: CheckboxProps) => {
-  const { checked } = props;
+  const checked: CheckedState = props.checked || false;
 
   const htmlFor = label
     ? `checkbox-${name}`.replaceAll(" ", "-").toLowerCase()
