@@ -1497,10 +1497,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@chromatic-com/cypress@0.5.5":
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/@chromatic-com/cypress/-/cypress-0.5.5.tgz#3d2c30da2b2b45099fe7b61c9182009a43ac0731"
-  integrity sha512-PJ3J3KAfeKkoZaeaSiuG2Sx6dHMwIWGzR1x5EPfHgi99a8Oo51y1Sa/II5YXsHLkGtoYWEO8JovklD1Njtz7DA==
+"@chromatic-com/cypress@0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@chromatic-com/cypress/-/cypress-0.6.0.tgz#44aec6a36ac2b215c54dbbd8e72c8503bb19b9b5"
+  integrity sha512-VydB52CZllRyJ0zIxQ3oBf7ZED8MGC/KDBVK8xeSsPmH3Colpwqxfk0EuJnBLhPgNeTE68SYBObyZy2loTVzLQ==
   dependencies:
     "@segment/analytics-node" "^1.1.0"
     "@storybook/addon-essentials" "^8.0.0-alpha.16"
