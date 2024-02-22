@@ -4,42 +4,40 @@ import {
   SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 
-interface SkylarkSchemaComparisonObjectTypeFieldsDiff {
-  added: NormalizedObjectField[];
-  removed: NormalizedObjectField[];
-  modified: {
-    name: string;
-    values: never[];
-    isModified: boolean;
-  }[];
-  unmodified: NormalizedObjectField[];
+interface ModifiedObjectRelationship {
+  relationshipName: string;
+  baseObjectType: string;
+  updatedObjectType: string;
+  isModified: boolean;
+}
+
+interface ComparedObjectField {
+  name: string;
+  baseValue: NormalizedObjectField | null;
+  updatedValue: NormalizedObjectField | null;
+  type: "equal" | "added" | "removed" | "modified";
+  modifiedProperties?: string[];
+}
+
+export interface SkylarkSchemaComparisonModifiedObjectType {
+  name: string;
+  fields: ComparedObjectField[];
+  fieldsIsEqual: boolean;
+  relationships: {
+    added: SkylarkObjectRelationship[];
+    removed: SkylarkObjectRelationship[];
+    unmodified: SkylarkObjectRelationship[];
+    modified: ModifiedObjectRelationship[];
+    isEqual: boolean;
+  };
   isEqual: boolean;
 }
 
-interface SkylarkSchemaComparisonObjectTypeRelationshipsDiff {
-  added: SkylarkObjectRelationship[];
-  removed: SkylarkObjectRelationship[];
-  modified: {
-    name: string;
-    values: never[];
-    isModified: boolean;
-  }[];
-  unmodified: SkylarkObjectRelationship[];
-  isEqual: boolean;
-}
-
-interface SkylarkSchemaComparisonObjectTypeDiff {
-  objectType: string;
-  fields: SkylarkSchemaComparisonObjectTypeFieldsDiff;
-  relationships: SkylarkSchemaComparisonObjectTypeRelationshipsDiff;
-  isEqual: boolean;
-}
-
-interface SkylarkSchemaComparisonObjectTypesDiff {
-  added: string[];
-  removed: string[];
-  modified: SkylarkSchemaComparisonObjectTypeDiff[];
-  unmodified: SkylarkSchemaComparisonObjectTypeDiff[];
+export interface SkylarkSchemaComparisonObjectTypesDiff {
+  added: SkylarkObjectMeta[];
+  removed: SkylarkObjectMeta[];
+  unmodified: SkylarkObjectMeta[];
+  modified: SkylarkSchemaComparisonModifiedObjectType[];
   isEqual: boolean;
 }
 
@@ -50,7 +48,10 @@ interface SkylarkSchemaComparison {
 const diffObjectMetasFields = (
   baseFields: NormalizedObjectField[],
   updatedFields: NormalizedObjectField[],
-): SkylarkSchemaComparisonObjectTypeFieldsDiff => {
+): {
+  isEqual: boolean;
+  fields: SkylarkSchemaComparisonModifiedObjectType["fields"];
+} => {
   // Calculate added and removed fields
   const addedFields = updatedFields.filter(
     (field) => !baseFields.find(({ name }) => name === field.name),
@@ -69,8 +70,8 @@ const diffObjectMetasFields = (
   );
 
   // Calculate different field types
-  const modifiedFields = commonFields
-    .map((field) => {
+  const comparedFields: ComparedObjectField[] = commonFields
+    .map((field): ComparedObjectField | null => {
       const baseField = baseFields.find(({ name }) => name === field.name);
       const updatedField = updatedFields.find(
         ({ name }) => name === field.name,
@@ -81,57 +82,58 @@ const diffObjectMetasFields = (
         return null;
       }
 
-      const fieldDiff = (
+      const modifiedProperties: string[] = (
         Object.keys(field) as (keyof NormalizedObjectField)[]
-      ).reduce(
-        (prev, key) => {
-          const base = baseField[key];
-          const updated = updatedField[key];
-          const isModified = base !== updated;
+      ).reduce((prev, key) => {
+        const base = baseField[key];
+        const updated = updatedField[key];
+        const isModified = base !== updated;
 
-          return {
-            ...prev,
-            isModified: prev.isModified || isModified,
-            values: {
-              ...prev.values,
-              [key]: {
-                base,
-                updated,
-                isModified,
-              },
-            },
-          };
-        },
-        { name: field.name, values: [], isModified: false },
-      );
+        return isModified ? [...prev, key] : prev;
+      }, [] as string[]);
 
-      return fieldDiff;
+      return {
+        name: field.name,
+        type: modifiedProperties.length > 0 ? "modified" : "equal",
+        baseValue: baseField,
+        updatedValue: updatedField,
+        modifiedProperties,
+      };
     })
-    .filter(
-      (
-        fieldDiff,
-      ): fieldDiff is {
-        name: string;
-        values: never[];
-        isModified: boolean;
-      } => Boolean(fieldDiff && fieldDiff.isModified),
+    .filter((fieldDiff): fieldDiff is ComparedObjectField =>
+      Boolean(fieldDiff),
     );
-
-  const unmodifiedFields = commonFields.filter(
-    (field) => !modifiedFields.find(({ name }) => name === field.name),
-  );
 
   const isEqual =
     addedFields.length === 0 &&
     removedFields.length === 0 &&
-    modifiedFields.length === 0 &&
-    unmodifiedFields.length === commonFields.length;
+    comparedFields.filter(({ type }) => type === "modified").length === 0;
+
+  const addedComparedFields = addedFields.map(
+    (field): ComparedObjectField => ({
+      name: field.name,
+      type: "added",
+      baseValue: null,
+      updatedValue: field,
+    }),
+  );
+  const removedComparedFields = removedFields.map(
+    (field): ComparedObjectField => ({
+      name: field.name,
+      type: "removed",
+      baseValue: field,
+      updatedValue: null,
+    }),
+  );
+
+  const fields: ComparedObjectField[] = [
+    ...comparedFields,
+    ...removedComparedFields,
+    ...addedComparedFields,
+  ];
 
   return {
-    added: addedFields,
-    removed: removedFields,
-    modified: modifiedFields,
-    unmodified: unmodifiedFields,
+    fields,
     isEqual,
   };
 };
@@ -139,7 +141,7 @@ const diffObjectMetasFields = (
 const diffObjectMetasRelationships = (
   baseRelationships: SkylarkObjectRelationship[],
   updatedRelationships: SkylarkObjectRelationship[],
-): SkylarkSchemaComparisonObjectTypeRelationshipsDiff => {
+): SkylarkSchemaComparisonModifiedObjectType["relationships"] => {
   // Calculate added and removed relationships
   const addedRelationships = updatedRelationships.filter(
     (rel) =>
@@ -164,59 +166,37 @@ const diffObjectMetasRelationships = (
   );
 
   // Calculate different field types
-  const modifiedRelationships = commonRelationships
-    .map((rel) => {
-      const baseRel = baseRelationships.find(
-        ({ relationshipName }) => relationshipName === rel.relationshipName,
+  const modifiedRelationships: ModifiedObjectRelationship[] =
+    commonRelationships
+      .map((rel): ModifiedObjectRelationship | null => {
+        const baseRel = baseRelationships.find(
+          ({ relationshipName }) => relationshipName === rel.relationshipName,
+        );
+        const updatedRel = updatedRelationships.find(
+          ({ relationshipName }) => relationshipName === rel.relationshipName,
+        );
+
+        if (!baseRel || !updatedRel) {
+          // Should never hit this case
+          return null;
+        }
+
+        return {
+          relationshipName: rel.relationshipName,
+          baseObjectType: baseRel.objectType,
+          updatedObjectType: updatedRel.objectType,
+          isModified: baseRel.objectType !== updatedRel.objectType,
+        };
+      })
+      .filter((relDiff): relDiff is ModifiedObjectRelationship =>
+        Boolean(relDiff && relDiff.isModified),
       );
-      const updatedRel = updatedRelationships.find(
-        ({ relationshipName }) => relationshipName === rel.relationshipName,
-      );
-
-      if (!baseRel || !updatedRel) {
-        // Should never hit this case
-        return null;
-      }
-
-      const fieldDiff = (
-        Object.keys(rel) as (keyof SkylarkObjectRelationship)[]
-      ).reduce(
-        (prev, key) => {
-          const base = baseRel[key];
-          const updated = updatedRel[key];
-          const isModified = base !== updated;
-
-          return {
-            ...prev,
-            isModified: prev.isModified || isModified,
-            values: {
-              ...prev.values,
-              [key]: {
-                base,
-                updated,
-                isModified,
-              },
-            },
-          };
-        },
-        { name: rel.relationshipName, values: [], isModified: false },
-      );
-
-      return fieldDiff;
-    })
-    .filter(
-      (
-        fieldDiff,
-      ): fieldDiff is {
-        name: string;
-        values: never[];
-        isModified: boolean;
-      } => Boolean(fieldDiff && fieldDiff.isModified),
-    );
 
   const unmodifiedRelationships = commonRelationships.filter(
     (rel) =>
-      !modifiedRelationships.find(({ name }) => name === rel.relationshipName),
+      !modifiedRelationships.find(
+        ({ relationshipName }) => relationshipName === rel.relationshipName,
+      ),
   );
 
   const isEqual =
@@ -237,12 +217,8 @@ const diffObjectMetasRelationships = (
 const diffObjectMetas = (
   baseObjectMeta: SkylarkObjectMeta,
   updatedObjectMeta: SkylarkObjectMeta,
-): {
-  fields: SkylarkSchemaComparisonObjectTypeFieldsDiff;
-  relationships: SkylarkSchemaComparisonObjectTypeRelationshipsDiff;
-  isEqual: boolean;
-} => {
-  const fieldDiff = diffObjectMetasFields(
+) => {
+  const { fields, isEqual: fieldsIsEqual } = diffObjectMetasFields(
     baseObjectMeta.fields,
     updatedObjectMeta.fields,
   );
@@ -253,9 +229,10 @@ const diffObjectMetas = (
   );
 
   return {
-    fields: fieldDiff,
+    fields,
+    fieldsIsEqual,
     relationships: relationshipDiff,
-    isEqual: fieldDiff.isEqual && relationshipDiff.isEqual,
+    isEqual: fieldsIsEqual && relationshipDiff.isEqual,
   };
 };
 
@@ -267,15 +244,17 @@ export const compareSkylarkSchemas = (
   const baseSchemaObjectTypes = baseSchema.map(({ name }) => name);
   const updatedSchemaObjectTypes = updatedSchema.map(({ name }) => name);
 
-  const addedObjectTypes = updatedSchemaObjectTypes.filter(
-    (objectType) => !baseSchemaObjectTypes.includes(objectType),
+  const addedObjectTypes = updatedSchema.filter(
+    ({ name }) => !baseSchemaObjectTypes.includes(name),
   );
-  const removedObjectTypes = baseSchemaObjectTypes.filter(
-    (objectType) => !updatedSchemaObjectTypes.includes(objectType),
+  const removedObjectTypes = baseSchema.filter(
+    ({ name }) => !updatedSchemaObjectTypes.includes(name),
   );
 
   // If Object Types have been added or removed, we don't need to calculate removed/added fields or relationships so ignore them
-  const objectTypesToIgnore = [...addedObjectTypes, ...removedObjectTypes];
+  const objectTypesToIgnore = [...addedObjectTypes, ...removedObjectTypes].map(
+    ({ name }) => name,
+  );
 
   const commonObjectTypes = updatedSchemaObjectTypes.filter(
     (objectType) => !objectTypesToIgnore.includes(objectType),
@@ -297,11 +276,11 @@ export const compareSkylarkSchemas = (
       }
 
       return {
-        objectType,
+        name: objectType,
         ...diffObjectMetas(baseSchemaObjectType, updatedSchemaObjectType),
       };
     })
-    .filter((entry): entry is SkylarkSchemaComparisonObjectTypeDiff =>
+    .filter((entry): entry is SkylarkSchemaComparisonModifiedObjectType =>
       Boolean(entry),
     );
 
@@ -309,11 +288,10 @@ export const compareSkylarkSchemas = (
     ({ isEqual }) => !isEqual,
   );
 
-  const unmodifiedObjectTypes = commonObjectTypesDiffs.filter(
-    ({ objectType }) =>
-      !modifiedObjectTypes.find(
-        (modified) => objectType === modified.objectType,
-      ),
+  const unmodifiedObjectTypes = baseSchema.filter(
+    ({ name }) =>
+      objectTypesToIgnore.includes(name) &&
+      !modifiedObjectTypes.find((modified) => name === modified.name),
   );
 
   const isEqual =

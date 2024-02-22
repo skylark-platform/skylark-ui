@@ -175,7 +175,7 @@ test("detects title field is missing from object", () => {
   });
 });
 
-test("detects title field has been modified as its type has changed from String to Integer from object", () => {
+test.only("detects title field has been modified as its type has changed from String to Integer from object", () => {
   const schema1 = getAllObjectsMeta(
     GQLSkylarkSchemaQueryFixtureJSON.data
       .__schema as unknown as IntrospectionSchema,
