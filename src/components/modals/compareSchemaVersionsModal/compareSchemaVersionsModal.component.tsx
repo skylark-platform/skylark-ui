@@ -5,8 +5,8 @@ import { Modal } from "src/components/modals/base/modal";
 
 interface CompareSchemaVersionsModalProps {
   isOpen: boolean;
-  baseVersionNumber: number;
-  updateVersionNumber: number;
+  baseVersionNumber: number | null;
+  updateVersionNumber: number | null;
   setIsOpen: (b: boolean) => void;
 }
 
@@ -30,12 +30,16 @@ export const CompareSchemaVersionsModal = ({
       growHeight
     >
       <p>test</p>
-      <CompareSchemaVersions
-        baseVersionNumber={
-          baseVersionNumber === updateVersionNumber ? 1 : baseVersionNumber
-        }
-        updateVersionNumber={updateVersionNumber}
-      />
+      {baseVersionNumber && updateVersionNumber ? (
+        <CompareSchemaVersions
+          baseVersionNumber={
+            baseVersionNumber === updateVersionNumber ? 1 : baseVersionNumber
+          }
+          updateVersionNumber={updateVersionNumber}
+        />
+      ) : (
+        <p>Add a base and update version number</p>
+      )}
     </Modal>
   );
 };

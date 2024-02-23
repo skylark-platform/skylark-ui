@@ -109,8 +109,8 @@ export const ContentModel = () => {
       <CompareSchemaVersionsModal
         isOpen
         setIsOpen={() => ""}
-        baseVersionNumber={activationStatus?.activeVersion}
-        updateVersionNumber={activeSchemaVersion}
+        baseVersionNumber={activationStatus?.activeVersion || null}
+        updateVersionNumber={activeSchemaVersion || null}
       />
     </div>
   );

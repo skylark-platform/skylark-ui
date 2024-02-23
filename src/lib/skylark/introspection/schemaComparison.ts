@@ -337,7 +337,7 @@ export const compareSkylarkSchemas = (
 
   const unmodifiedObjectTypes = baseSchema.filter(
     ({ name }) =>
-      objectTypesToIgnore.includes(name) &&
+      !objectTypesToIgnore.includes(name) &&
       !modifiedObjectTypes.find((modified) => name === modified.name),
   );
 
