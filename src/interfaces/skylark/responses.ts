@@ -40,7 +40,7 @@ export interface GQLSkylarkActivationStatusResponse {
     active_version: number;
     update_in_progress: boolean | null;
     update_started_at: string | null;
-  };
+  } | null;
 }
 
 // https://github.com/skylark-platform/skylark/blob/d5bbe3624eb5341823975d4068f9332c502607b6/components/object-registry/src/tasks/tasks.py#L24C1-L31C62

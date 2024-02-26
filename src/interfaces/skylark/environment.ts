@@ -22,7 +22,7 @@ export interface ActivationStatus {
 }
 
 export interface AccountStatus {
-  activationStatus: ActivationStatus;
+  activationStatus: ActivationStatus | null;
   backgroundTasks: {
     queued: GQLSkylarkBackgroundTask[];
     inProgress: GQLSkylarkBackgroundTask[];
