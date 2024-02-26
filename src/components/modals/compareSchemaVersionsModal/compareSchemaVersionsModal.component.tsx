@@ -28,8 +28,8 @@ export const CompareSchemaVersionsModal = ({
       data-testid="create-object-modal"
       size="medium"
       growHeight
+      {...props}
     >
-      <p>test</p>
       {baseVersionNumber && updateVersionNumber ? (
         <CompareSchemaVersions
           baseVersionNumber={

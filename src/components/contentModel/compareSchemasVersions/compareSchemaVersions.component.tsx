@@ -1,8 +1,9 @@
 import { Disclosure } from "@headlessui/react";
 import clsx from "clsx";
 import { ReactNode, useMemo, useState } from "react";
-import { FiCheck } from "react-icons/fi";
+import { FiCheck, FiX } from "react-icons/fi";
 
+import { Select } from "src/components/inputs/select";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
 import {
@@ -30,6 +31,19 @@ type TabID = "MODIFIED" | "UNMODIFIED" | "ADDED" | "REMOVED";
  * - If modified: show modified fields, modified relationships -> Show existing too? Show in a changelog type way? Or preview type on hover (tooltip)?
  * - If unmodified: show nothing changed -> Or show everything like modified
  */
+
+const IsRequiredTickCross = ({
+  value,
+  displayFalsy,
+}: {
+  value?: boolean | null;
+  displayFalsy?: boolean;
+}) =>
+  value ? (
+    <FiCheck className="text-lg" />
+  ) : displayFalsy ? (
+    <FiX className="text-lg" />
+  ) : null;
 
 interface TableProps<TRow extends Record<string, string | boolean | string[]>> {
   columns: { property: keyof TRow; name: string }[];
@@ -148,6 +162,9 @@ const UnmodifiedObjectTypeSection = ({
         </Accordion>
       );
     })}
+    {objectTypes.length === 0 && (
+      <p className="mt-2">No object types {type}.</p>
+    )}
   </div>
 );
 
@@ -199,6 +216,7 @@ const ModifiedObjectTypeSection = ({
                     updatedValue,
                     modifiedProperties,
                   }) => {
+                    // console.log({ field, modifiedProperties });
                     return (
                       <tr
                         key={field}
@@ -232,21 +250,44 @@ const ModifiedObjectTypeSection = ({
                         </td>
                         <td
                           className={clsx(
-                            "px-1 py-0.5",
+                            "px-1 py-0.5 flex items-center",
                             type === "removed" && "line-through",
                           )}
                         >
                           {type === "modified" &&
-                            (modifiedProperties?.includes("isRequired")
-                              ? `${baseValue?.isRequired} -> ${updatedValue?.isRequired}`
-                              : baseValue?.isRequired && "true")}
-                          {type === "equal" && baseValue?.isRequired && "true"}
-                          {type === "removed" &&
-                            baseValue?.isRequired &&
-                            "true"}
-                          {type === "added" &&
-                            updatedValue?.isRequired &&
-                            "true"}
+                          modifiedProperties?.includes("isRequired") ? (
+                            //? `${baseValue?.isRequired} -> ${updatedValue?.isRequired}`
+                            <>
+                              <IsRequiredTickCross
+                                displayFalsy
+                                value={baseValue?.isRequired}
+                              />{" "}
+                              <span>{`->`}</span>{" "}
+                              <IsRequiredTickCross
+                                displayFalsy
+                                value={updatedValue?.isRequired}
+                              />
+                            </>
+                          ) : (
+                            <IsRequiredTickCross
+                              value={
+                                type === "added"
+                                  ? updatedValue?.isRequired
+                                  : baseValue?.isRequired
+                              }
+                            />
+                          )}
+                          {/* {type === "equal" && (
+                            <IsRequiredTickCross
+                              value={baseValue?.isRequired}
+                            />
+                          )}
+                          {type === "removed" && baseValue?.isRequired && (
+                            <FiCheck className="text-lg" />
+                          )}
+                          {type === "added" && updatedValue?.isRequired && (
+                            <FiCheck className="text-lg" />
+                          )} */}
                         </td>
                       </tr>
                     );
@@ -375,19 +416,24 @@ export const CompareSchemaVersions = ({
 
   const tabs = [
     { id: "objectTypes", name: "Object Types" },
-    { id: "enums", name: "Enums" },
+    // { id: "enums", name: "Enums" },
   ];
 
   return (
     <div className="relative h-full w-full overflow-hidden flex flex-col">
       <div className="">
+        <h3 className="text-center font-semibold text-xl">Schema Comparison</h3>
         <p className="text-center font-medium mb-2">{`Comparing base version ${baseVersionNumber} to version ${updateVersionNumber}`}</p>
-        <Tabs
-          tabs={tabs}
-          selectedTab={activeTab || tabs?.[0].id}
-          onChange={({ id }) => ""}
-          className="border-b"
-        />
+        <div className="flex space-x-2">
+          <Tabs
+            tabs={tabs}
+            selectedTab={activeTab || tabs?.[0].id}
+            onChange={({ id }) => ""}
+            className="border-b"
+          />
+          {/* TODO - do we want to enable filtering by status? */}
+          {/* <Select options={[{ value: "modified", label: "Modified" }]} /> */}
+        </div>
       </div>
       {objectTypeDiff ? (
         <div className="grow overflow-y-scroll py-10">

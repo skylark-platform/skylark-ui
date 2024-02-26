@@ -63,7 +63,7 @@ export const ContentModel = () => {
       objectMeta?.name !== BuiltInSkylarkObjectType.Availability);
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-8xl mx-auto px-4 md:px-8">
       <ContentModelHeader
         activeSchemaVersion={activationStatus?.activeVersion || 0}
         schemaVersion={activeSchemaVersion}
@@ -106,12 +106,6 @@ export const ContentModel = () => {
           <Spinner className="h-14 w-14 animate-spin" />
         </div>
       )}
-      <CompareSchemaVersionsModal
-        isOpen
-        setIsOpen={() => ""}
-        baseVersionNumber={activationStatus?.activeVersion || null}
-        updateVersionNumber={activeSchemaVersion || null}
-      />
     </div>
   );
 };

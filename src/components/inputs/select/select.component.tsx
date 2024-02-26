@@ -349,7 +349,7 @@ const SelectComponent = <T extends string | number>(
 
   return (
     <Combobox
-      disabled={disabled}
+      disabled={disabled || !options}
       onChange={onChangeWrapper}
       value={
         (displayRawSelectedValue && selected

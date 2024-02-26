@@ -86,17 +86,25 @@ const getInputObjectInterfaceFromIntrospectionField = (
 const getObjectFields = (
   objectType: string,
   enums: Record<string, IntrospectionEnumType>,
+  requiredFields: string[],
   objectInterface?: IntrospectionObjectType,
 ): NormalizedObjectField[] => {
   if (!objectInterface) {
     return [];
   }
 
+  // Skylark's Object Type Get methods don't mark which fields are required
+  // Instead of using the Create method's fields (some fields are not included),
+  // we mark which fields are required instead here (these are calculated from the Create method)
   const objectFields = parseObjectInputFields(
     objectType,
     objectInterface.fields.filter((field) => field.type.kind !== "OBJECT"),
     enums,
-  );
+  ).map(({ name, isRequired, ...field }) => ({
+    ...field,
+    name,
+    isRequired: isRequired || requiredFields.includes(name),
+  }));
 
   return objectFields;
 };
@@ -399,13 +407,6 @@ export const getObjectOperations = (
   const updateInputObjectInterface =
     getInputObjectInterfaceFromIntrospectionField(updateMutation, objectType);
 
-  const objectFields = getObjectFields(objectType, enums, getObjectInterface);
-  const fieldConfig = getGlobalAndTranslatableFields(
-    schema.types,
-    objectType,
-    objectFields,
-  );
-
   const hasAvailability = objectHasRelationshipFromInterface(
     SkylarkSystemField.Availability,
     getObjectInterface,
@@ -431,6 +432,10 @@ export const getObjectOperations = (
     enums,
     createInputObjectInterface,
   );
+
+  const requiredFields = createMeta.inputs
+    .filter(({ isRequired }) => isRequired)
+    .map(({ name }) => name);
 
   const hasRelationships = relationships.length > 0;
 
@@ -478,6 +483,18 @@ export const getObjectOperations = (
       inputs: [],
     },
   };
+
+  const objectFields = getObjectFields(
+    objectType,
+    enums,
+    requiredFields,
+    getObjectInterface,
+  );
+  const fieldConfig = getGlobalAndTranslatableFields(
+    schema.types,
+    objectType,
+    objectFields,
+  );
 
   const objectMeta: SkylarkObjectMeta = {
     name: objectType,
