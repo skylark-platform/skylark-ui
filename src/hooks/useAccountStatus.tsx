@@ -12,14 +12,19 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { GET_ACCOUNT_STATUS } from "src/lib/graphql/skylark/queries";
 
-const selectAllData = (data: GQLSkylarkStatusResponse): AccountStatus => ({
-  activationStatus: data.getActivationStatus
+const parseActivationStatus = (
+  getActivationStatus: GQLSkylarkStatusResponse["getActivationStatus"],
+) =>
+  getActivationStatus
     ? {
-        activeVersion: data.getActivationStatus.active_version,
-        updateInProgress: data.getActivationStatus.update_in_progress,
-        updateStartedAt: data.getActivationStatus.update_started_at,
+        activeVersion: getActivationStatus.active_version,
+        updateInProgress: getActivationStatus.update_in_progress,
+        updateStartedAt: getActivationStatus.update_started_at,
       }
-    : null,
+    : null;
+
+const selectAllData = (data: GQLSkylarkStatusResponse): AccountStatus => ({
+  activationStatus: parseActivationStatus(data.getActivationStatus),
   backgroundTasks: {
     queued: data.queuedBackgroundTasks.objects,
     inProgress: data.inProgressBackgroundTasks.objects,
@@ -32,14 +37,7 @@ const selectAllData = (data: GQLSkylarkStatusResponse): AccountStatus => ({
 
 const selectActivationStatus = (
   data: GQLSkylarkStatusResponse,
-): ActivationStatus | null =>
-  data.getActivationStatus
-    ? {
-        activeVersion: data.getActivationStatus.active_version,
-        updateInProgress: data.getActivationStatus.update_in_progress,
-        updateStartedAt: data.getActivationStatus.update_started_at,
-      }
-    : null;
+): ActivationStatus | null => parseActivationStatus(data.getActivationStatus);
 
 function useBackgroundTasksAndActivationStatus<T>(
   select: (data: GQLSkylarkStatusResponse) => T,
