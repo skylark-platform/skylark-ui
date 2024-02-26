@@ -13,11 +13,13 @@ import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { GET_ACCOUNT_STATUS } from "src/lib/graphql/skylark/queries";
 
 const selectAllData = (data: GQLSkylarkStatusResponse): AccountStatus => ({
-  activationStatus: {
-    activeVersion: data.getActivationStatus.active_version,
-    updateInProgress: data.getActivationStatus.update_in_progress,
-    updateStartedAt: data.getActivationStatus.update_started_at,
-  },
+  activationStatus: data.getActivationStatus
+    ? {
+        activeVersion: data.getActivationStatus.active_version,
+        updateInProgress: data.getActivationStatus.update_in_progress,
+        updateStartedAt: data.getActivationStatus.update_started_at,
+      }
+    : null,
   backgroundTasks: {
     queued: data.queuedBackgroundTasks.objects,
     inProgress: data.inProgressBackgroundTasks.objects,
@@ -30,11 +32,14 @@ const selectAllData = (data: GQLSkylarkStatusResponse): AccountStatus => ({
 
 const selectActivationStatus = (
   data: GQLSkylarkStatusResponse,
-): ActivationStatus => ({
-  activeVersion: data.getActivationStatus.active_version,
-  updateInProgress: data.getActivationStatus.update_in_progress,
-  updateStartedAt: data.getActivationStatus.update_started_at,
-});
+): ActivationStatus | null =>
+  data.getActivationStatus
+    ? {
+        activeVersion: data.getActivationStatus.active_version,
+        updateInProgress: data.getActivationStatus.update_in_progress,
+        updateStartedAt: data.getActivationStatus.update_started_at,
+      }
+    : null;
 
 function useBackgroundTasksAndActivationStatus<T>(
   select: (data: GQLSkylarkStatusResponse) => T,
@@ -91,9 +96,17 @@ export const useAccountStatus = (poll?: boolean) => {
   const isUnauthenticated =
     error?.response?.errors?.[0]?.errorType === "UnauthorizedException";
 
+  const userNeedsSelfConfigPermissions = error?.response?.errors?.[0]?.message
+    .toLowerCase()
+    .startsWith("forbidden: requires self_config permissions");
+
+  const isConnected =
+    userNeedsSelfConfigPermissions || (!isError && !isUnauthenticated);
+
   return {
     isLoading,
-    isConnected: !isError && !isUnauthenticated,
+    isConnected,
+    userNeedsSelfConfigPermissions,
     ...data,
   };
 };

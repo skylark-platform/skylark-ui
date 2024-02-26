@@ -139,11 +139,12 @@ const BackgroundStatusText = ({
 };
 
 export const AccountStatus = () => {
-  const { backgroundTasks, activationStatus } = useAccountStatus(true);
+  const { backgroundTasks, activationStatus, userNeedsSelfConfigPermissions } =
+    useAccountStatus(true);
 
   const [showCompletedText, setShowCompletedText] = useState(false);
 
-  if (activationStatus?.updateInProgress) {
+  if (activationStatus?.updateInProgress && !userNeedsSelfConfigPermissions) {
     if (!showCompletedText) setShowCompletedText(true);
 
     return <StatusText loading>{`Data Model Update In Progress`}</StatusText>;
