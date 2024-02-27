@@ -4,6 +4,7 @@ import GQLSkylarkRelationshipConfigMovie from "src/__tests__/fixtures/skylark/qu
 import GQLSkylarkRelationshipConfigSeason from "src/__tests__/fixtures/skylark/queries/getObjectTypeRelationshipConfiguration/season.json";
 import GQLSkylarkRelationshipConfigSkylarkSet from "src/__tests__/fixtures/skylark/queries/getObjectTypeRelationshipConfiguration/skylarkSet.json";
 import GQLSkylarkIntrospectionQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/introspectionQuery.json";
+import GQLSkylarkIntrospectionQueryWithoutEpisodeObjectQueryFixtureJSON from "src/__tests__/fixtures/skylark/queries/introspection/introspectionQueryWithoutEpisode.json";
 import GQLSkylarkListSchemaVersionsQueryFixture from "src/__tests__/fixtures/skylark/queries/introspection/listSchemaVersions.json";
 import GQLSkylarkObjectTypes from "src/__tests__/fixtures/skylark/queries/introspection/objectTypes.json";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
@@ -32,6 +33,30 @@ export const introspectionHandlers = [
         return res(ctx.data(GQLSkylarkRelationshipConfigSeason.data));
       }
       return res(ctx.data(GQLSkylarkRelationshipConfigSkylarkSet.data));
+    },
+  ),
+
+  graphql.query(
+    wrapQueryName("GET_CONFIGURATION_SCHEMA"),
+    ({ variables }, res, ctx) => {
+      console.log("handler", { variables });
+      if (variables.version > 1) {
+        return res(
+          ctx.data({
+            getConfigurationSchema: JSON.stringify(
+              GQLSkylarkIntrospectionQueryWithoutEpisodeObjectQueryFixtureJSON.data,
+            ),
+          }),
+        );
+      }
+
+      return res(
+        ctx.data({
+          getConfigurationSchema: JSON.stringify(
+            GQLSkylarkIntrospectionQueryFixture.data,
+          ),
+        }),
+      );
     },
   ),
 ];

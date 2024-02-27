@@ -18693,7 +18693,7 @@
               "args": [],
               "type": {
                 "kind": "SCALAR",
-                "name": "AWSDate",
+                "name": "String",
                 "ofType": null
               },
               "isDeprecated": false,

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import { CompareSchemaVersions } from "src/components/contentModel/compareSchemasVersions/compareSchemaVersions.component";
+import { CompareSchemaVersions } from "src/components/compareSchemasVersions/compareSchemaVersions.component";
 import { Select, SelectOption } from "src/components/inputs/select";
 import { useSchemaVersions } from "src/hooks/schema/get/useSchemaVersions";
 import { useActivationStatus } from "src/hooks/useAccountStatus";

@@ -1,17 +1,10 @@
-import clsx from "clsx";
-import { Dispatch, ReactNode, SetStateAction, useMemo, useState } from "react";
-import { FiCheck, FiX } from "react-icons/fi";
+import { ReactNode, useMemo, useState } from "react";
 
 import { Accordion } from "src/components/accordion";
-import { Select } from "src/components/inputs/select";
 import { ObjectComparisonTable, SimpleTable } from "src/components/tables";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
-import {
-  NormalizedObjectField,
-  SkylarkObjectMeta,
-  SkylarkObjectRelationship,
-} from "src/interfaces/skylark";
+import { SkylarkObjectMeta } from "src/interfaces/skylark";
 import {
   SkylarkSchemaComparisonModifiedObjectType,
   compareSkylarkSchemas,
@@ -43,7 +36,7 @@ const Section = ({
   children: ReactNode;
 }) => (
   <section>
-    <h3 className="text-lg font-medium">
+    <h3 className="text-lg font-medium text-black">
       {title} ({numObjectTypes})
     </h3>
     {children}
@@ -70,7 +63,7 @@ const UnmodifiedObjectTypeSection = ({
           isError={type === "removed"}
         >
           <>
-            <h4 className="text-base font-medium mb-2">Fields</h4>
+            <h4 className="text-base font-medium mb-2 text-black">Fields</h4>
             <SimpleTable
               columns={[
                 { name: "Name", property: "name" },
@@ -82,7 +75,9 @@ const UnmodifiedObjectTypeSection = ({
                 id: field.name,
               }))}
             />
-            <h4 className="text-base font-medium mb-2 mt-4">Relationships</h4>
+            <h4 className="text-base font-medium mb-2 mt-8 text-black">
+              Relationships
+            </h4>
             {objectMeta.relationships.length > 0 ? (
               <SimpleTable
                 columns={[
@@ -128,9 +123,10 @@ const ModifiedObjectTypeSection = ({
           : name;
         return (
           <Accordion key={name} buttonText={title} as="div">
+            <h4 className="text-base font-medium mb-2 text-black">Fields</h4>
             <ObjectComparisonTable
               columns={[
-                { name: "Field", property: "name" },
+                { name: "Name", property: "name" },
                 { name: "Type", property: "originalType" },
                 { name: "Is Required", property: "isRequired" },
               ]}
@@ -141,9 +137,12 @@ const ModifiedObjectTypeSection = ({
                 modifiedProperties: field.modifiedProperties,
               }))}
             />
+            <h4 className="text-base font-medium mb-2 mt-8 text-black">
+              Relationships
+            </h4>
             <ObjectComparisonTable
               columns={[
-                { name: "Relationship", property: "relationshipName" },
+                { name: "Name", property: "relationshipName" },
                 { name: "Object Type", property: "objectType" },
               ]}
               rows={relationships.map((rel) => ({
@@ -151,7 +150,6 @@ const ModifiedObjectTypeSection = ({
                 from: rel.baseValue,
                 to: rel.updatedValue,
               }))}
-              className="mt-8"
             />
           </Accordion>
         );
