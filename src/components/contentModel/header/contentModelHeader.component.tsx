@@ -56,7 +56,8 @@ export const ContentModelHeader = ({
             onClick={() => setActiveSchemaModalIsOpen(true)}
             // loading={isSaving}
           >
-            Make active version
+            {/* Activate selected Schema */}
+            View Schema Changes
           </Button>
         </div>
       </div>

@@ -31,8 +31,8 @@ export default function CompareSchemas() {
 
   return (
     <div className="mx-auto mt-32 flex w-full max-w-5xl flex-col justify-center text-sm">
-      <h1 className="mb-8 text-center font-heading text-4xl">
-        Compare Schemas
+      <h1 className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl text-center">
+        Schema Comparison
       </h1>
       <div className="flex w-full justify-center space-x-4 mb-10">
         <Select

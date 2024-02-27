@@ -1,7 +1,11 @@
-import React, { useRef } from "react";
+import React from "react";
 
 import { CompareSchemaVersions } from "src/components/contentModel/compareSchemasVersions/compareSchemaVersions.component";
-import { Modal } from "src/components/modals/base/modal";
+import {
+  Modal,
+  ModalDescription,
+  ModalTitle,
+} from "src/components/modals/base/modal";
 
 interface CompareSchemaVersionsModalProps {
   isOpen: boolean;
@@ -17,19 +21,27 @@ export const CompareSchemaVersionsModal = ({
   setIsOpen,
   ...props
 }: CompareSchemaVersionsModalProps) => {
-  const objectTypeSelectRef = useRef(null);
-
   return (
     <Modal
-      initialFocus={objectTypeSelectRef}
       title={null}
       isOpen={isOpen}
       closeModal={() => setIsOpen(false)}
-      data-testid="create-object-modal"
+      data-testid="schema-versions-modal"
       size="medium"
       growHeight
+      withoutBodyPadding
       {...props}
     >
+      <ModalTitle withoutBodyPadding>Schema Comparison</ModalTitle>
+      <ModalDescription withoutBodyPadding>
+        <p>
+          Review differences between schema versions.
+          {/* When you're happy, activate the new Schema. */}
+        </p>
+        {baseVersionNumber && updateVersionNumber && (
+          <p className="font-medium my-1 mb-4">{`Comparing version ${updateVersionNumber} to base version ${baseVersionNumber}.`}</p>
+        )}
+      </ModalDescription>
       {baseVersionNumber && updateVersionNumber ? (
         <CompareSchemaVersions
           baseVersionNumber={

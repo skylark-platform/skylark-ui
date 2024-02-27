@@ -28,7 +28,7 @@ const calculateDiffType = <TData extends TableData>({
   Pick<TableRow<TData>, "modifiedProperties">): {
   type: "added" | "removed" | "equal" | "modified";
   modifiedProperties: string[];
-} | null => {
+} => {
   if (from && !to) {
     return { type: "removed", modifiedProperties: [] };
   }
@@ -39,7 +39,10 @@ const calculateDiffType = <TData extends TableData>({
 
   // Should never hit this case
   if (!to || !from) {
-    return null;
+    return {
+      type: "equal",
+      modifiedProperties: modifiedProperties || [],
+    };
   }
 
   // Allow modifiedProperties to be passed in to skip the array checking
@@ -74,7 +77,7 @@ export const ObjectComparisonTable = <TRow extends TableData>({
               to,
               from,
               modifiedProperties: propModifiedProperties,
-            }) || { type: "equal", modifiedProperties: [] };
+            });
           return (
             <tr
               key={id}
