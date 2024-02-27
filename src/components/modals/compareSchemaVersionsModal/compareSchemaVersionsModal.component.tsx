@@ -50,7 +50,9 @@ export const CompareSchemaVersionsModal = ({
           updateVersionNumber={updateVersionNumber}
         />
       ) : (
-        <p>Add a base and update version number</p>
+        <p className="px-6 md:px-10 mt-4">
+          Add a base and update version number.
+        </p>
       )}
     </Modal>
   );

@@ -39,7 +39,6 @@ export const introspectionHandlers = [
   graphql.query(
     wrapQueryName("GET_CONFIGURATION_SCHEMA"),
     ({ variables }, res, ctx) => {
-      console.log("handler", { variables });
       if (variables.version > 1) {
         return res(
           ctx.data({
