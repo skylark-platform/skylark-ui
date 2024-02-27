@@ -60,14 +60,14 @@ export type NormalizedObjectFieldType =
   | "phone"
   | "boolean";
 
-export interface NormalizedObjectField {
+export type NormalizedObjectField = {
   name: string;
   type: NormalizedObjectFieldType;
   originalType: GQLScalars;
   enumValues?: string[];
   isList: boolean;
   isRequired: boolean;
-}
+};
 
 export type InputFieldWithFieldConfig = {
   field: NormalizedObjectField;
@@ -106,10 +106,10 @@ export interface SkylarkObjectFields {
   };
 }
 
-export interface SkylarkObjectRelationship {
+export type SkylarkObjectRelationship = {
   relationshipName: string;
   objectType: SkylarkObjectType;
-}
+};
 
 export interface SkylarkObjectMeta extends SkylarkObjectFields {
   availability: SkylarkObjectMeta | null;

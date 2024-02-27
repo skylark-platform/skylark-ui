@@ -1,9 +1,9 @@
-import { Disclosure } from "@headlessui/react";
 import clsx from "clsx";
-import { ReactNode, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { FiCheck, FiX } from "react-icons/fi";
 
-import { Select } from "src/components/inputs/select";
+import { Accordion } from "src/components/accordion";
+import { ObjectComparisonTable, SimpleTable } from "src/components/tables";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
 import {
@@ -44,95 +44,6 @@ const IsRequiredTickCross = ({
   ) : displayFalsy ? (
     <FiX className="text-lg" />
   ) : null;
-
-interface TableProps<TRow extends Record<string, string | boolean | string[]>> {
-  columns: { property: keyof TRow; name: string }[];
-  rows: (TRow & { id: string })[];
-}
-
-const Table = <TRow extends Record<string, string | string[] | boolean>>({
-  columns,
-  rows,
-}: TableProps<TRow>) => {
-  return (
-    <table className="w-full border">
-      <thead className="border-b text-black">
-        {columns.map(({ property, name }) => (
-          <td key={String(property)} className="p-1">
-            {name}
-          </td>
-        ))}
-      </thead>
-      <tbody className="p-2">
-        {rows.map((field) => (
-          <tr key={field.id} className="">
-            {columns.map(({ property }) => {
-              const val = field[property];
-              const type = typeof val;
-              const isArr = Array.isArray(val);
-
-              return (
-                <td
-                  key={`${field.id}-${String(property)}`}
-                  className="px-1 py-0.5"
-                >
-                  {type === "string" && val}
-                  {isArr && val.join(", ")}
-                  {type === "boolean" && val === true && (
-                    <FiCheck className="text-lg" />
-                  )}
-                </td>
-              );
-            })}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-};
-
-const Accordion = ({
-  isSuccess,
-  isError,
-  isWarning,
-  buttonText,
-  children,
-}: {
-  isSuccess?: boolean;
-  isError?: boolean;
-  isWarning?: boolean;
-  buttonText: string;
-  children: ReactNode;
-}) => (
-  <Disclosure>
-    <Disclosure.Button
-      className={clsx(
-        "px-4 mt-4 flex justify-between text-left py-2 w-full border rounded",
-        isSuccess && "bg-success/10 border-success",
-        isError && "bg-error/10 border-error",
-        isWarning && "bg-warning/10 border-warning",
-        !isSuccess &&
-          !isError &&
-          !isWarning &&
-          "bg-manatee-100 border-manatee-300",
-      )}
-    >
-      <span>{buttonText}</span>
-      <span>D</span>
-    </Disclosure.Button>
-    <Disclosure.Panel
-      className={clsx(
-        "text-gray-500 p-4 rounded-b-lg",
-        isSuccess && "bg-success/5",
-        isError && "bg-error/5",
-        isWarning && "bg-warning/5",
-        !isSuccess && !isError && !isWarning && "bg-manatee-50",
-      )}
-    >
-      {children}
-    </Disclosure.Panel>
-  </Disclosure>
-);
 
 const UnmodifiedObjectTypeSection = ({
   title,
@@ -194,156 +105,32 @@ const ModifiedObjectTypeSection = ({
           ? `${name} - ${fieldChangesText}${fieldChangesText && relationshipChangesText ? ", " : ""}${relationshipChangesText}`
           : name;
         return (
-          <Accordion
-            key={name}
-            buttonText={title}
-            // isWarning
-          >
-            <table className="w-full border mb-4">
-              <thead className="border-b text-black">
-                {["Field", "Type", "Is Required"].map((name) => (
-                  <td key={name} className="p-1">
-                    {name}
-                  </td>
-                ))}
-              </thead>
-              <tbody className="p-2">
-                {fields.map(
-                  ({
-                    name: field,
-                    type,
-                    baseValue,
-                    updatedValue,
-                    modifiedProperties,
-                  }) => {
-                    // console.log({ field, modifiedProperties });
-                    return (
-                      <tr
-                        key={field}
-                        className={clsx(
-                          type === "added" && "bg-success/20",
-                          type === "removed" && "bg-error/20",
-                          type === "modified" && "bg-warning/20",
-                        )}
-                      >
-                        <td
-                          className={clsx(
-                            "px-1 py-0.5",
-                            type === "removed" && "line-through",
-                          )}
-                        >
-                          {field}
-                        </td>
-                        <td
-                          className={clsx(
-                            "px-1 py-0.5",
-                            type === "removed" && "line-through",
-                          )}
-                        >
-                          {type === "modified" &&
-                            (modifiedProperties?.includes("originalType")
-                              ? `${baseValue?.originalType} -> ${updatedValue?.originalType}`
-                              : baseValue?.originalType)}
-                          {type === "equal" && baseValue?.originalType}
-                          {type === "removed" && baseValue?.originalType}
-                          {type === "added" && updatedValue?.originalType}
-                        </td>
-                        <td
-                          className={clsx(
-                            "px-1 py-0.5 flex items-center",
-                            type === "removed" && "line-through",
-                          )}
-                        >
-                          {type === "modified" &&
-                          modifiedProperties?.includes("isRequired") ? (
-                            //? `${baseValue?.isRequired} -> ${updatedValue?.isRequired}`
-                            <>
-                              <IsRequiredTickCross
-                                displayFalsy
-                                value={baseValue?.isRequired}
-                              />{" "}
-                              <span>{`->`}</span>{" "}
-                              <IsRequiredTickCross
-                                displayFalsy
-                                value={updatedValue?.isRequired}
-                              />
-                            </>
-                          ) : (
-                            <IsRequiredTickCross
-                              value={
-                                type === "added"
-                                  ? updatedValue?.isRequired
-                                  : baseValue?.isRequired
-                              }
-                            />
-                          )}
-                          {/* {type === "equal" && (
-                            <IsRequiredTickCross
-                              value={baseValue?.isRequired}
-                            />
-                          )}
-                          {type === "removed" && baseValue?.isRequired && (
-                            <FiCheck className="text-lg" />
-                          )}
-                          {type === "added" && updatedValue?.isRequired && (
-                            <FiCheck className="text-lg" />
-                          )} */}
-                        </td>
-                      </tr>
-                    );
-                  },
-                )}
-              </tbody>
-            </table>
-
-            <table className="w-full border">
-              <thead className="border-b text-black">
-                {["Relationship", "Object Type"].map((name) => (
-                  <td key={name} className="p-1">
-                    {name}
-                  </td>
-                ))}
-              </thead>
-              <tbody className="p-2">
-                {relationships.map(
-                  ({ name, type, baseValue, updatedValue }) => {
-                    return (
-                      <tr
-                        key={name}
-                        className={clsx(
-                          type === "added" && "bg-success/20",
-                          type === "removed" && "bg-error/20",
-                          type === "modified" && "bg-warning/20",
-                        )}
-                      >
-                        <td
-                          className={clsx(
-                            "px-1 py-0.5",
-                            type === "removed" && "line-through",
-                          )}
-                        >
-                          {name}
-                        </td>
-                        <td
-                          className={clsx(
-                            "px-1 py-0.5",
-                            type === "removed" && "line-through",
-                          )}
-                        >
-                          {type === "modified" &&
-                            (baseValue?.objectType !== updatedValue?.objectType
-                              ? `${baseValue?.objectType} -> ${updatedValue?.objectType}`
-                              : baseValue?.objectType)}
-                          {type === "equal" && baseValue?.objectType}
-                          {type === "removed" && baseValue?.objectType}
-                          {type === "added" && updatedValue?.objectType}
-                        </td>
-                      </tr>
-                    );
-                  },
-                )}
-              </tbody>
-            </table>
+          <Accordion key={name} buttonText={title} as="div">
+            <ObjectComparisonTable
+              columns={[
+                { name: "Field", property: "name" },
+                { name: "Type", property: "originalType" },
+                { name: "Is Required", property: "isRequired" },
+              ]}
+              rows={fields.map((field) => ({
+                id: field.name,
+                from: field.baseValue,
+                to: field.updatedValue,
+                modifiedProperties: field.modifiedProperties,
+              }))}
+            />
+            <ObjectComparisonTable
+              columns={[
+                { name: "Relationship", property: "relationshipName" },
+                { name: "Object Type", property: "objectType" },
+              ]}
+              rows={relationships.map((rel) => ({
+                id: rel.name,
+                from: rel.baseValue,
+                to: rel.updatedValue,
+              }))}
+              className="mt-8"
+            />
           </Accordion>
         );
       },
@@ -360,12 +147,12 @@ const ObjectTypeFieldsAndRelationships = ({
 }) => (
   <>
     <h4 className="text-base font-medium mb-2">Fields</h4>
-    <Table
+    <SimpleTable
       columns={[
-        "name" as const,
-        "originalType" as const,
-        "isRequired" as const,
-      ].map((name) => ({ name, property: name }))}
+        { name: "Name", property: "name" },
+        { name: "Type", property: "originalType" },
+        { name: "Is Required", property: "isRequired" },
+      ]}
       rows={fields.map((field) => ({
         ...field,
         id: field.name,
@@ -373,10 +160,11 @@ const ObjectTypeFieldsAndRelationships = ({
     />
     <h4 className="text-base font-medium mb-2 mt-4">Relationships</h4>
     {relationships.length > 0 ? (
-      <Table
-        columns={["relationshipName" as const, "objectType" as const].map(
-          (name) => ({ name, property: name }),
-        )}
+      <SimpleTable
+        columns={[
+          { name: "Name", property: "relationshipName" },
+          { name: "Object Type", property: "objectType" },
+        ]}
         rows={relationships.map((rel) => ({
           ...rel,
           id: rel.relationshipName,
@@ -436,7 +224,7 @@ export const CompareSchemaVersions = ({
         </div>
       </div>
       {objectTypeDiff ? (
-        <div className="grow overflow-y-scroll py-10">
+        <div className="grow overflow-y-scroll py-6">
           <div className="space-y-10 text-left">
             <ModifiedObjectTypeSection
               title="Modified"
