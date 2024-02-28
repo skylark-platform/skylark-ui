@@ -4,3 +4,4 @@ export * from "./deleteObjectModal/deleteObjectModal.component";
 export * from "./graphQLQueryModal/graphQLQueryModal.component";
 export * from "./searchObjectsModal/searchObjectsModal.component";
 export * from "./batchDeleteObjectsModal/batchDeleteObjectsModal.component";
+export * from "./compareSchemaVersionsModal/compareSchemaVersionsModal.component";

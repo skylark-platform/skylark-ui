@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 import { Spinner } from "src/components/icons";
+import { CompareSchemaVersionsModal } from "src/components/modals";
 import { useActivationStatus } from "src/hooks/useAccountStatus";
 import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import {
@@ -62,7 +63,7 @@ export const ContentModel = () => {
       objectMeta?.name !== BuiltInSkylarkObjectType.Availability);
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-8xl mx-auto px-4 md:px-8">
       <ContentModelHeader
         activeSchemaVersion={activationStatus?.activeVersion || 0}
         schemaVersion={activeSchemaVersion}

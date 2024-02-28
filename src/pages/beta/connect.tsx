@@ -19,9 +19,14 @@ export default function BetaConnect() {
 
       queryClient.clear();
 
+      const redirectUrl =
+        query.redirect && typeof query.redirect === "string"
+          ? query.redirect
+          : "/";
+
       // storage events are not picked up in the same tab, so dispatch it for the current one
       window.dispatchEvent(new Event("storage"));
-      navigateTo("/");
+      navigateTo(redirectUrl);
     }
   }, [query, navigateTo, queryClient, saveCreds]);
 

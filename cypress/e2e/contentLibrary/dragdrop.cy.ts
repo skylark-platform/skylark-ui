@@ -2,6 +2,7 @@ import {
   hasMatchingVariable,
   hasOperationName,
 } from "../../support/utils/graphqlTestUtils";
+import { configureSkylarkIntercepts } from "../../support/utils/handlers";
 
 const allDevicesAllCustomersAvailability =
   "Always - All devices, all non-kids customer types";
@@ -68,79 +69,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
   beforeEach(() => {
     cy.login();
 
-    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "IntrospectionQuery")) {
-        req.alias = "introspectionQuery";
-        req.reply({
-          fixture: "./skylark/queries/introspection/introspectionQuery.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_OBJECTS_CONFIG")) {
-        req.reply({
-          fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_ACCOUNT_STATUS")) {
-        req.reply({
-          fixture: "./skylark/queries/getAccountStatus/default.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_SKYLARKSET_RELATIONSHIPS")) {
-        req.reply({
-          fixture: "./skylark/queries/getObjectRelationships/homepage.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_SKYLARKSET_AVAILABILITY")) {
-        req.reply({
-          fixture:
-            "./skylark/queries/getObjectAvailability/fantasticMrFox_All_Availabilities.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_SKYLARKSET")) {
-        req.reply({
-          fixture: "./skylark/queries/getObject/homepage.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_SKYLARKSET_CONTENT")) {
-        req.reply({
-          fixture: "./skylark/queries/getObjectContent/homepage.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_AVAILABILITY")) {
-        req.reply({
-          fixture:
-            "./skylark/queries/getObject/allDevicesAllCustomersAvailability.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_USER_AND_ACCOUNT")) {
-        req.reply({
-          fixture: "./skylark/queries/getUserAndAccount.json",
-        });
-      }
-
-      if (hasOperationName(req, "SL_UI_SEARCH")) {
-        if (hasMatchingVariable(req, "queryString", "Homepage")) {
-          req.reply({
-            fixture: "./skylark/queries/search/homepage.json",
-          });
-        } else if (
-          hasMatchingVariable(
-            req,
-            "queryString",
-            allDevicesAllCustomersAvailability,
-          )
-        ) {
-          req.reply({
-            fixture:
-              "./skylark/queries/search/allDevicesAllCustomersAvailability.json",
-          });
-        } else {
-          req.reply({
-            fixture: "./skylark/queries/search/gotPage1.json",
-          });
-        }
-      }
-    });
+    configureSkylarkIntercepts();
 
     cy.visit("/");
     cy.wait("@introspectionQuery");

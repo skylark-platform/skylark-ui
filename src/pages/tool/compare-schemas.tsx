@@ -1,11 +1,28 @@
-import { useMemo, useState } from "react";
+import { useRouter } from "next/router";
+import { ParsedUrlQuery } from "querystring";
+import { useCallback, useMemo } from "react";
 
-import { CompareSchemaVersions } from "src/components/contentModel/compareSchemasVersions/compareSchemaVersions.component";
+import { CompareSchemaVersions } from "src/components/compareSchemasVersions/compareSchemaVersions.component";
 import { Select, SelectOption } from "src/components/inputs/select";
 import { useSchemaVersions } from "src/hooks/schema/get/useSchemaVersions";
 import { useActivationStatus } from "src/hooks/useAccountStatus";
 
+const queryKey = {
+  base: "base",
+  to: "to",
+};
+
+const parseVersionFromQuery = (
+  query: ParsedUrlQuery,
+  key: string,
+): number | null => {
+  const value = query[key];
+  return value && typeof value === "string" ? parseInt(value) : null;
+};
+
 export default function CompareSchemas() {
+  const { query, push } = useRouter();
+
   const { activationStatus } = useActivationStatus();
 
   const { schemaVersions } = useSchemaVersions();
@@ -22,17 +39,27 @@ export default function CompareSchemas() {
     [activationStatus?.activeVersion, schemaVersions],
   );
 
-  const [baseSchemaVersion, setBaseSchemaVersion] = useState<number | null>(
-    null,
+  const baseSchemaVersion = parseVersionFromQuery(query, queryKey.base) || 1;
+  const updatedSchemaVersion =
+    parseVersionFromQuery(query, queryKey.to) ||
+    activationStatus?.activeVersion ||
+    1;
+
+  const updateURL = useCallback(
+    (param: string, value: string) =>
+      push({ query: { ...query, [param]: value } }, undefined, {
+        shallow: true,
+      }),
+    [query],
   );
-  const [updatedSchemaVersion, setUpdatedSchemaVersion] = useState<
-    number | null
-  >(null);
+
+  const setBaseSchemaVersion = (v: number) => updateURL("base", `${v}`);
+  const setUpdatedSchemaVersion = (v: number) => updateURL("to", `${v}`);
 
   return (
     <div className="mx-auto mt-32 flex w-full max-w-5xl flex-col justify-center text-sm">
-      <h1 className="mb-8 text-center font-heading text-4xl">
-        Compare Schemas
+      <h1 className="mb-2 font-heading text-2xl md:mb-4 md:text-3xl text-center">
+        Schema Comparison
       </h1>
       <div className="flex w-full justify-center space-x-4 mb-10">
         <Select
@@ -61,10 +88,8 @@ export default function CompareSchemas() {
         />
       </div>
       <CompareSchemaVersions
-        baseVersionNumber={baseSchemaVersion || 1}
-        updateVersionNumber={
-          updatedSchemaVersion || activationStatus?.activeVersion || 0
-        }
+        baseVersionNumber={baseSchemaVersion}
+        updateVersionNumber={updatedSchemaVersion}
       />
     </div>
   );

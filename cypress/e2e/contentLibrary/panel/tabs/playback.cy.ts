@@ -1,10 +1,10 @@
-import { configurePanelSkylarkIntercepts } from "../__utils__/test-utils";
+import { configureSkylarkIntercepts } from "../../../../support/utils/handlers";
 
 describe("Content Library - Object Panel - Playback tab", () => {
   beforeEach(() => {
     cy.login();
 
-    configurePanelSkylarkIntercepts();
+    configureSkylarkIntercepts();
 
     cy.visit("/");
     cy.wait("@introspectionQuery");

@@ -86,17 +86,33 @@ const getInputObjectInterfaceFromIntrospectionField = (
 const getObjectFields = (
   objectType: string,
   enums: Record<string, IntrospectionEnumType>,
+  createFields: NormalizedObjectField[],
   objectInterface?: IntrospectionObjectType,
 ): NormalizedObjectField[] => {
   if (!objectInterface) {
     return [];
   }
 
+  // Skylark's Object Type Get methods don't mark which fields are required
+  // Instead of using the Create method's fields (some fields are not included),
+  // we mark which fields are required instead here (these are calculated from the Create method)
   const objectFields = parseObjectInputFields(
     objectType,
     objectInterface.fields.filter((field) => field.type.kind !== "OBJECT"),
     enums,
-  );
+  ).map(({ name, isRequired, type, originalType, ...field }) => {
+    const createField = createFields.find(
+      (createField) => createField.name === name,
+    );
+
+    return {
+      ...field,
+      name,
+      type: createField?.type || type,
+      originalType: createField?.originalType || originalType,
+      isRequired: createField?.isRequired || isRequired,
+    };
+  });
 
   return objectFields;
 };
@@ -399,13 +415,6 @@ export const getObjectOperations = (
   const updateInputObjectInterface =
     getInputObjectInterfaceFromIntrospectionField(updateMutation, objectType);
 
-  const objectFields = getObjectFields(objectType, enums, getObjectInterface);
-  const fieldConfig = getGlobalAndTranslatableFields(
-    schema.types,
-    objectType,
-    objectFields,
-  );
-
   const hasAvailability = objectHasRelationshipFromInterface(
     SkylarkSystemField.Availability,
     getObjectInterface,
@@ -478,6 +487,18 @@ export const getObjectOperations = (
       inputs: [],
     },
   };
+
+  const objectFields = getObjectFields(
+    objectType,
+    enums,
+    createMeta.inputs,
+    getObjectInterface,
+  );
+  const fieldConfig = getGlobalAndTranslatableFields(
+    schema.types,
+    objectType,
+    objectFields,
+  );
 
   const objectMeta: SkylarkObjectMeta = {
     name: objectType,

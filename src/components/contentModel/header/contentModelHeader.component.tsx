@@ -1,7 +1,8 @@
-import { Dispatch, SetStateAction, useMemo } from "react";
+import { Dispatch, SetStateAction, useMemo, useState } from "react";
 
 import { Button } from "src/components/button";
 import { Select, SelectOption } from "src/components/inputs/select";
+import { CompareSchemaVersionsModal } from "src/components/modals";
 import { useSchemaVersions } from "src/hooks/schema/get/useSchemaVersions";
 
 interface ContentModelHeaderProps {
@@ -15,6 +16,8 @@ export const ContentModelHeader = ({
   schemaVersion,
   setSchemaVersion,
 }: ContentModelHeaderProps) => {
+  const [activeSchemaModalIsOpen, setActiveSchemaModalIsOpen] = useState(false);
+
   const { schemaVersions } = useSchemaVersions();
 
   const schemaVersionOptions = useMemo(
@@ -46,21 +49,24 @@ export const ContentModelHeader = ({
           onChange={setSchemaVersion}
           disabled={schemaVersionOptions.length === 0}
         />
-        {/* <div className="space-x-2">
+        <div className="space-x-2">
           <Button
             variant="primary"
             disabled={activeSchemaVersion === schemaVersion}
-            // onClick={onSave}
+            onClick={() => setActiveSchemaModalIsOpen(true)}
             // loading={isSaving}
-            // loading={
-            //   isUpdatingObjectTypeConfig || isUpdatingRelationshipConfig
-            // }
-            // disabled={!form.formState.isDirty}
           >
-            Make active version
+            {/* Activate selected Schema */}
+            View Schema Changes
           </Button>
-        </div> */}
+        </div>
       </div>
+      <CompareSchemaVersionsModal
+        isOpen={activeSchemaModalIsOpen}
+        setIsOpen={setActiveSchemaModalIsOpen}
+        baseVersionNumber={activeSchemaVersion}
+        updateVersionNumber={schemaVersion}
+      />
     </div>
   );
 };
