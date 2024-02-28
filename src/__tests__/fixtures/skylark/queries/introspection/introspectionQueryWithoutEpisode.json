@@ -38242,7 +38242,7 @@
               "description": null,
               "type": {
                 "kind": "SCALAR",
-                "name": "AWSDate",
+                "name": "String",
                 "ofType": null
               },
               "defaultValue": null
