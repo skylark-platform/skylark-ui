@@ -1,14 +1,14 @@
 import { hasOperationName } from "../../../../support/utils/graphqlTestUtils";
 import {
   allDevicesAllCustomersAvailability,
-  configurePanelSkylarkIntercepts,
-} from "../__utils__/test-utils";
+  configureSkylarkIntercepts,
+} from "../../../../support/utils/handlers";
 
 describe("Content Library - Object Panel - Availability Dimensions tab", () => {
   beforeEach(() => {
     cy.login();
 
-    configurePanelSkylarkIntercepts();
+    configureSkylarkIntercepts();
 
     cy.visit("/");
     cy.wait("@introspectionQuery");

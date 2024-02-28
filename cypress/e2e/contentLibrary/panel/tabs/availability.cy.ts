@@ -1,13 +1,13 @@
 import {
   allDevicesAllCustomersAvailability,
-  configurePanelSkylarkIntercepts,
-} from "../__utils__/test-utils";
+  configureSkylarkIntercepts,
+} from "../../../../support/utils/handlers";
 
 describe("Content Library - Object Panel - Availability tab", () => {
   beforeEach(() => {
     cy.login();
 
-    configurePanelSkylarkIntercepts();
+    configureSkylarkIntercepts();
 
     cy.visit("/");
     cy.wait("@introspectionQuery");
