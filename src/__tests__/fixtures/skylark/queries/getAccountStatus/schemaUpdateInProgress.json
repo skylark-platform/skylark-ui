@@ -1,7 +1,7 @@
 {
   "data": {
     "getActivationStatus": {
-      "active_version": "2",
+      "active_version": 2,
       "update_in_progress": true,
       "update_started_at": "2023-12-12T12:30:00Z"
     },

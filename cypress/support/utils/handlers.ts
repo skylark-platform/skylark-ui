@@ -20,16 +20,41 @@ const introspectionIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
     });
   }
 
+  if (hasOperationName(req, "SL_UI_LIST_SCHEMA_VERSIONS")) {
+    req.reply({
+      fixture: "./skylark/queries/introspection/listSchemaVersions.json",
+    });
+  }
+};
+
+const objectConfigIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
   if (hasOperationName(req, "SL_UI_GET_OBJECTS_CONFIG")) {
     req.reply({
       fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
     });
   }
 
-  if (hasOperationName(req, "SL_UI_LIST_SCHEMA_VERSIONS")) {
-    req.reply({
-      fixture: "./skylark/queries/introspection/listSchemaVersions.json",
-    });
+  if (
+    hasOperationName(req, "SL_UI_LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION")
+  ) {
+    if (hasMatchingVariable(req, "objectType", "SkylarkSet")) {
+      req.reply({
+        fixture:
+          "./skylark/queries/getObjectTypeRelationshipConfiguration/skylarkSet.json",
+      });
+    }
+    if (hasMatchingVariable(req, "objectType", "Season")) {
+      req.reply({
+        fixture:
+          "./skylark/queries/getObjectTypeRelationshipConfiguration/season.json",
+      });
+    }
+    if (hasMatchingVariable(req, "objectType", "Movie")) {
+      req.reply({
+        fixture:
+          "./skylark/queries/getObjectTypeRelationshipConfiguration/movie.json",
+      });
+    }
   }
 };
 
@@ -296,6 +321,7 @@ export const configureSkylarkIntercepts = () => {
     Cypress.env("skylark_graphql_uri"),
     (req: CyHttpMessages.IncomingHttpRequest) => {
       introspectionIntercepts(req);
+      objectConfigIntercepts(req);
       accountIntercepts(req);
       searchIntercepts(req);
       getObjectIntercepts(req);
