@@ -14,7 +14,7 @@ export const Default = {
 export const WithAccordionOpen = {
   ...Default,
   play: async () => {
-    const brandButton = screen.getByRole("button", { name: /Brand/ });
+    const brandButton = await screen.findByRole("button", { name: /Brand/ });
     await userEvent.click(brandButton);
   },
 };

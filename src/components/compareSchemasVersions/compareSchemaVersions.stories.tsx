@@ -16,13 +16,15 @@ export const ObjectTypesWithAccordionOpen = {
     updateVersionNumber: 2,
   },
   play: async () => {
-    const seasonButton = screen.getByRole("button", { name: /Season/ });
+    const seasonButton = await screen.findByRole("button", { name: /Season/ });
     await userEvent.click(seasonButton);
 
-    const episodeButton = screen.getByRole("button", { name: /Episode/ });
+    const episodeButton = await screen.findByRole("button", {
+      name: /Episode/,
+    });
     await userEvent.click(episodeButton);
 
-    const availabilityButton = screen.getByRole("button", {
+    const availabilityButton = await screen.findByRole("button", {
       name: /Availability/,
     });
     await userEvent.click(availabilityButton);
@@ -35,7 +37,7 @@ export const Enums = {
     updateVersionNumber: 2,
   },
   play: async () => {
-    const enumButton = screen.getByText("Enums");
+    const enumButton = await screen.findByText("Enums");
     await userEvent.click(enumButton);
   },
 };
@@ -46,10 +48,12 @@ export const EnumsWithAccordionOpen = {
     updateVersionNumber: 2,
   },
   play: async () => {
-    const enumButton = screen.getByText("Enums");
+    const enumButton = await screen.findByText("Enums");
     await userEvent.click(enumButton);
 
-    const imageTypeButton = screen.getByRole("button", { name: /ImageType/ });
+    const imageTypeButton = await screen.findByRole("button", {
+      name: /ImageType/,
+    });
     await userEvent.click(imageTypeButton);
   },
 };
