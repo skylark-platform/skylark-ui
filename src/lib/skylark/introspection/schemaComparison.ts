@@ -27,12 +27,14 @@ interface ComparedObjectField
 interface ComparedObjectRelationship
   extends ComparedObjectProperty<SkylarkObjectRelationship> {}
 
+export type ComparedEnumValue = {
+  value: string;
+  type: Omit<SchemaObjectTypePropertyComparisonType, "modified">;
+};
+
 export interface ComparedEnum {
   name: string;
-  values: {
-    value: string;
-    type: Omit<SchemaObjectTypePropertyComparisonType, "modified">;
-  }[];
+  values: ComparedEnumValue[];
 }
 
 export type SchemaComparedObjectTypeCounts = Record<

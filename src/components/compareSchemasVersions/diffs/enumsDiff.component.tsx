@@ -1,15 +1,25 @@
+import clsx from "clsx";
 import { IntrospectionEnumType } from "graphql";
 import { useMemo } from "react";
 
 import { Accordion } from "src/components/accordion";
-import { SimpleTable } from "src/components/tables";
+import { EnumComparisonTable, SimpleTable } from "src/components/tables";
 import { useSkylarkSchemaEnums } from "src/hooks/useSkylarkSchemaEnums";
 import {
   ComparedEnum,
+  ComparedEnumValue,
   compareSkylarkEnums,
 } from "src/lib/skylark/introspection/schemaComparison";
 
 import { CompareSchemaVersionsProps, DiffSection } from "./common.component";
+
+const generateModifiedText = (name: string, values: ComparedEnumValue[]) => {
+  const numAdded = values.filter(({ type }) => type === "added").length;
+  const numRemoved = values.filter(({ type }) => type === "removed").length;
+  const addedAndRemoved = numAdded > 0 && numRemoved > 0;
+
+  return `${name} - ${numAdded > 0 ? `${numAdded} added` : ""}${addedAndRemoved ? ", " : ""}${numRemoved > 0 ? `${numRemoved} removed` : ""}`;
+};
 
 const ModifiedEnumSection = ({
   title,
@@ -21,10 +31,9 @@ const ModifiedEnumSection = ({
   <DiffSection title={title} count={enums.length} type={"modified"} isEnums>
     {enums.map(({ name, values }) => {
       return (
-        <Accordion key={name} buttonText={name}>
-          <SimpleTable
-            columns={[{ name: "Values", property: "name" }]}
-            rows={values.map(({ value }) => ({ name, id: name }))}
+        <Accordion key={name} buttonText={generateModifiedText(name, values)}>
+          <EnumComparisonTable
+            rows={values.map((obj) => ({ ...obj, id: obj.value }))}
           />
         </Accordion>
       );

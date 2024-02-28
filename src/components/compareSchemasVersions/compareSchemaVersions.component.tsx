@@ -24,7 +24,6 @@ export const CompareSchemaVersions = (props: CompareSchemaVersionsProps) => {
           selectedTab={activeTab || tabs?.[0].id}
           onChange={({ id }) => setActiveTab(id)}
           className="border-b"
-          // disabled
         />
         {/* TODO - do we want to enable filtering by status? */}
         {/* <Select options={[{ value: "modified", label: "Modified" }]} /> */}

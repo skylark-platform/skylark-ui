@@ -12,9 +12,7 @@ interface SimpleTableProps<TData extends TableData>
   rows: (TData & { id: string })[];
 }
 
-export const SimpleTable = <
-  TRow extends Record<string, string | string[] | number | boolean>,
->({
+export const SimpleTable = <TRow extends TableData>({
   columns,
   rows,
   displayFalsyBooleanValues,
