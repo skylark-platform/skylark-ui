@@ -5,11 +5,11 @@ import GQLSkylarkSchemaWithoutEpisodeObjectQueryFixtureJSON from "src/__tests__/
 import { getAllObjectsMeta } from "src/lib/skylark/objects";
 
 import {
-  compareSkylarkSchemas,
+  compareSkylarkObjectTypes,
   generateSchemaObjectTypeCountsText,
 } from "./schemaComparison";
 
-describe("compareSkylarkSchemas", () => {
+describe("compareSkylarkObjectTypes", () => {
   test("shows schemas as equal when no object types are given", () => {
     const schema1 = getAllObjectsMeta(
       GQLSkylarkSchemaQueryFixtureJSON.data
@@ -22,7 +22,7 @@ describe("compareSkylarkSchemas", () => {
       [],
     );
 
-    const got = compareSkylarkSchemas(schema1, schema2);
+    const got = compareSkylarkObjectTypes(schema1, schema2);
 
     expect(got).toEqual({
       objectTypes: {
@@ -47,7 +47,7 @@ describe("compareSkylarkSchemas", () => {
       [],
     );
 
-    const got = compareSkylarkSchemas(schema1, schema2);
+    const got = compareSkylarkObjectTypes(schema1, schema2);
 
     expect(got.objectTypes.added.map(({ name }) => name)).toEqual([]);
     expect(got.objectTypes.removed.map(({ name }) => name)).toEqual([
@@ -89,7 +89,7 @@ describe("compareSkylarkSchemas", () => {
       objectTypesSchema2,
     );
 
-    const got = compareSkylarkSchemas(schema1, schema2);
+    const got = compareSkylarkObjectTypes(schema1, schema2);
 
     expect(got).toEqual({
       objectTypes: {
@@ -178,7 +178,7 @@ describe("compareSkylarkSchemas", () => {
       ["SkylarkSet"],
     );
 
-    const got = compareSkylarkSchemas(schema1, schema2);
+    const got = compareSkylarkObjectTypes(schema1, schema2);
 
     expect(got).toEqual({
       objectTypes: {
@@ -243,7 +243,7 @@ describe("compareSkylarkSchemas", () => {
       ["SkylarkSet"],
     );
 
-    const got = compareSkylarkSchemas(schema1, schema2);
+    const got = compareSkylarkObjectTypes(schema1, schema2);
 
     expect(got).toEqual({
       objectTypes: {

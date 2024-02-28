@@ -1,3 +1,5 @@
+import { IntrospectionEnumType } from "graphql";
+
 import {
   NormalizedObjectField,
   SkylarkObjectMeta,
@@ -25,6 +27,14 @@ interface ComparedObjectField
 interface ComparedObjectRelationship
   extends ComparedObjectProperty<SkylarkObjectRelationship> {}
 
+export interface ComparedEnum {
+  name: string;
+  values: {
+    value: string;
+    type: Omit<SchemaObjectTypePropertyComparisonType, "modified">;
+  }[];
+}
+
 export type SchemaComparedObjectTypeCounts = Record<
   SchemaObjectTypePropertyComparisonType,
   number
@@ -38,7 +48,6 @@ export interface SkylarkSchemaComparisonModifiedObjectType {
   relationships: ComparedObjectRelationship[];
   relationshipsIsEqual: boolean;
   relationshipCounts: SchemaComparedObjectTypeCounts;
-
   isEqual: boolean;
 }
 
@@ -283,7 +292,7 @@ const diffObjectMetas = (
   };
 };
 
-export const compareSkylarkSchemas = (
+export const compareSkylarkObjectTypes = (
   baseSchema: SkylarkObjectMeta[],
   updatedSchema: SkylarkObjectMeta[],
 ): SkylarkSchemaComparison => {
@@ -390,4 +399,88 @@ export const generateSchemaObjectTypeCountsText = (
   const plural = totalCount > 1 ? `${type}s` : type;
 
   return `${totalCount} ${plural} changed`;
+};
+
+export const compareSkylarkEnums = (
+  baseEnums: IntrospectionEnumType[],
+  updatedEnums: IntrospectionEnumType[],
+) => {
+  // Calculate added and removed Enums
+  const baseEnumNames = baseEnums.map(({ name }) => name);
+  const updateEnumNames = updatedEnums.map(({ name }) => name);
+
+  const addedEnums = updatedEnums.filter(
+    ({ name }) => !baseEnumNames.includes(name),
+  );
+  const removedEnums = baseEnums.filter(
+    ({ name }) => !updateEnumNames.includes(name),
+  );
+
+  // If Enums have been added or removed, we don't need to calculate which values are different
+  const enumsToIgnore = [...addedEnums, ...removedEnums].map(
+    ({ name }) => name,
+  );
+
+  const commonEnums = updatedEnums.filter(
+    ({ name }) => !enumsToIgnore.includes(name),
+  );
+
+  // Calculate added/removed enum values
+  const modifiedEnums = commonEnums
+    .map(({ name: enumName }) => {
+      const baseEnum = baseEnums.find(({ name }) => name === enumName);
+      const updatedEnum = updatedEnums.find(({ name }) => name === enumName);
+
+      if (!baseEnum || !updatedEnum) {
+        // Should never hit this case
+        return null;
+      }
+
+      const baseValues = baseEnum.enumValues.map(({ name }) => name);
+      const updatedValues = updatedEnum.enumValues.map(({ name }) => name);
+      const combinedValues = [...new Set([...baseValues, ...updatedValues])];
+
+      const validatedValues = combinedValues.map(
+        (value): ComparedEnum["values"][0] => {
+          const valueInBase = baseValues.includes(value);
+          const valueInUpdated = updatedValues.includes(value);
+
+          if (valueInBase && valueInUpdated) {
+            return {
+              value,
+              type: "equal",
+            };
+          }
+
+          return {
+            value,
+            type: valueInBase ? "removed" : "added",
+          };
+        },
+      );
+
+      const hasChanges =
+        validatedValues.filter(({ type }) => type !== "equal").length > 0;
+
+      if (!hasChanges) {
+        return null;
+      }
+
+      return {
+        name: enumName,
+        values: validatedValues,
+      };
+    })
+    .filter((entry): entry is ComparedEnum => Boolean(entry));
+
+  const unmodifiedEnums = commonEnums.filter(
+    ({ name }) => !modifiedEnums.find((e) => e.name === name),
+  );
+
+  return {
+    added: addedEnums,
+    removed: removedEnums,
+    modified: modifiedEnums,
+    unmodified: unmodifiedEnums,
+  };
 };
