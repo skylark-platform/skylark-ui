@@ -3,14 +3,14 @@ import { userEvent, screen } from "@storybook/testing-library";
 import { CompareSchemaVersions } from "./compareSchemaVersions.component";
 
 export default { component: CompareSchemaVersions };
-export const Default = {
+export const ObjectTypes = {
   args: {
     baseVersionNumber: 1,
     updateVersionNumber: 2,
   },
 };
 
-export const WithAccordionOpen = {
+export const ObjectTypesWithAccordionOpen = {
   args: {
     baseVersionNumber: 1,
     updateVersionNumber: 2,
@@ -26,5 +26,30 @@ export const WithAccordionOpen = {
       name: /Availability/,
     });
     await userEvent.click(availabilityButton);
+  },
+};
+
+export const Enums = {
+  args: {
+    baseVersionNumber: 1,
+    updateVersionNumber: 2,
+  },
+  play: async () => {
+    const enumButton = screen.getByText("Enums");
+    await userEvent.click(enumButton);
+  },
+};
+
+export const EnumsWithAccordionOpen = {
+  args: {
+    baseVersionNumber: 1,
+    updateVersionNumber: 2,
+  },
+  play: async () => {
+    const enumButton = screen.getByText("Enums");
+    await userEvent.click(enumButton);
+
+    const imageTypeButton = screen.getByRole("button", { name: /ImageType/ });
+    await userEvent.click(imageTypeButton);
   },
 };

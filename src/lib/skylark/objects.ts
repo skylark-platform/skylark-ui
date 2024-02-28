@@ -86,7 +86,7 @@ const getInputObjectInterfaceFromIntrospectionField = (
 const getObjectFields = (
   objectType: string,
   enums: Record<string, IntrospectionEnumType>,
-  requiredFields: string[],
+  createFields: NormalizedObjectField[],
   objectInterface?: IntrospectionObjectType,
 ): NormalizedObjectField[] => {
   if (!objectInterface) {
@@ -100,11 +100,19 @@ const getObjectFields = (
     objectType,
     objectInterface.fields.filter((field) => field.type.kind !== "OBJECT"),
     enums,
-  ).map(({ name, isRequired, ...field }) => ({
-    ...field,
-    name,
-    isRequired: isRequired || requiredFields.includes(name),
-  }));
+  ).map(({ name, isRequired, type, originalType, ...field }) => {
+    const createField = createFields.find(
+      (createField) => createField.name === name,
+    );
+
+    return {
+      ...field,
+      name,
+      type: createField?.type || type,
+      originalType: createField?.originalType || originalType,
+      isRequired: createField?.isRequired || isRequired,
+    };
+  });
 
   return objectFields;
 };
@@ -433,10 +441,6 @@ export const getObjectOperations = (
     createInputObjectInterface,
   );
 
-  const requiredFields = createMeta.inputs
-    .filter(({ isRequired }) => isRequired)
-    .map(({ name }) => name);
-
   const hasRelationships = relationships.length > 0;
 
   const builtinObjectRelationships = getBuiltInObjectTypeRelationships(
@@ -487,7 +491,7 @@ export const getObjectOperations = (
   const objectFields = getObjectFields(
     objectType,
     enums,
-    requiredFields,
+    createMeta.inputs,
     getObjectInterface,
   );
   const fieldConfig = getGlobalAndTranslatableFields(
