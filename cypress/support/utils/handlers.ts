@@ -4,6 +4,7 @@ import {
   hasMatchingQuery,
   hasMatchingVariable,
   hasOperationName,
+  operationNameStartsWith,
 } from "./graphqlTestUtils";
 
 export const allDevicesAllCustomersAvailability =
@@ -196,6 +197,12 @@ const availabilityIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
 };
 
 const createIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
+  if (operationNameStartsWith(req, "SL_UI_FLATFILE_IMPORT_EPISODE")) {
+    req.reply({
+      fixture: "./skylark/mutations/import/csvImportEpisodeCreation.json",
+    });
+  }
+
   if (hasOperationName(req, "SL_UI_CREATE_OBJECT_EPISODE")) {
     req.alias = "createObject";
     req.reply({

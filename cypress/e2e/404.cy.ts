@@ -1,15 +1,10 @@
-import { hasOperationName } from "../support/utils/graphqlTestUtils";
+import { configureSkylarkIntercepts } from "../support/utils/handlers";
 
 describe("404 page", () => {
   beforeEach(() => {
     cy.login();
-    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "IntrospectionQuery")) {
-        req.reply({
-          fixture: "./skylark/queries/introspection/introspectionQuery.json",
-        });
-      }
-    });
+
+    configureSkylarkIntercepts();
   });
 
   it("shows the 404 page when the path does not exist", () => {
