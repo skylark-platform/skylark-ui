@@ -113,6 +113,12 @@ const getObjectIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
       fixture: "./skylark/queries/getObjectRelationships/homepage.json",
     });
   }
+  if (hasOperationName(req, "SL_UI_GET_SKYLARKSET_AVAILABILITY")) {
+    req.reply({
+      fixture:
+        "./skylark/queries/getObjectAvailability/fantasticMrFox_All_Availabilities.json",
+    });
+  }
   if (hasOperationName(req, "SL_UI_GET_MOVIE")) {
     req.reply({
       fixture:
