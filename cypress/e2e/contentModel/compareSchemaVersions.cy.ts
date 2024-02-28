@@ -103,50 +103,81 @@ describe("Compare Schema Versions", () => {
     cy.contains("Episode").should("not.exist");
   });
 
-  it("selects a new Schema version and opens the View Schema changes modal", () => {
-    cy.get("[data-testid=content-model-editor]").within(() => {
-      cy.contains("SkylarkSet");
-      cy.contains("System Object");
+  describe("Object Types", () => {
+    it("selects a new Schema version and opens the View Schema changes modal", () => {
+      cy.get("[data-testid=content-model-editor]").within(() => {
+        cy.contains("SkylarkSet");
+        cy.contains("System Object");
+      });
+
+      cy.get('input[placeholder="Schema Version"]').click();
+      cy.contains("3 (draft)").click();
+      cy.get('input[placeholder="Schema Version"]').should(
+        "have.value",
+        "3 (draft)",
+      );
+
+      cy.contains("button", "View Schema Changes")
+        .should("not.be.disabled")
+        .click();
+
+      cy.contains("Episode").scrollIntoView().click();
     });
 
-    cy.get('input[placeholder="Schema Version"]').click();
-    cy.contains("3 (draft)").click();
-    cy.get('input[placeholder="Schema Version"]').should(
-      "have.value",
-      "3 (draft)",
-    );
+    it("opens the View Schema changes modal and verifies Episode has been removed", () => {
+      cy.get('input[placeholder="Schema Version"]').click();
+      cy.contains("3 (draft)").click();
 
-    cy.contains("button", "View Schema Changes")
-      .should("not.be.disabled")
-      .click();
+      cy.contains("button", "View Schema Changes")
+        .should("not.be.disabled")
+        .click();
 
-    cy.contains("Episode").scrollIntoView().click();
-  });
-
-  it("opens the View Schema changes modal and verifies Episode has been removed", () => {
-    cy.get('input[placeholder="Schema Version"]').click();
-    cy.contains("3 (draft)").click();
-
-    cy.contains("button", "View Schema Changes")
-      .should("not.be.disabled")
-      .click();
-
-    cy.contains("Episode").scrollIntoView().click();
-  });
-
-  it("opens the View Schema changes modal and verifies Season has been modified", () => {
-    cy.get('input[placeholder="Schema Version"]').click();
-    cy.contains("3 (draft)").click();
-
-    cy.contains("button", "View Schema Changes")
-      .should("not.be.disabled")
-      .click();
-
-    cy.get("[data-testid=schema-versions-modal]").within(() => {
-      cy.contains("Season").scrollIntoView().click();
-      cy.contains("AWSDate -> String");
+      cy.contains("Episode").scrollIntoView().click();
     });
 
-    cy.percySnapshot("Content Model - Compare Schema - Season modified");
+    it("opens the View Schema changes modal and verifies Season has been modified", () => {
+      cy.get('input[placeholder="Schema Version"]').click();
+      cy.contains("3 (draft)").click();
+
+      cy.contains("button", "View Schema Changes")
+        .should("not.be.disabled")
+        .click();
+
+      cy.get("[data-testid=schema-versions-modal]").within(() => {
+        cy.contains("Season").scrollIntoView().click();
+        cy.contains("AWSDate -> String");
+      });
+
+      cy.percySnapshot("Content Model - Compare Schema - Season modified");
+    });
+  });
+
+  describe("Enums", () => {
+    it("opens the View Schema changes modal and changes to the enums tab", () => {
+      cy.get('input[placeholder="Schema Version"]').click();
+      cy.contains("3 (draft)").click();
+
+      cy.contains("button", "View Schema Changes")
+        .should("not.be.disabled")
+        .click();
+
+      cy.contains("Enums").click();
+    });
+
+    it("verifies the ImageType enum has been modified", () => {
+      cy.get('input[placeholder="Schema Version"]').click();
+      cy.contains("3 (draft)").click();
+
+      cy.contains("button", "View Schema Changes")
+        .should("not.be.disabled")
+        .click();
+
+      cy.contains("Enums").click();
+
+      cy.get("[data-testid=schema-versions-modal]").within(() => {
+        cy.contains("ImageType - 2 removed").scrollIntoView().click();
+        cy.contains("PRE_LIVE");
+      });
+    });
   });
 });
