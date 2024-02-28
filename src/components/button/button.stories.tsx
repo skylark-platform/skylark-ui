@@ -1,4 +1,4 @@
-import { ComponentStory } from "@storybook/react";
+import { StoryFn } from "@storybook/react";
 import { FiPlus, FiPlusCircle } from "react-icons/fi";
 
 import { Button } from "./button.component";
@@ -29,114 +29,157 @@ const defaultProps = {
   block: false,
 };
 
-const Template: ComponentStory<typeof Button> = (args) => (
+const Template: StoryFn<typeof Button> = (args) => (
   <Button {...args} onClick={() => window.alert("clicked")} />
 );
 
-export const Default = Template.bind({});
-Default.args = {
-  ...defaultProps,
-};
+export const Default = {
+  render: Template,
 
-export const Disabled = Template.bind({});
-Disabled.args = {
-  ...defaultProps,
-  disabled: true,
-};
-
-export const Loading = Template.bind({});
-Loading.argTypes = {
-  variant: {
-    options: ["solid", "outline", "ghost"],
-    control: { type: "radio" },
-  },
-  success: {
-    control: { type: "boolean" },
-  },
-  danger: {
-    control: { type: "boolean" },
-  },
-  children: {
-    control: false,
-  },
-  loading: {
-    control: false,
-  },
-  disabled: {
-    control: false,
+  args: {
+    ...defaultProps,
   },
 };
-Loading.args = {
-  ...defaultProps,
-  loading: true,
+
+export const Disabled = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    disabled: true,
+  },
 };
 
-export const Neutral = Template.bind({});
-Neutral.args = {
-  ...defaultProps,
-  variant: "neutral",
+export const Loading = {
+  render: Template,
+
+  argTypes: {
+    variant: {
+      options: ["solid", "outline", "ghost"],
+      control: { type: "radio" },
+    },
+    success: {
+      control: { type: "boolean" },
+    },
+    danger: {
+      control: { type: "boolean" },
+    },
+    children: {
+      control: false,
+    },
+    loading: {
+      control: false,
+    },
+    disabled: {
+      control: false,
+    },
+  },
+
+  args: {
+    ...defaultProps,
+    loading: true,
+  },
 };
 
-export const Outline = Template.bind({});
-Outline.args = {
-  ...defaultProps,
-  variant: "outline",
+export const Neutral = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    variant: "neutral",
+  },
 };
 
-export const Ghost = Template.bind({});
-Ghost.args = {
-  ...defaultProps,
-  variant: "ghost",
+export const Outline = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    variant: "outline",
+  },
 };
 
-export const GhostIconOnly = Template.bind({});
-GhostIconOnly.args = {
-  ...defaultProps,
-  variant: "ghost",
-  children: undefined,
-  Icon: <FiPlusCircle className="text-xl" />,
+export const Ghost = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    variant: "ghost",
+  },
 };
 
-export const Link = Template.bind({});
-Link.args = {
-  ...defaultProps,
-  variant: "link",
+export const GhostIconOnly = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    variant: "ghost",
+    children: undefined,
+    Icon: <FiPlusCircle className="text-xl" />,
+  },
 };
 
-export const Success = Template.bind({});
-Success.args = {
-  ...defaultProps,
-  success: true,
+export const Link = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    variant: "link",
+  },
 };
 
-export const SuccessOutline = Template.bind({});
-SuccessOutline.args = {
-  ...defaultProps,
-  variant: "outline",
-  success: true,
+export const Success = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    success: true,
+  },
 };
 
-export const Danger = Template.bind({});
-Danger.args = {
-  ...defaultProps,
-  danger: true,
+export const SuccessOutline = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    variant: "outline",
+    success: true,
+  },
 };
 
-export const DangerOutline = Template.bind({});
-DangerOutline.args = {
-  ...defaultProps,
-  variant: "outline",
-  danger: true,
+export const Danger = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    danger: true,
+  },
 };
 
-export const FullWidth = Template.bind({});
-FullWidth.args = {
-  ...defaultProps,
-  block: true,
+export const DangerOutline = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    variant: "outline",
+    danger: true,
+  },
 };
 
-export const WithIcon = Template.bind({});
-WithIcon.args = {
-  ...defaultProps,
-  Icon: <FiPlus className="text-xl" />,
+export const FullWidth = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    block: true,
+  },
+};
+
+export const WithIcon = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    Icon: <FiPlus className="text-xl" />,
+  },
 };

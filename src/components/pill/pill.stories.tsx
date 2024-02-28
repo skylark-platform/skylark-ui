@@ -1,4 +1,4 @@
-import { ComponentStory } from "@storybook/react";
+import { StoryFn } from "@storybook/react";
 
 import { Pill } from "./pill.component";
 
@@ -7,18 +7,18 @@ export default {
   component: Pill,
 };
 
-const Template: ComponentStory<typeof Pill> = (args) => <Pill {...args} />;
-
-export const Default = Template.bind({});
-Default.args = {
-  label: "Episode",
-  bgColor: "orange",
-  onDelete: undefined,
+export const Default = {
+  args: {
+    label: "Episode",
+    bgColor: "orange",
+    onDelete: undefined,
+  },
 };
 
-export const WithClose = Template.bind({});
-WithClose.args = {
-  label: "Episode",
-  bgColor: "orange",
-  onDelete: () => "",
+export const WithClose = {
+  args: {
+    label: "Episode",
+    bgColor: "orange",
+    onDelete: () => "",
+  },
 };

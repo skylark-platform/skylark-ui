@@ -1,4 +1,4 @@
-import { ComponentStory } from "@storybook/react";
+import { StoryFn } from "@storybook/react";
 
 import { ObjectTypeNavigation } from "./contentModelNavigation.component";
 
@@ -7,11 +7,14 @@ export default {
   component: ObjectTypeNavigation,
 };
 
-const Template: ComponentStory<typeof ObjectTypeNavigation> = (args) => {
+const Template: StoryFn<typeof ObjectTypeNavigation> = (args) => {
   return <ObjectTypeNavigation {...args} />;
 };
 
-export const Default = Template.bind({});
-Default.args = {
-  activeObjectType: "Episode",
+export const Default = {
+  render: Template,
+
+  args: {
+    activeObjectType: "Episode",
+  },
 };

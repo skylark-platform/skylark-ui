@@ -1,4 +1,4 @@
-import { ComponentStory } from "@storybook/react";
+import { StoryFn } from "@storybook/react";
 import React from "react";
 
 import { IconProps } from "./iconBase.component";
@@ -8,7 +8,7 @@ export default {
   title: "Components/Icons",
 };
 
-const Template: ComponentStory<React.FC<IconProps>> = (args) => {
+const Template: StoryFn<React.FC<IconProps>> = (args) => {
   return (
     <div className="flex flex-row space-x-2">
       <Icons.Spinner {...args} />
@@ -17,4 +17,6 @@ const Template: ComponentStory<React.FC<IconProps>> = (args) => {
   );
 };
 
-export const Default = Template.bind({});
+export const Default = {
+  render: Template,
+};

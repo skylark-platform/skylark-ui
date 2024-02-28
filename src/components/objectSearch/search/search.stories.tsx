@@ -1,5 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-import { userEvent, within } from "@storybook/testing-library";
+import { StoryFn } from "@storybook/react";
+import { userEvent, screen } from "@storybook/testing-library";
 import { VisibilityState } from "@tanstack/react-table";
 
 import { createObjectListingColumns } from "src/components/objectSearch/results/columnConfiguration";
@@ -45,7 +45,7 @@ const visibleColumns: VisibilityState = Object.fromEntries(
   columnIds.map((column) => [column, true]),
 );
 
-const Template: ComponentStory<typeof Search> = (args) => {
+const Template: StoryFn<typeof Search> = (args) => {
   return (
     <div className="w-full h-[500px]">
       <Search {...args} />
@@ -53,43 +53,50 @@ const Template: ComponentStory<typeof Search> = (args) => {
   );
 };
 
-export const Default = Template.bind({});
-Default.args = {
-  className: "w-[600px]",
-  filters: {
-    objectTypes,
-    language: "",
-    availability: {
-      dimensions: null,
-      timeTravel: null,
+export const Default = {
+  render: Template,
+
+  args: {
+    className: "w-[600px]",
+    filters: {
+      objectTypes,
+      language: "",
+      availability: {
+        dimensions: null,
+        timeTravel: null,
+      },
+      query: "",
     },
-    query: "",
+    columns,
+    columnIds,
+    visibleColumns,
+    graphqlQuery,
   },
-  columns,
-  columnIds,
-  visibleColumns,
-  graphqlQuery,
 };
 
-export const WithFiltersOpen = Template.bind({});
-WithFiltersOpen.args = {
-  ...Default.args,
+export const WithFiltersOpen = {
+  render: Template,
+
+  args: {
+    ...Default.args,
+  },
+
+  play: async () => {
+    const filtersButton = screen.getByLabelText("Open Search Options");
+
+    await userEvent.click(filtersButton);
+  },
 };
-WithFiltersOpen.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
 
-  const filtersButton = canvas.getByLabelText("Open Search Options");
+export const WithLanguageOpen = {
+  render: Template,
 
-  await userEvent.click(filtersButton);
-};
+  args: {
+    ...Default.args,
+  },
 
-export const WithLanguageOpen = Template.bind({});
-WithLanguageOpen.args = {
-  ...Default.args,
-};
-WithLanguageOpen.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
-
-  const combobox = canvas.getByRole("combobox");
-  await userEvent.type(combobox, "en-");
+  play: async () => {
+    const combobox = screen.getByRole("combobox");
+    await userEvent.type(combobox, "en-");
+  },
 };

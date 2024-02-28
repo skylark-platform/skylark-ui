@@ -1,4 +1,4 @@
-import { ComponentStory } from "@storybook/react";
+import { StoryFn } from "@storybook/react";
 import clsx from "clsx";
 import React from "react";
 
@@ -10,7 +10,7 @@ export default {
   argTypes: {},
 };
 
-const Template: ComponentStory<typeof LanguageSelect> = (args) => {
+const Template: StoryFn<typeof LanguageSelect> = (args) => {
   return (
     <div className={clsx(args.variant === "pill" ? "w-24" : "w-96")}>
       <LanguageSelect {...args} />
@@ -18,10 +18,15 @@ const Template: ComponentStory<typeof LanguageSelect> = (args) => {
   );
 };
 
-export const Default = Template.bind({});
-Default.args = {};
+export const Default = {
+  render: Template,
+  args: {},
+};
 
-export const WithSelectedLanguage = Template.bind({});
-WithSelectedLanguage.args = {
-  selected: "en-GB",
+export const WithSelectedLanguage = {
+  render: Template,
+
+  args: {
+    selected: "en-GB",
+  },
 };

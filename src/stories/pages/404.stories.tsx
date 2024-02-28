@@ -5,11 +5,14 @@ export default {
   component: Custom404,
 };
 
-export const Custom404Page = () => <Custom404 />;
-Custom404Page.parameters = {
-  nextjs: {
-    router: {
-      asPath: "/404?pet=hazel",
+export const Custom404Page = {
+  render: () => <Custom404 />,
+
+  parameters: {
+    nextjs: {
+      router: {
+        asPath: "/404?pet=hazel",
+      },
     },
   },
 };

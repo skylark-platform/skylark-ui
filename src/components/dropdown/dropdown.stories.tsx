@@ -1,5 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-import { userEvent, within } from "@storybook/testing-library";
+import { StoryFn } from "@storybook/react";
+import { userEvent, screen } from "@storybook/testing-library";
 
 import {
   DropdownMenu,
@@ -13,7 +13,7 @@ export default {
   component: DropdownMenu,
 };
 
-const Template: ComponentStory<typeof DropdownMenu> = (args) => (
+const Template: StoryFn<typeof DropdownMenu> = (args) => (
   <DropdownMenu {...args}>
     <DropdownMenuButton>Open Dropdown</DropdownMenuButton>
   </DropdownMenu>
@@ -31,24 +31,30 @@ const sections: DropdownMenuSection[] = [
   { id: "section-2", label: "Label", options },
 ];
 
-export const Default = Template.bind({});
-Default.args = {
-  options,
-  placement: "bottom-end",
-};
-Default.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
-  const openButton = canvas.getByText("Open Dropdown");
-  await userEvent.click(openButton);
+export const Default = {
+  render: Template,
+
+  args: {
+    options,
+    placement: "bottom-end",
+  },
+
+  play: async () => {
+    const openButton = screen.getByText("Open Dropdown");
+    await userEvent.click(openButton);
+  },
 };
 
-export const Sections = Template.bind({});
-Sections.args = {
-  options: sections,
-  placement: "bottom-end",
-};
-Sections.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
-  const openButton = canvas.getByText("Open Dropdown");
-  await userEvent.click(openButton);
+export const Sections = {
+  render: Template,
+
+  args: {
+    options: sections,
+    placement: "bottom-end",
+  },
+
+  play: async () => {
+    const openButton = screen.getByText("Open Dropdown");
+    await userEvent.click(openButton);
+  },
 };

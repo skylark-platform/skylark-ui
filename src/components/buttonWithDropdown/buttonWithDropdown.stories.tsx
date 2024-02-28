@@ -1,4 +1,4 @@
-import { ComponentStory } from "@storybook/react";
+import { StoryFn } from "@storybook/react";
 
 import { ButtonWithDropdown } from "./buttonWithDropdown.component";
 
@@ -16,18 +16,21 @@ const defaultProps = {
   block: false,
 };
 
-const Template: ComponentStory<typeof ButtonWithDropdown> = (args) => (
+const Template: StoryFn<typeof ButtonWithDropdown> = (args) => (
   <ButtonWithDropdown {...args} onClick={() => window.alert("clicked")} />
 );
 
-export const Default = Template.bind({});
-Default.args = {
-  ...defaultProps,
-  children: "Save",
-  options: [
-    {
-      id: "save-draft",
-      text: "Save as Draft",
-    },
-  ],
+export const Default = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    children: "Save",
+    options: [
+      {
+        id: "save-draft",
+        text: "Save as Draft",
+      },
+    ],
+  },
 };

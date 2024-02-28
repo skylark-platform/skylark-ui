@@ -1,5 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-import { userEvent, waitFor, within } from "@storybook/testing-library";
+import { StoryFn } from "@storybook/react";
+import { userEvent, waitFor, screen } from "@storybook/testing-library";
 
 import { ObjectSearch } from "./objectSearch.component";
 
@@ -8,28 +8,34 @@ export default {
   component: ObjectSearch,
 };
 
-const Template: ComponentStory<typeof ObjectSearch> = (args) => {
+const Template: StoryFn<typeof ObjectSearch> = (args) => {
   return <ObjectSearch {...args} />;
 };
 
-export const Default = Template.bind({});
-
-export const WithFiltersOpen = Template.bind({});
-WithFiltersOpen.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
-
-  await waitFor(() => {
-    canvas.findAllByText("GOT Highest Rated Episodes");
-  });
-
-  const filtersButton = canvas.getByRole("button", {
-    name: "Open Search Options",
-  });
-
-  await userEvent.click(filtersButton);
+export const Default = {
+  render: Template,
 };
 
-export const KitchenSink = Template.bind({});
-KitchenSink.args = {
-  withObjectSelect: true,
+export const WithFiltersOpen = {
+  render: Template,
+
+  play: async () => {
+    await waitFor(() => {
+      screen.findAllByText("GOT Highest Rated Episodes");
+    });
+
+    const filtersButton = screen.getByRole("button", {
+      name: "Open Search Options",
+    });
+
+    await userEvent.click(filtersButton);
+  },
+};
+
+export const KitchenSink = {
+  render: Template,
+
+  args: {
+    withObjectSelect: true,
+  },
 };
