@@ -1,5 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-import { userEvent, waitFor, within } from "@storybook/testing-library";
+import { StoryFn } from "@storybook/react";
+import { userEvent, waitFor, screen } from "@storybook/testing-library";
 
 import { Tooltip } from "./tooltip.component";
 
@@ -8,7 +8,7 @@ export default {
   component: Tooltip,
 };
 
-const Template: ComponentStory<typeof Tooltip> = () => (
+const Template: StoryFn<typeof Tooltip> = () => (
   <Tooltip tooltip={<span>My tooltip message</span>}>
     <p className="w-28">Hover me</p>
   </Tooltip>
@@ -20,15 +20,16 @@ const sleep = (timeMs: number) => {
   });
 };
 
-export const Default = Template.bind({});
-Default.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
+export const Default = {
+  render: Template,
 
-  await waitFor(async () => {
-    await userEvent.hover(canvas.getByText("Hover me"));
-  });
+  play: async () => {
+    await waitFor(async () => {
+      await userEvent.hover(screen.getByText("Hover me"));
+    });
 
-  await sleep(1000);
+    await sleep(1000);
 
-  await canvas.findAllByText(/My tooltip message/);
+    await screen.findAllByText(/My tooltip message/);
+  },
 };

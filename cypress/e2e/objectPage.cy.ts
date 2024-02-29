@@ -1,9 +1,6 @@
 // Most of the Object Page functionality should be tested by the contentLibrary/panel tests
 // These tests should only check functionality that is different
-import {
-  hasMatchingVariable,
-  hasOperationName,
-} from "../support/utils/graphqlTestUtils";
+import { configureSkylarkIntercepts } from "../support/utils/intercepts";
 
 const homepageContentOrdered = [
   "Home page hero",
@@ -21,45 +18,7 @@ describe("Object Page", () => {
   beforeEach(() => {
     cy.login();
 
-    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "IntrospectionQuery")) {
-        req.alias = "introspectionQuery";
-        req.reply({
-          fixture: "./skylark/queries/introspection/introspectionQuery.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_OBJECTS_CONFIG")) {
-        req.reply({
-          fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_ACCOUNT_STATUS")) {
-        req.reply({
-          fixture: "./skylark/queries/getAccountStatus/default.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_EPISODE")) {
-        if (hasMatchingVariable(req, "language", "pt-PT")) {
-          req.reply({
-            fixture: "./skylark/queries/getObject/gots01e01ptPT.json",
-          });
-        } else {
-          req.reply({
-            fixture: "./skylark/queries/getObject/gots01e01.json",
-          });
-        }
-      }
-      if (hasOperationName(req, "SL_UI_GET_SKYLARKSET")) {
-        req.reply({
-          fixture: "./skylark/queries/getObject/homepage.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_SKYLARKSET_CONTENT")) {
-        req.reply({
-          fixture: "./skylark/queries/getObjectContent/homepage.json",
-        });
-      }
-    });
+    configureSkylarkIntercepts();
   });
 
   describe("SkylarkSet", () => {

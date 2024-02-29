@@ -1,4 +1,4 @@
-import { ComponentStory } from "@storybook/react";
+import { StoryFn } from "@storybook/react";
 
 import { CheckboxGrid, CheckboxOptionState } from "./checkboxGrid.component";
 
@@ -6,10 +6,6 @@ export default {
   title: "Components/CheckboxGrid",
   component: CheckboxGrid,
 };
-
-const Template: ComponentStory<typeof CheckboxGrid> = (args) => (
-  <CheckboxGrid {...args} />
-);
 
 const options: CheckboxOptionState[] = Object.entries({
   Brand: true,
@@ -31,28 +27,32 @@ const options: CheckboxOptionState[] = Object.entries({
 
 const allOptionsChecked = options.map(({ option: { value } }) => value);
 
-export const Default = Template.bind({});
-Default.args = {
-  options,
-  checkedOptions: [],
+export const Default = {
+  args: {
+    options,
+    checkedOptions: [],
+  },
 };
 
-export const DefaultChecked = Template.bind({});
-DefaultChecked.args = {
-  options,
-  checkedOptions: allOptionsChecked,
+export const DefaultChecked = {
+  args: {
+    options,
+    checkedOptions: allOptionsChecked,
+  },
 };
 
-export const WithLabel = Template.bind({});
-WithLabel.args = {
-  label: "Checkbox Grid",
-  options,
-  checkedOptions: allOptionsChecked,
+export const WithLabel = {
+  args: {
+    label: "Checkbox Grid",
+    options,
+    checkedOptions: allOptionsChecked,
+  },
 };
 
-export const WithToggleAll = Template.bind({});
-WithToggleAll.args = {
-  withToggleAll: true,
-  options,
-  checkedOptions: allOptionsChecked,
+export const WithToggleAll = {
+  args: {
+    withToggleAll: true,
+    options,
+    checkedOptions: allOptionsChecked,
+  },
 };

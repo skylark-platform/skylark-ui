@@ -3,6 +3,7 @@ import {
   hasMatchingVariable,
   hasOperationName,
 } from "../../support/utils/graphqlTestUtils";
+import { configureSkylarkIntercepts } from "../../support/utils/intercepts";
 
 const assetOnlyQuery =
   "query SEARCH($ignoreAvailability: Boolean = true, $queryString: String!) {\n  search(\n    ignore_availability: $ignoreAvailability\n    query: $queryString\n    limit: 1000\n  ) {\n    __typename\n    objects {\n      ... on Asset {\n        __typename\n        uid\n        external_id\n        __Asset__slug: slug\n        __Asset__title: title\n        __Asset__type: type\n        __Asset__url: url\n      }\n      __typename\n    }\n  }\n}";
@@ -11,101 +12,11 @@ describe("Content Library - Search", () => {
   beforeEach(() => {
     cy.login();
 
-    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "IntrospectionQuery")) {
-        req.alias = "introspectionQuery";
-        req.reply({
-          fixture: "./skylark/queries/introspection/introspectionQuery.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_OBJECTS_CONFIG")) {
-        req.alias = "getObjectConfig";
-        req.reply({
-          fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_ACCOUNT_STATUS")) {
-        req.reply({
-          fixture: "./skylark/queries/getAccountStatus/default.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_SEARCH")) {
-        if (
-          hasMatchingVariable(req, "dimensions", [
-            { dimension: "customer-types", value: "kids" },
-            { dimension: "device-types", value: "pc" },
-          ])
-        ) {
-          req.reply({
-            fixture: "./skylark/queries/search/dimensionsKids.json",
-          });
-        } else if (
-          hasMatchingVariable(req, "queryString", "got winter is coming")
-        ) {
-          req.reply({
-            fixture: "./skylark/queries/search/gotWinterIsComing.json",
-          });
-        } else if (hasMatchingVariable(req, "queryString", "Homepage")) {
-          req.reply({
-            fixture: "./skylark/queries/search/homepage.json",
-          });
-        } else if (
-          hasMatchingVariable(req, "queryString", "all avail test movie")
-        ) {
-          req.reply({
-            fixture:
-              "./skylark/queries/search/fantasticMrFox_All_Availabilities.json",
-          });
-        } else if (hasMatchingQuery(req, assetOnlyQuery)) {
-          req.reply({
-            fixture: "./skylark/queries/search/gotAssetsOnly.json",
-          });
-        } else if (hasMatchingVariable(req, "language", "en-GB")) {
-          req.reply({
-            fixture: "./skylark/queries/search/gotPage1enGB.json",
-          });
-        } else {
-          req.reply({
-            fixture: "./skylark/queries/search/gotPage1.json",
-          });
-        }
-      }
-      if (hasOperationName(req, "SL_UI_GET_EPISODE")) {
-        if (hasMatchingVariable(req, "language", "pt-PT")) {
-          req.reply({
-            fixture: "./skylark/queries/getObject/gots01e01ptPT.json",
-          });
-        } else {
-          req.reply({
-            fixture: "./skylark/queries/getObject/gots01e01.json",
-          });
-        }
-      }
-      if (hasOperationName(req, "SL_UI_LIST_AVAILABILITY_DIMENSIONS")) {
-        req.reply({
-          fixture: "./skylark/queries/listDimensions.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_LIST_AVAILABILITY_DIMENSION_VALUES")) {
-        req.reply({
-          fixture: "./skylark/queries/listDimensionValues.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_USER_AND_ACCOUNT")) {
-        req.reply({
-          fixture: "./skylark/queries/getUserAndAccount.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_OBJECT_GENERIC")) {
-        req.reply({
-          fixture: "./skylark/queries/getObjectGeneric/homepage.json",
-        });
-      }
-    });
+    configureSkylarkIntercepts();
 
     cy.visit("/");
     cy.wait("@introspectionQuery");
-    cy.wait("@getObjectConfig");
+    cy.wait("@getObjectsConfig");
 
     cy.get("[data-testid=animated-skylark-logo]").should("not.exist");
   });

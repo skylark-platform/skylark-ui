@@ -1,4 +1,4 @@
-import { ComponentStory } from "@storybook/react";
+import { StoryFn } from "@storybook/react";
 import clsx from "clsx";
 
 import { RadioGroup } from "./radioGroup.component";
@@ -13,7 +13,7 @@ const options = ["Episode", "Season", "Brand"].map((val) => ({
   value: val,
 }));
 
-const Template: ComponentStory<typeof RadioGroup> = (args) => {
+const Template: StoryFn<typeof RadioGroup> = (args) => {
   return (
     <div className={clsx("w-96")}>
       <RadioGroup {...args} onChange={() => ""} />
@@ -21,8 +21,11 @@ const Template: ComponentStory<typeof RadioGroup> = (args) => {
   );
 };
 
-export const Default = Template.bind({});
-Default.args = {
-  options,
-  selected: options[0],
+export const Default = {
+  render: Template,
+
+  args: {
+    options,
+    selected: options[0],
+  },
 };

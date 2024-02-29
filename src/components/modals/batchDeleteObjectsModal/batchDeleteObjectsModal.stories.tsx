@@ -1,4 +1,4 @@
-import { ComponentStory, Story } from "@storybook/react";
+import { StoryFn } from "@storybook/react";
 import { userEvent, within } from "@storybook/testing-library";
 
 import {
@@ -33,7 +33,7 @@ export default {
   component: BatchDeleteObjectsModal,
   // Decorator to increase Story height https://www.chromatic.com/docs/snapshots#why-are-components-that-render-in-a-portal-tooltip-modal-menu-ge
   decorators: [
-    (StoryComponent: Story) => (
+    (StoryComponent: StoryFn) => (
       <div className="h-screen w-screen">
         <StoryComponent />
       </div>
@@ -41,45 +41,54 @@ export default {
   ],
 };
 
-const Template: ComponentStory<typeof BatchDeleteObjectsModal> = (args) => {
+const Template: StoryFn<typeof BatchDeleteObjectsModal> = (args) => {
   return <BatchDeleteObjectsModal {...args} />;
 };
 
-export const Default = Template.bind({});
-Default.args = {
-  isOpen: true,
-  closeModal: () => "",
-  objectsToBeDeleted: [
-    object,
-    {
-      ...object,
-      objectType: "Movie",
-      uid: "246",
-      metadata: { uid: "246", external_id: "", title: "My Movie" },
-    },
-  ],
+export const Default = {
+  render: Template,
+
+  args: {
+    isOpen: true,
+    closeModal: () => "",
+    objectsToBeDeleted: [
+      object,
+      {
+        ...object,
+        objectType: "Movie",
+        uid: "246",
+        metadata: { uid: "246", external_id: "", title: "My Movie" },
+      },
+    ],
+  },
 };
 
-export const Confirmation = Template.bind({});
-Confirmation.args = {
-  isOpen: true,
-  closeModal: () => "",
-  objectsToBeDeleted: [
-    object,
-    {
-      ...object,
-      objectType: "Movie",
-      uid: "246",
-      metadata: { uid: "246", external_id: "", title: "My Movie" },
-    },
-  ],
-};
-Confirmation.play = async () => {
-  const headlessPortalRoot = document.querySelector("#headlessui-portal-root");
-  const headlessCanvas = within(headlessPortalRoot as HTMLElement);
+export const Confirmation = {
+  render: Template,
 
-  const buttom = await headlessCanvas.findByText("Delete objects");
-  await userEvent.click(buttom);
+  args: {
+    isOpen: true,
+    closeModal: () => "",
+    objectsToBeDeleted: [
+      object,
+      {
+        ...object,
+        objectType: "Movie",
+        uid: "246",
+        metadata: { uid: "246", external_id: "", title: "My Movie" },
+      },
+    ],
+  },
 
-  await headlessCanvas.findByPlaceholderText(/permanently delete/);
+  play: async () => {
+    const headlessPortalRoot = document.querySelector(
+      "#headlessui-portal-root",
+    );
+    const headlessCanvas = within(headlessPortalRoot as HTMLElement);
+
+    const buttom = await headlessCanvas.findByText("Delete objects");
+    await userEvent.click(buttom);
+
+    await headlessCanvas.findByPlaceholderText(/permanently delete/);
+  },
 };

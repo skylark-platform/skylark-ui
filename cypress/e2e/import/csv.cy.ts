@@ -4,35 +4,13 @@ import {
   hasOperationName,
   operationNameStartsWith,
 } from "../../support/utils/graphqlTestUtils";
+import { configureSkylarkIntercepts } from "../../support/utils/intercepts";
 
 describe("Import/CSV", () => {
   beforeEach(() => {
     cy.login();
 
-    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "IntrospectionQuery")) {
-        req.alias = "introspectionQuery";
-        req.reply({
-          fixture: "./skylark/queries/introspection/introspectionQuery.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_ACCOUNT_STATUS")) {
-        req.reply({
-          fixture: "./skylark/queries/getAccountStatus/default.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_OBJECTS_CONFIG")) {
-        req.alias = "getObjectsConfig";
-        req.reply({
-          fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
-        });
-      }
-      if (operationNameStartsWith(req, "SL_UI_FLATFILE_IMPORT_EPISODE")) {
-        req.reply({
-          fixture: "./skylark/mutations/import/csvImportEpisodeCreation.json",
-        });
-      }
-    });
+    configureSkylarkIntercepts();
 
     cy.intercept("POST", "https://api.us.flatfile.io/graphql", (req) => {
       if (hasOperationName(req, "InitializeEmptyBatch")) {

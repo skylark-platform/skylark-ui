@@ -1,4 +1,4 @@
-import { ComponentStory } from "@storybook/react";
+import { StoryFn } from "@storybook/react";
 
 import { Switch } from "./switch.component";
 
@@ -7,28 +7,40 @@ export default {
   component: Switch,
 };
 
-const Template: ComponentStory<typeof Switch> = (args) => {
+const Template: StoryFn<typeof Switch> = (args) => {
   return <Switch {...args} />;
 };
 
-export const Default = Template.bind({});
-Default.args = {
-  enabled: false,
+export const Default = {
+  render: Template,
+
+  args: {
+    enabled: false,
+  },
 };
 
-export const DefaultEnabled = Template.bind({});
-DefaultEnabled.args = {
-  enabled: true,
+export const DefaultEnabled = {
+  render: Template,
+
+  args: {
+    enabled: true,
+  },
 };
 
-export const Small = Template.bind({});
-Small.args = {
-  enabled: false,
-  size: "small",
+export const Small = {
+  render: Template,
+
+  args: {
+    enabled: false,
+    size: "small",
+  },
 };
 
-export const SmallEnabled = Template.bind({});
-SmallEnabled.args = {
-  enabled: true,
-  size: "small",
+export const SmallEnabled = {
+  render: Template,
+
+  args: {
+    enabled: true,
+    size: "small",
+  },
 };

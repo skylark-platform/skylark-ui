@@ -1,5 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-import { userEvent, waitFor, within } from "@storybook/testing-library";
+import { StoryFn } from "@storybook/react";
+import { screen, userEvent, waitFor } from "@storybook/testing-library";
 import React from "react";
 
 import GQLSkylarkGetAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allDevicesAllCustomersAvailability.json";
@@ -17,7 +17,7 @@ export default {
   argTypes: {},
 };
 
-const Template: ComponentStory<typeof Panel> = (args) => {
+const Template: StoryFn<typeof Panel> = (args) => {
   return (
     <Panel
       {...args}
@@ -28,226 +28,247 @@ const Template: ComponentStory<typeof Panel> = (args) => {
   );
 };
 
-export const Default = Template.bind({});
-Default.args = {
-  object: {
-    uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
-    objectType: "Movie",
-    language: "",
+export const Default = {
+  render: Template,
+  args: {
+    object: {
+      uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
+      objectType: "Movie",
+      language: "",
+    },
+    tab: PanelTab.Metadata,
   },
-  tab: PanelTab.Metadata,
 };
 
-export const Metadata = Template.bind({});
-Metadata.args = {
-  object: {
-    uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
-    objectType: "Movie",
-    language: "",
+export const Metadata = {
+  render: Template,
+  args: {
+    object: {
+      uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
+      objectType: "Movie",
+      language: "",
+    },
+    isPage: true,
+    tab: PanelTab.Metadata,
   },
-  isPage: true,
-  tab: PanelTab.Metadata,
 };
 
-export const MetadataEditing = Template.bind({});
-MetadataEditing.args = {
-  object: {
-    uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
-    objectType: "Movie",
-    language: "",
+export const MetadataEditing = {
+  render: Template,
+
+  args: {
+    object: {
+      uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
+      objectType: "Movie",
+      language: "",
+    },
+    isPage: true,
+    tab: PanelTab.Metadata,
   },
-  isPage: true,
-  tab: PanelTab.Metadata,
-};
-MetadataEditing.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
 
-  const editButton = await canvas.findByRole("button", {
-    name: /Edit Metadata/i,
-  });
+  play: async () => {
+    const editButton = await screen.findByRole("button", {
+      name: /Edit Metadata/i,
+    });
 
-  await waitFor(async () => {
-    userEvent.click(editButton);
-  });
+    await waitFor(async () => {
+      userEvent.click(editButton);
+    });
 
-  const openSaveOptions = await canvas.findByLabelText(
-    "save changes - see alternate options",
-  );
+    const openSaveOptions = await screen.findByLabelText(
+      "save changes - see alternate options",
+    );
 
-  await waitFor(async () => {
-    userEvent.click(openSaveOptions);
-  });
-};
-
-export const MetadataDraft = Template.bind({});
-MetadataDraft.args = {
-  object: {
-    uid: GQLSkylarkGetMovieDraftQueryFixture.data.getObject.uid,
-    objectType: "Movie",
-    language: "",
+    await waitFor(async () => {
+      userEvent.click(openSaveOptions);
+    });
   },
-  isPage: true,
-  tab: PanelTab.Metadata,
 };
 
-export const MetadataDraftModeEditing = Template.bind({});
-MetadataDraftModeEditing.args = {
-  object: {
-    uid: GQLSkylarkGetMovieDraftQueryFixture.data.getObject.uid,
-    objectType: "Movie",
-    language: "",
+export const MetadataDraft = {
+  render: Template,
+
+  args: {
+    object: {
+      uid: GQLSkylarkGetMovieDraftQueryFixture.data.getObject.uid,
+      objectType: "Movie",
+      language: "",
+    },
+    isPage: true,
+    tab: PanelTab.Metadata,
   },
-  isPage: true,
-  tab: PanelTab.Metadata,
-};
-MetadataDraftModeEditing.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
-
-  const editButton = await canvas.findByRole("button", {
-    name: /Edit Metadata/i,
-  });
-
-  await waitFor(async () => {
-    userEvent.click(editButton);
-  });
-
-  const openSaveOptions = await canvas.findByLabelText(
-    "save changes - see alternate options",
-  );
-
-  await waitFor(async () => {
-    userEvent.click(openSaveOptions);
-  });
 };
 
-export const Imagery = Template.bind({});
-Imagery.parameters = Default.parameters;
-Imagery.args = {
-  ...Default.args,
-  tab: PanelTab.Imagery,
-};
+export const MetadataDraftModeEditing = {
+  render: Template,
 
-export const Content = Template.bind({});
-Content.parameters = Default.parameters;
-Content.args = {
-  object: {
-    objectType: "SkylarkSet",
-    uid: GQLSkylarkGetHomepageSetQueryFixture.data.getObject.uid,
-    language: "",
+  args: {
+    object: {
+      uid: GQLSkylarkGetMovieDraftQueryFixture.data.getObject.uid,
+      objectType: "Movie",
+      language: "",
+    },
+    isPage: true,
+    tab: PanelTab.Metadata,
   },
-  tab: PanelTab.Content,
-};
 
-export const ContentEditing = Template.bind({});
-ContentEditing.parameters = Default.parameters;
-ContentEditing.args = {
-  object: {
-    objectType: "SkylarkSet",
-    uid: GQLSkylarkGetHomepageSetQueryFixture.data.getObject.uid,
-    language: "",
+  play: async () => {
+    const editButton = await screen.findByRole("button", {
+      name: /Edit Metadata/i,
+    });
+
+    await waitFor(async () => {
+      userEvent.click(editButton);
+    });
+
+    const openSaveOptions = await screen.findByLabelText(
+      "save changes - see alternate options",
+    );
+
+    await waitFor(async () => {
+      userEvent.click(openSaveOptions);
+    });
   },
-  tab: PanelTab.Content,
-};
-ContentEditing.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
-
-  const editButton = await canvas.findByRole("button", {
-    name: /Edit Content/i,
-  });
-
-  await waitFor(async () => {
-    userEvent.click(editButton);
-  });
 };
 
-export const Relationships = Template.bind({});
-Relationships.parameters = Default.parameters;
-Relationships.args = {
-  ...Default.args,
-  object: {
-    objectType: "Season",
-    uid: GQLSkylarkGetSeasonQueryFixture.data.getObject.uid,
-    language: "",
+export const Imagery = {
+  render: Template,
+  args: {
+    ...Default.args,
+    tab: PanelTab.Imagery,
   },
-  tab: PanelTab.Relationships,
 };
-export const RelationshipsExpanded = Template.bind({});
-RelationshipsExpanded.parameters = Default.parameters;
-RelationshipsExpanded.args = {
-  ...Default.args,
-  object: {
-    objectType: "Season",
-    uid: GQLSkylarkGetSeasonQueryFixture.data.getObject.uid,
-    language: "",
+
+export const Content = {
+  render: Template,
+  args: {
+    object: {
+      objectType: "SkylarkSet",
+      uid: GQLSkylarkGetHomepageSetQueryFixture.data.getObject.uid,
+      language: "",
+    },
+    tab: PanelTab.Content,
   },
-  tab: PanelTab.Relationships,
-};
-RelationshipsExpanded.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
-  const openButton = await canvas.findByLabelText(
-    "expand episodes relationship",
-  );
-  await userEvent.click(openButton);
 };
 
-export const Availability = Template.bind({});
-Availability.parameters = Default.parameters;
-Availability.args = {
-  ...Default.args,
-  tab: PanelTab.Availability,
+export const ContentEditing = {
+  render: Template,
+  args: {
+    object: {
+      objectType: "SkylarkSet",
+      uid: GQLSkylarkGetHomepageSetQueryFixture.data.getObject.uid,
+      language: "",
+    },
+    tab: PanelTab.Content,
+  },
+
+  play: async () => {
+    const editButton = await screen.findByRole("button", {
+      name: /Edit Content/i,
+    });
+
+    await waitFor(async () => {
+      userEvent.click(editButton);
+    });
+  },
 };
 
-export const AvailabilityActiveObject = Template.bind({});
-AvailabilityActiveObject.parameters = Default.parameters;
-AvailabilityActiveObject.args = {
-  ...Default.args,
-  tab: PanelTab.Availability,
-};
-AvailabilityActiveObject.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
-  const openButton = await canvas.findByLabelText(
-    "expand availability: Active Next Sunday @ 9PM, Europe/North America",
-  );
-  await userEvent.click(openButton);
+export const Relationships = {
+  render: Template,
+  args: {
+    ...Default.args,
+    object: {
+      objectType: "Season",
+      uid: GQLSkylarkGetSeasonQueryFixture.data.getObject.uid,
+      language: "",
+    },
+    tab: PanelTab.Relationships,
+  },
 };
 
-export const AvailabilityActiveObjectInheritedBy = Template.bind({});
-AvailabilityActiveObjectInheritedBy.parameters = Default.parameters;
-AvailabilityActiveObjectInheritedBy.args = {
-  ...Default.args,
-  tab: PanelTab.Availability,
+export const RelationshipsExpanded = {
+  render: Template,
+  args: {
+    ...Default.args,
+    object: {
+      objectType: "Season",
+      uid: GQLSkylarkGetSeasonQueryFixture.data.getObject.uid,
+      language: "",
+    },
+    tab: PanelTab.Relationships,
+  },
+
+  play: async () => {
+    const openButton = await screen.findByLabelText(
+      "expand episodes relationship",
+    );
+    await userEvent.click(openButton);
+  },
 };
-AvailabilityActiveObjectInheritedBy.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
-  await userEvent.click(
-    await canvas.findByLabelText(
+
+export const Availability = {
+  render: Template,
+  args: {
+    ...Default.args,
+    tab: PanelTab.Availability,
+  },
+};
+
+export const AvailabilityActiveObject = {
+  render: Template,
+  args: {
+    ...Default.args,
+    tab: PanelTab.Availability,
+  },
+
+  play: async () => {
+    const openButton = await screen.findByLabelText(
       "expand availability: Active Next Sunday @ 9PM, Europe/North America",
-    ),
-  );
-
-  await userEvent.click(canvas.getByText("Inherited by"));
+    );
+    await userEvent.click(openButton);
+  },
 };
 
-export const AvailabilityDimensions = Template.bind({});
-AvailabilityDimensions.parameters = Default.parameters;
-AvailabilityDimensions.args = {
-  ...Default.args,
-  object: {
-    objectType: "Availability",
-    uid: GQLSkylarkGetAvailabilityQueryFixture.data.getObject.uid,
-    language: "",
+export const AvailabilityActiveObjectInheritedBy = {
+  render: Template,
+  args: {
+    ...Default.args,
+    tab: PanelTab.Availability,
   },
-  tab: PanelTab.AvailabilityDimensions,
+
+  play: async () => {
+    await userEvent.click(
+      await screen.findByLabelText(
+        "expand availability: Active Next Sunday @ 9PM, Europe/North America",
+      ),
+    );
+
+    await userEvent.click(screen.getByText("Inherited by"));
+  },
 };
 
-export const AvailabilityAssignedTo = Template.bind({});
-AvailabilityAssignedTo.parameters = Default.parameters;
-AvailabilityAssignedTo.args = {
-  ...Default.args,
-  object: {
-    objectType: "Availability",
-    uid: GQLSkylarkGetAvailabilityQueryFixture.data.getObject.uid,
-    language: "",
+export const AvailabilityDimensions = {
+  render: Template,
+  args: {
+    ...Default.args,
+    object: {
+      objectType: "Availability",
+      uid: GQLSkylarkGetAvailabilityQueryFixture.data.getObject.uid,
+      language: "",
+    },
+    tab: PanelTab.AvailabilityDimensions,
   },
-  tab: PanelTab.AvailabilityAssignedTo,
+};
+
+export const AvailabilityAssignedTo = {
+  render: Template,
+  args: {
+    ...Default.args,
+    object: {
+      objectType: "Availability",
+      uid: GQLSkylarkGetAvailabilityQueryFixture.data.getObject.uid,
+      language: "",
+    },
+    tab: PanelTab.AvailabilityAssignedTo,
+  },
 };

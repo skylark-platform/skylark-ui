@@ -1,6 +1,6 @@
 import { expect } from "@storybook/jest";
-import { ComponentStory } from "@storybook/react";
-import { userEvent, waitFor, within } from "@storybook/testing-library";
+import { StoryFn } from "@storybook/react";
+import { userEvent, waitFor, screen, within } from "@storybook/testing-library";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -33,7 +33,7 @@ const openToastAndCheckForTitle = async ({
   const canvas = within(canvasElement);
 
   await waitFor(async () => {
-    canvas.getByTestId("toastify-loaded");
+    screen.getByTestId("toastify-loaded");
   });
 
   // Delay to allow ToastContainer to mount
@@ -45,16 +45,16 @@ const openToastAndCheckForTitle = async ({
   });
 
   await waitFor(() => {
-    expect(canvas.getByText(args.title)).toBeInTheDocument();
+    expect(screen.getByText(args.title)).toBeInTheDocument();
   });
 
   // Delay to allow Toast to animate
   await sleep(2000);
 
-  await userEvent.hover(canvas.getByText(args.title));
+  await userEvent.hover(screen.getByText(args.title));
 };
 
-const Template: ComponentStory<typeof Toast> = () => {
+const Template: StoryFn<typeof Toast> = () => {
   return (
     <>
       <ToastContainer />
@@ -63,41 +63,61 @@ const Template: ComponentStory<typeof Toast> = () => {
   );
 };
 
-export const Default = Template.bind({});
-Default.args = {
-  title: "Default toast",
-  message: "Toast message",
-};
-Default.play = openToastAndCheckForTitle;
+export const Default = {
+  render: Template,
 
-export const Info = Template.bind({});
-Info.args = {
-  title: "Information toast",
-  message: "This is some useful information",
-  type: "info",
-};
-Info.play = openToastAndCheckForTitle;
+  args: {
+    title: "Default toast",
+    message: "Toast message",
+  },
 
-export const Success = Template.bind({});
-Success.args = {
-  title: "Success toast",
-  message: "The operation was successful",
-  type: "success",
+  play: openToastAndCheckForTitle,
 };
-Success.play = openToastAndCheckForTitle;
 
-export const Warning = Template.bind({});
-Warning.args = {
-  title: "Warning toast",
-  message: "Are you sure you want to delete this?",
-  type: "warning",
-};
-Warning.play = openToastAndCheckForTitle;
+export const Info = {
+  render: Template,
 
-export const ErrorToast = Template.bind({});
-ErrorToast.args = {
-  title: "Error toast",
-  message: "Operation has failed",
-  type: "error",
+  args: {
+    title: "Information toast",
+    message: "This is some useful information",
+    type: "info",
+  },
+
+  play: openToastAndCheckForTitle,
 };
-ErrorToast.play = openToastAndCheckForTitle;
+
+export const Success = {
+  render: Template,
+
+  args: {
+    title: "Success toast",
+    message: "The operation was successful",
+    type: "success",
+  },
+
+  play: openToastAndCheckForTitle,
+};
+
+export const Warning = {
+  render: Template,
+
+  args: {
+    title: "Warning toast",
+    message: "Are you sure you want to delete this?",
+    type: "warning",
+  },
+
+  play: openToastAndCheckForTitle,
+};
+
+export const ErrorToast = {
+  render: Template,
+
+  args: {
+    title: "Error toast",
+    message: "Operation has failed",
+    type: "error",
+  },
+
+  play: openToastAndCheckForTitle,
+};

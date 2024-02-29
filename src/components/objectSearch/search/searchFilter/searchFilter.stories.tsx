@@ -1,4 +1,4 @@
-import { ComponentStory } from "@storybook/react";
+import { StoryFn } from "@storybook/react";
 
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
@@ -41,7 +41,7 @@ const columns = [
   "synopsis_long",
 ].map((col) => ({ value: col }));
 
-const Template: ComponentStory<typeof SearchFilter> = (args) => {
+const Template: StoryFn<typeof SearchFilter> = (args) => {
   return (
     <div className="w-full max-w-4xl">
       <SearchFilter {...args} />
@@ -49,20 +49,26 @@ const Template: ComponentStory<typeof SearchFilter> = (args) => {
   );
 };
 
-export const Default = Template.bind({});
-Default.args = {
-  activeObjectTypes: objectTypes,
-  objectTypesWithConfig,
-  columns,
-  visibleColumns: columns.map(({ value }) => value),
-  graphqlQuery,
+export const Default = {
+  render: Template,
+
+  args: {
+    activeObjectTypes: objectTypes,
+    objectTypesWithConfig,
+    columns,
+    visibleColumns: columns.map(({ value }) => value),
+    graphqlQuery,
+  },
 };
 
-export const WithNoFiltersSelected = Template.bind({});
-WithNoFiltersSelected.args = {
-  activeObjectTypes: [],
-  objectTypesWithConfig,
-  columns,
-  visibleColumns: [],
-  graphqlQuery,
+export const WithNoFiltersSelected = {
+  render: Template,
+
+  args: {
+    activeObjectTypes: [],
+    objectTypesWithConfig,
+    columns,
+    visibleColumns: [],
+    graphqlQuery,
+  },
 };

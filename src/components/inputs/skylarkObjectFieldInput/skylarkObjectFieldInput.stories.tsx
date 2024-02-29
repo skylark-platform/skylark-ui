@@ -1,6 +1,6 @@
 import { expect } from "@storybook/jest";
-import { ComponentStory } from "@storybook/react";
-import { waitFor, within } from "@storybook/testing-library";
+import { StoryFn } from "@storybook/react";
+import { waitFor, screen } from "@storybook/testing-library";
 import { useForm } from "react-hook-form";
 
 import { SkylarkObjectFieldInput } from "./skylarkObjectFieldInput.component";
@@ -16,7 +16,7 @@ const sleep = (timeMs: number) => {
   });
 };
 
-const Template: ComponentStory<typeof SkylarkObjectFieldInput> = ({
+const Template: StoryFn<typeof SkylarkObjectFieldInput> = ({
   config,
   fieldConfigFromObject,
 }) => {
@@ -42,206 +42,253 @@ const Template: ComponentStory<typeof SkylarkObjectFieldInput> = ({
   );
 };
 
-export const String = Template.bind({});
-String.args = {
-  config: {
-    type: "string",
-    name: "stringfield",
-    originalType: "String",
-    isRequired: false,
-    isList: false,
+export const String = {
+  render: Template,
+
+  args: {
+    config: {
+      type: "string",
+      name: "stringfield",
+      originalType: "String",
+      isRequired: false,
+      isList: false,
+    },
   },
 };
 
-export const Boolean = Template.bind({});
-Boolean.args = {
-  config: {
-    type: "boolean",
-    name: "booleanfield",
-    originalType: "Boolean",
-    isRequired: false,
-    isList: false,
+export const Boolean = {
+  render: Template,
+
+  args: {
+    config: {
+      type: "boolean",
+      name: "booleanfield",
+      originalType: "Boolean",
+      isRequired: false,
+      isList: false,
+    },
   },
 };
 
-export const Int = Template.bind({});
-Int.args = {
-  config: {
-    type: "int",
-    name: "intfield",
-    originalType: "Int",
-    isRequired: false,
-    isList: false,
+export const Int = {
+  render: Template,
+
+  args: {
+    config: {
+      type: "int",
+      name: "intfield",
+      originalType: "Int",
+      isRequired: false,
+      isList: false,
+    },
   },
 };
 
-export const Float = Template.bind({});
-Float.args = {
-  config: {
-    type: "float",
-    name: "floatfield",
-    originalType: "Float",
-    isRequired: false,
-    isList: false,
+export const Float = {
+  render: Template,
+
+  args: {
+    config: {
+      type: "float",
+      name: "floatfield",
+      originalType: "Float",
+      isRequired: false,
+      isList: false,
+    },
   },
 };
 
-export const Date = Template.bind({});
-Date.args = {
-  config: {
-    type: "date",
-    name: "datefield",
-    originalType: "AWSDate",
-    isRequired: false,
-    isList: false,
+export const Date = {
+  render: Template,
+
+  args: {
+    config: {
+      type: "date",
+      name: "datefield",
+      originalType: "AWSDate",
+      isRequired: false,
+      isList: false,
+    },
   },
 };
 
-export const Time = Template.bind({});
-Time.args = {
-  config: {
-    type: "time",
-    name: "timefield",
-    originalType: "AWSTime",
-    isRequired: false,
-    isList: false,
+export const Time = {
+  render: Template,
+
+  args: {
+    config: {
+      type: "time",
+      name: "timefield",
+      originalType: "AWSTime",
+      isRequired: false,
+      isList: false,
+    },
   },
 };
 
-export const Timestamp = Template.bind({});
-Timestamp.args = {
-  config: {
-    type: "timestamp",
-    name: "timestampfield",
-    originalType: "AWSTimestamp",
-    isRequired: false,
-    isList: false,
+export const Timestamp = {
+  render: Template,
+
+  args: {
+    config: {
+      type: "timestamp",
+      name: "timestampfield",
+      originalType: "AWSTimestamp",
+      isRequired: false,
+      isList: false,
+    },
   },
 };
 
-export const Datetime = Template.bind({});
-Datetime.args = {
-  config: {
-    type: "datetime",
-    name: "datetimefield",
-    originalType: "AWSDateTime",
-    isRequired: false,
-    isList: false,
+export const Datetime = {
+  render: Template,
+
+  args: {
+    config: {
+      type: "datetime",
+      name: "datetimefield",
+      originalType: "AWSDateTime",
+      isRequired: false,
+      isList: false,
+    },
   },
 };
 
-export const Email = Template.bind({});
-Email.args = {
-  config: {
-    type: "email",
-    name: "emailfield",
-    originalType: "AWSEmail",
-    isRequired: false,
-    isList: false,
+export const Email = {
+  render: Template,
+
+  args: {
+    config: {
+      type: "email",
+      name: "emailfield",
+      originalType: "AWSEmail",
+      isRequired: false,
+      isList: false,
+    },
   },
 };
 
-export const Phone = Template.bind({});
-Phone.args = {
-  config: {
-    type: "phone",
-    name: "phonefield",
-    originalType: "AWSPhone",
-    isRequired: false,
-    isList: false,
+export const Phone = {
+  render: Template,
+
+  args: {
+    config: {
+      type: "phone",
+      name: "phonefield",
+      originalType: "AWSPhone",
+      isRequired: false,
+      isList: false,
+    },
   },
 };
 
-export const URL = Template.bind({});
-URL.args = {
-  config: {
-    type: "url",
-    name: "urlfield",
-    originalType: "AWSURL",
-    isRequired: false,
-    isList: false,
+export const URL = {
+  render: Template,
+
+  args: {
+    config: {
+      type: "url",
+      name: "urlfield",
+      originalType: "AWSURL",
+      isRequired: false,
+      isList: false,
+    },
   },
 };
 
-export const IPAddress = Template.bind({});
-IPAddress.args = {
-  config: {
-    type: "ipaddress",
-    name: "ipaddressfield",
-    originalType: "AWSIPAddress",
-    isRequired: false,
-    isList: false,
+export const IPAddress = {
+  render: Template,
+
+  args: {
+    config: {
+      type: "ipaddress",
+      name: "ipaddressfield",
+      originalType: "AWSIPAddress",
+      isRequired: false,
+      isList: false,
+    },
   },
 };
 
-export const JSON = Template.bind({});
-JSON.args = {
-  config: {
-    type: "json",
-    name: "jsonfield",
-    originalType: "AWSJSON",
-    isRequired: false,
-    isList: false,
+export const JSON = {
+  render: Template,
+
+  args: {
+    config: {
+      type: "json",
+      name: "jsonfield",
+      originalType: "AWSJSON",
+      isRequired: false,
+      isList: false,
+    },
   },
 };
 
-export const Enum = Template.bind({});
-Enum.args = {
-  config: {
-    type: "enum",
-    name: "enumfield",
-    originalType: "String",
-    enumValues: ["value1", "value2"],
-    isRequired: false,
-    isList: false,
+export const Enum = {
+  render: Template,
+
+  args: {
+    config: {
+      type: "enum",
+      name: "enumfield",
+      originalType: "String",
+      enumValues: ["value1", "value2"],
+      isRequired: false,
+      isList: false,
+    },
   },
 };
 
-export const Textarea = Template.bind({});
-Textarea.args = {
-  config: {
-    type: "string",
-    name: "textarea",
-    originalType: "String",
-    isRequired: false,
-    isList: false,
-  },
-  fieldConfigFromObject: {
-    fieldType: "TEXTAREA",
-    name: "textarea",
-    position: 0,
-  },
-};
+export const Textarea = {
+  render: Template,
 
-export const WYSIWYGEditor = Template.bind({});
-WYSIWYGEditor.args = {
-  config: {
-    type: "string",
-    name: "wysiwyg",
-    originalType: "String",
-    isRequired: false,
-    isList: false,
-  },
-  fieldConfigFromObject: {
-    fieldType: "WYSIWYG",
-    name: "wysiwyg",
-    position: 0,
+  args: {
+    config: {
+      type: "string",
+      name: "textarea",
+      originalType: "String",
+      isRequired: false,
+      isList: false,
+    },
+    fieldConfigFromObject: {
+      fieldType: "TEXTAREA",
+      name: "textarea",
+      position: 0,
+    },
   },
 };
-WYSIWYGEditor.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
 
-  await waitFor(() => {
-    expect(canvas.getByText("Wysiwyg")).toBeInTheDocument();
-  });
+export const WYSIWYGEditor = {
+  render: Template,
 
-  // Delay to allow TinyMCE to load
-  await sleep(5000);
+  args: {
+    config: {
+      type: "string",
+      name: "wysiwyg",
+      originalType: "String",
+      isRequired: false,
+      isList: false,
+    },
+    fieldConfigFromObject: {
+      fieldType: "WYSIWYG",
+      name: "wysiwyg",
+      position: 0,
+    },
+  },
 
-  await waitFor(() => {
-    expect(canvas.getByText("File")).toBeInTheDocument();
-  });
-  await waitFor(() => {
-    expect(canvas.getByText("Format")).toBeInTheDocument();
-  });
+  play: async () => {
+    await waitFor(() => {
+      expect(screen.getByText("Wysiwyg")).toBeInTheDocument();
+    });
+
+    // Delay to allow TinyMCE to load
+    await sleep(5000);
+
+    await waitFor(() => {
+      expect(screen.getByText("File")).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      expect(screen.getByText("Format")).toBeInTheDocument();
+    });
+  },
 };

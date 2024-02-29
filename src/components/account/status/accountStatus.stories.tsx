@@ -1,5 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-import { userEvent, waitFor, within } from "@storybook/testing-library";
+import { StoryFn } from "@storybook/react";
+import { screen, userEvent, waitFor } from "@storybook/testing-library";
 import { graphql } from "msw";
 
 import GQLSkylarkAccountStatusAvailabilityBackgroundTasksFixture from "src/__tests__/fixtures/skylark/queries/getAccountStatus/availabilityBackgroundTasksInProgress.json";
@@ -14,7 +14,7 @@ export default {
   component: AccountStatus,
 };
 
-const Template: ComponentStory<typeof AccountStatus> = () => <AccountStatus />;
+const Template: StoryFn<typeof AccountStatus> = () => <AccountStatus />;
 
 const sleep = (timeMs: number) => {
   return new Promise((resolve) => {
@@ -22,97 +22,111 @@ const sleep = (timeMs: number) => {
   });
 };
 
-export const ProcessingAvailabilities = Template.bind({});
-ProcessingAvailabilities.parameters = {
-  msw: {
-    handlers: {
-      status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
-        return res(
-          ctx.data(
-            GQLSkylarkAccountStatusAvailabilityBackgroundTasksFixture.data,
-          ),
-        );
-      }),
+export const ProcessingAvailabilities = {
+  render: Template,
+
+  parameters: {
+    msw: {
+      handlers: {
+        status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
+          return res(
+            ctx.data(
+              GQLSkylarkAccountStatusAvailabilityBackgroundTasksFixture.data,
+            ),
+          );
+        }),
+      },
     },
   },
 };
 
-export const ProcessingMultipleBackgroundTasks = Template.bind({});
-ProcessingMultipleBackgroundTasks.parameters = {
-  msw: {
-    handlers: {
-      status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
-        return res(
-          ctx.data(GQLSkylarkAccountStatusBackgroundTasksFixture.data),
-        );
-      }),
+export const ProcessingMultipleBackgroundTasks = {
+  render: Template,
+
+  parameters: {
+    msw: {
+      handlers: {
+        status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
+          return res(
+            ctx.data(GQLSkylarkAccountStatusBackgroundTasksFixture.data),
+          );
+        }),
+      },
     },
   },
 };
 
-export const UpdatingSchema = Template.bind({});
-UpdatingSchema.parameters = {
-  msw: {
-    handlers: {
-      status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
-        return res(ctx.data(GQLSkylarkAccountStatusSchemaUpdate.data));
-      }),
+export const UpdatingSchema = {
+  render: Template,
+
+  parameters: {
+    msw: {
+      handlers: {
+        status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
+          return res(ctx.data(GQLSkylarkAccountStatusSchemaUpdate.data));
+        }),
+      },
     },
   },
 };
 
 // Successful account status only shows after an in progress task has completed
 let calls = 0;
-export const AfterBackgroundTasksFinished = Template.bind({});
-AfterBackgroundTasksFinished.parameters = {
-  msw: {
-    handlers: {
-      status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
-        if (calls > 0) {
-          return res(ctx.data(GQLSkylarkAccountStatusDefault.data));
-        }
 
-        calls += 1;
-        return res(ctx.data(GQLSkylarkAccountStatusSchemaUpdate.data));
-      }),
+export const AfterBackgroundTasksFinished = {
+  render: Template,
+
+  parameters: {
+    msw: {
+      handlers: {
+        status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
+          if (calls > 0) {
+            return res(ctx.data(GQLSkylarkAccountStatusDefault.data));
+          }
+
+          calls += 1;
+          return res(ctx.data(GQLSkylarkAccountStatusSchemaUpdate.data));
+        }),
+      },
     },
   },
-};
-AfterBackgroundTasksFinished.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
 
-  // Allow a second request to happen
-  await sleep(10000);
+  play: async () => {
+    // Allow a second request to happen
+    await sleep(10000);
 
-  await waitFor(async () => {
-    await canvas.findByText("All Background Tasks Completed");
-  });
-};
-
-export const Tooltip = Template.bind({});
-Tooltip.parameters = {
-  msw: {
-    handlers: {
-      status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
-        return res(
-          ctx.data(
-            GQLSkylarkAccountStatusAvailabilityBackgroundTasksFixture.data,
-          ),
-        );
-      }),
-    },
+    await waitFor(async () => {
+      await screen.findByText("All Background Tasks Completed");
+    });
   },
 };
-Tooltip.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
 
-  await waitFor(async () => {
-    await userEvent.hover(
-      canvas.getByText("Processing 50+ Availability Rules"),
-    );
-  });
+export const Tooltip = {
+  render: Template,
 
-  await sleep(1000);
+  parameters: {
+    msw: {
+      handlers: {
+        status: graphql.query(`SL_UI_GET_ACCOUNT_STATUS`, (req, res, ctx) => {
+          return res(
+            ctx.data(
+              GQLSkylarkAccountStatusAvailabilityBackgroundTasksFixture.data,
+            ),
+          );
+        }),
+      },
+    },
+  },
 
-  await canvas.findAllByText(/When objects/);
+  play: async () => {
+    await waitFor(async () => {
+      await userEvent.hover(
+        screen.getByText("Processing 50+ Availability Rules"),
+      );
+    });
+
+    await sleep(1000);
+
+    await screen.findAllByText(/When objects/);
+  },
 };

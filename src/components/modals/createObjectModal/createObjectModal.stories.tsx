@@ -1,4 +1,4 @@
-import { ComponentStory, Story } from "@storybook/react";
+import { StoryFn } from "@storybook/react";
 
 import { CreateObjectModal } from "./createObjectModal.component";
 
@@ -7,7 +7,7 @@ export default {
   component: CreateObjectModal,
   // Decorator to increase Story height https://www.chromatic.com/docs/snapshots#why-are-components-that-render-in-a-portal-tooltip-modal-menu-ge
   decorators: [
-    (StoryComponent: Story) => (
+    (StoryComponent: StoryFn) => (
       <div className="h-screen w-screen">
         <StoryComponent />
       </div>
@@ -15,17 +15,23 @@ export default {
   ],
 };
 
-const Template: ComponentStory<typeof CreateObjectModal> = (args) => {
+const Template: StoryFn<typeof CreateObjectModal> = (args) => {
   return <CreateObjectModal {...args} />;
 };
 
-export const Default = Template.bind({});
-Default.args = {
-  isOpen: true,
+export const Default = {
+  render: Template,
+
+  args: {
+    isOpen: true,
+  },
 };
 
-export const WithEpisodeSelected = Template.bind({});
-WithEpisodeSelected.args = {
-  isOpen: true,
-  objectType: "Episode",
+export const WithEpisodeSelected = {
+  render: Template,
+
+  args: {
+    isOpen: true,
+    objectType: "Episode",
+  },
 };

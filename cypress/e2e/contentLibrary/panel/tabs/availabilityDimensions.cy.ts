@@ -2,7 +2,7 @@ import { hasOperationName } from "../../../../support/utils/graphqlTestUtils";
 import {
   allDevicesAllCustomersAvailability,
   configureSkylarkIntercepts,
-} from "../../../../support/utils/handlers";
+} from "../../../../support/utils/intercepts";
 
 describe("Content Library - Object Panel - Availability Dimensions tab", () => {
   beforeEach(() => {

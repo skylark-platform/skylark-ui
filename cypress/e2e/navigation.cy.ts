@@ -1,27 +1,10 @@
-import { hasOperationName } from "../support/utils/graphqlTestUtils";
+import { configureSkylarkIntercepts } from "../support/utils/intercepts";
 
 describe("Navigation", () => {
   beforeEach(() => {
     cy.login();
 
-    cy.intercept("POST", Cypress.env("skylark_graphql_uri"), (req) => {
-      if (hasOperationName(req, "IntrospectionQuery")) {
-        req.alias = "introspectionQuery";
-        req.reply({
-          fixture: "./skylark/queries/introspection/introspectionQuery.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_SKYLARK_OBJECT_TYPES")) {
-        req.reply({
-          fixture: "./skylark/queries/introspection/objectTypes.json",
-        });
-      }
-      if (hasOperationName(req, "SL_UI_GET_ACCOUNT_STATUS")) {
-        req.reply({
-          fixture: "./skylark/queries/getAccountStatus/default.json",
-        });
-      }
-    });
+    configureSkylarkIntercepts();
 
     cy.visit("/");
     cy.wait("@introspectionQuery");
@@ -29,12 +12,12 @@ describe("Navigation", () => {
 
   it("contains the navigation bar", () => {
     cy.contains("Skylark");
-    cy.get("nav").get("ul").find("li").should("have.length", 2);
+    cy.get("nav").find("li").should("have.length", 2);
   });
 
   it("opens the navigation bar on mobile", () => {
     cy.viewport("iphone-xr");
     cy.get("#mobile-nav-toggle").click();
-    cy.get("nav").get("ul").find("li").should("have.length", 2);
+    cy.get("nav").find("li").should("have.length", 2);
   });
 });

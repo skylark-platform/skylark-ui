@@ -1,4 +1,4 @@
-import { configureSkylarkIntercepts } from "../../../../support/utils/handlers";
+import { configureSkylarkIntercepts } from "../../../../support/utils/intercepts";
 
 describe("Content Library - Object Panel - Imagery tab", () => {
   beforeEach(() => {

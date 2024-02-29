@@ -4,6 +4,7 @@ import {
   hasMatchingQuery,
   hasMatchingVariable,
   hasOperationName,
+  operationNameStartsWith,
 } from "./graphqlTestUtils";
 
 export const allDevicesAllCustomersAvailability =
@@ -29,6 +30,7 @@ const introspectionIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
 
 const objectConfigIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
   if (hasOperationName(req, "SL_UI_GET_OBJECTS_CONFIG")) {
+    req.alias = "getObjectsConfig";
     req.reply({
       fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
     });
@@ -73,7 +75,18 @@ const accountIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
 
 const searchIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
   if (hasOperationName(req, "SL_UI_SEARCH")) {
-    if (hasMatchingVariable(req, "queryString", "got winter is coming")) {
+    if (
+      hasMatchingVariable(req, "dimensions", [
+        { dimension: "customer-types", value: "kids" },
+        { dimension: "device-types", value: "pc" },
+      ])
+    ) {
+      req.reply({
+        fixture: "./skylark/queries/search/dimensionsKids.json",
+      });
+    } else if (
+      hasMatchingVariable(req, "queryString", "got winter is coming")
+    ) {
       req.reply({
         fixture: "./skylark/queries/search/gotWinterIsComing.json",
       });
@@ -102,6 +115,10 @@ const searchIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
     } else if (hasMatchingQuery(req, assetOnlyQuery)) {
       req.reply({
         fixture: "./skylark/queries/search/gotAssetsOnly.json",
+      });
+    } else if (hasMatchingVariable(req, "language", "en-GB")) {
+      req.reply({
+        fixture: "./skylark/queries/search/gotPage1enGB.json",
       });
     } else {
       req.reply({
@@ -180,6 +197,11 @@ const getObjectIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
         "./skylark/queries/getObjectDimensions/allDevicesAllCustomersAvailability.json",
     });
   }
+  if (hasOperationName(req, "SL_UI_GET_OBJECT_GENERIC")) {
+    req.reply({
+      fixture: "./skylark/queries/getObjectGeneric/homepage.json",
+    });
+  }
 };
 
 const availabilityIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
@@ -196,6 +218,12 @@ const availabilityIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
 };
 
 const createIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
+  if (operationNameStartsWith(req, "SL_UI_FLATFILE_IMPORT_EPISODE")) {
+    req.reply({
+      fixture: "./skylark/mutations/import/csvImportEpisodeCreation.json",
+    });
+  }
+
   if (hasOperationName(req, "SL_UI_CREATE_OBJECT_EPISODE")) {
     req.alias = "createObject";
     req.reply({

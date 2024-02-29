@@ -1,4 +1,4 @@
-import { ComponentStory } from "@storybook/react";
+import { StoryFn } from "@storybook/react";
 
 import { SearchInput } from "./searchInput.component";
 
@@ -7,18 +7,24 @@ export default {
   component: SearchInput,
 };
 
-const Template: ComponentStory<typeof SearchInput> = (args) => {
+const Template: StoryFn<typeof SearchInput> = (args) => {
   return <SearchInput {...args} />;
 };
 
-export const Default = Template.bind({});
-Default.args = {
-  className: "w-[600px]",
-  toggleFilterOpen: () => alert("toggle filter clicked"),
+export const Default = {
+  render: Template,
+
+  args: {
+    className: "w-[600px]",
+    toggleFilterOpen: () => alert("toggle filter clicked"),
+  },
 };
 
-export const WithSearchQuery = Template.bind({});
-WithSearchQuery.args = {
-  ...Default.args,
-  searchQuery: "Game of Thrones",
+export const WithSearchQuery = {
+  render: Template,
+
+  args: {
+    ...Default.args,
+    searchQuery: "Game of Thrones",
+  },
 };

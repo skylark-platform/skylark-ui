@@ -1,5 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-import { userEvent, within } from "@storybook/testing-library";
+import { StoryFn } from "@storybook/react";
+import { screen, userEvent } from "@storybook/testing-library";
 
 import { NavigationLinks } from "./links.component";
 
@@ -8,28 +8,30 @@ export default {
   component: NavigationLinks,
 };
 
-const Template: ComponentStory<typeof NavigationLinks> = () => (
-  <NavigationLinks />
-);
+const Template: StoryFn<typeof NavigationLinks> = () => <NavigationLinks />;
 
-export const Default = Template.bind({});
+export const Default = {
+  render: Template,
+};
 
-export const WithActivePath = Template.bind({});
-WithActivePath.parameters = {
-  nextjs: {
-    router: {
-      asPath: "/developer/graphql-editor",
+export const WithActivePath = {
+  render: Template,
+  parameters: {
+    nextjs: {
+      router: {
+        asPath: "/developer/graphql-editor",
+      },
     },
   },
 };
 
-export const WithOpenDropdown = Template.bind({});
-WithOpenDropdown.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
+export const WithOpenDropdown = {
+  render: Template,
+  play: async () => {
+    const navigationButton = screen.getByText("Developer");
 
-  const navigationButton = canvas.getByText("Developer");
+    await userEvent.click(navigationButton);
 
-  await userEvent.click(navigationButton);
-
-  await canvas.findAllByText("API Documentation");
+    await screen.findAllByText("API Documentation");
+  },
 };

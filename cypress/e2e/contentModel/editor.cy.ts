@@ -1,4 +1,4 @@
-import { configureSkylarkIntercepts } from "../../support/utils/handlers";
+import { configureSkylarkIntercepts } from "../../support/utils/intercepts";
 
 describe("Compare Schema Versions", () => {
   beforeEach(() => {

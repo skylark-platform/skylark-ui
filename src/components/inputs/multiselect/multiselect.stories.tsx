@@ -1,5 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-import { userEvent, waitFor, within } from "@storybook/testing-library";
+import { StoryFn } from "@storybook/react";
+import { userEvent, waitFor, screen } from "@storybook/testing-library";
 import clsx from "clsx";
 
 import { MultiSelect } from "./multiselect.component";
@@ -16,7 +16,7 @@ const options = ["Episode", "Season", "Brand", "Set", "Image", "Asset"].map(
   }),
 );
 
-const Template: ComponentStory<typeof MultiSelect> = (args) => {
+const Template: StoryFn<typeof MultiSelect> = (args) => {
   return (
     <div className={clsx("w-96")}>
       <MultiSelect {...args} onChange={() => ""} />
@@ -24,52 +24,68 @@ const Template: ComponentStory<typeof MultiSelect> = (args) => {
   );
 };
 
-export const Default = Template.bind({});
-Default.args = {
-  options,
+export const Default = {
+  render: Template,
+
+  args: {
+    options,
+  },
 };
 
-export const WithSelected = Template.bind({});
-WithSelected.args = {
-  options,
-  selected: [options[0].value, options[1].value],
+export const WithSelected = {
+  render: Template,
+
+  args: {
+    options,
+    selected: [options[0].value, options[1].value],
+  },
 };
 
-export const WithLabel = Template.bind({});
-WithLabel.args = {
-  label: "Select Object Type",
-  options,
+export const WithLabel = {
+  render: Template,
+
+  args: {
+    label: "Select Object Type",
+    options,
+  },
 };
 
-export const WithFormLabel = Template.bind({});
-WithFormLabel.args = {
-  label: "Select Object Type",
-  labelVariant: "form",
-  options,
+export const WithFormLabel = {
+  render: Template,
+
+  args: {
+    label: "Select Object Type",
+    labelVariant: "form",
+    options,
+  },
 };
 
-export const Open = Template.bind({});
-Open.args = {
-  options,
-};
-Open.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
+export const Open = {
+  render: Template,
 
-  await waitFor(async () => {
-    const textInput = canvas.getByRole("combobox");
-    await userEvent.type(textInput, "E");
-  });
+  args: {
+    options,
+  },
+
+  play: async () => {
+    await waitFor(async () => {
+      const textInput = screen.getByRole("combobox");
+      await userEvent.type(textInput, "E");
+    });
+  },
 };
 
-export const OpenNothingFound = Template.bind({});
-OpenNothingFound.args = {
-  options,
-};
-OpenNothingFound.play = async ({ canvasElement }) => {
-  const canvas = within(canvasElement);
+export const OpenNothingFound = {
+  render: Template,
 
-  await waitFor(async () => {
-    const textInput = canvas.getByRole("combobox");
-    await userEvent.type(textInput, "custominput");
-  });
+  args: {
+    options,
+  },
+
+  play: async () => {
+    await waitFor(async () => {
+      const textInput = screen.getByRole("combobox");
+      await userEvent.type(textInput, "custominput");
+    });
+  },
 };
