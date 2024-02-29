@@ -1,6 +1,6 @@
 // Most of the Object Page functionality should be tested by the contentLibrary/panel tests
 // These tests should only check functionality that is different
-import { configureSkylarkIntercepts } from "../support/utils/handlers";
+import { configureSkylarkIntercepts } from "../support/utils/intercepts";
 
 const homepageContentOrdered = [
   "Home page hero",

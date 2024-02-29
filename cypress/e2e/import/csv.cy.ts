@@ -4,7 +4,7 @@ import {
   hasOperationName,
   operationNameStartsWith,
 } from "../../support/utils/graphqlTestUtils";
-import { configureSkylarkIntercepts } from "../../support/utils/handlers";
+import { configureSkylarkIntercepts } from "../../support/utils/intercepts";
 
 describe("Import/CSV", () => {
   beforeEach(() => {

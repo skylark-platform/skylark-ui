@@ -1,4 +1,4 @@
-import { configureSkylarkIntercepts } from "../../support/utils/handlers";
+import { configureSkylarkIntercepts } from "../../support/utils/intercepts";
 
 const assetOnlyQuery =
   "query SEARCH($ignoreAvailability: Boolean = true, $queryString: String!) {\n  search(\n    ignore_availability: $ignoreAvailability\n    query: $queryString\n    limit: 1000\n  ) {\n    __typename\n    objects {\n      ... on Asset {\n        __typename\n        uid\n        external_id\n        __Asset__slug: slug\n        __Asset__title: title\n        __Asset__type: type\n        __Asset__url: url\n      }\n      __typename\n    }\n  }\n}";

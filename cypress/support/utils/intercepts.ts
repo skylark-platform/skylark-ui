@@ -30,6 +30,7 @@ const introspectionIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
 
 const objectConfigIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
   if (hasOperationName(req, "SL_UI_GET_OBJECTS_CONFIG")) {
+    req.alias = "getObjectsConfig";
     req.reply({
       fixture: "./skylark/queries/getObjectsConfig/allObjectsConfig.json",
     });
@@ -74,7 +75,18 @@ const accountIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
 
 const searchIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
   if (hasOperationName(req, "SL_UI_SEARCH")) {
-    if (hasMatchingVariable(req, "queryString", "got winter is coming")) {
+    if (
+      hasMatchingVariable(req, "dimensions", [
+        { dimension: "customer-types", value: "kids" },
+        { dimension: "device-types", value: "pc" },
+      ])
+    ) {
+      req.reply({
+        fixture: "./skylark/queries/search/dimensionsKids.json",
+      });
+    } else if (
+      hasMatchingVariable(req, "queryString", "got winter is coming")
+    ) {
       req.reply({
         fixture: "./skylark/queries/search/gotWinterIsComing.json",
       });
@@ -103,6 +115,10 @@ const searchIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
     } else if (hasMatchingQuery(req, assetOnlyQuery)) {
       req.reply({
         fixture: "./skylark/queries/search/gotAssetsOnly.json",
+      });
+    } else if (hasMatchingVariable(req, "language", "en-GB")) {
+      req.reply({
+        fixture: "./skylark/queries/search/gotPage1enGB.json",
       });
     } else {
       req.reply({
@@ -179,6 +195,11 @@ const getObjectIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
     req.reply({
       fixture:
         "./skylark/queries/getObjectDimensions/allDevicesAllCustomersAvailability.json",
+    });
+  }
+  if (hasOperationName(req, "SL_UI_GET_OBJECT_GENERIC")) {
+    req.reply({
+      fixture: "./skylark/queries/getObjectGeneric/homepage.json",
     });
   }
 };

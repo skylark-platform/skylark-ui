@@ -2,7 +2,7 @@ import {
   hasMatchingVariable,
   hasOperationName,
 } from "../../support/utils/graphqlTestUtils";
-import { configureSkylarkIntercepts } from "../../support/utils/handlers";
+import { configureSkylarkIntercepts } from "../../support/utils/intercepts";
 
 describe("Compare Schema Versions", () => {
   beforeEach(() => {
