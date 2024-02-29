@@ -14,6 +14,7 @@ export enum QueryKeys {
   GetObjectDimensions = "getObjectDimensions",
   GetObjectContentOf = "getObjectContentOf",
   GetObjectContent = "getObjectContent",
+  ListObjects = "listObjects",
 }
 
 export enum QueryErrorMessages {
