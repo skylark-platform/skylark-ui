@@ -24,7 +24,7 @@ describe("Content Library - Object Panel", () => {
         "equal",
         "Series Premiere. Eddard Stark is torn between his family and an old friend when asked to serve at the side of King Robert Baratheon; Viserys plans to wed his sister to a nomadic warlord in exchange for an army.",
       );
-    cy.percySnapshot("Homepage - object panel open");
+    cy.takeSnapshot("Homepage - object panel open");
   });
 
   it("close Panel", () => {

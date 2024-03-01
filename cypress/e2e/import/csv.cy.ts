@@ -174,7 +174,7 @@ describe("Import/CSV", () => {
         .should("have.attr", "href")
         .should("not.be.empty");
 
-      cy.percySnapshot("import/csv - import complete");
+      cy.takeSnapshot("import/csv - import complete");
     });
 
     it("fail to create objects in Skylark", { retries: 0 }, () => {
@@ -226,7 +226,7 @@ describe("Import/CSV", () => {
         cy.get("input").should("be.disabled"),
       );
 
-      cy.percySnapshot(
+      cy.takeSnapshot(
         "import/csv - import failed (skylark object creation error)",
       );
     });
