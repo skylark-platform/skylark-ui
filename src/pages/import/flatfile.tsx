@@ -1,5 +1,12 @@
-import DromoUploader from "dromo-uploader-react";
-import { useState, useReducer, useEffect } from "react";
+import { Flatfile } from "@flatfile/api";
+import { ISpace, useSpace } from "@flatfile/react";
+import {
+  useState,
+  useReducer,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { FiDownload, FiUpload } from "react-icons/fi";
 
 import { Button } from "src/components/button";
@@ -8,20 +15,16 @@ import { StatusCard, statusType } from "src/components/statusCard";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { useListAllObjects } from "src/hooks/objects/list/useListAllObjects";
 import {
+  useAllObjectsMeta,
   useSkylarkObjectOperations,
-  useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
-import {
-  DromoSchema,
-  convertObjectInputToDromoSchemaFields,
-  convertRelationshipsToDromoSchemaFields,
-} from "src/lib/dromo/schema";
 import { generateExampleCSV } from "src/lib/flatfile";
 import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
+import { createObjectsWorkbook } from "src/lib/graphql/flatfile/workbook";
 import { createAccountIdentifier, pause } from "src/lib/utils";
 
 type ImportStates = "select" | "prep" | "import" | "create";
@@ -99,23 +102,47 @@ function reducer(
   };
 }
 
+const spaceProps: ISpace = {
+  name: "My JW Space",
+  publishableKey: "pk_caf4253adbf543f7a6e85d312a9c3cc7",
+  environmentId: "us_env_Uf1PrOnu",
+};
+
+const Space = ({
+  workbook,
+  setShowSpace,
+}: {
+  workbook: Flatfile.CreateWorkbookConfig;
+  setShowSpace: Dispatch<SetStateAction<boolean>>;
+}) => {
+  const space = useSpace({
+    ...spaceProps,
+    workbook,
+    sidebarConfig: {
+      showSidebar: false,
+    },
+    closeSpace: {
+      operation: "contacts:submit",
+      onClose: () => setShowSpace(false),
+    },
+  });
+  return space;
+};
+
 export default function CSVImportPage() {
   const [{ objectType, config: objectTypeConfig }, setObjectTypeWithConfig] =
     useState<{ objectType: string; config?: ParsedSkylarkObjectConfig }>({
       objectType: "",
     });
 
+  const [showSpace, setShowSpace] = useState(false);
+
   const objectTypeDisplayName =
     objectTypeConfig?.objectTypeDisplayName || objectType;
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  const { data: allObjects } = useListAllObjects();
-
-  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
-
   const [state, dispatch] = useReducer(reducer, initialState);
-
   const [
     { numCreated, numErrored, totalImportedToFlatfile },
     setObjectAmounts,
@@ -127,36 +154,10 @@ export default function CSVImportPage() {
 
   const [creds] = useSkylarkCreds();
 
-  const [dromoSchema, setDromoSchema] = useState<DromoSchema | null>(null);
-
-  const relationshipFields: DromoSchema["fields"] =
-    objectOperations?.relationships
-      ? convertRelationshipsToDromoSchemaFields(
-          objectOperations.relationships,
-          allObjects || {},
-          objectTypesWithConfig || [],
-        )
-      : [];
-
-  console.log(
-    "JSON",
-    dromoSchema &&
-      JSON.stringify({
-        ...dromoSchema,
-        fields: [...dromoSchema.fields, ...relationshipFields],
-      }),
-  );
-  console.log({ relationshipFields });
-
   const onClick = async () => {
-    if (!objectOperations) {
-      return;
-    }
-
     dispatch({ stage: "prep", status: statusType.inProgress });
-    const fields = convertObjectInputToDromoSchemaFields(
-      objectOperations.operations.create.inputs,
-      objectOperations.relationships,
+    const schema = convertObjectInputToFlatfileSchema(
+      objectOperations?.operations.create.inputs as NormalizedObjectField[],
     );
 
     if (!creds) {
@@ -173,12 +174,6 @@ export default function CSVImportPage() {
     //   accountIdentifier,
     // );
 
-    const settings: DromoSchema["settings"] = {
-      importIdentifier: `${accountIdentifier}-${objectOperations.name}`,
-      title: objectOperations.name,
-      allowCustomFields: false,
-    };
-
     dispatch({ stage: "prep", status: statusType.success });
     await pause(500); // Reflect state on client side, then open
     // await openFlatfileImportClient(
@@ -186,14 +181,34 @@ export default function CSVImportPage() {
     //   template.token,
     //   createObjectsInSkylark,
     // );
-    setDromoSchema({ fields, settings });
-
     dispatch({ stage: "import", status: statusType.inProgress });
+    setShowSpace(true);
   };
 
   const closeFlatfile = () => dispatch({ stage: "reset" });
 
+  useEffect(() => {
+    if (state.import === statusType.inProgress) {
+      document
+        .getElementsByClassName("flatfile-close")[0]
+        ?.addEventListener("click", closeFlatfile);
+    }
+    return () => {
+      document
+        .getElementsByClassName("flatfile-close")[0]
+        ?.removeEventListener("click", closeFlatfile);
+    };
+  }, [state.import]);
+
   const exampleCSV = generateExampleCSV(objectOperations);
+
+  const { data: allObjects } = useListAllObjects();
+
+  const { objects: allObjectsMeta } = useAllObjectsMeta(true);
+
+  const workbook = allObjectsMeta
+    ? createObjectsWorkbook(allObjectsMeta)
+    : null;
 
   return (
     <div className="flex h-full w-full flex-col sm:flex-row">
@@ -218,6 +233,7 @@ export default function CSVImportPage() {
           disabled={
             !objectType ||
             !objectOperations ||
+            !workbook ||
             state.prep !== statusType.pending
           }
           onClick={onClick}
@@ -289,19 +305,9 @@ export default function CSVImportPage() {
           </div>
         </div>
       </section>
-      <DromoUploader
-        open={!!dromoSchema}
-        onCancel={() => setDromoSchema(null)}
-        onResults={(d) => {
-          console.log("submitted", d);
-          setDromoSchema(null);
-        }}
-        developmentMode
-        licenseKey={"bace02ef-7319-4911-a3ce-5a3cc3d79df9"}
-        user={{ id: "jw" }}
-        fields={[...(dromoSchema?.fields || []), ...relationshipFields]}
-        settings={dromoSchema?.settings}
-      />
+      {showSpace && workbook && (
+        <Space setShowSpace={setShowSpace} workbook={workbook} />
+      )}
     </div>
   );
 }

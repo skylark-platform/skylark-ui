@@ -164,9 +164,17 @@ export const convertRelationshipsToDromoSchemaFields = (
             metadata.external_id ||
             metadata.uid,
           value: metadata.uid,
-          alternateMatches: Object.values(metadata).filter(
-            (field): field is string => typeof field === "string",
-          ),
+          alternateMatches: Object.entries(metadata)
+            .map(([key, value]) =>
+              [
+                primaryField,
+                SkylarkSystemField.Slug,
+                SkylarkSystemField.ExternalID,
+              ].includes(key)
+                ? value
+                : null,
+            )
+            .filter((field): field is string => typeof field === "string"),
         };
       }),
     };
