@@ -11922,6 +11922,11 @@ react-toastify@10.0.4:
   dependencies:
     clsx "^2.1.0"
 
+react-use-intercom@^5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/react-use-intercom/-/react-use-intercom-5.3.0.tgz#bf86b277f0f0656fa8952c9a02a20017101fe786"
+  integrity sha512-sS93lEe4lpDl8DrLdLbqocOJOm2AjQzoq0KR2L8pCU5pXVUhr8C4yzNR4ek4pIvPrLGW7BFz1rOlRYHAcHL+UA==
+
 react-virtual@2.10.4:
   version "2.10.4"
   resolved "https://registry.yarnpkg.com/react-virtual/-/react-virtual-2.10.4.tgz#08712f0acd79d7d6f7c4726f05651a13b24d8704"
