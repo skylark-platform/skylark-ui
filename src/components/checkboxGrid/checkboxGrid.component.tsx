@@ -116,7 +116,7 @@ export const CheckboxGrid = ({
           checkedOptions={checkedOptions}
         />
       )}
-      <div className="columns-2 space-y-2 md:columns-4 lg:columns-5 xl:columns-6">
+      <div className="grid columns-2 space-y-2 md:columns-4 lg:columns-5 xl:columns-6">
         {options.map(({ option }) => (
           <Checkbox
             label={option.label}

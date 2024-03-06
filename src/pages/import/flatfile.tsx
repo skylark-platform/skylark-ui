@@ -119,8 +119,9 @@ const Space = ({
     ...spaceProps,
     workbook,
     sidebarConfig: {
-      showSidebar: false,
+      showSidebar: true,
     },
+
     closeSpace: {
       operation: "contacts:submit",
       onClose: () => setShowSpace(false),

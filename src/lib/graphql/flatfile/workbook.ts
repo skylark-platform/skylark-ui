@@ -4,6 +4,7 @@ import {
   NormalizedObjectField,
   SkylarkObjectMeta,
   SkylarkObjectRelationship,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
 
 export const workbook: Flatfile.CreateWorkbookConfig = {
@@ -46,10 +47,23 @@ export const workbook: Flatfile.CreateWorkbookConfig = {
 const convertObjectInputFieldToFlatfileProperty = (
   field: NormalizedObjectField,
 ) => {
-  const defaultField = {
+  const defaultField: Flatfile.Property = {
     key: field.name,
     label: field.name,
+    type: "string",
   };
+
+  if (field.name === SkylarkSystemField.ExternalID) {
+    defaultField.constraints = [
+      {
+        type: "unique",
+      },
+    ];
+  }
+
+  if (field.name === SkylarkSystemField.UID) {
+    defaultField.readonly = true;
+  }
 
   if (field.type === "enum") {
     const options: Flatfile.EnumPropertyOption[] =
@@ -77,6 +91,9 @@ const convertObjectInputFieldToFlatfileProperty = (
     case "boolean":
       return {
         ...defaultField,
+        config: {
+          allowIndeterminate: false,
+        },
         type: "boolean",
       } satisfies Flatfile.Property.Boolean;
 
@@ -133,8 +150,9 @@ const convertRelationshipToReferenceField = (
     type: "reference",
     config: {
       // id: relationship.relationshipName,
-      key: relationship.relationshipName,
-      relationship: "has-one",
+      // key: relationship.relationshipName,
+      key: SkylarkSystemField.ExternalID,
+      relationship: "has-many",
       ref: relationship.objectType,
     },
   } satisfies Flatfile.Property.Reference;
