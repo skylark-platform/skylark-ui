@@ -12,3 +12,11 @@ test("renders the WYSIWYG Editor", async () => {
     "my-editor",
   );
 });
+
+test("doesn't call onEditorChange when the initial value isn't html", async () => {
+  const onEditorChange = jest.fn();
+
+  render(<WYSIWYGEditor onEditorChange={onEditorChange} value="a value" />);
+
+  expect(onEditorChange).not.toHaveBeenCalled();
+});
