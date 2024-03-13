@@ -1,19 +1,24 @@
 import DromoUploader from "dromo-uploader-react";
+import { RequestDocument } from "graphql-request";
 import { useState, useReducer, useEffect } from "react";
 import { FiDownload, FiUpload } from "react-icons/fi";
 
 import { Button } from "src/components/button";
 import { ObjectTypeSelect } from "src/components/inputs/select";
 import { StatusCard, statusType } from "src/components/statusCard";
+import { REQUEST_HEADERS } from "src/constants/skylark";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { useListAllObjects } from "src/hooks/objects/list/useListAllObjects";
 import {
+  useAllObjectsMeta,
   useSkylarkObjectOperations,
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
+  GQLSkylarkSearchResponse,
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
+  SkylarkGraphQLObject,
 } from "src/interfaces/skylark";
 import {
   DromoSchema,
@@ -22,7 +27,12 @@ import {
 } from "src/lib/dromo/schema";
 import { generateExampleCSV } from "src/lib/flatfile";
 import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
-import { createAccountIdentifier, pause } from "src/lib/utils";
+import { skylarkRequest } from "src/lib/graphql/skylark/client";
+import {
+  createSearchObjectsQuery,
+  removeFieldPrefixFromReturnedObject,
+} from "src/lib/graphql/skylark/dynamicQueries";
+import { createAccountIdentifier, hasProperty, pause } from "src/lib/utils";
 
 type ImportStates = "select" | "prep" | "import" | "create";
 
@@ -110,7 +120,9 @@ export default function CSVImportPage() {
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  const { data: allObjects } = useListAllObjects();
+  // const { data: allObjects } = useListAllObjects();
+
+  const { objects: allObjectsMeta } = useAllObjectsMeta(true);
 
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
 
@@ -133,7 +145,8 @@ export default function CSVImportPage() {
     objectOperations?.relationships
       ? convertRelationshipsToDromoSchemaFields(
           objectOperations.relationships,
-          allObjects || {},
+          // allObjects || {},
+          {},
           objectTypesWithConfig || [],
         )
       : [];
@@ -145,6 +158,10 @@ export default function CSVImportPage() {
         ...dromoSchema,
         fields: [...dromoSchema.fields, ...relationshipFields],
       }),
+    dromoSchema && {
+      ...dromoSchema,
+      fields: [...dromoSchema.fields, ...relationshipFields],
+    },
   );
   console.log({ relationshipFields });
 
@@ -194,6 +211,54 @@ export default function CSVImportPage() {
   const closeFlatfile = () => dispatch({ stage: "reset" });
 
   const exampleCSV = generateExampleCSV(objectOperations);
+
+  const search = async (objectType: string, queryString: string) => {
+    const query = createSearchObjectsQuery(allObjectsMeta, {
+      typesToRequest: [objectType],
+    });
+
+    if (query) {
+      const response = await skylarkRequest<GQLSkylarkSearchResponse>(
+        "query",
+        query as RequestDocument,
+        {
+          queryString,
+          limit: 10,
+          offset: 0,
+          language: "en-gb" || null,
+        },
+        {},
+        { [REQUEST_HEADERS.ignoreAvailability]: "true" },
+      );
+
+      const objects = response.search.objects
+        .filter((object): object is SkylarkGraphQLObject => !!object)
+        .map(removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>);
+
+      console.log({ data: objects });
+
+      const primaryField = objectTypesWithConfig?.find(
+        (otc) => otc.objectType === objectType,
+      )?.config.primaryField;
+
+      const selectOptions = objects.map((object) => {
+        const customLabel =
+          primaryField && hasProperty(object, primaryField)
+            ? `${object[primaryField]}`
+            : null;
+        const label = customLabel || object.external_id || object.uid;
+
+        return {
+          label,
+          value: object.uid,
+        };
+      });
+
+      return selectOptions;
+    }
+
+    return [];
+  };
 
   return (
     <div className="flex h-full w-full flex-col sm:flex-row">
@@ -301,6 +366,42 @@ export default function CSVImportPage() {
         user={{ id: "jw" }}
         fields={[...(dromoSchema?.fields || []), ...relationshipFields]}
         settings={dromoSchema?.settings}
+        rowHooks={[
+          async (record) => {
+            const newRecord = record;
+
+            console.log({ record });
+
+            await objectOperations?.relationships.map(
+              async ({ relationshipName, objectType }) => {
+                if (hasProperty(newRecord.row, relationshipName)) {
+                  const value = newRecord.row[relationshipName].value;
+                  const selectOptions = await search(objectType, value);
+
+                  newRecord.row[relationshipName].selectOptions = selectOptions;
+                }
+              },
+            );
+
+            // if (record.index < 10) {
+            // if (
+            //   newRecord.row.episodes &&
+            //   newRecord.row.episodes.manyToOne &&
+            //   newRecord.row.episodes.manyToOne.length > 0
+            // ) {
+            //   newRecord.row.episodes.value = "0" + newRecord.row.email.value;
+            //   newRecord.row.episodes.info = [
+            //     {
+            //       message: "Prepend 0 to value",
+            //       level: "info",
+            //     },
+            //   ];
+            // }
+
+            // }
+            return newRecord;
+          },
+        ]}
       />
     </div>
   );

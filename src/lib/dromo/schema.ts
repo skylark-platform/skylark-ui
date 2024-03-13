@@ -12,8 +12,7 @@ import {
   SkylarkObjectType,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-
-import { hasProperty } from "../utils";
+import { hasProperty } from "src/lib/utils";
 
 export interface DromoSchema {
   fields: IDeveloperField[];
@@ -148,7 +147,7 @@ export const convertRelationshipsToDromoSchemaFields = (
     const field: DromoSchema["fields"][0] = {
       label: relationshipName,
       key: relationshipName,
-      manyToOne: true,
+      // manyToOne: true,
       type: "select",
       selectOptions: objects.map(({ metadata }) => {
         const ot = objectTypesWithConfig.find(

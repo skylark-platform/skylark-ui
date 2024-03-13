@@ -179,6 +179,15 @@ export const createObjectsWorkbook = (allObjectsMeta: SkylarkObjectMeta[]) => {
   const objectsWorkbook: Flatfile.CreateWorkbookConfig = {
     name: "Skylark Objects",
     sheets,
+    actions: [
+      {
+        operation: "submitActionFg",
+        mode: "foreground",
+        label: "Sync with Skylark",
+        description: "Submit data to webhook.site",
+        primary: true,
+      },
+    ],
   };
 
   return objectsWorkbook;

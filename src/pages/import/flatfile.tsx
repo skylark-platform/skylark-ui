@@ -23,6 +23,7 @@ import {
   ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
 import { generateExampleCSV } from "src/lib/flatfile";
+import { listener } from "src/lib/flatfile/listener";
 import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
 import { createObjectsWorkbook } from "src/lib/graphql/flatfile/workbook";
 import { createAccountIdentifier, pause } from "src/lib/utils";
@@ -118,6 +119,7 @@ const Space = ({
   const space = useSpace({
     ...spaceProps,
     workbook,
+    listener,
     sidebarConfig: {
       showSidebar: true,
     },
