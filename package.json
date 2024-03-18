@@ -70,7 +70,7 @@
     "tailwindcss-radix": "2.8.0",
     "tinymce": "6.8.3",
     "use-debounce": "10.0.0",
-    "usehooks-ts": "2.16.0",
+    "usehooks-ts": "3.0.1",
     "uuid": "9.0.1"
   },
   "devDependencies": {
