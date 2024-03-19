@@ -7229,7 +7229,7 @@ dotenv@^16.0.0:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.3.1.tgz#369034de7d7e5b120972693352a3bf112172cc3e"
   integrity sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==
 
-dromo-uploader-js@^2.0.16:
+dromo-uploader-js@^2.0.18:
   version "2.0.18"
   resolved "https://registry.yarnpkg.com/dromo-uploader-js/-/dromo-uploader-js-2.0.18.tgz#55ccefcb226d9dc4886f636867dc93ccc61cb8b6"
   integrity sha512-D+4WvD7RPNpf1ftgw8urrUzgwmRDc4BkypkFhEasHKVJgl7X6hZdR06lCMocfbSlrH9jV7bJiqzeEOtWbJSoeg==
@@ -7240,12 +7240,12 @@ dromo-uploader-js@^2.0.16:
     "@sentry/tracing" "^5.29.2"
     penpal "^5.3.0"
 
-dromo-uploader-react@^2.0.17:
-  version "2.0.17"
-  resolved "https://registry.yarnpkg.com/dromo-uploader-react/-/dromo-uploader-react-2.0.17.tgz#effb64528322c761a030323f26541b53363f803d"
-  integrity sha512-HWG4L0qmwbRFKdr6sj6aDmvN2PCzheTr9ijKGSwoaxUTq7xwMqXEAAQ3aFu/ktVR6kyNpLW4j+0GVuN8gGMBMg==
+dromo-uploader-react@^2.0.18:
+  version "2.0.18"
+  resolved "https://registry.yarnpkg.com/dromo-uploader-react/-/dromo-uploader-react-2.0.18.tgz#69ff8618c1dae39f5588dad1a8a2c2597c63783a"
+  integrity sha512-b2wsk3bu8dPhPwMSrCAxvbafHw+SUwp8DdmeDb6cIhmfkotMoGJfCYsvIX+EPc73CeAuo4O8WINYEpSYgboMXQ==
   dependencies:
-    dromo-uploader-js "^2.0.16"
+    dromo-uploader-js "^2.0.18"
 
 duplexer@~0.1.1:
   version "0.1.2"

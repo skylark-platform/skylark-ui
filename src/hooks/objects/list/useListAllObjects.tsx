@@ -53,7 +53,7 @@ const getNextTokens = (data: GQLSkylarkListAllObjectsResponse) => {
       objectTypesWithNextPage: string[];
     },
   );
-  console.log({ nextTokens });
+  // console.log({ nextTokens });
   return nextTokens;
 };
 
@@ -91,7 +91,7 @@ export const useListAllObjects = () => {
           : undefined;
       },
       select: (data) => {
-        console.log({ data });
+        // console.log({ data });
         // return Object.entries(data).reduce(
         //   (prev, [objectType, { objects }]) => {
         //     return {
@@ -142,7 +142,7 @@ export const useListAllObjects = () => {
     fetchNextPage();
   }
 
-  console.log({ parsedData: data });
+  // console.log({ parsedData: data });
 
   return {
     error,

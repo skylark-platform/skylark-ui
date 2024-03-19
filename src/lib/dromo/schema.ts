@@ -147,35 +147,36 @@ export const convertRelationshipsToDromoSchemaFields = (
     const field: DromoSchema["fields"][0] = {
       label: relationshipName,
       key: relationshipName,
-      // manyToOne: true,
+      manyToOne: true,
       type: "select",
-      selectOptions: objects.map(({ metadata }) => {
-        const ot = objectTypesWithConfig.find(
-          (o) => o.objectType === objectType,
-        );
+      selectOptions: [{ label: "dummy", value: "dummy" }],
+      // selectOptions: objects.map(({ metadata }) => {
+      //   const ot = objectTypesWithConfig.find(
+      //     (o) => o.objectType === objectType,
+      //   );
 
-        const primaryField = ot?.config.primaryField || "external_id";
+      //   const primaryField = ot?.config.primaryField || "external_id";
 
-        return {
-          label:
-            ((hasProperty(metadata, primaryField) &&
-              metadata[primaryField]) as string) ||
-            metadata.external_id ||
-            metadata.uid,
-          value: metadata.uid,
-          alternateMatches: Object.entries(metadata)
-            .map(([key, value]) =>
-              [
-                primaryField,
-                SkylarkSystemField.Slug,
-                SkylarkSystemField.ExternalID,
-              ].includes(key)
-                ? value
-                : null,
-            )
-            .filter((field): field is string => typeof field === "string"),
-        };
-      }),
+      //   return {
+      //     label:
+      //       ((hasProperty(metadata, primaryField) &&
+      //         metadata[primaryField]) as string) ||
+      //       metadata.external_id ||
+      //       metadata.uid,
+      //     value: metadata.uid,
+      //     alternateMatches: Object.entries(metadata)
+      //       .map(([key, value]) =>
+      //         [
+      //           primaryField,
+      //           SkylarkSystemField.Slug,
+      //           SkylarkSystemField.ExternalID,
+      //         ].includes(key)
+      //           ? value
+      //           : null,
+      //       )
+      //       .filter((field): field is string => typeof field === "string"),
+      //   };
+      // }),
     };
 
     return field;

@@ -15,6 +15,7 @@ import {
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
+  GQLSkylarkGetObjectResponse,
   GQLSkylarkSearchResponse,
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
@@ -29,6 +30,7 @@ import { generateExampleCSV } from "src/lib/flatfile";
 import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
+  createGetObjectGenericQuery,
   createSearchObjectsQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
@@ -151,18 +153,18 @@ export default function CSVImportPage() {
         )
       : [];
 
-  console.log(
-    "JSON",
-    dromoSchema &&
-      JSON.stringify({
-        ...dromoSchema,
-        fields: [...dromoSchema.fields, ...relationshipFields],
-      }),
-    dromoSchema && {
-      ...dromoSchema,
-      fields: [...dromoSchema.fields, ...relationshipFields],
-    },
-  );
+  // console.log(
+  //   "JSON",
+  //   dromoSchema &&
+  //     JSON.stringify({
+  //       ...dromoSchema,
+  //       fields: [...dromoSchema.fields, ...relationshipFields],
+  //     }),
+  //   dromoSchema && {
+  //     ...dromoSchema,
+  //     fields: [...dromoSchema.fields, ...relationshipFields],
+  //   },
+  // );
   console.log({ relationshipFields });
 
   const onClick = async () => {
@@ -211,6 +213,43 @@ export default function CSVImportPage() {
   const closeFlatfile = () => dispatch({ stage: "reset" });
 
   const exampleCSV = generateExampleCSV(objectOperations);
+
+  const lookupViaUidOrExternalID = async (
+    objectType: string,
+    queryString: string,
+  ) => {
+    const query = createGetObjectGenericQuery(allObjectsMeta, {
+      typesToRequest: [objectType],
+    });
+
+    if (query) {
+      const response = await skylarkRequest<GQLSkylarkGetObjectResponse>(
+        "query",
+        query as RequestDocument,
+        {
+          uid: queryString,
+          externalId: queryString,
+          language: "en-GB",
+          dimensions: [],
+        },
+        {},
+        { [REQUEST_HEADERS.ignoreAvailability]: "true", "x-force-get": "true" },
+      );
+
+      const object = response.getObject;
+
+      console.log({ data: object });
+
+      const selectOption = {
+        label: queryString,
+        value: object.uid,
+      };
+
+      return [selectOption];
+    }
+
+    return [];
+  };
 
   const search = async (objectType: string, queryString: string) => {
     const query = createSearchObjectsQuery(allObjectsMeta, {
@@ -367,21 +406,118 @@ export default function CSVImportPage() {
         fields={[...(dromoSchema?.fields || []), ...relationshipFields]}
         settings={dromoSchema?.settings}
         rowHooks={[
-          async (record) => {
+          async (record, type) => {
             const newRecord = record;
 
-            console.log({ record });
+            if (!objectOperations) {
+              return newRecord;
+            }
 
-            await objectOperations?.relationships.map(
-              async ({ relationshipName, objectType }) => {
-                if (hasProperty(newRecord.row, relationshipName)) {
-                  const value = newRecord.row[relationshipName].value;
-                  const selectOptions = await search(objectType, value);
+            console.log("HERE", record.index, { record, type });
 
-                  newRecord.row[relationshipName].selectOptions = selectOptions;
-                }
-              },
+            await Promise.all(
+              objectOperations.relationships.map(
+                async ({ relationshipName, objectType }) => {
+                  // const relationshipName: string = "episodes";
+                  if (hasProperty(newRecord.row, relationshipName)) {
+                    // const value = newRecord.row[relationshipName].value;
+                    const values = newRecord.row[relationshipName].manyToOne;
+
+                    if (!values) {
+                      return;
+                    }
+
+                    newRecord.row[relationshipName].manyToOne =
+                      await Promise.all(
+                        values.map(
+                          async ({
+                            value,
+                            resultValue,
+                            selectOptions,
+                            ...rest
+                          }) => {
+                            // If value is already valid, return the current configuration (reduces requests to Skylark)
+                            if (
+                              selectOptions?.find(
+                                (option) => option.value === resultValue,
+                              )
+                            ) {
+                              return {
+                                ...rest,
+                                value,
+                                resultValue,
+                                selectOptions,
+                              };
+                            }
+
+                            try {
+                              const selectOptions =
+                                await lookupViaUidOrExternalID(
+                                  objectType,
+                                  value,
+                                );
+
+                              console.log(record.index, relationshipName, {
+                                selectOptions,
+                              });
+                              // TODO show primary field in info message - so they can see what the record is in Skylark without changing their values
+
+                              return {
+                                resultValue: value,
+                                value,
+                                info: [],
+                                selectOptions,
+                              };
+                            } catch {
+                              // On an update, make a search request if the original get request fails
+                              if (type === "update") {
+                                const selectOptions = await search(
+                                  objectType,
+                                  value,
+                                );
+
+                                return {
+                                  resultValue: value,
+                                  value,
+                                  info: [
+                                    {
+                                      message: "Found via Search",
+                                      level: "info",
+                                    },
+                                  ],
+                                  selectOptions,
+                                };
+                              }
+
+                              return {
+                                resultValue,
+                                value,
+                                info: [
+                                  {
+                                    message: "Invalid External ID or UID",
+                                    level: "error",
+                                  },
+                                ],
+                                selectOptions: [],
+                              };
+                            }
+                          },
+                        ),
+                      );
+
+                    if (!values) {
+                      return;
+                    }
+
+                    // await Promise.all(values.map((value) => {
+
+                    // }))
+                  }
+                },
+              ),
             );
+
+            console.log("record updated", record.index, newRecord);
 
             // if (record.index < 10) {
             // if (
