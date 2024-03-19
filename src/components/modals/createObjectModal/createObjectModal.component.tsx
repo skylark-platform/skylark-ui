@@ -243,25 +243,22 @@ const CreateObjectModalBody = forwardRef(
         : false;
 
     return (
-      <>
-        <ModalTitle>
-          {isCreateTranslationModal
-            ? `Create ${objectTypeDisplayName} Translation`
-            : `Create ${objectTypeDisplayName || "Object"}`}
-        </ModalTitle>
-        <ModalDescription>
-          {isCreateTranslationModal
-            ? "Select language and add translatable data."
-            : "Select Object Type to get started."}
-        </ModalDescription>
-        <form
-          className="mt-8 flex w-full flex-col justify-end gap-4"
-          onSubmit={handleSubmit(onSubmit)}
-        >
+      <div className="grid grid-cols-3 h-full overflow-hidden">
+        <div className="h-full border-r pr-10 flex flex-col">
+          <ModalTitle>
+            {isCreateTranslationModal
+              ? `Create ${objectTypeDisplayName} Translation`
+              : `Create ${objectTypeDisplayName || "Object"}`}
+          </ModalTitle>
+          <ModalDescription>
+            {isCreateTranslationModal
+              ? "Select language and add translatable data."
+              : "Select Object Type to get started."}
+          </ModalDescription>
           {!isCreateTranslationModal && (
             <ObjectTypeSelect
               ref={objectTypeSelectRef}
-              className="w-full"
+              className="w-full mt-4"
               variant="primary"
               label="Object Type"
               labelVariant="form"
@@ -270,39 +267,57 @@ const CreateObjectModalBody = forwardRef(
               onChange={setObjectTypeWithConfig}
             />
           )}
-          {objectOperations && (
-            <div>
-              {(objectOperations.isTranslatable ||
-                isCreateTranslationModal) && (
-                <>
-                  <Controller
-                    name="_language"
-                    control={control}
-                    render={({ field }) => {
-                      return (
-                        <LanguageSelect
-                          name="_language"
-                          className="w-full"
-                          variant="primary"
-                          label="Object Language"
-                          labelVariant="form"
-                          useDefaultLanguage={!isCreateTranslationModal}
-                          rounded={false}
-                          selected={field.value as string | undefined}
-                          onChange={(str: string) => {
-                            field.onChange(str);
-                          }}
-                          onValueClear={() => setValue("_language", "")}
-                        />
-                      );
-                    }}
-                  />
-                  {isExistingTranslation && (
-                    <p className="-mb-4 mt-2 text-error">{`The language "${values._language}" is an existing translation.`}</p>
-                  )}
-                </>
-              )}
-              <div className="mt-10">
+
+          <div className="mt-8 grow">
+            {["Metadata", "Relationships", "Availability"].map((str) => (
+              <div key={str} className="p-4 border">
+                {str}
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end space-x-2">
+            <Button
+              ref={submitButtonRef}
+              variant="primary"
+              className="mt-4"
+              loading={isCreatingObject || isCreatingTranslation}
+              type="submit"
+              disabled={
+                !objectOperations ||
+                !formHasObjectPropertyValues(values) ||
+                isExistingTranslation ||
+                (isCreateTranslationModal && !values._language)
+              }
+              success
+            >
+              {isCreatingObject
+                ? `Creating ${
+                    isCreateTranslationModal
+                      ? "Translation"
+                      : objectTypeDisplayName
+                  }`
+                : `Create ${isCreateTranslationModal ? "Translation" : ""}`}
+            </Button>
+            <Button
+              variant="outline"
+              className="mt-4"
+              type="button"
+              danger
+              disabled={isCreatingObject || isCreatingTranslation}
+              onClick={closeModal}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+        <div className="w-full overflow-y-scroll h-full col-span-2">
+          <form
+            className="mt-8 flex w-full flex-col gap-4 pl-10 pr-3 h-full"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            {objectOperations && (
+              <div>
+                {/* <div className="mt-10"> */}
                 {formSections
                   .filter(({ metadataFields }) => metadataFields.length > 0)
                   .map(({ id, title, metadataFields }) => (
@@ -330,49 +345,12 @@ const CreateObjectModalBody = forwardRef(
                       )}
                     </div>
                   ))}
+                {/* </div> */}
               </div>
-              <div className="flex justify-end space-x-2">
-                <Button
-                  ref={submitButtonRef}
-                  variant="primary"
-                  className="mt-4"
-                  loading={isCreatingObject || isCreatingTranslation}
-                  type="submit"
-                  disabled={
-                    !objectOperations ||
-                    !formHasObjectPropertyValues(values) ||
-                    isExistingTranslation ||
-                    (isCreateTranslationModal && !values._language)
-                  }
-                  success
-                >
-                  {isCreatingObject
-                    ? `Creating ${
-                        isCreateTranslationModal
-                          ? "Translation"
-                          : objectTypeDisplayName
-                      }`
-                    : `Create ${
-                        isCreateTranslationModal
-                          ? "Translation"
-                          : objectTypeDisplayName || "Object"
-                      }`}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="mt-4"
-                  type="button"
-                  danger
-                  disabled={isCreatingObject || isCreatingTranslation}
-                  onClick={closeModal}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
-        </form>
-      </>
+            )}
+          </form>
+        </div>
+      </div>
     );
   },
 );
@@ -394,7 +372,7 @@ export const CreateObjectModal = ({
       isOpen={isOpen}
       closeModal={() => setIsOpen(false)}
       data-testid="create-object-modal"
-      size="medium"
+      size="large"
       growHeight
     >
       {isOpen && (

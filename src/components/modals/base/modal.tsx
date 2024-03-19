@@ -70,7 +70,7 @@ export const Modal = ({
       <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
         <Dialog.Panel
           className={clsx(
-            "relative mx-auto flex max-h-[90%] w-full flex-col overflow-y-auto rounded bg-white pb-4 pt-6 md:pb-8 md:pt-10 ",
+            "relative mx-auto flex max-h-[90%] w-full flex-col rounded bg-white pb-4 pt-6 md:pb-8 md:pt-10 ",
             size === "small" && "max-w-xl md:w-7/12",
             size === "medium" && "max-w-3xl md:w-4/5",
             size === "large" && "max-w-8xl lg:w-11/12 xl:w-4/5",
