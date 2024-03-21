@@ -332,43 +332,44 @@ const CreateObjectModalBody = forwardRef(
                     </div>
                   ))}
               </div>
-              <div className="flex justify-end space-x-2">
-                <Button
-                  ref={submitButtonRef}
-                  variant="primary"
-                  className="mt-4"
-                  loading={isCreatingObject || isCreatingTranslation}
-                  type="submit"
-                  disabled={
-                    !objectOperations ||
-                    !formHasObjectValues ||
-                    isExistingTranslation ||
-                    (isCreateTranslationModal && !values._language)
-                  }
-                  success
-                >
-                  {isCreatingObject
-                    ? `Creating ${
-                        isCreateTranslationModal
-                          ? "Translation"
-                          : objectTypeDisplayName
-                      }`
-                    : `Create ${
-                        isCreateTranslationModal
-                          ? "Translation"
-                          : objectTypeDisplayName || "Object"
-                      }`}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="mt-4"
-                  type="button"
-                  danger
-                  disabled={isCreatingObject || isCreatingTranslation}
-                  onClick={closeModal}
-                >
-                  Cancel
-                </Button>
+              <div className="flex justify-between mt-4">
+                <Button variant="outline">Fill with AI values</Button>
+                <div className="space-x-2 flex">
+                  <Button
+                    ref={submitButtonRef}
+                    variant="primary"
+                    loading={isCreatingObject || isCreatingTranslation}
+                    type="submit"
+                    disabled={
+                      !objectOperations ||
+                      !formHasObjectValues ||
+                      isExistingTranslation ||
+                      (isCreateTranslationModal && !values._language)
+                    }
+                    success
+                  >
+                    {isCreatingObject
+                      ? `Creating ${
+                          isCreateTranslationModal
+                            ? "Translation"
+                            : objectTypeDisplayName
+                        }`
+                      : `Create ${
+                          isCreateTranslationModal
+                            ? "Translation"
+                            : objectTypeDisplayName || "Object"
+                        }`}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    type="button"
+                    danger
+                    disabled={isCreatingObject || isCreatingTranslation}
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </div>
             </div>
           )}
