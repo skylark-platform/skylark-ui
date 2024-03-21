@@ -336,6 +336,7 @@ const CreateObjectModalBody = forwardRef(
               <div className="flex justify-between mt-4">
                 <Button
                   variant="outline"
+                  loading={aiFieldGeneration.isGeneratingAiSuggestions}
                   disabled={!aiFieldGeneration.formHasValues}
                   onClick={
                     aiFieldGeneration.hasAiSuggestions

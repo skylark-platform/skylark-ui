@@ -1,5 +1,5 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useCallback } from "react";
 
 import {
   SkylarkObjectMetadataField,
@@ -61,13 +61,15 @@ const select = (data?: {
 };
 
 export const useAIGeneratedFields = ({
-  onFieldsGenerated,
+  onSuggestionsGenerated,
+  onSuggestionGenerationError,
 }: {
-  onFieldsGenerated?: (
+  onSuggestionsGenerated?: (
     data: Record<string, SkylarkObjectMetadataField[]>,
     variables: MutationArgs,
     context: unknown,
   ) => unknown;
+  onSuggestionGenerationError?: () => void;
 }) => {
   const { data, mutate, isPending } = useMutation<
     Record<string, SkylarkObjectMetadataField[]>,
@@ -75,9 +77,20 @@ export const useAIGeneratedFields = ({
     MutationArgs
   >({
     mutationKey: ["aiFieldSuggestions"],
-    mutationFn: async ({ rootFieldData, ...argVariables }) => {
+    mutationFn: async ({
+      rootFieldData,
+      fieldsToPopulate,
+      context,
+      language,
+      setUid,
+      objectType,
+    }) => {
       const variables: AIGeneratedFieldsVariables & Record<string, unknown> = {
-        ...argVariables,
+        fieldsToPopulate,
+        context,
+        language,
+        setUid,
+        objectType,
         rootFieldData: JSON.stringify(rootFieldData),
       };
       const data = await skylarkRequest<{ AiAssistant: string }>(
@@ -85,10 +98,10 @@ export const useAIGeneratedFields = ({
         AI_FIELD_SUGGESTIONS,
         variables,
       );
-
       return select(data);
     },
-    onSuccess: onFieldsGenerated,
+    onSuccess: onSuggestionsGenerated,
+    onError: onSuggestionGenerationError,
   });
 
   console.log({ data });
