@@ -7,7 +7,6 @@ import {
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { AI_FIELD_SUGGESTIONS } from "src/lib/graphql/skylark/queries";
-import { hasProperty } from "src/lib/utils";
 
 interface AIGeneratedFieldsVariables {
   objectType: SkylarkObjectType;
@@ -15,6 +14,7 @@ interface AIGeneratedFieldsVariables {
   fieldsToPopulate?: string[];
   context?: string;
   language?: string;
+  setUid?: string;
 }
 
 type MutationArgs = Omit<AIGeneratedFieldsVariables, "rootFieldData"> & {

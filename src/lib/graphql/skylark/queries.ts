@@ -162,7 +162,7 @@ query ${wrapQueryName(
 `;
 
 export const AI_FIELD_SUGGESTIONS = gql`
-query ${wrapQueryName("AI_FIELD_SUGGESTIONS")}($objectType:ObjectTypes!, $rootFieldData:AWSJSON!, $fieldsToPopulate: [String], $context: String, $language: String) {
+query ${wrapQueryName("AI_FIELD_SUGGESTIONS")}($objectType:ObjectTypes!, $rootFieldData:AWSJSON!, $fieldsToPopulate: [String], $context: String, $language: String, $setUid: String) {
   AiAssistant(
     object_type: $objectType
     # Stringified JSON of all the data inputted by the user
@@ -172,5 +172,7 @@ query ${wrapQueryName("AI_FIELD_SUGGESTIONS")}($objectType:ObjectTypes!, $rootFi
     # String of text with context to pass to GPT
     context: $context
     language: $language
+    # When a Set is used, send the UID to use the set content to add context
+    uid: $setUid
   )
 }`;
