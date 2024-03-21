@@ -29,9 +29,9 @@ import {
   DeleteObjectModal,
   DisplayGraphQLQueryModal,
 } from "src/components/modals";
-import { PanelLabel } from "src/components/panel/panelLabel";
 import { ObjectTypePill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
+import { Tag } from "src/components/tag";
 import { QueryKeys } from "src/enums/graphql";
 import { PanelTab } from "src/hooks/state";
 import {
@@ -118,6 +118,41 @@ const RefreshPanelQueries = (props: Omit<ButtonProps, "variant">) => {
       aria-label="Refresh Panel"
     />
   );
+};
+
+const PanelTag = ({
+  inEditMode,
+  isDraft,
+  isSaving,
+  isPage,
+}: {
+  inEditMode?: boolean;
+  isDraft?: boolean;
+  isSaving?: boolean;
+  isPage?: boolean;
+}) => {
+  const sharedClassName = clsx(
+    "absolute -bottom-16 left-1/2 z-20 -translate-x-1/2",
+    isPage ? "md:fixed md:bottom-auto md:top-24" : "md:-bottom-18",
+  );
+
+  if (inEditMode) {
+    return (
+      <Tag className={sharedClassName} warning={isDraft} loading={isSaving}>
+        {isSaving ? "Saving" : "Editing"}
+      </Tag>
+    );
+  }
+
+  if (isDraft) {
+    return (
+      <Tag className={sharedClassName} warning>
+        Draft
+      </Tag>
+    );
+  }
+
+  return null;
 };
 
 export const PanelHeader = ({
@@ -385,22 +420,13 @@ export const PanelHeader = ({
           )}
         </div>
         <div className="flex flex-row items-end justify-end">
-          {(inEditMode || currentTab === PanelTab.Metadata) && (
-            <div
-              className={clsx(
-                "absolute -bottom-16 left-1/2 z-20 -translate-x-1/2",
-                isPage ? "md:fixed md:bottom-auto md:top-24" : " md:-bottom-18",
-              )}
-            >
-              {inEditMode && (
-                <PanelLabel
-                  text={isSaving ? "Saving" : "Editing"}
-                  warning={isDraft}
-                  loading={isSaving}
-                />
-              )}
-              {!inEditMode && isDraft && <PanelLabel text="Draft" warning />}
-            </div>
+          {currentTab === PanelTab.Metadata && (
+            <PanelTag
+              inEditMode={inEditMode}
+              isPage={isPage}
+              isDraft={isDraft}
+              isSaving={isSaving}
+            />
           )}
         </div>
       </div>

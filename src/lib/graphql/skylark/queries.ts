@@ -160,3 +160,17 @@ query ${wrapQueryName(
   getConfigurationSchema(version: $version, query: $query)
 }
 `;
+
+export const AI_FIELD_SUGGESTIONS = gql`
+query ${wrapQueryName("AI_FIELD_SUGGESTIONS")}($objectType:ObjectTypes!, $rootFieldData:AWSJSON!, $fieldsToPopulate: [String]!, $context: String, $language: String) {
+  AiAssistant(
+    object_type: $objectType
+    # Stringified JSON of all the data inputted by the user
+    root_field_data: $rootFieldData
+    # Array of strings with names of fields to give suggestions for
+    fields_to_populate: $fieldsToPopulate
+    # String of text with context to pass to GPT
+    context: $context
+    language: $language
+  )
+}`;

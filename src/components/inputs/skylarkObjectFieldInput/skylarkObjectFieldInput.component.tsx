@@ -12,8 +12,16 @@ import {
 
 import { Checkbox } from "src/components/inputs/checkbox";
 import { ColourPicker } from "src/components/inputs/colourPicker";
-import { InputLabel } from "src/components/inputs/label/label.component";
+import {
+  InputLabel,
+  InputLabelProps,
+} from "src/components/inputs/label/label.component";
 import { Select, TimezoneSelect } from "src/components/inputs/select";
+import {
+  SkylarkObjectFieldInputLabel,
+  SkylarkObjectFieldInputLabelProps,
+  createHtmlForId,
+} from "src/components/inputs/skylarkObjectFieldInputLabel/skylarkObjectFieldInputLabel.component";
 import { Skeleton } from "src/components/skeleton";
 import { WYSIWYGEditor } from "src/components/wysiwygEditor";
 import { INPUT_REGEX, SYSTEM_FIELDS } from "src/constants/skylark";
@@ -39,6 +47,7 @@ interface SkylarkObjectFieldInputProps {
   additionalRequiredFields?: string[];
   isLoading?: boolean;
   fieldConfigFromObject?: ParsedSkylarkObjectConfigFieldConfig;
+  aiFieldGeneration?: SkylarkObjectFieldInputLabelProps["aiFieldGeneration"];
 }
 
 interface SkylarkObjectFieldInputComponentProps
@@ -46,29 +55,6 @@ interface SkylarkObjectFieldInputComponentProps
   error?: FieldError;
   registerOptions?: RegisterOptions<FieldValues, string>;
 }
-
-const createHtmlForId = (
-  prefix: string,
-  field: SkylarkObjectFieldInputProps["field"],
-) => `${prefix}-skylark-object-field-input-${field}`;
-
-export const SkylarkObjectFieldInputLabel = ({
-  field,
-  idPrefix,
-  ...props
-}: {
-  field: SkylarkObjectFieldInputProps["field"];
-  isRequired?: boolean;
-  copyValue?: string;
-  href?: string;
-  idPrefix: string;
-}) => (
-  <InputLabel
-    text={field}
-    htmlFor={createHtmlForId(idPrefix, field)}
-    {...props}
-  />
-);
 
 const SkylarkObjectFieldInputEnum = ({
   field,
@@ -246,6 +232,7 @@ export const SkylarkObjectFieldInput = (
     isLoading,
     fieldConfigFromObject,
     idPrefix,
+    aiFieldGeneration,
   } = props;
   const required =
     config.isRequired || additionalRequiredFields?.includes(config.name)
@@ -316,6 +303,7 @@ export const SkylarkObjectFieldInput = (
         isRequired={!!required}
         copyValue={props.value !== null ? `${props.value}` : undefined}
         href={config.type === "url" ? `${props.value}` : undefined}
+        aiFieldGeneration={aiFieldGeneration}
       />
       {isLoading &&
       (!fieldConfigFromObject ||

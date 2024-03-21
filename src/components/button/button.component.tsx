@@ -6,7 +6,14 @@ import { CgSpinner } from "react-icons/cg";
 export interface ButtonProps {
   onClick?: () => void;
   children?: ReactNode;
-  variant: "primary" | "neutral" | "outline" | "ghost" | "link" | "form";
+  variant:
+    | "primary"
+    | "neutral"
+    | "outline"
+    | "ghost"
+    | "link"
+    | "form"
+    | "form-ghost";
   loading?: boolean;
   success?: boolean;
   danger?: boolean;
@@ -48,9 +55,10 @@ export const Button = forwardRef(
     const iconOnly = Icon && !children;
 
     const combinedClassName = clsx(
-      "btn flex-nowrap min-h-8 h-8 md:h-10",
+      "btn flex-nowrap",
       Icon && children && "gap-x-2",
       !iconOnly && "text-xs normal-case md:text-sm",
+      !iconOnly && variant !== "form" && "min-h-8 h-8 md:h-10",
       variant === "primary" && "btn-primary shadow",
       variant === "neutral" &&
         "btn-neutral bg-manatee-50 hover:bg-manatee-100 border-none",
@@ -59,8 +67,10 @@ export const Button = forwardRef(
       variant === "ghost" &&
         "btn-ghost text-black hover:bg-transparent p-0 disabled:bg-transparent bg-transparent",
       variant === "link" && "btn-link",
-      variant === "form" &&
-        "p-0 h-auto min-h-0 btn-ghost hover:bg-transparent opacity-30 transition-opacity hover:opacity-100 active:opacity-60",
+      (variant === "form" || variant === "form-ghost") &&
+        "p-0 h-auto min-h-0 btn-ghost hover:bg-transparent hover:text-brand-primary",
+      variant === "form-ghost" &&
+        "opacity-30 transition-opacity hover:opacity-100 active:opacity-60",
       success && !disabled && !loading && "btn-success text-white",
       danger && "btn-error",
       warning && "btn-warning",

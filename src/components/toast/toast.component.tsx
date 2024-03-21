@@ -18,7 +18,7 @@ export interface ToastProps extends Partial<ToastContentProps> {
 
 const contextClassNames = {
   default: "bg-manatee-200 text-info-content",
-  info: "bg-info text-info-content",
+  info: "bg-brand-primary text-info-content",
   success: "bg-success text-success-content",
   warning: "bg-warning text-warning-content",
   error: "bg-error text-error-content",
