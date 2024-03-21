@@ -333,7 +333,13 @@ const CreateObjectModalBody = forwardRef(
                   ))}
               </div>
               <div className="flex justify-between mt-4">
-                <Button variant="outline">Fill with AI values</Button>
+                <Button
+                  variant="outline"
+                  disabled={!aiFieldGeneration.hasAiSuggestions}
+                  onClick={aiFieldGeneration.populateAllFieldsUsingAiValues}
+                >
+                  Fill with AI values
+                </Button>
                 <div className="space-x-2 flex">
                   <Button
                     ref={submitButtonRef}
