@@ -1,3 +1,5 @@
+import clsx from "clsx";
+import { useEffect, useState } from "react";
 import { CgSpinner } from "react-icons/cg";
 import { GrMagic } from "react-icons/gr";
 
@@ -12,6 +14,7 @@ import { AIFieldGeneration } from "src/hooks/forms/useSkylarkObjectFormWithAutog
 export type SkylarkObjectFieldInputLabelProps = {
   field: string;
   idPrefix: string;
+  hasValue: boolean;
   aiFieldGeneration?: AIFieldGeneration;
 } & Omit<InputLabelProps, "text">;
 
@@ -23,11 +26,13 @@ export const createHtmlForId = (prefix: string, field: string) =>
 // - When field has value, tooltip should say this field will taken into account when generating results
 
 const AiTooltip = ({
-  hasValues,
+  fieldHasValue,
+  formHasValues,
   isGeneratingAiSuggestions,
   triggerAiFieldGeneration,
 }: {
-  hasValues: boolean;
+  fieldHasValue: boolean;
+  formHasValues: boolean;
   isGeneratingAiSuggestions: boolean;
   triggerAiFieldGeneration: () => void;
 }) => {
@@ -40,7 +45,15 @@ const AiTooltip = ({
     );
   }
 
-  if (hasValues) {
+  if (fieldHasValue) {
+    return (
+      <p className="font-normal">
+        This field will be used when generating AI suggestions.
+      </p>
+    );
+  }
+
+  if (formHasValues) {
     return (
       <div className="flex flex-col max-w-64 items-center">
         <p className="font-normal">
@@ -73,6 +86,7 @@ export const SkylarkObjectFieldInputLabel = ({
   field,
   idPrefix,
   aiFieldGeneration,
+  hasValue,
   ...props
 }: SkylarkObjectFieldInputLabelProps) => (
   <>
@@ -86,28 +100,37 @@ export const SkylarkObjectFieldInputLabel = ({
           <Tooltip
             tooltip={
               <AiTooltip
-                hasValues={aiFieldGeneration.formHasValues}
+                fieldHasValue={hasValue}
+                formHasValues={aiFieldGeneration.formHasValues}
                 isGeneratingAiSuggestions={
                   aiFieldGeneration.isGeneratingAiSuggestions
                 }
-                triggerAiFieldGeneration={
-                  aiFieldGeneration.generateFieldSuggestions
-                }
+                triggerAiFieldGeneration={() => {
+                  aiFieldGeneration.generateFieldSuggestions();
+                }}
               />
             }
           >
             <span>
               <Button
-                Icon={<GrMagic className="text-base" />}
+                Icon={
+                  <GrMagic
+                    className={clsx(
+                      "text-base",
+                      aiFieldGeneration.isGeneratingAiSuggestions &&
+                        "animate-pulse",
+                    )}
+                  />
+                }
                 disabled={
                   !aiFieldGeneration.formHasValues ||
-                  aiFieldGeneration.isGeneratingAiSuggestions
+                  aiFieldGeneration.isGeneratingAiSuggestions ||
+                  (hasValue && !aiFieldGeneration.fieldIsAiSuggestion(field))
                 }
-                className=""
                 variant="form"
-                onClick={() =>
-                  aiFieldGeneration.populateFieldUsingAiValue(field)
-                }
+                onClick={() => {
+                  aiFieldGeneration.populateFieldUsingAiValue(field);
+                }}
               />
             </span>
           </Tooltip>

@@ -301,6 +301,7 @@ export const SkylarkObjectFieldInput = (
         idPrefix={idPrefix}
         field={field}
         isRequired={!!required}
+        hasValue={Boolean(props.value) || props.value === false}
         copyValue={props.value !== null ? `${props.value}` : undefined}
         href={config.type === "url" ? `${props.value}` : undefined}
         aiFieldGeneration={aiFieldGeneration}

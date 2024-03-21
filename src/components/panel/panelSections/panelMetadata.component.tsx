@@ -16,6 +16,7 @@ import {
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
 
@@ -145,7 +146,11 @@ export const PanelMetadata = ({
                       formState={formState}
                       additionalRequiredFields={requiredFields}
                       fieldConfigFromObject={fieldConfigFromObject}
-                      aiFieldGeneration={aiFieldGeneration}
+                      aiFieldGeneration={
+                        field !== SkylarkSystemField.ExternalID
+                          ? aiFieldGeneration
+                          : undefined
+                      }
                     />
                   );
                 }

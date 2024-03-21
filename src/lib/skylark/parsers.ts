@@ -544,6 +544,10 @@ export const parseDateTimeForHTMLForm = (
   type: HTMLInputTypeAttribute,
   value: SkylarkObjectMetadataField,
 ) => {
+  if (!value) {
+    return "";
+  }
+
   if (type === "datetime-local") {
     // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local
     const validDateTimeLocal = dayjs(`${value}`).format(

@@ -7,11 +7,12 @@ import {
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { AI_FIELD_SUGGESTIONS } from "src/lib/graphql/skylark/queries";
+import { hasProperty } from "src/lib/utils";
 
 interface AIGeneratedFieldsVariables {
   objectType: SkylarkObjectType;
   rootFieldData: string;
-  fieldsToPopulate: string[];
+  fieldsToPopulate?: string[];
   context?: string;
   language?: string;
 }
@@ -21,9 +22,11 @@ type MutationArgs = Omit<AIGeneratedFieldsVariables, "rootFieldData"> & {
   fieldToFill?: string;
 };
 
-const select = (data?: { AiAssistant: string }) => {
+const select = (data?: {
+  AiAssistant: string;
+}): Record<string, SkylarkObjectMetadataField[]> => {
   if (!data) {
-    return undefined;
+    return {};
   }
 
   try {
@@ -31,9 +34,29 @@ const select = (data?: { AiAssistant: string }) => {
       string,
       SkylarkObjectMetadataField
     >[];
-    return json;
+
+    const initialValue: Record<string, SkylarkObjectMetadataField[]> = {};
+
+    const fieldSuggestions = json.reduce((prev, suggestionObj) => {
+      Object.entries(suggestionObj).forEach(([key, value]) => {
+        if (prev?.[key]) {
+          if (!prev[key].includes(value)) {
+            prev[key] = [...prev[key], value];
+          }
+        } else {
+          prev = {
+            ...prev,
+            [key]: [value],
+          };
+        }
+      });
+
+      return prev;
+    }, initialValue);
+
+    return fieldSuggestions;
   } catch {
-    return [];
+    return {};
   }
 };
 
@@ -41,46 +64,49 @@ export const useAIGeneratedFields = ({
   onFieldsGenerated,
 }: {
   onFieldsGenerated?: (
-    data: {
-      AiAssistant: string;
-    },
+    data: Record<string, SkylarkObjectMetadataField[]>,
     variables: MutationArgs,
     context: unknown,
   ) => unknown;
 }) => {
-  const {
-    data: response,
-    mutate,
-    isPending,
-  } = useMutation<
-    { AiAssistant: string },
+  const { data, mutate, isPending } = useMutation<
+    Record<string, SkylarkObjectMetadataField[]>,
     { response?: { errors?: { errorType?: string; message?: string }[] } },
     MutationArgs
   >({
     mutationKey: ["aiFieldSuggestions"],
-    mutationFn: ({ rootFieldData, ...argVariables }) => {
+    mutationFn: async ({ rootFieldData, ...argVariables }) => {
       const variables: AIGeneratedFieldsVariables & Record<string, unknown> = {
         ...argVariables,
         rootFieldData: JSON.stringify(rootFieldData),
       };
-      return skylarkRequest<{ AiAssistant: string }>(
+      const data = await skylarkRequest<{ AiAssistant: string }>(
         "query",
         AI_FIELD_SUGGESTIONS,
         variables,
       );
+
+      return select(data);
     },
     onSuccess: onFieldsGenerated,
   });
 
-  const data = useMemo(() => select(response), [response]);
-
   console.log({ data });
 
-  const getGeneratedFieldValues = useCallback(
-    (field: string) => {
-      return data
-        ?.map((values) => values?.[field])
-        .filter((value) => value !== undefined);
+  const getGeneratedFieldSuggestion = useCallback(
+    (field: string, currentValue?: SkylarkObjectMetadataField) => {
+      const suggestions = data?.[field];
+      if (!suggestions) {
+        return null;
+      }
+
+      if (currentValue) {
+        const nextSuggestionIndex = suggestions.indexOf(currentValue) + 1;
+        return suggestions?.[
+          nextSuggestionIndex >= suggestions.length ? 0 : nextSuggestionIndex
+        ];
+      }
+      return suggestions?.[0];
     },
     [data],
   );
@@ -88,7 +114,7 @@ export const useAIGeneratedFields = ({
   return {
     generatedFieldValues: data,
     generateFieldValues: mutate,
-    getGeneratedFieldValues,
+    getGeneratedFieldSuggestion,
     isGeneratingAiSuggestions: isPending,
   };
 };
