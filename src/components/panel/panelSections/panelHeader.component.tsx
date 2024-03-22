@@ -57,6 +57,7 @@ interface PanelHeaderProps {
   isTranslatable?: boolean;
   availabilityStatus?: AvailabilityStatus | null;
   objectMetadataHasChanged: boolean;
+  isGeneratingAiSuggestions?: boolean;
   toggleEditMode: () => void;
   closePanel?: () => void;
   save: (opts?: { draft?: boolean }) => void;
@@ -125,16 +126,26 @@ const PanelTag = ({
   isDraft,
   isSaving,
   isPage,
+  isGeneratingAiSuggestions,
 }: {
   inEditMode?: boolean;
   isDraft?: boolean;
   isSaving?: boolean;
   isPage?: boolean;
+  isGeneratingAiSuggestions?: boolean;
 }) => {
   const sharedClassName = clsx(
-    "absolute -bottom-16 left-1/2 z-20 -translate-x-1/2",
+    "absolute -bottom-16 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap",
     isPage ? "md:fixed md:bottom-auto md:top-24" : "md:-bottom-18",
   );
+
+  if (isGeneratingAiSuggestions) {
+    return (
+      <Tag className={sharedClassName} loading>
+        Generating AI Suggestions
+      </Tag>
+    );
+  }
 
   if (inEditMode) {
     return (
@@ -170,6 +181,7 @@ export const PanelHeader = ({
   isTranslatable,
   availabilityStatus,
   objectMetadataHasChanged,
+  isGeneratingAiSuggestions,
   toggleEditMode,
   closePanel,
   save,
@@ -426,6 +438,7 @@ export const PanelHeader = ({
               isPage={isPage}
               isDraft={isDraft}
               isSaving={isSaving}
+              isGeneratingAiSuggestions={isGeneratingAiSuggestions}
             />
           )}
         </div>

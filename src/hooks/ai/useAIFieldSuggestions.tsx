@@ -8,7 +8,7 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { AI_FIELD_SUGGESTIONS } from "src/lib/graphql/skylark/queries";
 
-interface AIGeneratedFieldsVariables {
+interface AIFieldSuggestionsVariables {
   objectType: SkylarkObjectType;
   rootFieldData: string;
   fieldsToPopulate?: string[];
@@ -17,9 +17,9 @@ interface AIGeneratedFieldsVariables {
   setUid?: string;
 }
 
-type MutationArgs = Omit<AIGeneratedFieldsVariables, "rootFieldData"> & {
+type MutationArgs = Omit<AIFieldSuggestionsVariables, "rootFieldData"> & {
   rootFieldData: object;
-  fieldToFill?: string;
+  fieldsToAutoFill?: string[];
 };
 
 const select = (data?: {
@@ -60,7 +60,7 @@ const select = (data?: {
   }
 };
 
-export const useAIGeneratedFields = ({
+export const useAIFieldSuggestions = ({
   onSuggestionsGenerated,
   onSuggestionGenerationError,
 }: {
@@ -85,18 +85,28 @@ export const useAIGeneratedFields = ({
       setUid,
       objectType,
     }) => {
-      const variables: AIGeneratedFieldsVariables & Record<string, unknown> = {
+      const sanitizedRootFieldData = JSON.stringify(
+        Object.fromEntries(
+          Object.entries(rootFieldData).filter(([, value]) => Boolean(value)),
+        ),
+      );
+
+      const variables: AIFieldSuggestionsVariables & Record<string, unknown> = {
         fieldsToPopulate,
         context,
         language,
         setUid,
         objectType,
-        rootFieldData: JSON.stringify(rootFieldData),
+        rootFieldData: sanitizedRootFieldData,
       };
       const data = await skylarkRequest<{ AiAssistant: string }>(
         "query",
         AI_FIELD_SUGGESTIONS,
         variables,
+        {},
+        // {
+        //   "x-gpt-model": "gpt-4",
+        // },
       );
       return select(data);
     },

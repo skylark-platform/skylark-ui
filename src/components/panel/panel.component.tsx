@@ -341,8 +341,16 @@ export const Panel = ({
       mode: "onTouched",
       values: formParsedMetadata || {},
     },
-    onFieldsGenerated: () => {
-      toast.info(<Toast title={"AI Values Generated"} />);
+    onSuggestionsGenerated: () => {
+      toast.info(<Toast title={"AI Suggestions Generated"} />);
+    },
+    onSuggestionGenerationError: () => {
+      toast.error(
+        <Toast
+          title={"Error generating AI suggestions"}
+          message={"Contact support"}
+        />,
+      );
     },
   });
 
@@ -631,6 +639,9 @@ export const Panel = ({
           isUpdatingAvailabilityAssignedTo
         }
         isTranslatable={objectMeta?.isTranslatable}
+        isGeneratingAiSuggestions={
+          metadataForm.aiFieldGeneration.isGeneratingAiSuggestions
+        }
         availabilityStatus={data?.meta.availabilityStatus}
         objectMetadataHasChanged={isMetadataFormDirty}
         toggleEditMode={() => {

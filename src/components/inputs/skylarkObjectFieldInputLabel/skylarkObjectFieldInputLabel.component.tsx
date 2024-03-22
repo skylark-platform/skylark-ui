@@ -36,6 +36,19 @@ const AiTooltip = ({
   isGeneratingAiSuggestions: boolean;
   triggerAiFieldGeneration: () => void;
 }) => {
+  const RefreshResultsButton = () => (
+    <div>
+      <Button
+        // variant="neutral"
+        variant="form"
+        className="mt-4 w-auto"
+        onClick={triggerAiFieldGeneration}
+      >
+        Refresh results
+      </Button>
+    </div>
+  );
+
   if (isGeneratingAiSuggestions) {
     return (
       <>
@@ -47,30 +60,25 @@ const AiTooltip = ({
 
   if (fieldHasValue) {
     return (
-      <p className="font-normal">
-        This field will be used when generating AI suggestions.
-      </p>
+      <div className="flex flex-col max-w-80 items-center">
+        <p className="font-normal">
+          This field will be used when generating AI suggestions.
+        </p>
+        <RefreshResultsButton />
+      </div>
     );
   }
 
   if (formHasValues) {
     return (
-      <div className="flex flex-col max-w-64 items-center">
+      <div className="flex flex-col max-w-80 items-center">
         <p className="font-normal">
           Click on the wand to populate the field using AI generated values.
         </p>
         <p className="font-normal mt-2">
           Alternatively, modify or add fields and refresh AI results.
         </p>
-        <div>
-          <Button
-            variant="neutral"
-            className="mt-2 w-auto"
-            onClick={triggerAiFieldGeneration}
-          >
-            Refresh results
-          </Button>
-        </div>
+        <RefreshResultsButton />
       </div>
     );
   }
