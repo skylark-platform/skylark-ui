@@ -25,9 +25,11 @@ export const InputLabel = ({
   copyValue,
   children,
 }: InputLabelProps) => (
-  <label className="mb-2 flex items-center font-bold" htmlFor={htmlFor}>
-    {formatObjectField(text)}
-    {isRequired && <span className="pl-0.5 text-error">*</span>}
+  <div className="mb-2 flex items-center font-bold">
+    <label htmlFor={htmlFor}>
+      {formatObjectField(text)}
+      {isRequired && <span className="pl-0.5 text-error">*</span>}
+    </label>
     {children}
     {href && (
       <Button
@@ -42,5 +44,5 @@ export const InputLabel = ({
       value={copyValue}
       className="invisible group-hover/input-field:visible"
     />
-  </label>
+  </div>
 );
