@@ -1,5 +1,5 @@
 import { Editor } from "@tinymce/tinymce-react";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import { Skeleton } from "src/components/skeleton";
 
@@ -58,6 +58,15 @@ export const WYSIWYGEditor = ({
 }: WYSIWYGEditorProps) => {
   const [isLoaded, setIsLoaded] = useState(withSkeletonLoading ? false : true);
 
+  const onEditorChangeWrapper = useCallback(
+    (newValue: string) => {
+      if (onEditorChange && isLoaded) {
+        onEditorChange(newValue);
+      }
+    },
+    [isLoaded, onEditorChange],
+  );
+
   return (
     <div className="relative" data-testid="wysiwyg-editor">
       <Editor
@@ -68,7 +77,7 @@ export const WYSIWYGEditor = ({
         }}
         init={WYSIWYG_INIT}
         value={value}
-        onEditorChange={onEditorChange}
+        onEditorChange={onEditorChangeWrapper}
       />
       {!isLoaded && (
         <div
