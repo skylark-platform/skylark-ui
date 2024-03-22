@@ -401,8 +401,6 @@ export const Panel = ({
     ],
   );
 
-  console.log({ getValues: metadataForm.getValues() });
-
   const { updateObjectRelationships, isUpdatingObjectRelationships } =
     useUpdateObjectRelationships({
       objectType,

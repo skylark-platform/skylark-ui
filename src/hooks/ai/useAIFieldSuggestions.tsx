@@ -114,8 +114,6 @@ export const useAIFieldSuggestions = ({
     onError: onSuggestionGenerationError,
   });
 
-  console.log({ data });
-
   const getGeneratedFieldSuggestion = useCallback(
     (field: string, currentValue?: SkylarkObjectMetadataField) => {
       const suggestions = data?.[field];

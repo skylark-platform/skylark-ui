@@ -432,15 +432,13 @@ export const PanelHeader = ({
           )}
         </div>
         <div className="flex flex-row items-end justify-end">
-          {currentTab === PanelTab.Metadata && (
-            <PanelTag
-              inEditMode={inEditMode}
-              isPage={isPage}
-              isDraft={isDraft}
-              isSaving={isSaving}
-              isGeneratingAiSuggestions={isGeneratingAiSuggestions}
-            />
-          )}
+          <PanelTag
+            inEditMode={inEditMode}
+            isPage={isPage}
+            isDraft={isDraft && currentTab === PanelTab.Metadata}
+            isSaving={isSaving}
+            isGeneratingAiSuggestions={isGeneratingAiSuggestions}
+          />
         </div>
       </div>
       <AnimatePresence>
