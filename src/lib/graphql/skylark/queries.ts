@@ -173,6 +173,6 @@ query ${wrapQueryName("AI_FIELD_SUGGESTIONS")}($objectType:ObjectTypes!, $rootFi
     context: $context
     language: $language
     # When a Set is used, send the UID to use the set content to add context
-    uid: $setUid
+    set_uid: $setUid
   )
 }`;

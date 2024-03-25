@@ -1,3 +1,4 @@
+import { aiHandlers } from "./aiHandlers";
 import { availabilityDimensionHandlers } from "./availabilityDimensions";
 import { createObjectHandlers } from "./createObjectHandlers";
 import { deleteObjectHandlers } from "./deleteObjectHandlers";
@@ -40,4 +41,5 @@ export const handlers = [
   ...flatfileHandlers,
   ...environmentHandlers,
   ...updateSchemaHandlers,
+  ...aiHandlers,
 ];

@@ -130,6 +130,7 @@ export const SkylarkObjectFieldInputLabel = ({
                     )}
                   />
                 }
+                data-testid="ai-field-fill"
                 disabled={
                   !aiFieldGeneration.formHasValues ||
                   aiFieldGeneration.isGeneratingAiSuggestions ||
