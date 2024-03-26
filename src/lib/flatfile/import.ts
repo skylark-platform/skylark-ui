@@ -1,5 +1,6 @@
 import { ITheme } from "@flatfile/sdk/dist/types";
 import dayjs from "dayjs";
+import { IResultMetadata } from "dromo-uploader-react";
 import { GraphQLClient } from "graphql-request";
 import { EnumType } from "json-to-graphql-query";
 
@@ -16,6 +17,7 @@ import {
   NormalizedObjectFieldType,
   SkylarkImportedObject,
   SkylarkObjectMeta,
+  SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
 import { wrappedJsonMutation } from "src/lib/graphql/skylark/dynamicQueries";
 import { getSkylarkObjectOperations } from "src/lib/skylark/introspection/introspection";
@@ -164,6 +166,143 @@ export const createFlatfileObjectsInSkylark = async (
   };
 };
 
+const parseDromoRelationships = (
+  dromoObject: Record<string, SkylarkObjectMetadataField>,
+  relationships: SkylarkObjectMeta["relationships"],
+): Record<string, string[]> => {
+  const relationshipNames = relationships.map(
+    ({ relationshipName }) => relationshipName,
+  );
+
+  return Object.entries(dromoObject).reduce((prev, [key, value]) => {
+    if (relationshipNames.includes(key) && Array.isArray(value)) {
+      return {
+        ...prev,
+        [key]: {
+          link: value,
+        },
+      };
+    }
+
+    return prev;
+  }, {});
+};
+
+export const createDromoObjectsInSkylark = async (
+  client: GraphQLClient,
+  objectMeta: SkylarkObjectMeta,
+  dromoObjects: Record<string, SkylarkObjectMetadataField>[],
+  dromoImportMetadata: IResultMetadata,
+): Promise<{
+  data: SkylarkImportedObject[];
+  errors: (GQLSkylarkError<FlatfileObjectsCreatedInSkylarkFields> | Error)[];
+}> => {
+  const objectType = objectMeta.name;
+  const createOperation = objectMeta.operations.create;
+
+  const chunkedFlatfileRows = chunkArray(dromoObjects, 50);
+
+  const dataArr = await Promise.all(
+    chunkedFlatfileRows.map(
+      async (
+        flatfileRows,
+        chunkIndex,
+      ): Promise<{
+        data: SkylarkImportedObject[];
+        errors: (
+          | GQLSkylarkError<FlatfileObjectsCreatedInSkylarkFields>
+          | Error
+        )[];
+      }> => {
+        const operations = flatfileRows.reduce(
+          (previousOperations, data, index) => {
+            const parsedMetadata = parseMetadataForGraphQLRequest(
+              objectType,
+              data,
+              createOperation.inputs,
+              true,
+            );
+
+            const parsedRelationships = parseDromoRelationships(
+              data,
+              objectMeta.relationships,
+            );
+
+            const operation = {
+              __aliasFor: createOperation.name,
+              __args: {
+                [createOperation.argName]: {
+                  ...parsedMetadata,
+                  relationships: parsedRelationships,
+                },
+              },
+              uid: true,
+              external_id: true,
+            };
+
+            const updatedOperations = {
+              ...previousOperations,
+              [`${createOperation.name}_${dromoImportMetadata.importIdentifier}__${chunkIndex + 1}_${index + 1}`.replace(
+                /-/g,
+                "_",
+              )]: operation,
+            };
+            return updatedOperations;
+          },
+          {} as { [key: string]: object },
+        );
+
+        const mutation = {
+          mutation: {
+            __name:
+              `DROMO_IMPORT_${objectType}_${dromoImportMetadata.importIdentifier}`.replace(
+                /-/g,
+                "_",
+              ),
+            ...operations,
+          },
+        };
+
+        const graphQLMutation = wrappedJsonMutation(mutation, { pretty: true });
+
+        try {
+          const responseData =
+            await client.request<FlatfileObjectsCreatedInSkylark>(
+              graphQLMutation,
+            );
+          const data = Object.values(
+            responseData as FlatfileObjectsCreatedInSkylark,
+          );
+          return { errors: [], data };
+        } catch (err) {
+          if (hasProperty(err, "response")) {
+            const { response } =
+              err as GQLSkylarkErrorResponse<FlatfileObjectsCreatedInSkylarkFields>;
+            return {
+              errors: response.errors,
+              data: response.data ? Object.values(response.data) : [],
+            };
+          }
+          return {
+            errors: [err as Error],
+            data: [],
+          };
+        }
+      },
+    ),
+  );
+
+  const data = dataArr.flatMap(({ data }) => data);
+  const errors = dataArr
+    .flatMap(({ errors }) => errors)
+    .filter((error) => !!error);
+
+  return {
+    data,
+    errors,
+  };
+};
+
 const generateExampleFieldData = (
   { type, enumValues }: NormalizedObjectField,
   rowNum: number,
@@ -219,9 +358,23 @@ export const generateExampleCSV = (
     return null;
   }
 
-  const columns = inputs
-    .map(({ name, isRequired }) => (isRequired ? `${name} (required)` : name))
-    .join(",");
+  const columns = inputs.map(({ name, isRequired }) =>
+    isRequired ? `${name} (required)` : name,
+  );
+
+  if (objectMeta?.hasRelationships) {
+    const relationshipNames = objectMeta.relationships
+      .map(({ relationshipName }) => [
+        `${relationshipName} (1)`,
+        `${relationshipName} (2)`,
+        `${relationshipName} (3)`,
+      ])
+      .flatMap((arr) => arr);
+    columns.push(...relationshipNames);
+  }
+
+  const joinedColumns = columns.join(",");
+
   const blankRow = inputs.length > 1 ? ",".repeat(inputs.length - 1) : ",";
 
   const exampleRows: string[] = [];
@@ -238,6 +391,6 @@ export const generateExampleCSV = (
     exampleRows.push(examples.join(","));
   }
 
-  const csv = [columns, ...exampleRows].join("\n");
+  const csv = [joinedColumns, ...exampleRows].join("\n");
   return csv;
 };

@@ -1,44 +1,44 @@
-import DromoUploader from "dromo-uploader-react";
-import { RequestDocument } from "graphql-request";
-import { useState, useReducer, useEffect } from "react";
+import dayjs from "dayjs";
+import DromoUploader, { IResultMetadata } from "dromo-uploader-react";
+import { useState, useReducer } from "react";
 import { FiDownload, FiUpload } from "react-icons/fi";
 
 import { Button } from "src/components/button";
 import { ObjectTypeSelect } from "src/components/inputs/select";
 import { StatusCard, statusType } from "src/components/statusCard";
-import { REQUEST_HEADERS } from "src/constants/skylark";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
-import { useListAllObjects } from "src/hooks/objects/list/useListAllObjects";
+import { SkylarkCreds } from "src/hooks/useConnectedToSkylark";
 import {
+  ObjectTypeWithConfig,
   useAllObjectsMeta,
   useSkylarkObjectOperations,
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
-  GQLSkylarkGetObjectResponse,
-  GQLSkylarkSearchResponse,
-  NormalizedObjectField,
   ParsedSkylarkObjectConfig,
-  SkylarkGraphQLObject,
+  SkylarkObjectMeta,
+  SkylarkObjectMetadataField,
+  SkylarkObjectType,
 } from "src/interfaces/skylark";
+import { createDromoRowHooks } from "src/lib/dromo/rowHooks";
 import {
   DromoSchema,
   convertObjectInputToDromoSchemaFields,
   convertRelationshipsToDromoSchemaFields,
 } from "src/lib/dromo/schema";
-import { generateExampleCSV } from "src/lib/flatfile";
-import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
-import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
-  createGetObjectGenericQuery,
-  createSearchObjectsQuery,
-  removeFieldPrefixFromReturnedObject,
-} from "src/lib/graphql/skylark/dynamicQueries";
-import { createAccountIdentifier, hasProperty, pause } from "src/lib/utils";
+  createDromoObjectsInSkylark,
+  generateExampleCSV,
+} from "src/lib/flatfile";
+import { createSkylarkClient } from "src/lib/graphql/skylark/client";
+import { createAccountIdentifier, pause } from "src/lib/utils";
 
 type ImportStates = "select" | "prep" | "import" | "create";
 
 const orderedStates = ["select", "prep", "import", "create"] as ImportStates[];
+
+// Import UID to use when creating objects
+// 504c3c43-4cf1-46dd-bdd2-fd109350946c
 
 const copyText: {
   [key in ImportStates]: {
@@ -111,6 +111,118 @@ function reducer(
   };
 }
 
+const createObjectsInSkylark = async (
+  objectMeta: SkylarkObjectMeta,
+  data: Record<string, SkylarkObjectMetadataField>[],
+  dromoImportMetadata: IResultMetadata,
+  creds: SkylarkCreds | null,
+  setStatus: (status: statusType) => void,
+  setObjectAmounts: (a: { numCreated: number; numErrored: number }) => void,
+) => {
+  setStatus(statusType.inProgress);
+  if (!creds?.uri || !creds?.token) {
+    setStatus(statusType.error);
+    throw new Error(
+      "Skylark GraphQL URI or Access Key not found in local storage",
+    );
+  }
+
+  try {
+    const skylarkClient = createSkylarkClient(creds.uri, creds.token);
+
+    const skylarkObjects = await createDromoObjectsInSkylark(
+      skylarkClient,
+      objectMeta,
+      data,
+      dromoImportMetadata,
+    );
+
+    setObjectAmounts({
+      numCreated: skylarkObjects.data.length,
+      numErrored: skylarkObjects.errors.length,
+    });
+    if (skylarkObjects.errors.length > 0) {
+      console.error("Errors creating objects:", skylarkObjects.errors);
+      setStatus(statusType.error);
+    } else {
+      setStatus(statusType.success);
+    }
+  } catch (err) {
+    console.error(err);
+    setObjectAmounts({
+      numCreated: 0,
+      numErrored: data.length,
+    });
+    setStatus(statusType.inProgress);
+  }
+};
+
+const Dromo = ({
+  show,
+  accountIdentifier,
+  objectMeta,
+  objectTypesWithConfig,
+  allObjectsMeta,
+  onCancel,
+  onResults,
+}: {
+  show: boolean;
+  accountIdentifier: string;
+  objectMeta: SkylarkObjectMeta;
+  allObjectsMeta: SkylarkObjectMeta[];
+  objectTypesWithConfig?: ObjectTypeWithConfig[];
+  onCancel: () => void;
+  onResults: (
+    objectMeta: SkylarkObjectMeta,
+    data: Record<string, SkylarkObjectMetadataField>[],
+    metadata: IResultMetadata,
+  ) => void;
+}) => {
+  const metadataFields = convertObjectInputToDromoSchemaFields(
+    objectMeta.operations.create.inputs,
+    objectMeta.relationships,
+  );
+
+  const relationshipFields: DromoSchema["fields"] = objectMeta.relationships
+    ? convertRelationshipsToDromoSchemaFields(
+        objectMeta.relationships,
+        {},
+        objectTypesWithConfig || [],
+      )
+    : [];
+
+  const settings: DromoSchema["settings"] = {
+    importIdentifier: `${accountIdentifier}-${objectMeta.name}-${dayjs().format("YYYY_MM_DD__HH_mm")}`,
+    title: objectMeta.name,
+    allowCustomFields: false,
+  };
+
+  const onResultsWrapper = (
+    data: Record<string, SkylarkObjectMetadataField>[],
+    metadata: IResultMetadata,
+  ) => {
+    onResults(objectMeta, data, metadata);
+  };
+
+  return (
+    <DromoUploader
+      open={show}
+      onCancel={onCancel}
+      onResults={onResultsWrapper}
+      developmentMode
+      licenseKey={"bace02ef-7319-4911-a3ce-5a3cc3d79df9"}
+      user={{ id: "jw" }}
+      fields={[...metadataFields, ...relationshipFields]}
+      settings={settings}
+      rowHooks={createDromoRowHooks(
+        objectMeta,
+        allObjectsMeta,
+        objectTypesWithConfig,
+      )}
+    />
+  );
+};
+
 export default function CSVImportPage() {
   const [{ objectType, config: objectTypeConfig }, setObjectTypeWithConfig] =
     useState<{ objectType: string; config?: ParsedSkylarkObjectConfig }>({
@@ -130,6 +242,8 @@ export default function CSVImportPage() {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const [showDromo, setShowDromo] = useState(false);
+
   const [
     { numCreated, numErrored, totalImportedToFlatfile },
     setObjectAmounts,
@@ -141,42 +255,12 @@ export default function CSVImportPage() {
 
   const [creds] = useSkylarkCreds();
 
-  const [dromoSchema, setDromoSchema] = useState<DromoSchema | null>(null);
-
-  const relationshipFields: DromoSchema["fields"] =
-    objectOperations?.relationships
-      ? convertRelationshipsToDromoSchemaFields(
-          objectOperations.relationships,
-          // allObjects || {},
-          {},
-          objectTypesWithConfig || [],
-        )
-      : [];
-
-  // console.log(
-  //   "JSON",
-  //   dromoSchema &&
-  //     JSON.stringify({
-  //       ...dromoSchema,
-  //       fields: [...dromoSchema.fields, ...relationshipFields],
-  //     }),
-  //   dromoSchema && {
-  //     ...dromoSchema,
-  //     fields: [...dromoSchema.fields, ...relationshipFields],
-  //   },
-  // );
-  console.log({ relationshipFields });
-
   const onClick = async () => {
     if (!objectOperations) {
       return;
     }
 
     dispatch({ stage: "prep", status: statusType.inProgress });
-    const fields = convertObjectInputToDromoSchemaFields(
-      objectOperations.operations.create.inputs,
-      objectOperations.relationships,
-    );
 
     if (!creds) {
       dispatch({ stage: "prep", status: statusType.error });
@@ -185,119 +269,45 @@ export default function CSVImportPage() {
       );
     }
 
-    const accountIdentifier = createAccountIdentifier(creds.uri);
-    // const template = await createFlatfileTemplate(
-    //   objectType,
-    //   schema,
-    //   accountIdentifier,
-    // );
-
-    const settings: DromoSchema["settings"] = {
-      importIdentifier: `${accountIdentifier}-${objectOperations.name}`,
-      title: objectOperations.name,
-      allowCustomFields: false,
-    };
-
     dispatch({ stage: "prep", status: statusType.success });
     await pause(500); // Reflect state on client side, then open
-    // await openFlatfileImportClient(
-    //   template.embedId,
-    //   template.token,
-    //   createObjectsInSkylark,
-    // );
-    setDromoSchema({ fields, settings });
 
     dispatch({ stage: "import", status: statusType.inProgress });
+    setShowDromo(true);
   };
 
-  const closeFlatfile = () => dispatch({ stage: "reset" });
+  const onCancel = () => {
+    dispatch({ stage: "reset" });
+    setShowDromo(false);
+  };
+
+  const onResults = (
+    objectMeta: SkylarkObjectMeta,
+    data: Record<string, SkylarkObjectMetadataField>[],
+    metadata: IResultMetadata,
+  ) => {
+    console.log("onResults", { data, metadata });
+    dispatch({ stage: "import", status: statusType.success });
+    setShowDromo(false);
+    createObjectsInSkylark(
+      objectMeta,
+      data,
+      metadata,
+      creds,
+      (status) => {
+        dispatch({ stage: "create", status });
+      },
+      ({ numCreated, numErrored }) => {
+        setObjectAmounts({
+          totalImportedToFlatfile: data.length,
+          numCreated,
+          numErrored,
+        });
+      },
+    );
+  };
 
   const exampleCSV = generateExampleCSV(objectOperations);
-
-  const lookupViaUidOrExternalID = async (
-    objectType: string,
-    queryString: string,
-  ) => {
-    const query = createGetObjectGenericQuery(allObjectsMeta, {
-      typesToRequest: [objectType],
-    });
-
-    if (query) {
-      const response = await skylarkRequest<GQLSkylarkGetObjectResponse>(
-        "query",
-        query as RequestDocument,
-        {
-          uid: queryString,
-          externalId: queryString,
-          language: "en-GB",
-          dimensions: [],
-        },
-        {},
-        { [REQUEST_HEADERS.ignoreAvailability]: "true", "x-force-get": "true" },
-      );
-
-      const object = response.getObject;
-
-      console.log({ data: object });
-
-      const selectOption = {
-        label: queryString,
-        value: object.uid,
-      };
-
-      return [selectOption];
-    }
-
-    return [];
-  };
-
-  const search = async (objectType: string, queryString: string) => {
-    const query = createSearchObjectsQuery(allObjectsMeta, {
-      typesToRequest: [objectType],
-    });
-
-    if (query) {
-      const response = await skylarkRequest<GQLSkylarkSearchResponse>(
-        "query",
-        query as RequestDocument,
-        {
-          queryString,
-          limit: 10,
-          offset: 0,
-          language: "en-gb" || null,
-        },
-        {},
-        { [REQUEST_HEADERS.ignoreAvailability]: "true" },
-      );
-
-      const objects = response.search.objects
-        .filter((object): object is SkylarkGraphQLObject => !!object)
-        .map(removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>);
-
-      console.log({ data: objects });
-
-      const primaryField = objectTypesWithConfig?.find(
-        (otc) => otc.objectType === objectType,
-      )?.config.primaryField;
-
-      const selectOptions = objects.map((object) => {
-        const customLabel =
-          primaryField && hasProperty(object, primaryField)
-            ? `${object[primaryField]}`
-            : null;
-        const label = customLabel || object.external_id || object.uid;
-
-        return {
-          label,
-          value: object.uid,
-        };
-      });
-
-      return selectOptions;
-    }
-
-    return [];
-  };
 
   return (
     <div className="flex h-full w-full flex-col sm:flex-row">
@@ -393,152 +403,17 @@ export default function CSVImportPage() {
           </div>
         </div>
       </section>
-      <DromoUploader
-        open={!!dromoSchema}
-        onCancel={() => setDromoSchema(null)}
-        onResults={(d) => {
-          console.log("submitted", d);
-          setDromoSchema(null);
-        }}
-        developmentMode
-        licenseKey={"bace02ef-7319-4911-a3ce-5a3cc3d79df9"}
-        user={{ id: "jw" }}
-        fields={[...(dromoSchema?.fields || []), ...relationshipFields]}
-        settings={dromoSchema?.settings}
-        rowHooks={[
-          async (record, type) => {
-            const newRecord = record;
-
-            if (!objectOperations) {
-              return newRecord;
-            }
-
-            console.log("HERE", record.index, { record, type });
-
-            await Promise.all(
-              objectOperations.relationships.map(
-                async ({ relationshipName, objectType }) => {
-                  // const relationshipName: string = "episodes";
-                  if (hasProperty(newRecord.row, relationshipName)) {
-                    // const value = newRecord.row[relationshipName].value;
-                    const values = newRecord.row[relationshipName].manyToOne;
-
-                    if (!values) {
-                      return;
-                    }
-
-                    newRecord.row[relationshipName].manyToOne =
-                      await Promise.all(
-                        values.map(
-                          async ({
-                            value,
-                            resultValue,
-                            selectOptions,
-                            ...rest
-                          }) => {
-                            // If value is already valid, return the current configuration (reduces requests to Skylark)
-                            if (
-                              selectOptions?.find(
-                                (option) => option.value === resultValue,
-                              )
-                            ) {
-                              return {
-                                ...rest,
-                                value,
-                                resultValue,
-                                selectOptions,
-                              };
-                            }
-
-                            try {
-                              const selectOptions =
-                                await lookupViaUidOrExternalID(
-                                  objectType,
-                                  value,
-                                );
-
-                              console.log(record.index, relationshipName, {
-                                selectOptions,
-                              });
-                              // TODO show primary field in info message - so they can see what the record is in Skylark without changing their values
-
-                              return {
-                                resultValue: value,
-                                value,
-                                info: [],
-                                selectOptions,
-                              };
-                            } catch {
-                              // On an update, make a search request if the original get request fails
-                              if (type === "update") {
-                                const selectOptions = await search(
-                                  objectType,
-                                  value,
-                                );
-
-                                return {
-                                  resultValue: value,
-                                  value,
-                                  info: [
-                                    {
-                                      message: "Found via Search",
-                                      level: "info",
-                                    },
-                                  ],
-                                  selectOptions,
-                                };
-                              }
-
-                              return {
-                                resultValue,
-                                value,
-                                info: [
-                                  {
-                                    message: "Invalid External ID or UID",
-                                    level: "error",
-                                  },
-                                ],
-                                selectOptions: [],
-                              };
-                            }
-                          },
-                        ),
-                      );
-
-                    if (!values) {
-                      return;
-                    }
-
-                    // await Promise.all(values.map((value) => {
-
-                    // }))
-                  }
-                },
-              ),
-            );
-
-            console.log("record updated", record.index, newRecord);
-
-            // if (record.index < 10) {
-            // if (
-            //   newRecord.row.episodes &&
-            //   newRecord.row.episodes.manyToOne &&
-            //   newRecord.row.episodes.manyToOne.length > 0
-            // ) {
-            //   newRecord.row.episodes.value = "0" + newRecord.row.email.value;
-            //   newRecord.row.episodes.info = [
-            //     {
-            //       message: "Prepend 0 to value",
-            //       level: "info",
-            //     },
-            //   ];
-            // }
-
-            // }
-            return newRecord;
-          },
-        ]}
-      />
+      {objectOperations && allObjectsMeta && creds && showDromo && (
+        <Dromo
+          show={showDromo}
+          accountIdentifier={createAccountIdentifier(creds.uri)}
+          objectMeta={objectOperations}
+          allObjectsMeta={allObjectsMeta}
+          objectTypesWithConfig={objectTypesWithConfig}
+          onResults={onResults}
+          onCancel={onCancel}
+        />
+      )}
     </div>
   );
 }
