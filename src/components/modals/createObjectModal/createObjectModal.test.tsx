@@ -1,4 +1,10 @@
-import { waitFor, screen, fireEvent, within } from "@testing-library/react";
+import {
+  waitFor,
+  screen,
+  fireEvent,
+  within,
+  findByText,
+} from "@testing-library/react";
 import {
   DefaultBodyType,
   GraphQLContext,
@@ -205,6 +211,112 @@ describe("Create Object (new object)", () => {
 
     expect(onObjectCreated).not.toHaveBeenCalled();
     expect(setIsOpen).not.toHaveBeenCalled();
+  });
+
+  test("uses AI field generation to suggest values for synopsis", async () => {
+    const setIsOpen = jest.fn();
+
+    const { user } = render(
+      <CreateObjectModal
+        isOpen={true}
+        setIsOpen={setIsOpen}
+        onObjectCreated={jest.fn()}
+      />,
+    );
+
+    await screen.findByTestId("create-object-modal");
+
+    await user.click(screen.getByTestId("select"));
+
+    await waitFor(() =>
+      expect(screen.queryAllByText("Episode")).toHaveLength(1),
+    );
+    await user.click(screen.getByText("Episode"));
+
+    await waitFor(() =>
+      expect(screen.queryAllByText("External id")).toHaveLength(1),
+    );
+
+    const title = await screen.findByLabelText("Title");
+    await user.type(title, "GOT S01E01");
+
+    const synopsis = await screen.findByLabelText("Synopsis");
+    expect(synopsis).toHaveValue("");
+
+    const aiFieldGenerationButton = await within(
+      synopsis.parentElement as HTMLElement,
+    ).findByTestId("ai-field-fill");
+
+    await user.click(aiFieldGenerationButton);
+
+    await waitFor(() => {
+      expect(synopsis).toHaveValue("Winter is Coming");
+    });
+
+    // Validate it cycles around values
+    await user.click(aiFieldGenerationButton);
+    await waitFor(() => {
+      expect(synopsis).toHaveValue(
+        "Winter is Coming - Series Premiere. Lord Ned Stark is troubled by disturbing reports from a Night's Watch deserter; King Robert and the Lannisters arrive at Winterfell; Viserys Targaryen forges a new alliance.",
+      );
+    });
+  });
+
+  test("uses Complete with AI Suggestions Button", async () => {
+    const setIsOpen = jest.fn();
+
+    const { user } = render(
+      <CreateObjectModal
+        isOpen={true}
+        setIsOpen={setIsOpen}
+        onObjectCreated={jest.fn()}
+      />,
+    );
+
+    await screen.findByTestId("create-object-modal");
+
+    await user.click(screen.getByTestId("select"));
+
+    await waitFor(() =>
+      expect(screen.queryAllByText("Episode")).toHaveLength(1),
+    );
+    await user.click(screen.getByText("Episode"));
+
+    await waitFor(() =>
+      expect(screen.queryAllByText("External id")).toHaveLength(1),
+    );
+
+    const title = await screen.findByLabelText("Title");
+    await user.type(title, "GOT S01E01");
+
+    const fieldsToCheck = [
+      "Synopsis",
+      "Synopsis short",
+      "Release date",
+      "Title short",
+      "Slug",
+    ];
+
+    await Promise.all(
+      fieldsToCheck.map(async (label) => {
+        const el = await screen.findByLabelText(label);
+        expect(el).toHaveValue("");
+      }),
+    );
+
+    const aiFieldGenerationButton = await screen.findByText(
+      "Complete with AI suggestions",
+    );
+    await user.click(aiFieldGenerationButton);
+
+    await Promise.all(
+      fieldsToCheck.map(async (label) => {
+        const el = await screen.findByLabelText(label);
+        await waitFor(() => {
+          expect(el).not.toHaveValue("");
+        });
+      }),
+    );
   });
 });
 

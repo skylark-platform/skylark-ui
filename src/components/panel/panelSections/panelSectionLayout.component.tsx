@@ -70,7 +70,7 @@ export const PanelSectionLayoutComponent = (
     <div className="h-full overflow-y-auto" ref={ref}>
       <div
         className={clsx(
-          "relative h-full flex flex-col",
+          "relative flex min-h-full flex-col",
           !withoutPadding && "pb-32 md:pb-56",
           !withoutPadding && withStickyHeaders && "px-6 md:px-8",
           !withoutPadding && !withStickyHeaders && "p-6 md:p-8",

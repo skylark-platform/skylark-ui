@@ -604,5 +604,45 @@ describe("metadata view", () => {
         expect(screen.queryAllByText("Edit Metadata")).toHaveLength(0),
       );
     });
+
+    test("uses AI field generation to suggest values for synopsis", async () => {
+      const { user } = render(
+        <Panel {...defaultProps} object={episodeObjectEnGB} />,
+      );
+
+      await waitFor(() =>
+        expect(screen.getByLabelText("Title short")).toBeInTheDocument(),
+      );
+
+      const title = await screen.findByLabelText("Title");
+      await user.type(title, "GOT S01E01");
+
+      const synopsis = await screen.findByLabelText("Synopsis");
+
+      const aiFieldGenerationButton = await within(
+        synopsis.parentElement as HTMLElement,
+      ).findByTestId("ai-field-fill");
+
+      // Check ai fill button is disabled when textbox has a custom value
+      expect(synopsis).not.toHaveValue("");
+      expect(aiFieldGenerationButton).toBeDisabled();
+
+      user.clear(synopsis);
+      expect(synopsis).toHaveValue("");
+
+      await user.click(aiFieldGenerationButton);
+
+      await waitFor(() => {
+        expect(synopsis).toHaveValue("Winter is Coming");
+      });
+
+      // Validate it cycles around values
+      await user.click(aiFieldGenerationButton);
+      await waitFor(() => {
+        expect(synopsis).toHaveValue(
+          "Winter is Coming - Series Premiere. Lord Ned Stark is troubled by disturbing reports from a Night's Watch deserter; King Robert and the Lannisters arrive at Winterfell; Viserys Targaryen forges a new alliance.",
+        );
+      });
+    });
   });
 });

@@ -29,9 +29,9 @@ import {
   DeleteObjectModal,
   DisplayGraphQLQueryModal,
 } from "src/components/modals";
-import { PanelLabel } from "src/components/panel/panelLabel";
 import { ObjectTypePill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
+import { Tag } from "src/components/tag";
 import { QueryKeys } from "src/enums/graphql";
 import { PanelTab } from "src/hooks/state";
 import {
@@ -57,6 +57,7 @@ interface PanelHeaderProps {
   isTranslatable?: boolean;
   availabilityStatus?: AvailabilityStatus | null;
   objectMetadataHasChanged: boolean;
+  isGeneratingAiSuggestions?: boolean;
   toggleEditMode: () => void;
   closePanel?: () => void;
   save: (opts?: { draft?: boolean }) => void;
@@ -120,6 +121,51 @@ const RefreshPanelQueries = (props: Omit<ButtonProps, "variant">) => {
   );
 };
 
+const PanelTag = ({
+  inEditMode,
+  isDraft,
+  isSaving,
+  isPage,
+  isGeneratingAiSuggestions,
+}: {
+  inEditMode?: boolean;
+  isDraft?: boolean;
+  isSaving?: boolean;
+  isPage?: boolean;
+  isGeneratingAiSuggestions?: boolean;
+}) => {
+  const sharedClassName = clsx(
+    "absolute -bottom-16 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap",
+    isPage ? "md:fixed md:bottom-auto md:top-24" : "md:-bottom-18",
+  );
+
+  if (isGeneratingAiSuggestions) {
+    return (
+      <Tag className={sharedClassName} loading>
+        Generating AI Suggestions
+      </Tag>
+    );
+  }
+
+  if (inEditMode) {
+    return (
+      <Tag className={sharedClassName} warning={isDraft} loading={isSaving}>
+        {isSaving ? "Saving" : "Editing"}
+      </Tag>
+    );
+  }
+
+  if (isDraft) {
+    return (
+      <Tag className={sharedClassName} warning>
+        Draft
+      </Tag>
+    );
+  }
+
+  return null;
+};
+
 export const PanelHeader = ({
   isPage,
   objectUid,
@@ -135,6 +181,7 @@ export const PanelHeader = ({
   isTranslatable,
   availabilityStatus,
   objectMetadataHasChanged,
+  isGeneratingAiSuggestions,
   toggleEditMode,
   closePanel,
   save,
@@ -385,23 +432,13 @@ export const PanelHeader = ({
           )}
         </div>
         <div className="flex flex-row items-end justify-end">
-          {(inEditMode || currentTab === PanelTab.Metadata) && (
-            <div
-              className={clsx(
-                "absolute -bottom-16 left-1/2 z-20 -translate-x-1/2",
-                isPage ? "md:fixed md:bottom-auto md:top-24" : " md:-bottom-18",
-              )}
-            >
-              {inEditMode && (
-                <PanelLabel
-                  text={isSaving ? "Saving" : "Editing"}
-                  warning={isDraft}
-                  loading={isSaving}
-                />
-              )}
-              {!inEditMode && isDraft && <PanelLabel text="Draft" warning />}
-            </div>
-          )}
+          <PanelTag
+            inEditMode={inEditMode}
+            isPage={isPage}
+            isDraft={isDraft && currentTab === PanelTab.Metadata}
+            isSaving={isSaving}
+            isGeneratingAiSuggestions={isGeneratingAiSuggestions}
+          />
         </div>
       </div>
       <AnimatePresence>

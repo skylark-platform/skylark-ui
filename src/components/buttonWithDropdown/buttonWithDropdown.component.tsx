@@ -40,7 +40,7 @@ export const ButtonWithDropdown = forwardRef(
                   : undefined
               }
               Icon={<FiChevronDown className="text-lg" />}
-              className="rounded-l-none border-l-2 border-l-white/40 pl-0.5 pr-1 hover:border-l-white/40 md:pl-1 md:pr-2"
+              className="rounded-l-none border-l-2 border-l-white/40 pl-0.5 pr-1 hover:border-l-white/40 md:pl-1 md:pr-2 min-h-8 h-8 md:h-10"
               animated={false}
             />
           </DropdownMenuButton>

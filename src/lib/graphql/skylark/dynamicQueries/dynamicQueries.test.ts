@@ -62,6 +62,7 @@ describe("createSearchObjectsQuery", () => {
           hasAvailability: true,
           isTranslatable: true,
           isImage: false,
+          isSet: false,
         },
         {
           name: "Brand",
@@ -94,6 +95,7 @@ describe("createSearchObjectsQuery", () => {
           hasAvailability: true,
           isTranslatable: true,
           isImage: false,
+          isSet: false,
         },
       ],
       { typesToRequest: [] },

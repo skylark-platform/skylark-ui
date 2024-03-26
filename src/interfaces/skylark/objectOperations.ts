@@ -130,4 +130,5 @@ export interface SkylarkObjectMeta extends SkylarkObjectFields {
   hasAvailability: boolean;
   isTranslatable: boolean;
   isImage: boolean;
+  isSet: boolean;
 }

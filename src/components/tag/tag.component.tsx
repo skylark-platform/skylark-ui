@@ -1,16 +1,19 @@
 import clsx from "clsx";
+import { ReactNode } from "react";
 import { CgSpinner } from "react-icons/cg";
 
-interface PanelLabelProps {
-  text: string;
+interface TagProps {
   warning?: boolean;
   loading?: boolean;
+  className?: string;
+  children: ReactNode;
 }
 
-export const PanelLabel = ({ loading, text, warning }: PanelLabelProps) => (
+export const Tag = ({ loading, children, warning, className }: TagProps) => (
   <span
     className={clsx(
       "flex items-center justify-center rounded  py-1 text-xs  md:text-sm",
+      className,
       warning
         ? "bg-warning font-medium text-warning-content"
         : "bg-black text-white",
@@ -20,6 +23,6 @@ export const PanelLabel = ({ loading, text, warning }: PanelLabelProps) => (
     {loading && (
       <CgSpinner className="mr-1 animate-spin-fast text-sm md:text-base" />
     )}
-    {text}
+    {children}
   </span>
 );
