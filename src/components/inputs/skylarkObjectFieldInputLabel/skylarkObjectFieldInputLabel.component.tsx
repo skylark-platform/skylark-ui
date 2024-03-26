@@ -21,10 +21,6 @@ export type SkylarkObjectFieldInputLabelProps = {
 export const createHtmlForId = (prefix: string, field: string) =>
   `${prefix}-skylark-object-field-input-${field}`;
 
-// TODO
-// - Disable magic wand when field has value
-// - When field has value, tooltip should say this field will taken into account when generating results
-
 const AiTooltip = ({
   fieldHasValue,
   formHasValues,
@@ -39,12 +35,11 @@ const AiTooltip = ({
   const RefreshResultsButton = () => (
     <div>
       <Button
-        // variant="neutral"
         variant="form"
         className="mt-4 w-auto"
         onClick={triggerAiFieldGeneration}
       >
-        Refresh results
+        Refresh suggestions
       </Button>
     </div>
   );
