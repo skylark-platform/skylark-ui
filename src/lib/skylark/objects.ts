@@ -3,6 +3,7 @@ import {
   IntrospectionField,
   IntrospectionInputObjectType,
   IntrospectionInputValue,
+  IntrospectionInterfaceType,
   IntrospectionListTypeRef,
   IntrospectionNamedTypeRef,
   IntrospectionNonNullTypeRef,
@@ -315,6 +316,15 @@ const getBuiltInObjectTypeRelationships = (
   };
 };
 
+const getSetObjectTypesFromIntrospection = (
+  schema: IntrospectionQuery["__schema"],
+) =>
+  (
+    schema.types.find(
+      (type) => type.kind === "INTERFACE" && type.name === "Set",
+    ) as IntrospectionInterfaceType | undefined
+  )?.possibleTypes.map(({ name }) => name) || [];
+
 export const getObjectOperations = (
   objectType: SkylarkObjectType,
   schema: IntrospectionQuery["__schema"],
@@ -488,6 +498,9 @@ export const getObjectOperations = (
     },
   };
 
+  const setTypes = getSetObjectTypesFromIntrospection(schema);
+  const isSet = setTypes.includes(objectType);
+
   const objectFields = getObjectFields(
     objectType,
     enums,
@@ -514,6 +527,7 @@ export const getObjectOperations = (
     hasAvailability,
     isTranslatable: objectType !== BuiltInSkylarkObjectType.Availability,
     isImage: objectType === BuiltInSkylarkObjectType.SkylarkImage,
+    isSet,
   };
 
   return objectMeta;
