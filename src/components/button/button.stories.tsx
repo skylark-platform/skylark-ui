@@ -119,6 +119,24 @@ export const GhostIconOnly = {
   },
 };
 
+export const Form = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    variant: "form",
+  },
+};
+
+export const GhostForm = {
+  render: Template,
+
+  args: {
+    ...defaultProps,
+    variant: "form-ghost",
+  },
+};
+
 export const Link = {
   render: Template,
 
