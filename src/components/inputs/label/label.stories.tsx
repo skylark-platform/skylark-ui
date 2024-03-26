@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { InputLabel } from "./label.component";
 
 export default {
-  title: "Components/Inputs/InputLabel",
+  title: "Components/Inputs/Labels/InputLabel",
   component: InputLabel,
 };
 

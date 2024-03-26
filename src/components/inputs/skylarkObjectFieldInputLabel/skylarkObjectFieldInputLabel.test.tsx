@@ -1,9 +1,4 @@
-import {
-  fireEvent,
-  prettyDOM,
-  render,
-  screen,
-} from "src/__tests__/utils/test-utils";
+import { fireEvent, render, screen } from "src/__tests__/utils/test-utils";
 
 import {
   SkylarkObjectFieldInputLabel,
