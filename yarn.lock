@@ -11856,6 +11856,11 @@ react-toastify@10.0.5:
   dependencies:
     clsx "^2.1.0"
 
+react-use-intercom@5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/react-use-intercom/-/react-use-intercom-5.3.0.tgz#bf86b277f0f0656fa8952c9a02a20017101fe786"
+  integrity sha512-sS93lEe4lpDl8DrLdLbqocOJOm2AjQzoq0KR2L8pCU5pXVUhr8C4yzNR4ek4pIvPrLGW7BFz1rOlRYHAcHL+UA==
+
 react-virtual@2.10.4:
   version "2.10.4"
   resolved "https://registry.yarnpkg.com/react-virtual/-/react-virtual-2.10.4.tgz#08712f0acd79d7d6f7c4726f05651a13b24d8704"
@@ -12982,10 +12987,10 @@ tabbable@^6.0.1:
   resolved "https://registry.yarnpkg.com/tabbable/-/tabbable-6.2.0.tgz#732fb62bc0175cfcec257330be187dcfba1f3b97"
   integrity sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==
 
-tailwindcss-radix@2.8.0:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/tailwindcss-radix/-/tailwindcss-radix-2.8.0.tgz#bac081a3a497cdc30d70f8e7425b795ffde0020a"
-  integrity sha512-1k1UfoIYgVyBl13FKwwoKavjnJ5VEaUClCTAsgz3VLquN4ay/lyaMPzkbqD71sACDs2fRGImytAUlMb4TzOt1A==
+tailwindcss-radix@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/tailwindcss-radix/-/tailwindcss-radix-3.0.2.tgz#1375b8dc3b98a1aad13da4d3c4e733e6b4e6051c"
+  integrity sha512-BuIF9q0QGVck7VW0UFFv0PYEHytlSlTo+1BeLug4fiHm1CHulHJ5NxCtCJ+sCaNAy0aWwYKk87mVccSoebgxXw==
 
 tailwindcss@3.4.1, tailwindcss@^3.1:
   version "3.4.1"
@@ -13185,10 +13190,10 @@ tiny-invariant@^1.3.3:
   resolved "https://registry.yarnpkg.com/tiny-invariant/-/tiny-invariant-1.3.3.tgz#46680b7a873a0d5d10005995eb90a70d74d60127"
   integrity sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==
 
-tinymce@6.8.3:
-  version "6.8.3"
-  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-6.8.3.tgz#0025a4aaa4c24dc2a3e32e83dfda705d196fd802"
-  integrity sha512-3fCHKAeqT+xNwBVESf6iDbDV0VNwZNmfrkx9c/6Gz5iB8piMfaO6s7FvoiTrj1hf1gVbfyLTnz1DooI6DhgINQ==
+tinymce@7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-7.0.0.tgz#d35441e15f8011cf549b39e58b64648798816e92"
+  integrity sha512-ggXLfTRrUALAcjeJSRrZcJDOl6MgC2tPXe/zNOEkQXvTDgcKqFypPRoPpfpK5wejexjyaI/7dwETOntJ5MPBFg==
 
 "tinymce@^6.0.0 || ^5.5.1":
   version "6.8.1"
