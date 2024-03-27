@@ -11,10 +11,12 @@ import {
   FlatfileRow,
 } from "src/interfaces/flatfile/responses";
 import {
+  BuiltInSkylarkObjectType,
   GQLSkylarkError,
   GQLSkylarkErrorResponse,
   NormalizedObjectField,
   NormalizedObjectFieldType,
+  ParsedSkylarkDimensionsWithValues,
   SkylarkImportedObject,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
@@ -233,7 +235,9 @@ export const createDromoObjectsInSkylark = async (
               __args: {
                 [createOperation.argName]: {
                   ...parsedMetadata,
-                  relationships: parsedRelationships,
+                  ...(parsedRelationships
+                    ? { relationships: parsedRelationships }
+                    : {}),
                 },
               },
               uid: true,
@@ -349,8 +353,13 @@ const generateExampleFieldData = (
 
 export const generateExampleCSV = (
   objectMeta: SkylarkObjectMeta | null,
+  dimensions?: ParsedSkylarkDimensionsWithValues[],
 ): string | null => {
-  const inputs = objectMeta?.operations.create.inputs.filter(
+  if (!objectMeta) {
+    return null;
+  }
+
+  const inputs = objectMeta.operations.create.inputs.filter(
     ({ name }) => !TEMPLATE_FIELDS_TO_IGNORE.includes(name),
   );
 
@@ -362,7 +371,7 @@ export const generateExampleCSV = (
     isRequired ? `${name} (required)` : name,
   );
 
-  if (objectMeta?.hasRelationships) {
+  if (objectMeta.hasRelationships) {
     const relationshipNames = objectMeta.relationships
       .map(({ relationshipName }) => [
         `${relationshipName} (1)`,
@@ -371,6 +380,24 @@ export const generateExampleCSV = (
       ])
       .flatMap((arr) => arr);
     columns.push(...relationshipNames);
+  }
+
+  const dimensionColumns = [];
+  if (objectMeta.name === BuiltInSkylarkObjectType.Availability) {
+    if (!dimensions) {
+      return null;
+    }
+
+    const dCols = dimensions
+      .map(({ title, slug, external_id, uid, values }) =>
+        values.map(
+          (_, i) => `${title || slug || external_id || uid} (${i + 1})`,
+        ),
+      )
+      .flatMap((arr) => arr);
+
+    columns.push(...dCols);
+    dimensionColumns.push(...dCols);
   }
 
   const joinedColumns = columns.join(",");
@@ -387,6 +414,21 @@ export const generateExampleCSV = (
     const examples = inputs.map((input) =>
       generateExampleFieldData(input, exampleRowNum),
     );
+
+    if (
+      exampleRowNum < 2 &&
+      objectMeta.name === BuiltInSkylarkObjectType.Availability &&
+      dimensions &&
+      dimensionColumns.length > 0
+    ) {
+      dimensions.forEach(({ values }) => {
+        const exampleValues = values.map(
+          (val) => val.title || val.slug || val.external_id || val.uid,
+        );
+        examples.push(...exampleValues);
+      });
+    }
+
     exampleRowNum += 1;
     exampleRows.push(examples.join(","));
   }

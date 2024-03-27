@@ -6,6 +6,7 @@ import { FiDownload, FiUpload } from "react-icons/fi";
 import { Button } from "src/components/button";
 import { ObjectTypeSelect } from "src/components/inputs/select";
 import { StatusCard, statusType } from "src/components/statusCard";
+import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { SkylarkCreds } from "src/hooks/useConnectedToSkylark";
 import {
@@ -15,6 +16,8 @@ import {
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
+  BuiltInSkylarkObjectType,
+  ParsedSkylarkDimensionsWithValues,
   ParsedSkylarkObjectConfig,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
@@ -30,7 +33,11 @@ import {
   generateExampleCSV,
 } from "src/lib/flatfile";
 import { createSkylarkClient } from "src/lib/graphql/skylark/client";
-import { createAccountIdentifier, pause } from "src/lib/utils";
+import {
+  createAccountIdentifier,
+  pause,
+  pauseForCondition,
+} from "src/lib/utils";
 
 type ImportStates = "select" | "prep" | "import" | "create";
 
@@ -157,19 +164,19 @@ const createObjectsInSkylark = async (
 };
 
 const Dromo = ({
-  show,
   accountIdentifier,
   objectMeta,
   objectTypesWithConfig,
   allObjectsMeta,
+  availabilityDimensionsWithValues,
   onCancel,
   onResults,
 }: {
-  show: boolean;
   accountIdentifier: string;
   objectMeta: SkylarkObjectMeta;
   allObjectsMeta: SkylarkObjectMeta[];
   objectTypesWithConfig?: ObjectTypeWithConfig[];
+  availabilityDimensionsWithValues: ParsedSkylarkDimensionsWithValues[] | null;
   onCancel: () => void;
   onResults: (
     objectMeta: SkylarkObjectMeta,
@@ -183,7 +190,10 @@ const Dromo = ({
 
   const settings = getDromoSettings(objectTypeWithConfig, accountIdentifier);
 
-  const fields = convertObjectMetaToDromoSchemaFields(objectMeta);
+  const fields = convertObjectMetaToDromoSchemaFields(
+    objectMeta,
+    availabilityDimensionsWithValues,
+  );
 
   const onResultsWrapper = (
     data: Record<string, SkylarkObjectMetadataField>[],
@@ -198,7 +208,7 @@ const Dromo = ({
 
   return (
     <DromoUploader
-      open={show}
+      open={true}
       onCancel={onCancel}
       onResults={onResultsWrapper}
       developmentMode={isDevelopmentMode}
@@ -206,19 +216,24 @@ const Dromo = ({
       user={{ id: accountIdentifier }}
       fields={fields}
       settings={settings}
-      rowHooks={createDromoRowHooks(
-        objectMeta,
-        allObjectsMeta,
-        objectTypesWithConfig,
-      )}
+      rowHooks={
+        objectMeta.name !== BuiltInSkylarkObjectType.Availability
+          ? createDromoRowHooks(
+              objectMeta,
+              allObjectsMeta,
+              objectTypesWithConfig,
+            )
+          : undefined
+      }
       beforeFinish={
-        isDevelopmentMode
+        isDevelopmentMode ||
+        objectMeta.name !== BuiltInSkylarkObjectType.Availability
           ? undefined
           : (data) => {
               if (data.length < 5) {
                 return {
                   cancel: true,
-                  message: "You must import at least 20 rows",
+                  message: "You must import at least 5 rows",
                 };
               }
             }
@@ -239,6 +254,11 @@ export default function CSVImportPage() {
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   // const { data: allObjects } = useListAllObjects();
+
+  const { dimensions, isLoading: isLoadingDimensions } =
+    useAvailabilityDimensionsWithValues({
+      enabled: objectType === BuiltInSkylarkObjectType.Availability,
+    });
 
   const { objects: allObjectsMeta } = useAllObjectsMeta(true);
 
@@ -271,6 +291,12 @@ export default function CSVImportPage() {
       throw new Error(
         "Skylark GraphQL URI or Access Key not found in local storage",
       );
+    }
+
+    if (objectType === BuiltInSkylarkObjectType.Availability) {
+      console.log("pausing");
+      await pauseForCondition(!isLoadingDimensions);
+      console.log("playing");
     }
 
     dispatch({ stage: "prep", status: statusType.success });
@@ -311,7 +337,10 @@ export default function CSVImportPage() {
     );
   };
 
-  const exampleCSV = generateExampleCSV(objectOperations);
+  const exampleCSV =
+    objectType === BuiltInSkylarkObjectType.Availability && isLoadingDimensions
+      ? null
+      : generateExampleCSV(objectOperations, dimensions);
 
   return (
     <div className="flex h-full w-full flex-col sm:flex-row">
@@ -407,17 +436,22 @@ export default function CSVImportPage() {
           </div>
         </div>
       </section>
-      {objectOperations && allObjectsMeta && creds && showDromo && (
-        <Dromo
-          show={true}
-          accountIdentifier={createAccountIdentifier(creds.uri)}
-          objectMeta={objectOperations}
-          allObjectsMeta={allObjectsMeta}
-          objectTypesWithConfig={objectTypesWithConfig}
-          onResults={onResults}
-          onCancel={onCancel}
-        />
-      )}
+      {objectOperations &&
+        allObjectsMeta &&
+        creds &&
+        showDromo &&
+        (dimensions ||
+          objectType !== BuiltInSkylarkObjectType.Availability) && (
+          <Dromo
+            accountIdentifier={createAccountIdentifier(creds.uri)}
+            objectMeta={objectOperations}
+            allObjectsMeta={allObjectsMeta}
+            objectTypesWithConfig={objectTypesWithConfig}
+            availabilityDimensionsWithValues={dimensions || null}
+            onResults={onResults}
+            onCancel={onCancel}
+          />
+        )}
     </div>
   );
 }
