@@ -2,6 +2,8 @@ import api from "@flatfile/api";
 import { FlatfileListener } from "@flatfile/listener";
 import { recordHook } from "@flatfile/plugin-record-hook";
 
+import { hasProperty } from "src/lib/utils";
+
 /**
  * Example Listener
  */
@@ -40,7 +42,10 @@ export const listener = FlatfileListener.create((listener) => {
           },
         });
       } catch (error: unknown) {
-        console.error("Error:", error?.stack);
+        console.error(
+          "Error:",
+          hasProperty(error, "stack") ? error?.stack : error,
+        );
 
         await api.jobs.fail(jobId, {
           outcome: {

@@ -18,14 +18,13 @@ import {
   ParsedSkylarkObjectConfig,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
-  SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { createDromoRowHooks } from "src/lib/dromo/rowHooks";
 import {
   DromoSchema,
-  convertObjectInputToDromoSchemaFields,
-  convertRelationshipsToDromoSchemaFields,
+  convertObjectMetaToDromoSchemaFields,
 } from "src/lib/dromo/schema";
+import { getDromoSettings } from "src/lib/dromo/settings";
 import {
   createDromoObjectsInSkylark,
   generateExampleCSV,
@@ -178,24 +177,13 @@ const Dromo = ({
     metadata: IResultMetadata,
   ) => void;
 }) => {
-  const metadataFields = convertObjectInputToDromoSchemaFields(
-    objectMeta.operations.create.inputs,
-    objectMeta.relationships,
-  );
+  const objectTypeWithConfig = objectTypesWithConfig?.find(
+    ({ objectType }) => objectMeta.name === objectType,
+  ) || { objectType: objectMeta.name, config: {} };
 
-  const relationshipFields: DromoSchema["fields"] = objectMeta.relationships
-    ? convertRelationshipsToDromoSchemaFields(
-        objectMeta.relationships,
-        {},
-        objectTypesWithConfig || [],
-      )
-    : [];
+  const settings = getDromoSettings(objectTypeWithConfig, accountIdentifier);
 
-  const settings: DromoSchema["settings"] = {
-    importIdentifier: `${accountIdentifier}-${objectMeta.name}-${dayjs().format("YYYY_MM_DD__HH_mm")}`,
-    title: objectMeta.name,
-    allowCustomFields: false,
-  };
+  const fields = convertObjectMetaToDromoSchemaFields(objectMeta);
 
   const onResultsWrapper = (
     data: Record<string, SkylarkObjectMetadataField>[],
@@ -204,21 +192,37 @@ const Dromo = ({
     onResults(objectMeta, data, metadata);
   };
 
+  console.log("triggered dromo", { settings, fields });
+
+  const isDevelopmentMode = true;
+
   return (
     <DromoUploader
       open={show}
       onCancel={onCancel}
       onResults={onResultsWrapper}
-      developmentMode
+      developmentMode={isDevelopmentMode}
       licenseKey={"bace02ef-7319-4911-a3ce-5a3cc3d79df9"}
-      user={{ id: "jw" }}
-      fields={[...metadataFields, ...relationshipFields]}
+      user={{ id: accountIdentifier }}
+      fields={fields}
       settings={settings}
       rowHooks={createDromoRowHooks(
         objectMeta,
         allObjectsMeta,
         objectTypesWithConfig,
       )}
+      beforeFinish={
+        isDevelopmentMode
+          ? undefined
+          : (data) => {
+              if (data.length < 5) {
+                return {
+                  cancel: true,
+                  message: "You must import at least 20 rows",
+                };
+              }
+            }
+      }
     />
   );
 };
@@ -405,7 +409,7 @@ export default function CSVImportPage() {
       </section>
       {objectOperations && allObjectsMeta && creds && showDromo && (
         <Dromo
-          show={showDromo}
+          show={true}
           accountIdentifier={createAccountIdentifier(creds.uri)}
           objectMeta={objectOperations}
           allObjectsMeta={allObjectsMeta}

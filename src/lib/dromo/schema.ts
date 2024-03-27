@@ -3,16 +3,14 @@ import {
   IValidatorField,
   IDeveloperSettings,
 } from "dromo-uploader-react";
+import { sentenceCase } from "sentence-case";
 
-import { ObjectTypeWithConfig } from "src/hooks/useSkylarkObjectTypes";
+import { INPUT_REGEX } from "src/constants/skylark";
 import {
   NormalizedObjectField,
-  ParsedSkylarkObject,
-  SkylarkObjectRelationship,
-  SkylarkObjectType,
+  SkylarkObjectMeta,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-import { hasProperty } from "src/lib/utils";
 
 export interface DromoSchema {
   fields: IDeveloperField[];
@@ -39,19 +37,23 @@ const convertObjectInputFieldToDromoField = (
     defaultValidators.push(isRequiredValidator);
   }
 
+  // Ensure all External IDs are unique
   if (field.name === SkylarkSystemField.ExternalID) {
-    defaultValidators.push(isUniqueValidator);
+    defaultValidators.push({
+      ...isUniqueValidator,
+      errorMessage: "External ID must be unique across all object types",
+    });
   }
 
-  const defaults: Pick<
-    IDeveloperField,
-    "label" | "key" | "requireMapping" | "validators"
-  > = {
+  const defaults = {
     label: field.name,
     key: field.name,
     requireMapping: field.isRequired,
     validators: defaultValidators,
-  };
+  } satisfies Pick<
+    IDeveloperField,
+    "label" | "key" | "requireMapping" | "validators"
+  >;
 
   if (field.type === "enum") {
     const enumValues = field.enumValues || [];
@@ -64,6 +66,11 @@ const convertObjectInputFieldToDromoField = (
 
   switch (field.type) {
     case "int":
+      return {
+        ...defaults,
+        type: ["number", { preset: "integer" }],
+      };
+
     case "float":
       return {
         ...defaults,
@@ -76,42 +83,76 @@ const convertObjectInputFieldToDromoField = (
         type: "checkbox",
       };
 
-    // case "phone":
-    //   return {
-    //     label: field?.name,
-    //     type: "string",
-    //     format: "phone",
-    //   } as FlatfileTemplatePropertyPhone;
-
     case "email":
       return {
         ...defaults,
         type: "email",
       };
 
-    // case "url":
+    case "date":
+      return {
+        ...defaults,
+        type: "date",
+      };
+
+    case "datetime":
+      return {
+        ...defaults,
+        type: "datetime",
+      };
+
+    case "time":
+      return {
+        ...defaults,
+        type: "time",
+      };
+
+    case "url":
+      return {
+        ...defaults,
+        type: "string",
+        validators: [
+          ...defaults.validators,
+          {
+            validate: "regex_match",
+            regex: INPUT_REGEX.url,
+            regexOptions: {
+              // Equivalent to "is", Flatfile used to be "isg"
+              ignoreCase: true,
+              dotAll: true,
+            },
+            level: "error",
+            errorMessage: "Invalid URL",
+          },
+        ],
+      };
+
+    case "ipaddress":
+      return {
+        ...defaults,
+        type: "string",
+        validators: [
+          ...defaults.validators,
+          {
+            validate: "regex_match",
+            regex: INPUT_REGEX.ipaddress,
+            regexOptions: {
+              // Equivalent to "is", Flatfile used to be "isg"
+              ignoreCase: true,
+              dotAll: true,
+            },
+            level: "error",
+            errorMessage: "Invalid IP Address",
+          },
+        ],
+      };
+
+    // case "phone":
     //   return {
     //     label: field?.name,
     //     type: "string",
-    //     regexp: {
-    //       pattern: INPUT_REGEX.url,
-    //       flags: "isg",
-    //       ignoreBlanks: true,
-    //     },
-    //   } as FlatfileTemplatePropertyString;
-
-    // case "ipaddress":
-    //   return {
-    //     label: field?.name,
-    //     type: "string",
-    //     regexp: {
-    //       pattern: INPUT_REGEX.ipaddress,
-    //       flags: "isg",
-    //       ignoreBlanks: true,
-    //     },
-    //   } as FlatfileTemplatePropertyString;
-
-    // TODO add date, datetime and time
+    //     format: "phone",
+    //   } as FlatfileTemplatePropertyPhone;
 
     default:
       return {
@@ -121,64 +162,38 @@ const convertObjectInputFieldToDromoField = (
   }
 };
 
-export const convertObjectInputToDromoSchemaFields = (
-  inputs: NormalizedObjectField[],
-  relationships: SkylarkObjectRelationship[],
+export const convertObjectMetaToDromoSchemaFields = (
+  objectMeta: SkylarkObjectMeta,
 ): DromoSchema["fields"] => {
-  const required = inputs
-    .filter((input) => input.isRequired)
-    .map((input) => input.name);
+  const { inputs } = objectMeta.operations.create;
+  const metadataFields = inputs.map(convertObjectInputFieldToDromoField);
 
-  const fields = inputs.map(convertObjectInputFieldToDromoField);
+  const relationshipFields = objectMeta.relationships.map(
+    ({ relationshipName, objectType }) => {
+      const field: DromoSchema["fields"][0] = {
+        label: sentenceCase(relationshipName),
+        key: relationshipName,
+        alternateMatches: [objectType],
+        manyToOne: true,
+        type: "select",
+        selectOptions: [],
+      };
 
-  return fields;
-};
+      return field;
+    },
+  );
 
-export const convertRelationshipsToDromoSchemaFields = (
-  relationships: SkylarkObjectRelationship[],
-  allObjects: Record<SkylarkObjectType, ParsedSkylarkObject[]>,
-  objectTypesWithConfig: ObjectTypeWithConfig[],
-) => {
-  return relationships.map(({ relationshipName, objectType }) => {
-    const objects = hasProperty(allObjects, objectType)
-      ? allObjects[objectType]
-      : [];
-
+  const availabilityFields = [];
+  if (objectMeta.availability) {
     const field: DromoSchema["fields"][0] = {
-      label: relationshipName,
-      key: relationshipName,
+      label: "Availability",
+      key: "availability",
       manyToOne: true,
       type: "select",
-      selectOptions: [{ label: "dummy", value: "dummy" }],
-      // selectOptions: objects.map(({ metadata }) => {
-      //   const ot = objectTypesWithConfig.find(
-      //     (o) => o.objectType === objectType,
-      //   );
-
-      //   const primaryField = ot?.config.primaryField || "external_id";
-
-      //   return {
-      //     label:
-      //       ((hasProperty(metadata, primaryField) &&
-      //         metadata[primaryField]) as string) ||
-      //       metadata.external_id ||
-      //       metadata.uid,
-      //     value: metadata.uid,
-      //     alternateMatches: Object.entries(metadata)
-      //       .map(([key, value]) =>
-      //         [
-      //           primaryField,
-      //           SkylarkSystemField.Slug,
-      //           SkylarkSystemField.ExternalID,
-      //         ].includes(key)
-      //           ? value
-      //           : null,
-      //       )
-      //       .filter((field): field is string => typeof field === "string"),
-      //   };
-      // }),
+      selectOptions: [],
     };
+    availabilityFields.push(field);
+  }
 
-    return field;
-  });
+  return [...metadataFields, ...relationshipFields, ...availabilityFields];
 };

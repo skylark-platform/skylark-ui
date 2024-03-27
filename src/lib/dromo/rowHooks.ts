@@ -4,10 +4,12 @@ import { RequestDocument } from "graphql-request";
 import { REQUEST_HEADERS } from "src/constants/skylark";
 import { ObjectTypeWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import {
+  BuiltInSkylarkObjectType,
   GQLSkylarkGetObjectResponse,
   GQLSkylarkSearchResponse,
   SkylarkGraphQLObject,
   SkylarkObjectMeta,
+  SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
@@ -123,8 +125,17 @@ const createLookupFieldHook =
 
     console.log("HERE", record.index, { record, type });
 
+    // Add Availability into array so it is also checked
+    const relationshipsAndAvailability: SkylarkObjectRelationship[] = [
+      ...objectOperations.relationships,
+      {
+        relationshipName: "availability",
+        objectType: BuiltInSkylarkObjectType.Availability,
+      },
+    ];
+
     await Promise.all(
-      objectOperations.relationships.map(
+      relationshipsAndAvailability.map(
         async ({ relationshipName, objectType }) => {
           // const relationshipName: string = "episodes";
           if (hasProperty(newRecord.row, relationshipName)) {

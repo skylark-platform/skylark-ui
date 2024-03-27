@@ -200,12 +200,12 @@ export const createDromoObjectsInSkylark = async (
   const objectType = objectMeta.name;
   const createOperation = objectMeta.operations.create;
 
-  const chunkedFlatfileRows = chunkArray(dromoObjects, 50);
+  const chunkedObjects = chunkArray(dromoObjects, 50);
 
   const dataArr = await Promise.all(
-    chunkedFlatfileRows.map(
+    chunkedObjects.map(
       async (
-        flatfileRows,
+        objects,
         chunkIndex,
       ): Promise<{
         data: SkylarkImportedObject[];
@@ -214,7 +214,7 @@ export const createDromoObjectsInSkylark = async (
           | Error
         )[];
       }> => {
-        const operations = flatfileRows.reduce(
+        const operations = objects.reduce(
           (previousOperations, data, index) => {
             const parsedMetadata = parseMetadataForGraphQLRequest(
               objectType,
