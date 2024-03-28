@@ -48,6 +48,26 @@ const WYSIWYG_INIT = {
   content_style:
     "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
   quickbars_insert_toolbar: "image quicktable | hr pagebreak",
+  style_formats: [
+    {
+      title: "Image Left",
+      selector: "img",
+      styles: {
+        float: "left",
+        margin: "0 10px 0 10px",
+      },
+    },
+    {
+      title: "Image Right",
+      selector: "img",
+      styles: {
+        float: "right",
+        margin: "0 0 10px 10px",
+      },
+    },
+  ],
+  relative_urls: false,
+  extended_valid_elements: "script[language|type|src|async|charset]",
 };
 
 export const WYSIWYGEditor = ({
