@@ -27,7 +27,7 @@ test("renders showing Availability processing", async () => {
 
   await waitFor(() => {
     expect(
-      screen.getByText("Processing 50+ Availability Rules"),
+      screen.getByText("Processing 51 Availability Rules"),
     ).toBeInTheDocument();
   });
 });
