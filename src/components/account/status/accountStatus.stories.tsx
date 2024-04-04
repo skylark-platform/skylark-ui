@@ -121,7 +121,7 @@ export const Tooltip = {
   play: async () => {
     await waitFor(async () => {
       await userEvent.hover(
-        screen.getByText("Processing 50+ Availability Rules"),
+        screen.getByText("Processing 51 Availability Rules"),
       );
     });
 

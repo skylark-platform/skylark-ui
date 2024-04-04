@@ -13,7 +13,8 @@ import {
 
 type GenericTaskType = "availability" | "deletion" | "other";
 
-const stringifyCount = (count: number) => (count >= 50 ? "50+" : `${count}`);
+const stringifyCount = (count: number, max = 100) =>
+  count >= max ? `${max}+` : `${count}`;
 
 const getGenericBackgroundTaskType = (
   task: GQLSkylarkBackgroundTask,
@@ -63,17 +64,20 @@ const StatusText = ({
   loading,
   danger,
   success,
+  additionalToolTipText,
   onClick,
 }: {
   children: string;
   loading?: boolean;
   danger?: boolean;
   success?: boolean;
+  additionalToolTipText?: string[];
   onClick?: () => void;
 }) => {
   const tooltipMessages = [
     "When objects, availability rules or your data model are modified, Skylark has to do some bookkeeping behind the scenes. This ensures that that your streaming apps remain lightning fast.",
     "While these background tasks are being completed, you might notice a delay of a few minutes before changes are reflected to your end users.",
+    ...(additionalToolTipText || []),
   ];
 
   const tooltip =
@@ -130,12 +134,21 @@ const StatusText = ({
 const BackgroundStatusText = ({
   queued,
   inProgress,
+  failed,
 }: {
   queued: GQLSkylarkBackgroundTask[];
   inProgress: GQLSkylarkBackgroundTask[];
+  failed: GQLSkylarkBackgroundTask[];
 }) => {
   const text = getBackgroundTaskTypeText([...queued, ...inProgress]);
-  return <StatusText loading>{`Processing ${text}`}</StatusText>;
+  return (
+    <StatusText
+      loading
+      additionalToolTipText={[
+        `${stringifyCount(inProgress.length, 50)} tasks in progress, ${stringifyCount(queued.length, 50)} queued, ${stringifyCount(failed.length, 50)} failed.`,
+      ]}
+    >{`Processing ${text}`}</StatusText>
+  );
 };
 
 export const AccountStatus = () => {
@@ -157,6 +170,7 @@ export const AccountStatus = () => {
       <BackgroundStatusText
         inProgress={backgroundTasks.inProgress}
         queued={backgroundTasks.queued}
+        failed={backgroundTasks.failed}
       />
     );
   }
