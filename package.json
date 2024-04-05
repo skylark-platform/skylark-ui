@@ -23,6 +23,7 @@
     "vercel:env": "vercel env --environment=preview pull"
   },
   "dependencies": {
+    "@bitmovin/api-sdk": "^1.189.0",
     "@dnd-kit/core": "6.1.0",
     "@dnd-kit/modifiers": "7.0.0",
     "@dnd-kit/sortable": "8.0.0",

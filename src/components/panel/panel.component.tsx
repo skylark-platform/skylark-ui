@@ -715,6 +715,7 @@ export const Panel = ({
               uid={uid}
               language={language}
               inEditMode={inEditMode}
+              setTab={setSelectedTab}
             />
           )}
           {selectedTab === PanelTab.Imagery && data?.images && (

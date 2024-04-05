@@ -13,10 +13,10 @@ interface CloudinaryContext {
 
 interface CloudinaryUploaderProps {
   uid: string;
+  onSuccess: () => void;
 }
 
-interface CloudinaryUploadWidgetProps {
-  uid: string;
+interface CloudinaryUploadWidgetProps extends CloudinaryUploaderProps {
   cloudName: string;
   custom: Record<string, unknown>;
 }
@@ -44,6 +44,7 @@ export const CloudinaryUploadWidget = ({
   uid,
   cloudName,
   custom,
+  onSuccess,
 }: CloudinaryUploadWidgetProps) => {
   // TODO Need to document these presets as they can be passed in as parameters
   //
@@ -106,6 +107,31 @@ export const CloudinaryUploadWidget = ({
             ? { ...custom.context, ...integrationContext }
             : integrationContext,
         cloudName,
+        multiple: false,
+        styles: {
+          palette: {
+            window: "#FFF",
+            windowBorder: "#90A0B3",
+            tabIcon: "#226DFF",
+            // menuIcons: "#5A616A",
+            textDark: "#0E1825",
+            textLight: "#FFFFFF",
+            link: "#226DFF",
+            // action: "",
+            inactiveTabIcon: "#B8BCC6",
+            error: "#F43636",
+            inProgress: "#FBBD23",
+            complete: "#33BD6E",
+            // sourceBg: "#F0F2F6",
+          },
+          frame: {
+            background: "#0E182599",
+          },
+          fonts: {
+            "'Inter', sans-serif":
+              "https://fonts.googleapis.com/css?family=Inter",
+          },
+        },
       };
 
       const myWidget =
@@ -113,7 +139,7 @@ export const CloudinaryUploadWidget = ({
           window,
           "cloudinary",
         ) &&
-        window.cloudinary.createUploadWidget(uwConfig, (error) => {
+        window.cloudinary.createUploadWidget(uwConfig, (error, result) => {
           if (error) {
             toast.error(
               <Toast
@@ -122,6 +148,10 @@ export const CloudinaryUploadWidget = ({
               />,
               { autoClose: 20000 },
             );
+          }
+
+          if (!error && result.event === "success") {
+            onSuccess();
           }
         });
 
@@ -144,7 +174,10 @@ export const CloudinaryUploadWidget = ({
   );
 };
 
-export const CloudinaryUploader = ({ uid }: CloudinaryUploaderProps) => {
+export const CloudinaryUploader = ({
+  uid,
+  onSuccess,
+}: CloudinaryUploaderProps) => {
   const { data, isLoading } = useGenerateCloudinaryUploadUrl(uid);
 
   return (
@@ -154,6 +187,7 @@ export const CloudinaryUploader = ({ uid }: CloudinaryUploaderProps) => {
           uid={uid}
           cloudName={data.cloud_name}
           custom={data.custom}
+          onSuccess={onSuccess}
         />
       )}
       {isLoading && <Skeleton className="h-52 w-full" />}
