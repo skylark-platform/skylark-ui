@@ -1,3 +1,4 @@
+import MuxUploader from "@mux/mux-uploader-react";
 import clsx from "clsx";
 import { Fragment } from "react";
 
@@ -10,6 +11,7 @@ import {
 } from "src/components/panel/panelTypography";
 import { VideoPlayer } from "src/components/players";
 import { Skeleton } from "src/components/skeleton";
+import { useGenerateMuxUploadUrl } from "src/hooks/integrations/useGenerateMuxUploadUrl";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
 import { PanelTab } from "src/hooks/state";
 import {
@@ -121,12 +123,17 @@ const PreviewVideo = ({
 };
 
 const MetadataPlayback = ({
+  uid,
   metadata,
   isPage,
 }: Omit<PanelPlaybackProps, "metadata"> & {
   metadata: Record<string, SkylarkObjectMetadataField>;
 }) => {
   const sections = getVideoTypeSections(metadata, true);
+
+  const { muxUploadUrl, isGeneratingMuxUploadUrl } =
+    useGenerateMuxUploadUrl(uid);
+  console.log({ muxUploadUrl, isGeneratingMuxUploadUrl });
 
   return (
     <PanelSectionLayout sections={sections} isPage={isPage}>
@@ -148,6 +155,14 @@ const MetadataPlayback = ({
           </div>
         );
       })}
+      {muxUploadUrl && !isGeneratingMuxUploadUrl && (
+        <MuxUploader
+          endpoint={muxUploadUrl}
+          id="uploader"
+          onSuccess={console.log}
+          onError={console.log}
+        />
+      )}
     </PanelSectionLayout>
   );
 };
