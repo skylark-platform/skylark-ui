@@ -381,6 +381,7 @@ export const Panel = ({
         // If relationship, put Playback tab after Relationships
         (objectMeta?.builtinObjectRelationships?.hasAssets ||
           objectMeta?.builtinObjectRelationships?.hasLiveAssets) &&
+          objectMeta?.name !== BuiltInSkylarkObjectType.SkylarkImage &&
           PanelTab.Playback,
         objectMeta?.builtinObjectRelationships?.images && PanelTab.Imagery,
         objectMeta?.hasContentOf && PanelTab.ContentOf,

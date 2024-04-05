@@ -1,23 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { QueryKeys } from "src/enums/graphql";
+import { IntegrationCloudinaryUploadUrlResponseBody } from "src/interfaces/skylark/integrations";
 import { integrationServiceRequest } from "src/lib/integrationService/client";
 
 export const useGenerateCloudinaryUploadUrl = (uid: string) => {
   const { data, isLoading } = useQuery({
     queryKey: [QueryKeys.Integrations, "cloudinary", "uploadUrl", uid],
     queryFn: async () => {
-      const data = await integrationServiceRequest<{ url: string }>(
-        "/upload-url/video/cloudinary",
-        {
-          body: {
-            asset_uid: uid,
+      const data =
+        await integrationServiceRequest<IntegrationCloudinaryUploadUrlResponseBody>(
+          "/upload-url/image/cloudinary",
+          {
+            body: {
+              skylark_object_uid: uid,
+            },
+            method: "POST",
           },
-          method: "POST",
-        },
-      );
+        );
 
-      return data.url;
+      return data;
     },
     retry: false,
     refetchOnWindowFocus: false,
@@ -27,7 +29,7 @@ export const useGenerateCloudinaryUploadUrl = (uid: string) => {
   });
 
   return {
-    muxUploadUrl: data,
-    isGeneratingMuxUploadUrl: isLoading,
+    data,
+    isLoading,
   };
 };

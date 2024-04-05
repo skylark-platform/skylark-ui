@@ -12,7 +12,7 @@ export const useGetIntegrations = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: [QueryKeys.Integrations],
     queryFn: async () => {
-      const data = await integrationServiceRequest("/video", {});
+      const data = await integrationServiceRequest("/", {});
       return data;
     },
   });

@@ -24,15 +24,6 @@ export const integrationServiceRequest = async <T>(
 
   // const integrationServiceUrl = `https://hook.sl-f-sl-2946.development.skylarkplatform.com${endpoint}/${integrationToken}/${uid}`;
 
-  const bodyWithCreds =
-    method === "POST"
-      ? {
-          skylark_api_url: uri,
-          skylark_api_key: tokenToSend,
-          ...body,
-        }
-      : undefined;
-
   const hookDomain = uri.split("skylarkplatform.com")?.[0]?.split("api.")?.[1];
   const integrationServiceUrl = `https://hook.${hookDomain}skylarkplatform.com`;
 
@@ -40,7 +31,6 @@ export const integrationServiceRequest = async <T>(
   console.log({
     hookDomain,
     integrationServiceUrl,
-    bodyWithCreds,
     endpoint,
     url,
     urlToString: url.toString(),
@@ -54,7 +44,7 @@ export const integrationServiceRequest = async <T>(
       "x-skylark-api-key": tokenToSend,
     },
     method: method || "GET",
-    body: JSON.stringify(bodyWithCreds),
+    body: body ? JSON.stringify(body) : undefined,
   });
 
   console.log({ response });

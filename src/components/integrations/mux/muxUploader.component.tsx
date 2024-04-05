@@ -10,14 +10,13 @@ interface MuxUploaderProps {
 }
 
 export const MuxUploader = ({ uid, id }: MuxUploaderProps) => {
-  const { muxUploadUrl, isGeneratingMuxUploadUrl } =
-    useGenerateMuxUploadUrl(uid);
+  const { data, isLoading } = useGenerateMuxUploadUrl(uid);
 
   return (
     <>
-      {muxUploadUrl && (
+      {data && (
         <MuxUploaderComponent
-          endpoint={muxUploadUrl}
+          endpoint={data.url}
           id={id}
           style={
             {
@@ -43,7 +42,7 @@ export const MuxUploader = ({ uid, id }: MuxUploaderProps) => {
           onError={console.log}
         />
       )}
-      {isGeneratingMuxUploadUrl && <Skeleton className="h-52 w-full" />}
+      {isLoading && <Skeleton className="h-52 w-full" />}
     </>
   );
 };

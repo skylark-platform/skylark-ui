@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { QueryKeys } from "src/enums/graphql";
+import { IntegrationGenericUploadUrlResponseBody } from "src/interfaces/skylark/integrations";
 import { integrationServiceRequest } from "src/lib/integrationService/client";
 
 // const integrationServiceMuxToken =
@@ -11,17 +12,18 @@ export const useGenerateMuxUploadUrl = (uid: string) => {
   const { data, isLoading } = useQuery({
     queryKey: [QueryKeys.Integrations, "mux", "uploadUrl", uid],
     queryFn: async () => {
-      const data = await integrationServiceRequest<{ url: string }>(
-        "/upload-url/video/mux",
-        {
-          body: {
-            asset_uid: uid,
+      const data =
+        await integrationServiceRequest<IntegrationGenericUploadUrlResponseBody>(
+          "/upload-url/video/mux",
+          {
+            body: {
+              skylark_object_uid: uid,
+            },
+            method: "POST",
           },
-          method: "POST",
-        },
-      );
+        );
 
-      return data.url;
+      return data;
     },
     retry: false,
     refetchOnWindowFocus: false,
@@ -31,7 +33,7 @@ export const useGenerateMuxUploadUrl = (uid: string) => {
   });
 
   return {
-    muxUploadUrl: data,
-    isGeneratingMuxUploadUrl: isLoading,
+    data,
+    isLoading,
   };
 };

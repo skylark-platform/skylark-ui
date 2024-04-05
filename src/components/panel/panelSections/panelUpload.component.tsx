@@ -1,10 +1,10 @@
-import { MuxUploader } from "src/components/integrations";
-import CloudinaryUploadWidget from "src/components/integrations/cloudinary/cloudinaryUploader.component";
+import { MuxUploader, CloudinaryUploader } from "src/components/integrations";
 import {
   PanelFieldTitle,
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { useGetIntegrations } from "src/hooks/integrations/useGetIntegrations";
+import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
@@ -17,43 +17,63 @@ interface PanelUploadProps {
   // objectMeta: SkylarkObjectMeta | null;
 }
 
-type UploaderType = "mux" | "cloudinary";
+type UploadType = "image" | "video";
 
-const Uploader = ({
-  type,
-  opts,
-}: {
-  type: UploaderType;
-  opts: { uid: string };
-}) => {
-  if (type === "mux") {
-    return <MuxUploader uid={opts.uid} />;
+type UploaderProvider = "mux" | "cloudinary";
+
+const generateSections = (
+  type: UploadType,
+): { id: UploaderProvider; htmlId: string; title: string }[] => {
+  if (type === "image") {
+    return [
+      {
+        id: "cloudinary",
+        htmlId: "panel-cloudinary-uploader",
+        title: "Cloudinary",
+      },
+    ];
   }
 
-  if (type === "cloudinary") {
-    return <CloudinaryUploadWidget uid={opts.uid} />;
-  }
-
-  return <></>;
-};
-
-export const PanelUpload = ({ uid, isPage }: PanelUploadProps) => {
-  useGetIntegrations();
-
-  const uploaderOpts = { uid };
-
-  const sections: { id: UploaderType; htmlId: string; title: string }[] = [
-    // {
-    //   id: "mux",
-    //   htmlId: "panel-mux-uploader",
-    //   title: "Mux",
-    // },
+  return [
+    {
+      id: "mux",
+      htmlId: "panel-mux-uploader",
+      title: "Mux",
+    },
     {
       id: "cloudinary",
       htmlId: "panel-cloudinary-uploader",
       title: "Cloudinary",
     },
   ];
+};
+
+const Uploader = ({
+  provider,
+  opts,
+}: {
+  provider: UploaderProvider;
+  opts: { uid: string };
+}) => {
+  if (provider === "mux") {
+    return <MuxUploader uid={opts.uid} />;
+  }
+
+  if (provider === "cloudinary") {
+    return <CloudinaryUploader uid={opts.uid} />;
+  }
+
+  return <></>;
+};
+
+export const PanelUpload = ({ uid, isPage, objectType }: PanelUploadProps) => {
+  const type: UploadType =
+    objectType === BuiltInSkylarkObjectType.SkylarkImage ? "image" : "video";
+
+  useGetIntegrations();
+
+  const sections = generateSections(type);
+  const uploaderOpts = { uid };
 
   return (
     <PanelSectionLayout sections={sections} isPage={isPage}>
@@ -61,7 +81,7 @@ export const PanelUpload = ({ uid, isPage }: PanelUploadProps) => {
       {sections.map(({ id, title, htmlId }) => (
         <div key={id} id={htmlId} className="relative mb-8">
           <PanelFieldTitle text={title} />
-          <Uploader type={id} opts={uploaderOpts} />
+          <Uploader provider={id} opts={uploaderOpts} />
         </div>
       ))}
     </PanelSectionLayout>
