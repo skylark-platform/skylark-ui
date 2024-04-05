@@ -60,6 +60,7 @@ import { PanelContent } from "./panelSections/panelContent.component";
 import { PanelContentOf } from "./panelSections/panelContentOf.component";
 import { PanelPlayback } from "./panelSections/panelPlayback.component";
 import { PanelRelationships } from "./panelSections/panelRelationships.component";
+import { PanelUpload } from "./panelSections/panelUpload.component";
 
 interface PanelProps {
   isPage?: boolean;
@@ -370,6 +371,9 @@ export const Panel = ({
       [
         PanelTab.Metadata,
         objectMeta?.hasContent && PanelTab.Content,
+        (objectMeta?.name === BuiltInSkylarkObjectType.SkylarkAsset ||
+          objectMeta?.name === BuiltInSkylarkObjectType.SkylarkImage) &&
+          PanelTab.Upload,
         (objectMeta?.name === BuiltInSkylarkObjectType.SkylarkAsset ||
           objectMeta?.name === BuiltInSkylarkObjectType.SkylarkLiveAsset) &&
           PanelTab.Playback,
@@ -701,6 +705,15 @@ export const Panel = ({
               objectType={objectType}
               objectMeta={objectMeta}
               objectFieldConfig={data?.config.fieldConfig}
+            />
+          )}
+          {selectedTab === PanelTab.Upload && (
+            <PanelUpload
+              isPage={isPage}
+              objectType={objectType}
+              uid={uid}
+              language={language}
+              inEditMode={inEditMode}
             />
           )}
           {selectedTab === PanelTab.Imagery && data?.images && (
