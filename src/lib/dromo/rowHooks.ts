@@ -24,6 +24,10 @@ const lookupViaUidOrExternalID = async (
   objectType: string,
   queryString: string,
 ) => {
+  if (!queryString) {
+    return [];
+  }
+
   const query = createGetObjectGenericQuery(allObjectsMeta, {
     typesToRequest: [objectType],
   });

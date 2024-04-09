@@ -204,6 +204,7 @@ const GenericObjectDromo = ({
 
   return (
     <DromoUploader
+      key="dromo"
       open={true}
       onCancel={onCancel}
       onResults={onResultsWrapper}
@@ -285,6 +286,7 @@ const AvailabilityDromo = ({
 
   return (
     <DromoUploader
+      key="dromo"
       open={true}
       onCancel={onCancel}
       onResults={onResultsWrapper}
@@ -374,7 +376,7 @@ export default function CSVImportPage() {
 
     if (objectType === BuiltInSkylarkObjectType.Availability) {
       console.log("pausing");
-      await pauseForCondition(!isLoadingDimensions);
+      await pauseForCondition(() => !isLoadingDimensions);
       console.log("playing");
     }
 
@@ -444,7 +446,13 @@ export default function CSVImportPage() {
           disabled={
             !objectType ||
             !objectOperations ||
-            state.prep !== statusType.pending
+            state.prep !== statusType.pending ||
+            (objectType === BuiltInSkylarkObjectType.Availability &&
+              isLoadingDimensions)
+          }
+          loading={
+            objectType === BuiltInSkylarkObjectType.Availability &&
+            isLoadingDimensions
           }
           onClick={onClick}
           Icon={<FiUpload className="text-xl" />}

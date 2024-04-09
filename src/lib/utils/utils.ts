@@ -25,9 +25,14 @@ export const isObject = (input: unknown): input is Record<string, unknown> => {
 export const pause = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-export const pauseForCondition = (condition: boolean, ms = 500, numTries = 0) =>
+export const pauseForCondition = (
+  conditionFunc: () => boolean,
+  ms = 500,
+  numTries = 0,
+) =>
   new Promise((resolve, reject) =>
     setTimeout((val) => {
+      const condition = conditionFunc();
       console.log({ condition });
       if (condition) {
         resolve(val);
@@ -36,7 +41,7 @@ export const pauseForCondition = (condition: boolean, ms = 500, numTries = 0) =>
         reject("Waited too long");
         return;
       } else {
-        pauseForCondition(condition, ms, numTries + 1);
+        pauseForCondition(conditionFunc, ms, numTries + 1);
         return;
       }
     }, ms),

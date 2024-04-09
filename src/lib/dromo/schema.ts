@@ -216,7 +216,7 @@ export const convertAvailabilityObjectMetaToDromoSchemaFields = (
 
       const field: DromoSchema["fields"][0] = {
         label: alternateMatches[0],
-        key: uid,
+        key: `dimension_${slug}`,
         alternateMatches,
         manyToOne: true,
         type: "select",
@@ -230,7 +230,7 @@ export const convertAvailabilityObjectMetaToDromoSchemaFields = (
 
           return {
             label: alternateValueMatches[0],
-            value: val.uid,
+            value: val.slug,
             alternateValueMatches,
           };
         }),

@@ -168,26 +168,86 @@ export const createFlatfileObjectsInSkylark = async (
   };
 };
 
+const filterEmptyOrNonStrings = (arr: unknown[]) => {
+  return arr.filter(
+    (item): item is string => Boolean(item) && typeof item === "string",
+  );
+};
+
+const parseDromoAvailability = (
+  dromoObject: Record<string, SkylarkObjectMetadataField>,
+) => {
+  if (
+    hasProperty(dromoObject, "availability") &&
+    Array.isArray(dromoObject.availability) &&
+    dromoObject.availability?.[0]
+  ) {
+    return {
+      availability: {
+        link: filterEmptyOrNonStrings(dromoObject.availability),
+      },
+    };
+  }
+
+  return {};
+};
+
+const parseDromoAvailabilityDimensions = (
+  dromoObject: Record<string, SkylarkObjectMetadataField>,
+) => {
+  const parsedDimensions = Object.entries(dromoObject).reduce(
+    (prev, [key, value]) => {
+      if (key.startsWith("dimension_") && Array.isArray(value) && value?.[0]) {
+        return [
+          ...prev,
+          {
+            dimension_slug: key.replace("dimension_", ""),
+            value_slugs: filterEmptyOrNonStrings(value),
+          },
+        ];
+      }
+
+      return prev;
+    },
+    [] as { dimension_slug: string; value_slugs: string[] }[],
+  );
+
+  return parsedDimensions.length > 0
+    ? { dimensions: { link: parsedDimensions } }
+    : {};
+};
+
 const parseDromoRelationships = (
   dromoObject: Record<string, SkylarkObjectMetadataField>,
   relationships: SkylarkObjectMeta["relationships"],
-): Record<string, string[]> => {
+) => {
   const relationshipNames = relationships.map(
     ({ relationshipName }) => relationshipName,
   );
 
-  return Object.entries(dromoObject).reduce((prev, [key, value]) => {
-    if (relationshipNames.includes(key) && Array.isArray(value)) {
-      return {
-        ...prev,
-        [key]: {
-          link: value,
-        },
-      };
-    }
+  const parsedRelationships = Object.entries(dromoObject).reduce(
+    (prev, [key, value]) => {
+      if (
+        relationshipNames.includes(key) &&
+        Array.isArray(value) &&
+        value?.[0]
+      ) {
+        return {
+          ...prev,
+          [key]: {
+            link: filterEmptyOrNonStrings(value),
+          },
+        };
+      }
 
-    return prev;
-  }, {});
+      return prev;
+    },
+    {},
+  );
+
+  return Object.keys(parsedRelationships).length > 0
+    ? { relationships: parsedRelationships }
+    : {};
 };
 
 export const createDromoObjectsInSkylark = async (
@@ -225,25 +285,21 @@ export const createDromoObjectsInSkylark = async (
               true,
             );
 
-            const parsedRelationships = parseDromoRelationships(
-              data,
-              objectMeta.relationships,
-            );
-
             const operation = {
               __aliasFor: createOperation.name,
               __args: {
                 [createOperation.argName]: {
                   ...parsedMetadata,
-                  ...(parsedRelationships
-                    ? { relationships: parsedRelationships }
-                    : {}),
+                  ...parseDromoRelationships(data, objectMeta.relationships),
+                  ...parseDromoAvailability(data),
+                  ...parseDromoAvailabilityDimensions(data),
                 },
               },
               uid: true,
               external_id: true,
             };
 
+            console.log({ operation });
             const updatedOperations = {
               ...previousOperations,
               [`${createOperation.name}_${dromoImportMetadata.importIdentifier}__${chunkIndex + 1}_${index + 1}`.replace(
