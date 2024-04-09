@@ -25,6 +25,7 @@ import {
 import { createDromoRowHooks } from "src/lib/dromo/rowHooks";
 import {
   DromoSchema,
+  convertAvailabilityObjectMetaToDromoSchemaFields,
   convertObjectMetaToDromoSchemaFields,
 } from "src/lib/dromo/schema";
 import { getDromoSettings } from "src/lib/dromo/settings";
@@ -163,12 +164,11 @@ const createObjectsInSkylark = async (
   }
 };
 
-const Dromo = ({
+const GenericObjectDromo = ({
   accountIdentifier,
   objectMeta,
   objectTypesWithConfig,
   allObjectsMeta,
-  availabilityDimensionsWithValues,
   onCancel,
   onResults,
 }: {
@@ -176,7 +176,6 @@ const Dromo = ({
   objectMeta: SkylarkObjectMeta;
   allObjectsMeta: SkylarkObjectMeta[];
   objectTypesWithConfig?: ObjectTypeWithConfig[];
-  availabilityDimensionsWithValues: ParsedSkylarkDimensionsWithValues[] | null;
   onCancel: () => void;
   onResults: (
     objectMeta: SkylarkObjectMeta,
@@ -190,10 +189,88 @@ const Dromo = ({
 
   const settings = getDromoSettings(objectTypeWithConfig, accountIdentifier);
 
-  const fields = convertObjectMetaToDromoSchemaFields(
+  const fields = convertObjectMetaToDromoSchemaFields(objectMeta);
+
+  const onResultsWrapper = (
+    data: Record<string, SkylarkObjectMetadataField>[],
+    metadata: IResultMetadata,
+  ) => {
+    onResults(objectMeta, data, metadata);
+  };
+
+  console.log("triggered dromo", { settings, fields });
+
+  const isDevelopmentMode = true;
+
+  return (
+    <DromoUploader
+      open={true}
+      onCancel={onCancel}
+      onResults={onResultsWrapper}
+      developmentMode={isDevelopmentMode}
+      licenseKey={"bace02ef-7319-4911-a3ce-5a3cc3d79df9"}
+      user={{ id: accountIdentifier }}
+      fields={fields}
+      settings={settings}
+      rowHooks={
+        objectMeta.name !== BuiltInSkylarkObjectType.Availability
+          ? createDromoRowHooks(
+              objectMeta,
+              allObjectsMeta,
+              objectTypesWithConfig,
+            )
+          : undefined
+      }
+      beforeFinish={
+        isDevelopmentMode ||
+        objectMeta.name !== BuiltInSkylarkObjectType.Availability
+          ? undefined
+          : (data) => {
+              if (data.length < 5) {
+                return {
+                  cancel: true,
+                  message: "You must import at least 5 rows",
+                };
+              }
+            }
+      }
+    />
+  );
+};
+
+const AvailabilityDromo = ({
+  accountIdentifier,
+  objectMeta,
+  objectTypesWithConfig,
+  allObjectsMeta,
+  availabilityDimensionsWithValues,
+  onCancel,
+  onResults,
+}: {
+  accountIdentifier: string;
+  objectMeta: SkylarkObjectMeta;
+  allObjectsMeta: SkylarkObjectMeta[];
+  objectTypesWithConfig?: ObjectTypeWithConfig[];
+  availabilityDimensionsWithValues: ParsedSkylarkDimensionsWithValues[];
+  onCancel: () => void;
+  onResults: (
+    objectMeta: SkylarkObjectMeta,
+    data: Record<string, SkylarkObjectMetadataField>[],
+    metadata: IResultMetadata,
+  ) => void;
+}) => {
+  const objectTypeWithConfig = objectTypesWithConfig?.find(
+    ({ objectType }) => objectMeta.name === objectType,
+  ) || { objectType: objectMeta.name, config: {} };
+
+  const settings = getDromoSettings(objectTypeWithConfig, accountIdentifier);
+
+  const fields = convertAvailabilityObjectMetaToDromoSchemaFields(
     objectMeta,
     availabilityDimensionsWithValues,
   );
+
+  console.log({ fields });
 
   const onResultsWrapper = (
     data: Record<string, SkylarkObjectMetadataField>[],
@@ -259,6 +336,8 @@ export default function CSVImportPage() {
     useAvailabilityDimensionsWithValues({
       enabled: objectType === BuiltInSkylarkObjectType.Availability,
     });
+
+  console.log({ dimensions, isLoadingDimensions });
 
   const { objects: allObjectsMeta } = useAllObjectsMeta(true);
 
@@ -436,22 +515,32 @@ export default function CSVImportPage() {
           </div>
         </div>
       </section>
-      {objectOperations &&
-        allObjectsMeta &&
-        creds &&
-        showDromo &&
-        (dimensions ||
-          objectType !== BuiltInSkylarkObjectType.Availability) && (
-          <Dromo
-            accountIdentifier={createAccountIdentifier(creds.uri)}
-            objectMeta={objectOperations}
-            allObjectsMeta={allObjectsMeta}
-            objectTypesWithConfig={objectTypesWithConfig}
-            availabilityDimensionsWithValues={dimensions || null}
-            onResults={onResults}
-            onCancel={onCancel}
-          />
-        )}
+      {objectOperations && allObjectsMeta && creds && showDromo && (
+        <>
+          {objectType !== BuiltInSkylarkObjectType.Availability && (
+            <GenericObjectDromo
+              accountIdentifier={createAccountIdentifier(creds.uri)}
+              objectMeta={objectOperations}
+              allObjectsMeta={allObjectsMeta}
+              objectTypesWithConfig={objectTypesWithConfig}
+              onResults={onResults}
+              onCancel={onCancel}
+            />
+          )}
+          {dimensions &&
+            objectType === BuiltInSkylarkObjectType.Availability && (
+              <AvailabilityDromo
+                accountIdentifier={createAccountIdentifier(creds.uri)}
+                objectMeta={objectOperations}
+                allObjectsMeta={allObjectsMeta}
+                objectTypesWithConfig={objectTypesWithConfig}
+                availabilityDimensionsWithValues={dimensions}
+                onResults={onResults}
+                onCancel={onCancel}
+              />
+            )}
+        </>
+      )}
     </div>
   );
 }

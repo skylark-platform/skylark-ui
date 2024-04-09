@@ -166,77 +166,79 @@ const convertObjectInputFieldToDromoField = (
 
 export const convertObjectMetaToDromoSchemaFields = (
   objectMeta: SkylarkObjectMeta,
-  availabilityDimensionsWithValues: ParsedSkylarkDimensionsWithValues[] | null,
 ): DromoSchema["fields"] => {
   const { inputs } = objectMeta.operations.create;
   const fields = inputs.map(convertObjectInputFieldToDromoField);
 
-  // Availability needs dimensions added, otherwise add relationships and availability fields
-  if (objectMeta.name === BuiltInSkylarkObjectType.Availability) {
-    const dimensionFields = availabilityDimensionsWithValues?.map(
-      ({ title, slug, external_id, uid, values }) => {
-        const alternateMatches = [title, slug, external_id, uid].filter(
-          (str): str is string => Boolean(str),
-        );
-
-        const field: DromoSchema["fields"][0] = {
-          label: alternateMatches[0],
-          key: uid,
-          alternateMatches,
-          manyToOne: true,
-          type: "select",
-          selectOptions: values.map((val) => {
-            const alternateValueMatches = [
-              val.title,
-              val.slug,
-              val.external_id,
-              val.uid,
-            ].filter((str): str is string => Boolean(str));
-
-            return {
-              label: alternateValueMatches[0],
-              value: val.uid,
-              alternateValueMatches,
-            };
-          }),
-        };
-
-        return field;
-      },
-    );
-
-    if (dimensionFields) {
-      fields.push(...dimensionFields);
-    }
-  } else {
-    const relationshipFields = objectMeta.relationships.map(
-      ({ relationshipName, objectType }) => {
-        const field: DromoSchema["fields"][0] = {
-          label: sentenceCase(relationshipName),
-          key: relationshipName,
-          alternateMatches: [objectType],
-          manyToOne: true,
-          type: "select",
-          selectOptions: [],
-        };
-
-        return field;
-      },
-    );
-
-    fields.push(...relationshipFields);
-
-    if (objectMeta.availability) {
+  // Add relationships and availability fields
+  const relationshipFields = objectMeta.relationships.map(
+    ({ relationshipName, objectType }) => {
       const field: DromoSchema["fields"][0] = {
-        label: "Availability",
-        key: "availability",
+        label: sentenceCase(relationshipName),
+        key: relationshipName,
+        alternateMatches: [objectType],
         manyToOne: true,
         type: "select",
         selectOptions: [],
       };
-      fields.push(field);
-    }
+
+      return field;
+    },
+  );
+
+  fields.push(...relationshipFields);
+
+  if (objectMeta.availability) {
+    const field: DromoSchema["fields"][0] = {
+      label: "Availability",
+      key: "availability",
+      manyToOne: true,
+      type: "select",
+      selectOptions: [],
+    };
+    fields.push(field);
   }
 
   return fields;
+};
+
+export const convertAvailabilityObjectMetaToDromoSchemaFields = (
+  objectMeta: SkylarkObjectMeta,
+  availabilityDimensionsWithValues: ParsedSkylarkDimensionsWithValues[],
+): DromoSchema["fields"] => {
+  const fields = convertObjectMetaToDromoSchemaFields(objectMeta);
+
+  const dimensionFields = availabilityDimensionsWithValues.map(
+    ({ title, slug, external_id, uid, values }) => {
+      const alternateMatches = [title, slug, external_id, uid].filter(
+        (str): str is string => Boolean(str),
+      );
+
+      const field: DromoSchema["fields"][0] = {
+        label: alternateMatches[0],
+        key: uid,
+        alternateMatches,
+        manyToOne: true,
+        type: "select",
+        selectOptions: values.map((val) => {
+          const alternateValueMatches = [
+            val.title,
+            val.slug,
+            val.external_id,
+            val.uid,
+          ].filter((str): str is string => Boolean(str));
+
+          return {
+            label: alternateValueMatches[0],
+            value: val.uid,
+            alternateValueMatches,
+          };
+        }),
+      };
+
+      return field;
+    },
+  );
+
+  return [...fields, ...dimensionFields];
 };
