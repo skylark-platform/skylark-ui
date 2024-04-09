@@ -9,13 +9,13 @@ import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "src/components/button";
+import { BaseIntegrationUploaderProps } from "src/components/integrations/baseUploader.component";
 import { Modal } from "src/components/modals/base/modal";
 import { Skeleton } from "src/components/skeleton";
 import { useGenerateMuxUploadUrl } from "src/hooks/integrations/useGenerateMuxUploadUrl";
 
-interface BitmovinUploaderProps {
+interface BitmovinUploaderProps extends BaseIntegrationUploaderProps {
   uid: string;
-  onSuccess: () => void;
 }
 
 interface BitmovingUploaderWidgetProps extends BitmovinUploaderProps {
@@ -44,7 +44,7 @@ const BitmovinUploaderWidget = ({
   // Create a Bitmovin API client instance
   useEffect(() => {
     setBitmovinApi(new BitmovinApi({ apiKey }));
-  }, []);
+  }, [apiKey]);
 
   const handleFileDroppedOrSelected = async (file: File) => {
     try {
@@ -244,7 +244,11 @@ const BitmovinUploaderWidget = ({
   );
 };
 
-export const BitmovinUploader = ({ uid, onSuccess }: BitmovinUploaderProps) => {
+export const BitmovinUploader = ({
+  uid,
+  buttonProps,
+  onSuccess,
+}: BitmovinUploaderProps) => {
   const { data, isLoading } = useGenerateMuxUploadUrl(uid);
 
   const apiKey = "";
@@ -258,11 +262,14 @@ export const BitmovinUploader = ({ uid, onSuccess }: BitmovinUploaderProps) => {
 
   return (
     <>
+      <Button
+        loading={isLoading}
+        {...buttonProps}
+        disabled={buttonProps.disabled || isLoading}
+        onClick={() => setIsOpen(true)}
+      />
       {data && (
         <>
-          <Button variant="outline" onClick={() => setIsOpen(true)}>
-            Open Bitmovin Widget
-          </Button>
           <Modal
             isOpen={isOpen}
             title="Bitmovin"
@@ -273,13 +280,13 @@ export const BitmovinUploader = ({ uid, onSuccess }: BitmovinUploaderProps) => {
               <BitmovinUploaderWidget
                 uid={uid}
                 apiKey={apiKey}
+                buttonProps={buttonProps}
                 onSuccess={onSuccessWrapper}
               />
             </div>
           </Modal>
         </>
       )}
-      {isLoading && <Skeleton className="h-52 w-full" />}
     </>
   );
 };

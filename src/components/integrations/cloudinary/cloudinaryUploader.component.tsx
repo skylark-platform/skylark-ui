@@ -2,6 +2,7 @@ import { createContext, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
+import { BaseIntegrationUploaderProps } from "src/components/integrations/baseUploader.component";
 import { Skeleton } from "src/components/skeleton";
 import { Toast } from "src/components/toast/toast.component";
 import { useGenerateCloudinaryUploadUrl } from "src/hooks/integrations/useGenerateCloudinaryUploadUrl";
@@ -11,9 +12,8 @@ interface CloudinaryContext {
   loaded: boolean;
 }
 
-interface CloudinaryUploaderProps {
+interface CloudinaryUploaderProps extends BaseIntegrationUploaderProps {
   uid: string;
-  onSuccess: () => void;
 }
 
 interface CloudinaryUploadWidgetProps extends CloudinaryUploaderProps {
@@ -44,6 +44,7 @@ export const CloudinaryUploadWidget = ({
   uid,
   cloudName,
   custom,
+  buttonProps,
   onSuccess,
 }: CloudinaryUploadWidgetProps) => {
   // TODO Need to document these presets as they can be passed in as parameters
@@ -162,20 +163,19 @@ export const CloudinaryUploadWidget = ({
   return (
     <CloudinaryScriptContext.Provider value={{ loaded }}>
       <Button
-        variant="outline"
+        {...buttonProps}
         onClick={() => {
           initializeCloudinaryWidget();
           widgetRef.current?.open();
         }}
-      >
-        Open Cloudinary Widget
-      </Button>
+      />
     </CloudinaryScriptContext.Provider>
   );
 };
 
 export const CloudinaryUploader = ({
   uid,
+  buttonProps,
   onSuccess,
 }: CloudinaryUploaderProps) => {
   const { data, isLoading } = useGenerateCloudinaryUploadUrl(uid);
@@ -187,10 +187,10 @@ export const CloudinaryUploader = ({
           uid={uid}
           cloudName={data.cloud_name}
           custom={data.custom}
+          buttonProps={{ ...buttonProps, loading: isLoading }}
           onSuccess={onSuccess}
         />
       )}
-      {isLoading && <Skeleton className="h-52 w-full" />}
     </>
   );
 };

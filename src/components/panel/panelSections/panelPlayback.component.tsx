@@ -1,6 +1,9 @@
 import clsx from "clsx";
 import { Fragment } from "react";
+import { FiUploadCloud } from "react-icons/fi";
 
+import { Button } from "src/components/button";
+import { IntegrationUploader } from "src/components/integrations/uploader/uploader.component";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelLoading } from "src/components/panel/panelLoading";
@@ -181,14 +184,28 @@ const RelationshipPlayback = ({
       title: formatObjectField(name),
       relationshipName: name,
       objects: objects,
+      isLive: liveAssetRelationships.findIndex((rel) => rel.name === name) > -1,
     }));
 
   return (
     <PanelSectionLayout sections={sections} isPage={isPage}>
-      {sections.map(({ id, title, objects }) => {
+      {sections.map(({ id, title, objects, isLive }) => {
         return (
           <div key={id} className="relative mb-8">
-            <PanelSectionTitle text={title} id={id} />
+            <PanelSectionTitle text={title} id={id}>
+              {!isLive && (
+                <IntegrationUploader
+                  provider={"mux"}
+                  type={"video"}
+                  opts={{ uid: "" }}
+                  buttonProps={{
+                    variant: "form-ghost",
+                    className: "ml-2",
+                    Icon: <FiUploadCloud className="text-lg" />,
+                  }}
+                />
+              )}
+            </PanelSectionTitle>
             {objects.length > 0 ? (
               objects.map((object) => {
                 const sections = getVideoTypeSections(object.metadata, false);

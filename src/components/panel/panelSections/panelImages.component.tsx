@@ -1,5 +1,8 @@
 import { useMemo } from "react";
+import { FiUpload, FiUploadCloud } from "react-icons/fi";
 
+import { Button } from "src/components/button";
+import { IntegrationUploader } from "src/components/integrations/uploader/uploader.component";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelLoading } from "src/components/panel/panelLoading";
@@ -140,7 +143,24 @@ export const PanelImages = ({
               text={formatObjectField(relationshipName)}
               id={`image-panel-${relationshipName}`}
               sticky
-            />
+            >
+              {/* <Button
+                variant="form-ghost"
+                className="ml-2"
+                onClick={() => console.log("")}
+                Icon={<FiUploadCloud className="text-lg" />}
+              /> */}
+              <IntegrationUploader
+                provider={"cloudinary"}
+                type={"image"}
+                opts={{ uid: "" }}
+                buttonProps={{
+                  variant: "form-ghost",
+                  className: "ml-2",
+                  Icon: <FiUploadCloud className="text-lg" />,
+                }}
+              />
+            </PanelSectionTitle>
             {objects.length === 0 && (
               <div className="mt-2">
                 <PanelEmptyDataText />

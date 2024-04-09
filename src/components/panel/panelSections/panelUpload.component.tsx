@@ -1,16 +1,16 @@
-import { toast } from "react-toastify";
-import { sentenceCase } from "sentence-case";
+import { useState } from "react";
+import { FiUploadCloud } from "react-icons/fi";
 
+import { Select, SelectOption } from "src/components/inputs/select";
 import {
-  MuxUploader,
-  CloudinaryUploader,
-  BitmovinUploader,
-} from "src/components/integrations";
+  IntegrationUploadType,
+  IntegrationUploader,
+  IntegrationUploaderProvider,
+} from "src/components/integrations/uploader/uploader.component";
 import {
   PanelFieldTitle,
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
-import { Toast } from "src/components/toast/toast.component";
 import { useGetIntegrations } from "src/hooks/integrations/useGetIntegrations";
 import { PanelTab } from "src/hooks/state";
 import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
@@ -27,13 +27,9 @@ interface PanelUploadProps {
   setTab: (t: PanelTab) => void;
 }
 
-type UploadType = "image" | "video";
-
-type UploaderProvider = "mux" | "cloudinary" | "bitmovin";
-
 const generateSections = (
-  type: UploadType,
-): { id: UploaderProvider; htmlId: string; title: string }[] => {
+  type: IntegrationUploadType,
+): { id: IntegrationUploaderProvider; htmlId: string; title: string }[] => {
   if (type === "image") {
     return [
       {
@@ -55,48 +51,12 @@ const generateSections = (
       htmlId: "panel-cloudinary-uploader",
       title: "Cloudinary",
     },
-    // {
-    //   id: "bitmovin",
-    //   htmlId: "panel-bitmovin-uploader",
-    //   title: "Bitmovin",
-    // },
+    {
+      id: "bitmovin",
+      htmlId: "panel-bitmovin-uploader",
+      title: "Bitmovin",
+    },
   ];
-};
-
-const Uploader = ({
-  provider,
-  type,
-  opts,
-  onSuccess,
-}: {
-  provider: UploaderProvider;
-  type: UploadType;
-  opts: { uid: string };
-  onSuccess: () => void;
-}) => {
-  const onSuccessWrapper = () => {
-    toast.success(
-      <Toast
-        title={"Upload Successful"}
-        message={`${sentenceCase(provider)} is processing your ${type}...`}
-      />,
-    );
-    onSuccess();
-  };
-
-  if (provider === "mux") {
-    return <MuxUploader uid={opts.uid} onSuccess={onSuccessWrapper} />;
-  }
-
-  if (provider === "cloudinary") {
-    return <CloudinaryUploader uid={opts.uid} onSuccess={onSuccessWrapper} />;
-  }
-
-  if (provider === "bitmovin") {
-    return <BitmovinUploader uid={opts.uid} onSuccess={onSuccessWrapper} />;
-  }
-
-  return <></>;
 };
 
 export const PanelUpload = ({
@@ -105,7 +65,7 @@ export const PanelUpload = ({
   objectType,
   setTab,
 }: PanelUploadProps) => {
-  const type: UploadType =
+  const type: IntegrationUploadType =
     objectType === BuiltInSkylarkObjectType.SkylarkImage ? "image" : "video";
 
   useGetIntegrations();
@@ -117,20 +77,54 @@ export const PanelUpload = ({
   const onSuccess = () =>
     setTab(type === "image" ? PanelTab.Metadata : PanelTab.Playback);
 
+  const [selected, setSelected] = useState<IntegrationUploaderProvider>(
+    sections?.[0].id,
+  );
+
+  const options = sections.map(
+    ({ title, id }): SelectOption<IntegrationUploaderProvider> => ({
+      label: title,
+      value: id,
+    }),
+  );
+
   return (
     <PanelSectionLayout sections={sections} isPage={isPage}>
       <PanelSectionTitle text={"Upload"} />
-      {sections.map(({ id, title, htmlId }) => (
-        <div key={id} id={htmlId} className="relative mb-8">
+      {/* {sections.map(({ id, title, htmlId }) => (
+        <div key={id} id={htmlId} className="relative mb-8 space-y-1">
           <PanelFieldTitle text={title} />
-          <Uploader
+          <IntegrationUploader
             provider={id}
             type={type}
             opts={uploaderOpts}
+            buttonProps={{ variant: "outline" }}
             onSuccess={onSuccess}
           />
         </div>
-      ))}
+      ))} */}
+      <Select
+        options={options}
+        selected={selected}
+        onChange={setSelected}
+        variant="primary"
+        placeholder="Select Provider"
+      />
+      {selected && (
+        <div className="mt-4">
+          <IntegrationUploader
+            provider={selected}
+            type={type}
+            opts={uploaderOpts}
+            buttonProps={{
+              variant: "outline",
+              children: "Upload",
+              Icon: <FiUploadCloud className="text-lg" />,
+            }}
+            onSuccess={onSuccess}
+          />
+        </div>
+      )}
     </PanelSectionLayout>
   );
 };

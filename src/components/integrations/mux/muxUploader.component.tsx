@@ -3,18 +3,23 @@ import { CSSProperties, useState } from "react";
 import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
+import { BaseIntegrationUploaderProps } from "src/components/integrations/baseUploader.component";
 import { Modal } from "src/components/modals/base/modal";
 import { Skeleton } from "src/components/skeleton";
 import { Toast } from "src/components/toast/toast.component";
 import { useGenerateMuxUploadUrl } from "src/hooks/integrations/useGenerateMuxUploadUrl";
 
-interface MuxUploaderProps {
+interface MuxUploaderProps extends BaseIntegrationUploaderProps {
   uid: string;
   id?: string;
-  onSuccess: () => void;
 }
 
-export const MuxUploader = ({ uid, id, onSuccess }: MuxUploaderProps) => {
+export const MuxUploader = ({
+  uid,
+  id,
+  buttonProps,
+  onSuccess,
+}: MuxUploaderProps) => {
   const { data, isLoading } = useGenerateMuxUploadUrl(uid);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -26,11 +31,14 @@ export const MuxUploader = ({ uid, id, onSuccess }: MuxUploaderProps) => {
 
   return (
     <>
+      <Button
+        loading={isLoading}
+        {...buttonProps}
+        disabled={buttonProps.disabled || isLoading}
+        onClick={() => setIsOpen(true)}
+      />
       {data && (
         <>
-          <Button variant="outline" onClick={() => setIsOpen(true)}>
-            Open Mux Widget
-          </Button>
           <Modal
             isOpen={isOpen}
             title="Mux"
@@ -78,7 +86,6 @@ export const MuxUploader = ({ uid, id, onSuccess }: MuxUploaderProps) => {
           </Modal>
         </>
       )}
-      {isLoading && <Skeleton className="h-52 w-full" />}
     </>
   );
 };
