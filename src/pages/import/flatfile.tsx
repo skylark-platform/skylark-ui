@@ -203,7 +203,7 @@ export default function CSVImportPage() {
     };
   }, [state.import]);
 
-  const exampleCSV = generateExampleCSV(objectOperations);
+  const exampleCSV = generateExampleCSV(objectOperations, false, false);
 
   const { data: allObjects } = useListAllObjects();
 

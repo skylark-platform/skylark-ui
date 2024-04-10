@@ -1,10 +1,14 @@
 import dayjs from "dayjs";
 import DromoUploader, { IResultMetadata } from "dromo-uploader-react";
-import { useState, useReducer } from "react";
+import { useState, useReducer, ReactNode } from "react";
 import { FiDownload, FiUpload } from "react-icons/fi";
 
 import { Button } from "src/components/button";
-import { ObjectTypeSelect } from "src/components/inputs/select";
+import {
+  LanguageSelect,
+  ObjectTypeSelect,
+  Select,
+} from "src/components/inputs/select";
 import { StatusCard, statusType } from "src/components/statusCard";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
@@ -42,6 +46,8 @@ import {
 
 type ImportStates = "select" | "prep" | "import" | "create";
 
+type ImportType = "full" | "translation";
+
 const orderedStates = ["select", "prep", "import", "create"] as ImportStates[];
 
 // Import UID to use when creating objects
@@ -60,7 +66,7 @@ const copyText: {
     messages: {
       pending: "Choose the Skylark object type to import",
       inProgress: "",
-      success: "You have selected {objectType}",
+      success: "You have selected {objectType}{selectedLanguageStr}",
       error: "",
     },
   },
@@ -123,6 +129,7 @@ const createObjectsInSkylark = async (
   data: Record<string, SkylarkObjectMetadataField>[],
   dromoImportMetadata: IResultMetadata,
   creds: SkylarkCreds | null,
+  language: string | null,
   setStatus: (status: statusType) => void,
   setObjectAmounts: (a: { numCreated: number; numErrored: number }) => void,
 ) => {
@@ -142,6 +149,7 @@ const createObjectsInSkylark = async (
       objectMeta,
       data,
       dromoImportMetadata,
+      language,
     );
 
     setObjectAmounts({
@@ -162,6 +170,51 @@ const createObjectsInSkylark = async (
     });
     setStatus(statusType.inProgress);
   }
+};
+
+const TemplateCSVDownloadButton = ({
+  objectTypeDisplayName,
+  objectMeta,
+  dimensions,
+  disabled,
+  children,
+  translatableFieldsOnly,
+}: {
+  objectTypeDisplayName: string;
+  objectMeta: SkylarkObjectMeta | null;
+  dimensions?: ParsedSkylarkDimensionsWithValues[];
+  disabled?: boolean;
+  children: ReactNode;
+  translatableFieldsOnly?: boolean;
+}) => {
+  const templateCSV =
+    objectMeta && !disabled
+      ? generateExampleCSV(
+          objectMeta,
+          translatableFieldsOnly || false,
+          true,
+          dimensions,
+        )
+      : null;
+
+  const downloadName = `${objectTypeDisplayName.replaceAll(" ", "_")}_${translatableFieldsOnly ? "translatable_fields" : "full"}_template.csv`;
+
+  return (
+    <Button
+      variant="link"
+      href={
+        !disabled && templateCSV
+          ? "data:text/plain;charset=utf-8," +
+            encodeURIComponent(templateCSV as string)
+          : undefined
+      }
+      downloadName={downloadName}
+      disabled={disabled || !templateCSV}
+      Icon={<FiDownload className="text-xl" />}
+    >
+      {children}
+    </Button>
+  );
 };
 
 const GenericObjectDromo = ({
@@ -330,6 +383,8 @@ export default function CSVImportPage() {
   const objectTypeDisplayName =
     objectTypeConfig?.objectTypeDisplayName || objectType;
 
+  const [language, setLanguage] = useState<string | undefined>();
+
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   // const { data: allObjects } = useListAllObjects();
@@ -405,6 +460,7 @@ export default function CSVImportPage() {
       data,
       metadata,
       creds,
+      language || null,
       (status) => {
         dispatch({ stage: "create", status });
       },
@@ -417,11 +473,6 @@ export default function CSVImportPage() {
       },
     );
   };
-
-  const exampleCSV =
-    objectType === BuiltInSkylarkObjectType.Availability && isLoadingDimensions
-      ? null
-      : generateExampleCSV(objectOperations, dimensions);
 
   return (
     <div className="flex h-full w-full flex-col sm:flex-row">
@@ -440,6 +491,16 @@ export default function CSVImportPage() {
           }}
           disabled={state.prep !== statusType.pending}
         />
+        {objectType !== BuiltInSkylarkObjectType.Availability && (
+          <LanguageSelect
+            useDefaultLanguage
+            variant="primary"
+            rounded={false}
+            selected={language}
+            onChange={setLanguage}
+            disabled={state.prep !== statusType.pending || !allObjectsMeta}
+          />
+        )}
         <Button
           block
           variant="primary"
@@ -459,25 +520,58 @@ export default function CSVImportPage() {
         >
           Import
         </Button>
-        <Button
-          variant="link"
-          href={
-            "data:text/plain;charset=utf-8," +
-            encodeURIComponent(exampleCSV as string)
-          }
-          downloadName={`${objectTypeDisplayName
-            .split(" ")
-            .join("_")}_example.csv`}
-          disabled={
-            !exampleCSV ||
-            !objectType ||
-            !objectOperations ||
-            state.prep !== statusType.pending
-          }
-          Icon={<FiDownload className="text-xl" />}
-        >
-          Download Example CSV
-        </Button>
+        <div className="text-center">
+          <TemplateCSVDownloadButton
+            objectMeta={objectOperations}
+            objectTypeDisplayName={objectTypeDisplayName}
+            dimensions={dimensions}
+            disabled={
+              !objectType ||
+              !objectOperations ||
+              state.prep !== statusType.pending ||
+              (objectType === BuiltInSkylarkObjectType.Availability &&
+                !dimensions)
+            }
+          >
+            Download Full Template
+          </TemplateCSVDownloadButton>
+          {objectType !== BuiltInSkylarkObjectType.Availability && (
+            <TemplateCSVDownloadButton
+              objectMeta={objectOperations}
+              objectTypeDisplayName={objectTypeDisplayName}
+              disabled={
+                !objectType ||
+                !objectOperations ||
+                state.prep !== statusType.pending
+              }
+              translatableFieldsOnly
+            >
+              Download Translatable Fields Template
+            </TemplateCSVDownloadButton>
+          )}
+
+          {/* {objectType !== BuiltInSkylarkObjectType.Availability && (
+            <Button
+              variant="link"
+              href={
+                "data:text/plain;charset=utf-8," +
+                encodeURIComponent(translationTemplateCSV as string)
+              }
+              downloadName={`${objectTypeDisplayName
+                .split(" ")
+                .join("_")}_example.csv`}
+              disabled={
+                !translationTemplateCSV ||
+                !objectType ||
+                !objectOperations ||
+                state.prep !== statusType.pending
+              }
+              Icon={<FiDownload className="text-xl" />}
+            >
+              Download Translatable Fields Template
+            </Button>
+          )} */}
+        </div>
       </section>
       <section className="flex flex-grow flex-col items-center justify-center bg-gray-200 py-10">
         <div className="flex w-5/6 flex-col items-center justify-center space-y-2 md:space-y-3 lg:w-3/5 xl:w-1/2 2xl:w-1/3">
@@ -491,6 +585,10 @@ export default function CSVImportPage() {
                 title={copyCard.title}
                 description={copyCard.messages[status]
                   .replace("{objectType}", objectTypeDisplayName)
+                  .replace(
+                    "{selectedLanguageStr}",
+                    language ? ` in ${language}` : "",
+                  )
                   .replace(
                     "{totalImportedToFlatfile}",
                     totalImportedToFlatfile.toString(),

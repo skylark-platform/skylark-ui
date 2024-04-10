@@ -466,7 +466,7 @@ export const parseMetadataForGraphQLRequest = (
   metadata: Record<string, SkylarkObjectMetadataField>,
   inputFields: NormalizedObjectField[],
   isCreate?: boolean,
-) => {
+): Record<string, string | EnumType> => {
   const keyValuePairs = Object.entries(metadata)
     .map(([key, value]) => {
       // Never send UID as it cannot be changed

@@ -7,7 +7,6 @@ import { sentenceCase } from "sentence-case";
 
 import { INPUT_REGEX } from "src/constants/skylark";
 import {
-  BuiltInSkylarkObjectType,
   NormalizedObjectField,
   ParsedSkylarkDimensionsWithValues,
   SkylarkObjectMeta,
@@ -18,6 +17,13 @@ export interface DromoSchema {
   fields: IDeveloperField[];
   settings: IDeveloperSettings;
 }
+
+const getFieldDescription = (fieldName: string): string | undefined => {
+  if (fieldName === SkylarkSystemField.ExternalID) {
+    // On external ID say it'll be used for update, not giving one will create
+    return "If External ID is not provided, new objects will be created.";
+  }
+};
 
 const convertObjectInputFieldToDromoField = (
   field: NormalizedObjectField,
@@ -52,9 +58,10 @@ const convertObjectInputFieldToDromoField = (
     key: field.name,
     requireMapping: field.isRequired,
     validators: defaultValidators,
+    description: getFieldDescription(field.name),
   } satisfies Pick<
     IDeveloperField,
-    "label" | "key" | "requireMapping" | "validators"
+    "label" | "key" | "requireMapping" | "validators" | "description"
   >;
 
   if (field.type === "enum") {
@@ -170,7 +177,18 @@ export const convertObjectMetaToDromoSchemaFields = (
   const { inputs } = objectMeta.operations.create;
   const fields = inputs.map(convertObjectInputFieldToDromoField);
 
-  // Add relationships and availability fields
+  if (objectMeta.availability) {
+    const availabilityField: DromoSchema["fields"][0] = {
+      label: "Availability",
+      key: "availability",
+      manyToOne: true,
+      type: "select",
+      selectOptions: [],
+    };
+
+    fields.push(availabilityField);
+  }
+
   const relationshipFields = objectMeta.relationships.map(
     ({ relationshipName, objectType }) => {
       const field: DromoSchema["fields"][0] = {
@@ -186,20 +204,7 @@ export const convertObjectMetaToDromoSchemaFields = (
     },
   );
 
-  fields.push(...relationshipFields);
-
-  if (objectMeta.availability) {
-    const field: DromoSchema["fields"][0] = {
-      label: "Availability",
-      key: "availability",
-      manyToOne: true,
-      type: "select",
-      selectOptions: [],
-    };
-    fields.push(field);
-  }
-
-  return fields;
+  return [...fields, ...relationshipFields];
 };
 
 export const convertAvailabilityObjectMetaToDromoSchemaFields = (

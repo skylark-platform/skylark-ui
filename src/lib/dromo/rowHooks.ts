@@ -17,6 +17,7 @@ import {
   createSearchObjectsQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
+import { GET_AVAILABILITY } from "src/lib/graphql/skylark/queries";
 import { hasProperty } from "src/lib/utils";
 
 const lookupViaUidOrExternalID = async (
@@ -59,6 +60,36 @@ const lookupViaUidOrExternalID = async (
   }
 
   return [];
+};
+
+const lookupAvailabilityViaUidOrExternalID = async (queryString: string) => {
+  if (!queryString) {
+    return [];
+  }
+
+  const response = await skylarkRequest<GQLSkylarkGetObjectResponse>(
+    "query",
+    GET_AVAILABILITY,
+    {
+      // uid: queryString, getAvailability supports only external ID or UID, not both at the same time
+      externalId: queryString,
+      language: "en-GB",
+      dimensions: [],
+    },
+    {},
+    { "x-force-get": "true" }, // Doesn't do anything
+  );
+
+  const object = response.getObject;
+
+  console.log({ data: object });
+
+  const selectOption = {
+    label: queryString,
+    value: object.uid,
+  };
+
+  return [selectOption];
 };
 
 const search = async (
@@ -168,11 +199,14 @@ const createLookupFieldHook =
                   }
 
                   try {
-                    const selectOptions = await lookupViaUidOrExternalID(
-                      allObjectsMeta,
-                      objectType,
-                      value,
-                    );
+                    const selectOptions = await (objectType ===
+                    BuiltInSkylarkObjectType.Availability
+                      ? lookupAvailabilityViaUidOrExternalID(value)
+                      : lookupViaUidOrExternalID(
+                          allObjectsMeta,
+                          objectType,
+                          value,
+                        ));
 
                     console.log(record.index, relationshipName, {
                       selectOptions,

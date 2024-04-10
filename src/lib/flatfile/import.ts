@@ -20,6 +20,7 @@ import {
   SkylarkImportedObject,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { wrappedJsonMutation } from "src/lib/graphql/skylark/dynamicQueries";
 import { getSkylarkObjectOperations } from "src/lib/skylark/introspection/introspection";
@@ -255,12 +256,12 @@ export const createDromoObjectsInSkylark = async (
   objectMeta: SkylarkObjectMeta,
   dromoObjects: Record<string, SkylarkObjectMetadataField>[],
   dromoImportMetadata: IResultMetadata,
+  language: string | null,
 ): Promise<{
   data: SkylarkImportedObject[];
   errors: (GQLSkylarkError<FlatfileObjectsCreatedInSkylarkFields> | Error)[];
 }> => {
   const objectType = objectMeta.name;
-  const createOperation = objectMeta.operations.create;
 
   const chunkedObjects = chunkArray(dromoObjects, 50);
 
@@ -281,14 +282,36 @@ export const createDromoObjectsInSkylark = async (
             const parsedMetadata = parseMetadataForGraphQLRequest(
               objectType,
               data,
-              createOperation.inputs,
+              objectMeta.operations.create.inputs,
               true,
             );
 
+            const externalId = hasProperty<
+              Record<string, string | EnumType>,
+              string,
+              string
+            >(parsedMetadata, SkylarkSystemField.ExternalID)
+              ? parsedMetadata[SkylarkSystemField.ExternalID]
+              : null;
+
+            // If External ID, use update, if not use create
+            // Availability doesn't support upsert
+            const useUpdate =
+              externalId &&
+              objectMeta.name !== BuiltInSkylarkObjectType.Availability;
+            const objectMetaOperation = useUpdate
+              ? objectMeta.operations.update
+              : objectMeta.operations.create;
+
             const operation = {
-              __aliasFor: createOperation.name,
+              __aliasFor: objectMetaOperation.name,
               __args: {
-                [createOperation.argName]: {
+                ...(useUpdate ? { external_id: externalId, upsert: true } : {}),
+                ...(objectMeta.name !== BuiltInSkylarkObjectType.Availability &&
+                language
+                  ? { language }
+                  : {}),
+                [objectMetaOperation.argName]: {
                   ...parsedMetadata,
                   ...parseDromoRelationships(data, objectMeta.relationships),
                   ...parseDromoAvailability(data),
@@ -302,7 +325,7 @@ export const createDromoObjectsInSkylark = async (
             console.log({ operation });
             const updatedOperations = {
               ...previousOperations,
-              [`${createOperation.name}_${dromoImportMetadata.importIdentifier}__${chunkIndex + 1}_${index + 1}`.replace(
+              [`${objectMetaOperation.name}_${dromoImportMetadata.importIdentifier}__${chunkIndex + 1}_${index + 1}`.replace(
                 /-/g,
                 "_",
               )]: operation,
@@ -409,6 +432,8 @@ const generateExampleFieldData = (
 
 export const generateExampleCSV = (
   objectMeta: SkylarkObjectMeta | null,
+  translationFieldsOnly: boolean,
+  dromoImport: boolean,
   dimensions?: ParsedSkylarkDimensionsWithValues[],
 ): string | null => {
   if (!objectMeta) {
@@ -416,8 +441,14 @@ export const generateExampleCSV = (
   }
 
   const inputs = objectMeta.operations.create.inputs.filter(
-    ({ name }) => !TEMPLATE_FIELDS_TO_IGNORE.includes(name),
+    ({ name }) =>
+      !TEMPLATE_FIELDS_TO_IGNORE.includes(name) &&
+      (!translationFieldsOnly ||
+        objectMeta.fieldConfig.translatable.includes(name) ||
+        name === SkylarkSystemField.ExternalID),
   );
+
+  console.log({ inputs });
 
   if (!inputs || inputs.length === 0) {
     return null;
@@ -427,7 +458,7 @@ export const generateExampleCSV = (
     isRequired ? `${name} (required)` : name,
   );
 
-  if (objectMeta.hasRelationships) {
+  if (dromoImport && !translationFieldsOnly && objectMeta.hasRelationships) {
     const relationshipNames = objectMeta.relationships
       .map(({ relationshipName }) => [
         `${relationshipName} (1)`,

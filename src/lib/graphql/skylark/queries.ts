@@ -176,3 +176,16 @@ query ${wrapQueryName("AI_FIELD_SUGGESTIONS")}($objectType:ObjectTypes!, $rootFi
     set_uid: $setUid
   )
 }`;
+
+export const GET_AVAILABILITY = gql`query ${wrapQueryName("GET_AVAILABILITY")}($uid: String, $externalId: String) {
+  getObject: getAvailability(uid: $uid, external_id: $externalId) {
+    uid
+    external_id
+    title
+    slug
+    start
+    end
+    active
+    timezone
+  }
+}`;
