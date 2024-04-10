@@ -1,14 +1,9 @@
-import dayjs from "dayjs";
 import DromoUploader, { IResultMetadata } from "dromo-uploader-react";
 import { useState, useReducer, ReactNode } from "react";
 import { FiDownload, FiUpload } from "react-icons/fi";
 
 import { Button } from "src/components/button";
-import {
-  LanguageSelect,
-  ObjectTypeSelect,
-  Select,
-} from "src/components/inputs/select";
+import { LanguageSelect, ObjectTypeSelect } from "src/components/inputs/select";
 import { StatusCard, statusType } from "src/components/statusCard";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
@@ -28,7 +23,6 @@ import {
 } from "src/interfaces/skylark";
 import { createDromoRowHooks } from "src/lib/dromo/rowHooks";
 import {
-  DromoSchema,
   convertAvailabilityObjectMetaToDromoSchemaFields,
   convertObjectMetaToDromoSchemaFields,
 } from "src/lib/dromo/schema";
@@ -46,12 +40,7 @@ import {
 
 type ImportStates = "select" | "prep" | "import" | "create";
 
-type ImportType = "full" | "translation";
-
 const orderedStates = ["select", "prep", "import", "create"] as ImportStates[];
-
-// Import UID to use when creating objects
-// 504c3c43-4cf1-46dd-bdd2-fd109350946c
 
 const copyText: {
   [key in ImportStates]: {
