@@ -32,11 +32,7 @@ import {
   generateExampleCSV,
 } from "src/lib/flatfile";
 import { createSkylarkClient } from "src/lib/graphql/skylark/client";
-import {
-  createAccountIdentifier,
-  pause,
-  pauseForCondition,
-} from "src/lib/utils";
+import { createAccountIdentifier, pause } from "src/lib/utils";
 
 type ImportStates = "select" | "prep" | "import" | "create";
 
@@ -416,12 +412,6 @@ export default function CSVImportPage() {
       throw new Error(
         "Skylark GraphQL URI or Access Key not found in local storage",
       );
-    }
-
-    if (objectType === BuiltInSkylarkObjectType.Availability) {
-      console.log("pausing");
-      await pauseForCondition(() => !isLoadingDimensions);
-      console.log("playing");
     }
 
     dispatch({ stage: "prep", status: statusType.success });

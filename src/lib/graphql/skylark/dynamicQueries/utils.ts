@@ -119,7 +119,7 @@ const getIgnoreAvailabilityVariableAndArg = (shouldAdd: boolean) => {
 };
 
 export const generateVariablesAndArgs = (
-  objectType: SkylarkObjectType | "search" | "listObjects" | "genericGetObject",
+  objectType: SkylarkObjectType | "search" | "genericGetObject",
   operationType: "Query" | "Mutation",
   addLanguageVariable = false,
 ): {

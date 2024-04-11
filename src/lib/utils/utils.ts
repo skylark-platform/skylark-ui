@@ -25,28 +25,6 @@ export const isObject = (input: unknown): input is Record<string, unknown> => {
 export const pause = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-export const pauseForCondition = (
-  conditionFunc: () => boolean,
-  ms = 500,
-  numTries = 0,
-) =>
-  new Promise((resolve, reject) =>
-    setTimeout((val) => {
-      const condition = conditionFunc();
-      console.log({ condition });
-      if (condition) {
-        resolve(val);
-        return;
-      } else if (!condition && numTries > 50) {
-        reject("Waited too long");
-        return;
-      } else {
-        pauseForCondition(conditionFunc, ms, numTries + 1);
-        return;
-      }
-    }, ms),
-  );
-
 export const getPrimaryKeyField = (
   object: ParsedSkylarkObject,
   fallbackConfig?: Record<string, ParsedSkylarkObjectConfig>,
