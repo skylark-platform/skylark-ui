@@ -13,7 +13,7 @@ import {
   mockFlatfileGetFinalDatabaseViewPaginated,
 } from "src/__tests__/mocks/handlers/flatfile";
 import { server } from "src/__tests__/mocks/server";
-import * as constants from "src/constants/flatfile";
+import * as constants from "src/constants/csv";
 import handler from "src/pages/api/flatfile/import";
 
 type ApiRequest = NextApiRequest & ReturnType<typeof createRequest>;

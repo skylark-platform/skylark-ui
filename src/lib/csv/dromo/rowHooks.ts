@@ -178,6 +178,7 @@ const createLookupFieldHook =
                 async ({ value, resultValue, selectOptions, ...rest }) => {
                   // If value is already valid, return the current configuration (reduces requests to Skylark)
                   if (
+                    !value ||
                     selectOptions?.find(
                       (option) => option.value === resultValue,
                     )

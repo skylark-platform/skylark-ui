@@ -8,7 +8,7 @@ import {
   erroredFlatfileTemplateSearch,
 } from "src/__tests__/mocks/handlers/flatfile";
 import { server } from "src/__tests__/mocks/server";
-import * as constants from "src/constants/flatfile";
+import * as constants from "src/constants/csv";
 import {
   FlatfileCreatePortalResponse,
   FlatfileCreateTemplateResponse,

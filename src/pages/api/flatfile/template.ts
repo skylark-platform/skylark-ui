@@ -5,7 +5,7 @@ import {
   FLATFILE_ACCESS_KEY_ID,
   FLATFILE_ORG,
   FLATFILE_SECRET_KEY,
-} from "src/constants/flatfile";
+} from "src/constants/csv";
 import { ApiRouteTemplateData } from "src/interfaces/apiRoutes";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
 import {

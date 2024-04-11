@@ -3,7 +3,7 @@ import { GraphQLClient } from "graphql-request";
 import { createFlatfileClient } from "./client";
 
 jest.mock("graphql-request");
-jest.mock("../../../constants/flatfile", () => ({
+jest.mock("../../../constants/csv", () => ({
   FLATFILE_GRAPHQL_URL: "https://flatfile",
   __esModule: true,
 }));

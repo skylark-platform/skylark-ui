@@ -253,3 +253,13 @@ export const insertAtIndex = <T>(
   const itemArr: T[] = Array.isArray(item) ? item : [item];
   return [...array.slice(0, index), ...itemArr, ...array.slice(index)];
 };
+
+export const chunkArray = <T>(arr: T[], chunkSize: number) => {
+  const chunkedArray: T[][] = [];
+
+  for (let index = 0; index < arr.length; index += chunkSize) {
+    chunkedArray.push(arr.slice(index, index + chunkSize));
+  }
+
+  return chunkedArray;
+};

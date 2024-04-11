@@ -17,9 +17,9 @@ import {
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
+import { generateExampleCSV } from "src/lib/csv/common";
 import {
   createFlatfileObjectsInSkylark,
-  generateExampleCSV,
   openFlatfileImportClient,
 } from "src/lib/csv/flatfile";
 import { convertObjectInputToFlatfileSchema } from "src/lib/csv/flatfile/template";

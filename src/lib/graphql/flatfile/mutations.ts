@@ -1,6 +1,6 @@
 import { gql } from "graphql-tag";
 
-import { FLATFILE_TEAM, ACTIVE_FLATFILE_ENV } from "src/constants/flatfile";
+import { FLATFILE_TEAM, ACTIVE_FLATFILE_ENV } from "src/constants/csv";
 
 export const CREATE_PORTAL = gql`
   mutation CREATE_PORTAL(

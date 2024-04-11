@@ -1,9 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import {
-  FLATFILE_ACCESS_KEY_ID,
-  FLATFILE_SECRET_KEY,
-} from "src/constants/flatfile";
+import { FLATFILE_ACCESS_KEY_ID, FLATFILE_SECRET_KEY } from "src/constants/csv";
 import {
   ApiRouteFlatfileImportRequestBody,
   ApiRouteFlatfileImportResponse,

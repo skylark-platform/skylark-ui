@@ -1,10 +1,12 @@
 import DromoUploader, { IResultMetadata } from "dromo-uploader-react";
 import { useState, useReducer, ReactNode } from "react";
 import { FiDownload, FiUpload } from "react-icons/fi";
+import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
 import { LanguageSelect, ObjectTypeSelect } from "src/components/inputs/select";
 import { StatusCard, statusType } from "src/components/statusCard";
+import { Toast } from "src/components/toast/toast.component";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { SkylarkCreds } from "src/hooks/useConnectedToSkylark";
@@ -21,16 +23,14 @@ import {
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
-import { createDromoRowHooks } from "src/lib/csv/dromo/rowHooks";
+import { generateExampleCSV } from "src/lib/csv/common";
 import {
   convertAvailabilityObjectMetaToDromoSchemaFields,
   convertObjectMetaToDromoSchemaFields,
-} from "src/lib/csv/dromo/schema";
-import { getDromoSettings } from "src/lib/csv/dromo/settings";
-import {
   createDromoObjectsInSkylark,
-  generateExampleCSV,
-} from "src/lib/csv/flatfile";
+  createDromoRowHooks,
+  getDromoSettings,
+} from "src/lib/csv/dromo";
 import { createSkylarkClient } from "src/lib/graphql/skylark/client";
 import { createAccountIdentifier, pause } from "src/lib/utils";
 
@@ -236,8 +236,6 @@ const GenericObjectDromo = ({
     onResults(objectMeta, data, metadata);
   };
 
-  console.log("triggered dromo", { settings, fields });
-
   const isDevelopmentMode = true;
 
   return (
@@ -309,16 +307,12 @@ const AvailabilityDromo = ({
     availabilityDimensionsWithValues,
   );
 
-  console.log({ fields });
-
   const onResultsWrapper = (
     data: Record<string, SkylarkObjectMetadataField>[],
     metadata: IResultMetadata,
   ) => {
     onResults(objectMeta, data, metadata);
   };
-
-  console.log("triggered dromo", { settings, fields });
 
   const isDevelopmentMode = true;
 
@@ -372,14 +366,10 @@ export default function CSVImportPage() {
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
-  // const { data: allObjects } = useListAllObjects();
-
   const { dimensions, isLoading: isLoadingDimensions } =
     useAvailabilityDimensionsWithValues({
       enabled: objectType === BuiltInSkylarkObjectType.Availability,
     });
-
-  console.log({ dimensions, isLoadingDimensions });
 
   const { objects: allObjectsMeta } = useAllObjectsMeta(true);
 
@@ -431,8 +421,16 @@ export default function CSVImportPage() {
     data: Record<string, SkylarkObjectMetadataField>[],
     metadata: IResultMetadata,
   ) => {
-    console.log("onResults", { data, metadata });
     dispatch({ stage: "import", status: statusType.success });
+    toast.info(
+      <Toast
+        title={`${objectTypeDisplayName} objects being created`}
+        message={[
+          `Your ${objectTypeDisplayName} objects are being created in Skylark.`,
+          "Do not refresh the page.",
+        ]}
+      />,
+    );
     setShowDromo(false);
     createObjectsInSkylark(
       objectMeta,
@@ -528,28 +526,6 @@ export default function CSVImportPage() {
               Download Translatable Fields Template
             </TemplateCSVDownloadButton>
           )}
-
-          {/* {objectType !== BuiltInSkylarkObjectType.Availability && (
-            <Button
-              variant="link"
-              href={
-                "data:text/plain;charset=utf-8," +
-                encodeURIComponent(translationTemplateCSV as string)
-              }
-              downloadName={`${objectTypeDisplayName
-                .split(" ")
-                .join("_")}_example.csv`}
-              disabled={
-                !translationTemplateCSV ||
-                !objectType ||
-                !objectOperations ||
-                state.prep !== statusType.pending
-              }
-              Icon={<FiDownload className="text-xl" />}
-            >
-              Download Translatable Fields Template
-            </Button>
-          )} */}
         </div>
       </section>
       <section className="flex flex-grow flex-col items-center justify-center bg-gray-200 py-10">
