@@ -1,6 +1,6 @@
 import { gql } from "graphql-tag";
 
-import { ACTIVE_FLATFILE_ENV, FLATFILE_TEAM } from "src/constants/flatfile";
+import { ACTIVE_FLATFILE_ENV, FLATFILE_TEAM } from "src/constants/csv";
 
 export const GET_PORTALS = gql`
   query GET_PORTALS(

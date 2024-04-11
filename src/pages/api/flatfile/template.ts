@@ -5,7 +5,7 @@ import {
   FLATFILE_ACCESS_KEY_ID,
   FLATFILE_ORG,
   FLATFILE_SECRET_KEY,
-} from "src/constants/flatfile";
+} from "src/constants/csv";
 import { ApiRouteTemplateData } from "src/interfaces/apiRoutes";
 import { FlatfileTemplate } from "src/interfaces/flatfile/template";
 import {
@@ -13,7 +13,7 @@ import {
   createOrUpdateFlatfileTemplate,
   exchangeFlatfileAccessKey,
   validateRequestTemplate,
-} from "src/lib/flatfile";
+} from "src/lib/csv/flatfile";
 import { createFlatfileClient } from "src/lib/graphql/flatfile/client";
 
 export default async function handler(

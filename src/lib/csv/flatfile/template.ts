@@ -1,4 +1,4 @@
-import { TEMPLATE_FIELDS_TO_IGNORE } from "src/constants/flatfile";
+import { TEMPLATE_FIELDS_TO_IGNORE } from "src/constants/csv";
 import { INPUT_REGEX } from "src/constants/skylark";
 import {
   FlatfileTemplate,

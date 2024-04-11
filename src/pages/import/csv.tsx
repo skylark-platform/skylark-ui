@@ -17,12 +17,12 @@ import {
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
+import { generateExampleCSV } from "src/lib/csv/common";
 import {
   createFlatfileObjectsInSkylark,
-  generateExampleCSV,
   openFlatfileImportClient,
-} from "src/lib/flatfile";
-import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
+} from "src/lib/csv/flatfile";
+import { convertObjectInputToFlatfileSchema } from "src/lib/csv/flatfile/template";
 import { createSkylarkClient } from "src/lib/graphql/skylark/client";
 import { createAccountIdentifier, pause } from "src/lib/utils";
 
@@ -286,7 +286,7 @@ export default function CSVImportPage() {
     };
   }, [state.import]);
 
-  const exampleCSV = generateExampleCSV(objectOperations);
+  const exampleCSV = generateExampleCSV(objectOperations, false, false);
 
   return (
     <div className="flex h-full w-full flex-col sm:flex-row">

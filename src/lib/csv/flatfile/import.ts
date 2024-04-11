@@ -1,9 +1,6 @@
 import { ITheme } from "@flatfile/sdk/dist/types";
-import dayjs from "dayjs";
 import { GraphQLClient } from "graphql-request";
-import { EnumType } from "json-to-graphql-query";
 
-import { TEMPLATE_FIELDS_TO_IGNORE } from "src/constants/flatfile";
 import {
   FlatfileObjectsCreatedInSkylark,
   FlatfileObjectsCreatedInSkylarkFields,
@@ -12,28 +9,13 @@ import {
 import {
   GQLSkylarkError,
   GQLSkylarkErrorResponse,
-  NormalizedObjectField,
-  NormalizedObjectFieldType,
   SkylarkImportedObject,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
 import { wrappedJsonMutation } from "src/lib/graphql/skylark/dynamicQueries";
 import { getSkylarkObjectOperations } from "src/lib/skylark/introspection/introspection";
-import {
-  parseInputFieldValue,
-  parseMetadataForGraphQLRequest,
-} from "src/lib/skylark/parsers";
-import { hasProperty } from "src/lib/utils";
-
-const chunkArray = <T>(arr: T[], chunkSize: number) => {
-  const chunkedArray: T[][] = [];
-
-  for (let index = 0; index < arr.length; index += chunkSize) {
-    chunkedArray.push(arr.slice(index, index + chunkSize));
-  }
-
-  return chunkedArray;
-};
+import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
+import { chunkArray, hasProperty } from "src/lib/utils";
 
 export const openFlatfileImportClient = async (
   embedId: string,
@@ -162,82 +144,4 @@ export const createFlatfileObjectsInSkylark = async (
     data,
     errors,
   };
-};
-
-const generateExampleFieldData = (
-  { type, enumValues }: NormalizedObjectField,
-  rowNum: number,
-): string | number | boolean | EnumType | string[] | null => {
-  const now = dayjs();
-  const examples: Record<
-    NormalizedObjectFieldType,
-    (string | number | boolean | EnumType | string[] | null)[]
-  > = {
-    string: ["example"],
-    int: [10, -5],
-    float: [1.2, 20.23, 0.2],
-    boolean: [true, false],
-    enum: enumValues as string[],
-    url: ["http://example.com", "https://example.com"],
-    date: [
-      parseInputFieldValue(now.format("YYYY-MM-DD"), type),
-      parseInputFieldValue("2011-02-02", type),
-    ],
-    datetime: [
-      parseInputFieldValue(now.toISOString(), type),
-      parseInputFieldValue("2023-03-06T11:12:05Z", type),
-    ],
-    time: [
-      parseInputFieldValue(now.format("HH:mm:ss"), "time"),
-      "14:04",
-      "10:30:11",
-    ],
-    timestamp: [
-      parseInputFieldValue(now.unix(), "timestamp"),
-      parseInputFieldValue("1678101125", "timestamp"),
-    ],
-    email: ["customer@email.com", "mail@email.co.uk"],
-    ipaddress: ["0.0.0.0", "9.255.255.255", "21DA:D3:0:2F3B:2AA:FF:FE28:9C5A"],
-    json: [],
-    phone: ["+447975777666", "+12025886500"],
-  };
-
-  return examples[type]?.[rowNum] !== "" &&
-    examples[type]?.[rowNum] !== undefined
-    ? examples[type]?.[rowNum]
-    : "";
-};
-
-export const generateExampleCSV = (
-  objectMeta: SkylarkObjectMeta | null,
-): string | null => {
-  const inputs = objectMeta?.operations.create.inputs.filter(
-    ({ name }) => !TEMPLATE_FIELDS_TO_IGNORE.includes(name),
-  );
-
-  if (!inputs || inputs.length === 0) {
-    return null;
-  }
-
-  const columns = inputs
-    .map(({ name, isRequired }) => (isRequired ? `${name} (required)` : name))
-    .join(",");
-  const blankRow = inputs.length > 1 ? ",".repeat(inputs.length - 1) : ",";
-
-  const exampleRows: string[] = [];
-
-  let exampleRowNum = 0;
-  while (
-    exampleRows[exampleRows.length - 1] !== blankRow &&
-    exampleRows[exampleRows.length - 1] !== ""
-  ) {
-    const examples = inputs.map((input) =>
-      generateExampleFieldData(input, exampleRowNum),
-    );
-    exampleRowNum += 1;
-    exampleRows.push(examples.join(","));
-  }
-
-  const csv = [columns, ...exampleRows].join("\n");
-  return csv;
 };

@@ -8,7 +8,7 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { LIST_AVAILABILITY_DIMENSIONS } from "src/lib/graphql/skylark/queries";
 
-export const useAvailabilityDimensions = () => {
+export const useAvailabilityDimensions = (opts?: { enabled?: boolean }) => {
   const { data, fetchNextPage, hasNextPage, isLoading } =
     useInfiniteQuery<GQLSkylarkListAvailabilityDimensionsResponse>({
       queryKey: [
@@ -23,6 +23,7 @@ export const useAvailabilityDimensions = () => {
       getNextPageParam: (lastPage): string | undefined => {
         return lastPage.listDimensions.next_token || undefined;
       },
+      enabled: opts?.enabled,
     });
 
   // This if statement ensures that all data is fetched

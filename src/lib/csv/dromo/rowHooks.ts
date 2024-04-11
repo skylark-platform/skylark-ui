@@ -1,0 +1,276 @@
+import { IRowHookInput } from "dromo-uploader-react";
+import { RequestDocument } from "graphql-request";
+
+import { REQUEST_HEADERS } from "src/constants/skylark";
+import { ObjectTypeWithConfig } from "src/hooks/useSkylarkObjectTypes";
+import {
+  BuiltInSkylarkObjectType,
+  GQLSkylarkGetObjectResponse,
+  GQLSkylarkSearchResponse,
+  SkylarkGraphQLObject,
+  SkylarkObjectMeta,
+  SkylarkObjectRelationship,
+} from "src/interfaces/skylark";
+import { skylarkRequest } from "src/lib/graphql/skylark/client";
+import {
+  createGetObjectGenericQuery,
+  createSearchObjectsQuery,
+  removeFieldPrefixFromReturnedObject,
+} from "src/lib/graphql/skylark/dynamicQueries";
+import { GET_AVAILABILITY } from "src/lib/graphql/skylark/queries";
+import { hasProperty } from "src/lib/utils";
+
+const lookupViaUidOrExternalID = async (
+  allObjectsMeta: SkylarkObjectMeta[],
+  objectType: string,
+  queryString: string,
+) => {
+  if (!queryString) {
+    return [];
+  }
+
+  const query = createGetObjectGenericQuery(allObjectsMeta, {
+    typesToRequest: [objectType],
+  });
+
+  if (query) {
+    const response = await skylarkRequest<GQLSkylarkGetObjectResponse>(
+      "query",
+      query as RequestDocument,
+      {
+        uid: queryString,
+        externalId: queryString,
+        language: "en-GB",
+        dimensions: [],
+      },
+      {},
+      { [REQUEST_HEADERS.ignoreAvailability]: "true", "x-force-get": "true" },
+    );
+
+    const object = response.getObject;
+
+    const selectOption = {
+      label: queryString,
+      value: object.uid,
+    };
+
+    return [selectOption];
+  }
+
+  return [];
+};
+
+const lookupAvailabilityViaUidOrExternalID = async (queryString: string) => {
+  if (!queryString) {
+    return [];
+  }
+
+  const response = await skylarkRequest<GQLSkylarkGetObjectResponse>(
+    "query",
+    GET_AVAILABILITY,
+    {
+      // uid: queryString, getAvailability supports only external ID or UID, not both at the same time
+      externalId: queryString,
+      language: "en-GB",
+      dimensions: [],
+    },
+    {},
+    { "x-force-get": "true" }, // Doesn't do anything
+  );
+
+  const object = response.getObject;
+
+  const selectOption = {
+    label: queryString,
+    value: object.uid,
+  };
+
+  return [selectOption];
+};
+
+const search = async (
+  allObjectsMeta: SkylarkObjectMeta[],
+  objectTypesWithConfig: ObjectTypeWithConfig[],
+  objectType: string,
+  queryString: string,
+) => {
+  const query = createSearchObjectsQuery(allObjectsMeta, {
+    typesToRequest: [objectType],
+  });
+
+  if (query) {
+    const response = await skylarkRequest<GQLSkylarkSearchResponse>(
+      "query",
+      query as RequestDocument,
+      {
+        queryString,
+        limit: 10,
+        offset: 0,
+        language: "en-gb" || null,
+      },
+      {},
+      { [REQUEST_HEADERS.ignoreAvailability]: "true" },
+    );
+
+    const objects = response.search.objects
+      .filter((object): object is SkylarkGraphQLObject => !!object)
+      .map(removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>);
+
+    const primaryField = objectTypesWithConfig?.find(
+      (otc) => otc.objectType === objectType,
+    )?.config.primaryField;
+
+    const selectOptions = objects.map((object) => {
+      const customLabel =
+        primaryField && hasProperty(object, primaryField)
+          ? `${object[primaryField]}`
+          : null;
+      const label = customLabel || object.external_id || object.uid;
+
+      return {
+        label,
+        value: object.uid,
+      };
+    });
+
+    return selectOptions;
+  }
+
+  return [];
+};
+
+const createLookupFieldHook =
+  (
+    objectOperations: SkylarkObjectMeta,
+    allObjectsMeta: SkylarkObjectMeta[],
+    objectTypesWithConfig?: ObjectTypeWithConfig[],
+  ) =>
+  async (record: IRowHookInput, type: "update" | "init") => {
+    const newRecord = record;
+
+    if (!objectOperations) {
+      return newRecord;
+    }
+
+    // Add Availability into array so it is also checked
+    const relationshipsAndAvailability: SkylarkObjectRelationship[] = [
+      ...objectOperations.relationships,
+      {
+        relationshipName: "availability",
+        objectType: BuiltInSkylarkObjectType.Availability,
+      },
+    ];
+
+    await Promise.all(
+      relationshipsAndAvailability.map(
+        async ({ relationshipName, objectType }) => {
+          // const relationshipName: string = "episodes";
+          if (hasProperty(newRecord.row, relationshipName)) {
+            // const value = newRecord.row[relationshipName].value;
+            const values = newRecord.row[relationshipName].manyToOne;
+
+            if (!values) {
+              return;
+            }
+
+            newRecord.row[relationshipName].manyToOne = await Promise.all(
+              values.map(
+                async ({ value, resultValue, selectOptions, ...rest }) => {
+                  // If value is already valid, return the current configuration (reduces requests to Skylark)
+                  if (
+                    !value ||
+                    selectOptions?.find(
+                      (option) => option.value === resultValue,
+                    )
+                  ) {
+                    return {
+                      ...rest,
+                      value,
+                      resultValue,
+                      selectOptions,
+                    };
+                  }
+
+                  try {
+                    const selectOptions = await (objectType ===
+                    BuiltInSkylarkObjectType.Availability
+                      ? lookupAvailabilityViaUidOrExternalID(value)
+                      : lookupViaUidOrExternalID(
+                          allObjectsMeta,
+                          objectType,
+                          value,
+                        ));
+
+                    return {
+                      resultValue: value,
+                      value,
+                      info: [
+                        {
+                          message:
+                            "Exact match found via UID/External ID lookup & automatically selected",
+                          level: "info",
+                        },
+                      ],
+                      selectOptions,
+                    };
+                  } catch {
+                    // On an update, make a search request if the original get request fails
+                    if (type === "update") {
+                      const selectOptions = await search(
+                        allObjectsMeta,
+                        objectTypesWithConfig || [],
+                        objectType,
+                        value,
+                      );
+
+                      return {
+                        resultValue: value,
+                        value,
+                        info: [
+                          {
+                            message: "Found via Search",
+                            level: "info",
+                          },
+                        ],
+                        selectOptions,
+                      };
+                    }
+
+                    return {
+                      resultValue,
+                      value,
+                      info: [
+                        {
+                          message: "Invalid External ID or UID",
+                          level: "error",
+                        },
+                      ],
+                      selectOptions: [],
+                    };
+                  }
+                },
+              ),
+            );
+
+            if (!values) {
+              return;
+            }
+          }
+        },
+      ),
+    );
+
+    return newRecord;
+  };
+
+export const createDromoRowHooks = (
+  objectOperations: SkylarkObjectMeta,
+  allObjectsMeta: SkylarkObjectMeta[],
+  objectTypesWithConfig?: ObjectTypeWithConfig[],
+) => [
+  createLookupFieldHook(
+    objectOperations,
+    allObjectsMeta,
+    objectTypesWithConfig,
+  ),
+];

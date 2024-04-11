@@ -41,11 +41,13 @@ const getNextPageParam = (
   return entriesWithNextToken.length > 0 ? nextTokens : undefined;
 };
 
-export const useAvailabilityDimensionsWithValues = () => {
+export const useAvailabilityDimensionsWithValues = (opts?: {
+  enabled?: boolean;
+}) => {
   const {
     dimensions: dimensionsWithoutValues,
     isLoading: isLoadingDimensions,
-  } = useAvailabilityDimensions();
+  } = useAvailabilityDimensions({ enabled: opts?.enabled });
 
   const hasDimensions = Boolean(
     dimensionsWithoutValues && dimensionsWithoutValues.length > 0,
@@ -68,7 +70,7 @@ export const useAvailabilityDimensionsWithValues = () => {
     },
     initialPageParam: {},
     getNextPageParam,
-    enabled: hasDimensions,
+    enabled: hasDimensions && (opts?.enabled || opts?.enabled === undefined),
   });
 
   // This if statement ensures that all data is fetched
