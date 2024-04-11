@@ -9,7 +9,7 @@ export enum PanelTab {
   Metadata = "Metadata",
   Upload = "Upload",
   Imagery = "Imagery",
-  Playback = "Playback",
+  Playback = "Video",
   Availability = "Availability",
   AvailabilityDimensions = "Dimensions",
   AvailabilityAssignedTo = "Assigned To",

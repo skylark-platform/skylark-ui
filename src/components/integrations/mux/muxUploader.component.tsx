@@ -5,22 +5,26 @@ import { toast } from "react-toastify";
 import { Button } from "src/components/button";
 import { BaseIntegrationUploaderProps } from "src/components/integrations/baseUploader.component";
 import { Modal } from "src/components/modals/base/modal";
-import { Skeleton } from "src/components/skeleton";
 import { Toast } from "src/components/toast/toast.component";
 import { useGenerateMuxUploadUrl } from "src/hooks/integrations/useGenerateMuxUploadUrl";
 
 interface MuxUploaderProps extends BaseIntegrationUploaderProps {
-  uid: string;
   id?: string;
 }
 
 export const MuxUploader = ({
   uid,
+  objectType,
+  relationshipName,
   id,
   buttonProps,
   onSuccess,
 }: MuxUploaderProps) => {
-  const { data, isLoading } = useGenerateMuxUploadUrl(uid);
+  const { data, isLoading, isError } = useGenerateMuxUploadUrl({
+    uid,
+    objectType,
+    relationshipName,
+  });
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -34,7 +38,7 @@ export const MuxUploader = ({
       <Button
         loading={isLoading}
         {...buttonProps}
-        disabled={buttonProps.disabled || isLoading}
+        disabled={buttonProps.disabled || isLoading || isError}
         onClick={() => setIsOpen(true)}
       />
       {data && (

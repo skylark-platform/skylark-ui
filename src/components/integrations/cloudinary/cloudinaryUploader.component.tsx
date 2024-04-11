@@ -2,8 +2,10 @@ import { createContext, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
-import { BaseIntegrationUploaderProps } from "src/components/integrations/baseUploader.component";
-import { Skeleton } from "src/components/skeleton";
+import {
+  BaseIntegrationUploaderProps,
+  createIntegrationServiceObj,
+} from "src/components/integrations/baseUploader.component";
 import { Toast } from "src/components/toast/toast.component";
 import { useGenerateCloudinaryUploadUrl } from "src/hooks/integrations/useGenerateCloudinaryUploadUrl";
 import { hasProperty, isObject } from "src/lib/utils";
@@ -12,9 +14,7 @@ interface CloudinaryContext {
   loaded: boolean;
 }
 
-interface CloudinaryUploaderProps extends BaseIntegrationUploaderProps {
-  uid: string;
-}
+type CloudinaryUploaderProps = BaseIntegrationUploaderProps;
 
 interface CloudinaryUploadWidgetProps extends CloudinaryUploaderProps {
   cloudName: string;
@@ -42,6 +42,8 @@ const CloudinaryScriptContext = createContext<CloudinaryContext>({
 
 export const CloudinaryUploadWidget = ({
   uid,
+  objectType,
+  relationshipName,
   cloudName,
   custom,
   buttonProps,
@@ -88,18 +90,13 @@ export const CloudinaryUploadWidget = ({
     }
   }, [loaded]);
 
-  console.log({
-    ...custom,
-    context:
-      custom?.context && isObject(custom.context)
-        ? { ...custom.context, ...{ skylark_object_uid: uid } }
-        : { skylark_object_uid: uid },
-    cloudName,
-  });
-
   const initializeCloudinaryWidget = () => {
     if (loaded) {
-      const integrationContext = { skylark_object_uid: uid };
+      const integrationContext = createIntegrationServiceObj({
+        uid,
+        objectType,
+        relationshipName,
+      });
 
       const uwConfig = {
         ...custom,
@@ -175,19 +172,31 @@ export const CloudinaryUploadWidget = ({
 
 export const CloudinaryUploader = ({
   uid,
+  objectType,
+  relationshipName,
   buttonProps,
   onSuccess,
 }: CloudinaryUploaderProps) => {
-  const { data, isLoading } = useGenerateCloudinaryUploadUrl(uid);
+  const { data, isLoading, isError } = useGenerateCloudinaryUploadUrl({
+    uid,
+    objectType,
+    relationshipName,
+  });
 
   return (
     <>
       {data && (
         <CloudinaryUploadWidget
           uid={uid}
+          objectType={objectType}
+          relationshipName={relationshipName}
           cloudName={data.cloud_name}
           custom={data.custom}
-          buttonProps={{ ...buttonProps, loading: isLoading }}
+          buttonProps={{
+            ...buttonProps,
+            loading: isLoading,
+            disabled: buttonProps.disabled || isError,
+          }}
           onSuccess={onSuccess}
         />
       )}

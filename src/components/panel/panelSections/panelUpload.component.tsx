@@ -4,13 +4,10 @@ import { FiUploadCloud } from "react-icons/fi";
 import { Select, SelectOption } from "src/components/inputs/select";
 import {
   IntegrationUploadType,
-  IntegrationUploader,
   IntegrationUploaderProvider,
-} from "src/components/integrations/uploader/uploader.component";
-import {
-  PanelFieldTitle,
-  PanelSectionTitle,
-} from "src/components/panel/panelTypography";
+} from "src/components/integrations/baseUploader.component";
+import { IntegrationUploader } from "src/components/integrations/uploader/uploader.component";
+import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { useGetIntegrations } from "src/hooks/integrations/useGetIntegrations";
 import { PanelTab } from "src/hooks/state";
 import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
@@ -23,7 +20,6 @@ interface PanelUploadProps {
   language: string;
   isPage?: boolean;
   inEditMode: boolean;
-  // objectMeta: SkylarkObjectMeta | null;
   setTab: (t: PanelTab) => void;
 }
 
@@ -68,10 +64,10 @@ export const PanelUpload = ({
   const type: IntegrationUploadType =
     objectType === BuiltInSkylarkObjectType.SkylarkImage ? "image" : "video";
 
-  useGetIntegrations();
+  const { data } = useGetIntegrations(type);
 
   const sections = generateSections(type);
-  const uploaderOpts = { uid };
+  const uploaderOpts = { uid, objectType };
 
   // SkylarkImage shows image on Metadata tab, SkylarkAsset uses Playback
   const onSuccess = () =>
@@ -81,35 +77,26 @@ export const PanelUpload = ({
     sections?.[0].id,
   );
 
-  const options = sections.map(
-    ({ title, id }): SelectOption<IntegrationUploaderProvider> => ({
-      label: title,
-      value: id,
-    }),
-  );
+  const options =
+    data?.enabledIntegrations.map(
+      (name): SelectOption<IntegrationUploaderProvider> => ({
+        label: name,
+        value: name,
+      }),
+    ) || [];
 
   return (
     <PanelSectionLayout sections={sections} isPage={isPage}>
       <PanelSectionTitle text={"Upload"} />
-      {/* {sections.map(({ id, title, htmlId }) => (
-        <div key={id} id={htmlId} className="relative mb-8 space-y-1">
-          <PanelFieldTitle text={title} />
-          <IntegrationUploader
-            provider={id}
-            type={type}
-            opts={uploaderOpts}
-            buttonProps={{ variant: "outline" }}
-            onSuccess={onSuccess}
-          />
-        </div>
-      ))} */}
-      <Select
-        options={options}
-        selected={selected}
-        onChange={setSelected}
-        variant="primary"
-        placeholder="Select Provider"
-      />
+      {data?.enabledIntegrations && data?.enabledIntegrations.length >= 2 && (
+        <Select
+          options={options}
+          selected={selected}
+          onChange={setSelected}
+          variant="primary"
+          placeholder="Select Provider"
+        />
+      )}
       {selected && (
         <div className="mt-4">
           <IntegrationUploader

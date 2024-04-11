@@ -246,10 +246,16 @@ const BitmovinUploaderWidget = ({
 
 export const BitmovinUploader = ({
   uid,
+  objectType,
+  relationshipName,
   buttonProps,
   onSuccess,
 }: BitmovinUploaderProps) => {
-  const { data, isLoading } = useGenerateMuxUploadUrl(uid);
+  const { data, isLoading } = useGenerateMuxUploadUrl({
+    uid,
+    objectType,
+    relationshipName,
+  });
 
   const apiKey = "";
 
@@ -279,6 +285,8 @@ export const BitmovinUploader = ({
             <div className="w-full h-full min-h-96 flex justify-center items-center text-black">
               <BitmovinUploaderWidget
                 uid={uid}
+                objectType={objectType}
+                relationshipName={relationshipName}
                 apiKey={apiKey}
                 buttonProps={buttonProps}
                 onSuccess={onSuccessWrapper}

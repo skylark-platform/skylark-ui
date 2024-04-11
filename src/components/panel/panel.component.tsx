@@ -371,9 +371,9 @@ export const Panel = ({
       [
         PanelTab.Metadata,
         objectMeta?.hasContent && PanelTab.Content,
-        (objectMeta?.name === BuiltInSkylarkObjectType.SkylarkAsset ||
-          objectMeta?.name === BuiltInSkylarkObjectType.SkylarkImage) &&
-          PanelTab.Upload,
+        // (objectMeta?.name === BuiltInSkylarkObjectType.SkylarkAsset ||
+        //   objectMeta?.name === BuiltInSkylarkObjectType.SkylarkImage) &&
+        //   PanelTab.Upload,
         (objectMeta?.name === BuiltInSkylarkObjectType.SkylarkAsset ||
           objectMeta?.name === BuiltInSkylarkObjectType.SkylarkLiveAsset) &&
           PanelTab.Playback,

@@ -12,6 +12,7 @@ import {
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
+import { useGetIntegrations } from "src/hooks/integrations/useGetIntegrations";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
 import { useImageSize } from "src/hooks/useImageSize";
 import {
@@ -116,6 +117,9 @@ export const PanelImages = ({
   const { relationships, isLoading, query, variables } =
     useGetObjectRelationships(objectType, uid, { language });
 
+  const { data, isLoading: isLoadingIntegrations } =
+    useGetIntegrations("image");
+
   const images = relationships
     ? Object.values(relationships)?.filter(
         (rel) => rel.objectType === BuiltInSkylarkObjectType.SkylarkImage,
@@ -143,23 +147,20 @@ export const PanelImages = ({
               text={formatObjectField(relationshipName)}
               id={`image-panel-${relationshipName}`}
               sticky
+              loading={isLoadingIntegrations}
             >
-              {/* <Button
-                variant="form-ghost"
-                className="ml-2"
-                onClick={() => console.log("")}
-                Icon={<FiUploadCloud className="text-lg" />}
-              /> */}
-              <IntegrationUploader
-                provider={"cloudinary"}
-                type={"image"}
-                opts={{ uid: "" }}
-                buttonProps={{
-                  variant: "form-ghost",
-                  className: "ml-2",
-                  Icon: <FiUploadCloud className="text-lg" />,
-                }}
-              />
+              {data && data.enabledIntegrations.length > 0 && (
+                <IntegrationUploader
+                  provider={data?.enabledIntegrations?.[0]}
+                  type={"image"}
+                  opts={{ uid, relationshipName, objectType }}
+                  buttonProps={{
+                    variant: "form-ghost",
+                    className: "ml-2",
+                    Icon: <FiUploadCloud className="text-lg" />,
+                  }}
+                />
+              )}
             </PanelSectionTitle>
             {objects.length === 0 && (
               <div className="mt-2">

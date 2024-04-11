@@ -1,16 +1,16 @@
 import { toast } from "react-toastify";
 import { sentenceCase } from "sentence-case";
 
-import { ButtonProps } from "src/components/button";
-import { BaseIntegrationUploaderProps } from "src/components/integrations/baseUploader.component";
+import {
+  BaseIntegrationUploaderProps,
+  IntegrationObjectInfo,
+  IntegrationUploadType,
+  IntegrationUploaderProvider,
+} from "src/components/integrations/baseUploader.component";
 import { BitmovinUploader } from "src/components/integrations/bitmovin/bitmovinUploader.component";
 import { CloudinaryUploader } from "src/components/integrations/cloudinary/cloudinaryUploader.component";
 import { MuxUploader } from "src/components/integrations/mux/muxUploader.component";
 import { Toast } from "src/components/toast/toast.component";
-
-export type IntegrationUploadType = "image" | "video";
-
-export type IntegrationUploaderProvider = "mux" | "cloudinary" | "bitmovin";
 
 export const IntegrationUploader = ({
   provider,
@@ -21,7 +21,7 @@ export const IntegrationUploader = ({
 }: {
   provider: IntegrationUploaderProvider;
   type: IntegrationUploadType;
-  opts: { uid: string };
+  opts: IntegrationObjectInfo;
   onSuccess?: () => void;
 } & { buttonProps: BaseIntegrationUploaderProps["buttonProps"] }) => {
   const onSuccessWrapper = () => {
@@ -37,8 +37,8 @@ export const IntegrationUploader = ({
   if (provider === "mux") {
     return (
       <MuxUploader
+        {...opts}
         buttonProps={buttonProps}
-        uid={opts.uid}
         onSuccess={onSuccessWrapper}
       />
     );
@@ -47,8 +47,8 @@ export const IntegrationUploader = ({
   if (provider === "cloudinary") {
     return (
       <CloudinaryUploader
+        {...opts}
         buttonProps={buttonProps}
-        uid={opts.uid}
         onSuccess={onSuccessWrapper}
       />
     );
@@ -57,8 +57,8 @@ export const IntegrationUploader = ({
   if (provider === "bitmovin") {
     return (
       <BitmovinUploader
+        {...opts}
         buttonProps={buttonProps}
-        uid={opts.uid}
         onSuccess={onSuccessWrapper}
       />
     );
