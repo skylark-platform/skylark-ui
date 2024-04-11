@@ -21,8 +21,8 @@ import {
   createFlatfileObjectsInSkylark,
   generateExampleCSV,
   openFlatfileImportClient,
-} from "src/lib/flatfile";
-import { convertObjectInputToFlatfileSchema } from "src/lib/flatfile/template";
+} from "src/lib/csv/flatfile";
+import { convertObjectInputToFlatfileSchema } from "src/lib/csv/flatfile/template";
 import { createSkylarkClient } from "src/lib/graphql/skylark/client";
 import { createAccountIdentifier, pause } from "src/lib/utils";
 

@@ -49,8 +49,6 @@ const lookupViaUidOrExternalID = async (
 
     const object = response.getObject;
 
-    console.log({ data: object });
-
     const selectOption = {
       label: queryString,
       value: object.uid,
@@ -81,8 +79,6 @@ const lookupAvailabilityViaUidOrExternalID = async (queryString: string) => {
   );
 
   const object = response.getObject;
-
-  console.log({ data: object });
 
   const selectOption = {
     label: queryString,
@@ -120,8 +116,6 @@ const search = async (
       .filter((object): object is SkylarkGraphQLObject => !!object)
       .map(removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>);
 
-    console.log({ data: objects });
-
     const primaryField = objectTypesWithConfig?.find(
       (otc) => otc.objectType === objectType,
     )?.config.primaryField;
@@ -157,8 +151,6 @@ const createLookupFieldHook =
     if (!objectOperations) {
       return newRecord;
     }
-
-    console.log("HERE", record.index, { record, type });
 
     // Add Availability into array so it is also checked
     const relationshipsAndAvailability: SkylarkObjectRelationship[] = [
@@ -207,11 +199,6 @@ const createLookupFieldHook =
                           objectType,
                           value,
                         ));
-
-                    console.log(record.index, relationshipName, {
-                      selectOptions,
-                    });
-                    // TODO show primary field in info message - so they can see what the record is in Skylark without changing their values
 
                     return {
                       resultValue: value,
@@ -267,33 +254,11 @@ const createLookupFieldHook =
             if (!values) {
               return;
             }
-
-            // await Promise.all(values.map((value) => {
-
-            // }))
           }
         },
       ),
     );
 
-    console.log("record updated", record.index, newRecord);
-
-    // if (record.index < 10) {
-    // if (
-    //   newRecord.row.episodes &&
-    //   newRecord.row.episodes.manyToOne &&
-    //   newRecord.row.episodes.manyToOne.length > 0
-    // ) {
-    //   newRecord.row.episodes.value = "0" + newRecord.row.email.value;
-    //   newRecord.row.episodes.info = [
-    //     {
-    //       message: "Prepend 0 to value",
-    //       level: "info",
-    //     },
-    //   ];
-    // }
-
-    // }
     return newRecord;
   };
 

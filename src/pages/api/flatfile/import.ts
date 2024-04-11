@@ -11,7 +11,7 @@ import {
 import {
   exchangeFlatfileAccessKey,
   getFlatfileFinalDatabaseView,
-} from "src/lib/flatfile";
+} from "src/lib/csv/flatfile";
 import { createFlatfileClient } from "src/lib/graphql/flatfile/client";
 
 export default async function handler(

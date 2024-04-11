@@ -21,16 +21,16 @@ import {
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
-import { createDromoRowHooks } from "src/lib/dromo/rowHooks";
+import { createDromoRowHooks } from "src/lib/csv/dromo/rowHooks";
 import {
   convertAvailabilityObjectMetaToDromoSchemaFields,
   convertObjectMetaToDromoSchemaFields,
-} from "src/lib/dromo/schema";
-import { getDromoSettings } from "src/lib/dromo/settings";
+} from "src/lib/csv/dromo/schema";
+import { getDromoSettings } from "src/lib/csv/dromo/settings";
 import {
   createDromoObjectsInSkylark,
   generateExampleCSV,
-} from "src/lib/flatfile";
+} from "src/lib/csv/flatfile";
 import { createSkylarkClient } from "src/lib/graphql/skylark/client";
 import { createAccountIdentifier, pause } from "src/lib/utils";
 
