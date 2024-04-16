@@ -3,7 +3,7 @@ import { CSSProperties, useState } from "react";
 import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
-import { BaseIntegrationUploaderProps } from "src/components/integrations/baseUploader.component";
+import { BaseIntegrationUploaderProps } from "src/components/integrations/common";
 import { Modal } from "src/components/modals/base/modal";
 import { Toast } from "src/components/toast/toast.component";
 import { useGenerateMuxUploadUrl } from "src/hooks/integrations/useGenerateMuxUploadUrl";

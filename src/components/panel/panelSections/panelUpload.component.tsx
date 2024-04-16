@@ -5,8 +5,8 @@ import { Select, SelectOption } from "src/components/inputs/select";
 import {
   IntegrationUploadType,
   IntegrationUploaderProvider,
-} from "src/components/integrations/baseUploader.component";
-import { IntegrationUploader } from "src/components/integrations/uploader/uploader.component";
+  IntegrationUploader,
+} from "src/components/integrations";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { useGetIntegrations } from "src/hooks/integrations/useGetIntegrations";
 import { PanelTab } from "src/hooks/state";

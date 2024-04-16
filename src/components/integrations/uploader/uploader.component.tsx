@@ -1,14 +1,14 @@
 import { toast } from "react-toastify";
 import { sentenceCase } from "sentence-case";
 
+import { BitmovinUploader } from "src/components/integrations/bitmovin/bitmovinUploader.component";
+import { CloudinaryUploader } from "src/components/integrations/cloudinary/cloudinaryUploader.component";
 import {
   BaseIntegrationUploaderProps,
   IntegrationObjectInfo,
   IntegrationUploadType,
   IntegrationUploaderProvider,
-} from "src/components/integrations/baseUploader.component";
-import { BitmovinUploader } from "src/components/integrations/bitmovin/bitmovinUploader.component";
-import { CloudinaryUploader } from "src/components/integrations/cloudinary/cloudinaryUploader.component";
+} from "src/components/integrations/common";
 import { MuxUploader } from "src/components/integrations/mux/muxUploader.component";
 import { Toast } from "src/components/toast/toast.component";
 

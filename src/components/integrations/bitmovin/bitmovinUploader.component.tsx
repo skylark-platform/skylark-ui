@@ -9,7 +9,7 @@ import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "src/components/button";
-import { BaseIntegrationUploaderProps } from "src/components/integrations/baseUploader.component";
+import { BaseIntegrationUploaderProps } from "src/components/integrations/common";
 import { Modal } from "src/components/modals/base/modal";
 import { Skeleton } from "src/components/skeleton";
 import { useGenerateMuxUploadUrl } from "src/hooks/integrations/useGenerateMuxUploadUrl";

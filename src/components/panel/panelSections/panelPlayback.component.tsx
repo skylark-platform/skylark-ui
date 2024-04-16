@@ -3,8 +3,10 @@ import { Fragment, useState } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 
 import { Select, SelectOption } from "src/components/inputs/select";
-import { IntegrationUploaderProvider } from "src/components/integrations/baseUploader.component";
-import { IntegrationUploader } from "src/components/integrations/uploader/uploader.component";
+import {
+  IntegrationUploader,
+  IntegrationUploaderProvider,
+} from "src/components/integrations";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { PanelLoading } from "src/components/panel/panelLoading";

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   IntegrationObjectInfo,
   createIntegrationServiceObj,
-} from "src/components/integrations/baseUploader.component";
+} from "src/components/integrations";
 import { QueryKeys } from "src/enums/graphql";
 import { IntegrationGenericUploadUrlResponseBody } from "src/interfaces/skylark/integrations";
 import { integrationServiceRequest } from "src/lib/integrationService/client";

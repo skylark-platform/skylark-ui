@@ -5,7 +5,7 @@ import { Button } from "src/components/button";
 import {
   BaseIntegrationUploaderProps,
   createIntegrationServiceObj,
-} from "src/components/integrations/baseUploader.component";
+} from "src/components/integrations/common";
 import { Toast } from "src/components/toast/toast.component";
 import { useGenerateCloudinaryUploadUrl } from "src/hooks/integrations/useGenerateCloudinaryUploadUrl";
 import { hasProperty, isObject } from "src/lib/utils";

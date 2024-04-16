@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import {
   IntegrationUploadType,
   IntegrationUploaderProvider,
-} from "src/components/integrations/baseUploader.component";
+} from "src/components/integrations";
 import { QueryKeys } from "src/enums/graphql";
 import { integrationServiceRequest } from "src/lib/integrationService/client";
 
