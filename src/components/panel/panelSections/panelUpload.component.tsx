@@ -47,11 +47,6 @@ const generateSections = (
       htmlId: "panel-cloudinary-uploader",
       title: "Cloudinary",
     },
-    {
-      id: "bitmovin",
-      htmlId: "panel-bitmovin-uploader",
-      title: "Bitmovin",
-    },
   ];
 };
 

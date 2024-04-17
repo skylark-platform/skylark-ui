@@ -2,7 +2,7 @@ import { ButtonProps } from "src/components/button";
 
 export type IntegrationUploadType = "image" | "video";
 
-export type IntegrationUploaderProvider = "mux" | "cloudinary" | "bitmovin";
+export type IntegrationUploaderProvider = "mux" | "cloudinary";
 
 export interface IntegrationObjectInfo {
   uid: string;

@@ -1,7 +1,6 @@
 import { toast } from "react-toastify";
 import { sentenceCase } from "sentence-case";
 
-import { BitmovinUploader } from "src/components/integrations/bitmovin/bitmovinUploader.component";
 import { CloudinaryUploader } from "src/components/integrations/cloudinary/cloudinaryUploader.component";
 import {
   BaseIntegrationUploaderProps,
@@ -47,16 +46,6 @@ export const IntegrationUploader = ({
   if (provider === "cloudinary") {
     return (
       <CloudinaryUploader
-        {...opts}
-        buttonProps={buttonProps}
-        onSuccess={onSuccessWrapper}
-      />
-    );
-  }
-
-  if (provider === "bitmovin") {
-    return (
-      <BitmovinUploader
         {...opts}
         buttonProps={buttonProps}
         onSuccess={onSuccessWrapper}
