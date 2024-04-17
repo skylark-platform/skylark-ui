@@ -53,5 +53,5 @@ export const IntegrationUploader = ({
     );
   }
 
-  return <></>;
+  return <p>{`No uploader for provider "${provider}".`}</p>;
 };

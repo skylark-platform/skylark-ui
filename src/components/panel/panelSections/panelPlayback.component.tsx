@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { Fragment, useState } from "react";
 import { FiUploadCloud } from "react-icons/fi";
@@ -9,6 +10,7 @@ import {
 } from "src/components/integrations";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { refetchPanelQueries } from "src/components/panel/panel.lib";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
@@ -135,6 +137,8 @@ const MetadataPlayback = ({
 }: Omit<PanelPlaybackProps, "metadata"> & {
   metadata: Record<string, SkylarkObjectMetadataField>;
 }) => {
+  const queryClient = useQueryClient();
+
   const sections = getVideoTypeSections(metadata, true);
   const { data } = useGetIntegrations("video");
 
@@ -158,7 +162,39 @@ const MetadataPlayback = ({
   };
 
   return (
-    <PanelSectionLayout sections={[...sections, uploadSection]} isPage={isPage}>
+    <PanelSectionLayout sections={[uploadSection, ...sections]} isPage={isPage}>
+      <PanelSectionTitle text={"Upload"} id={uploadSection.id} />
+      <div className="mb-8">
+        {data?.enabledIntegrations && data?.enabledIntegrations.length >= 2 && (
+          <Select
+            options={options}
+            selected={provider}
+            onChange={setSelected}
+            className="mb-4"
+            variant="primary"
+            placeholder="Select Provider"
+          />
+        )}
+        {provider && (
+          <div>
+            <IntegrationUploader
+              provider={provider}
+              type={"video"}
+              opts={{ uid, objectType }}
+              buttonProps={{
+                variant: "outline",
+                children: "Upload",
+                Icon: <FiUploadCloud className="text-lg" />,
+              }}
+              onSuccess={() => {
+                setTimeout(() => {
+                  void refetchPanelQueries(queryClient);
+                }, 10000);
+              }}
+            />
+          </div>
+        )}
+      </div>
       {sections.map(({ id, type, properties, url }) => {
         return (
           <div key={id} className="relative mb-8">
@@ -177,32 +213,6 @@ const MetadataPlayback = ({
           </div>
         );
       })}
-      <PanelSectionTitle text={"Upload"} id={uploadSection.id} />
-      {data?.enabledIntegrations && data?.enabledIntegrations.length >= 2 && (
-        <Select
-          options={options}
-          selected={provider}
-          onChange={setSelected}
-          className="mb-4"
-          variant="primary"
-          placeholder="Select Provider"
-        />
-      )}
-      {provider && (
-        <div>
-          <IntegrationUploader
-            provider={provider}
-            type={"video"}
-            opts={{ uid, objectType }}
-            buttonProps={{
-              variant: "outline",
-              children: "Upload",
-              Icon: <FiUploadCloud className="text-lg" />,
-            }}
-            // onSuccess={onSuccess}
-          />
-        </div>
-      )}
     </PanelSectionLayout>
   );
 };
@@ -214,6 +224,8 @@ const RelationshipPlayback = ({
   isPage,
   setPanelObject,
 }: PanelPlaybackProps) => {
+  const queryClient = useQueryClient();
+
   const { relationships, isLoading, query, variables } =
     useGetObjectRelationships(objectType, uid, { language });
 
@@ -261,6 +273,11 @@ const RelationshipPlayback = ({
                     variant: "form-ghost",
                     className: "ml-2",
                     Icon: <FiUploadCloud className="text-lg" />,
+                  }}
+                  onSuccess={() => {
+                    setTimeout(() => {
+                      void refetchPanelQueries(queryClient);
+                    }, 10000);
                   }}
                 />
               )}

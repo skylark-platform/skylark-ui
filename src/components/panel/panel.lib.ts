@@ -1,3 +1,6 @@
+import { QueryClient } from "@tanstack/react-query";
+
+import { QueryKeys } from "src/enums/graphql";
 import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
@@ -32,6 +35,20 @@ export type HandleRelationshipDropError = {
 export type HandleDropError =
   | HandleGenericDropError
   | HandleRelationshipDropError;
+
+export const refetchPanelQueries = async (client: QueryClient) => {
+  const getObjectQueryKeys = Object.values(QueryKeys).filter((key) =>
+    key.startsWith(QueryKeys.GetObject),
+  );
+
+  await Promise.all(
+    getObjectQueryKeys.map((key) =>
+      client.refetchQueries({
+        queryKey: [key],
+      }),
+    ),
+  );
+};
 
 export const convertSkylarkObjectToContentObject = (
   skylarkObject: ParsedSkylarkObject,

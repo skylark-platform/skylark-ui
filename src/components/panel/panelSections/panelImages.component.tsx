@@ -1,10 +1,11 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { FiUpload, FiUploadCloud } from "react-icons/fi";
+import { FiUploadCloud } from "react-icons/fi";
 
-import { Button } from "src/components/button";
 import { IntegrationUploader } from "src/components/integrations/uploader/uploader.component";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { refetchPanelQueries } from "src/components/panel/panel.lib";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
@@ -114,6 +115,8 @@ export const PanelImages = ({
   inEditMode,
   setPanelObject,
 }: PanelImagesProps) => {
+  const queryClient = useQueryClient();
+
   const { relationships, isLoading, query, variables } =
     useGetObjectRelationships(objectType, uid, { language });
 
@@ -158,6 +161,11 @@ export const PanelImages = ({
                     variant: "form-ghost",
                     className: "ml-2",
                     Icon: <FiUploadCloud className="text-lg" />,
+                  }}
+                  onSuccess={() => {
+                    setTimeout(() => {
+                      void refetchPanelQueries(queryClient);
+                    }, 10000);
                   }}
                 />
               )}

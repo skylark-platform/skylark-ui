@@ -29,10 +29,10 @@ import {
   DeleteObjectModal,
   DisplayGraphQLQueryModal,
 } from "src/components/modals";
+import { refetchPanelQueries } from "src/components/panel/panel.lib";
 import { ObjectTypePill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
 import { Tag } from "src/components/tag";
-import { QueryKeys } from "src/enums/graphql";
 import { PanelTab } from "src/hooks/state";
 import {
   AvailabilityStatus,
@@ -83,10 +83,6 @@ const getAlternateSaveButtonText = (
   return "Publish";
 };
 
-const getObjectQueryKeys = Object.values(QueryKeys).filter((key) =>
-  key.startsWith(QueryKeys.GetObject),
-);
-
 const RefreshPanelQueries = (props: Omit<ButtonProps, "variant">) => {
   const client = useQueryClient();
 
@@ -94,15 +90,7 @@ const RefreshPanelQueries = (props: Omit<ButtonProps, "variant">) => {
 
   const onClick = async () => {
     setIsFetching(true);
-
-    await Promise.all(
-      getObjectQueryKeys.map((key) =>
-        client.refetchQueries({
-          queryKey: [key],
-        }),
-      ),
-    );
-
+    await refetchPanelQueries(client);
     setIsFetching(false);
   };
 

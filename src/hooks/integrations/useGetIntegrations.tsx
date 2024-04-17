@@ -22,7 +22,7 @@ type GetIntegrationsResponse = Record<
 >;
 
 export const useGetIntegrations = (type: IntegrationUploadType) => {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: [QueryKeys.Integrations],
     queryFn: async () => {
       const data = await integrationServiceRequest<GetIntegrationsResponse>(
@@ -47,8 +47,6 @@ export const useGetIntegrations = (type: IntegrationUploadType) => {
       [type],
     ),
   });
-
-  console.log({ data, error });
 
   return {
     data,

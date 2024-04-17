@@ -78,7 +78,7 @@ export const MuxUploader = ({
                   onError={(error) =>
                     toast.error(
                       <Toast
-                        title="Cloudinary Upload Error"
+                        title="Mux Upload Error"
                         message={JSON.stringify(error)}
                       />,
                       { autoClose: 20000 },
