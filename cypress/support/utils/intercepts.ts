@@ -344,9 +344,7 @@ const updateIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
 };
 
 const integrationIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
-  console.log({ req });
   const url = new URL(req.url);
-  console.log({ url, pathname: url.pathname });
 
   if (url.pathname === "/") {
     req.reply({
