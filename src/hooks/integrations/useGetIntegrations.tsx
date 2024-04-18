@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import {
   IntegrationUploadType,
   IntegrationUploaderProvider,
+  supportedIntegrations,
 } from "src/components/integrations";
 import { QueryKeys } from "src/enums/graphql";
 import { integrationServiceRequest } from "src/lib/integrationService/client";
@@ -34,9 +35,13 @@ export const useGetIntegrations = (type: IntegrationUploadType) => {
     select: useCallback(
       (data: GetIntegrationsResponse) => {
         const integrations = data[type];
+        const supported = supportedIntegrations[type];
         const enabledIntegrations: IntegrationUploaderProvider[] =
           Object.entries(integrations)
-            .filter(([, { enabled }]) => enabled)
+            .filter(
+              ([name, { enabled }]) =>
+                enabled && supported?.[name as IntegrationUploaderProvider],
+            )
             .map(([name]) => name as IntegrationUploaderProvider);
 
         return {

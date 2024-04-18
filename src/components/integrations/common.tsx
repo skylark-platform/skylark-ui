@@ -15,6 +15,20 @@ export interface BaseIntegrationUploaderProps extends IntegrationObjectInfo {
   onSuccess: () => void;
 }
 
+export const supportedIntegrations: Record<
+  IntegrationUploadType,
+  Record<IntegrationUploaderProvider, boolean>
+> = {
+  image: {
+    cloudinary: true,
+    mux: false,
+  },
+  video: {
+    mux: true,
+    cloudinary: true,
+  },
+};
+
 export const createIntegrationServiceObj = ({
   uid,
   objectType,
