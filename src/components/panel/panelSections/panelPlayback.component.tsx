@@ -269,10 +269,12 @@ const RelationshipPlayback = ({
                   provider={data?.enabledIntegrations?.[0]}
                   type={"video"}
                   opts={{ uid, relationshipName, objectType }}
+                  hideErrorForUnsupported
                   buttonProps={{
                     variant: "form-ghost",
                     className: "ml-2",
                     Icon: <FiUploadCloud className="text-lg" />,
+                    "aria-label": `Upload video to ${relationshipName}`,
                   }}
                   onSuccess={() => {
                     setTimeout(() => {

@@ -343,6 +343,22 @@ const updateIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
   }
 };
 
+const integrationIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
+  console.log({ req });
+  const url = new URL(req.url);
+  console.log({ url, pathname: url.pathname });
+
+  if (url.pathname === "/") {
+    req.reply({
+      fixture: "./skylark/integrationService/getAllIntegrations.json",
+    });
+  } else if (url.pathname === "/upload-url/image/cloudinary") {
+    req.reply({
+      fixture: "./skylark/integrationService/uploadUrl/image/cloudinary.json",
+    });
+  }
+};
+
 export const configureSkylarkIntercepts = () => {
   cy.intercept(
     "POST",
@@ -356,6 +372,13 @@ export const configureSkylarkIntercepts = () => {
       availabilityIntercepts(req);
       createIntercepts(req);
       updateIntercepts(req);
+    },
+  );
+
+  cy.intercept(
+    "https://hook.skylarkplatform.com/**",
+    (req: CyHttpMessages.IncomingHttpRequest) => {
+      integrationIntercepts(req);
     },
   );
 };

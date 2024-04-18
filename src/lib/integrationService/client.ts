@@ -16,8 +16,8 @@ export const integrationServiceRequest = async <T>(
     : { uri: "", token: "" };
 
   const tokenToSend = uri ? token || "" : "";
-
-  const hookDomain = uri.split("skylarkplatform.com")?.[0]?.split("api.")?.[1];
+  const hookDomain =
+    uri.split("skylarkplatform.com")?.[0]?.split("api.")?.[1] || "";
   const integrationServiceUrl = `https://hook.${hookDomain}skylarkplatform.com`;
 
   const url = new URL(endpoint, integrationServiceUrl);

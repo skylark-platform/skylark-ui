@@ -1,6 +1,6 @@
 import { configureSkylarkIntercepts } from "../../../../support/utils/intercepts";
 
-describe("Content Library - Object Panel - Playback tab", () => {
+describe("Content Library - Object Panel - Video tab", () => {
   beforeEach(() => {
     cy.login();
 
@@ -10,15 +10,15 @@ describe("Content Library - Object Panel - Playback tab", () => {
     cy.wait("@introspectionQuery");
   });
 
-  it("open Playback tab", () => {
+  it("open Video tab", () => {
     cy.get('input[name="search-query-input"]').type("all avail test movie");
     cy.openContentLibraryObjectPanelByText(
       "Fantastic Mr Fox (All Availabilities)",
     );
 
-    cy.contains("button", "Playback").click();
+    cy.contains("button", "Video").click();
 
-    cy.contains("Playback");
+    cy.contains("Video");
 
     cy.contains("Fantastic Mr Fox Trailer");
 
@@ -39,7 +39,7 @@ describe("Content Library - Object Panel - Playback tab", () => {
         "Fantastic Mr Fox (All Availabilities)",
       );
 
-      cy.contains("button", "Playback").click();
+      cy.contains("button", "Video").click();
 
       cy.contains("Fantastic Mr Fox Trailer");
 
@@ -48,5 +48,20 @@ describe("Content Library - Object Panel - Playback tab", () => {
       // Only check the panel object type and uid so we don't have to mock the response
       cy.get(`[data-cy=panel-for-SkylarkAsset-${firstAssetUid}]`);
     });
+  });
+
+  it("uses the video upload button to open the uploader modal", () => {
+    cy.get('input[name="search-query-input"]').type("all avail test movie");
+    cy.openContentLibraryObjectPanelByText(
+      "Fantastic Mr Fox (All Availabilities)",
+    );
+
+    cy.contains("button", "Video").click();
+
+    cy.contains("Fantastic Mr Fox Trailer");
+
+    cy.get('[aria-label="Upload video to assets"]').click();
+
+    cy.contains("Upload video to Mux");
   });
 });

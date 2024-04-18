@@ -27,6 +27,7 @@ export interface ButtonProps {
   type?: "button" | "submit" | "reset";
   newTab?: boolean;
   animated?: boolean;
+  "aria-label"?: string;
 }
 
 export const Button = forwardRef(

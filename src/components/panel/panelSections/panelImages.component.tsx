@@ -161,6 +161,7 @@ export const PanelImages = ({
                     variant: "form-ghost",
                     className: "ml-2",
                     Icon: <FiUploadCloud className="text-lg" />,
+                    "aria-label": `Upload to ${relationshipName}`,
                   }}
                   onSuccess={() => {
                     setTimeout(() => {

@@ -45,7 +45,7 @@ export const MuxUploader = ({
         <>
           <Modal
             isOpen={isOpen}
-            title="Mux"
+            title="Upload video to Mux"
             size="medium"
             closeModal={() => setIsOpen(false)}
           >

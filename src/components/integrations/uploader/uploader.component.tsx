@@ -16,11 +16,13 @@ export const IntegrationUploader = ({
   type,
   opts,
   buttonProps,
+  hideErrorForUnsupported,
   onSuccess,
 }: {
   provider: IntegrationUploaderProvider;
   type: IntegrationUploadType;
   opts: IntegrationObjectInfo;
+  hideErrorForUnsupported?: boolean;
   onSuccess?: () => void;
 } & { buttonProps: BaseIntegrationUploaderProps["buttonProps"] }) => {
   const onSuccessWrapper = () => {
@@ -53,5 +55,9 @@ export const IntegrationUploader = ({
     );
   }
 
-  return <p>{`No uploader for provider "${provider}".`}</p>;
+  return hideErrorForUnsupported ? (
+    <></>
+  ) : (
+    <p>{`No uploader for provider "${provider}".`}</p>
+  );
 };
