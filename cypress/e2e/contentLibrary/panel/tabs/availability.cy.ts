@@ -90,6 +90,7 @@ describe("Content Library - Object Panel - Availability tab", () => {
 
       cy.get("#availability-panel-header")
         .parent()
+        .parent()
         .within(() => {
           cy.get("button").click();
         });

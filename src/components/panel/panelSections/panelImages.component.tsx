@@ -1,7 +1,11 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { FiUploadCloud } from "react-icons/fi";
 
+import { IntegrationUploader } from "src/components/integrations/uploader/uploader.component";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { pollPanelRefetch } from "src/components/panel/panel.lib";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
@@ -9,6 +13,7 @@ import {
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
+import { useGetIntegrations } from "src/hooks/integrations/useGetIntegrations";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
 import { useImageSize } from "src/hooks/useImageSize";
 import {
@@ -37,12 +42,13 @@ interface PanelImagesProps {
 const groupImagesByType = (images: ParsedSkylarkObject[]) => {
   return images.reduce(
     (acc: { [key: string]: ParsedSkylarkObject[] }, currentValue) => {
-      const key = hasProperty<ParsedSkylarkObject["metadata"], "type", string>(
-        currentValue.metadata,
-        "type",
-      )
-        ? currentValue.metadata.type
-        : "other (no type field)";
+      const key =
+        hasProperty<ParsedSkylarkObject["metadata"], "type", string>(
+          currentValue.metadata,
+          "type",
+        ) && currentValue.metadata.type
+          ? currentValue.metadata.type
+          : "No type set";
 
       if (acc && acc[key])
         return {
@@ -110,8 +116,13 @@ export const PanelImages = ({
   inEditMode,
   setPanelObject,
 }: PanelImagesProps) => {
+  const queryClient = useQueryClient();
+
   const { relationships, isLoading, query, variables } =
     useGetObjectRelationships(objectType, uid, { language });
+
+  const { data, isLoading: isLoadingIntegrations } =
+    useGetIntegrations("image");
 
   const images = relationships
     ? Object.values(relationships)?.filter(
@@ -140,7 +151,25 @@ export const PanelImages = ({
               text={formatObjectField(relationshipName)}
               id={`image-panel-${relationshipName}`}
               sticky
-            />
+              loading={isLoadingIntegrations}
+            >
+              {data && data.enabledIntegrations.length > 0 && (
+                <IntegrationUploader
+                  provider={data?.enabledIntegrations?.[0]}
+                  type={"image"}
+                  opts={{ uid, relationshipName, objectType }}
+                  buttonProps={{
+                    variant: "form-ghost",
+                    className: "ml-2",
+                    Icon: <FiUploadCloud className="text-lg" />,
+                    "aria-label": `Upload to ${relationshipName}`,
+                  }}
+                  onSuccess={() => {
+                    pollPanelRefetch(queryClient);
+                  }}
+                />
+              )}
+            </PanelSectionTitle>
             {objects.length === 0 && (
               <div className="mt-2">
                 <PanelEmptyDataText />

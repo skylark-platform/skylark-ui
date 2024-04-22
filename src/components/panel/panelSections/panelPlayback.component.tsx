@@ -1,8 +1,19 @@
+import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
+import { FiUploadCloud } from "react-icons/fi";
 
+import { Select, SelectOption } from "src/components/inputs/select";
+import {
+  IntegrationUploader,
+  IntegrationUploaderProvider,
+} from "src/components/integrations";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import {
+  pollPanelRefetch,
+  refetchPanelQueries,
+} from "src/components/panel/panel.lib";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
@@ -10,6 +21,7 @@ import {
 } from "src/components/panel/panelTypography";
 import { VideoPlayer } from "src/components/players";
 import { Skeleton } from "src/components/skeleton";
+import { useGetIntegrations } from "src/hooks/integrations/useGetIntegrations";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
 import { PanelTab } from "src/hooks/state";
 import {
@@ -121,15 +133,69 @@ const PreviewVideo = ({
 };
 
 const MetadataPlayback = ({
+  uid,
+  objectType,
   metadata,
   isPage,
 }: Omit<PanelPlaybackProps, "metadata"> & {
   metadata: Record<string, SkylarkObjectMetadataField>;
 }) => {
+  const queryClient = useQueryClient();
+
   const sections = getVideoTypeSections(metadata, true);
+  const { data } = useGetIntegrations("video");
+
+  const options =
+    data?.enabledIntegrations.map(
+      (name): SelectOption<IntegrationUploaderProvider> => ({
+        label: name,
+        value: name,
+      }),
+    ) || [];
+
+  const [selected, setSelected] = useState<IntegrationUploaderProvider | null>(
+    null,
+  );
+  const provider = selected || data?.enabledIntegrations?.[0];
+
+  const uploadSection = {
+    id: "video-upload",
+    htmlId: "video-upload",
+    title: "Upload",
+  };
 
   return (
-    <PanelSectionLayout sections={sections} isPage={isPage}>
+    <PanelSectionLayout sections={[uploadSection, ...sections]} isPage={isPage}>
+      <PanelSectionTitle text={"Upload"} id={uploadSection.id} />
+      <div className="mb-8">
+        {data?.enabledIntegrations && data?.enabledIntegrations.length >= 2 && (
+          <Select
+            options={options}
+            selected={provider}
+            onChange={setSelected}
+            className="mb-4"
+            variant="primary"
+            placeholder="Select Provider"
+          />
+        )}
+        {provider && (
+          <div>
+            <IntegrationUploader
+              provider={provider}
+              type={"video"}
+              opts={{ uid, objectType }}
+              buttonProps={{
+                variant: "outline",
+                children: "Upload",
+                Icon: <FiUploadCloud className="text-lg" />,
+              }}
+              onSuccess={() => {
+                pollPanelRefetch(queryClient);
+              }}
+            />
+          </div>
+        )}
+      </div>
       {sections.map(({ id, type, properties, url }) => {
         return (
           <div key={id} className="relative mb-8">
@@ -159,6 +225,8 @@ const RelationshipPlayback = ({
   isPage,
   setPanelObject,
 }: PanelPlaybackProps) => {
+  const queryClient = useQueryClient();
+
   const { relationships, isLoading, query, variables } =
     useGetObjectRelationships(objectType, uid, { language });
 
@@ -181,14 +249,40 @@ const RelationshipPlayback = ({
       title: formatObjectField(name),
       relationshipName: name,
       objects: objects,
+      isLive: liveAssetRelationships.findIndex((rel) => rel.name === name) > -1,
     }));
+
+  const { data, isLoading: isLoadingIntegrations } =
+    useGetIntegrations("video");
 
   return (
     <PanelSectionLayout sections={sections} isPage={isPage}>
-      {sections.map(({ id, title, objects }) => {
+      {sections.map(({ id, title, objects, isLive, relationshipName }) => {
         return (
           <div key={id} className="relative mb-8">
-            <PanelSectionTitle text={title} id={id} />
+            <PanelSectionTitle
+              text={title}
+              id={id}
+              loading={isLoadingIntegrations}
+            >
+              {!isLive && data && data.enabledIntegrations.length > 0 && (
+                <IntegrationUploader
+                  provider={data?.enabledIntegrations?.[0]}
+                  type={"video"}
+                  opts={{ uid, relationshipName, objectType }}
+                  hideErrorForUnsupported
+                  buttonProps={{
+                    variant: "form-ghost",
+                    className: "ml-2",
+                    Icon: <FiUploadCloud className="text-lg" />,
+                    "aria-label": `Upload video to ${relationshipName}`,
+                  }}
+                  onSuccess={() => {
+                    pollPanelRefetch(queryClient);
+                  }}
+                />
+              )}
+            </PanelSectionTitle>
             {objects.length > 0 ? (
               objects.map((object) => {
                 const sections = getVideoTypeSections(object.metadata, false);

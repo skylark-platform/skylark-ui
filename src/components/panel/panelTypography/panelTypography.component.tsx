@@ -1,8 +1,16 @@
 import clsx from "clsx";
-import { Ref, forwardRef } from "react";
+import { ReactNode, Ref, forwardRef } from "react";
 import { CgSpinner } from "react-icons/cg";
-import { FiMaximize2, FiMinimize2, FiPlus, FiX } from "react-icons/fi";
+import {
+  FiMaximize2,
+  FiMinimize2,
+  FiPlus,
+  FiUpload,
+  FiUploadCloud,
+  FiX,
+} from "react-icons/fi";
 
+import { Button } from "src/components/button";
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 
 interface PanelHeaderProps {
@@ -12,6 +20,7 @@ interface PanelHeaderProps {
   sticky?: boolean;
   withCopyValue?: boolean;
   copyValue?: string | number | true | JSX.Element | string[];
+  children?: ReactNode;
 }
 
 export const PanelSectionTitle = ({
@@ -20,22 +29,23 @@ export const PanelSectionTitle = ({
   count,
   sticky,
   loading,
+  children,
 }: PanelHeaderProps & { loading?: boolean }) => (
-  <>
-    <h3
-      id={id}
-      className={clsx(
-        "bg-white text-base font-semibold inline-block",
-        sticky ? "sticky top-0 z-[2] pb-2 pt-4 md:pt-8" : "mb-2 pb-1 md:pb-2",
-      )}
-    >
+  <div
+    className={clsx(
+      "bg-white text-base font-semibold flex items-center",
+      sticky ? "sticky top-0 z-[2] pb-2 pt-4 md:pt-8" : "mb-2 pb-1 md:pb-2",
+    )}
+  >
+    <h3 id={id} className={clsx("inline-block")}>
       <span className="underline">{text}</span>
       {count !== undefined && !loading && ` (${count})`}
-      {loading && (
-        <CgSpinner className="inline-block ml-2 animate-spin h-4 w-4 mb-0.5" />
-      )}
     </h3>
-  </>
+    {children}
+    {loading && (
+      <CgSpinner className="inline-block ml-2 animate-spin h-4 w-4 mb-0.5" />
+    )}
+  </div>
 );
 
 export const PanelFieldTitle = ({

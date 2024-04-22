@@ -8,7 +8,7 @@ import {
 export enum PanelTab {
   Metadata = "Metadata",
   Imagery = "Imagery",
-  Playback = "Playback",
+  Playback = "Video",
   Availability = "Availability",
   AvailabilityDimensions = "Dimensions",
   AvailabilityAssignedTo = "Assigned To",
