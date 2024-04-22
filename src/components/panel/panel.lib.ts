@@ -50,6 +50,18 @@ export const refetchPanelQueries = async (client: QueryClient) => {
   );
 };
 
+export const pollPanelRefetch = (client: QueryClient) => {
+  let timesRun = 0;
+  const interval = setInterval(() => {
+    timesRun += 1;
+    if (timesRun === 40) {
+      clearInterval(interval);
+    }
+
+    void refetchPanelQueries(client);
+  }, 500);
+};
+
 export const convertSkylarkObjectToContentObject = (
   skylarkObject: ParsedSkylarkObject,
 ): ParsedSkylarkObjectContentObject => {

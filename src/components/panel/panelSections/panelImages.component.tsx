@@ -5,7 +5,7 @@ import { FiUploadCloud } from "react-icons/fi";
 import { IntegrationUploader } from "src/components/integrations/uploader/uploader.component";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
-import { refetchPanelQueries } from "src/components/panel/panel.lib";
+import { pollPanelRefetch } from "src/components/panel/panel.lib";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
@@ -42,12 +42,13 @@ interface PanelImagesProps {
 const groupImagesByType = (images: ParsedSkylarkObject[]) => {
   return images.reduce(
     (acc: { [key: string]: ParsedSkylarkObject[] }, currentValue) => {
-      const key = hasProperty<ParsedSkylarkObject["metadata"], "type", string>(
-        currentValue.metadata,
-        "type",
-      )
-        ? currentValue.metadata.type
-        : "other (no type field)";
+      const key =
+        hasProperty<ParsedSkylarkObject["metadata"], "type", string>(
+          currentValue.metadata,
+          "type",
+        ) && currentValue.metadata.type
+          ? currentValue.metadata.type
+          : "No type set";
 
       if (acc && acc[key])
         return {
@@ -164,9 +165,7 @@ export const PanelImages = ({
                     "aria-label": `Upload to ${relationshipName}`,
                   }}
                   onSuccess={() => {
-                    setTimeout(() => {
-                      void refetchPanelQueries(queryClient);
-                    }, 10000);
+                    pollPanelRefetch(queryClient);
                   }}
                 />
               )}

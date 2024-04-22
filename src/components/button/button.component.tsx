@@ -28,6 +28,7 @@ export interface ButtonProps {
   newTab?: boolean;
   animated?: boolean;
   "aria-label"?: string;
+  slot?: string;
 }
 
 export const Button = forwardRef(

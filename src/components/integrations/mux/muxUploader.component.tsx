@@ -49,10 +49,11 @@ export const MuxUploader = ({
             size="medium"
             closeModal={() => setIsOpen(false)}
           >
-            <div className="w-full h-full min-h-96 flex justify-center items-center text-black">
-              <div className="bg-brand-primary/30 w-full h-52">
+            <div className="w-full h-full min-h-64 flex justify-center items-center text-black">
+              <div className="w-full h-full">
                 <MuxUploaderComponent
                   endpoint={data.url}
+                  dynamicChunkSize
                   id={id}
                   style={
                     {
@@ -70,7 +71,7 @@ export const MuxUploader = ({
                       // "--button-active-background": "#226DFF",
                       // "--progress-bar-fill-color": "",
                       // "--progress-radial-fill-color": "",
-                      "--overlay-background-color": "green",
+                      // "--overlay-background-color": "green",
                       fontSize: 14,
                     } as CSSProperties
                   }
@@ -84,7 +85,11 @@ export const MuxUploader = ({
                       { autoClose: 20000 },
                     )
                   }
-                />
+                >
+                  <Button variant="primary" className={""} slot="file-select">
+                    Upload video
+                  </Button>
+                </MuxUploaderComponent>
               </div>
             </div>
           </Modal>

@@ -10,7 +10,10 @@ import {
 } from "src/components/integrations";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
-import { refetchPanelQueries } from "src/components/panel/panel.lib";
+import {
+  pollPanelRefetch,
+  refetchPanelQueries,
+} from "src/components/panel/panel.lib";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
@@ -187,9 +190,7 @@ const MetadataPlayback = ({
                 Icon: <FiUploadCloud className="text-lg" />,
               }}
               onSuccess={() => {
-                setTimeout(() => {
-                  void refetchPanelQueries(queryClient);
-                }, 10000);
+                pollPanelRefetch(queryClient);
               }}
             />
           </div>
@@ -277,9 +278,7 @@ const RelationshipPlayback = ({
                     "aria-label": `Upload video to ${relationshipName}`,
                   }}
                   onSuccess={() => {
-                    setTimeout(() => {
-                      void refetchPanelQueries(queryClient);
-                    }, 10000);
+                    pollPanelRefetch(queryClient);
                   }}
                 />
               )}

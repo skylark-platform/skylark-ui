@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 
 import { Select, SelectOption } from "src/components/inputs/select";
@@ -8,7 +8,10 @@ import {
   IntegrationUploader,
   IntegrationUploaderProvider,
 } from "src/components/integrations";
-import { refetchPanelQueries } from "src/components/panel/panel.lib";
+import {
+  pollPanelRefetch,
+  refetchPanelQueries,
+} from "src/components/panel/panel.lib";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelSectionTitle,
@@ -100,9 +103,7 @@ const UploadImageSection = ({
                 Icon: <FiUploadCloud className="text-lg" />,
               }}
               onSuccess={() => {
-                setTimeout(() => {
-                  void refetchPanelQueries(queryClient);
-                }, 10000);
+                pollPanelRefetch(queryClient);
               }}
             />
           </div>
