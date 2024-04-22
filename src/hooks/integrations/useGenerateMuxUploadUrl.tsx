@@ -13,7 +13,7 @@ export const useGenerateMuxUploadUrl = ({
   objectType,
   relationshipName,
 }: IntegrationObjectInfo) => {
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: [
       QueryKeys.Integrations,
       "mux",

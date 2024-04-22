@@ -354,6 +354,10 @@ const integrationIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
     req.reply({
       fixture: "./skylark/integrationService/uploadUrl/image/cloudinary.json",
     });
+  } else if (url.pathname === "/upload-url/video/mux") {
+    req.reply({
+      fixture: "./skylark/integrationService/uploadUrl/video/mux.json",
+    });
   }
 };
 
