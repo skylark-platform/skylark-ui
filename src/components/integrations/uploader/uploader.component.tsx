@@ -1,5 +1,5 @@
+import { sentenceCase } from "change-case";
 import { toast } from "react-toastify";
-import { sentenceCase } from "sentence-case";
 
 import { CloudinaryUploader } from "src/components/integrations/cloudinary/cloudinaryUploader.component";
 import {

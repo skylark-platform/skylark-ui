@@ -1,4 +1,4 @@
-import { sentenceCase } from "sentence-case";
+import { sentenceCase } from "change-case";
 
 import { SkylarkSystemField } from "src/interfaces/skylark";
 

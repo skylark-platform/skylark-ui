@@ -1,7 +1,7 @@
+import { sentenceCase } from "change-case";
 import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { sentenceCase } from "sentence-case";
 
 import {
   Tabs,

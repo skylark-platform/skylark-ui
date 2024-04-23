@@ -1,6 +1,6 @@
+import { sentenceCase } from "change-case";
 import { AnimatePresence } from "framer-motion";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { sentenceCase } from "sentence-case";
 
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
 import {
