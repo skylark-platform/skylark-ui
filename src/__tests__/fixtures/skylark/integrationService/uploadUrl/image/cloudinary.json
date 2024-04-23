@@ -1,0 +1,9 @@
+{
+  "cloud_name": "dc5jkcqya",
+  "custom": {
+    "uploadPreset": "mfmmvfrr"
+  },
+  "provider_name": "cloudinary",
+  "type": "image",
+  "url": "https://api.cloudinary.com/v1_1/dc5jkcqya/upload"
+}

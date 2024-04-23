@@ -27,6 +27,8 @@ export interface ButtonProps {
   type?: "button" | "submit" | "reset";
   newTab?: boolean;
   animated?: boolean;
+  "aria-label"?: string;
+  slot?: string;
 }
 
 export const Button = forwardRef(
@@ -56,7 +58,7 @@ export const Button = forwardRef(
 
     const combinedClassName = clsx(
       "btn flex-nowrap",
-      Icon && children && "gap-x-2",
+      Boolean(Icon && children) && "gap-x-2",
       !iconOnly && "text-xs normal-case md:text-sm",
       !iconOnly && variant !== "form" && "min-h-8 h-8 md:h-10",
       variant === "primary" && "btn-primary shadow",

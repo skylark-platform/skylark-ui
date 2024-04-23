@@ -31,6 +31,7 @@ describe("Content Library - Object Panel - Relationships Tab", () => {
 
     cy.get("#panel-section-assets")
       .parent()
+      .parent()
       .within(() => {
         cy.get('[aria-label="Open edit assets relationship modal"]').click();
       });

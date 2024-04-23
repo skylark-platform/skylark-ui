@@ -343,6 +343,24 @@ const updateIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
   }
 };
 
+const integrationIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
+  const url = new URL(req.url);
+
+  if (url.pathname === "/") {
+    req.reply({
+      fixture: "./skylark/integrationService/getAllIntegrations.json",
+    });
+  } else if (url.pathname === "/upload-url/image/cloudinary") {
+    req.reply({
+      fixture: "./skylark/integrationService/uploadUrl/image/cloudinary.json",
+    });
+  } else if (url.pathname === "/upload-url/video/mux") {
+    req.reply({
+      fixture: "./skylark/integrationService/uploadUrl/video/mux.json",
+    });
+  }
+};
+
 export const configureSkylarkIntercepts = () => {
   cy.intercept(
     "POST",
@@ -356,6 +374,13 @@ export const configureSkylarkIntercepts = () => {
       availabilityIntercepts(req);
       createIntercepts(req);
       updateIntercepts(req);
+    },
+  );
+
+  cy.intercept(
+    "https://hook.skylarkplatform.com/**",
+    (req: CyHttpMessages.IncomingHttpRequest) => {
+      integrationIntercepts(req);
     },
   );
 };

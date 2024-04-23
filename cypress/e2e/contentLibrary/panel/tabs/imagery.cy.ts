@@ -29,6 +29,23 @@ describe("Content Library - Object Panel - Imagery tab", () => {
       );
   });
 
+  it("uses the video upload button to open the uploader modal", () => {
+    cy.get('input[name="search-query-input"]').type("all avail test movie");
+    cy.openContentLibraryObjectPanelByText(
+      "Fantastic Mr Fox (All Availabilities)",
+    );
+
+    cy.contains("button", "Imagery").click();
+
+    cy.contains("Imagery");
+    cy.contains("wes_mrfox.jpeg");
+
+    cy.wait(1000);
+    cy.get('[aria-label="Upload to images"]').click();
+
+    cy.frameLoaded("[data-test=uw-iframe]");
+  });
+
   it("navigates to the image object using the object button", () => {
     cy.fixture(
       "./skylark/queries/getObjectRelationships/fantasticMrFox_All_Availabilities.json",

@@ -1,0 +1,18 @@
+{
+  "image": {
+    "cloudinary": {
+      "created": "2024-04-05T14:58:31.585510",
+      "enabled": true,
+      "modified": "2024-04-05T14:58:31.585523",
+      "token": "2d4a4ffd-6f03-4f70-ae07-a9322fcd1b45"
+    }
+  },
+  "video": {
+    "mux": {
+      "created": "2024-04-05T11:25:00Z",
+      "enabled": true,
+      "modified": "2024-04-05T11:19:14.167412",
+      "token": "b9fda8e2-4a4c-4f1e-a6a8-26cc8d36a823"
+    }
+  }
+}
