@@ -1,8 +1,8 @@
+import { sentenceCase } from "change-case";
 import clsx from "clsx";
 import { Transition, m } from "framer-motion";
 import { Ref, forwardRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
-import { sentenceCase } from "sentence-case";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import {

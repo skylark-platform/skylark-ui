@@ -45,7 +45,9 @@ describe("appears in (content_of) view", () => {
         .objects;
     const firstContentOfItem = contentOfObjects[0];
 
-    expect(screen.getByText("Set")).toBeInTheDocument();
+    expect((await screen.findAllByText("Setˢˡ")).length).toBeGreaterThanOrEqual(
+      1,
+    );
     await waitFor(() =>
       expect(
         screen.getByText(firstContentOfItem.__SkylarkSet__title),
