@@ -3,6 +3,7 @@ import { useCallback } from "react";
 
 import {
   IntegrationUploadType,
+  IntegrationUploaderPlaybackPolicy,
   IntegrationUploaderProvider,
   supportedIntegrations,
 } from "src/components/integrations";
@@ -18,6 +19,10 @@ type GetIntegrationsResponse = Record<
       enabled: boolean;
       modified: string;
       token: string;
+      custom: {
+        default_playback_policy: IntegrationUploaderPlaybackPolicy;
+        signing_key_id: string;
+      };
     }
   >
 >;

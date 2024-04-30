@@ -156,6 +156,7 @@ export const PanelImages = ({
               {data && data.enabledIntegrations.length > 0 && (
                 <IntegrationUploader
                   provider={data?.enabledIntegrations?.[0]}
+                  playbackPolicy="public"
                   type={"image"}
                   opts={{ uid, relationshipName, objectType }}
                   buttonProps={{

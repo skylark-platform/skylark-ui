@@ -6,25 +6,31 @@ import {
   BaseIntegrationUploaderProps,
   IntegrationObjectInfo,
   IntegrationUploadType,
+  IntegrationUploaderPlaybackPolicy,
   IntegrationUploaderProvider,
 } from "src/components/integrations/common";
 import { MuxUploader } from "src/components/integrations/mux/muxUploader.component";
 import { Toast } from "src/components/toast/toast.component";
 
+interface IntegrationUploaderProps {
+  provider: IntegrationUploaderProvider;
+  type: IntegrationUploadType;
+  playbackPolicy: IntegrationUploaderPlaybackPolicy;
+  opts: IntegrationObjectInfo;
+  hideErrorForUnsupported?: boolean;
+  onSuccess?: () => void;
+  buttonProps: BaseIntegrationUploaderProps["buttonProps"];
+}
+
 export const IntegrationUploader = ({
   provider,
   type,
+  playbackPolicy,
   opts,
   buttonProps,
   hideErrorForUnsupported,
   onSuccess,
-}: {
-  provider: IntegrationUploaderProvider;
-  type: IntegrationUploadType;
-  opts: IntegrationObjectInfo;
-  hideErrorForUnsupported?: boolean;
-  onSuccess?: () => void;
-} & { buttonProps: BaseIntegrationUploaderProps["buttonProps"] }) => {
+}: IntegrationUploaderProps) => {
   const onSuccessWrapper = () => {
     toast.success(
       <Toast
@@ -35,24 +41,18 @@ export const IntegrationUploader = ({
     onSuccess?.();
   };
 
+  const commonProps = {
+    playbackPolicy,
+    buttonProps,
+    onSuccess: onSuccessWrapper,
+  };
+
   if (provider === "mux") {
-    return (
-      <MuxUploader
-        {...opts}
-        buttonProps={buttonProps}
-        onSuccess={onSuccessWrapper}
-      />
-    );
+    return <MuxUploader {...opts} {...commonProps} />;
   }
 
   if (provider === "cloudinary") {
-    return (
-      <CloudinaryUploader
-        {...opts}
-        buttonProps={buttonProps}
-        onSuccess={onSuccessWrapper}
-      />
-    );
+    return <CloudinaryUploader {...opts} {...commonProps} />;
   }
 
   return hideErrorForUnsupported ? (

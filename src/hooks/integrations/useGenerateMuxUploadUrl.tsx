@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import {
   IntegrationObjectInfo,
+  IntegrationUploaderPlaybackPolicy,
   createIntegrationServiceObj,
 } from "src/components/integrations";
 import { QueryKeys } from "src/enums/graphql";
@@ -12,7 +13,10 @@ export const useGenerateMuxUploadUrl = ({
   uid,
   objectType,
   relationshipName,
-}: IntegrationObjectInfo) => {
+  playbackPolicy,
+}: IntegrationObjectInfo & {
+  playbackPolicy: IntegrationUploaderPlaybackPolicy;
+}) => {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [
       QueryKeys.Integrations,
@@ -21,13 +25,17 @@ export const useGenerateMuxUploadUrl = ({
       uid,
       objectType,
       relationshipName,
+      playbackPolicy,
     ],
     queryFn: async () => {
-      const body = createIntegrationServiceObj({
-        uid,
-        objectType,
-        relationshipName,
-      });
+      const body = createIntegrationServiceObj(
+        {
+          uid,
+          objectType,
+          relationshipName,
+        },
+        playbackPolicy,
+      );
 
       const data =
         await integrationServiceRequest<IntegrationGenericUploadUrlResponseBody>(

@@ -157,6 +157,7 @@ export const CloudinaryUploader = ({
   objectType,
   relationshipName,
   buttonProps,
+  playbackPolicy,
   onSuccess,
 }: CloudinaryUploaderProps) => {
   const { data, isLoading, isError } = useGenerateCloudinaryUploadUrl({
@@ -174,6 +175,7 @@ export const CloudinaryUploader = ({
           relationshipName={relationshipName}
           cloudName={data.cloud_name}
           custom={data.custom}
+          playbackPolicy={playbackPolicy}
           buttonProps={{
             ...buttonProps,
             loading: isLoading,
