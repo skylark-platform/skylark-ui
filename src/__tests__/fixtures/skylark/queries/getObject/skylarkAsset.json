@@ -75,6 +75,7 @@
       "dash_url": null,
       "dash_dashboard": null,
       "status": null,
+      "policy": "PRIVATE",
       "availability": {
         "next_token": null,
         "objects": [

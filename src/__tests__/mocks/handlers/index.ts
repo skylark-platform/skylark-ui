@@ -16,6 +16,7 @@ import {
   getObjectAvailabilityInheritanceHandlers,
   getObjectAvailabilityAssignedToHandlers,
 } from "./getObjectHandlers";
+import { integrationHandlers } from "./integrationHandlers";
 import { introspectionHandlers } from "./introspectionHandlers";
 import { searchHandlers } from "./searchHandlers";
 import { updateObjectHandlers } from "./updateObjectHandlers";
@@ -42,4 +43,5 @@ export const handlers = [
   ...environmentHandlers,
   ...updateSchemaHandlers,
   ...aiHandlers,
+  ...integrationHandlers,
 ];

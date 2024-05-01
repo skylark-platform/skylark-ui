@@ -121,7 +121,7 @@ const AssetPlaybackPolicyPill = ({ policy }: { policy: string }) => {
 
   return (
     <Tooltip tooltip={[`Privacy policy is ${policy}`]}>
-      <span aria-label={policy}>
+      <span aria-label={`Privacy policy: ${policy}`}>
         <Pill
           className="bg-black"
           label={policy === "PRIVATE" ? <GrLock /> : <GrUnlock />}

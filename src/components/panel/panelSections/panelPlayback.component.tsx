@@ -133,7 +133,7 @@ const getVideoTypeSections = (
           property: string;
           value: SkylarkObjectMetadataField;
           isUrl: boolean;
-        } => hasProperty(metadata, obj.key),
+        } => hasProperty(metadata, obj.key) && metadata[obj.key] !== null,
       );
 
       return {
@@ -179,7 +179,7 @@ const PreviewVideo = ({
 
   return (
     <>
-      {publicUrl && playbackPolicy === "public" && (
+      {publicUrl && (playbackPolicy === "public" || !playbackId) && (
         <VideoPlayer src={publicUrl as string} className={className} />
       )}
       {signedPlaybackUrl && playbackPolicy !== "public" && (
