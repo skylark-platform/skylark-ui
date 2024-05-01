@@ -10,21 +10,20 @@ import {
 import { QueryKeys } from "src/enums/graphql";
 import { integrationServiceRequest } from "src/lib/integrationService/client";
 
+interface IntegrationInfo {
+  created: string;
+  enabled: boolean;
+  modified: string;
+  token: string;
+  custom?: {
+    default_playback_policy?: IntegrationUploaderPlaybackPolicy;
+    signing_key_id?: string;
+  };
+}
+
 type GetIntegrationsResponse = Record<
   IntegrationUploadType,
-  Record<
-    IntegrationUploaderProvider,
-    {
-      created: string;
-      enabled: boolean;
-      modified: string;
-      token: string;
-      custom: {
-        default_playback_policy: IntegrationUploaderPlaybackPolicy;
-        signing_key_id: string;
-      };
-    }
-  >
+  Record<IntegrationUploaderProvider, IntegrationInfo>
 >;
 
 export const useGetIntegrations = (type: IntegrationUploadType) => {

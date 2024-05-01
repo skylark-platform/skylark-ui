@@ -241,7 +241,7 @@ const MetadataPlayback = ({
               provider={provider}
               type={"video"}
               playbackPolicy={
-                data?.integrations?.[provider].custom.default_playback_policy
+                data?.integrations?.[provider]?.custom?.default_playback_policy
               }
               opts={{ uid, objectType }}
               buttonProps={{
@@ -339,8 +339,8 @@ const RelationshipPlayback = ({
                   provider={firstActiveProvider}
                   type={"video"}
                   playbackPolicy={
-                    data?.integrations?.[firstActiveProvider].custom
-                      .default_playback_policy
+                    data?.integrations?.[firstActiveProvider]?.custom
+                      ?.default_playback_policy
                   }
                   opts={{ uid, relationshipName, objectType }}
                   hideErrorForUnsupported
