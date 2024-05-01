@@ -1,4 +1,5 @@
 import MuxUploaderComponent from "@mux/mux-uploader-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { CSSProperties, useState } from "react";
 import { CgSpinner } from "react-icons/cg";
 import { toast } from "react-toastify";
@@ -8,7 +9,10 @@ import { Select } from "src/components/inputs/select";
 import { BaseIntegrationUploaderProps } from "src/components/integrations/common";
 import { Modal } from "src/components/modals/base/modal";
 import { Toast } from "src/components/toast/toast.component";
-import { useGenerateMuxUploadUrl } from "src/hooks/integrations/useGenerateMuxUploadUrl";
+import {
+  createIntegrationUploadQueryKeyBase,
+  useGenerateIntegrationUploadUrl,
+} from "src/hooks/integrations/useGenerateIntegrationUploadUrl";
 
 interface MuxUploaderProps extends BaseIntegrationUploaderProps {
   id?: string;
@@ -23,22 +27,31 @@ export const MuxUploader = ({
   buttonProps,
   onSuccess,
 }: MuxUploaderProps) => {
+  const queryClient = useQueryClient();
+
   const [playbackPolicy, setPlaybackPolicy] = useState<"signed" | "public">(
     propPlaybackPolicy || "public",
   );
 
-  const { data, isLoading, isError } = useGenerateMuxUploadUrl({
-    uid,
-    objectType,
-    relationshipName,
-    playbackPolicy,
-  });
+  const { data, isLoading, isError } = useGenerateIntegrationUploadUrl(
+    "video",
+    "mux",
+    {
+      uid,
+      objectType,
+      relationshipName,
+      playbackPolicy,
+    },
+  );
 
   const [isOpen, setIsOpen] = useState(false);
 
   const onSuccessWrapper = () => {
     setIsOpen(false);
     onSuccess();
+    void queryClient.invalidateQueries({
+      queryKey: createIntegrationUploadQueryKeyBase("video", "mux"),
+    });
   };
 
   return (

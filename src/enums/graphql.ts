@@ -15,6 +15,8 @@ export enum QueryKeys {
   GetObjectContentOf = "getObjectContentOf",
   GetObjectContent = "getObjectContent",
   Integrations = "integrations",
+  IntegrationsUploadUrl = "integrationsUploadUrl",
+  IntegrationsPlaybackUrl = "integrationsPlaybackUrl",
 }
 
 export enum QueryErrorMessages {

@@ -2,26 +2,37 @@ import { useQuery } from "@tanstack/react-query";
 
 import {
   IntegrationObjectInfo,
+  IntegrationUploadType,
   IntegrationUploaderPlaybackPolicy,
+  IntegrationUploaderProvider,
   createIntegrationServiceObj,
 } from "src/components/integrations";
 import { QueryKeys } from "src/enums/graphql";
 import { IntegrationGenericUploadUrlResponseBody } from "src/interfaces/skylark/integrations";
 import { integrationServiceRequest } from "src/lib/integrationService/client";
 
-export const useGenerateMuxUploadUrl = ({
-  uid,
-  objectType,
-  relationshipName,
-  playbackPolicy,
-}: IntegrationObjectInfo & {
-  playbackPolicy: IntegrationUploaderPlaybackPolicy;
-}) => {
-  const { data, isLoading, isError, error } = useQuery({
+export const createIntegrationUploadQueryKeyBase = (
+  type: IntegrationUploadType,
+  provider: IntegrationUploaderProvider,
+) => [QueryKeys.Integrations, QueryKeys.IntegrationsUploadUrl, type, provider];
+
+export const useGenerateIntegrationUploadUrl = <
+  ResponseBody = IntegrationGenericUploadUrlResponseBody,
+>(
+  type: IntegrationUploadType,
+  provider: IntegrationUploaderProvider,
+  {
+    uid,
+    objectType,
+    relationshipName,
+    playbackPolicy,
+  }: IntegrationObjectInfo & {
+    playbackPolicy?: IntegrationUploaderPlaybackPolicy;
+  },
+) => {
+  const { data, isLoading, isError } = useQuery({
     queryKey: [
-      QueryKeys.Integrations,
-      "mux",
-      "uploadUrl",
+      ...createIntegrationUploadQueryKeyBase(type, provider),
       uid,
       objectType,
       relationshipName,
@@ -37,14 +48,13 @@ export const useGenerateMuxUploadUrl = ({
         playbackPolicy,
       );
 
-      const data =
-        await integrationServiceRequest<IntegrationGenericUploadUrlResponseBody>(
-          "/upload-url/video/mux",
-          {
-            body,
-            method: "POST",
-          },
-        );
+      const data = await integrationServiceRequest<ResponseBody>(
+        `/upload-url/${type}/${provider}`,
+        {
+          body,
+          method: "POST",
+        },
+      );
 
       return data;
     },

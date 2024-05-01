@@ -1,13 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 
 import {
-  IntegrationObjectInfo,
   IntegrationUploaderPlaybackPolicy,
   IntegrationUploaderProvider,
-  createIntegrationServiceObj,
 } from "src/components/integrations";
 import { QueryKeys } from "src/enums/graphql";
-import { IntegrationGenericUploadUrlResponseBody } from "src/interfaces/skylark/integrations";
 import { integrationServiceRequest } from "src/lib/integrationService/client";
 
 export const useGenerateIntegrationPlaybackUrl = (
@@ -15,8 +12,13 @@ export const useGenerateIntegrationPlaybackUrl = (
   playbackPolicy: IntegrationUploaderPlaybackPolicy,
   hlsId: string | null,
 ) => {
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: [QueryKeys.Integrations, provider, "playbackUrl", hlsId],
+  const { data, isLoading, isError } = useQuery({
+    queryKey: [
+      QueryKeys.Integrations,
+      QueryKeys.IntegrationsPlaybackUrl,
+      provider,
+      hlsId,
+    ],
     queryFn: async () => {
       const data = await integrationServiceRequest<{ playback_url: string }>(
         `/playback-url/video/${provider}`,
@@ -32,6 +34,9 @@ export const useGenerateIntegrationPlaybackUrl = (
     },
     enabled:
       provider === "mux" && playbackPolicy !== "public" && Boolean(hlsId),
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
   return {
