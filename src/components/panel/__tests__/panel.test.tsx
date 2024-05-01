@@ -12,6 +12,7 @@ import {
   defaultProps,
   movieObject,
   setObjectWithContent,
+  skylarkAssetObject,
 } from "./utils/test-utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -165,5 +166,19 @@ describe("header (tab independent)", () => {
       expect(screen.getByText("Edit Metadata")).toBeInTheDocument(),
     );
     expect(screen.queryByText("Editing")).not.toBeInTheDocument();
+  });
+
+  test("shows lock icon when objectType is SkylarkAsset and it has a policy field of PRIVATE", async () => {
+    render(<Panel {...defaultProps} object={skylarkAssetObject} />);
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByLabelText("Privacy policy: PRIVATE"),
+      ).toBeInTheDocument(),
+    );
   });
 });

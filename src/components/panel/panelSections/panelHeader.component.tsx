@@ -13,7 +13,7 @@ import {
   FiSave,
   FiTrash2,
 } from "react-icons/fi";
-import { GrGraphQl } from "react-icons/gr";
+import { GrGraphQl, GrLock, GrUnlock } from "react-icons/gr";
 
 import { AvailabilityLabelPill } from "src/components/availability";
 import { Button, ButtonProps } from "src/components/button";
@@ -30,9 +30,10 @@ import {
   DisplayGraphQLQueryModal,
 } from "src/components/modals";
 import { refetchPanelQueries } from "src/components/panel/panel.lib";
-import { ObjectTypePill } from "src/components/pill";
+import { ObjectTypePill, Pill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
 import { Tag } from "src/components/tag";
+import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { PanelTab } from "src/hooks/state";
 import {
   AvailabilityStatus,
@@ -40,7 +41,11 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
-import { getObjectDisplayName, platformMetaKeyClicked } from "src/lib/utils";
+import {
+  getObjectDisplayName,
+  hasProperty,
+  platformMetaKeyClicked,
+} from "src/lib/utils";
 
 interface PanelHeaderProps {
   isPage?: boolean;
@@ -106,6 +111,23 @@ const RefreshPanelQueries = (props: Omit<ButtonProps, "variant">) => {
       onClick={onClick}
       aria-label="Refresh Panel"
     />
+  );
+};
+
+const AssetPlaybackPolicyPill = ({ policy }: { policy: string }) => {
+  if (policy !== "PRIVATE" && policy !== "PUBLIC") {
+    return <></>;
+  }
+
+  return (
+    <Tooltip tooltip={[`Privacy policy is ${policy}`]}>
+      <span aria-label={`Privacy policy: ${policy}`}>
+        <Pill
+          className="bg-black"
+          label={policy === "PRIVATE" ? <GrLock /> : <GrUnlock />}
+        />
+      </span>
+    </Tooltip>
   );
 };
 
@@ -393,6 +415,12 @@ export const PanelHeader = ({
         <div className="mt-2 flex h-5 items-center justify-center gap-2">
           {object ? (
             <>
+              {objectType === BuiltInSkylarkObjectType.SkylarkAsset &&
+                hasProperty(object.metadata, "policy") && (
+                  <AssetPlaybackPolicyPill
+                    policy={object.metadata.policy as string}
+                  />
+                )}
               <ObjectTypePill
                 className="w-20 bg-brand-primary"
                 type={objectType}

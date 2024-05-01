@@ -1,8 +1,9 @@
 import clsx from "clsx";
+import { ReactNode } from "react";
 import { FiX } from "react-icons/fi";
 
 export interface PillProps {
-  label: string;
+  label: ReactNode;
   bgColor?: string;
   className?: string;
   onDelete?: () => void;

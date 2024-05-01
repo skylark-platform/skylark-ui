@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { createContext, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -7,7 +8,11 @@ import {
   createIntegrationServiceObj,
 } from "src/components/integrations/common";
 import { Toast } from "src/components/toast/toast.component";
-import { useGenerateCloudinaryUploadUrl } from "src/hooks/integrations/useGenerateCloudinaryUploadUrl";
+import {
+  createIntegrationUploadQueryKeyBase,
+  useGenerateIntegrationUploadUrl,
+} from "src/hooks/integrations/useGenerateIntegrationUploadUrl";
+import { IntegrationCloudinaryUploadUrlResponseBody } from "src/interfaces/skylark/integrations";
 import { hasProperty, isObject } from "src/lib/utils";
 
 interface CloudinaryContext {
@@ -157,13 +162,28 @@ export const CloudinaryUploader = ({
   objectType,
   relationshipName,
   buttonProps,
+  playbackPolicy,
   onSuccess,
 }: CloudinaryUploaderProps) => {
-  const { data, isLoading, isError } = useGenerateCloudinaryUploadUrl({
-    uid,
-    objectType,
-    relationshipName,
-  });
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, isError } =
+    useGenerateIntegrationUploadUrl<IntegrationCloudinaryUploadUrlResponseBody>(
+      "image",
+      "cloudinary",
+      {
+        uid,
+        objectType,
+        relationshipName,
+      },
+    );
+
+  const onSuccessWrapper = () => {
+    onSuccess();
+    void queryClient.invalidateQueries({
+      queryKey: createIntegrationUploadQueryKeyBase("image", "cloudinary"),
+    });
+  };
 
   return (
     <>
@@ -174,12 +194,13 @@ export const CloudinaryUploader = ({
           relationshipName={relationshipName}
           cloudName={data.cloud_name}
           custom={data.custom}
+          playbackPolicy={playbackPolicy}
           buttonProps={{
             ...buttonProps,
             loading: isLoading,
             disabled: buttonProps.disabled || isError,
           }}
-          onSuccess={onSuccess}
+          onSuccess={onSuccessWrapper}
         />
       )}
     </>

@@ -96,6 +96,7 @@ const UploadImageSection = ({
             <IntegrationUploader
               provider={provider}
               type={"image"}
+              playbackPolicy="public"
               opts={{ uid, objectType }}
               buttonProps={{
                 variant: "outline",

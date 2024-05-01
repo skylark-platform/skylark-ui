@@ -6,6 +6,7 @@ import { FiUploadCloud } from "react-icons/fi";
 import { Select, SelectOption } from "src/components/inputs/select";
 import {
   IntegrationUploader,
+  IntegrationUploaderPlaybackPolicy,
   IntegrationUploaderProvider,
 } from "src/components/integrations";
 import { DisplayGraphQLQuery } from "src/components/modals";
@@ -21,6 +22,7 @@ import {
 } from "src/components/panel/panelTypography";
 import { VideoPlayer } from "src/components/players";
 import { Skeleton } from "src/components/skeleton";
+import { useGenerateIntegrationPlaybackUrl } from "src/hooks/integrations/useGenerateIntegrationPlaybackUrl";
 import { useGetIntegrations } from "src/hooks/integrations/useGetIntegrations";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
 import { PanelTab } from "src/hooks/state";
@@ -48,6 +50,27 @@ interface PanelPlaybackProps {
 
 const videoTypes = ["hls", "dash", "external"];
 
+const getPlaybackPolicyFromMetadata = (
+  metadata: PanelPlaybackProps["metadata"],
+): IntegrationUploaderPlaybackPolicy => {
+  const policyField = metadata?.["policy"];
+
+  if (!metadata || !policyField || typeof policyField !== "string") {
+    return;
+  }
+
+  const lowercasedPolicyField = policyField.toLocaleLowerCase();
+
+  if (
+    lowercasedPolicyField !== "signed" &&
+    lowercasedPolicyField !== "public"
+  ) {
+    return;
+  }
+
+  return lowercasedPolicyField;
+};
+
 const getVideoTypeSections = (
   metadata: PanelPlaybackProps["metadata"],
   includeEmptySections?: boolean,
@@ -63,6 +86,7 @@ const getVideoTypeSections = (
     isUrl: boolean;
   }[];
   url: SkylarkObjectMetadataField;
+  playbackId: string | null;
 }[] => {
   const sections = videoTypes
     .map((videoType) => {
@@ -80,6 +104,7 @@ const getVideoTypeSections = (
             ? [{ key: "url", property: "URL", isUrl: true, value: url }]
             : [],
           url,
+          playbackId: null,
         };
       }
 
@@ -87,16 +112,29 @@ const getVideoTypeSections = (
       const urlKey = `${videoType}_url`;
       const dashboardKey = `${videoType}_dashboard`;
 
+      const idProperty = metadata?.[idKey];
+      const urlProperty = metadata?.[urlKey];
+      const dashboardProperty = metadata?.[dashboardKey];
+
       const properties = [
-        { key: idKey, property: "ID", isUrl: false },
-        { key: urlKey, property: "URL", isUrl: true },
-        { key: dashboardKey, property: "Dashboard", isUrl: true },
-      ]
-        .filter(({ key }) => hasProperty(metadata, key) && metadata[key])
-        .map((obj) => ({
-          ...obj,
-          value: hasProperty(metadata, obj.key) && metadata[obj.key],
-        }));
+        { key: idKey, property: "ID", isUrl: false, value: idProperty },
+        { key: urlKey, property: "URL", isUrl: true, value: urlProperty },
+        {
+          key: dashboardKey,
+          property: "Dashboard",
+          isUrl: true,
+          value: dashboardProperty,
+        },
+      ].filter(
+        (
+          obj,
+        ): obj is {
+          key: string;
+          property: string;
+          value: SkylarkObjectMetadataField;
+          isUrl: boolean;
+        } => hasProperty(metadata, obj.key) && metadata[obj.key] !== null,
+      );
 
       return {
         type: videoType,
@@ -104,6 +142,9 @@ const getVideoTypeSections = (
         htmlId: `playback-panel-${videoType}`,
         title: videoType.toUpperCase(),
         properties,
+        playbackId: hasProperty(metadata, idKey)
+          ? (metadata[idKey] as string)
+          : null,
         url: hasProperty(metadata, urlKey) && metadata[urlKey],
       };
     })
@@ -113,22 +154,38 @@ const getVideoTypeSections = (
 };
 
 const PreviewVideo = ({
-  url,
-  className,
+  url: publicUrl,
+  provider,
+  playbackId,
+  playbackPolicy,
+  className: propClassName,
 }: {
   url: SkylarkObjectMetadataField;
+  provider: IntegrationUploaderProvider | null;
+  playbackPolicy: IntegrationUploaderPlaybackPolicy;
+  playbackId: string | null;
   className?: string;
 }) => {
-  return url ? (
-    <VideoPlayer
-      src={url as string}
-      className={clsx(
-        "h-full w-full bg-black object-cover object-center max-w-xl",
-        className,
+  const { signedPlaybackUrl } = useGenerateIntegrationPlaybackUrl(
+    provider,
+    playbackPolicy,
+    playbackId,
+  );
+
+  const className = clsx(
+    "h-full w-full bg-black object-cover object-center max-w-xl",
+    propClassName,
+  );
+
+  return (
+    <>
+      {publicUrl && (playbackPolicy === "public" || !playbackId) && (
+        <VideoPlayer src={publicUrl as string} className={className} />
       )}
-    />
-  ) : (
-    <></>
+      {signedPlaybackUrl && playbackPolicy !== "public" && (
+        <VideoPlayer src={signedPlaybackUrl} className={className} />
+      )}
+    </>
   );
 };
 
@@ -183,6 +240,9 @@ const MetadataPlayback = ({
             <IntegrationUploader
               provider={provider}
               type={"video"}
+              playbackPolicy={
+                data?.integrations?.[provider]?.custom?.default_playback_policy
+              }
               opts={{ uid, objectType }}
               buttonProps={{
                 variant: "outline",
@@ -196,7 +256,7 @@ const MetadataPlayback = ({
           </div>
         )}
       </div>
-      {sections.map(({ id, type, properties, url }) => {
+      {sections.map(({ id, type, properties, url, playbackId }) => {
         return (
           <div key={id} className="relative mb-8">
             <PanelSectionTitle text={type.toUpperCase()} id={id} />
@@ -210,7 +270,13 @@ const MetadataPlayback = ({
               />
             ))}
             {properties.length === 0 && <PanelEmptyDataText />}
-            <PreviewVideo url={url} className="mb-4" />
+            <PreviewVideo
+              url={url}
+              className="mb-4"
+              playbackId={playbackId}
+              provider={provider || null}
+              playbackPolicy={getPlaybackPolicyFromMetadata(metadata)}
+            />
           </div>
         );
       })}
@@ -223,6 +289,7 @@ const RelationshipPlayback = ({
   objectType,
   language,
   isPage,
+  metadata,
   setPanelObject,
 }: PanelPlaybackProps) => {
   const queryClient = useQueryClient();
@@ -255,6 +322,8 @@ const RelationshipPlayback = ({
   const { data, isLoading: isLoadingIntegrations } =
     useGetIntegrations("video");
 
+  const firstActiveProvider = data?.enabledIntegrations?.[0];
+
   return (
     <PanelSectionLayout sections={sections} isPage={isPage}>
       {sections.map(({ id, title, objects, isLive, relationshipName }) => {
@@ -265,10 +334,14 @@ const RelationshipPlayback = ({
               id={id}
               loading={isLoadingIntegrations}
             >
-              {!isLive && data && data.enabledIntegrations.length > 0 && (
+              {!isLive && data && firstActiveProvider && (
                 <IntegrationUploader
-                  provider={data?.enabledIntegrations?.[0]}
+                  provider={firstActiveProvider}
                   type={"video"}
+                  playbackPolicy={
+                    data?.integrations?.[firstActiveProvider]?.custom
+                      ?.default_playback_policy
+                  }
                   opts={{ uid, relationshipName, objectType }}
                   hideErrorForUnsupported
                   buttonProps={{
@@ -289,9 +362,16 @@ const RelationshipPlayback = ({
 
                 return (
                   <Fragment key={uid}>
-                    {sections.map(({ url, id }) => (
+                    {sections.map(({ url, id, playbackId }) => (
                       <div key={id} className="mb-4">
-                        <PreviewVideo url={url} />
+                        <PreviewVideo
+                          url={url}
+                          provider={firstActiveProvider || null}
+                          playbackId={playbackId}
+                          playbackPolicy={getPlaybackPolicyFromMetadata(
+                            metadata,
+                          )}
+                        />
                         <ObjectIdentifierCard
                           hideObjectType
                           className="max-w-xl"
