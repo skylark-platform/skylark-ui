@@ -14,3 +14,7 @@ export interface ApiRouteFlatfileImportResponse {
   rows: FlatfileRow[];
   totalRows: number;
 }
+
+export interface ApiRouteWowzaUploadUrlRequestBody {
+  uploadUrl: string;
+}

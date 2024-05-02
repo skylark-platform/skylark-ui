@@ -2,7 +2,7 @@ import { ButtonProps } from "src/components/button";
 
 export type IntegrationUploadType = "image" | "video";
 
-export type IntegrationUploaderProvider = "mux" | "cloudinary";
+export type IntegrationUploaderProvider = "mux" | "cloudinary" | "wowza";
 
 export type IntegrationUploaderPlaybackPolicy = "signed" | "public" | undefined;
 
@@ -25,9 +25,11 @@ export const supportedIntegrations: Record<
   image: {
     cloudinary: true,
     mux: false,
+    wowza: false,
   },
   video: {
     mux: true,
+    wowza: true,
     cloudinary: true,
   },
 };

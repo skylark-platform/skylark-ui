@@ -10,6 +10,7 @@ import {
   SkylarkObjectType,
   GQLSkylarkErrorResponse,
   ParsedSkylarkObject,
+  BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import { GQLSkylarkGetObjectResponse } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -69,6 +70,24 @@ export const useGetObject = (
         data?.getObject && parseSkylarkObject(data?.getObject, objectMeta),
       [objectMeta],
     ),
+    refetchInterval({ state: { data } }) {
+      if (
+        objectType === BuiltInSkylarkObjectType.SkylarkAsset &&
+        data &&
+        data?.getObject
+      ) {
+        const obj = data.getObject;
+
+        if (
+          obj?.provider === "WOWZA" &&
+          obj?.status &&
+          obj.status !== "FINISHED"
+        ) {
+          return 500;
+        }
+      }
+      return false;
+    },
   });
 
   useEffect(() => {

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import {
   IntegrationObjectInfo,
@@ -63,10 +64,26 @@ export const useGenerateIntegrationUploadUrl = <
     refetchOnMount: false,
     refetchOnReconnect: false,
     staleTime: 60000 * 30, // 30 minutes
+    enabled: provider !== "wowza",
   });
 
+  const d = useMemo(() => {
+    if (provider === "wowza") {
+      const mockedResponse = {
+        provider_name: "wowza",
+        url: "dummy",
+        type: "video",
+        custom: {},
+      } as ResponseBody;
+
+      return mockedResponse;
+    }
+
+    return data;
+  }, [data, provider]);
+
   return {
-    data,
+    data: d,
     isLoading,
     isError,
   };

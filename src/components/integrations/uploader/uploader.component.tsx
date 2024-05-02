@@ -10,6 +10,7 @@ import {
   IntegrationUploaderProvider,
 } from "src/components/integrations/common";
 import { MuxUploader } from "src/components/integrations/mux/muxUploader.component";
+import { WowzaUploader } from "src/components/integrations/wowza/wowzaUploader";
 import { Toast } from "src/components/toast/toast.component";
 
 interface IntegrationUploaderProps {
@@ -49,6 +50,10 @@ export const IntegrationUploader = ({
 
   if (provider === "mux") {
     return <MuxUploader {...opts} {...commonProps} />;
+  }
+
+  if (provider === "wowza") {
+    return <WowzaUploader {...opts} {...commonProps} />;
   }
 
   if (provider === "cloudinary") {
