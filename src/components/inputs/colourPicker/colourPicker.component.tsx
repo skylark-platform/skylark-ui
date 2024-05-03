@@ -11,7 +11,7 @@ import {
 import { ReactNode, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 
-import { TextInput } from "src/components/inputs/textInput";
+import { TextInput } from "src/components/inputs/input";
 
 interface ColourPickerProps {
   colour: string;

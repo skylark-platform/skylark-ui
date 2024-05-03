@@ -1,8 +1,8 @@
 import { UseFormReturn } from "react-hook-form";
 
 import { ColourPicker } from "src/components/inputs/colourPicker";
+import { TextInput } from "src/components/inputs/input";
 import { Select } from "src/components/inputs/select";
-import { TextInput } from "src/components/inputs/textInput";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import {
   SkylarkSystemField,

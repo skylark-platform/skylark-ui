@@ -1,6 +1,13 @@
 import { Combobox, Transition } from "@headlessui/react";
 import clsx from "clsx";
-import React, { useState, useCallback, forwardRef, Ref, useRef } from "react";
+import React, {
+  useState,
+  useCallback,
+  forwardRef,
+  Ref,
+  useRef,
+  useMemo,
+} from "react";
 import { useVirtual } from "react-virtual";
 
 import {
@@ -90,7 +97,10 @@ const MultiSelectComponent = (
     rounded,
   } = props;
 
-  const options = unsortedOptions.sort(sortSelectOptions);
+  const options = useMemo(
+    () => unsortedOptions.sort(sortSelectOptions),
+    [unsortedOptions],
+  );
 
   const [query, setQuery] = useState("");
 
@@ -121,15 +131,19 @@ const MultiSelectComponent = (
     rounded && "rounded-full",
   );
 
-  const selectedOptions = options.filter(({ value }) =>
-    selected?.includes(value),
+  const selectedOptions = useMemo(
+    () => options.filter(({ value }) => selected?.includes(value)),
+    [options, selected],
   );
 
-  const deselectOption = (value: MultiSelectOption["value"]) => {
-    onChangeWrapper(
-      selectedOptions.filter((selected) => selected.value !== value),
-    );
-  };
+  const deselectOption = useCallback(
+    (value: MultiSelectOption["value"]) => {
+      onChangeWrapper(
+        selectedOptions.filter((selected) => selected.value !== value),
+      );
+    },
+    [onChangeWrapper, selectedOptions],
+  );
 
   return (
     <Combobox

@@ -176,3 +176,16 @@ query ${wrapQueryName("AI_FIELD_SUGGESTIONS")}($objectType:ObjectTypes!, $rootFi
     set_uid: $setUid
   )
 }`;
+
+export const LIST_API_KEYS = gql`
+query ${wrapQueryName("LIST_API_KEYS")} {
+  listApiKeys {
+    name
+    active
+    api_key
+    expires
+    permissions
+    created
+  }
+}
+`;

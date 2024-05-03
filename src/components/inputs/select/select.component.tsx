@@ -17,11 +17,10 @@ import React, {
   ReactNode,
   ReactElement,
 } from "react";
-import { FiChevronDown, FiInfo } from "react-icons/fi";
+import { FiCheck, FiChevronDown, FiInfo } from "react-icons/fi";
 import { useVirtual } from "react-virtual";
 
 import { FiX } from "src/components/icons";
-import { Checkbox } from "src/components/inputs/checkbox";
 import { Tooltip, TooltipSide } from "src/components/tooltip/tooltip.component";
 import { formatObjectField, mergeRefs } from "src/lib/utils";
 
@@ -134,7 +133,18 @@ export const SelectOptionComponent = <T extends string | number>({
       height: style?.height || getSelectOptionHeight(variant),
     }}
   >
-    {withCheckbox && <Checkbox checked={isSelected} className="mr-2" />}
+    {withCheckbox && (
+      <span
+        className={clsx(
+          "flex h-5 w-5 min-w-5 items-center justify-center rounded-sm border-2 text-white mr-2",
+          isSelected
+            ? "border-brand-primary bg-brand-primary"
+            : "bg-manatee-200",
+        )}
+      >
+        {isSelected && <FiCheck className="text-lg" />}
+      </span>
+    )}
     <span
       className={clsx(
         "block truncate flex-grow",

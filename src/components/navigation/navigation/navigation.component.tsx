@@ -2,8 +2,8 @@ import { Menu } from "@headlessui/react";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { FiGithub, FiLogOut } from "react-icons/fi";
+import { useMemo, useState } from "react";
+import { FiGithub, FiKey, FiLogOut } from "react-icons/fi";
 import { useIsClient } from "usehooks-ts";
 
 import { AccountStatus } from "src/components/account";
@@ -15,12 +15,15 @@ import { NavigationLinks } from "src/components/navigation/links";
 import { UserAvatar } from "src/components/user";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { useAccountStatus } from "src/hooks/useAccountStatus";
+import { useUserAccount } from "src/hooks/useUserAccount";
 import { formatUriAsCustomerIdentifer } from "src/lib/utils";
 
 import Logo from "public/images/skylark.png";
 
 export const Navigation = () => {
   const isClient = useIsClient();
+
+  const { permissions } = useUserAccount();
 
   const [open, setOpen] = useState(false);
 
@@ -36,6 +39,34 @@ export const Navigation = () => {
   const handleModalOpenState = (open: boolean) => {
     setAuthModalOpen(open);
   };
+
+  const dropdownOptions = useMemo(() => {
+    const options = [
+      {
+        id: "change-skylark",
+        text: "Change Skylark Account",
+        onClick: () => setAuthModalOpen(true),
+        Icon: <FiLogOut className="text-xl" />,
+      },
+      {
+        id: "skylark-ui-github",
+        text: "GitHub",
+        href: "https://github.com/skylark-platform/skylark-ui",
+        Icon: <FiGithub className="text-xl" />,
+      },
+    ];
+
+    if (permissions?.includes("KEY_MANAGEMENT")) {
+      options.splice(1, 0, {
+        id: "manage-api-key",
+        text: "Manage API Keys",
+        href: "/settings/api-keys",
+        Icon: <FiKey className="text-xl" />,
+      });
+    }
+
+    return options;
+  }, [permissions]);
 
   return (
     <>
@@ -65,23 +96,7 @@ export const Navigation = () => {
               Connect to Skylark
             </Button>
           )}
-          <DropdownMenu
-            options={[
-              {
-                id: "change-skylark",
-                text: "Change Skylark Account",
-                onClick: () => setAuthModalOpen(true),
-                Icon: <FiLogOut className="text-xl" />,
-              },
-              {
-                id: "skylark-ui-github",
-                text: "GitHub",
-                href: "https://github.com/skylark-platform/skylark-ui",
-                Icon: <FiGithub className="text-xl" />,
-              },
-            ]}
-            placement="bottom-end"
-          >
+          <DropdownMenu options={dropdownOptions} placement="bottom-end">
             <Menu.Button
               aria-label="User Settings Dropdown"
               className="flex w-full items-center justify-center space-x-3 text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:space-x-4 md:text-sm"

@@ -50,7 +50,7 @@ export default function CompareSchemas() {
       push({ query: { ...query, [param]: value } }, undefined, {
         shallow: true,
       }),
-    [query],
+    [push, query],
   );
 
   const setBaseSchemaVersion = (v: number) => updateURL("base", `${v}`);
