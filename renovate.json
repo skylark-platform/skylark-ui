@@ -11,5 +11,6 @@
     }
   ],
   "schedule": ["before 4am on Monday"],
-  "draftPR": true
+  "draftPR": true,
+  "ignoreDeps": ["msw-storybook-addon"]
 }
