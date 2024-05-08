@@ -69,11 +69,13 @@ export const SelectLabel = <T extends string | number>({
   labelVariant,
   labelPosition,
   htmlFor,
+  isRequired,
 }: {
   label: SelectProps<T>["label"];
   labelVariant: SelectProps<T>["labelVariant"];
   labelPosition: SelectProps<T>["labelPosition"];
   htmlFor?: string;
+  isRequired?: boolean;
 }) => (
   <Combobox.Label
     htmlFor={htmlFor}
@@ -85,6 +87,7 @@ export const SelectLabel = <T extends string | number>({
     )}
   >
     {labelVariant === "form" ? formatObjectField(label) : label}
+    {isRequired && <span className="pl-0.5 text-error">*</span>}
   </Combobox.Label>
 );
 

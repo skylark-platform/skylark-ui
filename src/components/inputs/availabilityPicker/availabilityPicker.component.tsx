@@ -94,7 +94,7 @@ const AvailabilitySelectors = ({
             >
               {dimensions?.map(({ title, slug, values }) => (
                 <div key={slug} className="w-72">
-                  <InputLabel text={title || slug} isRequired />
+                  <InputLabel formatText text={title || slug} isRequired />
                   <Select
                     variant="primary"
                     options={values.map((value) => ({
@@ -123,7 +123,7 @@ const AvailabilitySelectors = ({
           <div className="flex flex-col gap-4">
             <div>
               <InputLabel
-                text="Time Travel"
+                text="Time travel"
                 htmlFor="availability-picker-time-travel-input"
                 isRequired={!hasDimensions}
               />

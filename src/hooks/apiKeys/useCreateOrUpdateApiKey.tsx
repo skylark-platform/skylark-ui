@@ -74,14 +74,16 @@ export const useCreateOrUpdateApiKey = ({
     [mutate],
   );
   const updateApiKey = useCallback(
-    (apiKey: ApiKeyInput) =>
-      mutate({
+    (apiKey: ApiKeyInput) => {
+      console.log({ apiKey });
+      return mutate({
         type: "update",
         apiKey: {
           ...apiKey,
           expires: transformDate(apiKey.expires),
         },
-      }),
+      });
+    },
     [mutate],
   );
 

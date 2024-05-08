@@ -1,11 +1,8 @@
 import { ReactNode } from "react";
-import { CgSpinner } from "react-icons/cg";
-import { FiExternalLink, FiRefreshCw } from "react-icons/fi";
-import { GrMagic } from "react-icons/gr";
+import { FiExternalLink } from "react-icons/fi";
 
 import { Button } from "src/components/button";
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
-import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { formatObjectField } from "src/lib/utils";
 
 export interface InputLabelProps {
@@ -15,6 +12,7 @@ export interface InputLabelProps {
   href?: string;
   copyValue?: string;
   children?: ReactNode;
+  formatText?: boolean;
 }
 
 export const InputLabel = ({
@@ -24,10 +22,11 @@ export const InputLabel = ({
   href,
   copyValue,
   children,
+  formatText,
 }: InputLabelProps) => (
   <div className="mb-2 flex items-center font-bold">
     <label htmlFor={htmlFor}>
-      {formatObjectField(text)}
+      {formatText ? formatObjectField(text) : text}
       {isRequired && <span className="pl-0.5 text-error">*</span>}
     </label>
     {children}

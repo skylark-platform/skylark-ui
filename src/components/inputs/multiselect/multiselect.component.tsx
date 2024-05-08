@@ -31,6 +31,7 @@ export interface MultiSelectProps {
   className?: string;
   disabled?: boolean;
   rounded?: boolean;
+  required?: boolean;
   onChange?: (values: string[]) => void;
 }
 
@@ -95,6 +96,7 @@ const MultiSelectComponent = (
     disabled,
     selected,
     rounded,
+    required,
   } = props;
 
   const options = useMemo(
@@ -163,6 +165,7 @@ const MultiSelectComponent = (
             label={label}
             labelVariant={labelVariant}
             labelPosition={"default"}
+            isRequired={required}
           />
         )}
         <div

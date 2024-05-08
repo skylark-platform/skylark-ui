@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { DetailedHTMLProps, InputHTMLAttributes } from "react";
 
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
+import { InputLabel } from "src/components/inputs/label/label.component";
 
 interface InputProps
   extends Omit<
@@ -31,12 +32,7 @@ export const Input = ({
 }: InputProps) => (
   <div className="relative flex flex-col">
     {label && (
-      <label
-        className="mb-1 text-xs text-black font-bold md:text-sm"
-        htmlFor={label}
-      >
-        {label}
-      </label>
+      <InputLabel text={label} htmlFor={label} isRequired={props.required} />
     )}
     <input
       className={clsx(

@@ -1,31 +1,23 @@
 import clsx from "clsx";
-import { Fragment, useCallback, useMemo, useRef, useState } from "react";
+import dayjs from "dayjs";
+import { useMemo, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { useDebouncedCallback } from "use-debounce";
 
 import { Button } from "src/components/button";
+import { InputLabel } from "src/components/inputs";
 import { Input, TextInput } from "src/components/inputs/input";
 import { MultiSelect } from "src/components/inputs/multiselect/multiselect.component";
+import { Switch } from "src/components/inputs/switch/switch.component";
 import { Modal } from "src/components/modals/base/modal";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { Pill } from "src/components/pill";
 import { Toast } from "src/components/toast/toast.component";
 import { useCreateOrUpdateApiKey } from "src/hooks/apiKeys/useCreateOrUpdateApiKey";
-import { useDeleteApiKey } from "src/hooks/apiKeys/useDeleteApiKey";
-import { useBulkDeleteObjects } from "src/hooks/objects/delete/useBulkDeleteObjects";
-import {
-  useSkylarkSchemaEnum,
-  useSkylarkSchemaInterfaceType,
-} from "src/hooks/useSkylarkSchemaIntrospection";
-import {
-  ParsedSkylarkObject,
-  SkylarkGraphQLAPIKey,
-} from "src/interfaces/skylark";
+import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
+import { useSkylarkSchemaEnum } from "src/hooks/useSkylarkSchemaIntrospection";
+import { SkylarkGraphQLAPIKey } from "src/interfaces/skylark";
+import { formatReadableDate } from "src/lib/skylark/availability";
 import { parseDateTimeForHTMLForm } from "src/lib/skylark/parsers";
-import { hasProperty } from "src/lib/utils";
-
-const DELETION_LIMIT = 100;
-const VERIFICATION_TEXT = "permanently delete";
 
 interface ApiKeyModalProps {
   isOpen: boolean;
@@ -39,103 +31,9 @@ interface ApiKeyModalContentProps extends ApiKeyModalProps {
 
 type FormInputs = Omit<SkylarkGraphQLAPIKey, "api_key">;
 
-const generateDescription = (
-  objectsToBeDeleted: ParsedSkylarkObject[],
-  multipleLanguages: boolean,
-) => {
-  if (objectsToBeDeleted.length > 1) {
-    const objectTypeDesc = multipleLanguages
-      ? "objects and translations"
-      : "objects";
-    return `The following ${objectTypeDesc} will be permanently deleted:`;
-  }
-
-  if (objectsToBeDeleted.length === 1) {
-    const objectTypeDesc =
-      objectsToBeDeleted[0].meta.availableLanguages.length > 1
-        ? "translation"
-        : "object";
-    return `The following ${objectTypeDesc} will be permanently deleted:`;
-  }
-
-  return "No objects selected for deletion.";
-};
-
-const DeleteButtonWithConfirmation = ({
-  confirmationMessage,
-  isDeleting,
-  onConfirmed,
-  onCancel,
-}: {
-  confirmationMessage: string;
-  onConfirmed: () => void;
-  onCancel: () => void;
-  isDeleting: boolean;
-}) => {
-  const [showDeleteVerification, setShowDeleteVerficiation] = useState(false);
-  const [input, setInput] = useState("");
-
-  return (
-    <div className="mt-6">
-      {showDeleteVerification && (
-        <div>
-          <p className="mb-2">
-            {`To confirm deletion, enter "${VERIFICATION_TEXT}" in the text input
-            field.`}
-          </p>
-          <TextInput
-            value={input}
-            onChange={setInput}
-            placeholder={VERIFICATION_TEXT}
-          />
-        </div>
-      )}
-      <div className="mt-4 flex justify-end space-x-2">
-        {showDeleteVerification ? (
-          <>
-            <Button
-              variant="primary"
-              type="button"
-              danger
-              loading={isDeleting}
-              disabled={input !== VERIFICATION_TEXT}
-              onClick={() => {
-                onConfirmed();
-              }}
-            >
-              {confirmationMessage}
-            </Button>
-            <Button
-              variant="outline"
-              type="button"
-              onClick={() => setShowDeleteVerficiation(false)}
-            >
-              Go back
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button
-              variant="primary"
-              type="button"
-              danger
-              loading={false}
-              onClick={() => {
-                setInput("");
-                setShowDeleteVerficiation(true);
-              }}
-            >
-              {`Delete objects`}
-            </Button>
-            <Button variant="outline" type="button" onClick={onCancel}>
-              Cancel
-            </Button>
-          </>
-        )}
-      </div>
-    </div>
-  );
-};
+const FormError = ({ text }: { text: string }) => (
+  <span className="text-error -mt-5 -mb-2">{text}</span>
+);
 
 const ApiKeyModalContent = ({
   existingApiKey,
@@ -144,18 +42,22 @@ const ApiKeyModalContent = ({
 }: ApiKeyModalContentProps) => {
   const isEdit = !!existingApiKey;
 
+  const [creds] = useSkylarkCreds();
+
   const {
     handleSubmit,
-    register,
-    watch,
     control,
     formState: { errors },
   } = useForm<FormInputs>({
     defaultValues: existingApiKey,
   });
 
+  console.log({ errors });
+
+  const [apiKey, setApiKey] = useState("");
+
   const { createApiKey, updateApiKey, isPending } = useCreateOrUpdateApiKey({
-    onSuccess: ({ name }) => {
+    onSuccess: ({ name, api_key }) => {
       toast.success(
         <Toast
           title={`Key "${name}" ${isEdit ? "updated" : "added"}`}
@@ -166,9 +68,24 @@ const ApiKeyModalContent = ({
           ]}
         />,
       );
-      closeModal();
+
+      if (api_key) {
+        setApiKey(api_key);
+      } else {
+        closeModal();
+      }
     },
-    onError: console.log,
+    onError: (err) => {
+      toast.error(
+        <Toast
+          title={`Error ${isEdit ? "Updating" : "Creating"} key`}
+          message={[
+            "Please try again later.",
+            err.response.errors?.[0].message,
+          ]}
+        />,
+      );
+    },
   });
 
   const options = useMemo(
@@ -181,30 +98,83 @@ const ApiKeyModalContent = ({
       ? updateApiKey({ ...data, name: existingApiKey.name })
       : createApiKey(data);
 
-  return (
+  const in1Day = dayjs().add(1, "day");
+  const in1Week = dayjs().add(1, "week");
+  const in1Month = dayjs().add(1, "month");
+  const in3Months = dayjs().add(3, "month");
+  const in6Months = dayjs().add(6, "month");
+  const in1Year = dayjs().add(1, "year");
+
+  const relativeDateArr = [
+    { key: "1day", date: in1Day },
+    { key: "1week", date: in1Week },
+    { key: "1month", date: in1Month },
+    { key: "3months", date: in3Months },
+    { key: "6months", date: in6Months },
+    { key: "1year", date: in1Year },
+  ];
+
+  return apiKey ? (
+    <div>
+      <p className="mb-4">
+        Take a note of your API Key as you won&apos;t be able to view it again.
+      </p>
+      <TextInput
+        label="API Key"
+        value={apiKey}
+        disabled
+        onChange={() => ""}
+        withCopy
+      />
+      {creds && (
+        <TextInput
+          label="Autoconnect URL"
+          value={`${window.location.origin}/connect?uri=${creds.uri}&apikey=${apiKey}`}
+          disabled
+          onChange={() => ""}
+          withCopy
+        />
+      )}
+      <div className="flex justify-end mt-8">
+        <Button
+          variant="primary"
+          className="ml-2"
+          onClick={closeModal}
+          disabled={isPending}
+        >
+          Close
+        </Button>
+      </div>
+    </div>
+  ) : (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="my-8 min-h-64 flex flex-col h-full gap-6"
     >
-      {/* register your input into the hook by invoking the "register" function */}
       <Controller
         name={"name"}
         control={control}
         disabled={isEdit}
+        rules={{ required: true }}
         render={({ field }) => (
           <TextInput
+            required
             label="Name"
+            autoComplete="off"
             disabled={field.disabled}
             value={field.value || ""}
-            onChange={field.onChange}
+            onChange={(str) =>
+              field.onChange(str.replaceAll(" ", "_").replaceAll("-", "_"))
+            }
           />
         )}
       />
-      {errors.name && <span>This field is required</span>}
+      {errors.name && <FormError text="Name is a required field." />}
 
       <Controller
         name={"permissions"}
         control={control}
+        rules={{ required: true }}
         render={({ field }) => {
           const selected = field.value || [];
 
@@ -218,23 +188,66 @@ const ApiKeyModalContent = ({
                 console.log({ values });
                 field.onChange(values);
               }}
+              required
             />
           );
         }}
       />
+      {errors.permissions && <FormError text="Add at least one permission." />}
 
       <Controller
         name={"expires"}
         control={control}
         render={({ field }) => (
-          <Input
-            label="Expiry Date"
-            type="datetime-local"
-            value={parseDateTimeForHTMLForm("datetime-local", field.value)}
-            onChange={field.onChange}
-          />
+          <div>
+            <Input
+              label="Expiry Date"
+              type="datetime-local"
+              value={parseDateTimeForHTMLForm("datetime-local", field.value)}
+              onChange={field.onChange}
+            />
+            <div className="space-x-1 mt-1">
+              {relativeDateArr.map(({ key, date }) => {
+                const d = date.minute(0).millisecond(0);
+
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => field.onChange(date.toISOString())}
+                  >
+                    <Pill
+                      label={d.fromNow()}
+                      className={clsx(
+                        field.value === date.toISOString() &&
+                          "bg-brand-primary",
+                      )}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-xs mt-1 text-manatee-500">
+              {field.value
+                ? `Expires ${dayjs(field.value).fromNow()} on ${formatReadableDate(field.value)}.`
+                : "Never expires."}
+            </p>
+          </div>
         )}
       />
+
+      {isEdit && (
+        <Controller
+          name={"active"}
+          control={control}
+          render={({ field }) => (
+            <div>
+              <InputLabel text="Enabled" />
+              <Switch enabled={field.value} onChange={field.onChange} />
+            </div>
+          )}
+        />
+      )}
 
       <div className="flex justify-end flex-grow items-end mt-8">
         <Button variant="primary" type="submit" loading={isPending}>

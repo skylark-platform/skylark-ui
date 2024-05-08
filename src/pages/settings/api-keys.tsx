@@ -5,7 +5,7 @@ import { FiPlus } from "react-icons/fi";
 import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
-import { ApiKeyModal } from "src/components/modals/apiKeyModal/apiKeyModal.component";
+import { DeleteConfirmationModal, ApiKeyModal } from "src/components/modals";
 import { Toast } from "src/components/toast/toast.component";
 import { HREFS } from "src/constants/skylark";
 import { useDeleteApiKey } from "src/hooks/apiKeys/useDeleteApiKey";
@@ -13,8 +13,18 @@ import { useListApiKeys } from "src/hooks/apiKeys/useListApiKeys";
 import { SkylarkGraphQLAPIKey } from "src/interfaces/skylark";
 import { formatReadableDateTime } from "src/lib/skylark/availability";
 
-const DeleteApiKeyButton = ({ name }: { name: string }) => {
-  const { deleteApiKey, isPending } = useDeleteApiKey({
+export default function ApiKeysPage() {
+  const { data } = useListApiKeys();
+
+  const [modalState, setModalState] = useState<
+    | null
+    | { mode: "create" }
+    | { mode: "edit" | "delete"; apiKey: SkylarkGraphQLAPIKey }
+  >(null);
+
+  const sortedApiKeys = data && [...data].reverse();
+
+  const { deleteApiKey, isPending: isDeletingApiKey } = useDeleteApiKey({
     onSuccess: (name) => {
       toast.success(
         <Toast
@@ -22,30 +32,20 @@ const DeleteApiKeyButton = ({ name }: { name: string }) => {
           message={["An API Key has been deleted."]}
         />,
       );
+      setModalState(null);
     },
-    onError: console.log,
+    onError: (err) => {
+      toast.error(
+        <Toast
+          title={`Error deleting key`}
+          message={[
+            "Please try again later.",
+            err.response.errors?.[0].message,
+          ]}
+        />,
+      );
+    },
   });
-
-  return (
-    <Button
-      variant="outline"
-      danger
-      onClick={() => deleteApiKey(name)}
-      loading={isPending}
-    >
-      Delete
-    </Button>
-  );
-};
-
-export default function ApiKeysPage() {
-  const { data } = useListApiKeys();
-
-  const [modalState, setModalState] = useState<
-    null | { mode: "create" } | { mode: "edit"; apiKey: SkylarkGraphQLAPIKey }
-  >(null);
-
-  const sortedApiKeys = data && [...data].reverse();
 
   return (
     <div className="mx-auto mt-32 flex w-full max-w-5xl flex-col justify-center text-sm">
@@ -72,9 +72,14 @@ export default function ApiKeysPage() {
       {sortedApiKeys?.map(({ name, active, permissions, expires, created }) => (
         <div
           key={name}
-          className="my-2 bg-white z-30 border shadow border-manatee-300 rounded-lg items-center h-14 px-8 flex justify-between"
+          className={clsx(
+            "my-2 bg-white z-30 border rounded-lg items-center h-14 px-8 flex justify-between",
+            active
+              ? "shadow border-manatee-300"
+              : "opacity-40 border-manatee-200",
+          )}
         >
-          <div className="flex-grow">
+          <div className={clsx("flex-grow")}>
             <p className="font-medium mr-1">
               {name}{" "}
               <span className="text-manatee-600 text-xs">
@@ -105,7 +110,6 @@ export default function ApiKeysPage() {
           <div className="gap-2 flex">
             <Button
               variant="outline"
-              disabled={!active}
               onClick={() =>
                 setModalState({
                   mode: "edit",
@@ -122,16 +126,47 @@ export default function ApiKeysPage() {
             >
               Edit
             </Button>
-            <DeleteApiKeyButton name={name} />
+            <Button
+              variant="outline"
+              danger
+              onClick={() =>
+                setModalState({
+                  mode: "delete",
+                  apiKey: {
+                    active,
+                    api_key: null,
+                    name,
+                    permissions,
+                    expires,
+                    created,
+                  },
+                })
+              }
+            >
+              Delete
+            </Button>
           </div>
         </div>
       ))}
       <ApiKeyModal
-        isOpen={!!modalState}
+        isOpen={Boolean(
+          modalState &&
+            (modalState.mode === "create" || modalState.mode === "edit"),
+        )}
         closeModal={() => setModalState(null)}
         existingApiKey={
           (modalState?.mode === "edit" && modalState.apiKey) || undefined
         }
+      />
+      <DeleteConfirmationModal
+        title="Delete API Key"
+        description={`Are you sure you want to delete the API Key "${modalState?.mode === "delete" && modalState.apiKey.name}"?`}
+        isOpen={Boolean(modalState?.mode === "delete")}
+        closeModal={() => setModalState(null)}
+        onDeleteConfirmed={() =>
+          modalState?.mode === "delete" && deleteApiKey(modalState.apiKey.name)
+        }
+        isDeleting={isDeletingApiKey}
       />
     </div>
   );
