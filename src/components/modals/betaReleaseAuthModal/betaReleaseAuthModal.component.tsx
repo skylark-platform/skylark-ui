@@ -6,7 +6,7 @@ import { useDebouncedCallback } from "use-debounce";
 
 import { Button } from "src/components/button";
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
-import { TextInput } from "src/components/inputs/textInput";
+import { TextInput } from "src/components/inputs/input";
 import { Modal } from "src/components/modals/base/modal";
 import { QueryKeys } from "src/enums/graphql";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";

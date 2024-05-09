@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+  IntrospectionEnumType,
   IntrospectionInterfaceType,
   IntrospectionQuery,
   IntrospectionType,
@@ -157,6 +158,31 @@ export const useSkylarkSchemaInterfaceType = (
           (type) => type.kind === "INTERFACE" && type.name === typeName,
         ) as IntrospectionInterfaceType | undefined,
       [typeName],
+    ),
+    introspectionOpts,
+  );
+  return {
+    data,
+  };
+};
+
+export const useSkylarkSchemaEnum = (
+  enumName: string,
+  introspectionOpts?: IntrospectionQueryOptions,
+) => {
+  const { data } = useSkylarkSchemaIntrospection(
+    useCallback(
+      (d: IntrospectionQuery) => {
+        const e = d.__schema.types.find(
+          (type) => type.kind === "ENUM" && type.name === enumName,
+        ) as IntrospectionEnumType | undefined;
+
+        return {
+          enum: e,
+          values: e?.enumValues.map((enumValue) => enumValue.name),
+        };
+      },
+      [enumName],
     ),
     introspectionOpts,
   );

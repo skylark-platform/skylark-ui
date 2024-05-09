@@ -21,7 +21,7 @@ import {
   DropdownMenuButton,
   DropdownMenuSection,
 } from "src/components/dropdown/dropdown.component";
-import { TextInput } from "src/components/inputs/textInput";
+import { TextInput } from "src/components/inputs/input";
 import {
   MemoizedObjectSearch,
   ObjectSearchInitialColumnsState,

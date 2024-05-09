@@ -13,7 +13,7 @@ import {
   FiSave,
   FiTrash2,
 } from "react-icons/fi";
-import { GrGraphQl, GrLock, GrUnlock } from "react-icons/gr";
+import { GrGlobe, GrGraphQl, GrLock, GrUnlock } from "react-icons/gr";
 
 import { AvailabilityLabelPill } from "src/components/availability";
 import { Button, ButtonProps } from "src/components/button";
@@ -124,7 +124,7 @@ const AssetPlaybackPolicyPill = ({ policy }: { policy: string }) => {
       <span aria-label={`Privacy policy: ${policy}`}>
         <Pill
           className="bg-black"
-          label={policy === "PRIVATE" ? <GrLock /> : <GrUnlock />}
+          label={policy === "PRIVATE" ? <GrLock /> : <GrGlobe />}
         />
       </span>
     </Tooltip>

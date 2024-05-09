@@ -2,13 +2,14 @@ import clsx from "clsx";
 import { DetailedHTMLProps, InputHTMLAttributes } from "react";
 
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
+import { InputLabel } from "src/components/inputs/label/label.component";
 
-interface TextInputProps
+interface InputProps
   extends Omit<
     DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
     "onChange"
   > {
-  value: string;
+  value?: string;
   onChange: (str: string) => void;
   className?: string;
   label?: string;
@@ -18,24 +19,20 @@ interface TextInputProps
   onEnterKeyPress?: () => void;
 }
 
-export const TextInput = ({
+export const Input = ({
   value,
   onChange,
   className,
   label,
   withCopy,
   placeholder,
+  type,
   onEnterKeyPress,
   ...props
-}: TextInputProps) => (
-  <div className="relative flex flex-col">
+}: InputProps) => (
+  <div className="relative flex flex-col w-full">
     {label && (
-      <label
-        className="mb-1 text-xs text-manatee-500 md:text-sm"
-        htmlFor={label}
-      >
-        {label}
-      </label>
+      <InputLabel text={label} htmlFor={label} isRequired={props.required} />
     )}
     <input
       className={clsx(
@@ -43,7 +40,7 @@ export const TextInput = ({
         withCopy && "pr-6 md:pr-8",
         className,
       )}
-      type="text"
+      type={type}
       id={label}
       name={label}
       value={value}
@@ -67,4 +64,8 @@ export const TextInput = ({
       />
     )}
   </div>
+);
+
+export const TextInput = (props: InputProps) => (
+  <Input {...props} type="text" />
 );

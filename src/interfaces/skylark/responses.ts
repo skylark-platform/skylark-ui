@@ -1,5 +1,6 @@
 import {
   NextToken,
+  SkylarkGraphQLAPIKey,
   SkylarkGraphQLAvailability,
   SkylarkGraphQLAvailabilityAssignedTo,
   SkylarkGraphQLAvailabilityDimension,
@@ -227,4 +228,12 @@ export interface GQLSkylarkListSchemaVersionsResponse {
     next_token: string | null;
     count: number;
   };
+}
+
+export interface GQLSkylarkListAPIKeysResponse {
+  listApiKeys: SkylarkGraphQLAPIKey[];
+}
+
+export interface GQLSkylarkCreateAPIKeyResponse {
+  createApiKey: SkylarkGraphQLAPIKey;
 }

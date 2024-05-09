@@ -96,6 +96,7 @@ export const SkylarkObjectFieldInputLabel = ({
     <InputLabel
       text={field}
       htmlFor={createHtmlForId(idPrefix, field)}
+      formatText
       {...props}
     >
       {aiFieldGeneration && (

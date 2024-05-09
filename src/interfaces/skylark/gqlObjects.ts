@@ -140,3 +140,12 @@ export type SkylarkGraphQLObjectList = {
   next_token: NextToken;
   objects: SkylarkGraphQLObject[];
 };
+
+export interface SkylarkGraphQLAPIKey {
+  name: string;
+  active: boolean;
+  api_key: string | null;
+  expires: string | null;
+  permissions: string[];
+  created: string;
+}

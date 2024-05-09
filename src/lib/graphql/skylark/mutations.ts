@@ -41,3 +41,33 @@ export const BATCH_DELETE = gql`
     }
   }
 `;
+
+export const CREATE_API_KEY = gql`
+  mutation ${wrapQueryName("CREATE_API_KEY")}($apiKey: APIKeyInput!) {
+    createApiKey(api_key: $apiKey) {
+      name
+      active
+      api_key
+      expires
+      permissions
+    }
+  }
+`;
+
+export const UPDATE_API_KEY = gql`
+  mutation ${wrapQueryName("UPDATE_API_KEY")}($name: String!, $apiKey: APIKeyInputUpdate!) {
+    updateApiKey(name: $name, api_key: $apiKey) {
+      name
+      active
+      api_key
+      expires
+      permissions
+    }
+  }
+`;
+
+export const DELETE_API_KEY = gql`
+  mutation ${wrapQueryName("DELETE_API_KEY")}($name: String!) {
+    deleteApiKey(name: $name)
+  }
+`;
