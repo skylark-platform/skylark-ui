@@ -1,4 +1,5 @@
 import { Menu } from "@headlessui/react";
+import { sentenceCase } from "change-case";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,7 +24,7 @@ import Logo from "public/images/skylark.png";
 export const Navigation = () => {
   const isClient = useIsClient();
 
-  const { permissions } = useUserAccount();
+  const { permissions, role } = useUserAccount();
 
   const [open, setOpen] = useState(false);
 
@@ -99,12 +100,15 @@ export const Navigation = () => {
           <DropdownMenu options={dropdownOptions} placement="bottom-end">
             <Menu.Button
               aria-label="User Settings Dropdown"
-              className="flex w-full items-center justify-center space-x-3 text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:space-x-4 md:text-sm"
+              className="flex w-full items-center justify-center text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:text-sm"
             >
               <span className="hidden font-semibold md:inline capitalize">
                 {customerIdentifier}
               </span>
-              <UserAvatar name={customerIdentifier || "S"} src="" />
+              {role && (
+                <span className="hidden font-normal text-manatee-500 md:inline ml-1 pr-3 md:pr-4">{`(${role.toLowerCase()})`}</span>
+              )}
+              <UserAvatar name={role || customerIdentifier || "S"} src="" />
             </Menu.Button>
           </DropdownMenu>
         </div>

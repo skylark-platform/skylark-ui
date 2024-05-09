@@ -125,13 +125,22 @@ const ApiKeyModalContent = ({
         withCopy
       />
       {creds && (
-        <TextInput
-          label="Autoconnect URL"
-          value={`${window.location.origin}/connect?uri=${creds.uri}&apikey=${apiKey}`}
-          disabled
-          onChange={() => ""}
-          withCopy
-        />
+        <div className="mt-4 gap-4 flex flex-col">
+          <TextInput
+            label="UI Autoconnect URL"
+            value={`${window.location.origin}/beta/connect?token=${btoa(`${creds.uri}__${creds.token}`)}`}
+            disabled
+            onChange={() => ""}
+            withCopy
+          />
+          <TextInput
+            label="UI Autoconnect URL (Legacy)"
+            value={`${window.location.origin}/beta/connect?uri=${creds.uri}&apikey=${apiKey}`}
+            disabled
+            onChange={() => ""}
+            withCopy
+          />
+        </div>
       )}
       <div className="flex justify-end mt-8">
         <Button

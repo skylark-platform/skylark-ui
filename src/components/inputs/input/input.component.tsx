@@ -30,7 +30,7 @@ export const Input = ({
   onEnterKeyPress,
   ...props
 }: InputProps) => (
-  <div className="relative flex flex-col">
+  <div className="relative flex flex-col w-full">
     {label && (
       <InputLabel text={label} htmlFor={label} isRequired={props.required} />
     )}
