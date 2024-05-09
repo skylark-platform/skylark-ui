@@ -52,8 +52,6 @@ const ApiKeyModalContent = ({
     defaultValues: existingApiKey,
   });
 
-  console.log({ errors });
-
   const [apiKey, setApiKey] = useState("");
 
   const { createApiKey, updateApiKey, isPending } = useCreateOrUpdateApiKey({
@@ -184,10 +182,7 @@ const ApiKeyModalContent = ({
               labelVariant="form"
               options={options || []}
               selected={selected}
-              onChange={(values) => {
-                console.log({ values });
-                field.onChange(values);
-              }}
+              onChange={field.onChange}
               required
             />
           );

@@ -75,7 +75,6 @@ export const useCreateOrUpdateApiKey = ({
   );
   const updateApiKey = useCallback(
     (apiKey: ApiKeyInput) => {
-      console.log({ apiKey });
       return mutate({
         type: "update",
         apiKey: {
