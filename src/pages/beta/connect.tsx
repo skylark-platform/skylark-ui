@@ -4,6 +4,24 @@ import { useEffect } from "react";
 
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 
+const decodeToken = (token: string | string[] | undefined) => {
+  if (!token || Array.isArray(token)) {
+    return;
+  }
+
+  const decodedString = atob(token);
+  const splitStr = decodedString.split("__");
+
+  if (splitStr.length !== 2) {
+    return;
+  }
+
+  return {
+    uri: splitStr[0],
+    apiKey: splitStr[1],
+  };
+};
+
 export default function BetaConnect() {
   const { query, push: navigateTo } = useRouter();
   const queryClient = useQueryClient();
@@ -11,10 +29,15 @@ export default function BetaConnect() {
   const [, saveCreds] = useSkylarkCreds();
 
   useEffect(() => {
-    if (query.uri && query.apikey) {
+    const uriAndApiKeyFromToken = decodeToken(query.token);
+
+    const uri = uriAndApiKeyFromToken?.uri || query.uri;
+    const apiKey = uriAndApiKeyFromToken?.apiKey || query.apikey;
+
+    if (uri && apiKey) {
       saveCreds({
-        uri: query.uri as string,
-        token: query.apikey as string,
+        uri: uri as string,
+        token: apiKey as string,
       });
 
       queryClient.clear();
