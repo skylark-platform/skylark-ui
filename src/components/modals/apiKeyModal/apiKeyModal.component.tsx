@@ -128,14 +128,7 @@ const ApiKeyModalContent = ({
         <div className="mt-4 gap-4 flex flex-col">
           <TextInput
             label="UI Autoconnect URL"
-            value={`${window.location.origin}/beta/connect?token=${btoa(`${creds.uri}__${creds.token}`)}`}
-            disabled
-            onChange={() => ""}
-            withCopy
-          />
-          <TextInput
-            label="UI Autoconnect URL (Legacy)"
-            value={`${window.location.origin}/beta/connect?uri=${creds.uri}&apikey=${apiKey}`}
+            value={`${window.location.origin}/connect?token=${btoa(`${creds.uri}__${apiKey}`)}`}
             disabled
             onChange={() => ""}
             withCopy

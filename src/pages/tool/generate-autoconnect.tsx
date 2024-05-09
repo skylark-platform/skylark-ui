@@ -15,7 +15,7 @@ export default function GenerateAutoconnect() {
   const autoconnectUrl =
     typeof window !== "undefined" &&
     token &&
-    `${window.location.origin}/beta/connect?token=${token}${redirectTo ? `&redirect=${redirectTo}` : ""}`;
+    `${window.location.origin}/connect?token=${token}${redirectTo ? `&redirect=${redirectTo}` : ""}`;
 
   return (
     <div className="mx-auto pt-32 flex w-full max-w-3xl flex-col justify-center items-center text-sm">

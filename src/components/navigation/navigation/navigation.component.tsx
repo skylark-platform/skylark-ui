@@ -102,12 +102,17 @@ export const Navigation = () => {
               aria-label="User Settings Dropdown"
               className="flex w-full items-center justify-center text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:text-sm"
             >
-              <span className="hidden font-semibold md:inline capitalize">
+              {role && (
+                <span className="hidden font-normal text-manatee-500 md:inline mr-1 capitalize">{`${role.replaceAll("_", " ").toLocaleLowerCase()} -`}</span>
+              )}
+              <span
+                className={clsx(
+                  "hidden font-semibold md:inline capitalize",
+                  "pr-3 md:pr-4",
+                )}
+              >
                 {customerIdentifier}
               </span>
-              {role && (
-                <span className="hidden font-normal text-manatee-500 md:inline ml-1 pr-3 md:pr-4">{`(${role.toLowerCase()})`}</span>
-              )}
               <UserAvatar name={role || customerIdentifier || "S"} src="" />
             </Menu.Button>
           </DropdownMenu>
