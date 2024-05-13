@@ -30,7 +30,7 @@
     "@floating-ui/react": "0.26.13",
     "@fontsource/inter": "5.0.18",
     "@fontsource/work-sans": "5.0.18",
-    "@graphiql/plugin-explorer": "2.0.0",
+    "@graphiql/plugin-explorer": "3.0.1",
     "@headlessui/react": "1.7.19",
     "@headlessui/tailwindcss": "0.2.0",
     "@mux/mux-uploader-react": "1.0.0-beta.17",
