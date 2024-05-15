@@ -6,11 +6,13 @@ import { Button } from "src/components/button";
 import {
   DropdownMenu,
   DropdownMenuButton,
+  DropdownMenuOption,
 } from "src/components/dropdown/dropdown.component";
 import { BatchDeleteObjectsModal } from "src/components/modals";
 import { Toast } from "src/components/toast/toast.component";
 import { CheckedObjectState } from "src/hooks/state";
 import { usePurgeObjectsCache } from "src/hooks/usePurgeCache";
+import { useUserAccount } from "src/hooks/useUserAccount";
 
 interface BulkObjectOptionsProps {
   checkedObjectsState: CheckedObjectState[];
@@ -50,26 +52,34 @@ export const BulkObjectOptions = ({
     },
   });
 
+  const { permissions } = useUserAccount();
+
+  const dropdownOptions = useMemo(() => {
+    const options: DropdownMenuOption[] = [
+      {
+        id: "delete-selected-objects",
+        text: "Delete Selected Objects",
+        Icon: <FiTrash2 className="stroke-error text-xl" />,
+        danger: true,
+        onClick: () => setDeleteModalOpen(true),
+      },
+    ];
+
+    if (permissions?.includes("SELF_CONFIG")) {
+      options.splice(0, 0, {
+        id: "purge-cache-objects",
+        text: `Purge Selected Cache`,
+        Icon: <FiShieldOff className="text-lg" />,
+        onClick: () => purgeCacheForObjects(selectedObjects),
+      });
+    }
+
+    return options;
+  }, [permissions, purgeCacheForObjects, selectedObjects]);
+
   return (
     <div className="max-sm:hidden">
-      <DropdownMenu
-        options={[
-          {
-            id: "purge-cache-objects",
-            text: `Purge Selected Cache`,
-            Icon: <FiShieldOff className="text-lg" />,
-            onClick: () => purgeCacheForObjects(selectedObjects),
-          },
-          {
-            id: "delete-selected-objects",
-            text: "Delete Selected Objects",
-            Icon: <FiTrash2 className="stroke-error text-xl" />,
-            danger: true,
-            onClick: () => setDeleteModalOpen(true),
-          },
-        ]}
-        placement="bottom-end"
-      >
+      <DropdownMenu options={dropdownOptions} placement="bottom-end">
         <DropdownMenuButton
           as={Button}
           variant="neutral"

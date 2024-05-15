@@ -2,10 +2,13 @@ import clsx from "clsx";
 import { useState } from "react";
 import { CgSpinner } from "react-icons/cg";
 import { FiCheck } from "react-icons/fi";
+import { useReadLocalStorage } from "usehooks-ts";
 
 import { Button } from "src/components/button";
 import { Tooltip } from "src/components/tooltip/tooltip.component";
+import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { useAccountStatus } from "src/hooks/useAccountStatus";
+import { useUserAccount } from "src/hooks/useUserAccount";
 import {
   BackgroundTaskType,
   GQLSkylarkBackgroundTask,
@@ -152,10 +155,21 @@ const BackgroundStatusText = ({
 };
 
 export const AccountStatus = () => {
+  const disableBackgroundTaskPolling = useReadLocalStorage<boolean>(
+    LOCAL_STORAGE.disableBackgroundTaskPolling,
+    { initializeWithValue: false },
+  );
+
+  const poll = disableBackgroundTaskPolling === true ? false : true;
+
   const { backgroundTasks, activationStatus, userNeedsSelfConfigPermissions } =
-    useAccountStatus(true);
+    useAccountStatus(poll);
 
   const [showCompletedText, setShowCompletedText] = useState(false);
+
+  if (!poll) {
+    return <StatusText danger>{`Background task polling disabled`}</StatusText>;
+  }
 
   if (activationStatus?.updateInProgress && !userNeedsSelfConfigPermissions) {
     if (!showCompletedText) setShowCompletedText(true);
