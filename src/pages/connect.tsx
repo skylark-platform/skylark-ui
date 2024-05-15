@@ -34,8 +34,6 @@ export default function BetaConnect() {
     const uri = uriAndApiKeyFromToken?.uri || query.uri;
     const apiKey = uriAndApiKeyFromToken?.apiKey || query.apikey;
 
-    console.log({ uri, apiKey, uriAndApiKeyFromToken });
-
     if (uri && apiKey) {
       saveCreds({
         uri: uri as string,

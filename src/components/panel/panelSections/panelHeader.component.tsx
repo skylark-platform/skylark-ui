@@ -11,9 +11,11 @@ import {
   FiMoreVertical,
   FiRefreshCw,
   FiSave,
+  FiShieldOff,
   FiTrash2,
 } from "react-icons/fi";
 import { GrGlobe, GrGraphQl, GrLock, GrUnlock } from "react-icons/gr";
+import { toast } from "react-toastify";
 
 import { AvailabilityLabelPill } from "src/components/availability";
 import { Button, ButtonProps } from "src/components/button";
@@ -33,8 +35,10 @@ import { refetchPanelQueries } from "src/components/panel/panel.lib";
 import { ObjectTypePill, Pill } from "src/components/pill";
 import { Skeleton } from "src/components/skeleton";
 import { Tag } from "src/components/tag";
+import { Toast } from "src/components/toast/toast.component";
 import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { PanelTab } from "src/hooks/state";
+import { usePurgeCacheObjectType } from "src/hooks/usePurgeCache";
 import {
   AvailabilityStatus,
   BuiltInSkylarkObjectType,
@@ -216,6 +220,28 @@ export const PanelHeader = ({
   const actualLanguage = object?.meta.language || language;
   const existingLanguages = object?.meta.availableLanguages || [language];
 
+  const { purgeCache } = usePurgeCacheObjectType({
+    onSuccess: () => {
+      toast.success(
+        <Toast
+          title={"Cache purged"}
+          message={`Cache purged for ${objectTypeDisplayName} "${title}"`}
+        />,
+      );
+    },
+    onError: () => {
+      toast.error(
+        <Toast
+          title={`Error purging cache`}
+          message={[
+            `Error purging cache for ${objectTypeDisplayName} "${title}"`,
+            "Please try again later.",
+          ]}
+        />,
+      );
+    },
+  });
+
   const objectMenuOptions = useMemo(
     () => [
       {
@@ -237,6 +263,12 @@ export const PanelHeader = ({
           />
         ),
         onClick: () => setGraphQLModalOpen(true),
+      },
+      {
+        id: "purge-cache",
+        text: `Purge cache`,
+        Icon: <FiShieldOff className="text-lg" />,
+        onClick: () => purgeCache({ objectType, uids: [objectUid] }),
       },
       {
         id: "delete-object",
