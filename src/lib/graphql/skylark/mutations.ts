@@ -71,3 +71,21 @@ export const DELETE_API_KEY = gql`
     deleteApiKey(name: $name)
   }
 `;
+
+export const PURGE_CACHE_ALL = gql`
+  mutation ${wrapQueryName("PURGE_CACHE_ALL")} {
+    purgeCache(all: true) {
+      type
+      uids
+    }
+  }
+`;
+
+export const PURGE_CACHE_OBJECT_TYPE = gql`
+  mutation ${wrapQueryName("PURGE_CACHE_OBJECT_TYPE")}($objectType: ObjectTypes!, $uids: [String]) {
+    purgeCache(all: false, type: { name: $objectType, uids: $uids }) {
+      type
+      uids
+    }
+  }
+`;
