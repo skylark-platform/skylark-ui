@@ -7,13 +7,15 @@ export const LOCAL_STORAGE = {
     active: "skylark:auth:active",
   },
   usedLanguages: "skylark:usedLanguages",
+  disableBackgroundTaskPolling: `skylark:background_tasks:polling_disabled`,
   accountPrefixed: (accountId: string) => {
-    const prefix = `skylark:${accountId}:contentLibrary`;
+    const prefix = `skylark:${accountId}`;
+    const contentLibraryPrefix = `${prefix}:contentLibrary`;
     return {
       contentLibrary: {
-        tabState: `${prefix}:tabState`,
-        activeTabIndex: `${prefix}:activeTabIndex`,
-        tabsScrollPosition: `${prefix}:tabsScrollPosition`,
+        tabState: `${contentLibraryPrefix}:tabState`,
+        activeTabIndex: `${contentLibraryPrefix}:activeTabIndex`,
+        tabsScrollPosition: `${contentLibraryPrefix}:tabsScrollPosition`,
       },
     };
   },
