@@ -431,8 +431,6 @@ const TabbedObjectSearch = ({
     saveScrollPosition,
   } = useObjectSearchTabs(accountId, initialTabs);
 
-  useInitialPanelStateFromQuery(setPanelObject);
-
   return (
     <>
       {tabs && (
@@ -525,6 +523,11 @@ export const TabbedObjectSearchWithAccount = ({
   >(skipLogoAnimation ? "completed" : "waiting");
 
   const isClient = useIsClient();
+
+  useInitialPanelStateFromQuery(
+    animationState === "completed",
+    props.setPanelObject,
+  );
 
   return (
     <>

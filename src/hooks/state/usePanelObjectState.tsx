@@ -330,6 +330,7 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
 };
 
 export const useInitialPanelStateFromQuery = (
+  isReadyToOpenPanel: boolean,
   setPanelObject?: (obj: SkylarkObjectIdentifier, tab?: PanelTab) => void,
 ) => {
   const { query } = useRouter();
@@ -340,6 +341,7 @@ export const useInitialPanelStateFromQuery = (
     const currentPanelQuery = readPanelUrlQuery(query);
 
     if (
+      isReadyToOpenPanel &&
       setPanelObject &&
       !hasInitialQueryBeenUpdated &&
       currentPanelQuery &&
@@ -357,5 +359,5 @@ export const useInitialPanelStateFromQuery = (
         currentPanelQuery.panelTab as PanelTab | undefined,
       );
     }
-  }, [hasInitialQueryBeenUpdated, query, setPanelObject]);
+  }, [hasInitialQueryBeenUpdated, isReadyToOpenPanel, query, setPanelObject]);
 };
