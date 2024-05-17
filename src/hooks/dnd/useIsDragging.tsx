@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 
 import {
   Active,
+  DragMoveEvent,
   DragStartEvent,
   DragType,
   useDndMonitor,
@@ -14,6 +15,12 @@ export const useIsDragging = (dragType: DragType | null) => {
     setActiveDragged(event.active);
   };
 
+  const onDragMove = (event: DragMoveEvent) => {
+    if (!activeDragged) {
+      setActiveDragged(event.active);
+    }
+  };
+
   const onDragEnd = () => {
     setActiveDragged(null);
   };
@@ -21,6 +28,7 @@ export const useIsDragging = (dragType: DragType | null) => {
   useDndMonitor({
     onDragStart,
     onDragEnd,
+    onDragMove,
     onDragCancel: onDragEnd,
   });
 
