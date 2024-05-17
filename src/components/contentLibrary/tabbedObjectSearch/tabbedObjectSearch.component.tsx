@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { m } from "framer-motion";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useRouter } from "next/router";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   FiCheckSquare,
   FiCrosshair,
@@ -36,6 +37,7 @@ import {
   ObjectSearchTab,
   useObjectSearchTabs,
 } from "src/hooks/localStorage/useObjectSearchTabs";
+import { useInitialPanelStateFromQuery } from "src/hooks/state";
 import { SearchFilters } from "src/hooks/useSearch";
 import { SearchType } from "src/hooks/useSearchWithLookupType";
 import {
@@ -413,6 +415,7 @@ const TabbedObjectSearch = ({
   accountId,
   initial,
   animate,
+  setPanelObject,
   ...props
 }: TabbedObjectSearchProps) => {
   const {
@@ -427,6 +430,8 @@ const TabbedObjectSearch = ({
     changeActiveTabIndex,
     saveScrollPosition,
   } = useObjectSearchTabs(accountId, initialTabs);
+
+  useInitialPanelStateFromQuery(setPanelObject);
 
   return (
     <>
@@ -469,7 +474,7 @@ const TabbedObjectSearch = ({
               <CreateButtons
                 className={clsx("mb-1 justify-end pr-1 md:pr-0")}
                 onObjectCreated={(obj) => {
-                  props.setPanelObject?.(obj);
+                  setPanelObject?.(obj);
                 }}
                 preselectedObjectType={
                   activeTab?.filters.objectTypes?.length === 1
@@ -494,6 +499,7 @@ const TabbedObjectSearch = ({
             <MemoizedObjectSearch
               key={`${accountId}-${activeTab?.id || -1}`}
               {...props}
+              setPanelObject={setPanelObject}
               initialSearchType={activeTab?.searchType || SearchType.Search}
               initialFilters={activeTab?.filters}
               initialColumnState={activeTab?.columnsState}

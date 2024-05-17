@@ -1,9 +1,12 @@
-import { useState, useCallback, useMemo } from "react";
+import { useRouter } from "next/router";
+import { ParsedUrlQuery } from "querystring";
+import { useState, useCallback, useMemo, useEffect } from "react";
 
 import {
   ParsedSkylarkObjectAvailabilityObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
+import { isObjectsDeepEqual } from "src/lib/utils";
 
 export enum PanelTab {
   Metadata = "Metadata",
@@ -40,6 +43,13 @@ export interface PanelObject extends SkylarkObjectIdentifier {
   tabState: PanelTabState;
 }
 
+export interface PanelUrlQuery {
+  panelUid?: string;
+  panelObjectType?: string;
+  panelLanguage?: string;
+  panelTab?: string;
+}
+
 export const defaultPanelTabState: PanelTabState = {
   [PanelTab.Relationships]: {
     active: null,
@@ -50,6 +60,57 @@ export const defaultPanelTabState: PanelTabState = {
   [PanelTab.AvailabilityAssignedTo]: {
     filters: null,
   },
+};
+
+const createPanelUrlQuery = (object: Partial<PanelObject>) => {
+  const obj: PanelUrlQuery = {};
+  if (object.uid) {
+    obj.panelUid = object.uid;
+  }
+
+  if (object.objectType) {
+    obj.panelObjectType = object.objectType;
+  }
+
+  if (object.language) {
+    obj.panelLanguage = object.language;
+  }
+
+  if (object.tab) {
+    obj.panelTab = object.tab;
+  }
+
+  if (Object.keys(object).length === 0) {
+    return null;
+  }
+
+  return obj;
+};
+
+export const readPanelUrlQuery = (query: Partial<PanelUrlQuery>) => {
+  const currentPanelQuery: PanelUrlQuery = {
+    panelUid: query?.panelUid,
+    panelObjectType: query?.panelObjectType,
+    panelLanguage: query?.panelLanguage,
+    panelTab: query?.panelTab,
+  };
+
+  return currentPanelQuery;
+};
+
+const urlQueryWithoutPanelQuery = (query: ParsedUrlQuery) => {
+  const cleanedQuery = { ...query };
+  const keys: (keyof PanelUrlQuery)[] = [
+    "panelUid",
+    "panelObjectType",
+    "panelLanguage",
+    "panelTab",
+  ];
+
+  // Delete existing keys
+  keys.forEach((key) => delete cleanedQuery[key]);
+
+  return cleanedQuery;
 };
 
 export const mergedPanelTabStates = (
@@ -73,6 +134,45 @@ export const mergedPanelTabStates = (
 };
 
 export const usePanelObjectState = (initialPanelState?: PanelObject) => {
+  const { replace, query } = useRouter();
+
+  const updatePanelUrlQuery = useCallback(
+    (newPanelState: PanelObject | null) => {
+      if (!newPanelState) {
+        return;
+      }
+
+      const currentPanelQuery = readPanelUrlQuery(query);
+
+      const cleanedQuery = urlQueryWithoutPanelQuery(query);
+
+      const newPanelQuery = createPanelUrlQuery({
+        ...newPanelState,
+      });
+
+      if (
+        newPanelQuery &&
+        (!currentPanelQuery ||
+          !isObjectsDeepEqual(
+            currentPanelQuery as Record<string, string>,
+            newPanelQuery as Record<string, string>,
+          ))
+      ) {
+        replace(
+          {
+            query: {
+              ...cleanedQuery,
+              ...newPanelQuery,
+            },
+          },
+          undefined,
+          { shallow: true },
+        );
+      }
+    },
+    [replace, query],
+  );
+
   const [panelState, setPanelState] = useState<{
     activePanelState: PanelObject | null;
     previousPanelStates: PanelObject[];
@@ -179,7 +279,11 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
       previousPanelStates: [],
       forwardPanelStates: [],
     });
-  }, []);
+
+    const cleanedQuery = urlQueryWithoutPanelQuery(query);
+
+    replace({ ...cleanedQuery });
+  }, [query, replace]);
 
   const activePanelObject: SkylarkObjectIdentifier | null = useMemo(
     () =>
@@ -199,6 +303,12 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
     ],
   );
 
+  useEffect(() => {
+    updatePanelUrlQuery(panelState.activePanelState);
+  }, [panelState.activePanelState, updatePanelUrlQuery]);
+
+  useEffect(() => console.log("query changed"), [query]);
+
   return {
     activePanelObject,
     activePanelTab: panelState.activePanelState?.tab || PanelTab.Metadata,
@@ -217,4 +327,35 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
     resetPanelObjectState,
     updateActivePanelTabState,
   };
+};
+
+export const useInitialPanelStateFromQuery = (
+  setPanelObject?: (obj: SkylarkObjectIdentifier, tab?: PanelTab) => void,
+) => {
+  const { query } = useRouter();
+
+  const [hasInitialQueryBeenUpdated, setInitialQueryUpdated] = useState(false);
+
+  useEffect(() => {
+    const currentPanelQuery = readPanelUrlQuery(query);
+
+    if (
+      setPanelObject &&
+      !hasInitialQueryBeenUpdated &&
+      currentPanelQuery &&
+      currentPanelQuery.panelUid &&
+      currentPanelQuery.panelObjectType &&
+      currentPanelQuery.panelLanguage
+    ) {
+      setInitialQueryUpdated(true);
+      setPanelObject(
+        {
+          uid: currentPanelQuery.panelUid,
+          objectType: currentPanelQuery.panelObjectType,
+          language: currentPanelQuery.panelLanguage,
+        },
+        currentPanelQuery.panelTab as PanelTab | undefined,
+      );
+    }
+  }, [hasInitialQueryBeenUpdated, query, setPanelObject]);
 };

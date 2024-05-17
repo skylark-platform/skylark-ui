@@ -1,4 +1,6 @@
 import { graphql } from "msw";
+import { RouterContext } from "next/dist/shared/lib/router-context.shared-runtime";
+import { NextRouter } from "next/router";
 
 import AccountFixture from "src/__tests__/fixtures/skylark/queries/getUserAndAccount.json";
 import { server } from "src/__tests__/mocks/server";
@@ -38,8 +40,21 @@ const mockLocalStorage = (initialTabs?: ObjectSearchTab[]) => {
   });
 };
 
+const renderWithNextRouter = async (skipLogoAnimation?: boolean) => {
+  const router = { push: jest.fn(), replace: jest.fn(), query: {} };
+
+  render(
+    <RouterContext.Provider value={router as unknown as NextRouter}>
+      <TabbedObjectSearchWithAccount
+        skipLogoAnimation={skipLogoAnimation}
+        id="test"
+      />
+    </RouterContext.Provider>,
+  );
+};
+
 const renderWithoutLogoAnimation = async () => {
-  render(<TabbedObjectSearchWithAccount skipLogoAnimation id="test" />);
+  renderWithNextRouter(true);
 };
 
 afterEach(() => {
@@ -77,7 +92,7 @@ test("Loads the default tabs when localStorage is empty (verify logo animation d
 test("Changing tabs", async () => {
   mockLocalStorage();
 
-  render(<TabbedObjectSearchWithAccount id="test" />);
+  renderWithNextRouter();
 
   await waitForElementToBeRemoved(
     () => screen.queryByTestId("animated-skylark-logo"),
@@ -459,7 +474,7 @@ describe("create button", () => {
 
     const csvImportButton = await screen.getByText("Import (CSV)");
     expect(csvImportButton).toBeInTheDocument();
-    expect(csvImportButton.closest("a")).toHaveAttribute("href", "import/csv");
+    expect(csvImportButton.closest("a")).toHaveAttribute("href", "/import/csv");
   });
 
   test("opens the create object modal", async () => {
