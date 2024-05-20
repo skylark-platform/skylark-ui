@@ -3246,7 +3246,7 @@
   dependencies:
     tslib "^2.4.1"
 
-"@segment/analytics-next@^1.69.0":
+"@segment/analytics-next@1.69.0":
   version "1.69.0"
   resolved "https://registry.yarnpkg.com/@segment/analytics-next/-/analytics-next-1.69.0.tgz#7d66805d2cb9b09888846e6ec4cf22d3c90fd175"
   integrity sha512-Uk7l0umdRMtUJSW2WDSG9lUia4OaiFbCIQSFoIHge6sNrCENEDCr/cN8aW0pyRXZ62hFbezuXwTdeTgvFMrTBg==
@@ -12789,7 +12789,8 @@ prelude-ls@^1.2.1:
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
   integrity sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
 
-"prettier-fallback@npm:prettier@^3", prettier@3.2.5, prettier@^3.1.1:
+"prettier-fallback@npm:prettier@^3", prettier@^3.1.1, prettier@^3.2.5:
+  name prettier-fallback
   version "3.2.5"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.2.5.tgz#e52bc3090586e824964a8813b09aba6233b28368"
   integrity sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==
@@ -13198,11 +13199,6 @@ react-toastify@10.0.5:
   integrity sha512-mNKt2jBXJg4O7pSdbNUfDdTsK9FIdikfsIE/yUCxbAEXl4HMyJaivrVFcn3Elvt5xvCQYhUZm+hqTIu1UXM3Pw==
   dependencies:
     clsx "^2.1.0"
-
-react-use-intercom@5.4.0:
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/react-use-intercom/-/react-use-intercom-5.4.0.tgz#9e2287470a3bba83fe4d9ec9991314bdc999fcb6"
-  integrity sha512-fMOfylJoFQbXdVNbsXbNZrK+Qwc45AqjZFzkq8gclxiK72FcZl7IUKbm3g+EVKd6QoNX2AHpDD7sqAEwMvzFaQ==
 
 react-virtual@2.10.4:
   version "2.10.4"

@@ -13,7 +13,6 @@ import { useRouter } from "next/router";
 import Script from "next/script";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { IntercomProvider } from "react-use-intercom";
 
 import { Navigation } from "src/components/navigation";
 import { ToastContainer } from "src/components/toast/toast.component";
@@ -27,8 +26,6 @@ const loadFramerMotionFeatures = () =>
   import("../lib/utils/lazyLoadFramerMotionFeatures").then(
     (res) => res.default,
   );
-
-const intercomAppId = process.env.NEXT_PUBLIC_INTERCOM_APP_ID;
 
 export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(createSkylarkReactQueryClient);
@@ -47,11 +44,6 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <PlausibleProvider domain={APP_URL} enabled={!!APP_URL}>
-      {/* <IntercomProvider
-        appId={intercomAppId || ""}
-        autoBoot
-        shouldInitialize={!!intercomAppId}
-      > */}
       <QueryClientProvider client={queryClient}>
         <ToastContainer />
         <Head>
@@ -91,7 +83,6 @@ export default function App({ Component, pageProps }: AppProps) {
           src="https://status.skylarkplatform.com/embed/script.js"
         />
       </QueryClientProvider>
-      {/* </IntercomProvider> */}
     </PlausibleProvider>
   );
 }
