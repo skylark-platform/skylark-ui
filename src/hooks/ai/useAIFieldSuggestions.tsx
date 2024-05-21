@@ -1,10 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 
+import { SEGMENT_KEYS } from "src/constants/segment";
 import {
   SkylarkObjectMetadataField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
+import { segment } from "src/lib/analytics/segment";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { AI_FIELD_SUGGESTIONS } from "src/lib/graphql/skylark/queries";
 
@@ -99,6 +101,9 @@ export const useAIFieldSuggestions = ({
         objectType,
         rootFieldData: sanitizedRootFieldData,
       };
+      segment.track(SEGMENT_KEYS.ai.fieldSuggestions.generateValuesRequest, {
+        ...variables,
+      });
       const data = await skylarkRequest<{ AiAssistant: string }>(
         "query",
         AI_FIELD_SUGGESTIONS,

@@ -3,8 +3,10 @@ import { useDebouncedCallback } from "use-debounce";
 
 import { ObjectSearchInitialColumnsState } from "src/components/objectSearch";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { SEGMENT_KEYS } from "src/constants/segment";
 import { SearchFilters } from "src/hooks/useSearch";
 import { SearchType } from "src/hooks/useSearchWithLookupType";
+import { segment } from "src/lib/analytics/segment";
 import { readIntFromLocalStorage } from "src/lib/utils";
 
 export interface ObjectSearchTab {
@@ -117,6 +119,8 @@ export const useObjectSearchTabs = (
 
   const setTabsAndWriteToLocalStorage = useCallback(
     (tabs: ObjectSearchTab[]) => {
+      segment.track(SEGMENT_KEYS.objectSearch.tabsModified, { tabs });
+
       setTabs(tabs);
       saveTabStateToStorage(accountId, { tabs });
     },
@@ -125,6 +129,10 @@ export const useObjectSearchTabs = (
 
   const modifyActiveTab = useCallback(
     (updatedTab: Partial<ObjectSearchTab>) => {
+      segment.track(SEGMENT_KEYS.objectSearch.activeTabModified, {
+        updatedTab,
+      });
+
       const updatedTabs =
         tabs?.map((tab, index) => {
           if (index !== activeTabIndex) return tab;

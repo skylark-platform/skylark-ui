@@ -11,6 +11,7 @@ import clsx from "clsx";
 import { useRef, useState, useMemo, useCallback, memo } from "react";
 import { VirtualItem, defaultRangeExtractor, useVirtual } from "react-virtual";
 
+import { SEGMENT_KEYS } from "src/constants/segment";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { CheckedObjectState, PanelTab } from "src/hooks/state";
 import {
@@ -22,6 +23,7 @@ import {
   ParsedSkylarkObject,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
+import { segment } from "src/lib/analytics/segment";
 import { useDndMonitor } from "src/lib/dndkit/dndkit";
 import {
   getObjectDisplayName,
@@ -405,6 +407,8 @@ export const ObjectSearchResults = ({
         event.active.data.current.type === "OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS"
       ) {
         const dropzoneColumnId = event.over?.data.current?.columnId;
+        segment.track(SEGMENT_KEYS.drag.modifyFrozenSearchColumns.ended, event);
+
         if (dropzoneColumnId) {
           // When the frozen columns are changed, unfreeze any hidden columns and move to the right of the frozen columns
           const orderedVisibleColumns = [...visibleColumns];
