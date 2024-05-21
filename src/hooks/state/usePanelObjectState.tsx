@@ -7,8 +7,8 @@ import {
   ParsedSkylarkObjectAvailabilityObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
-import { isObjectsDeepEqual } from "src/lib/utils";
 import { segment } from "src/lib/analytics/segment";
+import { isObjectsDeepEqual } from "src/lib/utils";
 
 export enum PanelTab {
   Metadata = "Metadata",
