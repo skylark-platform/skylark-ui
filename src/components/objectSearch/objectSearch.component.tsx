@@ -131,6 +131,83 @@ const getSearchResultsText = ({
   return `${totalHits || 0} results`;
 };
 
+const updateTableStateColumns = (
+  prevTableState: TableState,
+  prevObjectTypes: string[],
+  updatedObjectTypes: string[],
+  sortedHeaders: string[],
+  updatedVisibleColumns?: VisibilityState,
+):
+  | {
+      columnVisibility: VisibilityState;
+      visible: string[];
+      order: string[];
+      frozen: string[];
+      sizes: ColumnSizingState;
+    }
+  | undefined => {
+  const visibleColumns =
+    updatedVisibleColumns &&
+    Object.entries(updatedVisibleColumns)
+      .filter(([, value]) => !!value)
+      .map(([key]) => key);
+
+  if (!visibleColumns) {
+    return;
+  }
+
+  // When updating columns, include any non-ordered columns in the column order or reorder columns breaks (unless its currently empty/not set)
+  const newColumnOrder =
+    prevTableState.columnOrder.length > 0
+      ? [...new Set([...prevTableState.columnOrder, ...sortedHeaders])]
+      : prevTableState.columnOrder;
+
+  const order = newColumnOrder;
+  const frozen = prevTableState.columnPinning.left || [];
+  const sizes = prevTableState.columnSizing;
+
+  // When going from one object type to multiple, we want to add the object type
+  if (prevObjectTypes.length <= 1 && updatedObjectTypes.length >= 2) {
+    // Make objectType column visible
+    const visibleColumnsArr = visibleColumns.filter(
+      (columnId) => columnId === OBJECT_LIST_TABLE.columnIds.objectType,
+    );
+    visibleColumnsArr.push(OBJECT_LIST_TABLE.columnIds.objectType);
+    updatedVisibleColumns[OBJECT_LIST_TABLE.columnIds.objectType] = true;
+
+    const newInitialOrder = [
+      ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+      OBJECT_LIST_TABLE.columnIds.objectType,
+    ];
+
+    // Fix the order and freeze so object type is most left
+    const updatedOrder = [
+      ...newInitialOrder,
+      ...order.filter((columnId) => !newInitialOrder.includes(columnId)),
+    ];
+    const updatedFrozen = [
+      ...newInitialOrder,
+      ...frozen.filter((columnId) => !newInitialOrder.includes(columnId)),
+    ];
+
+    return {
+      columnVisibility: updatedVisibleColumns,
+      visible: visibleColumnsArr,
+      order: updatedOrder,
+      frozen: updatedFrozen,
+      sizes,
+    };
+  }
+
+  return {
+    columnVisibility: updatedVisibleColumns,
+    visible: visibleColumns,
+    order,
+    frozen,
+    sizes,
+  };
+};
+
 export const ObjectSearch = (props: ObjectSearchProps) => {
   const { defaultLanguage, isLoading: isUserLoading } = useUserAccount();
 
@@ -266,28 +343,33 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
       visibleColumns: VisibilityState;
       searchType: SearchType;
     }>) => {
-      const visibleColumns =
-        updatedVisibleColumns &&
-        Object.entries(updatedVisibleColumns)
-          .filter(([, value]) => !!value)
-          .map(([key]) => key);
-
       if (filters) {
         setSearchFilters(filters);
       }
 
       if (updatedVisibleColumns) {
-        setTableState((prev) => {
-          // When updating columns, include any non-ordered columns in the column order or reorder columns breaks (unless its currently empty/not set)
-          const newColumnOrder =
-            prev.columnOrder.length > 0
-              ? [...new Set([...prev.columnOrder, ...sortedHeaders])]
-              : prev.columnOrder;
+        setTableState((prev): TableState => {
+          const updatedTableStateColumns = updateTableStateColumns(
+            prev,
+            searchFilters.objectTypes || [],
+            filters?.objectTypes || [],
+            sortedHeaders,
+            updatedVisibleColumns,
+          );
+
+          if (!updatedTableStateColumns) {
+            return prev;
+          }
 
           return {
             ...prev,
-            columnVisibility: updatedVisibleColumns,
-            columnOrder: newColumnOrder,
+            columnVisibility: updatedTableStateColumns.columnVisibility,
+            columnOrder: updatedTableStateColumns.order,
+            columnPinning: {
+              ...prev.columnPinning,
+              left: updatedTableStateColumns.frozen,
+            },
+            columnSizing: updatedTableStateColumns.sizes,
           };
         });
       }
@@ -296,24 +378,27 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
         setSearchType(searchType);
       }
 
+      // This one could be out of date but its just for saving to LocalStorage
+      const updatedColumnState = updateTableStateColumns(
+        tableState,
+        searchFilters.objectTypes || [],
+        filters?.objectTypes || [],
+        sortedHeaders,
+        updatedVisibleColumns,
+      );
+
       onStateChange?.({
         searchType,
         filters,
-        columns: visibleColumns && {
-          order: tableState.columnOrder,
-          columns: visibleColumns,
-          frozen: tableState.columnPinning.left || [],
-          sizes: tableState.columnSizing,
+        columns: updatedColumnState && {
+          order: updatedColumnState.order,
+          columns: updatedColumnState.visible,
+          frozen: updatedColumnState.frozen,
+          sizes: updatedColumnState.sizes,
         },
       });
     },
-    [
-      onStateChange,
-      sortedHeaders,
-      tableState.columnOrder,
-      tableState.columnPinning.left,
-      tableState.columnSizing,
-    ],
+    [onStateChange, searchFilters, sortedHeaders, tableState],
   );
 
   const handleTableStateChange = useCallback(

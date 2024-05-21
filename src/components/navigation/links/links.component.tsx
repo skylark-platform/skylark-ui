@@ -89,7 +89,7 @@ export const Link = ({
 };
 
 export const NavigationLinks = () => {
-  const { asPath } = useRouter();
+  const { pathname } = useRouter();
 
   return (
     <ul className="flex h-full select-none flex-col items-center justify-center text-base font-bold md:ml-4 md:flex-grow md:flex-row md:items-center md:justify-start md:text-sm lg:ml-6">
@@ -97,9 +97,9 @@ export const NavigationLinks = () => {
         ({ text, href, Icon, links, shouldMarkAsActive }) => {
           const subhrefs = links?.map((l) => l.href);
           const isActiveLink =
-            href === asPath ||
-            subhrefs?.includes(asPath) ||
-            shouldMarkAsActive?.(asPath) ||
+            href === pathname ||
+            subhrefs?.includes(pathname) ||
+            shouldMarkAsActive?.(pathname) ||
             false;
           return (
             <li

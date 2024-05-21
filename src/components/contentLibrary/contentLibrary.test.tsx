@@ -23,7 +23,7 @@ const useRouter = jest.spyOn(require("next/router"), "useRouter");
 beforeEach(() => {
   jest.useFakeTimers();
 
-  const router = { query: {} };
+  const router = { query: {}, replace: jest.fn() };
   useRouter.mockReturnValue(router);
 });
 
