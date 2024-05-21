@@ -287,6 +287,7 @@ export const PanelHeader = ({
       objectUid,
       objectTypeDisplayName,
       existingLanguages.length,
+      purgeCache,
     ],
   );
 

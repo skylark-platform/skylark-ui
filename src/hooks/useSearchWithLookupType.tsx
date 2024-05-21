@@ -2,7 +2,9 @@ import { DocumentNode } from "graphql";
 import { Variables } from "graphql-request";
 import { useMemo } from "react";
 
+import { SEGMENT_KEYS } from "src/constants/segment";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import { segment } from "src/lib/analytics/segment";
 
 import { useGetObjectGeneric } from "./objects/get/useGetObjectGeneric";
 import { SearchFilters, useSearch } from "./useSearch";
@@ -117,6 +119,13 @@ export const useSearchWithLookupType = (
   const getObject = useGetObjectGenericWrapper(opts);
 
   const result = opts.type === SearchType.UIDExtIDLookup ? getObject : search;
+
+  segment.track(SEGMENT_KEYS.objectSearch.search, {
+    opts,
+    result,
+    searchHash: search.searchHash,
+    properties: search.properties,
+  });
 
   return {
     ...result,

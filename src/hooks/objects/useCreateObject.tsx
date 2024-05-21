@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
+import { SEGMENT_KEYS } from "src/constants/segment";
 import { QueryKeys } from "src/enums/graphql";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
@@ -14,6 +15,7 @@ import {
   SkylarkObjectMetadataField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
+import { segment } from "src/lib/analytics/segment";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createCreateObjectMutation } from "src/lib/graphql/skylark/dynamicMutations/objects";
 
@@ -70,6 +72,11 @@ export const useCreateObject = ({
         language,
       });
       refetchSearchQueriesAfterUpdate(queryClient);
+
+      segment.track(SEGMENT_KEYS.object.created, {
+        data,
+        language,
+      });
     },
     onError,
   });

@@ -2,7 +2,7 @@ import { Dialog } from "@headlessui/react";
 import { AnimatePresence, m } from "framer-motion";
 import { DocumentNode, print, getOperationAST } from "graphql";
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FiCopy } from "react-icons/fi";
 import { GrGraphQl } from "react-icons/gr";
 import { v4 as uuidv4 } from "uuid";
@@ -15,7 +15,9 @@ import {
 } from "src/components/tabs/tabs.component";
 import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
+import { SEGMENT_KEYS } from "src/constants/segment";
 import { HREFS } from "src/constants/skylark";
+import { segment } from "src/lib/analytics/segment";
 
 interface GraphiQLTabStateTab {
   hash: null;
@@ -192,6 +194,15 @@ export const DisplayGraphQLQueryModal = ({
     query &&
       updateGraphiQLLocalStorage(query, formattedQuery, variables, headers);
   };
+
+  useEffect(() => {
+    segment.track(SEGMENT_KEYS.modals.graphqlQueryModal.open, {
+      label,
+      query,
+      variables,
+      headers,
+    });
+  }, [headers, label, query, variables]);
 
   return (
     <Dialog
