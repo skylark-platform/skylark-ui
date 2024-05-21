@@ -31,6 +31,7 @@ import {
 import { CreateButtons } from "src/components/objectSearch/createButtons";
 import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "src/components/objectSearch/results/columnConfiguration";
 import { ScrollableTabs } from "src/components/tabs/tabs.component";
+import { SEGMENT_KEYS } from "src/constants/segment";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import {
@@ -50,6 +51,7 @@ import {
   SkylarkAvailabilityField,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
+import { segment } from "src/lib/analytics/segment";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
 
 type TabbedObjectSearchProps = Omit<
@@ -261,6 +263,8 @@ const NewTabButton = ({
       argTab?.name?.replace("{tabNum}", `${tabsNum}`) || `View ${tabsNum}`,
       argTab || {},
     );
+
+    segment.track(SEGMENT_KEYS.objectSearch.tabCreated, { newTab });
 
     const updatedTabs = tabs ? [...tabs, newTab] : [newTab];
 

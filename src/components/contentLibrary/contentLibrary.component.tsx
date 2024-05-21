@@ -14,12 +14,14 @@ import { createPortal } from "react-dom";
 
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { Panel } from "src/components/panel";
+import { SEGMENT_KEYS } from "src/constants/segment";
 import { PanelTab, usePanelObjectState } from "src/hooks/state";
 import { useCheckedObjectsState } from "src/hooks/state";
 import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
+import { segment } from "src/lib/analytics/segment";
 import { Active, DragStartEvent, DragType } from "src/lib/dndkit/dndkit";
 
 import { TabbedObjectSearchWithAccount } from "./tabbedObjectSearch/tabbedObjectSearch.component";
@@ -307,6 +309,8 @@ export const ContentLibrary = ({
     if (type === DragType.CONTENT_LIBRARY_OBJECT) {
       setActiveDragged(event.active);
 
+      segment.track(SEGMENT_KEYS.drag.contentLibrary.started, event);
+
       if (
         [PanelTab.Metadata, PanelTab.Imagery, PanelTab.Playback].includes(
           activePanelTab,
@@ -325,10 +329,12 @@ export const ContentLibrary = ({
 
     if (type === DragType.OBJECT_SEARCH_MODIFY_FROZEN_COLUMNS) {
       setActiveDragged(event.active);
+      segment.track(SEGMENT_KEYS.drag.modifyFrozenSearchColumns.started, event);
     }
 
     if (type === DragType.PANEL_CONTENT_REORDER_OBJECTS) {
       setActiveDragged(event.active);
+      segment.track(SEGMENT_KEYS.drag.panelReorder.started, event);
     }
   }
 

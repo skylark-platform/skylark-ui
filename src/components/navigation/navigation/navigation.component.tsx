@@ -1,9 +1,8 @@
 import { Menu } from "@headlessui/react";
-import { sentenceCase } from "change-case";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FiGithub, FiKey, FiLogOut } from "react-icons/fi";
 import { useIsClient } from "usehooks-ts";
 
@@ -17,6 +16,7 @@ import { UserAvatar } from "src/components/user";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { useAccountStatus } from "src/hooks/useAccountStatus";
 import { useUserAccount } from "src/hooks/useUserAccount";
+import { segment } from "src/lib/analytics/segment";
 import { formatUriAsCustomerIdentifer } from "src/lib/utils";
 
 import Logo from "public/images/skylark.png";
@@ -24,7 +24,7 @@ import Logo from "public/images/skylark.png";
 export const Navigation = () => {
   const isClient = useIsClient();
 
-  const { permissions, role } = useUserAccount();
+  const { permissions, role, defaultLanguage } = useUserAccount();
 
   const [open, setOpen] = useState(false);
 
@@ -68,6 +68,17 @@ export const Navigation = () => {
 
     return options;
   }, [permissions]);
+
+  useEffect(() => {
+    if (creds?.uri && role) {
+      segment.identify({
+        skylark: creds?.uri,
+        role,
+        defaultLanguage,
+        permissions,
+      });
+    }
+  }, [creds?.uri, defaultLanguage, permissions, role]);
 
   return (
     <>

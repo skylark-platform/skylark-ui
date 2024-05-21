@@ -2,11 +2,13 @@ import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import { useState, useCallback, useMemo, useEffect } from "react";
 
+import { SEGMENT_KEYS } from "src/constants/segment";
 import {
   ParsedSkylarkObjectAvailabilityObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import { isObjectsDeepEqual } from "src/lib/utils";
+import { segment } from "src/lib/analytics/segment";
 
 export enum PanelTab {
   Metadata = "Metadata",
@@ -189,6 +191,12 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
       tab?: PanelTab,
       tabState?: Partial<PanelTabState>,
     ) => {
+      segment.track(SEGMENT_KEYS.panel.objectChange, {
+        newPanelObject,
+        tab,
+        tabState,
+      });
+
       setPanelState((oldState) => ({
         forwardPanelStates: [],
         previousPanelStates: oldState.activePanelState
@@ -206,6 +214,10 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
 
   const setPanelTab = useCallback(
     (newTab: PanelTab, tabState?: Partial<PanelTabState>) => {
+      segment.track(SEGMENT_KEYS.panel.tabChange, {
+        newTab,
+      });
+
       setPanelState((oldState) =>
         oldState.activePanelState
           ? {
@@ -246,6 +258,8 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
   );
 
   const navigateToPreviousPanelObject = useCallback(() => {
+    segment.track(SEGMENT_KEYS.panel.historyPrevious);
+
     setPanelState((oldState) =>
       oldState.previousPanelStates.length > 0
         ? {
@@ -263,6 +277,8 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
   }, []);
 
   const navigateToForwardPanelObject = useCallback(() => {
+    segment.track(SEGMENT_KEYS.panel.historyForward);
+
     setPanelState((oldState) => ({
       previousPanelStates: oldState.activePanelState
         ? [...oldState.previousPanelStates, oldState.activePanelState]
@@ -274,6 +290,8 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
   }, []);
 
   const resetPanelObjectState = useCallback(() => {
+    segment.track(SEGMENT_KEYS.panel.closed);
+
     setPanelState({
       activePanelState: null,
       previousPanelStates: [],
