@@ -24,7 +24,7 @@ import Logo from "public/images/skylark.png";
 export const Navigation = () => {
   const isClient = useIsClient();
 
-  const { permissions, role, defaultLanguage } = useUserAccount();
+  const { permissions, role, defaultLanguage, accountId } = useUserAccount();
 
   const [open, setOpen] = useState(false);
 
@@ -76,9 +76,10 @@ export const Navigation = () => {
         role,
         defaultLanguage,
         permissions,
+        accountId,
       });
     }
-  }, [creds?.uri, defaultLanguage, permissions, role]);
+  }, [accountId, creds?.uri, defaultLanguage, permissions, role]);
 
   return (
     <>
