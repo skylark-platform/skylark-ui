@@ -28,7 +28,9 @@ export const SEGMENT_KEYS = {
     tabsModified: "objectSearch:tabsModified",
     tabCreated: "objectSearch:tabCreated",
     tabDeleted: "objectSearch:tabDeleted",
-    search: "objectSearch:search",
+    search: {
+      filtersChanged: "objectSearch:search:filtersChanged",
+    },
   },
   modals: {
     graphqlQueryModal: {
