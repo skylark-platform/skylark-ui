@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { m } from "framer-motion";
-import { useRouter } from "next/router";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import {
   FiCheckSquare,
   FiCrosshair,
@@ -528,18 +527,17 @@ export const TabbedObjectSearchWithAccount = ({
 
   const isClient = useIsClient();
 
-  useInitialPanelStateFromQuery(
-    animationState === "completed",
-    props.setPanelObject,
-  );
+  const showLogo =
+    (!accountId && isAccountLoading) || animationState === "running";
+
+  useInitialPanelStateFromQuery(!showLogo, props.setPanelObject);
 
   return (
     <>
       {!skipLogoAnimation && creds?.uri && isClient && (
         <AnimatedLogo
-          show={
-            (!accountId && isAccountLoading) || animationState === "running"
-          }
+          show={showLogo}
+          withBackground
           withLoadingSpinner
           hideLoadingSpinner={animationState !== "completed"}
           speed="fast"

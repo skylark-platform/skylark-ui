@@ -274,10 +274,12 @@ export const AnimatedLogo = ({
   children,
   withLoadingSpinner,
   hideLoadingSpinner,
+  withBackground,
   ...props
 }: AnimatedLogoProps & {
   withLoadingSpinner?: boolean;
   hideLoadingSpinner?: boolean;
+  withBackground?: boolean;
 }) => {
   return (
     <AnimatePresence>
@@ -286,6 +288,7 @@ export const AnimatedLogo = ({
           data-testid="animated-skylark-logo"
           className={clsx(
             "fixed left-0 right-0 top-0 z-[99999999999] flex h-full w-full flex-col items-center justify-center pb-10",
+            withBackground && "bg-white/60",
             withLoadingSpinner ? "pb-8" : "pb-32",
           )}
           initial={{ opacity: 1 }}
