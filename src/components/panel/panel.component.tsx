@@ -28,7 +28,6 @@ import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
   AddedSkylarkObjectContentObject,
-  SkylarkObjectMetadataField,
   SkylarkSystemField,
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,

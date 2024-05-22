@@ -208,8 +208,14 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
           tabState: mergedPanelTabStates(defaultPanelTabState, tabState),
         },
       }));
+
+      updatePanelUrlQuery({
+        ...newPanelObject,
+        tab: tab || PanelTab.Metadata,
+        tabState: mergedPanelTabStates(defaultPanelTabState, tabState),
+      });
     },
-    [],
+    [updatePanelUrlQuery],
   );
 
   const setPanelTab = useCallback(
@@ -218,8 +224,8 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
         newTab,
       });
 
-      setPanelState((oldState) =>
-        oldState.activePanelState
+      setPanelState((oldState) => {
+        const updatedState = oldState.activePanelState
           ? {
               ...oldState,
               activePanelState: {
@@ -231,10 +237,14 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
                 ),
               },
             }
-          : oldState,
-      );
+          : oldState;
+
+        updatePanelUrlQuery(updatedState.activePanelState);
+
+        return updatedState;
+      });
     },
-    [],
+    [updatePanelUrlQuery],
   );
 
   const updateActivePanelTabState = useCallback(
@@ -260,34 +270,45 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
   const navigateToPreviousPanelObject = useCallback(() => {
     segment.track(SEGMENT_KEYS.panel.historyPrevious);
 
-    setPanelState((oldState) =>
-      oldState.previousPanelStates.length > 0
-        ? {
-            previousPanelStates: oldState.previousPanelStates.slice(0, -1),
-            forwardPanelStates: oldState.activePanelState
-              ? [...oldState.forwardPanelStates, oldState.activePanelState]
-              : oldState.forwardPanelStates,
-            activePanelState:
-              oldState.previousPanelStates[
-                oldState.previousPanelStates.length - 1
-              ],
-          }
-        : oldState,
-    );
-  }, []);
+    setPanelState((oldState) => {
+      const updatedState =
+        oldState.previousPanelStates.length > 0
+          ? {
+              previousPanelStates: oldState.previousPanelStates.slice(0, -1),
+              forwardPanelStates: oldState.activePanelState
+                ? [...oldState.forwardPanelStates, oldState.activePanelState]
+                : oldState.forwardPanelStates,
+              activePanelState:
+                oldState.previousPanelStates[
+                  oldState.previousPanelStates.length - 1
+                ],
+            }
+          : oldState;
+
+      updatePanelUrlQuery(updatedState.activePanelState);
+
+      return updatedState;
+    });
+  }, [updatePanelUrlQuery]);
 
   const navigateToForwardPanelObject = useCallback(() => {
     segment.track(SEGMENT_KEYS.panel.historyForward);
 
-    setPanelState((oldState) => ({
-      previousPanelStates: oldState.activePanelState
-        ? [...oldState.previousPanelStates, oldState.activePanelState]
-        : oldState.previousPanelStates,
-      forwardPanelStates: oldState.forwardPanelStates.slice(0, -1),
-      activePanelState:
-        oldState.forwardPanelStates[oldState.forwardPanelStates.length - 1],
-    }));
-  }, []);
+    setPanelState((oldState) => {
+      const updatedState = {
+        previousPanelStates: oldState.activePanelState
+          ? [...oldState.previousPanelStates, oldState.activePanelState]
+          : oldState.previousPanelStates,
+        forwardPanelStates: oldState.forwardPanelStates.slice(0, -1),
+        activePanelState:
+          oldState.forwardPanelStates[oldState.forwardPanelStates.length - 1],
+      };
+
+      updatePanelUrlQuery(updatedState.activePanelState);
+
+      return updatedState;
+    });
+  }, [updatePanelUrlQuery]);
 
   const resetPanelObjectState = useCallback(() => {
     segment.track(SEGMENT_KEYS.panel.closed);
@@ -320,12 +341,6 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
       panelState.activePanelState?.uid,
     ],
   );
-
-  useEffect(() => {
-    updatePanelUrlQuery(panelState.activePanelState);
-  }, [panelState.activePanelState, updatePanelUrlQuery]);
-
-  useEffect(() => console.log("query changed"), [query]);
 
   return {
     activePanelObject,
@@ -364,15 +379,14 @@ export const useInitialPanelStateFromQuery = (
       !hasInitialQueryBeenUpdated &&
       currentPanelQuery &&
       currentPanelQuery.panelUid &&
-      currentPanelQuery.panelObjectType &&
-      currentPanelQuery.panelLanguage
+      currentPanelQuery.panelObjectType
     ) {
       setInitialQueryUpdated(true);
       setPanelObject(
         {
           uid: currentPanelQuery.panelUid,
           objectType: currentPanelQuery.panelObjectType,
-          language: currentPanelQuery.panelLanguage,
+          language: currentPanelQuery.panelLanguage || "",
         },
         currentPanelQuery.panelTab as PanelTab | undefined,
       );

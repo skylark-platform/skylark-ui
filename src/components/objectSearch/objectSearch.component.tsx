@@ -347,10 +347,6 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
     }>) => {
       if (filters) {
         setSearchFilters(filters);
-        segment.track(SEGMENT_KEYS.objectSearch.search.filtersChanged, {
-          ...filters,
-          searchType,
-        });
       }
 
       if (updatedVisibleColumns) {
