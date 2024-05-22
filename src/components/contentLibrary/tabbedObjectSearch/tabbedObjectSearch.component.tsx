@@ -247,7 +247,7 @@ const NewTabButton = ({
 }: {
   tabs: ObjectSearchTab[];
   setTabs: (tabs: ObjectSearchTab[]) => void;
-  setActiveTabIndex: Dispatch<SetStateAction<number>>;
+  setActiveTabIndex: (n: number) => void;
 }) => {
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
   const { objects: objectsMeta } = useAllObjectsMeta();
@@ -430,7 +430,6 @@ const TabbedObjectSearch = ({
     setActiveTabIndex,
     deleteActiveTab,
     deleteTab,
-    changeActiveTabIndex,
     saveScrollPosition,
   } = useObjectSearchTabs(accountId, initialTabs);
 
@@ -453,7 +452,7 @@ const TabbedObjectSearch = ({
                   initialScrollPosition={initialTabsScrollPosition}
                   tabs={tabs}
                   selectedTab={activeTab?.id || ""}
-                  onChange={({ index }) => changeActiveTabIndex(index)}
+                  onChange={({ index }) => setActiveTabIndex(index)}
                   onScroll={({ scrollLeft: tabsScrollPosition }) =>
                     saveScrollPosition(tabsScrollPosition)
                   }
