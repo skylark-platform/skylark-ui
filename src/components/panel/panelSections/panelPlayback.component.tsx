@@ -11,10 +11,7 @@ import {
 } from "src/components/integrations";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
-import {
-  pollPanelRefetch,
-  refetchPanelQueries,
-} from "src/components/panel/panel.lib";
+import { pollPanelRefetch } from "src/components/panel/panel.lib";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
@@ -166,6 +163,8 @@ const PreviewVideo = ({
   playbackId: string | null;
   className?: string;
 }) => {
+  console.log({ publicUrl, provider, playbackId, playbackPolicy });
+
   const { signedPlaybackUrl } = useGenerateIntegrationPlaybackUrl(
     provider,
     playbackPolicy,
@@ -369,7 +368,7 @@ const RelationshipPlayback = ({
                           provider={firstActiveProvider || null}
                           playbackId={playbackId}
                           playbackPolicy={getPlaybackPolicyFromMetadata(
-                            metadata,
+                            object.metadata,
                           )}
                         />
                         <ObjectIdentifierCard
