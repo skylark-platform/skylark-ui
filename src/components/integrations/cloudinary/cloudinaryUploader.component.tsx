@@ -86,6 +86,17 @@ export const CloudinaryUploadWidget = ({
       });
 
       const uwConfig = {
+        sources: [
+          "local",
+          "url",
+          "unsplash",
+          "google_drive",
+          "dropbox",
+          "image_search",
+          "shutterstock",
+          "getty",
+          "istock",
+        ], // Missing: "camera"
         ...custom,
         context:
           custom?.context && isObject(custom.context)
