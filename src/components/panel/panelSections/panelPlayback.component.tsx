@@ -163,9 +163,7 @@ const PreviewVideo = ({
   playbackId: string | null;
   className?: string;
 }) => {
-  console.log({ publicUrl, provider, playbackId, playbackPolicy });
-
-  const { signedPlaybackUrl } = useGenerateIntegrationPlaybackUrl(
+  const { signedPlaybackUrl, isLoading } = useGenerateIntegrationPlaybackUrl(
     provider,
     playbackPolicy,
     playbackId,
@@ -178,9 +176,12 @@ const PreviewVideo = ({
 
   return (
     <>
-      {publicUrl && (playbackPolicy === "public" || !playbackId) && (
-        <VideoPlayer src={publicUrl as string} className={className} />
-      )}
+      {publicUrl &&
+        (playbackPolicy === "public" ||
+          !playbackId ||
+          (!signedPlaybackUrl && !isLoading)) && (
+          <VideoPlayer src={publicUrl as string} className={className} />
+        )}
       {signedPlaybackUrl && playbackPolicy !== "public" && (
         <VideoPlayer src={signedPlaybackUrl} className={className} />
       )}
@@ -269,13 +270,15 @@ const MetadataPlayback = ({
               />
             ))}
             {properties.length === 0 && <PanelEmptyDataText />}
-            <PreviewVideo
-              url={url}
-              className="mb-4"
-              playbackId={playbackId}
-              provider={provider || null}
-              playbackPolicy={getPlaybackPolicyFromMetadata(metadata)}
-            />
+            {url && (
+              <PreviewVideo
+                url={url}
+                className="mb-4"
+                playbackId={playbackId}
+                provider={provider || null}
+                playbackPolicy={getPlaybackPolicyFromMetadata(metadata)}
+              />
+            )}
           </div>
         );
       })}

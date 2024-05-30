@@ -24,7 +24,9 @@ export const VideoPlayer = ({ src, className }: VideoPlayerProps) => {
       `${data.response.code}` === "403"
     ) {
       setPlayerError(PlayerError.ACCESS_DENIED);
+      return;
     }
+    setPlayerError(PlayerError.UNKNOWN);
   };
 
   return (
