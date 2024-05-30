@@ -1,11 +1,21 @@
 import { explorerPlugin } from "@graphiql/plugin-explorer";
 import "@graphiql/plugin-explorer/dist/style.css";
-import { createGraphiQLFetcher } from "@graphiql/toolkit";
+import {
+  FetcherParams,
+  FetcherOpts,
+  FetcherReturnType,
+} from "@graphiql/toolkit";
+import dayjs from "dayjs";
 import { GraphiQL } from "graphiql";
 import "graphiql/graphiql.min.css";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { REQUEST_HEADERS } from "src/constants/skylark";
+import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
+
+const GRAPHIQL_INTROSPECTION_NAME = wrapQueryName(
+  "GRAPHIQL_INTROSPECTION_QUERY",
+);
 
 export const DEFAULT_QUERY = `# Welcome to Skylark's GraphQL Editor
 #
@@ -53,17 +63,54 @@ interface GraphiQLEditorProps {
 
 const explorer = explorerPlugin({ showAttribution: true });
 
+const createGraphQLFetcher =
+  (
+    uri: string,
+    token: string,
+    setRequestTimeElapsed: (ms: number | null) => void,
+  ) =>
+  (graphQLParams: FetcherParams, opts?: FetcherOpts): FetcherReturnType => {
+    const before = dayjs();
+    let after: dayjs.Dayjs | null = null;
+
+    setRequestTimeElapsed(null);
+
+    return fetch(uri, {
+      method: "post",
+      headers: {
+        [REQUEST_HEADERS.apiKey]: token,
+        ...opts?.headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(graphQLParams),
+      credentials: "omit",
+    })
+      .then((response) => {
+        after = dayjs();
+        return response.json();
+      })
+      .then((json) => {
+        if (
+          after &&
+          graphQLParams.operationName !== GRAPHIQL_INTROSPECTION_NAME &&
+          json?.data
+        ) {
+          const timeElapsed = after.diff(before, "millisecond");
+          setRequestTimeElapsed(timeElapsed);
+        }
+        return json;
+      });
+  };
+
 export const GraphiQLEditor = ({
   uri,
   token,
   defaultQuery,
 }: GraphiQLEditorProps) => {
+  const [responseTime, setResponseTime] = useState<number | null>(null);
+
   const fetcher = useMemo(
-    () =>
-      createGraphiQLFetcher({
-        url: uri,
-        headers: { [REQUEST_HEADERS.apiKey]: token },
-      }),
+    () => createGraphQLFetcher(uri, token, setResponseTime),
     [token, uri],
   );
 
@@ -74,8 +121,17 @@ export const GraphiQLEditor = ({
       // storage={}
       fetcher={fetcher}
       shouldPersistHeaders={true}
+      introspectionQueryName={GRAPHIQL_INTROSPECTION_NAME}
     >
       <GraphiQL.Logo>Query Editor</GraphiQL.Logo>
+
+      <GraphiQL.Footer>
+        <div className="h-14 flex items-center mx-4">
+          {responseTime !== null && (
+            <p className="text-sm text-manatee-600">{responseTime}ms</p>
+          )}
+        </div>
+      </GraphiQL.Footer>
     </GraphiQL>
   );
 };
