@@ -10,8 +10,10 @@ import { GraphiQL } from "graphiql";
 import "graphiql/graphiql.min.css";
 import { useMemo, useState } from "react";
 
-import { REQUEST_HEADERS } from "src/constants/skylark";
+import { HREFS, REQUEST_HEADERS } from "src/constants/skylark";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
+
+import { skylarkHeadersPlugin } from "./plugins/skylarkHeadersPlugin.component";
 
 const GRAPHIQL_INTROSPECTION_NAME = wrapQueryName(
   "GRAPHIQL_INTROSPECTION_QUERY",
@@ -41,7 +43,7 @@ export const DEFAULT_QUERY = `# Welcome to Skylark's GraphQL Editor
 #     }
 #
 # For information on Skylark's queries and mutations,
-# view the documentation: https://docs.skylarkplatform.com/
+# view the documentation: ${HREFS.apiDocs.root}
 #
 # Keyboard shortcuts:
 #
@@ -62,6 +64,8 @@ interface GraphiQLEditorProps {
 }
 
 const explorer = explorerPlugin({ showAttribution: true });
+
+const skylarkSettingsPlugin = skylarkHeadersPlugin();
 
 const createGraphQLFetcher =
   (
@@ -117,11 +121,14 @@ export const GraphiQLEditor = ({
   return (
     <GraphiQL
       defaultQuery={defaultQuery}
-      plugins={[explorer]}
+      plugins={[explorer, skylarkSettingsPlugin]}
       // storage={}
       fetcher={fetcher}
       shouldPersistHeaders={true}
+      showPersistHeadersSettings={false}
       introspectionQueryName={GRAPHIQL_INTROSPECTION_NAME}
+      defaultEditorToolsVisibility="headers"
+      visiblePlugin={skylarkSettingsPlugin}
     >
       <GraphiQL.Logo>Query Editor</GraphiQL.Logo>
 

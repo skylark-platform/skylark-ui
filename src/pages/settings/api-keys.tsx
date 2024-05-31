@@ -54,7 +54,7 @@ export default function ApiKeysPage() {
           <h1 className="text-xl font-semibold">Manage API Keys</h1>
           <p>
             Keys that you have generated can be used with the{" "}
-            <Button variant="ghost" href={HREFS.external.apiDocs} newTab>
+            <Button variant="ghost" href={HREFS.apiDocs.root} newTab>
               Skylark API
             </Button>
             .
