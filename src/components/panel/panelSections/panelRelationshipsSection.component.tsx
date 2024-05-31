@@ -11,11 +11,11 @@ import {
   PanelSeparator,
 } from "src/components/panel/panelTypography";
 import { Tooltip } from "src/components/tooltip/tooltip.component";
+import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectRelationship,
   ParsedSkylarkObjectTypeRelationshipConfiguration,
-  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import { formatObjectField, hasProperty } from "src/lib/utils";
 
@@ -28,7 +28,7 @@ interface PanelRelationshipsSectionProps {
   isExpanded: boolean;
   config: ParsedSkylarkObjectTypeRelationshipConfiguration["config"] | null;
   setExpandedRelationship: (r: string | null) => void;
-  setPanelObject: (o: SkylarkObjectIdentifier) => void;
+  setPanelObject: SetPanelObject;
   removeRelationshipObject: (args: {
     uid: string;
     relationshipName: string;

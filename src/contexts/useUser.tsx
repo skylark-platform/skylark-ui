@@ -1,14 +1,6 @@
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useReducer,
-} from "react";
+import { createContext, ReactNode, useContext, useReducer } from "react";
 
 import { LOCAL_STORAGE } from "src/constants/localStorage";
-import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
-import { segment } from "src/lib/analytics/segment";
 import { getJSONFromLocalStorage } from "src/lib/utils";
 
 type State = {

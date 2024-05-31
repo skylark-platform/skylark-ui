@@ -15,7 +15,7 @@ import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useIsDragging } from "src/hooks/dnd/useIsDragging";
 import { usePanelDropzone } from "src/hooks/dnd/usePanelDropzone";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
-import { PanelTab, PanelTabState } from "src/hooks/state";
+import { PanelTab, PanelTabState, SetPanelObject } from "src/hooks/state";
 import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import {
   ParsedSkylarkObjectRelationships,
@@ -45,7 +45,7 @@ interface PanelRelationshipsProps {
   ) => void;
   inEditMode: boolean;
   language: string;
-  setPanelObject: (o: SkylarkObjectIdentifier) => void;
+  setPanelObject: SetPanelObject;
   updateActivePanelTabState: (s: Partial<PanelTabState>) => void;
 }
 

@@ -16,12 +16,11 @@ import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { useGetAvailabilityAssignedTo } from "src/hooks/availability/useAvailabilityAssignedTo";
 import { useIsDragging } from "src/hooks/dnd/useIsDragging";
 import { usePanelDropzone } from "src/hooks/dnd/usePanelDropzone";
-import { PanelTab, PanelTabState } from "src/hooks/state";
+import { PanelTab, PanelTabState, SetPanelObject } from "src/hooks/state";
 import {
   BuiltInSkylarkObjectType,
   ParsedAvailabilityAssignedToObject,
   ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import { DragType, DroppableType } from "src/lib/dndkit/dndkit";
 
@@ -36,7 +35,7 @@ interface PanelAvailabilityAssignedToProps {
     removed: ParsedSkylarkObject[];
   } | null;
   tabState: PanelTabState[PanelTab.AvailabilityAssignedTo];
-  setPanelObject: (o: SkylarkObjectIdentifier) => void;
+  setPanelObject: SetPanelObject;
   setModifiedAvailabilityAssignedTo: (
     args: {
       added: ParsedSkylarkObject[];

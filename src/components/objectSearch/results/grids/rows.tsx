@@ -99,6 +99,7 @@ const DataRow = ({
               if (tableMeta?.onObjectClick) {
                 tableMeta.onObjectClick?.(
                   convertParsedObjectToIdentifier(cell.row.original),
+                  { keepTab: true },
                 );
                 return;
               }

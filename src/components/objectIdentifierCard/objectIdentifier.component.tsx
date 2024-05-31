@@ -5,12 +5,10 @@ import { FiTrash2, FiX } from "react-icons/fi";
 import { AvailabilityIcon } from "src/components/availability";
 import { OpenObjectButton } from "src/components/button";
 import { Pill } from "src/components/pill";
+import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
-import {
-  ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
-} from "src/interfaces/skylark/parsedObjects";
+import { ParsedSkylarkObject } from "src/interfaces/skylark/parsedObjects";
 import { getObjectDisplayName, platformMetaKeyClicked } from "src/lib/utils";
 
 interface ObjectIdentifierCardProps {
@@ -23,7 +21,7 @@ interface ObjectIdentifierCardProps {
   className?: string;
   hideAvailabilityStatus?: boolean;
   forceConfigFromObject?: boolean;
-  onForwardClick?: (o: SkylarkObjectIdentifier) => void;
+  onForwardClick?: SetPanelObject;
   onDeleteClick?: () => void;
 }
 
