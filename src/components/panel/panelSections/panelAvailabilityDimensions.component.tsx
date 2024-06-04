@@ -6,6 +6,7 @@ import { DisplayGraphQLQuery } from "src/components/modals";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import { PanelFieldTitle } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
+import { HREFS } from "src/constants/skylark";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { useAvailabilityObjectDimensions } from "src/hooks/availability/useAvailabilityObjectDimensions";
 import {
@@ -147,7 +148,7 @@ export const PanelAvailabilityDimensions = ({
           <p>No Dimensions configured for Account.</p>
           <a
             className="my-2 block text-brand-primary underline"
-            href="https://docs.skylarkplatform.com/docs/dimensions"
+            href={HREFS.apiDocs.dimensions}
             target="_blank"
             rel="noreferrer"
           >

@@ -175,12 +175,15 @@ export const useObjectSearchTabs = (
     deleteTab(activeTabIndex);
   }, [activeTabIndex, deleteTab]);
 
-  const changeActiveTabIndex = useCallback((newIndex: number) => {
-    if (accountId) {
-      saveTabStateToStorage(accountId, { activeTabIndex: newIndex });
-    }
-    setActiveTabIndex(newIndex);
-  }, []);
+  const changeActiveTabIndex = useCallback(
+    (newIndex: number) => {
+      if (accountId) {
+        saveTabStateToStorage(accountId, { activeTabIndex: newIndex });
+      }
+      setActiveTabIndex(newIndex);
+    },
+    [accountId],
+  );
 
   const saveScrollPosition = useDebouncedCallback((position: number) => {
     saveTabStateToStorage(accountId, { tabsScrollPosition: position });

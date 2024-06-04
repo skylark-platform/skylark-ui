@@ -30,7 +30,7 @@ import { useIsDragging } from "src/hooks/dnd/useIsDragging";
 import { usePanelDropzone } from "src/hooks/dnd/usePanelDropzone";
 import { useGetObjectAvailability } from "src/hooks/objects/get/useGetObjectAvailability";
 import { useGetObjectAvailabilityInheritance } from "src/hooks/objects/get/useGetObjectAvailabilityInheritance";
-import { PanelTab, PanelTabState } from "src/hooks/state";
+import { PanelTab, PanelTabState, SetPanelObject } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   AvailabilityStatus,
@@ -60,7 +60,7 @@ interface PanelAvailabilityProps {
   uid: string;
   language: string;
   inEditMode: boolean;
-  setPanelObject: (o: SkylarkObjectIdentifier) => void;
+  setPanelObject: SetPanelObject;
   modifiedAvailabilityObjects: {
     added: ParsedSkylarkObject[];
     removed: string[];
@@ -408,7 +408,7 @@ const PanelAvailabilityInheritanceObjects = ({
   objectType: string;
   objectUid: string;
   availabilityUid: string;
-  setPanelObject: PanelAvailabilityProps["setPanelObject"];
+  setPanelObject: SetPanelObject;
 }) => {
   const {
     data: inheritanceData,
@@ -468,7 +468,7 @@ const PanelAvailabilityReadonlyCard = ({
       tabId: TabID;
     } | null,
   ) => void;
-  setPanelObject: PanelAvailabilityProps["setPanelObject"];
+  setPanelObject: SetPanelObject;
   now: Dayjs;
   objectType: string;
   objectUid: string;

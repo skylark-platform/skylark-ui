@@ -7,12 +7,9 @@ import {
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
 import { useGetObjectContentOf } from "src/hooks/objects/get/useGetObjectContentOf";
+import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkSetObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
-import {
-  SkylarkObjectType,
-  SkylarkObjectIdentifier,
-  ParsedSkylarkObject,
-} from "src/interfaces/skylark";
+import { SkylarkObjectType, ParsedSkylarkObject } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
@@ -23,7 +20,7 @@ interface PanelContentOfProps {
   uid: string;
   inEditMode: boolean;
   language: string;
-  setPanelObject: (o: SkylarkObjectIdentifier) => void;
+  setPanelObject: SetPanelObject;
 }
 
 const groupContentOfByObjectType = (objects?: ParsedSkylarkObject[]) => {

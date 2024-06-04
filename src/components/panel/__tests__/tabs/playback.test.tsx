@@ -138,7 +138,7 @@ describe("playback view", () => {
           .getObjectRelationships.assets.objects[0].uid,
         language: "en-GB",
       },
-      PanelTab.Playback,
+      { tab: PanelTab.Playback },
     );
   });
 });

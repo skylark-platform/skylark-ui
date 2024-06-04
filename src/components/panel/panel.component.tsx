@@ -19,7 +19,7 @@ import { useUpdateObjectAvailability } from "src/hooks/objects/update/useUpdateO
 import { useUpdateObjectContent } from "src/hooks/objects/update/useUpdateObjectContent";
 import { useUpdateObjectMetadata } from "src/hooks/objects/update/useUpdateObjectMetadata";
 import { useUpdateObjectRelationships } from "src/hooks/objects/update/useUpdateObjectRelationships";
-import { PanelTab, PanelTabState } from "src/hooks/state";
+import { PanelTab, PanelTabState, SetPanelObject } from "src/hooks/state";
 import {
   ObjectTypeWithConfig,
   useSkylarkObjectTypesWithConfig,
@@ -65,7 +65,7 @@ interface PanelProps {
   object: SkylarkObjectIdentifier;
   tab: PanelTab;
   tabState: PanelTabState;
-  setPanelObject: (o: SkylarkObjectIdentifier, tab?: PanelTab) => void;
+  setPanelObject: SetPanelObject;
   setTab: (t: PanelTab) => void;
   navigateToPreviousPanelObject?: () => void;
   navigateToForwardPanelObject?: () => void;
@@ -656,7 +656,7 @@ export const Panel = ({
         setLanguage={(newLanguage) =>
           setPanelObject(
             { uid, objectType, language: newLanguage },
-            selectedTab,
+            { tab: selectedTab },
           )
         }
         navigateToPreviousPanelObject={navigateToPreviousPanelObject}

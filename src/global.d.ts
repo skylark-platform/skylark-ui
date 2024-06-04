@@ -1,5 +1,5 @@
 // @tanstack/react-table meta object declaration
-import { CheckedObjectState, PanelTab } from "./hooks/state";
+import { CheckedObjectState } from "./hooks/state";
 import {
   SkylarkObjectIdentifier,
   SkylarkObjectMeta,
@@ -12,7 +12,7 @@ export declare module "@tanstack/table-core" {
     checkedObjectsState?: CheckedObjectState[];
     onRowCheckChange?: ({ object, checkedState }: CheckedObjectState) => void;
     batchCheckRows: (type: "shift" | "clear-all", rowIndex?: number) => void;
-    onObjectClick?: (obj: SkylarkObjectIdentifier, tab?: PanelTab) => void;
+    onObjectClick?: SetPanelObject;
     activeObject: SkylarkObjectIdentifier | null;
     objectTypesWithConfig:
       | {
