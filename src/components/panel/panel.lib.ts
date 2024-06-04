@@ -36,30 +36,51 @@ export type HandleDropError =
   | HandleGenericDropError
   | HandleRelationshipDropError;
 
-export const refetchPanelQueries = async (client: QueryClient) => {
-  const getObjectQueryKeys = Object.values(QueryKeys).filter((key) =>
-    key.startsWith(QueryKeys.GetObject),
-  );
+export const refetchPanelQueries = async (
+  client: QueryClient,
+  objectType: string,
+  uid: string,
+) => {
+  const queryCache = client.getQueryCache();
+
+  const queryKeys = queryCache
+    .getAll()
+    .map((cache) => cache.queryKey)
+    .filter(
+      (key) =>
+        (key?.[0] as string).startsWith(QueryKeys.GetObject) &&
+        (key.length === 1 ||
+          (hasProperty(key[1], "objectType") &&
+            hasProperty(key[1], "uid") &&
+            key[1]?.objectType === objectType &&
+            key[1]?.uid === uid)),
+    );
 
   await Promise.all(
-    getObjectQueryKeys.map((key) =>
+    queryKeys.map((queryKey) =>
       client.refetchQueries({
-        queryKey: [key],
+        queryKey,
       }),
     ),
   );
 };
 
-export const pollPanelRefetch = (client: QueryClient) => {
+export const pollPanelRefetch = (
+  client: QueryClient,
+  objectType: string,
+  uid: string,
+) => {
   let timesRun = 0;
   const interval = setInterval(() => {
     timesRun += 1;
-    if (timesRun === 40) {
+    if (timesRun === 50) {
       clearInterval(interval);
     }
 
-    void refetchPanelQueries(client);
-  }, 500);
+    void refetchPanelQueries(client, objectType, uid);
+  }, 750);
+
+  return interval;
 };
 
 export const convertSkylarkObjectToContentObject = (

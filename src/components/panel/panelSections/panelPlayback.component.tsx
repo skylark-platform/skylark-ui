@@ -250,7 +250,7 @@ const MetadataPlayback = ({
                 Icon: <FiUploadCloud className="text-lg" />,
               }}
               onSuccess={() => {
-                pollPanelRefetch(queryClient);
+                pollPanelRefetch(queryClient, objectType, uid);
               }}
             />
           </div>
@@ -353,7 +353,7 @@ const RelationshipPlayback = ({
                     "aria-label": `Upload video to ${relationshipName}`,
                   }}
                   onSuccess={() => {
-                    pollPanelRefetch(queryClient);
+                    pollPanelRefetch(queryClient, objectType, uid);
                   }}
                 />
               )}

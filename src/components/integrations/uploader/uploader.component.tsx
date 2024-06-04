@@ -42,12 +42,13 @@ export const IntegrationUploader = ({
   };
 
   const commonProps = {
+    provider,
     playbackPolicy,
     buttonProps,
     onSuccess: onSuccessWrapper,
   };
 
-  if (provider === "mux") {
+  if (provider === "mux" || provider === "brightcove") {
     return <MuxUploader {...opts} {...commonProps} />;
   }
 

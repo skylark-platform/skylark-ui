@@ -2,7 +2,7 @@ import { ButtonProps } from "src/components/button";
 
 export type IntegrationUploadType = "image" | "video";
 
-export type IntegrationUploaderProvider = "mux" | "cloudinary";
+export type IntegrationUploaderProvider = "mux" | "cloudinary" | "brightcove";
 
 export type IntegrationUploaderPlaybackPolicy = "signed" | "public" | undefined;
 
@@ -13,6 +13,7 @@ export interface IntegrationObjectInfo {
 }
 
 export interface BaseIntegrationUploaderProps extends IntegrationObjectInfo {
+  provider: IntegrationUploaderProvider;
   buttonProps: Omit<ButtonProps, "onClick">;
   playbackPolicy: IntegrationUploaderPlaybackPolicy;
   onSuccess: () => void;
@@ -25,10 +26,12 @@ export const supportedIntegrations: Record<
   image: {
     cloudinary: true,
     mux: false,
+    brightcove: false,
   },
   video: {
     mux: true,
     cloudinary: true,
+    brightcove: true,
   },
 };
 
