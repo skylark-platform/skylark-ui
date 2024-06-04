@@ -20,6 +20,7 @@ interface IntegrationUploaderProps {
   hideErrorForUnsupported?: boolean;
   onSuccess?: () => void;
   buttonProps: BaseIntegrationUploaderProps["buttonProps"];
+  assetType?: string;
 }
 
 export const IntegrationUploader = ({
@@ -29,6 +30,7 @@ export const IntegrationUploader = ({
   opts,
   buttonProps,
   hideErrorForUnsupported,
+  assetType,
   onSuccess,
 }: IntegrationUploaderProps) => {
   const onSuccessWrapper = () => {
@@ -42,12 +44,14 @@ export const IntegrationUploader = ({
   };
 
   const commonProps = {
+    provider,
     playbackPolicy,
     buttonProps,
+    assetType,
     onSuccess: onSuccessWrapper,
   };
 
-  if (provider === "mux") {
+  if (provider === "mux" || provider === "brightcove") {
     return <MuxUploader {...opts} {...commonProps} />;
   }
 

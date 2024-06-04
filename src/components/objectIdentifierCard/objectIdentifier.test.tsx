@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "src/__tests__/utils/test-utils";
+import { PanelTab } from "src/hooks/state";
 import {
   AvailabilityStatus,
   BuiltInSkylarkObjectType,
@@ -68,7 +69,7 @@ test("displays arrow when onForwardClick is passed as a prop and calls onForward
     />,
   );
 
-  const forwardButton = screen.getByRole("button");
+  const forwardButton = screen.getByLabelText("Open Object");
 
   expect(forwardButton).toBeInTheDocument();
 
@@ -93,7 +94,7 @@ test("displays arrow when onForwardClick is passed as a prop and calls window.op
     />,
   );
 
-  const forwardButton = screen.getByRole("button");
+  const forwardButton = screen.getByLabelText("Open Object");
 
   expect(forwardButton).toBeInTheDocument();
 
@@ -117,6 +118,38 @@ test("displays AvailabilityStatus icon by default (Active)", () => {
       "This object has at least one active Availability assigned.",
     ),
   ).toBeInTheDocument();
+});
+
+test("AvailabilityStatus icon can be clicked to open the Object on its Availability tab", () => {
+  const onForwardClick = jest.fn();
+
+  render(
+    <ObjectIdentifierCard
+      object={defaultObject}
+      onForwardClick={onForwardClick}
+    />,
+  );
+
+  const forwardButton = screen.getByLabelText("Open Object (Availability tab)");
+
+  expect(
+    screen.getByLabelText(
+      "This object has at least one active Availability assigned.",
+    ),
+  ).toBeInTheDocument();
+
+  expect(forwardButton).toBeInTheDocument();
+
+  fireEvent.click(forwardButton);
+
+  expect(onForwardClick).toHaveBeenCalledWith(
+    {
+      uid: "123",
+      objectType: "SkylarkSet",
+      language: "en-GB",
+    },
+    { tab: PanelTab.Availability },
+  );
 });
 
 test("displays AvailabilityStatus icon by default (Future)", () => {
