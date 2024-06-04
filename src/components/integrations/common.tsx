@@ -16,6 +16,7 @@ export interface BaseIntegrationUploaderProps extends IntegrationObjectInfo {
   provider: IntegrationUploaderProvider;
   buttonProps: Omit<ButtonProps, "onClick">;
   playbackPolicy: IntegrationUploaderPlaybackPolicy;
+  assetType?: string;
   onSuccess: () => void;
 }
 

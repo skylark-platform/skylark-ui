@@ -15,6 +15,7 @@ import {
   useGenerateIntegrationUploadUrl,
 } from "src/hooks/integrations/useGenerateIntegrationUploadUrl";
 import { useSignalIntegrationUploadComplete } from "src/hooks/integrations/useSignalIntegrationUploadComplete";
+import { useSkylarkSchemaEnum } from "src/hooks/useSkylarkSchemaIntrospection";
 
 interface MuxUploaderProps extends BaseIntegrationUploaderProps {
   id?: string;
@@ -28,6 +29,7 @@ export const MuxUploader = ({
   id,
   playbackPolicy: propPlaybackPolicy,
   buttonProps,
+  assetType: propAssetType,
   onSuccess,
 }: MuxUploaderProps) => {
   const queryClient = useQueryClient();
@@ -35,6 +37,7 @@ export const MuxUploader = ({
   const [playbackPolicy, setPlaybackPolicy] = useState<"signed" | "public">(
     propPlaybackPolicy || "public",
   );
+  const [assetType, setAssetType] = useState(propAssetType || "");
 
   const { data, isLoading, isError } = useGenerateIntegrationUploadUrl(
     "video",
@@ -68,9 +71,14 @@ export const MuxUploader = ({
       signalUploadComplete({
         uploadId: data.upload_id,
         fileName: filename || "",
+        assetType,
+        playbackPolicy,
       });
     }
   };
+
+  const { data: d } = useSkylarkSchemaEnum("AssetType");
+  console.log({ d: d?.values });
 
   return (
     <>
@@ -83,24 +91,42 @@ export const MuxUploader = ({
       <>
         <Modal
           isOpen={isOpen}
-          title="Upload video to Mux"
+          title={`Upload video to ${provider}`}
           size="medium"
           closeModal={() => setIsOpen(false)}
         >
-          <Select
-            className="max-w-64"
-            label="Playback type"
-            labelVariant="form"
-            searchable={false}
-            variant="primary"
-            placeholder=""
-            options={[
-              { label: "Public", value: "public" },
-              { label: "Signed", value: "signed" },
-            ]}
-            selected={playbackPolicy}
-            onChange={setPlaybackPolicy}
-          />
+          <div className="flex w-full gap-4">
+            <Select
+              className="max-w-64 w-full"
+              label="Playback type"
+              labelVariant="form"
+              searchable={false}
+              variant="primary"
+              placeholder=""
+              options={[
+                { label: "Public", value: "public" },
+                { label: "Signed", value: "signed" },
+              ]}
+              selected={playbackPolicy}
+              onChange={setPlaybackPolicy}
+            />
+            {provider === "brightcove" && (
+              <Select
+                className="max-w-64 w-full"
+                label="Asset type"
+                labelVariant="form"
+                searchable={false}
+                variant="primary"
+                placeholder=""
+                disabled={!d?.values}
+                options={
+                  d?.values?.map((value) => ({ label: value, value })) || []
+                }
+                selected={assetType}
+                onChange={setAssetType}
+              />
+            )}
+          </div>
 
           <div className="w-full h-full min-h-64 text-black">
             <div className="flex justify-center items-center mt-4">

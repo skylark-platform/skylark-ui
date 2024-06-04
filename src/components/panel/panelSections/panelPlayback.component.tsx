@@ -16,6 +16,7 @@ import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
   PanelSectionTitle,
+  PanelSeparator,
 } from "src/components/panel/panelTypography";
 import { VideoPlayer } from "src/components/players";
 import { Skeleton } from "src/components/skeleton";
@@ -252,6 +253,7 @@ const MetadataPlayback = ({
               onSuccess={() => {
                 pollPanelRefetch(queryClient, objectType, uid);
               }}
+              assetType={(metadata?.type as string) || ""}
             />
           </div>
         )}
@@ -291,7 +293,6 @@ const RelationshipPlayback = ({
   objectType,
   language,
   isPage,
-  metadata,
   setPanelObject,
 }: PanelPlaybackProps) => {
   const queryClient = useQueryClient();
@@ -326,6 +327,8 @@ const RelationshipPlayback = ({
 
   const firstActiveProvider = data?.enabledIntegrations?.[0];
 
+  console.log({ assetRelationships, sections });
+
   return (
     <PanelSectionLayout sections={sections} isPage={isPage}>
       {sections.map(({ id, title, objects, isLive, relationshipName }) => {
@@ -359,13 +362,16 @@ const RelationshipPlayback = ({
               )}
             </PanelSectionTitle>
             {objects.length > 0 ? (
-              objects.map((object) => {
+              objects.map((object, i) => {
                 const sections = getVideoTypeSections(object.metadata, false);
 
                 return (
-                  <Fragment key={uid}>
-                    {sections.map(({ url, id, playbackId }) => (
-                      <div key={id} className="mb-4">
+                  <div key={`video-section-for-${object.uid}`} className="mb-8">
+                    {sections.map(({ url, id, playbackId, title }) => (
+                      <div key={`${object.uid}-${id}`} className="mb-2">
+                        {sections.length > 1 && (
+                          <p className="font-bold pt-2">{title}</p>
+                        )}
                         <PreviewVideo
                           url={url}
                           provider={firstActiveProvider || null}
@@ -374,17 +380,25 @@ const RelationshipPlayback = ({
                             object.metadata,
                           )}
                         />
-                        <ObjectIdentifierCard
-                          hideObjectType
-                          className="max-w-xl"
-                          object={object}
-                          onForwardClick={(obj) =>
-                            setPanelObject(obj, PanelTab.Playback)
-                          }
-                        />
                       </div>
                     ))}
-                  </Fragment>
+                    {sections.length === 0 && (
+                      <p className="text-sm text-warning">
+                        {object.metadata.status || `No playback URL`}
+                      </p>
+                    )}
+                    <ObjectIdentifierCard
+                      hideObjectType
+                      className="max-w-xl mb-2"
+                      object={object}
+                      onForwardClick={(obj, tab) =>
+                        setPanelObject(obj, tab || PanelTab.Playback)
+                      }
+                    >
+                      {object?.metadata?.type}
+                    </ObjectIdentifierCard>
+                    {i < objects.length - 1 && <PanelSeparator />}
+                  </div>
                 );
               })
             ) : (

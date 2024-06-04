@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import {
   IntegrationUploadType,
+  IntegrationUploaderPlaybackPolicy,
   IntegrationUploaderProvider,
   createIntegrationServiceObj,
 } from "src/components/integrations";
@@ -27,18 +28,26 @@ export const useSignalIntegrationUploadComplete = ({
     mutationFn: ({
       uploadId,
       fileName,
+      assetType,
+      playbackPolicy,
     }: {
       uploadId: string;
       fileName: string;
+      assetType: string;
+      playbackPolicy: IntegrationUploaderPlaybackPolicy;
     }) => {
       const body = {
         upload_id: uploadId,
         file_name: fileName,
-        ...createIntegrationServiceObj({
-          uid,
-          objectType,
-          relationshipName,
-        }),
+        asset_type: assetType,
+        ...createIntegrationServiceObj(
+          {
+            uid,
+            objectType,
+            relationshipName,
+          },
+          playbackPolicy,
+        ),
       };
 
       return integrationServiceRequest(`/upload-complete/${type}/${provider}`, {

@@ -20,6 +20,7 @@ interface IntegrationUploaderProps {
   hideErrorForUnsupported?: boolean;
   onSuccess?: () => void;
   buttonProps: BaseIntegrationUploaderProps["buttonProps"];
+  assetType?: string;
 }
 
 export const IntegrationUploader = ({
@@ -29,6 +30,7 @@ export const IntegrationUploader = ({
   opts,
   buttonProps,
   hideErrorForUnsupported,
+  assetType,
   onSuccess,
 }: IntegrationUploaderProps) => {
   const onSuccessWrapper = () => {
@@ -45,6 +47,7 @@ export const IntegrationUploader = ({
     provider,
     playbackPolicy,
     buttonProps,
+    assetType,
     onSuccess: onSuccessWrapper,
   };
 

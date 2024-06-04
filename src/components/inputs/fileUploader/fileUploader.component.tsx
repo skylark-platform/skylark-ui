@@ -60,12 +60,7 @@ export const SimpleFileUploader = ({
       <input
         type="file"
         onChange={onFileChange}
-        className="text-sm text-stone-500
-   file:mr-5 file:py-1 file:px-3 file:border-[1px]
-   file:text-xs file:font-medium
-   file:bg-stone-50 file:text-stone-700
-   hover:file:cursor-pointer hover:file:bg-blue-50
-   hover:file:text-blue-700"
+        className="text-sm text-manatee-500 file:mr-5 file:py-1 file:px-3 file:border file:border-manatee-700 file:text-sm file:font-medium file:rounded  file:bg-manatee-50 file:text-content hover:file:cursor-pointer  hover:file:text-brand-primary"
       />
       <div className="mt-6">
         <Button
