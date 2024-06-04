@@ -148,7 +148,7 @@ test("AvailabilityStatus icon can be clicked to open the Object on its Availabil
       objectType: "SkylarkSet",
       language: "en-GB",
     },
-    PanelTab.Availability,
+    { tab: PanelTab.Availability },
   );
 });
 

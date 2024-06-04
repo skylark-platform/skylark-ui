@@ -23,10 +23,9 @@ import { Skeleton } from "src/components/skeleton";
 import { useGenerateIntegrationPlaybackUrl } from "src/hooks/integrations/useGenerateIntegrationPlaybackUrl";
 import { useGetIntegrations } from "src/hooks/integrations/useGetIntegrations";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
-import { PanelTab } from "src/hooks/state";
+import { PanelTab, SetPanelObject } from "src/hooks/state";
 import {
   BuiltInSkylarkObjectType,
-  SkylarkObjectIdentifier,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
@@ -43,7 +42,7 @@ interface PanelPlaybackProps {
   inEditMode: boolean;
   objectMeta: SkylarkObjectMeta | null;
   metadata: Record<string, SkylarkObjectMetadataField> | null;
-  setPanelObject: (o: SkylarkObjectIdentifier, tab?: PanelTab) => void;
+  setPanelObject: SetPanelObject;
 }
 
 const videoTypes = ["hls", "dash", "external"];
@@ -391,8 +390,11 @@ const RelationshipPlayback = ({
                       hideObjectType
                       className="max-w-xl mb-2"
                       object={object}
-                      onForwardClick={(obj, tab) =>
-                        setPanelObject(obj, tab || PanelTab.Playback)
+                      onForwardClick={(obj, opts) =>
+                        setPanelObject(obj, {
+                          ...opts,
+                          tab: opts?.tab || PanelTab.Playback,
+                        })
                       }
                     >
                       {object?.metadata?.type}

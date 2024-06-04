@@ -64,6 +64,15 @@ export const defaultPanelTabState: PanelTabState = {
   },
 };
 
+export type SetPanelObject = (
+  newPanelObject: SkylarkObjectIdentifier,
+  opts?: {
+    tab?: PanelTab;
+    tabState?: Partial<PanelTabState>;
+    keepTab?: boolean;
+  },
+) => void;
+
 const createPanelUrlQuery = (object: Partial<PanelObject>) => {
   const obj: PanelUrlQuery = {};
   if (object.uid) {
@@ -185,34 +194,48 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
     forwardPanelStates: [],
   });
 
-  const setPanelObject = useCallback(
+  const setPanelObject: SetPanelObject = useCallback(
     (
       newPanelObject: SkylarkObjectIdentifier,
-      tab?: PanelTab,
-      tabState?: Partial<PanelTabState>,
+      opts?: {
+        tab?: PanelTab;
+        tabState?: Partial<PanelTabState>;
+        keepTab?: boolean;
+      },
     ) => {
+      const { tab, tabState, keepTab } = opts || {
+        tab: undefined,
+        tabState: undefined,
+        keepTab: undefined,
+      };
+
       segment.track(SEGMENT_KEYS.panel.objectChange, {
         newPanelObject,
         tab,
         tabState,
       });
 
-      setPanelState((oldState) => ({
-        forwardPanelStates: [],
-        previousPanelStates: oldState.activePanelState
-          ? [...oldState.previousPanelStates, oldState.activePanelState]
-          : oldState.previousPanelStates,
-        activePanelState: {
-          ...newPanelObject,
-          tab: tab || PanelTab.Metadata,
-          tabState: mergedPanelTabStates(defaultPanelTabState, tabState),
-        },
-      }));
+      setPanelState((oldState) => {
+        const updatedTab =
+          tab ||
+          (keepTab && oldState.activePanelState?.tab) ||
+          PanelTab.Metadata;
 
-      updatePanelUrlQuery({
-        ...newPanelObject,
-        tab: tab || PanelTab.Metadata,
-        tabState: mergedPanelTabStates(defaultPanelTabState, tabState),
+        const updatedState = {
+          forwardPanelStates: [],
+          previousPanelStates: oldState.activePanelState
+            ? [...oldState.previousPanelStates, oldState.activePanelState]
+            : oldState.previousPanelStates,
+          activePanelState: {
+            ...newPanelObject,
+            tab: updatedTab,
+            tabState: mergedPanelTabStates(defaultPanelTabState, tabState),
+          },
+        };
+
+        updatePanelUrlQuery(updatedState.activePanelState);
+
+        return updatedState;
       });
     },
     [updatePanelUrlQuery],
@@ -364,7 +387,7 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
 
 export const useInitialPanelStateFromQuery = (
   isReadyToOpenPanel: boolean,
-  setPanelObject?: (obj: SkylarkObjectIdentifier, tab?: PanelTab) => void,
+  setPanelObject?: SetPanelObject,
 ) => {
   const { query } = useRouter();
 
@@ -388,7 +411,7 @@ export const useInitialPanelStateFromQuery = (
           objectType: currentPanelQuery.panelObjectType,
           language: currentPanelQuery.panelLanguage || "",
         },
-        currentPanelQuery.panelTab as PanelTab | undefined,
+        { tab: currentPanelQuery.panelTab as PanelTab | undefined },
       );
     }
   }, [hasInitialQueryBeenUpdated, isReadyToOpenPanel, query, setPanelObject]);

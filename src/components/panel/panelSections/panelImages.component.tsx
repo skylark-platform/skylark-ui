@@ -15,6 +15,7 @@ import {
 import { Skeleton } from "src/components/skeleton";
 import { useGetIntegrations } from "src/hooks/integrations/useGetIntegrations";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
+import { SetPanelObject } from "src/hooks/state";
 import { useImageSize } from "src/hooks/useImageSize";
 import {
   BuiltInSkylarkObjectType,
@@ -36,7 +37,7 @@ interface PanelImagesProps {
   language: string;
   isPage?: boolean;
   inEditMode: boolean;
-  setPanelObject: (o: SkylarkObjectIdentifier) => void;
+  setPanelObject: SetPanelObject;
 }
 
 const groupImagesByType = (images: ParsedSkylarkObject[]) => {
@@ -70,7 +71,7 @@ const PanelImage = ({
 }: {
   object: ParsedSkylarkObject;
   inEditMode: boolean;
-  setPanelObject: (o: SkylarkObjectIdentifier) => void;
+  setPanelObject: SetPanelObject;
 }) => {
   const { displayName, src } = useMemo(() => {
     const displayName = getObjectDisplayName(object);

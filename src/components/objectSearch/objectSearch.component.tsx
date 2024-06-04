@@ -11,7 +11,6 @@ import clsx from "clsx";
 import { useEffect, useState, useMemo, memo, useCallback } from "react";
 
 import { Spinner } from "src/components/icons";
-import { SEGMENT_KEYS } from "src/constants/segment";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { SearchFilters } from "src/hooks/useSearch";
 import {
@@ -21,7 +20,6 @@ import {
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import { useUserAccount } from "src/hooks/useUserAccount";
 import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
-import { segment } from "src/lib/analytics/segment";
 import {
   hasProperty,
   isObjectsDeepEqual,

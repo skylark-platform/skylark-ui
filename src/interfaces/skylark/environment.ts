@@ -1,7 +1,4 @@
-import {
-  GQLSkylarkActivationStatusResponse,
-  GQLSkylarkBackgroundTask,
-} from "./responses";
+import { GQLSkylarkBackgroundTask } from "./responses";
 
 export interface SkylarkAccount {
   accountId: string;

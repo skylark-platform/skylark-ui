@@ -39,7 +39,7 @@ const navigationItems = [
       {
         id: "api-docs",
         text: "API Documentation",
-        href: HREFS.external.apiDocs,
+        href: HREFS.apiDocs.root,
         Icon: <FiFileText className="text-xl" />,
       },
       {

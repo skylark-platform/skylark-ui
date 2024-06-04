@@ -13,7 +13,7 @@ import { VirtualItem, defaultRangeExtractor, useVirtual } from "react-virtual";
 
 import { SEGMENT_KEYS } from "src/constants/segment";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { CheckedObjectState, PanelTab } from "src/hooks/state";
+import { CheckedObjectState, SetPanelObject } from "src/hooks/state";
 import {
   useAllObjectsMeta,
   useSkylarkObjectTypesWithConfig,
@@ -48,7 +48,7 @@ export interface ObjectSearchResultsProps {
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
   panelObject?: SkylarkObjectIdentifier | null;
-  setPanelObject?: (obj: SkylarkObjectIdentifier, tab?: PanelTab) => void;
+  setPanelObject?: SetPanelObject;
   fetchNextPage?: () => void;
   searchData?: ObjectSearchTableData[];
   hasNextPage?: boolean;

@@ -28,6 +28,7 @@ import {
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
 import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
+import { SetPanelObject } from "src/hooks/state";
 import {
   ParsedSkylarkObjectContentObject,
   AddedSkylarkObjectContentObject,
@@ -57,7 +58,7 @@ interface PanelContentProps extends SkylarkObjectIdentifier {
     errors: HandleDropError[],
   ) => void;
   inEditMode?: boolean;
-  setPanelObject: (o: SkylarkObjectIdentifier) => void;
+  setPanelObject: SetPanelObject;
 }
 
 interface SortableContentObject extends AddedSkylarkObjectContentObject {
@@ -80,7 +81,7 @@ interface ContentObjectProps {
   inEditMode?: boolean;
   arrIndex: number;
   arrLength: number;
-  setPanelObject: PanelContentProps["setPanelObject"];
+  setPanelObject: SetPanelObject;
   removeItem: (uid: string) => void;
   handleManualOrderChange: (
     currentIndex: number,

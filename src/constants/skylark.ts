@@ -43,8 +43,11 @@ export const HREFS = {
     graphqlEditor: "/developer/graphql-editor",
     contentModel: "/content-model",
   },
-  external: {
-    apiDocs: "https://docs.skylarkplatform.com/",
+  external: {},
+  apiDocs: {
+    root: "https://docs.skylarkplatform.com/",
+    headers: "https://docs.skylarkplatform.com/docs/headers",
+    dimensions: "https://docs.skylarkplatform.com/docs/dimensions",
   },
 };
 export const SYSTEM_FIELDS: string[] = [
