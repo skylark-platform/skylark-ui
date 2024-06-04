@@ -5,6 +5,7 @@ import { CgSpinner } from "react-icons/cg";
 import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
+import { SimpleFileUploader } from "src/components/inputs/fileUploader/fileUploader.component";
 import { Select } from "src/components/inputs/select";
 import { BaseIntegrationUploaderProps } from "src/components/integrations/common";
 import { Modal } from "src/components/modals/base/modal";
@@ -13,18 +14,22 @@ import {
   createIntegrationUploadQueryKeyBase,
   useGenerateIntegrationUploadUrl,
 } from "src/hooks/integrations/useGenerateIntegrationUploadUrl";
+import { useSignalIntegrationUploadComplete } from "src/hooks/integrations/useSignalIntegrationUploadComplete";
+import { useSkylarkSchemaEnum } from "src/hooks/useSkylarkSchemaIntrospection";
 
 interface MuxUploaderProps extends BaseIntegrationUploaderProps {
   id?: string;
 }
 
 export const MuxUploader = ({
+  provider,
   uid,
   objectType,
   relationshipName,
   id,
   playbackPolicy: propPlaybackPolicy,
   buttonProps,
+  assetType: propAssetType,
   onSuccess,
 }: MuxUploaderProps) => {
   const queryClient = useQueryClient();
@@ -32,10 +37,11 @@ export const MuxUploader = ({
   const [playbackPolicy, setPlaybackPolicy] = useState<"signed" | "public">(
     propPlaybackPolicy || "public",
   );
+  const [assetType, setAssetType] = useState(propAssetType || "");
 
   const { data, isLoading, isError } = useGenerateIntegrationUploadUrl(
     "video",
-    "mux",
+    provider,
     {
       uid,
       objectType,
@@ -44,15 +50,35 @@ export const MuxUploader = ({
     },
   );
 
+  const { signalUploadComplete } = useSignalIntegrationUploadComplete({
+    type: "video",
+    provider,
+    uid,
+    objectType,
+    relationshipName,
+  });
+
   const [isOpen, setIsOpen] = useState(false);
 
-  const onSuccessWrapper = () => {
+  const onSuccessWrapper = (filename?: string) => {
     setIsOpen(false);
     onSuccess();
     void queryClient.invalidateQueries({
-      queryKey: createIntegrationUploadQueryKeyBase("video", "mux"),
+      queryKey: createIntegrationUploadQueryKeyBase("video", provider),
     });
+
+    if (data?.upload_id && provider === "brightcove") {
+      signalUploadComplete({
+        uploadId: data.upload_id,
+        fileName: filename || "",
+        assetType,
+        playbackPolicy,
+      });
+    }
   };
+
+  const { data: d } = useSkylarkSchemaEnum("AssetType");
+  console.log({ d: d?.values });
 
   return (
     <>
@@ -65,24 +91,42 @@ export const MuxUploader = ({
       <>
         <Modal
           isOpen={isOpen}
-          title="Upload video to Mux"
+          title={`Upload video to ${provider}`}
           size="medium"
           closeModal={() => setIsOpen(false)}
         >
-          <Select
-            className="max-w-64"
-            label="Playback type"
-            labelVariant="form"
-            searchable={false}
-            variant="primary"
-            placeholder=""
-            options={[
-              { label: "Public", value: "public" },
-              { label: "Signed", value: "signed" },
-            ]}
-            selected={playbackPolicy}
-            onChange={setPlaybackPolicy}
-          />
+          <div className="flex w-full gap-4">
+            <Select
+              className="max-w-64 w-full"
+              label="Playback type"
+              labelVariant="form"
+              searchable={false}
+              variant="primary"
+              placeholder=""
+              options={[
+                { label: "Public", value: "public" },
+                { label: "Signed", value: "signed" },
+              ]}
+              selected={playbackPolicy}
+              onChange={setPlaybackPolicy}
+            />
+            {provider === "brightcove" && (
+              <Select
+                className="max-w-64 w-full"
+                label="Asset type"
+                labelVariant="form"
+                searchable={false}
+                variant="primary"
+                placeholder=""
+                disabled={!d?.values}
+                options={
+                  d?.values?.map((value) => ({ label: value, value })) || []
+                }
+                selected={assetType}
+                onChange={setAssetType}
+              />
+            )}
+          </div>
 
           <div className="w-full h-full min-h-64 text-black">
             <div className="flex justify-center items-center mt-4">
@@ -94,45 +138,71 @@ export const MuxUploader = ({
                   </div>
                 )}
                 {data && (
-                  <MuxUploaderComponent
-                    endpoint={data.url}
-                    dynamicChunkSize
-                    id={id}
-                    style={
-                      {
-                        // Commented out ones didn't work
-                        "--uploader-font-family": "Inter",
-                        // "--uploader-font-size": "",
-                        // "--uploader-background-color": "blue",
-                        // "--button-background-color": "#226DFF",
-                        // "--button-border": "",
-                        // "--button-border-radius": "",
-                        // "--button-padding": "",
-                        // "--button-hover-text": "",
-                        // "--button-hover-background": "#226DFF",
-                        // "--button-active-text": "",
-                        // "--button-active-background": "#226DFF",
-                        // "--progress-bar-fill-color": "",
-                        // "--progress-radial-fill-color": "",
-                        // "--overlay-background-color": "green",
-                        fontSize: 14,
-                      } as CSSProperties
-                    }
-                    onSuccess={onSuccessWrapper}
-                    onError={(error) =>
-                      toast.error(
-                        <Toast
-                          title="Mux Upload Error"
-                          message={JSON.stringify(error)}
-                        />,
-                        { autoClose: 20000 },
-                      )
-                    }
-                  >
-                    <Button variant="primary" className={""} slot="file-select">
-                      Upload video
-                    </Button>
-                  </MuxUploaderComponent>
+                  <>
+                    {provider === "mux" ? (
+                      <MuxUploaderComponent
+                        endpoint={data.url}
+                        dynamicChunkSize
+                        id={id}
+                        style={
+                          {
+                            // Commented out ones didn't work
+                            "--uploader-font-family": "Inter",
+                            // "--uploader-font-size": "",
+                            // "--uploader-background-color": "blue",
+                            // "--button-background-color": "#226DFF",
+                            // "--button-border": "",
+                            // "--button-border-radius": "",
+                            // "--button-padding": "",
+                            // "--button-hover-text": "",
+                            // "--button-hover-background": "#226DFF",
+                            // "--button-active-text": "",
+                            // "--button-active-background": "#226DFF",
+                            // "--progress-bar-fill-color": "",
+                            // "--progress-radial-fill-color": "",
+                            // "--overlay-background-color": "green",
+                            fontSize: 14,
+                          } as CSSProperties
+                        }
+                        onSuccess={() => onSuccessWrapper()}
+                        onUploadError={(err) =>
+                          toast.error(
+                            <Toast
+                              title="Mux Upload Error"
+                              message={[err.detail.message]}
+                            />,
+                            { autoClose: 20000 },
+                          )
+                        }
+                        onError={(error) =>
+                          toast.error(
+                            <Toast
+                              title="Mux Upload Error"
+                              message={JSON.stringify(error)}
+                            />,
+                            { autoClose: 20000 },
+                          )
+                        }
+                      >
+                        <Button
+                          variant="primary"
+                          className={""}
+                          slot="file-select"
+                        >
+                          Upload video
+                        </Button>
+                      </MuxUploaderComponent>
+                    ) : (
+                      <SimpleFileUploader
+                        uploadUrl={data.url}
+                        onSuccess={onSuccessWrapper}
+                      />
+                    )}
+                    {/* <SimpleFileUploader
+                      uploadUrl={data.url}
+                      onSuccess={onSuccessWrapper}
+                    /> */}
+                  </>
                 )}
               </div>
             </div>

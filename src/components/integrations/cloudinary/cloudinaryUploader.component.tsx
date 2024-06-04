@@ -175,6 +175,7 @@ export const CloudinaryUploader = ({
   buttonProps,
   playbackPolicy,
   onSuccess,
+  ...props
 }: CloudinaryUploaderProps) => {
   const queryClient = useQueryClient();
 
@@ -200,6 +201,7 @@ export const CloudinaryUploader = ({
     <>
       {data && (
         <CloudinaryUploadWidget
+          {...props}
           uid={uid}
           objectType={objectType}
           relationshipName={relationshipName}

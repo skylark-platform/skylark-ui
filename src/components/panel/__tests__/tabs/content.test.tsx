@@ -113,7 +113,7 @@ describe("content view", () => {
     );
 
     const firstOpenObjectButton = screen.getAllByRole("button", {
-      name: /Open Object/i,
+      name: "Open Object",
     })[0];
     fireEvent.click(firstOpenObjectButton);
 

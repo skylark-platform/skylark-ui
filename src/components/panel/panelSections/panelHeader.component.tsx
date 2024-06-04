@@ -92,14 +92,16 @@ const getAlternateSaveButtonText = (
   return "Publish";
 };
 
-const RefreshPanelQueries = (props: Omit<ButtonProps, "variant">) => {
+const RefreshPanelQueries = (
+  props: Omit<ButtonProps, "variant"> & { uid: string; objectType: string },
+) => {
   const client = useQueryClient();
 
   const [isFetching, setIsFetching] = useState(false);
 
   const onClick = async () => {
     setIsFetching(true);
-    await refetchPanelQueries(client);
+    await refetchPanelQueries(client, props.objectType, props.uid);
     setIsFetching(false);
   };
 
@@ -352,7 +354,11 @@ export const PanelHeader = ({
                 onClick={navigateToForwardPanelObject}
                 aria-label="Click to go forward"
               />
-              <RefreshPanelQueries disabled={inEditMode} />
+              <RefreshPanelQueries
+                disabled={inEditMode}
+                uid={objectUid}
+                objectType={objectType}
+              />
             </>
           )}
           <DropdownMenu options={objectMenuOptions} placement="bottom-end">

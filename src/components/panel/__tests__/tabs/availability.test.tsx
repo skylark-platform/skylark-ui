@@ -351,7 +351,7 @@ describe("availability view", () => {
     );
 
     const firstOpenObjectButton = screen.getAllByRole("button", {
-      name: /Open Object/i,
+      name: "Open Object",
     })[0];
     await fireEvent.click(firstOpenObjectButton);
 
