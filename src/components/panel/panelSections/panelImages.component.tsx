@@ -20,7 +20,6 @@ import { useImageSize } from "src/hooks/useImageSize";
 import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import {
   addCloudinaryOnTheFlyImageTransformation,

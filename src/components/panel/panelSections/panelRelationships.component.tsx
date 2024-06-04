@@ -20,7 +20,6 @@ import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeR
 import {
   ParsedSkylarkObjectRelationships,
   SkylarkObjectType,
-  SkylarkObjectIdentifier,
   ParsedSkylarkObject,
   ParsedSkylarkObjectRelationship,
 } from "src/interfaces/skylark";

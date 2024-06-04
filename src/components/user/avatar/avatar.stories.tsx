@@ -1,5 +1,3 @@
-import { StoryFn } from "@storybook/react";
-
 import { UserAvatar } from "./avatar.component";
 
 export default {

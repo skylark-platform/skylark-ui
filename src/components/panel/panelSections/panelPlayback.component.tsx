@@ -290,7 +290,6 @@ const RelationshipPlayback = ({
   objectType,
   language,
   isPage,
-  metadata,
   setPanelObject,
 }: PanelPlaybackProps) => {
   const queryClient = useQueryClient();

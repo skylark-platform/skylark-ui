@@ -1,10 +1,4 @@
-import {
-  waitFor,
-  screen,
-  fireEvent,
-  within,
-  findByText,
-} from "@testing-library/react";
+import { waitFor, screen, fireEvent, within } from "@testing-library/react";
 import {
   DefaultBodyType,
   GraphQLContext,

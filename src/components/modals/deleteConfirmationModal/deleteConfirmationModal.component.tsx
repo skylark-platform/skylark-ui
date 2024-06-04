@@ -1,16 +1,9 @@
 import clsx from "clsx";
-import { Fragment, useCallback, useRef, useState } from "react";
-import { toast } from "react-toastify";
-import { useDebouncedCallback } from "use-debounce";
+import { useState } from "react";
 
 import { Button } from "src/components/button";
 import { TextInput } from "src/components/inputs/input";
 import { Modal } from "src/components/modals/base/modal";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
-import { Toast } from "src/components/toast/toast.component";
-import { useBulkDeleteObjects } from "src/hooks/objects/delete/useBulkDeleteObjects";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
-import { hasProperty } from "src/lib/utils";
 
 const VERIFICATION_TEXT = "permanently delete";
 

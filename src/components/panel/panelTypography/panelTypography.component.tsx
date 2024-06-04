@@ -1,16 +1,8 @@
 import clsx from "clsx";
 import { ReactNode, Ref, forwardRef } from "react";
 import { CgSpinner } from "react-icons/cg";
-import {
-  FiMaximize2,
-  FiMinimize2,
-  FiPlus,
-  FiUpload,
-  FiUploadCloud,
-  FiX,
-} from "react-icons/fi";
+import { FiMaximize2, FiMinimize2, FiPlus, FiX } from "react-icons/fi";
 
-import { Button } from "src/components/button";
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 
 interface PanelHeaderProps {

@@ -3,6 +3,8 @@ import { StoryFn } from "@storybook/react";
 import { waitFor, screen } from "@storybook/testing-library";
 import { useForm } from "react-hook-form";
 
+import { SkylarkObjectMetadataField } from "src/interfaces/skylark";
+
 import { SkylarkObjectFieldInput } from "./skylarkObjectFieldInput.component";
 
 export default {
@@ -20,7 +22,8 @@ const Template: StoryFn<typeof SkylarkObjectFieldInput> = ({
   config,
   fieldConfigFromObject,
 }) => {
-  const { register, control, getValues, formState } = useForm();
+  const { register, control, getValues, formState } =
+    useForm<Record<string, SkylarkObjectMetadataField>>();
 
   return (
     <div

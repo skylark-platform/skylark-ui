@@ -27,7 +27,35 @@ type GetIntegrationsResponse = Record<
 >;
 
 export const useGetIntegrations = (type: IntegrationUploadType) => {
-  const { data, isLoading } = useQuery({
+  const select = useCallback(
+    (data: GetIntegrationsResponse) => {
+      const integrations = data[type];
+      const supported = supportedIntegrations[type];
+      const enabledIntegrations: IntegrationUploaderProvider[] = Object.entries(
+        integrations,
+      )
+        .filter(
+          ([name, { enabled }]) =>
+            enabled && supported?.[name as IntegrationUploaderProvider],
+        )
+        .map(([name]) => name as IntegrationUploaderProvider);
+
+      return {
+        integrations,
+        enabledIntegrations,
+      };
+    },
+    [type],
+  );
+
+  const { data, isLoading } = useQuery<
+    GetIntegrationsResponse,
+    unknown,
+    {
+      integrations: Record<IntegrationUploaderProvider, IntegrationInfo>;
+      enabledIntegrations: IntegrationUploaderProvider[];
+    }
+  >({
     queryKey: [QueryKeys.Integrations],
     queryFn: async () => {
       const data = await integrationServiceRequest<GetIntegrationsResponse>(
@@ -36,25 +64,7 @@ export const useGetIntegrations = (type: IntegrationUploadType) => {
       );
       return data;
     },
-    select: useCallback(
-      (data: GetIntegrationsResponse) => {
-        const integrations = data[type];
-        const supported = supportedIntegrations[type];
-        const enabledIntegrations: IntegrationUploaderProvider[] =
-          Object.entries(integrations)
-            .filter(
-              ([name, { enabled }]) =>
-                enabled && supported?.[name as IntegrationUploaderProvider],
-            )
-            .map(([name]) => name as IntegrationUploaderProvider);
-
-        return {
-          integrations,
-          enabledIntegrations,
-        };
-      },
-      [type],
-    ),
+    select,
   });
 
   return {
