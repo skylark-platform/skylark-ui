@@ -1,6 +1,6 @@
 import { expect } from "@storybook/jest";
 import { StoryFn } from "@storybook/react";
-import { userEvent, waitFor, screen, within } from "@storybook/testing-library";
+import { userEvent, waitFor, screen } from "@storybook/testing-library";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -24,14 +24,11 @@ export default {
 };
 
 const openToastAndCheckForTitle = async ({
-  canvasElement,
   args,
 }: {
   canvasElement: HTMLElement;
   args: ToastProps;
 }) => {
-  const canvas = within(canvasElement);
-
   await waitFor(async () => {
     screen.getByTestId("toastify-loaded");
   });

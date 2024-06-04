@@ -1,6 +1,5 @@
 import { Disclosure, DisclosureProps } from "@headlessui/react";
 import clsx from "clsx";
-import { ReactNode } from "react";
 import { FiChevronDown } from "react-icons/fi";
 
 type AccordionProps<TTag extends React.ElementType> = DisclosureProps<TTag> & {

@@ -1,5 +1,3 @@
-import { StoryFn } from "@storybook/react";
-
 import { Pill } from "./pill.component";
 
 export default {

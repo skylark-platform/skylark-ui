@@ -1,5 +1,3 @@
-import { StoryFn } from "@storybook/react";
-
 import { CheckboxGrid, CheckboxOptionState } from "./checkboxGrid.component";
 
 export default {

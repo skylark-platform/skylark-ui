@@ -1,4 +1,3 @@
-import { StoryFn } from "@storybook/react";
 import { userEvent, screen } from "@storybook/testing-library";
 
 import { ColourPicker } from "./colourPicker.component";

@@ -14,7 +14,7 @@ import {
   FiShieldOff,
   FiTrash2,
 } from "react-icons/fi";
-import { GrGlobe, GrGraphQl, GrLock, GrUnlock } from "react-icons/gr";
+import { GrGlobe, GrGraphQl, GrLock } from "react-icons/gr";
 import { toast } from "react-toastify";
 
 import { AvailabilityLabelPill } from "src/components/availability";

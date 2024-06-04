@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 import { Spinner } from "src/components/icons";
-import { CompareSchemaVersionsModal } from "src/components/modals";
 import { useActivationStatus } from "src/hooks/useAccountStatus";
 import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import {

@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import { useEffect, useState } from "react";
 import { CgSpinner } from "react-icons/cg";
 import { GrMagic } from "react-icons/gr";
 

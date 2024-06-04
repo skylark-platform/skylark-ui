@@ -8,10 +8,7 @@ import {
   IntegrationUploader,
   IntegrationUploaderProvider,
 } from "src/components/integrations";
-import {
-  pollPanelRefetch,
-  refetchPanelQueries,
-} from "src/components/panel/panel.lib";
+import { pollPanelRefetch } from "src/components/panel/panel.lib";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelSectionTitle,

@@ -12,10 +12,6 @@ import {
 
 import { Checkbox } from "src/components/inputs/checkbox";
 import { ColourPicker } from "src/components/inputs/colourPicker";
-import {
-  InputLabel,
-  InputLabelProps,
-} from "src/components/inputs/label/label.component";
 import { Select, TimezoneSelect } from "src/components/inputs/select";
 import {
   SkylarkObjectFieldInputLabel,

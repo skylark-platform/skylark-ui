@@ -8,7 +8,6 @@ import { Button } from "src/components/button";
 import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { LOCAL_STORAGE } from "src/constants/localStorage";
 import { useAccountStatus } from "src/hooks/useAccountStatus";
-import { useUserAccount } from "src/hooks/useUserAccount";
 import {
   BackgroundTaskType,
   GQLSkylarkBackgroundTask,
