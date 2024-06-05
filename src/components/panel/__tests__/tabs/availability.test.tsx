@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import { graphql } from "msw";
 
 import GQLSkylarkGetObjectQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/fantasticMrFox_All_Availabilities.json";
@@ -37,7 +38,7 @@ beforeEach(() => {
 });
 describe("availability view", () => {
   beforeEach(() => {
-    jest.useFakeTimers().setSystemTime(new Date("2023-03-10T00:00:00.000Z"));
+    jest.setSystemTime(new Date("2023-03-10T00:00:00.000Z"));
   });
 
   test("render the panel", async () => {
