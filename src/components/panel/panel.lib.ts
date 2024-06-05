@@ -80,7 +80,7 @@ export const pollPanelRefetch = (
   let timesRun = 0;
   const interval = setInterval(() => {
     timesRun += 1;
-    if (timesRun === 50) {
+    if (timesRun === 100) {
       clearInterval(interval);
     }
 
@@ -88,7 +88,7 @@ export const pollPanelRefetch = (
     if (timesRun % 10 === 0) {
       void refetchSearchQueriesAfterUpdate(client);
     }
-  }, 750);
+  }, 1000);
 
   return interval;
 };
