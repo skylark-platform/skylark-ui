@@ -29,7 +29,7 @@ export const createGetObjectKeyPrefix = ({
   objectType: string;
   uid: string;
   language?: string | null;
-}) => [QueryKeys.GetObject, { objectType, uid }, { language }];
+}) => [QueryKeys.GetObject, uid, objectType, { language }];
 
 export const useGetObject = (
   objectType: SkylarkObjectType,

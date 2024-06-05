@@ -162,7 +162,7 @@ export const AccountStatus = () => {
   const poll = disableBackgroundTaskPolling === true ? false : true;
 
   const { backgroundTasks, activationStatus, userNeedsSelfConfigPermissions } =
-    useAccountStatus(poll);
+    useAccountStatus({ poll, refetchQueries: true });
 
   const [showCompletedText, setShowCompletedText] = useState(false);
 

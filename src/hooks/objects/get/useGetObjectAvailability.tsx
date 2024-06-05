@@ -28,7 +28,7 @@ export const createGetObjectAvailabilityKeyPrefix = ({
 }: {
   objectType: string;
   uid: string;
-}) => [QueryKeys.GetObjectAvailability, { objectType, uid }];
+}) => [QueryKeys.GetObjectAvailability, uid, objectType];
 
 const generateQueryFunctionAndKey = ({
   objectMeta,

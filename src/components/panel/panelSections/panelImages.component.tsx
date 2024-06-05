@@ -166,7 +166,7 @@ export const PanelImages = ({
                     "aria-label": `Upload to ${relationshipName}`,
                   }}
                   onSuccess={() => {
-                    pollPanelRefetch(queryClient, objectType, uid);
+                    pollPanelRefetch(queryClient, uid);
                   }}
                 />
               )}

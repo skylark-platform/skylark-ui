@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { refetchPanelQueries } from "src/components/panel/panel.lib";
 import { QueryKeys } from "src/enums/graphql";
 import {
   GQLSkylarkErrorResponse,
@@ -84,7 +85,15 @@ export const useActivationStatus = () => {
   };
 };
 
-export const useAccountStatus = (poll?: boolean) => {
+export const useAccountStatus = ({
+  poll,
+  refetchQueries,
+}: {
+  poll?: boolean;
+  refetchQueries?: boolean;
+}) => {
+  const client = useQueryClient();
+
   const { data, error, isLoading, isError } =
     useBackgroundTasksAndActivationStatus<AccountStatus>(selectAllData, {
       poll,
@@ -100,6 +109,14 @@ export const useAccountStatus = (poll?: boolean) => {
 
   const isConnected =
     userNeedsSelfConfigPermissions || (!isError && !isUnauthenticated);
+
+  if (refetchQueries && data?.backgroundTasks.inProgress) {
+    data.backgroundTasks.inProgress.map(({ object_uid }) => {
+      // Intermediary step before we have webhook notifications
+      void refetchPanelQueries(client, object_uid);
+      setTimeout(() => void refetchPanelQueries(client, object_uid), 10000);
+    });
+  }
 
   return {
     isLoading,

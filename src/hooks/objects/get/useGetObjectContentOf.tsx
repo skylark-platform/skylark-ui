@@ -28,7 +28,7 @@ export const createGetObjectContentOfKeyPrefix = ({
 }: {
   objectType: string;
   uid: string;
-}) => [QueryKeys.GetObjectContentOf, objectType, uid];
+}) => [QueryKeys.GetObjectContentOf, uid, objectType];
 
 export const useGetObjectContentOf = (
   objectType: SkylarkObjectType,

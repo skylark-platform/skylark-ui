@@ -28,7 +28,7 @@ export const Navigation = () => {
 
   const [open, setOpen] = useState(false);
 
-  const { isConnected } = useAccountStatus();
+  const { isConnected } = useAccountStatus({});
 
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
 

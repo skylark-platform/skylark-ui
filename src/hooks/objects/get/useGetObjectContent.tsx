@@ -44,7 +44,7 @@ export const createGetObjectContentKeyPrefix = ({
 }: {
   objectType: string;
   uid: string;
-}) => [QueryKeys.GetObjectContent, { objectType, uid }];
+}) => [QueryKeys.GetObjectContent, uid, objectType];
 
 const generateQueryFunctionAndKey = ({
   objectMeta,

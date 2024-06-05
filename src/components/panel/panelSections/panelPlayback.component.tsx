@@ -253,7 +253,7 @@ const MetadataPlayback = ({
                 Icon: <FiUploadCloud className="text-lg" />,
               }}
               onSuccess={() => {
-                pollPanelRefetch(queryClient, objectType, uid);
+                pollPanelRefetch(queryClient, uid);
               }}
               assetType={(metadata?.type as string) || ""}
             />
@@ -371,7 +371,6 @@ const RelationshipPlayback = ({
                   onSuccess={() => {
                     pollPanelRefetch(
                       queryClient,
-                      objectType,
                       uid,
                       QueryKeys.GetObjectRelationships,
                     );

@@ -101,7 +101,7 @@ const UploadImageSection = ({
                 Icon: <FiUploadCloud className="text-lg" />,
               }}
               onSuccess={() => {
-                pollPanelRefetch(queryClient, objectType, uid);
+                pollPanelRefetch(queryClient, uid);
               }}
             />
           </div>

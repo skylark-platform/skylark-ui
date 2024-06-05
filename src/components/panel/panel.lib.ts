@@ -39,7 +39,6 @@ export type HandleDropError =
 
 export const refetchPanelQueries = async (
   client: QueryClient,
-  objectType: string,
   uid: string,
   alternativeKey?: QueryKeys,
 ) => {
@@ -53,11 +52,7 @@ export const refetchPanelQueries = async (
         (key?.[0] as string).startsWith(
           alternativeKey || QueryKeys.GetObject,
         ) &&
-        (key.length === 1 ||
-          (hasProperty(key[1], "objectType") &&
-            hasProperty(key[1], "uid") &&
-            key[1]?.objectType === objectType &&
-            key[1]?.uid === uid)),
+        (key.length === 1 || key[1] === uid),
     );
 
   console.log(queryKeys);
@@ -73,7 +68,6 @@ export const refetchPanelQueries = async (
 
 export const pollPanelRefetch = (
   client: QueryClient,
-  objectType: string,
   uid: string,
   alternativeKey?: QueryKeys,
 ) => {
@@ -84,7 +78,7 @@ export const pollPanelRefetch = (
       clearInterval(interval);
     }
 
-    void refetchPanelQueries(client, objectType, uid, alternativeKey);
+    void refetchPanelQueries(client, uid, alternativeKey);
     if (timesRun % 10 === 0) {
       void refetchSearchQueriesAfterUpdate(client);
     }

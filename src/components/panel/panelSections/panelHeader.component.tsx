@@ -101,7 +101,7 @@ const RefreshPanelQueries = (
 
   const onClick = async () => {
     setIsFetching(true);
-    await refetchPanelQueries(client, props.objectType, props.uid);
+    await refetchPanelQueries(client, props.uid);
     setIsFetching(false);
   };
 
