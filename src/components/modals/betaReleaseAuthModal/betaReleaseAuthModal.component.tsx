@@ -50,9 +50,10 @@ export const AddAuthTokenModal = ({
     }
   }, 750);
 
-  if (!isOpen && !isLoading && !isConnected) {
-    setIsOpen(true);
-  }
+  // TODO remove in future
+  // if (!isOpen && !isLoading && !isConnected) {
+  //   setIsOpen(true);
+  // }
 
   useEffect(() => {
     if (credsFromLocalStorage) {
@@ -95,7 +96,7 @@ export const AddAuthTokenModal = ({
     <Modal
       title="Connect to Skylark"
       description="Enter your GraphQL URI and API Key below to connect to your Skylark account."
-      isOpen={isOpen}
+      isOpen={isOpen || (!isLoading && !isConnected)}
       size="small"
       closeModal={closeModal}
     >

@@ -60,6 +60,10 @@ export const MuxUploader = ({
 
   const [isOpen, setIsOpen] = useState(false);
 
+  const { data: assetTypeEnum } = useSkylarkSchemaEnum("AssetType");
+  const firstAssetTypeEnumValue =
+    (assetTypeEnum?.values && assetTypeEnum?.values?.[0]) || "";
+
   const onSuccessWrapper = (filename?: string) => {
     setIsOpen(false);
     onSuccess();
@@ -71,14 +75,11 @@ export const MuxUploader = ({
       signalUploadComplete({
         uploadId: data.upload_id,
         fileName: filename || "",
-        assetType,
+        assetType: assetType || firstAssetTypeEnumValue,
         playbackPolicy,
       });
     }
   };
-
-  const { data: d } = useSkylarkSchemaEnum("AssetType");
-  console.log({ d: d?.values });
 
   return (
     <>
@@ -118,11 +119,14 @@ export const MuxUploader = ({
                 searchable={false}
                 variant="primary"
                 placeholder=""
-                disabled={!d?.values}
+                disabled={!assetTypeEnum?.values}
                 options={
-                  d?.values?.map((value) => ({ label: value, value })) || []
+                  assetTypeEnum?.values?.map((value) => ({
+                    label: value,
+                    value,
+                  })) || []
                 }
-                selected={assetType}
+                selected={assetType || firstAssetTypeEnumValue}
                 onChange={setAssetType}
               />
             )}

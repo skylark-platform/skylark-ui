@@ -1,6 +1,7 @@
 import { QueryClient } from "@tanstack/react-query";
 
 import { QueryKeys } from "src/enums/graphql";
+import { refetchSearchQueriesAfterUpdate } from "src/hooks/objects/useCreateObject";
 import {
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
@@ -78,6 +79,9 @@ export const pollPanelRefetch = (
     }
 
     void refetchPanelQueries(client, objectType, uid);
+    if (timesRun % 10 === 0) {
+      void refetchSearchQueriesAfterUpdate(client);
+    }
   }, 750);
 
   return interval;

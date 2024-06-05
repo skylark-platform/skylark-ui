@@ -1,6 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
-import { Fragment, useState } from "react";
+import dayjs from "dayjs";
+import { Fragment, useMemo, useState } from "react";
+import { CgSpinner } from "react-icons/cg";
 import { FiUploadCloud } from "react-icons/fi";
 
 import { Select, SelectOption } from "src/components/inputs/select";
@@ -299,34 +301,45 @@ const RelationshipPlayback = ({
   const { relationships, isLoading, query, variables } =
     useGetObjectRelationships(objectType, uid, { language });
 
-  const relationshipsArr = relationships ? Object.values(relationships) : [];
+  const sections = useMemo(() => {
+    const relationshipsArr = relationships ? Object.values(relationships) : [];
 
-  const assetRelationships =
-    relationshipsArr?.filter(
-      (rel) => rel.objectType === BuiltInSkylarkObjectType.SkylarkAsset,
-    ) || [];
-  const liveAssetRelationships =
-    relationshipsArr?.filter(
-      (rel) => rel.objectType === BuiltInSkylarkObjectType.SkylarkLiveAsset,
-    ) || [];
+    const assetRelationships =
+      relationshipsArr?.filter(
+        (rel) => rel.objectType === BuiltInSkylarkObjectType.SkylarkAsset,
+      ) || [];
+    const liveAssetRelationships =
+      relationshipsArr?.filter(
+        (rel) => rel.objectType === BuiltInSkylarkObjectType.SkylarkLiveAsset,
+      ) || [];
 
-  const sections = [...assetRelationships, ...liveAssetRelationships]
-    .sort((a, b) => (a.objects.length > b.objects.length ? -1 : 1))
-    .map(({ objects, name }) => ({
-      id: name,
-      htmlId: `playback-panel-${name}`,
-      title: formatObjectField(name),
-      relationshipName: name,
-      objects: objects,
-      isLive: liveAssetRelationships.findIndex((rel) => rel.name === name) > -1,
-    }));
+    const sections = [...assetRelationships, ...liveAssetRelationships]
+      .sort((a, b) => (a.objects.length > b.objects.length ? -1 : 1))
+      .map(({ objects, name }) => ({
+        id: name,
+        htmlId: `playback-panel-${name}`,
+        title: formatObjectField(name),
+        relationshipName: name,
+        objects: objects.sort((a, b) =>
+          a.meta &&
+          b.meta &&
+          dayjs(a.meta.modified || a.meta.created).isBefore(
+            b.meta.modified || b.meta.created,
+          )
+            ? 1
+            : -1,
+        ),
+        isLive:
+          liveAssetRelationships.findIndex((rel) => rel.name === name) > -1,
+      }));
+
+    return sections;
+  }, [relationships]);
 
   const { data, isLoading: isLoadingIntegrations } =
     useGetIntegrations("video");
 
   const firstActiveProvider = data?.enabledIntegrations?.[0];
-
-  console.log({ assetRelationships, sections });
 
   return (
     <PanelSectionLayout sections={sections} isPage={isPage}>
@@ -382,8 +395,15 @@ const RelationshipPlayback = ({
                       </div>
                     ))}
                     {sections.length === 0 && (
-                      <p className="text-sm text-warning">
-                        {object.metadata.status || `No playback URL`}
+                      <p className="text-sm text-warning inline-flex">
+                        {object.metadata.status ? (
+                          <>
+                            {object.metadata.status}
+                            <CgSpinner className="ml-1 animate-spin-fast text-base md:text-lg" />
+                          </>
+                        ) : (
+                          `No playback URL`
+                        )}
                       </p>
                     )}
                     <ObjectIdentifierCard
