@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { Fragment, Ref, forwardRef } from "react";
 import { FiChevronDown } from "react-icons/fi";
 
@@ -23,7 +24,7 @@ export const ButtonWithDropdown = forwardRef(
         <Button
           {...buttonProps}
           onClick={onClick}
-          className="rounded-r-none pr-1 md:pr-2"
+          className={clsx("rounded-r-none pr-1 md:pr-2", buttonProps.className)}
           ref={buttonRef}
         >
           {children}

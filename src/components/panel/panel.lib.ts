@@ -41,6 +41,7 @@ export const refetchPanelQueries = async (
   client: QueryClient,
   objectType: string,
   uid: string,
+  alternativeKey?: QueryKeys,
 ) => {
   const queryCache = client.getQueryCache();
 
@@ -49,13 +50,17 @@ export const refetchPanelQueries = async (
     .map((cache) => cache.queryKey)
     .filter(
       (key) =>
-        (key?.[0] as string).startsWith(QueryKeys.GetObject) &&
+        (key?.[0] as string).startsWith(
+          alternativeKey || QueryKeys.GetObject,
+        ) &&
         (key.length === 1 ||
           (hasProperty(key[1], "objectType") &&
             hasProperty(key[1], "uid") &&
             key[1]?.objectType === objectType &&
             key[1]?.uid === uid)),
     );
+
+  console.log(queryKeys);
 
   await Promise.all(
     queryKeys.map((queryKey) =>
@@ -70,6 +75,7 @@ export const pollPanelRefetch = (
   client: QueryClient,
   objectType: string,
   uid: string,
+  alternativeKey?: QueryKeys,
 ) => {
   let timesRun = 0;
   const interval = setInterval(() => {
@@ -78,7 +84,7 @@ export const pollPanelRefetch = (
       clearInterval(interval);
     }
 
-    void refetchPanelQueries(client, objectType, uid);
+    void refetchPanelQueries(client, objectType, uid, alternativeKey);
     if (timesRun % 10 === 0) {
       void refetchSearchQueriesAfterUpdate(client);
     }

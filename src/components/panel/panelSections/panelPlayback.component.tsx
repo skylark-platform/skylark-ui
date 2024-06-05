@@ -22,6 +22,7 @@ import {
 } from "src/components/panel/panelTypography";
 import { VideoPlayer } from "src/components/players";
 import { Skeleton } from "src/components/skeleton";
+import { QueryKeys } from "src/enums/graphql";
 import { useGenerateIntegrationPlaybackUrl } from "src/hooks/integrations/useGenerateIntegrationPlaybackUrl";
 import { useGetIntegrations } from "src/hooks/integrations/useGetIntegrations";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
@@ -368,7 +369,12 @@ const RelationshipPlayback = ({
                     "aria-label": `Upload video to ${relationshipName}`,
                   }}
                   onSuccess={() => {
-                    pollPanelRefetch(queryClient, objectType, uid);
+                    pollPanelRefetch(
+                      queryClient,
+                      objectType,
+                      uid,
+                      QueryKeys.GetObjectRelationships,
+                    );
                   }}
                 />
               )}

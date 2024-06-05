@@ -92,7 +92,7 @@ export const MuxUploader = ({
       <>
         <Modal
           isOpen={isOpen}
-          title={`Upload video to ${provider}`}
+          title={`Upload video to ${provider === "brightcove" ? "Brightcove" : "Mux"}`}
           size="medium"
           closeModal={() => setIsOpen(false)}
         >

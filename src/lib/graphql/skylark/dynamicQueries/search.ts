@@ -1,7 +1,10 @@
 import gql from "graphql-tag";
 import { VariableType } from "json-to-graphql-query";
 
-import { SkylarkObjectMeta } from "src/interfaces/skylark";
+import {
+  BuiltInSkylarkObjectType,
+  SkylarkObjectMeta,
+} from "src/interfaces/skylark";
 
 import {
   generateVariablesAndArgs,
@@ -19,10 +22,13 @@ export const createSearchObjectsQuery = (
   },
 ) => {
   // Default to showing all objects when no types are requested
-  const objectsToRequest =
+  const objectsToRequest = (
     typesToRequest.length > 0
       ? objects?.filter(({ name }) => typesToRequest.includes(name))
-      : objects;
+      : objects
+  )?.filter(
+    ({ name }) => name !== BuiltInSkylarkObjectType.SkylarkFavoriteList,
+  );
 
   if (
     !objects ||

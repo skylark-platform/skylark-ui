@@ -14,6 +14,7 @@ import { HREFS, REQUEST_HEADERS } from "src/constants/skylark";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 
 import { skylarkHeadersPlugin } from "./plugins/skylarkHeadersPlugin.component";
+import { skylarkQueriesPlugin } from "./plugins/skylarkQueriesPlugin.component";
 
 const GRAPHIQL_INTROSPECTION_NAME = wrapQueryName(
   "GRAPHIQL_INTROSPECTION_QUERY",
@@ -66,6 +67,8 @@ interface GraphiQLEditorProps {
 const explorer = explorerPlugin({ showAttribution: true });
 
 const skylarkSettingsPlugin = skylarkHeadersPlugin();
+
+const skylarkQueryPlugin = skylarkQueriesPlugin();
 
 const createGraphQLFetcher =
   (
@@ -121,7 +124,7 @@ export const GraphiQLEditor = ({
   return (
     <GraphiQL
       defaultQuery={defaultQuery}
-      plugins={[explorer, skylarkSettingsPlugin]}
+      plugins={[explorer, skylarkSettingsPlugin, skylarkQueryPlugin]}
       // storage={}
       fetcher={fetcher}
       shouldPersistHeaders={true}
