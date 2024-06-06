@@ -47,13 +47,11 @@ export const createGetObjectGenericQuery = (
         ...variables,
         uid: "String",
         externalId: "String",
-        dimensions: "[UserDimension]",
       },
       getObject: {
         __aliasFor: "getObject",
         __args: {
           ...args,
-          dimensions: new VariableType("dimensions"),
           uid: new VariableType("uid"),
           external_id: new VariableType("externalId"),
         },

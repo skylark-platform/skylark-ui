@@ -1,6 +1,26 @@
 import { REQUEST_HEADERS } from "src/constants/skylark";
 import { convertDateAndTimezoneToISO } from "src/lib/skylark/availability";
 
+import { convertSlugToDimensionHeader } from "./utils";
+
+const convertAvailabilityDimensionsObjectToGQLDimensionHeaders = (
+  availabilityDimensions: Record<string, string> | null,
+) => {
+  if (!availabilityDimensions) {
+    return [];
+  }
+
+  const dimensions = Object.entries(availabilityDimensions).reduce(
+    (prev, [dimension, value]) => ({
+      ...prev,
+      [convertSlugToDimensionHeader(dimension)]: value,
+    }),
+    {},
+  );
+
+  return dimensions;
+};
+
 export const generateAvailabilityHeaders = (availability?: {
   dimensions: Record<string, string> | null;
   timeTravel: {
@@ -9,7 +29,7 @@ export const generateAvailabilityHeaders = (availability?: {
   } | null;
 }) => {
   // TODO convert this into generic function as its duplicated in search
-  const headers: HeadersInit = {
+  let headers: HeadersInit = {
     [REQUEST_HEADERS.ignoreAvailability]: "true",
   };
 
@@ -18,7 +38,14 @@ export const generateAvailabilityHeaders = (availability?: {
   }
 
   if (availability.dimensions) {
-    headers[REQUEST_HEADERS.ignoreAvailability] = "false";
+    headers = {
+      ...headers,
+      ...convertAvailabilityDimensionsObjectToGQLDimensionHeaders(
+        availability.dimensions,
+      ),
+      [REQUEST_HEADERS.ignoreAvailability]: "false",
+    };
+
     if (!availability.timeTravel) {
       headers[REQUEST_HEADERS.ignoreTime] = "true";
     }

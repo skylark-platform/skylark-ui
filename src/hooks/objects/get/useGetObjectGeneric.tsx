@@ -13,7 +13,6 @@ import {
 import { GQLSkylarkGetObjectResponse } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
-  convertAvailabilityDimensionsObjectToGQLDimensions,
   createGetObjectGenericQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
@@ -69,17 +68,10 @@ export const useGetObjectGeneric = (
     };
   }, [ignoreLanguage, objectMeta, objectTypes]);
 
-  const dimensions = availability
-    ? convertAvailabilityDimensionsObjectToGQLDimensions(
-        availability.dimensions,
-      )
-    : null;
-
   const variables: Variables = {
     uid,
     externalId,
     language: language || null,
-    dimensions,
   };
 
   const headers = {

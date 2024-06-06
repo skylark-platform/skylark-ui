@@ -10,7 +10,6 @@ import {
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
-  convertAvailabilityDimensionsObjectToGQLDimensions,
   createSearchObjectsQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
@@ -57,16 +56,11 @@ export const useSearch = ({
     };
   }, [searchableObjects, objectTypes]);
 
-  const dimensions = convertAvailabilityDimensionsObjectToGQLDimensions(
-    availability.dimensions,
-  );
-
   const variables: Variables = {
     queryString,
     limit: SEARCH_PAGE_SIZE,
     offset: 0,
     language: language || null,
-    dimensions,
   };
 
   const headers = generateAvailabilityHeaders(availability);

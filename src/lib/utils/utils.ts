@@ -253,3 +253,6 @@ export const insertAtIndex = <T>(
   const itemArr: T[] = Array.isArray(item) ? item : [item];
   return [...array.slice(0, index), ...itemArr, ...array.slice(index)];
 };
+
+export const convertSlugToDimensionHeader = (slug: string) =>
+  `x-sl-dimension-${slug}`;

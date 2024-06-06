@@ -5,6 +5,7 @@ import {
   useVariablesEditorState,
 } from "@graphiql/react";
 import { DocumentNode, Kind, OperationDefinitionNode, print } from "graphql";
+import gql from "graphql-tag";
 import { FiFilePlus } from "react-icons/fi";
 
 import { ButtonWithDropdown } from "src/components/buttonWithDropdown";
@@ -23,6 +24,12 @@ import {
   createGetObjectQuery,
   createSearchObjectsQuery,
 } from "src/lib/graphql/skylark/dynamicQueries";
+import {
+  GET_ACCOUNT_STATUS,
+  GET_SKYLARK_OBJECT_TYPES,
+  GET_USER_AND_ACCOUNT,
+  SKYLARK_SCHEMA_INTROSPECTION_QUERY,
+} from "src/lib/graphql/skylark/queries";
 
 const generateQueries = (
   allObjectMeta: SkylarkObjectMeta[] | null,
@@ -116,6 +123,15 @@ const generateQueries = (
     queries: [
       ["Search", fullSearchQuery, objectTypeSearchQueries],
       ["Get Object", getGenericObjectQuery, getObjectQueries],
+      [
+        "Account & User",
+        GET_USER_AND_ACCOUNT,
+        [
+          ["Account Status", GET_ACCOUNT_STATUS],
+          ["Object Types", GET_SKYLARK_OBJECT_TYPES],
+          ["Introspection Query", gql(SKYLARK_SCHEMA_INTROSPECTION_QUERY)],
+        ],
+      ],
     ],
     mutations: [
       [
@@ -173,7 +189,6 @@ const SkylarkQueriesPlugin = () => {
   const [, handleEditVariables] = useOptimisticState(useVariablesEditorState());
 
   const handleQueryWithSingleOperation = (query?: DocumentNode | null) => {
-    console.log({ query });
     if (query) {
       handleEditOperations(print(query));
 

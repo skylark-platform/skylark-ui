@@ -68,6 +68,8 @@ export const GET_USER_AND_ACCOUNT = gql`
     }
     getAccount {
       config {
+        raise_uid_exception
+        draft_update
         default_language
       }
       account_id

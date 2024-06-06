@@ -6,7 +6,7 @@ import { Checkbox } from "src/components/inputs/checkbox";
 import { Select } from "src/components/inputs/select";
 import { HREFS, REQUEST_HEADERS } from "src/constants/skylark";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
-import { hasProperty } from "src/lib/utils";
+import { convertSlugToDimensionHeader, hasProperty } from "src/lib/utils";
 
 const parseExistingHeaders = (
   existingHeaders: string,
@@ -25,8 +25,6 @@ const mergeHeaders = (existingHeaders: string, newHeaders: object) => {
     ...newHeaders,
   };
 };
-
-const convertSlugToDimensionHeader = (slug: string) => `x-sl-dimension-${slug}`;
 
 const SkylarkHeadersPlugin = () => {
   const { dimensions } = useAvailabilityDimensionsWithValues();

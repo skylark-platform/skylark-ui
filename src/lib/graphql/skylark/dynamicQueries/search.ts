@@ -49,7 +49,6 @@ export const createSearchObjectsQuery = (
         queryString: "String!",
         offset: "Int",
         limit: "Int",
-        dimensions: "[UserDimension]",
       },
       search: {
         __args: {
@@ -57,7 +56,6 @@ export const createSearchObjectsQuery = (
           query: new VariableType("queryString"),
           offset: new VariableType("offset"),
           limit: new VariableType("limit"),
-          dimensions: new VariableType("dimensions"),
         },
         __typename: true,
         total_count: true,

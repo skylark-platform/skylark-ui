@@ -55,8 +55,6 @@ export const refetchPanelQueries = async (
         (key.length === 1 || key[1] === uid),
     );
 
-  console.log(queryKeys);
-
   await Promise.all(
     queryKeys.map((queryKey) =>
       client.refetchQueries({
