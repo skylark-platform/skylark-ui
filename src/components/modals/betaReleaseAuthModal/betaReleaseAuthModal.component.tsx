@@ -21,6 +21,29 @@ interface AddAuthTokenModalProps {
   setIsOpen: (b: boolean) => void;
 }
 
+const readAutoconnectPath = (path: string): SkylarkCreds | null => {
+  const isPath = path.includes("/connect") || path.includes("/beta/connect");
+  if (!isPath) {
+    return null;
+  }
+  const splitArr = path.split("?")?.[1]?.split("&");
+  if (!splitArr || splitArr.length < 2) {
+    return null;
+  }
+  const uri = splitArr
+    .find((val) => val.startsWith("uri="))
+    ?.replace("uri=", "");
+  const token = splitArr
+    .find((val) => val.startsWith("apikey="))
+    ?.replace("apikey=", "");
+  console.log({ path, splitArr, uri, token });
+  if (uri && token) {
+    return { uri, token };
+  }
+
+  return null;
+};
+
 export const AddAuthTokenModal = ({
   isOpen,
   setIsOpen,
@@ -113,6 +136,13 @@ export const AddAuthTokenModal = ({
         <TextInput
           value={inputUri || ""}
           onChange={(uri) => {
+            const autoconnectCreds = readAutoconnectPath(uri);
+            if (autoconnectCreds) {
+              setInputCreds(autoconnectCreds);
+              debouncedSetCreds(autoconnectCreds);
+              return;
+            }
+
             setInputCreds((prev) => ({ ...prev, uri }));
             debouncedSetCreds({ token: inputToken, uri });
           }}
