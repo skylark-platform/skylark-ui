@@ -3,7 +3,7 @@ import { useCallback } from "react";
 
 import { InputLabel } from "src/components/inputs";
 import { Checkbox } from "src/components/inputs/checkbox";
-import { Select } from "src/components/inputs/select";
+import { LanguageSelect, Select } from "src/components/inputs/select";
 import { HREFS, REQUEST_HEADERS } from "src/constants/skylark";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { convertSlugToDimensionHeader, hasProperty } from "src/lib/utils";
@@ -54,6 +54,25 @@ const SkylarkHeadersPlugin = () => {
       </a>
 
       <h3 className="text-lg mt-8 mb-2 font-medium">Request options</h3>
+      <LanguageSelect
+        className="mb-2"
+        variant="primary"
+        rounded={false}
+        useDefaultLanguage={false}
+        name="language-select"
+        selected={jsonHeaders?.[REQUEST_HEADERS.language]}
+        onChange={(updatedValue) =>
+          formatAndSetHeaders(
+            mergeHeaders(headers, {
+              [REQUEST_HEADERS.language]: updatedValue,
+            }),
+          )
+        }
+        onValueClear={() => {
+          delete jsonHeaders[REQUEST_HEADERS.language];
+          formatAndSetHeaders(jsonHeaders);
+        }}
+      />
       <Checkbox
         name="ignore-availability-header"
         label="Ignore Availability"

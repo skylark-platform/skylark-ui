@@ -21,6 +21,7 @@ export const REQUEST_HEADERS = {
   ignoreTime: "x-ignore-time",
   timeTravel: "x-time-travel",
   draft: "x-draft",
+  language: "x-language",
 };
 export const OBJECT_LIST_TABLE = {
   columnIds: {
