@@ -1,6 +1,7 @@
 import { CyHttpMessages } from "cypress/types/net-stubbing";
 
 import {
+  hasMatchingHeader,
   hasMatchingQuery,
   hasMatchingVariable,
   hasOperationName,
@@ -76,10 +77,8 @@ const accountIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
 const searchIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
   if (hasOperationName(req, "SL_UI_SEARCH")) {
     if (
-      hasMatchingVariable(req, "dimensions", [
-        { dimension: "customer-types", value: "kids" },
-        { dimension: "device-types", value: "pc" },
-      ])
+      hasMatchingHeader(req, "x-sl-dimension-customer-types", "kids") &&
+      hasMatchingHeader(req, "x-sl-dimension-device-types", "pc")
     ) {
       req.reply({
         fixture: "./skylark/queries/search/dimensionsKids.json",

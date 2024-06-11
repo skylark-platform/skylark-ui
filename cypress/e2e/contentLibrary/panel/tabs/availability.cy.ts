@@ -56,7 +56,9 @@ describe("Content Library - Object Panel - Availability tab", () => {
         // Only check the panel object type and uid so we don't have to mock the response
         cy.get(
           `[data-cy=panel-for-Availability-${availabilityJson.data.getObjectAvailability.availability.objects[0].uid}]`,
-        );
+        ).within(() => {
+          cy.contains("External id");
+        });
 
         // Check back button returns to the original object
         cy.get('[aria-label="Click to go back"]').click();

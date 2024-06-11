@@ -122,6 +122,25 @@ export const hasMatchingVariable = (
   return bodyVariableValue === variableValue;
 };
 
+export const hasMatchingHeader = (
+  req: CyHttpMessages.IncomingHttpRequest,
+  headerName: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  variableValue: string | string[],
+) => {
+  if (!req.headers.hasOwnProperty(headerName)) {
+    return false;
+  }
+
+  const headerValue = req.headers[headerName];
+
+  if (Array.isArray(variableValue)) {
+    return isArraysDeepEqual(headerValue as string[], variableValue);
+  }
+
+  return headerValue === variableValue;
+};
+
 // Alias query if operationName matches
 export const aliasQuery = (
   req: CyHttpMessages.IncomingHttpRequest,
