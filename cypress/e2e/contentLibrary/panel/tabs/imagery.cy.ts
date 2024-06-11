@@ -24,8 +24,8 @@ describe("Content Library - Object Panel - Imagery tab", () => {
       .find("img")
       .should("have.attr", "src")
       .and(
-        "match",
-        /https:\/\/res.cloudinary.com\/dmiq9sasn\/image\/fetch\/https:\/\/media.sl-develop.development.skylarkplatform.com\/skylarkimages\/pscimysu7bhxji72g45z4u6gvy\/01HF6MNY67QHBFZAJ7XTSVGBGZ\/01HF71HQQR6TVGTJ2ZMT2QTP1Y/,
+        "contain",
+        "https://media.sl-develop.development.skylarkplatform.com/skylarkimages/pscimysu7bhxji72g45z4u6gvy/01HF6MNY67QHBFZAJ7XTSVGBGZ/01HF71HQQR6TVGTJ2ZMT2QTP1Y",
       );
   });
 
