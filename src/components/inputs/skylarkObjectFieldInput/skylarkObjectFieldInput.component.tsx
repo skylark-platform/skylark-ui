@@ -1,4 +1,5 @@
 import { CheckedState } from "@radix-ui/react-checkbox";
+import dayjs from "dayjs";
 import {
   UseFormRegister,
   FieldValues,
@@ -12,6 +13,8 @@ import {
 
 import { Checkbox } from "src/components/inputs/checkbox";
 import { ColourPicker } from "src/components/inputs/colourPicker";
+import { DatePicker } from "src/components/inputs/datePicker";
+import { DateTimePicker } from "src/components/inputs/dateTimePicker";
 import { Select, TimezoneSelect } from "src/components/inputs/select";
 import {
   SkylarkObjectFieldInputLabel,
@@ -144,6 +147,52 @@ const SkylarkObjectFieldInputBoolean = ({
         onCheckedChange={field.onChange}
         aria-invalid={error ? "true" : "false"}
         id={createHtmlForId(idPrefix, field.name)}
+      />
+    )}
+  />
+);
+
+const SkylarkObjectFieldInputDate = ({
+  field,
+  control,
+  error,
+  idPrefix,
+}: SkylarkObjectFieldInputComponentProps) => (
+  <Controller
+    name={field}
+    control={control}
+    render={({ field }) => (
+      <DatePicker
+        value={field.value as string}
+        onChange={(date) => {
+          console.log({ date });
+          field.onChange(date?.startDate || "");
+        }}
+        aria-invalid={error ? "true" : "false"}
+        name={createHtmlForId(idPrefix, field.name)}
+      />
+    )}
+  />
+);
+
+const SkylarkObjectFieldInputDateTime = ({
+  field,
+  control,
+  error,
+  idPrefix,
+}: SkylarkObjectFieldInputComponentProps) => (
+  <Controller
+    name={field}
+    control={control}
+    render={({ field }) => (
+      <DateTimePicker
+        value={field.value as string}
+        onChange={(date) => {
+          console.log({ date });
+          field.onChange(date || "");
+        }}
+        aria-invalid={error ? "true" : "false"}
+        name={createHtmlForId(idPrefix, field.name)}
       />
     )}
   />
@@ -314,6 +363,14 @@ export const SkylarkObjectFieldInput = (
 
           if (config.type === "boolean") {
             return <SkylarkObjectFieldInputBoolean {...inputProps} />;
+          }
+
+          if (config.type === "date") {
+            return <SkylarkObjectFieldInputDate {...inputProps} />;
+          }
+
+          if (config.type === "datetime") {
+            return <SkylarkObjectFieldInputDateTime {...inputProps} />;
           }
 
           if (config.type === "string") {

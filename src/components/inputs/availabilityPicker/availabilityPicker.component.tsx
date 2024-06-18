@@ -6,6 +6,7 @@ import { FiChevronDown } from "react-icons/fi";
 
 import { Button } from "src/components/button";
 import { FiX } from "src/components/icons";
+import { DateTimePicker } from "src/components/inputs/dateTimePicker";
 import { InputLabel } from "src/components/inputs/label/label.component";
 import { UTC_NAME, Select, TimezoneSelect } from "src/components/inputs/select";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
@@ -127,7 +128,7 @@ const AvailabilitySelectors = ({
                 htmlFor="availability-picker-time-travel-input"
                 isRequired={!hasDimensions}
               />
-              <input
+              {/* <input
                 onChange={(e) => setActiveTimeTravel(e.target.value)}
                 id="availability-picker-time-travel-input"
                 value={activeTimeTravel || ""}
@@ -137,6 +138,11 @@ const AvailabilitySelectors = ({
                   "h-8 w-full rounded bg-manatee-50 px-4 md:h-10",
                   activeTimeTravel ? "text-black" : "text-manatee-400",
                 )}
+              /> */}
+              <DateTimePicker
+                onChange={setActiveTimeTravel}
+                name="availability-picker-time-travel-input"
+                value={activeTimeTravel || ""}
               />
             </div>
             <TimezoneSelect
