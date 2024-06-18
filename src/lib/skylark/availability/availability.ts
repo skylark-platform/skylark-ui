@@ -62,8 +62,8 @@ export const getObjectAvailabilityStatus = (
 
   const now = dayjs();
 
-  const nonExpiredAvailability = availabilityObjects.filter(({ end }) =>
-    now.isBefore(end),
+  const nonExpiredAvailability = availabilityObjects.filter(
+    ({ end }) => end === null || now.isBefore(end),
   );
 
   if (nonExpiredAvailability.length === 0) {
