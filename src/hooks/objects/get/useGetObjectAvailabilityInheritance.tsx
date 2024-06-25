@@ -44,8 +44,10 @@ export const createGetObjectAvailabilityInheritanceKeyPrefix = ({
   availabilityUid: string;
 }) => [
   QueryKeys.GetObjectAvailability,
-  { objectType, objectUid, availabilityUid },
+  objectUid,
+  objectType,
   "Inheritance",
+  availabilityUid,
 ];
 
 const generateQueryFunctionAndKey = ({
