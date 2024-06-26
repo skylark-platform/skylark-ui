@@ -48,7 +48,6 @@ export const useConnectedToSkylark = () => {
     },
     enabled: Boolean(currentCreds.uri && currentCreds.token),
     retry: false,
-    gcTime: 0,
   });
 
   useEffect(() => {
