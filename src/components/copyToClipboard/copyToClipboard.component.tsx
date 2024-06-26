@@ -15,7 +15,7 @@ export const CopyToClipboard = ({ value, className }: CopyToClipboardProps) =>
         navigator.clipboard.writeText(`${value}`);
       }}
       className={clsx(
-        "ml-2 cursor-pointer text-base opacity-20 transition-opacity hover:opacity-100 active:opacity-60 group-hover/copy-to-clipboard:visible",
+        "ml-2 cursor-pointer inline text-base opacity-20 transition-opacity hover:opacity-100 active:opacity-60 group-hover/copy-to-clipboard:visible",
         className,
       )}
     />

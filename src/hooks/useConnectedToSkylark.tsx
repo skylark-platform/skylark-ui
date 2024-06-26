@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import request from "graphql-request";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { REQUEST_HEADERS } from "src/constants/skylark";
 import { GQLSkylarkObjectTypesResponse } from "src/interfaces/graphql/introspection";
@@ -18,23 +18,21 @@ export const useConnectedToSkylark = () => {
 
   const [localStorageCreds] = useSkylarkCreds();
 
-  const currentCreds: SkylarkCreds = overrideCreds ||
-    localStorageCreds || {
-      uri: "",
-      token: "",
-    };
+  const currentCreds: SkylarkCreds = useMemo(
+    () =>
+      overrideCreds ||
+      localStorageCreds || {
+        uri: "",
+        token: "",
+      },
+    [localStorageCreds, overrideCreds],
+  );
 
   const { data, error, isError, isLoading, isSuccess, refetch } = useQuery<
     GQLSkylarkObjectTypesResponse,
     { response?: { errors?: { errorType?: string; message?: string }[] } }
   >({
-    queryKey: [
-      "credentialValidator",
-      GET_SKYLARK_OBJECT_TYPES,
-      currentCreds.uri,
-      currentCreds.token,
-      REQUEST_HEADERS.apiKey,
-    ],
+    queryKey: ["credentialValidator", currentCreds.uri, currentCreds.token],
     queryFn: async () => {
       return request(
         currentCreds.uri || "",
@@ -48,6 +46,8 @@ export const useConnectedToSkylark = () => {
     },
     enabled: Boolean(currentCreds.uri && currentCreds.token),
     retry: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {

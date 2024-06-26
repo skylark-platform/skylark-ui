@@ -97,7 +97,7 @@ export const useAccountStatus = ({
   const { data, error, isLoading, isError } =
     useBackgroundTasksAndActivationStatus<AccountStatus>(selectAllData, {
       poll,
-      backgroundTaskLimit: 50,
+      backgroundTaskLimit: 100,
     });
 
   const isUnauthenticated =

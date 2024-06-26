@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { usePlausible } from "next-plausible";
 import React, { useEffect, useState } from "react";
+import { CgSpinner } from "react-icons/cg";
 import { useDebouncedCallback } from "use-debounce";
 
 import { Button } from "src/components/button";
@@ -44,17 +45,14 @@ const readAutoconnectPath = (path: string): SkylarkCreds | null => {
   return null;
 };
 
-export const AddAuthTokenModal = ({
-  isOpen,
-  setIsOpen,
-}: AddAuthTokenModalProps) => {
+const AddAuthTokenModalBody = ({ closeModal }: { closeModal: () => void }) => {
   const queryClient = useQueryClient();
   const plausible = usePlausible();
 
   const { isConnected, isLoading, invalidUri, invalidToken, setCreds } =
     useConnectedToSkylark();
 
-  const { accountId } = useUserAccount();
+  const { accountId, isLoading: isLoadingAccount } = useUserAccount();
 
   const [credsFromLocalStorage, saveCreds] = useSkylarkCreds();
 
@@ -72,11 +70,6 @@ export const AddAuthTokenModal = ({
       setCreds(null);
     }
   }, 750);
-
-  // TODO remove in future
-  // if (!isOpen && !isLoading && !isConnected) {
-  //   setIsOpen(true);
-  // }
 
   useEffect(() => {
     if (credsFromLocalStorage) {
@@ -107,31 +100,25 @@ export const AddAuthTokenModal = ({
         type: "all",
       });
 
-      setIsOpen(false);
+      closeModal();
     }
   };
 
-  const closeModal = () => {
-    setIsOpen(false);
-  };
-
   return (
-    <Modal
-      title="Connect to Skylark"
-      description="Enter your GraphQL URI and API Key below to connect to your Skylark account."
-      isOpen={isOpen || (!isLoading && !isConnected)}
-      size="small"
-      closeModal={closeModal}
-    >
-      {accountId && (
-        <div className="mt-2 flex items-center">
-          <p>
-            Currently connected to:{" "}
-            <code className="rounded-sm bg-manatee-200 p-1">{accountId}</code>
-          </p>
-          <CopyToClipboard value={accountId} />
-        </div>
-      )}
+    <>
+      <div className="mt-2 flex items-center">
+        <p>
+          Currently connected to:{" "}
+          {isLoadingAccount ? (
+            <CgSpinner className="animate-spin-fast text-base md:text-lg inline" />
+          ) : (
+            <>
+              <code className="rounded-sm bg-manatee-200 p-1">{accountId}</code>
+              <CopyToClipboard value={accountId} />
+            </>
+          )}
+        </p>
+      </div>
       <div className="my-4 flex flex-col space-y-2 md:my-10">
         <TextInput
           value={inputUri || ""}
@@ -190,6 +177,29 @@ export const AddAuthTokenModal = ({
           {requestLoading ? "Validating" : "Connect"}
         </Button>
       </div>
+    </>
+  );
+};
+
+export const AddAuthTokenModal = ({
+  isOpen,
+  setIsOpen,
+}: AddAuthTokenModalProps) => {
+  const { isConnected, isLoading } = useConnectedToSkylark();
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  return (
+    <Modal
+      title="Connect to Skylark"
+      description="Enter your GraphQL URI and API Key below to connect to your Skylark account."
+      isOpen={isOpen || (!isLoading && !isConnected)}
+      size="small"
+      closeModal={closeModal}
+    >
+      <AddAuthTokenModalBody closeModal={closeModal} />
     </Modal>
   );
 };

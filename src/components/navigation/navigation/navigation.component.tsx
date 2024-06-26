@@ -21,14 +21,28 @@ import { formatUriAsCustomerIdentifer } from "src/lib/utils";
 
 import Logo from "public/images/skylark.png";
 
+const AccountStatusAuthButton = ({
+  setAuthModalOpen,
+}: {
+  setAuthModalOpen: (open: boolean) => void;
+}) => {
+  const { isConnected } = useAccountStatus({});
+
+  return isConnected ? (
+    <AccountStatus />
+  ) : (
+    <Button variant="outline" onClick={() => setAuthModalOpen(true)}>
+      Connect to Skylark
+    </Button>
+  );
+};
+
 export const Navigation = () => {
   const isClient = useIsClient();
 
   const { permissions, role, defaultLanguage, accountId } = useUserAccount();
 
   const [open, setOpen] = useState(false);
-
-  const { isConnected } = useAccountStatus({});
 
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
 
@@ -102,13 +116,7 @@ export const Navigation = () => {
         </nav>
 
         <div className="z-50 flex flex-grow flex-row items-center justify-end space-x-1 md:flex-grow-0 md:space-x-5">
-          {isConnected ? (
-            <AccountStatus />
-          ) : (
-            <Button variant="outline" onClick={() => setAuthModalOpen(true)}>
-              Connect to Skylark
-            </Button>
-          )}
+          <AccountStatusAuthButton setAuthModalOpen={setAuthModalOpen} />
           <DropdownMenu options={dropdownOptions} placement="bottom-end">
             <Menu.Button
               aria-label="User Settings Dropdown"
@@ -137,7 +145,7 @@ export const Navigation = () => {
       </div>
       {/* This should be removed after beta when we implement real authentication */}
       <AddAuthTokenModal
-        isOpen={isAuthModalOpen || !isConnected}
+        isOpen={isAuthModalOpen}
         setIsOpen={handleModalOpenState}
       />
     </>

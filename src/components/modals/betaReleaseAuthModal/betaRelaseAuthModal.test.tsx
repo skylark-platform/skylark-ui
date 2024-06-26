@@ -189,5 +189,7 @@ test("shows the user's account when connected", async () => {
     expect(screen.getByText("Currently connected to:")).toBeInTheDocument();
   });
 
-  expect(screen.getByText("kxa3cpoawbcdpfkz3gusojkg3u")).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText("kxa3cpoawbcdpfkz3gusojkg3u")).toBeInTheDocument();
+  });
 });
