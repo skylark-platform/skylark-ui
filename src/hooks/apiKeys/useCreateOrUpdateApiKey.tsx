@@ -50,7 +50,7 @@ export const useCreateOrUpdateApiKey = ({
             },
       );
     },
-    onSuccess: async (data, { apiKey }) => {
+    onSuccess: async (data: GQLSkylarkCreateAPIKeyResponse, { apiKey }) => {
       onSuccess({ ...apiKey, ...data.createApiKey });
       queryClient.refetchQueries({ queryKey: [QueryKeys.ApiKeys] });
     },

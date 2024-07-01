@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 // Extend Jest "expect" functionality with Testing Library assertions.
 import "@testing-library/jest-dom";
 // Polyfill "window.fetch" used in the React component.
@@ -9,9 +10,11 @@ import { LOCAL_STORAGE } from "./src/constants/localStorage";
 // Replace react-player/lazy with react-player
 // Fix Segmentation Fault when using 'react-player/lazy' in tests
 // Learn more: https://github.com/cookpete/react-player/issues/1391
-jest.mock("react-player/lazy", () => {
-  return jest.requireActual("react-player");
-});
+// jest.mock("react-player/lazy", () => {
+//   return jest.requireActual("react-player");
+// });
+
+jest.useFakeTimers();
 
 // Establish API mocking before all tests.
 beforeAll(() => {
