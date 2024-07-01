@@ -13,7 +13,7 @@ import {
   GQLSkylarkBackgroundTask,
 } from "src/interfaces/skylark";
 
-type GenericTaskType = "availability" | "deletion" | "other";
+type GenericTaskType = "availability" | "deletion" | "search" | "other";
 
 const stringifyCount = (count: number, max = 100) =>
   count >= max ? `${max}+` : `${count}`;
@@ -22,6 +22,8 @@ const getGenericBackgroundTaskType = (
   task: GQLSkylarkBackgroundTask,
 ): GenericTaskType => {
   switch (task.task_type) {
+    case BackgroundTaskType.SearchIndexing:
+      return "search";
     case BackgroundTaskType.AVAILABILITY_UPDATE_OBJECT_PROCESSING:
     case BackgroundTaskType.AVAILABILITY_DELETE_OBJECT_PROCESSING:
     case BackgroundTaskType.POST_AVAILABILITY_UPDATE:
@@ -48,6 +50,10 @@ const getBackgroundTaskTypeText = (tasks: GQLSkylarkBackgroundTask[]) => {
 
   if (taskTypes.length === 1) {
     const [type] = taskTypes;
+
+    if (type === "search") {
+      return `${count} Search Index Updates`;
+    }
 
     if (type === "availability") {
       return `${count} Availability Rules`;
