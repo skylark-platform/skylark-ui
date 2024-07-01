@@ -510,7 +510,7 @@ const PanelAvailabilityReadonlyCard = ({
   return (
     <m.div
       key={`availability-card-inner-${availability.uid}`}
-      className={clsx("flex items-start z-10 bg-white mb-2")}
+      className={clsx("flex items-start z-10 bg-white mb-2 absolute")}
       layout
       initial={{ opacity: 1 }}
       exit={{ opacity: 1 }}
