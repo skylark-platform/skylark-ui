@@ -59,6 +59,7 @@ export enum BackgroundTaskType {
   POST_AVAILABILITY_DELETE = "post_delete_availability",
   AVAILABILITY_DELETE_OBJECT_PROCESSING = "availability_delete",
   AVAILABILITY_UPDATE_OBJECT_PROCESSING = "availability_update",
+  SearchIndexing = "search_indexing",
 }
 
 export enum BackgroundTaskStatus {
