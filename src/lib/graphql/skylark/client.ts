@@ -12,6 +12,7 @@ import { SkylarkCreds } from "src/hooks/useConnectedToSkylark";
 
 interface SkylarkRequestOpts {
   useCache?: boolean;
+  noDraftHeader?: boolean;
 }
 
 export const createSkylarkClient = (uri: string, token: string) =>
@@ -59,7 +60,7 @@ export const skylarkRequest = <T>(
     headers[REQUEST_HEADERS.bypassCache as keyof HeadersInit] = "1";
   }
 
-  if (type === "query") {
+  if (type === "query" && !opts?.noDraftHeader) {
     headers[REQUEST_HEADERS.draft as keyof HeadersInit] = "true";
   }
 

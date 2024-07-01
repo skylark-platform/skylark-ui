@@ -8,6 +8,7 @@ export enum QueryKeys {
   AvailabilityDimensions = "availabilityDimensions",
   AvailabilityAssignedTo = "availabilityAssignedTo",
   GetObject = "getObject",
+  GetObjectMetadataVersion = "getObjectMetadataVersion",
   GetObjectGeneric = "getObjectGeneric",
   GetObjectAvailability = "getObjectAvailability",
   GetObjectRelationships = "getObjectRelationships",

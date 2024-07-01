@@ -8,8 +8,13 @@ import {
   SkylarkGraphQLObject,
   SkylarkGraphQLObjectConfig,
   SkylarkGraphQLObjectContent,
+  SkylarkGraphQLObjectMeta,
 } from "./gqlObjects";
-import { SkylarkObjectType } from "./objectOperations";
+import {
+  SkylarkObjectMetadataField,
+  SkylarkObjectType,
+} from "./objectOperations";
+import { SkylarkExternalId, SkylarkUID } from "./parsedObjects";
 
 export interface GQLSkylarkError<T> {
   data: T | null;
@@ -135,6 +140,40 @@ export interface GQLSkylarkGetObjectContentOfResponse {
       next_token: string | null;
       count: number;
       objects: SkylarkGraphQLObject[];
+    };
+  };
+}
+
+export interface GQLSkylarkGetObjectVersionMetadataResponse {
+  getObjectVersion: {
+    _meta: {
+      modified: SkylarkGraphQLObjectMeta["modified"];
+      created: SkylarkGraphQLObjectMeta["created"];
+      published: SkylarkGraphQLObjectMeta["published"];
+      global_data: SkylarkGraphQLObjectMeta["global_data"] &
+        Record<string, SkylarkObjectMetadataField> & {
+          uid: SkylarkUID;
+          external_id: SkylarkExternalId;
+        };
+      language_data: SkylarkGraphQLObjectMeta["language_data"] &
+        Record<string, SkylarkObjectMetadataField>;
+    };
+  };
+}
+
+export interface GQLSkylarkGetObjectVersionsResponse {
+  getObjectVersions: {
+    _meta: {
+      global_data: {
+        history: {
+          version: number;
+        }[];
+      };
+      language_data: {
+        history: {
+          version: number;
+        }[];
+      };
     };
   };
 }

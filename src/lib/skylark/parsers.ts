@@ -41,6 +41,7 @@ import {
   SkylarkGraphQLObjectMeta,
   AvailabilityStatus,
   SkylarkGraphQLObjectList,
+  ParsedSkylarkObjectMeta,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -199,7 +200,7 @@ const parseObjectAvailability = (unparsedObject?: {
 const parseObjectMeta = (
   meta: SkylarkGraphQLObjectMeta | undefined,
   availabilityStatus: AvailabilityStatus | null,
-) => ({
+): ParsedSkylarkObjectMeta => ({
   availabilityStatus,
   language: meta?.language_data.language || "",
   availableLanguages: meta?.available_languages || [],

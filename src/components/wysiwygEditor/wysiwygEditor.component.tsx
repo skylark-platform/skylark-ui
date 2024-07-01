@@ -8,6 +8,7 @@ interface WYSIWYGEditorProps {
   value?: string;
   onEditorChange?: (value: string) => void;
   withSkeletonLoading?: boolean;
+  disabled?: boolean;
 }
 
 const WYSIWYG_DEFAULT_HEIGHT = 500;
@@ -74,6 +75,7 @@ export const WYSIWYGEditor = ({
   id,
   value,
   withSkeletonLoading,
+  disabled,
   onEditorChange,
 }: WYSIWYGEditorProps) => {
   const [isLoaded, setIsLoaded] = useState(withSkeletonLoading ? false : true);
@@ -98,6 +100,7 @@ export const WYSIWYGEditor = ({
         init={WYSIWYG_INIT}
         value={value}
         onEditorChange={onEditorChangeWrapper}
+        disabled={disabled}
       />
       {!isLoaded && (
         <div
