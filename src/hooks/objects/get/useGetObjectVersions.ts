@@ -115,7 +115,7 @@ const calculateModifiedFields = (
   };
 };
 
-export const createGetObjectMetadataVersionKeyPrefix = ({
+export const createGetObjectMetadataHistoryKeyPrefix = ({
   objectType,
   uid,
   language,
@@ -123,7 +123,7 @@ export const createGetObjectMetadataVersionKeyPrefix = ({
   objectType: string;
   uid: string;
 } & GetObjectOptions) => [
-  QueryKeys.GetObjectMetadataVersion,
+  QueryKeys.GetObjectMetadataHistory,
   uid,
   objectType,
   language,
@@ -150,7 +150,7 @@ export const useGetObjectVersions = (
     }
   >({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: createGetObjectMetadataVersionKeyPrefix({
+    queryKey: createGetObjectMetadataHistoryKeyPrefix({
       objectType,
       uid,
       language,

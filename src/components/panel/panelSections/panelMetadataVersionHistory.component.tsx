@@ -114,9 +114,6 @@ export const PanelMetadataVersionHistory = ({
                   <p className="text-xs text-right">{`${dayjs(version.date).fromNow()}`}</p>
                 </div>
                 <div className="rounded bg-manatee-200 p-4 mt-2 relative">
-                  {/* <button className="text-lg absolute right-0.5 top-2">
-                    <FiMoreVertical />
-                  </button> */}
                   <div className="absolute right-0.5 top-2">
                     <DropdownMenu
                       options={dropdownMenuOptions}

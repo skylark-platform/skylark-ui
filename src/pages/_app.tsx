@@ -81,7 +81,6 @@ export default function App({ Component, pageProps }: AppProps) {
         />
         <UserProvider>
           <Navigation openAuthModal={() => setAuthModalOpen(true)} />
-          {/* This should be removed after beta when we implement real authentication */}
           <LazyMotion features={loadFramerMotionFeatures} strict>
             <Component {...pageProps} />
           </LazyMotion>

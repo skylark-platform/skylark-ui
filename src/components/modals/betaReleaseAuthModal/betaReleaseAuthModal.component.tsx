@@ -37,7 +37,6 @@ const readAutoconnectPath = (path: string): SkylarkCreds | null => {
   const token = splitArr
     .find((val) => val.startsWith("apikey="))
     ?.replace("apikey=", "");
-  console.log({ path, splitArr, uri, token });
   if (uri && token) {
     return { uri, token };
   }
