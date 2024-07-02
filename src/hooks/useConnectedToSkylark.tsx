@@ -28,12 +28,14 @@ export const useConnectedToSkylark = () => {
     [localStorageCreds, overrideCreds],
   );
 
+  const hasCreds = Boolean(currentCreds.uri && currentCreds.token);
+
   const { data, error, isError, isLoading, isSuccess, refetch } = useQuery<
     GQLSkylarkObjectTypesResponse,
     { response?: { errors?: { errorType?: string; message?: string }[] } }
   >({
     queryKey: ["credentialValidator", currentCreds.uri, currentCreds.token],
-    queryFn: async () => {
+    queryFn: () => {
       return request(
         currentCreds.uri || "",
         GET_SKYLARK_OBJECT_TYPES,
@@ -44,10 +46,11 @@ export const useConnectedToSkylark = () => {
         },
       );
     },
-    enabled: Boolean(currentCreds.uri && currentCreds.token),
+    enabled: hasCreds,
     retry: false,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    staleTime: 5000,
   });
 
   useEffect(() => {
@@ -80,6 +83,8 @@ export const useConnectedToSkylark = () => {
     invalidUri,
     invalidToken,
     currentCreds,
+    error,
+    isError,
     setCreds: setOverrideCreds,
   };
 };

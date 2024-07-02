@@ -36,6 +36,7 @@ import {
   PanelMetadataProperty,
   RenderedImage,
 } from "./panelMetadataAdditionalSections";
+import { PanelMetadataVersionHistory } from "./panelMetadataVersionHistory.component";
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
 interface PanelMetadataProps {
@@ -203,21 +204,21 @@ export const PanelMetadata = ({
       title: "System Metadata",
       htmlId: "panel-section-system",
       metadataFields: systemMetadataFields,
-      activeVersion: activeVersions.global,
+      activeVersion: activeVersions?.global,
     },
     {
       id: "translatable-metadata",
       title: "Translatable Metadata",
       htmlId: "panel-section-translatable",
       metadataFields: translatableMetadataFields,
-      activeVersion: activeVersions.language,
+      activeVersion: activeVersions?.language,
     },
     {
       id: "global-metadata",
       title: "Global Metadata",
       htmlId: "panel-section-global",
       metadataFields: globalMetadataFields,
-      activeVersion: activeVersions.global,
+      activeVersion: activeVersions?.global,
     },
   ].filter(({ metadataFields }) => metadataFields.length > 0);
 
@@ -234,137 +235,143 @@ export const PanelMetadata = ({
   }));
 
   return (
-    <PanelSectionLayout
-      sections={
-        objectMeta?.isImage
-          ? [uploadSection, ...sideBarSections]
-          : sideBarSections
-      }
-      isPage={isPage}
-    >
-      {objectMeta?.isImage && (
-        <>
-          {metadata?.url && (
-            <RenderedImage
-              src={metadata?.url as string | null}
-              alt={metadata?.title as string}
-            />
-          )}
-          <UploadImageSection
-            id={uploadSection.id}
-            uid={uid}
-            objectType={objectType}
-          />
-        </>
-      )}
-      <form
-        className="h-full"
-        data-testid="panel-metadata"
-        data-loading={isLoading}
-        onSubmit={(e) => e.preventDefault()}
+    <div className="flex h-full w-full overflow-y-hidden">
+      <PanelSectionLayout
+        sections={
+          objectMeta?.isImage
+            ? [uploadSection, ...sideBarSections]
+            : sideBarSections
+        }
+        isPage={isPage}
       >
-        {sections.map(
-          (
-            { id, title, metadataFields, htmlId, activeVersion },
-            index,
-            { length: numSections },
-          ) => (
-            <div key={id} className="mb-8 md:mb-10">
-              <PanelSectionTitle id={htmlId} text={title}>
-                <Select
-                  placeholder={null}
-                  variant="pill"
-                  className="w-28 ml-2"
-                  selected={activeVersion}
-                  options={generateVersionOptions(
-                    id === "translatable-metadata",
-                    objectVersions,
-                    versions,
-                  )}
-                  onChange={(value) =>
-                    setVersions((prev) => {
-                      const keyToUpdate =
-                        id === "translatable-metadata" ? "language" : "global";
-                      const active = prev || {
-                        language: objectVersions?.language || 1,
-                        global: objectVersions?.global || 1,
-                      };
-                      return { ...active, [keyToUpdate]: value };
-                    })
-                  }
-                />
-              </PanelSectionTitle>
-
-              {metadataFields.map(({ field, config }) => {
-                const fieldConfigFromObject = objectFieldConfigArr?.find(
-                  ({ name }) => name === field,
-                );
-                const value =
-                  field !== SkylarkSystemField.UID &&
-                  historialVersions &&
-                  historicalMetadata
-                    ? historicalMetadata?.[field] || null
-                    : getValues(field);
-
-                console.log({ historicalMetadata, value });
-                if (config) {
-                  return (
-                    <SkylarkObjectFieldInput
-                      idPrefix="panel-metadata"
-                      isLoading={isLoading}
-                      key={field}
-                      field={field}
-                      config={config}
-                      control={control}
-                      register={register}
-                      value={value}
-                      formState={formState}
-                      additionalRequiredFields={requiredFields}
-                      fieldConfigFromObject={fieldConfigFromObject}
-                      // disabled={Boolean(historicalMetadata)}
-                      aiFieldGeneration={
-                        field !== SkylarkSystemField.ExternalID
-                          ? aiFieldGeneration
-                          : undefined
-                      }
-                    />
-                  );
-                }
-
-                return (
-                  <PanelMetadataProperty
-                    key={field}
-                    property={field}
-                    value={value}
-                    isLoading={isLoading}
-                  />
-                );
-              })}
-              {index < numSections - 1 && <PanelSeparator />}
-            </div>
-          ),
-        )}
-
-        {objectType === BuiltInSkylarkObjectType.SkylarkImage && (
+        {objectMeta?.isImage && (
           <>
-            <CalculatedImageSize src={metadata?.url as string | null} />
-            <PanelMetadataProperty
-              property={"URL"}
-              value={metadata?.url}
-              isUrl
+            {metadata?.url && (
+              <RenderedImage
+                src={metadata?.url as string | null}
+                alt={metadata?.title as string}
+              />
+            )}
+            <UploadImageSection
+              id={uploadSection.id}
+              uid={uid}
+              objectType={objectType}
             />
           </>
         )}
-      </form>
-      <PanelLoading isLoading={!objectMeta}>
-        <Skeleton className="mb-6 h-8 w-64" />
-        <Skeleton className="mb-2 h-5 w-48" />
-        <Skeleton className="h-20 w-full" />
-        <Skeleton className="mb-2 mt-6 h-5 w-48" />
-        <Skeleton className="h-20 w-full" />
-        <Skeleton className="mb-2 mt-6 h-5 w-48" />
-        <Skeleton className="h-20 w-full" />
-      </PanelLoading>
-    </PanelSectionLayout>
+        <form
+          className="h-full"
+          data-testid="panel-metadata"
+          data-loading={isLoading}
+          onSubmit={(e) => e.preventDefault()}
+        >
+          {sections.map(
+            (
+              { id, title, metadataFields, htmlId, activeVersion },
+              index,
+              { length: numSections },
+            ) => (
+              <div key={id} className="mb-8 md:mb-10">
+                <PanelSectionTitle id={htmlId} text={title}>
+                  <Select
+                    placeholder={null}
+                    variant="pill"
+                    className="w-28 ml-2"
+                    selected={activeVersion}
+                    options={generateVersionOptions(
+                      id === "translatable-metadata",
+                      objectVersions,
+                      versions,
+                    )}
+                    onChange={(value) =>
+                      setVersions((prev) => {
+                        const keyToUpdate =
+                          id === "translatable-metadata"
+                            ? "language"
+                            : "global";
+                        const active = prev || {
+                          language: objectVersions?.language || 1,
+                          global: objectVersions?.global || 1,
+                        };
+                        return { ...active, [keyToUpdate]: value };
+                      })
+                    }
+                  />
+                </PanelSectionTitle>
+
+                {metadataFields.map(({ field, config }) => {
+                  const fieldConfigFromObject = objectFieldConfigArr?.find(
+                    ({ name }) => name === field,
+                  );
+                  const value =
+                    field !== SkylarkSystemField.UID &&
+                    historialVersions &&
+                    historicalMetadata
+                      ? historicalMetadata?.[field] || null
+                      : getValues(field);
+
+                  console.log({ historicalMetadata, value });
+                  if (config) {
+                    return (
+                      <SkylarkObjectFieldInput
+                        idPrefix="panel-metadata"
+                        isLoading={isLoading}
+                        key={field}
+                        field={field}
+                        config={config}
+                        control={control}
+                        register={register}
+                        value={value}
+                        formState={formState}
+                        additionalRequiredFields={requiredFields}
+                        fieldConfigFromObject={fieldConfigFromObject}
+                        disabled={Boolean(historicalMetadata)}
+                        aiFieldGeneration={
+                          historicalMetadata ||
+                          field !== SkylarkSystemField.ExternalID
+                            ? aiFieldGeneration
+                            : undefined
+                        }
+                      />
+                    );
+                  }
+
+                  return (
+                    <PanelMetadataProperty
+                      key={field}
+                      property={field}
+                      value={value}
+                      isLoading={isLoading}
+                    />
+                  );
+                })}
+                {index < numSections - 1 && <PanelSeparator />}
+              </div>
+            ),
+          )}
+
+          {objectType === BuiltInSkylarkObjectType.SkylarkImage && (
+            <>
+              <CalculatedImageSize src={metadata?.url as string | null} />
+              <PanelMetadataProperty
+                property={"URL"}
+                value={metadata?.url}
+                isUrl
+              />
+            </>
+          )}
+        </form>
+        <PanelLoading isLoading={!objectMeta}>
+          <Skeleton className="mb-6 h-8 w-64" />
+          <Skeleton className="mb-2 h-5 w-48" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="mb-2 mt-6 h-5 w-48" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="mb-2 mt-6 h-5 w-48" />
+          <Skeleton className="h-20 w-full" />
+        </PanelLoading>
+      </PanelSectionLayout>
+      <PanelMetadataVersionHistory />
+    </div>
   );
 };

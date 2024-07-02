@@ -191,6 +191,13 @@ export const AddAuthTokenModal = ({
     setIsOpen(false);
   };
 
+  // Think this is the most stable way of showing the auth modal as react-query fetches a lot on first load
+  useEffect(() => {
+    if (!isLoading && !isConnected) {
+      setIsOpen(true);
+    }
+  }, [isLoading, isConnected, isOpen, setIsOpen]);
+
   return (
     <Modal
       title="Connect to Skylark"

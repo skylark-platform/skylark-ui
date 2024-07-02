@@ -110,11 +110,19 @@ export const createGetObjectVersionsQuery = (
           global_data: {
             history: {
               version: true,
+              created: {
+                date: true,
+                user: true,
+              },
             },
           },
           language_data: {
             history: {
               version: true,
+              created: {
+                date: true,
+                user: true,
+              },
             },
           },
         },

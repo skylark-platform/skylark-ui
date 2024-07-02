@@ -56,7 +56,7 @@ export const useGetObjectVersionMetadata = (
   } = useSkylarkObjectOperations(objectType);
 
   const query = createGetObjectVersionMetadataQuery(objectMeta, !!language);
-  const variables = { uid, languageVersion, globalVersion };
+  const variables = { uid, languageVersion, globalVersion, language };
 
   const { data, error, isLoading, isError } = useQuery<
     GQLSkylarkGetObjectVersionMetadataResponse,

@@ -49,7 +49,7 @@ export const useGetObjectVersions = (
   } = useSkylarkObjectOperations(objectType);
 
   const query = createGetObjectVersionsQuery(objectMeta, !!language);
-  const variables = { uid };
+  const variables = { uid, language };
 
   const { data, error, isLoading, isError } = useQuery<
     GQLSkylarkGetObjectVersionsResponse,

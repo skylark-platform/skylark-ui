@@ -14,6 +14,7 @@ import Script from "next/script";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 
+import { AddAuthTokenModal } from "src/components/modals";
 import { Navigation } from "src/components/navigation";
 import { ToastContainer } from "src/components/toast/toast.component";
 import { APP_URL } from "src/constants/skylark";
@@ -29,6 +30,8 @@ const loadFramerMotionFeatures = () =>
 
 export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(createSkylarkReactQueryClient);
+
+  const [isAuthModalOpen, setAuthModalOpen] = useState(false);
 
   const router = useRouter();
 
@@ -72,8 +75,13 @@ export default function App({ Component, pageProps }: AppProps) {
           <link href="/favicons/site.webmanifest" rel="manifest" />
           <link href="/favicons/favicon.ico" rel="icon" />
         </Head>
+        <AddAuthTokenModal
+          isOpen={isAuthModalOpen}
+          setIsOpen={setAuthModalOpen}
+        />
         <UserProvider>
-          <Navigation />
+          <Navigation openAuthModal={() => setAuthModalOpen(true)} />
+          {/* This should be removed after beta when we implement real authentication */}
           <LazyMotion features={loadFramerMotionFeatures} strict>
             <Component {...pageProps} />
           </LazyMotion>
