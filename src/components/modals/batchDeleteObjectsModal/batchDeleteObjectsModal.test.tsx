@@ -18,6 +18,7 @@ const object: ParsedSkylarkObject = {
     language: "en-GB",
     availableLanguages: ["en-GB"],
     availabilityStatus: AvailabilityStatus.Unavailable,
+    versions: {},
   },
   metadata: { uid: "123", external_id: "" },
   config: { primaryField: "title" },

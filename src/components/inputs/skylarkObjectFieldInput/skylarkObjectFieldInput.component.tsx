@@ -228,7 +228,6 @@ const SkylarkObjectFieldInputGeneric = ({
       (config.type === "float" && "any") ||
       undefined
     }
-    value={(value as string) || ""}
     className="w-full rounded-sm bg-manatee-50 px-4 py-3"
     disabled={disabled}
   />

@@ -159,6 +159,7 @@ const convertAvailabilityToParsedObjects = (
         language: "",
         availableLanguages: [],
         availabilityStatus: null,
+        versions: {},
       },
       availability: {
         status: null,

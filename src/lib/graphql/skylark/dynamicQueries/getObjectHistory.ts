@@ -114,6 +114,10 @@ export const createGetObjectVersionsQuery = (
                 date: true,
                 user: true,
               },
+              ...object.fieldConfig.global.reduce(
+                (prev, field) => ({ ...prev, [field]: true }),
+                {},
+              ),
             },
           },
           language_data: {
@@ -123,6 +127,10 @@ export const createGetObjectVersionsQuery = (
                 date: true,
                 user: true,
               },
+              ...object.fieldConfig.translatable.reduce(
+                (prev, field) => ({ ...prev, [field]: true }),
+                {},
+              ),
             },
           },
         },

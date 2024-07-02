@@ -1,27 +1,119 @@
 import { useQuery } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import { DocumentNode } from "graphql";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 
-import { useUser } from "src/contexts/useUser";
-import { QueryErrorMessages, QueryKeys } from "src/enums/graphql";
+import { QueryKeys } from "src/enums/graphql";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
-import { ErrorCodes } from "src/interfaces/errors";
 import {
   SkylarkObjectType,
   GQLSkylarkErrorResponse,
-  ParsedSkylarkObject,
-  GQLSkylarkGetObjectVersionMetadataResponse,
-  ParsedSkylarkObjectMetadata,
   GQLSkylarkGetObjectVersionsResponse,
+  SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
-import { GQLSkylarkGetObjectResponse } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import { createGetObjectVersionsQuery } from "src/lib/graphql/skylark/dynamicQueries";
-import { parseSkylarkObject } from "src/lib/skylark/parsers";
-import { hasProperty } from "src/lib/utils";
 
 import { GetObjectOptions } from "./useGetObject";
+
+type SkylarkObjectVersion = {
+  version: number;
+  date: string;
+  user: string;
+  type: "language" | "global";
+  fields: Record<string, SkylarkObjectMetadataField>;
+};
+
+type ModifiedFieldDiff = {
+  field: string;
+  values: {
+    old: SkylarkObjectMetadataField;
+    new: SkylarkObjectMetadataField;
+  };
+};
+
+type CombinedSkylarkObjectVersion = Omit<
+  SkylarkObjectVersion,
+  "type" | "version"
+> & {
+  isInitialVersion: boolean;
+  id: string;
+  global: number;
+  language: number;
+  modifiedFields?: ModifiedFieldDiff[];
+};
+
+const parseGQLSkylarkVersion = (
+  {
+    version,
+    created: { date, user },
+    ...fields
+  }: GQLSkylarkGetObjectVersionsResponse["getObjectVersions"]["_meta"]["global_data"]["history"][0],
+  type: SkylarkObjectVersion["type"],
+): SkylarkObjectVersion => ({
+  version,
+  date,
+  user,
+  type,
+  fields,
+});
+
+const calculateModifiedFields = (
+  version: CombinedSkylarkObjectVersion,
+  index: number,
+  arr: CombinedSkylarkObjectVersion[],
+): CombinedSkylarkObjectVersion & { modifiedFields: ModifiedFieldDiff[] } => {
+  const hasPreviousVersion = index > 0;
+
+  if (hasPreviousVersion) {
+    const previousVersion = arr[index - 1];
+
+    const allFieldNames = [
+      ...Object.keys(version.fields),
+      ...Object.keys(previousVersion.fields),
+    ].filter(
+      (field, index, arr) => arr.findIndex((f) => f === field) !== index,
+    );
+
+    const changedModifiedFields = allFieldNames
+      .map((field): ModifiedFieldDiff | null => {
+        const newValue = version.fields?.[field] || null;
+        const oldValue = previousVersion.fields?.[field] || null;
+
+        if (newValue === oldValue) {
+          return null;
+        }
+
+        return {
+          field,
+          values: {
+            old: oldValue,
+            new: newValue,
+          },
+        };
+      })
+      .filter((diff): diff is ModifiedFieldDiff => diff !== null);
+
+    return {
+      ...version,
+      modifiedFields: changedModifiedFields,
+    };
+  }
+
+  const allNewModifiedFields = Object.entries(version.fields)
+    .filter(([, value]) => value !== null)
+    .map(
+      ([field, value]): ModifiedFieldDiff => ({
+        field,
+        values: { old: null, new: value },
+      }),
+    );
+
+  return {
+    ...version,
+    modifiedFields: allNewModifiedFields,
+  };
+};
 
 export const createGetObjectMetadataVersionKeyPrefix = ({
   objectType,
@@ -42,11 +134,8 @@ export const useGetObjectVersions = (
   uid: string,
   { language }: GetObjectOptions,
 ) => {
-  const {
-    objectOperations: objectMeta,
-    error: objectMetaError,
-    isError: isObjectMetaError,
-  } = useSkylarkObjectOperations(objectType);
+  const { objectOperations: objectMeta, isError: isObjectMetaError } =
+    useSkylarkObjectOperations(objectType);
 
   const query = createGetObjectVersionsQuery(objectMeta, !!language);
   const variables = { uid, language };
@@ -54,7 +143,11 @@ export const useGetObjectVersions = (
   const { data, error, isLoading, isError } = useQuery<
     GQLSkylarkGetObjectVersionsResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectVersionsResponse>,
-    { language: number[]; global: number[] }
+    {
+      language: SkylarkObjectVersion[];
+      global: SkylarkObjectVersion[];
+      combined: CombinedSkylarkObjectVersion[];
+    }
   >({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: createGetObjectMetadataVersionKeyPrefix({
@@ -69,21 +162,75 @@ export const useGetObjectVersions = (
     enabled: query !== null,
     select: useCallback((data: GQLSkylarkGetObjectVersionsResponse) => {
       const language = data.getObjectVersions._meta.language_data.history.map(
-        ({ version }) => version,
+        (version) => parseGQLSkylarkVersion(version, "language"),
       );
 
       const global = data.getObjectVersions._meta.global_data.history.map(
-        ({ version }) => version,
+        (version) => parseGQLSkylarkVersion(version, "global"),
       );
+
+      const combinedDateVersions = [...global, ...language]
+        .sort((a, b) => (dayjs(a.date).isAfter(b.date) ? 1 : -1))
+        .reduce(
+          (prev, { version, type, user, date, fields }, i) => {
+            const currentVersions = {
+              ...prev.current,
+              [type]: version,
+            };
+
+            const combinedVersion: CombinedSkylarkObjectVersion = {
+              ...currentVersions,
+              id: `G${currentVersions.global}_L${currentVersions.language}`,
+              user,
+              date,
+              isInitialVersion: i === 0,
+              fields: {
+                ...fields,
+              },
+            };
+
+            if (prev.versions?.[date]) {
+              return {
+                versions: {
+                  ...prev.versions,
+                  [date]: {
+                    ...prev.versions[date],
+                    ...combinedVersion,
+                    fields: {
+                      ...prev.versions[date].fields,
+                      ...fields,
+                    },
+                  },
+                },
+                current: currentVersions,
+              };
+            }
+
+            return {
+              versions: {
+                ...prev.versions,
+                [date]: combinedVersion,
+              },
+              current: currentVersions,
+            };
+          },
+          { versions: {}, current: { language: 0, global: 0 } } as {
+            versions: Record<string, CombinedSkylarkObjectVersion>;
+            current: Pick<CombinedSkylarkObjectVersion, "language" | "global">;
+          },
+        );
+
+      const combined = Object.values(combinedDateVersions.versions)
+        .map(calculateModifiedFields)
+        .reverse();
 
       return {
         language,
         global,
+        combined,
       };
     }, []),
   });
-
-  console.log({ historicalMetadata: data, query });
 
   return {
     error,
