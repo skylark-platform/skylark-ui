@@ -8,8 +8,13 @@ import {
   SkylarkGraphQLObject,
   SkylarkGraphQLObjectConfig,
   SkylarkGraphQLObjectContent,
+  SkylarkGraphQLObjectMeta,
 } from "./gqlObjects";
-import { SkylarkObjectType } from "./objectOperations";
+import {
+  SkylarkObjectMetadataField,
+  SkylarkObjectType,
+} from "./objectOperations";
+import { SkylarkExternalId, SkylarkUID } from "./parsedObjects";
 
 export interface GQLSkylarkError<T> {
   data: T | null;
@@ -136,6 +141,31 @@ export interface GQLSkylarkGetObjectContentOfResponse {
       next_token: string | null;
       count: number;
       objects: SkylarkGraphQLObject[];
+    };
+  };
+}
+
+export interface GQLSkylarkGetObjectVersionsResponse {
+  getObjectVersions: {
+    _meta: {
+      global_data: {
+        history: ({
+          version: number;
+          created: {
+            date: string;
+            user: string;
+          };
+        } & Record<string, SkylarkObjectMetadataField>)[];
+      };
+      language_data: {
+        history: ({
+          version: number;
+          created: {
+            date: string;
+            user: string;
+          };
+        } & Record<string, SkylarkObjectMetadataField>)[];
+      };
     };
   };
 }

@@ -122,6 +122,7 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
                   language: "",
                   availableLanguages: [],
                   availabilityStatus: AvailabilityStatus.Active,
+                  versions: {},
                 },
                 metadata: {
                   uid: `Example "${primaryField}" value`,

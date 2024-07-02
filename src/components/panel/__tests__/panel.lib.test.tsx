@@ -36,6 +36,7 @@ const panelObject: ParsedSkylarkObject = {
     language: "",
     availableLanguages: [],
     availabilityStatus: AvailabilityStatus.Unavailable,
+    versions: {},
   },
   availability: {
     status: AvailabilityStatus.Unavailable,

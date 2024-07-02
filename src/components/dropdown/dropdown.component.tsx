@@ -120,12 +120,16 @@ const MenuItems = ({
                           const className = clsx(
                             "flex w-full items-center space-x-1 md:space-x-1.5 rounded-sm pl-3 pr-2 py-2 md:py-3 md:pr-4",
                             !option.disabled &&
+                              (option.onClick || option.href) &&
                               "hover:bg-manatee-200 ui-active:bg-manatee-200 hover:text-gray-900 ui-active:text-gray-900",
                             option.disabled &&
                               "bg-manatee-100 text-manatee-500",
                             option.danger &&
                               !option.disabled &&
                               "bg-red-100 ui-active:bg-red-300 hover:bg-red-300 [&>svg]:text-error",
+                            !option.onClick &&
+                              !option.href &&
+                              "font-normal text-xs",
                           );
                           return option.href ? (
                             <Link

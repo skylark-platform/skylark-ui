@@ -60,7 +60,7 @@ export const PanelSectionLayoutComponent = (
                 ? onSectionClick(section)
                 : scrollToSection(section.htmlId || section.id)
             }
-            className="py-3 text-left text-manatee-700 transition-colors hover:text-black"
+            className="py-2 -mt-2 mb-3 text-left text-manatee-700 transition-colors hover:text-black"
           >
             {section.title}
           </button>

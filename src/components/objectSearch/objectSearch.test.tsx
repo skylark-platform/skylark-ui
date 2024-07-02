@@ -549,6 +549,7 @@ describe("batch options", () => {
                 language: "en-GB",
                 availableLanguages: [],
                 availabilityStatus: AvailabilityStatus.Unavailable,
+                versions: {},
               },
               metadata: {
                 uid: "123",

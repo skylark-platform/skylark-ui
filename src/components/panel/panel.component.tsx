@@ -699,6 +699,7 @@ export const Panel = ({
               form={metadataForm}
               objectType={objectType}
               objectMeta={objectMeta}
+              objectVersions={data?.meta.versions}
               objectFieldConfig={data?.config.fieldConfig}
             />
           )}

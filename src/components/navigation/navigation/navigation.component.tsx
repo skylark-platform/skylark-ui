@@ -9,7 +9,6 @@ import { useIsClient } from "usehooks-ts";
 import { AccountStatus } from "src/components/account";
 import { Button } from "src/components/button";
 import { DropdownMenu } from "src/components/dropdown/dropdown.component";
-import { AddAuthTokenModal } from "src/components/modals";
 import { Hamburger } from "src/components/navigation/hamburger";
 import { NavigationLinks } from "src/components/navigation/links";
 import { UserAvatar } from "src/components/user";
@@ -22,45 +21,43 @@ import { formatUriAsCustomerIdentifer } from "src/lib/utils";
 import Logo from "public/images/skylark.png";
 
 const AccountStatusAuthButton = ({
-  setAuthModalOpen,
+  openAuthModal,
 }: {
-  setAuthModalOpen: (open: boolean) => void;
+  openAuthModal: () => void;
 }) => {
   const { isConnected } = useAccountStatus({});
 
   return isConnected ? (
     <AccountStatus />
   ) : (
-    <Button variant="outline" onClick={() => setAuthModalOpen(true)}>
+    <Button variant="outline" onClick={openAuthModal}>
       Connect to Skylark
     </Button>
   );
 };
 
-export const Navigation = () => {
+export const Navigation = ({
+  openAuthModal,
+}: {
+  openAuthModal: () => void;
+}) => {
   const isClient = useIsClient();
 
   const { permissions, role, defaultLanguage, accountId } = useUserAccount();
 
   const [open, setOpen] = useState(false);
 
-  const [isAuthModalOpen, setAuthModalOpen] = useState(false);
-
   const [creds] = useSkylarkCreds();
   const customerIdentifier = isClient
     ? formatUriAsCustomerIdentifer(creds?.uri || "")
     : "";
-
-  const handleModalOpenState = (open: boolean) => {
-    setAuthModalOpen(open);
-  };
 
   const dropdownOptions = useMemo(() => {
     const options = [
       {
         id: "change-skylark",
         text: "Change Skylark Account",
-        onClick: () => setAuthModalOpen(true),
+        onClick: openAuthModal,
         Icon: <FiLogOut className="text-xl" />,
       },
       {
@@ -81,7 +78,7 @@ export const Navigation = () => {
     }
 
     return options;
-  }, [permissions]);
+  }, [openAuthModal, permissions]);
 
   useEffect(() => {
     if (creds?.uri && role) {
@@ -116,7 +113,7 @@ export const Navigation = () => {
         </nav>
 
         <div className="z-50 flex flex-grow flex-row items-center justify-end space-x-1 md:flex-grow-0 md:space-x-5">
-          <AccountStatusAuthButton setAuthModalOpen={setAuthModalOpen} />
+          <AccountStatusAuthButton openAuthModal={openAuthModal} />
           <DropdownMenu options={dropdownOptions} placement="bottom-end">
             <Menu.Button
               aria-label="User Settings Dropdown"
@@ -143,11 +140,6 @@ export const Navigation = () => {
           className="ml-4 justify-self-end md:hidden"
         />
       </div>
-      {/* This should be removed after beta when we implement real authentication */}
-      <AddAuthTokenModal
-        isOpen={isAuthModalOpen}
-        setIsOpen={handleModalOpenState}
-      />
     </>
   );
 };

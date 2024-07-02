@@ -88,7 +88,7 @@ export interface ParsedSkylarkObjectConfig {
 export interface ParsedSkylarkObjectMeta {
   language: string;
   availableLanguages: string[];
-  versions?: {
+  versions: {
     language?: number;
     global?: number;
   };

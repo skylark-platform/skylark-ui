@@ -17,12 +17,14 @@ interface ColourPickerProps {
   colour: string;
   onChange: (c: string) => void;
   children?: ReactNode;
+  disabled?: boolean;
 }
 
 export const ColourPicker = ({
   colour,
   onChange,
   children,
+  disabled,
 }: ColourPickerProps) => {
   const [open, setOpen] = useState(false);
 
@@ -53,6 +55,7 @@ export const ColourPicker = ({
         ref={refs.setReference}
         className="flex items-center space-x-1 group/colour-picker"
         data-testid="colour-picker-button"
+        disabled={disabled}
         {...getReferenceProps()}
       >
         <span

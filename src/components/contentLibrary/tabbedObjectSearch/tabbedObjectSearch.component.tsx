@@ -519,7 +519,11 @@ export const TabbedObjectSearchWithAccount = ({
   ...props
 }: Omit<TabbedObjectSearchProps, "accountId" | "animate" | "initial">) => {
   const [creds] = useSkylarkCreds();
-  const { accountId, isLoading: isAccountLoading } = useUserAccount();
+  const {
+    accountId,
+    isLoading: isAccountLoading,
+    isFetched: isAccountFetched,
+  } = useUserAccount();
   const [animationState, setAnimationState] = useState<
     "waiting" | "running" | "completed"
   >(skipLogoAnimation ? "completed" : "waiting");
@@ -527,7 +531,8 @@ export const TabbedObjectSearchWithAccount = ({
   const isClient = useIsClient();
 
   const showLogo =
-    (!accountId && isAccountLoading) || animationState === "running";
+    (!accountId && isAccountLoading && !isAccountFetched) ||
+    animationState === "running";
 
   useInitialPanelStateFromQuery(!showLogo, props.setPanelObject);
 

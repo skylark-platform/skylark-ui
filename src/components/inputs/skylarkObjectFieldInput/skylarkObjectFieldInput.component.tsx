@@ -44,6 +44,7 @@ interface SkylarkObjectFieldInputProps {
   isLoading?: boolean;
   fieldConfigFromObject?: ParsedSkylarkObjectConfigFieldConfig;
   aiFieldGeneration?: SkylarkObjectFieldInputLabelProps["aiFieldGeneration"];
+  disabled?: boolean;
 }
 
 interface SkylarkObjectFieldInputComponentProps
@@ -57,6 +58,7 @@ const SkylarkObjectFieldInputEnum = ({
   control,
   config,
   error,
+  disabled,
 }: SkylarkObjectFieldInputComponentProps) => (
   <Controller
     name={field}
@@ -78,6 +80,7 @@ const SkylarkObjectFieldInputEnum = ({
           placeholder={`Select ${formatObjectField(field.name)}`}
           onChange={field.onChange}
           aria-invalid={error ? "true" : "false"}
+          disabled={disabled}
         />
       );
     }}
@@ -88,6 +91,7 @@ const SkylarkObjectFieldInputTimezone = ({
   field,
   control,
   error,
+  disabled,
 }: SkylarkObjectFieldInputComponentProps) => (
   <Controller
     name={field}
@@ -103,6 +107,7 @@ const SkylarkObjectFieldInputTimezone = ({
           placeholder={`Select ${formatObjectField(field.name)}`}
           onChange={field.onChange}
           aria-invalid={error ? "true" : "false"}
+          disabled={disabled}
         />
       );
     }}
@@ -113,6 +118,7 @@ const SkylarkObjectFieldInputColourPicker = ({
   field,
   control,
   error,
+  disabled,
 }: SkylarkObjectFieldInputComponentProps) => (
   <Controller
     name={field}
@@ -123,6 +129,7 @@ const SkylarkObjectFieldInputColourPicker = ({
           colour={(field.value || "") as string}
           onChange={field.onChange}
           aria-invalid={error ? "true" : "false"}
+          disabled={disabled}
         />
       );
     }}
@@ -134,6 +141,7 @@ const SkylarkObjectFieldInputBoolean = ({
   control,
   error,
   idPrefix,
+  disabled,
 }: SkylarkObjectFieldInputComponentProps) => (
   <Controller
     name={field}
@@ -144,6 +152,7 @@ const SkylarkObjectFieldInputBoolean = ({
         onCheckedChange={field.onChange}
         aria-invalid={error ? "true" : "false"}
         id={createHtmlForId(idPrefix, field.name)}
+        disabled={disabled}
       />
     )}
   />
@@ -154,6 +163,7 @@ const SkylarkObjectFieldInputWYSIWYG = ({
   control,
   error,
   idPrefix,
+  disabled,
 }: SkylarkObjectFieldInputComponentProps) => (
   <Controller
     name={field}
@@ -165,6 +175,7 @@ const SkylarkObjectFieldInputWYSIWYG = ({
         onEditorChange={field.onChange}
         aria-invalid={error ? "true" : "false"}
         withSkeletonLoading
+        disabled={disabled}
       />
     )}
   />
@@ -177,6 +188,7 @@ const SkylarkObjectFieldInputTextArea = ({
   error,
   registerOptions,
   idPrefix,
+  disabled,
 }: SkylarkObjectFieldInputComponentProps) => (
   <textarea
     {...register(field, registerOptions)}
@@ -190,6 +202,7 @@ const SkylarkObjectFieldInputTextArea = ({
       1
     }
     className="w-full rounded-sm bg-manatee-50 px-4 py-3"
+    disabled={disabled}
   />
 );
 
@@ -200,6 +213,8 @@ const SkylarkObjectFieldInputGeneric = ({
   error,
   registerOptions,
   idPrefix,
+  value,
+  disabled,
 }: SkylarkObjectFieldInputComponentProps) => (
   <input
     {...register(field, {
@@ -214,6 +229,7 @@ const SkylarkObjectFieldInputGeneric = ({
       undefined
     }
     className="w-full rounded-sm bg-manatee-50 px-4 py-3"
+    disabled={disabled}
   />
 );
 

@@ -23,6 +23,7 @@ const defaultObject: ParsedSkylarkObject = {
     language: "en-GB",
     availableLanguages: ["en-GB"],
     availabilityStatus: AvailabilityStatus.Active,
+    versions: {},
   },
   availability: {
     status: AvailabilityStatus.Active,

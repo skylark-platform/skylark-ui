@@ -37,7 +37,6 @@ const readAutoconnectPath = (path: string): SkylarkCreds | null => {
   const token = splitArr
     .find((val) => val.startsWith("apikey="))
     ?.replace("apikey=", "");
-  console.log({ path, splitArr, uri, token });
   if (uri && token) {
     return { uri, token };
   }
@@ -190,6 +189,13 @@ export const AddAuthTokenModal = ({
   const closeModal = () => {
     setIsOpen(false);
   };
+
+  // Think this is the most stable way of showing the auth modal as react-query fetches a lot on first load
+  useEffect(() => {
+    if (!isLoading && !isConnected) {
+      setIsOpen(true);
+    }
+  }, [isLoading, isConnected, isOpen, setIsOpen]);
 
   return (
     <Modal

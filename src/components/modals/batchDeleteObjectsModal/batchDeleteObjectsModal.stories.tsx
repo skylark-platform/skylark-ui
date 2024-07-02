@@ -15,6 +15,7 @@ const object: ParsedSkylarkObject = {
     language: "en-GB",
     availableLanguages: ["en-GB"],
     availabilityStatus: AvailabilityStatus.Active,
+    versions: {},
   },
   metadata: {
     uid: "123",

@@ -117,6 +117,32 @@ describe("metadata view", () => {
     ).toBeInTheDocument();
   });
 
+  test("renders the version history when isPage is true", async () => {
+    render(<Panel {...defaultProps} isPage object={movieObject} />);
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading")).not.toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByTestId("panel-metadata-version-history"),
+      ).toBeInTheDocument(),
+    );
+
+    const withinPanelPageVersionHistory = within(
+      screen.getByTestId("panel-metadata-version-history"),
+    );
+    await waitFor(() => {
+      expect(
+        withinPanelPageVersionHistory.getByText("History"),
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      withinPanelPageVersionHistory.getAllByText(/edited this object/).length,
+    ).toBeGreaterThan(0);
+  });
+
   test("renders object not found when the object doesn't exist", async () => {
     server.use(
       graphql.query(

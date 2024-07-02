@@ -29,7 +29,7 @@ const select = (data: GQLSkylarkUserAndAccountResponse): UseUserAccount => ({
 });
 
 export const useUserAccount = () => {
-  const { data, isLoading } = useQuery<
+  const { data, isLoading, isFetched } = useQuery<
     GQLSkylarkUserAndAccountResponse,
     GQLSkylarkErrorResponse<GQLSkylarkUserAndAccountResponse>,
     UseUserAccount
@@ -42,5 +42,6 @@ export const useUserAccount = () => {
   return {
     ...data,
     isLoading,
+    isFetched,
   };
 };
