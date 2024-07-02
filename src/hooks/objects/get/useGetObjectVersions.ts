@@ -185,6 +185,7 @@ export const useGetObjectVersions = (
               date,
               isInitialVersion: i === 0,
               fields: {
+                ...prev.valuesForAllFields,
                 ...fields,
               },
             };
@@ -198,11 +199,12 @@ export const useGetObjectVersions = (
                     ...combinedVersion,
                     fields: {
                       ...prev.versions[date].fields,
-                      ...fields,
+                      ...combinedVersion.fields,
                     },
                   },
                 },
                 current: currentVersions,
+                valuesForAllFields: combinedVersion.fields,
               };
             }
 
@@ -212,11 +214,18 @@ export const useGetObjectVersions = (
                 [date]: combinedVersion,
               },
               current: currentVersions,
+              valuesForAllFields: combinedVersion.fields,
             };
           },
-          { versions: {}, current: { language: 0, global: 0 } } as {
+          {
+            versions: {},
+            current: { language: 0, global: 0 },
+            valuesForAllFields: {},
+          } as {
             versions: Record<string, CombinedSkylarkObjectVersion>;
             current: Pick<CombinedSkylarkObjectVersion, "language" | "global">;
+            // Keep a running total for all fields in case the date for a language version does not have a matching global version (field won't exist in the previous version)
+            valuesForAllFields: Record<string, SkylarkObjectMetadataField>;
           },
         );
 

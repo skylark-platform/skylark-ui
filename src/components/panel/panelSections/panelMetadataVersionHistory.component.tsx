@@ -70,7 +70,10 @@ export const PanelMetadataVersionHistory = ({
   });
 
   return (
-    <div className="w-96 overflow-y-hidden">
+    <div
+      className="w-96 overflow-y-hidden hidden md:block"
+      data-testid="panel-metadata-version-history"
+    >
       <div className="overflow-y-scroll h-full p-6 md:p-8">
         <PanelSectionTitle text="History" />
         {versions?.combined

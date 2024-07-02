@@ -1,0 +1,109 @@
+{
+  "data": {
+    "getObjectVersions": {
+      "__typename": "Movie",
+      "_meta": {
+        "global_data": {
+          "history": [
+            {
+              "version": 1,
+              "created": {
+                "date": "2024-06-29T14:14:23.412241+00:00",
+                "user": "ADMIN"
+              },
+              "audience_rating": "7.796 ",
+              "budget": "40000000 ",
+              "internal_title": "Fantastic Mr Fox (All Availabilities)",
+              "movie_number": null,
+              "release_date": "2009-11-23",
+              "title_sort": "fantasticmrfox(allavailabilities)",
+              "year_of_release": null
+            },
+            {
+              "version": 2,
+              "created": {
+                "date": "2024-06-29T14:16:14.748725+00:00",
+                "user": "ADMIN"
+              },
+              "audience_rating": "7.796 ",
+              "budget": "40000000 ",
+              "internal_title": "Fantastic Mr Fox (All Availabilities)",
+              "movie_number": null,
+              "release_date": "2009-11-23",
+              "title_sort": "fantasticmrfox(allavailabilities)",
+              "year_of_release": null
+            },
+            {
+              "version": 3,
+              "created": {
+                "date": "2024-07-02T16:16:33.107920+00:00",
+                "user": "ADMIN"
+              },
+              "audience_rating": "7.796 ",
+              "budget": "40000000 ",
+              "internal_title": "Fantastic Mr Fox",
+              "movie_number": null,
+              "release_date": "2009-11-23+00:00",
+              "title_sort": "fantasticmrfox(allavailabilities)",
+              "year_of_release": null
+            },
+            {
+              "version": 4,
+              "created": {
+                "date": "2024-07-02T16:18:00.224218+00:00",
+                "user": "ADMIN"
+              },
+              "audience_rating": "7.796 ",
+              "budget": "40000000 ",
+              "internal_title": "Fantastic Mr Fox (All Availabilities)",
+              "movie_number": null,
+              "release_date": "2009-11-23+00:00",
+              "title_sort": "fantasticmrfox(allavailabilities)",
+              "year_of_release": null
+            }
+          ]
+        },
+        "language_data": {
+          "history": [
+            {
+              "version": 1,
+              "created": {
+                "date": "2024-06-29T14:14:23.412241+00:00",
+                "user": "ADMIN"
+              },
+              "slug": "fantastic-mr-fox",
+              "synopsis": "Mr Fox, a family man, goes back to his ways of stealing, unable to resist his animal instincts. However, he finds himself trapped when three farmers decide to kill him and his kind.\n\nThis test movie is configured with an expired, active and future availability.",
+              "synopsis_short": "Mr Fox, a family man, goes back to his ways of stealing, unable to resist his animal instincts. However, he finds himself trapped when three farmers decide to kill him and his kind.",
+              "title": "Fantastic Mr Fox (All Availabilities)",
+              "title_short": "Fantastic Mr Fox (All)"
+            },
+            {
+              "version": 2,
+              "created": {
+                "date": "2024-07-02T16:16:33.107920+00:00",
+                "user": "ADMIN"
+              },
+              "slug": "fantastic-mr-fox",
+              "synopsis": null,
+              "synopsis_short": null,
+              "title": "Fantastic Mr Fox",
+              "title_short": "Fantastic Mr Fox (All)"
+            },
+            {
+              "version": 3,
+              "created": {
+                "date": "2024-07-02T16:18:00.224218+00:00",
+                "user": "ADMIN"
+              },
+              "slug": "fantastic-mr-fox",
+              "synopsis": "Mr Fox, a family man, goes back to his ways of stealing, unable to resist his animal instincts. However, he finds himself trapped when three farmers decide to kill him and his kind. This test movie is configured with an expired, active and future availability.",
+              "synopsis_short": "Mr Fox, a family man, goes back to his ways of stealing, unable to resist his animal instincts. However, he finds himself trapped when three farmers decide to kill him and his kind.",
+              "title": "Fantastic Mr Fox (All Availabilities)",
+              "title_short": "Fantastic Mr Fox (All)"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

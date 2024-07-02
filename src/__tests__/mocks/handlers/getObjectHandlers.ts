@@ -24,6 +24,7 @@ import GQLSkylarkGetAvailabilityDimensionsQueryFixture from "src/__tests__/fixtu
 import GQLSkylarkGetObjectGenericFixture from "src/__tests__/fixtures/skylark/queries/getObjectGeneric/homepage.json";
 import GQLSkylarkGetMovieRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetSeasonRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/gots04relationships.json";
+import GQLSkylarkGetMovieVersionsFixture from "src/__tests__/fixtures/skylark/queries/getObjectVersions/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetObjectsConfigFixture from "src/__tests__/fixtures/skylark/queries/getObjectsConfig/allObjectsConfig.json";
 import {
   createGetObjectAvailabilityInheritanceQueryName,
@@ -32,6 +33,8 @@ import {
   createGetObjectContentQueryName,
   createGetObjectQueryName,
   createGetObjectRelationshipsQueryName,
+  createGetObjectVersionMetadataQueryName,
+  createGetObjectVersionsQueryName,
   wrapQueryName,
 } from "src/lib/graphql/skylark/dynamicQueries";
 
@@ -220,4 +223,13 @@ export const getObjectGenericHandlers = [
   graphql.query(wrapQueryName("GET_OBJECT_GENERIC"), (_, res, ctx) => {
     return res(ctx.data(GQLSkylarkGetObjectGenericFixture.data));
   }),
+];
+
+export const getObjectVersions = [
+  graphql.query(
+    wrapQueryName(createGetObjectVersionsQueryName("Movie")),
+    (_, res, ctx) => {
+      return res(ctx.data(GQLSkylarkGetMovieVersionsFixture.data));
+    },
+  ),
 ];
