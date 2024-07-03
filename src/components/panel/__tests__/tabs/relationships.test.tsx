@@ -73,9 +73,12 @@ describe("relationships view", () => {
 
     await waitFor(() => {
       expect(
-        withinEpisodesRelationship.getByText("Sorted by: Episode number"),
+        withinEpisodesRelationship.getByLabelText("Sorted by:"),
       ).toBeInTheDocument();
     });
+
+    const sortedBy = withinEpisodesRelationship.getByLabelText("Sorted by:");
+    expect(sortedBy).toHaveTextContent("Episode number (Default)");
   });
 
   test("displays the value of the relationship sort field", async () => {

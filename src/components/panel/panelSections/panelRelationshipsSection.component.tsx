@@ -1,9 +1,10 @@
 import { sentenceCase } from "change-case";
 import clsx from "clsx";
 import { Transition, m } from "framer-motion";
-import { Ref, forwardRef, useEffect } from "react";
+import { Ref, forwardRef, useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 
+import { Select } from "src/components/inputs/select";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import {
   PanelButton,
@@ -14,10 +15,11 @@ import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
+  ParsedSkylarkObject,
   ParsedSkylarkObjectRelationship,
-  ParsedSkylarkObjectTypeRelationshipConfiguration,
+  ParsedSkylarkRelationshipConfig,
 } from "src/interfaces/skylark";
-import { formatObjectField, hasProperty } from "src/lib/utils";
+import { formatObjectField } from "src/lib/utils";
 
 interface PanelRelationshipsSectionProps {
   isEmptySection?: boolean;
@@ -26,13 +28,20 @@ interface PanelRelationshipsSectionProps {
   isFetchingMoreRelationships: boolean;
   newUids: string[];
   isExpanded: boolean;
-  config: ParsedSkylarkObjectTypeRelationshipConfiguration["config"] | null;
+  config: {
+    objectTypeDefault: ParsedSkylarkRelationshipConfig | null;
+    overrides: Partial<ParsedSkylarkRelationshipConfig>;
+  };
+  modifiedConfig?: Partial<ParsedSkylarkRelationshipConfig>;
   setExpandedRelationship: (r: string | null) => void;
   setPanelObject: SetPanelObject;
   removeRelationshipObject: (args: {
     uid: string;
     relationshipName: string;
   }) => void;
+  updateRelationshipConfig: (
+    updatedConfig: Partial<ParsedSkylarkRelationshipConfig>,
+  ) => void;
   setSearchObjectsModalState: (args: {
     relationship: ParsedSkylarkObjectRelationship;
     fields?: string[];
@@ -46,6 +55,32 @@ const transition: Transition = {
   ease: "linear",
 };
 
+const dumbFieldComparison = (
+  a: ParsedSkylarkObject,
+  b: ParsedSkylarkObject,
+  sortField: string,
+) => {
+  const aField = a.metadata?.[sortField];
+  const bField = b.metadata?.[sortField];
+
+  if (aField === bField) {
+    return 0;
+  }
+
+  if (aField === null || bField === null) {
+    return aField === null ? -1 : 1;
+  }
+
+  return aField < bField ? -1 : 1;
+};
+
+const manuallySortObjects = (
+  objects: ParsedSkylarkObject[],
+  sortField: string,
+) => {
+  return objects.sort((a, b) => dumbFieldComparison(a, b, sortField));
+};
+
 const PanelRelationshipSectionComponent = (
   {
     isEmptySection,
@@ -56,8 +91,10 @@ const PanelRelationshipSectionComponent = (
     isExpanded,
     config,
     hasMoreRelationships,
+    modifiedConfig,
     setPanelObject,
     removeRelationshipObject,
+    updateRelationshipConfig,
     setSearchObjectsModalState,
     setExpandedRelationship,
     fetchMoreRelationships,
@@ -79,14 +116,27 @@ const PanelRelationshipSectionComponent = (
 
   const hasShowMore = objects?.length > 4;
 
-  const displayList =
-    hasShowMore && !isExpanded ? objects.slice(0, 5) : objects;
-
   const toggleExpanded = () => {
     setExpandedRelationship(isExpanded ? null : relationshipName);
   };
 
   const canLoadMore = isExpanded && hasMoreRelationships;
+
+  const sortedObjects = useMemo(
+    () =>
+      modifiedConfig?.defaultSortField
+        ? manuallySortObjects(objects, modifiedConfig.defaultSortField)
+        : objects,
+    [objects, modifiedConfig?.defaultSortField],
+  );
+
+  const displayList =
+    hasShowMore && !isExpanded ? sortedObjects.slice(0, 5) : sortedObjects;
+
+  const activeSortField =
+    modifiedConfig?.defaultSortField ||
+    config.overrides.defaultSortField ||
+    config.objectTypeDefault?.defaultSortField;
 
   return (
     <m.div
@@ -142,10 +192,27 @@ const PanelRelationshipSectionComponent = (
             />
           )}
         </div>
-        {!isEmptySection && config?.defaultSortField && (
-          <p className="text-manatee-300 text-xs mb-4 hover:text-manatee-600 transition-colors cursor-default">{`Sorted by: ${sentenceCase(
-            config.defaultSortField,
-          )}`}</p>
+        {!isEmptySection && (
+          <Select
+            variant="pill"
+            placeholder="Unsorted"
+            className="text-manatee-600 w-52 mb-2 pb-1 md:pb-2"
+            selected={activeSortField}
+            options={
+              objectOperations?.fieldConfig.global.map((value) => ({
+                label: `${sentenceCase(value)} ${value === config?.objectTypeDefault?.defaultSortField ? "(Default)" : ""}`,
+                value,
+              })) || []
+            }
+            label="Sorted by:"
+            labelPosition="inline"
+            labelVariant="small"
+            renderInPortal
+            searchable={false}
+            onChange={(defaultSortField) =>
+              updateRelationshipConfig({ defaultSortField })
+            }
+          />
         )}
       </m.div>
 
@@ -157,10 +224,8 @@ const PanelRelationshipSectionComponent = (
         <div className="overflow-hidden">
           {displayList?.length > 0 &&
             displayList?.map((obj, index) => {
-              const defaultSortFieldValue =
-                config?.defaultSortField &&
-                hasProperty(obj.metadata, config.defaultSortField) &&
-                obj.metadata[config.defaultSortField];
+              const sortFieldValue =
+                activeSortField && obj.metadata?.[activeSortField];
 
               return (
                 <m.div
@@ -191,18 +256,14 @@ const PanelRelationshipSectionComponent = (
                       }
                       onForwardClick={setPanelObject}
                     >
-                      {config?.defaultSortField && (
-                        <Tooltip
-                          tooltip={`${sentenceCase(
-                            config.defaultSortField,
-                          )}: ${defaultSortFieldValue}`}
-                        >
+                      {sortFieldValue && (
+                        <Tooltip tooltip={sortFieldValue}>
                           <p
-                            className="flex max-w-8 min-w-3 overflow-hidden whitespace-nowrap text-sm text-manatee-500 cursor-default"
+                            className="flex max-w-8 sm:max-w-full min-w-3 overflow-hidden whitespace-nowrap text-sm text-manatee-500 cursor-default"
                             data-testid="object-sort-field"
                           >
                             <span className="overflow-hidden text-ellipsis">
-                              {defaultSortFieldValue}
+                              {sortFieldValue}
                             </span>
                           </p>
                         </Tooltip>

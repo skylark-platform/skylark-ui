@@ -6,7 +6,7 @@ import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkErrorResponse,
   GQLSkylarkUpdateRelationshipsResponse,
-  ParsedSkylarkObject,
+  ModifiedRelationshipsObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -14,13 +14,7 @@ import { createUpdateObjectRelationshipsMutation } from "src/lib/graphql/skylark
 
 interface MutationArgs {
   uid: string;
-  modifiedRelationships: Record<
-    string,
-    {
-      added: ParsedSkylarkObject[];
-      removed: string[];
-    }
-  > | null;
+  modifiedRelationships: ModifiedRelationshipsObject | null;
 }
 
 export const useUpdateObjectRelationships = ({

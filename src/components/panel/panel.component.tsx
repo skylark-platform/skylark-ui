@@ -33,6 +33,8 @@ import {
   BuiltInSkylarkObjectType,
   GQLSkylarkErrorResponse,
   ParsedSkylarkObjectConfig,
+  ParsedSkylarkRelationshipConfig,
+  ModifiedRelationshipsObject,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
@@ -274,10 +276,8 @@ export const Panel = ({
     updated: null,
   });
 
-  const [modifiedRelationships, setModifiedRelationships] = useState<Record<
-    string,
-    { added: ParsedSkylarkObject[]; removed: string[] }
-  > | null>(null);
+  const [modifiedRelationships, setModifiedRelationships] =
+    useState<ModifiedRelationshipsObject | null>(null);
 
   const [modifiedAvailabilityObjects, setModifiedAvailabilityObjects] =
     useState<{
@@ -543,13 +543,7 @@ export const Panel = ({
 
   const handleRelationshipsObjectsModified = useCallback(
     (
-      updatedModifiedRelationships: Record<
-        string,
-        {
-          added: ParsedSkylarkObject[];
-          removed: string[];
-        }
-      >,
+      updatedModifiedRelationships: ModifiedRelationshipsObject,
       errors: HandleDropError[],
     ) => {
       setModifiedRelationships(updatedModifiedRelationships);
