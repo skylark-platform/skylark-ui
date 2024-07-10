@@ -13,6 +13,7 @@ import {
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
+import { SEGMENT_KEYS } from "src/constants/segment";
 import { useGetIntegrations } from "src/hooks/integrations/useGetIntegrations";
 import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRelationships";
 import { SetPanelObject } from "src/hooks/state";
@@ -21,6 +22,7 @@ import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
+import { segment } from "src/lib/analytics/segment";
 import {
   addCloudinaryOnTheFlyImageTransformation,
   formatObjectField,
@@ -166,6 +168,15 @@ export const PanelImages = ({
                     "aria-label": `Upload to ${relationshipName}`,
                   }}
                   onSuccess={() => {
+                    segment.track(
+                      SEGMENT_KEYS.panel.integrations.imageUploaded,
+                      {
+                        provider: data?.enabledIntegrations?.[0],
+                        objectType,
+                        uid,
+                        relationshipName,
+                      },
+                    );
                     pollPanelRefetch(queryClient, uid);
                   }}
                 />

@@ -22,6 +22,7 @@ import {
 } from "src/components/panel/panelTypography";
 import { VideoPlayer } from "src/components/players";
 import { Skeleton } from "src/components/skeleton";
+import { SEGMENT_KEYS } from "src/constants/segment";
 import { QueryKeys } from "src/enums/graphql";
 import { useGenerateIntegrationPlaybackUrl } from "src/hooks/integrations/useGenerateIntegrationPlaybackUrl";
 import { useGetIntegrations } from "src/hooks/integrations/useGetIntegrations";
@@ -32,6 +33,7 @@ import {
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
+import { segment } from "src/lib/analytics/segment";
 import { formatObjectField, hasProperty } from "src/lib/utils";
 
 import { PanelMetadataProperty } from "./panelMetadataAdditionalSections";
@@ -369,6 +371,15 @@ const RelationshipPlayback = ({
                     "aria-label": `Upload video to ${relationshipName}`,
                   }}
                   onSuccess={() => {
+                    segment.track(
+                      SEGMENT_KEYS.panel.integrations.imageUploaded,
+                      {
+                        provider: firstActiveProvider,
+                        objectType,
+                        uid,
+                        relationshipName,
+                      },
+                    );
                     pollPanelRefetch(
                       queryClient,
                       uid,

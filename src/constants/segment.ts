@@ -5,6 +5,14 @@ export const SEGMENT_KEYS = {
     historyForward: "panel:historyForward",
     historyPrevious: "panel:historyPrevious",
     closed: "panel:closed",
+    save: "panel:save",
+    purgeCache: "panel:purgeCache",
+    openInNewTab: "panel:openInNewTab",
+    objectDelete: "panel:objectDelete",
+    integrations: {
+      imageUploaded: "panel:integrations:imageUploaded",
+      videoUploaded: "panel:integrations:videoUploaded",
+    },
   },
   object: {
     created: "object:created",
