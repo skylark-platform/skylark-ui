@@ -71,6 +71,9 @@ export type SetPanelObject = (
     tabState?: Partial<PanelTabState>;
     keepTab?: boolean;
   },
+  analyticsOpts?: {
+    source: "panel" | "contentLibrary";
+  },
 ) => void;
 
 const createPanelUrlQuery = (object: Partial<PanelObject>) => {
@@ -195,14 +198,7 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
   });
 
   const setPanelObject: SetPanelObject = useCallback(
-    (
-      newPanelObject: SkylarkObjectIdentifier,
-      opts?: {
-        tab?: PanelTab;
-        tabState?: Partial<PanelTabState>;
-        keepTab?: boolean;
-      },
-    ) => {
+    (newPanelObject, opts, analyticsOpts) => {
       const { tab, tabState, keepTab } = opts || {
         tab: undefined,
         tabState: undefined,
@@ -213,6 +209,7 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
         newPanelObject,
         tab,
         tabState,
+        source: analyticsOpts?.source || "unknown",
       });
 
       setPanelState((oldState) => {
