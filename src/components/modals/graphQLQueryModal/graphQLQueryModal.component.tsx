@@ -171,13 +171,12 @@ interface GraphQLQueryModalProps {
   headers?: HeadersInit;
 }
 
-export const DisplayGraphQLQueryModal = ({
-  close,
+const DisplayGraphQLQueryModalBody = ({
   label,
   query,
   variables,
   headers,
-}: { close: () => void } & GraphQLQueryModalProps) => {
+}: GraphQLQueryModalProps) => {
   const [activeTab, setTab] = useState("Query");
 
   const formattedQuery = useMemo(() => (query ? print(query) : ""), [query]);
@@ -202,8 +201,89 @@ export const DisplayGraphQLQueryModal = ({
       variables,
       headers,
     });
-  }, [headers, label, query, variables]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  return (
+    <Dialog.Panel className="relative mx-auto flex h-full w-full flex-col overflow-y-hidden rounded bg-white sm:w-11/12 md:w-5/6 lg:w-3/4 xl:w-2/3 2xl:w-1/2">
+      <div className="sticky top-0 bg-white pt-8 text-black shadow">
+        <button
+          className="absolute right-4 top-4 sm:right-8 sm:top-9"
+          onClick={close}
+        >
+          <FiX className="text-lg" />
+        </button>
+
+        <div className="mb-2 px-4 md:mb-4 md:px-8">
+          <Dialog.Title className="mb-2 font-heading text-xl sm:text-2xl md:mb-4 md:text-3xl">
+            Query for {label}
+          </Dialog.Title>
+
+          <Dialog.Description className="mb-2">
+            The Skylark UI uses dynamic GraphQL Queries generated at runtime to
+            match your Skylark Schema exactly. This enables developers to copy
+            the query into their application with minimal changes.
+          </Dialog.Description>
+
+          <a
+            className="link text-brand-primary"
+            onClick={openQueryInGraphQLEditor}
+            target="_blank"
+            href={HREFS.relative.graphqlEditor}
+            rel="noreferrer"
+          >
+            Open Query in GraphQL Editor
+          </a>
+        </div>
+
+        <Tabs
+          tabs={convertStringArrToTabs(["Query", "Variables", "Headers"])}
+          selectedTab={activeTab}
+          onChange={({ name }) => setTab(name)}
+          className="px-4 md:px-8"
+        />
+
+        <div className="absolute right-0 z-50 w-auto">
+          <div className="mr-4 mt-3 sm:mr-8 sm:mt-6">
+            <button
+              data-testid="copy-active-tab-to-clipboard"
+              className="rounded border bg-manatee-100 p-2 shadow transition-colors hover:bg-brand-primary hover:stroke-white sm:p-3"
+              onClick={copyActiveTab}
+            >
+              <FiCopy className="text-lg md:text-xl" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-grow overflow-y-scroll">
+        {activeTab === "Query" && (
+          <DynamicSyntaxHighlighter
+            language={"graphql"}
+            value={formattedQuery}
+          />
+        )}
+        {activeTab === "Variables" && (
+          <DynamicSyntaxHighlighter
+            language={"json"}
+            value={JSON.stringify(variables || {}, null, 4)}
+          />
+        )}
+        {activeTab === "Headers" && (
+          <DynamicSyntaxHighlighter
+            language={"json"}
+            value={JSON.stringify(headers || {}, null, 4)}
+          />
+        )}
+      </div>
+    </Dialog.Panel>
+  );
+};
+
+export const DisplayGraphQLQueryModal = ({
+  close,
+  ...props
+}: { close: () => void } & GraphQLQueryModalProps) => {
   return (
     <Dialog
       static
@@ -231,78 +311,7 @@ export const DisplayGraphQLQueryModal = ({
         id="graphql-query-modal"
         className="fixed inset-0 flex h-full items-center justify-center overflow-y-hidden py-4 text-sm sm:py-10 md:py-20"
       >
-        <Dialog.Panel className="relative mx-auto flex h-full w-full flex-col overflow-y-hidden rounded bg-white sm:w-11/12 md:w-5/6 lg:w-3/4 xl:w-2/3 2xl:w-1/2">
-          <div className="sticky top-0 bg-white pt-8 text-black shadow">
-            <button
-              className="absolute right-4 top-4 sm:right-8 sm:top-9"
-              onClick={close}
-            >
-              <FiX className="text-lg" />
-            </button>
-
-            <div className="mb-2 px-4 md:mb-4 md:px-8">
-              <Dialog.Title className="mb-2 font-heading text-xl sm:text-2xl md:mb-4 md:text-3xl">
-                Query for {label}
-              </Dialog.Title>
-
-              <Dialog.Description className="mb-2">
-                The Skylark UI uses dynamic GraphQL Queries generated at runtime
-                to match your Skylark Schema exactly. This enables developers to
-                copy the query into their application with minimal changes.
-              </Dialog.Description>
-
-              <a
-                className="link text-brand-primary"
-                onClick={openQueryInGraphQLEditor}
-                target="_blank"
-                href={HREFS.relative.graphqlEditor}
-                rel="noreferrer"
-              >
-                Open Query in GraphQL Editor
-              </a>
-            </div>
-
-            <Tabs
-              tabs={convertStringArrToTabs(["Query", "Variables", "Headers"])}
-              selectedTab={activeTab}
-              onChange={({ name }) => setTab(name)}
-              className="px-4 md:px-8"
-            />
-
-            <div className="absolute right-0 z-50 w-auto">
-              <div className="mr-4 mt-3 sm:mr-8 sm:mt-6">
-                <button
-                  data-testid="copy-active-tab-to-clipboard"
-                  className="rounded border bg-manatee-100 p-2 shadow transition-colors hover:bg-brand-primary hover:stroke-white sm:p-3"
-                  onClick={copyActiveTab}
-                >
-                  <FiCopy className="text-lg md:text-xl" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-grow overflow-y-scroll">
-            {activeTab === "Query" && (
-              <DynamicSyntaxHighlighter
-                language={"graphql"}
-                value={formattedQuery}
-              />
-            )}
-            {activeTab === "Variables" && (
-              <DynamicSyntaxHighlighter
-                language={"json"}
-                value={JSON.stringify(variables || {}, null, 4)}
-              />
-            )}
-            {activeTab === "Headers" && (
-              <DynamicSyntaxHighlighter
-                language={"json"}
-                value={JSON.stringify(headers || {}, null, 4)}
-              />
-            )}
-          </div>
-        </Dialog.Panel>
+        <DisplayGraphQLQueryModalBody {...props} />
       </m.div>
     </Dialog>
   );
