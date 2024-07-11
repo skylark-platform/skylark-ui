@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import dayjs, { Dayjs } from "dayjs";
 import { AnimatePresence, m } from "framer-motion";
-import { Fragment, ReactNode, useMemo, useState } from "react";
+import { Fragment, ReactNode, useMemo, useRef, useState } from "react";
 
 import {
   AvailabilityInheritanceIcon,
@@ -511,7 +511,10 @@ const PanelAvailabilityReadonlyCard = ({
   return (
     <m.div
       key={`availability-card-inner-${availability.uid}`}
-      className={clsx("flex items-start z-10 bg-white mb-2 absolute w-11/12")}
+      className={clsx(
+        "flex items-start z-10 bg-white mb-2 w-full",
+        isActive ? "absolute" : "relative",
+      )}
       layout
       initial={{ opacity: 1 }}
       exit={{ opacity: 1 }}
@@ -755,6 +758,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
   const [activeAvailability, setActiveAvailability] = useState<{
     object: ParsedSkylarkObjectAvailabilityObject;
     tabId: TabID;
+    previousScrollTop?: number;
   } | null>(
     tabState.active
       ? {
@@ -764,18 +768,39 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
       : null,
   );
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const setActiveAvailabilityWrapper = (
     newActiveAvailability: {
       object: ParsedSkylarkObjectAvailabilityObject;
       tabId: TabID;
     } | null,
   ) => {
-    setActiveAvailability(newActiveAvailability);
+    const previousScrollTop = containerRef.current?.scrollTop;
+    const shouldScroll =
+      newActiveAvailability === null && activeAvailability?.previousScrollTop;
+    setActiveAvailability(
+      newActiveAvailability
+        ? { ...newActiveAvailability, previousScrollTop }
+        : newActiveAvailability,
+    );
     updateActivePanelTabState({
       [PanelTab.Availability]: {
         active: newActiveAvailability,
       },
     });
+
+    if (shouldScroll && containerRef.current) {
+      const scrollTop = activeAvailability.previousScrollTop;
+      // Little cheat to scroll after the elements have rendered
+      setTimeout(() => {
+        console.log(containerRef.current, scrollTop);
+        containerRef.current?.scrollTo({
+          top: scrollTop,
+          behavior: "instant",
+        });
+      }, 50);
+    }
   };
 
   const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
@@ -929,6 +954,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
         },
       ]}
       isPage={isPage}
+      ref={containerRef}
     >
       <div
         data-testid="panel-availability"
