@@ -8,8 +8,11 @@ import { TextInput } from "src/components/inputs/input";
 import { Modal } from "src/components/modals/base/modal";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { Toast } from "src/components/toast/toast.component";
+import { SEGMENT_KEYS } from "src/constants/segment";
 import { useBulkDeleteObjects } from "src/hooks/objects/delete/useBulkDeleteObjects";
 import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import { segment } from "src/lib/analytics/segment";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { hasProperty } from "src/lib/utils";
 
 const DELETION_LIMIT = 100;
@@ -141,6 +144,9 @@ const BatchDeleteObjectsModalContent = ({
         />,
       );
       onDeletionComplete(deletedObjects);
+      segment.track(SEGMENT_KEYS.bulkOperations.delete, {
+        objects: deletedObjects.map(convertParsedObjectToIdentifier),
+      });
     },
     onError: () => {
       toast.error(

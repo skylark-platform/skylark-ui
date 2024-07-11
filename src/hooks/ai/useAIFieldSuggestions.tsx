@@ -22,6 +22,9 @@ interface AIFieldSuggestionsVariables {
 type MutationArgs = Omit<AIFieldSuggestionsVariables, "rootFieldData"> & {
   rootFieldData: object;
   fieldsToAutoFill?: string[];
+  triggerInfo: {
+    field: string;
+  };
 };
 
 const select = (data?: {
@@ -86,6 +89,7 @@ export const useAIFieldSuggestions = ({
       language,
       setUid,
       objectType,
+      triggerInfo,
     }) => {
       const sanitizedRootFieldData = JSON.stringify(
         Object.fromEntries(
@@ -103,6 +107,7 @@ export const useAIFieldSuggestions = ({
       };
       segment.track(SEGMENT_KEYS.ai.fieldSuggestions.generateValuesRequest, {
         ...variables,
+        triggerInfo,
       });
       const data = await skylarkRequest<{ AiAssistant: string }>(
         "query",

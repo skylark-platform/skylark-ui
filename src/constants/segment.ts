@@ -63,4 +63,16 @@ export const SEGMENT_KEYS = {
       generateValuesRequest: "ai:fieldSuggestions:generateValuesRequest",
     },
   },
+  bulkOperations: {
+    delete: "bulkOperations:delete",
+    purgeCache: "bulkOperations:purgeCache",
+  },
+  externalLink: {
+    github: {
+      ui: "externalLink:github:skylark-ui",
+    },
+    apiDocs: {
+      home: "externalLink:apiDocs:home",
+    },
+  },
 };

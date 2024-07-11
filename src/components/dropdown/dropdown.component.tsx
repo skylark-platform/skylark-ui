@@ -133,7 +133,10 @@ const MenuItems = ({
                           );
                           return option.href ? (
                             <Link
-                              onClick={close}
+                              onClick={() => {
+                                close();
+                                option.onClick?.();
+                              }}
                               className={className}
                               href={option.href as string}
                               Icon={option.Icon}

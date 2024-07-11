@@ -111,7 +111,7 @@ export const SkylarkObjectFieldInputLabel = ({
                   aiFieldGeneration.isGeneratingAiSuggestions
                 }
                 triggerAiFieldGeneration={() => {
-                  aiFieldGeneration.generateFieldSuggestions();
+                  aiFieldGeneration.generateFieldSuggestions(field);
                 }}
               />
             }

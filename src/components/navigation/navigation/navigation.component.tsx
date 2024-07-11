@@ -8,10 +8,14 @@ import { useIsClient } from "usehooks-ts";
 
 import { AccountStatus } from "src/components/account";
 import { Button } from "src/components/button";
-import { DropdownMenu } from "src/components/dropdown/dropdown.component";
+import {
+  DropdownMenu,
+  DropdownMenuOption,
+} from "src/components/dropdown/dropdown.component";
 import { Hamburger } from "src/components/navigation/hamburger";
 import { NavigationLinks } from "src/components/navigation/links";
 import { UserAvatar } from "src/components/user";
+import { SEGMENT_KEYS } from "src/constants/segment";
 import { useSkylarkCreds } from "src/hooks/localStorage/useCreds";
 import { useAccountStatus } from "src/hooks/useAccountStatus";
 import { useUserAccount } from "src/hooks/useUserAccount";
@@ -52,8 +56,8 @@ export const Navigation = ({
     ? formatUriAsCustomerIdentifer(creds?.uri || "")
     : "";
 
-  const dropdownOptions = useMemo(() => {
-    const options = [
+  const dropdownOptions: DropdownMenuOption[] = useMemo(() => {
+    const options: DropdownMenuOption[] = [
       {
         id: "change-skylark",
         text: "Change Skylark Account",
@@ -63,6 +67,9 @@ export const Navigation = ({
       {
         id: "skylark-ui-github",
         text: "GitHub",
+        onClick: () => {
+          segment.track(SEGMENT_KEYS.externalLink.github.ui);
+        },
         href: "https://github.com/skylark-platform/skylark-ui",
         Icon: <FiGithub className="text-xl" />,
       },

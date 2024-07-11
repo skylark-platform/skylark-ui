@@ -23,6 +23,7 @@ import { ButtonWithDropdown } from "src/components/buttonWithDropdown";
 import {
   DropdownMenu,
   DropdownMenuButton,
+  DropdownMenuOption,
 } from "src/components/dropdown/dropdown.component";
 import { FiX } from "src/components/icons";
 import { LanguageSelect } from "src/components/inputs/select";
@@ -246,7 +247,7 @@ export const PanelHeader = ({
     },
   });
 
-  const objectMenuOptions = useMemo(
+  const objectMenuOptions: DropdownMenuOption[] = useMemo(
     () => [
       {
         id: "open-in-new-tab",
