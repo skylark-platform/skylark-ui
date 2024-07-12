@@ -92,12 +92,10 @@ export const Navigation = ({
       segment.identify({
         skylark: creds?.uri,
         role,
-        defaultLanguage,
-        permissions,
         accountId,
       });
     }
-  }, [accountId, creds?.uri, defaultLanguage, permissions, role]);
+  }, [accountId, creds?.uri, role]);
 
   return (
     <>
