@@ -31,7 +31,10 @@ const loadFramerMotionFeatures = () =>
 export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(createSkylarkReactQueryClient);
 
-  const [isAuthModalOpen, setAuthModalOpen] = useState(false);
+  const [isAuthModalOpen, setAuthModalOpen] = useState<
+    // network when react-query detects we're disconnected, manual when the open modal button is clicked
+    "network" | "manual" | false
+  >(false);
 
   const router = useRouter();
 
@@ -80,7 +83,7 @@ export default function App({ Component, pageProps }: AppProps) {
           setIsOpen={setAuthModalOpen}
         />
         <UserProvider>
-          <Navigation openAuthModal={() => setAuthModalOpen(true)} />
+          <Navigation openAuthModal={() => setAuthModalOpen("manual")} />
           <LazyMotion features={loadFramerMotionFeatures} strict>
             <Component {...pageProps} />
           </LazyMotion>
