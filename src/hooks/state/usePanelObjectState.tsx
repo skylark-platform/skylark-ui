@@ -197,6 +197,8 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
     forwardPanelStates: [],
   });
 
+  console.log({ panelState });
+
   const setPanelObject: SetPanelObject = useCallback(
     (newPanelObject, opts, analyticsOpts) => {
       const { tab, tabState, keepTab } = opts || {
@@ -217,6 +219,9 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
           tab ||
           (keepTab && oldState.activePanelState?.tab) ||
           PanelTab.Metadata;
+
+        console.log("setPanelObject", newPanelObject, opts, analyticsOpts);
+        console.log({ oldState });
 
         const updatedState = {
           forwardPanelStates: [],
@@ -386,30 +391,40 @@ export const useInitialPanelStateFromQuery = (
   isReadyToOpenPanel: boolean,
   setPanelObject?: SetPanelObject,
 ) => {
-  const { query } = useRouter();
+  const { query, isReady } = useRouter();
 
   const [hasInitialQueryBeenUpdated, setInitialQueryUpdated] = useState(false);
 
   useEffect(() => {
-    const currentPanelQuery = readPanelUrlQuery(query);
-
     if (
       isReadyToOpenPanel &&
       setPanelObject &&
       !hasInitialQueryBeenUpdated &&
-      currentPanelQuery &&
-      currentPanelQuery.panelUid &&
-      currentPanelQuery.panelObjectType
+      isReady
     ) {
+      const currentPanelQuery = readPanelUrlQuery(query);
+      if (
+        currentPanelQuery &&
+        currentPanelQuery.panelUid &&
+        currentPanelQuery.panelObjectType
+      ) {
+        setPanelObject(
+          {
+            uid: currentPanelQuery.panelUid,
+            objectType: currentPanelQuery.panelObjectType,
+            language: currentPanelQuery.panelLanguage || "",
+          },
+          { tab: currentPanelQuery.panelTab as PanelTab | undefined },
+        );
+      }
+
       setInitialQueryUpdated(true);
-      setPanelObject(
-        {
-          uid: currentPanelQuery.panelUid,
-          objectType: currentPanelQuery.panelObjectType,
-          language: currentPanelQuery.panelLanguage || "",
-        },
-        { tab: currentPanelQuery.panelTab as PanelTab | undefined },
-      );
     }
-  }, [hasInitialQueryBeenUpdated, isReadyToOpenPanel, query, setPanelObject]);
+  }, [
+    hasInitialQueryBeenUpdated,
+    isReady,
+    isReadyToOpenPanel,
+    query,
+    setPanelObject,
+  ]);
 };
