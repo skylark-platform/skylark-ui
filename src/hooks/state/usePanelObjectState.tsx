@@ -197,8 +197,6 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
     forwardPanelStates: [],
   });
 
-  console.log({ panelState });
-
   const setPanelObject: SetPanelObject = useCallback(
     (newPanelObject, opts, analyticsOpts) => {
       const { tab, tabState, keepTab } = opts || {
@@ -219,9 +217,6 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
           tab ||
           (keepTab && oldState.activePanelState?.tab) ||
           PanelTab.Metadata;
-
-        console.log("setPanelObject", newPanelObject, opts, analyticsOpts);
-        console.log({ oldState });
 
         const updatedState = {
           forwardPanelStates: [],
