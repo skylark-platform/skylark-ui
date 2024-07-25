@@ -433,10 +433,16 @@ describe("parseObjectContent", () => {
             objects: [
               {
                 __typename: BuiltInSkylarkObjectType.Availability,
+                title: "my-avail",
+                slug: null,
                 start: "2000-10-10T12:00:00Z",
                 end: "2030-10-10T12:00:00Z",
                 uid: "avail-1",
                 external_id: "",
+                timezone: null,
+                inheritance_source: null,
+                inherited: null,
+                active: true,
               },
             ],
           },

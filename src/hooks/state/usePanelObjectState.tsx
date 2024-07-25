@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 
 import { SEGMENT_KEYS } from "src/constants/segment";
 import {
+  ParsedSkylarkObject,
   ParsedSkylarkObjectAvailabilityObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
@@ -70,6 +71,7 @@ export type SetPanelObject = (
     tab?: PanelTab;
     tabState?: Partial<PanelTabState>;
     keepTab?: boolean;
+    parsedObject?: ParsedSkylarkObject;
   },
   analyticsOpts?: {
     source: "panel" | "contentLibrary";

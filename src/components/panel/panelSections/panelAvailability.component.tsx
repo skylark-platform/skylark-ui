@@ -97,9 +97,11 @@ const sortDimensionsByTitleOrSlug = (
 const AvailabilityValueGrid = ({
   header,
   data,
+  isLoading,
   onForwardClick,
 }: {
   header: string;
+  isLoading?: boolean;
   data: {
     key: string;
     label: string;
@@ -111,6 +113,9 @@ const AvailabilityValueGrid = ({
   return (
     <div className="mt-3">
       <h4 className="font-semibold">{header}</h4>
+      {isLoading && data.length === 0 && (
+        <Skeleton className="h-10 w-full max-w-xl" />
+      )}
       {data.length > 0 && (
         <div
           className={clsx(
@@ -457,6 +462,7 @@ const PanelAvailabilityReadonlyCard = ({
   tabId,
   objectType,
   objectUid,
+  isFetched,
   setActiveAvailability,
   setPanelObject,
 }: {
@@ -473,6 +479,7 @@ const PanelAvailabilityReadonlyCard = ({
   now: Dayjs;
   objectType: string;
   objectUid: string;
+  isFetched: boolean;
 }) => {
   const activeTabId: TabID = (isActive && tabId) || "overview";
 
@@ -647,6 +654,7 @@ const PanelAvailabilityReadonlyCard = ({
 
             <AvailabilityValueGrid
               header="Audience"
+              isLoading={!isFetched}
               data={availability.dimensions
                 .sort(sortDimensionsByTitleOrSlug)
                 .map((dimension) => ({
@@ -681,6 +689,7 @@ const PanelAvailabilityReadOnlyView = ({
   inheritedAvails,
   setActiveAvailability,
   now,
+  isFetched,
   ...props
 }: {
   activeAvailability: {
@@ -693,6 +702,7 @@ const PanelAvailabilityReadOnlyView = ({
     a: { object: ParsedSkylarkObjectAvailabilityObject; tabId: TabID } | null,
   ) => void;
   now: Dayjs;
+  isFetched: boolean;
 } & PanelAvailabilityProps) => {
   return (
     <>
@@ -713,6 +723,7 @@ const PanelAvailabilityReadOnlyView = ({
           objectType={props.objectType}
           tabId={activeAvailability?.tabId}
           objectUid={props.uid}
+          isFetched={isFetched}
         />
       ))}
       {!activeAvailability && (
@@ -736,6 +747,7 @@ const PanelAvailabilityReadOnlyView = ({
           objectType={props.objectType}
           objectUid={props.uid}
           tabId={activeAvailability?.tabId}
+          isFetched={isFetched}
         />
       ))}
     </>
@@ -803,8 +815,15 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
     }
   };
 
-  const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
-    useGetObjectAvailability(objectType, uid, { language });
+  const {
+    data,
+    hasNextPage,
+    isLoading,
+    isFetched,
+    fetchNextPage,
+    query,
+    variables,
+  } = useGetObjectAvailability(objectType, uid, { language });
 
   const [objectSearchModalOpen, setObjectSearchModalOpen] = useState(false);
 
@@ -1001,19 +1020,25 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                   inheritedAvails={inheritedAvails}
                   setActiveAvailability={setActiveAvailabilityWrapper}
                   now={now}
+                  isFetched={isFetched}
                 />
               )}
             </>
           )}
         </AnimatePresence>
+        <PanelLoading
+          isLoading={isLoading || hasNextPage}
+          loadMore={() => fetchNextPage()}
+        >
+          <Skeleton
+            className={clsx(
+              "mb-4 h-52 w-full max-w-xl",
+              !isLoading && hasNextPage && "mt-4",
+            )}
+          />
+          <Skeleton className="mb-4 h-52 w-full max-w-xl" />
+        </PanelLoading>
       </div>
-      <PanelLoading
-        isLoading={isLoading || hasNextPage}
-        loadMore={() => fetchNextPage()}
-      >
-        <Skeleton className="mb-4 h-52 w-full max-w-xl" />
-        <Skeleton className="mb-4 h-52 w-full max-w-xl" />
-      </PanelLoading>
       <DisplayGraphQLQuery
         label="Get Object Availability"
         query={query}

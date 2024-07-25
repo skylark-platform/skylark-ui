@@ -11,6 +11,7 @@ import {
   generateFieldsToReturn,
   generateRelationshipsToReturn,
   wrappedJsonQuery,
+  getObjectConfigFields,
 } from "./utils";
 
 export const createSearchObjectsQuery = (
@@ -72,6 +73,7 @@ export const createSearchObjectsQuery = (
                 true,
                 `__${object.name}__`,
               ),
+              ...getObjectConfigFields(true),
               ...generateRelationshipsToReturn(object, true),
               ...common.fields,
             };

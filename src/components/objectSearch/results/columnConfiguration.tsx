@@ -13,6 +13,7 @@ import {
 } from "src/interfaces/skylark";
 import { formatReadableDateTime } from "src/lib/skylark/availability";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
+import { parseSkylarkObject } from "src/lib/skylark/parsers";
 import {
   addCloudinaryOnTheFlyImageTransformation,
   formatObjectField,
@@ -196,10 +197,10 @@ const availabilityColumn = columnHelper.accessor("meta.availabilityStatus", {
           onClick={(e) => {
             if (tableMeta?.onObjectClick) {
               e.stopPropagation();
-              tableMeta.onObjectClick(
-                convertParsedObjectToIdentifier(object as ParsedSkylarkObject),
-                PanelTab.Availability,
-              );
+              tableMeta.onObjectClick(convertParsedObjectToIdentifier(object), {
+                tab: PanelTab.Availability,
+                parsedObject: object,
+              });
             }
           }}
         />
@@ -296,26 +297,34 @@ const imagesColumn = columnHelper.accessor(OBJECT_LIST_TABLE.columnIds.images, {
 
     return (
       <div className={wrapperClassName}>
-        {allImages.map(({ uid, url, title, _meta }) => (
+        {allImages.map((image) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            key={`${props.row.id}-${uid}`}
+            key={`${props.row.id}-${image.uid}`}
             onClick={(e) => {
               if (props.table.options.meta?.onObjectClick) {
                 e.stopPropagation();
-                props.table.options.meta.onObjectClick({
-                  uid,
-                  objectType: BuiltInSkylarkObjectType.SkylarkImage,
-                  language: _meta?.language_data.language || "",
-                });
+                props.table.options.meta.onObjectClick(
+                  {
+                    uid: image.uid,
+                    objectType: BuiltInSkylarkObjectType.SkylarkImage,
+                    language: image._meta?.language_data.language || "",
+                  },
+                  {
+                    parsedObject: parseSkylarkObject({
+                      ...image,
+                      __typename: BuiltInSkylarkObjectType.SkylarkImage,
+                    }),
+                  },
+                );
               }
             }}
             className={className}
             src={addCloudinaryOnTheFlyImageTransformation(
-              url,
+              image.url,
               cloudinaryConfig,
             )}
-            alt={title}
+            alt={image.title || image.slug}
           />
         ))}
       </div>

@@ -1,4 +1,5 @@
 import { CheckedState } from "@radix-ui/react-checkbox";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   ColumnDef,
   useReactTable,
@@ -13,6 +14,8 @@ import { VirtualItem, defaultRangeExtractor, useVirtual } from "react-virtual";
 
 import { SEGMENT_KEYS } from "src/constants/segment";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { createGetObjectKeyPrefix } from "src/hooks/objects/get/useGetObject";
+import { createGetObjectAvailabilityKeyPrefix } from "src/hooks/objects/get/useGetObjectAvailability";
 import { CheckedObjectState, SetPanelObject } from "src/hooks/state";
 import {
   useAllObjectsMeta,
@@ -25,6 +28,7 @@ import {
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
 import { useDndMonitor } from "src/lib/dndkit/dndkit";
+import { createGetObjectQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   getObjectDisplayName,
   hasProperty,
@@ -274,6 +278,39 @@ export const ObjectSearchResults = ({
       1 !==
       frozenColumns.indexOf(OBJECT_LIST_TABLE.columnIds.objectType);
 
+  const queryClient = useQueryClient();
+
+  const onObjectClickWrapper: SetPanelObject = useCallback(
+    (obj, opts, ...args) => {
+      if (setPanelObject) {
+        const object =
+          opts?.parsedObject ||
+          searchData?.find(
+            ({ objectType, uid, meta: { language } }) =>
+              objectType === obj.objectType &&
+              uid === obj.uid &&
+              obj.language === language,
+          );
+
+        if (object) {
+          console.log("filled cache", { object });
+          queryClient.setQueryData(createGetObjectKeyPrefix(obj), object);
+          if (
+            object.availability.objects &&
+            object.availability.objects.length > 0
+          ) {
+            queryClient.setQueryData(
+              createGetObjectAvailabilityKeyPrefix(obj),
+              object.availability.objects,
+            );
+          }
+        }
+        setPanelObject(obj, opts, ...args);
+      }
+    },
+    [queryClient, searchData, setPanelObject],
+  );
+
   const table = useReactTable<ObjectSearchTableData>({
     debugAll: false,
     data: (formattedSearchData as ObjectSearchTableData[]) || emptyArray,
@@ -298,7 +335,7 @@ export const ObjectSearchResults = ({
       objectsMeta,
       onRowCheckChange,
       batchCheckRows,
-      onObjectClick: setPanelObject,
+      onObjectClick: setPanelObject ? onObjectClickWrapper : undefined,
       hoveredRow,
       disableTableEvents,
     },

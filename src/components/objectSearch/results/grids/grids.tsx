@@ -193,6 +193,7 @@ export const ObjectSearchResultsLeftGrid = ({
               ? (obj) =>
                   table.options.meta?.onObjectClick?.(
                     convertParsedObjectToIdentifier(obj),
+                    { parsedObject: obj },
                   )
               : undefined
           }

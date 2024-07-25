@@ -1,12 +1,13 @@
 import {
+  InfiniteData,
   QueryClient,
   QueryFunction,
   QueryKey,
   useInfiniteQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
 import { RequestDocument } from "graphql-request";
-import { useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
@@ -19,8 +20,35 @@ import {
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectAvailabilityQuery } from "src/lib/graphql/skylark/dynamicQueries";
+import { parseAvailabilityObjects } from "src/lib/skylark/parsers";
+import { hasProperty } from "src/lib/utils";
 
 import { GetObjectOptions } from "./useGetObject";
+
+const select = (
+  data:
+    | InfiniteData<GQLSkylarkGetObjectAvailabilityResponse>
+    | { initialData: ParsedSkylarkObjectAvailabilityObject[] },
+): ParsedSkylarkObjectAvailabilityObject[] => {
+  // data will be ParsedSkylarkObjectAvailabilityObject[] when pre-loaded into the cache
+  if (
+    data &&
+    hasProperty<
+      | InfiniteData<GQLSkylarkGetObjectAvailabilityResponse>
+      | { initialData: ParsedSkylarkObjectAvailabilityObject[] },
+      "initialData",
+      ParsedSkylarkObjectAvailabilityObject[]
+    >(data, "initialData")
+  ) {
+    console.log("select", { data });
+    return data.initialData;
+  }
+
+  const objects = data.pages.flatMap(
+    (page) => page.getObjectAvailability?.availability?.objects || [],
+  );
+  return parseAvailabilityObjects(objects);
+};
 
 export const createGetObjectAvailabilityKeyPrefix = ({
   objectType,
@@ -135,44 +163,40 @@ export const useGetObjectAvailability = (
     variables,
   });
 
-  const { data, isLoading, hasNextPage, fetchNextPage } = useInfiniteQuery<
-    GQLSkylarkGetObjectAvailabilityResponse,
-    GQLSkylarkErrorResponse<GQLSkylarkGetObjectAvailabilityResponse>
-  >({
-    queryFn,
-    queryKey,
-    initialPageParam: "",
-    getNextPageParam: (lastPage): string | undefined =>
-      lastPage.getObjectAvailability?.availability?.next_token || undefined,
-  });
+  const queryClient = useQueryClient();
 
-  const availability: ParsedSkylarkObjectAvailabilityObject[] | undefined =
-    useMemo(
-      () =>
-        data?.pages
-          ?.flatMap(
-            (page) => page.getObjectAvailability?.availability?.objects || [],
-          )
-          .map((object): ParsedSkylarkObjectAvailabilityObject => {
-            return {
-              ...object,
-              title: object.title || "",
-              slug: object.slug || "",
-              start: object.start || "",
-              end: object.end || "",
-              timezone: object.timezone || "",
-              active: object.active === false ? false : true,
-              inherited: object.inherited || false,
-              inheritanceSource: object.inheritance_source || false,
-              dimensions: object.dimensions.objects,
-            };
-          }),
-      [data?.pages],
-    );
+  const { data, isLoading, isFetched, hasNextPage, fetchNextPage } =
+    useInfiniteQuery<
+      GQLSkylarkGetObjectAvailabilityResponse,
+      GQLSkylarkErrorResponse<GQLSkylarkGetObjectAvailabilityResponse>,
+      ParsedSkylarkObjectAvailabilityObject[]
+    >({
+      queryFn,
+      queryKey,
+      initialPageParam: "",
+      getNextPageParam: (lastPage): string | undefined =>
+        lastPage.getObjectAvailability?.availability?.next_token || undefined,
+      select,
+      initialData: () => {
+        const initialData: ParsedSkylarkObjectAvailabilityObject[] | undefined =
+          queryClient.getQueryData(
+            createGetObjectAvailabilityKeyPrefix({ uid, objectType }),
+          );
+
+        return initialData && Array.isArray(initialData)
+          ? { initialData, pageParams: [], pages: [] }
+          : undefined;
+      },
+    });
+
+  console.log({ availability: data, isLoading, isFetched });
+
+  const hasQuery = Boolean(query);
 
   return {
-    data: availability,
-    isLoading: isLoading || !query,
+    data,
+    isLoading: isLoading || !hasQuery,
+    isFetched: isFetched && hasQuery,
     hasNextPage,
     fetchNextPage,
     query,
