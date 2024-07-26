@@ -114,15 +114,14 @@ export type SkylarkGraphQLObject = {
   [SkylarkSystemField.Slug]?: string | null;
   [SkylarkSystemField.DataSourceID]?: string | null;
   [SkylarkSystemField.DataSourceFields]?: string | string[] | null;
-  availability?: SkylarkGraphQLObjectList<SkylarkGraphQLAvailability>;
+  availability?: SkylarkGraphQLAvailabilityList;
   _config?: SkylarkGraphQLObjectConfig;
   _meta?: SkylarkGraphQLObjectMeta;
   content?: SkylarkGraphQLObjectContent;
   [key: string]:
     | SkylarkObjectMetadataField
-    | SkylarkGraphQLObjectList<
-        SkylarkGraphQLObject | SkylarkGraphQLAvailability
-      >
+    | SkylarkGraphQLObjectList<SkylarkGraphQLObject>
+    | SkylarkGraphQLAvailabilityList
     | SkylarkGraphQLObjectContent
     | SkylarkGraphQLObjectConfig
     | SkylarkGraphQLObjectMeta
@@ -143,6 +142,11 @@ export type SkylarkGraphQLObjectList<T = SkylarkGraphQLObject> = {
   next_token: NextToken;
   objects: T[];
 };
+
+export type SkylarkGraphQLAvailabilityList =
+  SkylarkGraphQLObjectList<SkylarkGraphQLAvailability> & {
+    time_window_status: "EXPIRED" | "FUTURE" | "ACTIVE" | "UNAVAILABLE" | null;
+  };
 
 export interface SkylarkGraphQLAPIKey {
   name: string;
