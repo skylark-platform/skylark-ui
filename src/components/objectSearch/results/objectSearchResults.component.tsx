@@ -293,8 +293,23 @@ export const ObjectSearchResults = ({
           );
 
         if (object) {
-          console.log("filled cache", { object });
-          queryClient.setQueryData(createGetObjectKeyPrefix(obj), object);
+          let objectConfig = object.config;
+          if (!object.config || !object.config.fieldConfig) {
+            const foundConfig = objectTypesWithConfig?.find(
+              ({ objectType }) => objectType === object.objectType,
+            );
+            if (foundConfig) {
+              objectConfig = foundConfig.config;
+            }
+          }
+
+          const cacheObject: ParsedSkylarkObject = {
+            ...object,
+            config: objectConfig,
+          };
+
+          console.log("filled cache", { cacheObject });
+          queryClient.setQueryData(createGetObjectKeyPrefix(obj), cacheObject);
           if (
             object.availability.objects &&
             object.availability.objects.length > 0
@@ -308,7 +323,7 @@ export const ObjectSearchResults = ({
         setPanelObject(obj, opts, ...args);
       }
     },
-    [queryClient, searchData, setPanelObject],
+    [objectTypesWithConfig, queryClient, searchData, setPanelObject],
   );
 
   const table = useReactTable<ObjectSearchTableData>({

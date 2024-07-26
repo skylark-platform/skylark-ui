@@ -73,7 +73,6 @@ export const createSearchObjectsQuery = (
                 true,
                 `__${object.name}__`,
               ),
-              ...getObjectConfigFields(true),
               ...generateRelationshipsToReturn(object, true),
               ...common.fields,
             };
