@@ -65,8 +65,16 @@ export const useGetObject = (
       skylarkRequest("query", query as DocumentNode, variables),
     enabled: query !== null,
     select: useCallback(
-      (data: GQLSkylarkGetObjectResponse) =>
-        data?.getObject && parseSkylarkObject(data?.getObject, objectMeta),
+      (
+        data: GQLSkylarkGetObjectResponse | ParsedSkylarkObject,
+      ): ParsedSkylarkObject => {
+        // data will be ParsedSkylarkObject when pre-loaded into the cache
+        if (hasProperty(data, "getObject") && !hasProperty(data, "metadata")) {
+          return parseSkylarkObject(data?.getObject, objectMeta);
+        }
+
+        return data as ParsedSkylarkObject;
+      },
       [objectMeta],
     ),
   });

@@ -42,6 +42,8 @@ import {
   AvailabilityStatus,
   SkylarkGraphQLObjectList,
   ParsedSkylarkObjectMeta,
+  SkylarkGraphQLAvailability,
+  ParsedSkylarkObjectAvailabilityObject,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -185,11 +187,31 @@ export const parseObjectRelationships = (
   return relationships;
 };
 
-const parseObjectAvailability = (unparsedObject?: {
-  objects: object[];
-}): ParsedSkylarkObjectAvailability => {
-  const objects = (unparsedObject?.objects ||
-    []) as ParsedSkylarkObjectAvailability["objects"];
+export const parseAvailabilityObjects = (
+  objects?: SkylarkGraphQLAvailability[],
+): ParsedSkylarkObjectAvailabilityObject[] => {
+  return objects
+    ? objects.map((object) => {
+        return {
+          ...object,
+          title: object.title,
+          slug: object.slug,
+          start: object.start,
+          end: object.end,
+          timezone: object.timezone,
+          active: object.active === false ? false : true,
+          inherited: object.inherited || false,
+          inheritanceSource: object.inheritance_source || false,
+          dimensions: object?.dimensions?.objects || [],
+        };
+      })
+    : [];
+};
+
+const parseObjectAvailability = (
+  unparsedObject?: SkylarkGraphQLObjectList<SkylarkGraphQLAvailability>,
+): ParsedSkylarkObjectAvailability => {
+  const objects = parseAvailabilityObjects(unparsedObject?.objects);
 
   return {
     status: getObjectAvailabilityStatus(objects),
