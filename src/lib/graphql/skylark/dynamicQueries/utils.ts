@@ -209,6 +209,7 @@ export const generateAvailabilityRelationshipFields = (
     limit: 50, // max
   },
   next_token: true,
+  time_window_status: true,
   objects: {
     ...generateFieldsToReturn(
       objectAvailability?.fields,
@@ -228,9 +229,15 @@ export const generateRelationshipsToReturn = (
   const relationshipsToReturn: Record<string, object> = {};
 
   if (object.availability) {
-    relationshipsToReturn.availability = generateAvailabilityRelationshipFields(
-      object.availability,
-    );
+    // Search uses the time_window_status field to show status
+    if (isSearch) {
+      relationshipsToReturn.availability = {
+        time_window_status: true,
+      };
+    } else {
+      relationshipsToReturn.availability =
+        generateAvailabilityRelationshipFields(object.availability);
+    }
   }
 
   const builtinObjectRelationships = object.builtinObjectRelationships;

@@ -44,6 +44,7 @@ import {
   ParsedSkylarkObjectMeta,
   SkylarkGraphQLAvailability,
   ParsedSkylarkObjectAvailabilityObject,
+  SkylarkGraphQLAvailabilityList,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -59,6 +60,7 @@ import {
   AWS_EARLIEST_DATE,
   AWS_LATEST_DATE,
   convertDateToTimezoneAndRemoveOffset,
+  convertTimeWindowStatus,
 } from "./availability";
 
 dayjs.extend(customParseFormat);
@@ -209,12 +211,16 @@ export const parseAvailabilityObjects = (
 };
 
 const parseObjectAvailability = (
-  unparsedObject?: SkylarkGraphQLObjectList<SkylarkGraphQLAvailability>,
+  unparsedObject?: SkylarkGraphQLAvailabilityList,
 ): ParsedSkylarkObjectAvailability => {
   const objects = parseAvailabilityObjects(unparsedObject?.objects);
 
+  const status = unparsedObject?.time_window_status
+    ? convertTimeWindowStatus(unparsedObject?.time_window_status)
+    : getObjectAvailabilityStatus(objects);
+
   return {
-    status: getObjectAvailabilityStatus(objects),
+    status,
     objects,
   };
 };

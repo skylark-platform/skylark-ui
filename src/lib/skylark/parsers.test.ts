@@ -398,6 +398,7 @@ describe("parseObjectContent", () => {
           },
           availability: {
             __typename: BuiltInSkylarkObjectType.Availability,
+            time_window_status: "UNAVAILABLE",
             next_token: "",
             objects: [],
           },
@@ -430,6 +431,7 @@ describe("parseObjectContent", () => {
           availability: {
             __typename: "AvailabilityList",
             next_token: "",
+            time_window_status: "ACTIVE",
             objects: [
               {
                 __typename: BuiltInSkylarkObjectType.Availability,
@@ -554,6 +556,7 @@ describe("parseSkylarkObject", () => {
       availability: {
         __typename: "SkylarkAvailabilityListing",
         next_token: null,
+        time_window_status: "UNAVAILABLE",
         objects: [],
       },
       images: {
