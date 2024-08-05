@@ -22,6 +22,9 @@ import {
   SkylarkObjectType,
   ParsedSkylarkObject,
   ParsedSkylarkObjectRelationship,
+  ParsedSkylarkRelationshipConfig,
+  ModifiedRelationshipsObject,
+  ModifiedRelationship,
 } from "src/interfaces/skylark";
 import { DragType, DroppableType } from "src/lib/dndkit/dndkit";
 import { formatObjectField, hasProperty } from "src/lib/utils";
@@ -34,12 +37,9 @@ interface PanelRelationshipsProps {
   objectType: SkylarkObjectType;
   uid: string;
   tabState: PanelTabState[PanelTab.Relationships];
-  modifiedRelationships: Record<
-    string,
-    { added: ParsedSkylarkObject[]; removed: string[] }
-  >;
+  modifiedRelationships: ModifiedRelationshipsObject;
   setModifiedRelationships: (
-    rels: Record<string, { added: ParsedSkylarkObject[]; removed: string[] }>,
+    rels: ModifiedRelationshipsObject,
     errors: HandleDropError[],
   ) => void;
   inEditMode: boolean;
@@ -184,10 +184,10 @@ const updateModifiedObjectsWithAddedObjects = (
 };
 
 const parseAddedAndRemovedRelationshipObjects = (
-  existing: { added: ParsedSkylarkObject[]; removed: string[] },
+  existing: ModifiedRelationship,
   added: ParsedSkylarkObject[],
   removed: string[],
-) => {
+): ModifiedRelationship => {
   const updatedAdded = added ? [...existing.added, ...added] : existing.added;
   const updatedRemoved = removed
     ? [...existing.removed, ...removed]
@@ -200,6 +200,7 @@ const parseAddedAndRemovedRelationshipObjects = (
   return {
     added: updatedAdded.filter(({ uid }) => !duplicates.includes(uid)),
     removed: updatedRemoved.filter((uid) => !duplicates.includes(uid)),
+    config: existing.config,
   };
 };
 
@@ -276,7 +277,7 @@ export const PanelRelationships = ({
   ) => {
     const relationship = hasProperty(modifiedRelationships, relationshipName)
       ? modifiedRelationships[relationshipName]
-      : { added: [], removed: [] };
+      : { added: [], removed: [], config: {} };
 
     setModifiedRelationships(
       {
@@ -286,6 +287,29 @@ export const PanelRelationships = ({
           added || [],
           removed || [],
         ),
+      },
+      [],
+    );
+  };
+
+  const modifyRelationshipConfig = (
+    relationshipName: string,
+    config: Partial<ParsedSkylarkRelationshipConfig>,
+  ) => {
+    const relationship = hasProperty(modifiedRelationships, relationshipName)
+      ? modifiedRelationships[relationshipName]
+      : { added: [], removed: [], config: {} };
+
+    setModifiedRelationships(
+      {
+        ...modifiedRelationships,
+        [relationshipName]: {
+          ...relationship,
+          config: {
+            ...relationship.config,
+            ...config,
+          },
+        },
       },
       [],
     );
@@ -338,14 +362,20 @@ export const PanelRelationships = ({
             orderedRelationships,
             activeRelationship,
           )?.map((relationship) => {
-            const config =
+            const objectTypeDefaultConfig =
               objectTypeRelationshipConfig?.[relationship.name] || null;
 
             return (
               <PanelRelationshipSection
                 key={relationship.name}
                 relationship={relationship}
-                config={config}
+                config={{
+                  objectTypeDefault: objectTypeDefaultConfig,
+                  overrides: {},
+                }}
+                modifiedConfig={
+                  modifiedRelationships?.[relationship.name]?.config
+                }
                 inEditMode={inEditMode}
                 isFetchingMoreRelationships={isFetchingMoreRelationships}
                 newUids={getNewUidsForRelationship(
@@ -364,6 +394,9 @@ export const PanelRelationships = ({
                     removed: [uid],
                   });
                 }}
+                updateRelationshipConfig={(
+                  updatedConfig: Partial<ParsedSkylarkRelationshipConfig>,
+                ) => modifyRelationshipConfig(relationship.name, updatedConfig)}
                 setSearchObjectsModalState={setSearchObjectsModalState}
               />
             );
@@ -379,7 +412,7 @@ export const PanelRelationships = ({
             emptyOrderedRelationships,
             activeRelationship,
           )?.map((relationship) => {
-            const config =
+            const objectTypeDefaultConfig =
               objectTypeRelationshipConfig?.[relationship.name] || null;
 
             return (
@@ -389,7 +422,13 @@ export const PanelRelationships = ({
                 isExpanded={!!activeRelationship}
                 key={relationship.name}
                 relationship={relationship}
-                config={config}
+                config={{
+                  objectTypeDefault: objectTypeDefaultConfig,
+                  overrides: {},
+                }}
+                modifiedConfig={
+                  modifiedRelationships?.[relationship.name]?.config
+                }
                 inEditMode={inEditMode}
                 isFetchingMoreRelationships={isFetchingMoreRelationships}
                 newUids={getNewUidsForRelationship(
@@ -402,6 +441,9 @@ export const PanelRelationships = ({
                     removed: [uid],
                   });
                 }}
+                updateRelationshipConfig={(
+                  updatedConfig: Partial<ParsedSkylarkRelationshipConfig>,
+                ) => modifyRelationshipConfig(relationship.name, updatedConfig)}
                 setSearchObjectsModalState={setSearchObjectsModalState}
               />
             );

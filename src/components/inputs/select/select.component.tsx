@@ -36,7 +36,7 @@ export interface SelectProps<T> {
   selected?: T;
   options: SelectOption<T>[];
   label?: string;
-  labelVariant?: "default" | "form" | "header";
+  labelVariant?: "default" | "form" | "header" | "small";
   labelPosition?: "default" | "inline";
   placeholder: string | null;
   className?: string;
@@ -84,6 +84,7 @@ export const SelectLabel = <T extends string | number>({
       labelVariant === "default" && "text-sm font-light md:text-base",
       labelVariant === "form" && "block text-sm font-bold",
       labelVariant === "header" && "text-sm md:text-base",
+      labelVariant === "small" && "text-xs text-manatee-300",
     )}
   >
     {labelVariant === "form" ? formatObjectField(label) : label}
@@ -396,7 +397,9 @@ const SelectComponent = <T extends string | number>(
               className={clsx(
                 selectClassName,
                 label && labelPosition === "default" && "mt-2",
-                label && labelPosition === "inline" && "ml-2",
+                label &&
+                  labelPosition === "inline" &&
+                  (labelVariant === "small" ? "ml-1" : "ml-2"),
               )}
               ref={refs.setReference}
             >
@@ -457,8 +460,12 @@ const SelectComponent = <T extends string | number>(
               data-testid="select"
               className={clsx(
                 selectClassName,
+                roundedClassName,
                 sizingClassName,
-                label && "mt-2",
+                label && labelPosition === "default" && "mt-2",
+                label &&
+                  labelPosition === "inline" &&
+                  (labelVariant === "small" ? "ml-1" : "ml-2"),
               )}
               ref={mergeRefs([refs.setReference, propRef])}
             >
@@ -466,6 +473,7 @@ const SelectComponent = <T extends string | number>(
                 className={clsx(
                   "block truncate",
                   !selectedOption?.label && "text-gray-300",
+                  variant === "pill" && "pr-6",
                 )}
               >
                 {selectedOption?.label || placeholder || "Select option"}
