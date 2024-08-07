@@ -48,6 +48,7 @@ export const skylarkRequest = <T>(
 
   const headers: HeadersInit = {
     [REQUEST_HEADERS.apiKey]: tokenToSend,
+    "x-api-v2": "true",
     ...argHeaders,
   };
 
