@@ -806,7 +806,6 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
       const scrollTop = activeAvailability.previousScrollTop;
       // Little cheat to scroll after the elements have rendered
       setTimeout(() => {
-        console.log(containerRef.current, scrollTop);
         containerRef.current?.scrollTo({
           top: scrollTop,
           behavior: "instant",

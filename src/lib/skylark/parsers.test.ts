@@ -831,6 +831,20 @@ describe("parseMetadataForGraphQLRequest", () => {
       isList: false,
       isRequired: false,
     },
+    {
+      name: "intzero",
+      type: "int",
+      originalType: "Int",
+      isList: false,
+      isRequired: false,
+    },
+    {
+      name: "floatzero",
+      type: "float",
+      originalType: "Float",
+      isList: false,
+      isRequired: false,
+    },
   ];
 
   test("returns nulled object values when either null or empty string is given unless field is UID", () => {
@@ -879,6 +893,8 @@ describe("parseMetadataForGraphQLRequest", () => {
       title: "string",
       date: "2020-11-03",
       int: 2.5,
+      intzero: 0,
+      floatzero: 0.0,
     };
     const got = parseMetadataForGraphQLRequest(
       objectType,
@@ -889,6 +905,8 @@ describe("parseMetadataForGraphQLRequest", () => {
       title: "string",
       date: "2020-11-03+00:00",
       int: 2,
+      intzero: 0,
+      floatzero: 0,
     });
   });
 

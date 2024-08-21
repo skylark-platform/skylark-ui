@@ -308,7 +308,6 @@ export const ObjectSearchResults = ({
             config: objectConfig,
           };
 
-          console.log("filled cache", { cacheObject });
           queryClient.setQueryData(createGetObjectKeyPrefix(obj), cacheObject);
           if (
             object.availability.objects &&

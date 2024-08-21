@@ -40,7 +40,6 @@ const select = (
       ParsedSkylarkObjectAvailabilityObject[]
     >(data, "initialData")
   ) {
-    console.log("select", { data });
     return data.initialData;
   }
 
@@ -188,8 +187,6 @@ export const useGetObjectAvailability = (
           : undefined;
       },
     });
-
-  console.log({ availability: data, isLoading, isFetched });
 
   const hasQuery = Boolean(query);
 

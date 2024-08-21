@@ -554,8 +554,15 @@ export const parseMetadataForGraphQLRequest = (
         }
       }
 
+      const sendParsedFieldValue =
+        (input.type === "float" || input.type === "int") &&
+        parsedFieldValue === 0;
+
       // If parsedFieldValue is returned as invalid, return the original value - GraphQL will handle the error
-      return [key, parsedFieldValue || value];
+      return [
+        key,
+        parsedFieldValue || sendParsedFieldValue ? parsedFieldValue : value,
+      ];
     })
     .filter((value) => value !== undefined) as [string, string | EnumType][];
 
