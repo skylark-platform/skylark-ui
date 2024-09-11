@@ -13,18 +13,35 @@ import {
 
 type ObjectTypeSelectProps = Omit<
   SelectProps<string>,
-  "options" | "onChange"
+  "options" | "onChange" | "placeholder"
 > & {
   onChange: (v: {
     objectType: SkylarkObjectType;
     config?: ParsedSkylarkObjectConfig;
   }) => void;
   hiddenObjectTypes?: SkylarkObjectType[];
+  placeholder?: string;
+  displayActualName?: boolean;
+};
+
+const formatLabel = (
+  objectType: string,
+  config: ParsedSkylarkObjectConfig,
+  displayActualName?: boolean,
+) => {
+  if (displayActualName) {
+    return config.objectTypeDisplayName &&
+      config.objectTypeDisplayName !== objectType
+      ? `${config.objectTypeDisplayName} (${objectType})` // `${objectType} (${config.objectTypeDisplayName})`
+      : objectType;
+  }
+
+  return config?.objectTypeDisplayName || objectType;
 };
 
 export const ObjectTypeSelect = forwardRef(
   (
-    { hiddenObjectTypes, ...props }: ObjectTypeSelectProps,
+    { hiddenObjectTypes, displayActualName, ...props }: ObjectTypeSelectProps,
     ref: Ref<HTMLButtonElement | HTMLInputElement>,
   ) => {
     const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
@@ -37,7 +54,7 @@ export const ObjectTypeSelect = forwardRef(
         )
         .map(({ objectType, config }) => ({
           value: objectType,
-          label: config?.objectTypeDisplayName || objectType,
+          label: formatLabel(objectType, config, displayActualName),
         })) || [];
 
     const onChangeWrapper = (value: string) => {

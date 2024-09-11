@@ -4,10 +4,12 @@ import { QueryKeys } from "src/enums/graphql";
 import {
   GQLSkylarkErrorResponse,
   GQLSkylarkListSchemaVersionsResponse,
+  GQLSkylarkSchemaVersion,
 } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { LIST_SCHEMA_VERSIONS } from "src/lib/graphql/skylark/queries";
+import { parseSchemaVersion } from "src/lib/skylark/parsers";
 
 const select = (
   data: InfiniteData<GQLSkylarkListSchemaVersionsResponse>,
@@ -15,14 +17,7 @@ const select = (
   data?.pages
     ?.flatMap(
       (page) =>
-        page.listConfigurationVersions.objects.map(
-          ({ active, version, base_version, published }): SchemaVersion => ({
-            active,
-            version,
-            baseVersion: base_version,
-            published,
-          }),
-        ) || [],
+        page.listConfigurationVersions.objects.map(parseSchemaVersion) || [],
     )
     .filter(
       ({ version }, index, arr) =>

@@ -31,8 +31,9 @@ export interface AccountStatus {
 }
 
 export interface SchemaVersion {
-  active: boolean;
   version: number;
   baseVersion: number | null;
-  published: boolean;
+  isActive: boolean;
+  isPublished: boolean;
+  isDraft: boolean;
 }

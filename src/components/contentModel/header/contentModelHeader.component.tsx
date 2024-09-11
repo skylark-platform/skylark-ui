@@ -3,18 +3,29 @@ import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { Button } from "src/components/button";
 import { Select, SelectOption } from "src/components/inputs/select";
 import { CompareSchemaVersionsModal } from "src/components/modals";
+import { Tabs } from "src/components/tabs/tabs.component";
+import { Tag } from "src/components/tag";
 import { useSchemaVersions } from "src/hooks/schema/get/useSchemaVersions";
+import { SchemaVersion } from "src/interfaces/skylark/environment";
 
 interface ContentModelHeaderProps {
   activeSchemaVersion: number;
-  schemaVersion: number | null;
-  setSchemaVersion: Dispatch<SetStateAction<number | null>>;
+  schemaVersion: SchemaVersion | null;
+  isEditingSchema: boolean;
+  isUpdatingSchema: boolean;
+  setSchemaVersion: Dispatch<SetStateAction<SchemaVersion | null>>;
+  setIsEditingSchema: (e: boolean) => void;
+  onSave: () => void;
 }
 
 export const ContentModelHeader = ({
   activeSchemaVersion,
   schemaVersion,
+  isEditingSchema,
+  isUpdatingSchema,
+  onSave,
   setSchemaVersion,
+  setIsEditingSchema,
 }: ContentModelHeaderProps) => {
   const [activeSchemaModalIsOpen, setActiveSchemaModalIsOpen] = useState(false);
 
@@ -23,8 +34,8 @@ export const ContentModelHeader = ({
   const schemaVersionOptions = useMemo(
     () =>
       schemaVersions?.map(
-        ({ version, published, baseVersion }): SelectOption<number> => ({
-          label: `${version}${version === activeSchemaVersion ? " (active)" : ""}${!published ? " (draft)" : ""}`,
+        ({ version, isDraft, baseVersion }): SelectOption<number> => ({
+          label: `${version}${version === activeSchemaVersion ? " (active)" : ""}${isDraft ? " (draft)" : ""}`,
           value: version,
           infoTooltip: baseVersion && <p>{`Base version: ${baseVersion}`}</p>,
         }),
@@ -32,40 +43,102 @@ export const ContentModelHeader = ({
     [activeSchemaVersion, schemaVersions],
   );
 
+  const setSchemaVersionWrapper = (value: number) => {
+    const newVersion = schemaVersions?.find(({ version }) => version === value);
+    setSchemaVersion(newVersion || null);
+  };
+
+  const handleCancel = () => {
+    setIsEditingSchema(false);
+  };
+
   return (
-    <div className="grid grid-cols-4 justify-between items-center sticky top-28 bg-white z-10 py-4 px-1 w-[calc(100%+0.5rem)] -ml-1">
-      <h1 className="text-xl font-semibold">Content Model Editor</h1>
-      <div className="col-span-3 flex items-center justify-between space-x-4 px-1">
+    <div className="justify-between items-center sticky top-12 md:top-14 bg-white z-10 px-1 w-[calc(100%+0.5rem)] -ml-1 pt-4 mb-8">
+      <div className="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 md:space-x-4 px-1 border-b border-b-manatee-300 w-full pb-4 relative">
         <Select
-          label="Schema Version:"
+          label="Content Model Version:"
           labelVariant="header"
           labelPosition="inline"
           variant="primary"
-          placeholder="Schema Version"
-          className="w-72 z-10"
+          placeholder="Version"
+          className="z-10"
           selectedInfoTooltipPosition="right"
           options={schemaVersionOptions}
-          selected={schemaVersion || undefined}
-          onChange={setSchemaVersion}
-          disabled={schemaVersionOptions.length === 0}
+          selected={schemaVersion?.version || undefined}
+          onChange={setSchemaVersionWrapper}
+          disabled={schemaVersionOptions.length === 0 || isEditingSchema}
         />
         <div className="space-x-2">
-          <Button
-            variant="primary"
-            disabled={activeSchemaVersion === schemaVersion}
-            onClick={() => setActiveSchemaModalIsOpen(true)}
-            // loading={isSaving}
-          >
-            {/* Activate selected Schema */}
-            View Schema Changes
-          </Button>
+          {isEditingSchema ? (
+            <>
+              <Button
+                variant="outline"
+                // disabled={}
+                danger
+                onClick={handleCancel}
+                // loading={isSaving}
+              >
+                {/* Activate selected Schema */}
+                {`Cancel`}
+              </Button>
+              <Button
+                variant="primary"
+                // disabled={}
+                onClick={onSave}
+                // loading={isSaving}
+              >
+                {/* Activate selected Schema */}
+                {schemaVersion?.isDraft
+                  ? `Update draft version ${schemaVersion.version}`
+                  : `Save changes to new draft version`}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="primary"
+                // disabled={}
+                onClick={() => setIsEditingSchema(true)}
+                // loading={isSaving}
+              >
+                {/* Activate selected Schema */}
+                {`Edit`}
+              </Button>
+              <Button
+                variant="outline"
+                disabled={activeSchemaVersion === schemaVersion?.version}
+                onClick={() => setActiveSchemaModalIsOpen(true)}
+                // loading={isSaving}
+              >
+                {/* Activate selected Schema */}
+                {`Compare to active version (${activeSchemaVersion})`}
+              </Button>
+            </>
+          )}
+          {(isEditingSchema || isUpdatingSchema) && (
+            <Tag
+              className="absolute -bottom-10 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap"
+              loading={isUpdatingSchema}
+            >
+              {/* {schemaVersion?.isDraft
+                ? ``
+                : `Editing Version: ${schemaVersion?.version}`} */}
+              {isEditingSchema &&
+                !isUpdatingSchema &&
+                `Editing version: ${schemaVersion?.version}`}
+              {isUpdatingSchema &&
+                (schemaVersion?.isActive
+                  ? `Saving changes to new draft version based on ${schemaVersion.version}`
+                  : `Updating draft version ${schemaVersion?.version}`)}
+            </Tag>
+          )}
         </div>
       </div>
       <CompareSchemaVersionsModal
         isOpen={activeSchemaModalIsOpen}
         setIsOpen={setActiveSchemaModalIsOpen}
         baseVersionNumber={activeSchemaVersion}
-        updateVersionNumber={schemaVersion}
+        updateVersionNumber={schemaVersion?.version || null}
       />
     </div>
   );

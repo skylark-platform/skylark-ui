@@ -35,6 +35,12 @@ const navigationItems = [
   //   Icon: <TbLink className="text-xl" />,
   // },
   {
+    text: "Content Model",
+    href: HREFS.relative.contentModel,
+    Icon: <FiTool className="text-xl" />,
+    permissions: ["CONTENT_MODEL_EDIT"], // TODO filter links when permissions have loaded
+  },
+  {
     text: "Developer",
     Icon: <TbTerminal2 className="text-xl" />,
     links: [
@@ -52,12 +58,6 @@ const navigationItems = [
         text: "GraphQL Editor",
         href: HREFS.relative.graphqlEditor,
         Icon: <GrGraphQl className="text-xl" />,
-      },
-      {
-        id: "content-model",
-        text: "Content Model (Alpha)",
-        href: HREFS.relative.contentModel,
-        Icon: <FiTool className="text-xl" />,
       },
     ],
   },

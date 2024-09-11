@@ -1,4 +1,5 @@
-import { forwardRef, Ref, useMemo } from "react";
+import { IntrospectionEnumType } from "graphql";
+import { forwardRef, Ref, useCallback, useMemo } from "react";
 
 import {
   Select,
@@ -7,11 +8,13 @@ import {
 } from "src/components/inputs/select";
 import { useSkylarkSchemaEnums } from "src/hooks/useSkylarkSchemaEnums";
 
-type EnumSelectProps = Omit<SelectProps<string>, "options">;
+type EnumSelectProps = Omit<SelectProps<string>, "options" | "onChange"> & {
+  onChange: (e: IntrospectionEnumType) => void;
+};
 
 export const EnumSelect = forwardRef(
   (
-    { ...props }: EnumSelectProps,
+    { onChange, ...props }: EnumSelectProps,
     ref: Ref<HTMLButtonElement | HTMLInputElement>,
   ) => {
     const { enums } = useSkylarkSchemaEnums();
@@ -37,9 +40,17 @@ export const EnumSelect = forwardRef(
       [enums],
     );
 
+    const onChangeWrapper = useCallback((value: string) => {
+      const newEnum = enums?.find((e) => e.name === value);
+      if (newEnum) {
+        onChange(newEnum);
+      }
+    }, []);
+
     return (
       <Select
         {...props}
+        onChange={onChangeWrapper}
         disabled={options.length === 0 || props.disabled}
         placeholder={props.placeholder || "Enum"}
         options={options}

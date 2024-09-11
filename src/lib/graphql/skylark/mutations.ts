@@ -89,3 +89,14 @@ export const PURGE_CACHE_OBJECT_TYPE = gql`
     }
   }
 `;
+
+export const CREATE_SCHEMA_VERSION = gql`
+  mutation ${wrapQueryName("CREATE_SCHEMA_VERSION")}($basedOnVersion: Int!) {
+  createSchemaVersion(based_on: $basedOnVersion) {
+    active
+    base_version
+    published
+    version
+  }
+}
+`;

@@ -1,42 +1,145 @@
-import { UseFormReturn } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
+import { toast } from "react-toastify";
 
+import { Button } from "src/components/button";
 import { ColourPicker } from "src/components/inputs/colourPicker";
 import { TextInput } from "src/components/inputs/input";
 import { Select } from "src/components/inputs/select";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { Toast } from "src/components/toast/toast.component";
+import { useUpdateObjectTypeConfig } from "src/hooks/schema/update/useUpdateObjectTypeConfig";
 import {
   SkylarkSystemField,
   AvailabilityStatus,
   SkylarkObjectMeta,
+  ParsedSkylarkObjectConfig,
+  ParsedSkylarkObjectConfigFieldConfig,
 } from "src/interfaces/skylark";
 
 import {
   ContentModelEditorForm,
+  createFieldSections,
   FieldHeader,
   SectionDescription,
   SectionHeader,
   SectionWrapper,
+  UIConfigForm,
   uiDisplayFieldTooltip,
 } from "./common.component";
+import { UIConfigFieldsSection } from "./uiConfigFields.component";
 
 interface UIConfigSectionProps {
-  form: UseFormReturn<ContentModelEditorForm>;
   objectMeta: SkylarkObjectMeta;
+  objectConfig?: ParsedSkylarkObjectConfig;
 }
 
-export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
-  const fieldSections = form.watch("fieldSections");
-  const { objectTypeDisplayName, primaryField, colour } =
-    form.watch("uiConfig");
+export const UIConfigSection = ({
+  objectMeta,
+  objectConfig,
+}: UIConfigSectionProps) => {
+  // const fieldSections = form.watch("fieldSections");
+  // const { objectTypeDisplayName, primaryField, colour } =
+  //   form.watch("uiConfig");
+
+  const form = useForm<UIConfigForm>({
+    // Can't use onSubmit because we don't have a submit button within the form
+    mode: "onTouched",
+    values: {
+      fieldSections: createFieldSections(objectMeta, objectConfig),
+      objectTypeDisplayName:
+        objectConfig?.objectTypeDisplayName || objectMeta.name,
+      primaryField: objectConfig?.primaryField,
+      colour: objectConfig?.colour,
+    },
+  });
+
+  const { fieldSections, objectTypeDisplayName, primaryField, colour } =
+    form.watch();
+
+  const { updateObjectTypeConfig, isUpdatingObjectTypeConfig } =
+    useUpdateObjectTypeConfig({
+      onSuccess: () => {
+        form.reset(undefined, { keepValues: true });
+        toast.success(
+          <Toast
+            title={`Object Type config updated`}
+            message={[
+              "You may have to refresh for the configuration changes to take effect.",
+            ]}
+          />,
+        );
+      },
+      onError: () => {
+        toast.error(
+          <Toast
+            title={`Object type config update failed`}
+            message={[
+              "Unable to update the Object Type.",
+              "Please try again later.",
+            ]}
+          />,
+        );
+      },
+    });
+
+  const onSave = () => {
+    const fieldConfig: ParsedSkylarkObjectConfigFieldConfig[] = [
+      ...fieldSections.system.fields,
+      ...fieldSections.translatable.fields,
+      ...fieldSections.global.fields,
+    ].map(
+      (fieldWithConfig, index): ParsedSkylarkObjectConfigFieldConfig => ({
+        name: fieldWithConfig.field.name,
+        fieldType: fieldWithConfig.config?.fieldType || null,
+        position: index + 1,
+      }),
+    );
+    const parsedConfig: ParsedSkylarkObjectConfig = {
+      ...objectConfig,
+      primaryField,
+      fieldConfig,
+      objectTypeDisplayName,
+      colour,
+    };
+
+    updateObjectTypeConfig({
+      objectType: objectMeta.name,
+      ...parsedConfig,
+    });
+  };
 
   return (
     <SectionWrapper data-testid="uiconfig-editor">
       <SectionHeader>UI Config</SectionHeader>
-      <SectionDescription>
-        Control how data for this Object Type is displayed in the UI including
-        field order and UI field type.
-      </SectionDescription>
-      <div className="flex flex-col md:grid md:space-x-8 max-md:space-y-8 grid-cols-2 text-sm text-manatee-600">
+      <div className="flex justify-between items-start flex-col md:flex-row bg-white w-full z-20">
+        <div className="md:max-w-[50%]">
+          <SectionDescription>
+            Control how data for this Object Type is displayed in the UI
+            including field order and UI field type.
+          </SectionDescription>
+          <SectionDescription>
+            It is unversioned and is based on the active content model.
+          </SectionDescription>
+        </div>
+        <div className="space-x-2 flex justify-center">
+          <Button
+            variant="primary"
+            onClick={onSave}
+            loading={isUpdatingObjectTypeConfig}
+          >
+            Update UI Config
+          </Button>
+          <Button
+            variant="outline"
+            danger
+            onClick={() => form.reset()}
+            disabled={isUpdatingObjectTypeConfig}
+          >
+            Cancel
+          </Button>
+        </div>
+      </div>
+      <div className="flex flex-col lg:grid md:gap-8 grid-cols-2 text-sm text-manatee-600">
         <div className="grid grid-cols-3 w-full items-center auto-rows-fr gap-x-2 mt-4 gap-y-1">
           <FieldHeader
             className="col-span-1"
@@ -49,7 +152,7 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
             <TextInput
               value={objectTypeDisplayName}
               onChange={(str) =>
-                form.setValue("uiConfig.objectTypeDisplayName", str, {
+                form.setValue("objectTypeDisplayName", str, {
                   shouldDirty: true,
                 })
               }
@@ -70,7 +173,7 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
             placeholder=""
             selected={primaryField || SkylarkSystemField.UID}
             onChange={(value) =>
-              form.setValue("uiConfig.primaryField", value, {
+              form.setValue("primaryField", value, {
                 shouldDirty: true,
               })
             }
@@ -85,7 +188,7 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
             <ColourPicker
               colour={colour || ""}
               onChange={(colour) =>
-                form.setValue("uiConfig.colour", colour, { shouldDirty: true })
+                form.setValue("colour", colour, { shouldDirty: true })
               }
             >
               <span className="group-hover/colour-picker:text-brand-primary text-xs group-hover/colour-picker:underline text-manatee-400">
@@ -99,7 +202,9 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
           >
             Order
           </FieldHeader>
-          <p className="col-span-2">Drag the fields below to reorder.</p>
+          <p className="col-span-2">
+            Drag the fields on the metadata tab to reorder.
+          </p>
         </div>
         <div className="flex justify-center items-center">
           <div
@@ -136,6 +241,11 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
             />
           </div>
         </div>
+        <UIConfigFieldsSection
+          form={form}
+          objectMeta={objectMeta}
+          objectConfig={objectConfig}
+        />
       </div>
     </SectionWrapper>
   );

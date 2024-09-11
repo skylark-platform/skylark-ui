@@ -44,7 +44,9 @@ import {
   ParsedSkylarkObjectMeta,
   SkylarkGraphQLAvailability,
   ParsedSkylarkObjectAvailabilityObject,
+  GQLSkylarkSchemaVersion,
 } from "src/interfaces/skylark";
+import { SchemaVersion } from "src/interfaces/skylark/environment";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   convertFieldTypeToHTMLInputType,
@@ -64,7 +66,7 @@ import {
 dayjs.extend(customParseFormat);
 dayjs.extend(advancedFormat);
 
-const parseObjectInputType = (
+export const parseObjectInputType = (
   name?: GQLScalars | string | null,
 ): NormalizedObjectFieldType => {
   if (!name) return "string";
@@ -650,3 +652,16 @@ export const parseUpdatedRelationshipObjects = (
 
   return { relationship, uidsToLink, uidsToUnlink };
 };
+
+export const parseSchemaVersion = ({
+  active,
+  version,
+  base_version,
+  published,
+}: GQLSkylarkSchemaVersion): SchemaVersion => ({
+  isActive: active,
+  version,
+  baseVersion: base_version,
+  isPublished: published,
+  isDraft: !published,
+});
