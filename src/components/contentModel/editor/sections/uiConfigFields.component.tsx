@@ -85,39 +85,39 @@ const FieldSection = ({
   );
 };
 
-export const UIConfigFieldsSection = ({
-  objectMeta,
-  form,
-  objectConfig,
-}: FieldsSectionProps) => {
-  const onFieldChange = useCallback(
-    (id: FieldType, reorderedFields: InputFieldWithFieldConfig[]) => {
-      form.setValue(`fieldSections.${id}.fields`, reorderedFields, {
-        shouldDirty: true,
-      });
-    },
-    [form],
-  );
+// export const UIConfigFieldsSection = ({
+//   objectMeta,
+//   form,
+//   objectConfig,
+// }: FieldsSectionProps) => {
+//   const onFieldChange = useCallback(
+//     (id: FieldType, reorderedFields: InputFieldWithFieldConfig[]) => {
+//       form.setValue(`fieldSections.${id}.fields`, reorderedFields, {
+//         shouldDirty: true,
+//       });
+//     },
+//     [form],
+//   );
 
-  const fieldSections = form.watch("fieldSections");
+//   const fieldSections = form.watch("fieldSections");
 
-  return (
-    <div className="w-full col-span-2 mt-8">
-      {/* <SectionHeader>Fields</SectionHeader> */}
-      {/* TODO add Skeleton here with hardcoded headings as sections headers can be filtered out when no fields exist */}
-      {Object.entries(fieldSections).map(([id, { title, fields }]) => (
-        <FieldSection
-          key={id}
-          title={title}
-          fields={fields}
-          objectMeta={objectMeta}
-          objectConfig={objectConfig}
-          disableReorder={id === "system"}
-          onChange={(fieldsWithConfig) =>
-            onFieldChange(id as FieldType, fieldsWithConfig)
-          }
-        />
-      ))}
-    </div>
-  );
-};
+//   return (
+//     <div className="w-full col-span-2 mt-8">
+//       {/* <SectionHeader>Fields</SectionHeader> */}
+//       {/* TODO add Skeleton here with hardcoded headings as sections headers can be filtered out when no fields exist */}
+//       {Object.entries(fieldSections).map(([id, { title, fields }]) => (
+//         <FieldSection
+//           key={id}
+//           title={title}
+//           fields={fields}
+//           objectMeta={objectMeta}
+//           objectConfig={objectConfig}
+//           disableReorder={id === "system"}
+//           onChange={(fieldsWithConfig) =>
+//             onFieldChange(id as FieldType, fieldsWithConfig)
+//           }
+//         />
+//       ))}
+//     </div>
+//   );
+// };

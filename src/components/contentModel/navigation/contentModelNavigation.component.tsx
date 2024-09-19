@@ -12,11 +12,13 @@ import {
   useSkylarkObjectOperations,
 } from "src/hooks/useSkylarkObjectTypes";
 import { IntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospection";
+import { SchemaVersion } from "src/interfaces/skylark/environment";
 import { isSkylarkObjectType } from "src/lib/utils";
 
 interface ObjectTypeNavigationProps {
   activeObjectType: string | null;
-  schemaOpts?: IntrospectionQueryOptions;
+  schemaVersion: SchemaVersion;
+  objectTypesWithConfig: ObjectTypeWithConfig[];
 }
 
 const ObjectTypeNavigationSection = ({
@@ -153,13 +155,12 @@ const ObjectTypeOverview = ({
 
 export const ObjectTypeSelectAndOverview = ({
   activeObjectType,
-  schemaOpts,
+  objectTypesWithConfig,
+  schemaVersion,
 }: ObjectTypeNavigationProps) => {
   const { push } = useRouter();
 
   // const { setObjectTypes } = useSkylarkSetObjectTypes(true, schemaOpts);
-
-  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig(schemaOpts);
 
   const selected = objectTypesWithConfig?.find(
     ({ objectType }) =>
@@ -192,7 +193,7 @@ export const ObjectTypeSelectAndOverview = ({
         labelVariant="header"
         onChange={({ objectType }) =>
           push(
-            `/content-model/${encodeURIComponent(objectType.toLocaleLowerCase())}`,
+            `/content-model/${schemaVersion.version}/${encodeURIComponent(objectType.toLocaleLowerCase())}`,
           )
         }
         selected={selected?.objectType || ""}

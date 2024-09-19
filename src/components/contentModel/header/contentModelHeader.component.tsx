@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 
 import { Button } from "src/components/button";
@@ -13,9 +14,8 @@ interface ContentModelHeaderProps {
   schemaVersion: SchemaVersion | null;
   isEditingSchema: boolean;
   isUpdatingSchema: boolean;
-  setSchemaVersion: Dispatch<SetStateAction<SchemaVersion | null>>;
-  setIsEditingSchema: (e: boolean) => void;
   onSave: () => void;
+  onCancel: () => void;
 }
 
 export const ContentModelHeader = ({
@@ -24,9 +24,10 @@ export const ContentModelHeader = ({
   isEditingSchema,
   isUpdatingSchema,
   onSave,
-  setSchemaVersion,
-  setIsEditingSchema,
+  onCancel,
 }: ContentModelHeaderProps) => {
+  const { push, query } = useRouter();
+
   const [activeSchemaModalIsOpen, setActiveSchemaModalIsOpen] = useState(false);
 
   const { schemaVersions } = useSchemaVersions();
@@ -44,12 +45,11 @@ export const ContentModelHeader = ({
   );
 
   const setSchemaVersionWrapper = (value: number) => {
-    const newVersion = schemaVersions?.find(({ version }) => version === value);
-    setSchemaVersion(newVersion || null);
+    push(`/content-model/${value}/${query?.slug?.[1] || ""}`);
   };
 
   const handleCancel = () => {
-    setIsEditingSchema(false);
+    onCancel();
   };
 
   return (
@@ -95,15 +95,15 @@ export const ContentModelHeader = ({
             </>
           ) : (
             <>
-              <Button
+              {/* <Button
                 variant="primary"
                 // disabled={}
                 onClick={() => setIsEditingSchema(true)}
                 // loading={isSaving}
               >
-                {/* Activate selected Schema */}
+                Activate selected Schema
                 {`Edit`}
-              </Button>
+              </Button> */}
               <Button
                 variant="outline"
                 disabled={activeSchemaVersion === schemaVersion?.version}

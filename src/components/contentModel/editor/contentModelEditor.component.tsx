@@ -14,14 +14,13 @@ import {
   SkylarkObjectMeta,
   ParsedSkylarkObjectConfigFieldConfig,
   InputFieldWithFieldConfig,
-  ParsedSkylarkObjectTypeRelationshipConfiguration,
+  ParsedSkylarkObjectTypeRelationshipConfigurations,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import { isSkylarkObjectType } from "src/lib/utils";
 
 import {
   ContentModelEditorForm,
-  createFieldSections,
   FieldSectionObject,
 } from "./sections/common.component";
 import { FieldsSection } from "./sections/fields.component";
@@ -29,13 +28,11 @@ import { RelationshipsSection } from "./sections/relationships.component";
 import { UIConfigSection } from "./sections/uiConfig.component";
 
 export const ObjectTypeEditor = ({
-  isEditingSchema,
   objectMeta,
   objectConfig,
   allObjectsMeta,
   form,
 }: {
-  isEditingSchema: boolean;
   objectMeta: SkylarkObjectMeta;
   objectConfig?: ParsedSkylarkObjectConfig;
   allObjectsMeta: SkylarkObjectMeta[];
@@ -110,11 +107,7 @@ export const ObjectTypeEditor = ({
         <UIConfigSection objectMeta={objectMeta} objectConfig={objectConfig} />
       )}
       {activeTab.id === "metadata" && (
-        <FieldsSection
-          form={form}
-          objectMeta={objectMeta}
-          isEditingSchema={isEditingSchema}
-        />
+        <FieldsSection form={form} objectMeta={objectMeta} />
       )}
       {objectMeta.name !== BuiltInSkylarkObjectType.Availability &&
         activeTab.id === "relationships" && (
@@ -122,7 +115,6 @@ export const ObjectTypeEditor = ({
             form={form}
             objectMeta={objectMeta}
             allObjectsMeta={allObjectsMeta}
-            isEditingSchema={isEditingSchema}
           />
         )}
     </div>

@@ -18,6 +18,7 @@ import {
   SkylarkObjectFieldType,
   SkylarkGraphQLObjectConfig,
   SkylarkSystemField,
+  SkylarkGraphQLObjectConfigFieldConfig,
 } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -25,7 +26,6 @@ import { wrappedJsonMutation } from "src/lib/graphql/skylark/dynamicQueries";
 import { UPDATE_OBJECT_TYPE_CONFIG } from "src/lib/graphql/skylark/mutations";
 
 interface MutationArgs {
-  createNewSchemaVersion: boolean;
   schemaVersion: SchemaVersion;
   formValues: ContentModelEditorForm;
   modifiedFormFields: FormState<ContentModelEditorForm>["dirtyFields"];
@@ -97,58 +97,54 @@ const parseFieldConfigurationField = (
 //   version
 // }
 
+// setObjectTypeConfiguration(
+//   object_type: Episode
+//   object_type_config: {display_name: "", field_config: {name: "test_field_no", ui_field_type: TEXTAREA, ui_position: 10}}
+// ) {
+//   display_name
+//   primary_field
+//   field_config {
+//     name
+//     ui_field_type
+//     ui_position
+//   }
+// }
 const buildEditFieldsConfigurationMutation = (
   objectType: string,
-  fieldValues: ContentModelEditorForm["objectTypes"][0]["fields"],
+  fields: ContentModelEditorFormObjectTypeField[],
 ) => {
-  const fields = fieldValues
-    .map((value) => parseFieldConfigurationField(value))
-    .filter((field): field is EditFieldConfigurationField => Boolean(field));
-  console.log("XXX", { fields });
   if (fields.length === 0) {
     return null;
   }
 
   return {
-    key: `${objectType}_editFieldConfiguration`,
+    key: `${objectType}_setObjectTypeConfiguration`,
     mutation: {
-      __aliasFor: "editFieldConfiguration",
+      __aliasFor: "setObjectTypeConfiguration",
       __args: {
-        version: new VariableType("version"),
-        object_class: new EnumType(objectType),
-        fields,
+        object_type: new EnumType(objectType),
+        object_type_config: {
+          field_config: fields.map(
+            (
+              field,
+              i,
+            ): Omit<SkylarkGraphQLObjectConfigFieldConfig, "ui_field_type"> & {
+              ui_field_type: EnumType | null;
+            } => ({
+              name: field.name,
+              ui_field_type: field.config?.fieldType
+                ? new EnumType(field.config.fieldType)
+                : null,
+              ui_position: i + 1,
+            }),
+          ),
+        },
       },
-      version: true,
-    },
-  };
-};
-
-// editRelationshipConfiguration(
-//   relationships: {operation: CREATE, from_class: SkylarkImage, to_class: SkylarkImage, relationship_name: "", reverse_relationship_name: ""}
-//   version: 10
-// ) {
-//   messages
-//   version
-// }
-const buildEditRelationshipsConfigurationMutation = (
-  objectType: string,
-  relationshipValues: ContentModelEditorForm["objectTypes"][0]["relationships"],
-) => {
-  const relationships = relationshipValues;
-
-  if (relationships.length === 0) {
-    return null;
-  }
-
-  return {
-    key: `${objectType}_editRelationshipConfiguration`,
-    mutation: {
-      __aliasFor: "editRelationshipConfiguration",
-      __args: {
-        version: new VariableType("version"),
-        relationships,
+      field_config: {
+        name: true,
+        ui_position: true,
+        ui_field_type: true,
       },
-      version: true,
     },
   };
 };
@@ -205,10 +201,7 @@ const buildSchemaMutation = (
 
   const mutation = {
     mutation: {
-      __name: `UPDATE_SCHEMA`,
-      __variables: {
-        version: "Int!",
-      },
+      __name: `UPDATE_OBJECT_TYPES_FIELD_CONFIG`,
       ...gqlOperations,
     },
   };
@@ -226,59 +219,47 @@ const buildSchemaMutation = (
   return gql(graphQLQuery);
 };
 
-export const useUpdateSchema = ({
+export const useUpdateObjectTypesFieldConfig = ({
   onSuccess,
   onError,
 }: {
-  onSuccess: (schemaVersion: SchemaVersion) => void;
+  onSuccess: () => void;
   onError: (e: GQLSkylarkErrorResponse) => void;
 }) => {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async ({
-      createNewSchemaVersion,
       schemaVersion,
       formValues,
       modifiedFormFields,
     }: MutationArgs) => {
-      let versionToUpdate: SchemaVersion = schemaVersion;
+      const versionToUpdate: SchemaVersion = schemaVersion;
 
       const mutation = buildSchemaMutation(formValues, modifiedFormFields);
 
       if (!mutation) {
-        return {
-          schemaVersion: versionToUpdate,
-        };
+        return;
       }
 
-      if (createNewSchemaVersion) {
-        const newSchemaVersion = await createSchemaVersionRequest(
-          schemaVersion.version,
-        );
-        versionToUpdate = newSchemaVersion;
-      }
-
-      const response = await skylarkRequest<object[]>("mutation", mutation, {
-        version: versionToUpdate.version,
-      });
+      const response = await skylarkRequest<object[]>("mutation", mutation);
 
       return { ...response, schemaVersion: versionToUpdate };
     },
-    onSuccess: async ({ schemaVersion }) => {
+    onSuccess: async () => {
       await queryClient.refetchQueries({
-        queryKey: [QueryKeys.Schema],
+        queryKey: [QueryKeys.ObjectTypesConfig],
         exact: false,
         type: "active",
       });
 
-      onSuccess(schemaVersion);
+      onSuccess();
     },
     onError,
   });
 
   return {
-    updateSchema: mutate,
-    isUpdatingSchema: isPending,
+    updateObjectTypesFieldConfig: mutate,
+    isUpdatingObjectTypesFieldConfig: isPending,
   };
 };

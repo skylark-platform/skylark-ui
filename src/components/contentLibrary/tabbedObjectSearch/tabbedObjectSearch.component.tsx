@@ -52,6 +52,7 @@ import {
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
+import { isSkylarkObjectType } from "src/lib/utils";
 
 type TabbedObjectSearchProps = Omit<
   ObjectSearchProps,
@@ -369,7 +370,7 @@ const NewTabButton = ({
                   objectTypes:
                     objectTypesWithConfig
                       ?.filter(({ objectType }) =>
-                        objectType.toUpperCase().startsWith("SKYLARK"),
+                        isSkylarkObjectType(objectType),
                       )
                       .map(({ objectType }) => objectType) || [],
                 },
@@ -387,8 +388,7 @@ const NewTabButton = ({
                   objectTypes:
                     objectTypesWithConfig
                       ?.filter(
-                        ({ objectType }) =>
-                          !objectType.toUpperCase().startsWith("SKYLARK"),
+                        ({ objectType }) => !isSkylarkObjectType(objectType),
                       )
                       .map(({ objectType }) => objectType) || [],
                 },

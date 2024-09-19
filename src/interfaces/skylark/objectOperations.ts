@@ -67,6 +67,7 @@ export type NormalizedObjectField = {
   enumValues?: string[];
   isList: boolean;
   isRequired: boolean;
+  isTranslatable: boolean;
 };
 
 export type InputFieldWithFieldConfig = {
@@ -108,6 +109,7 @@ export interface SkylarkObjectFields {
 
 export type SkylarkObjectRelationship = {
   relationshipName: string;
+  reverseRelationshipName: string | null;
   objectType: SkylarkObjectType;
 };
 
@@ -131,4 +133,5 @@ export interface SkylarkObjectMeta extends SkylarkObjectFields {
   isTranslatable: boolean;
   isImage: boolean;
   isSet: boolean;
+  isBuiltIn: boolean;
 }

@@ -26,7 +26,8 @@ import {
   UIConfigForm,
   uiDisplayFieldTooltip,
 } from "./common.component";
-import { UIConfigFieldsSection } from "./uiConfigFields.component";
+
+// import { UIConfigFieldsSection } from "./uiConfigFields.component";
 
 interface UIConfigSectionProps {
   objectMeta: SkylarkObjectMeta;
@@ -45,7 +46,7 @@ export const UIConfigSection = ({
     // Can't use onSubmit because we don't have a submit button within the form
     mode: "onTouched",
     values: {
-      fieldSections: createFieldSections(objectMeta, objectConfig),
+      // fieldSections: createFieldSections(objectMeta, objectConfig),
       objectTypeDisplayName:
         objectConfig?.objectTypeDisplayName || objectMeta.name,
       primaryField: objectConfig?.primaryField,
@@ -53,8 +54,7 @@ export const UIConfigSection = ({
     },
   });
 
-  const { fieldSections, objectTypeDisplayName, primaryField, colour } =
-    form.watch();
+  const { objectTypeDisplayName, primaryField, colour } = form.watch();
 
   const { updateObjectTypeConfig, isUpdatingObjectTypeConfig } =
     useUpdateObjectTypeConfig({
@@ -83,21 +83,21 @@ export const UIConfigSection = ({
     });
 
   const onSave = () => {
-    const fieldConfig: ParsedSkylarkObjectConfigFieldConfig[] = [
-      ...fieldSections.system.fields,
-      ...fieldSections.translatable.fields,
-      ...fieldSections.global.fields,
-    ].map(
-      (fieldWithConfig, index): ParsedSkylarkObjectConfigFieldConfig => ({
-        name: fieldWithConfig.field.name,
-        fieldType: fieldWithConfig.config?.fieldType || null,
-        position: index + 1,
-      }),
-    );
+    // const fieldConfig: ParsedSkylarkObjectConfigFieldConfig[] = [
+    //   ...fieldSections.system.fields,
+    //   ...fieldSections.translatable.fields,
+    //   ...fieldSections.global.fields,
+    // ].map(
+    //   (fieldWithConfig, index): ParsedSkylarkObjectConfigFieldConfig => ({
+    //     name: fieldWithConfig.field.name,
+    //     fieldType: fieldWithConfig.config?.fieldType || null,
+    //     position: index + 1,
+    //   }),
+    // );
     const parsedConfig: ParsedSkylarkObjectConfig = {
       ...objectConfig,
       primaryField,
-      fieldConfig,
+      // fieldConfig,
       objectTypeDisplayName,
       colour,
     };
@@ -165,11 +165,17 @@ export const UIConfigSection = ({
           <Select
             className="col-span-2"
             variant="primary"
-            options={[
-              ...fieldSections.system.fields,
-              ...fieldSections.translatable.fields,
-              ...fieldSections.global.fields,
-            ].map(({ field }) => ({ label: field.name, value: field.name }))}
+            options={
+              //   [
+              //   ...fieldSections.system.fields,
+              //   ...fieldSections.translatable.fields,
+              //   ...fieldSections.global.fields,
+              // ]
+              objectMeta.fields.map(({ name }) => ({
+                label: name,
+                value: name,
+              }))
+            }
             placeholder=""
             selected={primaryField || SkylarkSystemField.UID}
             onChange={(value) =>
@@ -196,7 +202,7 @@ export const UIConfigSection = ({
               </span>
             </ColourPicker>
           </div>
-          <FieldHeader
+          {/* <FieldHeader
             className="col-span-1"
             tooltip="Controls the display order of fields in the UI. System fields cannot be reordered."
           >
@@ -204,7 +210,7 @@ export const UIConfigSection = ({
           </FieldHeader>
           <p className="col-span-2">
             Drag the fields on the metadata tab to reorder.
-          </p>
+          </p> */}
         </div>
         <div className="flex justify-center items-center">
           <div
@@ -241,11 +247,11 @@ export const UIConfigSection = ({
             />
           </div>
         </div>
-        <UIConfigFieldsSection
+        {/* <UIConfigFieldsSection
           form={form}
           objectMeta={objectMeta}
           objectConfig={objectConfig}
-        />
+        /> */}
       </div>
     </SectionWrapper>
   );

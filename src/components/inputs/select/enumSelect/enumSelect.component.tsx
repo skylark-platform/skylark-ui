@@ -40,12 +40,15 @@ export const EnumSelect = forwardRef(
       [enums],
     );
 
-    const onChangeWrapper = useCallback((value: string) => {
-      const newEnum = enums?.find((e) => e.name === value);
-      if (newEnum) {
-        onChange(newEnum);
-      }
-    }, []);
+    const onChangeWrapper = useCallback(
+      (value: string) => {
+        const newEnum = enums?.find((e) => e.name === value);
+        if (newEnum) {
+          onChange(newEnum);
+        }
+      },
+      [enums, onChange],
+    );
 
     return (
       <Select

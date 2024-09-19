@@ -1,16 +1,19 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FormState, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 import { Spinner } from "src/components/icons";
 import { Toast } from "src/components/toast/toast.component";
 import { useCreateSchemaVersion } from "src/hooks/schema/create/useCreateSchemaVersion";
+import { useUpdateObjectTypeConfig } from "src/hooks/schema/update/useUpdateObjectTypeConfig";
+import { useUpdateObjectTypesFieldConfig } from "src/hooks/schema/update/useUpdateObjectTypesFieldConfig";
 import { useUpdateRelationshipConfig } from "src/hooks/schema/update/useUpdateRelationshipConfig";
 import { useUpdateSchema } from "src/hooks/schema/update/useUpdateSchema";
 import { useActivationStatus } from "src/hooks/useAccountStatus";
 import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import {
+  ObjectTypeWithConfig,
   useAllObjectsMeta,
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
@@ -18,73 +21,77 @@ import { IntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospecti
 import {
   BuiltInSkylarkObjectType,
   NormalizedObjectField,
+  ParsedSkylarkObjectConfig,
+  ParsedSkylarkObjectTypeRelationshipConfigurations,
+  ParsedSkylarkObjectTypesRelationshipConfigurations,
+  SkylarkObjectMeta,
 } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
 
 import { ObjectTypeEditor } from "./editor/contentModelEditor.component";
 import {
+  combineFieldAndFieldConfigAndSortByConfigPostion,
   ContentModelEditorForm,
-  createFieldSections,
-  splitFieldsIntoSystemGlobalTranslatable,
 } from "./editor/sections/common.component";
 import { ContentModelHeader } from "./header/contentModelHeader.component";
 import { ObjectTypeSelectAndOverview } from "./navigation/contentModelNavigation.component";
 
-export const ContentModel = () => {
-  const { query } = useRouter();
+interface ContentModelProps {
+  schemaVersion: SchemaVersion;
+  activeVersionNumber: number;
+  objectType: string;
+  objectTypesWithConfig: ObjectTypeWithConfig[];
+  allObjectsMeta: SkylarkObjectMeta[];
+  allObjectTypesRelationshipConfig: ParsedSkylarkObjectTypesRelationshipConfigurations;
+}
 
-  const { activationStatus } = useActivationStatus();
-  const [selectedSchemaVersionState, setSelectedSchemaVersion] =
-    useState<SchemaVersion | null>(null);
+const createFormValues = (
+  allObjectsMeta: SkylarkObjectMeta[],
+  objectTypesWithConfig: ObjectTypeWithConfig[],
+  allObjectTypesRelationshipConfig: ParsedSkylarkObjectTypesRelationshipConfigurations,
+): ContentModelEditorForm => ({
+  objectTypes: Object.fromEntries(
+    allObjectsMeta.map((objectMeta) => {
+      const { name, relationships } = objectMeta;
 
-  const selectedSchemaVersion: SchemaVersion | null =
-    selectedSchemaVersionState === null
-      ? activationStatus?.activeVersion
-        ? {
-            version: activationStatus.activeVersion,
-            baseVersion: -1,
-            isDraft: false,
-            isPublished: true,
-            isActive: true,
-          }
-        : null
-      : selectedSchemaVersionState;
+      const config = objectTypesWithConfig.find(
+        ({ objectType }) => objectType === name,
+      )?.config;
 
-  const schemaOpts: IntrospectionQueryOptions | undefined =
-    selectedSchemaVersion !== null &&
-    selectedSchemaVersion !== undefined &&
-    selectedSchemaVersion?.version !== activationStatus?.activeVersion
-      ? {
-          schemaVersion: selectedSchemaVersion.version,
-        }
-      : undefined;
+      const fields = combineFieldAndFieldConfigAndSortByConfigPostion(
+        objectMeta.fields,
+        config,
+      );
 
-  const { objects: allObjectsMeta } = useAllObjectsMeta(true, schemaOpts);
-  const { objectTypesWithConfig, isLoading: isLoadingObjectTypesWithConfig } =
-    useSkylarkObjectTypesWithConfig(schemaOpts);
+      console.log(name, { fields });
 
-  const activeObjectType = (query?.objectType?.[0] as string) || null;
+      return [
+        name,
+        {
+          fields,
+          relationships,
+        },
+      ];
+    }),
+  ),
+  // allObjectTypesRelationshipConfig,
+});
 
-  const objectMeta = allObjectsMeta?.find(
-    ({ name }) => name.toLowerCase() === activeObjectType?.toLowerCase(),
+export const ContentModel = ({
+  schemaVersion,
+  activeVersionNumber,
+  objectType,
+  allObjectsMeta,
+  objectTypesWithConfig,
+  allObjectTypesRelationshipConfig,
+}: ContentModelProps) => {
+  const objectMeta = allObjectsMeta.find(
+    ({ name }) => name.toLowerCase() === objectType?.toLowerCase(),
   );
 
-  const config = objectTypesWithConfig?.find(
+  const config = objectTypesWithConfig.find(
     ({ objectType }) => objectType === objectMeta?.name,
   )?.config;
-
-  const {
-    objectTypeRelationshipConfig: relationshipConfig,
-    isLoading: isLoadingRelationshipConfig,
-  } = useObjectTypeRelationshipConfiguration(objectMeta?.name || null);
-
-  const isLoading =
-    !allObjectsMeta ||
-    isLoadingObjectTypesWithConfig ||
-    (isLoadingRelationshipConfig &&
-      objectMeta?.name !== BuiltInSkylarkObjectType.Availability);
-
-  const [isEditingSchema, setIsEditingSchema] = useState(false);
 
   const form = useForm<ContentModelEditorForm>({
     // Can't use onSubmit because we don't have a submit button within the form
@@ -92,45 +99,77 @@ export const ContentModel = () => {
     // values: {
     //   fieldSections: []
     // },
+    defaultValues: createFormValues(
+      allObjectsMeta,
+      objectTypesWithConfig,
+      allObjectTypesRelationshipConfig,
+    ),
   });
 
-  const handleEditClick = (isEditing: boolean) => {
-    setIsEditingSchema(isEditing);
-  };
+  const onCancel = useCallback(() => {
+    form.reset(
+      createFormValues(
+        allObjectsMeta,
+        objectTypesWithConfig,
+        allObjectTypesRelationshipConfig,
+      ),
+    );
+  }, [
+    allObjectsMeta,
+    form,
+    objectTypesWithConfig,
+    allObjectTypesRelationshipConfig,
+  ]);
 
-  useEffect(() => {
-    if (!isEditingSchema && allObjectsMeta && config)
-      form.reset({
-        objectTypes: Object.fromEntries(
-          allObjectsMeta.map((objectMeta) => {
-            const { name, relationships } = objectMeta;
+  // const handleEditClick = (isEditing: boolean) => {
+  //   setIsEditingSchema(isEditing);
+  // };
 
-            const fields: ContentModelEditorForm["objectTypes"][0]["fields"] =
-              splitFieldsIntoSystemGlobalTranslatable(objectMeta);
-
-            return [
-              name,
-              {
-                fields,
-                relationships,
-              },
-            ];
-          }),
-        ),
-        relationshipConfig,
-      });
-  }, [allObjectsMeta, config, form, isEditingSchema, relationshipConfig]);
+  // TODO only reset when the version changes
+  // useEffect(() => {
+  //   if (!form.formState.isDirty) {
+  //     console.log("cancel ");
+  //     onCancel();
+  //   }
+  // }, [allObjectsMeta, config, form, onCancel, relationshipConfig]);
 
   const { updateSchema, isUpdatingSchema } = useUpdateSchema({
     onSuccess: (newSchemaVersion) => {
-      if (newSchemaVersion.version !== selectedSchemaVersion?.version) {
-        setSelectedSchemaVersion(newSchemaVersion);
-      }
+      // if (newSchemaVersion.version !== selectedSchemaVersion?.version) {
+      //   setSelectedSchemaVersion(newSchemaVersion);
+      // }
+      // push(newSchemaVersion.version)
     },
     onError: (err) => {
       console.log("Error you should handle this", err);
     },
   });
+
+  const { updateObjectTypesFieldConfig, isUpdatingObjectTypesFieldConfig } =
+    useUpdateObjectTypesFieldConfig({
+      onSuccess: () => {
+        form.reset(undefined, { keepValues: true });
+        toast.success(
+          <Toast
+            title={`Object Type config updated`}
+            message={[
+              "You may have to refresh for the configuration changes to take effect.",
+            ]}
+          />,
+        );
+      },
+      onError: () => {
+        toast.error(
+          <Toast
+            title={`Object type config update failed`}
+            message={[
+              "Unable to update the Object Type.",
+              "Please try again later.",
+            ]}
+          />,
+        );
+      },
+    });
 
   const { updateRelationshipConfig, isUpdatingRelationshipConfig } =
     useUpdateRelationshipConfig({
@@ -191,9 +230,11 @@ export const ContentModel = () => {
     });
 
   const onSave = () => {
-    if (objectMeta && selectedSchemaVersion) {
+    console.log("onSave");
+    if (objectMeta && schemaVersion) {
       form.handleSubmit((formValues) => {
-        const { objectTypes, relationshipConfig } = formValues;
+        console.log({ formValues });
+        const { objectTypes } = formValues;
         const schemaChangesDetected = form.formState.dirtyFields.objectTypes;
 
         if (schemaChangesDetected) {
@@ -207,22 +248,28 @@ export const ContentModel = () => {
             form.formState.dirtyFields;
 
           updateSchema({
-            createNewSchemaVersion: selectedSchemaVersion.isActive,
-            schemaVersion: selectedSchemaVersion,
+            createNewSchemaVersion: schemaVersion.isActive,
+            schemaVersion,
             formValues,
             modifiedFormFields,
           });
 
-          // updateSchemaWithChanges(changedObjectTypes, dirtyFields);
-        } else if (
-          form.formState.dirtyFields.relationshipConfig &&
-          relationshipConfig
-        ) {
-          updateRelationshipConfig({
-            objectType: objectMeta.name,
-            relationshipConfig,
+          updateObjectTypesFieldConfig({
+            schemaVersion,
+            formValues,
+            modifiedFormFields,
           });
+          // updateSchemaWithChanges(changedObjectTypes, dirtyFields);
         }
+        // else if (
+        //   form.formState.dirtyFields.relationshipConfig &&
+        //   relationshipConfig
+        // ) {
+        //   updateRelationshipConfig({
+        //     objectType: objectMeta.name,
+        //     relationshipConfig,
+        //   });
+        // }
       })();
     }
   };
@@ -230,42 +277,37 @@ export const ContentModel = () => {
   return (
     <div className="max-w-8xl mx-auto px-4 md:px-8">
       <ContentModelHeader
-        activeSchemaVersion={activationStatus?.activeVersion || 0}
-        schemaVersion={selectedSchemaVersion}
-        setSchemaVersion={setSelectedSchemaVersion}
-        isEditingSchema={isEditingSchema}
+        activeSchemaVersion={activeVersionNumber || 0}
+        schemaVersion={schemaVersion}
+        isEditingSchema={form.formState.isDirty}
         isUpdatingSchema={isUpdatingSchema}
-        setIsEditingSchema={handleEditClick}
+        onCancel={onCancel}
         onSave={onSave}
       />
 
       {allObjectsMeta && objectTypesWithConfig ? (
         <div className="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-5 gap-8">
           <ObjectTypeSelectAndOverview
-            activeObjectType={activeObjectType}
-            schemaOpts={schemaOpts}
+            activeObjectType={objectType}
+            schemaVersion={schemaVersion}
+            objectTypesWithConfig={objectTypesWithConfig}
           />
 
           <div className="md:col-span-3 xl:col-span-4 h-full">
-            {objectMeta && !isLoading && (
+            {objectMeta && (
               <ObjectTypeEditor
-                key={`${activeObjectType}-${config}`}
-                isEditingSchema={isEditingSchema}
+                key={`${objectType}-${config}`}
                 objectMeta={objectMeta}
                 objectConfig={config}
                 allObjectsMeta={allObjectsMeta}
                 form={form}
               />
             )}
-            {isLoading && (
-              <div className="flex justify-center w-full mt-20 items-center">
-                <Spinner className="h-14 w-14 animate-spin" />
-              </div>
-            )}
-            {!isLoading && activeObjectType && !objectMeta && (
+
+            {objectType && !objectMeta && (
               <p className="mt-10">
                 Requested Object Type &quot;
-                <span className="font-medium">{activeObjectType}</span>
+                <span className="font-medium">{objectType}</span>
                 &quot; does not exist in this schema version.
               </p>
             )}

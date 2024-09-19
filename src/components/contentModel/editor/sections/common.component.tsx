@@ -7,37 +7,49 @@ import {
   InputFieldWithFieldConfig,
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
-  ParsedSkylarkObjectTypeRelationshipConfiguration,
+  ParsedSkylarkObjectConfigFieldConfig,
+  ParsedSkylarkObjectTypeRelationshipConfigurations,
   SkylarkObjectMeta,
   SkylarkObjectRelationship,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
 
 export type FieldType = "system" | "translatable" | "global";
 
 export type FieldSectionObject = Record<
   FieldType,
-  { title: string; type: FieldType; fields: InputFieldWithFieldConfig[] }
+  {
+    title: string;
+    type: FieldType;
+    fields: ContentModelEditorFormObjectTypeField[];
+  }
 >;
+
+export type ContentModelEditorFormObjectTypeField = NormalizedObjectField & {
+  isNew?: boolean;
+  isDeleted?: boolean;
+  config: Omit<
+    ParsedSkylarkObjectConfigFieldConfig,
+    "position" | "name"
+  > | null;
+};
 
 export interface ContentModelEditorForm {
   objectTypes: Record<
     string,
     {
-      fields: Record<
-        FieldType,
-        (NormalizedObjectField & { isNew?: boolean; isDeleted?: boolean })[]
-      >;
+      fields: ContentModelEditorFormObjectTypeField[];
       relationships: (SkylarkObjectRelationship & {
         isNew?: boolean;
         isDeleted?: boolean;
       })[];
     }
   >;
-  relationshipConfig?: ParsedSkylarkObjectTypeRelationshipConfiguration;
+  // relationshipConfig?: ParsedSkylarkObjectTypeRelationshipConfigurations;
 }
 
 export interface UIConfigForm {
-  fieldSections: FieldSectionObject;
+  // fieldSections: FieldSectionObject;
   objectTypeDisplayName: string;
   primaryField: string | undefined | null;
   colour: string | undefined | null;
@@ -73,23 +85,27 @@ export const FieldHeader = ({
   </div>
 );
 
-const combineInputAndGetFields = (
-  inputFields: NormalizedObjectField[],
-  getFields: NormalizedObjectField[],
-): NormalizedObjectField[] => {
-  // Some fields are not in input fields but we need to display them anyway, e.g. UID
-  const inputFieldNames = inputFields.map(({ name }) => name);
-  const missingInputFields = getFields.filter(
-    ({ name }) => !inputFieldNames.includes(name),
-  );
+export const sortSystemFieldsFirst = (
+  fieldA: ContentModelEditorFormObjectTypeField,
+  fieldB: ContentModelEditorFormObjectTypeField,
+) => {
+  // Hardcode some system fields to always be in the same place
+  if (fieldA.name == SkylarkSystemField.UID) return -1;
+  if (fieldB.name == SkylarkSystemField.UID) return 1;
 
-  return [...inputFields, ...missingInputFields];
+  if (fieldA.name == SkylarkSystemField.ExternalID) return -1;
+  if (fieldB.name == SkylarkSystemField.ExternalID) return 1;
+
+  if (fieldA.name == SkylarkSystemField.Type) return -1;
+  if (fieldB.name == SkylarkSystemField.Type) return 1;
+
+  return 0;
 };
 
-const combineFieldAndFieldConfigAndSortByConfigPostion = (
+export const combineFieldAndFieldConfigAndSortByConfigPostion = (
   fields: NormalizedObjectField[],
   objectFieldConfig?: ParsedSkylarkObjectConfig,
-): InputFieldWithFieldConfig[] => {
+): ContentModelEditorFormObjectTypeField[] => {
   const inputFieldsWithFieldConfig = fields
     .map((field) => {
       const config = objectFieldConfig?.fieldConfig?.find(
@@ -97,15 +113,24 @@ const combineFieldAndFieldConfigAndSortByConfigPostion = (
       );
 
       return {
-        field,
-        config,
+        ...field,
+        config: config || null,
       };
     })
-    .sort(({ config: configA }, { config: configB }) =>
-      (configA?.position ?? Infinity) > (configB?.position ?? Infinity)
+    .sort((fieldA, fieldB) => {
+      const systemFieldSorted = sortSystemFieldsFirst(fieldA, fieldB);
+
+      if (systemFieldSorted !== 0) {
+        return systemFieldSorted;
+      }
+
+      // console.log({ fieldA, fieldB });
+
+      return (fieldA.config?.position ?? Infinity) >
+        (fieldB.config?.position ?? Infinity)
         ? 1
-        : -1,
-    );
+        : -1;
+    });
 
   return inputFieldsWithFieldConfig;
 };
@@ -154,20 +179,17 @@ const splitNormailsedFieldsIntoSystemGlobalTranslatable = (
   return splitFields;
 };
 
-export const splitFieldsIntoSystemGlobalTranslatable = (
+const splitFieldsIntoSystemGlobalTranslatable = (
   objectMeta: SkylarkObjectMeta,
 ) =>
   splitNormailsedFieldsIntoSystemGlobalTranslatable(
-    combineInputAndGetFields(
-      objectMeta.operations.create.inputs,
-      objectMeta.fields,
-    ),
+    objectMeta.fields,
     objectMeta.fieldConfig,
   );
 
 export const createFieldSections = (
   objectMeta: SkylarkObjectMeta,
-  objectFieldConfig?: ParsedSkylarkObjectConfig,
+  objectFieldConfig: ParsedSkylarkObjectConfig,
 ) => {
   const splitFields = splitFieldsIntoSystemGlobalTranslatable(objectMeta);
 

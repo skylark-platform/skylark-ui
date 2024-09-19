@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useDragControls, Reorder } from "framer-motion";
 import {
+  FiCheck,
   FiInfo,
   FiLoader,
   FiPlus,
@@ -192,13 +193,16 @@ export const ObjectTypeFieldInput = ({
   field,
   objectMeta,
   showInput: showInputProp,
+  fieldConfig,
   allowModifyName,
   isDeleted,
   isNew,
   onChange,
   onDelete,
+  onEdit,
 }: {
   field: NormalizedObjectField;
+  fieldConfig?: ParsedSkylarkObjectConfigFieldConfig;
   objectMeta: SkylarkObjectMeta;
   showInput: boolean;
   allowModifyName?: boolean;
@@ -206,6 +210,7 @@ export const ObjectTypeFieldInput = ({
   isNew?: boolean;
   onChange: (field: NormalizedObjectField) => void;
   onDelete: (field: NormalizedObjectField) => void;
+  onEdit: () => void;
 }) => {
   const isEnum = !!field?.enumValues;
 
@@ -216,8 +221,6 @@ export const ObjectTypeFieldInput = ({
     showInputProp &&
     !isSkylarkObjectType(objectMeta.name) &&
     field.name !== SkylarkSystemField.UID;
-
-  const showDelete = showInput && field.name !== SkylarkSystemField.ExternalID;
 
   return (
     <div
@@ -238,14 +241,15 @@ export const ObjectTypeFieldInput = ({
           {fieldConfig?.position}
         </p> */}
         {/* <p>{sentenceCase(field.name)}</p> */}
-        {allowModifyName ? (
+        {/* {allowModifyName ? (
           <TextInput
             value={field.name}
             onChange={(str) => onChange({ ...field, name: str })}
           />
         ) : (
           <p>{field.name}</p>
-        )}
+        )} */}
+        <p>{field.name}</p>
         <FieldNameTooltip field={field.name} />
         {/* <Tooltip tooltip={`GraphQL field: ${field.name}`}>
           <div className="ml-2">
@@ -254,7 +258,7 @@ export const ObjectTypeFieldInput = ({
         </Tooltip> */}
       </div>
       <div className="flex justify-start items-center h-full col-span-2">
-        {showInput ? (
+        {/* {showInput ? (
           <Select
             options={graphQLFields.map((value) => ({
               value,
@@ -280,73 +284,64 @@ export const ObjectTypeFieldInput = ({
             }}
             // disabled
           />
-        ) : (
+        ) : ( */}
+        <div className="flex">
           <p>{isEnum ? "Enum" : field.originalType}</p>
+          {isEnum && (
+            <>
+              <Tooltip
+                tooltip={
+                  <>
+                    <ul>
+                      {field.enumValues?.map((value) => (
+                        <li key={value}>{value}</li>
+                      ))}
+                    </ul>
+                  </>
+                }
+              >
+                <p className="ml-2 flex justify-center items-center text-manatee-500">
+                  {`(${field.originalType}`}
+                  <FiInfo className="text-sm ml-1" />
+                  {`)`}
+                </p>
+              </Tooltip>
+            </>
+          )}
+          {fieldConfig?.fieldType && field.type === "string" && (
+            <p className="ml-2 flex justify-center items-center text-manatee-500">
+              {`(${fieldConfig.fieldType}`}
+              {/* <FiInfo className="text-sm ml-1" /> */}
+              {`)`}
+            </p>
+          )}
+        </div>
+        {/* )} */}
+      </div>
+      <div className="flex justify-start items-center col-span-1">
+        {field.isTranslatable ? (
+          <FiCheck className="text-success text-xl" />
+        ) : (
+          "-"
         )}
       </div>
-      <div className="flex justify-start items-center h-full col-span-2 w-full">
-        {isEnum && (
-          <>
-            {showInput ? (
-              <EnumSelect
-                variant="primary"
-                selected={field.originalType}
-                placeholder=""
-                className="w-full"
-                onChange={({ name, enumValues }) => {
-                  onChange({
-                    ...field,
-                    enumValues: enumValues.map(({ name }) => name),
-                    originalType: name as GQLScalars,
-                    type: "enum",
-                  });
-                }}
-              />
-            ) : (
-              <>
-                <p className="flex-grow">{field.originalType}</p>
-                <Tooltip
-                  tooltip={
-                    <>
-                      {/* <p className="mb-2 font-medium">Values:</p> */}
-                      <ul>
-                        {field.enumValues?.map((value) => (
-                          <li key={value}>{value}</li>
-                        ))}
-                      </ul>
-                    </>
-                  }
-                >
-                  <div className="ml-2">
-                    <FiInfo className="text-base" />
-                  </div>
-                </Tooltip>
-              </>
-            )}
-          </>
-        )}
+      <div className="flex justify-start items-center col-span-1">
+        {field.isRequired ? <FiCheck className="text-success text-xl" /> : "-"}
       </div>
-      <div className="flex justify-center items-center">
-        <Checkbox
-          checked={field.isRequired}
-          disabled={!showInput}
-          onCheckedChange={(checked) =>
-            onChange({ ...field, isRequired: Boolean(checked) })
-          }
-        />
-      </div>
-      <div className="flex justify-center items-center absolute right-4">
-        {showDelete && (
-          <Button
-            variant="ghost"
-            Icon={<FiTrash2 className="text-base text-error" />}
-            onClick={() => onDelete(field)}
-          />
-        )}
-        {isDeleted && !isNew && (
+      <div className="flex justify-center items-center col-span-1">
+        <Button variant="form" onClick={() => onEdit()}>
+          Edit
+        </Button>
+        {isDeleted && !isNew ? (
           <Button
             variant="ghost"
             Icon={<FiRotateCcw className="text-base" />}
+            onClick={() => onDelete(field)}
+          />
+        ) : (
+          <Button
+            variant="ghost"
+            Icon={<FiTrash2 className="text-base text-error" />}
             onClick={() => onDelete(field)}
           />
         )}
@@ -358,12 +353,15 @@ export const ObjectTypeFieldInput = ({
 export const AddNewButton = ({
   onClick,
   text,
+  disabled,
 }: {
   onClick: () => void;
   text: string;
+  disabled?: boolean;
 }) => (
   <button
     onClick={onClick}
+    disabled={disabled}
     className="my-2 bg-manatee-50 z-30 border flex justify-center text-manatee-500 hover:bg-brand-primary/10 hover:text-manatee-800 transition-colors w-full shadow-sm border-manatee-200 rounded-lg items-center h-14 px-2 text-sm"
   >
     <FiPlus />

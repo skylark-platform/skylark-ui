@@ -13,6 +13,7 @@ export interface InputLabelProps {
   copyValue?: string;
   children?: ReactNode;
   formatText?: boolean;
+  language?: string;
 }
 
 export const InputLabel = ({
@@ -22,12 +23,16 @@ export const InputLabel = ({
   href,
   copyValue,
   children,
+  language,
   formatText,
 }: InputLabelProps) => (
   <div className="mb-2 flex items-center font-bold">
     <label htmlFor={htmlFor}>
       {formatText ? formatObjectField(text) : text}
       {isRequired && <span className="pl-0.5 text-error">*</span>}
+      {language && (
+        <span className="opacity-50 font-normal">{` (${language})`}</span>
+      )}
     </label>
     {children}
     {href && (

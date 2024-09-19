@@ -4,7 +4,7 @@ import { QueryKeys } from "src/enums/graphql";
 import {
   GQLSkylarkErrorResponse,
   ParsedSkylarkObjectConfig,
-  ParsedSkylarkObjectTypeRelationshipConfiguration,
+  ParsedSkylarkObjectTypeRelationshipConfigurations,
   SkylarkGraphQLObjectConfig,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -12,7 +12,7 @@ import { createUpdateRelationshipConfigMutation } from "src/lib/graphql/skylark/
 
 interface MutationArgs extends ParsedSkylarkObjectConfig {
   objectType: string;
-  relationshipConfig: ParsedSkylarkObjectTypeRelationshipConfiguration;
+  relationshipConfig: ParsedSkylarkObjectTypeRelationshipConfigurations;
 }
 
 export const useUpdateRelationshipConfig = ({

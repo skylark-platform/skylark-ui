@@ -9,7 +9,9 @@ import {
   IntrospectionListTypeRef,
   IntrospectionNamedTypeRef,
   IntrospectionNonNullTypeRef,
+  IntrospectionObjectType,
   IntrospectionScalarType,
+  IntrospectionType,
 } from "graphql";
 import { EnumType } from "json-to-graphql-query";
 import { HTMLInputTypeAttribute } from "react";
@@ -71,6 +73,8 @@ export const parseObjectInputType = (
 ): NormalizedObjectFieldType => {
   if (!name) return "string";
   switch (name) {
+    case "Enum":
+      return "enum";
     case "AWSTimestamp":
       return "timestamp";
     case "AWSTime":
@@ -109,6 +113,7 @@ export const parseObjectInputFields = (
     | IntrospectionField
     | IntrospectionInputValue
   )[],
+  fieldConfig: { translatable: string[]; global: string[] } | null,
   enums: Record<string, IntrospectionEnumType>,
 ): NormalizedObjectField[] => {
   if (!introspectionFields) {
@@ -148,6 +153,7 @@ export const parseObjectInputFields = (
         enumValues,
         isList: input.type.kind === "LIST",
         isRequired: input.type.kind === "NON_NULL",
+        isTranslatable: fieldConfig?.translatable.includes(input.name) || false,
       };
     });
 
@@ -155,6 +161,7 @@ export const parseObjectInputFields = (
 };
 
 export const parseObjectRelationships = (
+  objectTypeInterface: IntrospectionObjectType,
   relationshipInputFields?: readonly IntrospectionInputValue[],
 ): SkylarkObjectRelationship[] => {
   if (!relationshipInputFields) {
@@ -179,12 +186,22 @@ export const parseObjectRelationships = (
         objectTypeWithRelationshipInput &&
         objectTypeWithRelationshipInput.endsWith(relationshipInputPostfix),
     )
-    .map(({ name, objectTypeWithRelationshipInput }) => ({
-      relationshipName: name,
-      objectType: (objectTypeWithRelationshipInput as string).split(
-        relationshipInputPostfix,
-      )[0],
-    }));
+    .map(({ name, objectTypeWithRelationshipInput }) => {
+      const description = objectTypeInterface.fields.find(
+        (field) => field.name === name,
+      )?.description;
+
+      const reverseRelationshipName =
+        description?.trim()?.replace("reverse:", "")?.replace(":", "") || null;
+
+      return {
+        relationshipName: name,
+        objectType: (objectTypeWithRelationshipInput as string).split(
+          relationshipInputPostfix,
+        )[0],
+        reverseRelationshipName,
+      };
+    });
 
   return relationships;
 };

@@ -29,7 +29,10 @@ import {
   SkylarkObjectIdentifier,
   ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
-import { getObjectTypeFromListingTypeName } from "src/lib/utils";
+import {
+  getObjectTypeFromListingTypeName,
+  isSkylarkObjectType,
+} from "src/lib/utils";
 import { ObjectError } from "src/lib/utils/errors";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
@@ -86,6 +89,7 @@ const getInputObjectInterfaceFromIntrospectionField = (
 
 const getObjectFields = (
   objectType: string,
+  fieldConfig: { translatable: string[]; global: string[] } | null,
   enums: Record<string, IntrospectionEnumType>,
   createFields: NormalizedObjectField[],
   objectInterface?: IntrospectionObjectType,
@@ -100,6 +104,7 @@ const getObjectFields = (
   const objectFields = parseObjectInputFields(
     objectType,
     objectInterface.fields.filter((field) => field.type.kind !== "OBJECT"),
+    fieldConfig,
     enums,
   ).map(({ name, isRequired, type, originalType, ...field }) => {
     const createField = createFields.find(
@@ -112,6 +117,7 @@ const getObjectFields = (
       type: createField?.type || type,
       originalType: createField?.originalType || originalType,
       isRequired: createField?.isRequired || isRequired,
+      isTranslatable: fieldConfig?.translatable.includes(name) || false,
     };
   });
 
@@ -121,8 +127,7 @@ const getObjectFields = (
 const getGlobalAndTranslatableFields = (
   schemaTypes: IntrospectionQuery["__schema"]["types"],
   objectType: string,
-  objectFields: NormalizedObjectField[],
-): { global: string[]; translatable: string[] } => {
+): { global: string[]; translatable: string[] } | null => {
   const globalInterfaceName = `_${objectType}Global`;
   const languageInterfaceName = `_${objectType}Language`;
 
@@ -132,27 +137,15 @@ const getGlobalAndTranslatableFields = (
     languageInterfaceName,
   );
 
-  const objectFieldNames = objectFields.map(({ name }) => name);
+  const globalFields = globalInterface?.fields.map(({ name }) => name);
+  const translatableFields = languageInterface?.fields.map(({ name }) => name);
 
-  if (!globalInterface || !languageInterface) {
-    // If for some reason one interface isn't found, return all fields as global fields
-    return {
-      global: objectFieldNames,
-      translatable: [],
-    };
-  }
-
-  const globalFields = globalInterface.fields
-    .filter(({ name }) => objectFieldNames.includes(name))
-    .map(({ name }) => name);
-  const translatableFields = languageInterface.fields
-    .filter(({ name }) => objectFieldNames.includes(name))
-    .map(({ name }) => name);
-
-  return {
-    global: globalFields,
-    translatable: translatableFields,
-  };
+  return globalFields
+    ? {
+        global: globalFields,
+        translatable: translatableFields || [],
+      }
+    : null;
 };
 
 const objectHasRelationshipFromInterface = (
@@ -212,6 +205,7 @@ const objectRelationshipFieldsFromGraphQLType = (
 
 const getObjectRelationshipsFromInputFields = (
   schemaTypes: IntrospectionQuery["__schema"]["types"],
+  objectTypeInterface: IntrospectionObjectType,
   inputFields?: readonly IntrospectionInputValue[],
 ): SkylarkObjectRelationship[] => {
   const relationshipsInput = inputFields?.find(
@@ -235,6 +229,7 @@ const getObjectRelationshipsFromInputFields = (
   ) as IntrospectionInputObjectType | undefined;
 
   const relationships = parseObjectRelationships(
+    objectTypeInterface,
     relationshipsInterface?.inputFields,
   );
 
@@ -244,7 +239,9 @@ const getObjectRelationshipsFromInputFields = (
 const getMutationInfo = (
   objectType: string,
   schemaTypes: IntrospectionQuery["__schema"]["types"],
+  fieldConfig: { global: string[]; translatable: string[] } | null,
   enums: Record<string, IntrospectionEnumType>,
+  objectTypeInterface: IntrospectionObjectType,
   inputObject?: IntrospectionInputValue,
 ) => {
   const argName = inputObject?.name || "";
@@ -263,10 +260,12 @@ const getMutationInfo = (
   const inputFields = inputInterface?.inputFields;
 
   const inputs = inputFields
-    ? parseObjectInputFields(objectType, inputFields, enums)
+    ? parseObjectInputFields(objectType, inputFields, fieldConfig, enums)
     : [];
+
   const relationships = getObjectRelationshipsFromInputFields(
     schemaTypes,
+    objectTypeInterface,
     inputFields,
   );
 
@@ -325,15 +324,28 @@ const getSetObjectTypesFromIntrospection = (
     ) as IntrospectionInterfaceType | undefined
   )?.possibleTypes.map(({ name }) => name) || [];
 
+const combineInputAndGetFields = (
+  inputFields: NormalizedObjectField[],
+  getFields: NormalizedObjectField[],
+): NormalizedObjectField[] => {
+  // Some fields are not in input fields but we need to display them anyway, e.g. UID
+  const inputFieldNames = inputFields.map(({ name }) => name);
+  const missingInputFields = getFields.filter(
+    ({ name }) => !inputFieldNames.includes(name),
+  );
+
+  return [...inputFields, ...missingInputFields];
+};
+
 export const getObjectOperations = (
   objectType: SkylarkObjectType,
   schema: IntrospectionQuery["__schema"],
   ignoreRelationships?: boolean,
 ): SkylarkObjectMeta => {
-  const objectTypeExists = schema.types.find(
+  const objectTypeInterface = schema.types.find(
     ({ name, kind }) => name === objectType && kind === "OBJECT",
-  );
-  if (!objectTypeExists) {
+  ) as IntrospectionObjectType | undefined;
+  if (!objectTypeInterface) {
     throw new ObjectError(
       ErrorCodes.NotFound,
       `Schema: Object "${objectType}" not found`,
@@ -443,11 +455,15 @@ export const getObjectOperations = (
     getObjectInterface,
   );
 
+  const fieldConfig = getGlobalAndTranslatableFields(schema.types, objectType);
+
   // Parse the relationships out of the create mutation as it has a relationships parameter
   const { relationships, ...createMeta } = getMutationInfo(
     objectType,
     schema.types,
+    fieldConfig,
     enums,
+    objectTypeInterface,
     createInputObjectInterface,
   );
 
@@ -463,7 +479,9 @@ export const getObjectOperations = (
   const updateMeta = getMutationInfo(
     objectType,
     schema.types,
+    fieldConfig,
     enums,
+    objectTypeInterface,
     updateInputObjectInterface,
   );
 
@@ -501,22 +519,25 @@ export const getObjectOperations = (
   const setTypes = getSetObjectTypesFromIntrospection(schema);
   const isSet = setTypes.includes(objectType);
 
-  const objectFields = getObjectFields(
-    objectType,
-    enums,
+  const objectFields = combineInputAndGetFields(
     createMeta.inputs,
-    getObjectInterface,
-  );
-  const fieldConfig = getGlobalAndTranslatableFields(
-    schema.types,
-    objectType,
-    objectFields,
+    getObjectFields(
+      objectType,
+      fieldConfig,
+      enums,
+      createMeta.inputs,
+      getObjectInterface,
+    ),
   );
 
   const objectMeta: SkylarkObjectMeta = {
     name: objectType,
     fields: objectFields,
-    fieldConfig,
+    // Default fieldConfig to all global when translatable fields are not found
+    fieldConfig: fieldConfig || {
+      global: objectFields.map(({ name }) => name),
+      translatable: [],
+    },
     builtinObjectRelationships,
     operations,
     availability,
@@ -528,6 +549,7 @@ export const getObjectOperations = (
     isTranslatable: objectType !== BuiltInSkylarkObjectType.Availability,
     isImage: objectType === BuiltInSkylarkObjectType.SkylarkImage,
     isSet,
+    isBuiltIn: isSkylarkObjectType(objectType),
   };
 
   return objectMeta;

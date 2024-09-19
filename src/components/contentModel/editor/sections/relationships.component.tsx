@@ -3,7 +3,7 @@ import { Controller, UseFormReturn } from "react-hook-form";
 import { FiTrash2 } from "react-icons/fi";
 
 import { Button } from "src/components/button";
-import { Checkbox } from "src/components/inputs/checkbox";
+import { AddNewButton } from "src/components/contentModel/editor/contentModelRowInput.component";
 import { TextInput } from "src/components/inputs/input";
 import { ObjectTypeSelect, Select } from "src/components/inputs/select";
 import { ObjectTypePill } from "src/components/pill";
@@ -12,7 +12,6 @@ import {
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
 
-import { AddNewButton } from "../contentModelRowInput.component";
 import {
   ContentModelEditorForm,
   FieldHeader,
@@ -25,14 +24,12 @@ interface RelationshipsSectionProps {
   form: UseFormReturn<ContentModelEditorForm>;
   objectMeta: SkylarkObjectMeta;
   allObjectsMeta: SkylarkObjectMeta[];
-  isEditingSchema: boolean;
 }
 
 export const RelationshipsSection = ({
   form,
   objectMeta,
   allObjectsMeta,
-  isEditingSchema,
 }: RelationshipsSectionProps) => {
   const relationshipConfig = form.watch("relationshipConfig");
 
@@ -48,6 +45,7 @@ export const RelationshipsSection = ({
       {
         relationshipName: `relationship_${newRelationshipNum + 1}`,
         objectType: BuiltInSkylarkObjectType.SkylarkImage,
+        reverseRelationshipName: null,
         isNew: true,
       },
       {
@@ -66,10 +64,11 @@ export const RelationshipsSection = ({
       <div className="grid grid-cols-12 gap-4 text-manatee-400 font-normal text-sm mt-4 px-2">
         <FieldHeader className="col-span-2">Object Type</FieldHeader>
         <FieldHeader className="col-span-3">Name</FieldHeader>
+        <FieldHeader className="col-span-3">{`Reverse name`}</FieldHeader>
         <FieldHeader className="col-span-3">Default Sort Field</FieldHeader>
-        <FieldHeader className="col-span-3">
+        {/* <FieldHeader className="col-span-3">
           Availability Inheritance
-        </FieldHeader>
+        </FieldHeader> */}
       </div>
       {relationships.map(({ relationshipName }, index) => {
         return (
@@ -134,6 +133,7 @@ export const RelationshipsSection = ({
                       <p>{relationshipName}</p>
                     )}
                   </div>
+                  <p className="col-span-3">{`parental_guidances`}</p>
 
                   <div className="col-span-3">
                     <Select
@@ -163,17 +163,7 @@ export const RelationshipsSection = ({
                       }
                     />
                   </div>
-                  <div className="flex justify-start items-center col-span-3">
-                    {/* <Checkbox
-                checked={config?.inheritAvailability}
-                onCheckedChange={(checkedState) =>
-                  form.setValue(
-                    `relationshipConfig.${relationshipName}.inheritAvailability`,
-                    Boolean(checkedState),
-                    { shouldDirty: true },
-                  )
-                }
-              /> */}
+                  {/* <div className="flex justify-start items-center col-span-3">
                     <Select
                       variant="primary"
                       placeholder=""
@@ -189,17 +179,15 @@ export const RelationshipsSection = ({
                         },
                       ]}
                     />
-                  </div>
+                  </div> */}
                   <div className="flex justify-start items-center col-span-1">
-                    {isEditingSchema && (
-                      <Button
-                        variant="ghost"
-                        Icon={<FiTrash2 className="text-base text-error" />}
-                        onClick={() =>
-                          hookField.onChange({ ...value, isDeleted: true })
-                        }
-                      />
-                    )}
+                    <Button
+                      variant="ghost"
+                      Icon={<FiTrash2 className="text-base text-error" />}
+                      onClick={() =>
+                        hookField.onChange({ ...value, isDeleted: true })
+                      }
+                    />
                   </div>
                 </div>
               );
