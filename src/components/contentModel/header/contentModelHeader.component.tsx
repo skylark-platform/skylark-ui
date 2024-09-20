@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 
 import { Button } from "src/components/button";
+import { ButtonWithDropdown } from "src/components/buttonWithDropdown";
 import { Select, SelectOption } from "src/components/inputs/select";
 import { CompareSchemaVersionsModal } from "src/components/modals";
 import { Tabs } from "src/components/tabs/tabs.component";
@@ -14,7 +15,7 @@ interface ContentModelHeaderProps {
   schemaVersion: SchemaVersion | null;
   isEditingSchema: boolean;
   isUpdatingSchema: boolean;
-  onSave: () => void;
+  onSave: (createNewSchemaVersion?: boolean) => void;
   onCancel: () => void;
 }
 
@@ -68,7 +69,7 @@ export const ContentModelHeader = ({
           onChange={setSchemaVersionWrapper}
           disabled={schemaVersionOptions.length === 0 || isEditingSchema}
         />
-        <div className="space-x-2">
+        <div className="space-x-2 flex">
           {isEditingSchema ? (
             <>
               <Button
@@ -81,17 +82,27 @@ export const ContentModelHeader = ({
                 {/* Activate selected Schema */}
                 {`Cancel`}
               </Button>
-              <Button
-                variant="primary"
-                // disabled={}
-                onClick={onSave}
-                // loading={isSaving}
-              >
-                {/* Activate selected Schema */}
-                {schemaVersion?.isDraft
-                  ? `Update draft version ${schemaVersion.version}`
-                  : `Save changes to new draft version`}
-              </Button>
+              {schemaVersion?.isDraft ? (
+                <ButtonWithDropdown
+                  variant="primary"
+                  loading={isUpdatingSchema}
+                  options={[
+                    {
+                      id: "new-draft",
+                      text: "Save to new draft version",
+                      onClick: () => onSave(true),
+                    },
+                  ]}
+                >{`Update draft version ${schemaVersion.version}`}</ButtonWithDropdown>
+              ) : (
+                <Button
+                  variant="primary"
+                  onClick={onSave}
+                  loading={isUpdatingSchema}
+                >
+                  Save changes to new draft version
+                </Button>
+              )}
             </>
           ) : (
             <>

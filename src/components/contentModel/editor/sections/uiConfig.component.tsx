@@ -1,4 +1,4 @@
-import { useForm, UseFormReturn } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
@@ -13,12 +13,9 @@ import {
   AvailabilityStatus,
   SkylarkObjectMeta,
   ParsedSkylarkObjectConfig,
-  ParsedSkylarkObjectConfigFieldConfig,
 } from "src/interfaces/skylark";
 
 import {
-  ContentModelEditorForm,
-  createFieldSections,
   FieldHeader,
   SectionDescription,
   SectionHeader,
@@ -46,7 +43,6 @@ export const UIConfigSection = ({
     // Can't use onSubmit because we don't have a submit button within the form
     mode: "onTouched",
     values: {
-      // fieldSections: createFieldSections(objectMeta, objectConfig),
       objectTypeDisplayName:
         objectConfig?.objectTypeDisplayName || objectMeta.name,
       primaryField: objectConfig?.primaryField,

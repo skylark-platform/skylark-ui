@@ -1,37 +1,24 @@
 import clsx from "clsx";
-import { DragControls, Reorder, useDragControls } from "framer-motion";
-import { Fragment, ReactNode, useCallback, useState } from "react";
-import { Controller, UseFormReturn } from "react-hook-form";
-import { FiCheck, FiInfo, FiPlus, FiRotateCcw, FiTrash2 } from "react-icons/fi";
+import { Reorder, useDragControls } from "framer-motion";
+import { useState } from "react";
+import { UseFormReturn } from "react-hook-form";
+import { FiCheck, FiInfo, FiRotateCcw, FiTrash2 } from "react-icons/fi";
 
 import { Button } from "src/components/button";
-import {
-  AddNewButton,
-  ObjectTypeFieldInput,
-} from "src/components/contentModel/editor/contentModelRowInput.component";
+import { AddNewButton } from "src/components/contentModel/editor/contentModelRowInput.component";
 import {
   EditObjectFieldModal,
   EditObjectFieldModalForm,
 } from "src/components/modals/editObjectFieldModal/editObjectFieldModal.component";
 import { InfoTooltip, Tooltip } from "src/components/tooltip/tooltip.component";
-import { useSkylarkSchemaEnums } from "src/hooks/useSkylarkSchemaEnums";
-import {
-  InputFieldWithFieldConfig,
-  SkylarkObjectMeta,
-  ParsedSkylarkObjectConfig,
-  NormalizedObjectField,
-  SkylarkSystemField,
-  ParsedSkylarkObjectConfigFieldConfig,
-} from "src/interfaces/skylark";
-import { hasProperty, isSkylarkObjectType } from "src/lib/utils";
+import { SkylarkObjectMeta, SkylarkSystemField } from "src/interfaces/skylark";
+import { SchemaVersion } from "src/interfaces/skylark/environment";
+import { isSkylarkObjectType } from "src/lib/utils";
 
 import {
-  combineFieldAndFieldConfigAndSortByConfigPostion,
   ContentModelEditorForm,
   ContentModelEditorFormObjectTypeField,
-  createFieldSections,
   FieldHeader,
-  FieldType,
   SectionDescription,
   SectionHeader,
   SectionWrapper,
@@ -41,6 +28,7 @@ import {
 interface FieldsSectionProps {
   form: UseFormReturn<ContentModelEditorForm>;
   objectMeta: SkylarkObjectMeta;
+  schemaVersion: SchemaVersion;
 }
 
 const FieldNameTooltip = ({ field }: { field: string }) => {
@@ -86,34 +74,108 @@ const FieldNameTooltip = ({ field }: { field: string }) => {
 };
 
 interface FieldProps {
+  objectType: string;
   field: ContentModelEditorFormObjectTypeField;
   isDeleted?: boolean;
   isNew?: boolean;
-  onDelete: (field: NormalizedObjectField) => void;
+  reorderFieldsDisabled: boolean;
+  onDelete: (field: ContentModelEditorFormObjectTypeField) => void;
   onEdit: () => void;
 }
 
-const Field = ({ field, isDeleted, isNew, onDelete, onEdit }: FieldProps) => {
+const FieldOriginalType = ({ field }: { field: FieldProps["field"] }) => {
+  const isRelationship = field.type === "relationship";
+
+  const isEnum = !isRelationship && !!field?.enumValues;
+
+  const originalType = isRelationship
+    ? "Relationship"
+    : isEnum
+      ? "Enum"
+      : field.originalType;
+
+  return (
+    <div className="flex">
+      <p>{originalType}</p>
+      {isRelationship && (
+        <>
+          <Tooltip tooltip={[``]}>
+            <p className="ml-2 flex justify-center items-center text-manatee-500">
+              {`(${field.objectType}`}
+              <FiInfo className="text-sm ml-1" />
+              {`)`}
+            </p>
+          </Tooltip>
+        </>
+      )}
+      {isEnum && (
+        <>
+          <Tooltip
+            tooltip={
+              <>
+                <ul>
+                  {field.enumValues?.map((value) => (
+                    <li key={value}>{value}</li>
+                  ))}
+                </ul>
+              </>
+            }
+          >
+            <p className="ml-2 flex justify-center items-center text-manatee-500">
+              {`(${field.originalType}`}
+              <FiInfo className="text-sm ml-1" />
+              {`)`}
+            </p>
+          </Tooltip>
+        </>
+      )}
+      {field.fieldConfig?.fieldType && field.type === "string" && (
+        <p className="ml-2 flex justify-center items-center text-manatee-500">
+          {`(${field.fieldConfig.fieldType}`}
+          {/* <FiInfo className="text-sm ml-1" /> */}
+          {`)`}
+        </p>
+      )}
+    </div>
+  );
+};
+
+const Field = ({
+  objectType,
+  field,
+  isDeleted,
+  isNew,
+  reorderFieldsDisabled,
+  onDelete,
+  onEdit,
+}: FieldProps) => {
   const dragControls = useDragControls();
 
-  const isEnum = !!field?.enumValues;
+  const isRelationship = field.type === "relationship";
+
+  const disableDelete =
+    isSkylarkObjectType(objectType) ||
+    (
+      [SkylarkSystemField.UID, SkylarkSystemField.ExternalID] as string[]
+    ).includes(field.name);
 
   return (
     <Reorder.Item
       value={field}
       dragListener={false}
       dragControls={dragControls}
+      className="border-b last-of-type:border-b-0 border-manatee-100"
       // as="div"
       // className="relative"
       // className="my-2 bg-white z-30 border shadow border-manatee-300 rounded-lg items-center h-14 px-2 grid gap-4 grid-cols-3"
     >
       <div
         className={clsx(
-          "my-2 border relative rounded-lg items-center h-14 px-2 grid gap-4",
+          "relative text-sm items-center h-12 px-2 grid gap-4",
           "grid-cols-7",
           isDeleted
             ? "bg-error/10 text-manatee-300 border-error/15"
-            : "bg-white shadow border-manatee-300",
+            : "bg-white ",
         )}
       >
         {!(
@@ -123,12 +185,20 @@ const Field = ({ field, isDeleted, isNew, onDelete, onEdit }: FieldProps) => {
             SkylarkSystemField.Type,
           ] as string[]
         ).includes(field.name) && (
-          <div
-            onPointerDown={(event) => {
-              dragControls.start(event);
-              event.preventDefault();
-            }}
-            className="absolute left-1 h-full w-5 mr-1 bg-inherit bg-[url('/icons/drag_indicator_black.png')] bg-center bg-no-repeat opacity-60 cursor-grab"
+          <button
+            disabled={reorderFieldsDisabled}
+            onPointerDown={
+              !reorderFieldsDisabled
+                ? (event) => {
+                    dragControls.start(event);
+                    event.preventDefault();
+                  }
+                : undefined
+            }
+            className={clsx(
+              "absolute left-1 h-full w-4 mr-1 bg-inherit bg-[url('/icons/drag_indicator_black.png')] bg-center bg-no-repeat ",
+              reorderFieldsDisabled ? "opacity-10" : "opacity-30 cursor-grab",
+            )}
           />
         )}
         <div
@@ -140,53 +210,23 @@ const Field = ({ field, isDeleted, isNew, onDelete, onEdit }: FieldProps) => {
           <FieldNameTooltip field={field.name} />
         </div>
         <div className="flex justify-start items-center h-full col-span-2">
-          <div className="flex">
-            <p>{isEnum ? "Enum" : field.originalType}</p>
-            {isEnum && (
-              <>
-                <Tooltip
-                  tooltip={
-                    <>
-                      <ul>
-                        {field.enumValues?.map((value) => (
-                          <li key={value}>{value}</li>
-                        ))}
-                      </ul>
-                    </>
-                  }
-                >
-                  <p className="ml-2 flex justify-center items-center text-manatee-500">
-                    {`(${field.originalType}`}
-                    <FiInfo className="text-sm ml-1" />
-                    {`)`}
-                  </p>
-                </Tooltip>
-              </>
-            )}
-            {field.config?.fieldType && field.type === "string" && (
-              <p className="ml-2 flex justify-center items-center text-manatee-500">
-                {`(${field.config.fieldType}`}
-                {/* <FiInfo className="text-sm ml-1" /> */}
-                {`)`}
-              </p>
-            )}
-          </div>
+          <FieldOriginalType field={field} />
         </div>
         <div className="flex justify-start items-center col-span-1">
-          {field.isTranslatable ? (
+          {!isRelationship && field.isTranslatable ? (
             <FiCheck className="text-success text-xl" />
           ) : (
             "-"
           )}
         </div>
         <div className="flex justify-start items-center col-span-1">
-          {field.isRequired ? (
+          {!isRelationship && field.isRequired ? (
             <FiCheck className="text-success text-xl" />
           ) : (
             "-"
           )}
         </div>
-        <div className="flex justify-center items-center col-span-1">
+        <div className="flex justify-end items-center col-span-1">
           <Button variant="form" onClick={() => onEdit()}>
             Edit
           </Button>
@@ -199,8 +239,14 @@ const Field = ({ field, isDeleted, isNew, onDelete, onEdit }: FieldProps) => {
           ) : (
             <Button
               variant="ghost"
-              Icon={<FiTrash2 className="text-base text-error" />}
+              Icon={
+                <FiTrash2
+                  className={clsx("text-base", !disableDelete && "text-error")}
+                />
+              }
               onClick={() => onDelete(field)}
+              disabled={disableDelete}
+              danger
             />
           )}
         </div>
@@ -209,9 +255,11 @@ const Field = ({ field, isDeleted, isNew, onDelete, onEdit }: FieldProps) => {
   );
 };
 
-export const FieldsSection = ({ objectMeta, form }: FieldsSectionProps) => {
-  // const fieldSections = createFieldSections(objectMeta);
-
+export const FieldsSection = ({
+  objectMeta,
+  form,
+  schemaVersion,
+}: FieldsSectionProps) => {
   const [editModalState, setEditModalState] = useState<{
     isOpen: boolean;
     initialData: { field: ContentModelEditorFormObjectTypeField } | null;
@@ -219,22 +267,6 @@ export const FieldsSection = ({ objectMeta, form }: FieldsSectionProps) => {
 
   const addField = () => {
     setEditModalState({ isOpen: true, initialData: null });
-    // const newFieldNum = objectMeta.fields.length;
-
-    // form.setValue(
-    //   `objectTypes.${objectMeta.name}.fields.${type}.${newFieldNum}`,
-    //   {
-    //     name: `${type}_field_${newFieldNum + 1}`,
-    //     originalType: "String",
-    //     type: "string",
-    //     isList: false,
-    //     isRequired: false,
-    //     isNew: true,
-    //   },
-    //   {
-    //     shouldDirty: true,
-    //   },
-    // );
   };
 
   const deleteField = (
@@ -246,12 +278,18 @@ export const FieldsSection = ({ objectMeta, form }: FieldsSectionProps) => {
         `objectTypes.${objectMeta.name}.fields`,
       );
       currentFields.splice(index, 1);
-      form.setValue(`objectTypes.${objectMeta.name}.fields`, currentFields);
-    } else {
-      form.setValue(`objectTypes.${objectMeta.name}.fields.${index}`, {
-        ...field,
-        isDeleted: true,
+      form.setValue(`objectTypes.${objectMeta.name}.fields`, currentFields, {
+        shouldDirty: true,
       });
+    } else {
+      form.setValue(
+        `objectTypes.${objectMeta.name}.fields.${index}`,
+        {
+          ...field,
+          isDeleted: !Boolean(field.isDeleted),
+        },
+        { shouldDirty: true },
+      );
     }
   };
 
@@ -314,27 +352,14 @@ export const FieldsSection = ({ objectMeta, form }: FieldsSectionProps) => {
           Required
         </FieldHeader>
       </div>
-      {/* {Object.entries(fieldSections).map(([id, { title, type, fields }]) => ( */}
-      {/* <FieldSection
-        // key={id}
-        title={"title"}
-        type={"system"}
-        form={form}
-        inputFields={combineFieldAndFieldConfigAndSortByConfigPostion(
-          objectMeta.fields,
-          // objectFieldConfig,
-        )}
-        objectMeta={objectMeta}
-        onEdit={(initialData) =>
-          setEditModalState({ isOpen: true, initialData })
-        }
-      /> */}
       <Reorder.Group onReorder={onReorder} values={fields}>
         {fields.map((field, index) => {
           return (
             <Field
               key={field.name}
+              reorderFieldsDisabled={!schemaVersion.isActive}
               field={field}
+              objectType={objectMeta.name}
               onDelete={() => deleteField(field, index)}
               isDeleted={field?.isDeleted}
               isNew={field?.isNew}

@@ -25,24 +25,31 @@ export type FieldSectionObject = Record<
   }
 >;
 
-export type ContentModelEditorFormObjectTypeField = NormalizedObjectField & {
+export type ContentModelEditorFormObjectTypeField = {
+  name: string;
   isNew?: boolean;
   isDeleted?: boolean;
-  config: Omit<
-    ParsedSkylarkObjectConfigFieldConfig,
-    "position" | "name"
-  > | null;
-};
+  fieldConfig: Omit<ParsedSkylarkObjectConfigFieldConfig, "name"> | null;
+} & (
+  | ({ type: "relationship" } & SkylarkObjectRelationship)
+  | Omit<NormalizedObjectField, "name">
+);
+
+export type ContentModelEditorFormObjectTypeRelationship =
+  SkylarkObjectRelationship & {
+    isNew?: boolean;
+    isDeleted?: boolean;
+  };
 
 export interface ContentModelEditorForm {
   objectTypes: Record<
     string,
     {
       fields: ContentModelEditorFormObjectTypeField[];
-      relationships: (SkylarkObjectRelationship & {
-        isNew?: boolean;
-        isDeleted?: boolean;
-      })[];
+      // relationships: ContentModelEditorFormObjectTypeRelationship[];
+
+      // Should use fieldOrder instead of attaching it to fields so that relationships can be mixed in to the list easily?
+      // fieldOrder: string[];
     }
   >;
   // relationshipConfig?: ParsedSkylarkObjectTypeRelationshipConfigurations;
@@ -102,123 +109,53 @@ export const sortSystemFieldsFirst = (
   return 0;
 };
 
-export const combineFieldAndFieldConfigAndSortByConfigPostion = (
+export const combineFieldRelationshipsAndFieldConfigAndSortByConfigPostion = (
   fields: NormalizedObjectField[],
+  relationships: SkylarkObjectRelationship[],
   objectFieldConfig?: ParsedSkylarkObjectConfig,
 ): ContentModelEditorFormObjectTypeField[] => {
-  const inputFieldsWithFieldConfig = fields
-    .map((field) => {
-      const config = objectFieldConfig?.fieldConfig?.find(
+  const fieldsWithConfig: ContentModelEditorFormObjectTypeField[] = fields.map(
+    (field) => {
+      const fieldConfig = objectFieldConfig?.fieldConfig?.find(
         ({ name }) => name === field.name,
       );
 
       return {
         ...field,
-        config: config || null,
+        fieldConfig: fieldConfig || null,
       };
-    })
-    .sort((fieldA, fieldB) => {
-      const systemFieldSorted = sortSystemFieldsFirst(fieldA, fieldB);
+    },
+  );
 
-      if (systemFieldSorted !== 0) {
-        return systemFieldSorted;
-      }
+  const relationshipsWithConfig: ContentModelEditorFormObjectTypeField[] =
+    relationships.map((relationship): ContentModelEditorFormObjectTypeField => {
+      const fieldConfig = objectFieldConfig?.fieldConfig?.find(
+        ({ name }) => name === relationship.relationshipName,
+      );
 
-      // console.log({ fieldA, fieldB });
-
-      return (fieldA.config?.position ?? Infinity) >
-        (fieldB.config?.position ?? Infinity)
-        ? 1
-        : -1;
+      return {
+        ...relationship,
+        name: relationship.relationshipName,
+        type: "relationship",
+        fieldConfig: fieldConfig || null,
+      };
     });
 
-  return inputFieldsWithFieldConfig;
-};
+  const sortedFieldsAndRelationships = [
+    ...fieldsWithConfig,
+    ...relationshipsWithConfig,
+  ].sort((fieldA, fieldB) => {
+    const systemFieldSorted = sortSystemFieldsFirst(fieldA, fieldB);
 
-const splitNormailsedFieldsIntoSystemGlobalTranslatable = (
-  fields: NormalizedObjectField[],
-  objectMetaFieldConfig: SkylarkObjectMeta["fieldConfig"],
-): Record<FieldType, NormalizedObjectField[]> => {
-  const splitFields = fields.reduce(
-    (prev, field) => {
-      const fieldName = field.name;
+    if (systemFieldSorted !== 0) {
+      return systemFieldSorted;
+    }
 
-      if (SYSTEM_FIELDS.includes(fieldName)) {
-        return {
-          ...prev,
-          system: [...prev.system, field].sort(
-            (a, b) =>
-              SYSTEM_FIELDS.indexOf(a.name) - SYSTEM_FIELDS.indexOf(b.name),
-          ),
-        };
-      }
+    return (fieldA.fieldConfig?.position ?? Infinity) >
+      (fieldB.fieldConfig?.position ?? Infinity)
+      ? 1
+      : -1;
+  });
 
-      if (objectMetaFieldConfig.global.includes(fieldName)) {
-        return {
-          ...prev,
-          global: [...prev.global, field],
-        };
-      }
-
-      if (objectMetaFieldConfig.translatable.includes(fieldName)) {
-        return {
-          ...prev,
-          translatable: [...prev.translatable, field],
-        };
-      }
-
-      return prev;
-    },
-    {
-      system: [] as NormalizedObjectField[],
-      translatable: [] as NormalizedObjectField[],
-      global: [] as NormalizedObjectField[],
-    },
-  );
-
-  return splitFields;
-};
-
-const splitFieldsIntoSystemGlobalTranslatable = (
-  objectMeta: SkylarkObjectMeta,
-) =>
-  splitNormailsedFieldsIntoSystemGlobalTranslatable(
-    objectMeta.fields,
-    objectMeta.fieldConfig,
-  );
-
-export const createFieldSections = (
-  objectMeta: SkylarkObjectMeta,
-  objectFieldConfig: ParsedSkylarkObjectConfig,
-) => {
-  const splitFields = splitFieldsIntoSystemGlobalTranslatable(objectMeta);
-
-  const sections: FieldSectionObject = {
-    system: {
-      title: "System",
-      type: "system",
-      fields: combineFieldAndFieldConfigAndSortByConfigPostion(
-        splitFields.system,
-        objectFieldConfig,
-      ),
-    },
-    translatable: {
-      title: "Translatable",
-      type: "translatable",
-      fields: combineFieldAndFieldConfigAndSortByConfigPostion(
-        splitFields.translatable,
-        objectFieldConfig,
-      ),
-    },
-    global: {
-      title: "Global",
-      type: "global",
-      fields: combineFieldAndFieldConfigAndSortByConfigPostion(
-        splitFields.global,
-        objectFieldConfig,
-      ),
-    },
-  };
-
-  return sections;
+  return sortedFieldsAndRelationships;
 };

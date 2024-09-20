@@ -1,28 +1,14 @@
-import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { FormState, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 import { Spinner } from "src/components/icons";
 import { Toast } from "src/components/toast/toast.component";
-import { useCreateSchemaVersion } from "src/hooks/schema/create/useCreateSchemaVersion";
-import { useUpdateObjectTypeConfig } from "src/hooks/schema/update/useUpdateObjectTypeConfig";
 import { useUpdateObjectTypesFieldConfig } from "src/hooks/schema/update/useUpdateObjectTypesFieldConfig";
 import { useUpdateRelationshipConfig } from "src/hooks/schema/update/useUpdateRelationshipConfig";
 import { useUpdateSchema } from "src/hooks/schema/update/useUpdateSchema";
-import { useActivationStatus } from "src/hooks/useAccountStatus";
-import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
+import { ObjectTypeWithConfig } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ObjectTypeWithConfig,
-  useAllObjectsMeta,
-  useSkylarkObjectTypesWithConfig,
-} from "src/hooks/useSkylarkObjectTypes";
-import { IntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospection";
-import {
-  BuiltInSkylarkObjectType,
-  NormalizedObjectField,
-  ParsedSkylarkObjectConfig,
-  ParsedSkylarkObjectTypeRelationshipConfigurations,
   ParsedSkylarkObjectTypesRelationshipConfigurations,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
@@ -30,7 +16,7 @@ import { SchemaVersion } from "src/interfaces/skylark/environment";
 
 import { ObjectTypeEditor } from "./editor/contentModelEditor.component";
 import {
-  combineFieldAndFieldConfigAndSortByConfigPostion,
+  combineFieldRelationshipsAndFieldConfigAndSortByConfigPostion,
   ContentModelEditorForm,
 } from "./editor/sections/common.component";
 import { ContentModelHeader } from "./header/contentModelHeader.component";
@@ -58,10 +44,12 @@ const createFormValues = (
         ({ objectType }) => objectType === name,
       )?.config;
 
-      const fields = combineFieldAndFieldConfigAndSortByConfigPostion(
-        objectMeta.fields,
-        config,
-      );
+      const fields =
+        combineFieldRelationshipsAndFieldConfigAndSortByConfigPostion(
+          objectMeta.fields,
+          relationships,
+          config,
+        );
 
       console.log(name, { fields });
 
@@ -69,7 +57,6 @@ const createFormValues = (
         name,
         {
           fields,
-          relationships,
         },
       ];
     }),
@@ -229,7 +216,7 @@ export const ContentModel = ({
       },
     });
 
-  const onSave = () => {
+  const onSave = (createNewSchemaVersion?: boolean) => {
     console.log("onSave");
     if (objectMeta && schemaVersion) {
       form.handleSubmit((formValues) => {
@@ -248,7 +235,8 @@ export const ContentModel = ({
             form.formState.dirtyFields;
 
           updateSchema({
-            createNewSchemaVersion: schemaVersion.isActive,
+            createNewSchemaVersion:
+              createNewSchemaVersion || schemaVersion.isActive,
             schemaVersion,
             formValues,
             modifiedFormFields,
@@ -301,6 +289,7 @@ export const ContentModel = ({
                 objectConfig={config}
                 allObjectsMeta={allObjectsMeta}
                 form={form}
+                schemaVersion={schemaVersion}
               />
             )}
 
