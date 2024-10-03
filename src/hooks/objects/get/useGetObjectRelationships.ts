@@ -47,7 +47,7 @@ const getRelationshipNextTokens = (
     (prev, relationshipName) => {
       const relationship = data[relationshipName] as SkylarkGraphQLObjectList;
 
-      if (relationship.next_token) {
+      if (relationship?.next_token) {
         return {
           ...prev,
           requestVariables: {
@@ -138,7 +138,11 @@ export const useGetObjectRelationships = (
         (pageAggregate, name) => {
           const relationship = page.getObjectRelationships[
             name
-          ] as SkylarkGraphQLObjectList;
+          ] as SkylarkGraphQLObjectList | null;
+
+          if (!relationship) {
+            return pageAggregate;
+          }
 
           const parsedObjects = relationship.objects.map((relatedObject) =>
             parseSkylarkObject(relatedObject as SkylarkGraphQLObject),
