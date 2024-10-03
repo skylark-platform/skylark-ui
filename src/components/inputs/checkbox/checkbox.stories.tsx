@@ -1,5 +1,3 @@
-import { StoryFn } from "@storybook/react";
-
 import { Checkbox } from "./checkbox.component";
 
 export default {

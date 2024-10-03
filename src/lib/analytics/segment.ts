@@ -6,7 +6,6 @@ export const segment: AnalyticsBrowser = AnalyticsBrowser.load({
 });
 
 setupAmpSRSegmentWrapper({
-  // @ts-expect-error AnalyticsBrowser types don't match up
   segmentInstance: segment,
   amplitudeApiKey: process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY as string,
   sessionReplayOptions: {

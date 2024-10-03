@@ -8,13 +8,11 @@ import {
   SkylarkGraphQLObject,
   SkylarkGraphQLObjectConfig,
   SkylarkGraphQLObjectContent,
-  SkylarkGraphQLObjectMeta,
 } from "./gqlObjects";
 import {
   SkylarkObjectMetadataField,
   SkylarkObjectType,
 } from "./objectOperations";
-import { SkylarkExternalId, SkylarkUID } from "./parsedObjects";
 
 export interface GQLSkylarkError<T> {
   data: T | null;

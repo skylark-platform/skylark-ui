@@ -47,7 +47,7 @@ export const Navigation = ({
 }) => {
   const isClient = useIsClient();
 
-  const { permissions, role, defaultLanguage, accountId } = useUserAccount();
+  const { permissions, role, accountId } = useUserAccount();
 
   const [open, setOpen] = useState(false);
 
