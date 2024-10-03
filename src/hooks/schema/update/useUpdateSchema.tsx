@@ -40,6 +40,14 @@ interface EditFieldConfigurationField {
   enum_name?: string;
 }
 
+interface EditRelationshipConfigurationRelationship {
+  operation: EnumType;
+  from_class: EnumType;
+  to_class: EnumType;
+  relationship_name: string;
+  reverse_relationship_name: string;
+}
+
 const convertFieldType = (
   type: NormalizedObjectFieldType,
 ): SkylarkObjectFieldType => {
@@ -57,7 +65,7 @@ const parseFieldConfigurationField = (
   field: ContentModelEditorFormObjectTypeField,
 ): EditFieldConfigurationField | null => {
   console.log({ field });
-  if (field.isNew && field.isDeleted) {
+  if ((field.isNew && field.isDeleted) || field.type === "relationship") {
     return null;
   }
 
@@ -90,12 +98,44 @@ const parseFieldConfigurationField = (
 
   return null;
 };
+
 // editFieldConfiguration(
 //   fields: {name: "synopsis", operation: UPDATE, is_translatable: false, required: false, type: INTEGER}
 //   object_class: LiveStream
 // ) {
 //   version
 // }
+const parseRelationshipConfigurationRelationship = (
+  objectType: string,
+  field: ContentModelEditorFormObjectTypeField,
+) => {
+  if ((field.isNew && field.isDeleted) || field.type !== "relationship") {
+    return null;
+  }
+
+  const common: Omit<EditRelationshipConfigurationRelationship, "operation"> = {
+    relationship_name: field.name,
+    reverse_relationship_name: field.reverseRelationshipName as string,
+    from_class: new EnumType(objectType),
+    to_class: new EnumType(field.objectType),
+  };
+
+  if (field.isNew) {
+    return {
+      ...common,
+      operation: new EnumType("CREATE"),
+    };
+  }
+
+  if (field.isDeleted) {
+    return {
+      ...common,
+      operation: new EnumType("DELETE"),
+    };
+  }
+
+  return null;
+};
 
 const buildEditFieldsConfigurationMutation = (
   objectType: string,
@@ -132,10 +172,16 @@ const buildEditFieldsConfigurationMutation = (
 // }
 const buildEditRelationshipsConfigurationMutation = (
   objectType: string,
-  relationshipValues: ContentModelEditorForm["objectTypes"][0]["relationships"],
+  fieldValues: ContentModelEditorForm["objectTypes"][0]["fields"],
 ) => {
-  const relationships = relationshipValues;
-
+  const relationships = fieldValues
+    .map((value) =>
+      parseRelationshipConfigurationRelationship(objectType, value),
+    )
+    .filter((rel): rel is EditRelationshipConfigurationRelationship =>
+      Boolean(rel),
+    );
+  console.log("XXX", { relationships });
   if (relationships.length === 0) {
     return null;
   }
@@ -195,8 +241,16 @@ const buildSchemaMutation = (
         mutations[fieldConfiguration.key] = fieldConfiguration.mutation;
       }
 
-      // const relationshipConfiguration =
-      //   buildEditRelationshipsConfigurationMutation;
+      const relationshipConfiguration =
+        buildEditRelationshipsConfigurationMutation(
+          objectType,
+          formValue.fields,
+        );
+
+      if (relationshipConfiguration) {
+        mutations[relationshipConfiguration.key] =
+          relationshipConfiguration.mutation;
+      }
 
       return mutations;
     },

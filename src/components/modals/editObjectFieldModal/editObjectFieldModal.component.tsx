@@ -216,7 +216,7 @@ const EditObjectFieldModalBody = forwardRef(
         <ModalTitle>{`${isEditModal ? `Edit ${initialValues.field.name}` : "Add Field"}`}</ModalTitle>
         <ModalDescription>
           Fields can only be created or deleted. Editing only supported for
-          field config.
+          field config. Fields can only be reordered on the active version.
         </ModalDescription>
         <form
           className="mt-8 flex w-full flex-col h-full justify-start"

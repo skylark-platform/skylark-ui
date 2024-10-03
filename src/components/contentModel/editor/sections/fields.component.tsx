@@ -78,7 +78,7 @@ interface FieldProps {
   field: ContentModelEditorFormObjectTypeField;
   isDeleted?: boolean;
   isNew?: boolean;
-  reorderFieldsDisabled: boolean;
+  reorderFieldsDisabled?: boolean;
   onDelete: (field: ContentModelEditorFormObjectTypeField) => void;
   onEdit: () => void;
 }
@@ -357,7 +357,6 @@ export const FieldsSection = ({
           return (
             <Field
               key={field.name}
-              reorderFieldsDisabled={!schemaVersion.isActive}
               field={field}
               objectType={objectMeta.name}
               onDelete={() => deleteField(field, index)}
