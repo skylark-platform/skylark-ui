@@ -5,7 +5,6 @@
   "scripts": {
     "postinstall": "node ./postInstall.js",
     "dev": "next dev",
-    "dev:all": "concurrently -c \"#226DFF\",\"#F84785\"  \"yarn:dev\" \"yarn:storybook\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -106,7 +105,6 @@
     "babel-jest": "29.7.0",
     "babel-loader": "9.2.1",
     "chromatic": "11.11.0",
-    "concurrently": "8.2.2",
     "cypress": "13.15.0",
     "cypress-iframe": "1.0.1",
     "eslint": "8.57.1",
