@@ -75,14 +75,15 @@ const getImportedFlatfileData = async (
   return data;
 };
 
-const copyText: {
-  [key in ImportStates]: {
+const copyText: Record<
+  ImportStates,
+  {
     title: string;
     messages: {
       [key in "pending" | "success" | "inProgress" | "error"]: string;
     };
-  };
-} = {
+  }
+> = {
   select: {
     title: "Select object type",
     messages: {
@@ -124,9 +125,7 @@ const copyText: {
   },
 };
 
-const initialState: {
-  [key in ImportStates]: statusType;
-} = {
+const initialState: Record<ImportStates, statusType> = {
   select: statusType.pending,
   prep: statusType.pending,
   import: statusType.pending,
@@ -134,7 +133,7 @@ const initialState: {
 };
 
 function reducer(
-  state: { [key in ImportStates]: statusType },
+  state: Record<ImportStates, statusType>,
   action: { stage: ImportStates; status: statusType } | { stage: "reset" },
 ) {
   if (action.stage === "reset")

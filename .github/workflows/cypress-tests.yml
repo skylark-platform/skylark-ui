@@ -39,6 +39,7 @@ jobs:
         with:
           name: build
           if-no-files-found: error
+          include-hidden-files: true
           path: .next
 
   tests:

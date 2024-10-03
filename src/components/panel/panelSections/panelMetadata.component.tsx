@@ -149,7 +149,6 @@ export const PanelMetadata = ({
   objectType,
   objectMeta,
   objectFieldConfig: objectFieldConfigArr,
-  objectVersions,
   language,
   form: { register, getValues, control, formState, aiFieldGeneration },
 }: PanelMetadataProps) => {
