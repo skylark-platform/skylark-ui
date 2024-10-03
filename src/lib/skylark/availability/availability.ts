@@ -10,6 +10,7 @@ import {
   AvailabilityStatus,
   ParsedSkylarkObjectMetadata,
   SkylarkAvailabilityField,
+  SkylarkGraphQLAvailabilityList,
 } from "src/interfaces/skylark";
 import { VALID_DATE_FORMATS } from "src/lib/skylark/parsers";
 import { hasProperty } from "src/lib/utils";
@@ -81,6 +82,21 @@ export const getObjectAvailabilityStatus = (
   );
 
   return isFuture ? AvailabilityStatus.Future : AvailabilityStatus.Active;
+};
+
+export const convertTimeWindowStatus = (
+  status: SkylarkGraphQLAvailabilityList["time_window_status"],
+) => {
+  switch (status) {
+    case "ACTIVE":
+      return AvailabilityStatus.Active;
+    case "FUTURE":
+      return AvailabilityStatus.Future;
+    case "EXPIRED":
+      return AvailabilityStatus.Expired;
+    default:
+      return AvailabilityStatus.Unavailable;
+  }
 };
 
 export const formatReadableDateTime = (date?: string | null) =>
