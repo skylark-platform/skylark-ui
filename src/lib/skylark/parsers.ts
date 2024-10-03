@@ -9,6 +9,7 @@ import {
   IntrospectionListTypeRef,
   IntrospectionNamedTypeRef,
   IntrospectionNonNullTypeRef,
+  IntrospectionObjectType,
   IntrospectionScalarType,
 } from "graphql";
 import { EnumType } from "json-to-graphql-query";
@@ -44,8 +45,10 @@ import {
   ParsedSkylarkObjectMeta,
   SkylarkGraphQLAvailability,
   ParsedSkylarkObjectAvailabilityObject,
+  GQLSkylarkSchemaVersion,
   SkylarkGraphQLAvailabilityList,
 } from "src/interfaces/skylark";
+import { SchemaVersion } from "src/interfaces/skylark/environment";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   convertFieldTypeToHTMLInputType,
@@ -66,11 +69,13 @@ import {
 dayjs.extend(customParseFormat);
 dayjs.extend(advancedFormat);
 
-const parseObjectInputType = (
+export const parseObjectInputType = (
   name?: GQLScalars | string | null,
 ): NormalizedObjectFieldType => {
   if (!name) return "string";
   switch (name) {
+    case "Enum":
+      return "enum";
     case "AWSTimestamp":
       return "timestamp";
     case "AWSTime":
@@ -109,6 +114,7 @@ export const parseObjectInputFields = (
     | IntrospectionField
     | IntrospectionInputValue
   )[],
+  fieldConfig: { translatable: string[]; global: string[] } | null,
   enums: Record<string, IntrospectionEnumType>,
 ): NormalizedObjectField[] => {
   if (!introspectionFields) {
@@ -148,6 +154,7 @@ export const parseObjectInputFields = (
         enumValues,
         isList: input.type.kind === "LIST",
         isRequired: input.type.kind === "NON_NULL",
+        isTranslatable: fieldConfig?.translatable.includes(input.name) || false,
       };
     });
 
@@ -155,6 +162,7 @@ export const parseObjectInputFields = (
 };
 
 export const parseObjectRelationships = (
+  objectTypeInterface: IntrospectionObjectType,
   relationshipInputFields?: readonly IntrospectionInputValue[],
 ): SkylarkObjectRelationship[] => {
   if (!relationshipInputFields) {
@@ -179,12 +187,22 @@ export const parseObjectRelationships = (
         objectTypeWithRelationshipInput &&
         objectTypeWithRelationshipInput.endsWith(relationshipInputPostfix),
     )
-    .map(({ name, objectTypeWithRelationshipInput }) => ({
-      relationshipName: name,
-      objectType: (objectTypeWithRelationshipInput as string).split(
-        relationshipInputPostfix,
-      )[0],
-    }));
+    .map(({ name, objectTypeWithRelationshipInput }) => {
+      const description = objectTypeInterface.fields.find(
+        (field) => field.name === name,
+      )?.description;
+
+      const reverseRelationshipName =
+        description?.trim()?.replace("reverse:", "")?.replace(":", "") || null;
+
+      return {
+        relationshipName: name,
+        objectType: (objectTypeWithRelationshipInput as string).split(
+          relationshipInputPostfix,
+        )[0],
+        reverseRelationshipName,
+      };
+    });
 
   return relationships;
 };
@@ -656,3 +674,16 @@ export const parseUpdatedRelationshipObjects = (
 
   return { relationship, uidsToLink, uidsToUnlink };
 };
+
+export const parseSchemaVersion = ({
+  active,
+  version,
+  base_version,
+  published,
+}: GQLSkylarkSchemaVersion): SchemaVersion => ({
+  isActive: active,
+  version,
+  baseVersion: base_version,
+  isPublished: published,
+  isDraft: !published,
+});

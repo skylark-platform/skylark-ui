@@ -126,11 +126,18 @@ export type ParsedSkylarkObjectRelationships = Record<
 >;
 
 export interface ParsedSkylarkObjectTypeRelationshipConfiguration {
-  [relationshipName: string]: {
-    defaultSortField: string;
-    inheritAvailability: boolean;
-  };
+  defaultSortField: string;
+  inheritAvailability: boolean;
 }
+
+export interface ParsedSkylarkObjectTypeRelationshipConfigurations {
+  [relationshipName: string]: ParsedSkylarkObjectTypeRelationshipConfiguration;
+}
+
+export type ParsedSkylarkObjectTypesRelationshipConfigurations = Record<
+  string,
+  ParsedSkylarkObjectTypeRelationshipConfigurations
+>;
 
 export interface ParsedAvailabilityAssignedToObject {
   objectType: SkylarkObjectType;

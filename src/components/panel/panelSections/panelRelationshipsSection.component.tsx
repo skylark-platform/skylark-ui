@@ -15,7 +15,7 @@ import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectRelationship,
-  ParsedSkylarkObjectTypeRelationshipConfiguration,
+  ParsedSkylarkObjectTypeRelationshipConfigurations,
 } from "src/interfaces/skylark";
 import { formatObjectField, hasProperty } from "src/lib/utils";
 
@@ -26,7 +26,7 @@ interface PanelRelationshipsSectionProps {
   isFetchingMoreRelationships: boolean;
   newUids: string[];
   isExpanded: boolean;
-  config: ParsedSkylarkObjectTypeRelationshipConfiguration["config"] | null;
+  config: ParsedSkylarkObjectTypeRelationshipConfigurations["config"] | null;
   setExpandedRelationship: (r: string | null) => void;
   setPanelObject: SetPanelObject;
   removeRelationshipObject: (args: {

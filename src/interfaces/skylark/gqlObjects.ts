@@ -6,6 +6,22 @@ import { SkylarkExternalId, SkylarkUID } from "./parsedObjects";
 
 export type NextToken = string | null;
 
+export type SkylarkObjectFieldType =
+  | "STRING"
+  | "INTEGER"
+  | "FLOAT"
+  | "BOOLEAN"
+  | "ENUM"
+  | "DATE"
+  | "DATETIME"
+  | "EMAIL"
+  | "IP_ADDRESS"
+  | "JSON"
+  | "PHONE"
+  | "TIME"
+  | "TIMESTAMP"
+  | "URL";
+
 export type SkylarkObjectConfigFieldType =
   | "STRING"
   | "TEXTAREA"
@@ -14,15 +30,17 @@ export type SkylarkObjectConfigFieldType =
   | "COLOURPICKER"
   | null;
 
+export interface SkylarkGraphQLObjectConfigFieldConfig {
+  name: string;
+  ui_field_type: SkylarkObjectConfigFieldType;
+  ui_position: number;
+}
+
 export interface SkylarkGraphQLObjectConfig {
   colour: string | null;
   primary_field: string | null;
   display_name: string | null;
-  field_config?: {
-    name: string;
-    ui_field_type: SkylarkObjectConfigFieldType;
-    ui_position: number;
-  }[];
+  field_config?: SkylarkGraphQLObjectConfigFieldConfig[];
 }
 
 export interface SkylarkGraphQLObjectMeta {

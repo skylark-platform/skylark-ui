@@ -1,14 +1,14 @@
 import { StoryFn } from "@storybook/react";
 
-import { ObjectTypeNavigation } from "./contentModelNavigation.component";
+import { ObjectTypeSelectAndOverview } from "./contentModelNavigation.component";
 
 export default {
   title: "Components/ContentModel/Navigation",
-  component: ObjectTypeNavigation,
+  component: ObjectTypeSelectAndOverview,
 };
 
-const Template: StoryFn<typeof ObjectTypeNavigation> = (args) => {
-  return <ObjectTypeNavigation {...args} />;
+const Template: StoryFn<typeof ObjectTypeSelectAndOverview> = (args) => {
+  return <ObjectTypeSelectAndOverview {...args} />;
 };
 
 export const Default = {
