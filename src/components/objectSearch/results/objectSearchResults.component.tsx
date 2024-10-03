@@ -28,7 +28,6 @@ import {
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
 import { useDndMonitor } from "src/lib/dndkit/dndkit";
-import { createGetObjectQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   getObjectDisplayName,
   hasProperty,
