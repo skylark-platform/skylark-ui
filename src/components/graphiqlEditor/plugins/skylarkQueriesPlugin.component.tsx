@@ -20,6 +20,8 @@ import {
   createUpdateObjectMetadataMutation,
 } from "src/lib/graphql/skylark/dynamicMutations/objects";
 import {
+  createGetAllObjectsConfigQuery,
+  createGetAllObjectsRelationshipConfigurationQuery,
   createGetObjectGenericQuery,
   createGetObjectQuery,
   createSearchObjectsQuery,
@@ -28,6 +30,7 @@ import {
   GET_ACCOUNT_STATUS,
   GET_SKYLARK_OBJECT_TYPES,
   GET_USER_AND_ACCOUNT,
+  LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION,
   SKYLARK_SCHEMA_INTROSPECTION_QUERY,
 } from "src/lib/graphql/skylark/queries";
 
@@ -119,6 +122,15 @@ const generateQueries = (
     ] as [string, DocumentNode | null];
   });
 
+  const allObjectsConfigQuery = createGetAllObjectsConfigQuery(allObjectTypes);
+
+  const allRelationshipConfigurationQuery =
+    createGetAllObjectsRelationshipConfigurationQuery(
+      allObjectTypes?.filter(
+        (str) => str !== BuiltInSkylarkObjectType.SkylarkFavoriteList,
+      ),
+    );
+
   return {
     queries: [
       ["Search", fullSearchQuery, objectTypeSearchQueries],
@@ -130,6 +142,12 @@ const generateQueries = (
           ["Account Status", GET_ACCOUNT_STATUS],
           ["Object Types", GET_SKYLARK_OBJECT_TYPES],
           ["Introspection Query", gql(SKYLARK_SCHEMA_INTROSPECTION_QUERY)],
+          ["All Objects Config", allObjectsConfigQuery],
+          ["All Relationships Config", allRelationshipConfigurationQuery],
+          [
+            "Object Relationship Config",
+            LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION,
+          ],
         ],
       ],
     ],
