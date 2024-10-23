@@ -11,6 +11,6 @@ setupAmpSRSegmentWrapper({
   sessionReplayOptions: {
     logLevel: 4,
     sampleRate: 1,
-    debugMode: true,
+    debugMode: false,
   },
 });
