@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { m } from "framer-motion";
+import { m, Target } from "framer-motion";
 import { useState } from "react";
 import {
   FiCheckSquare,
@@ -62,8 +62,8 @@ type TabbedObjectSearchProps = Omit<
 > & {
   accountId: string;
   skipLogoAnimation?: boolean;
-  animate: object;
-  initial: object;
+  animate: Target;
+  initial: Target;
 };
 
 const generateNewTabColumnStateForObjectType = (
