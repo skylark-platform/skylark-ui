@@ -18,8 +18,8 @@ import {
 import { useUserAccount } from "src/hooks/useUserAccount";
 
 interface AddAuthTokenModalProps {
-  isOpen: boolean;
-  setIsOpen: (b: boolean) => void;
+  isOpen: "network" | "manual" | false;
+  setIsOpen: (b: "network" | "manual" | false) => void;
 }
 
 const readAutoconnectPath = (path: string): SkylarkCreds | null => {
@@ -192,8 +192,12 @@ export const AddAuthTokenModal = ({
 
   // Think this is the most stable way of showing the auth modal as react-query fetches a lot on first load
   useEffect(() => {
-    if (!isLoading && !isConnected) {
-      setIsOpen(true);
+    if (!isLoading && isOpen !== "manual") {
+      if (!isConnected && !isOpen) {
+        setIsOpen("network");
+      } else if (isConnected && isOpen === "network") {
+        setIsOpen(false);
+      }
     }
   }, [isLoading, isConnected, isOpen, setIsOpen]);
 
@@ -201,7 +205,7 @@ export const AddAuthTokenModal = ({
     <Modal
       title="Connect to Skylark"
       description="Enter your GraphQL URI and API Key below to connect to your Skylark account."
-      isOpen={isOpen || (!isLoading && !isConnected)}
+      isOpen={Boolean(isOpen) || (!isLoading && !isConnected)}
       size="small"
       closeModal={closeModal}
     >

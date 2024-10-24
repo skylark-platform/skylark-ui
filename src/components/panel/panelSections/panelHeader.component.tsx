@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   FiArrowLeft,
   FiArrowRight,
@@ -23,6 +23,7 @@ import { ButtonWithDropdown } from "src/components/buttonWithDropdown";
 import {
   DropdownMenu,
   DropdownMenuButton,
+  DropdownMenuOption,
 } from "src/components/dropdown/dropdown.component";
 import { FiX } from "src/components/icons";
 import { LanguageSelect } from "src/components/inputs/select";
@@ -37,6 +38,7 @@ import { Skeleton } from "src/components/skeleton";
 import { Tag } from "src/components/tag";
 import { Toast } from "src/components/toast/toast.component";
 import { Tooltip } from "src/components/tooltip/tooltip.component";
+import { SEGMENT_KEYS } from "src/constants/segment";
 import { PanelTab } from "src/hooks/state";
 import { usePurgeCacheObjectType } from "src/hooks/usePurgeCache";
 import {
@@ -45,6 +47,7 @@ import {
   ParsedSkylarkObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
+import { segment } from "src/lib/analytics/segment";
 import {
   getObjectDisplayName,
   hasProperty,
@@ -200,7 +203,7 @@ export const PanelHeader = ({
   isGeneratingAiSuggestions,
   toggleEditMode,
   closePanel,
-  save,
+  save: propSave,
   setLanguage,
   navigateToPreviousPanelObject,
   navigateToForwardPanelObject,
@@ -244,7 +247,7 @@ export const PanelHeader = ({
     },
   });
 
-  const objectMenuOptions = useMemo(
+  const objectMenuOptions: DropdownMenuOption[] = useMemo(
     () => [
       {
         id: "open-in-new-tab",
@@ -253,6 +256,13 @@ export const PanelHeader = ({
         href: actualLanguage
           ? `/object/${objectType}/${objectUid}?language=${actualLanguage}`
           : `/object/${objectType}/${objectUid}`,
+        onClick: () => {
+          segment.track(SEGMENT_KEYS.panel.openInNewTab, {
+            objectType,
+            uid: objectUid,
+            language: actualLanguage,
+          });
+        },
         newTab: true,
       },
       {
@@ -270,7 +280,13 @@ export const PanelHeader = ({
         id: "purge-cache",
         text: `Purge cache`,
         Icon: <FiShieldOff className="text-lg" />,
-        onClick: () => purgeCache({ objectType, uids: [objectUid] }),
+        onClick: () => {
+          purgeCache({ objectType, uids: [objectUid] });
+          segment.track(SEGMENT_KEYS.panel.purgeCache, {
+            objectType,
+            uid: objectUid,
+          });
+        },
       },
       {
         id: "delete-object",
@@ -325,6 +341,20 @@ export const PanelHeader = ({
   }, [inEditMode]);
 
   const isDraft = object?.meta.published === false;
+
+  const save: PanelHeaderProps["save"] = useCallback(
+    (...args) => {
+      segment.track(SEGMENT_KEYS.panel.save, {
+        ...args,
+        tab: currentTab,
+        objectType,
+        uid: objectUid,
+        language,
+      });
+      propSave(...args);
+    },
+    [currentTab, language, objectType, objectUid, propSave],
+  );
 
   return (
     <div
@@ -539,6 +569,12 @@ export const PanelHeader = ({
                 (lang) => lang !== actualLanguage,
               )) ||
             [];
+
+          segment.track(SEGMENT_KEYS.panel.objectDelete, {
+            objectType,
+            uid: objectUid,
+            language: actualLanguage,
+          });
 
           // Change to other language if exists, otherwise close the panel
           return otherLanguages.length > 0

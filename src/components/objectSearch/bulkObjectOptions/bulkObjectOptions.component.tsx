@@ -10,9 +10,12 @@ import {
 } from "src/components/dropdown/dropdown.component";
 import { BatchDeleteObjectsModal } from "src/components/modals";
 import { Toast } from "src/components/toast/toast.component";
+import { SEGMENT_KEYS } from "src/constants/segment";
 import { CheckedObjectState } from "src/hooks/state";
 import { usePurgeObjectsCache } from "src/hooks/usePurgeCache";
 import { useUserAccount } from "src/hooks/useUserAccount";
+import { segment } from "src/lib/analytics/segment";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
 interface BulkObjectOptionsProps {
   checkedObjectsState: CheckedObjectState[];
@@ -41,6 +44,9 @@ export const BulkObjectOptions = ({
           message={`Cache purged for ${selectedObjects.length} objects`}
         />,
       );
+      segment.track(SEGMENT_KEYS.bulkOperations.purgeCache, {
+        objects: selectedObjects.map(convertParsedObjectToIdentifier),
+      });
     },
     onError: () => {
       toast.error(

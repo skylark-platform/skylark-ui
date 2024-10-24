@@ -398,6 +398,7 @@ describe("parseObjectContent", () => {
           },
           availability: {
             __typename: BuiltInSkylarkObjectType.Availability,
+            time_window_status: "UNAVAILABLE",
             next_token: "",
             objects: [],
           },
@@ -430,13 +431,20 @@ describe("parseObjectContent", () => {
           availability: {
             __typename: "AvailabilityList",
             next_token: "",
+            time_window_status: "ACTIVE",
             objects: [
               {
                 __typename: BuiltInSkylarkObjectType.Availability,
+                title: "my-avail",
+                slug: null,
                 start: "2000-10-10T12:00:00Z",
                 end: "2030-10-10T12:00:00Z",
                 uid: "avail-1",
                 external_id: "",
+                timezone: null,
+                inheritance_source: null,
+                inherited: null,
+                active: true,
               },
             ],
           },
@@ -548,6 +556,7 @@ describe("parseSkylarkObject", () => {
       availability: {
         __typename: "SkylarkAvailabilityListing",
         next_token: null,
+        time_window_status: "UNAVAILABLE",
         objects: [],
       },
       images: {
@@ -825,6 +834,20 @@ describe("parseMetadataForGraphQLRequest", () => {
       isList: false,
       isRequired: false,
     },
+    {
+      name: "intzero",
+      type: "int",
+      originalType: "Int",
+      isList: false,
+      isRequired: false,
+    },
+    {
+      name: "floatzero",
+      type: "float",
+      originalType: "Float",
+      isList: false,
+      isRequired: false,
+    },
   ];
 
   test("returns nulled object values when either null or empty string is given unless field is UID", () => {
@@ -873,6 +896,8 @@ describe("parseMetadataForGraphQLRequest", () => {
       title: "string",
       date: "2020-11-03",
       int: 2.5,
+      intzero: 0,
+      floatzero: 0.0,
     };
     const got = parseMetadataForGraphQLRequest(
       objectType,
@@ -883,6 +908,8 @@ describe("parseMetadataForGraphQLRequest", () => {
       title: "string",
       date: "2020-11-03+00:00",
       int: 2,
+      intzero: 0,
+      floatzero: 0,
     });
   });
 

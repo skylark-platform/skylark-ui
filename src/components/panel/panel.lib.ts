@@ -49,6 +49,7 @@ export const refetchPanelQueries = async (
     .map((cache) => cache.queryKey)
     .filter(
       (key) =>
+        key?.[0] &&
         (key?.[0] as string).startsWith(
           alternativeKey || QueryKeys.GetObject,
         ) &&

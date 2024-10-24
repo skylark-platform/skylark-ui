@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 
 import { SEGMENT_KEYS } from "src/constants/segment";
 import {
+  ParsedSkylarkObject,
   ParsedSkylarkObjectAvailabilityObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
@@ -70,6 +71,10 @@ export type SetPanelObject = (
     tab?: PanelTab;
     tabState?: Partial<PanelTabState>;
     keepTab?: boolean;
+    parsedObject?: ParsedSkylarkObject;
+  },
+  analyticsOpts?: {
+    source: "panel" | "contentLibrary";
   },
 ) => void;
 
@@ -195,14 +200,7 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
   });
 
   const setPanelObject: SetPanelObject = useCallback(
-    (
-      newPanelObject: SkylarkObjectIdentifier,
-      opts?: {
-        tab?: PanelTab;
-        tabState?: Partial<PanelTabState>;
-        keepTab?: boolean;
-      },
-    ) => {
+    (newPanelObject, opts, analyticsOpts) => {
       const { tab, tabState, keepTab } = opts || {
         tab: undefined,
         tabState: undefined,
@@ -213,6 +211,7 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
         newPanelObject,
         tab,
         tabState,
+        source: analyticsOpts?.source || "unknown",
       });
 
       setPanelState((oldState) => {
@@ -389,30 +388,40 @@ export const useInitialPanelStateFromQuery = (
   isReadyToOpenPanel: boolean,
   setPanelObject?: SetPanelObject,
 ) => {
-  const { query } = useRouter();
+  const { query, isReady } = useRouter();
 
   const [hasInitialQueryBeenUpdated, setInitialQueryUpdated] = useState(false);
 
   useEffect(() => {
-    const currentPanelQuery = readPanelUrlQuery(query);
-
     if (
       isReadyToOpenPanel &&
       setPanelObject &&
       !hasInitialQueryBeenUpdated &&
-      currentPanelQuery &&
-      currentPanelQuery.panelUid &&
-      currentPanelQuery.panelObjectType
+      isReady
     ) {
+      const currentPanelQuery = readPanelUrlQuery(query);
+      if (
+        currentPanelQuery &&
+        currentPanelQuery.panelUid &&
+        currentPanelQuery.panelObjectType
+      ) {
+        setPanelObject(
+          {
+            uid: currentPanelQuery.panelUid,
+            objectType: currentPanelQuery.panelObjectType,
+            language: currentPanelQuery.panelLanguage || "",
+          },
+          { tab: currentPanelQuery.panelTab as PanelTab | undefined },
+        );
+      }
+
       setInitialQueryUpdated(true);
-      setPanelObject(
-        {
-          uid: currentPanelQuery.panelUid,
-          objectType: currentPanelQuery.panelObjectType,
-          language: currentPanelQuery.panelLanguage || "",
-        },
-        { tab: currentPanelQuery.panelTab as PanelTab | undefined },
-      );
     }
-  }, [hasInitialQueryBeenUpdated, isReadyToOpenPanel, query, setPanelObject]);
+  }, [
+    hasInitialQueryBeenUpdated,
+    isReady,
+    isReadyToOpenPanel,
+    query,
+    setPanelObject,
+  ]);
 };

@@ -56,6 +56,7 @@ export const createGetAllObjectsRelationshipConfigurationQuery = (
             relationship_name: true,
             config: {
               default_sort_field: true,
+              inherit_availability: true,
             },
           },
         };

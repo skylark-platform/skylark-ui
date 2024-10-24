@@ -42,6 +42,9 @@ import {
   AvailabilityStatus,
   SkylarkGraphQLObjectList,
   ParsedSkylarkObjectMeta,
+  SkylarkGraphQLAvailability,
+  ParsedSkylarkObjectAvailabilityObject,
+  SkylarkGraphQLAvailabilityList,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -57,6 +60,7 @@ import {
   AWS_EARLIEST_DATE,
   AWS_LATEST_DATE,
   convertDateToTimezoneAndRemoveOffset,
+  convertTimeWindowStatus,
 } from "./availability";
 
 dayjs.extend(customParseFormat);
@@ -185,14 +189,38 @@ export const parseObjectRelationships = (
   return relationships;
 };
 
-const parseObjectAvailability = (unparsedObject?: {
-  objects: object[];
-}): ParsedSkylarkObjectAvailability => {
-  const objects = (unparsedObject?.objects ||
-    []) as ParsedSkylarkObjectAvailability["objects"];
+export const parseAvailabilityObjects = (
+  objects?: SkylarkGraphQLAvailability[],
+): ParsedSkylarkObjectAvailabilityObject[] => {
+  return objects
+    ? objects.map((object) => {
+        return {
+          ...object,
+          title: object.title,
+          slug: object.slug,
+          start: object.start,
+          end: object.end,
+          timezone: object.timezone,
+          active: object.active === false ? false : true,
+          inherited: object.inherited || false,
+          inheritanceSource: object.inheritance_source || false,
+          dimensions: object?.dimensions?.objects || [],
+        };
+      })
+    : [];
+};
+
+const parseObjectAvailability = (
+  unparsedObject?: SkylarkGraphQLAvailabilityList,
+): ParsedSkylarkObjectAvailability => {
+  const objects = parseAvailabilityObjects(unparsedObject?.objects);
+
+  const status = unparsedObject?.time_window_status
+    ? convertTimeWindowStatus(unparsedObject?.time_window_status)
+    : getObjectAvailabilityStatus(objects);
 
   return {
-    status: getObjectAvailabilityStatus(objects),
+    status,
     objects,
   };
 };
@@ -532,8 +560,15 @@ export const parseMetadataForGraphQLRequest = (
         }
       }
 
+      const sendParsedFieldValue =
+        (input.type === "float" || input.type === "int") &&
+        parsedFieldValue === 0;
+
       // If parsedFieldValue is returned as invalid, return the original value - GraphQL will handle the error
-      return [key, parsedFieldValue || value];
+      return [
+        key,
+        parsedFieldValue || sendParsedFieldValue ? parsedFieldValue : value,
+      ];
     })
     .filter((value) => value !== undefined) as [string, string | EnumType][];
 

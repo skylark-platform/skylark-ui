@@ -15,7 +15,7 @@ import { createPortal } from "react-dom";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { Panel } from "src/components/panel";
 import { SEGMENT_KEYS } from "src/constants/segment";
-import { PanelTab, usePanelObjectState } from "src/hooks/state";
+import { PanelTab, SetPanelObject, usePanelObjectState } from "src/hooks/state";
 import { useCheckedObjectsState } from "src/hooks/state";
 import {
   BuiltInSkylarkObjectType,
@@ -191,6 +191,15 @@ export const ContentLibrary = ({
     ? activeDragged.data.current.options.modifiers
     : [snapCenterToCursor];
 
+  const setPanelObjectContentLibrary: SetPanelObject = useCallback(
+    (i, o, a) => setPanelObject(i, o, { ...a, source: "contentLibrary" }),
+    [setPanelObject],
+  );
+  const setPanelObjectPanel: SetPanelObject = useCallback(
+    (i, o, a) => setPanelObject(i, o, { ...a, source: "panel" }),
+    [setPanelObject],
+  );
+
   return (
     <DndContext
       onDragStart={handleDragStart}
@@ -240,7 +249,7 @@ export const ContentLibrary = ({
           <TabbedObjectSearchWithAccount
             id="content-library-search"
             panelObject={activePanelObject}
-            setPanelObject={setPanelObject}
+            setPanelObject={setPanelObjectContentLibrary}
             isPanelOpen={!!activePanelObject}
             withObjectSelect
             checkedObjectsState={checkedObjectsState}
@@ -291,7 +300,7 @@ export const ContentLibrary = ({
                 tab={activePanelTab}
                 tabState={activePanelTabState}
                 closePanel={closePanel}
-                setPanelObject={setPanelObject}
+                setPanelObject={setPanelObjectPanel}
                 setTab={setPanelTab}
                 navigateToPreviousPanelObject={navigateToPreviousPanelObject}
                 navigateToForwardPanelObject={navigateToForwardPanelObject}

@@ -34,11 +34,11 @@ export interface ParsedSkylarkDimensionsWithValues
 export interface ParsedSkylarkObjectAvailabilityObject {
   uid: SkylarkUID;
   external_id: SkylarkExternalId;
-  title: string;
-  slug: string;
-  start: string;
-  end: string;
-  timezone: string;
+  title: string | null;
+  slug: string | null;
+  start: string | null;
+  end: string | null;
+  timezone: string | null;
   active: boolean;
   inherited: boolean;
   inheritanceSource: boolean;

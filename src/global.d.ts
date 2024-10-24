@@ -1,5 +1,6 @@
 // @tanstack/react-table meta object declaration
 import { CheckedObjectState } from "./hooks/state";
+import { SetPanelObject } from "./hooks/state/usePanelObjectState";
 import {
   SkylarkObjectIdentifier,
   SkylarkObjectMeta,

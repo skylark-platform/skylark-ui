@@ -24,7 +24,7 @@ test("renders as closed", () => {
 });
 
 test("renders as open", async () => {
-  render(<AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />);
+  render(<AddAuthTokenModal isOpen={"manual"} setIsOpen={jest.fn()} />);
 
   expect(screen.getByText("Connect to Skylark")).toBeInTheDocument();
   expect(screen.getByLabelText("GraphQL URL")).toBeInTheDocument();
@@ -34,7 +34,7 @@ test("renders as open", async () => {
 test("renders as open and closes on the esc key", () => {
   const setIsOpen = jest.fn();
 
-  render(<AddAuthTokenModal isOpen={true} setIsOpen={setIsOpen} />);
+  render(<AddAuthTokenModal isOpen={"manual"} setIsOpen={setIsOpen} />);
 
   const header = screen.getByText("Connect to Skylark");
 
@@ -53,7 +53,7 @@ test("renders as open and closes on the esc key", () => {
 test("renders and close with close button", () => {
   const setIsOpen = jest.fn();
 
-  render(<AddAuthTokenModal isOpen={true} setIsOpen={setIsOpen} />);
+  render(<AddAuthTokenModal isOpen={"manual"} setIsOpen={setIsOpen} />);
 
   const header = screen.getByText("Connect to Skylark");
 
@@ -70,7 +70,7 @@ test("clicks the copy buttons", () => {
 
   jest.spyOn(navigator.clipboard, "writeText");
 
-  render(<AddAuthTokenModal isOpen={true} setIsOpen={setIsOpen} />);
+  render(<AddAuthTokenModal isOpen={"manual"} setIsOpen={setIsOpen} />);
 
   const header = screen.getByText("Connect to Skylark");
 
@@ -108,7 +108,7 @@ test("changes input to red when they are invalid", async () => {
       );
     }),
   );
-  render(<AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />);
+  render(<AddAuthTokenModal isOpen={"manual"} setIsOpen={jest.fn()} />);
 
   const uriInput = screen.getByLabelText("GraphQL URL");
   const tokenInput = screen.getByLabelText("API Key");
@@ -130,7 +130,7 @@ test("changes input to red when they are invalid", async () => {
 });
 
 test("changes input to green when they are valid", async () => {
-  render(<AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />);
+  render(<AddAuthTokenModal isOpen={"manual"} setIsOpen={jest.fn()} />);
 
   const uriInput = screen.getByLabelText("GraphQL URL");
   const tokenInput = screen.getByLabelText("API Key");
@@ -152,7 +152,7 @@ test("changes input to green when they are valid", async () => {
 test("when GraphQL is valid, updates local storage", async () => {
   const setItem = jest.spyOn(Storage.prototype, "setItem");
 
-  render(<AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />);
+  render(<AddAuthTokenModal isOpen={"manual"} setIsOpen={jest.fn()} />);
 
   const uriInput = screen.getByLabelText("GraphQL URL");
   const tokenInput = screen.getByLabelText("API Key");
@@ -183,7 +183,7 @@ test("when GraphQL is valid, updates local storage", async () => {
 });
 
 test("shows the user's account when connected", async () => {
-  render(<AddAuthTokenModal isOpen={true} setIsOpen={jest.fn()} />);
+  render(<AddAuthTokenModal isOpen={"manual"} setIsOpen={jest.fn()} />);
 
   await waitFor(() => {
     expect(screen.getByText("Currently connected to:")).toBeInTheDocument();

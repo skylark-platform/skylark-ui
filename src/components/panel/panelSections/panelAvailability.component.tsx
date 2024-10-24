@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import dayjs, { Dayjs } from "dayjs";
 import { AnimatePresence, m } from "framer-motion";
-import { Fragment, ReactNode, useMemo, useState } from "react";
+import { Fragment, ReactNode, useMemo, useRef, useState } from "react";
 
 import {
   AvailabilityInheritanceIcon,
@@ -97,9 +97,11 @@ const sortDimensionsByTitleOrSlug = (
 const AvailabilityValueGrid = ({
   header,
   data,
+  isLoading,
   onForwardClick,
 }: {
   header: string;
+  isLoading?: boolean;
   data: {
     key: string;
     label: string;
@@ -111,6 +113,9 @@ const AvailabilityValueGrid = ({
   return (
     <div className="mt-3">
       <h4 className="font-semibold">{header}</h4>
+      {isLoading && data.length === 0 && (
+        <Skeleton className="h-10 w-full max-w-xl" />
+      )}
       {data.length > 0 && (
         <div
           className={clsx(
@@ -457,6 +462,7 @@ const PanelAvailabilityReadonlyCard = ({
   tabId,
   objectType,
   objectUid,
+  isFetched,
   setActiveAvailability,
   setPanelObject,
 }: {
@@ -473,6 +479,7 @@ const PanelAvailabilityReadonlyCard = ({
   now: Dayjs;
   objectType: string;
   objectUid: string;
+  isFetched: boolean;
 }) => {
   const activeTabId: TabID = (isActive && tabId) || "overview";
 
@@ -511,7 +518,10 @@ const PanelAvailabilityReadonlyCard = ({
   return (
     <m.div
       key={`availability-card-inner-${availability.uid}`}
-      className={clsx("flex items-start z-10 bg-white mb-2 absolute")}
+      className={clsx(
+        "flex items-start z-10 bg-white mb-2 w-full",
+        isActive ? "absolute" : "relative",
+      )}
       layout
       initial={{ opacity: 1 }}
       exit={{ opacity: 1 }}
@@ -644,6 +654,7 @@ const PanelAvailabilityReadonlyCard = ({
 
             <AvailabilityValueGrid
               header="Audience"
+              isLoading={!isFetched}
               data={availability.dimensions
                 .sort(sortDimensionsByTitleOrSlug)
                 .map((dimension) => ({
@@ -678,6 +689,7 @@ const PanelAvailabilityReadOnlyView = ({
   inheritedAvails,
   setActiveAvailability,
   now,
+  isFetched,
   ...props
 }: {
   activeAvailability: {
@@ -690,6 +702,7 @@ const PanelAvailabilityReadOnlyView = ({
     a: { object: ParsedSkylarkObjectAvailabilityObject; tabId: TabID } | null,
   ) => void;
   now: Dayjs;
+  isFetched: boolean;
 } & PanelAvailabilityProps) => {
   return (
     <>
@@ -710,6 +723,7 @@ const PanelAvailabilityReadOnlyView = ({
           objectType={props.objectType}
           tabId={activeAvailability?.tabId}
           objectUid={props.uid}
+          isFetched={isFetched}
         />
       ))}
       {!activeAvailability && (
@@ -733,6 +747,7 @@ const PanelAvailabilityReadOnlyView = ({
           objectType={props.objectType}
           objectUid={props.uid}
           tabId={activeAvailability?.tabId}
+          isFetched={isFetched}
         />
       ))}
     </>
@@ -755,6 +770,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
   const [activeAvailability, setActiveAvailability] = useState<{
     object: ParsedSkylarkObjectAvailabilityObject;
     tabId: TabID;
+    previousScrollTop?: number;
   } | null>(
     tabState.active
       ? {
@@ -764,22 +780,49 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
       : null,
   );
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const setActiveAvailabilityWrapper = (
     newActiveAvailability: {
       object: ParsedSkylarkObjectAvailabilityObject;
       tabId: TabID;
     } | null,
   ) => {
-    setActiveAvailability(newActiveAvailability);
+    const previousScrollTop = containerRef.current?.scrollTop;
+    const shouldScroll =
+      newActiveAvailability === null && activeAvailability?.previousScrollTop;
+    setActiveAvailability(
+      newActiveAvailability
+        ? { ...newActiveAvailability, previousScrollTop }
+        : newActiveAvailability,
+    );
     updateActivePanelTabState({
       [PanelTab.Availability]: {
         active: newActiveAvailability,
       },
     });
+
+    if (shouldScroll && containerRef.current) {
+      const scrollTop = activeAvailability.previousScrollTop;
+      // Little cheat to scroll after the elements have rendered
+      setTimeout(() => {
+        containerRef.current?.scrollTo({
+          top: scrollTop,
+          behavior: "instant",
+        });
+      }, 50);
+    }
   };
 
-  const { data, hasNextPage, isLoading, fetchNextPage, query, variables } =
-    useGetObjectAvailability(objectType, uid, { language });
+  const {
+    data,
+    hasNextPage,
+    isLoading,
+    isFetched,
+    fetchNextPage,
+    query,
+    variables,
+  } = useGetObjectAvailability(objectType, uid, { language });
 
   const [objectSearchModalOpen, setObjectSearchModalOpen] = useState(false);
 
@@ -929,6 +972,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
         },
       ]}
       isPage={isPage}
+      ref={containerRef}
     >
       <div
         data-testid="panel-availability"
@@ -975,19 +1019,25 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                   inheritedAvails={inheritedAvails}
                   setActiveAvailability={setActiveAvailabilityWrapper}
                   now={now}
+                  isFetched={isFetched}
                 />
               )}
             </>
           )}
         </AnimatePresence>
+        <PanelLoading
+          isLoading={isLoading || hasNextPage}
+          loadMore={() => fetchNextPage()}
+        >
+          <Skeleton
+            className={clsx(
+              "mb-4 h-52 w-full max-w-xl",
+              !isLoading && hasNextPage && "mt-4",
+            )}
+          />
+          <Skeleton className="mb-4 h-52 w-full max-w-xl" />
+        </PanelLoading>
       </div>
-      <PanelLoading
-        isLoading={isLoading || hasNextPage}
-        loadMore={() => fetchNextPage()}
-      >
-        <Skeleton className="mb-4 h-52 w-full max-w-xl" />
-        <Skeleton className="mb-4 h-52 w-full max-w-xl" />
-      </PanelLoading>
       <DisplayGraphQLQuery
         label="Get Object Availability"
         query={query}

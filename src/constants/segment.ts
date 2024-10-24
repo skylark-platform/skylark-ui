@@ -5,6 +5,14 @@ export const SEGMENT_KEYS = {
     historyForward: "panel:historyForward",
     historyPrevious: "panel:historyPrevious",
     closed: "panel:closed",
+    save: "panel:save",
+    purgeCache: "panel:purgeCache",
+    openInNewTab: "panel:openInNewTab",
+    objectDelete: "panel:objectDelete",
+    integrations: {
+      imageUploaded: "panel:integrations:imageUploaded",
+      videoUploaded: "panel:integrations:videoUploaded",
+    },
   },
   object: {
     created: "object:created",
@@ -53,6 +61,18 @@ export const SEGMENT_KEYS = {
     fieldSuggestions: {
       populateFormField: "ai:fieldSuggestions:populateFormField",
       generateValuesRequest: "ai:fieldSuggestions:generateValuesRequest",
+    },
+  },
+  bulkOperations: {
+    delete: "bulkOperations:delete",
+    purgeCache: "bulkOperations:purgeCache",
+  },
+  externalLink: {
+    github: {
+      ui: "externalLink:github:skylark-ui",
+    },
+    apiDocs: {
+      home: "externalLink:apiDocs:home",
     },
   },
 };

@@ -7,7 +7,9 @@ import { GrGraphQl } from "react-icons/gr";
 import { TbTerminal2 } from "react-icons/tb";
 
 import { DropdownMenu } from "src/components/dropdown/dropdown.component";
+import { SEGMENT_KEYS } from "src/constants/segment";
 import { HREFS } from "src/constants/skylark";
+import { segment } from "src/lib/analytics/segment";
 
 interface LinkProps {
   text: string;
@@ -41,6 +43,9 @@ const navigationItems = [
         text: "API Documentation",
         href: HREFS.apiDocs.root,
         Icon: <FiFileText className="text-xl" />,
+        onClick: () => {
+          segment.track(SEGMENT_KEYS.externalLink.apiDocs.home);
+        },
       },
       {
         id: "graphql-ide",

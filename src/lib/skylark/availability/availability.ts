@@ -10,6 +10,7 @@ import {
   AvailabilityStatus,
   ParsedSkylarkObjectMetadata,
   SkylarkAvailabilityField,
+  SkylarkGraphQLAvailabilityList,
 } from "src/interfaces/skylark";
 import { VALID_DATE_FORMATS } from "src/lib/skylark/parsers";
 import { hasProperty } from "src/lib/utils";
@@ -24,14 +25,14 @@ export const AWS_LATEST_DATE = "2038-01-19T03:14:07.000Z"; // Also the 2038 prob
 
 export const getSingleAvailabilityStatus = (
   now: dayjs.Dayjs,
-  start: string,
-  end: string,
+  start: string | null,
+  end: string | null,
 ): ParsedSkylarkObjectAvailability["status"] => {
-  if (now.isAfter(end)) {
+  if (end && now.isAfter(end)) {
     return AvailabilityStatus.Expired;
   }
 
-  return now.isBefore(start)
+  return start && now.isBefore(start)
     ? AvailabilityStatus.Future
     : AvailabilityStatus.Active;
 };
@@ -39,12 +40,18 @@ export const getSingleAvailabilityStatus = (
 export const getAvailabilityStatusForAvailabilityObject = (
   metadata: ParsedSkylarkObjectMetadata,
 ): ParsedSkylarkObjectAvailability["status"] => {
-  const start = hasProperty(metadata, SkylarkAvailabilityField.Start)
-    ? (metadata.start as string)
-    : "";
-  const end = hasProperty(metadata, SkylarkAvailabilityField.End)
-    ? (metadata.end as string)
-    : "";
+  const start =
+    hasProperty(metadata, SkylarkAvailabilityField.Start) && metadata.start
+      ? (metadata.start as string)
+      : null;
+  const end =
+    hasProperty(metadata, SkylarkAvailabilityField.End) && metadata.end
+      ? (metadata.end as string)
+      : null;
+
+  if (start === null && end === null) {
+    return AvailabilityStatus.Active;
+  }
 
   if (!start && !end) {
     return AvailabilityStatus.Unavailable;
@@ -75,6 +82,21 @@ export const getObjectAvailabilityStatus = (
   );
 
   return isFuture ? AvailabilityStatus.Future : AvailabilityStatus.Active;
+};
+
+export const convertTimeWindowStatus = (
+  status: SkylarkGraphQLAvailabilityList["time_window_status"],
+) => {
+  switch (status) {
+    case "ACTIVE":
+      return AvailabilityStatus.Active;
+    case "FUTURE":
+      return AvailabilityStatus.Future;
+    case "EXPIRED":
+      return AvailabilityStatus.Expired;
+    default:
+      return AvailabilityStatus.Unavailable;
+  }
 };
 
 export const formatReadableDateTime = (date?: string | null) =>

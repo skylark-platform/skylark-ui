@@ -27,11 +27,10 @@ const contextClassNames = {
 export const ToastContainer = () => (
   <ReactToastifyContainer
     position="top-right"
-    autoClose={5000}
+    autoClose={4000}
     pauseOnHover
     theme="colored"
-    closeButton={false}
-    transition={Slide}
+    closeButton={true}
     bodyClassName="p-0 bg-none"
     toastClassName={(props) => {
       return clsx(
@@ -74,21 +73,13 @@ const ToastMessage = ({
   return message || <></>;
 };
 
-export const Toast = ({
-  closeToast,
-  title,
-  message,
-  messageClassName,
-}: ToastProps) => {
+export const Toast = ({ title, message, messageClassName }: ToastProps) => {
   return (
     <div data-testid="toast">
       <div className="flex flex-row">
         <h4 className="flex-grow pr-2 text-base font-medium md:text-base">
           {title}
         </h4>
-        <button onClick={() => closeToast?.()}>
-          <FiX className="text-xl" />
-        </button>
       </div>
       {message && (
         <div className="mt-1 text-xs font-light md:text-sm">

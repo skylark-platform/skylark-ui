@@ -1,5 +1,5 @@
 import { sentenceCase } from "change-case";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
 import {
@@ -394,6 +394,18 @@ export const Panel = ({
       objectMeta?.name,
     ],
   );
+
+  // useEffect to ensure that if the selectTab is not valid, we change it back to metadata. Failsafe.
+  useEffect(() => {
+    if (
+      objectMeta &&
+      tabs.length > 1 &&
+      selectedTab !== PanelTab.Metadata &&
+      !tabs.includes(selectedTab)
+    ) {
+      setSelectedTab(PanelTab.Metadata);
+    }
+  }, [tabs, objectMeta, selectedTab, setSelectedTab]);
 
   const { updateObjectRelationships, isUpdatingObjectRelationships } =
     useUpdateObjectRelationships({

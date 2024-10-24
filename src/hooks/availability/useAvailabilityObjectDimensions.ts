@@ -42,7 +42,7 @@ export const useAvailabilityObjectDimensions = (uid: string) => {
   const availabilityDimensions:
     | ParsedSkylarkObjectAvailabilityObject["dimensions"]
     | undefined = data?.pages?.flatMap(
-    (page) => page.getAvailability.dimensions.objects,
+    (page) => page.getAvailability.dimensions?.objects || [],
   );
 
   return {
