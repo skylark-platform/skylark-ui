@@ -4,8 +4,11 @@ import { VariableType } from "json-to-graphql-query";
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
   BuiltInSkylarkObjectType,
+  GQLObjectTypeRelationshipConfig,
+  ModifiedRelationshipsObject,
   ParsedSkylarkObject,
   ParsedSkylarkObjectContentObject,
+  ParsedSkylarkRelationshipConfig,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
@@ -348,26 +351,42 @@ export const createUpdateObjectContentMutation = (
 
 export const createUpdateObjectRelationshipsMutation = (
   object: SkylarkObjectMeta | null,
-  modifiedRelationships: Record<
-    string,
-    {
-      added: ParsedSkylarkObject[];
-      removed: string[];
-    }
-  > | null,
+  modifiedRelationships: ModifiedRelationshipsObject | null,
 ) => {
   if (!object || !object.operations.update || !modifiedRelationships) {
     return null;
   }
 
   const parsedRelationsToUpdate = Object.entries(modifiedRelationships).reduce(
-    (acc, [relationshipName, { added, removed }]) => {
+    (acc, [relationshipName, { added, removed, config }]) => {
+      const relationshipArg: {
+        link: string[];
+        unlink: string[];
+        config?: Partial<GQLObjectTypeRelationshipConfig>;
+      } = {
+        link: [...new Set(added.map(({ uid }) => uid))],
+        unlink: [...new Set(removed)],
+      };
+
+      if (config && Object.keys(config).length > 0) {
+        const parsedConfig: Partial<GQLObjectTypeRelationshipConfig> = {};
+
+        if (config.defaultSortField !== undefined) {
+          parsedConfig.default_sort_field = config.defaultSortField;
+        }
+
+        if (config.inheritAvailability !== undefined) {
+          parsedConfig.inherit_availability = config.inheritAvailability;
+        }
+
+        if (Object.keys(parsedConfig).length > 0) {
+          relationshipArg.config = parsedConfig;
+        }
+      }
+
       return {
         ...acc,
-        [relationshipName]: {
-          link: [...new Set(added.map(({ uid }) => uid))],
-          unlink: [...new Set(removed)],
-        },
+        [relationshipName]: relationshipArg,
       };
     },
     {},
