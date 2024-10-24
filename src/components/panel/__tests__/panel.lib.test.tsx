@@ -213,6 +213,7 @@ describe("handleDroppedContents", () => {
         uid: "EXISTING_OBJECT",
       },
       position: 0,
+      isDynamic: false,
     };
 
     const existingObjectContent: AddedSkylarkObjectContentObject[] = [
@@ -284,6 +285,7 @@ describe("handleDroppedContents", () => {
         uid: "EXISTING_OBJECT",
       },
       position: 0,
+      isDynamic: false,
     };
 
     const existingObjectContent: AddedSkylarkObjectContentObject[] = [

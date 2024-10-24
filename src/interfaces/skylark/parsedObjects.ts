@@ -56,6 +56,7 @@ export interface ParsedSkylarkObjectContentObject {
   meta: ParsedSkylarkObjectMeta;
   object: ParsedSkylarkObjectMetadata;
   position: number;
+  isDynamic: boolean;
 }
 
 export interface AddedSkylarkObjectContentObject

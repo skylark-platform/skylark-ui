@@ -21,6 +21,7 @@ interface ObjectIdentifierCardProps {
   className?: string;
   hideAvailabilityStatus?: boolean;
   forceConfigFromObject?: boolean;
+  showDragIcon?: boolean;
   onForwardClick?: SetPanelObject;
   onDeleteClick?: () => void;
 }
@@ -35,6 +36,7 @@ export const ObjectIdentifierCard = ({
   deleteIconVariant = "trash",
   hideAvailabilityStatus,
   forceConfigFromObject,
+  showDragIcon,
   onForwardClick,
   onDeleteClick,
 }: ObjectIdentifierCardProps) => {
@@ -53,6 +55,9 @@ export const ObjectIdentifierCard = ({
         className,
       )}
     >
+      {showDragIcon && (
+        <span className="-ml-4 block w-2.5 h-5 bg-inherit bg-[url('/icons/drag_indicator_black.png')] bg-center bg-no-repeat opacity-60" />
+      )}
       {!hideObjectType && (
         <Pill
           label={config?.objectTypeDisplayName || object.objectType}
@@ -98,7 +103,7 @@ export const ObjectIdentifierCard = ({
           data-testid="object-identifier-delete"
           className={clsx(
             "transition-width",
-            !disableDeleteClick ? "w-6 pl-1" : "w-0",
+            !disableDeleteClick ? "w-5" : "w-0 !-mx-0",
           )}
           onClick={onDeleteClick}
         >

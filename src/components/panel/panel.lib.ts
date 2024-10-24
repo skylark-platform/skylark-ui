@@ -95,6 +95,7 @@ export const convertSkylarkObjectToContentObject = (
     object: skylarkObject.metadata,
     objectType: skylarkObject.objectType,
     position: 1,
+    isDynamic: false,
   };
 };
 

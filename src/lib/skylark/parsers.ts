@@ -12,6 +12,7 @@ import {
   IntrospectionScalarType,
 } from "graphql";
 import { EnumType } from "json-to-graphql-query";
+import dynamic from "next/dynamic";
 import { HTMLInputTypeAttribute } from "react";
 
 import { UTC_NAME } from "src/components/inputs/select";
@@ -311,7 +312,7 @@ export const parseObjectContent = (
   unparsedContent?: SkylarkGraphQLObjectContent,
 ): ParsedSkylarkObjectContent => {
   const normalisedContentObjects = unparsedContent?.objects.map(
-    ({ object, position }) => {
+    ({ object, position, dynamic }) => {
       const normalisedObject =
         removeFieldPrefixFromReturnedObject<ParsedSkylarkObjectMetadata>(
           object,
@@ -323,6 +324,7 @@ export const parseObjectContent = (
         config: parseObjectConfig(object.__typename, object._config),
         meta: parseObjectMeta(object._meta, availability.status),
         object: normalisedObject,
+        isDynamic: dynamic,
       };
     },
   );

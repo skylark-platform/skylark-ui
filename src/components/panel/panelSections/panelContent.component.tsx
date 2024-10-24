@@ -12,6 +12,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import clsx from "clsx";
 import { useEffect, useMemo, useState } from "react";
+import { FiDatabase } from "react-icons/fi";
 
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
@@ -27,6 +28,7 @@ import {
   PanelSeparator,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
+import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
 import { SetPanelObject } from "src/hooks/state";
 import {
@@ -99,7 +101,7 @@ const SortableItem = ({
   setPanelObject,
   handleManualOrderChange,
 }: ContentObjectProps) => {
-  const { object, config, meta, position } = contentObject;
+  const { object, config, meta, position, isDynamic } = contentObject;
   const isNewObject = hasProperty(contentObject, "isNewObject");
 
   const parsedObject: ParsedSkylarkObject = {
@@ -149,7 +151,7 @@ const SortableItem = ({
         ref={setNodeRef}
         style={style}
         {...attributes}
-        {...listeners}
+        {...(isDynamic ? {} : listeners)}
         data-testid={`panel-object-content-item-${arrIndex + 1}`}
         data-cy={"panel-object-content-item"}
       >
@@ -158,32 +160,44 @@ const SortableItem = ({
           onForwardClick={setPanelObject}
           disableForwardClick={inEditMode}
           disableDeleteClick={!inEditMode}
-          onDeleteClick={() => removeItem(object.uid)}
+          showDragIcon={inEditMode && !isDynamic}
+          onDeleteClick={isDynamic ? undefined : () => removeItem(object.uid)}
         >
-          <div className="flex">
-            {inEditMode && (
-              <span
-                className={clsx(
-                  "flex h-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
-                  position === arrIndex + 1 || isNewObject
-                    ? "opacity-0"
-                    : "opacity-100",
-                )}
-              >
-                {position}
-              </span>
-            )}
-            <PanelPositionInput
-              disabled={!inEditMode}
-              position={arrIndex + 1}
-              hasMoved={!!inEditMode && position !== arrIndex + 1}
-              isNewObject={inEditMode && isNewObject}
-              onBlur={(updatedPosition: number) =>
-                handleManualOrderChange(arrIndex, updatedPosition)
-              }
-              maxPosition={arrLength}
-            />
-          </div>
+          {isDynamic ? (
+            <Tooltip
+              tooltip={"Included in one or more dynamic content rules"}
+              side="left"
+            >
+              <div className="bg-manatee-600 p-1 h-6 w-6 flex justify-center items-center rounded-full">
+                <FiDatabase className="text-white" />
+              </div>
+            </Tooltip>
+          ) : (
+            <div className="flex">
+              {inEditMode && (
+                <span
+                  className={clsx(
+                    "flex h-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
+                    position === arrIndex + 1 || isNewObject
+                      ? "opacity-0"
+                      : "opacity-100",
+                  )}
+                >
+                  {position}
+                </span>
+              )}
+              <PanelPositionInput
+                disabled={!inEditMode}
+                position={arrIndex + 1}
+                hasMoved={!!inEditMode && position !== arrIndex + 1}
+                isNewObject={inEditMode && isNewObject}
+                onBlur={(updatedPosition: number) =>
+                  handleManualOrderChange(arrIndex, updatedPosition)
+                }
+                maxPosition={arrLength}
+              />
+            </div>
+          )}
         </ObjectIdentifierCard>
         {arrIndex < arrLength - 1 && (
           <PanelSeparator transparent={inEditMode} />

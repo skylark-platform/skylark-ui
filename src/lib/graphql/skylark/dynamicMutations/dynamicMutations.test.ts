@@ -61,6 +61,7 @@ describe("createUpdateSetContentPositionMutation", () => {
           versions: {},
         },
         position: 1,
+        isDynamic: false,
         object: { uid: "episode_1", external_id: "" },
       },
       {
@@ -73,6 +74,7 @@ describe("createUpdateSetContentPositionMutation", () => {
           versions: {},
         },
         position: 2,
+        isDynamic: false,
         object: { uid: "episode_2", external_id: "" },
       },
       {
@@ -85,6 +87,7 @@ describe("createUpdateSetContentPositionMutation", () => {
           versions: {},
         },
         position: 3,
+        isDynamic: true,
         object: { uid: "movie_1", external_id: "" },
       },
     ];
@@ -112,6 +115,7 @@ describe("createUpdateSetContentPositionMutation", () => {
           versions: {},
         },
         position: 1,
+        isDynamic: false,
         object: { uid: "episode_1", external_id: "" },
       },
       {
@@ -124,6 +128,7 @@ describe("createUpdateSetContentPositionMutation", () => {
           versions: {},
         },
         position: 2,
+        isDynamic: false,
         object: { uid: "episode_2", external_id: "" },
       },
       {
@@ -136,6 +141,7 @@ describe("createUpdateSetContentPositionMutation", () => {
           versions: {},
         },
         position: 3,
+        isDynamic: true,
         object: { uid: "movie_1", external_id: "" },
       },
     ];
@@ -165,6 +171,7 @@ describe("createUpdateSetContentPositionMutation", () => {
           versions: {},
         },
         position: 1,
+        isDynamic: false,
         object: { uid: "episode_1", external_id: "" },
       },
       {
@@ -177,6 +184,7 @@ describe("createUpdateSetContentPositionMutation", () => {
           versions: {},
         },
         position: 2,
+        isDynamic: false,
         object: { uid: "episode_2", external_id: "" },
       },
       {
@@ -189,6 +197,7 @@ describe("createUpdateSetContentPositionMutation", () => {
           versions: {},
         },
         position: 3,
+        isDynamic: true,
         object: { uid: "movie_1", external_id: "" },
       },
     ];

@@ -13,7 +13,6 @@ import {
   SkylarkObjectType,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-import { convertSlugToDimensionHeader } from "src/lib/utils";
 
 const fieldNamesToNeverAlias: string[] = [
   SkylarkSystemField.UID,
@@ -313,6 +312,7 @@ export const generateContentsToReturn = (
           })),
         },
         position: true,
+        dynamic: true,
       },
     },
   };

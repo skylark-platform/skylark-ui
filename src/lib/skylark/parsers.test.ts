@@ -371,9 +371,14 @@ describe("parseObjectContent", () => {
   });
 
   test("parses an objects content objects", () => {
-    const objects: { object: SkylarkGraphQLObject; position: number }[] = [
+    const objects: {
+      object: SkylarkGraphQLObject;
+      position: number;
+      dynamic: boolean;
+    }[] = [
       {
         position: 1,
+        dynamic: false,
         object: {
           __typename: "Episode",
           uid: "episode_1",
@@ -406,6 +411,7 @@ describe("parseObjectContent", () => {
       },
       {
         position: 2,
+        dynamic: true,
         object: {
           __typename: "SkylarkSet",
           uid: "set_1",
@@ -482,6 +488,7 @@ describe("parseObjectContent", () => {
           object: objects[0].object,
           objectType: objects[0].object.__typename,
           position: 1,
+          isDynamic: false,
         },
         {
           config: {
@@ -508,6 +515,7 @@ describe("parseObjectContent", () => {
           object: objects[1].object,
           objectType: objects[1].object.__typename,
           position: 2,
+          isDynamic: true,
         },
       ],
     });
