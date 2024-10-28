@@ -10,6 +10,7 @@ import {
   getJSONFromLocalStorage,
   getObjectDisplayName,
   getObjectTypeDisplayNameFromParsedObject,
+  getObjectTypeFromListingTypeName,
   getPrimaryKeyField,
   hasProperty,
   isObject,
@@ -440,5 +441,27 @@ describe("isSkylarkObjectType", () => {
     const got = isSkylarkObjectType("Episode");
 
     expect(got).toBe(false);
+  });
+});
+
+describe("getObjectTypeFromListingTypeName", () => {
+  it("removes Listing", () => {
+    const got = getObjectTypeFromListingTypeName("EpisodeListing");
+
+    expect(got).toBe("Episode");
+  });
+
+  it("removes RelationshipListing", () => {
+    const got = getObjectTypeFromListingTypeName("EpisodeRelationshipListing");
+
+    expect(got).toBe("Episode");
+  });
+
+  it("returns unchanged when string ends with something else", () => {
+    const got = getObjectTypeFromListingTypeName(
+      "EpisodeRelationshipListingHello",
+    );
+
+    expect(got).toBe("EpisodeRelationshipListingHello");
   });
 });

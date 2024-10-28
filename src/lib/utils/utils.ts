@@ -205,9 +205,17 @@ export const skylarkObjectIsInArray = (
   arr: ParsedSkylarkObject[],
 ) => arr.findIndex((obj) => skylarkObjectsAreSame(objToFind, obj)) > -1;
 
-// Naive implementation, just removes Listing from ImageListing
-export const getObjectTypeFromListingTypeName = (typename: string) =>
-  typename.substring(0, typename.lastIndexOf("Listing"));
+// Naive implementation, just removes Listing from ImageListing or ImageRelationshipListing
+export const getObjectTypeFromListingTypeName = (str: string) => {
+  const isRelationshipListing = str.endsWith("RelationshipListing");
+  if (isRelationshipListing || str.endsWith("Listing")) {
+    const end = str.lastIndexOf(
+      isRelationshipListing ? "RelationshipListing" : "Listing",
+    );
+    return str.substring(0, end);
+  }
+  return str;
+};
 
 export const shallowCompareObjects = (
   obj1: Record<string, unknown>,
