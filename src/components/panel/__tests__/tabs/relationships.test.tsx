@@ -58,28 +58,29 @@ describe("relationships view", () => {
     );
   });
 
-  test("displays the relationship sort field", async () => {
-    render(
-      <Panel
-        {...defaultProps}
-        object={seasonWithRelationships}
-        tab={PanelTab.Relationships}
-      />,
-    );
+  // TODO uncomment when relationship_config is ready
+  // test("displays the relationship sort field", async () => {
+  //   render(
+  //     <Panel
+  //       {...defaultProps}
+  //       object={seasonWithRelationships}
+  //       tab={PanelTab.Relationships}
+  //     />,
+  //   );
 
-    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
+  //   await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
 
-    const withinEpisodesRelationship = within(screen.getByTestId("episodes"));
+  //   const withinEpisodesRelationship = within(screen.getByTestId("episodes"));
 
-    await waitFor(() => {
-      expect(
-        withinEpisodesRelationship.getByLabelText("Sorted by:"),
-      ).toBeInTheDocument();
-    });
+  //   await waitFor(() => {
+  //     expect(
+  //       withinEpisodesRelationship.getByLabelText("Sorted by:"),
+  //     ).toBeInTheDocument();
+  //   });
 
-    const sortedBy = withinEpisodesRelationship.getByLabelText("Sorted by:");
-    expect(sortedBy).toHaveTextContent("Episode number (Default)");
-  });
+  //   const sortedBy = withinEpisodesRelationship.getByLabelText("Sorted by:");
+  //   expect(sortedBy).toHaveTextContent("Episode number (Default)");
+  // });
 
   test("displays the value of the relationship sort field", async () => {
     render(

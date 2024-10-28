@@ -192,7 +192,8 @@ const PanelRelationshipSectionComponent = (
             />
           )}
         </div>
-        {!isEmptySection && (
+        {/* TODO uncomment when relationship_config is ready */}
+        {/* {!isEmptySection && (
           <Select
             variant="pill"
             placeholder="Unsorted"
@@ -213,7 +214,7 @@ const PanelRelationshipSectionComponent = (
               updateRelationshipConfig({ defaultSortField })
             }
           />
-        )}
+        )} */}
       </m.div>
 
       <m.div
