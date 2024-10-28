@@ -298,6 +298,10 @@ export const createGetObjectRelationshipsQuery = (
               },
               __typename: true, // To get the ObjectType (Listing)
               next_token: true,
+              // TODO uncomment when relationship_config is ready
+              // relationship_config: {
+              //   default_sort_field: true,
+              // },
               objects: {
                 uid: true,
                 __typename: true,
