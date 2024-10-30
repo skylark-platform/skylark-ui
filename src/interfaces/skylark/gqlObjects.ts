@@ -1,5 +1,8 @@
+import { EnumType } from "json-to-graphql-query";
+
 import {
   SkylarkObjectMetadataField,
+  SkylarkObjectType,
   SkylarkSystemField,
 } from "./objectOperations";
 import { SkylarkExternalId, SkylarkUID } from "./parsedObjects";
@@ -156,4 +159,19 @@ export interface SkylarkGraphQLAPIKey {
   expires: string | null;
   permissions: string[];
   created: string;
+}
+
+export interface SkylarkDynamicSetRuleBlock {
+  object_types: SkylarkObjectType[];
+  relationship_name: String;
+  uid?: string[];
+}
+
+export interface SkylarkDynamicSetInput {
+  dynamic_content_types: EnumType[];
+  dynamic_content_rules: [
+    { object_types: SkylarkObjectType[] },
+    ...Array<SkylarkDynamicSetRuleBlock>,
+  ][];
+  limit?: number;
 }

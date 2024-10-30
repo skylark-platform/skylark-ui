@@ -7,6 +7,8 @@ import React, {
   Ref,
   useRef,
   useMemo,
+  Fragment,
+  ReactNode,
 } from "react";
 import { useVirtual } from "react-virtual";
 
@@ -24,6 +26,7 @@ type MultiSelectOption = SelectOption<string>;
 
 export interface MultiSelectProps {
   selected?: string[];
+  selectedDivider?: ReactNode;
   options: MultiSelectOption[];
   label?: string;
   labelVariant?: "default" | "form";
@@ -95,6 +98,7 @@ const MultiSelectComponent = (
     onChange,
     disabled,
     selected,
+    selectedDivider,
     rounded,
     required,
   } = props;
@@ -176,13 +180,15 @@ const MultiSelectComponent = (
             "flex-wrap gap-2",
           )}
         >
-          {selectedOptions.map(({ label, value }) => (
-            <Pill
-              key={value}
-              label={label || value}
-              className="my-auto bg-brand-primary"
-              onDelete={() => deselectOption(value)}
-            />
+          {selectedOptions.map(({ label, value }, i, arr) => (
+            <Fragment key={value}>
+              <Pill
+                label={label || value}
+                className="my-auto bg-brand-primary"
+                onDelete={() => deselectOption(value)}
+              />
+              {selectedDivider && i < arr.length - 1 && selectedDivider}
+            </Fragment>
           ))}
           <Combobox.Button
             data-testid="multiselect-input"

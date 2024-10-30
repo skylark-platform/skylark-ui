@@ -92,7 +92,7 @@ export const useObjectTypeRelationshipConfiguration = (
 };
 
 export const useAllObjectTypesRelationshipConfiguration = () => {
-  const { objectTypes } = useSkylarkObjectTypes(false);
+  const { objectTypes } = useSkylarkObjectTypes({ searchable: false });
 
   const query = createGetAllObjectsRelationshipConfigurationQuery(
     objectTypes?.filter(

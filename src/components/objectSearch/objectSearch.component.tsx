@@ -228,7 +228,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
 
   const withPanel = typeof setPanelObject !== "undefined";
 
-  const { objectTypes } = useSkylarkObjectTypes(true);
+  const { objectTypes } = useSkylarkObjectTypes({ searchable: true });
 
   const [searchType, setSearchType] = useState<SearchType>(
     initialSearchType || SearchType.Search,

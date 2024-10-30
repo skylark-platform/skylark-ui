@@ -38,7 +38,7 @@ export const ContentModel = () => {
 
   const { objects: allObjectsMeta } = useAllObjectsMeta(true, schemaOpts);
   const { objectTypesWithConfig, isLoading: isLoadingObjectTypesWithConfig } =
-    useSkylarkObjectTypesWithConfig(schemaOpts);
+    useSkylarkObjectTypesWithConfig({ introspectionOpts: schemaOpts });
 
   const activeObjectType = (query?.objectType?.[0] as string) || null;
 

@@ -4,6 +4,7 @@ import { useCallback, useMemo } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
 import {
+  BuiltInSkylarkObjectType,
   GQLSkylarkObjectTypesWithConfig,
   ParsedSkylarkObjectConfig,
   SkylarkObjectMeta,
@@ -50,20 +51,32 @@ export const sortObjectTypesWithConfig = (
 };
 
 export const useSkylarkObjectTypes = (
-  searchable: boolean,
-  introspectionOpts?: IntrospectionQueryOptions | undefined,
+  opts: {
+    searchable?: boolean;
+    withAvailabilityObjectType?: boolean;
+    introspectionOpts?: IntrospectionQueryOptions | undefined;
+  } = {
+    searchable: false,
+    withAvailabilityObjectType: true,
+    introspectionOpts: undefined,
+  },
 ) => {
   // VisibleObject Interface contains all items that appear in Search, whereas Metadata can all be added into Sets
   const { data } = useSkylarkSchemaInterfaceType(
-    searchable ? "VisibleObject" : "Metadata",
-    introspectionOpts,
+    opts.searchable ? "VisibleObject" : "Metadata",
+    opts.introspectionOpts,
   );
 
   const objectTypes = useMemo(() => {
     const objectTypes = data
       ? data?.possibleTypes.map(({ name }) => name) || []
       : undefined;
-    return objectTypes?.sort();
+
+    const sorted = objectTypes?.sort();
+
+    return opts.withAvailabilityObjectType
+      ? sorted
+      : sorted?.filter((ot) => ot !== BuiltInSkylarkObjectType.Availability);
   }, [data]);
 
   return {
@@ -138,10 +151,11 @@ export const useSkylarkObjectOperations = (
   return res;
 };
 
-export const useSkylarkObjectTypesWithConfig = (
-  introspectionOpts?: IntrospectionQueryOptions | undefined,
-) => {
-  const { objectTypes } = useSkylarkObjectTypes(true, introspectionOpts);
+export const useSkylarkObjectTypesWithConfig = (opts?: {
+  withAvailabilityObjectType?: boolean;
+  introspectionOpts?: IntrospectionQueryOptions | undefined;
+}) => {
+  const { objectTypes } = useSkylarkObjectTypes({ ...opts, searchable: true });
   const ret = useObjectTypesConfig(objectTypes);
   return {
     ...ret,
@@ -153,7 +167,10 @@ export const useSkylarkSetObjectTypes = (
   searchable: boolean,
   introspectionOpts?: IntrospectionQueryOptions | undefined,
 ) => {
-  const { objectTypes } = useSkylarkObjectTypes(searchable, introspectionOpts);
+  const { objectTypes } = useSkylarkObjectTypes({
+    introspectionOpts,
+    searchable,
+  });
   const { data } = useSkylarkSchemaInterfaceType("Set", introspectionOpts);
 
   const setObjectTypes = useMemo(() => {
@@ -183,10 +200,10 @@ export const useAllObjectsMeta = (
   searchableOnly?: boolean,
   introspectionOpts?: IntrospectionQueryOptions,
 ) => {
-  const { objectTypes } = useSkylarkObjectTypes(
-    !!searchableOnly,
+  const { objectTypes } = useSkylarkObjectTypes({
     introspectionOpts,
-  );
+    searchable: !!searchableOnly,
+  });
 
   const { data } = useSkylarkSchemaIntrospection(
     useCallback(

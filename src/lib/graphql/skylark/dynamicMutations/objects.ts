@@ -1,14 +1,18 @@
 import { gql } from "graphql-tag";
-import { VariableType } from "json-to-graphql-query";
+import { EnumType, VariableType } from "json-to-graphql-query";
 
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
   BuiltInSkylarkObjectType,
+  DynamicSetConfig,
+  DynamicSetRuleBlock,
   GQLObjectTypeRelationshipConfig,
   ModifiedRelationshipsObject,
   ParsedSkylarkObject,
   ParsedSkylarkObjectContentObject,
   ParsedSkylarkRelationshipConfig,
+  SkylarkDynamicSetInput,
+  SkylarkDynamicSetRuleBlock,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
@@ -27,6 +31,33 @@ interface SetContentOperation {
   objectType: SkylarkObjectType;
   position: number;
 }
+
+const createDynamicSetContentInput = (
+  dynamicSetConfig: DynamicSetConfig,
+): SkylarkDynamicSetInput => {
+  return {
+    dynamic_content_types: dynamicSetConfig.objectTypes.map(
+      (str) => new EnumType(str),
+    ),
+    dynamic_content_rules: dynamicSetConfig.ruleBlocks.map(
+      (ruleBlock): SkylarkDynamicSetInput["dynamic_content_rules"][0] => {
+        const firstRule = {
+          object_types: ruleBlock.objectTypesToSearch,
+        };
+
+        const otherRules = ruleBlock.objectRules.map(
+          (rule): SkylarkDynamicSetRuleBlock => ({
+            object_types: rule.objectType,
+            relationship_name: rule.relationshipName,
+            uid: rule.relatedUid,
+          }),
+        );
+
+        return [firstRule, ...otherRules];
+      },
+    ),
+  };
+};
 
 export const createDeleteObjectMutation = (
   object: SkylarkObjectMeta | null,
@@ -337,6 +368,38 @@ export const createUpdateObjectContentMutation = (
           uid: new VariableType("uid"),
           [object.operations.update.argName]: {
             content: setContent,
+          },
+        },
+        uid: true,
+      },
+    },
+  };
+
+  const graphQLQuery = wrappedJsonMutation(mutation);
+
+  return gql(graphQLQuery);
+};
+
+export const createUpdateObjectDynamicContentConfigurationMutation = (
+  object: SkylarkObjectMeta | null,
+  dynamicSetConfig: DynamicSetConfig,
+) => {
+  if (!object || !object.operations.update) {
+    return null;
+  }
+
+  const mutation = {
+    mutation: {
+      __name: `UPDATE_OBJECT_DYNAMIC_CONTENT_CONFIGURATION_${object.name}`,
+      __variables: {
+        uid: "String!",
+      },
+      updateObjectContent: {
+        __aliasFor: object.operations.update.name,
+        __args: {
+          uid: new VariableType("uid"),
+          [object.operations.update.argName]: {
+            dynamic_content: createDynamicSetContentInput(dynamicSetConfig),
           },
         },
         uid: true,
