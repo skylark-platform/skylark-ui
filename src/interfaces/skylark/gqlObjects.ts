@@ -162,7 +162,7 @@ export interface SkylarkGraphQLAPIKey {
 }
 
 export interface SkylarkDynamicSetRuleBlock {
-  object_types: SkylarkObjectType[];
+  object_types: EnumType[];
   relationship_name: String;
   uid?: string[];
 }
@@ -170,7 +170,7 @@ export interface SkylarkDynamicSetRuleBlock {
 export interface SkylarkDynamicSetInput {
   dynamic_content_types: EnumType[];
   dynamic_content_rules: [
-    { object_types: SkylarkObjectType[] },
+    { object_types: EnumType[] },
     ...Array<SkylarkDynamicSetRuleBlock>,
   ][];
   limit?: number;

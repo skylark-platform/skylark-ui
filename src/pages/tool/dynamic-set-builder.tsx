@@ -11,6 +11,7 @@ import { Select } from "src/components/inputs/select";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { Skeleton } from "src/components/skeleton";
 import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
+import { useDynamicContentPreview } from "src/hooks/useDynamicContentPreview";
 import {
   ObjectTypeWithConfig,
   useAllObjectsMeta,
@@ -166,19 +167,19 @@ const ObjectRuleBlock = ({
 };
 
 const ContentRuleBlock = ({
-  validObjectTypes,
+  // validObjectTypes,
   ruleBlock,
   objectTypesWithConfig,
   setRuleBlock,
 }: {
-  validObjectTypes: string[];
+  // validObjectTypes: string[];
   ruleBlock: DynamicSetRuleBlock;
   objectTypesWithConfig: ObjectTypeWithConfig[];
   // setRuleBlock: Dispatch<SetStateAction<RuleBlock>>;
   setRuleBlock: (r: DynamicSetRuleBlock) => void;
 }) => {
   const objectTypesToSearchOptions = objectTypesWithConfig
-    .filter(({ objectType }) => validObjectTypes.includes(objectType))
+    // .filter(({ objectType }) => validObjectTypes.includes(objectType))
     .map(({ objectType, config }) => ({
       label: config.objectTypeDisplayName || objectType,
       value: objectType,
@@ -315,17 +316,15 @@ const ListObjectContent = ({ uid }: { uid: string }) => {
 };
 
 export default function DynamicSets() {
-  const { query } = useRouter();
-
   const [setUid, setSetUid] = useState("");
 
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig({
     withAvailabilityObjectType: false,
   });
 
-  const [objectTypes, setObjectTypes] = useState<
-    DynamicSetConfig["objectTypes"]
-  >([]);
+  // const [objectTypes, setObjectTypes] = useState<
+  //   DynamicSetConfig["objectTypes"]
+  // >([]);
 
   const [ruleBlocks, setRuleBlocks] = useState<DynamicSetConfig["ruleBlocks"]>(
     [],
@@ -349,12 +348,25 @@ export default function DynamicSets() {
 
   const { objectOperations } = useSkylarkObjectOperations("SkylarkSet");
 
+  const objectTypes = [
+    ...new Set(
+      ruleBlocks.reduce(
+        (prev, { objectTypesToSearch }) => [...prev, ...objectTypesToSearch],
+        [] as string[],
+      ),
+    ),
+  ];
+
+  const { data, query } = useDynamicContentPreview({ objectTypes, ruleBlocks });
+
+  console.log("preview", { data });
+
   return (
     <div className="w-full grid grid-cols-3 pt-32 mx-auto">
       <div className="w-full mx-auto flex max-w-3xl flex-col justify-start items-center text-sm col-span-2">
         {objectOperations && objectTypesWithConfig && (
           <>
-            <MultiSelect
+            {/* <MultiSelect
               label="Populate a Set with content matching the types"
               labelVariant="form"
               options={objectTypesWithConfig.map(({ objectType, config }) => ({
@@ -364,12 +376,12 @@ export default function DynamicSets() {
               selected={objectTypes}
               onChange={setObjectTypes}
               className="w-full"
-            />
+            /> */}
             {ruleBlocks.map((ruleBlock, i) => (
               <ContentRuleBlock
                 key={i}
                 ruleBlock={ruleBlock}
-                validObjectTypes={objectTypes}
+                // validObjectTypes={objectTypes}
                 objectTypesWithConfig={objectTypesWithConfig}
                 setRuleBlock={(newRule) =>
                   setRuleBlocks((oldRules) =>
@@ -390,27 +402,36 @@ export default function DynamicSets() {
         )}
       </div>
       <div className="w-full col-span-1">
-        <TextInput
-          onChange={setSetUid}
-          value={setUid}
-          label="UID of Set to update"
-          className="mb-4 mr-4"
-        />
-        <Button variant={"primary"}>Update</Button>
-        {setUid ? (
-          <ListObjectContent uid={setUid} />
+        {data ? (
+          <>
+            <p>Preview</p>
+            <div className="h-96 overflow-scroll mx-4 px-4 my-4 border border-manatee-300">
+              {data.map((obj) => (
+                <ObjectIdentifierCard key={obj.uid} object={obj} />
+              ))}
+            </div>
+            <TextInput
+              onChange={setSetUid}
+              value={setUid}
+              label="UID of Set to update"
+              className="mb-4 mr-4"
+            />
+            <Button variant={"primary"}>Update</Button>
+          </>
         ) : (
           <>
             <p>DynamicSetInput:</p>
             <pre className="text-xs mt-2">
               {objectOperations &&
-                objectTypes &&
+                // objectTypes &&
                 ruleBlocks &&
+                query &&
                 print(
-                  createUpdateObjectDynamicContentConfigurationMutation(
-                    objectOperations,
-                    { objectTypes, ruleBlocks },
-                  ) as DocumentNode,
+                  // createUpdateObjectDynamicContentConfigurationMutation(
+                  //   objectOperations,
+                  //   { objectTypes, ruleBlocks },
+                  // ) as DocumentNode,
+                  query,
                 )}
             </pre>
           </>

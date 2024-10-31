@@ -32,7 +32,7 @@ interface SetContentOperation {
   position: number;
 }
 
-const createDynamicSetContentInput = (
+export const createDynamicSetContentInput = (
   dynamicSetConfig: DynamicSetConfig,
 ): SkylarkDynamicSetInput => {
   return {
@@ -42,12 +42,14 @@ const createDynamicSetContentInput = (
     dynamic_content_rules: dynamicSetConfig.ruleBlocks.map(
       (ruleBlock): SkylarkDynamicSetInput["dynamic_content_rules"][0] => {
         const firstRule = {
-          object_types: ruleBlock.objectTypesToSearch,
+          object_types: ruleBlock.objectTypesToSearch.map(
+            (ot) => new EnumType(ot),
+          ),
         };
 
         const otherRules = ruleBlock.objectRules.map(
           (rule): SkylarkDynamicSetRuleBlock => ({
-            object_types: rule.objectType,
+            object_types: rule.objectType.map((ot) => new EnumType(ot)),
             relationship_name: rule.relationshipName,
             uid: rule.relatedUid,
           }),

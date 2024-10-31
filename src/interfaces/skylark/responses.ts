@@ -266,3 +266,7 @@ export interface GQLSkylarkListAPIKeysResponse {
 export interface GQLSkylarkCreateAPIKeyResponse {
   createApiKey: SkylarkGraphQLAPIKey;
 }
+
+export interface GQLSkylarkDynamicContentPreviewResponse {
+  dynamicContentPreview: SkylarkGraphQLObject[];
+}
