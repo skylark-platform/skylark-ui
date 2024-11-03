@@ -37,7 +37,7 @@ export const ContentModel = () => {
       : undefined;
 
   const { objects: allObjectsMeta } = useAllObjectsMeta(true, schemaOpts);
-  const { objectTypesWithConfig, isLoading: isLoadingObjectTypesWithConfig } =
+  const { objectTypesConfig, isLoading: isLoadingObjectTypesWithConfig } =
     useSkylarkObjectTypesWithConfig({ introspectionOpts: schemaOpts });
 
   const activeObjectType = (query?.objectType?.[0] as string) || null;
@@ -46,9 +46,7 @@ export const ContentModel = () => {
     ({ name }) => name.toLowerCase() === activeObjectType?.toLowerCase(),
   );
 
-  const config = objectTypesWithConfig?.find(
-    ({ objectType }) => objectType === objectMeta?.name,
-  )?.config;
+  const config = objectTypesConfig?.[objectMeta?.name || ""];
 
   const {
     objectTypeRelationshipConfig: relationshipConfig,
@@ -69,7 +67,7 @@ export const ContentModel = () => {
         setSchemaVersion={setActiveSchemaVersion}
       />
 
-      {allObjectsMeta && objectTypesWithConfig ? (
+      {allObjectsMeta && objectTypesConfig ? (
         <div className="grid grid-cols-4 gap-4">
           <ObjectTypeNavigation
             activeObjectType={activeObjectType}

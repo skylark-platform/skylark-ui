@@ -38,7 +38,6 @@ import {
   ParsedSkylarkObjectAvailabilityObject,
   SkylarkObjectIdentifier,
   BuiltInSkylarkObjectType,
-  ParsedSkylarkObject,
   SkylarkAvailabilityField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -50,6 +49,7 @@ import {
   getSingleAvailabilityStatus,
   is2038Problem,
 } from "src/lib/skylark/availability";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { formatObjectField } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
@@ -62,12 +62,12 @@ interface PanelAvailabilityProps {
   inEditMode: boolean;
   setPanelObject: SetPanelObject;
   modifiedAvailabilityObjects: {
-    added: ParsedSkylarkObject[];
+    added: SkylarkObjectIdentifier[];
     removed: string[];
   } | null;
   setAvailabilityObjects: (
     a: {
-      added: ParsedSkylarkObject[];
+      added: SkylarkObjectIdentifier[];
       removed: string[];
     },
     errors: HandleDropError[],
@@ -147,7 +147,7 @@ const AvailabilityValueGrid = ({
 
 const convertAvailabilityToParsedObjects = (
   availabilityObjects: ParsedSkylarkObjectAvailabilityObject[],
-): ParsedSkylarkObject[] => {
+): SkylarkObjectIdentifier[] => {
   const parsedObjects = availabilityObjects.map(
     ({
       uid,
@@ -157,30 +157,32 @@ const convertAvailabilityToParsedObjects = (
       title,
       slug,
       timezone,
-    }): ParsedSkylarkObject => ({
-      uid,
-      config: {},
-      meta: {
-        language: "",
-        availableLanguages: [],
-        availabilityStatus: null,
-        versions: {},
-      },
-      availability: {
-        status: null,
-        objects: [],
-      },
-      objectType: BuiltInSkylarkObjectType.Availability,
-      metadata: {
+    }): SkylarkObjectIdentifier =>
+      convertParsedObjectToIdentifier({
         uid,
-        start,
-        end,
-        external_id,
-        title,
-        slug,
-        timezone,
-      },
-    }),
+        config: {},
+        meta: {
+          language: "",
+          availableLanguages: [],
+          availabilityStatus: null,
+          versions: {},
+        },
+        availability: {
+          status: null,
+          objects: [],
+        },
+        objectType: BuiltInSkylarkObjectType.Availability,
+        metadata: {
+          type: null,
+          uid,
+          start,
+          end,
+          external_id,
+          title,
+          slug,
+          timezone,
+        },
+      }),
   );
   return parsedObjects;
 };
@@ -296,10 +298,10 @@ const PanelAvailabilityEditViewSection = ({
   removeAvailabilityObject: (uid: string) => void;
   toggleInheritedAvailability: (o: {
     newActive: boolean;
-    parsedObject: ParsedSkylarkObject;
+    parsedObject: SkylarkObjectIdentifier;
     isActiveOnServer: boolean;
   }) => void;
-  availabilityObjects: ParsedSkylarkObject[];
+  availabilityObjects: SkylarkObjectIdentifier[];
   inheritedObjects: ParsedSkylarkObjectAvailabilityObject[];
 } & PanelAvailabilityProps) => {
   const inheritedUids = inheritedObjects?.map(({ uid }) => uid);
@@ -309,60 +311,69 @@ const PanelAvailabilityEditViewSection = ({
 
   return (
     <div className="mb-8">
-      {availabilityObjects?.map((obj) => {
-        const isInherited = inheritedUids.includes(obj.uid);
-        const initialActiveFromServer = activeInheritedUids.includes(obj.uid);
-        const hasSwitchedToEnabled = Boolean(
-          modifiedAvailabilityObjects?.added.find(({ uid }) => uid === obj.uid),
-        );
-        const hasSwitchedToDisabled = Boolean(
-          modifiedAvailabilityObjects?.removed.includes(obj.uid),
-        );
+      {availabilityObjects
+        ?.filter(
+          (
+            obj,
+          ): obj is SkylarkObjectIdentifier<BuiltInSkylarkObjectType.Availability> =>
+            obj.objectType === BuiltInSkylarkObjectType.Availability,
+        )
+        .map((obj) => {
+          const isInherited = inheritedUids.includes(obj.uid);
+          const initialActiveFromServer = activeInheritedUids.includes(obj.uid);
+          const hasSwitchedToEnabled = Boolean(
+            modifiedAvailabilityObjects?.added.find(
+              ({ uid }) => uid === obj.uid,
+            ),
+          );
+          const hasSwitchedToDisabled = Boolean(
+            modifiedAvailabilityObjects?.removed.includes(obj.uid),
+          );
 
-        const clientHasChangedActive =
-          hasSwitchedToEnabled || hasSwitchedToDisabled;
+          const clientHasChangedActive =
+            hasSwitchedToEnabled || hasSwitchedToDisabled;
 
-        const isActive = clientHasChangedActive
-          ? hasSwitchedToEnabled
-          : initialActiveFromServer;
-        return (
-          <div key={obj.uid} className="flex items-center">
-            <ObjectIdentifierCard
-              key={`availability-edit-card-${obj.uid}`}
-              object={obj}
-              disableForwardClick={inEditMode}
-              hideObjectType
-              onForwardClick={setPanelObject}
-              onDeleteClick={
-                isInherited
-                  ? undefined
-                  : () => removeAvailabilityObject(obj.uid)
-              }
-            >
-              <AvailabilityLabel
-                status={getAvailabilityStatusForAvailabilityObject(
-                  obj.metadata,
+          const isActive = clientHasChangedActive
+            ? hasSwitchedToEnabled
+            : initialActiveFromServer;
+          return (
+            <div key={obj.uid} className="flex items-center">
+              <ObjectIdentifierCard
+                key={`availability-edit-card-${obj.uid}`}
+                object={obj}
+                disableForwardClick={inEditMode}
+                hideObjectType
+                onForwardClick={setPanelObject}
+                onDeleteClick={
+                  isInherited
+                    ? undefined
+                    : () => removeAvailabilityObject(obj.uid)
+                }
+              >
+                <AvailabilityLabel
+                  status={getAvailabilityStatusForAvailabilityObject(
+                    obj.contextualFields,
+                  )}
+                />
+                {isInherited && (
+                  <div>
+                    <Switch
+                      size="small"
+                      enabled={isActive}
+                      onChange={(active) =>
+                        toggleInheritedAvailability({
+                          newActive: active,
+                          parsedObject: obj,
+                          isActiveOnServer: initialActiveFromServer,
+                        })
+                      }
+                    />
+                  </div>
                 )}
-              />
-              {isInherited && (
-                <div>
-                  <Switch
-                    size="small"
-                    enabled={isActive}
-                    onChange={(active) =>
-                      toggleInheritedAvailability({
-                        newActive: active,
-                        parsedObject: obj,
-                        isActiveOnServer: initialActiveFromServer,
-                      })
-                    }
-                  />
-                </div>
-              )}
-            </ObjectIdentifierCard>
-          </div>
-        );
-      })}
+              </ObjectIdentifierCard>
+            </div>
+          );
+        })}
       {availabilityObjects.length === 0 && <PanelEmptyDataText />}
     </div>
   );
@@ -374,11 +385,11 @@ const PanelAvailabilityEditView = ({
   ...props
 }: {
   removeAvailabilityObject: (uid: string) => void;
-  availabilityObjects: ParsedSkylarkObject[];
+  availabilityObjects: SkylarkObjectIdentifier[];
   inheritedUids: string[];
   toggleInheritedAvailability: (o: {
     newActive: boolean;
-    parsedObject: ParsedSkylarkObject;
+    parsedObject: SkylarkObjectIdentifier;
     isActiveOnServer: boolean;
   }) => void;
   inheritedObjects: ParsedSkylarkObjectAvailabilityObject[];
@@ -438,7 +449,7 @@ const PanelAvailabilityInheritanceObjects = ({
         {objects?.map((obj) => (
           <ObjectIdentifierCard
             key={obj.uid}
-            object={obj}
+            object={convertParsedObjectToIdentifier(obj)}
             onForwardClick={setPanelObject}
             hideAvailabilityStatus
           />
@@ -515,6 +526,13 @@ const PanelAvailabilityReadonlyCard = ({
       value: availability[SkylarkAvailabilityField.Timezone] || "",
     },
   ];
+
+  const displayName =
+    availability.title ||
+    availability.slug ||
+    availability.external_id ||
+    availability.uid;
+
   return (
     <m.div
       key={`availability-card-inner-${availability.uid}`}
@@ -588,14 +606,7 @@ const PanelAvailabilityReadonlyCard = ({
         />
         <div className="flex items-start">
           <div className="flex-grow">
-            <PanelFieldTitle
-              text={
-                availability.title ||
-                availability.slug ||
-                availability.external_id ||
-                availability.uid
-              }
-            />
+            <PanelFieldTitle text={displayName} />
             <p className="text-manatee-400">
               {status &&
                 getRelativeTimeFromDate(
@@ -616,6 +627,21 @@ const PanelAvailabilityReadonlyCard = ({
                   uid: availability.uid,
                   objectType: BuiltInSkylarkObjectType.Availability,
                   language: "",
+                  availabilityStatus: status,
+                  availableLanguages: [],
+                  externalId: availability.external_id,
+                  type: null,
+                  display: {
+                    name: displayName,
+                    objectType: BuiltInSkylarkObjectType.Availability,
+                    colour: "",
+                  },
+                  contextualFields: {
+                    start: availability.start,
+                    end: availability.end,
+                  },
+                  created: undefined,
+                  modified: undefined,
                 })
               }
             />
@@ -898,7 +924,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
     parsedObject,
   }: {
     newActive: boolean;
-    parsedObject: ParsedSkylarkObject;
+    parsedObject: SkylarkObjectIdentifier;
     isActiveOnServer: boolean;
   }) => {
     const previousAdded = modifiedAvailabilityObjects?.added || [];

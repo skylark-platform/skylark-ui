@@ -2,11 +2,11 @@ import { CheckedState } from "@radix-ui/react-checkbox";
 import { useState, useMemo, useCallback } from "react";
 
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 
 export type CheckedObjectState = {
   checkedState: CheckedState;
-  object: ParsedSkylarkObject;
+  object: SkylarkObjectIdentifier;
 };
 
 export const useCheckedObjectsState = (
@@ -20,7 +20,7 @@ export const useCheckedObjectsState = (
     setCheckedObjectsState(initialCheckedObjects || []);
   }, [initialCheckedObjects]);
 
-  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+  const { objectTypesConfig } = useSkylarkObjectTypesWithConfig();
 
   const { checkedObjectTypes, checkedUids, checkedObjects } = useMemo(() => {
     const { objectTypes, uids, objects } = checkedObjectsState.reduce(
@@ -38,7 +38,7 @@ export const useCheckedObjectsState = (
       {
         uids: [] as string[],
         objectTypes: [] as string[],
-        objects: [] as ParsedSkylarkObject[],
+        objects: [] as SkylarkObjectIdentifier[],
       },
     );
 
@@ -50,18 +50,16 @@ export const useCheckedObjectsState = (
   }, [checkedObjectsState]);
 
   const checkedObjectTypesForDisplay = useMemo(() => {
-    const objectTypesForDisplay = objectTypesWithConfig
+    const objectTypesForDisplay = objectTypesConfig
       ? checkedObjectTypes.map((objectType) => {
-          const data = objectTypesWithConfig.find(
-            (c) => c.objectType === objectType,
-          );
+          const config = objectTypesConfig?.[objectType];
 
-          return data?.config?.objectTypeDisplayName || objectType;
+          return config?.objectTypeDisplayName || objectType;
         })
       : checkedObjectTypes;
 
     return objectTypesForDisplay;
-  }, [checkedObjectTypes, objectTypesWithConfig]);
+  }, [checkedObjectTypes, objectTypesConfig]);
 
   return {
     checkedObjectsState,

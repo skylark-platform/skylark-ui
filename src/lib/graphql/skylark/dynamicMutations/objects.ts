@@ -9,13 +9,14 @@ import {
   GQLObjectTypeRelationshipConfig,
   ModifiedRelationshipsObject,
   ParsedSkylarkObject,
-  ParsedSkylarkObjectContentObject,
+  SkylarkObjectContentObject,
   ParsedSkylarkRelationshipConfig,
   SkylarkDynamicSetInput,
   SkylarkDynamicSetRuleBlock,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
+  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import {
   generateFieldsToReturn,
@@ -274,8 +275,8 @@ export const createPublishVersionMutation = (
 
 export const createUpdateObjectContentMutation = (
   object: SkylarkObjectMeta | null,
-  originalContentObjects: ParsedSkylarkObjectContentObject[] | null,
-  updatedContentObjects: ParsedSkylarkObjectContentObject[] | null,
+  originalContentObjects: SkylarkObjectContentObject[] | null,
+  updatedContentObjects: SkylarkObjectContentObject[] | null,
 ) => {
   if (
     !object ||
@@ -486,7 +487,7 @@ export const createUpdateObjectRelationshipsMutation = (
 export const createUpdateObjectAvailability = (
   object: SkylarkObjectMeta | null,
   modifiedAvailabilityObjects: {
-    added: ParsedSkylarkObject[];
+    added: SkylarkObjectIdentifier[];
     removed: string[];
   } | null,
 ) => {
@@ -649,7 +650,7 @@ export const createUpdateAvailabilityDimensionsMutation = (
 const createAvailabilityObjectLinkUnlinkOperations = (
   allObjectsMeta: SkylarkObjectMeta[],
   availabilityUid: string,
-  objects: ParsedSkylarkObject[],
+  objects: SkylarkObjectIdentifier[],
   type: "link" | "unlink",
 ) =>
   objects.reduce((previous, object) => {
@@ -686,8 +687,8 @@ const createAvailabilityObjectLinkUnlinkOperations = (
 export const createUpdateAvailabilityAssignedToMutation = (
   allObjectsMeta: SkylarkObjectMeta[] | null,
   availabilityUid: string,
-  addedObjects: ParsedSkylarkObject[],
-  removedObjects: ParsedSkylarkObject[],
+  addedObjects: SkylarkObjectIdentifier[],
+  removedObjects: SkylarkObjectIdentifier[],
 ) => {
   if (!allObjectsMeta || !availabilityUid) {
     return null;

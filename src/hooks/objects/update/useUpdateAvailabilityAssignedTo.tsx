@@ -6,7 +6,7 @@ import { createGetObjectAvailabilityKeyPrefix } from "src/hooks/objects/get/useG
 import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkErrorResponse,
-  ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateAvailabilityAssignedToMutation } from "src/lib/graphql/skylark/dynamicMutations/objects";
@@ -28,8 +28,8 @@ export const useUpdateAvailabilityAssignedTo = ({
     }: {
       uid: string;
       modifiedAvailabilityAssignedTo: {
-        added: ParsedSkylarkObject[];
-        removed: ParsedSkylarkObject[];
+        added: SkylarkObjectIdentifier[];
+        removed: SkylarkObjectIdentifier[];
       };
     }) => {
       const updateAvailabilityObjectDimensionsMutation =

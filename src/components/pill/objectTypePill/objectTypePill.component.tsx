@@ -18,11 +18,9 @@ export const ObjectTypePill = ({
   className,
   forceActualName,
 }: ObjectTypePillProps) => {
-  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+  const { objectTypesConfig } = useSkylarkObjectTypesWithConfig();
 
-  const { config } = objectTypesWithConfig?.find(
-    ({ objectType }) => objectType === type,
-  ) || { config: defaultConfig };
+  const config = objectTypesConfig?.[type] || defaultConfig;
 
   return (
     <Pill

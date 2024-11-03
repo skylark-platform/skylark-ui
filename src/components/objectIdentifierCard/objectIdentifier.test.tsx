@@ -5,10 +5,11 @@ import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
 import { ObjectIdentifierCard } from "./objectIdentifier.component";
 
-const defaultObject: ParsedSkylarkObject = {
+const defaultObject = convertParsedObjectToIdentifier({
   uid: "123",
   objectType: "SkylarkSet",
   config: {
@@ -18,6 +19,7 @@ const defaultObject: ParsedSkylarkObject = {
     uid: "set-1",
     external_id: "my-set",
     title: "my episode",
+    type: null,
   },
   meta: {
     language: "en-GB",
@@ -29,7 +31,7 @@ const defaultObject: ParsedSkylarkObject = {
     status: AvailabilityStatus.Active,
     objects: [],
   },
-};
+});
 
 test("displays the Object's display_name when one is given", () => {
   render(<ObjectIdentifierCard object={defaultObject} />);
@@ -41,10 +43,11 @@ test("displays the Object's display_name when one is given", () => {
 test("displays the Object's objectType when no display_name is given", () => {
   const object = {
     ...defaultObject,
-    config: {
-      objectTypeDisplayName: null,
+    display: {
+      ...defaultObject.display,
+      objectType: "",
     },
-  } as unknown as ParsedSkylarkObject;
+  };
   render(<ObjectIdentifierCard object={object} />);
 
   expect(screen.getByText("SkylarkSet")).toBeInTheDocument();
@@ -106,7 +109,7 @@ test("displays arrow when onForwardClick is passed as a prop and calls window.op
   expect(onForwardClick).not.toHaveBeenCalled();
 
   expect(window.open).toHaveBeenCalledWith(
-    `/object/${defaultObject.objectType}/${defaultObject.uid}?language=${defaultObject.meta.language}`,
+    `/object/${defaultObject.objectType}/${defaultObject.uid}?language=${defaultObject.language}`,
     "_blank",
   );
 });
@@ -158,7 +161,7 @@ test("displays AvailabilityStatus icon by default (Future)", () => {
     <ObjectIdentifierCard
       object={{
         ...defaultObject,
-        availability: { status: AvailabilityStatus.Future, objects: [] },
+        availabilityStatus: AvailabilityStatus.Future,
       }}
     />,
   );
@@ -188,6 +191,7 @@ test("does not show AvailabilityStatus icon when object type is Availability", (
       object={{
         ...defaultObject,
         objectType: BuiltInSkylarkObjectType.Availability,
+        contextualFields: undefined,
       }}
     />,
   );

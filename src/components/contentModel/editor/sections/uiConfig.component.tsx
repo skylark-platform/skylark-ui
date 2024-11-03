@@ -9,6 +9,7 @@ import {
   AvailabilityStatus,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
 import {
   ContentModelEditorForm,
@@ -110,7 +111,7 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
             <ObjectIdentifierCard
               forceConfigFromObject
               className="shadow px-2"
-              object={{
+              object={convertParsedObjectToIdentifier({
                 objectType: objectMeta.name,
                 uid: "example",
                 config: {
@@ -127,12 +128,13 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
                 metadata: {
                   uid: `Example "${primaryField}" value`,
                   external_id: "",
+                  type: null,
                 },
                 availability: {
                   status: AvailabilityStatus.Active,
                   objects: [],
                 },
-              }}
+              })}
             />
           </div>
         </div>

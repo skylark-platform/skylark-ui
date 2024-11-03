@@ -31,6 +31,11 @@ export interface ObjectTypeWithConfig {
   config: ParsedSkylarkObjectConfig;
 }
 
+export type ObjectTypesConfigObject = Record<
+  SkylarkObjectType,
+  ParsedSkylarkObjectConfig
+>;
+
 export const sortObjectTypesWithConfig = (
   a: {
     objectType: string;
@@ -97,19 +102,35 @@ const useObjectTypesConfig = (objectTypes?: string[]) => {
     gcTime: Infinity,
   });
 
-  const objectTypesWithConfig: ObjectTypeWithConfig[] | undefined = useMemo(
-    () =>
-      objectTypes
-        ?.map((objectType) => ({
-          objectType,
-          config: parseObjectConfig(objectType, data?.[objectType]),
-        }))
-        .sort(sortObjectTypesWithConfig),
-    [data, objectTypes],
-  );
+  const { objectTypesWithConfig, objectTypesConfig } = useMemo((): {
+    objectTypesWithConfig?: ObjectTypeWithConfig[];
+    objectTypesConfig?: ObjectTypesConfigObject;
+  } => {
+    const objectTypesWithConfig = objectTypes
+      ?.map((objectType) => ({
+        objectType,
+        config: parseObjectConfig(objectType, data?.[objectType]),
+      }))
+      .sort(sortObjectTypesWithConfig);
+
+    const objectTypesConfig = objectTypesWithConfig
+      ? Object.fromEntries(
+          objectTypesWithConfig.map(({ objectType, config }) => [
+            objectType,
+            config,
+          ]),
+        )
+      : undefined;
+
+    return {
+      objectTypesWithConfig,
+      objectTypesConfig,
+    };
+  }, [data, objectTypes]);
 
   return {
     objectTypesWithConfig,
+    objectTypesConfig,
     numObjectTypes: objectTypes?.length,
     isLoading,
   };

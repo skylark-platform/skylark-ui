@@ -1,29 +1,26 @@
-import { sentenceCase } from "change-case";
 import clsx from "clsx";
 import { Transition, m } from "framer-motion";
-import { Ref, forwardRef, useEffect, useMemo } from "react";
+import { Ref, forwardRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
-import { Select } from "src/components/inputs/select";
 import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import {
   PanelButton,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
-import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObject,
-  ParsedSkylarkObjectRelationship,
+  SkylarkObjectRelationship,
   ParsedSkylarkRelationshipConfig,
 } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
 interface PanelRelationshipsSectionProps {
   isEmptySection?: boolean;
-  relationship: ParsedSkylarkObjectRelationship;
+  relationship: SkylarkObjectRelationship;
   inEditMode: boolean;
   isFetchingMoreRelationships: boolean;
   newUids: string[];
@@ -43,7 +40,7 @@ interface PanelRelationshipsSectionProps {
     updatedConfig: Partial<ParsedSkylarkRelationshipConfig>,
   ) => void;
   setSearchObjectsModalState: (args: {
-    relationship: ParsedSkylarkObjectRelationship;
+    relationship: SkylarkObjectRelationship;
     fields?: string[];
   }) => void;
   hasMoreRelationships?: boolean;
@@ -72,13 +69,6 @@ const dumbFieldComparison = (
   }
 
   return aField < bField ? -1 : 1;
-};
-
-const manuallySortObjects = (
-  objects: ParsedSkylarkObject[],
-  sortField: string,
-) => {
-  return objects.sort((a, b) => dumbFieldComparison(a, b, sortField));
 };
 
 const PanelRelationshipSectionComponent = (
@@ -122,21 +112,15 @@ const PanelRelationshipSectionComponent = (
 
   const canLoadMore = isExpanded && hasMoreRelationships;
 
-  const sortedObjects = useMemo(
-    () =>
-      modifiedConfig?.defaultSortField
-        ? manuallySortObjects(objects, modifiedConfig.defaultSortField)
-        : objects,
-    [objects, modifiedConfig?.defaultSortField],
-  );
-
   const displayList =
-    hasShowMore && !isExpanded ? sortedObjects.slice(0, 5) : sortedObjects;
+    hasShowMore && !isExpanded ? objects.slice(0, 5) : objects;
 
   const activeSortField =
     modifiedConfig?.defaultSortField ||
     config.overrides.defaultSortField ||
     config.objectTypeDefault?.defaultSortField;
+
+  console.log({ displayList });
 
   return (
     <m.div
@@ -225,8 +209,8 @@ const PanelRelationshipSectionComponent = (
         <div className="overflow-hidden">
           {displayList?.length > 0 &&
             displayList?.map((obj, index) => {
-              const sortFieldValue =
-                activeSortField && obj.metadata?.[activeSortField];
+              // const sortFieldValue =
+              //   activeSortField && obj.metadata?.[activeSortField];
 
               return (
                 <m.div
@@ -257,7 +241,7 @@ const PanelRelationshipSectionComponent = (
                       }
                       onForwardClick={setPanelObject}
                     >
-                      {sortFieldValue && (
+                      {/* {sortFieldValue && (
                         <Tooltip tooltip={sortFieldValue}>
                           <p
                             className="flex max-w-8 sm:max-w-full min-w-3 overflow-hidden whitespace-nowrap text-sm text-manatee-500 cursor-default"
@@ -268,7 +252,7 @@ const PanelRelationshipSectionComponent = (
                             </span>
                           </p>
                         </Tooltip>
-                      )}
+                      )} */}
                       {inEditMode && newUids?.includes(obj.uid) && (
                         <span
                           className={

@@ -12,16 +12,17 @@ import {
   NormalizedObjectField,
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
-  ParsedSkylarkObjectRelationship,
-  ParsedSkylarkObjectRelationships,
+  SkylarkObjectRelationship,
+  SkylarkObjectRelationships,
   SkylarkAvailabilityField,
   SkylarkGraphQLObject,
   SkylarkObjectMetadataField,
-  SkylarkObjectRelationship,
+  SkylarkObjectMetaRelationship,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 
 import { AWS_EARLIEST_DATE, AWS_LATEST_DATE } from "./availability";
+import { convertParsedObjectToIdentifier } from "./objects";
 import {
   parseInputFieldValue,
   parseMetadataForGraphQLRequest,
@@ -613,6 +614,7 @@ describe("parseSkylarkObject", () => {
         title_long: null,
         title_medium: "Game of Thrones - Season 2",
         title_short: "GOT Season 2",
+        type: null,
       },
       availability: {
         status: AvailabilityStatus.Unavailable,
@@ -1124,12 +1126,12 @@ describe("parseMetadataForHTMLForm", () => {
 });
 
 describe("parseUpdatedRelationshipObjects", () => {
-  const relationship: SkylarkObjectRelationship = {
+  const relationship: SkylarkObjectMetaRelationship = {
     relationshipName: "seasons",
     objectType: "Season",
   };
 
-  const parsedRelationship: ParsedSkylarkObjectRelationship = {
+  const parsedRelationship: SkylarkObjectRelationship = {
     name: relationship.relationshipName,
     objectType: relationship.objectType,
     objects: [],
@@ -1167,6 +1169,7 @@ describe("parseUpdatedRelationshipObjects", () => {
       title_long: null,
       title_medium: "Game of Thrones - Season 2",
       title_short: "GOT Season 2",
+      type: null,
     },
     availability: {
       status: AvailabilityStatus.Unavailable,
@@ -1176,16 +1179,16 @@ describe("parseUpdatedRelationshipObjects", () => {
     content: undefined,
   };
 
-  const updatedRelationshipObjects: ParsedSkylarkObjectRelationships = {
+  const updatedRelationshipObjects: SkylarkObjectRelationships = {
     [relationship.relationshipName]: {
       ...parsedRelationship,
-      objects: [expectedParsedObject],
+      objects: [convertParsedObjectToIdentifier(expectedParsedObject)],
     },
   };
-  const originalRelationshipObjects: ParsedSkylarkObjectRelationships = {
+  const originalRelationshipObjects: SkylarkObjectRelationships = {
     [relationship.relationshipName]: {
       ...parsedRelationship,
-      objects: [expectedParsedObject],
+      objects: [convertParsedObjectToIdentifier(expectedParsedObject)],
     },
   };
 

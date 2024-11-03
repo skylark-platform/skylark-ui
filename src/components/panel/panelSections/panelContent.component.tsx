@@ -32,7 +32,7 @@ import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
 import { SetPanelObject } from "src/hooks/state";
 import {
-  ParsedSkylarkObjectContentObject,
+  SkylarkObjectContentObject,
   AddedSkylarkObjectContentObject,
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
@@ -45,16 +45,24 @@ import {
   generateSortableObjectId,
   useSortable,
 } from "src/lib/dndkit/dndkit";
-import { hasProperty, insertAtIndex } from "src/lib/utils";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
+import {
+  getObjectDisplayName,
+  hasProperty,
+  insertAtIndex,
+} from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
-interface PanelContentProps extends SkylarkObjectIdentifier {
+interface PanelContentProps {
+  uid: string;
+  objectType: string;
+  language: string;
   isPage?: boolean;
   objects: AddedSkylarkObjectContentObject[] | null;
   setContentObjects: (
     contentObjects: {
-      original: ParsedSkylarkObjectContentObject[] | null;
+      original: SkylarkObjectContentObject[] | null;
       updated: AddedSkylarkObjectContentObject[] | null;
     },
     errors: HandleDropError[],
@@ -79,7 +87,7 @@ const isSortableDisplayObject = (
 
 interface ContentObjectProps {
   sortableId: string;
-  contentObject: ParsedSkylarkObjectContentObject;
+  contentObject: SkylarkObjectContentObject;
   inEditMode?: boolean;
   arrIndex: number;
   arrLength: number;
@@ -101,20 +109,8 @@ const SortableItem = ({
   setPanelObject,
   handleManualOrderChange,
 }: ContentObjectProps) => {
-  const { object, config, meta, position, isDynamic } = contentObject;
+  const { object, position, isDynamic } = contentObject;
   const isNewObject = hasProperty(contentObject, "isNewObject");
-
-  const parsedObject: ParsedSkylarkObject = {
-    objectType: object.__typename as string,
-    uid: object.uid,
-    metadata: object,
-    config,
-    meta,
-    availability: {
-      status: meta.availabilityStatus,
-      objects: [],
-    },
-  };
 
   const {
     attributes,
@@ -132,7 +128,7 @@ const SortableItem = ({
       dragOverlay: (
         <ObjectIdentifierCard
           className="bg-white px-2 shadow-md cursor-grabbing"
-          object={parsedObject}
+          object={object}
         />
       ),
       collisionDetection: closestCenter,
@@ -156,7 +152,7 @@ const SortableItem = ({
         data-cy={"panel-object-content-item"}
       >
         <ObjectIdentifierCard
-          object={parsedObject}
+          object={object}
           onForwardClick={setPanelObject}
           disableForwardClick={inEditMode}
           disableDeleteClick={!inEditMode}
@@ -288,8 +284,8 @@ export const PanelContent = ({
       id: generateSortableObjectId(
         {
           uid: object.object.uid,
-          objectType: object.object.__typename as string,
-          meta: { language: object.meta.language },
+          objectType: object.objectType,
+          meta: { language: object.object.language },
         },
         "PANEL_CONTENT",
       ),
@@ -368,7 +364,7 @@ export const PanelContent = ({
         ({ uid }) => uid === active.data.current.object.uid,
       );
 
-      const objectsToAdd: ParsedSkylarkObject[] = draggedObjectIsChecked
+      const objectsToAdd: SkylarkObjectIdentifier[] = draggedObjectIsChecked
         ? checkedObjects
         : [draggedObject];
 

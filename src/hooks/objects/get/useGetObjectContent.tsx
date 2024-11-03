@@ -18,7 +18,7 @@ import {
   GQLSkylarkErrorResponse,
   SkylarkObjectMeta,
   GQLSkylarkGetObjectContentResponse,
-  ParsedSkylarkObjectContentObject,
+  SkylarkObjectContentObject,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectContentQuery } from "src/lib/graphql/skylark/dynamicQueries";
@@ -28,7 +28,7 @@ import { GetObjectOptions } from "./useGetObject";
 
 const select = (
   data: InfiniteData<GQLSkylarkGetObjectContentResponse>,
-): ParsedSkylarkObjectContentObject[] => {
+): SkylarkObjectContentObject[] => {
   const contentObjects =
     data?.pages?.flatMap(
       (page) => page.getObjectContent.content?.objects || [],
@@ -175,7 +175,7 @@ export const useGetObjectContent = (
   } = useInfiniteQuery<
     GQLSkylarkGetObjectContentResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentResponse>,
-    ParsedSkylarkObjectContentObject[]
+    SkylarkObjectContentObject[]
   >({
     queryFn,
     queryKey,

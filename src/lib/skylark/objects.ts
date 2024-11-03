@@ -24,12 +24,17 @@ import {
   SkylarkSystemField,
   SkylarkSystemGraphQLType,
   NormalizedObjectField,
-  SkylarkObjectRelationship,
+  SkylarkObjectMetaRelationship,
   ParsedSkylarkObject,
   SkylarkObjectIdentifier,
   ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
-import { getObjectTypeFromListingTypeName } from "src/lib/utils";
+import {
+  getObjectDisplayName,
+  getObjectTypeDisplayNameFromParsedObject,
+  getObjectTypeFromListingTypeName,
+  getPlaybackPolicyFromMetadata,
+} from "src/lib/utils";
 import { ObjectError } from "src/lib/utils/errors";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
@@ -213,7 +218,7 @@ const objectRelationshipFieldsFromGraphQLType = (
 const getObjectRelationshipsFromInputFields = (
   schemaTypes: IntrospectionQuery["__schema"]["types"],
   inputFields?: readonly IntrospectionInputValue[],
-): SkylarkObjectRelationship[] => {
+): SkylarkObjectMetaRelationship[] => {
   const relationshipsInput = inputFields?.find(
     (input) => input.name === "relationships",
   );
@@ -279,7 +284,7 @@ const getMutationInfo = (
 
 const getBuiltInObjectTypeRelationships = (
   schema: IntrospectionSchema,
-  relationships: SkylarkObjectRelationship[],
+  relationships: SkylarkObjectMetaRelationship[],
   getObjectInterface?: IntrospectionObjectType,
   ignoreRelationships?: boolean,
 ): SkylarkObjectMeta["builtinObjectRelationships"] => {
@@ -632,12 +637,87 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
   };
 };
 
-export const convertParsedObjectToIdentifier = ({
-  uid,
-  objectType,
-  meta: { language },
-}: ParsedSkylarkObject): SkylarkObjectIdentifier => ({
-  uid,
-  objectType,
-  language,
-});
+export const convertParsedObjectToIdentifier = (
+  parsedObject: ParsedSkylarkObject,
+  fallbackConfig?: Record<string, ParsedSkylarkObjectConfig>,
+): SkylarkObjectIdentifier => {
+  const { uid, objectType, metadata, meta } = parsedObject;
+
+  const objectConfig = {
+    ...(fallbackConfig?.[parsedObject.objectType] || parsedObject.config),
+  };
+  if (objectConfig?.fieldConfig) delete objectConfig?.fieldConfig;
+
+  const object: SkylarkObjectIdentifier = {
+    uid,
+    externalId: metadata.external_id,
+    type: metadata?.type || null,
+    objectType,
+    language: meta.language,
+    availableLanguages: meta.availableLanguages,
+    availabilityStatus:
+      (parsedObject.availability && parsedObject.availability.status) || null,
+    display: {
+      name: getObjectDisplayName(parsedObject, fallbackConfig),
+      objectType: getObjectTypeDisplayNameFromParsedObject(
+        parsedObject,
+        fallbackConfig,
+      ),
+      colour: parsedObject.config?.colour || fallbackConfig?.config?.colour,
+    },
+    contextualFields: undefined,
+    created: meta.created,
+    modified: meta.modified,
+  };
+
+  if (object.objectType === BuiltInSkylarkObjectType.Availability) {
+    const availabilityObject: SkylarkObjectIdentifier<BuiltInSkylarkObjectType.Availability> =
+      {
+        ...object,
+        objectType: BuiltInSkylarkObjectType.Availability,
+        contextualFields: {
+          start: metadata?.start === "string" ? metadata.start : "",
+          end: metadata?.end === "string" ? metadata.end : "",
+        },
+      };
+
+    return availabilityObject;
+  }
+
+  if (object.objectType === BuiltInSkylarkObjectType.SkylarkImage) {
+    const imageObject: SkylarkObjectIdentifier<BuiltInSkylarkObjectType.SkylarkImage> =
+      {
+        ...object,
+        objectType: BuiltInSkylarkObjectType.SkylarkImage,
+        contextualFields: {
+          url: metadata?.url === "string" ? metadata.url : "",
+        },
+      };
+
+    return imageObject;
+  }
+
+  if (
+    objectType === BuiltInSkylarkObjectType.SkylarkAsset ||
+    objectType === BuiltInSkylarkObjectType.SkylarkLiveAsset
+  ) {
+    const assetObject: SkylarkObjectIdentifier<
+      | BuiltInSkylarkObjectType.SkylarkAsset
+      | BuiltInSkylarkObjectType.SkylarkLiveAsset
+    > = {
+      ...object,
+      objectType:
+        objectType === BuiltInSkylarkObjectType.SkylarkAsset
+          ? BuiltInSkylarkObjectType.SkylarkAsset
+          : BuiltInSkylarkObjectType.SkylarkLiveAsset,
+      contextualFields: {
+        ...metadata,
+        playbackPolicy: getPlaybackPolicyFromMetadata(parsedObject.metadata),
+      },
+    };
+
+    return assetObject;
+  }
+
+  return object;
+};

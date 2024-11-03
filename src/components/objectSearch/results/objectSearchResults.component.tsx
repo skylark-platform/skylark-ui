@@ -28,6 +28,7 @@ import {
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
 import { useDndMonitor } from "src/lib/dndkit/dndkit";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
   getObjectDisplayName,
   hasProperty,
@@ -102,15 +103,14 @@ export const ObjectSearchResults = ({
 }: ObjectSearchResultsProps) => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
-  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+  const { objectTypesWithConfig, objectTypesConfig } =
+    useSkylarkObjectTypesWithConfig();
 
   const { objects: objectsMeta } = useAllObjectsMeta(true);
 
   const formattedSearchData = useMemo(() => {
     const searchDataWithDisplayField = searchData?.map((obj) => {
-      const { config } = objectTypesWithConfig?.find(
-        ({ objectType }) => objectType === obj.objectType,
-      ) || { config: obj.config };
+      const config = objectTypesConfig?.[obj.objectType] || obj.config;
       return {
         ...obj,
         // When the object type is an image, we want to display its preview in the images tab
@@ -135,7 +135,7 @@ export const ObjectSearchResults = ({
     );
 
     return searchDataWithTopLevelMetadata;
-  }, [objectTypesWithConfig, searchData]);
+  }, [objectTypesConfig, searchData]);
 
   const searchDataLength = searchData?.length || 0;
   const fetchMoreOnBottomReached = useCallback(
@@ -158,7 +158,10 @@ export const ObjectSearchResults = ({
   );
 
   const onRowCheckChange = useCallback(
-    (updated: { object: ParsedSkylarkObject; checkedState: CheckedState }) => {
+    (updated: {
+      object: SkylarkObjectIdentifier;
+      checkedState: CheckedState;
+    }) => {
       if (onObjectCheckedChanged && checkedObjectsState) {
         const existsIndex = checkedObjectsState.findIndex((c) =>
           skylarkObjectsAreSame(updated.object, c.object),
@@ -187,7 +190,10 @@ export const ObjectSearchResults = ({
       ? checkedObjectsState.reduce(
           (acc, { object: checkedObj, checkedState }) => {
             const index = searchData.findIndex((searchDataObj) =>
-              skylarkObjectsAreSame(checkedObj, searchDataObj),
+              skylarkObjectsAreSame(
+                checkedObj,
+                convertParsedObjectToIdentifier(searchDataObj),
+              ),
             );
 
             if (index > -1) {
@@ -225,7 +231,10 @@ export const ObjectSearchResults = ({
             .filter(({ checkedState }) => checkedState !== false)
             .map(({ object }) => {
               const index = searchData.findIndex((searchDataObj) =>
-                skylarkObjectsAreSame(object, searchDataObj),
+                skylarkObjectsAreSame(
+                  object,
+                  convertParsedObjectToIdentifier(searchDataObj),
+                ),
               );
 
               return index;
@@ -244,7 +253,10 @@ export const ObjectSearchResults = ({
               reverseSortedCheckedRows[firstSmallerIndex] + 1 || 0,
               rowIndex + 1,
             )
-            .map((object) => ({ object, checkedState: true }));
+            .map((object) => ({
+              object: convertParsedObjectToIdentifier(object),
+              checkedState: true,
+            }));
 
           onObjectCheckedChanged([...checkedObjectsState, ...objectsToCheck]);
         }
@@ -294,11 +306,9 @@ export const ObjectSearchResults = ({
         if (object) {
           let objectConfig = object.config;
           if (!object.config || !object.config.fieldConfig) {
-            const foundConfig = objectTypesWithConfig?.find(
-              ({ objectType }) => objectType === object.objectType,
-            );
+            const foundConfig = objectTypesConfig?.[object.objectType];
             if (foundConfig) {
-              objectConfig = foundConfig.config;
+              objectConfig = foundConfig;
             }
           }
 
@@ -321,7 +331,7 @@ export const ObjectSearchResults = ({
         setPanelObject(obj, opts, ...args);
       }
     },
-    [objectTypesWithConfig, queryClient, searchData, setPanelObject],
+    [objectTypesConfig, queryClient, searchData, setPanelObject],
   );
 
   const table = useReactTable<ObjectSearchTableData>({

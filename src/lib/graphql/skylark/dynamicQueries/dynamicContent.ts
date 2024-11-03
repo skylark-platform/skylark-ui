@@ -7,7 +7,7 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 
-import { createDynamicSetContentInput } from "../dynamicMutations/objects";
+import { createDynamicSetContentInput } from "src/lib/graphql/skylark/dynamicMutations/objects";
 import {
   generateAvailabilityRelationshipFields,
   generateFieldsToReturn,

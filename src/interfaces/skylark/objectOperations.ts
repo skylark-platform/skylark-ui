@@ -106,7 +106,7 @@ export interface SkylarkObjectFields {
   };
 }
 
-export type SkylarkObjectRelationship = {
+export type SkylarkObjectMetaRelationship = {
   relationshipName: string;
   objectType: SkylarkObjectType;
 };
@@ -123,7 +123,7 @@ export interface SkylarkObjectMeta extends SkylarkObjectFields {
     } | null;
   };
   operations: SkylarkObjectOperations;
-  relationships: SkylarkObjectRelationship[];
+  relationships: SkylarkObjectMetaRelationship[];
   hasContent: boolean;
   hasContentOf: boolean;
   hasRelationships: boolean;

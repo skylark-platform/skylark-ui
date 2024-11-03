@@ -8,7 +8,10 @@ import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 import { prefetchGetObjectAvailability } from "./useGetObjectAvailability";
 import { prefetchGetObjectContent } from "./useGetObjectContent";
 
-interface UseGetObjectPrefetchQueriesProps extends SkylarkObjectIdentifier {
+interface UseGetObjectPrefetchQueriesProps {
+  uid: string;
+  objectType: string;
+  language: string;
   selectedTab: PanelTab;
 }
 

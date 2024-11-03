@@ -22,16 +22,15 @@ import {
   NormalizedObjectField,
   ParsedSkylarkObjectAvailability,
   SkylarkGraphQLObjectContent,
-  ParsedSkylarkObjectContent,
+  SkylarkObjectContent,
   ParsedSkylarkObjectMetadata,
-  SkylarkObjectRelationship,
+  SkylarkObjectMetaRelationship,
   SkylarkGraphQLObject,
-  ParsedSkylarkObjectImageRelationship,
   SkylarkObjectMeta,
   ParsedSkylarkObject,
   SkylarkGraphQLObjectImage,
   SkylarkObjectMetadataField,
-  ParsedSkylarkObjectRelationships,
+  SkylarkObjectRelationships,
   BuiltInSkylarkObjectType,
   ParsedSkylarkObjectConfig,
   SkylarkGraphQLObjectConfig,
@@ -46,6 +45,7 @@ import {
   SkylarkGraphQLAvailability,
   ParsedSkylarkObjectAvailabilityObject,
   SkylarkGraphQLAvailabilityList,
+  SkylarkObjectImageRelationship,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -63,6 +63,7 @@ import {
   convertDateToTimezoneAndRemoveOffset,
   convertTimeWindowStatus,
 } from "./availability";
+import { convertParsedObjectToIdentifier } from "./objects";
 
 dayjs.extend(customParseFormat);
 dayjs.extend(advancedFormat);
@@ -157,7 +158,7 @@ export const parseObjectInputFields = (
 
 export const parseObjectRelationships = (
   relationshipInputFields?: readonly IntrospectionInputValue[],
-): SkylarkObjectRelationship[] => {
+): SkylarkObjectMetaRelationship[] => {
   if (!relationshipInputFields) {
     return [];
   }
@@ -173,7 +174,7 @@ export const parseObjectRelationships = (
     }),
   );
 
-  const relationships: SkylarkObjectRelationship[] = potentialRelationships
+  const relationships: SkylarkObjectMetaRelationship[] = potentialRelationships
     .filter(
       ({ name, objectTypeWithRelationshipInput }) =>
         name &&
@@ -310,7 +311,7 @@ export const parseObjectRelationship = <T>(
 
 export const parseObjectContent = (
   unparsedContent?: SkylarkGraphQLObjectContent,
-): ParsedSkylarkObjectContent => {
+): SkylarkObjectContent => {
   const normalisedContentObjects = unparsedContent?.objects.map(
     ({ object, position, dynamic }) => {
       const normalisedObject =
@@ -321,9 +322,16 @@ export const parseObjectContent = (
       return {
         objectType: object.__typename,
         position,
-        config: parseObjectConfig(object.__typename, object._config),
-        meta: parseObjectMeta(object._meta, availability.status),
-        object: normalisedObject,
+        // config: parseObjectConfig(object.__typename, object._config),
+        // meta: parseObjectMeta(object._meta, availability.status),
+        object: convertParsedObjectToIdentifier({
+          uid: normalisedObject.uid,
+          objectType: object.__typename,
+          metadata: normalisedObject,
+          config: parseObjectConfig(object.__typename, object._config),
+          meta: parseObjectMeta(object._meta, availability.status),
+          availability,
+        }),
         isDynamic: dynamic,
       };
     },
@@ -338,6 +346,7 @@ const parseObjectMetadata = (
   object: SkylarkGraphQLObject,
 ): ParsedSkylarkObjectMetadata => {
   const metadata: ParsedSkylarkObjectMetadata = {
+    type: null,
     ...Object.keys(object).reduce((prev, key) => {
       return {
         ...prev,
@@ -387,7 +396,7 @@ export const parseSkylarkObject = (
 
   const images =
     objectMeta?.builtinObjectRelationships?.images?.relationshipNames.map(
-      (imageField): ParsedSkylarkObjectImageRelationship => {
+      (imageField): SkylarkObjectImageRelationship => {
         const parsedImages =
           hasProperty(object, imageField) &&
           parseObjectRelationship<SkylarkGraphQLObjectImage>(
@@ -635,9 +644,9 @@ export const parseMetadataForHTMLForm = (
 };
 
 export const parseUpdatedRelationshipObjects = (
-  relationship: SkylarkObjectRelationship,
-  updatedRelationshipObjects: ParsedSkylarkObjectRelationships,
-  originalRelationshipObjects: ParsedSkylarkObjectRelationships,
+  relationship: SkylarkObjectMetaRelationship,
+  updatedRelationshipObjects: SkylarkObjectRelationships,
+  originalRelationshipObjects: SkylarkObjectRelationships,
 ) => {
   const updatedObjects: string[] =
     updatedRelationshipObjects?.[relationship?.relationshipName]?.objects.map(

@@ -3,12 +3,13 @@ import { QueryClient } from "@tanstack/react-query";
 import { QueryKeys } from "src/enums/graphql";
 import { refetchSearchQueriesAfterUpdate } from "src/hooks/objects/useCreateObject";
 import {
-  ParsedSkylarkObjectContentObject,
-  ParsedSkylarkObject,
+  SkylarkObjectContentObject,
   AddedSkylarkObjectContentObject,
-  ParsedSkylarkObjectRelationships,
+  SkylarkObjectRelationships,
   BuiltInSkylarkObjectType,
   SkylarkObjectMeta,
+  SkylarkObjectIdentifier,
+  ParsedSkylarkObject,
 } from "src/interfaces/skylark";
 import { hasProperty, insertAtIndex } from "src/lib/utils";
 
@@ -20,7 +21,7 @@ export enum HandleDropErrorType {
 }
 
 export type HandleGenericDropError = {
-  object: ParsedSkylarkObject;
+  object: SkylarkObjectIdentifier;
   type:
     | HandleDropErrorType.EXISTING_LINK
     | HandleDropErrorType.INVALID_OBJECT_TYPE
@@ -28,7 +29,7 @@ export type HandleGenericDropError = {
 };
 
 export type HandleRelationshipDropError = {
-  object: ParsedSkylarkObject;
+  object: SkylarkObjectIdentifier;
   type: HandleDropErrorType.INVALID_RELATIONSHIP_TYPE;
   targetRelationship: string;
 };
@@ -87,12 +88,12 @@ export const pollPanelRefetch = (
 };
 
 export const convertSkylarkObjectToContentObject = (
-  skylarkObject: ParsedSkylarkObject,
-): ParsedSkylarkObjectContentObject => {
+  skylarkObject: SkylarkObjectIdentifier,
+): SkylarkObjectContentObject => {
   return {
-    config: skylarkObject.config,
-    meta: skylarkObject.meta,
-    object: skylarkObject.metadata,
+    // config: skylarkObject.config,
+    // meta: skylarkObject.meta,
+    object: skylarkObject,
     objectType: skylarkObject.objectType,
     position: 1,
     isDynamic: false,
@@ -106,15 +107,15 @@ export const handleDroppedRelationships = ({
   droppedObjects,
   targetRelationship,
 }: {
-  existingObjects: ParsedSkylarkObjectRelationships;
+  existingObjects: SkylarkObjectRelationships;
   objectMetaRelationships: SkylarkObjectMeta["relationships"];
   activeObjectUid: string;
-  droppedObjects: ParsedSkylarkObject[];
+  droppedObjects: SkylarkObjectIdentifier[];
   targetRelationship?: string | null;
 }): {
   count: number;
-  updatedRelationshipObjects: ParsedSkylarkObjectRelationships;
-  addedObjects: Record<string, ParsedSkylarkObject[]>;
+  updatedRelationshipObjects: SkylarkObjectRelationships;
+  addedObjects: Record<string, SkylarkObjectIdentifier[]>;
   errors: HandleDropError[];
 } => {
   const { count, updatedRelationshipObjects, errors, addedObjects } =
@@ -124,8 +125,8 @@ export const handleDroppedRelationships = ({
         droppedObject,
       ): {
         count: number;
-        updatedRelationshipObjects: ParsedSkylarkObjectRelationships;
-        addedObjects: Record<string, ParsedSkylarkObject[]>;
+        updatedRelationshipObjects: SkylarkObjectRelationships;
+        addedObjects: Record<string, SkylarkObjectIdentifier[]>;
         errors: HandleDropError[];
       } => {
         const targetRelationshipMeta =
@@ -243,7 +244,7 @@ export const handleDroppedRelationships = ({
       {
         count: 0,
         updatedRelationshipObjects: existingObjects,
-        addedObjects: {} as Record<string, ParsedSkylarkObject[]>,
+        addedObjects: {} as Record<string, SkylarkObjectIdentifier[]>,
         errors: [] as HandleDropError[],
       },
     );
@@ -264,7 +265,7 @@ export const handleDroppedContents = ({
 }: {
   existingObjects: AddedSkylarkObjectContentObject[];
   activeObjectUid: string;
-  droppedObjects: ParsedSkylarkObject[];
+  droppedObjects: SkylarkObjectIdentifier[];
   indexToInsert: number;
 }): {
   updatedContentObjects: AddedSkylarkObjectContentObject[];
@@ -353,8 +354,8 @@ export const handleDroppedAvailabilities = ({
   droppedObjects,
   activeObjectUid,
 }: {
-  existingObjects: ParsedSkylarkObject[];
-  droppedObjects: ParsedSkylarkObject[];
+  existingObjects: SkylarkObjectIdentifier[];
+  droppedObjects: SkylarkObjectIdentifier[];
   activeObjectUid: string;
 }) => {
   const { addedObjects, errors } = droppedObjects.reduce(
@@ -362,7 +363,7 @@ export const handleDroppedAvailabilities = ({
       previous,
       droppedObject,
     ): {
-      addedObjects: ParsedSkylarkObject[];
+      addedObjects: SkylarkObjectIdentifier[];
       errors: HandleDropError[];
     } => {
       if (droppedObject.objectType !== BuiltInSkylarkObjectType.Availability) {
@@ -404,7 +405,7 @@ export const handleDroppedAvailabilities = ({
       };
     },
     {
-      addedObjects: [] as ParsedSkylarkObject[],
+      addedObjects: [] as SkylarkObjectIdentifier[],
       errors: [] as HandleDropError[],
     },
   );
@@ -418,9 +419,9 @@ export const handleDroppedAvailabilities = ({
 export const handleDroppedObjectsToAssignToAvailability = ({
   newObjects,
 }: {
-  newObjects: ParsedSkylarkObject[];
+  newObjects: SkylarkObjectIdentifier[];
 }): {
-  updatedAssignedToObjects: ParsedSkylarkObject[];
+  updatedAssignedToObjects: SkylarkObjectIdentifier[];
   errors: HandleDropError[];
 } => {
   const { updatedAssignedToObjects, errors } = newObjects.reduce(
@@ -428,7 +429,7 @@ export const handleDroppedObjectsToAssignToAvailability = ({
       previous,
       newObject,
     ): {
-      updatedAssignedToObjects: ParsedSkylarkObject[];
+      updatedAssignedToObjects: SkylarkObjectIdentifier[];
       errors: HandleDropError[];
     } => {
       if (newObject.objectType === BuiltInSkylarkObjectType.Availability) {
@@ -453,7 +454,7 @@ export const handleDroppedObjectsToAssignToAvailability = ({
       };
     },
     {
-      updatedAssignedToObjects: [] as ParsedSkylarkObject[],
+      updatedAssignedToObjects: [] as SkylarkObjectIdentifier[],
       errors: [] as HandleDropError[],
     },
   );

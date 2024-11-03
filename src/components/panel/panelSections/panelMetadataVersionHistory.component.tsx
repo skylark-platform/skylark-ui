@@ -13,12 +13,13 @@ import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { UserAvatar } from "src/components/user";
 import { useGetObjectVersions } from "src/hooks/objects/get/useGetObjectVersions";
 import { useUserAccount } from "src/hooks/useUserAccount";
-import {
-  SkylarkObjectIdentifier,
-  SkylarkObjectMetadataField,
-} from "src/interfaces/skylark";
+import { SkylarkObjectMetadataField } from "src/interfaces/skylark";
 
-interface PanelMetadataVersionHistoryProps extends SkylarkObjectIdentifier {}
+interface PanelMetadataVersionHistoryProps {
+  uid: string;
+  objectType: string;
+  language: string;
+}
 
 const FieldDiff = ({
   newValue,

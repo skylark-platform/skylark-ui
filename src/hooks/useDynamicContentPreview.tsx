@@ -1,35 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
-import { useCallback, useEffect } from "react";
 
-import { useUser } from "src/contexts/useUser";
-import { QueryErrorMessages, QueryKeys } from "src/enums/graphql";
-import {
-  useAllObjectsMeta,
-  useSkylarkObjectOperations,
-} from "src/hooks/useSkylarkObjectTypes";
-import { ErrorCodes } from "src/interfaces/errors";
+import { QueryKeys } from "src/enums/graphql";
+import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
 import {
   SkylarkObjectType,
   GQLSkylarkErrorResponse,
   ParsedSkylarkObject,
   DynamicSetConfig,
-  GQLSkylarkGetObjectContentResponse,
   GQLSkylarkDynamicContentPreviewResponse,
   SkylarkGraphQLObject,
 } from "src/interfaces/skylark";
-import { GQLSkylarkGetObjectResponse } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
-  createGetObjectQuery,
   createPreviewDynamicContentQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
-import {
-  parseObjectContent,
-  parseSkylarkObject,
-} from "src/lib/skylark/parsers";
-import { hasProperty } from "src/lib/utils";
+import { parseSkylarkObject } from "src/lib/skylark/parsers";
 import { generateAvailabilityHeaders } from "src/lib/utils/request";
 
 export interface DynamicContentPreviewOptions {

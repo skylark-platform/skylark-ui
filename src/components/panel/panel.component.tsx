@@ -25,7 +25,7 @@ import {
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ParsedSkylarkObjectContentObject,
+  SkylarkObjectContentObject,
   ParsedSkylarkObject,
   AddedSkylarkObjectContentObject,
   SkylarkSystemField,
@@ -33,7 +33,6 @@ import {
   BuiltInSkylarkObjectType,
   GQLSkylarkErrorResponse,
   ParsedSkylarkObjectConfig,
-  ParsedSkylarkRelationshipConfig,
   ModifiedRelationshipsObject,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
@@ -108,13 +107,7 @@ const displayHandleDroppedErrors = (
     toast.error(
       <Toast
         title={`Object added to self`}
-        message={`Cannot link ${getObjectTypeDisplayNameFromParsedObject(
-          addedToSelfError.object,
-          objectTypeConfigObject,
-        )} "${getObjectDisplayName(
-          addedToSelfError.object,
-          objectTypeConfigObject,
-        )}" to itself.`}
+        message={`Cannot link ${addedToSelfError.object.display.objectType} "${addedToSelfError.object.display.name}" to itself.`}
       />,
       { autoClose: 10000 },
     );
@@ -127,12 +120,7 @@ const displayHandleDroppedErrors = (
   if (invalidObjectTypeErrors.length > 0) {
     const invalidObjectTypes = [
       ...new Set(
-        invalidObjectTypeErrors.map(({ object }) =>
-          getObjectTypeDisplayNameFromParsedObject(
-            object,
-            objectTypeConfigObject,
-          ),
-        ),
+        invalidObjectTypeErrors.map(({ object }) => object.display.objectType),
       ),
     ];
 
@@ -153,8 +141,7 @@ const displayHandleDroppedErrors = (
     }
 
     const affectedObjectsMsg = invalidObjectTypeErrors.map(
-      ({ object }) =>
-        `- ${getObjectDisplayName(object, objectTypeConfigObject)}`,
+      ({ object }) => `- ${object.display.name}`,
     );
     toast.error(
       <Toast
@@ -178,11 +165,8 @@ const displayHandleDroppedErrors = (
   if (invalidRelationshipTypeErrors.length > 0) {
     const invalidObjectTypes = [
       ...new Set(
-        invalidRelationshipTypeErrors.map(({ object }) =>
-          getObjectTypeDisplayNameFromParsedObject(
-            object,
-            objectTypeConfigObject,
-          ),
+        invalidRelationshipTypeErrors.map(
+          ({ object }) => object.display.objectType,
         ),
       ),
     ];
@@ -199,8 +183,7 @@ const displayHandleDroppedErrors = (
       sentenceCase(relationshipName) || "Active relationship";
 
     const affectedObjectsMsg = invalidRelationshipTypeErrors.map(
-      ({ object }) =>
-        `- ${getObjectDisplayName(object, objectTypeConfigObject)}`,
+      ({ object }) => `- ${object.display.name}`,
     );
     toast.error(
       <Toast
@@ -227,8 +210,7 @@ const displayHandleDroppedErrors = (
 
   if (existingLinkErrors.length > 0) {
     const affectedObjectsMsg = existingLinkErrors.map(
-      ({ object }) =>
-        `- ${getObjectDisplayName(object, objectTypeConfigObject)}`,
+      ({ object }) => `- ${object.display.name}`,
     );
     toast.error(
       <Toast
@@ -269,7 +251,7 @@ export const Panel = ({
   const [panelInEditMode, setEditMode] = useState(false);
 
   const [contentObjects, setContentObjects] = useState<{
-    original: ParsedSkylarkObjectContentObject[] | null;
+    original: SkylarkObjectContentObject[] | null;
     updated: AddedSkylarkObjectContentObject[] | null;
   }>({
     original: null,
@@ -281,7 +263,7 @@ export const Panel = ({
 
   const [modifiedAvailabilityObjects, setModifiedAvailabilityObjects] =
     useState<{
-      added: ParsedSkylarkObject[];
+      added: SkylarkObjectIdentifier[];
       removed: string[];
     } | null>(null);
 
@@ -293,8 +275,8 @@ export const Panel = ({
 
   const [modifiedAvailabilityAssignedTo, setModifiedAvailabilityAssignedTo] =
     useState<{
-      added: ParsedSkylarkObject[];
-      removed: ParsedSkylarkObject[];
+      added: SkylarkObjectIdentifier[];
+      removed: SkylarkObjectIdentifier[];
     } | null>(null);
 
   const { uid, objectType, language } = object;
@@ -537,7 +519,7 @@ export const Panel = ({
   const handleContentObjectsModified = useCallback(
     (
       updatedContentObjects: {
-        original: ParsedSkylarkObjectContentObject[] | null;
+        original: SkylarkObjectContentObject[] | null;
         updated: AddedSkylarkObjectContentObject[] | null;
       },
       errors: HandleDropError[],
@@ -572,7 +554,7 @@ export const Panel = ({
   const handleAvailabilityObjectsModified = useCallback(
     (
       updatedModifiedAvailabilities: {
-        added: ParsedSkylarkObject[];
+        added: SkylarkObjectIdentifier[];
         removed: string[];
       },
       errors: HandleDropError[],
@@ -591,8 +573,8 @@ export const Panel = ({
   const handleAvailabilityAssignedToModified = useCallback(
     (
       updatedAssignedToObjects: {
-        added: ParsedSkylarkObject[];
-        removed: ParsedSkylarkObject[];
+        added: SkylarkObjectIdentifier[];
+        removed: SkylarkObjectIdentifier[];
       },
       errors?: HandleDropError[],
     ) => {
@@ -661,7 +643,7 @@ export const Panel = ({
         }}
         setLanguage={(newLanguage) =>
           setPanelObject(
-            { uid, objectType, language: newLanguage },
+            { ...object, language: newLanguage },
             { tab: selectedTab },
           )
         }

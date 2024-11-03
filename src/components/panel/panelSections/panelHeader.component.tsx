@@ -48,6 +48,7 @@ import {
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
   getObjectDisplayName,
   hasProperty,
@@ -537,22 +538,22 @@ export const PanelHeader = ({
           />
         )}
       </AnimatePresence>
-      <CreateObjectModal
-        createTranslation={{
-          uid: objectUid,
-          language,
-          objectType,
-          objectTypeDisplayName,
-          existingLanguages,
-          objectDisplayName: title,
-        }}
-        isOpen={createObjectModalOpen}
-        objectType={objectType}
-        setIsOpen={setCreateObjectModalOpen}
-        onObjectCreated={(obj) => {
-          setLanguage(obj.language);
-        }}
-      />
+      {object && (
+        <CreateObjectModal
+          createTranslation={{
+            ...convertParsedObjectToIdentifier(object),
+            objectTypeDisplayName,
+            existingLanguages,
+            objectDisplayName: title,
+          }}
+          isOpen={createObjectModalOpen}
+          objectType={objectType}
+          setIsOpen={setCreateObjectModalOpen}
+          onObjectCreated={(obj) => {
+            setLanguage(obj.language);
+          }}
+        />
+      )}
       <DeleteObjectModal
         isOpen={deleteObjectConfirmationModalOpen}
         setIsOpen={setDeleteObjectConfirmationModalOpen}

@@ -1,3 +1,5 @@
+import { IntegrationUploaderPlaybackPolicy } from "src/components/integrations";
+
 import {
   SkylarkGraphQLAvailabilityDimension,
   SkylarkGraphQLAvailabilityDimensionWithValues,
@@ -6,6 +8,7 @@ import {
   SkylarkObjectConfigFieldType,
 } from "./gqlObjects";
 import {
+  BuiltInSkylarkObjectType,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
 } from "./objectOperations";
@@ -13,11 +16,45 @@ import {
 export type SkylarkUID = string;
 export type SkylarkExternalId = string | null;
 
-export interface SkylarkObjectIdentifier {
+export type SkylarkObjectIdentifier<T = BuiltInSkylarkObjectType | string> = {
   uid: SkylarkUID;
-  objectType: SkylarkObjectType;
+  externalId: string | null;
+  type: string | null;
+  objectType: T;
   language: string;
-}
+  availableLanguages: ParsedSkylarkObjectMeta["availableLanguages"];
+  availabilityStatus: AvailabilityStatus | null;
+  display: {
+    name: string;
+    objectType: string;
+    colour: ParsedSkylarkObjectConfig["colour"];
+  };
+  created: ParsedSkylarkObjectMeta["created"];
+  modified: ParsedSkylarkObjectMeta["modified"];
+} & (
+  | {
+      objectType: BuiltInSkylarkObjectType.SkylarkImage;
+      contextualFields: {
+        url: string;
+      };
+    }
+  | {
+      objectType: BuiltInSkylarkObjectType.Availability;
+      contextualFields: {
+        start: string | null;
+        end: string | null;
+      };
+    }
+  | {
+      objectType:
+        | BuiltInSkylarkObjectType.SkylarkAsset
+        | BuiltInSkylarkObjectType.SkylarkLiveAsset;
+      contextualFields: Record<string, SkylarkObjectMetadataField> & {
+        playbackPolicy: IntegrationUploaderPlaybackPolicy | null;
+      };
+    }
+  | { objectType: string; contextualFields: undefined }
+);
 
 export enum AvailabilityStatus {
   Active = "Active",
@@ -50,28 +87,30 @@ export interface ParsedSkylarkObjectAvailability {
   objects: ParsedSkylarkObjectAvailabilityObject[];
 }
 
-export interface ParsedSkylarkObjectContentObject {
+export interface SkylarkObjectContentObject {
   objectType: SkylarkObjectType;
-  config: ParsedSkylarkObjectConfig;
-  meta: ParsedSkylarkObjectMeta;
-  object: ParsedSkylarkObjectMetadata;
+  // config: ParsedSkylarkObjectConfig;
+  // meta: ParsedSkylarkObjectMeta;
+  object: SkylarkObjectIdentifier;
   position: number;
   isDynamic: boolean;
 }
 
 export interface AddedSkylarkObjectContentObject
-  extends ParsedSkylarkObjectContentObject {
+  extends SkylarkObjectContentObject {
   isNewObject?: boolean;
 }
 
-export interface ParsedSkylarkObjectContent {
-  objects: ParsedSkylarkObjectContentObject[];
+export interface SkylarkObjectContent {
+  objects: SkylarkObjectContentObject[];
 }
 
-export type ParsedSkylarkObjectMetadata = {
+export interface ParsedSkylarkObjectMetadata
+  extends Record<string, SkylarkObjectMetadataField> {
   uid: SkylarkUID;
   external_id: SkylarkExternalId;
-} & Record<string, SkylarkObjectMetadataField>;
+  type: string | null;
+}
 
 export interface ParsedSkylarkObjectConfigFieldConfig {
   name: string;
@@ -99,7 +138,7 @@ export interface ParsedSkylarkObjectMeta {
   published?: boolean;
 }
 
-export interface ParsedSkylarkObjectImageRelationship {
+export interface SkylarkObjectImageRelationship {
   relationshipName: string;
   objects: SkylarkGraphQLObjectImage[];
 }
@@ -111,20 +150,20 @@ export interface ParsedSkylarkObject {
   meta: ParsedSkylarkObjectMeta;
   metadata: ParsedSkylarkObjectMetadata;
   availability: ParsedSkylarkObjectAvailability;
-  images?: ParsedSkylarkObjectImageRelationship[];
-  content?: ParsedSkylarkObjectContent;
+  images?: SkylarkObjectImageRelationship[];
+  content?: SkylarkObjectContent;
 }
 
-export interface ParsedSkylarkObjectRelationship {
+export interface SkylarkObjectRelationship<
+  T = BuiltInSkylarkObjectType | string,
+> {
   name: string;
   objectType: SkylarkObjectType;
-  objects: ParsedSkylarkObject[];
+  objects: SkylarkObjectIdentifier<T>[];
 }
 
-export type ParsedSkylarkObjectRelationships = Record<
-  string,
-  ParsedSkylarkObjectRelationship
->;
+export type SkylarkObjectRelationships<T = BuiltInSkylarkObjectType | string> =
+  Record<string, SkylarkObjectRelationship<T>>;
 
 export interface ParsedSkylarkRelationshipConfig {
   defaultSortField: string;
@@ -135,9 +174,9 @@ export interface ParsedSkylarkObjectTypeRelationshipConfiguration {
   [relationshipName: string]: ParsedSkylarkRelationshipConfig;
 }
 
-export interface ParsedAvailabilityAssignedToObject {
+export interface AvailabilityAssignedToObject {
   objectType: SkylarkObjectType;
-  object: ParsedSkylarkObject;
+  object: SkylarkObjectIdentifier;
   inherited: boolean;
   inheritanceSource: boolean;
   active: boolean;

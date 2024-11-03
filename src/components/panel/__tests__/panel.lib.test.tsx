@@ -9,7 +9,7 @@ import {
   AvailabilityStatus,
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
-  ParsedSkylarkObjectRelationships,
+  SkylarkObjectRelationships,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
 
@@ -27,6 +27,7 @@ const panelObject: ParsedSkylarkObject = {
     uid: "PANEL_OBJECT",
     external_id: "",
     title: "the season",
+    type: null,
   },
   config: {
     primaryField: "title",
@@ -67,7 +68,7 @@ const droppedObjects: ParsedSkylarkObject[] = [
 
 describe("handleDroppedRelationships", () => {
   test("receives the expected relationships and errors", () => {
-    const existingRelationships: ParsedSkylarkObjectRelationships = {
+    const existingRelationships: SkylarkObjectRelationships = {
       seasons: {
         name: "seasons",
         objectType: "Season",
@@ -144,7 +145,7 @@ describe("handleDroppedRelationships", () => {
   });
 
   test("receives the expected relationships and errors when targetRelationship is given", () => {
-    const existingRelationships: ParsedSkylarkObjectRelationships = {
+    const existingRelationships: SkylarkObjectRelationships = {
       seasons: {
         name: "seasons",
         objectType: "Season",

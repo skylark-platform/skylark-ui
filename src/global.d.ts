@@ -2,6 +2,7 @@
 import { CheckedObjectState } from "./hooks/state";
 import { SetPanelObject } from "./hooks/state/usePanelObjectState";
 import {
+  ParsedSkylarkObject,
   SkylarkObjectIdentifier,
   SkylarkObjectMeta,
 } from "./interfaces/skylark";

@@ -32,9 +32,14 @@ import {
   BuiltInSkylarkObjectType,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
+  SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
-import { formatObjectField, hasProperty } from "src/lib/utils";
+import {
+  formatObjectField,
+  getPlaybackPolicyFromMetadata,
+  hasProperty,
+} from "src/lib/utils";
 
 import { PanelMetadataProperty } from "./panelMetadataAdditionalSections";
 import { PanelSectionLayout } from "./panelSectionLayout.component";
@@ -51,27 +56,6 @@ interface PanelPlaybackProps {
 }
 
 const videoTypes = ["hls", "dash", "external"];
-
-const getPlaybackPolicyFromMetadata = (
-  metadata: PanelPlaybackProps["metadata"],
-): IntegrationUploaderPlaybackPolicy => {
-  const policyField = metadata?.["policy"];
-
-  if (!metadata || !policyField || typeof policyField !== "string") {
-    return;
-  }
-
-  const lowercasedPolicyField = policyField.toLocaleLowerCase();
-
-  if (
-    lowercasedPolicyField !== "signed" &&
-    lowercasedPolicyField !== "public"
-  ) {
-    return;
-  }
-
-  return lowercasedPolicyField;
-};
 
 const getVideoTypeSections = (
   metadata: PanelPlaybackProps["metadata"],
@@ -246,7 +230,8 @@ const MetadataPlayback = ({
               provider={provider}
               type={"video"}
               playbackPolicy={
-                data?.integrations?.[provider]?.custom?.default_playback_policy
+                data?.integrations?.[provider]?.custom
+                  ?.default_playback_policy || null
               }
               opts={{ uid, objectType }}
               buttonProps={{
@@ -309,11 +294,17 @@ const RelationshipPlayback = ({
 
     const assetRelationships =
       relationshipsArr?.filter(
-        (rel) => rel.objectType === BuiltInSkylarkObjectType.SkylarkAsset,
+        (
+          rel,
+        ): rel is SkylarkObjectRelationship<BuiltInSkylarkObjectType.SkylarkAsset> =>
+          rel.objectType === BuiltInSkylarkObjectType.SkylarkAsset,
       ) || [];
     const liveAssetRelationships =
       relationshipsArr?.filter(
-        (rel) => rel.objectType === BuiltInSkylarkObjectType.SkylarkLiveAsset,
+        (
+          rel,
+        ): rel is SkylarkObjectRelationship<BuiltInSkylarkObjectType.SkylarkLiveAsset> =>
+          rel.objectType === BuiltInSkylarkObjectType.SkylarkLiveAsset,
       ) || [];
 
     const sections = [...assetRelationships, ...liveAssetRelationships]
@@ -324,11 +315,7 @@ const RelationshipPlayback = ({
         title: formatObjectField(name),
         relationshipName: name,
         objects: objects.sort((a, b) =>
-          a.meta &&
-          b.meta &&
-          dayjs(a.meta.modified || a.meta.created).isBefore(
-            b.meta.modified || b.meta.created,
-          )
+          dayjs(a.modified || a.created).isBefore(b.modified || b.created)
             ? 1
             : -1,
         ),
@@ -360,7 +347,7 @@ const RelationshipPlayback = ({
                   type={"video"}
                   playbackPolicy={
                     data?.integrations?.[firstActiveProvider]?.custom
-                      ?.default_playback_policy
+                      ?.default_playback_policy || null
                   }
                   opts={{ uid, relationshipName, objectType }}
                   hideErrorForUnsupported
@@ -391,7 +378,9 @@ const RelationshipPlayback = ({
             </PanelSectionTitle>
             {objects.length > 0 ? (
               objects.map((object, i) => {
-                const sections = getVideoTypeSections(object.metadata, false);
+                const sections = object.contextualFields
+                  ? getVideoTypeSections(object.contextualFields, false)
+                  : [];
 
                 return (
                   <div key={`video-section-for-${object.uid}`} className="mb-8">
@@ -404,17 +393,17 @@ const RelationshipPlayback = ({
                           url={url}
                           provider={firstActiveProvider || null}
                           playbackId={playbackId}
-                          playbackPolicy={getPlaybackPolicyFromMetadata(
-                            object.metadata,
-                          )}
+                          playbackPolicy={
+                            object.contextualFields?.playbackPolicy || null
+                          }
                         />
                       </div>
                     ))}
                     {sections.length === 0 && (
                       <p className="text-sm text-warning inline-flex">
-                        {object.metadata.status ? (
+                        {object.contextualFields?.status ? (
                           <>
-                            {object.metadata.status}
+                            {object.contextualFields.status}
                             <CgSpinner className="ml-1 animate-spin-fast text-base md:text-lg" />
                           </>
                         ) : (
@@ -433,7 +422,7 @@ const RelationshipPlayback = ({
                         })
                       }
                     >
-                      {object?.metadata?.type}
+                      {object?.type}
                     </ObjectIdentifierCard>
                     {i < objects.length - 1 && <PanelSeparator />}
                   </div>

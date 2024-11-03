@@ -305,11 +305,12 @@ const imagesColumn = columnHelper.accessor(OBJECT_LIST_TABLE.columnIds.images, {
               if (props.table.options.meta?.onObjectClick) {
                 e.stopPropagation();
                 props.table.options.meta.onObjectClick(
-                  {
-                    uid: image.uid,
-                    objectType: BuiltInSkylarkObjectType.SkylarkImage,
-                    language: image._meta?.language_data.language || "",
-                  },
+                  convertParsedObjectToIdentifier(
+                    parseSkylarkObject({
+                      ...image,
+                      __typename: BuiltInSkylarkObjectType.SkylarkImage,
+                    }),
+                  ),
                   {
                     parsedObject: parseSkylarkObject({
                       ...image,
@@ -368,7 +369,7 @@ const selectColumn = columnHelper.display({
           } else {
             tableMeta?.onRowCheckChange?.({
               checkedState: !checked,
-              object: cell.row.original as ParsedSkylarkObject,
+              object: convertParsedObjectToIdentifier(cell.row.original),
             });
           }
         }}

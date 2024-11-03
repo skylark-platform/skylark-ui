@@ -7,7 +7,7 @@ import {
   DynamicSetConfig,
   GQLSkylarkErrorResponse,
   GQLSkylarkUpdateObjectContentResponse,
-  ParsedSkylarkObjectContentObject,
+  SkylarkObjectContentObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";

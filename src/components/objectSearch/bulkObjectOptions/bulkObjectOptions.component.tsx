@@ -15,7 +15,7 @@ import { CheckedObjectState } from "src/hooks/state";
 import { usePurgeObjectsCache } from "src/hooks/usePurgeCache";
 import { useUserAccount } from "src/hooks/useUserAccount";
 import { segment } from "src/lib/analytics/segment";
-import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
+import { skylarkObjectsAreSame } from "src/lib/utils";
 
 interface BulkObjectOptionsProps {
   checkedObjectsState: CheckedObjectState[];
@@ -45,7 +45,7 @@ export const BulkObjectOptions = ({
         />,
       );
       segment.track(SEGMENT_KEYS.bulkOperations.purgeCache, {
-        objects: selectedObjects.map(convertParsedObjectToIdentifier),
+        objects: selectedObjects,
       });
     },
     onError: () => {
@@ -89,11 +89,7 @@ export const BulkObjectOptions = ({
         <DropdownMenuButton
           as={Button}
           variant="neutral"
-          disabled={
-            checkedObjectsState.filter(
-              ({ checkedState }) => checkedState === true,
-            ).length === 0
-          }
+          disabled={selectedObjects.length === 0}
           className="whitespace-nowrap"
           Icon={<FiMoreVertical className="-mr-1 text-2xl" />}
         >
@@ -107,7 +103,10 @@ export const BulkObjectOptions = ({
         onDeletionComplete={(deletedObjects) => {
           onObjectCheckedChanged?.(
             checkedObjectsState.filter(
-              ({ object }) => !deletedObjects.includes(object),
+              ({ object }) =>
+                deletedObjects.findIndex((deletedObject) =>
+                  skylarkObjectsAreSame(object, deletedObject),
+                ) > -1,
             ),
           );
           setDeleteModalOpen(false);

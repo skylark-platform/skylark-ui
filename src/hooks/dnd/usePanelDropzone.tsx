@@ -1,6 +1,9 @@
 import { useCallback } from "react";
 
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import {
+  ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
+} from "src/interfaces/skylark";
 import {
   DragEndEvent,
   DragType,
@@ -12,7 +15,7 @@ export const usePanelDropzone = (
   droppableType: DroppableType,
   {
     onObjectsDropped,
-  }: { onObjectsDropped: (o: ParsedSkylarkObject[]) => void },
+  }: { onObjectsDropped: (o: SkylarkObjectIdentifier[]) => void },
 ) => {
   const onDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -39,7 +42,7 @@ export const usePanelDropzone = (
           ({ uid }) => uid === active.data.current.object.uid,
         );
 
-        const objectsToAdd: ParsedSkylarkObject[] = draggedObjectIsChecked
+        const objectsToAdd: SkylarkObjectIdentifier[] = draggedObjectIsChecked
           ? checkedObjects
           : [draggedObject];
 

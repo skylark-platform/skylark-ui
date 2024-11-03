@@ -4,13 +4,21 @@ import {
 } from "src/__tests__/utils/objectOperations";
 import {
   AvailabilityStatus,
-  ParsedSkylarkObjectContentObject,
+  SkylarkObjectContentObject,
+  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 
 import {
   createDeleteObjectMutation,
   createUpdateObjectContentMutation,
 } from "./objects";
+
+const obj: SkylarkObjectIdentifier = {
+  uid: "",
+  externalId: "",
+  type: null,
+  language: "",
+} as SkylarkObjectIdentifier;
 
 describe("createDeleteObjectMutation", () => {
   test("returns null when the object doesn't have a delete operation", () => {
@@ -50,45 +58,45 @@ describe("createUpdateSetContentPositionMutation", () => {
   });
 
   test("returns expected GraphQL update mutation when no items are reordered", () => {
-    const content: ParsedSkylarkObjectContentObject[] = [
+    const content: SkylarkObjectContentObject[] = [
       {
         objectType: "Episode",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        // config: { fieldConfig: [] },
+        // meta: {
+        //   language: "en-GB",
+        //   availableLanguages: ["en-GB"],
+        //   availabilityStatus: AvailabilityStatus.Active,
+        //   versions: {},
+        // },
         position: 1,
         isDynamic: false,
-        object: { uid: "episode_1", external_id: "" },
+        object: { ...obj, uid: "episode_1" },
       },
       {
         objectType: "Episode",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        // config: { fieldConfig: [] },
+        // meta: {
+        //   language: "en-GB",
+        //   availableLanguages: ["en-GB"],
+        //   availabilityStatus: AvailabilityStatus.Active,
+        //   versions: {},
+        // },
         position: 2,
         isDynamic: false,
-        object: { uid: "episode_2", external_id: "" },
+        object: { ...obj, uid: "episode_2" },
       },
       {
         objectType: "Movie",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        // config: { fieldConfig: [] },
+        // meta: {
+        //   language: "en-GB",
+        //   availableLanguages: ["en-GB"],
+        //   availabilityStatus: AvailabilityStatus.Active,
+        //   versions: {},
+        // },
         position: 3,
         isDynamic: true,
-        object: { uid: "movie_1", external_id: "" },
+        object: { ...obj, uid: "movie_1" },
       },
     ];
 
@@ -104,45 +112,45 @@ describe("createUpdateSetContentPositionMutation", () => {
   });
 
   test("returns expected GraphQL update mutation when items are reordered", () => {
-    const content: ParsedSkylarkObjectContentObject[] = [
+    const content: SkylarkObjectContentObject[] = [
       {
         objectType: "Episode",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        // config: { fieldConfig: [] },
+        // meta: {
+        //   language: "en-GB",
+        //   availableLanguages: ["en-GB"],
+        //   availabilityStatus: AvailabilityStatus.Active,
+        //   versions: {},
+        // },
         position: 1,
         isDynamic: false,
-        object: { uid: "episode_1", external_id: "" },
+        object: { ...obj, uid: "episode_1" },
       },
       {
         objectType: "Episode",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        // config: { fieldConfig: [] },
+        // meta: {
+        //   language: "en-GB",
+        //   availableLanguages: ["en-GB"],
+        //   availabilityStatus: AvailabilityStatus.Active,
+        //   versions: {},
+        // },
         position: 2,
         isDynamic: false,
-        object: { uid: "episode_2", external_id: "" },
+        object: { ...obj, uid: "episode_2" },
       },
       {
         objectType: "Movie",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        // config: { fieldConfig: [] },
+        // meta: {
+        //   language: "en-GB",
+        //   availableLanguages: ["en-GB"],
+        //   availabilityStatus: AvailabilityStatus.Active,
+        //   versions: {},
+        // },
         position: 3,
         isDynamic: true,
-        object: { uid: "movie_1", external_id: "" },
+        object: { ...obj, uid: "movie_1" },
       },
     ];
 
@@ -160,45 +168,45 @@ describe("createUpdateSetContentPositionMutation", () => {
   });
 
   test("returns expected GraphQL update mutation when an item is removed", () => {
-    const content: ParsedSkylarkObjectContentObject[] = [
+    const content: SkylarkObjectContentObject[] = [
       {
         objectType: "Episode",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        // config: { fieldConfig: [] },
+        // meta: {
+        //   language: "en-GB",
+        //   availableLanguages: ["en-GB"],
+        //   availabilityStatus: AvailabilityStatus.Active,
+        //   versions: {},
+        // },
         position: 1,
         isDynamic: false,
-        object: { uid: "episode_1", external_id: "" },
+        object: { ...obj, uid: "episode_1" },
       },
       {
         objectType: "Episode",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        // config: { fieldConfig: [] },
+        // meta: {
+        //   language: "en-GB",
+        //   availableLanguages: ["en-GB"],
+        //   availabilityStatus: AvailabilityStatus.Active,
+        //   versions: {},
+        // },
         position: 2,
         isDynamic: false,
-        object: { uid: "episode_2", external_id: "" },
+        object: { ...obj, uid: "episode_2" },
       },
       {
         objectType: "Movie",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        // config: { fieldConfig: [] },
+        // meta: {
+        //   language: "en-GB",
+        //   availableLanguages: ["en-GB"],
+        //   availabilityStatus: AvailabilityStatus.Active,
+        //   versions: {},
+        // },
         position: 3,
         isDynamic: true,
-        object: { uid: "movie_1", external_id: "" },
+        object: { ...obj, uid: "movie_1" },
       },
     ];
 

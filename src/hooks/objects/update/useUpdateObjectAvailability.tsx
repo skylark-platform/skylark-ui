@@ -5,7 +5,7 @@ import { createGetObjectAvailabilityKeyPrefix } from "src/hooks/objects/get/useG
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkErrorResponse,
-  ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -14,7 +14,7 @@ import { createUpdateObjectAvailability } from "src/lib/graphql/skylark/dynamicM
 interface MutationFnArgs {
   uid: string;
   modifiedAvailabilityObjects: {
-    added: ParsedSkylarkObject[];
+    added: SkylarkObjectIdentifier[];
     removed: string[];
   } | null;
 }

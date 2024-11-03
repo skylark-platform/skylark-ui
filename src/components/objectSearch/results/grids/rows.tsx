@@ -45,8 +45,8 @@ const DataRow = ({
     type: DragType.CONTENT_LIBRARY_OBJECT,
     id: draggableId,
     data: {
-      object: row.original,
-      checkedObjectsState: tableMeta?.checkedObjectsState || [],
+      object: convertParsedObjectToIdentifier(row.original),
+      checkedObjectsState: tableMeta?.checkedObjectsState,
     },
     disabled: !isDraggable,
   });
@@ -107,7 +107,7 @@ const DataRow = ({
               if (tableMeta?.onRowCheckChange) {
                 tableMeta.onRowCheckChange({
                   checkedState: !row.getIsSelected(),
-                  object: row.original,
+                  object: convertParsedObjectToIdentifier(row.original),
                 });
               }
             }}

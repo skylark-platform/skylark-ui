@@ -11,33 +11,34 @@ import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { CheckedObjectState, useCheckedObjectsState } from "src/hooks/state";
 import {
   ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
   SkylarkObjectTypes,
+  SkylarkSystemField,
 } from "src/interfaces/skylark";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
 interface SearchObjectsModalProps {
   title: string;
   objectTypes?: SkylarkObjectTypes;
   columns?: string[];
   isOpen: boolean;
-  existingObjects?: ParsedSkylarkObject[];
+  existingObjects?: SkylarkObjectIdentifier[];
   closeModal: () => void;
   onSave: (args: { checkedObjectsState: CheckedObjectState[] }) => void;
 }
 
 const generateSaveMessage = ({
-  checkedObjects,
+  checkedUids,
   checkedObjectTypesForDisplay,
   existingObjects = [],
 }: {
-  checkedObjects: ParsedSkylarkObject[];
+  checkedUids: string[];
   checkedObjectTypesForDisplay: string[];
-  existingObjects?: ParsedSkylarkObject[];
+  existingObjects?: SkylarkObjectIdentifier[];
 }) => {
   const existingUids = existingObjects.map(({ uid }) => uid);
 
-  const addedObjects = checkedObjects.filter(
-    ({ uid }) => !existingUids.includes(uid),
-  );
+  const addedObjects = checkedUids.filter((uid) => !existingUids.includes(uid));
 
   // const removedObjects = existingObjects.filter(
   //   ({ uid }) => !checkedUids.includes(uid),
@@ -79,7 +80,7 @@ export const SearchObjectsModal = ({
 }: SearchObjectsModalProps) => {
   const {
     checkedObjectsState,
-    checkedObjects,
+    checkedUids,
     checkedObjectTypesForDisplay,
     setCheckedObjectsState,
     resetCheckedObjects,
@@ -99,21 +100,26 @@ export const SearchObjectsModal = ({
 
   const initialColumnState: Partial<ObjectSearchInitialColumnsState> =
     useMemo(() => {
-      const columns = propColumns || [];
+      const columns = propColumns;
 
       return {
-        columns: [...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS, ...columns],
-        frozen: columns.includes(OBJECT_LIST_TABLE.columnIds.displayField)
-          ? [
-              ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
-              OBJECT_LIST_TABLE.columnIds.displayField,
-            ]
-          : OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+        columns: [
+          ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+          OBJECT_LIST_TABLE.columnIds.displayField,
+          ...(columns || [
+            SkylarkSystemField.UID,
+            SkylarkSystemField.ExternalID,
+          ]),
+        ],
+        frozen: [
+          ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
+          OBJECT_LIST_TABLE.columnIds.displayField,
+        ],
       };
     }, [propColumns]);
 
   const saveMessage = generateSaveMessage({
-    checkedObjects,
+    checkedUids,
     checkedObjectTypesForDisplay,
     existingObjects,
   });

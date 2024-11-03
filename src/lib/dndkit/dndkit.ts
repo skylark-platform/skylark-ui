@@ -4,7 +4,10 @@ import { Column } from "@tanstack/react-table";
 import { MutableRefObject, ReactNode } from "react";
 
 import { CheckedObjectState } from "src/hooks/state";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import {
+  ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
+} from "src/interfaces/skylark";
 
 declare type AnyData = Record<string, unknown>;
 
@@ -31,7 +34,7 @@ type Data<T> = dndkit.Data<T> & {
 } & (
     | {
         type: DragType.CONTENT_LIBRARY_OBJECT;
-        object: ParsedSkylarkObject;
+        object: SkylarkObjectIdentifier;
         checkedObjectsState: CheckedObjectState[];
       }
     | {

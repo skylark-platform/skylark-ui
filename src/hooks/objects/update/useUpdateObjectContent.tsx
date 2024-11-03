@@ -6,7 +6,7 @@ import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkErrorResponse,
   GQLSkylarkUpdateObjectContentResponse,
-  ParsedSkylarkObjectContentObject,
+  SkylarkObjectContentObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -14,8 +14,8 @@ import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynam
 
 interface MutationArgs {
   uid: string;
-  originalContentObjects: ParsedSkylarkObjectContentObject[] | null;
-  updatedContentObjects: ParsedSkylarkObjectContentObject[] | null;
+  originalContentObjects: SkylarkObjectContentObject[] | null;
+  updatedContentObjects: SkylarkObjectContentObject[] | null;
 }
 
 export const useUpdateObjectContent = ({

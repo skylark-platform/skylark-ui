@@ -19,8 +19,8 @@ import { usePanelDropzone } from "src/hooks/dnd/usePanelDropzone";
 import { PanelTab, PanelTabState, SetPanelObject } from "src/hooks/state";
 import {
   BuiltInSkylarkObjectType,
-  ParsedAvailabilityAssignedToObject,
-  ParsedSkylarkObject,
+  AvailabilityAssignedToObject,
+  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import { DragType, DroppableType } from "src/lib/dndkit/dndkit";
 
@@ -31,15 +31,15 @@ interface PanelAvailabilityAssignedToProps {
   isPage?: boolean;
   inEditMode: boolean;
   modifiedAvailabilityAssignedTo: {
-    added: ParsedSkylarkObject[];
-    removed: ParsedSkylarkObject[];
+    added: SkylarkObjectIdentifier[];
+    removed: SkylarkObjectIdentifier[];
   } | null;
   tabState: PanelTabState[PanelTab.AvailabilityAssignedTo];
   setPanelObject: SetPanelObject;
   setModifiedAvailabilityAssignedTo: (
     args: {
-      added: ParsedSkylarkObject[];
-      removed: ParsedSkylarkObject[];
+      added: SkylarkObjectIdentifier[];
+      removed: SkylarkObjectIdentifier[];
     },
     errors?: HandleDropError[],
   ) => void;
@@ -47,14 +47,14 @@ interface PanelAvailabilityAssignedToProps {
 }
 
 const mergeServerAndModifiedAssignedTo = (
-  serverAssignedTo: ParsedAvailabilityAssignedToObject[] | undefined,
+  serverAssignedTo: AvailabilityAssignedToObject[] | undefined,
   modifiedAvailabilityAssignedTo: PanelAvailabilityAssignedToProps["modifiedAvailabilityAssignedTo"],
-): ParsedSkylarkObject[] => {
+): SkylarkObjectIdentifier[] => {
   if (!serverAssignedTo && !modifiedAvailabilityAssignedTo) {
     return [];
   }
 
-  const parsedServerAssignedTo: ParsedSkylarkObject[] =
+  const parsedServerAssignedTo: SkylarkObjectIdentifier[] =
     serverAssignedTo?.map(({ object }) => object) || [];
 
   if (!modifiedAvailabilityAssignedTo) {
@@ -190,7 +190,7 @@ export const PanelAvailabilityAssignedTo = ({
 
   const addedUids = modifiedAvailabilityAssignedTo?.added.map(({ uid }) => uid);
 
-  const handleDeletedAssignedTo = (object: ParsedSkylarkObject) => {
+  const handleDeletedAssignedTo = (object: SkylarkObjectIdentifier) => {
     const isAlreadyRemoved = Boolean(
       modifiedAvailabilityAssignedTo?.removed &&
         modifiedAvailabilityAssignedTo.removed.findIndex(
@@ -212,7 +212,7 @@ export const PanelAvailabilityAssignedTo = ({
     });
   };
 
-  const handleEnableInheritedAssignedTo = (object: ParsedSkylarkObject) => {
+  const handleEnableInheritedAssignedTo = (object: SkylarkObjectIdentifier) => {
     const wasOriginallyActive = activeUids?.includes(object.uid);
     const added = modifiedAvailabilityAssignedTo?.added || [];
 

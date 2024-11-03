@@ -4,7 +4,7 @@ export type IntegrationUploadType = "image" | "video";
 
 export type IntegrationUploaderProvider = "mux" | "cloudinary" | "brightcove";
 
-export type IntegrationUploaderPlaybackPolicy = "signed" | "public" | undefined;
+export type IntegrationUploaderPlaybackPolicy = "signed" | "public" | null;
 
 export interface IntegrationObjectInfo {
   uid: string;

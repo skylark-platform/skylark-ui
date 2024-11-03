@@ -21,8 +21,11 @@ import { useImageSize } from "src/hooks/useImageSize";
 import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
+  SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
   addCloudinaryOnTheFlyImageTransformation,
   formatObjectField,
@@ -41,16 +44,19 @@ interface PanelImagesProps {
   setPanelObject: SetPanelObject;
 }
 
-const groupImagesByType = (images: ParsedSkylarkObject[]) => {
+const groupImagesByType = (
+  images: SkylarkObjectIdentifier<BuiltInSkylarkObjectType.SkylarkImage>[],
+) => {
   return images.reduce(
-    (acc: { [key: string]: ParsedSkylarkObject[] }, currentValue) => {
-      const key =
-        hasProperty<ParsedSkylarkObject["metadata"], "type", string>(
-          currentValue.metadata,
-          "type",
-        ) && currentValue.metadata.type
-          ? currentValue.metadata.type
-          : "No type set";
+    (
+      acc: {
+        [
+          key: string
+        ]: SkylarkObjectIdentifier<BuiltInSkylarkObjectType.SkylarkImage>[];
+      },
+      currentValue,
+    ) => {
+      const key = currentValue.type || "No type set";
 
       if (acc && acc[key])
         return {
@@ -70,23 +76,13 @@ const PanelImage = ({
   object,
   setPanelObject,
 }: {
-  object: ParsedSkylarkObject;
+  object: SkylarkObjectIdentifier<BuiltInSkylarkObjectType.SkylarkImage>;
   inEditMode: boolean;
   setPanelObject: SetPanelObject;
 }) => {
-  const { displayName, src } = useMemo(() => {
-    const displayName = getObjectDisplayName(object);
+  const src = object.contextualFields?.url || "";
 
-    const src =
-      hasProperty(object.metadata, "url") &&
-      typeof object.metadata.url === "string"
-        ? object.metadata.url
-        : "";
-
-    return { displayName, src };
-  }, [object]);
-
-  const { size } = useImageSize(src);
+  const { size } = useImageSize(src || null);
 
   return (
     <div className="mb-4 break-words">
@@ -94,7 +90,7 @@ const PanelImage = ({
       <img
         className="max-h-64"
         src={addCloudinaryOnTheFlyImageTransformation(src, {})}
-        alt={displayName}
+        alt={object.display.name}
       />
       <ObjectIdentifierCard
         hideObjectType
@@ -128,7 +124,10 @@ export const PanelImages = ({
 
   const images = relationships
     ? Object.values(relationships)?.filter(
-        (rel) => rel.objectType === BuiltInSkylarkObjectType.SkylarkImage,
+        (
+          rel,
+        ): rel is SkylarkObjectRelationship<BuiltInSkylarkObjectType.SkylarkImage> =>
+          rel.objectType === BuiltInSkylarkObjectType.SkylarkImage,
       )
     : [];
 

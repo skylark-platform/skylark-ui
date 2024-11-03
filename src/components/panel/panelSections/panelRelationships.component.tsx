@@ -18,13 +18,14 @@ import { useGetObjectRelationships } from "src/hooks/objects/get/useGetObjectRel
 import { PanelTab, PanelTabState, SetPanelObject } from "src/hooks/state";
 import { useObjectTypeRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import {
-  ParsedSkylarkObjectRelationships,
+  SkylarkObjectRelationships,
   SkylarkObjectType,
   ParsedSkylarkObject,
-  ParsedSkylarkObjectRelationship,
+  SkylarkObjectRelationship,
   ParsedSkylarkRelationshipConfig,
   ModifiedRelationshipsObject,
   ModifiedRelationship,
+  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import { DragType, DroppableType } from "src/lib/dndkit/dndkit";
 import { formatObjectField, hasProperty } from "src/lib/utils";
@@ -50,7 +51,7 @@ interface PanelRelationshipsProps {
 
 const sortByRelationshipName = (
   relationshipNames: string[],
-  arr: ParsedSkylarkObjectRelationship[] | null,
+  arr: SkylarkObjectRelationship[] | null,
 ) =>
   arr?.sort(
     (a, b) =>
@@ -59,7 +60,7 @@ const sortByRelationshipName = (
 
 const splitRelationshipsIntoSections = (
   relationshipNames: string[],
-  relationships: ParsedSkylarkObjectRelationships | null,
+  relationships: SkylarkObjectRelationships | null,
 ) =>
   sortByRelationshipName(
     relationshipNames,
@@ -88,13 +89,13 @@ const splitRelationshipsIntoSections = (
       orderedRelationships: [],
       emptyOrderedRelationships: [],
     } as {
-      orderedRelationships: ParsedSkylarkObjectRelationship[];
-      emptyOrderedRelationships: ParsedSkylarkObjectRelationship[];
+      orderedRelationships: SkylarkObjectRelationship[];
+      emptyOrderedRelationships: SkylarkObjectRelationship[];
     },
   );
 
 const filterWhenExpandedRelationship = (
-  relationships: ParsedSkylarkObjectRelationship[],
+  relationships: SkylarkObjectRelationship[],
   expandedRelationship: string | null,
 ) =>
   expandedRelationship
@@ -104,9 +105,9 @@ const filterWhenExpandedRelationship = (
     : relationships;
 
 const addModifiedRelationshipsOntoRelationships = (
-  relationships: ParsedSkylarkObjectRelationships | null,
+  relationships: SkylarkObjectRelationships | null,
   modifiedRelationships: PanelRelationshipsProps["modifiedRelationships"],
-): ParsedSkylarkObjectRelationships | null => {
+): SkylarkObjectRelationships | null => {
   if (!relationships) {
     return null;
   }
@@ -155,7 +156,7 @@ const getNewUidsForRelationship = (
 
 const updateModifiedObjectsWithAddedObjects = (
   modifiedRelationships: PanelRelationshipsProps["modifiedRelationships"],
-  addedObjects: Record<string, ParsedSkylarkObject[]>,
+  addedObjects: Record<string, SkylarkObjectIdentifier[]>,
 ) => {
   const updatedModifiedRelationships: PanelRelationshipsProps["modifiedRelationships"] =
     Object.fromEntries(
@@ -185,7 +186,7 @@ const updateModifiedObjectsWithAddedObjects = (
 
 const parseAddedAndRemovedRelationshipObjects = (
   existing: ModifiedRelationship,
-  added: ParsedSkylarkObject[],
+  added: SkylarkObjectIdentifier[],
   removed: string[],
 ): ModifiedRelationship => {
   const updatedAdded = added ? [...existing.added, ...added] : existing.added;
@@ -273,7 +274,10 @@ export const PanelRelationships = ({
 
   const modifyRelationshipObjects = (
     relationshipName: string,
-    { added, removed }: { added?: ParsedSkylarkObject[]; removed?: string[] },
+    {
+      added,
+      removed,
+    }: { added?: SkylarkObjectIdentifier[]; removed?: string[] },
   ) => {
     const relationship = hasProperty(modifiedRelationships, relationshipName)
       ? modifiedRelationships[relationshipName]
@@ -337,7 +341,7 @@ export const PanelRelationships = ({
     splitRelationshipsIntoSections(relationshipNames, relationships);
 
   const [searchObjectsModalState, setSearchObjectsModalState] = useState<{
-    relationship: ParsedSkylarkObjectRelationship;
+    relationship: SkylarkObjectRelationship;
     fields?: string[];
   } | null>(null);
 

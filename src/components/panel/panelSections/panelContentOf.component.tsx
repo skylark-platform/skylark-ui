@@ -9,7 +9,11 @@ import { Skeleton } from "src/components/skeleton";
 import { useGetObjectContentOf } from "src/hooks/objects/get/useGetObjectContentOf";
 import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkSetObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
-import { SkylarkObjectType, ParsedSkylarkObject } from "src/interfaces/skylark";
+import {
+  SkylarkObjectType,
+  ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
+} from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
@@ -23,10 +27,10 @@ interface PanelContentOfProps {
   setPanelObject: SetPanelObject;
 }
 
-const groupContentOfByObjectType = (objects?: ParsedSkylarkObject[]) => {
+const groupContentOfByObjectType = (objects?: SkylarkObjectIdentifier[]) => {
   return (
     objects?.reduce(
-      (acc: { [key: string]: ParsedSkylarkObject[] }, currentValue) => {
+      (acc: { [key: string]: SkylarkObjectIdentifier[] }, currentValue) => {
         if (acc && acc[currentValue.objectType])
           return {
             ...acc,

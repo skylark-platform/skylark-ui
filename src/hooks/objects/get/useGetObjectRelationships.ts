@@ -10,13 +10,14 @@ import { QueryKeys } from "src/enums/graphql";
 import {
   useAllObjectsMeta,
   useSkylarkObjectOperations,
+  useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkErrorResponse,
   GQLSkylarkGetObjectRelationshipsResponse,
   GQLSkylarkGetObjectResponse,
   NormalizedObjectField,
-  ParsedSkylarkObjectRelationships,
+  SkylarkObjectRelationships,
   SkylarkGraphQLObject,
   SkylarkGraphQLObjectList,
   SkylarkObjectMeta,
@@ -24,6 +25,7 @@ import {
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectRelationshipsQuery } from "src/lib/graphql/skylark/dynamicQueries";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 import { getObjectTypeFromListingTypeName, hasProperty } from "src/lib/utils";
 
@@ -88,6 +90,8 @@ export const useGetObjectRelationships = (
   const { objectOperations } = useSkylarkObjectOperations(objectType);
   const { objects } = useAllObjectsMeta(true);
 
+  const { objectTypesConfig } = useSkylarkObjectTypesWithConfig();
+
   const relationshipsFields: { [key: string]: NormalizedObjectField[] } =
     objectOperations?.relationships.reduce((acc, { objectType }) => {
       const fields = getFieldsFromObjectType(objects, objectType);
@@ -128,7 +132,7 @@ export const useGetObjectRelationships = (
       enabled: query !== null,
     });
 
-  const relationships: ParsedSkylarkObjectRelationships | null = useMemo(() => {
+  const relationships: SkylarkObjectRelationships | null = useMemo(() => {
     if (!data?.pages || data.pages.length === 0) {
       return null;
     }
@@ -145,7 +149,10 @@ export const useGetObjectRelationships = (
           }
 
           const parsedObjects = relationship.objects.map((relatedObject) =>
-            parseSkylarkObject(relatedObject as SkylarkGraphQLObject),
+            convertParsedObjectToIdentifier(
+              parseSkylarkObject(relatedObject),
+              objectTypesConfig,
+            ),
           );
 
           const objectType = getObjectTypeFromListingTypeName(
@@ -166,7 +173,7 @@ export const useGetObjectRelationships = (
       );
 
       return obj;
-    }, {} as ParsedSkylarkObjectRelationships);
+    }, {} as SkylarkObjectRelationships);
   }, [data?.pages]);
 
   const { relationshipsWithNextPage } = data

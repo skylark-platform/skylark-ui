@@ -6,12 +6,14 @@ import { render } from "src/__tests__/utils/test-utils";
 import {
   AvailabilityStatus,
   ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
 import { BatchDeleteObjectsModal } from "./batchDeleteObjectsModal.component";
 
-const object: ParsedSkylarkObject = {
+const object = convertParsedObjectToIdentifier({
   objectType: "Episode",
   uid: "123",
   meta: {
@@ -20,13 +22,13 @@ const object: ParsedSkylarkObject = {
     availabilityStatus: AvailabilityStatus.Unavailable,
     versions: {},
   },
-  metadata: { uid: "123", external_id: "" },
+  metadata: { uid: "123", external_id: "", type: null },
   config: { primaryField: "title" },
   availability: {
     objects: [],
     status: AvailabilityStatus.Unavailable,
   },
-};
+});
 
 test("renders the modal", async () => {
   render(
@@ -115,7 +117,7 @@ test("shows this translation will be deleted and the object when not all availab
       objectsToBeDeleted={[
         {
           ...object,
-          meta: { ...object.meta, availableLanguages: ["en-GB", "pt-PT"] },
+          availableLanguages: ["en-GB", "pt-PT"],
         },
       ]}
       closeModal={jest.fn()}
@@ -143,7 +145,7 @@ test("shows this translation will be deleted and the object when not all availab
           ...object,
           uid: "245",
           objectType: "Movie",
-          metadata: { uid: "245", external_id: "" },
+          contextualFields: undefined,
         },
       ]}
       closeModal={jest.fn()}
@@ -165,15 +167,11 @@ test("shows this translation will be deleted and the object when not all availab
 });
 
 test("shows some objects will not be deleted when the number of objects exceeds the deletion limit", async () => {
-  const objects: ParsedSkylarkObject[] = Array.from(
+  const objects: SkylarkObjectIdentifier[] = Array.from(
     { length: 150 },
     (_, i) => ({
       ...object,
       uid: `object-${i}`,
-      metadata: {
-        uid: `object-${i}`,
-        external_id: "",
-      },
     }),
   );
   render(
@@ -212,7 +210,7 @@ describe("activated delete button", () => {
             ...object,
             uid: "245",
             objectType: "Movie",
-            metadata: { uid: "245", external_id: "" },
+            contextualFields: undefined,
           },
         ]}
         closeModal={closeModal}
