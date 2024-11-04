@@ -173,6 +173,7 @@ const ObjectRuleBlock = ({
           onChange={(relationshipName) =>
             onChange({
               ...objectRule,
+              relatedObjects: [],
               relationshipName,
               objectType: sharedRelationships
                 .filter((r) => r.relationshipName === relationshipName)
@@ -187,15 +188,16 @@ const ObjectRuleBlock = ({
         <div className="ml-8 w-full flex items-center space-x-8">
           <p className="whitespace-nowrap font-bold">that contain</p>
           <ObjectMultiSelect
-            selectedObjects={[]}
+            selectedObjects={objectRule.relatedObjects || []}
             onChange={(objects) =>
               onChange({
                 ...objectRule,
-                relatedUid: objects ? objects.map(({ uid }) => uid) : undefined,
+                relatedObjects: objects,
               })
             }
             objectTypes={objectRule.objectType}
             className="w-72 flex-grow"
+            selectedDivider="OR"
           />
         </div>
       )}
@@ -252,6 +254,8 @@ const ContentRuleBlock = ({
     // setRuleBlock((prev) => ({ ...prev, ...updatedRuleBlock }));
     const updatedObjectRules = [...ruleBlock.objectRules];
     updatedObjectRules[index] = objectRule;
+
+    console.log({ objectRule });
     setRuleBlock({ ...ruleBlock, objectRules: updatedObjectRules });
   };
 

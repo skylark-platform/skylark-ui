@@ -23,8 +23,12 @@ interface SearchObjectsModalProps {
   columns?: string[];
   isOpen: boolean;
   existingObjects?: SkylarkObject[];
+  initialSearchQuery?: string;
   closeModal: () => void;
-  onSave: (args: { checkedObjectsState: CheckedObjectState[] }) => void;
+  onSave: (args: {
+    checkedObjectsState: CheckedObjectState[];
+    checkedObjects: SkylarkObject[];
+  }) => void;
 }
 
 const generateSaveMessage = ({
@@ -75,12 +79,14 @@ export const SearchObjectsModal = ({
   objectTypes,
   columns: propColumns,
   existingObjects,
+  initialSearchQuery,
   closeModal,
   onSave,
 }: SearchObjectsModalProps) => {
   const {
     checkedObjectsState,
     checkedUids,
+    checkedObjects,
     checkedObjectTypesForDisplay,
     setCheckedObjectsState,
     resetCheckedObjects,
@@ -93,7 +99,7 @@ export const SearchObjectsModal = ({
     ),
   );
   const onModalCloseWrapper = () => {
-    onSave({ checkedObjectsState });
+    onSave({ checkedObjectsState, checkedObjects });
     closeModal();
     setCheckedObjectsState([]);
   };
@@ -137,7 +143,7 @@ export const SearchObjectsModal = ({
       <div className="ml-2 flex-grow overflow-auto pr-0 pt-2 md:ml-4 md:pl-4">
         <ObjectSearch
           id={`search-object-modal-${objectTypes?.join("-")}`}
-          initialFilters={{ objectTypes }}
+          initialFilters={{ objectTypes, query: initialSearchQuery }}
           initialColumnState={initialColumnState}
           checkedObjectsState={checkedObjectsState}
           onObjectCheckedChanged={setCheckedObjectsState}

@@ -158,11 +158,24 @@ export const ObjectSearchResults = ({
   );
 
   const onRowCheckChange = useCallback(
-    (updated: { object: SkylarkObject; checkedState: CheckedState }) => {
+    ({
+      rowData: updatedRowData,
+      checkedState: updatedCheckedState,
+    }: {
+      rowData: ObjectSearchTableData;
+      checkedState: CheckedState;
+    }) => {
       if (onObjectCheckedChanged && checkedObjectsState) {
-        const existsIndex = checkedObjectsState.findIndex((c) =>
-          skylarkObjectsAreSame(updated.object, c.object),
+        const object = convertParsedObjectToIdentifier(
+          updatedRowData,
+          objectTypesConfig,
         );
+
+        const existsIndex = checkedObjectsState.findIndex((c) =>
+          skylarkObjectsAreSame(object, c.object),
+        );
+
+        const updated = { object, checkedState: updatedCheckedState };
 
         if (existsIndex > -1) {
           const copyArr = [...checkedObjectsState];
@@ -173,7 +186,7 @@ export const ObjectSearchResults = ({
         }
       }
     },
-    [checkedObjectsState, onObjectCheckedChanged],
+    [checkedObjectsState, objectTypesConfig, onObjectCheckedChanged],
   );
 
   const {

@@ -676,11 +676,6 @@ export const convertParsedObjectToIdentifier = (
 ): SkylarkObject => {
   const { uid, objectType, metadata, meta } = parsedObject;
 
-  const objectConfig = {
-    ...(fallbackConfig?.[parsedObject.objectType] || parsedObject.config),
-  };
-  if (objectConfig?.fieldConfig) delete objectConfig?.fieldConfig;
-
   const object: SkylarkObject = {
     uid,
     externalId: metadata.external_id,
@@ -696,7 +691,8 @@ export const convertParsedObjectToIdentifier = (
         parsedObject,
         fallbackConfig,
       ),
-      colour: parsedObject.config?.colour || fallbackConfig?.config?.colour,
+      colour:
+        parsedObject.config?.colour || fallbackConfig?.[objectType]?.colour,
     },
     contextualFields: null,
     created: meta.created,

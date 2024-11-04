@@ -163,7 +163,7 @@ export interface SkylarkGraphQLAPIKey {
 export interface SkylarkDynamicSetRuleBlock {
   object_types: EnumType[];
   relationship_name: string;
-  uid?: string[];
+  uid: string[] | null;
 }
 
 export interface SkylarkDynamicSetInput {

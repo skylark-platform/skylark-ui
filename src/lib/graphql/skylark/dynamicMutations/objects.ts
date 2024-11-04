@@ -49,11 +49,20 @@ export const createDynamicSetContentInput = (
         };
 
         const otherRules = ruleBlock.objectRules.map(
-          (rule): SkylarkDynamicSetRuleBlock => ({
-            object_types: rule.objectType.map((ot) => new EnumType(ot)),
-            relationship_name: rule.relationshipName,
-            uid: rule.relatedUid,
-          }),
+          (rule): SkylarkDynamicSetRuleBlock => {
+            const uids = [
+              ...new Set([
+                ...(rule.relatedUid || []),
+                ...(rule.relatedObjects?.map(({ uid }) => uid) || []),
+              ]),
+            ];
+
+            return {
+              object_types: rule.objectType.map((ot) => new EnumType(ot)),
+              relationship_name: rule.relationshipName,
+              uid: uids.length > 0 ? uids : null,
+            };
+          },
         );
 
         return [firstRule, ...otherRules];

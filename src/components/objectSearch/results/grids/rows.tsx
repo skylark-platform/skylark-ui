@@ -107,7 +107,7 @@ const DataRow = ({
               if (tableMeta?.onRowCheckChange) {
                 tableMeta.onRowCheckChange({
                   checkedState: !row.getIsSelected(),
-                  object: convertParsedObjectToIdentifier(row.original),
+                  rowData: row.original,
                 });
               }
             }}

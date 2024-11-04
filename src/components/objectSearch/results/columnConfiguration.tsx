@@ -369,7 +369,7 @@ const selectColumn = columnHelper.display({
           } else {
             tableMeta?.onRowCheckChange?.({
               checkedState: !checked,
-              object: convertParsedObjectToIdentifier(cell.row.original),
+              rowData: cell.row.original,
             });
           }
         }}

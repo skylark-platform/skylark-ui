@@ -22,9 +22,16 @@ import {
 } from "src/components/inputs/select";
 import { Pill } from "src/components/pill";
 
-type MultiSelectOption = SelectOption<string>;
+interface NothingFoundProps {
+  nothingFoundText?: string;
+  onNothingFoundClick?: () => void;
+}
 
-export interface MultiSelectProps {
+export type MultiSelectOption = SelectOption<string> & {
+  config?: { colour?: string | null };
+};
+
+export interface MultiSelectProps extends NothingFoundProps {
   selected?: string[];
   selectedDivider?: ReactNode;
   options: MultiSelectOption[];
@@ -36,7 +43,35 @@ export interface MultiSelectProps {
   rounded?: boolean;
   required?: boolean;
   onChange?: (values: string[]) => void;
+  onQueryChange?: (s: string) => void;
 }
+
+const NothingFound = ({
+  nothingFoundText,
+  onNothingFoundClick,
+}: NothingFoundProps) => {
+  const text = nothingFoundText || "Nothing found.";
+  const className =
+    "relative cursor-default select-none bg-white px-4 py-2 text-sm text-gray-900";
+
+  return (
+    <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+      {onNothingFoundClick ? (
+        <button
+          onClick={onNothingFoundClick}
+          className={clsx(
+            className,
+            "cursor-pointer hover:text-brand-primary transition-colors",
+          )}
+        >
+          {text}
+        </button>
+      ) : (
+        <div className={clsx(className)}>{text}</div>
+      )}
+    </div>
+  );
+};
 
 const VirtualizedOptions = ({
   options,
@@ -96,11 +131,14 @@ const MultiSelectComponent = (
     placeholder,
     className,
     onChange,
+    onQueryChange,
     disabled,
     selected,
     selectedDivider,
     rounded,
     required,
+    nothingFoundText,
+    onNothingFoundClick,
   } = props;
 
   const options = useMemo(
@@ -108,7 +146,15 @@ const MultiSelectComponent = (
     [unsortedOptions],
   );
 
-  const [query, setQuery] = useState("");
+  const [query, setStateQuery] = useState("");
+
+  const setQuery = useCallback(
+    (s: string) => {
+      onQueryChange?.(s);
+      setStateQuery(s);
+    },
+    [onQueryChange],
+  );
 
   const filteredOptions =
     query === ""
@@ -128,7 +174,7 @@ const MultiSelectComponent = (
       setQuery("");
       onChange?.(newSelected.map(({ value }) => value));
     },
-    [onChange],
+    [onChange, setQuery],
   );
 
   const paddingClassName = "py-2 pl-3 pr-2 sm:py-3 sm:pl-6";
@@ -180,12 +226,13 @@ const MultiSelectComponent = (
             "flex-wrap gap-2",
           )}
         >
-          {selectedOptions.map(({ label, value }, i, arr) => (
+          {selectedOptions.map(({ label, value, config }, i, arr) => (
             <Fragment key={value}>
               <Pill
                 label={label || value}
                 className="my-auto bg-brand-primary"
                 onDelete={() => deselectOption(value)}
+                bgColor={config?.colour}
               />
               {selectedDivider && i < arr.length - 1 && selectedDivider}
             </Fragment>
@@ -219,11 +266,10 @@ const MultiSelectComponent = (
         >
           <Combobox.Options>
             {filteredOptions.length === 0 ? (
-              <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <div className="relative cursor-default select-none bg-white px-4 py-2 text-sm text-gray-900">
-                  Nothing found.
-                </div>
-              </div>
+              <NothingFound
+                nothingFoundText={nothingFoundText}
+                onNothingFoundClick={onNothingFoundClick}
+              />
             ) : options.length > 40 ? (
               <VirtualizedOptions
                 options={filteredOptions ?? []}
