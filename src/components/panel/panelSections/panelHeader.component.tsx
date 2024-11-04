@@ -45,6 +45,7 @@ import {
   AvailabilityStatus,
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
@@ -97,7 +98,8 @@ const getAlternateSaveButtonText = (
 };
 
 const RefreshPanelQueries = (
-  props: Omit<ButtonProps, "variant"> & { uid: string; objectType: string },
+  props: Omit<ButtonProps, "variant"> &
+    Omit<SkylarkObjectIdentifier, "language">,
 ) => {
   const client = useQueryClient();
 
@@ -550,7 +552,7 @@ export const PanelHeader = ({
           objectType={objectType}
           setIsOpen={setCreateObjectModalOpen}
           onObjectCreated={(obj) => {
-            setLanguage(obj.language);
+            setLanguage(obj.language || "");
           }}
         />
       )}

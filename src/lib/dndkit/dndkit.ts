@@ -6,6 +6,7 @@ import { MutableRefObject, ReactNode } from "react";
 import { CheckedObjectState } from "src/hooks/state";
 import {
   ParsedSkylarkObject,
+  SkylarkObject,
   SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 
@@ -34,7 +35,7 @@ type Data<T> = dndkit.Data<T> & {
 } & (
     | {
         type: DragType.CONTENT_LIBRARY_OBJECT;
-        object: SkylarkObjectIdentifier;
+        object: SkylarkObject;
         checkedObjectsState: CheckedObjectState[];
       }
     | {
@@ -101,13 +102,10 @@ export interface DndMonitorListener extends dndkit.DndMonitorListener {
 }
 
 export const generateSortableObjectId = (
-  object: Pick<ParsedSkylarkObject, "uid"> &
-    Pick<ParsedSkylarkObject, "objectType"> & {
-      meta: Pick<ParsedSkylarkObject["meta"], "language">;
-    },
+  object: SkylarkObjectIdentifier,
   identifier: string,
 ) => {
-  return `${object.objectType}-${object.uid}-${object.meta.language}${identifier ? `-${identifier}` : ""}`;
+  return `${object.objectType}-${object.uid}-${object.language || ""}${identifier ? `-${identifier}` : ""}`;
 };
 
 export const useDraggable = ({

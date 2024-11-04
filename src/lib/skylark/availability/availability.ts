@@ -9,7 +9,7 @@ import {
   ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
   SkylarkGraphQLAvailabilityList,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
   BuiltInSkylarkObjectType,
   ParsedSkylarkObjectMetadata,
 } from "src/interfaces/skylark";
@@ -39,7 +39,7 @@ export const getSingleAvailabilityStatus = (
 
 export const getAvailabilityStatusForAvailabilityObject = (
   object:
-    | SkylarkObjectIdentifier<BuiltInSkylarkObjectType.Availability>["contextualFields"]
+    | SkylarkObject<BuiltInSkylarkObjectType.Availability>["contextualFields"]
     | ParsedSkylarkObjectMetadata,
 ): ParsedSkylarkObjectAvailability["status"] => {
   const start = typeof object?.start === "string" ? object.start : null;

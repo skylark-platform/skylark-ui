@@ -22,7 +22,7 @@ import {
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
-  SkylarkObjectIdentifier,
+  SkylarkObject,
   ParsedSkylarkObject,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -51,7 +51,7 @@ export interface ObjectSearchResultsProps {
   tableColumns: ColumnDef<ObjectSearchTableData, ObjectSearchTableData>[];
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
-  panelObject?: SkylarkObjectIdentifier | null;
+  panelObject?: SkylarkObject | null;
   setPanelObject?: SetPanelObject;
   fetchNextPage?: () => void;
   searchData?: ObjectSearchTableData[];
@@ -158,10 +158,7 @@ export const ObjectSearchResults = ({
   );
 
   const onRowCheckChange = useCallback(
-    (updated: {
-      object: SkylarkObjectIdentifier;
-      checkedState: CheckedState;
-    }) => {
+    (updated: { object: SkylarkObject; checkedState: CheckedState }) => {
       if (onObjectCheckedChanged && checkedObjectsState) {
         const existsIndex = checkedObjectsState.findIndex((c) =>
           skylarkObjectsAreSame(updated.object, c.object),

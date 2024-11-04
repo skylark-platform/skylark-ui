@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import {
   ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -60,7 +60,7 @@ export const usePurgeCacheObjectType = ({
 };
 
 const groupObjectsByObjectType = (
-  objects: SkylarkObjectIdentifier[],
+  objects: SkylarkObject[],
 ): Record<SkylarkObjectType, string[]> => {
   return objects.reduce(
     (prev, { objectType, uid }) => {
@@ -84,7 +84,7 @@ export const usePurgeObjectsCache = ({
 }) => {
   const { mutate: purgeCacheForObjects } = useMutation({
     mutationKey: ["purgeCache"],
-    mutationFn: (objects: SkylarkObjectIdentifier[]) => {
+    mutationFn: (objects: SkylarkObject[]) => {
       const purgeConfiguration = groupObjectsByObjectType(objects);
       return skylarkRequest(
         "mutation",

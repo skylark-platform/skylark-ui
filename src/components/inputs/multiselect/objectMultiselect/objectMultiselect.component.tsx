@@ -2,18 +2,24 @@ import { DndContext } from "@dnd-kit/core";
 import { forwardRef, Ref, useCallback, useMemo, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 
+import {
+  MultiSelect,
+  MultiSelectProps,
+} from "src/components/inputs/multiselect/multiselect.component";
 import { SearchObjectsModal } from "src/components/modals";
-import { ParsedSkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
-
-import { MultiSelect, MultiSelectProps } from "src/components/inputs/multiselect/multiselect.component";
+import {
+  ParsedSkylarkObject,
+  SkylarkObject,
+  SkylarkObjectType,
+} from "src/interfaces/skylark";
 
 type ObjectMultiSelectProps = Omit<
   MultiSelectProps,
   "options" | "selected" | "onChange"
 > & {
   objectTypes: SkylarkObjectType[];
-  selectedObjects: ParsedSkylarkObject[];
-  onChange: (objects: ParsedSkylarkObject[]) => void;
+  selectedObjects: SkylarkObject[];
+  onChange: (objects: SkylarkObject[]) => void;
 };
 
 const ObjectMultiSelectComponent = (

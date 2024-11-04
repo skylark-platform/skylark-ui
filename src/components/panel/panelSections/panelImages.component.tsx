@@ -21,7 +21,7 @@ import { useImageSize } from "src/hooks/useImageSize";
 import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
   SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
@@ -45,14 +45,12 @@ interface PanelImagesProps {
 }
 
 const groupImagesByType = (
-  images: SkylarkObjectIdentifier<BuiltInSkylarkObjectType.SkylarkImage>[],
+  images: SkylarkObject<BuiltInSkylarkObjectType.SkylarkImage>[],
 ) => {
   return images.reduce(
     (
       acc: {
-        [
-          key: string
-        ]: SkylarkObjectIdentifier<BuiltInSkylarkObjectType.SkylarkImage>[];
+        [key: string]: SkylarkObject<BuiltInSkylarkObjectType.SkylarkImage>[];
       },
       currentValue,
     ) => {
@@ -76,7 +74,7 @@ const PanelImage = ({
   object,
   setPanelObject,
 }: {
-  object: SkylarkObjectIdentifier<BuiltInSkylarkObjectType.SkylarkImage>;
+  object: SkylarkObject<BuiltInSkylarkObjectType.SkylarkImage>;
   inEditMode: boolean;
   setPanelObject: SetPanelObject;
 }) => {

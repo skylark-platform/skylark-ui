@@ -29,17 +29,17 @@ import {
   ParsedSkylarkObject,
   AddedSkylarkObjectContentObject,
   SkylarkSystemField,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
   BuiltInSkylarkObjectType,
   GQLSkylarkErrorResponse,
   ParsedSkylarkObjectConfig,
   ModifiedRelationshipsObject,
+  SkylarkObjectIdentifier,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
   hasProperty,
   getObjectTypeDisplayNameFromParsedObject,
-  getObjectDisplayName,
 } from "src/lib/utils";
 
 import {
@@ -63,7 +63,7 @@ import { PanelRelationships } from "./panelSections/panelRelationships.component
 interface PanelProps {
   isPage?: boolean;
   closePanel?: () => void;
-  object: SkylarkObjectIdentifier;
+  object: SkylarkObject;
   tab: PanelTab;
   tabState: PanelTabState;
   setPanelObject: SetPanelObject;
@@ -263,7 +263,7 @@ export const Panel = ({
 
   const [modifiedAvailabilityObjects, setModifiedAvailabilityObjects] =
     useState<{
-      added: SkylarkObjectIdentifier[];
+      added: SkylarkObject[];
       removed: string[];
     } | null>(null);
 
@@ -275,8 +275,8 @@ export const Panel = ({
 
   const [modifiedAvailabilityAssignedTo, setModifiedAvailabilityAssignedTo] =
     useState<{
-      added: SkylarkObjectIdentifier[];
-      removed: SkylarkObjectIdentifier[];
+      added: SkylarkObject[];
+      removed: SkylarkObject[];
     } | null>(null);
 
   const { uid, objectType, language } = object;
@@ -554,7 +554,7 @@ export const Panel = ({
   const handleAvailabilityObjectsModified = useCallback(
     (
       updatedModifiedAvailabilities: {
-        added: SkylarkObjectIdentifier[];
+        added: SkylarkObject[];
         removed: string[];
       },
       errors: HandleDropError[],
@@ -573,8 +573,8 @@ export const Panel = ({
   const handleAvailabilityAssignedToModified = useCallback(
     (
       updatedAssignedToObjects: {
-        added: SkylarkObjectIdentifier[];
-        removed: SkylarkObjectIdentifier[];
+        added: SkylarkObject[];
+        removed: SkylarkObject[];
       },
       errors?: HandleDropError[],
     ) => {

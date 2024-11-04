@@ -6,9 +6,10 @@ import { SEGMENT_KEYS } from "src/constants/segment";
 import {
   ParsedSkylarkObject,
   ParsedSkylarkObjectAvailabilityObject,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { isObjectsDeepEqual } from "src/lib/utils";
 
 export enum PanelTab {
@@ -44,7 +45,7 @@ export interface PanelTabState {
 export interface PanelState {
   tab: PanelTab;
   tabState: PanelTabState;
-  object: SkylarkObjectIdentifier;
+  object: SkylarkObject;
 }
 
 export interface PanelUrlQuery {
@@ -67,7 +68,7 @@ export const defaultPanelTabState: PanelTabState = {
 };
 
 export type SetPanelObject = (
-  newPanelObject: SkylarkObjectIdentifier,
+  newPanelObject: SkylarkObject,
   opts?: {
     tab?: PanelTab;
     tabState?: Partial<PanelTabState>;
@@ -352,8 +353,8 @@ export const usePanelObjectState = (initialPanelState?: PanelState) => {
     replace({ ...cleanedQuery });
   }, [query, replace]);
 
-  const activePanelObject: SkylarkObjectIdentifier | null = useMemo(
-    (): SkylarkObjectIdentifier | null =>
+  const activePanelObject: SkylarkObject | null = useMemo(
+    (): SkylarkObject | null =>
       panelState.activePanelState?.object.uid === undefined ||
       panelState.activePanelState?.object.objectType === undefined ||
       panelState.activePanelState?.object.language === undefined
@@ -416,7 +417,7 @@ export const useInitialPanelStateFromQuery = (
             },
             availabilityStatus: null,
             availableLanguages: [],
-            contextualFields: undefined,
+            contextualFields: null,
             type: null,
             created: undefined,
             modified: undefined,
@@ -435,3 +436,5 @@ export const useInitialPanelStateFromQuery = (
     setPanelObject,
   ]);
 };
+
+convertParsedObjectToIdentifier;

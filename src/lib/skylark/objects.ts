@@ -26,7 +26,7 @@ import {
   NormalizedObjectField,
   SkylarkObjectMetaRelationship,
   ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
   ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
 import {
@@ -637,10 +637,43 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
   };
 };
 
+export const createDefaultSkylarkObject = (
+  args: {
+    uid: SkylarkObject["uid"];
+    objectType: SkylarkObject["objectType"];
+  } & Omit<Partial<SkylarkObject>, "display"> & {
+      display?: Partial<SkylarkObject["display"]>;
+    },
+) => {
+  const skylarkObject: SkylarkObject = {
+    language: "",
+    externalId: null,
+    availabilityStatus: null,
+    availableLanguages: [],
+    contextualFields: null,
+    type: null,
+    created: undefined,
+    modified: undefined,
+    ...args,
+    display: {
+      colour: undefined,
+      name: args.uid,
+      objectType: args.objectType,
+      ...args.display,
+    },
+    uid: args.uid,
+    objectType: args.objectType,
+  } as Omit<SkylarkObject, "contextualFields"> & {
+    contextualFields: null;
+  };
+
+  return skylarkObject;
+};
+
 export const convertParsedObjectToIdentifier = (
   parsedObject: ParsedSkylarkObject,
   fallbackConfig?: Record<string, ParsedSkylarkObjectConfig>,
-): SkylarkObjectIdentifier => {
+): SkylarkObject => {
   const { uid, objectType, metadata, meta } = parsedObject;
 
   const objectConfig = {
@@ -648,7 +681,7 @@ export const convertParsedObjectToIdentifier = (
   };
   if (objectConfig?.fieldConfig) delete objectConfig?.fieldConfig;
 
-  const object: SkylarkObjectIdentifier = {
+  const object: SkylarkObject = {
     uid,
     externalId: metadata.external_id,
     type: metadata?.type || null,
@@ -665,13 +698,13 @@ export const convertParsedObjectToIdentifier = (
       ),
       colour: parsedObject.config?.colour || fallbackConfig?.config?.colour,
     },
-    contextualFields: undefined,
+    contextualFields: null,
     created: meta.created,
     modified: meta.modified,
   };
 
   if (object.objectType === BuiltInSkylarkObjectType.Availability) {
-    const availabilityObject: SkylarkObjectIdentifier<BuiltInSkylarkObjectType.Availability> =
+    const availabilityObject: SkylarkObject<BuiltInSkylarkObjectType.Availability> =
       {
         ...object,
         objectType: BuiltInSkylarkObjectType.Availability,
@@ -685,14 +718,13 @@ export const convertParsedObjectToIdentifier = (
   }
 
   if (object.objectType === BuiltInSkylarkObjectType.SkylarkImage) {
-    const imageObject: SkylarkObjectIdentifier<BuiltInSkylarkObjectType.SkylarkImage> =
-      {
-        ...object,
-        objectType: BuiltInSkylarkObjectType.SkylarkImage,
-        contextualFields: {
-          url: metadata?.url === "string" ? metadata.url : "",
-        },
-      };
+    const imageObject: SkylarkObject<BuiltInSkylarkObjectType.SkylarkImage> = {
+      ...object,
+      objectType: BuiltInSkylarkObjectType.SkylarkImage,
+      contextualFields: {
+        url: metadata?.url === "string" ? metadata.url : "",
+      },
+    };
 
     return imageObject;
   }
@@ -701,7 +733,7 @@ export const convertParsedObjectToIdentifier = (
     objectType === BuiltInSkylarkObjectType.SkylarkAsset ||
     objectType === BuiltInSkylarkObjectType.SkylarkLiveAsset
   ) {
-    const assetObject: SkylarkObjectIdentifier<
+    const assetObject: SkylarkObject<
       | BuiltInSkylarkObjectType.SkylarkAsset
       | BuiltInSkylarkObjectType.SkylarkLiveAsset
     > = {

@@ -11,7 +11,7 @@ import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { CheckedObjectState, useCheckedObjectsState } from "src/hooks/state";
 import {
   ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
   SkylarkObjectTypes,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
@@ -22,7 +22,7 @@ interface SearchObjectsModalProps {
   objectTypes?: SkylarkObjectTypes;
   columns?: string[];
   isOpen: boolean;
-  existingObjects?: SkylarkObjectIdentifier[];
+  existingObjects?: SkylarkObject[];
   closeModal: () => void;
   onSave: (args: { checkedObjectsState: CheckedObjectState[] }) => void;
 }
@@ -34,7 +34,7 @@ const generateSaveMessage = ({
 }: {
   checkedUids: string[];
   checkedObjectTypesForDisplay: string[];
-  existingObjects?: SkylarkObjectIdentifier[];
+  existingObjects?: SkylarkObject[];
 }) => {
   const existingUids = existingObjects.map(({ uid }) => uid);
 

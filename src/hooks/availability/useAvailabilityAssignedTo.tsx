@@ -21,6 +21,7 @@ import {
   createGetAvailabilityAssignedTo,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 const select = (
@@ -40,7 +41,9 @@ const select = (
         const normalisedObject =
           removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>(object);
 
-        const parsedObject = parseSkylarkObject(normalisedObject);
+        const parsedObject = convertParsedObjectToIdentifier(
+          parseSkylarkObject(normalisedObject),
+        );
 
         return {
           objectType: object.__typename,

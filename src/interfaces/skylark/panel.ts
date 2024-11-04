@@ -1,10 +1,10 @@
 import {
   ParsedSkylarkRelationshipConfig,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
 } from "./parsedObjects";
 
 export interface ModifiedRelationship {
-  added: SkylarkObjectIdentifier[];
+  added: SkylarkObject[];
   removed: string[];
   config: Partial<ParsedSkylarkRelationshipConfig>;
 }
@@ -12,7 +12,7 @@ export interface ModifiedRelationship {
 export type ModifiedRelationshipsObject = Record<
   string,
   {
-    added: SkylarkObjectIdentifier[];
+    added: SkylarkObject[];
     removed: string[];
     config: Partial<ParsedSkylarkRelationshipConfig>;
   }

@@ -12,7 +12,7 @@ import { useSkylarkSetObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTy
 import {
   SkylarkObjectType,
   ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
 } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
@@ -27,25 +27,22 @@ interface PanelContentOfProps {
   setPanelObject: SetPanelObject;
 }
 
-const groupContentOfByObjectType = (objects?: SkylarkObjectIdentifier[]) => {
+const groupContentOfByObjectType = (objects?: SkylarkObject[]) => {
   return (
-    objects?.reduce(
-      (acc: { [key: string]: SkylarkObjectIdentifier[] }, currentValue) => {
-        if (acc && acc[currentValue.objectType])
-          return {
-            ...acc,
-            [currentValue.objectType]: [
-              ...acc[currentValue.objectType],
-              currentValue,
-            ],
-          };
+    objects?.reduce((acc: { [key: string]: SkylarkObject[] }, currentValue) => {
+      if (acc && acc[currentValue.objectType])
         return {
           ...acc,
-          [currentValue.objectType]: [currentValue],
+          [currentValue.objectType]: [
+            ...acc[currentValue.objectType],
+            currentValue,
+          ],
         };
-      },
-      {},
-    ) || {}
+      return {
+        ...acc,
+        [currentValue.objectType]: [currentValue],
+      };
+    }, {}) || {}
   );
 };
 

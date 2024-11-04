@@ -36,7 +36,7 @@ import {
   AvailabilityStatus,
   SkylarkGraphQLAvailabilityDimensionWithValues,
   ParsedSkylarkObjectAvailabilityObject,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
   BuiltInSkylarkObjectType,
   SkylarkAvailabilityField,
   SkylarkObjectType,
@@ -62,12 +62,12 @@ interface PanelAvailabilityProps {
   inEditMode: boolean;
   setPanelObject: SetPanelObject;
   modifiedAvailabilityObjects: {
-    added: SkylarkObjectIdentifier[];
+    added: SkylarkObject[];
     removed: string[];
   } | null;
   setAvailabilityObjects: (
     a: {
-      added: SkylarkObjectIdentifier[];
+      added: SkylarkObject[];
       removed: string[];
     },
     errors: HandleDropError[],
@@ -106,9 +106,9 @@ const AvailabilityValueGrid = ({
     key: string;
     label: string;
     value: ReactNode;
-    forwardObject?: SkylarkObjectIdentifier;
+    forwardObject?: SkylarkObject;
   }[];
-  onForwardClick?: (o: SkylarkObjectIdentifier) => void;
+  onForwardClick?: (o: SkylarkObject) => void;
 }) => {
   return (
     <div className="mt-3">
@@ -147,17 +147,9 @@ const AvailabilityValueGrid = ({
 
 const convertAvailabilityToParsedObjects = (
   availabilityObjects: ParsedSkylarkObjectAvailabilityObject[],
-): SkylarkObjectIdentifier[] => {
+): SkylarkObject[] => {
   const parsedObjects = availabilityObjects.map(
-    ({
-      uid,
-      start,
-      end,
-      external_id,
-      title,
-      slug,
-      timezone,
-    }): SkylarkObjectIdentifier =>
+    ({ uid, start, end, external_id, title, slug, timezone }): SkylarkObject =>
       convertParsedObjectToIdentifier({
         uid,
         config: {},
@@ -298,10 +290,10 @@ const PanelAvailabilityEditViewSection = ({
   removeAvailabilityObject: (uid: string) => void;
   toggleInheritedAvailability: (o: {
     newActive: boolean;
-    parsedObject: SkylarkObjectIdentifier;
+    parsedObject: SkylarkObject;
     isActiveOnServer: boolean;
   }) => void;
-  availabilityObjects: SkylarkObjectIdentifier[];
+  availabilityObjects: SkylarkObject[];
   inheritedObjects: ParsedSkylarkObjectAvailabilityObject[];
 } & PanelAvailabilityProps) => {
   const inheritedUids = inheritedObjects?.map(({ uid }) => uid);
@@ -313,9 +305,7 @@ const PanelAvailabilityEditViewSection = ({
     <div className="mb-8">
       {availabilityObjects
         ?.filter(
-          (
-            obj,
-          ): obj is SkylarkObjectIdentifier<BuiltInSkylarkObjectType.Availability> =>
+          (obj): obj is SkylarkObject<BuiltInSkylarkObjectType.Availability> =>
             obj.objectType === BuiltInSkylarkObjectType.Availability,
         )
         .map((obj) => {
@@ -385,11 +375,11 @@ const PanelAvailabilityEditView = ({
   ...props
 }: {
   removeAvailabilityObject: (uid: string) => void;
-  availabilityObjects: SkylarkObjectIdentifier[];
+  availabilityObjects: SkylarkObject[];
   inheritedUids: string[];
   toggleInheritedAvailability: (o: {
     newActive: boolean;
-    parsedObject: SkylarkObjectIdentifier;
+    parsedObject: SkylarkObject;
     isActiveOnServer: boolean;
   }) => void;
   inheritedObjects: ParsedSkylarkObjectAvailabilityObject[];
@@ -924,7 +914,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
     parsedObject,
   }: {
     newActive: boolean;
-    parsedObject: SkylarkObjectIdentifier;
+    parsedObject: SkylarkObject;
     isActiveOnServer: boolean;
   }) => {
     const previousAdded = modifiedAvailabilityObjects?.added || [];

@@ -35,7 +35,7 @@ import {
   SkylarkObjectContentObject,
   AddedSkylarkObjectContentObject,
   ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
 } from "src/interfaces/skylark";
 import {
   DragEndEvent,
@@ -281,14 +281,7 @@ export const PanelContent = ({
   const preppedObjects: SortableContentObject[] | undefined = objects?.map(
     (object) => ({
       ...object,
-      id: generateSortableObjectId(
-        {
-          uid: object.object.uid,
-          objectType: object.objectType,
-          meta: { language: object.object.language },
-        },
-        "PANEL_CONTENT",
-      ),
+      id: generateSortableObjectId(object.object, "PANEL_CONTENT"),
     }),
   );
 
@@ -364,7 +357,7 @@ export const PanelContent = ({
         ({ uid }) => uid === active.data.current.object.uid,
       );
 
-      const objectsToAdd: SkylarkObjectIdentifier[] = draggedObjectIsChecked
+      const objectsToAdd: SkylarkObject[] = draggedObjectIsChecked
         ? checkedObjects
         : [draggedObject];
 

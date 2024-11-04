@@ -10,12 +10,12 @@ import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes
 import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
 import {
   ParsedSkylarkObjectConfig,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
 } from "src/interfaces/skylark/parsedObjects";
 import { platformMetaKeyClicked } from "src/lib/utils";
 
 interface ObjectIdentifierCardProps {
-  object: SkylarkObjectIdentifier;
+  object: SkylarkObject;
   objectConfig?: ParsedSkylarkObjectConfig;
   children?: ReactNode;
   disableForwardClick?: boolean;

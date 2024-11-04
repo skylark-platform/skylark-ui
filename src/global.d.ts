@@ -3,7 +3,7 @@ import { CheckedObjectState } from "./hooks/state";
 import { SetPanelObject } from "./hooks/state/usePanelObjectState";
 import {
   ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
   SkylarkObjectMeta,
 } from "./interfaces/skylark";
 
@@ -15,7 +15,7 @@ export declare module "@tanstack/table-core" {
     onRowCheckChange?: ({ object, checkedState }: CheckedObjectState) => void;
     batchCheckRows: (type: "shift" | "clear-all", rowIndex?: number) => void;
     onObjectClick?: SetPanelObject;
-    activeObject: SkylarkObjectIdentifier | null;
+    activeObject: SkylarkObject | null;
     objectTypesWithConfig:
       | {
           objectType: string;

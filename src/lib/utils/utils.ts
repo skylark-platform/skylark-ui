@@ -11,7 +11,7 @@ import {
   ParsedSkylarkObject,
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectMetadata,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
   SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
 
@@ -197,16 +197,16 @@ export const addCloudinaryOnTheFlyImageTransformation = (
 };
 
 export const skylarkObjectsAreSame = <
-  T extends SkylarkObjectIdentifier | ParsedSkylarkObject,
+  T extends SkylarkObject | ParsedSkylarkObject,
 >(
   obj1: T,
   obj2: T,
 ) => {
   const obj1Language =
-    (obj1 as SkylarkObjectIdentifier)?.language ||
+    (obj1 as SkylarkObject)?.language ||
     (obj1 as ParsedSkylarkObject)?.meta?.language;
   const obj2Language =
-    (obj2 as SkylarkObjectIdentifier)?.language ||
+    (obj2 as SkylarkObject)?.language ||
     (obj2 as ParsedSkylarkObject)?.meta?.language;
 
   return (
@@ -303,6 +303,6 @@ export const getPlaybackPolicyFromMetadata = (
 };
 
 export const objectIsAvailability = (
-  obj: SkylarkObjectIdentifier,
-): obj is SkylarkObjectIdentifier<BuiltInSkylarkObjectType.Availability> =>
+  obj: SkylarkObject,
+): obj is SkylarkObject<BuiltInSkylarkObjectType.Availability> =>
   obj.objectType === BuiltInSkylarkObjectType.Availability;

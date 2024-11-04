@@ -140,14 +140,20 @@ test("existing selected rows are disabled from being checked", async () => {
         {
           uid: secondEpisode.uid,
           objectType: secondEpisode.__typename,
-          meta: {
-            availableLanguages: secondEpisode._meta.available_languages,
-            language: secondEpisode._meta.language_data.language,
-            availabilityStatus: AvailabilityStatus.Active,
+          availableLanguages: secondEpisode._meta.available_languages,
+          language: secondEpisode._meta.language_data.language,
+          availabilityStatus: AvailabilityStatus.Active,
+          type: null,
+          contextualFields: null,
+          externalId: "",
+          display: {
+            name: secondEpisode.uid,
+            objectType: secondEpisode.__typename,
+            colour: "",
           },
-          config: {},
-          metadata: {},
-        } as ParsedSkylarkObject,
+          created: "",
+          modified: "",
+        },
       ]}
     />,
   );

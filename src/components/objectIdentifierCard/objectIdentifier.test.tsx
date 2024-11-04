@@ -191,7 +191,7 @@ test("does not show AvailabilityStatus icon when object type is Availability", (
       object={{
         ...defaultObject,
         objectType: BuiltInSkylarkObjectType.Availability,
-        contextualFields: undefined,
+        contextualFields: null,
       }}
     />,
   );

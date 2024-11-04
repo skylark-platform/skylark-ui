@@ -3,15 +3,12 @@ import { useEffect, useState } from "react";
 
 import { PanelTab } from "src/hooks/state";
 import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
-import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
+import { SkylarkObject, SkylarkObjectIdentifier } from "src/interfaces/skylark";
 
 import { prefetchGetObjectAvailability } from "./useGetObjectAvailability";
 import { prefetchGetObjectContent } from "./useGetObjectContent";
 
-interface UseGetObjectPrefetchQueriesProps {
-  uid: string;
-  objectType: string;
-  language: string;
+interface UseGetObjectPrefetchQueriesProps extends SkylarkObjectIdentifier {
   selectedTab: PanelTab;
 }
 

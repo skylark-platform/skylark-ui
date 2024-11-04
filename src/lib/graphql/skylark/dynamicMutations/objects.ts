@@ -16,7 +16,7 @@ import {
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
 } from "src/interfaces/skylark";
 import {
   generateFieldsToReturn,
@@ -487,7 +487,7 @@ export const createUpdateObjectRelationshipsMutation = (
 export const createUpdateObjectAvailability = (
   object: SkylarkObjectMeta | null,
   modifiedAvailabilityObjects: {
-    added: SkylarkObjectIdentifier[];
+    added: SkylarkObject[];
     removed: string[];
   } | null,
 ) => {
@@ -650,7 +650,7 @@ export const createUpdateAvailabilityDimensionsMutation = (
 const createAvailabilityObjectLinkUnlinkOperations = (
   allObjectsMeta: SkylarkObjectMeta[],
   availabilityUid: string,
-  objects: SkylarkObjectIdentifier[],
+  objects: SkylarkObject[],
   type: "link" | "unlink",
 ) =>
   objects.reduce((previous, object) => {
@@ -687,8 +687,8 @@ const createAvailabilityObjectLinkUnlinkOperations = (
 export const createUpdateAvailabilityAssignedToMutation = (
   allObjectsMeta: SkylarkObjectMeta[] | null,
   availabilityUid: string,
-  addedObjects: SkylarkObjectIdentifier[],
-  removedObjects: SkylarkObjectIdentifier[],
+  addedObjects: SkylarkObject[],
+  removedObjects: SkylarkObject[],
 ) => {
   if (!allObjectsMeta || !availabilityUid) {
     return null;

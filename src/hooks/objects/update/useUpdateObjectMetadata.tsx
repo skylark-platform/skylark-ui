@@ -9,6 +9,7 @@ import {
   GQLSkylarkErrorResponse,
   GQLSkylarkGetObjectResponse,
   GQLSkylarkUpdateObjectMetadataResponse,
+  SkylarkObject,
   SkylarkObjectIdentifier,
   SkylarkObjectMetadataField,
   SkylarkObjectType,

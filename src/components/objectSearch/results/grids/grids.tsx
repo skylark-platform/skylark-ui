@@ -22,7 +22,7 @@ import {
 import { RowActions } from "src/components/objectSearch/rowActions";
 import { Skeleton } from "src/components/skeleton";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
+import { SkylarkObject } from "src/interfaces/skylark";
 import {
   DragEndEvent,
   DragStartEvent,
@@ -44,7 +44,7 @@ interface GridProps {
   virtualColumns: VirtualItem[];
   headers: Header<ObjectSearchTableData, string>[];
   leftGridSize: number;
-  panelObject: SkylarkObjectIdentifier | null;
+  panelObject: SkylarkObject | null;
   hoveredRow: number | null;
   setHoveredRow?: (rowId: number | null) => void;
   showFrozenColumnDropZones: boolean;

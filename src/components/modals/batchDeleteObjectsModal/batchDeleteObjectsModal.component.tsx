@@ -10,10 +10,7 @@ import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
 import { Toast } from "src/components/toast/toast.component";
 import { SEGMENT_KEYS } from "src/constants/segment";
 import { useBulkDeleteObjects } from "src/hooks/objects/delete/useBulkDeleteObjects";
-import {
-  ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
-} from "src/interfaces/skylark";
+import { ParsedSkylarkObject, SkylarkObject } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { hasProperty } from "src/lib/utils";
@@ -22,14 +19,14 @@ const DELETION_LIMIT = 100;
 const VERIFICATION_TEXT = "permanently delete";
 
 interface BatchDeleteObjectsModalProps {
-  objectsToBeDeleted: SkylarkObjectIdentifier[];
+  objectsToBeDeleted: SkylarkObject[];
   isOpen: boolean;
   closeModal: () => void;
-  onDeletionComplete: (deletedObjects: SkylarkObjectIdentifier[]) => void;
+  onDeletionComplete: (deletedObjects: SkylarkObject[]) => void;
 }
 
 const generateDescription = (
-  objectsToBeDeleted: SkylarkObjectIdentifier[],
+  objectsToBeDeleted: SkylarkObject[],
   multipleLanguages: boolean,
 ) => {
   if (objectsToBeDeleted.length > 1) {
@@ -131,7 +128,7 @@ const BatchDeleteObjectsModalContent = ({
   closeModal,
   onDeletionComplete,
 }: {
-  objects: SkylarkObjectIdentifier[];
+  objects: SkylarkObject[];
   closeModal: () => void;
   onDeletionComplete: BatchDeleteObjectsModalProps["onDeletionComplete"];
 }) => {
@@ -167,7 +164,7 @@ const BatchDeleteObjectsModalContent = ({
   const [objects, setObjects] = useState(propObjects);
 
   const groupedObjectsByUID = objects.reduce(
-    (prev, obj): Record<string, SkylarkObjectIdentifier[]> => {
+    (prev, obj): Record<string, SkylarkObject[]> => {
       if (hasProperty(prev, obj.uid)) {
         return {
           ...prev,
@@ -176,11 +173,11 @@ const BatchDeleteObjectsModalContent = ({
       }
 
       return {
-        ...(prev as Record<string, SkylarkObjectIdentifier[]>),
+        ...(prev as Record<string, SkylarkObject[]>),
         [obj.uid]: [obj],
       };
     },
-    {} as Record<string, SkylarkObjectIdentifier[]>,
+    {} as Record<string, SkylarkObject[]>,
   );
 
   const orderedObjects = Object.values(groupedObjectsByUID).flatMap(

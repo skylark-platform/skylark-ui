@@ -25,7 +25,7 @@ import {
   ParsedSkylarkRelationshipConfig,
   ModifiedRelationshipsObject,
   ModifiedRelationship,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
 } from "src/interfaces/skylark";
 import { DragType, DroppableType } from "src/lib/dndkit/dndkit";
 import { formatObjectField, hasProperty } from "src/lib/utils";
@@ -156,7 +156,7 @@ const getNewUidsForRelationship = (
 
 const updateModifiedObjectsWithAddedObjects = (
   modifiedRelationships: PanelRelationshipsProps["modifiedRelationships"],
-  addedObjects: Record<string, SkylarkObjectIdentifier[]>,
+  addedObjects: Record<string, SkylarkObject[]>,
 ) => {
   const updatedModifiedRelationships: PanelRelationshipsProps["modifiedRelationships"] =
     Object.fromEntries(
@@ -186,7 +186,7 @@ const updateModifiedObjectsWithAddedObjects = (
 
 const parseAddedAndRemovedRelationshipObjects = (
   existing: ModifiedRelationship,
-  added: SkylarkObjectIdentifier[],
+  added: SkylarkObject[],
   removed: string[],
 ): ModifiedRelationship => {
   const updatedAdded = added ? [...existing.added, ...added] : existing.added;
@@ -274,10 +274,7 @@ export const PanelRelationships = ({
 
   const modifyRelationshipObjects = (
     relationshipName: string,
-    {
-      added,
-      removed,
-    }: { added?: SkylarkObjectIdentifier[]; removed?: string[] },
+    { added, removed }: { added?: SkylarkObject[]; removed?: string[] },
   ) => {
     const relationship = hasProperty(modifiedRelationships, relationshipName)
       ? modifiedRelationships[relationshipName]

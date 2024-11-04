@@ -3,10 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QueryKeys } from "src/enums/graphql";
 import { createGetObjectKeyPrefix } from "src/hooks/objects/get/useGetObject";
 import { refetchSearchQueriesAfterUpdate } from "src/hooks/objects/useCreateObject";
-import {
-  GQLSkylarkErrorResponse,
-  SkylarkObjectIdentifier,
-} from "src/interfaces/skylark";
+import { GQLSkylarkErrorResponse, SkylarkObject } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { BATCH_DELETE } from "src/lib/graphql/skylark/mutations";
 
@@ -14,13 +11,13 @@ export const useBulkDeleteObjects = ({
   onSuccess,
   onError,
 }: {
-  onSuccess: (deletedObjects: SkylarkObjectIdentifier[]) => void;
+  onSuccess: (deletedObjects: SkylarkObject[]) => void;
   onError: (e: GQLSkylarkErrorResponse) => void;
 }) => {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: ({ objects }: { objects: SkylarkObjectIdentifier[] }) => {
+    mutationFn: ({ objects }: { objects: SkylarkObject[] }) => {
       const formattedObjects = objects.map(({ uid, language, objectType }) => ({
         uid,
         language,

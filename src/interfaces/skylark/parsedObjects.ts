@@ -16,45 +16,51 @@ import {
 export type SkylarkUID = string;
 export type SkylarkExternalId = string | null;
 
-export type SkylarkObjectIdentifier<T = BuiltInSkylarkObjectType | string> = {
+export interface SkylarkObjectIdentifier<
+  T = BuiltInSkylarkObjectType | string,
+> {
   uid: SkylarkUID;
-  externalId: string | null;
-  type: string | null;
   objectType: T;
   language: string;
-  availableLanguages: ParsedSkylarkObjectMeta["availableLanguages"];
-  availabilityStatus: AvailabilityStatus | null;
-  display: {
-    name: string;
-    objectType: string;
-    colour: ParsedSkylarkObjectConfig["colour"];
-  };
-  created: ParsedSkylarkObjectMeta["created"];
-  modified: ParsedSkylarkObjectMeta["modified"];
-} & (
-  | {
-      objectType: BuiltInSkylarkObjectType.SkylarkImage;
-      contextualFields: {
-        url: string;
-      };
-    }
-  | {
-      objectType: BuiltInSkylarkObjectType.Availability;
-      contextualFields: {
-        start: string | null;
-        end: string | null;
-      };
-    }
-  | {
-      objectType:
-        | BuiltInSkylarkObjectType.SkylarkAsset
-        | BuiltInSkylarkObjectType.SkylarkLiveAsset;
-      contextualFields: Record<string, SkylarkObjectMetadataField> & {
-        playbackPolicy: IntegrationUploaderPlaybackPolicy | null;
-      };
-    }
-  | { objectType: string; contextualFields: undefined }
-);
+}
+
+export type SkylarkObject<T = BuiltInSkylarkObjectType | string> =
+  SkylarkObjectIdentifier<T> & {
+    externalId: string | null;
+    type: string | null;
+    availableLanguages: ParsedSkylarkObjectMeta["availableLanguages"];
+    availabilityStatus: AvailabilityStatus | null;
+    display: {
+      name: string;
+      objectType: string;
+      colour: ParsedSkylarkObjectConfig["colour"];
+    };
+    created: ParsedSkylarkObjectMeta["created"];
+    modified: ParsedSkylarkObjectMeta["modified"];
+  } & (
+      | {
+          objectType: BuiltInSkylarkObjectType.SkylarkImage;
+          contextualFields: {
+            url: string | null;
+          };
+        }
+      | {
+          objectType: BuiltInSkylarkObjectType.Availability;
+          contextualFields: {
+            start: string | null;
+            end: string | null;
+          };
+        }
+      | {
+          objectType:
+            | BuiltInSkylarkObjectType.SkylarkAsset
+            | BuiltInSkylarkObjectType.SkylarkLiveAsset;
+          contextualFields: Record<string, SkylarkObjectMetadataField> & {
+            playbackPolicy: IntegrationUploaderPlaybackPolicy | null;
+          };
+        }
+      | { objectType: string; contextualFields: null }
+    );
 
 export enum AvailabilityStatus {
   Active = "Active",
@@ -91,7 +97,7 @@ export interface SkylarkObjectContentObject {
   objectType: SkylarkObjectType;
   // config: ParsedSkylarkObjectConfig;
   // meta: ParsedSkylarkObjectMeta;
-  object: SkylarkObjectIdentifier;
+  object: SkylarkObject;
   position: number;
   isDynamic: boolean;
 }
@@ -159,7 +165,7 @@ export interface SkylarkObjectRelationship<
 > {
   name: string;
   objectType: SkylarkObjectType;
-  objects: SkylarkObjectIdentifier<T>[];
+  objects: SkylarkObject<T>[];
 }
 
 export type SkylarkObjectRelationships<T = BuiltInSkylarkObjectType | string> =
@@ -176,7 +182,7 @@ export interface ParsedSkylarkObjectTypeRelationshipConfiguration {
 
 export interface AvailabilityAssignedToObject {
   objectType: SkylarkObjectType;
-  object: SkylarkObjectIdentifier;
+  object: SkylarkObject;
   inherited: boolean;
   inheritanceSource: boolean;
   active: boolean;

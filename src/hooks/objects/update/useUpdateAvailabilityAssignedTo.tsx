@@ -4,10 +4,7 @@ import { RequestDocument } from "graphql-request";
 import { createGetAvailabilityAssignedToKeyPrefix } from "src/hooks/availability/useAvailabilityAssignedTo";
 import { createGetObjectAvailabilityKeyPrefix } from "src/hooks/objects/get/useGetObjectAvailability";
 import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
-import {
-  GQLSkylarkErrorResponse,
-  SkylarkObjectIdentifier,
-} from "src/interfaces/skylark";
+import { GQLSkylarkErrorResponse, SkylarkObject } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateAvailabilityAssignedToMutation } from "src/lib/graphql/skylark/dynamicMutations/objects";
 
@@ -28,8 +25,8 @@ export const useUpdateAvailabilityAssignedTo = ({
     }: {
       uid: string;
       modifiedAvailabilityAssignedTo: {
-        added: SkylarkObjectIdentifier[];
-        removed: SkylarkObjectIdentifier[];
+        added: SkylarkObject[];
+        removed: SkylarkObject[];
       };
     }) => {
       const updateAvailabilityObjectDimensionsMutation =

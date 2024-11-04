@@ -6,7 +6,7 @@ import { render } from "src/__tests__/utils/test-utils";
 import {
   AvailabilityStatus,
   ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
 } from "src/interfaces/skylark";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
@@ -145,7 +145,7 @@ test("shows this translation will be deleted and the object when not all availab
           ...object,
           uid: "245",
           objectType: "Movie",
-          contextualFields: undefined,
+          contextualFields: null,
         },
       ]}
       closeModal={jest.fn()}
@@ -167,13 +167,10 @@ test("shows this translation will be deleted and the object when not all availab
 });
 
 test("shows some objects will not be deleted when the number of objects exceeds the deletion limit", async () => {
-  const objects: SkylarkObjectIdentifier[] = Array.from(
-    { length: 150 },
-    (_, i) => ({
-      ...object,
-      uid: `object-${i}`,
-    }),
-  );
+  const objects: SkylarkObject[] = Array.from({ length: 150 }, (_, i) => ({
+    ...object,
+    uid: `object-${i}`,
+  }));
   render(
     <BatchDeleteObjectsModal
       isOpen={true}
@@ -210,7 +207,7 @@ describe("activated delete button", () => {
             ...object,
             uid: "245",
             objectType: "Movie",
-            contextualFields: undefined,
+            contextualFields: null,
           },
         ]}
         closeModal={closeModal}

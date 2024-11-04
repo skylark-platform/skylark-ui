@@ -2,11 +2,11 @@ import { CheckedState } from "@radix-ui/react-checkbox";
 import { useState, useMemo, useCallback } from "react";
 
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
-import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
+import { SkylarkObject } from "src/interfaces/skylark";
 
 export type CheckedObjectState = {
   checkedState: CheckedState;
-  object: SkylarkObjectIdentifier;
+  object: SkylarkObject;
 };
 
 export const useCheckedObjectsState = (
@@ -38,7 +38,7 @@ export const useCheckedObjectsState = (
       {
         uids: [] as string[],
         objectTypes: [] as string[],
-        objects: [] as SkylarkObjectIdentifier[],
+        objects: [] as SkylarkObject[],
       },
     );
 

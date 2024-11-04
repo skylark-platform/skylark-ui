@@ -5,6 +5,7 @@ import {
   AvailabilityStatus,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
+import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
 import { ObjectIdentifierCard } from "./objectIdentifier.component";
 
@@ -14,28 +15,16 @@ export default {
   argTypes: {},
 };
 
-const object: ParsedSkylarkObject = {
+const object = createDefaultSkylarkObject({
   uid: "123",
   objectType: "SkylarkSet",
-  config: {
-    objectTypeDisplayName: undefined,
+  language: "en-GB",
+  availableLanguages: ["en-GB"],
+  availabilityStatus: AvailabilityStatus.Active,
+  display: {
+    name: "my episode",
   },
-  meta: {
-    language: "en-GB",
-    availableLanguages: ["en-GB"],
-    availabilityStatus: AvailabilityStatus.Active,
-    versions: {},
-  },
-  metadata: {
-    uid: "1",
-    external_id: "epi-1",
-    title: "my episode",
-  },
-  availability: {
-    status: AvailabilityStatus.Active,
-    objects: [],
-  },
-};
+});
 
 const Template: StoryFn<typeof ObjectIdentifierCard> = (args) => {
   return (

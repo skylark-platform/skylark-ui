@@ -5,20 +5,19 @@ import {
 import {
   AvailabilityStatus,
   SkylarkObjectContentObject,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
 } from "src/interfaces/skylark";
+import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
 import {
   createDeleteObjectMutation,
   createUpdateObjectContentMutation,
 } from "./objects";
 
-const obj: SkylarkObjectIdentifier = {
+const obj: SkylarkObject = createDefaultSkylarkObject({
   uid: "",
-  externalId: "",
-  type: null,
-  language: "",
-} as SkylarkObjectIdentifier;
+  objectType: "",
+});
 
 describe("createDeleteObjectMutation", () => {
   test("returns null when the object doesn't have a delete operation", () => {
