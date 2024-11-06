@@ -1,5 +1,6 @@
 import MuxUploaderComponent from "@mux/mux-uploader-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { sentenceCase } from "change-case";
 import { CSSProperties, useState } from "react";
 import { CgSpinner } from "react-icons/cg";
 import { toast } from "react-toastify";
@@ -92,7 +93,7 @@ export const MuxUploader = ({
       <>
         <Modal
           isOpen={isOpen}
-          title={`Upload video to ${provider === "brightcove" ? "Brightcove" : "Mux"}`}
+          title={`Upload video to ${sentenceCase(provider)}`}
           size="medium"
           closeModal={() => setIsOpen(false)}
         >
