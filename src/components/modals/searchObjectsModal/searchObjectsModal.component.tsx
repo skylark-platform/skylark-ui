@@ -1,3 +1,4 @@
+import { CheckedState } from "@radix-ui/react-checkbox";
 import React, { useMemo } from "react";
 
 import { Button } from "src/components/button";
@@ -10,12 +11,10 @@ import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "src/components/objectSea
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { CheckedObjectState, useCheckedObjectsState } from "src/hooks/state";
 import {
-  ParsedSkylarkObject,
   SkylarkObject,
   SkylarkObjectTypes,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
 interface SearchObjectsModalProps {
   title: string;
@@ -23,6 +22,7 @@ interface SearchObjectsModalProps {
   columns?: string[];
   isOpen: boolean;
   existingObjects?: SkylarkObject[];
+  existingCheckedState?: CheckedState;
   initialSearchQuery?: string;
   closeModal: () => void;
   onSave: (args: {
@@ -79,6 +79,7 @@ export const SearchObjectsModal = ({
   objectTypes,
   columns: propColumns,
   existingObjects,
+  existingCheckedState,
   initialSearchQuery,
   closeModal,
   onSave,
@@ -93,7 +94,7 @@ export const SearchObjectsModal = ({
   } = useCheckedObjectsState(
     existingObjects?.map(
       (object): CheckedObjectState => ({
-        checkedState: "indeterminate",
+        checkedState: existingCheckedState || "indeterminate",
         object,
       }),
     ),

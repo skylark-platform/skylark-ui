@@ -19,6 +19,7 @@ import {
   SkylarkObject,
 } from "src/interfaces/skylark";
 import {
+  createDynamicSetContentInput,
   generateFieldsToReturn,
   generateVariablesAndArgs,
   wrappedJsonMutation,
@@ -32,44 +33,6 @@ interface SetContentOperation {
   objectType: SkylarkObjectType;
   position: number;
 }
-
-export const createDynamicSetContentInput = (
-  dynamicSetConfig: DynamicSetConfig,
-): SkylarkDynamicSetInput => {
-  return {
-    dynamic_content_types: dynamicSetConfig.objectTypes.map(
-      (str) => new EnumType(str),
-    ),
-    dynamic_content_rules: dynamicSetConfig.ruleBlocks.map(
-      (ruleBlock): SkylarkDynamicSetInput["dynamic_content_rules"][0] => {
-        const firstRule = {
-          object_types: ruleBlock.objectTypesToSearch.map(
-            (ot) => new EnumType(ot),
-          ),
-        };
-
-        const otherRules = ruleBlock.objectRules.map(
-          (rule): SkylarkDynamicSetRuleBlock => {
-            const uids = [
-              ...new Set([
-                ...(rule.relatedUid || []),
-                ...(rule.relatedObjects?.map(({ uid }) => uid) || []),
-              ]),
-            ];
-
-            return {
-              object_types: rule.objectType.map((ot) => new EnumType(ot)),
-              relationship_name: rule.relationshipName,
-              uid: uids.length > 0 ? uids : null,
-            };
-          },
-        );
-
-        return [firstRule, ...otherRules];
-      },
-    ),
-  };
-};
 
 export const createDeleteObjectMutation = (
   object: SkylarkObjectMeta | null,

@@ -42,23 +42,25 @@ export const createDynamicContentPreviewPrefix = ({
   { language },
 ];
 
-const select = (
-  data: GQLSkylarkDynamicContentPreviewResponse,
-): ParsedSkylarkObject[] => {
+const select = (data: GQLSkylarkDynamicContentPreviewResponse) => {
   // const contentObjects =
   //   data?.pages?.flatMap(
   //     (page) => page.getObjectContent.content?.objects || [],
   //   ) || [];
 
   const parsedObjects =
-    data.dynamicContentPreview?.map((obj) =>
+    data.dynamicContentPreview?.objects.map((obj) =>
       parseSkylarkObject(
         removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>(obj),
         null,
       ),
     ) || [];
 
-  return parsedObjects;
+  return {
+    count: data.dynamicContentPreview.count,
+    totalCount: data.dynamicContentPreview.total_count,
+    objects: parsedObjects,
+  };
 };
 
 export const useDynamicContentPreview = (
@@ -87,7 +89,11 @@ export const useDynamicContentPreview = (
   } = useQuery<
     GQLSkylarkDynamicContentPreviewResponse,
     GQLSkylarkErrorResponse<GQLSkylarkDynamicContentPreviewResponse>,
-    ParsedSkylarkObject[]
+    {
+      objects: ParsedSkylarkObject[];
+      count: number;
+      totalCount: number;
+    }
   >({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: createDynamicContentPreviewPrefix({ dynamicSetConfig, language }),

@@ -268,5 +268,9 @@ export interface GQLSkylarkCreateAPIKeyResponse {
 }
 
 export interface GQLSkylarkDynamicContentPreviewResponse {
-  dynamicContentPreview: SkylarkGraphQLObject[];
+  dynamicContentPreview: {
+    count: number;
+    total_count: number;
+    objects: SkylarkGraphQLObject[];
+  };
 }

@@ -4,7 +4,7 @@ import { DocumentNode, print, getOperationAST } from "graphql";
 import { useRouter } from "next/router";
 import { Dispatch, Fragment, SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FiArrowDown, FiPlus, FiTrash, FiTrash2 } from "react-icons/fi";
+import { FiArrowDown, FiPlus, FiTrash, FiTrash2, FiX } from "react-icons/fi";
 
 import { Button } from "src/components/button";
 import { TextInput } from "src/components/inputs/input";
@@ -109,14 +109,16 @@ const ObjectRuleBlock = ({
   isFirstRuleBlock,
   objectRule,
   validObjectTypes,
-  hideUidInput,
+  hideDelete,
   onChange,
+  onDelete,
 }: {
   isFirstRuleBlock: boolean;
   objectRule: DynamicSetObjectRule;
   validObjectTypes: string[];
-  hideUidInput?: boolean;
+  hideDelete?: boolean;
   onChange: (r: DynamicSetObjectRule) => void;
+  onDelete: () => void;
 }) => {
   const { objects: allObjectsMeta } = useAllObjectsMeta();
 
@@ -135,12 +137,13 @@ const ObjectRuleBlock = ({
   console.log({ sharedRelationships });
 
   return (
-    <div className="relative ">
-      <div className="items-center flex space-x-8">
-        {/* <p className="whitespace-nowrap font-bold w-8 text-center ml-2 rounded">
+    <div className="relative border border-manatee-200 px-8 rounded py-4 flex">
+      <div className="w-full">
+        <div className="items-center flex space-x-8">
+          {/* <p className="whitespace-nowrap font-bold w-8 text-center ml-2 rounded">
           {isFirstRuleBlock ? "" : "that"}
         </p> */}
-        {/* <Select
+          {/* <Select
           // label="At least one object linked in the relationship"
           options={[
             {
@@ -159,60 +162,57 @@ const ObjectRuleBlock = ({
           selected={"relationship"}
           disabled
         /> */}
-        <p className="whitespace-nowrap font-bold">are related to</p>
-        <Select
-          // label="At least one object linked in the relationship"
-          options={sharedRelationshipNames.map((relationshipName) => ({
-            label: sentenceCase(relationshipName),
-            value: relationshipName,
-          }))}
-          variant="primary"
-          labelVariant="form"
-          placeholder=""
-          className="my-2"
-          onChange={(relationshipName) =>
-            onChange({
-              ...objectRule,
-              relatedObjects: [],
-              relationshipName,
-              objectType: sharedRelationships
-                .filter((r) => r.relationshipName === relationshipName)
-                .map(({ objectType }) => objectType)
-                .filter((item, i, arr) => arr.indexOf(item) === i),
-            })
-          }
-          selected={objectRule.relationshipName}
-        />
-      </div>
-      {objectRule.relationshipName && (
-        <div className="ml-8 w-full flex items-center space-x-8">
-          <p className="whitespace-nowrap font-bold">that contain</p>
-          <ObjectMultiSelect
-            selectedObjects={objectRule.relatedObjects || []}
-            onChange={(objects) =>
+          <p className="whitespace-nowrap font-bold">are related to</p>
+          <Select
+            // label="At least one object linked in the relationship"
+            options={sharedRelationshipNames.map((relationshipName) => ({
+              label: sentenceCase(relationshipName),
+              value: relationshipName,
+            }))}
+            variant="primary"
+            labelVariant="form"
+            placeholder=""
+            className="mb-2"
+            onChange={(relationshipName) =>
               onChange({
                 ...objectRule,
-                relatedObjects: objects,
+                relatedObjects: [],
+                relationshipName,
+                objectType: sharedRelationships
+                  .filter((r) => r.relationshipName === relationshipName)
+                  .map(({ objectType }) => objectType)
+                  .filter((item, i, arr) => arr.indexOf(item) === i),
               })
             }
-            objectTypes={objectRule.objectType}
-            className="w-72 flex-grow"
-            selectedDivider="OR"
+            selected={objectRule.relationshipName}
           />
         </div>
+        {objectRule.relationshipName && (
+          <div className="pl-8 w-full flex items-center space-x-8">
+            <p className="whitespace-nowrap font-bold">that contain</p>
+            <ObjectMultiSelect
+              selectedObjects={objectRule.relatedObjects || []}
+              onChange={(objects) =>
+                onChange({
+                  ...objectRule,
+                  relatedObjects: objects,
+                })
+              }
+              objectTypes={objectRule.objectType}
+              className="w-full flex-grow"
+              selectedDivider="OR"
+            />
+          </div>
+        )}
+      </div>
+      {!hideDelete && (
+        <button
+          onClick={onDelete}
+          className="absolute right-2 top-2 p-1 text-manatee-300 hover:text-error transition-colors"
+        >
+          <FiX className="text-xl" />
+        </button>
       )}
-
-      {/* {!hideUidInput && (
-        <TextInput
-          label="Matching the uids (Optional, comma separated)"
-          onChange={(str) =>
-            onChange({
-              ...objectRule,
-              relatedUid: str ? str.trim().split(",") : undefined,
-            })
-          }
-        />
-      )} */}
     </div>
   );
 };
@@ -220,6 +220,7 @@ const ObjectRuleBlock = ({
 const ContentRuleBlock = ({
   // validObjectTypes,
   isFirstBlock,
+  hideDelete,
   ruleBlock,
   objectTypesWithConfig,
   setRuleBlock,
@@ -229,6 +230,7 @@ const ContentRuleBlock = ({
   isFirstBlock: boolean;
   ruleBlock: DynamicSetRuleBlock;
   objectTypesWithConfig: ObjectTypeWithConfig[];
+  hideDelete?: boolean;
   // setRuleBlock: Dispatch<SetStateAction<RuleBlock>>;
   setRuleBlock: (r: DynamicSetRuleBlock) => void;
   deleteRuleBlock: () => void;
@@ -279,7 +281,7 @@ const ContentRuleBlock = ({
   console.log(ruleBlock.objectRules);
 
   return (
-    <div className="my- px-8 py-4 border-manatee-500 w-full relative">
+    <div className="my-4 px-8 py-8 border-manatee-200 w-full relative border rounded">
       {/* <h3 className="text-2xl font-medium mb-2">Condition</h3> */}
       <div className="flex space-x-4 justify-center items-center w-full">
         <p className="whitespace-nowrap font-bold">
@@ -302,13 +304,13 @@ const ContentRuleBlock = ({
               ? "Select object types for this rule"
               : ""
           }
-          className="w-full"
+          className="w-full mb-4"
           selectedDivider={<p>OR</p>}
         />
         {/* <p className="whitespace-nowrap">object types</p> */}
       </div>
 
-      <div className="px-8 ml-0 border-l- border-manatee-300 mt-2 flex flex-col justify-center relative w-full">
+      <div className=" ml-0 border-l- border-manatee-300 flex flex-col justify-center relative w-full">
         {ruleBlock.objectRules.map((objectRule, i, arr) => (
           <div key={i} className="w-full relative my-2">
             {/* {i < arr.length && (
@@ -324,8 +326,8 @@ const ContentRuleBlock = ({
                 arr?.[i - 1]?.objectType || ruleBlock.objectTypesToSearch
               }
               onChange={(ruleBlock) => onObjectRuleChange(ruleBlock, i)}
-              // onDelete={() => deleteObjectRule(i)}
-              hideUidInput={i < arr.length - 1}
+              onDelete={() => deleteObjectRule(i)}
+              hideDelete={i === 0 || i < arr.length - 1}
             />
             {/* {arr.length > 1 && i === arr.length - 1 && (
               <div className="bottom-0 top-0 -right-4 absolute flex items-center">
@@ -342,46 +344,26 @@ const ContentRuleBlock = ({
         ))}
         <div>
           <Button
+            disabled={ruleBlock.objectRules.length === 5}
             variant="link"
             onClick={addObjectRule}
             Icon={<FiPlus className="text-xl" />}
-            className="mt-4"
           >
             Add filter
           </Button>
         </div>
       </div>
-      {deleteRuleBlock && (
-        <div className="bottom-0 top-0 -right-4 absolute flex items-center">
+      {!hideDelete && (
+        <div className="top-0 right-3 absolute flex items-center">
           <Button
             variant="ghost"
-            className="text-error"
+            className="text-manatee-300 hover:text-error"
             onClick={deleteRuleBlock}
           >
-            <FiTrash2 className="text-xl" />
+            <FiX className="text-xl" />
           </Button>
         </div>
       )}
-    </div>
-  );
-};
-
-const ListObjectContent = ({ uid }: { uid: string }) => {
-  const { data, isLoading } = useGetObjectContent("SkylarkSet", uid);
-
-  if (isLoading) {
-    return <Skeleton className="h-10 w-full" />;
-  }
-
-  if (data.length === 0) {
-    <p>Empty set</p>;
-  }
-
-  return (
-    <div>
-      {data.map(({ object }) => (
-        <ObjectIdentifierCard key={object.uid} object={object} />
-      ))}
     </div>
   );
 };
@@ -434,7 +416,7 @@ export default function DynamicSets() {
 
   return (
     <div className="w-full grid grid-cols-3 pt-32 mx-auto">
-      <div className="mx-auto flex max-w-3xl flex-col justify-start items-center text-sm col-span-2">
+      <div className="mx-auto flex max-w-3xl w-full flex-col justify-start items-center text-sm col-span-2">
         {objectOperations && objectTypesWithConfig && (
           <>
             {/* <MultiSelect
@@ -468,6 +450,7 @@ export default function DynamicSets() {
                       oldRules.filter((oldRule, j) => j !== i),
                     )
                   }
+                  hideDelete={ruleBlocks.length === 1}
                 />
                 {/* <p className="whitespace-nowrap text-lef w-ful">AND</p> */}
               </Fragment>
@@ -487,8 +470,10 @@ export default function DynamicSets() {
         {data ? (
           <>
             <p>Preview</p>
+            <p>Total matching: {data.totalCount}</p>
+            <p>Total in preview: {data.count}</p>
             <div className="h-96 overflow-scroll mx-4 px-4 my-4 border border-manatee-300">
-              {data.map((obj) => (
+              {data.objects.map((obj) => (
                 <ObjectIdentifierCard
                   key={obj.uid}
                   object={convertParsedObjectToIdentifier(obj)}

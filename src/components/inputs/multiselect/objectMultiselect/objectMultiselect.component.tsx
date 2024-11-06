@@ -1,4 +1,5 @@
 import { DndContext } from "@dnd-kit/core";
+import clsx from "clsx";
 import { forwardRef, Ref, useCallback, useMemo, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 
@@ -25,6 +26,7 @@ const ObjectMultiSelectComponent = (
     objectTypes,
     selectedObjects,
     showObjectTypeOnSelected,
+    className,
     onChange,
     ...props
   }: ObjectMultiSelectProps,
@@ -60,10 +62,11 @@ const ObjectMultiSelectComponent = (
   const [inputQuery, setInputQuery] = useState("");
 
   return (
-    <div className="flex justify-center items-center">
+    <div className={clsx("flex justify-center items-center", className)}>
       <MultiSelect
         {...props}
         ref={ref}
+        className="w-full"
         selected={selectedUids}
         options={options}
         nothingFoundText={
@@ -86,6 +89,7 @@ const ObjectMultiSelectComponent = (
           title={`Select objects`}
           onSave={({ checkedObjects }) => onChange(checkedObjects)}
           existingObjects={selectedObjects}
+          existingCheckedState={true}
           objectTypes={objectTypes}
           closeModal={() => setSearchIsOpen(false)}
         />
