@@ -142,6 +142,15 @@ export const MuxUploader = ({
                     <p className="">Generating upload URL</p>
                   </div>
                 )}
+                {(data === null || isError) && (
+                  <div className="w-full flex h-full">
+                    <p>
+                      {isError
+                        ? "Error occured generating upload URL"
+                        : "Null upload URL returned from Integrations Service"}
+                    </p>
+                  </div>
+                )}
                 {data && (
                   <>
                     {provider === "mux" ? (
