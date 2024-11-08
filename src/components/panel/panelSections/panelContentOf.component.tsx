@@ -1,5 +1,5 @@
 import { DisplayGraphQLQuery } from "src/components/modals";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,

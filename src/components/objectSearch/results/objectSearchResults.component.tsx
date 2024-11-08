@@ -264,7 +264,10 @@ export const ObjectSearchResults = ({
               rowIndex + 1,
             )
             .map((object) => ({
-              object: convertParsedObjectToIdentifier(object),
+              object: convertParsedObjectToIdentifier(
+                object,
+                objectTypesConfig,
+              ),
               checkedState: true,
             }));
 

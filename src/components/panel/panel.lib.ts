@@ -91,10 +91,7 @@ export const convertSkylarkObjectToContentObject = (
   skylarkObject: SkylarkObject,
 ): SkylarkObjectContentObject => {
   return {
-    // config: skylarkObject.config,
-    // meta: skylarkObject.meta,
-    object: skylarkObject,
-    objectType: skylarkObject.objectType,
+    ...skylarkObject,
     position: 1,
     isDynamic: false,
   };
@@ -301,11 +298,7 @@ export const handleDroppedContents = ({
         };
       }
 
-      if (
-        existingObjects?.find(
-          ({ object: { uid } }) => uid === droppedObject.uid,
-        )
-      ) {
+      if (existingObjects?.find(({ uid }) => uid === droppedObject.uid)) {
         const error: HandleDropError = {
           type: HandleDropErrorType.EXISTING_LINK,
           object: droppedObject,

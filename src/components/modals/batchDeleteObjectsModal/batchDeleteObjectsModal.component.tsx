@@ -6,7 +6,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { Button } from "src/components/button";
 import { TextInput } from "src/components/inputs/input";
 import { Modal } from "src/components/modals/base/modal";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import { Toast } from "src/components/toast/toast.component";
 import { SEGMENT_KEYS } from "src/constants/segment";
 import { useBulkDeleteObjects } from "src/hooks/objects/delete/useBulkDeleteObjects";

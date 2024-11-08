@@ -93,19 +93,18 @@ export interface ParsedSkylarkObjectAvailability {
   objects: ParsedSkylarkObjectAvailabilityObject[];
 }
 
-export interface SkylarkObjectContentObject {
-  objectType: SkylarkObjectType;
-  // config: ParsedSkylarkObjectConfig;
-  // meta: ParsedSkylarkObjectMeta;
-  object: SkylarkObject;
+export type SkylarkObjectContentObject = SkylarkObject & {
+  // objectType: SkylarkObjectType;
+  // // config: ParsedSkylarkObjectConfig;
+  // // meta: ParsedSkylarkObjectMeta;
+  // object: SkylarkObject;
   position: number;
   isDynamic: boolean;
-}
+};
 
-export interface AddedSkylarkObjectContentObject
-  extends SkylarkObjectContentObject {
+export type AddedSkylarkObjectContentObject = SkylarkObjectContentObject & {
   isNewObject?: boolean;
-}
+};
 
 export interface SkylarkObjectContent {
   objects: SkylarkObjectContentObject[];

@@ -7,7 +7,7 @@ import {
 } from "src/interfaces/skylark";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
-import { ObjectIdentifierCard } from "./objectIdentifier.component";
+import { ObjectIdentifierCard } from "./objectIdentifierCard.component";
 
 const defaultObject = convertParsedObjectToIdentifier({
   uid: "123",

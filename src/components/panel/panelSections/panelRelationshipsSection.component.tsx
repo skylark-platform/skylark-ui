@@ -3,7 +3,7 @@ import { Transition, m } from "framer-motion";
 import { Ref, forwardRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import {
   PanelButton,
   PanelSectionTitle,
@@ -120,7 +120,7 @@ const PanelRelationshipSectionComponent = (
     config.overrides.defaultSortField ||
     config.objectTypeDefault?.defaultSortField;
 
-  console.log({ displayList });
+  // console.log({ displayList });
 
   return (
     <m.div

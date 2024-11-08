@@ -199,15 +199,14 @@ describe("handleDroppedRelationships", () => {
 describe("handleDroppedContents", () => {
   test("receives the expected content objects and errors", () => {
     const existingOb = {
+      ...panelObject,
+      uid: "EXISTING_OBJECT",
       objectType: panelObject.objectType,
       // config: panelObject.config,
       // meta: panelObject.meta,
-      object: {
-        ...panelObject,
-        uid: "EXISTING_OBJECT",
-      },
       position: 0,
       isDynamic: false,
+      contextualFields: null,
     };
 
     const existingObjectContent: AddedSkylarkObjectContentObject[] = [
@@ -222,7 +221,7 @@ describe("handleDroppedContents", () => {
         ...droppedObjects,
         {
           ...panelObject,
-          uid: existingOb.object.uid,
+          uid: existingOb.uid,
           // metadata: existingOb.object,
         },
       ],
@@ -231,12 +230,12 @@ describe("handleDroppedContents", () => {
     // Check valid content objects
     expect(got.updatedContentObjects).toHaveLength(3);
     expect(got.updatedContentObjects[0]).toEqual(existingOb);
-    expect(got.updatedContentObjects[1].object).toHaveProperty(
+    expect(got.updatedContentObjects[1]).toHaveProperty(
       "uid",
       droppedObjects[1].uid,
     );
     expect(got.updatedContentObjects[1].isNewObject).toBeTruthy();
-    expect(got.updatedContentObjects[2].object).toHaveProperty(
+    expect(got.updatedContentObjects[2]).toHaveProperty(
       "uid",
       droppedObjects[2].uid,
     );
@@ -265,15 +264,14 @@ describe("handleDroppedContents", () => {
 
   test("receives the expected content objects, inserted at the correct place", () => {
     const existingOb = {
+      ...panelObject,
+      uid: "EXISTING_OBJECT",
       objectType: panelObject.objectType,
       // config: panelObject.config,
       // meta: panelObject.meta,
-      object: {
-        ...panelObject,
-        uid: "EXISTING_OBJECT",
-      },
       position: 0,
       isDynamic: false,
+      contextualFields: null,
     };
 
     const existingObjectContent: AddedSkylarkObjectContentObject[] = [

@@ -10,7 +10,7 @@ import {
 import { OpenObjectButton } from "src/components/button";
 import { Switch } from "src/components/inputs/switch/switch.component";
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import {
   HandleDropError,
   handleDroppedAvailabilities,

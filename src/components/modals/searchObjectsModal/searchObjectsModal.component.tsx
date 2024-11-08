@@ -21,7 +21,7 @@ interface SearchObjectsModalProps {
   objectTypes?: SkylarkObjectTypes;
   columns?: string[];
   isOpen: boolean;
-  existingObjects?: SkylarkObject[];
+  existingObjects?: SkylarkObject[] | null;
   existingCheckedState?: CheckedState;
   initialSearchQuery?: string;
   closeModal: () => void;
@@ -128,7 +128,7 @@ export const SearchObjectsModal = ({
   const saveMessage = generateSaveMessage({
     checkedUids,
     checkedObjectTypesForDisplay,
-    existingObjects,
+    existingObjects: existingObjects || [],
   });
 
   return (

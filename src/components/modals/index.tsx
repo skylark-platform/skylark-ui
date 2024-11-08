@@ -7,3 +7,4 @@ export * from "./batchDeleteObjectsModal/batchDeleteObjectsModal.component";
 export * from "./compareSchemaVersionsModal/compareSchemaVersionsModal.component";
 export * from "./apiKeyModal/apiKeyModal.component";
 export * from "./deleteConfirmationModal/deleteConfirmationModal.component";
+export * from "./dynamicContentConfigurationModal/dynamicContentConfigurationModal.component";

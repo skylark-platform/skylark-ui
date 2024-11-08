@@ -14,7 +14,7 @@ import {
 } from "src/interfaces/skylark/parsedObjects";
 import { platformMetaKeyClicked } from "src/lib/utils";
 
-interface ObjectIdentifierCardProps {
+export interface ObjectIdentifierCardProps {
   object: SkylarkObject;
   objectConfig?: ParsedSkylarkObjectConfig;
   children?: ReactNode;

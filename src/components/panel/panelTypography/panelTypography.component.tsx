@@ -1,7 +1,13 @@
 import clsx from "clsx";
 import { ReactNode, Ref, forwardRef } from "react";
 import { CgSpinner } from "react-icons/cg";
-import { FiMaximize2, FiMinimize2, FiPlus, FiX } from "react-icons/fi";
+import {
+  FiMaximize2,
+  FiMinimize2,
+  FiPlus,
+  FiSettings,
+  FiX,
+} from "react-icons/fi";
 
 import { CopyToClipboard } from "src/components/copyToClipboard/copyToClipboard.component";
 
@@ -97,7 +103,7 @@ export const PanelButton = ({
   ...props
 }: {
   onClick: () => void;
-  type: "plus" | "maximise" | "minimise" | "x";
+  type: "plus" | "maximise" | "minimise" | "x" | "settings";
   className?: string;
 }) => (
   <button
@@ -112,5 +118,6 @@ export const PanelButton = ({
     {type === "maximise" && <FiMaximize2 className="h-4 w-4" />}
     {type === "minimise" && <FiMinimize2 className="h-4 w-4" />}
     {type === "x" && <FiX className="h-4 w-4" />}
+    {type === "settings" && <FiSettings className="h-4 w-4" />}
   </button>
 );

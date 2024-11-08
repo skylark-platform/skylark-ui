@@ -7,7 +7,7 @@ import {
 } from "src/interfaces/skylark";
 import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
-import { ObjectIdentifierCard } from "./objectIdentifier.component";
+import { ObjectIdentifierCard } from "./objectIdentifierCard.component";
 
 export default {
   title: "Components/ObjectIdentifierCard",

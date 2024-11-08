@@ -5,7 +5,7 @@ import { Checkbox } from "src/components/inputs/checkbox";
 import { ObjectTypeSelect } from "src/components/inputs/select";
 import { Switch } from "src/components/inputs/switch/switch.component";
 import { DisplayGraphQLQuery } from "src/components/modals";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import {
   HandleDropError,
   handleDroppedObjectsToAssignToAvailability,

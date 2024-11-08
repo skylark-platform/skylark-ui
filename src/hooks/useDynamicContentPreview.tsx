@@ -10,12 +10,14 @@ import {
   DynamicSetConfig,
   GQLSkylarkDynamicContentPreviewResponse,
   SkylarkGraphQLObject,
+  SkylarkObject,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
   createPreviewDynamicContentQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 import { generateAvailabilityHeaders } from "src/lib/utils/request";
 
@@ -50,9 +52,11 @@ const select = (data: GQLSkylarkDynamicContentPreviewResponse) => {
 
   const parsedObjects =
     data.dynamicContentPreview?.objects.map((obj) =>
-      parseSkylarkObject(
-        removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>(obj),
-        null,
+      convertParsedObjectToIdentifier(
+        parseSkylarkObject(
+          removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>(obj),
+          null,
+        ),
       ),
     ) || [];
 
@@ -90,7 +94,7 @@ export const useDynamicContentPreview = (
     GQLSkylarkDynamicContentPreviewResponse,
     GQLSkylarkErrorResponse<GQLSkylarkDynamicContentPreviewResponse>,
     {
-      objects: ParsedSkylarkObject[];
+      objects: SkylarkObject[];
       count: number;
       totalCount: number;
     }

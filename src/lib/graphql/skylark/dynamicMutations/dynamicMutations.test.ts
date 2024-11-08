@@ -59,6 +59,7 @@ describe("createUpdateSetContentPositionMutation", () => {
   test("returns expected GraphQL update mutation when no items are reordered", () => {
     const content: SkylarkObjectContentObject[] = [
       {
+        ...obj,
         objectType: "Episode",
         // config: { fieldConfig: [] },
         // meta: {
@@ -69,10 +70,12 @@ describe("createUpdateSetContentPositionMutation", () => {
         // },
         position: 1,
         isDynamic: false,
-        object: { ...obj, uid: "episode_1" },
+        uid: "episode_1",
       },
       {
+        ...obj,
         objectType: "Episode",
+        uid: "episode_2",
         // config: { fieldConfig: [] },
         // meta: {
         //   language: "en-GB",
@@ -82,10 +85,11 @@ describe("createUpdateSetContentPositionMutation", () => {
         // },
         position: 2,
         isDynamic: false,
-        object: { ...obj, uid: "episode_2" },
       },
       {
+        ...obj,
         objectType: "Movie",
+        uid: "movie_1",
         // config: { fieldConfig: [] },
         // meta: {
         //   language: "en-GB",
@@ -95,7 +99,6 @@ describe("createUpdateSetContentPositionMutation", () => {
         // },
         position: 3,
         isDynamic: true,
-        object: { ...obj, uid: "movie_1" },
       },
     ];
 
@@ -113,7 +116,9 @@ describe("createUpdateSetContentPositionMutation", () => {
   test("returns expected GraphQL update mutation when items are reordered", () => {
     const content: SkylarkObjectContentObject[] = [
       {
+        ...obj,
         objectType: "Episode",
+        uid: "episode_1",
         // config: { fieldConfig: [] },
         // meta: {
         //   language: "en-GB",
@@ -123,10 +128,11 @@ describe("createUpdateSetContentPositionMutation", () => {
         // },
         position: 1,
         isDynamic: false,
-        object: { ...obj, uid: "episode_1" },
       },
       {
+        ...obj,
         objectType: "Episode",
+        uid: "episode_2",
         // config: { fieldConfig: [] },
         // meta: {
         //   language: "en-GB",
@@ -136,10 +142,11 @@ describe("createUpdateSetContentPositionMutation", () => {
         // },
         position: 2,
         isDynamic: false,
-        object: { ...obj, uid: "episode_2" },
       },
       {
+        ...obj,
         objectType: "Movie",
+        uid: "movie_1",
         // config: { fieldConfig: [] },
         // meta: {
         //   language: "en-GB",
@@ -149,7 +156,6 @@ describe("createUpdateSetContentPositionMutation", () => {
         // },
         position: 3,
         isDynamic: true,
-        object: { ...obj, uid: "movie_1" },
       },
     ];
 
@@ -169,7 +175,9 @@ describe("createUpdateSetContentPositionMutation", () => {
   test("returns expected GraphQL update mutation when an item is removed", () => {
     const content: SkylarkObjectContentObject[] = [
       {
+        ...obj,
         objectType: "Episode",
+        uid: "episode_1",
         // config: { fieldConfig: [] },
         // meta: {
         //   language: "en-GB",
@@ -179,10 +187,11 @@ describe("createUpdateSetContentPositionMutation", () => {
         // },
         position: 1,
         isDynamic: false,
-        object: { ...obj, uid: "episode_1" },
       },
       {
+        ...obj,
         objectType: "Episode",
+        uid: "episode_2",
         // config: { fieldConfig: [] },
         // meta: {
         //   language: "en-GB",
@@ -192,10 +201,11 @@ describe("createUpdateSetContentPositionMutation", () => {
         // },
         position: 2,
         isDynamic: false,
-        object: { ...obj, uid: "episode_2" },
       },
       {
+        ...obj,
         objectType: "Movie",
+        uid: "movie_1",
         // config: { fieldConfig: [] },
         // meta: {
         //   language: "en-GB",
@@ -205,7 +215,6 @@ describe("createUpdateSetContentPositionMutation", () => {
         // },
         position: 3,
         isDynamic: true,
-        object: { ...obj, uid: "movie_1" },
       },
     ];
 

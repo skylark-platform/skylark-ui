@@ -12,7 +12,8 @@ import { MultiSelect } from "src/components/inputs/multiselect/multiselect.compo
 import { ObjectMultiSelect } from "src/components/inputs/multiselect/objectMultiselect/objectMultiselect.component";
 import { Select } from "src/components/inputs/select";
 import { SearchObjectsModal } from "src/components/modals";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
+import { ObjectIdentifierList } from "src/components/objectIdentifier/list/objectIdentifierList.component";
 import { Skeleton } from "src/components/skeleton";
 import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
 import { useDynamicContentPreview } from "src/hooks/useDynamicContentPreview";
@@ -473,12 +474,7 @@ export default function DynamicSets() {
             <p>Total matching: {data.totalCount}</p>
             <p>Total in preview: {data.count}</p>
             <div className="h-96 overflow-scroll mx-4 px-4 my-4 border border-manatee-300">
-              {data.objects.map((obj) => (
-                <ObjectIdentifierCard
-                  key={obj.uid}
-                  object={convertParsedObjectToIdentifier(obj)}
-                />
-              ))}
+              <ObjectIdentifierList objects={data.objects} />
             </div>
             <TextInput
               onChange={setSetUid}

@@ -320,11 +320,7 @@ export const parseObjectContent = (
         );
       const availability = parseObjectAvailability(object?.availability);
       return {
-        objectType: object.__typename,
-        position,
-        // config: parseObjectConfig(object.__typename, object._config),
-        // meta: parseObjectMeta(object._meta, availability.status),
-        object: convertParsedObjectToIdentifier({
+        ...convertParsedObjectToIdentifier({
           uid: normalisedObject.uid,
           objectType: object.__typename,
           metadata: normalisedObject,
@@ -332,6 +328,7 @@ export const parseObjectContent = (
           meta: parseObjectMeta(object._meta, availability.status),
           availability,
         }),
+        position,
         isDynamic: dynamic,
       };
     },

@@ -4,7 +4,7 @@ import { FiUploadCloud } from "react-icons/fi";
 
 import { IntegrationUploader } from "src/components/integrations/uploader/uploader.component";
 import { DisplayGraphQLQuery } from "src/components/modals";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import { pollPanelRefetch } from "src/components/panel/panel.lib";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {

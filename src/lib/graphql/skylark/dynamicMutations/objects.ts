@@ -260,14 +260,12 @@ export const createUpdateObjectContentMutation = (
   }
 
   const originalContentObjectUids = originalContentObjects.map(
-    ({ object }) => object.uid,
+    ({ uid }) => uid,
   );
-  const updatedContentObjectUids = updatedContentObjects.map(
-    ({ object }) => object.uid,
-  );
+  const updatedContentObjectUids = updatedContentObjects.map(({ uid }) => uid);
 
   const linkOrRepositionOperations = updatedContentObjects.map(
-    ({ objectType, object: { uid } }, index): SetContentOperation => {
+    ({ objectType, uid }, index): SetContentOperation => {
       const position = index + 1;
       if (originalContentObjectUids.includes(uid)) {
         return {
@@ -287,8 +285,8 @@ export const createUpdateObjectContentMutation = (
   );
 
   const deleteOperations = originalContentObjects
-    .filter(({ object: { uid } }) => !updatedContentObjectUids.includes(uid))
-    .map(({ objectType, object: { uid } }): SetContentOperation => {
+    .filter(({ uid }) => !updatedContentObjectUids.includes(uid))
+    .map(({ objectType, uid }): SetContentOperation => {
       return {
         operation: "unlink",
         objectType,

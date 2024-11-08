@@ -12,7 +12,7 @@ import { m, useMotionValue, useTransform } from "framer-motion";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import { Panel } from "src/components/panel";
 import { SEGMENT_KEYS } from "src/constants/segment";
 import { PanelTab, SetPanelObject, usePanelObjectState } from "src/hooks/state";

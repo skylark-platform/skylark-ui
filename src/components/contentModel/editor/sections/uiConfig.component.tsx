@@ -3,7 +3,7 @@ import { UseFormReturn } from "react-hook-form";
 import { ColourPicker } from "src/components/inputs/colourPicker";
 import { TextInput } from "src/components/inputs/input";
 import { Select } from "src/components/inputs/select";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import {
   SkylarkSystemField,
   AvailabilityStatus,
