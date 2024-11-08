@@ -466,7 +466,8 @@ export const DynamicContentConfigurationEditor = ({
 
   const { objectOperations } = useSkylarkObjectOperations("SkylarkSet");
 
-  const { data, query, isLoading } = useDynamicContentPreview(configuration);
+  const { data, query, isLoading, error } =
+    useDynamicContentPreview(configuration);
 
   console.log("preview", { data });
 
@@ -520,7 +521,14 @@ export const DynamicContentConfigurationEditor = ({
             {/* </div> */}
           </div>
         )}
-        {!data && <p>Content Configuration is invalid.</p>}
+        {!data && (
+          <p>
+            {isLoading
+              ? `Loading preview...`
+              : `Content Configuration is invalid.`}
+          </p>
+        )}
+        {error && <p>{error.toString()}</p>}
       </div>
     </div>
   );

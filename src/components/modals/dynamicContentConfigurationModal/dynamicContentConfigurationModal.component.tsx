@@ -45,13 +45,23 @@ const DynamicContentConfigurationModalBody = ({
   const { updateObjectDynamicContentConfiguration, isUpdating } =
     useUpdateObjectDynamicContentConfiguration({
       objectType,
-      onSuccess: console.log,
+      onSuccess: () => {
+        // TODO add Toast
+        // TODO clear cache
+        closeModal();
+      },
       onError: console.log,
     });
 
   const onSave = () => {
     // updateObjectDynamicContentConfiguration
     console.log("onSave", updatedDynamicContentConfiguration);
+    if (updatedDynamicContentConfiguration) {
+      updateObjectDynamicContentConfiguration({
+        uid,
+        dynamicSetConfig: updatedDynamicContentConfiguration,
+      });
+    }
   };
 
   const { data } = useGetObjectDynamicContentConfiguration(objectType, uid);
