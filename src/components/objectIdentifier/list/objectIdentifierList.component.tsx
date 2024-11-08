@@ -8,11 +8,13 @@ import { SkylarkObject } from "src/interfaces/skylark";
 
 interface ObjectIdentifierListProps {
   objects: SkylarkObject[];
+  className?: string;
   setPanelObject?: SetPanelObject;
 }
 
 export const ObjectIdentifierList = ({
   objects,
+  className,
   setPanelObject,
 }: ObjectIdentifierListProps) => {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -27,10 +29,10 @@ export const ObjectIdentifierList = ({
   return (
     <div
       ref={parentRef}
-      data-testid="panel-content-items"
       // style={{ height: 600 }}
       className={clsx(
-        "w-full border border-dashed flex-grow h-full overflow-scroll",
+        "w-full flex-grow h-full overflow-scroll",
+        className,
         // isLoading && sortableObjects?.length === 0 && "hidden",
       )}
     >
@@ -59,6 +61,7 @@ export const ObjectIdentifierList = ({
                 // removeItem={removeItem}
                 // handleManualOrderChange={handleManualOrderChange}
                 onForwardClick={setPanelObject}
+                hideAvailabilityStatus
               />
             </div>
           );

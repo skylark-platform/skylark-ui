@@ -1,7 +1,8 @@
 import { CheckedState } from "@radix-ui/react-checkbox";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 
 import { Button } from "src/components/button";
+import { DynamicContentConfigurationEditor } from "src/components/dynamicContentConfigurationEditor/dynamicContentConfigurationEditor.component";
 import { Modal } from "src/components/modals/base/modal";
 import {
   ObjectSearch,
@@ -9,9 +10,11 @@ import {
 } from "src/components/objectSearch";
 import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "src/components/objectSearch/results/columnConfiguration";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { useGetObjectDynamicContentConfiguration } from "src/hooks/objects/get/useGetObjectDynamicContentConfiguration";
 import { useUpdateObjectDynamicContentConfiguration } from "src/hooks/objects/update/useUpdateObjectDynamicContentConfiguration";
 import { CheckedObjectState, useCheckedObjectsState } from "src/hooks/state";
 import {
+  DynamicSetConfig,
   SkylarkObject,
   SkylarkObjectType,
   SkylarkObjectTypes,
@@ -34,6 +37,11 @@ const DynamicContentConfigurationModalBody = ({
   objectType,
   closeModal,
 }: Omit<DynamicContentConfigurationModalProps, "isOpen">) => {
+  const [
+    updatedDynamicContentConfiguration,
+    setUpdatedDynamicContentConfiguration,
+  ] = useState<DynamicSetConfig>();
+
   const { updateObjectDynamicContentConfiguration, isUpdating } =
     useUpdateObjectDynamicContentConfiguration({
       objectType,
@@ -43,11 +51,21 @@ const DynamicContentConfigurationModalBody = ({
 
   const onSave = () => {
     // updateObjectDynamicContentConfiguration
+    console.log("onSave", updatedDynamicContentConfiguration);
   };
+
+  const { data } = useGetObjectDynamicContentConfiguration(objectType, uid);
+
+  console.log({ data });
 
   return (
     <>
-      <div className="ml-2 flex-grow overflow-auto pr-0 pt-2 md:ml-4 md:pl-4"></div>
+      {data && (
+        <DynamicContentConfigurationEditor
+          initialConfiguration={data}
+          onConfigurationChange={setUpdatedDynamicContentConfiguration}
+        />
+      )}
       <div className="flex justify-end items-center space-x-2 px-6 md:px-10 mt-4">
         {/* <p className="text-manatee-700 mr-2">{saveMessage}</p> */}
         <Button

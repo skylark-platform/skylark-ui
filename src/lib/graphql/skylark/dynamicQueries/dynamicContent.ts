@@ -5,7 +5,7 @@ import { EnumType, VariableType } from "json-to-graphql-query";
 import {
   DynamicSetConfig,
   SkylarkDynamicSetInput,
-  SkylarkDynamicSetRuleBlock,
+  SkylarkDynamicSetRuleBlockInput,
   SkylarkObjectMeta,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -24,8 +24,13 @@ export const createDynamicSetContentInput = (
     dynamic_content_types: dynamicSetConfig.objectTypes.map(
       (str) => new EnumType(str),
     ),
-    dynamic_content_rules: dynamicSetConfig.ruleBlocks.map(
-      (ruleBlock): SkylarkDynamicSetInput["dynamic_content_rules"][0] => {
+    dynamic_content_rules: dynamicSetConfig.ruleBlocks
+      .filter(
+        (ruleBlock) =>
+          ruleBlock.objectTypesToSearch.length > 0 &&
+          ruleBlock.objectRules.length > 0,
+      )
+      .map((ruleBlock): SkylarkDynamicSetInput["dynamic_content_rules"][0] => {
         const firstRule = {
           object_types: ruleBlock.objectTypesToSearch.map(
             (ot) => new EnumType(ot),
@@ -33,7 +38,7 @@ export const createDynamicSetContentInput = (
         };
 
         const otherRules = ruleBlock.objectRules.map(
-          (rule): SkylarkDynamicSetRuleBlock => {
+          (rule): SkylarkDynamicSetRuleBlockInput => {
             const uids = [
               ...new Set([
                 ...(rule.relatedUid || []),
@@ -50,8 +55,7 @@ export const createDynamicSetContentInput = (
         );
 
         return [firstRule, ...otherRules];
-      },
-    ),
+      }),
   };
 };
 
@@ -115,6 +119,48 @@ export const createPreviewDynamicContentQuery = (
                 }
               : {}),
           })),
+        },
+      },
+    },
+  };
+
+  const graphQLQuery = wrappedJsonQuery(query);
+
+  return gql(graphQLQuery);
+};
+
+export const createGetObjectDynamicContentConfigurationQuery = (
+  objectMeta: SkylarkObjectMeta | null,
+) => {
+  if (!objectMeta) {
+    return null;
+  }
+  // const common = generateVariablesAndArgs(
+  //   object.name,
+  //   "Query",
+  //   addLanguageVariable,
+  // );
+
+  const query = {
+    query: {
+      __name: "GET_OBJECT_DYNAMIC_CONTENT_CONFIGURATION",
+      __variables: {
+        uid: "String",
+      },
+      getObjectDynamicContentConfiguration: {
+        __aliasFor: objectMeta.operations.get.name,
+        __args: {
+          uid: new VariableType("uid"),
+        },
+        __typename: true,
+        uid: true,
+        dynamic_content: {
+          dynamic_content_rules: {
+            object_types: true,
+            relationship_name: true,
+            uid: true,
+          },
+          dynamic_content_types: true,
         },
       },
     },

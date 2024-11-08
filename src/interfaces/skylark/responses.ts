@@ -1,5 +1,6 @@
 import {
   NextToken,
+  SkylarkDynamicSetRuleBlock,
   SkylarkGraphQLAPIKey,
   SkylarkGraphQLAvailability,
   SkylarkGraphQLAvailabilityAssignedTo,
@@ -272,5 +273,20 @@ export interface GQLSkylarkDynamicContentPreviewResponse {
     count: number;
     total_count: number;
     objects: SkylarkGraphQLObject[];
+  };
+}
+
+export interface GQLSkylarkGetObjectDynamicContentConfigurationResponse {
+  getObjectDynamicContentConfiguration: {
+    dynamic_content: {
+      dynamic_content_types: string[];
+      dynamic_content_rules: [
+        Pick<SkylarkDynamicSetRuleBlock, "object_types"> & {
+          relationship_name: null;
+          uid: null;
+        },
+        ...Array<SkylarkDynamicSetRuleBlock>,
+      ][];
+    };
   };
 }
