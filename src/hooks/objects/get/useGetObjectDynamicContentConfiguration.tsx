@@ -31,33 +31,36 @@ export const createGetObjectDynamicContentConfigurationKeyPrefix = ({
 const select = ({
   getObjectDynamicContentConfiguration: { dynamic_content },
 }: GQLSkylarkGetObjectDynamicContentConfigurationResponse): DynamicSetConfig => {
+  console.log("select", { dynamic_content });
   return {
-    objectTypes: dynamic_content.dynamic_content_types,
-    ruleBlocks: dynamic_content.dynamic_content_rules.map(
-      (gqlRuleBlock): DynamicSetRuleBlock => {
-        const firstRule = gqlRuleBlock?.[0];
+    objectTypes: dynamic_content.dynamic_content_types || [],
+    ruleBlocks: dynamic_content.dynamic_content_rules
+      ? dynamic_content.dynamic_content_rules.map(
+          (gqlRuleBlock): DynamicSetRuleBlock => {
+            const firstRule = gqlRuleBlock?.[0];
 
-        if (gqlRuleBlock.length < 2) {
-          const emptyRules: DynamicSetObjectRule[] = [];
-          return {
-            objectTypesToSearch: firstRule.object_types || [],
-            objectRules: emptyRules,
-          };
-        }
+            if (gqlRuleBlock.length < 2) {
+              const emptyRules: DynamicSetObjectRule[] = [];
+              return {
+                objectTypesToSearch: firstRule.object_types || [],
+                objectRules: emptyRules,
+              };
+            }
 
-        return {
-          objectTypesToSearch: firstRule.object_types,
-          objectRules: gqlRuleBlock.slice(1).map(
-            (gqlRule): DynamicSetObjectRule => ({
-              objectType: gqlRule.object_types,
-              relatedObjects: undefined,
-              relationshipName: gqlRule.relationship_name || "",
-              relatedUid: gqlRule.uid || [],
-            }),
-          ),
-        };
-      },
-    ),
+            return {
+              objectTypesToSearch: firstRule.object_types,
+              objectRules: gqlRuleBlock.slice(1).map(
+                (gqlRule): DynamicSetObjectRule => ({
+                  objectType: gqlRule.object_types,
+                  relatedObjects: undefined,
+                  relationshipName: gqlRule.relationship_name || "",
+                  relatedUid: gqlRule.uid || [],
+                }),
+              ),
+            };
+          },
+        )
+      : [],
   };
 };
 

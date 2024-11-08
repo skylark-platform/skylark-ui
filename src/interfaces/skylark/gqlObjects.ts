@@ -169,14 +169,19 @@ export interface SkylarkGraphQLDynamicContentConfigurationRuleBlock {
 }
 
 export interface SkylarkGraphQLDynamicContentConfiguration {
-  dynamic_content_types: string[];
-  dynamic_content_rules: [
-    Pick<SkylarkGraphQLDynamicContentConfigurationRuleBlock, "object_types"> & {
-      relationship_name: null;
-      uid: null;
-    },
-    ...Array<SkylarkGraphQLDynamicContentConfigurationRuleBlock>,
-  ][];
+  dynamic_content_types: string[] | null;
+  dynamic_content_rules:
+    | [
+        Pick<
+          SkylarkGraphQLDynamicContentConfigurationRuleBlock,
+          "object_types"
+        > & {
+          relationship_name: null;
+          uid: null;
+        },
+        ...Array<SkylarkGraphQLDynamicContentConfigurationRuleBlock>,
+      ][]
+    | null;
 }
 
 export type SkylarkGraphQLDynamicSetRuleBlockInput = Omit<

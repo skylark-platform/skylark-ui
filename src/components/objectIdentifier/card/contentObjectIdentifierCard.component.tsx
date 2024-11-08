@@ -111,7 +111,9 @@ export const ContentObjectIdenfierCard = ({
           tooltip={"Included in one or more dynamic content rules"}
           side="left"
         >
-          <DynamicContentIcon />
+          <div>
+            <DynamicContentIcon />
+          </div>
         </Tooltip>
       ) : (
         <div className="flex">
