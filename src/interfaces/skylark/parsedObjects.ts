@@ -141,6 +141,7 @@ export interface ParsedSkylarkObjectMeta {
   created?: string;
   modified?: string;
   published?: boolean;
+  hasDynamicContent?: boolean;
 }
 
 export interface SkylarkObjectImageRelationship {

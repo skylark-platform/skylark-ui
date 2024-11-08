@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { useState, useEffect, useCallback } from "react";
 import { FiDatabase } from "react-icons/fi";
 
+import { DynamicContentIcon } from "src/components/icons";
 import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { SkylarkObjectContentObject } from "src/interfaces/skylark";
 
@@ -110,9 +111,7 @@ export const ContentObjectIdenfierCard = ({
           tooltip={"Included in one or more dynamic content rules"}
           side="left"
         >
-          <div className="bg-manatee-600 p-1 h-6 w-6 flex justify-center items-center rounded-full">
-            <FiDatabase className="text-white" />
-          </div>
+          <DynamicContentIcon />
         </Tooltip>
       ) : (
         <div className="flex">

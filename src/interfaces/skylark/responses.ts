@@ -1,11 +1,11 @@
 import {
   NextToken,
-  SkylarkDynamicSetRuleBlock,
   SkylarkGraphQLAPIKey,
   SkylarkGraphQLAvailability,
   SkylarkGraphQLAvailabilityAssignedTo,
   SkylarkGraphQLAvailabilityDimension,
   SkylarkGraphQLAvailabilityDimensionValue,
+  SkylarkGraphQLDynamicContentConfiguration,
   SkylarkGraphQLObject,
   SkylarkGraphQLObjectConfig,
   SkylarkGraphQLObjectContent,
@@ -278,15 +278,6 @@ export interface GQLSkylarkDynamicContentPreviewResponse {
 
 export interface GQLSkylarkGetObjectDynamicContentConfigurationResponse {
   getObjectDynamicContentConfiguration: {
-    dynamic_content: {
-      dynamic_content_types: string[];
-      dynamic_content_rules: [
-        Pick<SkylarkDynamicSetRuleBlock, "object_types"> & {
-          relationship_name: null;
-          uid: null;
-        },
-        ...Array<SkylarkDynamicSetRuleBlock>,
-      ][];
-    };
+    dynamic_content: SkylarkGraphQLDynamicContentConfiguration;
   };
 }

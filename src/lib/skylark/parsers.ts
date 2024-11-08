@@ -46,6 +46,7 @@ import {
   ParsedSkylarkObjectAvailabilityObject,
   SkylarkGraphQLAvailabilityList,
   SkylarkObjectImageRelationship,
+  SkylarkGraphQLDynamicContentConfiguration,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -230,6 +231,7 @@ const parseObjectAvailability = (
 const parseObjectMeta = (
   meta: SkylarkGraphQLObjectMeta | undefined,
   availabilityStatus: AvailabilityStatus | null,
+  dynamicContentConfiguration?: SkylarkGraphQLDynamicContentConfiguration,
 ): ParsedSkylarkObjectMeta => ({
   availabilityStatus,
   language: meta?.language_data.language || "",
@@ -241,6 +243,10 @@ const parseObjectMeta = (
   created: meta?.created?.date,
   modified: meta?.modified?.date,
   published: meta?.published,
+  hasDynamicContent: Boolean(
+    dynamicContentConfiguration?.dynamic_content_types &&
+      dynamicContentConfiguration?.dynamic_content_types.length > 0,
+  ),
 });
 
 export const parseObjectConfig = (
@@ -410,12 +416,17 @@ export const parseSkylarkObject = (
     ? parseObjectContent(object.content)
     : undefined;
 
+  console.log(object?.dynamic_content);
   return (
     object && {
       objectType: object.__typename,
       uid: object.uid,
       config: parseObjectConfig(object.__typename, object._config),
-      meta: parseObjectMeta(object._meta, availabilityStatus),
+      meta: parseObjectMeta(
+        object._meta,
+        availabilityStatus,
+        object?.dynamic_content,
+      ),
       metadata,
       availability,
       images,

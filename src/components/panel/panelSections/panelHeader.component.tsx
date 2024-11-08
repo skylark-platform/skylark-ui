@@ -25,7 +25,7 @@ import {
   DropdownMenuButton,
   DropdownMenuOption,
 } from "src/components/dropdown/dropdown.component";
-import { FiX } from "src/components/icons";
+import { DynamicContentIcon, FiX } from "src/components/icons";
 import { LanguageSelect } from "src/components/inputs/select";
 import {
   CreateObjectModal,
@@ -358,7 +358,7 @@ export const PanelHeader = ({
     },
     [currentTab, language, objectType, objectUid, propSave],
   );
-
+  console.log(object?.meta);
   return (
     <div
       data-testid="panel-header"
@@ -493,6 +493,7 @@ export const PanelHeader = ({
                     policy={object.metadata.policy as string}
                   />
                 )}
+              {object.meta.hasDynamicContent && <DynamicContentIcon />}
               <ObjectTypePill
                 className="w-20 bg-brand-primary"
                 type={objectType}

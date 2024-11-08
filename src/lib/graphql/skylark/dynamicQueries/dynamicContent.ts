@@ -5,7 +5,7 @@ import { EnumType, VariableType } from "json-to-graphql-query";
 import {
   DynamicSetConfig,
   SkylarkDynamicSetInput,
-  SkylarkDynamicSetRuleBlockInput,
+  SkylarkGraphQLDynamicSetRuleBlockInput,
   SkylarkObjectMeta,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -38,7 +38,7 @@ export const createDynamicSetContentInput = (
         };
 
         const otherRules = ruleBlock.objectRules.map(
-          (rule): SkylarkDynamicSetRuleBlockInput => {
+          (rule): SkylarkGraphQLDynamicSetRuleBlockInput => {
             const uids = [
               ...new Set([
                 ...(rule.relatedUid || []),

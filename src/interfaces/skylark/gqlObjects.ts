@@ -121,6 +121,7 @@ export type SkylarkGraphQLObject = {
   _config?: SkylarkGraphQLObjectConfig;
   _meta?: SkylarkGraphQLObjectMeta;
   content?: SkylarkGraphQLObjectContent;
+  dynamic_content?: SkylarkGraphQLDynamicContentConfiguration;
   [key: string]:
     | SkylarkObjectMetadataField
     | SkylarkGraphQLObjectList<SkylarkGraphQLObject>
@@ -128,6 +129,7 @@ export type SkylarkGraphQLObject = {
     | SkylarkGraphQLObjectContent
     | SkylarkGraphQLObjectConfig
     | SkylarkGraphQLObjectMeta
+    | SkylarkGraphQLDynamicContentConfiguration
     | undefined;
 };
 
@@ -160,14 +162,25 @@ export interface SkylarkGraphQLAPIKey {
   created: string;
 }
 
-export interface SkylarkDynamicSetRuleBlock {
+export interface SkylarkGraphQLDynamicContentConfigurationRuleBlock {
   object_types: string[];
   relationship_name: string;
   uid: string[] | null;
 }
 
-export type SkylarkDynamicSetRuleBlockInput = Omit<
-  SkylarkDynamicSetRuleBlock,
+export interface SkylarkGraphQLDynamicContentConfiguration {
+  dynamic_content_types: string[];
+  dynamic_content_rules: [
+    Pick<SkylarkGraphQLDynamicContentConfigurationRuleBlock, "object_types"> & {
+      relationship_name: null;
+      uid: null;
+    },
+    ...Array<SkylarkGraphQLDynamicContentConfigurationRuleBlock>,
+  ][];
+}
+
+export type SkylarkGraphQLDynamicSetRuleBlockInput = Omit<
+  SkylarkGraphQLDynamicContentConfigurationRuleBlock,
   "object_types"
 > & {
   object_types: EnumType[];
@@ -177,7 +190,7 @@ export interface SkylarkDynamicSetInput {
   dynamic_content_types: EnumType[];
   dynamic_content_rules: [
     { object_types: EnumType[] },
-    ...Array<SkylarkDynamicSetRuleBlockInput>,
+    ...Array<SkylarkGraphQLDynamicSetRuleBlockInput>,
   ][];
   limit?: number;
 }

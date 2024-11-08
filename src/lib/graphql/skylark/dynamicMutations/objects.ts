@@ -1,18 +1,13 @@
 import { gql } from "graphql-tag";
-import { EnumType, VariableType } from "json-to-graphql-query";
+import { VariableType } from "json-to-graphql-query";
 
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
   BuiltInSkylarkObjectType,
   DynamicSetConfig,
-  DynamicSetRuleBlock,
   GQLObjectTypeRelationshipConfig,
   ModifiedRelationshipsObject,
-  ParsedSkylarkObject,
   SkylarkObjectContentObject,
-  ParsedSkylarkRelationshipConfig,
-  SkylarkDynamicSetInput,
-  SkylarkDynamicSetRuleBlock,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
