@@ -130,6 +130,7 @@ const SortableSkylarkContentObjectCard = ({
         disableForwardClick={inEditMode}
         disableDeleteClick={!inEditMode}
         canEditPosition={inEditMode}
+        showDragIcon={inEditMode}
         isNewObject={object.isNewObject}
         onDeleteClick={onDeleteClick}
         actualPosition={arrIndex + 1}
@@ -338,7 +339,7 @@ export const SortableContentObjectList = ({
         data-testid="panel-content-items"
         style={{ height: 600 }}
         className={clsx(
-          "w-full border border-dashed flex-grow h-ful overflow-scroll",
+          "w-full border border-dashed flex-grow overflow-scroll px-8",
           isLoading && sortableObjects?.length === 0 && "hidden",
           isDragging && sortableObjects && sortableObjects.length < 8
             ? "border-brand-primary"

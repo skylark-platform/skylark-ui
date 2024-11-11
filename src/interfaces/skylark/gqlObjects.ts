@@ -166,6 +166,7 @@ export interface SkylarkGraphQLDynamicContentConfigurationRuleBlock {
   object_types: string[];
   relationship_name: string;
   uid: string[] | null;
+  objects: SkylarkGraphQLObject[];
 }
 
 export interface SkylarkGraphQLDynamicContentConfiguration {
@@ -178,6 +179,7 @@ export interface SkylarkGraphQLDynamicContentConfiguration {
         > & {
           relationship_name: null;
           uid: null;
+          objects: null;
         },
         ...Array<SkylarkGraphQLDynamicContentConfigurationRuleBlock>,
       ][]
@@ -186,7 +188,7 @@ export interface SkylarkGraphQLDynamicContentConfiguration {
 
 export type SkylarkGraphQLDynamicSetRuleBlockInput = Omit<
   SkylarkGraphQLDynamicContentConfigurationRuleBlock,
-  "object_types"
+  "object_types" | "objects"
 > & {
   object_types: EnumType[];
 };

@@ -62,7 +62,12 @@ const ObjectMultiSelectComponent = (
   const [inputQuery, setInputQuery] = useState("");
 
   return (
-    <div className={clsx("flex justify-center items-center", className)}>
+    <div
+      className={clsx(
+        "flex justify-center items-center overflow-x-hidden",
+        className,
+      )}
+    >
       <MultiSelect
         {...props}
         ref={ref}
@@ -72,6 +77,7 @@ const ObjectMultiSelectComponent = (
         nothingFoundText={
           inputQuery ? `Search for "${inputQuery}"` : "Type something..."
         }
+        renderInPortal
         onNothingFoundClick={() => inputQuery && setSearchIsOpen(true)}
         onChange={onChangeWrapper}
         onQueryChange={setInputQuery}

@@ -1,71 +1,30 @@
-import {
-  closestCenter,
-  useDndContext,
-  useDndMonitor,
-  useDroppable,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import clsx from "clsx";
-import {
-  CSSProperties,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { FiDatabase } from "react-icons/fi";
-import { useVirtual } from "react-virtual";
+import { useDndContext, useDroppable } from "@dnd-kit/core";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { FiZap } from "react-icons/fi";
 
+import { Button } from "src/components/button";
 import {
   DisplayGraphQLQuery,
   DynamicContentConfigurationModal,
   SearchObjectsModal,
 } from "src/components/modals";
-import {
-  ObjectIdentifierCard,
-  SortableContentObjectList,
-} from "src/components/objectIdentifier";
+import { SortableContentObjectList } from "src/components/objectIdentifier";
 import {
   HandleDropError,
   handleDroppedContents,
 } from "src/components/panel/panel.lib";
-import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelButton,
   PanelEmptyDataText,
   PanelSectionTitle,
-  PanelSeparator,
 } from "src/components/panel/panelTypography";
-import { Skeleton } from "src/components/skeleton";
-import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
 import { SetPanelObject } from "src/hooks/state";
 import {
   SkylarkObjectContentObject,
   AddedSkylarkObjectContentObject,
-  ParsedSkylarkObject,
-  SkylarkObject,
 } from "src/interfaces/skylark";
-import {
-  DragEndEvent,
-  DragOverEvent,
-  DragType,
-  DroppableType,
-  generateSortableObjectId,
-  useSortable,
-} from "src/lib/dndkit/dndkit";
-import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
-import {
-  getObjectDisplayName,
-  hasProperty,
-  insertAtIndex,
-} from "src/lib/utils";
+import { DroppableType } from "src/lib/dndkit/dndkit";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
@@ -155,12 +114,6 @@ export const PanelContent = ({
           count={objects.length || 0}
           loading={isLoading || isFetchingNextPage}
         />
-        <PanelButton
-          aria-label={`Open content settings`}
-          className="ml-1"
-          type="settings"
-          onClick={() => setModalState("dynamic-content")}
-        />
         {!isFetchingNextPage && (
           <PanelButton
             aria-label={`Open edit content modal`}
@@ -169,9 +122,26 @@ export const PanelContent = ({
             onClick={() => setModalState("search")}
           />
         )}
+        <div className="flex flex-grow justify-end">
+          <Button
+            variant="link"
+            className="-mt-4"
+            onClick={() => setModalState("dynamic-content")}
+            Icon={<FiZap className="text-base -mr-1" />}
+          >
+            Configure Dynamic Content
+          </Button>
+        </div>
       </div>
 
-      <div className="px-8">
+      <div className="">
+        {/* <PanelButton
+          aria-label={`Open content settings`}
+          className="ml-1"
+          type="settings"
+          onClick={() => setModalState("dynamic-content")}
+        /> */}
+
         {!isLoading &&
           objects.length === 0 &&
           ((inEditMode && !isPage) || isDragging ? (

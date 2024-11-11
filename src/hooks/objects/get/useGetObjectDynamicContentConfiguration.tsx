@@ -1,9 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { DocumentNode } from "graphql";
+import { useCallback } from "react";
 
 import { REQUEST_HEADERS } from "src/constants/skylark";
 import { QueryErrorMessages, QueryKeys } from "src/enums/graphql";
-import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
+import {
+  ObjectTypesConfigObject,
+  useAllObjectsMeta,
+  useSkylarkObjectTypesWithConfig,
+} from "src/hooks/useSkylarkObjectTypes";
 import {
   SkylarkObjectType,
   GQLSkylarkErrorResponse,
@@ -11,9 +16,15 @@ import {
   GQLSkylarkGetObjectDynamicContentConfigurationResponse,
   DynamicSetRuleBlock,
   DynamicSetObjectRule,
+  SkylarkGraphQLObject,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import { createGetObjectDynamicContentConfigurationQuery } from "src/lib/graphql/skylark/dynamicQueries";
+import {
+  createGetObjectDynamicContentConfigurationQuery,
+  removeFieldPrefixFromReturnedObject,
+} from "src/lib/graphql/skylark/dynamicQueries";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
+import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 export const createGetObjectDynamicContentConfigurationKeyPrefix = ({
   objectType,
@@ -28,9 +39,12 @@ export const createGetObjectDynamicContentConfigurationKeyPrefix = ({
   objectType,
 ];
 
-const select = ({
-  getObjectDynamicContentConfiguration: { dynamic_content },
-}: GQLSkylarkGetObjectDynamicContentConfigurationResponse): DynamicSetConfig => {
+const select = (
+  {
+    getObjectDynamicContentConfiguration: { dynamic_content },
+  }: GQLSkylarkGetObjectDynamicContentConfigurationResponse,
+  objectTypesConfig?: ObjectTypesConfigObject,
+): DynamicSetConfig => {
   console.log("select", { dynamic_content });
   return {
     objectTypes: dynamic_content.dynamic_content_types || [],
@@ -52,7 +66,18 @@ const select = ({
               objectRules: gqlRuleBlock.slice(1).map(
                 (gqlRule): DynamicSetObjectRule => ({
                   objectType: gqlRule.object_types,
-                  relatedObjects: undefined,
+                  relatedObjects:
+                    gqlRule.objects?.map((obj) =>
+                      convertParsedObjectToIdentifier(
+                        parseSkylarkObject(
+                          removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>(
+                            obj,
+                          ),
+                          null,
+                        ),
+                        objectTypesConfig,
+                      ),
+                    ) || [],
                   relationshipName: gqlRule.relationship_name || "",
                   relatedUid: gqlRule.uid || [],
                 }),
@@ -68,10 +93,14 @@ export const useGetObjectDynamicContentConfiguration = (
   objectType: SkylarkObjectType,
   uid: string,
 ) => {
-  const { objectOperations: objectMeta, isError: isObjectMetaError } =
-    useSkylarkObjectOperations(objectType);
+  const { objects: allObjectsMeta } = useAllObjectsMeta();
 
-  const query = createGetObjectDynamicContentConfigurationQuery(objectMeta);
+  const { objectTypesConfig } = useSkylarkObjectTypesWithConfig();
+
+  const query = createGetObjectDynamicContentConfigurationQuery(
+    objectType,
+    allObjectsMeta,
+  );
   const variables = { uid };
 
   const { data, error, isLoading, isError } = useQuery<
@@ -93,16 +122,20 @@ export const useGetObjectDynamicContentConfiguration = (
         { [REQUEST_HEADERS.ignoreAvailability]: "true" },
       ),
     enabled: query !== null,
-    select,
+    select: useCallback(
+      (data: GQLSkylarkGetObjectDynamicContentConfigurationResponse) =>
+        select(data, objectTypesConfig),
+      [objectTypesConfig],
+    ),
   });
 
   return {
     error,
     data,
-    isLoading: (isLoading || !query) && !isObjectMetaError,
+    isLoading: isLoading || !query,
     isNotFound:
       error?.response?.errors?.[0]?.errorType === QueryErrorMessages.NotFound,
-    isError: isError || isObjectMetaError,
+    isError: isError,
     query,
     variables,
   };

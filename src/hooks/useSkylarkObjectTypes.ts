@@ -82,7 +82,7 @@ export const useSkylarkObjectTypes = (
     return opts.withAvailabilityObjectType
       ? sorted
       : sorted?.filter((ot) => ot !== BuiltInSkylarkObjectType.Availability);
-  }, [data]);
+  }, [data, opts.withAvailabilityObjectType]);
 
   return {
     objectTypes,

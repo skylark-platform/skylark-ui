@@ -1,21 +1,13 @@
 import { sentenceCase } from "change-case";
-import clsx from "clsx";
-import { DocumentNode, print, getOperationAST } from "graphql";
-import { useRouter } from "next/router";
-import { Dispatch, Fragment, SetStateAction, useState } from "react";
-import { useForm } from "react-hook-form";
-import { FiArrowDown, FiPlus, FiTrash, FiTrash2, FiX } from "react-icons/fi";
+import { Fragment, useState } from "react";
+import { FiPlus, FiX } from "react-icons/fi";
 
 import { Button } from "src/components/button";
-import { TextInput } from "src/components/inputs/input";
 import { MultiSelect } from "src/components/inputs/multiselect/multiselect.component";
 import { ObjectMultiSelect } from "src/components/inputs/multiselect/objectMultiselect/objectMultiselect.component";
 import { Select } from "src/components/inputs/select";
-import { SearchObjectsModal } from "src/components/modals";
-import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import { ObjectIdentifierList } from "src/components/objectIdentifier/list/objectIdentifierList.component";
-import { Skeleton } from "src/components/skeleton";
-import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
+import { InfoTooltip } from "src/components/tooltip/tooltip.component";
 import { useDynamicContentPreview } from "src/hooks/useDynamicContentPreview";
 import {
   ObjectTypeWithConfig,
@@ -24,8 +16,6 @@ import {
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
-  BuiltInSkylarkObjectType,
-  SkylarkObject,
   SkylarkObjectMeta,
   SkylarkObjectMetaRelationship,
 } from "src/interfaces/skylark";
@@ -34,16 +24,6 @@ import {
   DynamicSetObjectRule,
   DynamicSetRuleBlock,
 } from "src/interfaces/skylark";
-import { createUpdateObjectDynamicContentConfigurationMutation } from "src/lib/graphql/skylark/dynamicMutations/objects";
-import {
-  convertParsedObjectToIdentifier,
-  createDefaultSkylarkObject,
-} from "src/lib/skylark/objects";
-
-// interface ContentRule {
-//   // This is an OR
-//   blocks: RuleBlock[];
-// }
 
 const calculateSharedRelationships = (
   selectedObjectMetas?: SkylarkObjectMeta[],
@@ -110,27 +90,6 @@ const calculateSharedRelationships = (
   );
 };
 
-const mergeRelatedObjectsAndUids = (
-  objectTypes: string[],
-  relatedObjects?: SkylarkObject[],
-  relatedUids?: string[],
-) => {
-  if (!relatedUids) {
-    return relatedObjects || [];
-  }
-
-  const objectType = objectTypes?.[0] || "";
-
-  const remainingRelatedUids = relatedObjects
-    ? relatedUids.filter((uid) => !relatedObjects.find((o) => o.uid === uid))
-    : relatedUids;
-
-  const uidsAsSkylarkObjects = remainingRelatedUids.map((uid) =>
-    createDefaultSkylarkObject({ uid, objectType }),
-  );
-  return [...uidsAsSkylarkObjects, ...(relatedObjects || [])];
-};
-
 const ObjectRuleBlock = ({
   isFirstRuleBlock,
   objectRule,
@@ -152,45 +111,17 @@ const ObjectRuleBlock = ({
     validObjectTypes.includes(name),
   );
 
-  // const allRelationshipNames =
-  // const commonRelationships = relationships?.filter(
-  //   ({ relationshipName }) => relationships,
-  // );
-
   const { sharedRelationships, sharedRelationshipNames } =
     calculateSharedRelationships(validObjectMetas);
 
-  console.log({ sharedRelationships });
+  const selectedObjects = objectRule.relatedObjects || [];
 
   return (
-    <div className="relative border border-manatee-200 px-8 rounded py-4 flex">
+    <div className="relative border border-manatee-200 px-6 rounded py-4 flex">
       <div className="w-full">
-        <div className="items-center flex space-x-8 mb-2">
-          {/* <p className="whitespace-nowrap font-bold w-8 text-center ml-2 rounded">
-          {isFirstRuleBlock ? "" : "that"}
-        </p> */}
-          {/* <Select
-          // label="At least one object linked in the relationship"
-          options={[
-            {
-              label: isFirstRuleBlock ? "have related" : `have related`,
-              value: "relationship",
-            },
-            {
-              label: "contain one of",
-              value: "uid",
-            },
-          ]}
-          variant="primary"
-          labelVariant="form"
-          placeholder=""
-          className={clsx("my-2 ", isFirstRuleBlock && "ml-12")}
-          selected={"relationship"}
-          disabled
-        /> */}
-          <p className="whitespace-nowrap font-bold">are related to</p>
+        <div className="items-center flex space-x-4 mb-2">
+          <p className="whitespace-nowrap font-bold w-24">are related to</p>
           <Select
-            // label="At least one object linked in the relationship"
             options={sharedRelationshipNames.map((relationshipName) => ({
               label: sentenceCase(relationshipName),
               value: relationshipName,
@@ -198,7 +129,6 @@ const ObjectRuleBlock = ({
             variant="primary"
             labelVariant="form"
             placeholder=""
-            // className="mb-2"
             onChange={(relationshipName) =>
               onChange({
                 ...objectRule,
@@ -214,14 +144,10 @@ const ObjectRuleBlock = ({
           />
         </div>
         {objectRule.relationshipName && (
-          <div className="pl-8 w-full flex items-center space-x-8">
-            <p className="whitespace-nowrap font-bold">that contain</p>
+          <div className="w-full flex items-center space-x-8">
+            <p className="whitespace-nowrap font-bold w-24">that contain</p>
             <ObjectMultiSelect
-              selectedObjects={mergeRelatedObjectsAndUids(
-                objectRule.objectType,
-                objectRule.relatedObjects,
-                objectRule.relatedUid,
-              )}
+              selectedObjects={selectedObjects}
               onChange={(objects) =>
                 onChange({
                   ...objectRule,
@@ -231,6 +157,7 @@ const ObjectRuleBlock = ({
               objectTypes={objectRule.objectType}
               className="w-full flex-grow"
               selectedDivider="OR"
+              placeholder={selectedObjects.length > 0 ? "OR" : "Select objects"}
             />
           </div>
         )}
@@ -256,26 +183,23 @@ const ContentRuleBlock = ({
   updateRuleBlock,
   deleteRuleBlock,
 }: {
-  // validObjectTypes: string[];
   isFirstBlock: boolean;
   ruleBlock: DynamicSetRuleBlock;
   objectTypesWithConfig: ObjectTypeWithConfig[];
   hideDelete?: boolean;
-  // setRuleBlock: Dispatch<SetStateAction<RuleBlock>>;
   updateRuleBlock: (r: DynamicSetRuleBlock) => void;
   deleteRuleBlock: () => void;
 }) => {
-  const objectTypesToSearchOptions = objectTypesWithConfig
-    // .filter(({ objectType }) => validObjectTypes.includes(objectType))
-    .map(({ objectType, config }) => ({
+  const objectTypesToSearchOptions = objectTypesWithConfig.map(
+    ({ objectType, config }) => ({
       label: config.objectTypeDisplayName || objectType,
       value: objectType,
-    }));
+    }),
+  );
 
   const onRuleBlockChange = (
     updatedRuleBlock: Partial<DynamicSetRuleBlock>,
   ) => {
-    // setRuleBlock((prev) => ({ ...prev, ...updatedRuleBlock }));
     updateRuleBlock({ ...ruleBlock, ...updatedRuleBlock });
   };
 
@@ -283,7 +207,6 @@ const ContentRuleBlock = ({
     objectRule: DynamicSetObjectRule,
     index: number,
   ) => {
-    // setRuleBlock((prev) => ({ ...prev, ...updatedRuleBlock }));
     const updatedObjectRules = [...ruleBlock.objectRules];
     updatedObjectRules[index] = objectRule;
 
@@ -311,15 +234,13 @@ const ContentRuleBlock = ({
   console.log(ruleBlock.objectRules);
 
   return (
-    <div className="mb-4 px-8 py-8 border-manatee-200 w-full relative border rounded shadow-sm">
-      {/* <h3 className="text-2xl font-medium mb-2">Condition</h3> */}
+    <div className="mb-4 px-6 py-8 border-manatee-200 w-full relative border rounded shadow-sm">
       <div className="flex space-x-4 justify-center items-center w-full mb-4">
         <p className="whitespace-nowrap font-bold">
           {isFirstBlock ? "Where" : "And"}
         </p>
         <MultiSelect
-          // label="Given objects matching the types:"
-          // labelVariant="form"
+          renderInPortal
           options={objectTypesToSearchOptions}
           selected={ruleBlock.objectTypesToSearch}
           onChange={(objectTypesToSearch) =>
@@ -332,22 +253,16 @@ const ContentRuleBlock = ({
           placeholder={
             ruleBlock.objectTypesToSearch.length === 0
               ? "Select object types for this rule"
-              : ""
+              : "OR"
           }
           className="w-full"
           selectedDivider={<p>OR</p>}
         />
-        {/* <p className="whitespace-nowrap">object types</p> */}
       </div>
 
       <div className=" ml-0 border-l- border-manatee-300 flex flex-col justify-center relative w-full">
         {ruleBlock.objectRules.map((objectRule, i, arr) => (
           <div key={i} className="w-full relative my-2">
-            {/* {i < arr.length && (
-              <p className="my-4 font-medium">
-                {i === 0 ? "That have" : "AND where objects returned have"}
-              </p>
-            )} */}
             <ObjectRuleBlock
               key={i}
               isFirstRuleBlock={i === 0}
@@ -359,17 +274,6 @@ const ContentRuleBlock = ({
               onDelete={() => deleteObjectRule(i)}
               hideDelete={i === 0 || i < arr.length - 1}
             />
-            {/* {arr.length > 1 && i === arr.length - 1 && (
-              <div className="bottom-0 top-0 -right-4 absolute flex items-center">
-                <Button
-                  variant="ghost"
-                  className="text-error"
-                  onClick={() => deleteObjectRule(i)}
-                >
-                  <FiTrash2 className="text-xl" />
-                </Button>
-              </div>
-            )} */}
           </div>
         ))}
         <div>
@@ -465,18 +369,24 @@ export const DynamicContentConfigurationEditor = ({
   };
 
   const { objectOperations } = useSkylarkObjectOperations("SkylarkSet");
+  const { objects: allObjectsMeta } = useAllObjectsMeta();
 
-  const { data, query, isLoading, error } =
-    useDynamicContentPreview(configuration);
+  const { data, isLoading, error } = useDynamicContentPreview(configuration);
 
-  console.log("preview", { data });
+  const sortedByOptions = allObjectsMeta?.filter(({ name }) =>
+    configuration.objectTypes.includes(name),
+  );
+
+  // Should be the options, value as the field name, label as ({fieldName} (All)) or ({fieldName} (Episode only))
+  // Text should appear when not using a common field across all object types to warn of weird behaviour
+  // sortedByOptions[0].fieldConfig.global
 
   return (
-    <div className="flex w-full gap-8 overflow-hidden">
-      <div className="text-sm w-3/5 xl:w-3/4 2xl:w-2/3 flex flex-col">
+    <div className="flex w-full gap-4 overflow-hidden">
+      <div className="text-sm w-full md:w-3/5 2xl:w-2/3 flex flex-col">
         <p className="text-xl font-bold text-left mb-4">Builder</p>
         {objectOperations && objectTypesWithConfig && (
-          <div className="overflow-scroll px-4 pb-20">
+          <div className="overflow-scroll pr-4 pb-20">
             {configuration.ruleBlocks.map((ruleBlock, i) => (
               <Fragment key={i}>
                 <ContentRuleBlock
@@ -490,9 +400,9 @@ export const DynamicContentConfigurationEditor = ({
                   deleteRuleBlock={() => deleteRuleBlock(i)}
                   hideDelete={configuration.ruleBlocks.length === 1}
                 />
-                {/* <p className="whitespace-nowrap text-lef w-ful">AND</p> */}
               </Fragment>
             ))}
+            {/* <Select label="Sorted by" /> */}
             <Button
               variant="link"
               onClick={addRuleBlock}
@@ -505,20 +415,30 @@ export const DynamicContentConfigurationEditor = ({
           </div>
         )}
       </div>
-      <div className="w-2/5 xl:w-1/4 2xl:w-1/3 flex flex-col">
-        <p className="text-xl font-bold text-left mb-4">Preview</p>
+      <div className="hidden md:flex md:w-2/5 2xl:w-1/3 flex-col">
+        {/* <p className="text-xl font-bold text-left mb-4">Preview</p> */}
+        <div className="flex items-center mb-4">
+          <p className="text-xl font-bold text-left">Preview</p>
+          <InfoTooltip
+            tooltip={
+              <div className="flex flex-col">
+                <p>{`Displaying a random ${data?.count} objects.`}</p>
+                <p>
+                  The actual content and ordering may change when using a full
+                  data set.
+                </p>
+              </div>
+            }
+          />
+        </div>
         {data && (
           <div className="flex flex-col overflow-hidden flex-grow">
-            <p>Overview:</p>
-            <p>Total matching: {data.totalCount}</p>
-            <p>Total in preview: {data.count}</p>
-            <p className="font-bold text-sm">Sample objects</p>
-            <p>{`Displaying a random ${data.count} objects out of a possible ${data.totalCount}.`}</p>
-            {/* <div className="flex flex-grow"> */}
+            <p className="mb-4 text-sm">
+              {data.totalCount} objects match the rules specified.
+            </p>
             <div className="overflow-scroll border border-manatee-200 rounded w-full">
               <ObjectIdentifierList objects={data.objects} className="px-4" />
             </div>
-            {/* </div> */}
           </div>
         )}
         {!data && (

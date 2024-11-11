@@ -17,6 +17,38 @@ import {
   wrappedJsonQuery,
 } from "./utils";
 
+const createOnSkylarkObjectFields = (
+  allObjectsMeta: SkylarkObjectMeta[],
+  objectTypesToRequest?: string[],
+  fetchAvailability?: boolean,
+) => {
+  return {
+    __typename: true,
+    uid: true,
+    __on: (objectTypesToRequest && objectTypesToRequest.length > 0
+      ? allObjectsMeta.filter(({ name }) => objectTypesToRequest.includes(name))
+      : allObjectsMeta
+    ).map((object) => ({
+      __typeName: object.name,
+      __typename: true, // To remove the alias later
+      // ...common.fields,
+      ...generateFieldsToReturn(
+        object.fields,
+        object.name,
+        true,
+        `__${object.name}__`,
+      ),
+      ...(fetchAvailability && object.availability
+        ? {
+            availability: generateAvailabilityRelationshipFields(
+              object.availability,
+            ),
+          }
+        : {}),
+    })),
+  };
+};
+
 export const createDynamicSetContentInput = (
   dynamicSetConfig: DynamicSetConfig,
 ): SkylarkDynamicSetInput => {
@@ -93,33 +125,11 @@ export const createPreviewDynamicContentQuery = (
         },
         count: true,
         total_count: true,
-        objects: {
-          __typename: true,
-          uid: true,
-          __on: (objectTypesToRequest && objectTypesToRequest.length > 0
-            ? allObjectsMeta.filter(({ name }) =>
-                objectTypesToRequest.includes(name),
-              )
-            : allObjectsMeta
-          ).map((object) => ({
-            __typeName: object.name,
-            __typename: true, // To remove the alias later
-            // ...common.fields,
-            ...generateFieldsToReturn(
-              object.fields,
-              object.name,
-              true,
-              `__${object.name}__`,
-            ),
-            ...(opts?.fetchAvailability && object.availability
-              ? {
-                  availability: generateAvailabilityRelationshipFields(
-                    object.availability,
-                  ),
-                }
-              : {}),
-          })),
-        },
+        objects: createOnSkylarkObjectFields(
+          allObjectsMeta,
+          objectTypesToRequest,
+          opts?.fetchAvailability,
+        ),
       },
     },
   };
@@ -129,10 +139,36 @@ export const createPreviewDynamicContentQuery = (
   return gql(graphQLQuery);
 };
 
-export const createGetObjectDynamicContentConfigurationQuery = (
-  objectMeta: SkylarkObjectMeta | null,
+export const createDynamicContentQueryField = (
+  withActualObjects: boolean,
+  allObjectsMeta: SkylarkObjectMeta[] | null,
 ) => {
-  if (!objectMeta) {
+  let objectsField = {};
+
+  if (withActualObjects && allObjectsMeta) {
+    objectsField = { objects: createOnSkylarkObjectFields(allObjectsMeta) };
+  }
+
+  const field = {
+    dynamic_content_rules: {
+      object_types: true,
+      relationship_name: true,
+      uid: true,
+      ...objectsField,
+    },
+    dynamic_content_types: true,
+  };
+
+  return field;
+};
+
+export const createGetObjectDynamicContentConfigurationQuery = (
+  objectType: string,
+  allObjectsMeta: SkylarkObjectMeta[] | null,
+) => {
+  const objectMeta = allObjectsMeta?.find(({ name }) => name === objectType);
+
+  if (!objectType || !allObjectsMeta || !objectMeta) {
     return null;
   }
   // const common = generateVariablesAndArgs(
@@ -154,17 +190,12 @@ export const createGetObjectDynamicContentConfigurationQuery = (
         },
         __typename: true,
         uid: true,
-        dynamic_content: {
-          dynamic_content_rules: {
-            object_types: true,
-            relationship_name: true,
-            uid: true,
-          },
-          dynamic_content_types: true,
-        },
+        dynamic_content: createDynamicContentQueryField(true, allObjectsMeta),
       },
     },
   };
+
+  console.log({ query });
 
   const graphQLQuery = wrappedJsonQuery(query);
 

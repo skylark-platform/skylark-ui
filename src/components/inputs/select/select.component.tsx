@@ -257,7 +257,7 @@ export const VirtualizedOptions = <T extends string | number>({
   );
 };
 
-const OptionsPortalWrapper = ({
+export const OptionsPortalWrapper = ({
   usePortal,
   children,
 }: {

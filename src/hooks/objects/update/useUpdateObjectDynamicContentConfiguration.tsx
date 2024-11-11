@@ -1,7 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
+import { QueryKeys } from "src/enums/graphql";
 import { createGetObjectContentKeyPrefix } from "src/hooks/objects/get/useGetObjectContent";
+import { createGetObjectDynamicContentConfigurationKeyPrefix } from "src/hooks/objects/get/useGetObjectDynamicContentConfiguration";
+import { createDynamicContentPreviewPrefix } from "src/hooks/useDynamicContentPreview";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   DynamicSetConfig,
@@ -51,7 +54,16 @@ export const useUpdateObjectDynamicContentConfiguration = ({
       await queryClient.refetchQueries({
         queryKey: createGetObjectContentKeyPrefix({ uid, objectType }),
       });
-
+      await queryClient.refetchQueries({
+        queryKey: [QueryKeys.PreviewDynamicContent],
+      });
+      await queryClient.refetchQueries({
+        queryKey: createGetObjectDynamicContentConfigurationKeyPrefix({
+          uid,
+          objectType,
+        }),
+      });
+      //update get confif
       onSuccess();
     },
     onError,

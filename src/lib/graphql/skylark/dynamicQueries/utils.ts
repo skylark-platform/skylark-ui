@@ -14,6 +14,8 @@ import {
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 
+import { createDynamicContentQueryField } from "./dynamicContent";
+
 const fieldNamesToNeverAlias: string[] = [
   SkylarkSystemField.UID,
   SkylarkSystemField.ExternalID,
@@ -240,15 +242,10 @@ export const generateRelationshipsToReturn = (
   }
 
   if (object.isSet) {
-    relationshipsToReturn.dynamic_content = {
-      dynamic_content_types: true,
-      // TODO only request dynamic_content_rules if dynamic_content_types is not enough by itself
-      // dynamic_content_rules {
-      //   object_types
-      //   relationship_name
-      //   uid
-      // }
-    };
+    relationshipsToReturn.dynamic_content = createDynamicContentQueryField(
+      false,
+      null,
+    );
   }
 
   const builtinObjectRelationships = object.builtinObjectRelationships;
