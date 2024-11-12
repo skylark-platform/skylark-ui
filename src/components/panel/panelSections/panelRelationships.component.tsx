@@ -370,10 +370,7 @@ export const PanelRelationships = ({
               <PanelRelationshipSection
                 key={relationship.name}
                 relationship={relationship}
-                config={{
-                  objectTypeDefault: objectTypeDefaultConfig,
-                  overrides: {},
-                }}
+                objectTypeDefaultConfig={objectTypeDefaultConfig}
                 modifiedConfig={
                   modifiedRelationships?.[relationship.name]?.config
                 }
@@ -423,10 +420,7 @@ export const PanelRelationships = ({
                 isExpanded={!!activeRelationship}
                 key={relationship.name}
                 relationship={relationship}
-                config={{
-                  objectTypeDefault: objectTypeDefaultConfig,
-                  overrides: {},
-                }}
+                objectTypeDefaultConfig={objectTypeDefaultConfig}
                 modifiedConfig={
                   modifiedRelationships?.[relationship.name]?.config
                 }

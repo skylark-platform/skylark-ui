@@ -293,7 +293,7 @@ export const generateContentsToReturn = (
   return {
     content: {
       __args: {
-        order: new EnumType("ASC"),
+        // order: new EnumType("ASC"),
         limit: 100,
         next_token: new VariableType(opts.nextTokenVariableName),
       },

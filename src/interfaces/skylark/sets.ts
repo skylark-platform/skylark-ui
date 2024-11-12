@@ -1,5 +1,6 @@
 import { SkylarkObjectType } from "./objectOperations";
 import { SkylarkObject } from "./parsedObjects";
+import { GQLSkylarkOrderDirections } from "./responses";
 
 export interface DynamicSetObjectRule {
   objectType: SkylarkObjectType[];
@@ -16,4 +17,6 @@ export interface DynamicSetRuleBlock {
 export interface DynamicSetConfig {
   objectTypes: SkylarkObjectType[];
   ruleBlocks: DynamicSetRuleBlock[];
+  contentSortField: string | null;
+  contentSortDirection: GQLSkylarkOrderDirections;
 }

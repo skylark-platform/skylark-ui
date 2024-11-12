@@ -41,13 +41,19 @@ export const createGetObjectDynamicContentConfigurationKeyPrefix = ({
 
 const select = (
   {
-    getObjectDynamicContentConfiguration: { dynamic_content },
+    getObjectDynamicContentConfiguration: {
+      dynamic_content,
+      content_sort_field,
+      content_sort_direction,
+    },
   }: GQLSkylarkGetObjectDynamicContentConfigurationResponse,
   objectTypesConfig?: ObjectTypesConfigObject,
 ): DynamicSetConfig => {
   console.log("select", { dynamic_content });
   return {
     objectTypes: dynamic_content.dynamic_content_types || [],
+    contentSortDirection: content_sort_direction,
+    contentSortField: content_sort_field,
     ruleBlocks: dynamic_content.dynamic_content_rules
       ? dynamic_content.dynamic_content_rules.map(
           (gqlRuleBlock): DynamicSetRuleBlock => {

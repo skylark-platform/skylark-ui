@@ -1,14 +1,17 @@
+import { sentenceCase } from "change-case";
 import clsx from "clsx";
 import { Transition, m } from "framer-motion";
 import { Ref, forwardRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
+import { Select } from "src/components/inputs/select";
 import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import {
   PanelButton,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
+import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
@@ -25,10 +28,7 @@ interface PanelRelationshipsSectionProps {
   isFetchingMoreRelationships: boolean;
   newUids: string[];
   isExpanded: boolean;
-  config: {
-    objectTypeDefault: ParsedSkylarkRelationshipConfig | null;
-    overrides: Partial<ParsedSkylarkRelationshipConfig>;
-  };
+  objectTypeDefaultConfig: ParsedSkylarkRelationshipConfig | null;
   modifiedConfig?: Partial<ParsedSkylarkRelationshipConfig>;
   setExpandedRelationship: (r: string | null) => void;
   setPanelObject: SetPanelObject;
@@ -79,7 +79,7 @@ const PanelRelationshipSectionComponent = (
     isFetchingMoreRelationships,
     newUids,
     isExpanded,
-    config,
+    objectTypeDefaultConfig,
     hasMoreRelationships,
     modifiedConfig,
     setPanelObject,
@@ -117,8 +117,8 @@ const PanelRelationshipSectionComponent = (
 
   const activeSortField =
     modifiedConfig?.defaultSortField ||
-    config.overrides.defaultSortField ||
-    config.objectTypeDefault?.defaultSortField;
+    relationship.config.defaultSortField ||
+    objectTypeDefaultConfig?.defaultSortField;
 
   // console.log({ displayList });
 
@@ -176,29 +176,28 @@ const PanelRelationshipSectionComponent = (
             />
           )}
         </div>
-        {/* TODO uncomment when relationship_config is ready */}
-        {/* {!isEmptySection && (
+        {!isEmptySection && (
           <Select
             variant="pill"
             placeholder="Unsorted"
-            className="text-manatee-600 w-52 mb-2 pb-1 md:pb-2"
-            selected={activeSortField}
+            className="text-manatee-600 w-40 mb-2 pb-1 md:pb-2"
+            selected={activeSortField || undefined}
             options={
               objectOperations?.fieldConfig.global.map((value) => ({
-                label: `${sentenceCase(value)} ${value === config?.objectTypeDefault?.defaultSortField ? "(Default)" : ""}`,
+                label: `${sentenceCase(value)} ${value === objectTypeDefaultConfig?.defaultSortField ? "(Default)" : ""}`,
                 value,
               })) || []
             }
-            label="Sorted by:"
-            labelPosition="inline"
-            labelVariant="small"
+            // label=""
+            // labelPosition="inline"
+            // labelVariant="small"
             renderInPortal
             searchable={false}
             onChange={(defaultSortField) =>
               updateRelationshipConfig({ defaultSortField })
             }
           />
-        )} */}
+        )}
       </m.div>
 
       <m.div
@@ -209,8 +208,8 @@ const PanelRelationshipSectionComponent = (
         <div className="overflow-hidden">
           {displayList?.length > 0 &&
             displayList?.map((obj, index) => {
-              // const sortFieldValue =
-              //   activeSortField && obj.metadata?.[activeSortField];
+              const sortFieldValue = activeSortField;
+              // const sortFieldValue = obj?.display.sortField;
 
               return (
                 <m.div
@@ -241,7 +240,7 @@ const PanelRelationshipSectionComponent = (
                       }
                       onForwardClick={setPanelObject}
                     >
-                      {/* {sortFieldValue && (
+                      {sortFieldValue && (
                         <Tooltip tooltip={sortFieldValue}>
                           <p
                             className="flex max-w-8 sm:max-w-full min-w-3 overflow-hidden whitespace-nowrap text-sm text-manatee-500 cursor-default"
@@ -252,7 +251,7 @@ const PanelRelationshipSectionComponent = (
                             </span>
                           </p>
                         </Tooltip>
-                      )} */}
+                      )}
                       {inEditMode && newUids?.includes(obj.uid) && (
                         <span
                           className={

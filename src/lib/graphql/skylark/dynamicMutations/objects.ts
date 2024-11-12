@@ -1,5 +1,5 @@
 import { gql } from "graphql-tag";
-import { VariableType } from "json-to-graphql-query";
+import { EnumType, VariableType } from "json-to-graphql-query";
 
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
@@ -12,6 +12,7 @@ import {
   SkylarkObjectMetadataField,
   SkylarkObjectType,
   SkylarkObject,
+  ModifiedContents,
 } from "src/interfaces/skylark";
 import {
   createDynamicSetContentInput,
@@ -244,25 +245,21 @@ export const createUpdateObjectContentMutation = (
   object: SkylarkObjectMeta | null,
   originalContentObjects: SkylarkObjectContentObject[] | null,
   updatedContentObjects: SkylarkObjectContentObject[] | null,
+  modifiedConfig: ModifiedContents["config"],
 ) => {
-  if (
-    !object ||
-    !object.operations.update ||
-    !originalContentObjects ||
-    !updatedContentObjects
-  ) {
+  if (!object || !object.operations.update) {
     return null;
   }
 
-  const originalContentObjectUids = originalContentObjects.map(
+  const originalContentObjectUids = originalContentObjects?.map(
     ({ uid }) => uid,
   );
-  const updatedContentObjectUids = updatedContentObjects.map(({ uid }) => uid);
+  const updatedContentObjectUids = updatedContentObjects?.map(({ uid }) => uid);
 
-  const linkOrRepositionOperations = updatedContentObjects.map(
+  const linkOrRepositionOperations = updatedContentObjects?.map(
     ({ objectType, uid }, index): SetContentOperation => {
       const position = index + 1;
-      if (originalContentObjectUids.includes(uid)) {
+      if (originalContentObjectUids?.includes(uid)) {
         return {
           operation: "reposition",
           objectType,
@@ -280,7 +277,7 @@ export const createUpdateObjectContentMutation = (
   );
 
   const deleteOperations = originalContentObjects
-    .filter(({ uid }) => !updatedContentObjectUids.includes(uid))
+    ?.filter(({ uid }) => !updatedContentObjectUids?.includes(uid))
     .map(({ objectType, uid }): SetContentOperation => {
       return {
         operation: "unlink",
@@ -291,8 +288,8 @@ export const createUpdateObjectContentMutation = (
     });
 
   const objectContentOperations = [
-    ...linkOrRepositionOperations,
-    ...deleteOperations,
+    ...(linkOrRepositionOperations || []),
+    ...(deleteOperations || []),
   ];
 
   const setContent = objectContentOperations.reduce(
@@ -324,6 +321,15 @@ export const createUpdateObjectContentMutation = (
     >,
   );
 
+  const contentConfig = modifiedConfig
+    ? {
+        content_sort_field: modifiedConfig.contentSortField || null,
+        content_sort_direction: modifiedConfig.contentSortDirection
+          ? new EnumType(modifiedConfig.contentSortDirection)
+          : null,
+      }
+    : {};
+
   const mutation = {
     mutation: {
       __name: `UPDATE_OBJECT_CONTENT_${object.name}`,
@@ -335,7 +341,10 @@ export const createUpdateObjectContentMutation = (
         __args: {
           uid: new VariableType("uid"),
           [object.operations.update.argName]: {
-            content: setContent,
+            ...(objectContentOperations.length > 0
+              ? { content: setContent }
+              : {}),
+            ...contentConfig,
           },
         },
         uid: true,
@@ -367,6 +376,14 @@ export const createUpdateObjectDynamicContentConfigurationMutation = (
         __args: {
           uid: new VariableType("uid"),
           [object.operations.update.argName]: {
+            content_sort_field:
+              dynamicSetConfig.contentSortField &&
+              dynamicSetConfig.contentSortField !== "manual"
+                ? dynamicSetConfig.contentSortField
+                : null,
+            content_sort_direction: dynamicSetConfig.contentSortDirection
+              ? new EnumType(dynamicSetConfig.contentSortDirection)
+              : null,
             dynamic_content: createDynamicSetContentInput(dynamicSetConfig),
           },
         },

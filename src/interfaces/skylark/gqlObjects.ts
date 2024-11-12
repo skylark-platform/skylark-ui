@@ -148,6 +148,16 @@ export type SkylarkGraphQLObjectList<T = SkylarkGraphQLObject> = {
   objects: T[];
 };
 
+export interface GQLObjectTypeRelationshipConfig {
+  default_sort_field: string | null;
+  inherit_availability: boolean | null;
+}
+
+export type SkylarkGraphQLRelationshipList<T = SkylarkGraphQLObject> =
+  SkylarkGraphQLObjectList<T> & {
+    relationship_config: GQLObjectTypeRelationshipConfig | null;
+  };
+
 export type SkylarkGraphQLAvailabilityList =
   SkylarkGraphQLObjectList<SkylarkGraphQLAvailability> & {
     time_window_status: "EXPIRED" | "FUTURE" | "ACTIVE" | "UNAVAILABLE" | null;

@@ -1,7 +1,10 @@
 import {
+  AddedSkylarkObjectContentObject,
   ParsedSkylarkRelationshipConfig,
   SkylarkObject,
+  SkylarkObjectContentObject,
 } from "./parsedObjects";
+import { GQLSkylarkOrderDirections } from "./responses";
 
 export interface ModifiedRelationship {
   added: SkylarkObject[];
@@ -17,3 +20,12 @@ export type ModifiedRelationshipsObject = Record<
     config: Partial<ParsedSkylarkRelationshipConfig>;
   }
 >;
+
+export type ModifiedContents = {
+  original: SkylarkObjectContentObject[] | null;
+  updated: AddedSkylarkObjectContentObject[] | null;
+  config: {
+    contentSortField: string | null;
+    contentSortDirection: GQLSkylarkOrderDirections;
+  } | null;
+};

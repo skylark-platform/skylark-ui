@@ -35,6 +35,7 @@ import {
   ParsedSkylarkObjectConfig,
   ModifiedRelationshipsObject,
   SkylarkObjectIdentifier,
+  ModifiedContents,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
@@ -250,13 +251,9 @@ export const Panel = ({
 
   const [panelInEditMode, setEditMode] = useState(false);
 
-  const [contentObjects, setContentObjects] = useState<{
-    original: SkylarkObjectContentObject[] | null;
-    updated: AddedSkylarkObjectContentObject[] | null;
-  }>({
-    original: null,
-    updated: null,
-  });
+  const [contentObjects, setContentObjects] = useState<ModifiedContents | null>(
+    null,
+  );
 
   const [modifiedRelationships, setModifiedRelationships] =
     useState<ModifiedRelationshipsObject | null>(null);
@@ -336,7 +333,8 @@ export const Panel = ({
   const inEditMode =
     panelInEditMode ||
     isMetadataFormDirty ||
-    contentObjects.original?.length !== contentObjects.updated?.length ||
+    contentObjects?.original?.length !== contentObjects?.updated?.length ||
+    Boolean(contentObjects?.config) ||
     modifiedRelationships !== null ||
     modifiedAvailabilityObjects !== null ||
     modifiedAvailabilityAssignedTo !== null;
@@ -414,7 +412,7 @@ export const Panel = ({
     useUpdateObjectContent({
       objectType,
       onSuccess: () => {
-        setContentObjects({ original: null, updated: null });
+        setContentObjects(null);
         if (panelInEditMode) setEditMode(false);
       },
       onError: showUpdateErrorToast,
@@ -450,11 +448,10 @@ export const Panel = ({
     });
 
   const saveActiveTabChanges = (opts?: { draft?: boolean }) => {
-    if (selectedTab === PanelTab.Content && contentObjects.updated) {
+    if (selectedTab === PanelTab.Content && contentObjects?.updated) {
       updateObjectContent({
         uid,
-        originalContentObjects: contentObjects.original,
-        updatedContentObjects: contentObjects.updated,
+        ...contentObjects,
       });
     } else if (
       selectedTab === PanelTab.Relationships &&
@@ -517,13 +514,7 @@ export const Panel = ({
   };
 
   const handleContentObjectsModified = useCallback(
-    (
-      updatedContentObjects: {
-        original: SkylarkObjectContentObject[] | null;
-        updated: AddedSkylarkObjectContentObject[] | null;
-      },
-      errors: HandleDropError[],
-    ) => {
+    (updatedContentObjects: ModifiedContents, errors: HandleDropError[]) => {
       setContentObjects(updatedContentObjects);
       displayHandleDroppedErrors(
         errors,
@@ -627,10 +618,15 @@ export const Panel = ({
         toggleEditMode={() => {
           if (inEditMode) {
             resetMetadataForm(formParsedMetadata || {});
-            setContentObjects({
-              original: contentObjects.original,
-              updated: contentObjects.original,
-            });
+            setContentObjects(
+              contentObjects
+                ? {
+                    original: contentObjects.original,
+                    updated: contentObjects.original,
+                    config: null,
+                  }
+                : null,
+            );
             setModifiedRelationships(null);
             setModifiedAvailabilityObjects(null);
             setAvailabilityDimensionValues({
@@ -733,7 +729,8 @@ export const Panel = ({
               objectType={objectType}
               uid={uid}
               language={language}
-              objects={contentObjects.updated}
+              objects={contentObjects?.updated || null}
+              modifiedConfig={contentObjects?.config || null}
               inEditMode={inEditMode}
               setContentObjects={handleContentObjectsModified}
               setPanelObject={setPanelObject}

@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { FiZap } from "react-icons/fi";
 
 import { Button } from "src/components/button";
+import { Select } from "src/components/inputs/select";
+import { createObjectContentSortFieldOptions } from "src/components/inputs/select/options.utils";
 import {
   DisplayGraphQLQuery,
   DynamicContentConfigurationModal,
@@ -21,8 +23,12 @@ import {
 import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
 import { SetPanelObject } from "src/hooks/state";
 import {
-  SkylarkObjectContentObject,
+  useAllObjectsMeta,
+  useSkylarkObjectTypesWithConfig,
+} from "src/hooks/useSkylarkObjectTypes";
+import {
   AddedSkylarkObjectContentObject,
+  ModifiedContents,
 } from "src/interfaces/skylark";
 import { DroppableType } from "src/lib/dndkit/dndkit";
 
@@ -34,11 +40,9 @@ interface PanelContentProps {
   language: string;
   isPage?: boolean;
   objects: AddedSkylarkObjectContentObject[] | null;
+  modifiedConfig: ModifiedContents["config"];
   setContentObjects: (
-    contentObjects: {
-      original: SkylarkObjectContentObject[] | null;
-      updated: AddedSkylarkObjectContentObject[] | null;
-    },
+    contentObjects: ModifiedContents,
     errors: HandleDropError[],
   ) => void;
   inEditMode?: boolean;
@@ -48,6 +52,7 @@ interface PanelContentProps {
 export const PanelContent = ({
   isPage,
   objects: updatedObjects,
+  modifiedConfig,
   inEditMode,
   objectType,
   uid,
@@ -64,14 +69,25 @@ export const PanelContent = ({
       fetchAvailability: true,
     });
 
-  const objects = (inEditMode ? updatedObjects : data) || [];
+  const objects = (inEditMode ? updatedObjects : data.objects) || [];
+
+  const { objects: allObjectsMeta } = useAllObjectsMeta();
+
+  const { objectTypesConfig } = useSkylarkObjectTypesWithConfig();
+
+  const sortFieldSelectOptions = createObjectContentSortFieldOptions(
+    allObjectsMeta,
+    data.objectTypesInContent,
+    objectTypesConfig,
+  );
 
   useEffect(() => {
     if (!inEditMode && data) {
       setContentObjects(
         {
-          original: data,
-          updated: data,
+          original: data.objects,
+          updated: data.objects,
+          config: null,
         },
         [],
       );
@@ -82,8 +98,9 @@ export const PanelContent = ({
     (updated: AddedSkylarkObjectContentObject[], errors?: HandleDropError[]) =>
       setContentObjects(
         {
-          original: data || null,
+          original: data.objects || null,
           updated,
+          config: modifiedConfig || data.config,
         },
         errors || [],
       ),
@@ -123,18 +140,59 @@ export const PanelContent = ({
           />
         )}
         <div className="flex flex-grow justify-end">
-          <Button
-            variant="link"
-            className="-mt-4"
-            onClick={() => setModalState("dynamic-content")}
-            Icon={<FiZap className="text-base -mr-1" />}
-          >
-            Configure Dynamic Content
-          </Button>
+          <Select
+            variant="pill"
+            placeholder="Unsorted"
+            className="text-manatee-600 w-40 mb-2 pb-1 md:pb-2"
+            optionsClassName="w-72"
+            selected={
+              modifiedConfig?.contentSortField ||
+              data.config?.contentSortField ||
+              "manual"
+            }
+            // selected={"manual"}
+            // options={
+            //   objectOperations?.fieldConfig.global.map((value) => ({
+            //     label: `${sentenceCase(value)} ${value === objectTypeDefaultConfig?.defaultSortField ? "(Default)" : ""}`,
+            //     value,
+            //   })) || []
+            // }
+            // label=""
+            // labelPosition="inline"
+            // labelVariant="small"
+            options={sortFieldSelectOptions}
+            renderInPortal
+            searchable={false}
+            floatingPosition="left-end"
+            onChange={(contentSortField) =>
+              setContentObjects(
+                {
+                  original: data.objects,
+                  updated: updatedObjects,
+                  config: {
+                    ...(data.config ||
+                      modifiedConfig || { contentSortDirection: null }),
+                    contentSortField,
+                  },
+                },
+                [],
+              )
+            }
+          />
         </div>
       </div>
+      <div className="flex flex-grow justify-end pr-3">
+        <Button
+          variant="link"
+          className="-mt-4"
+          onClick={() => setModalState("dynamic-content")}
+          Icon={<FiZap className="text-sm -mr-1" />}
+        >
+          Configure Dynamic Content
+        </Button>
+      </div>
 
-      <div className="">
+      <div className="flex flex-grow">
         {/* <PanelButton
           aria-label={`Open content settings`}
           className="ml-1"

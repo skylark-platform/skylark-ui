@@ -6,17 +6,16 @@ import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkErrorResponse,
   GQLSkylarkUpdateObjectContentResponse,
+  ModifiedContents,
   SkylarkObjectContentObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynamicMutations/objects";
 
-interface MutationArgs {
+type MutationArgs = ModifiedContents & {
   uid: string;
-  originalContentObjects: SkylarkObjectContentObject[] | null;
-  updatedContentObjects: SkylarkObjectContentObject[] | null;
-}
+};
 
 export const useUpdateObjectContent = ({
   objectType,
@@ -33,13 +32,15 @@ export const useUpdateObjectContent = ({
   const { mutate, isPending } = useMutation({
     mutationFn: ({
       uid,
-      originalContentObjects,
-      updatedContentObjects,
+      original: originalContentObjects,
+      updated: updatedContentObjects,
+      config: modifiedConfig,
     }: MutationArgs) => {
       const updateObjectContentMutation = createUpdateObjectContentMutation(
         objectOperations,
         originalContentObjects,
         updatedContentObjects,
+        modifiedConfig,
       );
 
       return skylarkRequest<GQLSkylarkUpdateObjectContentResponse>(

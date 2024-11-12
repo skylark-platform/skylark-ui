@@ -63,7 +63,6 @@ export const useUpdateObjectDynamicContentConfiguration = ({
           objectType,
         }),
       });
-      //update get confif
       onSuccess();
     },
     onError,

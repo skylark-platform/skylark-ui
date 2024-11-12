@@ -5,11 +5,12 @@ import { FiPlus, FiX } from "react-icons/fi";
 import { Button } from "src/components/button";
 import { MultiSelect } from "src/components/inputs/multiselect/multiselect.component";
 import { ObjectMultiSelect } from "src/components/inputs/multiselect/objectMultiselect/objectMultiselect.component";
-import { Select } from "src/components/inputs/select";
+import { Select, SelectOption } from "src/components/inputs/select";
 import { ObjectIdentifierList } from "src/components/objectIdentifier/list/objectIdentifierList.component";
 import { InfoTooltip } from "src/components/tooltip/tooltip.component";
 import { useDynamicContentPreview } from "src/hooks/useDynamicContentPreview";
 import {
+  ObjectTypesConfigObject,
   ObjectTypeWithConfig,
   useAllObjectsMeta,
   useSkylarkObjectOperations,
@@ -24,6 +25,8 @@ import {
   DynamicSetObjectRule,
   DynamicSetRuleBlock,
 } from "src/interfaces/skylark";
+
+import { createObjectContentSortFieldOptions } from "../inputs/select/options.utils";
 
 const calculateSharedRelationships = (
   selectedObjectMetas?: SkylarkObjectMeta[],
@@ -309,13 +312,31 @@ export const DynamicContentConfigurationEditor = ({
   initialConfiguration: DynamicSetConfig | null;
   onConfigurationChange: (c: DynamicSetConfig) => void;
 }) => {
-  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig({
-    withAvailabilityObjectType: false,
-  });
+  const { objectTypesWithConfig, objectTypesConfig } =
+    useSkylarkObjectTypesWithConfig({
+      withAvailabilityObjectType: false,
+    });
 
-  const [configuration, setConfiguration] = useState<DynamicSetConfig>(
-    initialConfiguration || { objectTypes: [], ruleBlocks: [] },
+  const [configuration, setConfigurationWrapper] = useState<DynamicSetConfig>(
+    initialConfiguration || {
+      objectTypes: [],
+      ruleBlocks: [],
+      contentSortDirection: null,
+      contentSortField: null,
+    },
   );
+
+  const setConfiguration = (newState: Partial<DynamicSetConfig>) =>
+    setConfigurationWrapper((previousState) => {
+      const updatedState = {
+        ...previousState,
+        ...newState,
+      };
+
+      onConfigurationChange(updatedState);
+
+      return updatedState;
+    });
 
   const updateRuleBlocks = (ruleBlocks: DynamicSetConfig["ruleBlocks"]) => {
     const objectTypes = [
@@ -328,13 +349,12 @@ export const DynamicContentConfigurationEditor = ({
     ];
 
     const updatedConfiguration = {
+      ...configuration,
       objectTypes,
       ruleBlocks,
     };
 
     setConfiguration(updatedConfiguration);
-
-    onConfigurationChange(updatedConfiguration);
   };
 
   // const canAddNewRule =
@@ -347,7 +367,7 @@ export const DynamicContentConfigurationEditor = ({
     //   return;
     // }
     const newRuleBlock: DynamicSetRuleBlock = {
-      objectTypesToSearch: [],
+      objectTypesToSearch: configuration.objectTypes,
       objectRules: [{ relationshipName: "", objectType: [] }],
     };
     updateRuleBlocks([...configuration.ruleBlocks, newRuleBlock]);
@@ -373,10 +393,11 @@ export const DynamicContentConfigurationEditor = ({
 
   const { data, isLoading, error } = useDynamicContentPreview(configuration);
 
-  const sortedByOptions = allObjectsMeta?.filter(({ name }) =>
-    configuration.objectTypes.includes(name),
+  const sortFieldOptions = createObjectContentSortFieldOptions(
+    allObjectsMeta,
+    configuration.objectTypes,
+    objectTypesConfig,
   );
-
   // Should be the options, value as the field name, label as ({fieldName} (All)) or ({fieldName} (Episode only))
   // Text should appear when not using a common field across all object types to warn of weird behaviour
   // sortedByOptions[0].fieldConfig.global
@@ -387,22 +408,68 @@ export const DynamicContentConfigurationEditor = ({
         <p className="text-xl font-bold text-left mb-4">Builder</p>
         {objectOperations && objectTypesWithConfig && (
           <div className="overflow-scroll pr-4 pb-20">
+            <div className="p-6 shadow-sm rounded-sm border border-manatee-200 mb-4">
+              <MultiSelect
+                label="Object Types to include in Content"
+                labelVariant="form"
+                options={objectTypesWithConfig.map(
+                  ({ objectType, config }) => ({
+                    label: config.objectTypeDisplayName || objectType,
+                    value: objectType,
+                  }),
+                )}
+                selected={configuration.objectTypes}
+                selectedDivider="AND"
+              />
+            </div>
             {configuration.ruleBlocks.map((ruleBlock, i) => (
-              <Fragment key={i}>
-                <ContentRuleBlock
-                  key={i}
-                  isFirstBlock={i === 0}
-                  ruleBlock={ruleBlock}
-                  objectTypesWithConfig={objectTypesWithConfig}
-                  updateRuleBlock={(newRuleBlock) =>
-                    updateRuleBlock(i, newRuleBlock)
-                  }
-                  deleteRuleBlock={() => deleteRuleBlock(i)}
-                  hideDelete={configuration.ruleBlocks.length === 1}
-                />
-              </Fragment>
+              <ContentRuleBlock
+                key={i}
+                isFirstBlock={i === 0}
+                ruleBlock={ruleBlock}
+                objectTypesWithConfig={objectTypesWithConfig}
+                updateRuleBlock={(newRuleBlock) =>
+                  updateRuleBlock(i, newRuleBlock)
+                }
+                deleteRuleBlock={() => deleteRuleBlock(i)}
+                hideDelete={configuration.ruleBlocks.length === 1}
+              />
             ))}
-            {/* <Select label="Sorted by" /> */}
+            <div className="grid grid-cols-4">
+              <Select
+                variant="primary"
+                placeholder="Select sort field"
+                selected={configuration.contentSortField || undefined}
+                className="px-1 col-span-3"
+                label="Sorted by"
+                labelVariant="form"
+                options={sortFieldOptions}
+                renderInPortal
+                onChange={(value) =>
+                  setConfiguration({
+                    contentSortField: value,
+                  })
+                }
+              />
+              <Select
+                variant="primary"
+                placeholder="Direction"
+                selected={configuration.contentSortDirection || "ASC"}
+                className="px-1"
+                label="Direction"
+                labelVariant="form"
+                options={[
+                  { value: "ASC", label: "ASC" },
+                  { value: "DESC", label: "DESC" },
+                ]}
+                renderInPortal
+                onChange={(value) =>
+                  setConfiguration({
+                    contentSortDirection: value,
+                  })
+                }
+              />
+            </div>
             <Button
               variant="link"
               onClick={addRuleBlock}

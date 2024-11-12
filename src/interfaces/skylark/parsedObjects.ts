@@ -37,6 +37,10 @@ export type SkylarkObject<T = BuiltInSkylarkObjectType | string> =
     };
     created: ParsedSkylarkObjectMeta["created"];
     modified: ParsedSkylarkObjectMeta["modified"];
+    listingConfig: {
+      sortField: string;
+      sortFieldValue: string;
+    };
   } & (
       | {
           objectType: BuiltInSkylarkObjectType.SkylarkImage;
@@ -160,21 +164,22 @@ export interface ParsedSkylarkObject {
   content?: SkylarkObjectContent;
 }
 
+export interface ParsedSkylarkRelationshipConfig {
+  defaultSortField: string | null;
+  inheritAvailability: boolean | null;
+}
+
 export interface SkylarkObjectRelationship<
   T = BuiltInSkylarkObjectType | string,
 > {
   name: string;
   objectType: SkylarkObjectType;
   objects: SkylarkObject<T>[];
+  config: ParsedSkylarkRelationshipConfig;
 }
 
 export type SkylarkObjectRelationships<T = BuiltInSkylarkObjectType | string> =
   Record<string, SkylarkObjectRelationship<T>>;
-
-export interface ParsedSkylarkRelationshipConfig {
-  defaultSortField: string;
-  inheritAvailability: boolean;
-}
 
 export interface ParsedSkylarkObjectTypeRelationshipConfiguration {
   [relationshipName: string]: ParsedSkylarkRelationshipConfig;

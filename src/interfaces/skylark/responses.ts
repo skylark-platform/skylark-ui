@@ -1,4 +1,5 @@
 import {
+  GQLObjectTypeRelationshipConfig,
   NextToken,
   SkylarkGraphQLAPIKey,
   SkylarkGraphQLAvailability,
@@ -39,6 +40,8 @@ export interface GQLSkylarkAccountResponse {
     skylark_version: string;
   };
 }
+
+export type GQLSkylarkOrderDirections = "ASC" | "DESC" | null;
 
 export interface GQLSkylarkActivationStatusResponse {
   getActivationStatus: {
@@ -113,6 +116,8 @@ export interface GQLSkylarkGetObjectRelationshipsResponse {
 
 export interface GQLSkylarkGetObjectContentResponse {
   getObjectContent: {
+    content_sort_field: string | null;
+    content_sort_direction: GQLSkylarkOrderDirections;
     content: SkylarkGraphQLObjectContent | null;
   };
 }
@@ -220,11 +225,6 @@ export interface GQLSkylarkGetAvailabilityDimensions {
   getAvailability: SkylarkGraphQLAvailability;
 }
 
-export interface GQLObjectTypeRelationshipConfig {
-  default_sort_field: string | null;
-  inherit_availability: boolean;
-}
-
 export interface GQLSkylarkListObjectTypeRelationshipConfiguration {
   listRelationshipConfiguration: {
     relationship_name: string;
@@ -278,6 +278,8 @@ export interface GQLSkylarkDynamicContentPreviewResponse {
 
 export interface GQLSkylarkGetObjectDynamicContentConfigurationResponse {
   getObjectDynamicContentConfiguration: {
+    content_sort_field: string | null;
+    content_sort_direction: GQLSkylarkOrderDirections;
     dynamic_content: SkylarkGraphQLDynamicContentConfiguration;
   };
 }

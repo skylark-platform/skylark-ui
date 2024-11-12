@@ -22,6 +22,8 @@ import {
   SkylarkGraphQLObjectList,
   SkylarkObjectMeta,
   SkylarkObjectType,
+  SkylarkGraphQLRelationshipList,
+  SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectRelationshipsQuery } from "src/lib/graphql/skylark/dynamicQueries";
@@ -142,7 +144,7 @@ export const useGetObjectRelationships = (
         (pageAggregate, name) => {
           const relationship = page.getObjectRelationships[
             name
-          ] as SkylarkGraphQLObjectList | null;
+          ] as SkylarkGraphQLRelationshipList | null;
 
           if (!relationship) {
             return pageAggregate;
@@ -159,14 +161,31 @@ export const useGetObjectRelationships = (
             relationship.__typename,
           );
 
+          const parsedRelationship: SkylarkObjectRelationship = hasProperty(
+            pageAggregate,
+            name,
+          )
+            ? {
+                ...pageAggregate[name],
+                objects: [...pageAggregate[name].objects, ...parsedObjects],
+              }
+            : {
+                objectType,
+                objects: parsedObjects,
+                name,
+                config: {
+                  defaultSortField:
+                    relationship.relationship_config?.default_sort_field ||
+                    null,
+                  inheritAvailability:
+                    relationship.relationship_config?.inherit_availability ||
+                    null,
+                },
+              };
+
           return {
             ...pageAggregate,
-            [name]: hasProperty(pageAggregate, name)
-              ? {
-                  ...pageAggregate[name],
-                  objects: [...pageAggregate[name].objects, ...parsedObjects],
-                }
-              : { objectType, objects: parsedObjects, name },
+            [name]: parsedRelationship,
           };
         },
         aggregate,

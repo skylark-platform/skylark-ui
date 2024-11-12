@@ -298,10 +298,9 @@ export const createGetObjectRelationshipsQuery = (
               },
               __typename: true, // To get the ObjectType (Listing)
               next_token: true,
-              // TODO uncomment when relationship_config is ready
-              // relationship_config: {
-              //   default_sort_field: true,
-              // },
+              relationship_config: {
+                default_sort_field: true,
+              },
               objects: {
                 uid: true,
                 __typename: true,
@@ -360,6 +359,9 @@ export const createGetObjectContentQuery = (
           uid: new VariableType("uid"),
         },
         __typename: true,
+        uid: true,
+        content_sort_field: true,
+        content_sort_direction: true,
         ...generateContentsToReturn(object, contentTypesToRequest, {
           nextTokenVariableName: "nextToken",
           fetchAvailability: opts?.fetchAvailability,

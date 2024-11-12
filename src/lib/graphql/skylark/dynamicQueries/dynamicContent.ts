@@ -121,6 +121,10 @@ export const createPreviewDynamicContentQuery = (
       dynamicContentPreview: {
         __args: {
           // ...common.args,
+          content_sort_field: dynamicSetConfig.contentSortField || null,
+          content_sort_direction: dynamicSetConfig.contentSortDirection
+            ? new EnumType(dynamicSetConfig.contentSortDirection)
+            : null,
           rules: createDynamicSetContentInput(dynamicSetConfig),
         },
         count: true,
@@ -190,6 +194,8 @@ export const createGetObjectDynamicContentConfigurationQuery = (
         },
         __typename: true,
         uid: true,
+        content_sort_field: true,
+        content_sort_direction: true,
         dynamic_content: createDynamicContentQueryField(true, allObjectsMeta),
       },
     },
