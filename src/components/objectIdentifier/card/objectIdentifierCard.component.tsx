@@ -7,12 +7,14 @@ import { OpenObjectButton } from "src/components/button";
 import { Pill } from "src/components/pill";
 import { PanelTab, SetPanelObject } from "src/hooks/state";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
-import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
 import {
   ParsedSkylarkObjectConfig,
   SkylarkObject,
 } from "src/interfaces/skylark/parsedObjects";
-import { platformMetaKeyClicked } from "src/lib/utils";
+import {
+  isAvailabilityOrAvailabilitySegment,
+  platformMetaKeyClicked,
+} from "src/lib/utils";
 
 export interface ObjectIdentifierCardProps {
   object: SkylarkObject;
@@ -75,7 +77,7 @@ export const ObjectIdentifierCard = ({
       </p>
       {children}
       {!hideAvailabilityStatus &&
-        object.objectType !== BuiltInSkylarkObjectType.Availability && (
+        !isAvailabilityOrAvailabilitySegment(object.objectType) && (
           <button
             onClick={
               onForwardClick &&

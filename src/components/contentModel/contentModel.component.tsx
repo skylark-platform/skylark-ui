@@ -9,7 +9,7 @@ import {
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import { IntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospection";
-import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
+import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
 
 import { ObjectTypeEditor } from "./editor/contentModelEditor.component";
 import { ContentModelHeader } from "./header/contentModelHeader.component";
@@ -57,7 +57,7 @@ export const ContentModel = () => {
     !allObjectsMeta ||
     isLoadingObjectTypesWithConfig ||
     (isLoadingRelationshipConfig &&
-      objectMeta?.name !== BuiltInSkylarkObjectType.Availability);
+      !isAvailabilityOrAvailabilitySegment(objectMeta?.name));
 
   return (
     <div className="max-w-8xl mx-auto px-4 md:px-8">

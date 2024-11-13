@@ -53,6 +53,7 @@ import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
   getObjectDisplayName,
   hasProperty,
+  isAvailabilityOrAvailabilitySegment,
   platformMetaKeyClicked,
 } from "src/lib/utils";
 
@@ -406,7 +407,7 @@ export const PanelHeader = ({
           {inEditMode ? (
             <>
               {currentTab === PanelTab.Metadata &&
-              objectType !== BuiltInSkylarkObjectType.Availability ? (
+              !isAvailabilityOrAvailabilitySegment(objectType) ? (
                 <ButtonWithDropdown
                   ref={saveButtonRef}
                   success

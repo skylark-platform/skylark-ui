@@ -10,7 +10,6 @@ import {
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
   ParsedSkylarkObjectConfig,
-  ParsedSkylarkObjectMetadata,
   SkylarkObject,
   SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
@@ -266,7 +265,7 @@ export const platformMetaKeyClicked = (
 };
 
 export const isSkylarkObjectType = (objectType: string) =>
-  objectType === BuiltInSkylarkObjectType.Availability ||
+  isAvailabilityOrAvailabilitySegment(objectType) ||
   objectType.toUpperCase().startsWith("SKYLARK");
 
 export const insertAtIndex = <T>(
@@ -306,3 +305,11 @@ export const objectIsAvailability = (
   obj: SkylarkObject,
 ): obj is SkylarkObject<BuiltInSkylarkObjectType.Availability> =>
   obj.objectType === BuiltInSkylarkObjectType.Availability;
+export const isAvailabilityOrAvailabilitySegment = (
+  objectType: string | null | undefined,
+) => {
+  return (
+    objectType === BuiltInSkylarkObjectType.Availability ||
+    objectType === BuiltInSkylarkObjectType.AvailabilitySegment
+  );
+};

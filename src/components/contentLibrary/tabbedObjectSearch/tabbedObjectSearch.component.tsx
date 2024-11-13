@@ -55,6 +55,7 @@ import {
   createDefaultSkylarkObject,
   splitMetadataIntoSystemTranslatableGlobal,
 } from "src/lib/skylark/objects";
+import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
 
 type TabbedObjectSearchProps = Omit<
   ObjectSearchProps,
@@ -73,15 +74,20 @@ const generateNewTabColumnStateForObjectType = (
   objectType: string,
   fields: string[],
 ): ObjectSearchInitialColumnsState => {
-  if (objectType === BuiltInSkylarkObjectType.Availability) {
+  if (isAvailabilityOrAvailabilitySegment(objectType)) {
     return {
       columns: [
         ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
         OBJECT_LIST_TABLE.columnIds.displayField,
         OBJECT_LIST_TABLE.columnIds.availability,
-        SkylarkAvailabilityField.Start,
-        SkylarkAvailabilityField.End,
-        SkylarkAvailabilityField.Timezone,
+        // Optional fields for Availability only
+        ...(BuiltInSkylarkObjectType.Availability
+          ? [
+              SkylarkAvailabilityField.Start,
+              SkylarkAvailabilityField.End,
+              SkylarkAvailabilityField.Timezone,
+            ]
+          : []),
         SkylarkSystemField.ExternalID,
         SkylarkSystemField.UID,
         SkylarkAvailabilityField.Title,
@@ -336,10 +342,9 @@ const NewTabButton = ({
               generateNewTab(`${readableObjType} objects`, {
                 filters: {
                   objectTypes: [objectType],
-                  language:
-                    objectType === BuiltInSkylarkObjectType.Availability
-                      ? null
-                      : undefined,
+                  language: isAvailabilityOrAvailabilitySegment(objectType)
+                    ? null
+                    : undefined,
                 },
                 columnsState: generateNewTabColumnStateForObjectType(
                   objectType,

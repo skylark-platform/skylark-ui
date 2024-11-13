@@ -32,8 +32,9 @@ import {
 import {
   getObjectDisplayName,
   getObjectTypeDisplayNameFromParsedObject,
-  getObjectTypeFromListingTypeName,
   getPlaybackPolicyFromMetadata,
+  getObjectTypeFromListingTypeName,
+  isAvailabilityOrAvailabilitySegment,
 } from "src/lib/utils";
 import { ObjectError } from "src/lib/utils/errors";
 
@@ -530,7 +531,7 @@ export const getObjectOperations = (
     hasContent,
     hasContentOf,
     hasAvailability,
-    isTranslatable: objectType !== BuiltInSkylarkObjectType.Availability,
+    isTranslatable: !isAvailabilityOrAvailabilitySegment(objectType),
     isImage: objectType === BuiltInSkylarkObjectType.SkylarkImage,
     isSet,
   };

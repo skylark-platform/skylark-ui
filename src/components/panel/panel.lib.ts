@@ -11,7 +11,11 @@ import {
   SkylarkObject,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
-import { hasProperty, insertAtIndex } from "src/lib/utils";
+import {
+  hasProperty,
+  insertAtIndex,
+  isAvailabilityOrAvailabilitySegment,
+} from "src/lib/utils";
 
 export enum HandleDropErrorType {
   "EXISTING_LINK" = "EXISTING_LINK",
@@ -276,7 +280,7 @@ export const handleDroppedContents = ({
       newContentObjects: AddedSkylarkObjectContentObject[];
       errors: HandleDropError[];
     } => {
-      if (droppedObject.objectType === BuiltInSkylarkObjectType.Availability) {
+      if (isAvailabilityOrAvailabilitySegment(droppedObject.objectType)) {
         const error: HandleDropError = {
           type: HandleDropErrorType.INVALID_OBJECT_TYPE,
           object: droppedObject,
@@ -425,7 +429,7 @@ export const handleDroppedObjectsToAssignToAvailability = ({
       updatedAssignedToObjects: SkylarkObject[];
       errors: HandleDropError[];
     } => {
-      if (newObject.objectType === BuiltInSkylarkObjectType.Availability) {
+      if (isAvailabilityOrAvailabilitySegment(newObject.objectType)) {
         const error: HandleDropError = {
           type: HandleDropErrorType.INVALID_OBJECT_TYPE,
           object: newObject,
