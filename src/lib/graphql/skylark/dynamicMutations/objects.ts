@@ -19,7 +19,10 @@ import {
   wrappedJsonMutation,
 } from "src/lib/graphql/skylark/dynamicQueries";
 import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
-import { hasProperty } from "src/lib/utils";
+import {
+  hasProperty,
+  isAvailabilityOrAvailabilitySegment,
+} from "src/lib/utils";
 
 interface SetContentOperation {
   operation: "link" | "unlink" | "reposition";
@@ -157,15 +160,13 @@ export const createUpdateObjectMetadataMutation = (
     objectMeta.operations.update.inputs,
   );
 
-  const draftVariableObj =
-    objectMeta.name === BuiltInSkylarkObjectType.Availability
-      ? {}
-      : { draft: "Boolean = false" };
+  const draftVariableObj = isAvailabilityOrAvailabilitySegment(objectMeta.name)
+    ? {}
+    : { draft: "Boolean = false" };
 
-  const draftArgObj =
-    objectMeta.name === BuiltInSkylarkObjectType.Availability
-      ? {}
-      : { draft: new VariableType("draft") };
+  const draftArgObj = isAvailabilityOrAvailabilitySegment(objectMeta.name)
+    ? {}
+    : { draft: new VariableType("draft") };
 
   const mutation = {
     mutation: {

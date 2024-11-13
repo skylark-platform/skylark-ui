@@ -239,7 +239,10 @@ export const PanelAvailabilityAssignedTo = ({
             selected={objectType}
             placeholder="Filter for Object Type"
             onValueClear={() => setFiltersWrapper({ objectType: "" })}
-            hiddenObjectTypes={[BuiltInSkylarkObjectType.Availability]}
+            hiddenObjectTypes={[
+              BuiltInSkylarkObjectType.Availability,
+              BuiltInSkylarkObjectType.AvailabilitySegment,
+            ]}
           />
           <Checkbox
             label="Hide objects linked via Inheritance"

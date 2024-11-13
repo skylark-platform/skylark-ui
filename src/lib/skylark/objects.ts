@@ -29,7 +29,10 @@ import {
   SkylarkObjectIdentifier,
   ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
-import { getObjectTypeFromListingTypeName } from "src/lib/utils";
+import {
+  getObjectTypeFromListingTypeName,
+  isAvailabilityOrAvailabilitySegment,
+} from "src/lib/utils";
 import { ObjectError } from "src/lib/utils/errors";
 
 import { parseObjectInputFields, parseObjectRelationships } from "./parsers";
@@ -525,7 +528,7 @@ export const getObjectOperations = (
     hasContent,
     hasContentOf,
     hasAvailability,
-    isTranslatable: objectType !== BuiltInSkylarkObjectType.Availability,
+    isTranslatable: !isAvailabilityOrAvailabilitySegment(objectType),
     isImage: objectType === BuiltInSkylarkObjectType.SkylarkImage,
     isSet,
   };

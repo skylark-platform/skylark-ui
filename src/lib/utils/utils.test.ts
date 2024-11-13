@@ -431,6 +431,14 @@ describe("isSkylarkObjectType", () => {
     expect(got).toBe(true);
   });
 
+  it("returns true when the Object Type is AvailabilitySegment", () => {
+    const got = isSkylarkObjectType(
+      BuiltInSkylarkObjectType.AvailabilitySegment,
+    );
+
+    expect(got).toBe(true);
+  });
+
   it("returns true when the Object Type starts with Skylark", () => {
     const got = isSkylarkObjectType(BuiltInSkylarkObjectType.SkylarkImage);
 

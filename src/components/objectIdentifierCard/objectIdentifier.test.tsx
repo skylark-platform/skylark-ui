@@ -198,3 +198,20 @@ test("does not show AvailabilityStatus icon when object type is Availability", (
     ),
   ).not.toBeInTheDocument();
 });
+
+test("does not show AvailabilityStatus icon when object type is AvailabilitySegment", () => {
+  render(
+    <ObjectIdentifierCard
+      object={{
+        ...defaultObject,
+        objectType: BuiltInSkylarkObjectType.AvailabilitySegment,
+      }}
+    />,
+  );
+
+  expect(
+    screen.queryByLabelText(
+      "This object has at least one active Availability assigned.",
+    ),
+  ).not.toBeInTheDocument();
+});

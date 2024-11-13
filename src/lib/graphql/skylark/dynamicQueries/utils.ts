@@ -7,13 +7,12 @@ import {
 
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
-  BuiltInSkylarkObjectType,
   SkylarkGraphQLObject,
   SkylarkObjectMeta,
   SkylarkObjectType,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-import { convertSlugToDimensionHeader } from "src/lib/utils";
+import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
 
 const fieldNamesToNeverAlias: string[] = [
   SkylarkSystemField.UID,
@@ -134,7 +133,7 @@ export const generateVariablesAndArgs = (
       objectType !== "search" &&
       objectType !== "genericGetObject",
   );
-  if (objectType === BuiltInSkylarkObjectType.Availability) {
+  if (isAvailabilityOrAvailabilitySegment(objectType)) {
     return {
       variables: {},
       args: {},
