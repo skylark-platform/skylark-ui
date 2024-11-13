@@ -51,6 +51,7 @@ import { segment } from "src/lib/analytics/segment";
 import {
   getObjectDisplayName,
   hasProperty,
+  isAvailabilityOrAvailabilitySegment,
   platformMetaKeyClicked,
 } from "src/lib/utils";
 
@@ -403,7 +404,7 @@ export const PanelHeader = ({
           {inEditMode ? (
             <>
               {currentTab === PanelTab.Metadata &&
-              objectType !== BuiltInSkylarkObjectType.Availability ? (
+              !isAvailabilityOrAvailabilitySegment(objectType) ? (
                 <ButtonWithDropdown
                   ref={saveButtonRef}
                   success

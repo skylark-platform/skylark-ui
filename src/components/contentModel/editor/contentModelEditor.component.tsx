@@ -15,9 +15,11 @@ import {
   ParsedSkylarkObjectConfigFieldConfig,
   InputFieldWithFieldConfig,
   ParsedSkylarkObjectTypeRelationshipConfiguration,
-  BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
-import { isSkylarkObjectType } from "src/lib/utils";
+import {
+  isAvailabilityOrAvailabilitySegment,
+  isSkylarkObjectType,
+} from "src/lib/utils";
 
 import {
   ContentModelEditorForm,
@@ -170,7 +172,7 @@ export const ObjectTypeEditor = ({
       { id: "metadata", name: "Metadata" },
     ];
 
-    if (objectMeta.name !== BuiltInSkylarkObjectType.Availability)
+    if (!isAvailabilityOrAvailabilitySegment(objectMeta.name))
       tabs.push({ id: "relationships", name: "Relationships" });
 
     return tabs;
@@ -366,7 +368,7 @@ export const ObjectTypeEditor = ({
           objectConfig={objectConfig}
         />
       )}
-      {objectMeta.name !== BuiltInSkylarkObjectType.Availability &&
+      {!isAvailabilityOrAvailabilitySegment(objectMeta.name) &&
         activeTab.id === "relationships" && (
           <RelationshipsSection
             form={form}

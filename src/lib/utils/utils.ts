@@ -250,7 +250,7 @@ export const platformMetaKeyClicked = (
 };
 
 export const isSkylarkObjectType = (objectType: string) =>
-  objectType === BuiltInSkylarkObjectType.Availability ||
+  isAvailabilityOrAvailabilitySegment(objectType) ||
   objectType.toUpperCase().startsWith("SKYLARK");
 
 export const insertAtIndex = <T>(
@@ -264,3 +264,12 @@ export const insertAtIndex = <T>(
 
 export const convertSlugToDimensionHeader = (slug: string) =>
   `x-sl-dimension-${slug}`;
+
+export const isAvailabilityOrAvailabilitySegment = (
+  objectType: string | null | undefined,
+) => {
+  return (
+    objectType === BuiltInSkylarkObjectType.Availability ||
+    objectType === BuiltInSkylarkObjectType.AvailabilitySegment
+  );
+};
