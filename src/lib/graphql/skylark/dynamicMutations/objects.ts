@@ -256,28 +256,37 @@ export const createUpdateObjectContentMutation = (
   );
   const updatedContentObjectUids = updatedContentObjects?.map(({ uid }) => uid);
 
-  const linkOrRepositionOperations = updatedContentObjects?.map(
-    ({ objectType, uid }, index): SetContentOperation => {
-      const position = index + 1;
-      if (originalContentObjectUids?.includes(uid)) {
+  const linkOrRepositionOperations = updatedContentObjects
+    ?.map(
+      ({ objectType, uid, isDynamic }, index): SetContentOperation | null => {
+        if (isDynamic) {
+          return null;
+        }
+
+        const position = index + 1;
+        if (originalContentObjectUids?.includes(uid)) {
+          return {
+            operation: "reposition",
+            objectType,
+            uid,
+            position,
+          };
+        }
         return {
-          operation: "reposition",
+          operation: "link",
           objectType,
           uid,
           position,
         };
-      }
-      return {
-        operation: "link",
-        objectType,
-        uid,
-        position,
-      };
-    },
-  );
+      },
+    )
+    .filter((op): op is SetContentOperation => op !== null);
 
   const deleteOperations = originalContentObjects
-    ?.filter(({ uid }) => !updatedContentObjectUids?.includes(uid))
+    ?.filter(
+      ({ uid, isDynamic }) =>
+        !isDynamic && !updatedContentObjectUids?.includes(uid),
+    )
     .map(({ objectType, uid }): SetContentOperation => {
       return {
         operation: "unlink",
@@ -294,16 +303,15 @@ export const createUpdateObjectContentMutation = (
 
   const setContent = objectContentOperations.reduce(
     (prev, { operation, objectType, uid, position }) => {
-      const updatedOperations = prev[objectType] || {
-        link: [],
-        unlink: [],
-        reposition: [],
-      };
+      const updatedOperations = prev?.[objectType] || {};
 
       if (operation === "unlink") {
-        updatedOperations.unlink.push(uid);
+        updatedOperations.unlink = [...(updatedOperations?.unlink || []), uid];
       } else {
-        updatedOperations[operation].push({ uid, position });
+        updatedOperations[operation] = [
+          ...(updatedOperations?.[operation] || []),
+          { uid, position },
+        ];
       }
 
       return {
@@ -314,12 +322,14 @@ export const createUpdateObjectContentMutation = (
     {} as Record<
       string,
       {
-        link: { uid: string; position: number }[];
-        unlink: string[];
-        reposition: { uid: string; position: number }[];
+        link?: { uid: string; position: number }[];
+        unlink?: string[];
+        reposition?: { uid: string; position: number }[];
       }
     >,
   );
+
+  console.log({ setContent });
 
   const contentConfig = modifiedConfig
     ? {

@@ -115,6 +115,11 @@ export const PanelContent = ({
     false | "search" | "dynamic-content"
   >(false);
 
+  const activeSortField =
+    modifiedConfig?.contentSortField ||
+    data.config?.contentSortField ||
+    "manual";
+
   return (
     <PanelSectionLayout
       sections={[
@@ -145,11 +150,7 @@ export const PanelContent = ({
             placeholder="Unsorted"
             className="text-manatee-600 w-40 mb-2 pb-1 md:pb-2"
             optionsClassName="w-72"
-            selected={
-              modifiedConfig?.contentSortField ||
-              data.config?.contentSortField ||
-              "manual"
-            }
+            selected={activeSortField}
             // selected={"manual"}
             // options={
             //   objectOperations?.fieldConfig.global.map((value) => ({
@@ -215,6 +216,7 @@ export const PanelContent = ({
           uid={uid}
           objects={objects}
           isDragging={isDragging}
+          disableReorder={activeSortField !== "manual"}
           isLoading={isLoading}
           inEditMode={inEditMode}
           onReorder={onReorder}

@@ -41,6 +41,7 @@ interface ContentObjectProps {
   inEditMode?: boolean;
   arrIndex: number;
   arrLength: number;
+  disableReorder?: boolean;
   setPanelObject: SetPanelObject;
   removeItem: (uid: string) => void;
   handleManualOrderChange: (
@@ -60,6 +61,20 @@ type SortableObject = (
   id: string;
 };
 
+interface SortableContentObjectListProps {
+  uid: string;
+  objects: SkylarkObjectContentObject[];
+  onReorder: (
+    updated: AddedSkylarkObjectContentObject[],
+    errors?: HandleDropError[],
+  ) => void;
+  setPanelObject: SetPanelObject;
+  isLoading: boolean;
+  isDragging: boolean;
+  inEditMode?: boolean;
+  disableReorder?: boolean;
+}
+
 const isSortableDisplayObject = (
   obj: SortableObject | SortableDisplayObject,
 ): obj is SortableDisplayObject => obj.id === DISPLAY_OBJ_ID;
@@ -70,6 +85,7 @@ const SortableSkylarkContentObjectCard = ({
   inEditMode,
   arrIndex,
   arrLength,
+  disableReorder,
   removeItem,
   setPanelObject,
   handleManualOrderChange,
@@ -83,7 +99,7 @@ const SortableSkylarkContentObjectCard = ({
     isDragging,
   } = useSortable({
     id: sortableId,
-    disabled: !inEditMode,
+    disabled: disableReorder || !inEditMode,
     type: DragType.PANEL_CONTENT_REORDER_OBJECTS,
     options: {
       modifiers: [],
@@ -119,7 +135,7 @@ const SortableSkylarkContentObjectCard = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...(object.isDynamic ? {} : listeners)}
+      {...(object.isDynamic || disableReorder ? {} : listeners)}
       data-testid={`panel-object-content-item-${arrIndex + 1}`}
       data-cy={"panel-object-content-item"}
     >
@@ -129,8 +145,8 @@ const SortableSkylarkContentObjectCard = ({
         onForwardClick={setPanelObject}
         disableForwardClick={inEditMode}
         disableDeleteClick={!inEditMode}
-        canEditPosition={inEditMode}
-        showDragIcon={inEditMode}
+        canEditPosition={!disableReorder && inEditMode}
+        showDragIcon={!disableReorder && inEditMode}
         isNewObject={object.isNewObject}
         onDeleteClick={onDeleteClick}
         actualPosition={arrIndex + 1}
@@ -149,18 +165,8 @@ export const SortableContentObjectList = ({
   isLoading,
   isDragging,
   inEditMode,
-}: {
-  uid: string;
-  objects: SkylarkObjectContentObject[];
-  onReorder: (
-    updated: AddedSkylarkObjectContentObject[],
-    errors?: HandleDropError[],
-  ) => void;
-  setPanelObject: SetPanelObject;
-  isLoading: boolean;
-  isDragging: boolean;
-  inEditMode?: boolean;
-}) => {
+  disableReorder,
+}: SortableContentObjectListProps) => {
   const [overRowIndex, setOverRowIndex] = useState<number | null>(null);
 
   const preppedObjects: SortableObject[] | undefined = objects.map(
@@ -284,9 +290,9 @@ export const SortableContentObjectList = ({
   };
 
   useDndMonitor({
-    onDragOver: handleDragOver,
-    onDragEnd: handleDragEnd,
-    onDragCancel: handleDragCancel,
+    onDragOver: !disableReorder ? handleDragOver : undefined,
+    onDragEnd: !disableReorder ? handleDragEnd : undefined,
+    onDragCancel: !disableReorder ? handleDragCancel : undefined,
   });
 
   const parentRef = useRef<HTMLDivElement>(null);
@@ -325,8 +331,6 @@ export const SortableContentObjectList = ({
       onReorder(updatedObjects);
     }
   };
-
-  console.log(rowVirtualizer.virtualItems);
 
   return (
     <SortableContext
@@ -393,6 +397,7 @@ export const SortableContentObjectList = ({
                   removeItem={removeItem}
                   handleManualOrderChange={handleManualOrderChange}
                   setPanelObject={setPanelObject}
+                  disableReorder={disableReorder}
                 />
               </div>
             );

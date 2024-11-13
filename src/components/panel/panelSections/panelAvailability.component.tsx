@@ -49,7 +49,10 @@ import {
   getSingleAvailabilityStatus,
   is2038Problem,
 } from "src/lib/skylark/availability";
-import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
+import {
+  convertParsedObjectToIdentifier,
+  createDefaultSkylarkObject,
+} from "src/lib/skylark/objects";
 import { formatObjectField } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
@@ -613,26 +616,24 @@ const PanelAvailabilityReadonlyCard = ({
             )}
             <OpenObjectButton
               onClick={() =>
-                setPanelObject({
-                  uid: availability.uid,
-                  objectType: BuiltInSkylarkObjectType.Availability,
-                  language: "",
-                  availabilityStatus: status,
-                  availableLanguages: [],
-                  externalId: availability.external_id,
-                  type: null,
-                  display: {
-                    name: displayName,
+                setPanelObject(
+                  createDefaultSkylarkObject({
+                    uid: availability.uid,
                     objectType: BuiltInSkylarkObjectType.Availability,
-                    colour: "",
-                  },
-                  contextualFields: {
-                    start: availability.start,
-                    end: availability.end,
-                  },
-                  created: undefined,
-                  modified: undefined,
-                })
+                    language: "",
+                    availabilityStatus: status,
+                    externalId: availability.external_id,
+                    display: {
+                      name: displayName,
+                      objectType: BuiltInSkylarkObjectType.Availability,
+                      colour: "",
+                    },
+                    contextualFields: {
+                      start: availability.start,
+                      end: availability.end,
+                    },
+                  }),
+                )
               }
             />
           </div>

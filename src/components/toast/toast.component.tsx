@@ -97,12 +97,13 @@ export const GraphQLRequestErrorToast = ({
   title: ToastProps["title"];
   error: GQLSkylarkErrorResponse;
 }) => {
+  console.log("ERROR", error);
   return (
     <Toast
       title={title}
       message={[
         `Reason(s):`,
-        ...error.response.errors.map(({ message }) => `- ${message}`),
+        ...error?.response?.errors?.map(({ message }) => `- ${message}`),
       ]}
     />
   );
