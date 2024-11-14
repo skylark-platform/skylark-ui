@@ -1,13 +1,9 @@
-import { sentenceCase } from "change-case";
 import clsx from "clsx";
 import { Transition, m } from "framer-motion";
 import { Ref, forwardRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
-import {
-  Select,
-  SortFieldAndDirectionSelect,
-} from "src/components/inputs/select";
+import { SortFieldAndDirectionSelect } from "src/components/inputs/select";
 import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import {
   PanelButton,
@@ -18,7 +14,6 @@ import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ParsedSkylarkObject,
   SkylarkObjectRelationship,
   ParsedSkylarkRelationshipConfig,
 } from "src/interfaces/skylark";
@@ -53,25 +48,6 @@ interface PanelRelationshipsSectionProps {
 const transition: Transition = {
   duration: 0.15,
   ease: "linear",
-};
-
-const dumbFieldComparison = (
-  a: ParsedSkylarkObject,
-  b: ParsedSkylarkObject,
-  sortField: string,
-) => {
-  const aField = a.metadata?.[sortField];
-  const bField = b.metadata?.[sortField];
-
-  if (aField === bField) {
-    return 0;
-  }
-
-  if (aField === null || bField === null) {
-    return aField === null ? -1 : 1;
-  }
-
-  return aField < bField ? -1 : 1;
 };
 
 const PanelRelationshipSectionComponent = (

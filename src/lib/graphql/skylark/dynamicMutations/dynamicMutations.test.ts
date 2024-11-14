@@ -3,7 +3,6 @@ import {
   setObjectOperations,
 } from "src/__tests__/utils/objectOperations";
 import {
-  AvailabilityStatus,
   SkylarkObjectContentObject,
   SkylarkObject,
 } from "src/interfaces/skylark";

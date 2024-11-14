@@ -4,9 +4,7 @@ import { DocumentNode } from "graphql";
 import { QueryKeys } from "src/enums/graphql";
 import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
 import {
-  SkylarkObjectType,
   GQLSkylarkErrorResponse,
-  ParsedSkylarkObject,
   DynamicSetConfig,
   GQLSkylarkDynamicContentPreviewResponse,
   SkylarkGraphQLObject,

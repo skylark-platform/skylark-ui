@@ -39,14 +39,12 @@ const createLabel = (
   {
     objectTypes,
     name,
-    translatable,
   }: { objectTypes: string[]; name: string; translatable: boolean },
 ) => {
   const objectTypesText =
     allObjectTypes.length === objectTypes.length
       ? ""
       : ` (${objectTypes.length} object types)`;
-  const translatableText = translatable ? " (translatable)" : "";
 
   return `"${name}"${objectTypesText}`;
 };
@@ -147,7 +145,7 @@ export const SortFieldAndDirectionSelect = ({
         objectTypesConfig,
         manualSortLabel,
       ),
-    [allObjectsMeta, objectTypes, objectTypesConfig],
+    [allObjectsMeta, manualSortLabel, objectTypes, objectTypesConfig],
   );
 
   const onChangeWrapper = (newValues: Partial<Values>) => {

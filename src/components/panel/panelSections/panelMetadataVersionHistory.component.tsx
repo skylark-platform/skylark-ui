@@ -1,7 +1,6 @@
 import { sentenceCase } from "change-case";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { useState } from "react";
 import { FiMoreVertical } from "react-icons/fi";
 
 import {

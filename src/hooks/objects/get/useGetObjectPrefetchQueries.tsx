@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { PanelTab } from "src/hooks/state";
 import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
-import { SkylarkObject, SkylarkObjectIdentifier } from "src/interfaces/skylark";
+import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
 
 import { prefetchGetObjectAvailability } from "./useGetObjectAvailability";
 import { prefetchGetObjectContent } from "./useGetObjectContent";

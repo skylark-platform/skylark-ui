@@ -9,7 +9,6 @@ import {
   BuiltInSkylarkObjectType,
   SkylarkObjectMeta,
   SkylarkObject,
-  ParsedSkylarkObject,
 } from "src/interfaces/skylark";
 import {
   hasProperty,

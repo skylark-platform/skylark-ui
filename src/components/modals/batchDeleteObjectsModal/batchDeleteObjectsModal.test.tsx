@@ -3,11 +3,7 @@ import { graphql } from "msw";
 
 import { server } from "src/__tests__/mocks/server";
 import { render } from "src/__tests__/utils/test-utils";
-import {
-  AvailabilityStatus,
-  ParsedSkylarkObject,
-  SkylarkObject,
-} from "src/interfaces/skylark";
+import { AvailabilityStatus, SkylarkObject } from "src/interfaces/skylark";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 

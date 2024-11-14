@@ -6,10 +6,7 @@ import {
   screen,
   fireEvent,
 } from "src/__tests__/utils/test-utils";
-import {
-  AvailabilityStatus,
-  ParsedSkylarkObject,
-} from "src/interfaces/skylark";
+import { AvailabilityStatus } from "src/interfaces/skylark";
 import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
 import { SearchObjectsModal } from "./searchObjectsModal.component";

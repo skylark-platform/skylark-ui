@@ -18,7 +18,6 @@ import {
   GQLSkylarkGetObjectResponse,
   NormalizedObjectField,
   SkylarkObjectRelationships,
-  SkylarkGraphQLObject,
   SkylarkGraphQLObjectList,
   SkylarkObjectMeta,
   SkylarkObjectType,
@@ -194,7 +193,7 @@ export const useGetObjectRelationships = (
 
       return obj;
     }, {} as SkylarkObjectRelationships);
-  }, [data?.pages]);
+  }, [data?.pages, objectTypesConfig]);
 
   const { relationshipsWithNextPage } = data
     ? getRelationshipNextTokens(data.pages[data.pages.length - 1])

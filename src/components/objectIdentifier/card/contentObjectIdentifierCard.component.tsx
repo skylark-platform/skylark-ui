@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { useState, useEffect, useCallback } from "react";
-import { FiDatabase } from "react-icons/fi";
 
 import { DynamicContentIcon } from "src/components/icons";
 import { Tooltip } from "src/components/tooltip/tooltip.component";

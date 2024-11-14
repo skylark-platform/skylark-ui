@@ -25,16 +25,13 @@ import {
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
-  SkylarkObjectContentObject,
   ParsedSkylarkObject,
-  AddedSkylarkObjectContentObject,
   SkylarkSystemField,
   SkylarkObject,
   BuiltInSkylarkObjectType,
   GQLSkylarkErrorResponse,
   ParsedSkylarkObjectConfig,
   ModifiedRelationshipsObject,
-  SkylarkObjectIdentifier,
   ModifiedContents,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";

@@ -5,11 +5,7 @@ import {
   waitFor,
 } from "src/__tests__/utils/test-utils";
 import { CheckedObjectState } from "src/hooks/state";
-import {
-  AvailabilityStatus,
-  ParsedSkylarkObject,
-  SkylarkObject,
-} from "src/interfaces/skylark";
+import { AvailabilityStatus, SkylarkObject } from "src/interfaces/skylark";
 import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
 import { BulkObjectOptions } from "./bulkObjectOptions.component";

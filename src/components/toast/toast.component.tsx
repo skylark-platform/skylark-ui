@@ -1,10 +1,8 @@
 import clsx from "clsx";
-import { FiX } from "react-icons/fi";
 import {
   ToastContainer as ReactToastifyContainer,
   ToastContentProps,
   TypeOptions,
-  Slide,
 } from "react-toastify";
 
 import { GQLSkylarkErrorResponse } from "src/interfaces/skylark";

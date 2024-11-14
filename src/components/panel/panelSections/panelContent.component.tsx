@@ -3,11 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { FiZap } from "react-icons/fi";
 
 import { Button } from "src/components/button";
-import {
-  Select,
-  SortFieldAndDirectionSelect,
-} from "src/components/inputs/select";
-import { createObjectContentSortFieldOptions } from "src/components/inputs/select/options.utils";
+import { SortFieldAndDirectionSelect } from "src/components/inputs/select";
 import {
   DisplayGraphQLQuery,
   DynamicContentConfigurationModal,
@@ -25,10 +21,6 @@ import {
 } from "src/components/panel/panelTypography";
 import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
 import { SetPanelObject } from "src/hooks/state";
-import {
-  useAllObjectsMeta,
-  useSkylarkObjectTypesWithConfig,
-} from "src/hooks/useSkylarkObjectTypes";
 import {
   AddedSkylarkObjectContentObject,
   ModifiedContents,
@@ -98,7 +90,7 @@ export const PanelContent = ({
         },
         errors || [],
       ),
-    [data, setContentObjects],
+    [data.config, data.objects, modifiedConfig, setContentObjects],
   );
 
   const { setNodeRef } = useDroppable({

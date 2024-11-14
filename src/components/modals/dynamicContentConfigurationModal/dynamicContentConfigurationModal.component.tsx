@@ -1,35 +1,17 @@
-import { CheckedState } from "@radix-ui/react-checkbox";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 
 import { Button } from "src/components/button";
 import { DynamicContentConfigurationEditor } from "src/components/dynamicContentConfigurationEditor/dynamicContentConfigurationEditor.component";
 import { Modal } from "src/components/modals/base/modal";
-import {
-  ObjectSearch,
-  ObjectSearchInitialColumnsState,
-} from "src/components/objectSearch";
-import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "src/components/objectSearch/results/columnConfiguration";
-import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useGetObjectDynamicContentConfiguration } from "src/hooks/objects/get/useGetObjectDynamicContentConfiguration";
 import { useUpdateObjectDynamicContentConfiguration } from "src/hooks/objects/update/useUpdateObjectDynamicContentConfiguration";
-import { CheckedObjectState, useCheckedObjectsState } from "src/hooks/state";
-import {
-  DynamicSetConfig,
-  SkylarkObject,
-  SkylarkObjectType,
-  SkylarkObjectTypes,
-  SkylarkSystemField,
-} from "src/interfaces/skylark";
+import { DynamicSetConfig, SkylarkObjectType } from "src/interfaces/skylark";
 
 interface DynamicContentConfigurationModalProps {
   isOpen: boolean;
   uid: string;
   objectType: SkylarkObjectType;
   closeModal: () => void;
-  // onSave: (args: {
-  //   checkedObjectsState: CheckedObjectState[];
-  //   checkedObjects: SkylarkObject[];
-  // }) => void;
 }
 
 const DynamicContentConfigurationModalBody = ({

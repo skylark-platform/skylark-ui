@@ -12,7 +12,6 @@ import {
   IntrospectionScalarType,
 } from "graphql";
 import { EnumType } from "json-to-graphql-query";
-import dynamic from "next/dynamic";
 import { HTMLInputTypeAttribute } from "react";
 
 import { UTC_NAME } from "src/components/inputs/select";

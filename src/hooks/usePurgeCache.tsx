@@ -1,10 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import {
-  ParsedSkylarkObject,
-  SkylarkObject,
-  SkylarkObjectType,
-} from "src/interfaces/skylark";
+import { SkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createPurgeObjectTypesCacheMutation } from "src/lib/graphql/skylark/dynamicMutations/cache";
 import {

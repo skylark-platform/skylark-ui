@@ -1,10 +1,7 @@
 import { StoryFn } from "@storybook/react";
 import React from "react";
 
-import {
-  AvailabilityStatus,
-  ParsedSkylarkObject,
-} from "src/interfaces/skylark";
+import { AvailabilityStatus } from "src/interfaces/skylark";
 import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
 import { ObjectIdentifierCard } from "./objectIdentifierCard.component";

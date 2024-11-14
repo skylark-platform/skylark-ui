@@ -8,7 +8,6 @@ import {
   AddedSkylarkObjectContentObject,
   AvailabilityStatus,
   BuiltInSkylarkObjectType,
-  ParsedSkylarkObject,
   SkylarkObjectRelationships,
   SkylarkObjectMeta,
   SkylarkObject,

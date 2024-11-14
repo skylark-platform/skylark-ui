@@ -1,5 +1,4 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 
 import { IntegrationUploader } from "src/components/integrations/uploader/uploader.component";
@@ -20,17 +19,13 @@ import { SetPanelObject } from "src/hooks/state";
 import { useImageSize } from "src/hooks/useImageSize";
 import {
   BuiltInSkylarkObjectType,
-  ParsedSkylarkObject,
   SkylarkObject,
   SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
-import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
   addCloudinaryOnTheFlyImageTransformation,
   formatObjectField,
-  getObjectDisplayName,
-  hasProperty,
 } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";

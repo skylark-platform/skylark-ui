@@ -9,11 +9,7 @@ import { Skeleton } from "src/components/skeleton";
 import { useGetObjectContentOf } from "src/hooks/objects/get/useGetObjectContentOf";
 import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkSetObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
-import {
-  SkylarkObjectType,
-  ParsedSkylarkObject,
-  SkylarkObject,
-} from "src/interfaces/skylark";
+import { SkylarkObjectType, SkylarkObject } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";

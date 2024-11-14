@@ -279,7 +279,12 @@ export const ObjectSearchResults = ({
         }
       }
     },
-    [checkedObjectsState, onObjectCheckedChanged, searchData],
+    [
+      checkedObjectsState,
+      objectTypesConfig,
+      onObjectCheckedChanged,
+      searchData,
+    ],
   );
 
   // TODO we may want to refactor this so that hovering doesn't trigger a render

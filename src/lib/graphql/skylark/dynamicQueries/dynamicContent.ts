@@ -1,4 +1,3 @@
-import { count } from "console";
 import { gql } from "graphql-tag";
 import { EnumType, VariableType } from "json-to-graphql-query";
 
@@ -13,7 +12,6 @@ import {
 import {
   generateAvailabilityRelationshipFields,
   generateFieldsToReturn,
-  generateVariablesAndArgs,
   wrappedJsonQuery,
 } from "./utils";
 

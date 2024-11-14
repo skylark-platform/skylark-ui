@@ -7,7 +7,6 @@ import {
   GQLSkylarkErrorResponse,
   GQLSkylarkUpdateObjectContentResponse,
   ModifiedContents,
-  SkylarkObjectContentObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { ParsedSkylarkObject, SkylarkObject } from "src/interfaces/skylark";
+import { SkylarkObject } from "src/interfaces/skylark";
 import {
   DragEndEvent,
   DragType,
