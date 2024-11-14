@@ -4,7 +4,10 @@ import { Transition, m } from "framer-motion";
 import { Ref, forwardRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
-import { Select } from "src/components/inputs/select";
+import {
+  Select,
+  SortFieldAndDirectionSelect,
+} from "src/components/inputs/select";
 import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import {
   PanelButton,
@@ -120,8 +123,6 @@ const PanelRelationshipSectionComponent = (
     relationship.config.defaultSortField ||
     objectTypeDefaultConfig?.defaultSortField;
 
-  // console.log({ displayList });
-
   return (
     <m.div
       ref={ref}
@@ -177,24 +178,20 @@ const PanelRelationshipSectionComponent = (
           )}
         </div>
         {!isEmptySection && (
-          <Select
+          <SortFieldAndDirectionSelect
+            hideDirectionSelect
+            objectTypes={[objectType]}
             variant="pill"
-            placeholder="Unsorted"
-            className="text-manatee-600 w-40 mb-2 pb-1 md:pb-2"
-            selected={activeSortField || undefined}
-            options={
-              objectOperations?.fieldConfig.global.map((value) => ({
-                label: `${sentenceCase(value)} ${value === objectTypeDefaultConfig?.defaultSortField ? "(Default)" : ""}`,
-                value,
-              })) || []
-            }
-            // label=""
-            // labelPosition="inline"
-            // labelVariant="small"
-            renderInPortal
-            searchable={false}
-            onChange={(defaultSortField) =>
-              updateRelationshipConfig({ defaultSortField })
+            containerClassName="mb-2 pb-1 md:pb-2 flex-grow justify-end"
+            values={{
+              sortField:
+                activeSortField ||
+                objectTypeDefaultConfig?.defaultSortField ||
+                "",
+            }}
+            manualSortLabel={`Reset to default (${objectTypeDefaultConfig?.defaultSortField || "Unsorted"})`}
+            onChange={({ sortField }) =>
+              updateRelationshipConfig({ defaultSortField: sortField })
             }
           />
         )}

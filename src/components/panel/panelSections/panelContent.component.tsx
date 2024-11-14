@@ -3,7 +3,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { FiZap } from "react-icons/fi";
 
 import { Button } from "src/components/button";
-import { Select } from "src/components/inputs/select";
+import {
+  Select,
+  SortFieldAndDirectionSelect,
+} from "src/components/inputs/select";
 import { createObjectContentSortFieldOptions } from "src/components/inputs/select/options.utils";
 import {
   DisplayGraphQLQuery,
@@ -29,6 +32,7 @@ import {
 import {
   AddedSkylarkObjectContentObject,
   ModifiedContents,
+  SkylarkOrderDirections,
 } from "src/interfaces/skylark";
 import { DroppableType } from "src/lib/dndkit/dndkit";
 
@@ -71,16 +75,6 @@ export const PanelContent = ({
 
   const objects = (inEditMode ? updatedObjects : data.objects) || [];
 
-  const { objects: allObjectsMeta } = useAllObjectsMeta();
-
-  const { objectTypesConfig } = useSkylarkObjectTypesWithConfig();
-
-  const sortFieldSelectOptions = createObjectContentSortFieldOptions(
-    allObjectsMeta,
-    data.objectTypesInContent,
-    objectTypesConfig,
-  );
-
   useEffect(() => {
     if (!inEditMode && data) {
       setContentObjects(
@@ -115,10 +109,12 @@ export const PanelContent = ({
     false | "search" | "dynamic-content"
   >(false);
 
-  const activeSortField =
-    modifiedConfig?.contentSortField ||
-    data.config?.contentSortField ||
-    "manual";
+  const combinedConfig: ModifiedContents["config"] = {
+    contentSortDirection: SkylarkOrderDirections.ASC,
+    contentSortField: "__manual",
+    ...data.config,
+    ...modifiedConfig,
+  };
 
   return (
     <PanelSectionLayout
@@ -144,43 +140,31 @@ export const PanelContent = ({
             onClick={() => setModalState("search")}
           />
         )}
-        <div className="flex flex-grow justify-end">
-          <Select
-            variant="pill"
-            placeholder="Unsorted"
-            className="text-manatee-600 w-40 mb-2 pb-1 md:pb-2"
-            optionsClassName="w-72"
-            selected={activeSortField}
-            // selected={"manual"}
-            // options={
-            //   objectOperations?.fieldConfig.global.map((value) => ({
-            //     label: `${sentenceCase(value)} ${value === objectTypeDefaultConfig?.defaultSortField ? "(Default)" : ""}`,
-            //     value,
-            //   })) || []
-            // }
-            // label=""
-            // labelPosition="inline"
-            // labelVariant="small"
-            options={sortFieldSelectOptions}
-            renderInPortal
-            searchable={false}
-            floatingPosition="left-end"
-            onChange={(contentSortField) =>
-              setContentObjects(
-                {
-                  original: data.objects,
-                  updated: updatedObjects,
-                  config: {
-                    ...(data.config ||
-                      modifiedConfig || { contentSortDirection: null }),
-                    contentSortField,
-                  },
+        <SortFieldAndDirectionSelect
+          objectTypes={data.objectTypesInContent}
+          variant="pill"
+          containerClassName="mb-2 pb-1 md:pb-2 flex-grow justify-end"
+          values={{
+            sortField: combinedConfig.contentSortField || "",
+            sortDirection:
+              combinedConfig.contentSortDirection || SkylarkOrderDirections.ASC,
+          }}
+          onChange={(values) => {
+            setContentObjects(
+              {
+                original: data.objects,
+                updated: updatedObjects,
+                config: {
+                  ...combinedConfig,
+                  contentSortDirection:
+                    values.sortDirection || SkylarkOrderDirections.ASC,
+                  contentSortField: values.sortField,
                 },
-                [],
-              )
-            }
-          />
-        </div>
+              },
+              [],
+            );
+          }}
+        />
       </div>
       <div className="flex flex-grow justify-end pr-3">
         <Button
@@ -216,7 +200,7 @@ export const PanelContent = ({
           uid={uid}
           objects={objects}
           isDragging={isDragging}
-          disableReorder={activeSortField !== "manual"}
+          disableReorder={combinedConfig.contentSortField !== "__manual"}
           isLoading={isLoading}
           inEditMode={inEditMode}
           onReorder={onReorder}

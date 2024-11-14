@@ -19,6 +19,7 @@ import {
 import {
   SkylarkObjectMeta,
   SkylarkObjectMetaRelationship,
+  SkylarkOrderDirections,
 } from "src/interfaces/skylark";
 import {
   DynamicSetConfig,
@@ -213,7 +214,6 @@ const ContentRuleBlock = ({
     const updatedObjectRules = [...ruleBlock.objectRules];
     updatedObjectRules[index] = objectRule;
 
-    console.log({ objectRule });
     updateRuleBlock({ ...ruleBlock, objectRules: updatedObjectRules });
   };
 
@@ -233,8 +233,6 @@ const ContentRuleBlock = ({
       objectRules: ruleBlock.objectRules.filter((_, i) => i !== index),
     });
   };
-
-  console.log(ruleBlock.objectRules);
 
   return (
     <div className="mb-4 px-6 py-8 border-manatee-200 w-full relative border rounded shadow-sm">
@@ -454,13 +452,16 @@ export const DynamicContentConfigurationEditor = ({
               <Select
                 variant="primary"
                 placeholder="Direction"
-                selected={configuration.contentSortDirection || "ASC"}
+                selected={
+                  configuration.contentSortDirection ||
+                  SkylarkOrderDirections.ASC
+                }
                 className="px-1"
                 label="Direction"
                 labelVariant="form"
                 options={[
-                  { value: "ASC", label: "ASC" },
-                  { value: "DESC", label: "DESC" },
+                  { value: SkylarkOrderDirections.ASC, label: "ASC" },
+                  { value: SkylarkOrderDirections.DESC, label: "DESC" },
                 ]}
                 renderInPortal
                 onChange={(value) =>

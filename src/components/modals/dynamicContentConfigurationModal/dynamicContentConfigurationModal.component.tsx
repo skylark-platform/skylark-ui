@@ -54,8 +54,6 @@ const DynamicContentConfigurationModalBody = ({
     });
 
   const onSave = () => {
-    // updateObjectDynamicContentConfiguration
-    console.log("onSave", updatedDynamicContentConfiguration);
     if (updatedDynamicContentConfiguration) {
       updateObjectDynamicContentConfiguration({
         uid,
@@ -65,8 +63,6 @@ const DynamicContentConfigurationModalBody = ({
   };
 
   const { data } = useGetObjectDynamicContentConfiguration(objectType, uid);
-
-  console.log({ data });
 
   return (
     <>

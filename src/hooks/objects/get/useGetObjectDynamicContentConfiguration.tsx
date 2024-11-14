@@ -49,7 +49,6 @@ const select = (
   }: GQLSkylarkGetObjectDynamicContentConfigurationResponse,
   objectTypesConfig?: ObjectTypesConfigObject,
 ): DynamicSetConfig => {
-  console.log("select", { dynamic_content });
   return {
     objectTypes: dynamic_content.dynamic_content_types || [],
     contentSortDirection: content_sort_direction,

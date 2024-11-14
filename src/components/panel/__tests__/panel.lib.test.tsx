@@ -77,6 +77,10 @@ describe("handleDroppedRelationships", () => {
           { ...panelObject, uid: "EXISTING_REL" },
           { ...panelObject, uid: "rel-2" },
         ],
+        config: {
+          defaultSortField: null,
+          inheritAvailability: null,
+        },
       },
     };
 
@@ -147,6 +151,10 @@ describe("handleDroppedRelationships", () => {
         name: "seasons",
         objectType: "Season",
         objects: [],
+        config: {
+          defaultSortField: null,
+          inheritAvailability: null,
+        },
       },
     };
 

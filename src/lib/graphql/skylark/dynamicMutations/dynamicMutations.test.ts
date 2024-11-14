@@ -51,7 +51,7 @@ describe("createDeleteObjectMutation", () => {
 
 describe("createUpdateSetContentPositionMutation", () => {
   test("returns null when the object doesn't have an update operation", () => {
-    const got = createUpdateObjectContentMutation(null, [], []);
+    const got = createUpdateObjectContentMutation(null, [], [], null);
 
     expect(got).toBeNull();
   });
@@ -106,6 +106,7 @@ describe("createUpdateSetContentPositionMutation", () => {
       setObjectOperations,
       content,
       content,
+      null,
     );
 
     expect(got?.loc?.source.body).toContain(
@@ -165,6 +166,7 @@ describe("createUpdateSetContentPositionMutation", () => {
       setObjectOperations,
       content,
       updatedContent,
+      null,
     );
 
     expect(got?.loc?.source.body).toContain(
@@ -224,6 +226,7 @@ describe("createUpdateSetContentPositionMutation", () => {
       setObjectOperations,
       content,
       updatedContent,
+      null,
     );
 
     expect(got?.loc?.source.body).toContain(

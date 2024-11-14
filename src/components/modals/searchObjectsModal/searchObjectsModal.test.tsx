@@ -10,6 +10,7 @@ import {
   AvailabilityStatus,
   ParsedSkylarkObject,
 } from "src/interfaces/skylark";
+import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
 import { SearchObjectsModal } from "./searchObjectsModal.component";
 
@@ -137,7 +138,7 @@ test("existing selected rows are disabled from being checked", async () => {
       onSave={jest.fn()}
       columns={["uid"]}
       existingObjects={[
-        {
+        createDefaultSkylarkObject({
           uid: secondEpisode.uid,
           objectType: secondEpisode.__typename,
           availableLanguages: secondEpisode._meta.available_languages,
@@ -153,7 +154,7 @@ test("existing selected rows are disabled from being checked", async () => {
           },
           created: "",
           modified: "",
-        },
+        }),
       ]}
     />,
   );

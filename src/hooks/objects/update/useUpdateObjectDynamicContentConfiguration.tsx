@@ -4,20 +4,15 @@ import { RequestDocument } from "graphql-request";
 import { QueryKeys } from "src/enums/graphql";
 import { createGetObjectContentKeyPrefix } from "src/hooks/objects/get/useGetObjectContent";
 import { createGetObjectDynamicContentConfigurationKeyPrefix } from "src/hooks/objects/get/useGetObjectDynamicContentConfiguration";
-import { createDynamicContentPreviewPrefix } from "src/hooks/useDynamicContentPreview";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   DynamicSetConfig,
   GQLSkylarkErrorResponse,
   GQLSkylarkUpdateObjectContentResponse,
-  SkylarkObjectContentObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import {
-  createUpdateObjectContentMutation,
-  createUpdateObjectDynamicContentConfigurationMutation,
-} from "src/lib/graphql/skylark/dynamicMutations/objects";
+import { createUpdateObjectDynamicContentConfigurationMutation } from "src/lib/graphql/skylark/dynamicMutations/objects";
 
 interface MutationArgs {
   uid: string;

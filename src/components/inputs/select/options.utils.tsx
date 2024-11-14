@@ -3,11 +3,29 @@ import { SkylarkObjectMeta } from "src/interfaces/skylark";
 
 import { SelectOption } from "./select.component";
 
+const createLabel = (
+  allObjectTypes: string[],
+  {
+    objectTypes,
+    name,
+    translatable,
+  }: { objectTypes: string[]; name: string; translatable: boolean },
+) => {
+  const objectTypesText =
+    allObjectTypes.length === objectTypes.length
+      ? ""
+      : ` (${objectTypes.length} object types)`;
+  const translatableText = translatable ? " (translatable)" : "";
+
+  return `"${name}"${objectTypesText}`;
+};
+
 export const createObjectContentSortFieldOptions = (
   allObjectsMeta: SkylarkObjectMeta[] | null,
   objectTypes: string[],
   objectTypesConfig?: ObjectTypesConfigObject,
-): SelectOption<"manual" | string>[] => {
+  manualSortLabel?: string,
+): SelectOption<"__manual" | string>[] => {
   if (!allObjectsMeta) {
     return [];
   }
@@ -33,7 +51,7 @@ export const createObjectContentSortFieldOptions = (
             prev,
           );
 
-          const translatableObj = objectMeta.fieldConfig.global.reduce(
+          const translatableObj = objectMeta.fieldConfig.translatable.reduce(
             (p, field) => ({
               ...p,
               [`t:${field}`]: {
@@ -52,13 +70,27 @@ export const createObjectContentSortFieldOptions = (
           { objectTypes: string[]; name: string; translatable: boolean }
         >,
       ),
-  ).reduce((prevOptions, [sortField, { objectTypes, name, translatable }]) => {
-    const option: SelectOption<string> = {
-      value: sortField,
-      label: `"${name}" on ${objectTypes.length === objectTypes.length ? "all" : objectTypes.length} object types ${translatable ? "(translatable)" : ""}`,
-    };
-    return [...prevOptions, option];
-  }, [] as SelectOption<string>[]);
+  )
+    .sort((a, b) => b[1].objectTypes.length - a[1].objectTypes.length)
+    .reduce((prevOptions, [sortField, value]) => {
+      const option: SelectOption<string> = {
+        value: sortField,
+        label: createLabel(objectTypes, value),
+        infoTooltip:
+          objectTypes.length !== value.objectTypes.length ? (
+            <div>
+              <p className="mb-1">
+                Object types without this field will be pushed to the bottom.
+              </p>
+              <p>We recommend against using this field.</p>
+            </div>
+          ) : null,
+      };
+      return [...prevOptions, option];
+    }, [] as SelectOption<string>[]);
 
-  return [{ label: "Manual sort", value: "manual" }, ...sortedByOptions];
+  return [
+    { label: manualSortLabel || "Manual sort", value: "__manual" },
+    ...sortedByOptions,
+  ];
 };

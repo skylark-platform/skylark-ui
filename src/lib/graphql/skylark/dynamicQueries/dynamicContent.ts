@@ -201,8 +201,6 @@ export const createGetObjectDynamicContentConfigurationQuery = (
     },
   };
 
-  console.log({ query });
-
   const graphQLQuery = wrappedJsonQuery(query);
 
   return gql(graphQLQuery);

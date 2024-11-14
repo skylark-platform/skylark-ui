@@ -359,7 +359,6 @@ export const PanelHeader = ({
     },
     [currentTab, language, objectType, objectUid, propSave],
   );
-  console.log(object?.meta);
   return (
     <div
       data-testid="panel-header"

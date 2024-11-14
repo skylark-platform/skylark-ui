@@ -41,7 +41,12 @@ export interface GQLSkylarkAccountResponse {
   };
 }
 
-export type GQLSkylarkOrderDirections = "ASC" | "DESC" | null;
+export enum SkylarkOrderDirections {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
+export type GQLSkylarkOrderDirections = SkylarkOrderDirections | null;
 
 export interface GQLSkylarkActivationStatusResponse {
   getActivationStatus: {
@@ -227,17 +232,19 @@ export interface GQLSkylarkGetAvailabilityDimensions {
 
 export interface GQLSkylarkListObjectTypeRelationshipConfiguration {
   listRelationshipConfiguration: {
-    relationship_name: string;
-    config: GQLObjectTypeRelationshipConfig;
-  }[];
+    count: number;
+    next_token: string | null;
+    objects: {
+      uid: string;
+      relationship_name: string;
+      config: GQLObjectTypeRelationshipConfig;
+    }[];
+  };
 }
 
 export type GQLSkylarkListAllObjectTypesRelationshipConfiguration = Record<
   string,
-  | {
-      relationship_name: string;
-      config: GQLObjectTypeRelationshipConfig;
-    }[]
+  | GQLSkylarkListObjectTypeRelationshipConfiguration["listRelationshipConfiguration"]
   | null
 >;
 

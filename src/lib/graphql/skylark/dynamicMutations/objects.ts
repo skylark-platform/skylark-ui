@@ -330,8 +330,6 @@ export const createUpdateObjectContentMutation = (
     >,
   );
 
-  console.log({ setContent });
-
   const contentConfig = modifiedConfig
     ? {
         content_sort_field: modifiedConfig.contentSortField || null,
@@ -389,7 +387,7 @@ export const createUpdateObjectDynamicContentConfigurationMutation = (
           [object.operations.update.argName]: {
             content_sort_field:
               dynamicSetConfig.contentSortField &&
-              dynamicSetConfig.contentSortField !== "manual"
+              dynamicSetConfig.contentSortField !== "__manual"
                 ? dynamicSetConfig.contentSortField
                 : null,
             content_sort_direction: dynamicSetConfig.contentSortDirection
@@ -419,19 +417,30 @@ export const createUpdateObjectRelationshipsMutation = (
   const parsedRelationsToUpdate = Object.entries(modifiedRelationships).reduce(
     (acc, [relationshipName, { added, removed, config }]) => {
       const relationshipArg: {
-        link: string[];
-        unlink: string[];
+        link?: string[];
+        unlink?: string[];
         config?: Partial<GQLObjectTypeRelationshipConfig>;
-      } = {
-        link: [...new Set(added.map(({ uid }) => uid))],
-        unlink: [...new Set(removed)],
-      };
+      } = {};
+
+      const linkedRelationships = [...new Set(added.map(({ uid }) => uid))];
+      const unlinkedRelationships = [...new Set(removed)];
+
+      if (linkedRelationships.length > 0) {
+        relationshipArg.link = linkedRelationships;
+      }
+
+      if (unlinkedRelationships.length > 0) {
+        relationshipArg.unlink = unlinkedRelationships;
+      }
 
       if (config && Object.keys(config).length > 0) {
         const parsedConfig: Partial<GQLObjectTypeRelationshipConfig> = {};
 
         if (config.defaultSortField !== undefined) {
-          parsedConfig.default_sort_field = config.defaultSortField;
+          parsedConfig.default_sort_field =
+            config.defaultSortField !== "__manual"
+              ? config.defaultSortField
+              : null;
         }
 
         if (config.inheritAvailability !== undefined) {

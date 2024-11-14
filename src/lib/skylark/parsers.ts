@@ -416,7 +416,6 @@ export const parseSkylarkObject = (
     ? parseObjectContent(object.content)
     : undefined;
 
-  console.log(object?.dynamic_content);
   return (
     object && {
       objectType: object.__typename,

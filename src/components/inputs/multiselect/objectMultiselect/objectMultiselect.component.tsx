@@ -57,8 +57,6 @@ const ObjectMultiSelectComponent = (
     [onChange, selectedObjects],
   );
 
-  console.log({ objectTypes, selectedUids, selectedObjects });
-
   const [inputQuery, setInputQuery] = useState("");
 
   return (
