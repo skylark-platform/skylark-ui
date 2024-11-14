@@ -674,6 +674,7 @@ export const createDefaultSkylarkObject = (
 export const convertParsedObjectToIdentifier = (
   parsedObject: ParsedSkylarkObject,
   fallbackConfig?: Record<string, ParsedSkylarkObjectConfig>,
+  opts?: { additionalFields?: boolean | string[] },
 ): SkylarkObject => {
   const { uid, objectType, metadata, meta } = parsedObject;
 
@@ -699,6 +700,17 @@ export const convertParsedObjectToIdentifier = (
     created: meta.created,
     modified: meta.modified,
   };
+
+  if (opts) {
+    if (opts.additionalFields && Array.isArray(opts.additionalFields)) {
+      object.additionalFields = opts.additionalFields.reduce(
+        (prev, field) => ({ ...prev, [field]: metadata?.[field] }),
+        {},
+      );
+    } else if (opts.additionalFields === true) {
+      object.additionalFields = metadata;
+    }
+  }
 
   if (object.objectType === BuiltInSkylarkObjectType.Availability) {
     const availabilityObject: SkylarkObject<BuiltInSkylarkObjectType.Availability> =

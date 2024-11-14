@@ -205,8 +205,9 @@ const PanelRelationshipSectionComponent = (
         <div className="overflow-hidden">
           {displayList?.length > 0 &&
             displayList?.map((obj, index) => {
-              const sortFieldValue = activeSortField;
-              // const sortFieldValue = obj?.display.sortField;
+              const sortFieldValue = activeSortField
+                ? obj.additionalFields?.[activeSortField]
+                : "";
 
               return (
                 <m.div

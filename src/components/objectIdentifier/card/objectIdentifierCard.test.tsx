@@ -3,7 +3,6 @@ import { PanelTab } from "src/hooks/state";
 import {
   AvailabilityStatus,
   BuiltInSkylarkObjectType,
-  ParsedSkylarkObject,
 } from "src/interfaces/skylark";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
@@ -79,11 +78,7 @@ test("displays arrow when onForwardClick is passed as a prop and calls onForward
 
   fireEvent.click(forwardButton);
 
-  expect(onForwardClick).toHaveBeenCalledWith({
-    uid: "123",
-    objectType: "SkylarkSet",
-    language: "en-GB",
-  });
+  expect(onForwardClick).toHaveBeenCalledWith(defaultObject);
 });
 
 test("displays arrow when onForwardClick is passed as a prop and calls window.open when clicked with the metaKey pressed", async () => {
@@ -146,14 +141,9 @@ test("AvailabilityStatus icon can be clicked to open the Object on its Availabil
 
   fireEvent.click(forwardButton);
 
-  expect(onForwardClick).toHaveBeenCalledWith(
-    {
-      uid: "123",
-      objectType: "SkylarkSet",
-      language: "en-GB",
-    },
-    { tab: PanelTab.Availability },
-  );
+  expect(onForwardClick).toHaveBeenCalledWith(defaultObject, {
+    tab: PanelTab.Availability,
+  });
 });
 
 test("displays AvailabilityStatus icon by default (Future)", () => {
@@ -209,6 +199,7 @@ test("does not show AvailabilityStatus icon when object type is AvailabilitySegm
       object={{
         ...defaultObject,
         objectType: BuiltInSkylarkObjectType.AvailabilitySegment,
+        contextualFields: null,
       }}
     />,
   );

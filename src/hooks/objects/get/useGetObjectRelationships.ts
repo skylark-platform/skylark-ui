@@ -154,6 +154,7 @@ export const useGetObjectRelationships = (
             convertParsedObjectToIdentifier(
               parseSkylarkObject(relatedObject),
               objectTypesConfig,
+              { additionalFields: true },
             ),
           );
 

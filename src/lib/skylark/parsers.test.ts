@@ -19,10 +19,15 @@ import {
   SkylarkObjectMetadataField,
   SkylarkObjectMetaRelationship,
   SkylarkSystemField,
+  SkylarkObjectContent,
+  SkylarkObjectContentObject,
 } from "src/interfaces/skylark";
 
 import { AWS_EARLIEST_DATE, AWS_LATEST_DATE } from "./availability";
-import { convertParsedObjectToIdentifier } from "./objects";
+import {
+  convertParsedObjectToIdentifier,
+  createDefaultSkylarkObject,
+} from "./objects";
 import {
   parseInputFieldValue,
   parseMetadataForGraphQLRequest,
@@ -462,63 +467,46 @@ describe("parseObjectContent", () => {
     const got = parseObjectContent({
       objects,
     });
-    expect(got).toEqual({
-      objects: [
-        {
-          config: {
-            colour: "black",
-            primaryField: "uid",
-            objectTypeDisplayName: "Episode",
-            fieldConfig: [
-              {
-                name: "title",
-                position: 1,
-                fieldType: "STRING",
-              },
-            ],
-          },
-          meta: {
-            availableLanguages: ["en-GB", "pt-PT"],
-            language: "en-GB",
-            versions: {
-              global: 1,
-              language: 2,
-            },
-            availabilityStatus: AvailabilityStatus.Unavailable,
-          },
-          object: objects[0].object,
+
+    const expectedObjects: SkylarkObjectContentObject[] = [
+      {
+        ...createDefaultSkylarkObject({
+          uid: objects[0].object.uid,
+          availabilityStatus: AvailabilityStatus.Unavailable,
+          availableLanguages: ["en-GB", "pt-PT"],
+          language: "en-GB",
           objectType: objects[0].object.__typename,
-          position: 1,
-          isDynamic: false,
-        },
-        {
-          config: {
+          display: {
+            objectType: "Episode",
+            name: objects[0].object.uid,
             colour: "black",
-            primaryField: "uid",
-            objectTypeDisplayName: "Set",
-            fieldConfig: [
-              {
-                name: "synopsis",
-                position: 2,
-                fieldType: "TEXTAREA",
-              },
-            ],
           },
-          meta: {
-            availableLanguages: ["en-GB"],
-            language: "en-GB",
-            versions: {
-              global: 2,
-              language: 1,
-            },
-            availabilityStatus: AvailabilityStatus.Active,
-          },
-          object: objects[1].object,
+          externalId: "",
+        }),
+        position: 1,
+        isDynamic: false,
+      },
+      {
+        ...createDefaultSkylarkObject({
+          uid: objects[1].object.uid,
+          availabilityStatus: AvailabilityStatus.Active,
+          availableLanguages: ["en-GB"],
+          language: "en-GB",
           objectType: objects[1].object.__typename,
-          position: 2,
-          isDynamic: true,
-        },
-      ],
+          display: {
+            objectType: "Set",
+            name: objects[1].object.uid,
+            colour: "black",
+          },
+          externalId: "set_1",
+        }),
+        position: 2,
+        isDynamic: true,
+      },
+    ];
+
+    expect(got).toEqual({
+      objects: expectedObjects,
     });
   });
 });
@@ -598,6 +586,10 @@ describe("parseSkylarkObject", () => {
           global: 2,
         },
         availabilityStatus: AvailabilityStatus.Unavailable,
+        created: undefined,
+        modified: undefined,
+        hasDynamicContent: false,
+        published: undefined,
       },
       metadata: {
         uid: "uid123",
@@ -1135,6 +1127,10 @@ describe("parseUpdatedRelationshipObjects", () => {
     name: relationship.relationshipName,
     objectType: relationship.objectType,
     objects: [],
+    config: {
+      defaultSortField: "uid",
+      inheritAvailability: null,
+    },
   };
 
   const expectedParsedObject: ParsedSkylarkObject = {

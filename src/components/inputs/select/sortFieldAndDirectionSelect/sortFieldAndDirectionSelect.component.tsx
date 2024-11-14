@@ -2,16 +2,20 @@ import clsx from "clsx";
 import { useMemo } from "react";
 
 import {
+  Select,
+  SelectOption,
+  SelectProps,
+} from "src/components/inputs/select/select.component";
+import {
+  ObjectTypesConfigObject,
   useAllObjectsMeta,
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
+  SkylarkObjectMeta,
   SkylarkObjectTypes,
   SkylarkOrderDirections,
 } from "src/interfaces/skylark";
-
-import { createObjectContentSortFieldOptions } from "../options.utils";
-import { Select, SelectProps } from "../select.component";
 
 type Values = {
   sortField: string;
@@ -28,6 +32,98 @@ type SortFieldAndDirectionSelectProps = Omit<
   manualSortLabel?: string;
   onChange: (v: Values) => void;
   containerClassName?: string;
+};
+
+const createLabel = (
+  allObjectTypes: string[],
+  {
+    objectTypes,
+    name,
+    translatable,
+  }: { objectTypes: string[]; name: string; translatable: boolean },
+) => {
+  const objectTypesText =
+    allObjectTypes.length === objectTypes.length
+      ? ""
+      : ` (${objectTypes.length} object types)`;
+  const translatableText = translatable ? " (translatable)" : "";
+
+  return `"${name}"${objectTypesText}`;
+};
+
+const createObjectContentSortFieldOptions = (
+  allObjectsMeta: SkylarkObjectMeta[] | null,
+  objectTypes: string[],
+  objectTypesConfig?: ObjectTypesConfigObject,
+  manualSortLabel?: string,
+): SelectOption<"__manual" | string>[] => {
+  if (!allObjectsMeta) {
+    return [];
+  }
+
+  const sortedByOptions = Object.entries(
+    allObjectsMeta
+      .filter(({ name }) => objectTypes.includes(name))
+      .reduce(
+        (prev, objectMeta) => {
+          const name =
+            objectTypesConfig?.[objectMeta.name]?.objectTypeDisplayName ||
+            objectMeta.name;
+
+          const globalObj = objectMeta.fieldConfig.global.reduce(
+            (p, field) => ({
+              ...p,
+              [field]: {
+                name: field,
+                objectTypes: [...(p?.[field]?.objectTypes || []), name],
+                translatable: false,
+              },
+            }),
+            prev,
+          );
+
+          const translatableObj = objectMeta.fieldConfig.translatable.reduce(
+            (p, field) => ({
+              ...p,
+              [`t:${field}`]: {
+                name: field,
+                objectTypes: [...(p?.[`t:${field}`]?.objectTypes || []), name],
+                translatable: true,
+              },
+            }),
+            globalObj,
+          );
+
+          return translatableObj;
+        },
+        {} as Record<
+          string,
+          { objectTypes: string[]; name: string; translatable: boolean }
+        >,
+      ),
+  )
+    .sort((a, b) => b[1].objectTypes.length - a[1].objectTypes.length)
+    .reduce((prevOptions, [sortField, value]) => {
+      const option: SelectOption<string> = {
+        value: sortField,
+        label: createLabel(objectTypes, value),
+        infoTooltip:
+          objectTypes.length !== value.objectTypes.length ? (
+            <div>
+              <p className="mb-1">
+                Object types without this field will be pushed to the bottom.
+              </p>
+              <p>We recommend against using this field.</p>
+            </div>
+          ) : null,
+      };
+      return [...prevOptions, option];
+    }, [] as SelectOption<string>[]);
+
+  return [
+    { label: manualSortLabel || "Manual sort", value: "__manual" },
+    ...sortedByOptions,
+  ];
 };
 
 export const SortFieldAndDirectionSelect = ({
@@ -66,7 +162,7 @@ export const SortFieldAndDirectionSelect = ({
       <Select
         variant={variant}
         placeholder="Unsorted"
-        className="text-manatee-600 w-36"
+        className={clsx(variant === "pill" && "text-manatee-600 w-36")}
         optionsClassName="w-72"
         selected={values.sortField || ""}
         options={sortFieldSelectOptions}
@@ -74,12 +170,13 @@ export const SortFieldAndDirectionSelect = ({
         searchable={false}
         floatingPosition="left-end"
         onChange={(sortField) => onChangeWrapper({ sortField })}
+        aria-label="Sort field"
       />
       {!hideDirectionSelect && (
         <Select
           variant={variant}
           placeholder="ASC"
-          className="text-manatee-600 w-20"
+          className={clsx(variant === "pill" && "text-manatee-600 w-20")}
           selected={values.sortDirection || SkylarkOrderDirections.ASC}
           options={[
             { label: "ASC", value: SkylarkOrderDirections.ASC },

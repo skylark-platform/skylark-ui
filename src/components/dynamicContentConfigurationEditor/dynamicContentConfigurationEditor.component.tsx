@@ -5,7 +5,11 @@ import { FiPlus, FiX } from "react-icons/fi";
 import { Button } from "src/components/button";
 import { MultiSelect } from "src/components/inputs/multiselect/multiselect.component";
 import { ObjectMultiSelect } from "src/components/inputs/multiselect/objectMultiselect/objectMultiselect.component";
-import { Select, SelectOption } from "src/components/inputs/select";
+import {
+  Select,
+  SelectOption,
+  SortFieldAndDirectionSelect,
+} from "src/components/inputs/select";
 import { ObjectIdentifierList } from "src/components/objectIdentifier/list/objectIdentifierList.component";
 import { InfoTooltip } from "src/components/tooltip/tooltip.component";
 import { useDynamicContentPreview } from "src/hooks/useDynamicContentPreview";
@@ -26,8 +30,6 @@ import {
   DynamicSetObjectRule,
   DynamicSetRuleBlock,
 } from "src/interfaces/skylark";
-
-import { createObjectContentSortFieldOptions } from "../inputs/select/options.utils";
 
 const calculateSharedRelationships = (
   selectedObjectMetas?: SkylarkObjectMeta[],
@@ -391,15 +393,6 @@ export const DynamicContentConfigurationEditor = ({
 
   const { data, isLoading, error } = useDynamicContentPreview(configuration);
 
-  const sortFieldOptions = createObjectContentSortFieldOptions(
-    allObjectsMeta,
-    configuration.objectTypes,
-    objectTypesConfig,
-  );
-  // Should be the options, value as the field name, label as ({fieldName} (All)) or ({fieldName} (Episode only))
-  // Text should appear when not using a common field across all object types to warn of weird behaviour
-  // sortedByOptions[0].fieldConfig.global
-
   return (
     <div className="flex w-full gap-4 overflow-hidden">
       <div className="text-sm w-full md:w-3/5 2xl:w-2/3 flex flex-col">
@@ -418,6 +411,7 @@ export const DynamicContentConfigurationEditor = ({
                 )}
                 selected={configuration.objectTypes}
                 selectedDivider="AND"
+                renderInPortal
               />
             </div>
             {configuration.ruleBlocks.map((ruleBlock, i) => (
@@ -434,39 +428,19 @@ export const DynamicContentConfigurationEditor = ({
               />
             ))}
             <div className="grid grid-cols-4">
-              <Select
+              <SortFieldAndDirectionSelect
                 variant="primary"
-                placeholder="Select sort field"
-                selected={configuration.contentSortField || undefined}
-                className="px-1 col-span-3"
-                label="Sorted by"
-                labelVariant="form"
-                options={sortFieldOptions}
-                renderInPortal
-                onChange={(value) =>
+                objectTypes={configuration.objectTypes}
+                values={{
+                  sortField: configuration.contentSortField || "",
+                  sortDirection:
+                    configuration.contentSortDirection ||
+                    SkylarkOrderDirections.ASC,
+                }}
+                onChange={(values) =>
                   setConfiguration({
-                    contentSortField: value,
-                  })
-                }
-              />
-              <Select
-                variant="primary"
-                placeholder="Direction"
-                selected={
-                  configuration.contentSortDirection ||
-                  SkylarkOrderDirections.ASC
-                }
-                className="px-1"
-                label="Direction"
-                labelVariant="form"
-                options={[
-                  { value: SkylarkOrderDirections.ASC, label: "ASC" },
-                  { value: SkylarkOrderDirections.DESC, label: "DESC" },
-                ]}
-                renderInPortal
-                onChange={(value) =>
-                  setConfiguration({
-                    contentSortDirection: value,
+                    contentSortField: values.sortField,
+                    contentSortDirection: values.sortDirection,
                   })
                 }
               />

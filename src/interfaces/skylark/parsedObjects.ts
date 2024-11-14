@@ -37,10 +37,7 @@ export type SkylarkObject<T = BuiltInSkylarkObjectType | string> =
     };
     created: ParsedSkylarkObjectMeta["created"];
     modified: ParsedSkylarkObjectMeta["modified"];
-    listingConfig: {
-      sortField: string;
-      sortFieldValue: string;
-    };
+    additionalFields?: Record<string, SkylarkObjectMetadataField>;
   } & (
       | {
           objectType: BuiltInSkylarkObjectType.SkylarkImage;
