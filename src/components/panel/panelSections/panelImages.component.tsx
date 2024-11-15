@@ -73,7 +73,8 @@ const PanelImage = ({
   inEditMode: boolean;
   setPanelObject: SetPanelObject;
 }) => {
-  const src = object.contextualFields?.url || "";
+  const src =
+    object.contextualFields?.url || object.contextualFields?.external_url || "";
 
   const { size } = useImageSize(src || null);
 

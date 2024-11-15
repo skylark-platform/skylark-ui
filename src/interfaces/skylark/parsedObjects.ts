@@ -43,6 +43,7 @@ export type SkylarkObject<T = BuiltInSkylarkObjectType | string> =
           objectType: BuiltInSkylarkObjectType.SkylarkImage;
           contextualFields: {
             url: string | null;
+            external_url: string | null;
           };
         }
       | {

@@ -132,12 +132,12 @@ describe("playback view", () => {
     fireEvent.click(firstOpenObjectButton);
 
     expect(setPanelObject).toHaveBeenCalledWith(
-      {
+      expect.objectContaining({
         objectType: "SkylarkAsset",
         uid: GQLSkylarkGetMovieRelationshipsQueryFixture.data
           .getObjectRelationships.assets.objects[0].uid,
         language: "en-GB",
-      },
+      }),
       { tab: PanelTab.Playback },
     );
   });

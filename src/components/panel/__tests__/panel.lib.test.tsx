@@ -77,8 +77,8 @@ describe("handleDroppedRelationships", () => {
           { ...panelObject, uid: "rel-2" },
         ],
         config: {
-          defaultSortField: null,
-          inheritAvailability: null,
+          defaultSortField: "uid",
+          inheritAvailability: false,
         },
       },
     };
@@ -106,6 +106,10 @@ describe("handleDroppedRelationships", () => {
       name: "seasons",
       objectType: "Season",
       objects: expect.any(Object),
+      config: {
+        defaultSortField: "uid",
+        inheritAvailability: false,
+      },
     });
     expect(gotSeasons.objects).toHaveLength(3);
     expect(gotSeasons.objects[0]).toHaveProperty("uid", "new-season");
@@ -186,6 +190,10 @@ describe("handleDroppedRelationships", () => {
       name: "seasons",
       objectType: "Season",
       objects: expect.any(Object),
+      config: {
+        defaultSortField: null,
+        inheritAvailability: null,
+      },
     });
     expect(gotSeasons.objects).toHaveLength(1);
     expect(gotSeasons.objects[0]).toHaveProperty("uid", "new-season");

@@ -30,12 +30,6 @@ export enum SkylarkAvailabilityField {
   Title = "title",
 }
 
-export enum SkylarkSystemGraphQLType {
-  SkylarkImageListing = "SkylarkImageListing",
-  SkylarkAssetListing = "SkylarkAssetListing",
-  SkylarkLiveAssetListing = "SkylarkLiveAssetListing",
-}
-
 export type SkylarkObjectType = string | BuiltInSkylarkObjectType;
 export type SkylarkObjectTypes = SkylarkObjectType[];
 export type SkylarkObjectMetadataField =

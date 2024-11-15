@@ -22,7 +22,6 @@ import {
   SkylarkObjectOperations,
   BuiltInSkylarkObjectType,
   SkylarkSystemField,
-  SkylarkSystemGraphQLType,
   NormalizedObjectField,
   SkylarkObjectMetaRelationship,
   ParsedSkylarkObject,
@@ -175,7 +174,7 @@ const objectHasRelationshipFromInterface = (
 };
 
 const objectRelationshipFieldsFromGraphQLType = (
-  type: SkylarkSystemGraphQLType,
+  objectType: string,
   objectInterface?: IntrospectionObjectType,
 ): {
   objectType: SkylarkObjectType;
@@ -185,11 +184,15 @@ const objectRelationshipFieldsFromGraphQLType = (
     return null;
   }
 
+  const listingType = `${objectType}Listing`;
+  const relationshipListingType = `${objectType}RelationshipListing`;
+
   const relationships = objectInterface.fields
     .filter(
-      (field) =>
-        (field.type as IntrospectionObjectType).name === type &&
-        field.type.kind === "OBJECT",
+      ({ type }) =>
+        ((type as IntrospectionObjectType).name === listingType ||
+          (type as IntrospectionObjectType).name === relationshipListingType) &&
+        type.kind === "OBJECT",
     )
     .map((field) => {
       const typeName = (field.type as IntrospectionObjectType | undefined)
@@ -294,7 +297,7 @@ const getBuiltInObjectTypeRelationships = (
   }
 
   const imageRelationships = objectRelationshipFieldsFromGraphQLType(
-    SkylarkSystemGraphQLType.SkylarkImageListing,
+    BuiltInSkylarkObjectType.SkylarkImage,
     getObjectInterface,
   );
   const imageOperations = imageRelationships
@@ -731,7 +734,11 @@ export const convertParsedObjectToIdentifier = (
       ...object,
       objectType: BuiltInSkylarkObjectType.SkylarkImage,
       contextualFields: {
-        url: metadata?.url === "string" ? metadata.url : "",
+        url: typeof metadata?.url === "string" ? metadata.url : null,
+        external_url:
+          typeof metadata?.external_url === "string"
+            ? metadata.external_url
+            : null,
       },
     };
 
