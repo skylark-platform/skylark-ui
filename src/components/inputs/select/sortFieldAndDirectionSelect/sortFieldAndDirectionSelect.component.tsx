@@ -165,7 +165,7 @@ export const SortFieldAndDirectionSelect = ({
         variant={variant}
         placeholder="Unsorted"
         className={clsx(
-          variant === "pill" && "text-manatee-600 w-36",
+          variant === "pill" && "text-manatee-600 w-36 mr-1",
           variant === "primary" && "w-full mr-2",
         )}
         optionsClassName={variant === "pill" ? "w-72" : "w-full"}

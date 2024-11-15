@@ -17,6 +17,7 @@ import {
   getAllObjectsMeta,
 } from "src/lib/skylark/objects";
 import { parseObjectConfig } from "src/lib/skylark/parsers";
+import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
 import { ObjectError } from "src/lib/utils/errors";
 
 import {
@@ -58,11 +59,11 @@ export const sortObjectTypesWithConfig = (
 export const useSkylarkObjectTypes = (
   opts: {
     searchable?: boolean;
-    withAvailabilityObjectType?: boolean;
+    withAvailabilityObjectTypes?: boolean;
     introspectionOpts?: IntrospectionQueryOptions | undefined;
   } = {
     searchable: false,
-    withAvailabilityObjectType: true,
+    withAvailabilityObjectTypes: true,
     introspectionOpts: undefined,
   },
 ) => {
@@ -79,10 +80,11 @@ export const useSkylarkObjectTypes = (
 
     const sorted = objectTypes?.sort();
 
-    return opts.withAvailabilityObjectType
+    return opts.withAvailabilityObjectTypes ||
+      typeof opts.withAvailabilityObjectTypes === "undefined"
       ? sorted
-      : sorted?.filter((ot) => ot !== BuiltInSkylarkObjectType.Availability);
-  }, [data, opts.withAvailabilityObjectType]);
+      : sorted?.filter((ot) => !isAvailabilityOrAvailabilitySegment(ot));
+  }, [data, opts.withAvailabilityObjectTypes]);
 
   return {
     objectTypes,
@@ -173,7 +175,7 @@ export const useSkylarkObjectOperations = (
 };
 
 export const useSkylarkObjectTypesWithConfig = (opts?: {
-  withAvailabilityObjectType?: boolean;
+  withAvailabilityObjectTypes?: boolean;
   introspectionOpts?: IntrospectionQueryOptions | undefined;
 }) => {
   const { objectTypes } = useSkylarkObjectTypes({ ...opts, searchable: true });

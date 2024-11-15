@@ -242,16 +242,16 @@ const ContentRuleBlock = ({
         <MultiSelect
           renderInPortal
           options={objectTypesToSearchOptions}
-          selected={ruleBlock.objectTypesToSearch}
-          onChange={(objectTypesToSearch) =>
+          selected={ruleBlock.objectTypes}
+          onChange={(objectTypes) =>
             onRuleBlockChange({
-              objectTypesToSearch: objectTypesToSearch.filter(
+              objectTypes: objectTypes.filter(
                 (item, i, arr) => arr.indexOf(item) === i,
               ),
             })
           }
           placeholder={
-            ruleBlock.objectTypesToSearch.length === 0
+            ruleBlock.objectTypes.length === 0
               ? "Select object types for this rule"
               : "OR"
           }
@@ -268,7 +268,7 @@ const ContentRuleBlock = ({
               isFirstRuleBlock={i === 0}
               objectRule={objectRule}
               validObjectTypes={
-                arr?.[i - 1]?.objectType || ruleBlock.objectTypesToSearch
+                arr?.[i - 1]?.objectType || ruleBlock.objectTypes
               }
               onChange={(ruleBlock) => onObjectRuleChange(ruleBlock, i)}
               onDelete={() => deleteObjectRule(i)}
@@ -310,10 +310,10 @@ export const DynamicContentConfigurationEditor = ({
   onConfigurationChange: (c: DynamicSetConfig) => void;
 }) => {
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig({
-    withAvailabilityObjectType: false,
+    withAvailabilityObjectTypes: false,
   });
 
-  const [configuration, setConfigurationWrapper] = useState<DynamicSetConfig>(
+  const [configuration, setConfigurationState] = useState<DynamicSetConfig>(
     initialConfiguration || {
       objectTypes: [],
       ruleBlocks: [],
@@ -323,7 +323,7 @@ export const DynamicContentConfigurationEditor = ({
   );
 
   const setConfiguration = (newState: Partial<DynamicSetConfig>) =>
-    setConfigurationWrapper((previousState) => {
+    setConfigurationState((previousState) => {
       const updatedState = {
         ...previousState,
         ...newState,
@@ -338,7 +338,7 @@ export const DynamicContentConfigurationEditor = ({
     const objectTypes = [
       ...new Set(
         ruleBlocks.reduce(
-          (prev, { objectTypesToSearch }) => [...prev, ...objectTypesToSearch],
+          (prev, { objectTypes }) => [...prev, ...objectTypes],
           [] as string[],
         ),
       ),
@@ -363,7 +363,7 @@ export const DynamicContentConfigurationEditor = ({
     //   return;
     // }
     const newRuleBlock: DynamicSetRuleBlock = {
-      objectTypesToSearch: configuration.objectTypes,
+      objectTypes: configuration.objectTypes,
       objectRules: [{ relationshipName: "", objectType: [] }],
     };
     updateRuleBlocks([...configuration.ruleBlocks, newRuleBlock]);
@@ -382,6 +382,14 @@ export const DynamicContentConfigurationEditor = ({
         i === index ? newRuleBlock : oldRuleBlock,
       ),
     );
+  };
+
+  const handleConfigurationObjectTypeChange = (
+    updatedObjectTypes: string[],
+  ) => {
+    setConfiguration({
+      objectTypes: updatedObjectTypes,
+    });
   };
 
   const { objectOperations } = useSkylarkObjectOperations("SkylarkSet");
@@ -407,7 +415,7 @@ export const DynamicContentConfigurationEditor = ({
                 selected={configuration.objectTypes}
                 selectedDivider="AND"
                 renderInPortal
-                disabled
+                onChange={handleConfigurationObjectTypeChange}
               />
               <SortFieldAndDirectionSelect
                 label="Sort field"

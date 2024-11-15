@@ -10,7 +10,7 @@ export interface DynamicSetObjectRule {
 }
 
 export interface DynamicSetRuleBlock {
-  objectTypesToSearch: SkylarkObjectType[];
+  objectTypes: SkylarkObjectType[];
   objectRules: DynamicSetObjectRule[];
 }
 

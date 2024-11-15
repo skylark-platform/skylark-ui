@@ -61,13 +61,13 @@ const select = (
             if (gqlRuleBlock.length < 2) {
               const emptyRules: DynamicSetObjectRule[] = [];
               return {
-                objectTypesToSearch: firstRule.object_types || [],
+                objectTypes: firstRule.object_types || [],
                 objectRules: emptyRules,
               };
             }
 
             return {
-              objectTypesToSearch: firstRule.object_types,
+              objectTypes: firstRule.object_types,
               objectRules: gqlRuleBlock.slice(1).map(
                 (gqlRule): DynamicSetObjectRule => ({
                   objectType: gqlRule.object_types,

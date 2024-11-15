@@ -57,14 +57,11 @@ export const createDynamicSetContentInput = (
     dynamic_content_rules: dynamicSetConfig.ruleBlocks
       .filter(
         (ruleBlock) =>
-          ruleBlock.objectTypesToSearch.length > 0 &&
-          ruleBlock.objectRules.length > 0,
+          ruleBlock.objectTypes.length > 0 && ruleBlock.objectRules.length > 0,
       )
       .map((ruleBlock): SkylarkDynamicSetInput["dynamic_content_rules"][0] => {
         const firstRule = {
-          object_types: ruleBlock.objectTypesToSearch.map(
-            (ot) => new EnumType(ot),
-          ),
+          object_types: ruleBlock.objectTypes.map((ot) => new EnumType(ot)),
         };
 
         const otherRules = ruleBlock.objectRules.map(

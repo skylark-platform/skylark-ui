@@ -104,9 +104,11 @@ export const BulkObjectOptions = ({
           onObjectCheckedChanged?.(
             checkedObjectsState.filter(
               ({ object }) =>
-                deletedObjects.findIndex((deletedObject) =>
-                  skylarkObjectsAreSame(object, deletedObject),
-                ) > -1,
+                !(
+                  deletedObjects.findIndex((deletedObject) =>
+                    skylarkObjectsAreSame(object, deletedObject),
+                  ) > -1
+                ),
             ),
           );
           setDeleteModalOpen(false);

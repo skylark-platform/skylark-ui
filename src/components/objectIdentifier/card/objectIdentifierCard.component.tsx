@@ -66,8 +66,8 @@ export const ObjectIdentifierCard = ({
       {!hideObjectType && (
         <Pill
           label={
-            object.display.objectType ||
             config?.objectTypeDisplayName ||
+            object.display.objectType ||
             object.objectType
           }
           bgColor={object.display.colour || config?.colour || undefined}
