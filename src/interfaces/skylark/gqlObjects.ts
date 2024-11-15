@@ -106,7 +106,7 @@ export interface SkylarkGraphQLObjectContent {
   objects: {
     object: SkylarkGraphQLObject;
     position: number;
-    dynamic: boolean;
+    dynamic: boolean | null;
   }[];
 }
 

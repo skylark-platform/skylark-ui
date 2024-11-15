@@ -334,7 +334,7 @@ export const parseObjectContent = (
           availability,
         }),
         position,
-        isDynamic: dynamic,
+        isDynamic: dynamic || false,
       };
     },
   );

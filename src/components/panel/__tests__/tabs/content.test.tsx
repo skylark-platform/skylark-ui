@@ -281,7 +281,7 @@ describe("content view", () => {
         `${
           GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
             .content.objects[0].object.__SkylarkSet__title as string
-        }1`,
+        }`,
       );
     });
 

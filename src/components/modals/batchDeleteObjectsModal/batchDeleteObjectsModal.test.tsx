@@ -131,19 +131,23 @@ test("shows this translation will be deleted and the object when not all availab
   ).toBeInTheDocument();
 });
 
-test("shows this translation will be deleted and the object when not all available languages are", async () => {
+test("shows these objects will be deleted when each have only one translation", async () => {
+  const object2 = {
+    ...object,
+    uid: "245",
+    objectType: "Movie",
+    contextualFields: null,
+    display: {
+      ...object.display,
+      objectType: "Movie",
+      name: "245",
+    },
+  };
+
   render(
     <BatchDeleteObjectsModal
       isOpen={true}
-      objectsToBeDeleted={[
-        object,
-        {
-          ...object,
-          uid: "245",
-          objectType: "Movie",
-          contextualFields: null,
-        },
-      ]}
+      objectsToBeDeleted={[object, object2]}
       closeModal={jest.fn()}
       onDeletionComplete={jest.fn()}
     />,
@@ -158,8 +162,8 @@ test("shows this translation will be deleted and the object when not all availab
     screen.getByText("The following objects will be permanently deleted:"),
   ).toBeInTheDocument();
   expect(screen.getByText(object.objectType)).toBeInTheDocument();
-  expect(screen.getByText("123")).toBeInTheDocument();
-  expect(screen.getByText("245")).toBeInTheDocument();
+  expect(screen.getByText(object.display.name)).toBeInTheDocument();
+  expect(screen.getByText(object2.display.name)).toBeInTheDocument();
 });
 
 test("shows some objects will not be deleted when the number of objects exceeds the deletion limit", async () => {

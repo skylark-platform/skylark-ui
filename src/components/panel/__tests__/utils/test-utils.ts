@@ -89,6 +89,7 @@ export const defaultProps = {
   updateActivePanelTabState: jest.fn(),
   tab: PanelTab.Metadata,
   tabState,
+  disableListVirtualization: true,
 };
 
 export const saveGraphQLError: ResponseResolver<

@@ -42,6 +42,7 @@ interface PanelContentProps {
     errors: HandleDropError[],
   ) => void;
   inEditMode?: boolean;
+  disableListVirtualization?: boolean;
   setPanelObject: SetPanelObject;
 }
 
@@ -53,6 +54,7 @@ export const PanelContent = ({
   objectType,
   uid,
   language,
+  disableListVirtualization,
   setContentObjects,
   setPanelObject,
 }: PanelContentProps) => {
@@ -170,13 +172,6 @@ export const PanelContent = ({
       </div>
 
       <div className="flex flex-grow">
-        {/* <PanelButton
-          aria-label={`Open content settings`}
-          className="ml-1"
-          type="settings"
-          onClick={() => setModalState("dynamic-content")}
-        /> */}
-
         {!isLoading &&
           objects.length === 0 &&
           ((inEditMode && !isPage) || isDragging ? (
@@ -197,6 +192,7 @@ export const PanelContent = ({
           inEditMode={inEditMode}
           onReorder={onReorder}
           setPanelObject={setPanelObject}
+          disableVirtualization={disableListVirtualization}
         />
         <DisplayGraphQLQuery
           label="Get Object Content"

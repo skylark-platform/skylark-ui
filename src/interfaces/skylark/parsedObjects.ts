@@ -96,10 +96,6 @@ export interface ParsedSkylarkObjectAvailability {
 }
 
 export type SkylarkObjectContentObject = SkylarkObject & {
-  // objectType: SkylarkObjectType;
-  // // config: ParsedSkylarkObjectConfig;
-  // // meta: ParsedSkylarkObjectMeta;
-  // object: SkylarkObject;
   position: number;
   isDynamic: boolean;
 };

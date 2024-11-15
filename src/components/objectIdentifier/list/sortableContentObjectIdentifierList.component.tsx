@@ -73,6 +73,7 @@ interface SortableContentObjectListProps {
   isDragging: boolean;
   inEditMode?: boolean;
   disableReorder?: boolean;
+  disableVirtualization?: boolean;
 }
 
 const isSortableDisplayObject = (
@@ -157,6 +158,50 @@ const SortableSkylarkContentObjectCard = ({
   );
 };
 
+const SortableContentObjectListItem = ({
+  object,
+  virtualizedOptions,
+  isLastItem,
+  ...props
+}: {
+  object: SortableObject | SortableDisplayObject;
+  virtualizedOptions?: {
+    height: string;
+    transform: string;
+  };
+  isLastItem: boolean;
+} & Omit<ContentObjectProps, "object">) => {
+  if (isSortableDisplayObject(object)) {
+    return (
+      <>
+        <div
+          className={clsx(
+            "h-10 bg-manatee-100 flex items-center justify-end w-full",
+            virtualizedOptions && "top-0 left-0 absolute",
+          )}
+          key={object.id}
+          style={virtualizedOptions}
+        >
+          {!isLastItem && <PanelSeparator transparent={props.inEditMode} />}
+        </div>
+      </>
+    );
+  }
+  return (
+    <div
+      key={object.id}
+      className="top-0 left-0 w-full absolute"
+      style={virtualizedOptions}
+    >
+      <SortableSkylarkContentObjectCard
+        key={object.id}
+        object={object}
+        {...props}
+      />
+    </div>
+  );
+};
+
 export const SortableContentObjectList = ({
   uid,
   objects,
@@ -166,6 +211,7 @@ export const SortableContentObjectList = ({
   isDragging,
   inEditMode,
   disableReorder,
+  disableVirtualization,
 }: SortableContentObjectListProps) => {
   const [overRowIndex, setOverRowIndex] = useState<number | null>(null);
 
@@ -295,15 +341,6 @@ export const SortableContentObjectList = ({
     onDragCancel: !disableReorder ? handleDragCancel : undefined,
   });
 
-  const parentRef = useRef<HTMLDivElement>(null);
-
-  const rowVirtualizer = useVirtual({
-    parentRef,
-    size: sortableObjects.length,
-    estimateSize: useCallback(() => 48, []),
-    overscan: 0,
-  });
-
   const removeItem = (uid: string) => {
     if (objects) {
       const filtered = objects.filter((object) => uid !== object.uid);
@@ -332,6 +369,15 @@ export const SortableContentObjectList = ({
     }
   };
 
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const rowVirtualizer = useVirtual({
+    parentRef,
+    size: sortableObjects.length,
+    estimateSize: useCallback(() => 48, []),
+    overscan: 0,
+  });
+
   return (
     <SortableContext
       id={DroppableType.PANEL_CONTENT_SORTABLE}
@@ -339,7 +385,7 @@ export const SortableContentObjectList = ({
       strategy={verticalListSortingStrategy}
     >
       <div
-        ref={parentRef}
+        ref={disableVirtualization ? undefined : parentRef}
         data-testid="panel-content-items"
         style={{ height: 600 }}
         className={clsx(
@@ -350,47 +396,24 @@ export const SortableContentObjectList = ({
             : "border-transparent",
         )}
       >
-        <div
-          className="w-full relative"
-          style={{
-            height: `${rowVirtualizer.totalSize}px`,
-          }}
-        >
-          {rowVirtualizer.virtualItems.map((virtualRow, index) => {
-            const object = sortableObjects[virtualRow.index];
-
-            if (isSortableDisplayObject(object)) {
+        {!disableVirtualization ? (
+          <div
+            className="w-full relative"
+            style={{
+              height: `${rowVirtualizer.totalSize}px`,
+            }}
+          >
+            {rowVirtualizer.virtualItems.map((virtualRow, index) => {
+              const object = sortableObjects[virtualRow.index];
               return (
-                <>
-                  <div
-                    className="h-10 bg-manatee-100 flex items-center justify-end w-full top-0 left-0 absolute"
-                    key={object.id}
-                    style={{
-                      width: "100%",
-                      height: `${virtualRow.size}px`,
-                      transform: `translateY(${virtualRow.start}px)`,
-                    }}
-                  >
-                    {index < sortableObjects.length - 1 && (
-                      <PanelSeparator transparent={inEditMode} />
-                    )}
-                  </div>
-                </>
-              );
-            }
-            return (
-              <div
-                key={object.id}
-                className="top-0 left-0 w-full absolute"
-                style={{
-                  height: `${virtualRow.size}px`,
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
-              >
-                <SortableSkylarkContentObjectCard
+                <SortableContentObjectListItem
                   key={object.id}
                   sortableId={object.id}
                   object={object}
+                  virtualizedOptions={{
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
                   inEditMode={inEditMode}
                   arrIndex={index}
                   arrLength={sortableObjects.length}
@@ -398,11 +421,30 @@ export const SortableContentObjectList = ({
                   handleManualOrderChange={handleManualOrderChange}
                   setPanelObject={setPanelObject}
                   disableReorder={disableReorder}
+                  isLastItem={index < sortableObjects.length - 1}
                 />
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        ) : (
+          <>
+            {sortableObjects.map((object, index) => (
+              <SortableContentObjectListItem
+                key={object.id}
+                sortableId={object.id}
+                object={object}
+                inEditMode={inEditMode}
+                arrIndex={index}
+                arrLength={sortableObjects.length}
+                removeItem={removeItem}
+                handleManualOrderChange={handleManualOrderChange}
+                setPanelObject={setPanelObject}
+                disableReorder={disableReorder}
+                isLastItem={index < sortableObjects.length - 1}
+              />
+            ))}
+          </>
+        )}
       </div>
     </SortableContext>
   );

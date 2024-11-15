@@ -60,13 +60,6 @@ describe("createUpdateSetContentPositionMutation", () => {
       {
         ...obj,
         objectType: "Episode",
-        // config: { fieldConfig: [] },
-        // meta: {
-        //   language: "en-GB",
-        //   availableLanguages: ["en-GB"],
-        //   availabilityStatus: AvailabilityStatus.Active,
-        //   versions: {},
-        // },
         position: 1,
         isDynamic: false,
         uid: "episode_1",
@@ -75,13 +68,6 @@ describe("createUpdateSetContentPositionMutation", () => {
         ...obj,
         objectType: "Episode",
         uid: "episode_2",
-        // config: { fieldConfig: [] },
-        // meta: {
-        //   language: "en-GB",
-        //   availableLanguages: ["en-GB"],
-        //   availabilityStatus: AvailabilityStatus.Active,
-        //   versions: {},
-        // },
         position: 2,
         isDynamic: false,
       },
@@ -89,13 +75,6 @@ describe("createUpdateSetContentPositionMutation", () => {
         ...obj,
         objectType: "Movie",
         uid: "movie_1",
-        // config: { fieldConfig: [] },
-        // meta: {
-        //   language: "en-GB",
-        //   availableLanguages: ["en-GB"],
-        //   availabilityStatus: AvailabilityStatus.Active,
-        //   versions: {},
-        // },
         position: 3,
         isDynamic: true,
       },
@@ -109,7 +88,7 @@ describe("createUpdateSetContentPositionMutation", () => {
     );
 
     expect(got?.loc?.source.body).toContain(
-      `{Episode: {link: [], unlink: [], reposition: [{uid: \"episode_1\", position: 1}, {uid: \"episode_2\", position: 2}]}, Movie: {link: [], unlink: [], reposition: [{uid: \"movie_1\", position: 3}]}`,
+      `content: {Episode: {reposition: [{uid: \"episode_1\", position: 1}, {uid: \"episode_2\", position: 2}]}}}`,
     );
   });
 
@@ -119,13 +98,6 @@ describe("createUpdateSetContentPositionMutation", () => {
         ...obj,
         objectType: "Episode",
         uid: "episode_1",
-        // config: { fieldConfig: [] },
-        // meta: {
-        //   language: "en-GB",
-        //   availableLanguages: ["en-GB"],
-        //   availabilityStatus: AvailabilityStatus.Active,
-        //   versions: {},
-        // },
         position: 1,
         isDynamic: false,
       },
@@ -133,13 +105,6 @@ describe("createUpdateSetContentPositionMutation", () => {
         ...obj,
         objectType: "Episode",
         uid: "episode_2",
-        // config: { fieldConfig: [] },
-        // meta: {
-        //   language: "en-GB",
-        //   availableLanguages: ["en-GB"],
-        //   availabilityStatus: AvailabilityStatus.Active,
-        //   versions: {},
-        // },
         position: 2,
         isDynamic: false,
       },
@@ -147,13 +112,6 @@ describe("createUpdateSetContentPositionMutation", () => {
         ...obj,
         objectType: "Movie",
         uid: "movie_1",
-        // config: { fieldConfig: [] },
-        // meta: {
-        //   language: "en-GB",
-        //   availableLanguages: ["en-GB"],
-        //   availabilityStatus: AvailabilityStatus.Active,
-        //   versions: {},
-        // },
         position: 3,
         isDynamic: true,
       },
@@ -169,7 +127,7 @@ describe("createUpdateSetContentPositionMutation", () => {
     );
 
     expect(got?.loc?.source.body).toContain(
-      `{Episode: {link: [], unlink: [], reposition: [{uid: \"episode_2\", position: 1}, {uid: \"episode_1\", position: 3}]}, Movie: {link: [], unlink: [], reposition: [{uid: \"movie_1\", position: 2}]}`,
+      `content: {Episode: {reposition: [{uid: \"episode_2\", position: 1}, {uid: \"episode_1\", position: 3}]}}}`,
     );
   });
 
@@ -179,13 +137,6 @@ describe("createUpdateSetContentPositionMutation", () => {
         ...obj,
         objectType: "Episode",
         uid: "episode_1",
-        // config: { fieldConfig: [] },
-        // meta: {
-        //   language: "en-GB",
-        //   availableLanguages: ["en-GB"],
-        //   availabilityStatus: AvailabilityStatus.Active,
-        //   versions: {},
-        // },
         position: 1,
         isDynamic: false,
       },
@@ -193,13 +144,6 @@ describe("createUpdateSetContentPositionMutation", () => {
         ...obj,
         objectType: "Episode",
         uid: "episode_2",
-        // config: { fieldConfig: [] },
-        // meta: {
-        //   language: "en-GB",
-        //   availableLanguages: ["en-GB"],
-        //   availabilityStatus: AvailabilityStatus.Active,
-        //   versions: {},
-        // },
         position: 2,
         isDynamic: false,
       },
@@ -207,13 +151,6 @@ describe("createUpdateSetContentPositionMutation", () => {
         ...obj,
         objectType: "Movie",
         uid: "movie_1",
-        // config: { fieldConfig: [] },
-        // meta: {
-        //   language: "en-GB",
-        //   availableLanguages: ["en-GB"],
-        //   availabilityStatus: AvailabilityStatus.Active,
-        //   versions: {},
-        // },
         position: 3,
         isDynamic: true,
       },
@@ -229,7 +166,7 @@ describe("createUpdateSetContentPositionMutation", () => {
     );
 
     expect(got?.loc?.source.body).toContain(
-      `{Movie: {link: [], unlink: [], reposition: [{uid: \"movie_1\", position: 1}]}, Episode: {link: [], unlink: [\"episode_2\"], reposition: [{uid: \"episode_1\", position: 2}]}`,
+      `content: {Episode: {reposition: [{uid: \"episode_1\", position: 2}], unlink: [\"episode_2\"]}}}`,
     );
   });
 });

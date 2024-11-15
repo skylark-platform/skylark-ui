@@ -98,17 +98,18 @@ const getAlternateSaveButtonText = (
   return "Publish";
 };
 
-const RefreshPanelQueries = (
-  props: Omit<ButtonProps, "variant"> &
-    Omit<SkylarkObjectIdentifier, "language">,
-) => {
+const RefreshPanelQueries = ({
+  uid,
+  ...props
+}: Omit<ButtonProps, "variant"> &
+  Omit<SkylarkObjectIdentifier, "language" | "objectType">) => {
   const client = useQueryClient();
 
   const [isFetching, setIsFetching] = useState(false);
 
   const onClick = async () => {
     setIsFetching(true);
-    await refetchPanelQueries(client, props.uid);
+    await refetchPanelQueries(client, uid);
     setIsFetching(false);
   };
 
@@ -387,11 +388,7 @@ export const PanelHeader = ({
                 onClick={navigateToForwardPanelObject}
                 aria-label="Click to go forward"
               />
-              <RefreshPanelQueries
-                disabled={inEditMode}
-                uid={objectUid}
-                objectType={objectType}
-              />
+              <RefreshPanelQueries disabled={inEditMode} uid={objectUid} />
             </>
           )}
           <DropdownMenu options={objectMenuOptions} placement="bottom-end">

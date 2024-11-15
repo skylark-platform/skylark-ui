@@ -64,6 +64,7 @@ interface PanelProps {
   object: SkylarkObject;
   tab: PanelTab;
   tabState: PanelTabState;
+  disableListVirtualization?: boolean;
   setPanelObject: SetPanelObject;
   setTab: (t: PanelTab) => void;
   navigateToPreviousPanelObject?: () => void;
@@ -236,6 +237,7 @@ export const Panel = ({
   closePanel,
   tabState,
   setTab: setSelectedTab,
+  disableListVirtualization,
   navigateToPreviousPanelObject,
   navigateToForwardPanelObject,
   setPanelObject,
@@ -729,6 +731,7 @@ export const Panel = ({
               objects={contentObjects?.updated || null}
               modifiedConfig={contentObjects?.config || null}
               inEditMode={inEditMode}
+              disableListVirtualization={disableListVirtualization}
               setContentObjects={handleContentObjectsModified}
               setPanelObject={setPanelObject}
             />
