@@ -107,7 +107,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             });
 
             cy.get(`[data-testid=panel-content-items]`)
-              .find("li")
+              .find("p")
               .should("have.length", 10);
 
             cy.percySnapshot("Panel - Content Tab - new object added");
@@ -165,7 +165,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
               cy.contains("Edit Content").click();
               cy.contains("Editing");
 
-              cy.get("[data-testid=panel-content-items] > li p")
+              cy.get("[data-testid=panel-content-items] > div p")
                 .then(($els) => {
                   const text = $els.toArray().map((el) => el.innerText.trim());
                   return text;
@@ -178,7 +178,7 @@ describe("Drag and Drop - Content and Relationship tab", () => {
             });
 
             // Test that the order has changed
-            cy.get("[data-testid=panel-content-items] > li p")
+            cy.get("[data-testid=panel-content-items] > div p")
               .then(($els) => {
                 const text = $els.toArray().map((el) => el.innerText.trim());
                 return text;

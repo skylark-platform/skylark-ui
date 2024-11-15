@@ -91,7 +91,7 @@ describe("Content Library - Object Panel - Content tab", () => {
       cy.contains("button", "Cancel").should("not.be.disabled");
     });
     cy.contains("Editing").should("exist");
-    cy.get("[data-testid=panel-content-items] > li p")
+    cy.get("[data-testid=panel-content-items] > div p")
       .then(($els) => {
         const text = $els.toArray().map((el) => el.innerText.trim());
         return text;
@@ -108,16 +108,17 @@ describe("Content Library - Object Panel - Content tab", () => {
     cy.contains("Discover").should("not.exist");
 
     // Test reorder
-    cy.get("[data-testid=panel-content-items] > li")
+    cy.get("[data-testid=panel-content-items] > div p")
       .first()
+      .parent()
       .within(() => {
-        cy.get("input").clear().type("30");
+        cy.get("input").clear().type("20");
       });
 
     cy.get("[data-testid=panel-content-items]").click();
 
     // Test updated order
-    cy.get("[data-testid=panel-content-items] > li p")
+    cy.get("[data-testid=panel-content-items] > div p")
       .then(($els) => {
         const text = $els.toArray().map((el) => el.innerText.trim());
         return text;
@@ -137,7 +138,7 @@ describe("Content Library - Object Panel - Content tab", () => {
     cy.contains("Cancel").click();
 
     cy.contains("Editing").should("not.exist");
-    cy.get("[data-testid=panel-content-items] > li p")
+    cy.get("[data-testid=panel-content-items] > div p")
       .then(($els) => {
         const text = $els.toArray().map((el) => el.innerText.trim());
         return text;
@@ -168,15 +169,16 @@ describe("Content Library - Object Panel - Content tab", () => {
       });
 
     // Reorder
-    cy.get("[data-testid=panel-content-items] > li")
+    cy.get("[data-testid=panel-content-items] > div p")
       .first()
+      .parent()
       .within(() => {
         cy.get("input").clear().type("20");
       });
     cy.get("[data-testid=panel-content-items]").click();
 
     // Test updated order
-    cy.get("[data-testid=panel-content-items] > li p")
+    cy.get("[data-testid=panel-content-items] > div p")
       .then(($els) => {
         const text = $els.toArray().map((el) => el.innerText.trim());
         return text;

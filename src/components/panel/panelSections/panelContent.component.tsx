@@ -104,10 +104,14 @@ export const PanelContent = ({
   >(false);
 
   const combinedConfig: ModifiedContents["config"] = {
-    contentSortDirection: SkylarkOrderDirections.ASC,
-    contentSortField: "__manual",
-    ...data.config,
-    ...modifiedConfig,
+    contentSortDirection:
+      data.config?.contentSortDirection ||
+      modifiedConfig?.contentSortDirection ||
+      SkylarkOrderDirections.ASC,
+    contentSortField:
+      data.config?.contentSortField ||
+      modifiedConfig?.contentSortField ||
+      "__manual",
   };
 
   return (
