@@ -30,11 +30,7 @@ export const ObjectIdentifierList = ({
     <div
       ref={parentRef}
       // style={{ height: 600 }}
-      className={clsx(
-        "w-full flex-grow h-full overflow-scroll",
-        className,
-        // isLoading && sortableObjects?.length === 0 && "hidden",
-      )}
+      className={clsx("w-full flex-grow h-full overflow-scroll", className)}
     >
       <div
         className="w-full relative"
@@ -56,10 +52,6 @@ export const ObjectIdentifierList = ({
             >
               <ObjectIdentifierCard
                 object={object}
-                // arrIndex={index}
-                // arrLength={sortableObjects.length}
-                // removeItem={removeItem}
-                // handleManualOrderChange={handleManualOrderChange}
                 onForwardClick={setPanelObject}
                 hideAvailabilityStatus
               />

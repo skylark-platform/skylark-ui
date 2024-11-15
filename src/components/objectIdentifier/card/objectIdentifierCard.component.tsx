@@ -70,7 +70,7 @@ export const ObjectIdentifierCard = ({
             config?.objectTypeDisplayName ||
             object.objectType
           }
-          bgColor={config?.colour || undefined}
+          bgColor={object.display.colour || config?.colour || undefined}
           className="w-20 min-w-20 max-w-20"
         />
       )}

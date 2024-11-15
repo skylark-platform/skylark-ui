@@ -131,6 +131,8 @@ export const SortFieldAndDirectionSelect = ({
   variant,
   hideDirectionSelect,
   manualSortLabel,
+  label,
+  labelVariant,
   onChange,
 }: SortFieldAndDirectionSelectProps) => {
   const { objects: allObjectsMeta } = useAllObjectsMeta();
@@ -158,15 +160,20 @@ export const SortFieldAndDirectionSelect = ({
   return (
     <div className={clsx("flex", containerClassName)}>
       <Select
+        label={label}
+        labelVariant={labelVariant}
         variant={variant}
         placeholder="Unsorted"
-        className={clsx(variant === "pill" && "text-manatee-600 w-36")}
-        optionsClassName="w-72"
+        className={clsx(
+          variant === "pill" && "text-manatee-600 w-36",
+          variant === "primary" && "w-full mr-2",
+        )}
+        optionsClassName={variant === "pill" ? "w-72" : "w-full"}
         selected={values.sortField || ""}
         options={sortFieldSelectOptions}
         renderInPortal
         searchable={false}
-        floatingPosition="left-end"
+        floatingPosition={variant === "pill" ? "left-end" : undefined}
         onChange={(sortField) => onChangeWrapper({ sortField })}
         aria-label="Sort field"
       />
@@ -174,7 +181,12 @@ export const SortFieldAndDirectionSelect = ({
         <Select
           variant={variant}
           placeholder="ASC"
-          className={clsx(variant === "pill" && "text-manatee-600 w-20")}
+          labelVariant={labelVariant}
+          label={label ? "Direction" : undefined}
+          className={clsx(
+            variant === "pill" && "text-manatee-600 w-20",
+            variant === "primary" && "w-32",
+          )}
           selected={values.sortDirection || SkylarkOrderDirections.ASC}
           options={[
             { label: "ASC", value: SkylarkOrderDirections.ASC },

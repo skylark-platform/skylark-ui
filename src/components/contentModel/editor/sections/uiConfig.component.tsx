@@ -9,7 +9,10 @@ import {
   AvailabilityStatus,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
-import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
+import {
+  convertParsedObjectToIdentifier,
+  createDefaultSkylarkObject,
+} from "src/lib/skylark/objects";
 
 import {
   ContentModelEditorForm,
@@ -111,29 +114,18 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
             <ObjectIdentifierCard
               forceConfigFromObject
               className="shadow px-2"
-              object={convertParsedObjectToIdentifier({
+              object={createDefaultSkylarkObject({
                 objectType: objectMeta.name,
                 uid: "example",
-                config: {
-                  primaryField: null,
+                display: {
                   colour,
-                  objectTypeDisplayName,
+                  objectType: objectTypeDisplayName,
+                  name: `Example "${primaryField}" value`,
                 },
-                meta: {
-                  language: "",
-                  availableLanguages: [],
-                  availabilityStatus: AvailabilityStatus.Active,
-                  versions: {},
-                },
-                metadata: {
-                  uid: `Example "${primaryField}" value`,
-                  external_id: "",
-                  type: null,
-                },
-                availability: {
-                  status: AvailabilityStatus.Active,
-                  objects: [],
-                },
+                availableLanguages: [],
+                availabilityStatus: AvailabilityStatus.Active,
+                externalId: "",
+                type: null,
               })}
             />
           </div>

@@ -1,5 +1,5 @@
 import { sentenceCase } from "change-case";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { FiPlus, FiX } from "react-icons/fi";
 
 import { Button } from "src/components/button";
@@ -7,14 +7,12 @@ import { MultiSelect } from "src/components/inputs/multiselect/multiselect.compo
 import { ObjectMultiSelect } from "src/components/inputs/multiselect/objectMultiselect/objectMultiselect.component";
 import {
   Select,
-  SelectOption,
   SortFieldAndDirectionSelect,
 } from "src/components/inputs/select";
 import { ObjectIdentifierList } from "src/components/objectIdentifier/list/objectIdentifierList.component";
 import { InfoTooltip } from "src/components/tooltip/tooltip.component";
 import { useDynamicContentPreview } from "src/hooks/useDynamicContentPreview";
 import {
-  ObjectTypesConfigObject,
   ObjectTypeWithConfig,
   useAllObjectsMeta,
   useSkylarkObjectOperations,
@@ -97,7 +95,6 @@ const calculateSharedRelationships = (
 };
 
 const ObjectRuleBlock = ({
-  isFirstRuleBlock,
   objectRule,
   validObjectTypes,
   hideDelete,
@@ -312,10 +309,9 @@ export const DynamicContentConfigurationEditor = ({
   initialConfiguration: DynamicSetConfig | null;
   onConfigurationChange: (c: DynamicSetConfig) => void;
 }) => {
-  const { objectTypesWithConfig, objectTypesConfig } =
-    useSkylarkObjectTypesWithConfig({
-      withAvailabilityObjectType: false,
-    });
+  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig({
+    withAvailabilityObjectType: false,
+  });
 
   const [configuration, setConfigurationWrapper] = useState<DynamicSetConfig>(
     initialConfiguration || {
@@ -389,12 +385,11 @@ export const DynamicContentConfigurationEditor = ({
   };
 
   const { objectOperations } = useSkylarkObjectOperations("SkylarkSet");
-  const { objects: allObjectsMeta } = useAllObjectsMeta();
 
   const { data, isLoading, error } = useDynamicContentPreview(configuration);
 
   return (
-    <div className="flex w-full gap-4 overflow-hidden">
+    <div className="flex w-full gap-4 overflow-hidden grow">
       <div className="text-sm w-full md:w-3/5 2xl:w-2/3 flex flex-col">
         <p className="text-xl font-bold text-left mb-4">Builder</p>
         {objectOperations && objectTypesWithConfig && (
@@ -412,23 +407,12 @@ export const DynamicContentConfigurationEditor = ({
                 selected={configuration.objectTypes}
                 selectedDivider="AND"
                 renderInPortal
+                disabled
               />
-            </div>
-            {configuration.ruleBlocks.map((ruleBlock, i) => (
-              <ContentRuleBlock
-                key={i}
-                isFirstBlock={i === 0}
-                ruleBlock={ruleBlock}
-                objectTypesWithConfig={objectTypesWithConfig}
-                updateRuleBlock={(newRuleBlock) =>
-                  updateRuleBlock(i, newRuleBlock)
-                }
-                deleteRuleBlock={() => deleteRuleBlock(i)}
-                hideDelete={configuration.ruleBlocks.length === 1}
-              />
-            ))}
-            <div className="grid grid-cols-4">
               <SortFieldAndDirectionSelect
+                label="Sort field"
+                labelVariant="form"
+                containerClassName="mt-4"
                 variant="primary"
                 objectTypes={configuration.objectTypes}
                 values={{
@@ -445,6 +429,20 @@ export const DynamicContentConfigurationEditor = ({
                 }
               />
             </div>
+            {configuration.ruleBlocks.map((ruleBlock, i) => (
+              <ContentRuleBlock
+                key={i}
+                isFirstBlock={i === 0}
+                ruleBlock={ruleBlock}
+                objectTypesWithConfig={objectTypesWithConfig}
+                updateRuleBlock={(newRuleBlock) =>
+                  updateRuleBlock(i, newRuleBlock)
+                }
+                deleteRuleBlock={() => deleteRuleBlock(i)}
+                hideDelete={configuration.ruleBlocks.length === 1}
+              />
+            ))}
+
             <Button
               variant="link"
               onClick={addRuleBlock}
