@@ -21,7 +21,7 @@ import { useSkylarkObjectTypes } from "./useSkylarkObjectTypes";
 const mapGQLRelationshipConfigToParsed = ({
   relationship_name,
   config,
-}: GQLSkylarkListObjectTypeRelationshipConfiguration["listRelationshipConfiguration"][0]) => ({
+}: GQLSkylarkListObjectTypeRelationshipConfiguration["listRelationshipConfiguration"]["objects"][0]) => ({
   relationshipName: relationship_name,
   config: {
     defaultSortField: config.default_sort_field,
@@ -32,7 +32,7 @@ const mapGQLRelationshipConfigToParsed = ({
 const select = (
   data: GQLSkylarkListObjectTypeRelationshipConfiguration,
 ): ParsedSkylarkObjectTypeRelationshipConfiguration =>
-  data.listRelationshipConfiguration.reduce(
+  data.listRelationshipConfiguration.objects.reduce(
     (
       prev,
       { relationship_name, config },
@@ -56,8 +56,9 @@ const allObjectTypesSelect = (
       return {
         ...prev,
         [objectType]:
-          relationshipConfiguration?.map(mapGQLRelationshipConfigToParsed) ||
-          [],
+          relationshipConfiguration?.objects.map(
+            mapGQLRelationshipConfigToParsed,
+          ) || [],
       };
     },
     {},
@@ -93,7 +94,7 @@ export const useObjectTypeRelationshipConfiguration = (
 };
 
 export const useAllObjectTypesRelationshipConfiguration = () => {
-  const { objectTypes } = useSkylarkObjectTypes(false);
+  const { objectTypes } = useSkylarkObjectTypes({ searchable: false });
 
   const query = createGetAllObjectsRelationshipConfigurationQuery(
     objectTypes?.filter(

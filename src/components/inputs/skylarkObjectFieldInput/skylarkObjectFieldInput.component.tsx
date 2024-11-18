@@ -213,7 +213,6 @@ const SkylarkObjectFieldInputGeneric = ({
   error,
   registerOptions,
   idPrefix,
-  value,
   disabled,
 }: SkylarkObjectFieldInputComponentProps) => (
   <input

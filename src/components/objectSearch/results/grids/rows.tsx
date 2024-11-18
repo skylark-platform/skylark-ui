@@ -8,7 +8,7 @@ import {
   columnsWithoutResize,
 } from "src/components/objectSearch/results/columnConfiguration";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
-import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
+import { SkylarkObject } from "src/interfaces/skylark";
 import { DragType, useSortable } from "src/lib/dndkit/dndkit";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { platformMetaKeyClicked } from "src/lib/utils";
@@ -23,7 +23,7 @@ interface DataRowProps {
 }
 
 interface LayoutRowProps extends DataRowProps {
-  panelObject: SkylarkObjectIdentifier | null;
+  panelObject: SkylarkObject | null;
   paddingLeft?: number;
   hoveredRow: number | null;
   setHoveredRow?: (rowId: number | null) => void;
@@ -45,8 +45,8 @@ const DataRow = ({
     type: DragType.CONTENT_LIBRARY_OBJECT,
     id: draggableId,
     data: {
-      object: row.original,
-      checkedObjectsState: tableMeta?.checkedObjectsState || [],
+      object: convertParsedObjectToIdentifier(row.original),
+      checkedObjectsState: tableMeta?.checkedObjectsState,
     },
     disabled: !isDraggable,
   });
@@ -107,7 +107,7 @@ const DataRow = ({
               if (tableMeta?.onRowCheckChange) {
                 tableMeta.onRowCheckChange({
                   checkedState: !row.getIsSelected(),
-                  object: row.original,
+                  rowData: row.original,
                 });
               }
             }}

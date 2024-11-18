@@ -19,7 +19,7 @@ import {
 } from "src/hooks/useSearchWithLookupType";
 import { useSkylarkObjectTypes } from "src/hooks/useSkylarkObjectTypes";
 import { useUserAccount } from "src/hooks/useUserAccount";
-import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
+import { SkylarkObject } from "src/interfaces/skylark";
 import {
   hasProperty,
   isObjectsDeepEqual,
@@ -51,7 +51,7 @@ export interface ObjectSearchProps {
   id: string;
   withObjectSelect?: boolean;
   isPanelOpen?: boolean;
-  panelObject?: SkylarkObjectIdentifier | null;
+  panelObject?: SkylarkObject | null;
   initialSearchType?: SearchType;
   initialFilters?: Partial<SearchFilters>;
   initialColumnState?: Partial<ObjectSearchInitialColumnsState>;
@@ -228,7 +228,7 @@ export const ObjectSearch = (props: ObjectSearchProps) => {
 
   const withPanel = typeof setPanelObject !== "undefined";
 
-  const { objectTypes } = useSkylarkObjectTypes(true);
+  const { objectTypes } = useSkylarkObjectTypes({ searchable: true });
 
   const [searchType, setSearchType] = useState<SearchType>(
     initialSearchType || SearchType.Search,

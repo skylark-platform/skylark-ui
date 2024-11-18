@@ -117,14 +117,16 @@ describe("content view", () => {
     })[0];
     fireEvent.click(firstOpenObjectButton);
 
-    expect(setPanelObject).toHaveBeenCalledWith({
-      objectType:
-        GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
-          .content.objects[0].object.__typename,
-      uid: GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
-        .content.objects[0].object.uid,
-      language: "en-GB",
-    });
+    expect(setPanelObject).toHaveBeenCalledWith(
+      expect.objectContaining({
+        objectType:
+          GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+            .content.objects[0].object.__typename,
+        uid: GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
+          .content.objects[0].object.uid,
+        language: "en-GB",
+      }),
+    );
   });
 
   describe("content view - edit", () => {
@@ -279,7 +281,7 @@ describe("content view", () => {
         `${
           GQLSkylarkGetHomepageSetContentQueryFixture.data.getObjectContent
             .content.objects[0].object.__SkylarkSet__title as string
-        }1`,
+        }`,
       );
     });
 

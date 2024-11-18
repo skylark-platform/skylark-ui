@@ -7,15 +7,18 @@ import { OpenObjectButton } from "src/components/button";
 import { Pill } from "src/components/pill";
 import { PanelTab, SetPanelObject } from "src/hooks/state";
 import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
-import { ParsedSkylarkObject } from "src/interfaces/skylark/parsedObjects";
 import {
-  getObjectDisplayName,
+  ParsedSkylarkObjectConfig,
+  SkylarkObject,
+} from "src/interfaces/skylark/parsedObjects";
+import {
   isAvailabilityOrAvailabilitySegment,
   platformMetaKeyClicked,
 } from "src/lib/utils";
 
-interface ObjectIdentifierCardProps {
-  object: ParsedSkylarkObject;
+export interface ObjectIdentifierCardProps {
+  object: SkylarkObject;
+  objectConfig?: ParsedSkylarkObjectConfig;
   children?: ReactNode;
   disableForwardClick?: boolean;
   disableDeleteClick?: boolean;
@@ -24,12 +27,14 @@ interface ObjectIdentifierCardProps {
   className?: string;
   hideAvailabilityStatus?: boolean;
   forceConfigFromObject?: boolean;
+  showDragIcon?: boolean;
   onForwardClick?: SetPanelObject;
   onDeleteClick?: () => void;
 }
 
 export const ObjectIdentifierCard = ({
   object,
+  objectConfig,
   children,
   disableForwardClick,
   disableDeleteClick,
@@ -38,16 +43,15 @@ export const ObjectIdentifierCard = ({
   deleteIconVariant = "trash",
   hideAvailabilityStatus,
   forceConfigFromObject,
+  showDragIcon,
   onForwardClick,
   onDeleteClick,
 }: ObjectIdentifierCardProps) => {
-  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+  const { objectTypesConfig } = useSkylarkObjectTypesWithConfig();
 
-  const { config } = forceConfigFromObject
-    ? { config: object.config }
-    : objectTypesWithConfig?.find(
-        ({ objectType }) => objectType === object.objectType,
-      ) || { config: object.config };
+  const config = forceConfigFromObject
+    ? objectConfig
+    : objectTypesConfig?.[object.objectType] || objectConfig;
 
   return (
     <div
@@ -56,16 +60,23 @@ export const ObjectIdentifierCard = ({
         className,
       )}
     >
+      {showDragIcon && (
+        <span className="-ml-4 block w-2.5 h-5 bg-inherit bg-[url('/icons/drag_indicator_black.png')] bg-center bg-no-repeat opacity-60" />
+      )}
       {!hideObjectType && (
         <Pill
-          label={config?.objectTypeDisplayName || object.objectType}
-          bgColor={config?.colour || undefined}
+          label={
+            config?.objectTypeDisplayName ||
+            object.display.objectType ||
+            object.objectType
+          }
+          bgColor={object.display.colour || config?.colour || undefined}
           className="w-20 min-w-20 max-w-20"
         />
       )}
       <p className="flex flex-grow overflow-hidden whitespace-nowrap text-sm">
         <span className="overflow-hidden text-ellipsis">
-          {getObjectDisplayName({ ...object, config })}
+          {object.display.name}
         </span>
       </p>
       {children}
@@ -74,21 +85,14 @@ export const ObjectIdentifierCard = ({
           <button
             onClick={
               onForwardClick &&
-              (() =>
-                onForwardClick(
-                  {
-                    uid: object.uid,
-                    objectType: object.objectType,
-                    language: object?.meta?.language || "",
-                  },
-                  { tab: PanelTab.Availability },
-                ))
+              (() => onForwardClick(object, { tab: PanelTab.Availability }))
             }
             aria-label="Open Object (Availability tab)"
           >
             <AvailabilityIcon
               status={
-                (object.availability && object.availability.status) || null
+                // (object.availability && object.availability.status) || null
+                object.availabilityStatus
               }
               className="text-xl"
               withTooltipDescription
@@ -101,7 +105,7 @@ export const ObjectIdentifierCard = ({
           data-testid="object-identifier-delete"
           className={clsx(
             "transition-width",
-            !disableDeleteClick ? "w-6 pl-1" : "w-0",
+            !disableDeleteClick ? "w-5" : "w-0 !-mx-0",
           )}
           onClick={onDeleteClick}
         >
@@ -130,17 +134,13 @@ export const ObjectIdentifierCard = ({
             if (platformMetaKeyClicked(e)) {
               window.open(
                 `/object/${object.objectType}/${object.uid}?language=${
-                  object?.meta?.language || ""
+                  object?.language || ""
                 }`,
                 "_blank",
               );
               return;
             } else {
-              onForwardClick({
-                uid: object.uid,
-                objectType: object.objectType,
-                language: object?.meta?.language || "",
-              });
+              onForwardClick(object);
             }
           }}
         />

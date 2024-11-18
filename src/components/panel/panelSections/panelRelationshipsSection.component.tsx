@@ -1,11 +1,10 @@
-import { sentenceCase } from "change-case";
 import clsx from "clsx";
 import { Transition, m } from "framer-motion";
-import { Ref, forwardRef, useEffect, useMemo } from "react";
+import { Ref, forwardRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
-import { Select } from "src/components/inputs/select";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { SortFieldAndDirectionSelect } from "src/components/inputs/select";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import {
   PanelButton,
   PanelSectionTitle,
@@ -15,23 +14,19 @@ import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ParsedSkylarkObject,
-  ParsedSkylarkObjectRelationship,
+  SkylarkObjectRelationship,
   ParsedSkylarkRelationshipConfig,
 } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
 interface PanelRelationshipsSectionProps {
   isEmptySection?: boolean;
-  relationship: ParsedSkylarkObjectRelationship;
+  relationship: SkylarkObjectRelationship;
   inEditMode: boolean;
   isFetchingMoreRelationships: boolean;
   newUids: string[];
   isExpanded: boolean;
-  config: {
-    objectTypeDefault: ParsedSkylarkRelationshipConfig | null;
-    overrides: Partial<ParsedSkylarkRelationshipConfig>;
-  };
+  objectTypeDefaultConfig: ParsedSkylarkRelationshipConfig | null;
   modifiedConfig?: Partial<ParsedSkylarkRelationshipConfig>;
   setExpandedRelationship: (r: string | null) => void;
   setPanelObject: SetPanelObject;
@@ -43,7 +38,7 @@ interface PanelRelationshipsSectionProps {
     updatedConfig: Partial<ParsedSkylarkRelationshipConfig>,
   ) => void;
   setSearchObjectsModalState: (args: {
-    relationship: ParsedSkylarkObjectRelationship;
+    relationship: SkylarkObjectRelationship;
     fields?: string[];
   }) => void;
   hasMoreRelationships?: boolean;
@@ -55,32 +50,6 @@ const transition: Transition = {
   ease: "linear",
 };
 
-const dumbFieldComparison = (
-  a: ParsedSkylarkObject,
-  b: ParsedSkylarkObject,
-  sortField: string,
-) => {
-  const aField = a.metadata?.[sortField];
-  const bField = b.metadata?.[sortField];
-
-  if (aField === bField) {
-    return 0;
-  }
-
-  if (aField === null || bField === null) {
-    return aField === null ? -1 : 1;
-  }
-
-  return aField < bField ? -1 : 1;
-};
-
-const manuallySortObjects = (
-  objects: ParsedSkylarkObject[],
-  sortField: string,
-) => {
-  return objects.sort((a, b) => dumbFieldComparison(a, b, sortField));
-};
-
 const PanelRelationshipSectionComponent = (
   {
     isEmptySection,
@@ -89,7 +58,7 @@ const PanelRelationshipSectionComponent = (
     isFetchingMoreRelationships,
     newUids,
     isExpanded,
-    config,
+    objectTypeDefaultConfig,
     hasMoreRelationships,
     modifiedConfig,
     setPanelObject,
@@ -122,21 +91,13 @@ const PanelRelationshipSectionComponent = (
 
   const canLoadMore = isExpanded && hasMoreRelationships;
 
-  const sortedObjects = useMemo(
-    () =>
-      modifiedConfig?.defaultSortField
-        ? manuallySortObjects(objects, modifiedConfig.defaultSortField)
-        : objects,
-    [objects, modifiedConfig?.defaultSortField],
-  );
-
   const displayList =
-    hasShowMore && !isExpanded ? sortedObjects.slice(0, 5) : sortedObjects;
+    hasShowMore && !isExpanded ? objects.slice(0, 5) : objects;
 
   const activeSortField =
     modifiedConfig?.defaultSortField ||
-    config.overrides.defaultSortField ||
-    config.objectTypeDefault?.defaultSortField;
+    relationship.config.defaultSortField ||
+    objectTypeDefaultConfig?.defaultSortField;
 
   return (
     <m.div
@@ -192,29 +153,24 @@ const PanelRelationshipSectionComponent = (
             />
           )}
         </div>
-        {/* TODO uncomment when relationship_config is ready */}
-        {/* {!isEmptySection && (
-          <Select
+        {!isEmptySection && (
+          <SortFieldAndDirectionSelect
+            hideDirectionSelect
+            objectTypes={[objectType]}
             variant="pill"
-            placeholder="Unsorted"
-            className="text-manatee-600 w-52 mb-2 pb-1 md:pb-2"
-            selected={activeSortField}
-            options={
-              objectOperations?.fieldConfig.global.map((value) => ({
-                label: `${sentenceCase(value)} ${value === config?.objectTypeDefault?.defaultSortField ? "(Default)" : ""}`,
-                value,
-              })) || []
-            }
-            label="Sorted by:"
-            labelPosition="inline"
-            labelVariant="small"
-            renderInPortal
-            searchable={false}
-            onChange={(defaultSortField) =>
-              updateRelationshipConfig({ defaultSortField })
+            containerClassName="mb-2 pb-1 md:pb-2 flex-grow justify-end"
+            values={{
+              sortField:
+                activeSortField ||
+                objectTypeDefaultConfig?.defaultSortField ||
+                "",
+            }}
+            manualSortLabel={`Reset to default (${objectTypeDefaultConfig?.defaultSortField || "Unsorted"})`}
+            onChange={({ sortField }) =>
+              updateRelationshipConfig({ defaultSortField: sortField })
             }
           />
-        )} */}
+        )}
       </m.div>
 
       <m.div
@@ -225,8 +181,9 @@ const PanelRelationshipSectionComponent = (
         <div className="overflow-hidden">
           {displayList?.length > 0 &&
             displayList?.map((obj, index) => {
-              const sortFieldValue =
-                activeSortField && obj.metadata?.[activeSortField];
+              const sortFieldValue = activeSortField
+                ? obj.additionalFields?.[activeSortField]
+                : "";
 
               return (
                 <m.div

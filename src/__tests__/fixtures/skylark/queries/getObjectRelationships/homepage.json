@@ -29,6 +29,10 @@
       "images": {
         "__typename": "SkylarkImageListing",
         "next_token": null,
+        "relationship_config": {
+          "default_sort_field": "title",
+          "inherit_availability": false
+        },
         "objects": [
           {
             "uid": "01H4MMC4QWTSY44KXKFV3DHV26",

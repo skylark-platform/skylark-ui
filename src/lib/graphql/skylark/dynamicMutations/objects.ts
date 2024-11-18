@@ -1,19 +1,21 @@
 import { gql } from "graphql-tag";
-import { VariableType } from "json-to-graphql-query";
+import { EnumType, VariableType } from "json-to-graphql-query";
 
 import { OBJECT_OPTIONS } from "src/constants/skylark";
 import {
   BuiltInSkylarkObjectType,
+  DynamicSetConfig,
   GQLObjectTypeRelationshipConfig,
   ModifiedRelationshipsObject,
-  ParsedSkylarkObject,
-  ParsedSkylarkObjectContentObject,
-  ParsedSkylarkRelationshipConfig,
+  SkylarkObjectContentObject,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
+  SkylarkObject,
+  ModifiedContents,
 } from "src/interfaces/skylark";
 import {
+  createDynamicSetContentInput,
   generateFieldsToReturn,
   generateVariablesAndArgs,
   wrappedJsonMutation,
@@ -242,48 +244,51 @@ export const createPublishVersionMutation = (
 
 export const createUpdateObjectContentMutation = (
   object: SkylarkObjectMeta | null,
-  originalContentObjects: ParsedSkylarkObjectContentObject[] | null,
-  updatedContentObjects: ParsedSkylarkObjectContentObject[] | null,
+  originalContentObjects: SkylarkObjectContentObject[] | null,
+  updatedContentObjects: SkylarkObjectContentObject[] | null,
+  modifiedConfig: ModifiedContents["config"],
 ) => {
-  if (
-    !object ||
-    !object.operations.update ||
-    !originalContentObjects ||
-    !updatedContentObjects
-  ) {
+  if (!object || !object.operations.update) {
     return null;
   }
 
-  const originalContentObjectUids = originalContentObjects.map(
-    ({ object }) => object.uid,
+  const originalContentObjectUids = originalContentObjects?.map(
+    ({ uid }) => uid,
   );
-  const updatedContentObjectUids = updatedContentObjects.map(
-    ({ object }) => object.uid,
-  );
+  const updatedContentObjectUids = updatedContentObjects?.map(({ uid }) => uid);
 
-  const linkOrRepositionOperations = updatedContentObjects.map(
-    ({ objectType, object: { uid } }, index): SetContentOperation => {
-      const position = index + 1;
-      if (originalContentObjectUids.includes(uid)) {
+  const linkOrRepositionOperations = updatedContentObjects
+    ?.map(
+      ({ objectType, uid, isDynamic }, index): SetContentOperation | null => {
+        if (isDynamic) {
+          return null;
+        }
+
+        const position = index + 1;
+        if (originalContentObjectUids?.includes(uid)) {
+          return {
+            operation: "reposition",
+            objectType,
+            uid,
+            position,
+          };
+        }
         return {
-          operation: "reposition",
+          operation: "link",
           objectType,
           uid,
           position,
         };
-      }
-      return {
-        operation: "link",
-        objectType,
-        uid,
-        position,
-      };
-    },
-  );
+      },
+    )
+    .filter((op): op is SetContentOperation => op !== null);
 
   const deleteOperations = originalContentObjects
-    .filter(({ object: { uid } }) => !updatedContentObjectUids.includes(uid))
-    .map(({ objectType, object: { uid } }): SetContentOperation => {
+    ?.filter(
+      ({ uid, isDynamic }) =>
+        !isDynamic && !updatedContentObjectUids?.includes(uid),
+    )
+    .map(({ objectType, uid }): SetContentOperation => {
       return {
         operation: "unlink",
         objectType,
@@ -293,22 +298,21 @@ export const createUpdateObjectContentMutation = (
     });
 
   const objectContentOperations = [
-    ...linkOrRepositionOperations,
-    ...deleteOperations,
+    ...(linkOrRepositionOperations || []),
+    ...(deleteOperations || []),
   ];
 
   const setContent = objectContentOperations.reduce(
     (prev, { operation, objectType, uid, position }) => {
-      const updatedOperations = prev[objectType] || {
-        link: [],
-        unlink: [],
-        reposition: [],
-      };
+      const updatedOperations = prev?.[objectType] || {};
 
       if (operation === "unlink") {
-        updatedOperations.unlink.push(uid);
+        updatedOperations.unlink = [...(updatedOperations?.unlink || []), uid];
       } else {
-        updatedOperations[operation].push({ uid, position });
+        updatedOperations[operation] = [
+          ...(updatedOperations?.[operation] || []),
+          { uid, position },
+        ];
       }
 
       return {
@@ -319,12 +323,21 @@ export const createUpdateObjectContentMutation = (
     {} as Record<
       string,
       {
-        link: { uid: string; position: number }[];
-        unlink: string[];
-        reposition: { uid: string; position: number }[];
+        link?: { uid: string; position: number }[];
+        unlink?: string[];
+        reposition?: { uid: string; position: number }[];
       }
     >,
   );
+
+  const contentConfig = modifiedConfig
+    ? {
+        content_sort_field: modifiedConfig.contentSortField || null,
+        content_sort_direction: modifiedConfig.contentSortDirection
+          ? new EnumType(modifiedConfig.contentSortDirection)
+          : null,
+      }
+    : {};
 
   const mutation = {
     mutation: {
@@ -337,7 +350,50 @@ export const createUpdateObjectContentMutation = (
         __args: {
           uid: new VariableType("uid"),
           [object.operations.update.argName]: {
-            content: setContent,
+            ...(objectContentOperations.length > 0
+              ? { content: setContent }
+              : {}),
+            ...contentConfig,
+          },
+        },
+        uid: true,
+      },
+    },
+  };
+
+  const graphQLQuery = wrappedJsonMutation(mutation);
+
+  return gql(graphQLQuery);
+};
+
+export const createUpdateObjectDynamicContentConfigurationMutation = (
+  object: SkylarkObjectMeta | null,
+  dynamicSetConfig: DynamicSetConfig,
+) => {
+  if (!object || !object.operations.update) {
+    return null;
+  }
+
+  const mutation = {
+    mutation: {
+      __name: `UPDATE_OBJECT_DYNAMIC_CONTENT_CONFIGURATION_${object.name}`,
+      __variables: {
+        uid: "String!",
+      },
+      updateObjectContent: {
+        __aliasFor: object.operations.update.name,
+        __args: {
+          uid: new VariableType("uid"),
+          [object.operations.update.argName]: {
+            content_sort_field:
+              dynamicSetConfig.contentSortField &&
+              dynamicSetConfig.contentSortField !== "__manual"
+                ? dynamicSetConfig.contentSortField
+                : null,
+            content_sort_direction: dynamicSetConfig.contentSortDirection
+              ? new EnumType(dynamicSetConfig.contentSortDirection)
+              : null,
+            dynamic_content: createDynamicSetContentInput(dynamicSetConfig),
           },
         },
         uid: true,
@@ -361,19 +417,30 @@ export const createUpdateObjectRelationshipsMutation = (
   const parsedRelationsToUpdate = Object.entries(modifiedRelationships).reduce(
     (acc, [relationshipName, { added, removed, config }]) => {
       const relationshipArg: {
-        link: string[];
-        unlink: string[];
+        link?: string[];
+        unlink?: string[];
         config?: Partial<GQLObjectTypeRelationshipConfig>;
-      } = {
-        link: [...new Set(added.map(({ uid }) => uid))],
-        unlink: [...new Set(removed)],
-      };
+      } = {};
+
+      const linkedRelationships = [...new Set(added.map(({ uid }) => uid))];
+      const unlinkedRelationships = [...new Set(removed)];
+
+      if (linkedRelationships.length > 0) {
+        relationshipArg.link = linkedRelationships;
+      }
+
+      if (unlinkedRelationships.length > 0) {
+        relationshipArg.unlink = unlinkedRelationships;
+      }
 
       if (config && Object.keys(config).length > 0) {
         const parsedConfig: Partial<GQLObjectTypeRelationshipConfig> = {};
 
         if (config.defaultSortField !== undefined) {
-          parsedConfig.default_sort_field = config.defaultSortField;
+          parsedConfig.default_sort_field =
+            config.defaultSortField !== "__manual"
+              ? config.defaultSortField
+              : null;
         }
 
         if (config.inheritAvailability !== undefined) {
@@ -422,7 +489,7 @@ export const createUpdateObjectRelationshipsMutation = (
 export const createUpdateObjectAvailability = (
   object: SkylarkObjectMeta | null,
   modifiedAvailabilityObjects: {
-    added: ParsedSkylarkObject[];
+    added: SkylarkObject[];
     removed: string[];
   } | null,
 ) => {
@@ -585,7 +652,7 @@ export const createUpdateAvailabilityDimensionsMutation = (
 const createAvailabilityObjectLinkUnlinkOperations = (
   allObjectsMeta: SkylarkObjectMeta[],
   availabilityUid: string,
-  objects: ParsedSkylarkObject[],
+  objects: SkylarkObject[],
   type: "link" | "unlink",
 ) =>
   objects.reduce((previous, object) => {
@@ -622,8 +689,8 @@ const createAvailabilityObjectLinkUnlinkOperations = (
 export const createUpdateAvailabilityAssignedToMutation = (
   allObjectsMeta: SkylarkObjectMeta[] | null,
   availabilityUid: string,
-  addedObjects: ParsedSkylarkObject[],
-  removedObjects: ParsedSkylarkObject[],
+  addedObjects: SkylarkObject[],
+  removedObjects: SkylarkObject[],
 ) => {
   if (!allObjectsMeta || !availabilityUid) {
     return null;

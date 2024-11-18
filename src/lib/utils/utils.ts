@@ -1,5 +1,6 @@
 import { HTMLInputTypeAttribute, MouseEvent } from "react";
 
+import { IntegrationUploaderPlaybackPolicy } from "src/components/integrations";
 import {
   CLOUDINARY_ENVIRONMENT,
   DISPLAY_NAME_PRIORITY,
@@ -9,6 +10,8 @@ import {
   NormalizedObjectFieldType,
   ParsedSkylarkObject,
   ParsedSkylarkObjectConfig,
+  SkylarkObject,
+  SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
 
 export const hasProperty = <T, K extends PropertyKey, V = unknown>(
@@ -192,13 +195,25 @@ export const addCloudinaryOnTheFlyImageTransformation = (
   return cloudinaryUrl;
 };
 
-export const skylarkObjectsAreSame = (
-  obj1: ParsedSkylarkObject,
-  obj2: ParsedSkylarkObject,
-) =>
-  obj1.uid === obj2.uid &&
-  obj1.objectType === obj2.objectType &&
-  obj1.meta.language === obj2.meta.language;
+export const skylarkObjectsAreSame = <
+  T extends SkylarkObject | ParsedSkylarkObject,
+>(
+  obj1: T,
+  obj2: T,
+) => {
+  const obj1Language =
+    (obj1 as SkylarkObject)?.language ||
+    (obj1 as ParsedSkylarkObject)?.meta?.language;
+  const obj2Language =
+    (obj2 as SkylarkObject)?.language ||
+    (obj2 as ParsedSkylarkObject)?.meta?.language;
+
+  return (
+    obj1.uid === obj2.uid &&
+    obj1.objectType === obj2.objectType &&
+    obj1Language === obj2Language
+  );
+};
 
 export const skylarkObjectIsInArray = (
   objToFind: ParsedSkylarkObject,
@@ -265,6 +280,31 @@ export const insertAtIndex = <T>(
 export const convertSlugToDimensionHeader = (slug: string) =>
   `x-sl-dimension-${slug}`;
 
+export const getPlaybackPolicyFromMetadata = (
+  metadata: Record<string, SkylarkObjectMetadataField>,
+): IntegrationUploaderPlaybackPolicy => {
+  const policyField = metadata?.["policy"];
+
+  if (!policyField || typeof policyField !== "string") {
+    return null;
+  }
+
+  const lowercasedPolicyField = policyField.toLocaleLowerCase();
+
+  if (
+    lowercasedPolicyField !== "signed" &&
+    lowercasedPolicyField !== "public"
+  ) {
+    return null;
+  }
+
+  return lowercasedPolicyField;
+};
+
+export const objectIsAvailability = (
+  obj: SkylarkObject,
+): obj is SkylarkObject<BuiltInSkylarkObjectType.Availability> =>
+  obj.objectType === BuiltInSkylarkObjectType.Availability;
 export const isAvailabilityOrAvailabilitySegment = (
   objectType: string | null | undefined,
 ) => {

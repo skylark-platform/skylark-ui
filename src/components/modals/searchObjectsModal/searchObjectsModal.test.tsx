@@ -6,10 +6,8 @@ import {
   screen,
   fireEvent,
 } from "src/__tests__/utils/test-utils";
-import {
-  AvailabilityStatus,
-  ParsedSkylarkObject,
-} from "src/interfaces/skylark";
+import { AvailabilityStatus } from "src/interfaces/skylark";
+import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
 import { SearchObjectsModal } from "./searchObjectsModal.component";
 
@@ -110,7 +108,14 @@ test("calls onSave with the selected rows", async () => {
 
   fireEvent.click(screen.getByTestId("search-objects-modal-save"));
 
+  const wantedObject = {
+    uid: GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].uid,
+    objectType:
+      GQLGameOfThronesSearchResultsPage1enGB.data.search.objects[0].__typename,
+  };
+
   expect(onSave).toHaveBeenCalledWith({
+    checkedObjects: [expect.objectContaining(wantedObject)],
     checkedObjectsState: [
       {
         checkedState: true,
@@ -137,17 +142,23 @@ test("existing selected rows are disabled from being checked", async () => {
       onSave={jest.fn()}
       columns={["uid"]}
       existingObjects={[
-        {
+        createDefaultSkylarkObject({
           uid: secondEpisode.uid,
           objectType: secondEpisode.__typename,
-          meta: {
-            availableLanguages: secondEpisode._meta.available_languages,
-            language: secondEpisode._meta.language_data.language,
-            availabilityStatus: AvailabilityStatus.Active,
+          availableLanguages: secondEpisode._meta.available_languages,
+          language: secondEpisode._meta.language_data.language,
+          availabilityStatus: AvailabilityStatus.Active,
+          type: null,
+          contextualFields: null,
+          externalId: "",
+          display: {
+            name: secondEpisode.uid,
+            objectType: secondEpisode.__typename,
+            colour: "",
           },
-          config: {},
-          metadata: {},
-        } as ParsedSkylarkObject,
+          created: "",
+          modified: "",
+        }),
       ]}
     />,
   );

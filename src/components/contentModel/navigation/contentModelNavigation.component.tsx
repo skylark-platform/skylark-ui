@@ -68,7 +68,9 @@ export const ObjectTypeNavigation = ({
 
   const { setObjectTypes } = useSkylarkSetObjectTypes(true, schemaOpts);
 
-  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig(schemaOpts);
+  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig({
+    introspectionOpts: schemaOpts,
+  });
 
   const setObjectTypesWithConfig = objectTypesWithConfig?.filter(
     ({ objectType }) => setObjectTypes?.includes(objectType),

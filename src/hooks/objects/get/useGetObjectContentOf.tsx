@@ -18,6 +18,7 @@ import {
   createGetObjectContentOfQuery,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 import { GetObjectOptions } from "./useGetObject";
@@ -78,12 +79,14 @@ export const useGetObjectContentOf = (
         removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>,
       ) || [];
 
-    const parsedObjects = normalisedObjects.map((obj) => {
+    const parsed = normalisedObjects.map((obj) => {
       const objectMeta = setObjects.find(({ name }) => name === obj.__typename);
-      return parseSkylarkObject(obj, objectMeta);
+      return convertParsedObjectToIdentifier(
+        parseSkylarkObject(obj, objectMeta),
+      );
     });
 
-    return parsedObjects;
+    return parsed;
   }, [contentOfResponse?.pages, setObjects]);
 
   if (hasNextPage) {

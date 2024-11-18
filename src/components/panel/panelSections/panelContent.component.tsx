@@ -1,212 +1,65 @@
-import {
-  closestCenter,
-  useDndContext,
-  useDndMonitor,
-  useDroppable,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import clsx from "clsx";
-import { useEffect, useMemo, useState } from "react";
+import { useDndContext, useDroppable } from "@dnd-kit/core";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { FiZap } from "react-icons/fi";
 
-import { DisplayGraphQLQuery } from "src/components/modals";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { Button } from "src/components/button";
+import { SortFieldAndDirectionSelect } from "src/components/inputs/select";
+import {
+  DisplayGraphQLQuery,
+  DynamicContentConfigurationModal,
+  SearchObjectsModal,
+} from "src/components/modals";
+import { SortableContentObjectList } from "src/components/objectIdentifier";
 import {
   HandleDropError,
   handleDroppedContents,
 } from "src/components/panel/panel.lib";
-import { PanelLoading } from "src/components/panel/panelLoading";
-import { PanelPositionInput } from "src/components/panel/panelPositionInput/panelPositionInput.component";
 import {
+  PanelButton,
   PanelEmptyDataText,
   PanelSectionTitle,
-  PanelSeparator,
 } from "src/components/panel/panelTypography";
-import { Skeleton } from "src/components/skeleton";
 import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
 import { SetPanelObject } from "src/hooks/state";
 import {
-  ParsedSkylarkObjectContentObject,
   AddedSkylarkObjectContentObject,
-  ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
+  ModifiedContents,
+  SkylarkOrderDirections,
 } from "src/interfaces/skylark";
-import {
-  DragEndEvent,
-  DragOverEvent,
-  DragType,
-  DroppableType,
-  generateSortableObjectId,
-  useSortable,
-} from "src/lib/dndkit/dndkit";
-import { hasProperty, insertAtIndex } from "src/lib/utils";
+import { DroppableType } from "src/lib/dndkit/dndkit";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
-interface PanelContentProps extends SkylarkObjectIdentifier {
+interface PanelContentProps {
+  uid: string;
+  objectType: string;
+  language: string;
   isPage?: boolean;
   objects: AddedSkylarkObjectContentObject[] | null;
+  modifiedConfig: ModifiedContents["config"];
   setContentObjects: (
-    contentObjects: {
-      original: ParsedSkylarkObjectContentObject[] | null;
-      updated: AddedSkylarkObjectContentObject[] | null;
-    },
+    contentObjects: ModifiedContents,
     errors: HandleDropError[],
   ) => void;
   inEditMode?: boolean;
+  disableListVirtualization?: boolean;
   setPanelObject: SetPanelObject;
 }
-
-interface SortableContentObject extends AddedSkylarkObjectContentObject {
-  id: string;
-}
-
-const DISPLAY_OBJ_ID = "display-object";
-
-interface SortableDisplayObject {
-  id: typeof DISPLAY_OBJ_ID;
-}
-
-const isSortableDisplayObject = (
-  obj: SortableContentObject | SortableDisplayObject,
-): obj is SortableDisplayObject => obj.id === DISPLAY_OBJ_ID;
-
-interface ContentObjectProps {
-  sortableId: string;
-  contentObject: ParsedSkylarkObjectContentObject;
-  inEditMode?: boolean;
-  arrIndex: number;
-  arrLength: number;
-  setPanelObject: SetPanelObject;
-  removeItem: (uid: string) => void;
-  handleManualOrderChange: (
-    currentIndex: number,
-    updatedPosition: number,
-  ) => void;
-}
-
-const SortableItem = ({
-  sortableId,
-  contentObject,
-  inEditMode,
-  arrIndex,
-  arrLength,
-  removeItem,
-  setPanelObject,
-  handleManualOrderChange,
-}: ContentObjectProps) => {
-  const { object, config, meta, position } = contentObject;
-  const isNewObject = hasProperty(contentObject, "isNewObject");
-
-  const parsedObject: ParsedSkylarkObject = {
-    objectType: object.__typename as string,
-    uid: object.uid,
-    metadata: object,
-    config,
-    meta,
-    availability: {
-      status: meta.availabilityStatus,
-      objects: [],
-    },
-  };
-
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: sortableId,
-    disabled: !inEditMode,
-    type: DragType.PANEL_CONTENT_REORDER_OBJECTS,
-    options: {
-      modifiers: [],
-      dragOverlay: (
-        <ObjectIdentifierCard
-          className="bg-white px-2 shadow-md cursor-grabbing"
-          object={parsedObject}
-        />
-      ),
-      collisionDetection: closestCenter,
-    },
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <>
-      <li
-        ref={setNodeRef}
-        style={style}
-        {...attributes}
-        {...listeners}
-        data-testid={`panel-object-content-item-${arrIndex + 1}`}
-        data-cy={"panel-object-content-item"}
-      >
-        <ObjectIdentifierCard
-          object={parsedObject}
-          onForwardClick={setPanelObject}
-          disableForwardClick={inEditMode}
-          disableDeleteClick={!inEditMode}
-          onDeleteClick={() => removeItem(object.uid)}
-        >
-          <div className="flex">
-            {inEditMode && (
-              <span
-                className={clsx(
-                  "flex h-6 items-center justify-center px-0.5 text-manatee-400 transition-opacity",
-                  position === arrIndex + 1 || isNewObject
-                    ? "opacity-0"
-                    : "opacity-100",
-                )}
-              >
-                {position}
-              </span>
-            )}
-            <PanelPositionInput
-              disabled={!inEditMode}
-              position={arrIndex + 1}
-              hasMoved={!!inEditMode && position !== arrIndex + 1}
-              isNewObject={inEditMode && isNewObject}
-              onBlur={(updatedPosition: number) =>
-                handleManualOrderChange(arrIndex, updatedPosition)
-              }
-              maxPosition={arrLength}
-            />
-          </div>
-        </ObjectIdentifierCard>
-        {arrIndex < arrLength - 1 && (
-          <PanelSeparator transparent={inEditMode} />
-        )}
-      </li>
-    </>
-  );
-};
 
 export const PanelContent = ({
   isPage,
   objects: updatedObjects,
+  modifiedConfig,
   inEditMode,
   objectType,
   uid,
   language,
+  disableListVirtualization,
   setContentObjects,
   setPanelObject,
 }: PanelContentProps) => {
   const { active: activeDragged } = useDndContext();
   const isDragging = useMemo(() => Boolean(activeDragged), [activeDragged]);
-
-  const [overRowIndex, setOverRowIndex] = useState<number | null>(null);
 
   const { data, isLoading, hasNextPage, isFetchingNextPage, query, variables } =
     useGetObjectContent(objectType, uid, {
@@ -214,275 +67,144 @@ export const PanelContent = ({
       fetchAvailability: true,
     });
 
-  const objects = inEditMode ? updatedObjects : data;
+  const objects = (inEditMode ? updatedObjects : data.objects) || [];
 
   useEffect(() => {
     if (!inEditMode && data) {
       setContentObjects(
         {
-          original: data,
-          updated: data,
+          original: data.objects,
+          updated: data.objects,
+          config: null,
         },
         [],
       );
     }
   }, [data, inEditMode, setContentObjects]);
 
-  const onReorder = (
-    updated: AddedSkylarkObjectContentObject[],
-    errors?: HandleDropError[],
-  ) =>
-    setContentObjects(
-      {
-        original: data || null,
-        updated,
-      },
-      errors || [],
-    );
-
-  const removeItem = (uid: string) => {
-    if (objects) {
-      const filtered = objects.filter(({ object }) => uid !== object.uid);
-      onReorder(filtered);
-    }
-  };
-
-  const handleManualOrderChange = (
-    currentIndex: number,
-    updatedPosition: number,
-  ) => {
-    if (objects) {
-      const updatedIndex = updatedPosition - 1;
-      const realUpdatedIndex =
-        updatedIndex <= 0
-          ? 0
-          : updatedIndex >= objects.length
-            ? objects.length - 1
-            : updatedIndex;
-      const updatedObjects = [...objects];
-
-      const objToMove = updatedObjects.splice(currentIndex, 1)[0];
-      updatedObjects.splice(realUpdatedIndex, 0, objToMove);
-
-      onReorder(updatedObjects);
-    }
-  };
-
-  const preppedObjects: SortableContentObject[] | undefined = objects?.map(
-    (object) => ({
-      ...object,
-      id: generateSortableObjectId(
+  const onReorder = useCallback(
+    (updated: AddedSkylarkObjectContentObject[], errors?: HandleDropError[]) =>
+      setContentObjects(
         {
-          uid: object.object.uid,
-          objectType: object.object.__typename as string,
-          meta: { language: object.meta.language },
+          original: data.objects || null,
+          updated,
+          config: modifiedConfig || data.config,
         },
-        "PANEL_CONTENT",
+        errors || [],
       ),
-    }),
+    [data.config, data.objects, modifiedConfig, setContentObjects],
   );
-
-  const sortableObjects: (SortableContentObject | SortableDisplayObject)[] =
-    overRowIndex !== null && preppedObjects
-      ? insertAtIndex<SortableContentObject | SortableDisplayObject>(
-          preppedObjects,
-          overRowIndex,
-          {
-            id: DISPLAY_OBJ_ID,
-          },
-        )
-      : preppedObjects || [];
-
-  const handleDragOver = (event: DragOverEvent) => {
-    const { over, collisions } = event;
-
-    if (
-      event.active.data.current.type === DragType.CONTENT_LIBRARY_OBJECT &&
-      over &&
-      objects
-    ) {
-      // Use first collision id as over id could be from the content library search
-      const collisionIds = collisions
-        ?.map((collision) => collision.id)
-        .filter((id) => !String(id).startsWith("content-library-search")); // TODO don't use a string
-      const overId = collisionIds?.[0] || over.id;
-
-      // DragOver handler for when the item has already been dragged over the sortable list and is now reordering
-      if (
-        over?.data?.current?.type === DragType.PANEL_CONTENT_REORDER_OBJECTS
-      ) {
-        const overIndex = over?.data?.current?.sortable.index;
-        setOverRowIndex(
-          typeof overIndex === "number" && overIndex > -1 ? overIndex : null,
-        );
-        return;
-      }
-
-      // DragOver handler for when the item is dragged over the content dropzone but isn't over the sortable list
-      if (
-        overId === DroppableType.PANEL_CONTENT_SORTABLE &&
-        (overRowIndex === null || !over?.data?.current?.sortable)
-      ) {
-        setOverRowIndex(objects.length);
-      }
-    }
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over, collisions } = event;
-
-    const overContainer = over?.data.current?.sortable?.containerId || over?.id;
-    const withinDropZone = Boolean(
-      collisions?.find(
-        ({ id }) => id === DroppableType.PANEL_CONTENT_SORTABLE,
-      ) || overContainer === DroppableType.PANEL_CONTENT_SORTABLE,
-    );
-
-    if (
-      objects &&
-      sortableObjects &&
-      over &&
-      withinDropZone &&
-      active.data.current.type === DragType.CONTENT_LIBRARY_OBJECT
-    ) {
-      const draggedObject = active.data.current.object;
-      const checkedObjects = active.data.current.checkedObjectsState
-        .filter(({ checkedState }) => Boolean(checkedState))
-        .map(({ object }) => object);
-
-      const draggedObjectIsChecked = checkedObjects.find(
-        ({ uid }) => uid === active.data.current.object.uid,
-      );
-
-      const objectsToAdd: ParsedSkylarkObject[] = draggedObjectIsChecked
-        ? checkedObjects
-        : [draggedObject];
-
-      const { updatedContentObjects, errors } = handleDroppedContents({
-        droppedObjects: objectsToAdd,
-        activeObjectUid: uid,
-        existingObjects: objects,
-        indexToInsert: overRowIndex !== null ? overRowIndex : -1,
-      });
-
-      onReorder(updatedContentObjects, errors);
-    }
-
-    if (
-      objects &&
-      sortableObjects &&
-      over &&
-      active.data.current.type === DragType.PANEL_CONTENT_REORDER_OBJECTS
-    ) {
-      const oldIndex = sortableObjects.findIndex(({ id }) => id === active.id);
-      const newIndex = sortableObjects.findIndex(({ id }) => id === over.id);
-
-      const updatedObjects =
-        oldIndex > -1 && newIndex > -1
-          ? arrayMove(objects, oldIndex, newIndex)
-          : objects;
-      const updatedObjectsWithIdFieldRemoved = updatedObjects.map((obj) => {
-        if (hasProperty(obj, "id")) delete obj.id;
-        return obj;
-      });
-
-      onReorder(updatedObjectsWithIdFieldRemoved);
-    }
-    setOverRowIndex(null);
-  };
-
-  const handleDragCancel = () => {
-    setOverRowIndex(null);
-  };
-
-  useDndMonitor({
-    onDragOver: handleDragOver,
-    onDragEnd: handleDragEnd,
-    onDragCancel: handleDragCancel,
-  });
 
   const { setNodeRef } = useDroppable({
     id: DroppableType.PANEL_CONTENT_SORTABLE,
   });
+
+  const [modalState, setModalState] = useState<
+    false | "search" | "dynamic-content"
+  >(false);
+
+  const combinedConfig: ModifiedContents["config"] = {
+    contentSortDirection:
+      data.config?.contentSortDirection ||
+      modifiedConfig?.contentSortDirection ||
+      SkylarkOrderDirections.ASC,
+    contentSortField:
+      data.config?.contentSortField ||
+      modifiedConfig?.contentSortField ||
+      "__manual",
+  };
 
   return (
     <PanelSectionLayout
       sections={[
         { htmlId: "content-panel-title", title: "Content", id: "content" },
       ]}
+      withoutPadding
       isPage={isPage}
       ref={setNodeRef}
     >
-      <PanelSectionTitle
-        text="Content"
-        id="content-panel-title"
-        count={objects?.length || 0}
-        loading={isLoading || isFetchingNextPage}
-      />
-      <SortableContext
-        id={DroppableType.PANEL_CONTENT_SORTABLE}
-        items={sortableObjects}
-        strategy={verticalListSortingStrategy}
-      >
-        <ul
-          data-testid="panel-content-items"
-          className={clsx(
-            "w-full border border-dashed flex-grow h-full",
-            isLoading && objects?.length === 0 && "hidden",
-            isDragging && objects && objects.length < 8
-              ? "border-brand-primary"
-              : "border-transparent",
-          )}
-        >
-          {!isLoading &&
-            objects?.length === 0 &&
-            ((inEditMode && !isPage) || isDragging ? (
-              <p className="w-full text-left text-sm text-manatee-600 p-0.5">
-                {
-                  "Drag & Drop an object from the Content Library here to add as content."
-                }
-              </p>
-            ) : (
-              <PanelEmptyDataText />
-            ))}
-          {sortableObjects.map((contentObject, index) => {
-            if (isSortableDisplayObject(contentObject)) {
-              return (
-                <>
-                  <li
-                    className="h-10 bg-manatee-100 flex items-center justify-end w-full"
-                    key={contentObject.id}
-                  >
-                    {index < sortableObjects.length - 1 && (
-                      <PanelSeparator transparent={inEditMode} />
-                    )}
-                  </li>
-                </>
-              );
-            }
-            return (
-              <SortableItem
-                key={contentObject.id}
-                sortableId={contentObject.id}
-                contentObject={contentObject}
-                inEditMode={inEditMode}
-                arrIndex={index}
-                arrLength={sortableObjects.length}
-                removeItem={removeItem}
-                handleManualOrderChange={handleManualOrderChange}
-                setPanelObject={setPanelObject}
-              />
+      <div className="flex items-center px-8 pt-8">
+        <PanelSectionTitle
+          text="Content"
+          id="content-panel-title"
+          count={objects.length || 0}
+          loading={isLoading || isFetchingNextPage}
+        />
+        {!isFetchingNextPage && (
+          <PanelButton
+            aria-label={`Open edit content modal`}
+            className="ml-1"
+            type="plus"
+            onClick={() => setModalState("search")}
+          />
+        )}
+        <SortFieldAndDirectionSelect
+          objectTypes={data.objectTypesInContent}
+          variant="pill"
+          containerClassName="mb-2 pb-1 md:pb-2 flex-grow justify-end"
+          values={{
+            sortField: combinedConfig.contentSortField || "",
+            sortDirection:
+              combinedConfig.contentSortDirection || SkylarkOrderDirections.ASC,
+          }}
+          onChange={(values) => {
+            setContentObjects(
+              {
+                original: data.objects,
+                updated: updatedObjects,
+                config: {
+                  ...combinedConfig,
+                  contentSortDirection:
+                    values.sortDirection || SkylarkOrderDirections.ASC,
+                  contentSortField: values.sortField,
+                },
+              },
+              [],
             );
-          })}
-        </ul>
-      </SortableContext>
-      <DisplayGraphQLQuery
-        label="Get Object Content"
-        query={query}
-        variables={variables}
-        buttonClassName="absolute right-2 top-0"
-      />
-      <PanelLoading
+          }}
+        />
+      </div>
+      <div className="flex flex-grow justify-end pr-3">
+        <Button
+          variant="link"
+          className="-mt-4"
+          onClick={() => setModalState("dynamic-content")}
+          Icon={<FiZap className="text-sm -mr-1" />}
+        >
+          Configure Dynamic Content
+        </Button>
+      </div>
+
+      <div className="flex flex-grow">
+        {!isLoading &&
+          objects.length === 0 &&
+          ((inEditMode && !isPage) || isDragging ? (
+            <p className="w-full text-left text-sm text-manatee-600 p-0.5">
+              {
+                "Drag & Drop an object from the Content Library here to add as content."
+              }
+            </p>
+          ) : (
+            <PanelEmptyDataText />
+          ))}
+        <SortableContentObjectList
+          uid={uid}
+          objects={objects}
+          isDragging={isDragging}
+          disableReorder={combinedConfig.contentSortField !== "__manual"}
+          isLoading={isLoading}
+          inEditMode={inEditMode}
+          onReorder={onReorder}
+          setPanelObject={setPanelObject}
+          disableVirtualization={disableListVirtualization}
+        />
+        <DisplayGraphQLQuery
+          label="Get Object Content"
+          query={query}
+          variables={variables}
+          buttonClassName="absolute right-2 top-0"
+        />
+        {/* <PanelLoading
         isLoading={
           (isLoading && objectType.length === 0) ||
           hasNextPage ||
@@ -495,7 +217,40 @@ export const PanelContent = ({
             className="mb-2 h-11 w-full max-w-xl"
           />
         ))}
-      </PanelLoading>
+      </PanelLoading> */}
+      </div>
+      <DynamicContentConfigurationModal
+        isOpen={modalState === "dynamic-content"}
+        uid={uid}
+        objectType={objectType}
+        closeModal={() => setModalState(false)}
+      />
+      <SearchObjectsModal
+        title={`Add Content`}
+        isOpen={modalState === "search"}
+        // columns={
+        //   searchObjectsModalState?.fields
+        //     ? [
+        //         OBJECT_LIST_TABLE.columnIds.displayField,
+        //         ...searchObjectsModalState?.fields,
+        //       ]
+        //     : undefined
+        // }
+        existingObjects={objects}
+        closeModal={() => setModalState(false)}
+        onSave={({ checkedObjectsState }) => {
+          const { updatedContentObjects, errors } = handleDroppedContents({
+            droppedObjects: checkedObjectsState
+              .filter(({ checkedState }) => checkedState === true)
+              .map(({ object }) => object),
+            activeObjectUid: uid,
+            existingObjects: objects || [],
+            indexToInsert: 0,
+          });
+
+          onReorder(updatedContentObjects, errors);
+        }}
+      />
     </PanelSectionLayout>
   );
 };

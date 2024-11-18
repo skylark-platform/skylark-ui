@@ -52,11 +52,18 @@ export const createGetAllObjectsRelationshipConfigurationQuery = (
             __aliasFor: "listRelationshipConfiguration",
             __args: {
               object_type: new EnumType(objectType),
+              default: true,
+              limit: 100,
             },
-            relationship_name: true,
-            config: {
-              default_sort_field: true,
-              inherit_availability: true,
+            count: true,
+            next_token: true,
+            objects: {
+              uid: true,
+              relationship_name: true,
+              config: {
+                default_sort_field: true,
+                inherit_availability: true,
+              },
             },
           },
         };

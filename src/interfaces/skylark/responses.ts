@@ -1,10 +1,12 @@
 import {
+  GQLObjectTypeRelationshipConfig,
   NextToken,
   SkylarkGraphQLAPIKey,
   SkylarkGraphQLAvailability,
   SkylarkGraphQLAvailabilityAssignedTo,
   SkylarkGraphQLAvailabilityDimension,
   SkylarkGraphQLAvailabilityDimensionValue,
+  SkylarkGraphQLDynamicContentConfiguration,
   SkylarkGraphQLObject,
   SkylarkGraphQLObjectConfig,
   SkylarkGraphQLObjectContent,
@@ -38,6 +40,13 @@ export interface GQLSkylarkAccountResponse {
     skylark_version: string;
   };
 }
+
+export enum SkylarkOrderDirections {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
+export type GQLSkylarkOrderDirections = SkylarkOrderDirections | null;
 
 export interface GQLSkylarkActivationStatusResponse {
   getActivationStatus: {
@@ -112,6 +121,8 @@ export interface GQLSkylarkGetObjectRelationshipsResponse {
 
 export interface GQLSkylarkGetObjectContentResponse {
   getObjectContent: {
+    content_sort_field: string | null;
+    content_sort_direction: GQLSkylarkOrderDirections;
     content: SkylarkGraphQLObjectContent | null;
   };
 }
@@ -219,24 +230,21 @@ export interface GQLSkylarkGetAvailabilityDimensions {
   getAvailability: SkylarkGraphQLAvailability;
 }
 
-export interface GQLObjectTypeRelationshipConfig {
-  default_sort_field: string | null;
-  inherit_availability: boolean;
-}
-
 export interface GQLSkylarkListObjectTypeRelationshipConfiguration {
   listRelationshipConfiguration: {
-    relationship_name: string;
-    config: GQLObjectTypeRelationshipConfig;
-  }[];
+    count: number;
+    next_token: string | null;
+    objects: {
+      uid: string;
+      relationship_name: string;
+      config: GQLObjectTypeRelationshipConfig;
+    }[];
+  };
 }
 
 export type GQLSkylarkListAllObjectTypesRelationshipConfiguration = Record<
   string,
-  | {
-      relationship_name: string;
-      config: GQLObjectTypeRelationshipConfig;
-    }[]
+  | GQLSkylarkListObjectTypeRelationshipConfiguration["listRelationshipConfiguration"]
   | null
 >;
 
@@ -265,4 +273,20 @@ export interface GQLSkylarkListAPIKeysResponse {
 
 export interface GQLSkylarkCreateAPIKeyResponse {
   createApiKey: SkylarkGraphQLAPIKey;
+}
+
+export interface GQLSkylarkDynamicContentPreviewResponse {
+  dynamicContentPreview: {
+    count: number;
+    total_count: number;
+    objects: SkylarkGraphQLObject[];
+  };
+}
+
+export interface GQLSkylarkGetObjectDynamicContentConfigurationResponse {
+  getObjectDynamicContentConfiguration: {
+    content_sort_field: string | null;
+    content_sort_direction: GQLSkylarkOrderDirections;
+    dynamic_content: SkylarkGraphQLDynamicContentConfiguration;
+  };
 }

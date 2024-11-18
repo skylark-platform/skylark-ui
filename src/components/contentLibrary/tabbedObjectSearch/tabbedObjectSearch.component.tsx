@@ -51,7 +51,10 @@ import {
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
-import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
+import {
+  createDefaultSkylarkObject,
+  splitMetadataIntoSystemTranslatableGlobal,
+} from "src/lib/skylark/objects";
 import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
 
 type TabbedObjectSearchProps = Omit<
@@ -479,7 +482,7 @@ const TabbedObjectSearch = ({
               <CreateButtons
                 className={clsx("mb-1 justify-end pr-1 md:pr-0")}
                 onObjectCreated={(obj) => {
-                  setPanelObject?.(obj);
+                  setPanelObject?.(createDefaultSkylarkObject(obj));
                 }}
                 preselectedObjectType={
                   activeTab?.filters.objectTypes?.length === 1

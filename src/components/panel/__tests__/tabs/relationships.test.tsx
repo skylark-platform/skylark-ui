@@ -58,29 +58,22 @@ describe("relationships view", () => {
     );
   });
 
-  // TODO uncomment when relationship_config is ready
-  // test("displays the relationship sort field", async () => {
-  //   render(
-  //     <Panel
-  //       {...defaultProps}
-  //       object={seasonWithRelationships}
-  //       tab={PanelTab.Relationships}
-  //     />,
-  //   );
+  test("displays the relationship sort field", async () => {
+    render(
+      <Panel
+        {...defaultProps}
+        object={seasonWithRelationships}
+        tab={PanelTab.Relationships}
+      />,
+    );
 
-  //   await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
+    await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
 
-  //   const withinEpisodesRelationship = within(screen.getByTestId("episodes"));
+    const withinEpisodesRelationship = within(screen.getByTestId("episodes"));
+    const select = withinEpisodesRelationship.getByTestId("select");
 
-  //   await waitFor(() => {
-  //     expect(
-  //       withinEpisodesRelationship.getByLabelText("Sorted by:"),
-  //     ).toBeInTheDocument();
-  //   });
-
-  //   const sortedBy = withinEpisodesRelationship.getByLabelText("Sorted by:");
-  //   expect(sortedBy).toHaveTextContent("Episode number (Default)");
-  // });
+    expect(select).toHaveTextContent('"episode_number"');
+  });
 
   test("displays the value of the relationship sort field", async () => {
     render(
@@ -140,11 +133,13 @@ describe("relationships view", () => {
     })[0];
     fireEvent.click(firstOpenObjectButton);
 
-    expect(setPanelObject).toHaveBeenCalledWith({
-      objectType: "Brand",
-      uid: "01H4MMDGADSP73B3MBM89VZTQC",
-      language: "en-GB",
-    });
+    expect(setPanelObject).toHaveBeenCalledWith(
+      expect.objectContaining({
+        objectType: "Brand",
+        uid: "01H4MMDGADSP73B3MBM89VZTQC",
+        language: "en-GB",
+      }),
+    );
   });
 
   test("makes a relationship active and then closes it", async () => {

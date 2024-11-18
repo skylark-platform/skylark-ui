@@ -16,8 +16,10 @@ import {
   AvailabilityStatus,
   GQLSkylarkAccountResponse,
   ParsedSkylarkObject,
+  SkylarkObject,
 } from "src/interfaces/skylark";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
 import { ObjectSearch } from "./objectSearch.component";
 
@@ -245,8 +247,9 @@ describe("with object select (checkboxes)", () => {
         checkedObjectsState={[
           {
             object: {
-              meta: { language: "en-GB", availableLanguages: [] },
-            } as unknown as ParsedSkylarkObject,
+              language: "en-GB",
+              availableLanguages: [],
+            } as unknown as SkylarkObject,
             checkedState: true,
           },
         ]}
@@ -276,8 +279,9 @@ describe("with object select (checkboxes)", () => {
         checkedObjectsState={[
           {
             object: {
-              meta: { language: "en-GB", availableLanguages: [] },
-            } as unknown as ParsedSkylarkObject,
+              language: "en-GB",
+              availableLanguages: [],
+            } as unknown as SkylarkObject,
             checkedState: true,
           },
         ]}
@@ -542,7 +546,7 @@ describe("batch options", () => {
         withObjectSelect
         checkedObjectsState={[
           {
-            object: {
+            object: convertParsedObjectToIdentifier({
               uid: "123",
               objectType: "Episode",
               meta: {
@@ -555,13 +559,14 @@ describe("batch options", () => {
                 uid: "123",
                 external_id: "",
                 title: "my episode",
+                type: null,
               },
               config: { primaryField: "title" },
               availability: {
                 status: AvailabilityStatus.Unavailable,
                 objects: [],
               },
-            } as ParsedSkylarkObject,
+            } as ParsedSkylarkObject),
             checkedState: true,
           },
         ]}

@@ -12,7 +12,7 @@ import { m, useMotionValue, useTransform } from "framer-motion";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import { Panel } from "src/components/panel";
 import { SEGMENT_KEYS } from "src/constants/segment";
 import { PanelTab, SetPanelObject, usePanelObjectState } from "src/hooks/state";
@@ -34,12 +34,10 @@ const MINIMUM_SIZES = {
 
 const ContentLibraryDragOverlay = ({
   activeDragged,
-  checkedObjects,
   checkedUids,
   checkedObjectTypesForDisplay,
 }: {
   activeDragged?: Active;
-  checkedObjects: ParsedSkylarkObject[];
   checkedObjectTypesForDisplay: string[];
   checkedUids: string[];
 }) => {
@@ -52,9 +50,8 @@ const ContentLibraryDragOverlay = ({
     const draggedObject = activeDragged.data.current.object;
     return (
       <div className="max-w-[350px] cursor-grabbing items-center rounded-sm border border-manatee-200 bg-white text-sm">
-        {checkedObjects.length > 0 &&
-        checkedUids.includes(draggedObject.uid) ? (
-          <p className="p-2">{`Add ${checkedObjects.length} ${
+        {checkedUids.length > 0 && checkedUids.includes(draggedObject.uid) ? (
+          <p className="p-2">{`Add ${checkedUids.length} ${
             checkedObjectTypesForDisplay.length === 1
               ? checkedObjectTypesForDisplay[0]
               : ""
@@ -87,7 +84,6 @@ export const ContentLibrary = ({
   } = usePanelObjectState();
 
   const {
-    checkedObjects,
     checkedObjectsState,
     checkedUids,
     checkedObjectTypesForDisplay,
@@ -218,7 +214,6 @@ export const ContentLibrary = ({
               {activeDragged ? (
                 <ContentLibraryDragOverlay
                   activeDragged={activeDragged}
-                  checkedObjects={checkedObjects}
                   checkedUids={checkedUids}
                   checkedObjectTypesForDisplay={checkedObjectTypesForDisplay}
                 />

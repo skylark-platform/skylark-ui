@@ -1,3 +1,10 @@
+import {
+  autoUpdate,
+  flip,
+  offset,
+  size,
+  useFloating,
+} from "@floating-ui/react";
 import { Combobox, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import React, {
@@ -7,11 +14,15 @@ import React, {
   Ref,
   useRef,
   useMemo,
+  Fragment,
+  ReactNode,
+  KeyboardEvent,
 } from "react";
 import { useVirtual } from "react-virtual";
 
 import {
   getSelectOptionHeight,
+  OptionsPortalWrapper,
   SelectLabel,
   SelectOption,
   SelectOptionComponent,
@@ -20,10 +31,18 @@ import {
 } from "src/components/inputs/select";
 import { Pill } from "src/components/pill";
 
-type MultiSelectOption = SelectOption<string>;
+interface NothingFoundProps {
+  nothingFoundText?: string;
+  onNothingFoundClick?: () => void;
+}
 
-export interface MultiSelectProps {
+export type MultiSelectOption = SelectOption<string> & {
+  config?: { colour?: string | null };
+};
+
+export interface MultiSelectProps extends NothingFoundProps {
   selected?: string[];
+  selectedDivider?: ReactNode;
   options: MultiSelectOption[];
   label?: string;
   labelVariant?: "default" | "form";
@@ -32,8 +51,37 @@ export interface MultiSelectProps {
   disabled?: boolean;
   rounded?: boolean;
   required?: boolean;
+  renderInPortal?: boolean;
   onChange?: (values: string[]) => void;
+  onQueryChange?: (s: string) => void;
 }
+
+const NothingFound = ({
+  nothingFoundText,
+  onNothingFoundClick,
+}: NothingFoundProps) => {
+  const text = nothingFoundText || "Nothing found.";
+  const className =
+    "relative cursor-default select-none bg-white px-4 py-2 text-sm text-gray-900";
+
+  return (
+    <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+      {onNothingFoundClick ? (
+        <button
+          onClick={onNothingFoundClick}
+          className={clsx(
+            className,
+            "cursor-pointer hover:text-brand-primary transition-colors",
+          )}
+        >
+          {text}
+        </button>
+      ) : (
+        <div className={clsx(className)}>{text}</div>
+      )}
+    </div>
+  );
+};
 
 const VirtualizedOptions = ({
   options,
@@ -93,10 +141,15 @@ const MultiSelectComponent = (
     placeholder,
     className,
     onChange,
+    onQueryChange,
     disabled,
     selected,
+    selectedDivider,
     rounded,
     required,
+    nothingFoundText,
+    renderInPortal,
+    onNothingFoundClick,
   } = props;
 
   const options = useMemo(
@@ -104,7 +157,15 @@ const MultiSelectComponent = (
     [unsortedOptions],
   );
 
-  const [query, setQuery] = useState("");
+  const [query, setStateQuery] = useState("");
+
+  const setQuery = useCallback(
+    (s: string) => {
+      onQueryChange?.(s);
+      setStateQuery(s);
+    },
+    [onQueryChange],
+  );
 
   const filteredOptions =
     query === ""
@@ -124,7 +185,7 @@ const MultiSelectComponent = (
       setQuery("");
       onChange?.(newSelected.map(({ value }) => value));
     },
-    [onChange],
+    [onChange, setQuery],
   );
 
   const paddingClassName = "py-2 pl-3 pr-2 sm:py-3 sm:pl-6";
@@ -147,6 +208,32 @@ const MultiSelectComponent = (
     [onChangeWrapper, selectedOptions],
   );
 
+  const { refs, floatingStyles } = useFloating({
+    placement: "bottom-start",
+    middleware: [
+      offset(5),
+      flip({ padding: 10 }),
+      size({
+        apply({ rects, elements, availableHeight }) {
+          Object.assign(elements.floating.style, {
+            maxHeight: `${availableHeight}px`,
+            minWidth: `${rects.reference.width}px`,
+          });
+        },
+        padding: 10,
+      }),
+    ],
+    whileElementsMounted: autoUpdate,
+  });
+
+  const callNothingFoundOnEnter = onNothingFoundClick
+    ? (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+          onNothingFoundClick();
+        }
+      }
+    : undefined;
+
   return (
     <Combobox
       disabled={disabled}
@@ -154,91 +241,106 @@ const MultiSelectComponent = (
       value={selectedOptions}
       multiple
     >
-      <div
-        className={clsx(
-          "relative flex flex-col items-start justify-center",
-          className,
-        )}
-      >
-        {label && (
-          <SelectLabel
-            label={label}
-            labelVariant={labelVariant}
-            labelPosition={"default"}
-            isRequired={required}
-          />
-        )}
+      {({ open }) => (
         <div
           className={clsx(
-            selectClassName,
-            label && "mt-2",
-            paddingClassName,
-            "flex-wrap gap-2",
+            "relative flex flex-col items-start justify-center overflow-x-hidden",
+            className,
           )}
+          ref={refs.setReference}
         >
-          {selectedOptions.map(({ label, value }) => (
-            <Pill
-              key={value}
-              label={label || value}
-              className="my-auto bg-brand-primary"
-              onDelete={() => deselectOption(value)}
+          {label && (
+            <SelectLabel
+              label={label}
+              labelVariant={labelVariant}
+              labelPosition={"default"}
+              isRequired={required}
             />
-          ))}
-          <Combobox.Button
-            data-testid="multiselect-input"
-            as="div"
-            className="flex min-w-[6rem] flex-1"
-          >
-            <Combobox.Input
-              className={clsx(
-                "block w-full truncate border-none bg-manatee-50 pr-2 leading-5 text-gray-900 focus:outline-none focus:ring-0",
-              )}
-              displayValue={(option: MultiSelectOption) =>
-                option.label || option.value
-              }
-              onChange={(event) => setQuery(event.target.value)}
-              value={query}
-              placeholder={placeholder}
-              ref={ref as Ref<HTMLInputElement> | undefined}
-            />
-          </Combobox.Button>
-        </div>
-        <Transition
-          as="div"
-          className="z-50 text-sm"
-          leave="transition ease-in duration-50"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-          afterLeave={() => setQuery("")}
-        >
-          <Combobox.Options>
-            {filteredOptions.length === 0 ? (
-              <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <div className="relative cursor-default select-none bg-white px-4 py-2 text-sm text-gray-900">
-                  Nothing found.
-                </div>
-              </div>
-            ) : options.length > 40 ? (
-              <VirtualizedOptions
-                options={filteredOptions ?? []}
-                selected={selected}
-              />
-            ) : (
-              <SelectOptionsContainer>
-                {filteredOptions.map((option) => (
-                  <SelectOptionComponent
-                    key={option.value}
-                    isSelected={selected?.includes(option.value)}
-                    variant="primary"
-                    option={option}
-                    withCheckbox
-                  />
-                ))}
-              </SelectOptionsContainer>
+          )}
+          <div
+            className={clsx(
+              selectClassName,
+              label && "mt-2",
+              paddingClassName,
+              "flex-wrap gap-2",
             )}
-          </Combobox.Options>
-        </Transition>
-      </div>
+          >
+            {selectedOptions.map(({ label, value, config }, i, arr) => (
+              <Fragment key={value}>
+                <Pill
+                  label={label || value}
+                  className="my-auto bg-brand-primary text-clip overflow-hidden"
+                  onDelete={() => deselectOption(value)}
+                  bgColor={config?.colour}
+                />
+                {selectedDivider && i < arr.length - 1 && selectedDivider}
+              </Fragment>
+            ))}
+            <Combobox.Button
+              data-testid="multiselect-input"
+              as="div"
+              className="flex min-w-[6rem] flex-1"
+            >
+              <Combobox.Input
+                className={clsx(
+                  "block w-full truncate border-none bg-manatee-50 pr-2 leading-5 text-gray-900 focus:outline-none focus:ring-0",
+                )}
+                displayValue={(option: MultiSelectOption) =>
+                  option.label || option.value
+                }
+                onChange={(event) => setQuery(event.target.value)}
+                onKeyDown={callNothingFoundOnEnter}
+                value={query}
+                placeholder={placeholder}
+                ref={ref as Ref<HTMLInputElement> | undefined}
+              />
+            </Combobox.Button>
+          </div>
+          <Transition
+            as="div"
+            className="z-50 text-sm"
+            leave="transition ease-in duration-50"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+            afterLeave={() => setQuery("")}
+          >
+            {open && (
+              <OptionsPortalWrapper usePortal={!!renderInPortal}>
+                <Combobox.Options
+                  static
+                  ref={refs.setFloating}
+                  style={floatingStyles}
+                  className="z-50 text-xs sm:text-sm w-72 md:w-96"
+                >
+                  {filteredOptions.length === 0 ? (
+                    <NothingFound
+                      nothingFoundText={nothingFoundText}
+                      onNothingFoundClick={onNothingFoundClick}
+                    />
+                  ) : options.length > 40 ? (
+                    <VirtualizedOptions
+                      options={filteredOptions ?? []}
+                      selected={selected}
+                    />
+                  ) : (
+                    <SelectOptionsContainer>
+                      {filteredOptions.map((option) => (
+                        <SelectOptionComponent
+                          key={option.value}
+                          isSelected={selected?.includes(option.value)}
+                          variant="primary"
+                          option={option}
+                          withCheckbox
+                        />
+                      ))}
+                    </SelectOptionsContainer>
+                  )}
+                </Combobox.Options>
+              </OptionsPortalWrapper>
+            )}
+          </Transition>
+        </div>
+      )}
     </Combobox>
   );
 };

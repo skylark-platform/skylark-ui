@@ -8,12 +8,12 @@ import { UTC_NAME } from "src/components/inputs/select";
 import {
   ParsedSkylarkObjectAvailability,
   AvailabilityStatus,
-  ParsedSkylarkObjectMetadata,
-  SkylarkAvailabilityField,
   SkylarkGraphQLAvailabilityList,
+  SkylarkObject,
+  BuiltInSkylarkObjectType,
+  ParsedSkylarkObjectMetadata,
 } from "src/interfaces/skylark";
 import { VALID_DATE_FORMATS } from "src/lib/skylark/parsers";
-import { hasProperty } from "src/lib/utils";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
@@ -38,16 +38,13 @@ export const getSingleAvailabilityStatus = (
 };
 
 export const getAvailabilityStatusForAvailabilityObject = (
-  metadata: ParsedSkylarkObjectMetadata,
+  object:
+    | SkylarkObject<BuiltInSkylarkObjectType.Availability>["contextualFields"]
+    | ParsedSkylarkObjectMetadata,
 ): ParsedSkylarkObjectAvailability["status"] => {
-  const start =
-    hasProperty(metadata, SkylarkAvailabilityField.Start) && metadata.start
-      ? (metadata.start as string)
-      : null;
-  const end =
-    hasProperty(metadata, SkylarkAvailabilityField.End) && metadata.end
-      ? (metadata.end as string)
-      : null;
+  const start = typeof object?.start === "string" ? object.start : null;
+
+  const end = typeof object?.end === "string" ? object.end : null;
 
   if (start === null && end === null) {
     return AvailabilityStatus.Active;

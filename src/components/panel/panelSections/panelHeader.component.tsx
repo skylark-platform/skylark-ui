@@ -25,7 +25,7 @@ import {
   DropdownMenuButton,
   DropdownMenuOption,
 } from "src/components/dropdown/dropdown.component";
-import { FiX } from "src/components/icons";
+import { DynamicContentIcon, FiX } from "src/components/icons";
 import { LanguageSelect } from "src/components/inputs/select";
 import {
   CreateObjectModal,
@@ -45,9 +45,11 @@ import {
   AvailabilityStatus,
   BuiltInSkylarkObjectType,
   ParsedSkylarkObject,
+  SkylarkObjectIdentifier,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
   getObjectDisplayName,
   hasProperty,
@@ -96,16 +98,18 @@ const getAlternateSaveButtonText = (
   return "Publish";
 };
 
-const RefreshPanelQueries = (
-  props: Omit<ButtonProps, "variant"> & { uid: string; objectType: string },
-) => {
+const RefreshPanelQueries = ({
+  uid,
+  ...props
+}: Omit<ButtonProps, "variant"> &
+  Omit<SkylarkObjectIdentifier, "language" | "objectType">) => {
   const client = useQueryClient();
 
   const [isFetching, setIsFetching] = useState(false);
 
   const onClick = async () => {
     setIsFetching(true);
-    await refetchPanelQueries(client, props.uid);
+    await refetchPanelQueries(client, uid);
     setIsFetching(false);
   };
 
@@ -356,7 +360,6 @@ export const PanelHeader = ({
     },
     [currentTab, language, objectType, objectUid, propSave],
   );
-
   return (
     <div
       data-testid="panel-header"
@@ -385,11 +388,7 @@ export const PanelHeader = ({
                 onClick={navigateToForwardPanelObject}
                 aria-label="Click to go forward"
               />
-              <RefreshPanelQueries
-                disabled={inEditMode}
-                uid={objectUid}
-                objectType={objectType}
-              />
+              <RefreshPanelQueries disabled={inEditMode} uid={objectUid} />
             </>
           )}
           <DropdownMenu options={objectMenuOptions} placement="bottom-end">
@@ -491,6 +490,7 @@ export const PanelHeader = ({
                     policy={object.metadata.policy as string}
                   />
                 )}
+              {object.meta.hasDynamicContent && <DynamicContentIcon />}
               <ObjectTypePill
                 className="w-20 bg-brand-primary"
                 type={objectType}
@@ -538,22 +538,22 @@ export const PanelHeader = ({
           />
         )}
       </AnimatePresence>
-      <CreateObjectModal
-        createTranslation={{
-          uid: objectUid,
-          language,
-          objectType,
-          objectTypeDisplayName,
-          existingLanguages,
-          objectDisplayName: title,
-        }}
-        isOpen={createObjectModalOpen}
-        objectType={objectType}
-        setIsOpen={setCreateObjectModalOpen}
-        onObjectCreated={(obj) => {
-          setLanguage(obj.language);
-        }}
-      />
+      {object && (
+        <CreateObjectModal
+          createTranslation={{
+            ...convertParsedObjectToIdentifier(object),
+            objectTypeDisplayName,
+            existingLanguages,
+            objectDisplayName: title,
+          }}
+          isOpen={createObjectModalOpen}
+          objectType={objectType}
+          setIsOpen={setCreateObjectModalOpen}
+          onObjectCreated={(obj) => {
+            setLanguage(obj.language || "");
+          }}
+        />
+      )}
       <DeleteObjectModal
         isOpen={deleteObjectConfirmationModalOpen}
         setIsOpen={setDeleteObjectConfirmationModalOpen}

@@ -355,12 +355,14 @@ describe("availability view", () => {
     })[0];
     await fireEvent.click(firstOpenObjectButton);
 
-    expect(setPanelObject).toHaveBeenCalledWith({
-      objectType: "Availability",
-      uid: GQLSkylarkGetObjectAvailabilityQueryFixture.data
-        .getObjectAvailability.availability.objects[0].uid,
-      language: "",
-    });
+    expect(setPanelObject).toHaveBeenCalledWith(
+      expect.objectContaining({
+        objectType: "Availability",
+        uid: GQLSkylarkGetObjectAvailabilityQueryFixture.data
+          .getObjectAvailability.availability.objects[0].uid,
+        language: "",
+      }),
+    );
   });
 
   test("makes an availability active and then closes it", async () => {

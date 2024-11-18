@@ -144,12 +144,17 @@ export const LIST_SCHEMA_VERSIONS = gql`
 export const LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION = gql`
   query ${wrapQueryName(
     "LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION",
-  )}($objectType: ObjectTypes!) {
-    listRelationshipConfiguration(object_type: $objectType) {
-      relationship_name
-      config {
-        default_sort_field
-        inherit_availability
+  )}($objectType: ObjectTypes!, $nextToken: String) {
+    listRelationshipConfiguration(object_type: $objectType, default: true, next_token: $nextToken, limit: 100) {
+      count
+      next_token
+      objects {
+        uid
+        relationship_name
+        config {
+          default_sort_field
+          inherit_availability
+        }
       }
     }
   }

@@ -89,7 +89,7 @@ describe("Object Page", () => {
             cy.contains("Edit Content").click();
             cy.contains("Editing");
 
-            cy.get("[data-testid=panel-content-items] > li p")
+            cy.get("[data-testid=panel-content-items] > div p")
               .then(($els) => {
                 const text = $els.toArray().map((el) => el.innerText.trim());
                 return text;
@@ -102,7 +102,7 @@ describe("Object Page", () => {
           });
 
           // Test that the order has changed
-          cy.get("[data-testid=panel-content-items] > li p")
+          cy.get("[data-testid=panel-content-items] > div p")
             .then(($els) => {
               const text = $els.toArray().map((el) => el.innerText.trim());
               return text;

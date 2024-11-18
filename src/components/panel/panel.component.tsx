@@ -25,22 +25,19 @@ import {
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ParsedSkylarkObjectContentObject,
   ParsedSkylarkObject,
-  AddedSkylarkObjectContentObject,
   SkylarkSystemField,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
   BuiltInSkylarkObjectType,
   GQLSkylarkErrorResponse,
   ParsedSkylarkObjectConfig,
-  ParsedSkylarkRelationshipConfig,
   ModifiedRelationshipsObject,
+  ModifiedContents,
 } from "src/interfaces/skylark";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
   hasProperty,
   getObjectTypeDisplayNameFromParsedObject,
-  getObjectDisplayName,
 } from "src/lib/utils";
 
 import {
@@ -64,9 +61,10 @@ import { PanelRelationships } from "./panelSections/panelRelationships.component
 interface PanelProps {
   isPage?: boolean;
   closePanel?: () => void;
-  object: SkylarkObjectIdentifier;
+  object: SkylarkObject;
   tab: PanelTab;
   tabState: PanelTabState;
+  disableListVirtualization?: boolean;
   setPanelObject: SetPanelObject;
   setTab: (t: PanelTab) => void;
   navigateToPreviousPanelObject?: () => void;
@@ -108,13 +106,7 @@ const displayHandleDroppedErrors = (
     toast.error(
       <Toast
         title={`Object added to self`}
-        message={`Cannot link ${getObjectTypeDisplayNameFromParsedObject(
-          addedToSelfError.object,
-          objectTypeConfigObject,
-        )} "${getObjectDisplayName(
-          addedToSelfError.object,
-          objectTypeConfigObject,
-        )}" to itself.`}
+        message={`Cannot link ${addedToSelfError.object.display.objectType} "${addedToSelfError.object.display.name}" to itself.`}
       />,
       { autoClose: 10000 },
     );
@@ -127,12 +119,7 @@ const displayHandleDroppedErrors = (
   if (invalidObjectTypeErrors.length > 0) {
     const invalidObjectTypes = [
       ...new Set(
-        invalidObjectTypeErrors.map(({ object }) =>
-          getObjectTypeDisplayNameFromParsedObject(
-            object,
-            objectTypeConfigObject,
-          ),
-        ),
+        invalidObjectTypeErrors.map(({ object }) => object.display.objectType),
       ),
     ];
 
@@ -153,8 +140,7 @@ const displayHandleDroppedErrors = (
     }
 
     const affectedObjectsMsg = invalidObjectTypeErrors.map(
-      ({ object }) =>
-        `- ${getObjectDisplayName(object, objectTypeConfigObject)}`,
+      ({ object }) => `- ${object.display.name}`,
     );
     toast.error(
       <Toast
@@ -178,11 +164,8 @@ const displayHandleDroppedErrors = (
   if (invalidRelationshipTypeErrors.length > 0) {
     const invalidObjectTypes = [
       ...new Set(
-        invalidRelationshipTypeErrors.map(({ object }) =>
-          getObjectTypeDisplayNameFromParsedObject(
-            object,
-            objectTypeConfigObject,
-          ),
+        invalidRelationshipTypeErrors.map(
+          ({ object }) => object.display.objectType,
         ),
       ),
     ];
@@ -199,8 +182,7 @@ const displayHandleDroppedErrors = (
       sentenceCase(relationshipName) || "Active relationship";
 
     const affectedObjectsMsg = invalidRelationshipTypeErrors.map(
-      ({ object }) =>
-        `- ${getObjectDisplayName(object, objectTypeConfigObject)}`,
+      ({ object }) => `- ${object.display.name}`,
     );
     toast.error(
       <Toast
@@ -227,8 +209,7 @@ const displayHandleDroppedErrors = (
 
   if (existingLinkErrors.length > 0) {
     const affectedObjectsMsg = existingLinkErrors.map(
-      ({ object }) =>
-        `- ${getObjectDisplayName(object, objectTypeConfigObject)}`,
+      ({ object }) => `- ${object.display.name}`,
     );
     toast.error(
       <Toast
@@ -256,6 +237,7 @@ export const Panel = ({
   closePanel,
   tabState,
   setTab: setSelectedTab,
+  disableListVirtualization,
   navigateToPreviousPanelObject,
   navigateToForwardPanelObject,
   setPanelObject,
@@ -268,20 +250,16 @@ export const Panel = ({
 
   const [panelInEditMode, setEditMode] = useState(false);
 
-  const [contentObjects, setContentObjects] = useState<{
-    original: ParsedSkylarkObjectContentObject[] | null;
-    updated: AddedSkylarkObjectContentObject[] | null;
-  }>({
-    original: null,
-    updated: null,
-  });
+  const [contentObjects, setContentObjects] = useState<ModifiedContents | null>(
+    null,
+  );
 
   const [modifiedRelationships, setModifiedRelationships] =
     useState<ModifiedRelationshipsObject | null>(null);
 
   const [modifiedAvailabilityObjects, setModifiedAvailabilityObjects] =
     useState<{
-      added: ParsedSkylarkObject[];
+      added: SkylarkObject[];
       removed: string[];
     } | null>(null);
 
@@ -293,8 +271,8 @@ export const Panel = ({
 
   const [modifiedAvailabilityAssignedTo, setModifiedAvailabilityAssignedTo] =
     useState<{
-      added: ParsedSkylarkObject[];
-      removed: ParsedSkylarkObject[];
+      added: SkylarkObject[];
+      removed: SkylarkObject[];
     } | null>(null);
 
   const { uid, objectType, language } = object;
@@ -354,7 +332,8 @@ export const Panel = ({
   const inEditMode =
     panelInEditMode ||
     isMetadataFormDirty ||
-    contentObjects.original?.length !== contentObjects.updated?.length ||
+    contentObjects?.original?.length !== contentObjects?.updated?.length ||
+    Boolean(contentObjects?.config) ||
     modifiedRelationships !== null ||
     modifiedAvailabilityObjects !== null ||
     modifiedAvailabilityAssignedTo !== null;
@@ -432,7 +411,7 @@ export const Panel = ({
     useUpdateObjectContent({
       objectType,
       onSuccess: () => {
-        setContentObjects({ original: null, updated: null });
+        setContentObjects(null);
         if (panelInEditMode) setEditMode(false);
       },
       onError: showUpdateErrorToast,
@@ -468,11 +447,10 @@ export const Panel = ({
     });
 
   const saveActiveTabChanges = (opts?: { draft?: boolean }) => {
-    if (selectedTab === PanelTab.Content && contentObjects.updated) {
+    if (selectedTab === PanelTab.Content && contentObjects?.updated) {
       updateObjectContent({
         uid,
-        originalContentObjects: contentObjects.original,
-        updatedContentObjects: contentObjects.updated,
+        ...contentObjects,
       });
     } else if (
       selectedTab === PanelTab.Relationships &&
@@ -535,13 +513,7 @@ export const Panel = ({
   };
 
   const handleContentObjectsModified = useCallback(
-    (
-      updatedContentObjects: {
-        original: ParsedSkylarkObjectContentObject[] | null;
-        updated: AddedSkylarkObjectContentObject[] | null;
-      },
-      errors: HandleDropError[],
-    ) => {
+    (updatedContentObjects: ModifiedContents, errors: HandleDropError[]) => {
       setContentObjects(updatedContentObjects);
       displayHandleDroppedErrors(
         errors,
@@ -572,7 +544,7 @@ export const Panel = ({
   const handleAvailabilityObjectsModified = useCallback(
     (
       updatedModifiedAvailabilities: {
-        added: ParsedSkylarkObject[];
+        added: SkylarkObject[];
         removed: string[];
       },
       errors: HandleDropError[],
@@ -591,8 +563,8 @@ export const Panel = ({
   const handleAvailabilityAssignedToModified = useCallback(
     (
       updatedAssignedToObjects: {
-        added: ParsedSkylarkObject[];
-        removed: ParsedSkylarkObject[];
+        added: SkylarkObject[];
+        removed: SkylarkObject[];
       },
       errors?: HandleDropError[],
     ) => {
@@ -645,10 +617,15 @@ export const Panel = ({
         toggleEditMode={() => {
           if (inEditMode) {
             resetMetadataForm(formParsedMetadata || {});
-            setContentObjects({
-              original: contentObjects.original,
-              updated: contentObjects.original,
-            });
+            setContentObjects(
+              contentObjects
+                ? {
+                    original: contentObjects.original,
+                    updated: contentObjects.original,
+                    config: null,
+                  }
+                : null,
+            );
             setModifiedRelationships(null);
             setModifiedAvailabilityObjects(null);
             setAvailabilityDimensionValues({
@@ -661,7 +638,7 @@ export const Panel = ({
         }}
         setLanguage={(newLanguage) =>
           setPanelObject(
-            { uid, objectType, language: newLanguage },
+            { ...object, language: newLanguage },
             { tab: selectedTab },
           )
         }
@@ -751,8 +728,10 @@ export const Panel = ({
               objectType={objectType}
               uid={uid}
               language={language}
-              objects={contentObjects.updated}
+              objects={contentObjects?.updated || null}
+              modifiedConfig={contentObjects?.config || null}
               inEditMode={inEditMode}
+              disableListVirtualization={disableListVirtualization}
               setContentObjects={handleContentObjectsModified}
               setPanelObject={setPanelObject}
             />

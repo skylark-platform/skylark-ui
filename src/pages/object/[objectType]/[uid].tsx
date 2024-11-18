@@ -20,8 +20,9 @@ import {
   defaultPanelTabState,
   mergedPanelTabStates,
 } from "src/hooks/state";
-import { SkylarkObjectIdentifier } from "src/interfaces/skylark";
+import { SkylarkObject } from "src/interfaces/skylark";
 import { Active, DragStartEvent, DragType } from "src/lib/dndkit/dndkit";
+import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
 const Object = () => {
   const router = useRouter();
@@ -34,20 +35,16 @@ const Object = () => {
   const object = useMemo(
     () =>
       objectType && uid
-        ? {
+        ? createDefaultSkylarkObject({
             uid: uid as string,
             objectType: objectType as string,
             language: (language as string) || "",
-          }
+          })
         : null,
     [language, objectType, uid],
   );
 
-  const setPanelObject = ({
-    uid,
-    objectType,
-    language,
-  }: SkylarkObjectIdentifier) => {
+  const setPanelObject = ({ uid, objectType, language }: SkylarkObject) => {
     router.push({
       pathname: "/object/[objectType]/[uid]",
       query: { uid, objectType, language },

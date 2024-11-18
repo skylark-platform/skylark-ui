@@ -83,11 +83,9 @@ const CreateObjectModalBody = forwardRef(
       objectType: defaultObjectType || "",
     });
 
-    const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+    const { objectTypesConfig } = useSkylarkObjectTypesWithConfig();
     const objectTypeConfig =
-      selectedObjectTypeConfig ||
-      objectTypesWithConfig?.find(({ objectType: ot }) => ot === objectType)
-        ?.config;
+      selectedObjectTypeConfig || objectTypesConfig?.[objectType];
 
     const objectTypeDisplayName = isCreateTranslationModal
       ? createTranslation.objectTypeDisplayName || createTranslation.objectType

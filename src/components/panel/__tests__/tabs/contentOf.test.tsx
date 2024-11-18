@@ -59,10 +59,12 @@ describe("appears in (content_of) view", () => {
     })[0];
     fireEvent.click(firstOpenObjectButton);
 
-    expect(setPanelObject).toHaveBeenCalledWith({
-      objectType: firstContentOfItem.__typename,
-      uid: firstContentOfItem.uid,
-      language: firstContentOfItem._meta.language_data.language,
-    });
+    expect(setPanelObject).toHaveBeenCalledWith(
+      expect.objectContaining({
+        objectType: firstContentOfItem.__typename,
+        uid: firstContentOfItem.uid,
+        language: firstContentOfItem._meta.language_data.language,
+      }),
+    );
   });
 });

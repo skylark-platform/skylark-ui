@@ -13,7 +13,7 @@ import {
   GQLSkylarkErrorResponse,
   SkylarkObjectMeta,
   GQLSkylarkGetAvailabilityAssignedResponse,
-  ParsedAvailabilityAssignedToObject,
+  AvailabilityAssignedToObject,
   SkylarkGraphQLObject,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -21,6 +21,7 @@ import {
   createGetAvailabilityAssignedTo,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 const select = (
@@ -36,11 +37,13 @@ const select = (
         inherited,
         inheritance_source,
         active,
-      }): ParsedAvailabilityAssignedToObject => {
+      }): AvailabilityAssignedToObject => {
         const normalisedObject =
           removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>(object);
 
-        const parsedObject = parseSkylarkObject(normalisedObject);
+        const parsedObject = convertParsedObjectToIdentifier(
+          parseSkylarkObject(normalisedObject),
+        );
 
         return {
           objectType: object.__typename,
@@ -115,7 +118,7 @@ export const useGetAvailabilityAssignedTo = (uid: string) => {
     useInfiniteQuery<
       GQLSkylarkGetAvailabilityAssignedResponse,
       GQLSkylarkErrorResponse<GQLSkylarkGetAvailabilityAssignedResponse>,
-      ParsedAvailabilityAssignedToObject[]
+      AvailabilityAssignedToObject[]
     >({
       queryFn,
       queryKey,

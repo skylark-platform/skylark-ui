@@ -4,6 +4,7 @@ import {
   flip,
   size,
   autoUpdate,
+  Placement,
 } from "@floating-ui/react";
 import { Combobox, Transition, Portal } from "@headlessui/react";
 import clsx from "clsx";
@@ -49,6 +50,7 @@ export interface SelectProps<T> {
   renderInPortal?: boolean;
   displayRawSelectedValue?: boolean;
   selectedInfoTooltipPosition?: TooltipSide;
+  floatingPosition?: Placement;
   onChange?: (value: T) => void;
   onValueClear?: () => void;
 }
@@ -257,7 +259,7 @@ export const VirtualizedOptions = <T extends string | number>({
   );
 };
 
-const OptionsPortalWrapper = ({
+export const OptionsPortalWrapper = ({
   usePortal,
   children,
 }: {
@@ -296,12 +298,13 @@ const SelectComponent = <T extends string | number>(
     withBasicSort,
     renderInPortal,
     displayRawSelectedValue,
+    floatingPosition,
   } = props;
 
   const [query, setQuery] = useState("");
 
   const { refs, floatingStyles } = useFloating({
-    placement: "bottom-start",
+    placement: floatingPosition || "bottom-start",
     middleware: [
       offset(5),
       flip({ padding: 10 }),

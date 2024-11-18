@@ -19,6 +19,7 @@ export enum QueryKeys {
   IntegrationsUploadUrl = "integrationsUploadUrl",
   IntegrationsPlaybackUrl = "integrationsPlaybackUrl",
   ApiKeys = "apiKeys",
+  PreviewDynamicContent = "previewDynamicContent",
 }
 
 export enum QueryErrorMessages {

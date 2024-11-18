@@ -30,12 +30,6 @@ export enum SkylarkAvailabilityField {
   Title = "title",
 }
 
-export enum SkylarkSystemGraphQLType {
-  SkylarkImageListing = "SkylarkImageListing",
-  SkylarkAssetListing = "SkylarkAssetListing",
-  SkylarkLiveAssetListing = "SkylarkLiveAssetListing",
-}
-
 export type SkylarkObjectType = string | BuiltInSkylarkObjectType;
 export type SkylarkObjectTypes = SkylarkObjectType[];
 export type SkylarkObjectMetadataField =
@@ -107,7 +101,7 @@ export interface SkylarkObjectFields {
   };
 }
 
-export type SkylarkObjectRelationship = {
+export type SkylarkObjectMetaRelationship = {
   relationshipName: string;
   objectType: SkylarkObjectType;
 };
@@ -124,7 +118,7 @@ export interface SkylarkObjectMeta extends SkylarkObjectFields {
     } | null;
   };
   operations: SkylarkObjectOperations;
-  relationships: SkylarkObjectRelationship[];
+  relationships: SkylarkObjectMetaRelationship[];
   hasContent: boolean;
   hasContentOf: boolean;
   hasRelationships: boolean;

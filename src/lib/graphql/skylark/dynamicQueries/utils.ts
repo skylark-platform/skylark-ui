@@ -1,5 +1,4 @@
 import {
-  EnumType,
   IJsonToGraphQLOptions,
   VariableType,
   jsonToGraphQLQuery,
@@ -13,6 +12,8 @@ import {
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
+
+import { createDynamicContentQueryField } from "./dynamicContent";
 
 const fieldNamesToNeverAlias: string[] = [
   SkylarkSystemField.UID,
@@ -239,6 +240,13 @@ export const generateRelationshipsToReturn = (
     }
   }
 
+  if (object.isSet) {
+    relationshipsToReturn.dynamic_content = createDynamicContentQueryField(
+      false,
+      null,
+    );
+  }
+
   const builtinObjectRelationships = object.builtinObjectRelationships;
 
   if (
@@ -284,7 +292,7 @@ export const generateContentsToReturn = (
   return {
     content: {
       __args: {
-        order: new EnumType("ASC"),
+        // order: new EnumType("ASC"),
         limit: 100,
         next_token: new VariableType(opts.nextTokenVariableName),
       },
@@ -312,6 +320,7 @@ export const generateContentsToReturn = (
           })),
         },
         position: true,
+        dynamic: true,
       },
     },
   };

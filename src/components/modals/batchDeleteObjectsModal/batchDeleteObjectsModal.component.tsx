@@ -6,27 +6,26 @@ import { useDebouncedCallback } from "use-debounce";
 import { Button } from "src/components/button";
 import { TextInput } from "src/components/inputs/input";
 import { Modal } from "src/components/modals/base/modal";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import { Toast } from "src/components/toast/toast.component";
 import { SEGMENT_KEYS } from "src/constants/segment";
 import { useBulkDeleteObjects } from "src/hooks/objects/delete/useBulkDeleteObjects";
-import { ParsedSkylarkObject } from "src/interfaces/skylark";
+import { SkylarkObject } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
-import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { hasProperty } from "src/lib/utils";
 
 const DELETION_LIMIT = 100;
 const VERIFICATION_TEXT = "permanently delete";
 
 interface BatchDeleteObjectsModalProps {
-  objectsToBeDeleted: ParsedSkylarkObject[];
+  objectsToBeDeleted: SkylarkObject[];
   isOpen: boolean;
   closeModal: () => void;
-  onDeletionComplete: (deletedObjects: ParsedSkylarkObject[]) => void;
+  onDeletionComplete: (deletedObjects: SkylarkObject[]) => void;
 }
 
 const generateDescription = (
-  objectsToBeDeleted: ParsedSkylarkObject[],
+  objectsToBeDeleted: SkylarkObject[],
   multipleLanguages: boolean,
 ) => {
   if (objectsToBeDeleted.length > 1) {
@@ -38,7 +37,7 @@ const generateDescription = (
 
   if (objectsToBeDeleted.length === 1) {
     const objectTypeDesc =
-      objectsToBeDeleted[0].meta.availableLanguages.length > 1
+      objectsToBeDeleted[0].availableLanguages.length > 1
         ? "translation"
         : "object";
     return `The following ${objectTypeDesc} will be permanently deleted:`;
@@ -128,7 +127,7 @@ const BatchDeleteObjectsModalContent = ({
   closeModal,
   onDeletionComplete,
 }: {
-  objects: ParsedSkylarkObject[];
+  objects: SkylarkObject[];
   closeModal: () => void;
   onDeletionComplete: BatchDeleteObjectsModalProps["onDeletionComplete"];
 }) => {
@@ -145,7 +144,7 @@ const BatchDeleteObjectsModalContent = ({
       );
       onDeletionComplete(deletedObjects);
       segment.track(SEGMENT_KEYS.bulkOperations.delete, {
-        objects: deletedObjects.map(convertParsedObjectToIdentifier),
+        objects: deletedObjects,
       });
     },
     onError: () => {
@@ -164,7 +163,7 @@ const BatchDeleteObjectsModalContent = ({
   const [objects, setObjects] = useState(propObjects);
 
   const groupedObjectsByUID = objects.reduce(
-    (prev, obj): Record<string, ParsedSkylarkObject[]> => {
+    (prev, obj): Record<string, SkylarkObject[]> => {
       if (hasProperty(prev, obj.uid)) {
         return {
           ...prev,
@@ -173,11 +172,11 @@ const BatchDeleteObjectsModalContent = ({
       }
 
       return {
-        ...(prev as Record<string, ParsedSkylarkObject[]>),
+        ...(prev as Record<string, SkylarkObject[]>),
         [obj.uid]: [obj],
       };
     },
-    {} as Record<string, ParsedSkylarkObject[]>,
+    {} as Record<string, SkylarkObject[]>,
   );
 
   const orderedObjects = Object.values(groupedObjectsByUID).flatMap(
@@ -229,7 +228,7 @@ const BatchDeleteObjectsModalContent = ({
               {objects.map((obj) => {
                 const index = orderedObjects.findIndex((_obj) => obj === _obj);
                 return (
-                  <Fragment key={obj.meta.language}>
+                  <Fragment key={obj.language}>
                     {obj === firstObjectOverTheLimit && (
                       <div className="mt-8 border-t-2 border-error pb-6 pt-8">
                         <p className="font-medium">
@@ -241,7 +240,7 @@ const BatchDeleteObjectsModalContent = ({
                       className={clsx(index >= DELETION_LIMIT && "opacity-30")}
                     >
                       <ObjectIdentifierCard
-                        key={`${uid}-${obj.meta.language}`}
+                        key={`${uid}-${obj.language}`}
                         object={obj}
                         onDeleteClick={() =>
                           setObjects((currentObjects) =>
@@ -250,7 +249,7 @@ const BatchDeleteObjectsModalContent = ({
                         }
                         deleteIconVariant="x"
                       >
-                        <p className="pr-1 text-manatee-500">{`${obj.meta.language}`}</p>
+                        <p className="pr-1 text-manatee-500">{`${obj.language}`}</p>
                       </ObjectIdentifierCard>
                     </div>
                   </Fragment>

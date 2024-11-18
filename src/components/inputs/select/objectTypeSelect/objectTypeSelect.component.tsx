@@ -27,7 +27,8 @@ export const ObjectTypeSelect = forwardRef(
     { hiddenObjectTypes, ...props }: ObjectTypeSelectProps,
     ref: Ref<HTMLButtonElement | HTMLInputElement>,
   ) => {
-    const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+    const { objectTypesWithConfig, objectTypesConfig } =
+      useSkylarkObjectTypesWithConfig();
 
     const options: SelectOption<string>[] =
       objectTypesWithConfig
@@ -41,12 +42,10 @@ export const ObjectTypeSelect = forwardRef(
         })) || [];
 
     const onChangeWrapper = (value: string) => {
-      const objectTypeWithConfig = objectTypesWithConfig?.find(
-        ({ objectType }) => objectType === value,
-      );
+      const config = objectTypesConfig?.[value];
       props.onChange({
         objectType: value,
-        config: objectTypeWithConfig?.config,
+        config,
       });
     };
 

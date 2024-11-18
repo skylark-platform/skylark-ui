@@ -8,7 +8,7 @@ export type IntegrationUploaderProvider =
   | "brightcove"
   | "wowza";
 
-export type IntegrationUploaderPlaybackPolicy = "signed" | "public" | undefined;
+export type IntegrationUploaderPlaybackPolicy = "signed" | "public" | null;
 
 export interface IntegrationObjectInfo {
   uid: string;

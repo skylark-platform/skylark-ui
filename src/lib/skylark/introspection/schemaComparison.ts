@@ -3,7 +3,7 @@ import { IntrospectionEnumType } from "graphql";
 import {
   NormalizedObjectField,
   SkylarkObjectMeta,
-  SkylarkObjectRelationship,
+  SkylarkObjectMetaRelationship,
 } from "src/interfaces/skylark";
 
 export type SchemaObjectTypePropertyComparisonType =
@@ -25,7 +25,7 @@ interface ComparedObjectField
 }
 
 interface ComparedObjectRelationship
-  extends ComparedObjectProperty<SkylarkObjectRelationship> {}
+  extends ComparedObjectProperty<SkylarkObjectMetaRelationship> {}
 
 export type ComparedEnumValue = {
   value: string;
@@ -166,8 +166,8 @@ const diffObjectMetasFields = (
 };
 
 const diffObjectMetasRelationships = (
-  baseRelationships: SkylarkObjectRelationship[],
-  updatedRelationships: SkylarkObjectRelationship[],
+  baseRelationships: SkylarkObjectMetaRelationship[],
+  updatedRelationships: SkylarkObjectMetaRelationship[],
 ) => {
   // Calculate added and removed relationships
   const addedRelationships = updatedRelationships.filter(

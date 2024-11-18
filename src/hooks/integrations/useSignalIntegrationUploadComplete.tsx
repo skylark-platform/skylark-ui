@@ -21,7 +21,7 @@ export const useSignalIntegrationUploadComplete = ({
   uid: string;
   objectType: SkylarkObjectType;
   relationshipName?: string;
-  // onSuccess: ({ uid, objectType, language }: SkylarkObjectIdentifier) => void;
+  // onSuccess: ({ uid, objectType, language }: SkylarkObject) => void;
   // onError: (e: GQLSkylarkErrorResponse) => void;
 }) => {
   const { mutate, isPending } = useMutation({

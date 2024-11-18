@@ -4,7 +4,7 @@ import { FiX } from "react-icons/fi";
 
 export interface PillProps {
   label: ReactNode;
-  bgColor?: string;
+  bgColor?: string | null;
   className?: string;
   onDelete?: () => void;
 }
