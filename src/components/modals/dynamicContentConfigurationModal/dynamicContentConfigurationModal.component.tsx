@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
 import { DynamicContentConfigurationEditor } from "src/components/dynamicContentConfigurationEditor/dynamicContentConfigurationEditor.component";
 import { Modal } from "src/components/modals/base/modal";
 import { Skeleton } from "src/components/skeleton";
+import { Toast } from "src/components/toast/toast.component";
 import { useGetObjectDynamicContentConfiguration } from "src/hooks/objects/get/useGetObjectDynamicContentConfiguration";
 import { useUpdateObjectDynamicContentConfiguration } from "src/hooks/objects/update/useUpdateObjectDynamicContentConfiguration";
 import { DynamicSetConfig, SkylarkObjectType } from "src/interfaces/skylark";
@@ -29,11 +31,24 @@ const DynamicContentConfigurationModalBody = ({
     useUpdateObjectDynamicContentConfiguration({
       objectType,
       onSuccess: () => {
-        // TODO add Toast
-        // TODO clear cache
+        toast.success(
+          <Toast
+            title={`Dynamic content updated`}
+            message={[
+              "The content list will be built and sorted in the background.",
+            ]}
+          />,
+        );
         closeModal();
       },
-      onError: console.log,
+      onError: (e) => {
+        toast.error(
+          <Toast
+            title={`Dynamic content update failed`}
+            message={["Contact support."]}
+          />,
+        );
+      },
     });
 
   const onSave = () => {

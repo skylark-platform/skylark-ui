@@ -18,6 +18,7 @@ import {
   createDynamicSetContentInput,
   generateFieldsToReturn,
   generateVariablesAndArgs,
+  parseSortField,
   wrappedJsonMutation,
 } from "src/lib/graphql/skylark/dynamicQueries";
 import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
@@ -385,11 +386,9 @@ export const createUpdateObjectDynamicContentConfigurationMutation = (
         __args: {
           uid: new VariableType("uid"),
           [object.operations.update.argName]: {
-            content_sort_field:
-              dynamicSetConfig.contentSortField &&
-              dynamicSetConfig.contentSortField !== "__manual"
-                ? dynamicSetConfig.contentSortField
-                : null,
+            content_sort_field: parseSortField(
+              dynamicSetConfig.contentSortField,
+            ),
             content_sort_direction: dynamicSetConfig.contentSortDirection
               ? new EnumType(dynamicSetConfig.contentSortDirection)
               : null,
@@ -437,10 +436,9 @@ export const createUpdateObjectRelationshipsMutation = (
         const parsedConfig: Partial<GQLObjectTypeRelationshipConfig> = {};
 
         if (config.defaultSortField !== undefined) {
-          parsedConfig.default_sort_field =
-            config.defaultSortField !== "__manual"
-              ? config.defaultSortField
-              : null;
+          parsedConfig.default_sort_field = parseSortField(
+            config.defaultSortField,
+          );
         }
 
         if (config.inheritAvailability !== undefined) {

@@ -347,3 +347,6 @@ export const removeFieldPrefixFromReturnedObject = <T>(
   );
   return result as T;
 };
+
+export const parseSortField = (sortField: string | null) =>
+  sortField !== "__manual" ? sortField : null;

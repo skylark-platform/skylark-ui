@@ -1,5 +1,5 @@
 import { sentenceCase } from "change-case";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { FiPlus, FiX } from "react-icons/fi";
 
 import { Button } from "src/components/button";
@@ -19,6 +19,8 @@ import {
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
+  GQLSkylarkDynamicContentPreviewResponse,
+  GQLSkylarkErrorResponse,
   SkylarkObjectMeta,
   SkylarkObjectMetaRelationship,
   SkylarkOrderDirections,
@@ -94,6 +96,79 @@ const calculateSharedRelationships = (
   );
 };
 
+const DisplayError = ({
+  configuration,
+  error,
+}: {
+  configuration: DynamicSetConfig;
+  error: GQLSkylarkErrorResponse<GQLSkylarkDynamicContentPreviewResponse>;
+}) => {
+  const ruleErrors = configuration.ruleBlocks
+    .map((rule, index) => ({
+      name: `Rule block ${index + 1}`,
+      missingObjectTypes: rule.objectTypes.length === 0,
+      missingRelationshipName: rule.objectRules.some(
+        (r) => !r.relationshipName,
+      ),
+      missingObjects:
+        [
+          ...(rule.objectRules?.[rule.objectRules.length - 1]?.relatedObjects ||
+            []),
+          ...(rule.objectRules?.[rule.objectRules.length - 1]?.relatedUid ||
+            []),
+        ].length === 0,
+    }))
+    .filter(
+      ({ missingObjects, missingRelationshipName, missingObjectTypes }) =>
+        missingObjects || missingRelationshipName || missingObjectTypes,
+    );
+
+  return (
+    <>
+      <p>Content Configuration is invalid.</p>
+      {ruleErrors.length > 0 ? (
+        ruleErrors.map(
+          ({
+            name,
+            missingObjectTypes,
+            missingRelationshipName,
+            missingObjects,
+          }) => {
+            if (!missingRelationshipName && !missingObjects) {
+              return <Fragment key={name} />;
+            }
+
+            return (
+              <div key={name} className="my-4">
+                <p className="font-medium mb-1">{name}</p>
+                <ul>
+                  {missingObjectTypes && (
+                    <li className="ml-5 list-disc">
+                      Missing Object Type selection.
+                    </li>
+                  )}
+                  {missingRelationshipName && (
+                    <li className="ml-5 list-disc">
+                      Missing a relationship selection.
+                    </li>
+                  )}
+                  {missingObjects && (
+                    <li className="ml-5 list-disc">
+                      Missing object selection in last filter.
+                    </li>
+                  )}
+                </ul>
+              </div>
+            );
+          },
+        )
+      ) : (
+        <p>{error.toString()}</p>
+      )}
+    </>
+  );
+};
+
 const ObjectRuleBlock = ({
   objectRule,
   validObjectTypes,
@@ -155,6 +230,7 @@ const ObjectRuleBlock = ({
                 onChange({
                   ...objectRule,
                   relatedObjects: objects,
+                  relatedUid: objects.map(({ uid }) => uid),
                 })
               }
               objectTypes={objectRule.objectType}
@@ -178,7 +254,6 @@ const ObjectRuleBlock = ({
 };
 
 const ContentRuleBlock = ({
-  // validObjectTypes,
   isFirstBlock,
   hideDelete,
   ruleBlock,
@@ -424,7 +499,7 @@ export const DynamicContentConfigurationEditor = ({
                 variant="primary"
                 objectTypes={configuration.objectTypes}
                 values={{
-                  sortField: configuration.contentSortField || "",
+                  sortField: configuration.contentSortField || "__manual",
                   sortDirection:
                     configuration.contentSortDirection ||
                     SkylarkOrderDirections.ASC,
@@ -489,14 +564,8 @@ export const DynamicContentConfigurationEditor = ({
             </div>
           </div>
         )}
-        {!data && (
-          <p>
-            {isLoading
-              ? `Loading preview...`
-              : `Content Configuration is invalid.`}
-          </p>
-        )}
-        {error && <p>{error.toString()}</p>}
+        {!data && isLoading && <p>Loading preview...</p>}
+        {error && <DisplayError error={error} configuration={configuration} />}
       </div>
     </div>
   );

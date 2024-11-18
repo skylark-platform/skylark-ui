@@ -1,7 +1,13 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { RequestDocument } from "graphql-request";
 
+import { QueryKeys } from "src/enums/graphql";
 import { createGetObjectContentKeyPrefix } from "src/hooks/objects/get/useGetObjectContent";
+import { createGetObjectDynamicContentConfigurationKeyPrefix } from "src/hooks/objects/get/useGetObjectDynamicContentConfiguration";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkErrorResponse,
@@ -14,6 +20,25 @@ import { createUpdateObjectContentMutation } from "src/lib/graphql/skylark/dynam
 
 type MutationArgs = ModifiedContents & {
   uid: string;
+};
+
+export const refetchObjectContentQueries = async (
+  queryClient: QueryClient,
+  uid: string,
+  objectType: string,
+) => {
+  await queryClient.refetchQueries({
+    queryKey: createGetObjectContentKeyPrefix({ uid, objectType }),
+  });
+  await queryClient.refetchQueries({
+    queryKey: [QueryKeys.PreviewDynamicContent],
+  });
+  await queryClient.refetchQueries({
+    queryKey: createGetObjectDynamicContentConfigurationKeyPrefix({
+      uid,
+      objectType,
+    }),
+  });
 };
 
 export const useUpdateObjectContent = ({
@@ -49,9 +74,7 @@ export const useUpdateObjectContent = ({
       );
     },
     onSuccess: async (_, { uid }) => {
-      await queryClient.refetchQueries({
-        queryKey: createGetObjectContentKeyPrefix({ uid, objectType }),
-      });
+      await refetchObjectContentQueries(queryClient, uid, objectType);
 
       onSuccess();
     },

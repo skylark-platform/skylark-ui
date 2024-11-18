@@ -12,6 +12,7 @@ import {
 import {
   generateAvailabilityRelationshipFields,
   generateFieldsToReturn,
+  parseSortField,
   wrappedJsonQuery,
 } from "./utils";
 
@@ -116,7 +117,7 @@ export const createPreviewDynamicContentQuery = (
       dynamicContentPreview: {
         __args: {
           // ...common.args,
-          content_sort_field: dynamicSetConfig.contentSortField || null,
+          content_sort_field: parseSortField(dynamicSetConfig.contentSortField),
           content_sort_direction: dynamicSetConfig.contentSortDirection
             ? new EnumType(dynamicSetConfig.contentSortDirection)
             : null,
