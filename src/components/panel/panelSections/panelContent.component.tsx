@@ -14,11 +14,13 @@ import {
   HandleDropError,
   handleDroppedContents,
 } from "src/components/panel/panel.lib";
+import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelButton,
   PanelEmptyDataText,
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
+import { Skeleton } from "src/components/skeleton";
 import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
 import { SetPanelObject } from "src/hooks/state";
 import {
@@ -121,6 +123,7 @@ export const PanelContent = ({
       ]}
       withoutPadding
       isPage={isPage}
+      withScrollableBody={false}
       ref={setNodeRef}
     >
       <div className="flex items-center px-8 pt-8">
@@ -164,7 +167,7 @@ export const PanelContent = ({
           }}
         />
       </div>
-      <div className="flex flex-grow justify-end pr-3">
+      <div className="flex justify-end pr-3">
         <Button
           variant="link"
           className="-mt-4"
@@ -175,50 +178,38 @@ export const PanelContent = ({
         </Button>
       </div>
 
-      <div className="flex flex-grow">
-        {!isLoading &&
-          objects.length === 0 &&
-          ((inEditMode && !isPage) || isDragging ? (
-            <p className="w-full text-left text-sm text-manatee-600 p-0.5">
-              {
-                "Drag & Drop an object from the Content Library here to add as content."
-              }
-            </p>
-          ) : (
-            <PanelEmptyDataText />
-          ))}
-        <SortableContentObjectList
-          uid={uid}
-          objects={objects}
-          isDragging={isDragging}
-          disableReorder={combinedConfig.contentSortField !== "__manual"}
-          isLoading={isLoading}
-          inEditMode={inEditMode}
-          onReorder={onReorder}
-          setPanelObject={setPanelObject}
-          disableVirtualization={disableListVirtualization}
-        />
-        <DisplayGraphQLQuery
-          label="Get Object Content"
-          query={query}
-          variables={variables}
-          buttonClassName="absolute right-2 top-0"
-        />
-        {/* <PanelLoading
+      {!isLoading &&
+        objects.length === 0 &&
+        ((inEditMode && !isPage) || isDragging ? (
+          <p className="w-full text-left text-sm text-manatee-600 p-0.5">
+            {
+              "Drag & Drop an object from the Content Library here to add as content."
+            }
+          </p>
+        ) : (
+          <PanelEmptyDataText />
+        ))}
+      <SortableContentObjectList
+        uid={uid}
+        objects={objects}
+        isDragging={isDragging}
+        disableReorder={combinedConfig.contentSortField !== "__manual"}
+        inEditMode={inEditMode}
+        onReorder={onReorder}
+        setPanelObject={setPanelObject}
+        disableVirtualization={disableListVirtualization}
         isLoading={
-          (isLoading && objectType.length === 0) ||
+          (isLoading && objects.length === 0) ||
           hasNextPage ||
           isFetchingNextPage
         }
-      >
-        {Array.from({ length: 6 }, (_, i) => (
-          <Skeleton
-            key={`content-skeleton-${i}`}
-            className="mb-2 h-11 w-full max-w-xl"
-          />
-        ))}
-      </PanelLoading> */}
-      </div>
+      />
+      <DisplayGraphQLQuery
+        label="Get Object Content"
+        query={query}
+        variables={variables}
+        buttonClassName="absolute right-2 top-0"
+      />
       <DynamicContentConfigurationModal
         isOpen={modalState === "dynamic-content"}
         uid={uid}
@@ -228,14 +219,8 @@ export const PanelContent = ({
       <SearchObjectsModal
         title={`Add Content`}
         isOpen={modalState === "search"}
-        // columns={
-        //   searchObjectsModalState?.fields
-        //     ? [
-        //         OBJECT_LIST_TABLE.columnIds.displayField,
-        //         ...searchObjectsModalState?.fields,
-        //       ]
-        //     : undefined
-        // }
+        showSearchFilters
+        showAllColumns
         existingObjects={objects}
         closeModal={() => setModalState(false)}
         onSave={({ checkedObjectsState }) => {

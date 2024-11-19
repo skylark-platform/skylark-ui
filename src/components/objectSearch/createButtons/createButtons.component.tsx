@@ -24,14 +24,22 @@ export const CreateButtons = ({
   onObjectCreated,
   preselectedObjectType,
 }: CreateButtonProps) => {
-  const [createObjectModalOpen, setCreateObjectModalOpen] = useState(false);
+  const [createObjectModalState, setCreateObjectModalState] = useState<
+    false | "all" | "sets-only"
+  >(false);
 
   const createOptions = [
+    {
+      id: "create-set",
+      text: "Create Set",
+      Icon: <FiEdit3 className="text-lg" />,
+      onClick: () => setCreateObjectModalState("sets-only"),
+    },
     {
       id: "create",
       text: "Create Object",
       Icon: <FiEdit3 className="text-lg" />,
-      onClick: () => setCreateObjectModalOpen(true),
+      onClick: () => setCreateObjectModalState("all"),
     },
     {
       id: "import-csv",
@@ -56,10 +64,11 @@ export const CreateButtons = ({
         </DropdownMenu>
       </div>
       <CreateObjectModal
-        isOpen={createObjectModalOpen}
-        setIsOpen={setCreateObjectModalOpen}
+        setTypesOnly={createObjectModalState === "sets-only"}
+        isOpen={!!createObjectModalState}
+        setIsOpen={setCreateObjectModalState}
         onObjectCreated={(obj) => {
-          setCreateObjectModalOpen(false);
+          setCreateObjectModalState(false);
           onObjectCreated?.({
             ...obj,
             language: obj.language || "",

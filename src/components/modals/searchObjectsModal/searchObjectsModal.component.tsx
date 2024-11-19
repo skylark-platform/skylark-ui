@@ -24,6 +24,8 @@ interface SearchObjectsModalProps {
   existingObjects?: SkylarkObject[] | null;
   existingCheckedState?: CheckedState;
   initialSearchQuery?: string;
+  showSearchFilters?: boolean;
+  showAllColumns?: boolean;
   closeModal: () => void;
   onSave: (args: {
     checkedObjectsState: CheckedObjectState[];
@@ -81,6 +83,8 @@ export const SearchObjectsModal = ({
   existingObjects,
   existingCheckedState,
   initialSearchQuery,
+  showSearchFilters = false,
+  showAllColumns = false,
   closeModal,
   onSave,
 }: SearchObjectsModalProps) => {
@@ -145,11 +149,11 @@ export const SearchObjectsModal = ({
         <ObjectSearch
           id={`search-object-modal-${objectTypes?.join("-")}`}
           initialFilters={{ objectTypes, query: initialSearchQuery }}
-          initialColumnState={initialColumnState}
+          initialColumnState={showAllColumns ? undefined : initialColumnState}
           checkedObjectsState={checkedObjectsState}
           onObjectCheckedChanged={setCheckedObjectsState}
           resetCheckedObjects={resetCheckedObjects}
-          hideSearchFilters
+          hideSearchFilters={!showSearchFilters}
           hideBulkOptions
           withObjectSelect
         />

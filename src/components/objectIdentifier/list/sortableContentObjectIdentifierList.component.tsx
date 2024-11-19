@@ -16,6 +16,7 @@ import {
   handleDroppedContents,
 } from "src/components/panel/panel.lib";
 import { PanelSeparator } from "src/components/panel/panelTypography";
+import { Skeleton } from "src/components/skeleton";
 import { SetPanelObject } from "src/hooks/state";
 import {
   SkylarkObjectContentObject,
@@ -387,10 +388,8 @@ export const SortableContentObjectList = ({
       <div
         ref={disableVirtualization ? undefined : parentRef}
         data-testid="panel-content-items"
-        style={{ height: 600 }}
         className={clsx(
-          "w-full border border-dashed flex-grow overflow-scroll px-8",
-          isLoading && sortableObjects?.length === 0 && "hidden",
+          "w-full border border-dashed flex-grow overflow-scroll px-8 h-full",
           isDragging && sortableObjects && sortableObjects.length < 8
             ? "border-brand-primary"
             : "border-transparent",
@@ -445,6 +444,13 @@ export const SortableContentObjectList = ({
             ))}
           </>
         )}
+        {isLoading &&
+          Array.from({ length: 6 }, (_, i) => (
+            <Skeleton
+              key={`content-skeleton-${i}`}
+              className="mb-2 h-11 w-full max-w-xl"
+            />
+          ))}
       </div>
     </SortableContext>
   );

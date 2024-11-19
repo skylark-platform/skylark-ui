@@ -9,6 +9,8 @@ import {
   MultiSelectProps,
 } from "src/components/inputs/multiselect/multiselect.component";
 import { SearchObjectsModal } from "src/components/modals";
+import { OBJECT_LIST_TABLE } from "src/constants/skylark";
+import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
 import { SkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
 
 type ObjectMultiSelectProps = Omit<
@@ -59,6 +61,25 @@ const ObjectMultiSelectComponent = (
 
   const [inputQuery, setInputQuery] = useState("");
 
+  const { objects: allObjectsMeta } = useAllObjectsMeta();
+  const columns = useMemo(() => {
+    const { global, translatable } = (allObjectsMeta || []).reduce(
+      (prev, { name, fieldConfig }) => {
+        if (!objectTypes.includes(name)) {
+          return prev;
+        }
+
+        return {
+          global: [...prev.global, ...fieldConfig.global],
+          translatable: [...prev.translatable, ...fieldConfig.translatable],
+        };
+      },
+      { global: [] as string[], translatable: [] as string[] },
+    );
+
+    return [...new Set([...translatable, ...global])];
+  }, [allObjectsMeta, objectTypes]);
+
   return (
     <div
       className={clsx(
@@ -93,8 +114,13 @@ const ObjectMultiSelectComponent = (
           title={`Select objects`}
           onSave={({ checkedObjects }) => onChange(checkedObjects)}
           existingObjects={selectedObjects}
-          existingCheckedState={true}
+          existingCheckedState
           objectTypes={objectTypes}
+          columns={
+            columns.length > 0
+              ? [OBJECT_LIST_TABLE.columnIds.displayField, ...columns]
+              : undefined
+          }
           closeModal={() => setSearchIsOpen(false)}
         />
       </DndContext>
