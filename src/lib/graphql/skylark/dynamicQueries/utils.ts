@@ -79,23 +79,23 @@ const commonGraphQLOpts = {
   variables: {},
   args: {},
   objectMeta: {
-    _meta: {
-      available_languages: true,
-      language_data: {
-        language: true,
-        version: true,
-      },
-      global_data: {
-        version: true,
-      },
-      modified: {
-        date: true,
-      },
-      created: {
-        date: true,
-      },
-      published: true,
-    },
+    // _meta: {
+    //   available_languages: true,
+    //   language_data: {
+    //     language: true,
+    //     version: true,
+    //   },
+    //   global_data: {
+    //     version: true,
+    //   },
+    //   modified: {
+    //     date: true,
+    //   },
+    //   created: {
+    //     date: true,
+    //   },
+    //   published: true,
+    // },
   },
 };
 
