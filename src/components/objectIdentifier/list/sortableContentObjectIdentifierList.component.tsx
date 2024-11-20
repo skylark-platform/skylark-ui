@@ -35,6 +35,7 @@ import {
 import { hasProperty, insertAtIndex } from "src/lib/utils";
 
 const DISPLAY_OBJ_ID = "display-object";
+const SORTABLE_ID_POSTFIX = "PANEL_CONTENT";
 
 interface ContentObjectProps {
   sortableId: string;
@@ -219,7 +220,7 @@ export const SortableContentObjectList = ({
   const preppedObjects: SortableObject[] | undefined = objects.map(
     (object) => ({
       ...object,
-      id: generateSortableObjectId(object, "PANEL_CONTENT"),
+      id: generateSortableObjectId(object, SORTABLE_ID_POSTFIX),
     }),
   );
 
@@ -275,7 +276,10 @@ export const SortableContentObjectList = ({
     const overContainer = over?.data.current?.sortable?.containerId || over?.id;
     const withinDropZone = Boolean(
       collisions?.find(
-        ({ id }) => id === DroppableType.PANEL_CONTENT_SORTABLE,
+        ({ id, data }) =>
+          id === DroppableType.PANEL_CONTENT_SORTABLE ||
+          data?.droppableContainer.data.current.sortable.containerId ===
+            DroppableType.PANEL_CONTENT_SORTABLE,
       ) || overContainer === DroppableType.PANEL_CONTENT_SORTABLE,
     );
 
@@ -313,7 +317,8 @@ export const SortableContentObjectList = ({
       objects &&
       sortableObjects &&
       over &&
-      active.data.current.type === DragType.PANEL_CONTENT_REORDER_OBJECTS
+      active.data.current.type === DragType.PANEL_CONTENT_REORDER_OBJECTS &&
+      !disableReorder
     ) {
       const oldIndex = sortableObjects.findIndex(({ id }) => id === active.id);
       const newIndex = sortableObjects.findIndex(({ id }) => id === over.id);
@@ -337,9 +342,9 @@ export const SortableContentObjectList = ({
   };
 
   useDndMonitor({
-    onDragOver: !disableReorder ? handleDragOver : undefined,
-    onDragEnd: !disableReorder ? handleDragEnd : undefined,
-    onDragCancel: !disableReorder ? handleDragCancel : undefined,
+    onDragOver: handleDragOver,
+    onDragEnd: handleDragEnd,
+    onDragCancel: handleDragCancel,
   });
 
   const removeItem = (uid: string) => {
@@ -400,7 +405,7 @@ export const SortableContentObjectList = ({
               height: `${rowVirtualizer.totalSize}px`,
             }}
           >
-            {rowVirtualizer.virtualItems.map((virtualRow, index) => {
+            {rowVirtualizer.virtualItems.map((virtualRow) => {
               const object = sortableObjects[virtualRow.index];
               return (
                 <SortableContentObjectListItem
@@ -412,13 +417,13 @@ export const SortableContentObjectList = ({
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                   inEditMode={inEditMode}
-                  arrIndex={index}
+                  arrIndex={virtualRow.index}
                   arrLength={sortableObjects.length}
                   removeItem={removeItem}
                   handleManualOrderChange={handleManualOrderChange}
                   setPanelObject={setPanelObject}
                   disableReorder={disableReorder}
-                  isLastItem={index < sortableObjects.length - 1}
+                  isLastItem={virtualRow.index < sortableObjects.length - 1}
                 />
               );
             })}
