@@ -128,7 +128,7 @@ const getSearchResultsText = ({
     return totalHits ? "Exact match found" : "No UID or External ID match";
   }
 
-  return `${totalHits || 0} results`;
+  return `${totalHits || "-"} results`;
 };
 
 const updateTableStateColumns = (

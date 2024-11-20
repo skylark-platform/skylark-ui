@@ -4,7 +4,6 @@ import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useA
 import { SearchType } from "src/hooks/useSearchWithLookupType";
 import {
   ObjectTypesConfigObject,
-  ObjectTypeWithConfig,
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import { formatReadableDateTime } from "src/lib/skylark/availability";

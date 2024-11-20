@@ -504,7 +504,9 @@ export const DynamicContentConfigurationEditor = ({
   return (
     <div className="flex w-full gap-4 overflow-hidden grow">
       <div className="text-sm w-full md:w-3/5 2xl:w-2/3 flex flex-col">
-        <p className="text-xl font-bold text-left mb-4">Configure</p>
+        <p className="text-xl font-bold text-left mb-4">
+          Configure Dynamic Content
+        </p>
         {objectOperations && objectTypesWithConfig && (
           <div className="overflow-scroll pr-4 pb-20">
             <div className="p-6 shadow-sm rounded-sm border border-manatee-200 mb-4">

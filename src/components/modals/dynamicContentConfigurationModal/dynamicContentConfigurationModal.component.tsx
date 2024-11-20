@@ -122,7 +122,7 @@ export const DynamicContentConfigurationModal = ({
     <Modal
       title={
         props.object.display.name
-          ? `Dynamic Content: ${props.object.display.name}`
+          ? props.object.display.name
           : "Dynamic Content"
       }
       isOpen={isOpen}

@@ -184,7 +184,9 @@ export const PanelContent = ({
             }
           </p>
         ) : (
-          <PanelEmptyDataText />
+          <div className="px-8">
+            <PanelEmptyDataText />
+          </div>
         ))}
       <SortableContentObjectList
         uid={uid}

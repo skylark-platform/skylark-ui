@@ -29,12 +29,12 @@ export const CreateButtons = ({
   >(false);
 
   const createOptions = [
-    {
-      id: "create-set",
-      text: "Create Set",
-      Icon: <FiEdit3 className="text-lg" />,
-      onClick: () => setCreateObjectModalState("sets-only"),
-    },
+    // {
+    //   id: "create-set",
+    //   text: "Create Set",
+    //   Icon: <FiEdit3 className="text-lg" />,
+    //   onClick: () => setCreateObjectModalState("sets-only"),
+    // },
     {
       id: "create",
       text: "Create Object",
@@ -52,6 +52,14 @@ export const CreateButtons = ({
   return (
     <>
       <div className={clsx("flex flex-row", className)}>
+        <Button
+          onClick={() => setCreateObjectModalState("sets-only")}
+          variant="outline"
+          className="mr-2"
+          Icon={<FiEdit3 className="text-lg" />}
+        >
+          <span className="hidden sm:inline">Create Set</span>
+        </Button>
         <DropdownMenu options={createOptions} placement="bottom-end">
           <DropdownMenuButton as={Fragment}>
             <Button
