@@ -84,7 +84,7 @@ const select = (
                       ),
                     ) || [],
                   relationshipName: gqlRule.relationship_name || "",
-                  relatedUid: gqlRule.uid || [],
+                  relatedUid: gqlRule.uid,
                 }),
               ),
             };

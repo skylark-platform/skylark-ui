@@ -14,18 +14,17 @@ import {
   HandleDropError,
   handleDroppedContents,
 } from "src/components/panel/panel.lib";
-import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelButton,
   PanelEmptyDataText,
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
-import { Skeleton } from "src/components/skeleton";
 import { useGetObjectContent } from "src/hooks/objects/get/useGetObjectContent";
 import { SetPanelObject } from "src/hooks/state";
 import {
   AddedSkylarkObjectContentObject,
   ModifiedContents,
+  SkylarkObject,
   SkylarkOrderDirections,
 } from "src/interfaces/skylark";
 import { DroppableType } from "src/lib/dndkit/dndkit";
@@ -33,9 +32,7 @@ import { DroppableType } from "src/lib/dndkit/dndkit";
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
 interface PanelContentProps {
-  uid: string;
-  objectType: string;
-  language: string;
+  object: SkylarkObject;
   isPage?: boolean;
   objects: AddedSkylarkObjectContentObject[] | null;
   modifiedConfig: ModifiedContents["config"];
@@ -50,16 +47,16 @@ interface PanelContentProps {
 
 export const PanelContent = ({
   isPage,
+  object,
   objects: updatedObjects,
   modifiedConfig,
   inEditMode,
-  objectType,
-  uid,
-  language,
   disableListVirtualization,
   setContentObjects,
   setPanelObject,
 }: PanelContentProps) => {
+  const { objectType, uid, language } = object;
+
   const { active: activeDragged } = useDndContext();
   const isDragging = useMemo(() => Boolean(activeDragged), [activeDragged]);
 
@@ -212,8 +209,7 @@ export const PanelContent = ({
       />
       <DynamicContentConfigurationModal
         isOpen={modalState === "dynamic-content"}
-        uid={uid}
-        objectType={objectType}
+        object={object}
         closeModal={() => setModalState(false)}
       />
       <SearchObjectsModal

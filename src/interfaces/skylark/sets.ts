@@ -5,7 +5,7 @@ import { GQLSkylarkOrderDirections } from "./responses";
 export interface DynamicSetObjectRule {
   objectType: SkylarkObjectType[];
   relationshipName: string;
-  relatedUid?: string[]; // Last one has to have the UID included, previous ones are optional
+  relatedUid?: string[] | null; // Last one has to have the UID included, previous ones are optional
   relatedObjects?: SkylarkObject[];
 }
 

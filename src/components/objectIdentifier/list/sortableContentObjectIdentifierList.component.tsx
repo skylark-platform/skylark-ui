@@ -390,9 +390,7 @@ export const SortableContentObjectList = ({
         data-testid="panel-content-items"
         className={clsx(
           "w-full border border-dashed flex-grow overflow-scroll px-8 h-full",
-          isDragging && sortableObjects && sortableObjects.length < 8
-            ? "border-brand-primary"
-            : "border-transparent",
+          isDragging ? "border-brand-primary" : "border-transparent",
         )}
       >
         {!disableVirtualization ? (

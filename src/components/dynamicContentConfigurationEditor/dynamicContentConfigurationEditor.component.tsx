@@ -1,6 +1,6 @@
 import { sentenceCase } from "change-case";
 import { Fragment, useState } from "react";
-import { FiPlus, FiX } from "react-icons/fi";
+import { FiPlus, FiSearch, FiX } from "react-icons/fi";
 
 import { Button } from "src/components/button";
 import { MultiSelect } from "src/components/inputs/multiselect/multiselect.component";
@@ -173,10 +173,11 @@ const ObjectRuleBlock = ({
   objectRule,
   validObjectTypes,
   hideDelete,
+  isLastRuleBlock,
   onChange,
   onDelete,
 }: {
-  isFirstRuleBlock: boolean;
+  isLastRuleBlock: boolean;
   objectRule: DynamicSetObjectRule;
   validObjectTypes: string[];
   hideDelete?: boolean;
@@ -211,6 +212,7 @@ const ObjectRuleBlock = ({
               onChange({
                 ...objectRule,
                 relatedObjects: [],
+                relatedUid: null,
                 relationshipName,
                 objectType: sharedRelationships
                   .filter((r) => r.relationshipName === relationshipName)
@@ -220,11 +222,26 @@ const ObjectRuleBlock = ({
             }
             selected={objectRule.relationshipName}
           />
+          {objectRule.relatedUid === null && (
+            <Button
+              variant="form-ghost"
+              Icon={<FiSearch />}
+              onClick={() =>
+                onChange({
+                  ...objectRule,
+                  relatedUid: [],
+                })
+              }
+            >
+              Add matches
+            </Button>
+          )}
         </div>
-        {objectRule.relationshipName && (
+        {(objectRule.relatedUid !== null || isLastRuleBlock) && (
           <div className="w-full flex items-center space-x-8">
-            <p className="whitespace-nowrap font-bold w-24">that contain</p>
+            <p className="whitespace-nowrap font-bold w-24">that match</p>
             <ObjectMultiSelect
+              disabled={!objectRule.relationshipName}
               selectedObjects={selectedObjects}
               onChange={(objects) =>
                 onChange({
@@ -238,6 +255,19 @@ const ObjectRuleBlock = ({
               selectedDivider="OR"
               placeholder={selectedObjects.length > 0 ? "OR" : "Select objects"}
             />
+            {!isLastRuleBlock && (
+              <Button
+                variant="form-ghost"
+                Icon={<FiX className="text-lg" />}
+                onClick={() =>
+                  onChange({
+                    ...objectRule,
+                    relatedObjects: [],
+                    relatedUid: null,
+                  })
+                }
+              />
+            )}
           </div>
         )}
       </div>
@@ -340,7 +370,7 @@ const ContentRuleBlock = ({
           <div key={i} className="w-full relative my-2">
             <ObjectRuleBlock
               key={i}
-              isFirstRuleBlock={i === 0}
+              isLastRuleBlock={i === arr.length - 1}
               objectRule={objectRule}
               validObjectTypes={
                 arr?.[i - 1]?.objectType || ruleBlock.objectTypes
@@ -358,7 +388,7 @@ const ContentRuleBlock = ({
             onClick={addObjectRule}
             Icon={<FiPlus className="text-xl" />}
           >
-            Add filter
+            Add relationship step
           </Button>
         </div>
       </div>
@@ -474,7 +504,7 @@ export const DynamicContentConfigurationEditor = ({
   return (
     <div className="flex w-full gap-4 overflow-hidden grow">
       <div className="text-sm w-full md:w-3/5 2xl:w-2/3 flex flex-col">
-        <p className="text-xl font-bold text-left mb-4">Builder</p>
+        <p className="text-xl font-bold text-left mb-4">Configure</p>
         {objectOperations && objectTypesWithConfig && (
           <div className="overflow-scroll pr-4 pb-20">
             <div className="p-6 shadow-sm rounded-sm border border-manatee-200 mb-4">
@@ -533,7 +563,7 @@ export const DynamicContentConfigurationEditor = ({
               Icon={<FiPlus className="text-xl" />}
               // disabled={!canAddNewRule}
             >
-              Add condition
+              Add rule
             </Button>
           </div>
         )}

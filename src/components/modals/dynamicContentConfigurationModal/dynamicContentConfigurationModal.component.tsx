@@ -8,18 +8,16 @@ import { Skeleton } from "src/components/skeleton";
 import { Toast } from "src/components/toast/toast.component";
 import { useGetObjectDynamicContentConfiguration } from "src/hooks/objects/get/useGetObjectDynamicContentConfiguration";
 import { useUpdateObjectDynamicContentConfiguration } from "src/hooks/objects/update/useUpdateObjectDynamicContentConfiguration";
-import { DynamicSetConfig, SkylarkObjectType } from "src/interfaces/skylark";
+import { DynamicSetConfig, SkylarkObject } from "src/interfaces/skylark";
 
 interface DynamicContentConfigurationModalProps {
   isOpen: boolean;
-  uid: string;
-  objectType: SkylarkObjectType;
+  object: SkylarkObject;
   closeModal: () => void;
 }
 
 const DynamicContentConfigurationModalBody = ({
-  uid,
-  objectType,
+  object,
   closeModal,
 }: Omit<DynamicContentConfigurationModalProps, "isOpen">) => {
   const [
@@ -29,7 +27,7 @@ const DynamicContentConfigurationModalBody = ({
 
   const { updateObjectDynamicContentConfiguration, isUpdating } =
     useUpdateObjectDynamicContentConfiguration({
-      objectType,
+      objectType: object.objectType,
       onSuccess: () => {
         toast.success(
           <Toast
@@ -54,13 +52,16 @@ const DynamicContentConfigurationModalBody = ({
   const onSave = () => {
     if (updatedDynamicContentConfiguration) {
       updateObjectDynamicContentConfiguration({
-        uid,
+        uid: object.uid,
         dynamicSetConfig: updatedDynamicContentConfiguration,
       });
     }
   };
 
-  const { data } = useGetObjectDynamicContentConfiguration(objectType, uid);
+  const { data } = useGetObjectDynamicContentConfiguration(
+    object.objectType,
+    object.uid,
+  );
 
   return (
     <>
@@ -119,7 +120,11 @@ export const DynamicContentConfigurationModal = ({
 }: DynamicContentConfigurationModalProps) => {
   return (
     <Modal
-      title={"Configure Dynamic Content"}
+      title={
+        props.object.display.name
+          ? `Dynamic Content: ${props.object.display.name}`
+          : "Dynamic Content"
+      }
       isOpen={isOpen}
       closeModal={closeModal}
       // withoutBodyPadding

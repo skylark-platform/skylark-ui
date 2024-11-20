@@ -34,6 +34,7 @@ import {
   ModifiedRelationshipsObject,
   ModifiedContents,
 } from "src/interfaces/skylark";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
 import {
   hasProperty,
@@ -232,7 +233,7 @@ const showUpdateErrorToast = (error: GQLSkylarkErrorResponse) =>
 
 export const Panel = ({
   isPage,
-  object,
+  object: propObject,
   tab: selectedTab,
   closePanel,
   tabState,
@@ -244,7 +245,7 @@ export const Panel = ({
   updateActivePanelTabState,
 }: PanelProps) => {
   useGetObjectPrefetchQueries({
-    ...object,
+    ...propObject,
     selectedTab,
   });
 
@@ -275,7 +276,7 @@ export const Panel = ({
       removed: SkylarkObject[];
     } | null>(null);
 
-  const { uid, objectType, language } = object;
+  const { uid, objectType, language } = propObject;
   const {
     data,
     objectMeta,
@@ -289,6 +290,11 @@ export const Panel = ({
   } = useGetObject(objectType, uid, { language });
 
   const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+
+  const object: SkylarkObject = useMemo(
+    () => (data ? convertParsedObjectToIdentifier(data) : propObject),
+    [data, propObject],
+  );
 
   const formParsedMetadata = useMemo(
     () =>
@@ -725,9 +731,7 @@ export const Panel = ({
           {selectedTab === PanelTab.Content && (
             <PanelContent
               isPage={isPage}
-              objectType={objectType}
-              uid={uid}
-              language={language}
+              object={object}
               objects={contentObjects?.updated || null}
               modifiedConfig={contentObjects?.config || null}
               inEditMode={inEditMode}
