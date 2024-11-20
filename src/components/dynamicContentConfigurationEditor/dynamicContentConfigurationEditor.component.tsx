@@ -222,10 +222,11 @@ const ObjectRuleBlock = ({
             }
             selected={objectRule.relationshipName}
           />
-          {objectRule.relatedUid === null && (
+          {objectRule.relatedUid === null && !isLastRuleBlock && (
             <Button
               variant="form-ghost"
               Icon={<FiSearch />}
+              disabled={!objectRule.relationshipName}
               onClick={() =>
                 onChange({
                   ...objectRule,
@@ -237,7 +238,8 @@ const ObjectRuleBlock = ({
             </Button>
           )}
         </div>
-        {(objectRule.relatedUid !== null || isLastRuleBlock) && (
+        {(objectRule.relatedUid !== null ||
+          (objectRule.relationshipName && isLastRuleBlock)) && (
           <div className="w-full flex items-center space-x-8">
             <p className="whitespace-nowrap font-bold w-24">that match</p>
             <ObjectMultiSelect
@@ -326,7 +328,12 @@ const ContentRuleBlock = ({
       ...ruleBlock,
       objectRules: [
         ...ruleBlock.objectRules,
-        { objectType: [], relationshipName: "" },
+        {
+          objectType: [],
+          relationshipName: "",
+          relatedUid: null,
+          relatedObjects: [],
+        },
       ],
     });
   };
