@@ -11,7 +11,11 @@ import {
 import { SearchObjectsModal } from "src/components/modals";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
-import { SkylarkObject, SkylarkObjectType } from "src/interfaces/skylark";
+import {
+  BuiltInSkylarkObjectType,
+  SkylarkObject,
+  SkylarkObjectType,
+} from "src/interfaces/skylark";
 
 type ObjectMultiSelectProps = Omit<
   MultiSelectProps,
@@ -77,7 +81,15 @@ const ObjectMultiSelectComponent = (
       { global: [] as string[], translatable: [] as string[] },
     );
 
-    return [...new Set([...translatable, ...global])];
+    const columns = [
+      ...new Set([...translatable, ...global]),
+      OBJECT_LIST_TABLE.columnIds.dateCreated,
+      OBJECT_LIST_TABLE.columnIds.dateModified,
+      OBJECT_LIST_TABLE.columnIds.languageVersion,
+      OBJECT_LIST_TABLE.columnIds.globalVersion,
+    ];
+
+    return columns;
   }, [allObjectsMeta, objectTypes]);
 
   return (

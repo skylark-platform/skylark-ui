@@ -11,6 +11,7 @@ import { OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS } from "src/components/objectSea
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { CheckedObjectState, useCheckedObjectsState } from "src/hooks/state";
 import {
+  BuiltInSkylarkObjectType,
   SkylarkObject,
   SkylarkObjectTypes,
   SkylarkSystemField,
@@ -117,6 +118,9 @@ export const SearchObjectsModal = ({
         columns: [
           ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
           OBJECT_LIST_TABLE.columnIds.displayField,
+          ...(objectTypes?.includes(BuiltInSkylarkObjectType.SkylarkImage)
+            ? [OBJECT_LIST_TABLE.columnIds.images]
+            : []),
           ...(columns || [
             SkylarkSystemField.UID,
             SkylarkSystemField.ExternalID,
