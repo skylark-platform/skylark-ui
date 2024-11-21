@@ -45,6 +45,7 @@ const select = (
       dynamic_content,
       content_sort_field,
       content_sort_direction,
+      content_limit,
     },
   }: GQLSkylarkGetObjectDynamicContentConfigurationResponse,
   objectTypesConfig?: ObjectTypesConfigObject,
@@ -53,6 +54,7 @@ const select = (
     objectTypes: dynamic_content.dynamic_content_types || [],
     contentSortDirection: content_sort_direction,
     contentSortField: content_sort_field,
+    contentLimit: typeof content_limit === "number" ? content_limit : null,
     ruleBlocks: dynamic_content.dynamic_content_rules
       ? dynamic_content.dynamic_content_rules.map(
           (gqlRuleBlock): DynamicSetRuleBlock => {

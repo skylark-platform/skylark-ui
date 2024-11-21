@@ -100,13 +100,15 @@ export const PanelContent = ({
 
   const combinedConfig: ModifiedContents["config"] = {
     contentSortDirection:
-      data.config?.contentSortDirection ||
       modifiedConfig?.contentSortDirection ||
+      data.config?.contentSortDirection ||
       SkylarkOrderDirections.ASC,
     contentSortField:
-      data.config?.contentSortField ||
       modifiedConfig?.contentSortField ||
+      data.config?.contentSortField ||
       "__manual",
+    contentLimit:
+      modifiedConfig?.contentLimit || data.config?.contentLimit || null,
   };
 
   return (

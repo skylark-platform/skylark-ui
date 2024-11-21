@@ -81,7 +81,6 @@ export const useDynamicContentPreview = (
     dynamicSetConfig.objectTypes,
     !!language,
   );
-  // const variables = { uid, language };
 
   const {
     data: parsedObject,
@@ -98,7 +97,10 @@ export const useDynamicContentPreview = (
     }
   >({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: createDynamicContentPreviewPrefix({ dynamicSetConfig, language }),
+    queryKey: [
+      ...createDynamicContentPreviewPrefix({ dynamicSetConfig, language }),
+      availability,
+    ],
     queryFn: async () =>
       skylarkRequest(
         "query",

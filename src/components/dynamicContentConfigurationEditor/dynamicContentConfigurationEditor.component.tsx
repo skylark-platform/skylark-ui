@@ -123,6 +123,10 @@ const DisplayError = ({
         missingObjects || missingRelationshipName || missingObjectTypes,
     );
 
+  if (error.response.errors?.[0].message === "Execution timed out") {
+    return <p>Retry</p>;
+  }
+
   return (
     <>
       <p>Content Configuration is invalid.</p>
@@ -431,6 +435,7 @@ export const DynamicContentConfigurationEditor = ({
       ruleBlocks: [],
       contentSortDirection: null,
       contentSortField: null,
+      contentLimit: null,
     },
   );
 
@@ -550,6 +555,29 @@ export const DynamicContentConfigurationEditor = ({
                   })
                 }
               />
+              <Select
+                selected={configuration.contentLimit || undefined}
+                options={Array.from({ length: 50 }, (_, i) => ({
+                  value: i + 1,
+                  label: `${i + 1}`,
+                }))}
+                label="Limit"
+                labelVariant="form"
+                className="mt-4"
+                placeholder="Default"
+                variant="primary"
+                onChange={(contentLimit) =>
+                  setConfiguration({
+                    contentLimit: contentLimit || null,
+                  })
+                }
+                onValueClear={() =>
+                  setConfiguration({
+                    contentLimit: null,
+                  })
+                }
+                renderInPortal
+              />
             </div>
             {configuration.ruleBlocks.map((ruleBlock, i) => (
               <ContentRuleBlock
@@ -596,7 +624,7 @@ export const DynamicContentConfigurationEditor = ({
         {data && (
           <div className="flex flex-col overflow-hidden flex-grow">
             <p className="mb-4 text-sm">
-              {data.totalCount} objects match the rules specified.
+              {`${data.totalCount} objects match the rules specified${configuration.contentLimit ? `, limited to ${configuration.contentLimit}` : ""}.`}
             </p>
             <div className="overflow-scroll border border-manatee-200 rounded w-full">
               <ObjectIdentifierList objects={data.objects} className="px-4" />

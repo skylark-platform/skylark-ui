@@ -27,5 +27,6 @@ export type ModifiedContents = {
   config: {
     contentSortField: string | null;
     contentSortDirection: GQLSkylarkOrderDirections;
+    contentLimit: number | null;
   } | null;
 };

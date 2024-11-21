@@ -123,6 +123,7 @@ export interface GQLSkylarkGetObjectContentResponse {
   getObjectContent: {
     content_sort_field: string | null;
     content_sort_direction: GQLSkylarkOrderDirections;
+    content_limit: number | null;
     content: SkylarkGraphQLObjectContent | null;
   };
 }
@@ -287,6 +288,7 @@ export interface GQLSkylarkGetObjectDynamicContentConfigurationResponse {
   getObjectDynamicContentConfiguration: {
     content_sort_field: string | null;
     content_sort_direction: GQLSkylarkOrderDirections;
+    content_limit: number | null;
     dynamic_content: SkylarkGraphQLDynamicContentConfiguration;
   };
 }

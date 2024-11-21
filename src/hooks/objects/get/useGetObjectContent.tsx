@@ -52,11 +52,17 @@ const select = (
   const contentSortField =
     data?.pages?.[0].getObjectContent?.content_sort_field || null;
 
+  const contentLimit =
+    typeof data?.pages?.[0].getObjectContent?.content_sort_field === "number"
+      ? data?.pages?.[0].getObjectContent?.content_sort_field
+      : null;
+
   return {
     objects: parsedContent.objects,
     config: {
       contentSortDirection,
       contentSortField,
+      contentLimit,
     },
     objectTypesInContent,
   };
@@ -214,6 +220,7 @@ export const useGetObjectContent = (
             content: { objects: [] },
             content_sort_field: null,
             content_sort_direction: null,
+            content_limit: null,
           },
         },
       ],

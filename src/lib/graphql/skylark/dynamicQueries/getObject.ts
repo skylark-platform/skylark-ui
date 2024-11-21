@@ -362,6 +362,7 @@ export const createGetObjectContentQuery = (
         uid: true,
         content_sort_field: true,
         content_sort_direction: true,
+        content_limit: true,
         ...generateContentsToReturn(object, contentTypesToRequest, {
           nextTokenVariableName: "nextToken",
           fetchAvailability: opts?.fetchAvailability,

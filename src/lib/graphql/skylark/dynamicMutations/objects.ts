@@ -337,6 +337,7 @@ export const createUpdateObjectContentMutation = (
         content_sort_direction: modifiedConfig.contentSortDirection
           ? new EnumType(modifiedConfig.contentSortDirection)
           : null,
+        // content_limit: modifiedConfig.contentLimit || null,
       }
     : {};
 
@@ -392,6 +393,7 @@ export const createUpdateObjectDynamicContentConfigurationMutation = (
             content_sort_direction: dynamicSetConfig.contentSortDirection
               ? new EnumType(dynamicSetConfig.contentSortDirection)
               : null,
+            content_limit: dynamicSetConfig.contentLimit || null,
             dynamic_content: createDynamicSetContentInput(dynamicSetConfig),
           },
         },

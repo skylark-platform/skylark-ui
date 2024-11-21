@@ -19,4 +19,5 @@ export interface DynamicSetConfig {
   ruleBlocks: DynamicSetRuleBlock[];
   contentSortField: string | null;
   contentSortDirection: GQLSkylarkOrderDirections;
+  contentLimit: number | null;
 }

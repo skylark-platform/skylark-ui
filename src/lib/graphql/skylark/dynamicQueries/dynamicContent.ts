@@ -121,6 +121,7 @@ export const createPreviewDynamicContentQuery = (
           content_sort_direction: dynamicSetConfig.contentSortDirection
             ? new EnumType(dynamicSetConfig.contentSortDirection)
             : null,
+          content_limit: dynamicSetConfig.contentLimit,
           rules: createDynamicSetContentInput(dynamicSetConfig),
         },
         count: true,
@@ -192,6 +193,7 @@ export const createGetObjectDynamicContentConfigurationQuery = (
         uid: true,
         content_sort_field: true,
         content_sort_direction: true,
+        content_limit: true,
         dynamic_content: createDynamicContentQueryField(true, allObjectsMeta),
       },
     },
