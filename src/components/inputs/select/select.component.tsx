@@ -532,7 +532,7 @@ const SelectComponent = <T extends string | number>(
                         </div>
                       </div>
                     )
-                  ) : options.length > 40 ? (
+                  ) : options.length > 60 ? (
                     <VirtualizedOptions
                       variant={variant}
                       options={filteredOptions ?? []}
