@@ -9,6 +9,7 @@ import {
 } from "src/components/dropdown/dropdown.component";
 import { CreateObjectModal } from "src/components/modals";
 import {
+  BuiltInSkylarkObjectType,
   SkylarkObjectIdentifier,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -49,6 +50,11 @@ export const CreateButtons = ({
     },
   ];
 
+  const defaultObjectType =
+    createObjectModalState === "sets-only"
+      ? BuiltInSkylarkObjectType.SkylarkSet
+      : preselectedObjectType;
+
   return (
     <>
       <div className={clsx("flex flex-row", className)}>
@@ -82,7 +88,7 @@ export const CreateButtons = ({
             language: obj.language || "",
           });
         }}
-        objectType={preselectedObjectType}
+        objectType={defaultObjectType}
       />
     </>
   );

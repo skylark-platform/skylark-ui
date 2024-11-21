@@ -1,4 +1,4 @@
-import { closestCenter } from "@dnd-kit/core";
+import { closestCenter, useDroppable } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
@@ -32,7 +32,7 @@ import {
   DragOverEvent,
   useDndMonitor,
 } from "src/lib/dndkit/dndkit";
-import { hasProperty, insertAtIndex } from "src/lib/utils";
+import { hasProperty, insertAtIndex, mergeRefs } from "src/lib/utils";
 
 const DISPLAY_OBJ_ID = "display-object";
 const SORTABLE_ID_POSTFIX = "PANEL_CONTENT";
@@ -384,6 +384,10 @@ export const SortableContentObjectList = ({
     overscan: 0,
   });
 
+  const { setNodeRef } = useDroppable({
+    id: DroppableType.PANEL_CONTENT_SORTABLE,
+  });
+
   return (
     <SortableContext
       id={DroppableType.PANEL_CONTENT_SORTABLE}
@@ -391,7 +395,11 @@ export const SortableContentObjectList = ({
       strategy={verticalListSortingStrategy}
     >
       <div
-        ref={disableVirtualization ? undefined : parentRef}
+        ref={
+          disableVirtualization
+            ? setNodeRef
+            : mergeRefs([parentRef, setNodeRef])
+        }
         data-testid="panel-content-items"
         className={clsx(
           "w-full border border-dashed flex-grow overflow-scroll px-8 h-full",

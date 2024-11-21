@@ -94,10 +94,6 @@ export const PanelContent = ({
     [data.config, data.objects, modifiedConfig, setContentObjects],
   );
 
-  const { setNodeRef } = useDroppable({
-    id: DroppableType.PANEL_CONTENT_SORTABLE,
-  });
-
   const [modalState, setModalState] = useState<
     false | "search" | "dynamic-content"
   >(false);
@@ -121,7 +117,6 @@ export const PanelContent = ({
       withoutPadding
       isPage={isPage}
       withScrollableBody={false}
-      ref={setNodeRef}
     >
       <div className="flex items-center px-8 pt-8">
         <PanelSectionTitle

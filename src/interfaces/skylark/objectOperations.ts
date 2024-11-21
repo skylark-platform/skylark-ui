@@ -9,6 +9,7 @@ export enum BuiltInSkylarkObjectType {
   SkylarkAsset = "SkylarkAsset",
   SkylarkLiveAsset = "SkylarkLiveAsset",
   SkylarkFavoriteList = "SkylarkFavoriteList",
+  SkylarkSet = "SkylarkSet",
 }
 
 export enum SkylarkSystemField {
