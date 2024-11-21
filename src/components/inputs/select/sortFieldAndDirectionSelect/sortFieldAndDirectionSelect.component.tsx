@@ -51,7 +51,7 @@ const createLabel = (
 
 const createObjectContentSortFieldOptions = (
   allObjectsMeta: SkylarkObjectMeta[] | null,
-  objectTypes: string[],
+  objectTypesToFilter: string[],
   objectTypesConfig?: ObjectTypesConfigObject,
   manualSortLabel?: string,
 ): SelectOption<"__manual" | string>[] => {
@@ -61,7 +61,11 @@ const createObjectContentSortFieldOptions = (
 
   const sortedByOptions = Object.entries(
     allObjectsMeta
-      .filter(({ name }) => objectTypes.includes(name))
+      .filter(
+        ({ name }) =>
+          objectTypesToFilter.length === 0 ||
+          objectTypesToFilter.includes(name),
+      )
       .reduce(
         (prev, objectMeta) => {
           const name =
@@ -104,9 +108,10 @@ const createObjectContentSortFieldOptions = (
     .reduce((prevOptions, [sortField, value]) => {
       const option: SelectOption<string> = {
         value: sortField,
-        label: createLabel(objectTypes, value),
+        label: createLabel(objectTypesToFilter, value),
         infoTooltip:
-          objectTypes.length !== value.objectTypes.length ? (
+          objectTypesToFilter.length > 0 &&
+          objectTypesToFilter.length !== value.objectTypes.length ? (
             <div>
               <p className="mb-1">
                 Object types without this field will be pushed to the bottom.
