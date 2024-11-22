@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { ReactNode } from "react";
-import { FiTrash2, FiX } from "react-icons/fi";
+import { FiTrash2, FiX, FiZap } from "react-icons/fi";
 
 import { AvailabilityIcon } from "src/components/availability";
 import { OpenObjectButton } from "src/components/button";
@@ -65,6 +65,7 @@ export const ObjectIdentifierCard = ({
       )}
       {!hideObjectType && (
         <Pill
+          Icon={object.hasDynamicContent ? FiZap : undefined}
           label={
             config?.objectTypeDisplayName ||
             object.display.objectType ||

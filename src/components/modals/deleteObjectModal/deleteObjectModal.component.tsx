@@ -8,33 +8,26 @@ import {
   Toast,
 } from "src/components/toast/toast.component";
 import { useDeleteObject } from "src/hooks/objects/delete/useDeleteObject";
+import { SkylarkObject } from "src/interfaces/skylark";
 
 interface DeleteObjectModalProps {
   isOpen: boolean;
-  uid: string;
-  objectType: string;
-  language?: string;
-  objectDisplayName: string;
-  objectTypeDisplayName: string;
-  availableLanguages: string[];
+  object: SkylarkObject;
   setIsOpen: (b: boolean) => void;
   onDeleteSuccess: () => void;
 }
 
 export const DeleteObjectModal = ({
   isOpen,
-  uid,
-  objectType,
-  language,
-  objectDisplayName,
-  objectTypeDisplayName,
-  availableLanguages,
+  object,
   setIsOpen,
   onDeleteSuccess,
 }: DeleteObjectModalProps) => {
   const closeModal = () => {
     setIsOpen(false);
   };
+
+  const { uid, objectType, language, availableLanguages } = object;
 
   const isDeleteTranslation =
     (language && availableLanguages.length > 1) || false;
@@ -49,12 +42,12 @@ export const DeleteObjectModal = ({
           title={
             isDeleteTranslation
               ? `Translation "${language}" deleted`
-              : `${objectTypeDisplayName} deleted`
+              : `${object.display.objectType} deleted`
           }
           message={
             isDeleteTranslation
-              ? `The "${language}" translation for the ${objectTypeDisplayName} "${objectDisplayName}" has been deleted`
-              : `${objectTypeDisplayName} "${objectDisplayName}" has been deleted`
+              ? `The "${language}" translation for the ${object.display.objectType} "${object.display.name}" has been deleted`
+              : `${object.display.objectType} "${object.display.name}" has been deleted`
           }
         />,
       );
@@ -76,13 +69,13 @@ export const DeleteObjectModal = ({
       title={
         isDeleteTranslation
           ? `Delete "${language}" translation`
-          : `Delete ${objectTypeDisplayName}`
+          : `Delete ${object.display.objectType}`
       }
       size="small"
       data-testid="delete-object-modal"
       description={`Are you sure you want to delete the ${
         isDeleteTranslation ? `"${language}" translation for the ` : ""
-      }${objectTypeDisplayName} "${objectDisplayName}"?`}
+      }${object.display.objectType} "${object.display.name}"?`}
       isOpen={isOpen}
       closeModal={closeModal}
     >

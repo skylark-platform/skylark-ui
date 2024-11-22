@@ -1,6 +1,8 @@
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import { FiZap } from "react-icons/fi";
 
 import { AvailabilityLabel } from "src/components/availability";
+import { DynamicContentIcon } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
@@ -106,18 +108,19 @@ const objectTypeColumn = columnHelper.accessor(
     size: 120,
     minSize: 60,
     cell: ({ cell, row }) => {
-      const original = row.original as ParsedSkylarkObject;
+      const object = row.original as ParsedSkylarkObject;
       const cellContext = cell.getContext();
 
       const { config }: { config: ParsedSkylarkObjectConfig | null } =
         cellContext.table.options.meta?.objectTypesWithConfig?.find(
-          ({ objectType }) => objectType === original.objectType,
+          ({ objectType }) => objectType === object.objectType,
         ) || { config: null };
 
       return (
         <div className="flex h-full w-full items-center pr-0.5">
           <Pill
-            label={config?.objectTypeDisplayName || original.objectType}
+            Icon={object.meta.hasDynamicContent ? FiZap : undefined}
+            label={config?.objectTypeDisplayName || object.objectType}
             bgColor={config?.colour || undefined}
             className="w-full"
           />

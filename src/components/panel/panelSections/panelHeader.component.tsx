@@ -27,6 +27,7 @@ import {
 } from "src/components/dropdown/dropdown.component";
 import { DynamicContentIcon, FiX } from "src/components/icons";
 import { LanguageSelect } from "src/components/inputs/select";
+import { IntegrationUploaderPlaybackPolicy } from "src/components/integrations";
 import {
   CreateObjectModal,
   DeleteObjectModal,
@@ -42,27 +43,19 @@ import { SEGMENT_KEYS } from "src/constants/segment";
 import { PanelTab } from "src/hooks/state";
 import { usePurgeCacheObjectType } from "src/hooks/usePurgeCache";
 import {
-  AvailabilityStatus,
   BuiltInSkylarkObjectType,
-  ParsedSkylarkObject,
+  SkylarkObject,
   SkylarkObjectIdentifier,
-  SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
-import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
-  getObjectDisplayName,
-  hasProperty,
   isAvailabilityOrAvailabilitySegment,
   platformMetaKeyClicked,
 } from "src/lib/utils";
 
 interface PanelHeaderProps {
   isPage?: boolean;
-  objectUid: string;
-  objectType: SkylarkObjectType;
-  object: ParsedSkylarkObject | null;
-  language: string;
+  object: SkylarkObject;
   currentTab: string;
   tabsWithEditMode: string[];
   graphQLQuery: DocumentNode | null;
@@ -70,7 +63,6 @@ interface PanelHeaderProps {
   inEditMode: boolean;
   isSaving?: boolean;
   isTranslatable?: boolean;
-  availabilityStatus?: AvailabilityStatus | null;
   objectMetadataHasChanged: boolean;
   isGeneratingAiSuggestions?: boolean;
   toggleEditMode: () => void;
@@ -128,8 +120,12 @@ const RefreshPanelQueries = ({
   );
 };
 
-const AssetPlaybackPolicyPill = ({ policy }: { policy: string }) => {
-  if (policy !== "PRIVATE" && policy !== "PUBLIC") {
+const AssetPlaybackPolicyPill = ({
+  policy,
+}: {
+  policy: IntegrationUploaderPlaybackPolicy;
+}) => {
+  if (policy !== "signed" && policy !== "public") {
     return <></>;
   }
 
@@ -138,7 +134,7 @@ const AssetPlaybackPolicyPill = ({ policy }: { policy: string }) => {
       <span aria-label={`Privacy policy: ${policy}`}>
         <Pill
           className="bg-black"
-          label={policy === "PRIVATE" ? <GrLock /> : <GrGlobe />}
+          label={policy === "signed" ? <GrLock /> : <GrGlobe />}
         />
       </span>
     </Tooltip>
@@ -192,10 +188,7 @@ const PanelTag = ({
 
 export const PanelHeader = ({
   isPage,
-  objectUid,
-  objectType,
   object,
-  language,
   currentTab,
   tabsWithEditMode,
   graphQLQuery,
@@ -203,7 +196,6 @@ export const PanelHeader = ({
   inEditMode,
   isSaving,
   isTranslatable,
-  availabilityStatus,
   objectMetadataHasChanged,
   isGeneratingAiSuggestions,
   toggleEditMode,
@@ -213,7 +205,6 @@ export const PanelHeader = ({
   navigateToPreviousPanelObject,
   navigateToForwardPanelObject,
 }: PanelHeaderProps) => {
-  const title = getObjectDisplayName(object);
   const [showGraphQLModal, setGraphQLModalOpen] = useState(false);
   const [createObjectModalOpen, setCreateObjectModalOpen] = useState(false);
   const [
@@ -224,18 +215,20 @@ export const PanelHeader = ({
   const saveButtonRef = useRef<HTMLButtonElement | null>(null);
   const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  const objectTypeDisplayName =
-    object?.config.objectTypeDisplayName || objectType;
-
-  const actualLanguage = object?.meta.language || language;
-  const existingLanguages = object?.meta.availableLanguages || [language];
+  const {
+    uid: objectUid,
+    objectType,
+    language,
+    availableLanguages,
+    availabilityStatus,
+  } = object;
 
   const { purgeCache } = usePurgeCacheObjectType({
     onSuccess: () => {
       toast.success(
         <Toast
           title={"Cache purged"}
-          message={`Cache purged for ${objectTypeDisplayName} "${title}"`}
+          message={`Cache purged for ${object.display.objectType} "${object.display.name}"`}
         />,
       );
     },
@@ -244,7 +237,7 @@ export const PanelHeader = ({
         <Toast
           title={`Error purging cache`}
           message={[
-            `Error purging cache for ${objectTypeDisplayName} "${title}"`,
+            `Error purging cache for ${object.display.objectType} "${object.display.name}"`,
             "Please try again later.",
           ]}
         />,
@@ -258,21 +251,21 @@ export const PanelHeader = ({
         id: "open-in-new-tab",
         text: "Open in new tab",
         Icon: <FiExternalLink className="text-lg" />,
-        href: actualLanguage
-          ? `/object/${objectType}/${objectUid}?language=${actualLanguage}`
+        href: language
+          ? `/object/${objectType}/${objectUid}?language=${language}`
           : `/object/${objectType}/${objectUid}`,
         onClick: () => {
           segment.track(SEGMENT_KEYS.panel.openInNewTab, {
             objectType,
             uid: objectUid,
-            language: actualLanguage,
+            language,
           });
         },
         newTab: true,
       },
       {
         id: "graphql-query",
-        text: `Get ${objectTypeDisplayName} Query`,
+        text: `Get ${object.display.objectType} Query`,
         Icon: (
           <GrGraphQl
             className="text-lg"
@@ -296,20 +289,18 @@ export const PanelHeader = ({
       {
         id: "delete-object",
         text:
-          existingLanguages.length < 2
-            ? `Delete ${objectTypeDisplayName}`
-            : `Delete "${actualLanguage}" translation`,
+          availableLanguages.length < 2
+            ? `Delete ${object.display.objectType}`
+            : `Delete "${language}" translation`,
         Icon: <FiTrash2 className="stroke-error text-xl" />,
         danger: true,
         onClick: () => setDeleteObjectConfirmationModalOpen(true),
       },
     ],
     [
-      actualLanguage,
-      objectType,
-      objectUid,
-      objectTypeDisplayName,
-      existingLanguages.length,
+      language,
+      object.display.objectType,
+      availableLanguages.length,
       purgeCache,
     ],
   );
@@ -345,7 +336,7 @@ export const PanelHeader = ({
     }
   }, [inEditMode]);
 
-  const isDraft = object?.meta.published === false;
+  const isDraft = object?.published === false;
 
   const save: PanelHeaderProps["save"] = useCallback(
     (...args) => {
@@ -473,9 +464,9 @@ export const PanelHeader = ({
         )}
       </div>
       <div className="flex flex-col items-start pb-2">
-        {title ? (
+        {object.display.name ? (
           <h1 className="h-6 w-full flex-grow truncate text-ellipsis text-lg font-bold uppercase md:text-xl">
-            {title}
+            {object.display.name}
           </h1>
         ) : (
           <Skeleton className="h-6 w-80" />
@@ -484,14 +475,13 @@ export const PanelHeader = ({
         <div className="mt-2 flex h-5 items-center justify-center gap-2">
           {object ? (
             <>
-              {objectType === BuiltInSkylarkObjectType.SkylarkAsset &&
-                hasProperty(object.metadata, "policy") && (
-                  <AssetPlaybackPolicyPill
-                    policy={object.metadata.policy as string}
-                  />
-                )}
-              {object.meta.hasDynamicContent && <DynamicContentIcon />}
+              {objectType === BuiltInSkylarkObjectType.SkylarkAsset && (
+                <AssetPlaybackPolicyPill
+                  policy={object?.contextualFields?.playbackPolicy || null}
+                />
+              )}
               <ObjectTypePill
+                hasDynamicContent={object.hasDynamicContent}
                 className="w-20 bg-brand-primary"
                 type={objectType}
               />
@@ -500,10 +490,10 @@ export const PanelHeader = ({
               )}
               {isTranslatable && (
                 <LanguageSelect
-                  selected={actualLanguage}
-                  disabled={inEditMode || !object.meta.availableLanguages}
+                  selected={language}
+                  disabled={inEditMode || !availableLanguages}
                   variant="pill"
-                  languages={[...existingLanguages, ADD_LANGUAGE_OPTION]}
+                  languages={[...availableLanguages, ADD_LANGUAGE_OPTION]}
                   optionsClassName="w-36"
                   onChange={changeLanguage}
                 />
@@ -540,12 +530,7 @@ export const PanelHeader = ({
       </AnimatePresence>
       {object && (
         <CreateObjectModal
-          createTranslation={{
-            ...convertParsedObjectToIdentifier(object),
-            objectTypeDisplayName,
-            existingLanguages,
-            objectDisplayName: title,
-          }}
+          createTranslation={object}
           isOpen={createObjectModalOpen}
           objectType={objectType}
           setIsOpen={setCreateObjectModalOpen}
@@ -557,24 +542,17 @@ export const PanelHeader = ({
       <DeleteObjectModal
         isOpen={deleteObjectConfirmationModalOpen}
         setIsOpen={setDeleteObjectConfirmationModalOpen}
-        uid={objectUid}
-        objectType={objectType}
-        language={actualLanguage}
-        objectDisplayName={title}
-        objectTypeDisplayName={objectTypeDisplayName}
-        availableLanguages={existingLanguages}
+        object={object}
         onDeleteSuccess={() => {
           const otherLanguages =
-            (object?.meta.availableLanguages &&
-              object.meta.availableLanguages.filter(
-                (lang) => lang !== actualLanguage,
-              )) ||
+            (availableLanguages &&
+              availableLanguages.filter((lang) => lang !== language)) ||
             [];
 
           segment.track(SEGMENT_KEYS.panel.objectDelete, {
             objectType,
             uid: objectUid,
-            language: actualLanguage,
+            language: language,
           });
 
           // Change to other language if exists, otherwise close the panel

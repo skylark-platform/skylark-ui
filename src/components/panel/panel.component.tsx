@@ -595,10 +595,7 @@ export const Panel = ({
     >
       <PanelHeader
         isPage={isPage}
-        objectUid={uid}
-        objectType={objectType}
-        object={data || null}
-        language={language}
+        object={object}
         graphQLQuery={query}
         graphQLVariables={variables}
         currentTab={selectedTab}
@@ -618,7 +615,6 @@ export const Panel = ({
         isGeneratingAiSuggestions={
           metadataForm.aiFieldGeneration.isGeneratingAiSuggestions
         }
-        availabilityStatus={data?.meta.availabilityStatus}
         objectMetadataHasChanged={isMetadataFormDirty}
         toggleEditMode={() => {
           if (inEditMode) {

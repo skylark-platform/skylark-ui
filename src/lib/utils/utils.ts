@@ -291,6 +291,10 @@ export const getPlaybackPolicyFromMetadata = (
 
   const lowercasedPolicyField = policyField.toLocaleLowerCase();
 
+  if (lowercasedPolicyField === "private") {
+    return "signed";
+  }
+
   if (
     lowercasedPolicyField !== "signed" &&
     lowercasedPolicyField !== "public"

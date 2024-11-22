@@ -37,6 +37,8 @@ export type SkylarkObject<T = BuiltInSkylarkObjectType | string> =
     };
     created: ParsedSkylarkObjectMeta["created"];
     modified: ParsedSkylarkObjectMeta["modified"];
+    published: ParsedSkylarkObjectMeta["published"];
+    hasDynamicContent: ParsedSkylarkObjectMeta["hasDynamicContent"];
     additionalFields?: Record<string, SkylarkObjectMetadataField>;
   } & (
       | {

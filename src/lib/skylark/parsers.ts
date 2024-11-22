@@ -330,7 +330,11 @@ export const parseObjectContent = (
           objectType: object.__typename,
           metadata: normalisedObject,
           config: parseObjectConfig(object.__typename, object._config),
-          meta: parseObjectMeta(object._meta, availability.status),
+          meta: parseObjectMeta(
+            object._meta,
+            availability.status,
+            object.dynamic_content,
+          ),
           availability,
         }),
         position,

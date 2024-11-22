@@ -36,6 +36,7 @@ import {
 } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectConfig,
+  SkylarkObject,
   SkylarkObjectIdentifier,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
@@ -48,11 +49,7 @@ interface CreateObjectModalProps {
   isOpen: boolean;
   objectType?: SkylarkObjectType;
   setTypesOnly?: boolean;
-  createTranslation?: {
-    existingLanguages: string[];
-    objectTypeDisplayName?: string;
-    objectDisplayName?: string;
-  } & SkylarkObjectIdentifier;
+  createTranslation?: SkylarkObject;
   setIsOpen: (b: false) => void;
   onObjectCreated: (o: SkylarkObjectIdentifier) => void;
 }
@@ -94,7 +91,7 @@ const CreateObjectModalBody = forwardRef(
       selectedObjectTypeConfig || objectTypesConfig?.[objectType];
 
     const objectTypeDisplayName = isCreateTranslationModal
-      ? createTranslation.objectTypeDisplayName || createTranslation.objectType
+      ? createTranslation.display.objectType || createTranslation.objectType
       : objectTypeConfig?.objectTypeDisplayName || objectType;
 
     const { objectOperations } = useSkylarkObjectOperations(
@@ -160,7 +157,7 @@ const CreateObjectModalBody = forwardRef(
             message={`The "${
               object.language
             }" translation has been created for the "${
-              createTranslation?.objectDisplayName || object.uid
+              createTranslation?.display.name || object.uid
             }" ${objectTypeDisplayName}.`}
           />,
         );
@@ -264,7 +261,7 @@ const CreateObjectModalBody = forwardRef(
 
     const isExistingTranslation =
       isCreateTranslationModal && values._language
-        ? createTranslation.existingLanguages.includes(
+        ? createTranslation.availableLanguages.includes(
             values._language as string,
           )
         : false;

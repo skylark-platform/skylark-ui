@@ -658,6 +658,8 @@ export const createDefaultSkylarkObject = (
     type: null,
     created: undefined,
     modified: undefined,
+    published: undefined,
+    hasDynamicContent: false,
     ...args,
     display: {
       colour: undefined,
@@ -689,7 +691,9 @@ export const convertParsedObjectToIdentifier = (
     language: meta.language,
     availableLanguages: meta.availableLanguages,
     availabilityStatus:
-      (parsedObject.availability && parsedObject.availability.status) || null,
+      parsedObject.meta.availabilityStatus ||
+      (parsedObject.availability && parsedObject.availability.status) ||
+      null,
     display: {
       name: getObjectDisplayName(parsedObject, fallbackConfig),
       objectType: getObjectTypeDisplayNameFromParsedObject(
@@ -702,6 +706,8 @@ export const convertParsedObjectToIdentifier = (
     contextualFields: null,
     created: meta.created,
     modified: meta.modified,
+    published: meta.published,
+    hasDynamicContent: meta.hasDynamicContent,
   };
 
   if (opts) {
@@ -760,7 +766,7 @@ export const convertParsedObjectToIdentifier = (
           : BuiltInSkylarkObjectType.SkylarkLiveAsset,
       contextualFields: {
         ...metadata,
-        playbackPolicy: getPlaybackPolicyFromMetadata(parsedObject.metadata),
+        playbackPolicy: getPlaybackPolicyFromMetadata(metadata),
       },
     };
 

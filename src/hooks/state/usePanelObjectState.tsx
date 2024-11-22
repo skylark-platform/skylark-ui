@@ -421,6 +421,8 @@ export const useInitialPanelStateFromQuery = (
             type: null,
             created: undefined,
             modified: undefined,
+            published: undefined,
+            hasDynamicContent: false,
           },
           { tab: currentPanelQuery.panelTab as PanelTab | undefined },
         );

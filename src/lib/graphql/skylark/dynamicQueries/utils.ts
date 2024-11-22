@@ -310,6 +310,9 @@ export const generateContentsToReturn = (
               true,
               `__${object.name}__`,
             ),
+            ...(object.isSet
+              ? { dynamic_content: createDynamicContentQueryField(false, null) }
+              : {}),
             ...(opts.fetchAvailability && object.availability
               ? {
                   availability: generateAvailabilityRelationshipFields(
