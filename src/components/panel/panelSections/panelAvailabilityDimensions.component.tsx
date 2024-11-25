@@ -135,6 +135,7 @@ export const PanelAvailabilityDimensions = ({
                 <Skeleton className="h-20 w-full" />
               ) : (
                 <MultiSelect
+                  renderInPortal
                   options={options}
                   selected={values}
                   onChange={onChangeWrapper}
