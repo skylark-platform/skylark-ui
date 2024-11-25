@@ -11,13 +11,22 @@ describe("Create Object Modal", () => {
   });
 
   const openModal = () => {
-    cy.contains("button", "Create").click();
+    cy.contains("button", /^Create$/).click();
     cy.contains("button", "Create Object").click();
     cy.contains("Select Object Type to get started.");
   };
 
   it("opens the create object modal", () => {
     openModal();
+  });
+
+  it("opens the Modal with the Create Set button", () => {
+    cy.contains("button", "Create Set").click();
+    cy.contains("Select type of Set to get started.");
+
+    cy.get("[data-testid=create-object-modal]").within(() => {
+      cy.contains("button", "Create Set").should("be.disabled");
+    });
   });
 
   it("displays an objects display_name in a select", () => {
