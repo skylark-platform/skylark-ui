@@ -72,7 +72,7 @@ interface DragEvent<T> {
   over: dndkit.Over | null;
 }
 
-export type DragStartEvent<T = AnyData> = Pick<DragEvent<T>, "active">;
+export type DragStartEvent<T = AnyData> = DragEvent<T>;
 export type DragMoveEvent<T = AnyData> = DragEvent<T>;
 export type DragOverEvent<T = AnyData> = DragMoveEvent<T>;
 export type DragEndEvent<T = AnyData> = DragEvent<T>;
