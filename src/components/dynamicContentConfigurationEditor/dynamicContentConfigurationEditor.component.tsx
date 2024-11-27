@@ -96,12 +96,27 @@ const calculateSharedRelationships = (
   );
 };
 
+const validateConfiguration = (configuration: DynamicSetConfig) => {
+  if (configuration.objectTypes.length === 0) {
+    return false;
+  }
+
+  const allRulesValid = configuration.ruleBlocks.every((ruleBlock) => {
+    return ruleBlock.objectTypes.length > 0 && ruleBlock.objectRules.length > 0;
+  });
+  if (!allRulesValid) {
+    return false;
+  }
+
+  return true;
+};
+
 const DisplayError = ({
   configuration,
   error,
 }: {
   configuration: DynamicSetConfig;
-  error: GQLSkylarkErrorResponse<GQLSkylarkDynamicContentPreviewResponse>;
+  error?: GQLSkylarkErrorResponse<GQLSkylarkDynamicContentPreviewResponse> | null;
 }) => {
   const ruleErrors = configuration.ruleBlocks
     .map((rule, index) => ({
@@ -123,14 +138,17 @@ const DisplayError = ({
         missingObjects || missingRelationshipName || missingObjectTypes,
     );
 
-  if (error.response.errors?.[0].message === "Execution timed out") {
+  if (error?.response.errors?.[0].message === "Execution timed out") {
     return <p>Retry</p>;
   }
 
   return (
     <>
-      <p>Content Configuration is invalid.</p>
-      {ruleErrors.length > 0 ? (
+      <p className="mb-4">Content Configuration is invalid.</p>
+      {configuration.objectTypes.length === 0 && (
+        <p>No object types selected.</p>
+      )}
+      {ruleErrors.length > 0 &&
         ruleErrors.map(
           ({
             name,
@@ -143,7 +161,7 @@ const DisplayError = ({
             }
 
             return (
-              <div key={name} className="my-4">
+              <div key={name} className="mb-4">
                 <p className="font-medium mb-1">{name}</p>
                 <ul>
                   {missingObjectTypes && (
@@ -165,9 +183,9 @@ const DisplayError = ({
               </div>
             );
           },
-        )
-      ) : (
-        <p>{error.toString()}</p>
+        )}
+      {error && (
+        <p>{error.response?.errors?.[0]?.message || error.toString()}</p>
       )}
     </>
   );
@@ -511,7 +529,12 @@ export const DynamicContentConfigurationEditor = ({
 
   const { objectOperations } = useSkylarkObjectOperations("SkylarkSet");
 
-  const { data, isLoading, error } = useDynamicContentPreview(configuration);
+  const isValidConfiguration = validateConfiguration(configuration);
+
+  const { data, isLoading, error } = useDynamicContentPreview(configuration, {
+    disabled: !isValidConfiguration,
+    language: null,
+  });
 
   return (
     <div className="flex w-full gap-4 overflow-hidden grow">
@@ -626,13 +649,17 @@ export const DynamicContentConfigurationEditor = ({
             <p className="mb-4 text-sm">
               {`${data.totalCount} objects match the rules specified${configuration.contentLimit ? `, limited to ${configuration.contentLimit}` : ""}.`}
             </p>
-            <div className="overflow-scroll border border-manatee-200 rounded w-full">
+            <div className="overflow-scroll flex-grow border border-manatee-200 rounded w-full">
               <ObjectIdentifierList objects={data.objects} className="px-4" />
             </div>
           </div>
         )}
-        {!data && isLoading && <p>Loading preview...</p>}
-        {error && <DisplayError error={error} configuration={configuration} />}
+        {!data && isValidConfiguration && isLoading && (
+          <p>Loading preview...</p>
+        )}
+        {(error || !isValidConfiguration) && (
+          <DisplayError error={error} configuration={configuration} />
+        )}
       </div>
     </div>
   );

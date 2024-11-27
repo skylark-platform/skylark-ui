@@ -28,6 +28,7 @@ export interface DynamicContentPreviewOptions {
       timezone: string;
     } | null;
   };
+  disabled?: boolean;
 }
 
 export const createDynamicContentPreviewPrefix = ({
@@ -69,9 +70,10 @@ export const useDynamicContentPreview = (
   dynamicSetConfig: DynamicSetConfig,
   opts?: DynamicContentPreviewOptions,
 ) => {
-  const { language, availability }: DynamicContentPreviewOptions = opts || {
-    language: null,
-  };
+  const { language, availability, disabled }: DynamicContentPreviewOptions =
+    opts || {
+      language: null,
+    };
 
   const { objects: allObjectsMeta } = useAllObjectsMeta();
 
@@ -109,7 +111,7 @@ export const useDynamicContentPreview = (
         {},
         generateAvailabilityHeaders(availability),
       ),
-    enabled: query !== null,
+    enabled: query !== null && !disabled,
     select,
   });
 
