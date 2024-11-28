@@ -53,8 +53,8 @@ import {
   PanelImages,
   PanelMetadata,
 } from "./panelSections";
+import { PanelAudience } from "./panelSections/panelAudience.component";
 import { PanelAvailabilityAssignedTo } from "./panelSections/panelAvailabilityAssignedTo.component";
-import { PanelAvailabilityDimensions } from "./panelSections/panelAvailabilityDimensions.component";
 import { PanelContent } from "./panelSections/panelContent.component";
 import { PanelContentOf } from "./panelSections/panelContentOf.component";
 import { PanelPlayback } from "./panelSections/panelPlayback.component";
@@ -79,7 +79,7 @@ const tabsWithEditMode = [
   PanelTab.Availability,
   PanelTab.Metadata,
   PanelTab.Relationships,
-  PanelTab.AvailabilityDimensions,
+  PanelTab.AvailabilityAudience,
   PanelTab.AvailabilityAssignedTo,
 ];
 
@@ -367,7 +367,7 @@ export const Panel = ({
         objectMeta?.hasContentOf && PanelTab.ContentOf,
         objectMeta?.hasAvailability && PanelTab.Availability,
         isAvailabilityOrAvailabilitySegment(objectMeta?.name) &&
-          PanelTab.AvailabilityDimensions,
+          PanelTab.AvailabilityAudience,
         isAvailabilityOrAvailabilitySegment(objectMeta?.name) &&
           PanelTab.AvailabilityAssignedTo,
       ].filter((tab): tab is PanelTab => !!tab),
@@ -471,7 +471,7 @@ export const Panel = ({
     ) {
       updateObjectAvailability({ uid, modifiedAvailabilityObjects });
     } else if (
-      selectedTab === PanelTab.AvailabilityDimensions &&
+      selectedTab === PanelTab.AvailabilityAudience &&
       availabilityDimensionValues.updated
     ) {
       updateObjectAvailabilityDimensions({
@@ -762,8 +762,8 @@ export const Panel = ({
               setPanelObject={setPanelObject}
             />
           )}
-          {selectedTab === PanelTab.AvailabilityDimensions && (
-            <PanelAvailabilityDimensions
+          {selectedTab === PanelTab.AvailabilityAudience && (
+            <PanelAudience
               isPage={isPage}
               objectType={objectType}
               uid={uid}

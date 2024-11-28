@@ -69,6 +69,19 @@ export interface SkylarkGraphQLAvailabilityDimensionWithValues
   };
 }
 
+export interface SkylarkGraphQLAvailabilitySegment {
+  uid: SkylarkUID;
+  external_id: SkylarkExternalId;
+  slug: string;
+  title: string | null;
+  active: boolean;
+  dimension_breakdown: string | null; // AWSJSON
+  // dimensions?: {
+  //   next_token: NextToken;
+  //   objects: SkylarkGraphQLAvailabilityDimensionWithValues[];
+  // };
+}
+
 export interface SkylarkGraphQLAvailability {
   __typename: string;
   uid: SkylarkUID;
@@ -83,9 +96,14 @@ export interface SkylarkGraphQLAvailability {
   inheritance_source: boolean | null;
   inherited_by?: SkylarkGraphQLObjectList;
   inherited_from?: SkylarkGraphQLObjectList;
+  dimension_breakdown: string | null; // AWSJSON
   dimensions?: {
     next_token: NextToken;
     objects: SkylarkGraphQLAvailabilityDimensionWithValues[];
+  };
+  segments?: {
+    next_token: NextToken;
+    objects: SkylarkGraphQLAvailabilitySegment[];
   };
 }
 

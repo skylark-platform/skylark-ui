@@ -4,7 +4,10 @@ import { MultiSelect } from "src/components/inputs/multiselect/multiselect.compo
 import { SelectOption } from "src/components/inputs/select";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { PanelLoading } from "src/components/panel/panelLoading";
-import { PanelFieldTitle } from "src/components/panel/panelTypography";
+import {
+  PanelFieldTitle,
+  PanelSectionTitle,
+} from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
 import { HREFS } from "src/constants/skylark";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
@@ -44,7 +47,7 @@ const parseDimensionsAndValues = (
   return selectedDimensionValues;
 };
 
-export const PanelAvailabilityDimensions = ({
+export const PanelAudience = ({
   isPage,
   inEditMode,
   uid,
@@ -97,6 +100,7 @@ export const PanelAvailabilityDimensions = ({
       }))}
       isPage={isPage}
     >
+      <PanelSectionTitle text={"Dimensions"} />
       {!dimensionsLoading &&
         dimensions?.map((dimension) => {
           const options: SelectOption<string>[] = dimension.values

@@ -34,7 +34,7 @@ describe("availabity dimensions view", () => {
       <Panel
         {...defaultProps}
         object={availabilityObject}
-        tab={PanelTab.AvailabilityDimensions}
+        tab={PanelTab.AvailabilityAudience}
       />,
     );
 
@@ -66,7 +66,7 @@ describe("availabity dimensions view", () => {
       <Panel
         {...defaultProps}
         object={availabilityObject}
-        tab={PanelTab.AvailabilityDimensions}
+        tab={PanelTab.AvailabilityAudience}
       />,
     );
 
@@ -86,7 +86,7 @@ describe("availabity dimensions view", () => {
         <Panel
           {...defaultProps}
           object={availabilityObject}
-          tab={PanelTab.AvailabilityDimensions}
+          tab={PanelTab.AvailabilityAudience}
         />,
       );
 
@@ -134,7 +134,7 @@ describe("availabity dimensions view", () => {
         <Panel
           {...defaultProps}
           object={availabilityObject}
-          tab={PanelTab.AvailabilityDimensions}
+          tab={PanelTab.AvailabilityAudience}
         />,
       );
 
@@ -170,7 +170,7 @@ describe("availabity dimensions view", () => {
         <Panel
           {...defaultProps}
           object={availabilityObject}
-          tab={PanelTab.AvailabilityDimensions}
+          tab={PanelTab.AvailabilityAudience}
         />,
       );
 
@@ -213,7 +213,7 @@ describe("availabity dimensions view", () => {
       );
 
       await waitFor(() =>
-        expect(screen.getByText("Edit Dimensions")).toBeInTheDocument(),
+        expect(screen.getByText("Edit Audience")).toBeInTheDocument(),
       );
     });
 
@@ -229,7 +229,7 @@ describe("availabity dimensions view", () => {
         <Panel
           {...defaultProps}
           object={availabilityObject}
-          tab={PanelTab.AvailabilityDimensions}
+          tab={PanelTab.AvailabilityAudience}
         />,
       );
 

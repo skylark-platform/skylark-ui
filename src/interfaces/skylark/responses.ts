@@ -231,6 +231,10 @@ export interface GQLSkylarkGetObjectDimensions {
   getObjectDimensions: Pick<SkylarkGraphQLAvailability, "dimensions">;
 }
 
+export interface GQLSkylarkGetObjectDimensions {
+  getObjectSegments: Pick<SkylarkGraphQLAvailability, "segments">;
+}
+
 export interface GQLSkylarkListObjectTypeRelationshipConfiguration {
   listRelationshipConfiguration: {
     count: number;

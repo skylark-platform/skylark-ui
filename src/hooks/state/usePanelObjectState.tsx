@@ -17,7 +17,7 @@ export enum PanelTab {
   Imagery = "Imagery",
   Playback = "Video",
   Availability = "Availability",
-  AvailabilityDimensions = "Dimensions",
+  AvailabilityAudience = "Audience",
   AvailabilityAssignedTo = "Assigned To",
   Content = "Content",
   ContentOf = "Appears In",

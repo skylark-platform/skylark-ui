@@ -85,7 +85,7 @@ const AvailabilitySelectors = ({
       <div className="flex h-full w-full flex-grow flex-col gap-4 md:flex-row">
         {(isLoadingDimensions || hasDimensions) && (
           <div className="">
-            <PanelSectionTitle text={"Dimensions"} />
+            <PanelSectionTitle text={"Audience"} />
             <div
               className={clsx(
                 "grid w-max gap-4",
@@ -119,7 +119,7 @@ const AvailabilitySelectors = ({
           </div>
         )}
         <div className="mb-6 w-72">
-          <PanelSectionTitle text={"Time"} />
+          <PanelSectionTitle text={"Time Window"} />
           <div className="flex flex-col gap-4">
             <div>
               <InputLabel
@@ -199,6 +199,7 @@ export const AvailabilityPicker = ({
 
   const { refs, floatingStyles } = useFloating({
     placement: "bottom-start",
+    strategy: "fixed",
     middleware: [
       offset(5),
       flip({ padding: 40 }),

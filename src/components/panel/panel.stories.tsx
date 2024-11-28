@@ -256,7 +256,7 @@ export const AvailabilityDimensions = {
       uid: GQLSkylarkGetAvailabilityQueryFixture.data.getObject.uid,
       language: "",
     },
-    tab: PanelTab.AvailabilityDimensions,
+    tab: PanelTab.AvailabilityAudience,
   },
 };
 
