@@ -227,8 +227,8 @@ export type GQLSkylarkListAvailabilityDimensionValuesResponse = Record<
   }
 >;
 
-export interface GQLSkylarkGetAvailabilityDimensions {
-  getAvailability: SkylarkGraphQLAvailability;
+export interface GQLSkylarkGetObjectDimensions {
+  getObjectDimensions: Pick<SkylarkGraphQLAvailability, "dimensions">;
 }
 
 export interface GQLSkylarkListObjectTypeRelationshipConfiguration {

@@ -144,3 +144,54 @@ export const createGetAvailabilityAssignedTo = (
 
   return gql(graphQLQuery);
 };
+
+export const createGetAssignedDimensionsQuery = (
+  objectMeta: SkylarkObjectMeta | null,
+) => {
+  if (!objectMeta) {
+    return null;
+  }
+
+  const query = {
+    query: {
+      __name: `GET_${objectMeta.name}_DIMENSIONS`,
+      __variables: {
+        uid: "String!",
+        nextToken: "String",
+      },
+      getObjectDimensions: {
+        __aliasFor: objectMeta.operations.get.name,
+        __args: {
+          uid: new VariableType("uid"),
+        },
+        __typename: true,
+        dimensions: {
+          __args: {
+            limit: 100,
+            next_token: new VariableType("nextToken"),
+          },
+          next_token: true,
+          objects: {
+            uid: true,
+            title: true,
+            slug: true,
+            values: {
+              __args: {
+                limit: 100,
+              },
+              objects: {
+                uid: true,
+                title: true,
+                slug: true,
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+
+  const graphQLQuery = wrappedJsonQuery(query);
+
+  return gql(graphQLQuery);
+};

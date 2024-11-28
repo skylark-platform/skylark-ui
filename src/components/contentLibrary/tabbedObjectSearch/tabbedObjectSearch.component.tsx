@@ -79,10 +79,10 @@ const generateNewTabColumnStateForObjectType = (
       columns: [
         ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
         OBJECT_LIST_TABLE.columnIds.displayField,
-        OBJECT_LIST_TABLE.columnIds.availability,
         // Optional fields for Availability only
-        ...(BuiltInSkylarkObjectType.Availability
+        ...(objectType === BuiltInSkylarkObjectType.Availability
           ? [
+              OBJECT_LIST_TABLE.columnIds.availability,
               SkylarkAvailabilityField.Start,
               SkylarkAvailabilityField.End,
               SkylarkAvailabilityField.Timezone,

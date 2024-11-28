@@ -388,6 +388,22 @@ const parseObjectMetadata = (
   return metadata;
 };
 
+const getAvailabilityStatus = (
+  objectType: string,
+  metadata: ParsedSkylarkObjectMetadata,
+  availability: ParsedSkylarkObjectAvailability,
+): AvailabilityStatus | null => {
+  if (objectType === BuiltInSkylarkObjectType.Availability) {
+    return getAvailabilityStatusForAvailabilityObject(metadata);
+  }
+
+  if (objectType === BuiltInSkylarkObjectType.AvailabilitySegment) {
+    return null;
+  }
+
+  return availability.status;
+};
+
 export const parseSkylarkObject = (
   object: SkylarkGraphQLObject,
   objectMeta?: SkylarkObjectMeta | null,
@@ -395,10 +411,11 @@ export const parseSkylarkObject = (
   const metadata = parseObjectMetadata(object);
 
   const availability = parseObjectAvailability(object?.availability);
-  const availabilityStatus =
-    object.__typename === BuiltInSkylarkObjectType.Availability
-      ? getAvailabilityStatusForAvailabilityObject(metadata)
-      : availability.status;
+  const availabilityStatus = getAvailabilityStatus(
+    object.__typename,
+    metadata,
+    availability,
+  );
 
   const images =
     objectMeta?.builtinObjectRelationships?.images?.relationshipNames.map(

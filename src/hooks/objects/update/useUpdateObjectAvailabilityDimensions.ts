@@ -3,43 +3,42 @@ import { RequestDocument } from "graphql-request";
 
 import { createGetAvailabilityObjectDimensionsKeyPrefix } from "src/hooks/availability/useAvailabilityObjectDimensions";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
-import {
-  BuiltInSkylarkObjectType,
-  GQLSkylarkErrorResponse,
-} from "src/interfaces/skylark";
+import { GQLSkylarkErrorResponse } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateAvailabilityDimensionsMutation } from "src/lib/graphql/skylark/dynamicMutations/objects";
 
 interface MutationArgs {
   uid: string;
-  originalAvailabilityDimensions: Record<string, string[]> | null;
-  updatedAvailabilityDimensions: Record<string, string[]> | null;
+  originalDimensions: Record<string, string[]> | null;
+  updatedDimensions: Record<string, string[]> | null;
 }
 
-export const useUpdateAvailabilityObjectDimensions = ({
+export const useUpdateObjectAvailabilityDimensions = ({
+  objectType,
   onSuccess,
   onError,
 }: {
+  objectType: string;
   onSuccess: () => void;
   onError: (e: GQLSkylarkErrorResponse) => void;
 }) => {
   const queryClient = useQueryClient();
-  const { objectOperations } = useSkylarkObjectOperations(
-    BuiltInSkylarkObjectType.Availability,
-  );
+  const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const { mutate, isPending } = useMutation({
     mutationFn: ({
       uid,
-      originalAvailabilityDimensions,
-      updatedAvailabilityDimensions,
+      originalDimensions,
+      updatedDimensions,
     }: MutationArgs) => {
       const updateAvailabilityObjectDimensionsMutation =
         createUpdateAvailabilityDimensionsMutation(
           objectOperations,
-          originalAvailabilityDimensions,
-          updatedAvailabilityDimensions,
+          originalDimensions,
+          updatedDimensions,
         );
+
+      console.log({ updateAvailabilityObjectDimensionsMutation });
 
       return skylarkRequest(
         "mutation",
@@ -49,7 +48,10 @@ export const useUpdateAvailabilityObjectDimensions = ({
     },
     onSuccess: async (_, { uid }) => {
       await queryClient.refetchQueries({
-        queryKey: createGetAvailabilityObjectDimensionsKeyPrefix({ uid }),
+        queryKey: createGetAvailabilityObjectDimensionsKeyPrefix({
+          uid,
+          objectType,
+        }),
       });
 
       onSuccess();
@@ -58,7 +60,7 @@ export const useUpdateAvailabilityObjectDimensions = ({
   });
 
   return {
-    updateAvailabilityObjectDimensions: mutate,
-    isUpdatingAvailabilityObjectDimensions: isPending,
+    updateObjectAvailabilityDimensions: mutate,
+    isUpdatingObjectAvailabilityDimensions: isPending,
   };
 };

@@ -1,8 +1,8 @@
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
+import clsx from "clsx";
 import { FiZap } from "react-icons/fi";
 
 import { AvailabilityLabel } from "src/components/availability";
-import { DynamicContentIcon } from "src/components/icons";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { Pill } from "src/components/pill";
 import { OBJECT_LIST_TABLE } from "src/constants/skylark";
@@ -21,6 +21,7 @@ import {
   formatObjectField,
   getObjectDisplayName,
   hasProperty,
+  isAvailabilityOrAvailabilitySegment,
 } from "src/lib/utils";
 
 import { Cell } from "./grids/cell.component";
@@ -50,7 +51,6 @@ export const OBJECT_SEARCH_ORDERED_KEYS = [
 export const OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS = [
   OBJECT_LIST_TABLE.columnIds.dragIcon,
   OBJECT_LIST_TABLE.columnIds.checkbox,
-  OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
 ];
 
 export const MAX_FROZEN_COLUMNS = 4;
@@ -58,7 +58,6 @@ export const MAX_FROZEN_COLUMNS = 4;
 export const columnsWithoutResize = [
   OBJECT_LIST_TABLE.columnIds.dragIcon,
   OBJECT_LIST_TABLE.columnIds.checkbox,
-  OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
 ];
 
 const columnHelper = createColumnHelper<ObjectSearchTableData>();
@@ -73,10 +72,6 @@ const dragIconColumn = columnHelper.display({
     const tableMeta = table.options.meta;
     const isHoveredRow = tableMeta?.hoveredRow === row.index;
 
-    const showObjectTypeIndicator = table
-      .getColumn(OBJECT_LIST_TABLE.columnIds.objectTypeIndicator)
-      ?.getIsVisible();
-
     const original = row.original;
     const cellContext = cell.getContext();
 
@@ -85,12 +80,21 @@ const dragIconColumn = columnHelper.display({
         ({ objectType }) => objectType === original.objectType,
       ) || { config: null };
 
+    const hideObjectTypeIndicator = table
+      .getLeftVisibleLeafColumns()
+      .find(({ id }) => id === OBJECT_LIST_TABLE.columnIds.objectType);
+
     return tableMeta?.activeObject && isHoveredRow ? (
       <span className="block h-full w-5 bg-inherit bg-[url('/icons/drag_indicator_black.png')] bg-center bg-no-repeat opacity-60" />
-    ) : showObjectTypeIndicator ? (
+    ) : !hideObjectTypeIndicator ? (
       <div className="flex h-full items-center justify-center">
         <div
-          className="h-2 w-2 rounded-full bg-manatee-300"
+          className={clsx(
+            "h-2 w-2",
+            isAvailabilityOrAvailabilitySegment(original.objectType)
+              ? "rounded-sm bg-brand-primary"
+              : "rounded-full bg-manatee-300",
+          )}
           style={{ background: config?.colour || undefined }}
         />
       </div>
@@ -129,33 +133,6 @@ const objectTypeColumn = columnHelper.accessor(
     },
   },
 );
-
-// TODO remove this when we're settled on a design for the indicator
-const objectTypeIndicatorColumn = columnHelper.display({
-  id: OBJECT_LIST_TABLE.columnIds.objectTypeIndicator,
-  header: "",
-  size: 0,
-  maxSize: 0,
-  minSize: 0,
-  cell: () => {
-    // cell: ({ cell, row }) => {
-    // const original = row.original as ParsedSkylarkObject;
-    // const cellContext = cell.getContext();
-
-    // const { config }: { config: ParsedSkylarkObjectConfig | null } =
-    //   cellContext.table.options.meta?.objectTypesWithConfig?.find(
-    //     ({ objectType }) => objectType === original.objectType,
-    //   ) || { config: null };
-
-    return (
-      // <div
-      //   className="mx-auto h-1.5 w-1.5 rounded-full bg-manatee-300"
-      //   style={{ background: config ? config.colour : undefined }}
-      // />
-      <></>
-    );
-  },
-});
 
 const displayNameColumn = columnHelper.accessor(
   OBJECT_LIST_TABLE.columnIds.displayField,
@@ -424,7 +401,6 @@ export const createObjectListingColumns = (
     );
 
   const orderedColumnArray = [
-    objectTypeIndicatorColumn,
     objectTypeColumn,
     displayNameColumn,
     translationColumn,

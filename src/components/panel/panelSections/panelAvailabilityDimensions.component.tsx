@@ -48,6 +48,7 @@ export const PanelAvailabilityDimensions = ({
   isPage,
   inEditMode,
   uid,
+  objectType,
   availabilityDimensionValues,
   setAvailabilityDimensionValues,
 }: PanelRelationshipsProps) => {
@@ -58,7 +59,7 @@ export const PanelAvailabilityDimensions = ({
     query,
     variables,
     isLoading: getObjectLoading,
-  } = useAvailabilityObjectDimensions(uid);
+  } = useAvailabilityObjectDimensions(objectType, uid);
 
   useEffect(() => {
     if (data && !inEditMode) {

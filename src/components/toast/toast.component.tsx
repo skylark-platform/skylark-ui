@@ -95,13 +95,8 @@ export const GraphQLRequestErrorToast = ({
   title: ToastProps["title"];
   error: GQLSkylarkErrorResponse;
 }) => {
-  return (
-    <Toast
-      title={title}
-      message={[
-        `Reason(s):`,
-        ...error?.response?.errors?.map(({ message }) => `- ${message}`),
-      ]}
-    />
-  );
+  const formattedError = error?.response?.errors?.map(
+    ({ message }) => `- ${message}`,
+  ) || [error.toString()];
+  return <Toast title={title} message={[`Reason(s):`, ...formattedError]} />;
 };

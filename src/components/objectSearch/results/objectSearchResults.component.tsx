@@ -301,12 +301,6 @@ export const ObjectSearchResults = ({
     [tableState.columnPinning.left],
   );
 
-  const showObjectTypeIndicator =
-    !tableState.columnVisibility[OBJECT_LIST_TABLE.columnIds.objectType] ||
-    frozenColumns.indexOf(OBJECT_LIST_TABLE.columnIds.objectTypeIndicator) +
-      1 !==
-      frozenColumns.indexOf(OBJECT_LIST_TABLE.columnIds.objectType);
-
   const queryClient = useQueryClient();
 
   const onObjectClickWrapper: SetPanelObject = useCallback(
@@ -363,8 +357,6 @@ export const ObjectSearchResults = ({
       ...tableState,
       columnVisibility: {
         ...tableState.columnVisibility,
-        [OBJECT_LIST_TABLE.columnIds.objectTypeIndicator]:
-          showObjectTypeIndicator,
       },
       rowSelection: rowCheckedState,
     },

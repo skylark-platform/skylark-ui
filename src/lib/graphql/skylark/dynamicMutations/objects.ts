@@ -533,7 +533,7 @@ export const createUpdateAvailabilityDimensionsMutation = (
 ) => {
   if (
     !objectMeta ||
-    objectMeta.name !== BuiltInSkylarkObjectType.Availability ||
+    !isAvailabilityOrAvailabilitySegment(objectMeta.name) ||
     !objectMeta.operations.update ||
     !updatedAvailabilityDimensionValues ||
     !originalAvailabilityDimensionValues
@@ -625,7 +625,7 @@ export const createUpdateAvailabilityDimensionsMutation = (
 
   const mutation = {
     mutation: {
-      __name: `UPDATE_AVAILABILITY_DIMENSIONS`,
+      __name: `UPDATE_${objectMeta.name}_DIMENSIONS`,
       __variables: {
         uid: "String!",
       },

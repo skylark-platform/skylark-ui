@@ -34,31 +34,6 @@ export const LIST_AVAILABILITY_DIMENSIONS = gql`
   }
 `;
 
-export const GET_AVAILABILITY_DIMENSIONS = gql`
-  query ${wrapQueryName(
-    "GET_AVAILABILITY_DIMENSIONS",
-  )}($uid: String!, $nextToken: String) {
-    getAvailability(uid: $uid) {
-      title
-      dimensions(limit: 50, next_token: $nextToken) {
-        next_token
-        objects {
-          uid
-          title
-          slug
-          values(limit: 50) {
-            objects {
-              uid
-              title
-              slug
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
 export const GET_USER_AND_ACCOUNT = gql`
   query ${wrapQueryName("GET_USER_AND_ACCOUNT")} {
     getUser {
