@@ -176,7 +176,8 @@ const DisplayGraphQLQueryModalBody = ({
   query,
   variables,
   headers,
-}: GraphQLQueryModalProps) => {
+  close,
+}: { close: () => void } & GraphQLQueryModalProps) => {
   const [activeTab, setTab] = useState("Query");
 
   const formattedQuery = useMemo(() => (query ? print(query) : ""), [query]);
@@ -280,15 +281,14 @@ const DisplayGraphQLQueryModalBody = ({
   );
 };
 
-export const DisplayGraphQLQueryModal = ({
-  close,
-  ...props
-}: { close: () => void } & GraphQLQueryModalProps) => {
+export const DisplayGraphQLQueryModal = (
+  props: { close: () => void } & GraphQLQueryModalProps,
+) => {
   return (
     <Dialog
       static
       open={true}
-      onClose={close}
+      onClose={props.close}
       className="font-body relative z-50"
     >
       <m.div

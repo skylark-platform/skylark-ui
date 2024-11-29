@@ -13,6 +13,7 @@ import {
   SkylarkObjectType,
   SkylarkObject,
   ModifiedContents,
+  ModifiedAvailabilityDimensions,
 } from "src/interfaces/skylark";
 import {
   createDynamicSetContentInput,
@@ -22,10 +23,7 @@ import {
   wrappedJsonMutation,
 } from "src/lib/graphql/skylark/dynamicQueries";
 import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
-import {
-  hasProperty,
-  isAvailabilityOrAvailabilitySegment,
-} from "src/lib/utils";
+import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
 
 interface SetContentOperation {
   operation: "link" | "unlink" | "reposition";
@@ -528,25 +526,16 @@ export const createUpdateObjectAvailability = (
 
 export const createUpdateAvailabilityDimensionsMutation = (
   objectMeta: SkylarkObjectMeta | null,
-  originalAvailabilityDimensionValues: Record<string, string[]> | null,
-  updatedAvailabilityDimensionValues: Record<string, string[]> | null,
+  modifiedAvailabilityDimensions: ModifiedAvailabilityDimensions,
 ) => {
   if (
     !objectMeta ||
     !isAvailabilityOrAvailabilitySegment(objectMeta.name) ||
     !objectMeta.operations.update ||
-    !updatedAvailabilityDimensionValues ||
-    !originalAvailabilityDimensionValues
+    !modifiedAvailabilityDimensions
   ) {
     return null;
   }
-
-  const dimensionSlugs = [
-    ...new Set([
-      ...Object.keys(originalAvailabilityDimensionValues),
-      ...Object.keys(updatedAvailabilityDimensionValues),
-    ]),
-  ];
 
   const parsedDimensionsForRequest: {
     link: {
@@ -557,41 +546,18 @@ export const createUpdateAvailabilityDimensionsMutation = (
       dimension_slug: string;
       value_slugs: string[];
     }[];
-  } = dimensionSlugs.reduce(
-    (acc, dimensionSlug) => {
-      const originalDimensionValues =
-        hasProperty(originalAvailabilityDimensionValues, dimensionSlug) &&
-        originalAvailabilityDimensionValues[dimensionSlug];
-
-      const updatedDimensionValues =
-        hasProperty(updatedAvailabilityDimensionValues, dimensionSlug) &&
-        updatedAvailabilityDimensionValues[dimensionSlug];
-
-      if (!updatedDimensionValues) {
+  } = Object.entries(modifiedAvailabilityDimensions).reduce(
+    (acc, [dimensionSlug, { added, removed }]) => {
+      if (added.length === 0 && removed.length === 0) {
         return acc;
       }
 
-      if (!originalDimensionValues) {
-        return {
-          ...acc,
-          link: [
-            ...acc.link,
-            {
-              dimension_slug: dimensionSlug,
-              value_slugs: updatedDimensionValues,
-            },
-          ],
-        };
-      }
+      const valuesToLink: string[] = added.filter(
+        (value) => !removed.includes(value),
+      );
 
-      const valuesToLink: string[] = !originalDimensionValues
-        ? updatedDimensionValues
-        : updatedDimensionValues.filter(
-            (value) => !originalDimensionValues.includes(value),
-          );
-
-      const valuesToUnlink: string[] = originalDimensionValues.filter(
-        (value) => !updatedDimensionValues.includes(value),
+      const valuesToUnlink: string[] = removed.filter(
+        (value) => !added.includes(value),
       );
 
       return {

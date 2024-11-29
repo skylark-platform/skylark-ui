@@ -3,14 +3,16 @@ import { RequestDocument } from "graphql-request";
 
 import { createGetAvailabilityObjectDimensionsKeyPrefix } from "src/hooks/availability/useAvailabilityObjectDimensions";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
-import { GQLSkylarkErrorResponse } from "src/interfaces/skylark";
+import {
+  GQLSkylarkErrorResponse,
+  ModifiedAvailabilityDimensions,
+} from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createUpdateAvailabilityDimensionsMutation } from "src/lib/graphql/skylark/dynamicMutations/objects";
 
 interface MutationArgs {
   uid: string;
-  originalDimensions: Record<string, string[]> | null;
-  updatedDimensions: Record<string, string[]> | null;
+  modifiedAvailabilityDimensions: ModifiedAvailabilityDimensions;
 }
 
 export const useUpdateObjectAvailabilityDimensions = ({
@@ -26,19 +28,12 @@ export const useUpdateObjectAvailabilityDimensions = ({
   const { objectOperations } = useSkylarkObjectOperations(objectType);
 
   const { mutate, isPending } = useMutation({
-    mutationFn: ({
-      uid,
-      originalDimensions,
-      updatedDimensions,
-    }: MutationArgs) => {
+    mutationFn: ({ uid, modifiedAvailabilityDimensions }: MutationArgs) => {
       const updateAvailabilityObjectDimensionsMutation =
         createUpdateAvailabilityDimensionsMutation(
           objectOperations,
-          originalDimensions,
-          updatedDimensions,
+          modifiedAvailabilityDimensions,
         );
-
-      console.log({ updateAvailabilityObjectDimensionsMutation });
 
       return skylarkRequest(
         "mutation",

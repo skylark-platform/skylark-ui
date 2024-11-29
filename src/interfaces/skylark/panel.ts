@@ -12,14 +12,7 @@ export interface ModifiedRelationship {
   config: Partial<ParsedSkylarkRelationshipConfig>;
 }
 
-export type ModifiedRelationshipsObject = Record<
-  string,
-  {
-    added: SkylarkObject[];
-    removed: string[];
-    config: Partial<ParsedSkylarkRelationshipConfig>;
-  }
->;
+export type ModifiedRelationshipsObject = Record<string, ModifiedRelationship>;
 
 export type ModifiedContents = {
   original: SkylarkObjectContentObject[] | null;
@@ -30,3 +23,16 @@ export type ModifiedContents = {
     contentLimit: number | null;
   } | null;
 };
+
+export type ModifiedAvailability = {
+  added: SkylarkObject[];
+  removed: string[];
+};
+
+export type ModifiedAvailabilityDimensions = Record<
+  string,
+  {
+    added: string[];
+    removed: string[];
+  }
+>;

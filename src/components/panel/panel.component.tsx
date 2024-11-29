@@ -33,6 +33,8 @@ import {
   ParsedSkylarkObjectConfig,
   ModifiedRelationshipsObject,
   ModifiedContents,
+  ModifiedAvailabilityDimensions,
+  ModifiedAvailability,
 } from "src/interfaces/skylark";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
@@ -260,16 +262,10 @@ export const Panel = ({
     useState<ModifiedRelationshipsObject | null>(null);
 
   const [modifiedAvailabilityObjects, setModifiedAvailabilityObjects] =
-    useState<{
-      added: SkylarkObject[];
-      removed: string[];
-    } | null>(null);
+    useState<ModifiedAvailability | null>(null);
 
-  const [availabilityDimensionValues, setAvailabilityDimensionValues] =
-    useState<{
-      original: Record<string, string[]> | null;
-      updated: Record<string, string[]> | null;
-    }>({ original: null, updated: null });
+  const [modifiedAvailabilityDimensions, setModifiedAvailabilityDimensions] =
+    useState<ModifiedAvailabilityDimensions | null>(null);
 
   const [modifiedAvailabilityAssignedTo, setModifiedAvailabilityAssignedTo] =
     useState<{
@@ -472,12 +468,11 @@ export const Panel = ({
       updateObjectAvailability({ uid, modifiedAvailabilityObjects });
     } else if (
       selectedTab === PanelTab.AvailabilityAudience &&
-      availabilityDimensionValues.updated
+      modifiedAvailabilityDimensions
     ) {
       updateObjectAvailabilityDimensions({
         uid,
-        originalDimensions: availabilityDimensionValues.original,
-        updatedDimensions: availabilityDimensionValues.updated,
+        modifiedAvailabilityDimensions,
       });
     } else if (
       selectedTab === PanelTab.AvailabilityAssignedTo &&
@@ -632,10 +627,7 @@ export const Panel = ({
             );
             setModifiedRelationships(null);
             setModifiedAvailabilityObjects(null);
-            setAvailabilityDimensionValues({
-              original: availabilityDimensionValues.original,
-              updated: availabilityDimensionValues.original,
-            });
+            setModifiedAvailabilityDimensions(null);
             setModifiedAvailabilityAssignedTo(null);
           }
           setEditMode(!inEditMode);
@@ -768,12 +760,10 @@ export const Panel = ({
               objectType={objectType}
               uid={uid}
               inEditMode={inEditMode}
-              availabilityDimensionValues={availabilityDimensionValues?.updated}
-              setAvailabilityDimensionValues={(values, toggleEditMode) => {
-                setAvailabilityDimensionValues(values);
-                if (toggleEditMode) {
-                  setEditMode(true);
-                }
+              modifiedAvailabilityDimensions={modifiedAvailabilityDimensions}
+              setAvailabilityDimensionValues={(dimensions) => {
+                setModifiedAvailabilityDimensions(dimensions);
+                setEditMode(true);
               }}
             />
           )}
