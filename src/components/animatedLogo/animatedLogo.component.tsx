@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { AnimatePresence, Transition, m } from "framer-motion";
+import { AnimatePresence, Transition, motion } from "framer-motion";
 import { ReactNode, useMemo } from "react";
 
 import { Spinner } from "src/components/icons";
@@ -67,7 +67,7 @@ const AnimatedSkylarkLogoSVG = ({
   );
 
   return (
-    <m.svg
+    <motion.svg
       className={className}
       width={168}
       height={144}
@@ -80,7 +80,7 @@ const AnimatedSkylarkLogoSVG = ({
     >
       {/* <rect x="36" y="24" width="24" height="24" fill="#0E1825" /> */}
       <g>
-        <m.path
+        <motion.path
           onAnimationStart={onAnimationStart}
           onAnimationComplete={onAnimationComplete}
           initial={strokeInitial}
@@ -90,7 +90,7 @@ const AnimatedSkylarkLogoSVG = ({
           fill="#0E1825"
           strokeDasharray="0 1"
         />
-        <m.path
+        <motion.path
           initial={strokeInitial}
           animate={strokeAnimate}
           transition={strokeTransition}
@@ -98,7 +98,7 @@ const AnimatedSkylarkLogoSVG = ({
           strokeDasharray="0 1"
           fill="#0D5AF1"
         />
-        <m.path
+        <motion.path
           initial={strokeInitial}
           animate={strokeAnimate}
           transition={strokeTransition}
@@ -106,7 +106,7 @@ const AnimatedSkylarkLogoSVG = ({
           d="M60 72C66.3652 72 72.4697 69.4714 76.9706 64.9706C81.4714 60.4697 84 54.3652 84 48C84 41.6348 81.4714 35.5303 76.9706 31.0294C72.4697 26.5286 66.3652 24 60 24H36C42.3652 24 48.4697 26.5286 52.9706 31.0294C57.4714 35.5303 60 41.6348 60 48V72Z"
           fill="url(#paint0_linear_1041_895)"
         />
-        <m.path
+        <motion.path
           initial={strokeInitial}
           animate={strokeAnimate}
           transition={strokeTransition}
@@ -116,7 +116,7 @@ const AnimatedSkylarkLogoSVG = ({
         />
       </g>
       <g>
-        <m.path
+        <motion.path
           initial={strokeInitial}
           animate={strokeAnimate}
           transition={strokeTransition}
@@ -125,7 +125,7 @@ const AnimatedSkylarkLogoSVG = ({
           strokeDasharray="0 1"
           strokeWidth={0.5}
         />
-        <m.path
+        <motion.path
           initial={strokeInitial}
           animate={strokeAnimate}
           transition={strokeTransition}
@@ -134,7 +134,7 @@ const AnimatedSkylarkLogoSVG = ({
           strokeDasharray="0 1"
           strokeWidth={0.5}
         />
-        <m.path
+        <motion.path
           initial={strokeInitial}
           animate={strokeAnimate}
           transition={strokeTransition}
@@ -143,7 +143,7 @@ const AnimatedSkylarkLogoSVG = ({
           d="M60 72C66.3652 72 72.4697 69.4714 76.9706 64.9706C81.4714 60.4697 84 54.3652 84 48C84 41.6348 81.4714 35.5303 76.9706 31.0294C72.4697 26.5286 66.3652 24 60 24H36C42.3652 24 48.4697 26.5286 52.9706 31.0294C57.4714 35.5303 60 41.6348 60 48V72Z"
           strokeWidth={0.5}
         />
-        <m.path
+        <motion.path
           initial={strokeInitial}
           animate={strokeAnimate}
           transition={strokeTransition}
@@ -177,7 +177,7 @@ const AnimatedSkylarkLogoSVG = ({
           <stop offset="1" stopOpacity="0" />
         </linearGradient>
       </defs>
-    </m.svg>
+    </motion.svg>
   );
 };
 
@@ -198,7 +198,7 @@ const AnimatedChristmasHatSVG = ({
   );
 
   return (
-    <m.svg
+    <motion.svg
       className={className}
       width={168}
       height={144}
@@ -211,13 +211,13 @@ const AnimatedChristmasHatSVG = ({
       onAnimationStart={onAnimationStart}
       onAnimationComplete={onAnimationComplete}
     >
-      <m.path
+      <motion.path
         d="M 154 3.051 C 154 3.955, 61.697 129.991, 57.001 135.500 L 55.296 137.500 56.398 142.422 L 57.500 147.343 112.864 79.672 C 143.314 42.452, 168.460 12, 168.746 12 C 169.031 12, 170.892 12.972, 172.882 14.160 C 180.165 18.508, 174.220 14.079, 164.786 8.127 C 154.490 1.633, 154 1.402, 154 3.051 M 47.288 148.250 C 42.951 153.917, 40.665 157.299, 41.521 156.782 C 42.703 156.068, 49.343 147, 48.685 147 C 48.443 147, 47.814 147.563, 47.288 148.250"
         stroke="none"
         fill="#a3211d"
         fill-rule="evenodd"
       />
-      <m.path
+      <motion.path
         d="M 19.500 156.665 C 15.091 158.995, 13.013 161.058, 10.894 165.210 L 9 168.920 9 173.500 L 9 178.080 10.991 181.982 C 13.545 186.988, 18.340 190.620, 24.102 191.911 L 28.661 192.932 32.580 191.868 C 34.736 191.283, 38.016 189.659, 39.869 188.260 L 43.238 185.717 45.232 181.209 L 47.226 176.701 46.762 171.875 L 46.298 167.049 43.648 163.044 L 40.998 159.040 37.039 157.020 L 33.080 155 27.790 155.040 L 22.500 155.080 19.500 156.665"
         stroke="none"
         fill="#ffffff"
@@ -225,21 +225,21 @@ const AnimatedChristmasHatSVG = ({
         strokeDasharray="0 1"
       />
 
-      <m.path
+      <motion.path
         d="M 154 3.051 C 154 3.955, 61.697 129.991, 57.001 135.500 L 55.296 137.500 56.398 142.422 L 57.500 147.343 112.864 79.672 C 143.314 42.452, 168.460 12, 168.746 12 C 169.031 12, 170.892 12.972, 172.882 14.160 C 180.165 18.508, 174.220 14.079, 164.786 8.127 C 154.490 1.633, 154 1.402, 154 3.051 M 47.288 148.250 C 42.951 153.917, 40.665 157.299, 41.521 156.782 C 42.703 156.068, 49.343 147, 48.685 147 C 48.443 147, 47.814 147.563, 47.288 148.250"
         stroke="none"
         fill="#a3211d"
         fill-rule="evenodd"
         strokeDasharray="0 1"
       />
-      <m.path
+      <motion.path
         d="M 94.500 25.017 L 35.500 46.770 35.249 48.635 C 35.028 50.273, 28 151.848, 28 153.397 C 28 153.729, 28.824 154, 29.831 154 C 30.837 154, 33.762 155.064, 36.331 156.364 L 41 158.728 41 157.714 C 41 157.156, 48.119 147.204, 56.821 135.600 C 85.362 97.535, 154.194 3.859, 153.843 3.558 C 153.654 3.397, 126.950 13.053, 94.500 25.017 M 114.903 77.155 C 85.531 113.044, 60.680 143.440, 59.679 144.702 L 57.857 146.997 62.137 166.032 L 66.418 185.066 67.503 184.783 C 68.100 184.627, 108.258 156.600, 156.743 122.500 L 244.897 60.500 243.698 59.363 C 242.219 57.960, 171.506 13.131, 169.646 12.418 L 168.305 11.903 114.903 77.155"
         stroke="none"
         fill="#bf2722"
         fill-rule="evenodd"
         strokeDasharray="0 1"
       />
-      <m.path
+      <motion.path
         d="M 248.500 58.873 C 244.505 60.700, 69.528 183.298, 65.228 187.284 C 63.979 188.442, 61.794 191.765, 60.374 194.668 L 57.791 199.948 57.737 205.724 L 57.684 211.500 59.687 216 C 61.866 220.895, 66.765 226.215, 71.500 228.827 L 74.500 230.483 83.087 230.491 L 91.673 230.500 97.587 226.574 C 115.604 214.613, 273.100 103.187, 276.267 100.161 C 278.339 98.181, 280.927 94.717, 282.017 92.465 L 284 88.369 284 83.050 C 284 75.708, 282.297 70.707, 278.145 65.856 L 274.611 61.728 269.556 59.374 L 264.500 57.020 258.500 57.032 L 252.500 57.044 248.500 58.873"
         stroke="none"
         fill="#f2f2f2"
@@ -270,7 +270,7 @@ const AnimatedChristmasHatSVG = ({
           <stop offset="1" stopOpacity="0" />
         </linearGradient>
       </defs>
-    </m.svg>
+    </motion.svg>
   );
 };
 
@@ -289,7 +289,7 @@ export const AnimatedLogo = ({
   return (
     <AnimatePresence>
       {show && (
-        <m.div
+        <motion.div
           data-testid="animated-skylark-logo"
           className={clsx(
             "fixed left-0 right-0 top-0 z-[99999999999] flex h-full w-full flex-col items-center justify-center pb-10",
@@ -326,7 +326,7 @@ export const AnimatedLogo = ({
               className="absolute -top-5 -left-2 md:-top-9 md:-left-3 xl:-top-16 xl:-left-3 2xl:-top-20 2xl:-left-4 h-20 md:h-36 xl:h-56 2xl:h-64"
             /> */}
             {children && (
-              <m.div
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{
@@ -336,7 +336,7 @@ export const AnimatedLogo = ({
                 className="mt-8 text-center font-heading text-6xl text-black"
               >
                 {children}
-              </m.div>
+              </motion.div>
             )}
           </div>
           {withLoadingSpinner && (
@@ -347,7 +347,7 @@ export const AnimatedLogo = ({
               )}
             />
           )}
-        </m.div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

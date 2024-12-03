@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { m, Target } from "framer-motion";
+import { motion, Target } from "framer-motion";
 import { useState } from "react";
 import {
   FiCheckSquare,
@@ -444,7 +444,7 @@ const TabbedObjectSearch = ({
   return (
     <>
       {tabs && (
-        <m.div
+        <motion.div
           initial={initial}
           animate={animate}
           className="flex h-full max-h-full w-full flex-col"
@@ -516,7 +516,7 @@ const TabbedObjectSearch = ({
               }
             />
           </div>
-        </m.div>
+        </motion.div>
       )}
     </>
   );

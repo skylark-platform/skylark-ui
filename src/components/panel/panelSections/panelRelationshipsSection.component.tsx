@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Transition, m } from "framer-motion";
+import { Transition, motion } from "framer-motion";
 import { Ref, forwardRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -100,7 +100,7 @@ const PanelRelationshipSectionComponent = (
     objectTypeDefaultConfig?.defaultSortField;
 
   return (
-    <m.div
+    <motion.div
       ref={ref}
       key={`${relationshipName}-container`}
       className={clsx("pb-6 bg-white")}
@@ -110,7 +110,7 @@ const PanelRelationshipSectionComponent = (
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: "auto" }}
     >
-      <m.div
+      <motion.div
         key={`${relationshipName}-title`}
         layout
         transition={transition}
@@ -171,9 +171,9 @@ const PanelRelationshipSectionComponent = (
             }
           />
         )}
-      </m.div>
+      </motion.div>
 
-      <m.div
+      <motion.div
         key={`${relationshipName}-objects`}
         transition={transition}
         layout="position"
@@ -186,7 +186,7 @@ const PanelRelationshipSectionComponent = (
                 : "";
 
               return (
-                <m.div
+                <motion.div
                   key={`relationship-${obj.objectType}-${obj.uid}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -237,13 +237,13 @@ const PanelRelationshipSectionComponent = (
                   </div>
 
                   {index < displayList.length - 1 && <PanelSeparator />}
-                </m.div>
+                </motion.div>
               );
             })}
         </div>
-      </m.div>
+      </motion.div>
 
-      <m.div layout className="mb-3" transition={{ duration: 0.08 }}>
+      <motion.div layout className="mb-3" transition={{ duration: 0.08 }}>
         {hasShowMore && toggleExpanded && (
           <>
             <PanelSeparator />
@@ -259,8 +259,8 @@ const PanelRelationshipSectionComponent = (
             </button>
           </>
         )}
-      </m.div>
-    </m.div>
+      </motion.div>
+    </motion.div>
   );
 };
 

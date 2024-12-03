@@ -8,7 +8,7 @@ import {
 } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import clsx from "clsx";
-import { m, useMotionValue, useTransform } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 
@@ -230,7 +230,7 @@ export const ContentLibrary = ({
           maxHeight: `calc(100vh - 4rem)`,
         }}
       >
-        <m.div
+        <motion.div
           className={clsx(
             "relative h-full w-full max-w-full",
             activePanelObject && "md:w-1/2 lg:w-5/12 xl:w-3/5",
@@ -252,13 +252,13 @@ export const ContentLibrary = ({
             resetCheckedObjects={resetCheckedObjects}
             skipLogoAnimation={skipLogoAnimation}
           />
-        </m.div>
+        </motion.div>
         {activePanelObject && (
-          <m.div
+          <motion.div
             className="fixed z-40 flex h-full w-full grow flex-row bg-white md:relative md:z-auto"
             style={{ width: activePanelObject ? panelWidth : 0 }}
           >
-            <m.div
+            <motion.div
               data-testid="drag-bar"
               key={windowSize}
               className="hidden w-3 cursor-pointer items-center bg-manatee-100 md:flex"
@@ -287,7 +287,7 @@ export const ContentLibrary = ({
               }}
             >
               <div className="mx-1 h-20 w-full rounded bg-manatee-600"></div>
-            </m.div>
+            </motion.div>
             <div className="w-full overflow-x-scroll">
               <Panel
                 key={`${activePanelObject.objectType}-${activePanelObject.uid}-${activePanelObject.language}`}
@@ -302,7 +302,7 @@ export const ContentLibrary = ({
                 updateActivePanelTabState={updateActivePanelTabState}
               />
             </div>
-          </m.div>
+          </motion.div>
         )}
       </div>
     </DndContext>

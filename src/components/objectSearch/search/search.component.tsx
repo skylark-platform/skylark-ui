@@ -10,7 +10,7 @@ import {
 import { Portal } from "@headlessui/react";
 import { ColumnDef, VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { DocumentNode } from "graphql";
 import { useState } from "react";
 
@@ -134,7 +134,7 @@ export const Search = ({
                 {...getFloatingProps()}
                 className="z-20"
               >
-                <m.div
+                <motion.div
                   initial={{ opacity: 0, y: -50 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
@@ -151,7 +151,7 @@ export const Search = ({
                     objectTypesWithConfig={objectTypesWithConfig || []}
                     onFilterSave={onFilterSave}
                   />
-                </m.div>
+                </motion.div>
               </div>
             </Portal>
           )}

@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState } from "react";
-import { FiClock, FiRewind, FiUploadCloud } from "react-icons/fi";
+import { FiClock, FiUploadCloud } from "react-icons/fi";
 
 import { Button } from "src/components/button";
 import { FiX } from "src/components/icons";
@@ -341,14 +341,14 @@ export const PanelMetadata = ({
         <AnimatePresence>
           {showHistory && (
             <>
-              <m.div
+              <motion.div
                 className="bg-manatee-900/40 absolute top-0 left-0 right-0 bottom-0"
                 onClick={() => setShowHistory(false)}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               />
-              <m.div
+              <motion.div
                 initial={{ x: 400 }}
                 animate={{ x: 0 }}
                 exit={{ x: 400 }}
@@ -362,7 +362,7 @@ export const PanelMetadata = ({
                   onClick={() => setShowHistory(false)}
                   Icon={<FiX className="text-base" />}
                 />
-              </m.div>
+              </motion.div>
             </>
           )}
         </AnimatePresence>

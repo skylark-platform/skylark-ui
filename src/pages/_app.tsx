@@ -5,7 +5,6 @@ import "@fontsource/inter/600.css";
 import "@fontsource/inter/700.css";
 import "@fontsource/work-sans/700.css";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { LazyMotion } from "framer-motion";
 import PlausibleProvider from "next-plausible";
 import type { AppProps } from "next/app";
 import Head from "next/head";
@@ -22,11 +21,6 @@ import { UserProvider } from "src/contexts/useUser";
 import { segment } from "src/lib/analytics/segment";
 import { createSkylarkReactQueryClient } from "src/lib/graphql/skylark/client";
 import "src/styles/globals.css";
-
-const loadFramerMotionFeatures = () =>
-  import("../lib/utils/lazyLoadFramerMotionFeatures").then(
-    (res) => res.default,
-  );
 
 export default function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(createSkylarkReactQueryClient);
@@ -84,9 +78,7 @@ export default function App({ Component, pageProps }: AppProps) {
         />
         <UserProvider>
           <Navigation openAuthModal={() => setAuthModalOpen("manual")} />
-          <LazyMotion features={loadFramerMotionFeatures} strict>
-            <Component {...pageProps} />
-          </LazyMotion>
+          <Component {...pageProps} />
         </UserProvider>
         <Script
           strategy="lazyOnload"

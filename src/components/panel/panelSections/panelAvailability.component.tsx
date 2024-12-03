@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import dayjs, { Dayjs } from "dayjs";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Fragment, ReactNode, useMemo, useRef, useState } from "react";
 
 import {
@@ -527,7 +527,7 @@ const PanelAvailabilityReadonlyCard = ({
     availability.uid;
 
   return (
-    <m.div
+    <motion.div
       key={`availability-card-inner-${availability.uid}`}
       className={clsx(
         "flex items-start z-10 bg-white mb-2 w-full",
@@ -551,7 +551,7 @@ const PanelAvailabilityReadonlyCard = ({
             }
       }
     >
-      <m.div
+      <motion.div
         className={clsx(
           "border border-l-4 py-4 h-full w-full relative transition-all",
           availability.active &&
@@ -569,7 +569,7 @@ const PanelAvailabilityReadonlyCard = ({
         layout
         transition={{ duration: 0.05 }}
       >
-        <m.div
+        <motion.div
           className={clsx("absolute", isActive ? "left-2" : "-left-7")}
           transition={{ ease: "linear", duration: 0.05 }}
         >
@@ -590,7 +590,7 @@ const PanelAvailabilityReadonlyCard = ({
               )
             }
           />
-        </m.div>
+        </motion.div>
         <InheritanceSummary
           objectType={objectType}
           availability={availability}
@@ -641,7 +641,7 @@ const PanelAvailabilityReadonlyCard = ({
         </div>
 
         {isActive && (
-          <m.div
+          <motion.div
             className="-mx-4 mt-4"
             layout="size"
             initial={{ opacity: 0, height: 0 }}
@@ -660,7 +660,7 @@ const PanelAvailabilityReadonlyCard = ({
               fillWidth
               selectedTab={tabId || activeAvailabilityTabs[0].id}
             />
-          </m.div>
+          </motion.div>
         )}
 
         {activeTabId === "overview" && (
@@ -696,8 +696,8 @@ const PanelAvailabilityReadonlyCard = ({
             setPanelObject={setPanelObject}
           />
         )}
-      </m.div>
-    </m.div>
+      </motion.div>
+    </motion.div>
   );
 };
 
@@ -998,7 +998,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
       >
         <AnimatePresence initial={false} mode="popLayout">
           {!activeAvailability && (
-            <m.div
+            <motion.div
               key="the-main-title"
               className="flex items-center"
               exit={{ opacity: 0 }}
@@ -1014,7 +1014,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                 type="plus"
                 onClick={() => setObjectSearchModalOpen(true)}
               />
-            </m.div>
+            </motion.div>
           )}
           {data && (
             <>

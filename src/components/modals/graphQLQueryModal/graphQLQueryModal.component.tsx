@@ -1,5 +1,5 @@
 import { Dialog } from "@headlessui/react";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { DocumentNode, print, getOperationAST } from "graphql";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
@@ -291,7 +291,7 @@ export const DisplayGraphQLQueryModal = (
       onClose={props.close}
       className="font-body relative z-50"
     >
-      <m.div
+      <motion.div
         className="fixed inset-0 bg-black/40"
         aria-hidden="true"
         data-testid="dialog-background"
@@ -302,7 +302,7 @@ export const DisplayGraphQLQueryModal = (
         transition={{ duration: 0.1 }}
       />
 
-      <m.div
+      <motion.div
         initial="hidden"
         animate="show"
         variants={modalVariants.background}
@@ -312,7 +312,7 @@ export const DisplayGraphQLQueryModal = (
         className="fixed inset-0 flex h-full items-center justify-center overflow-y-hidden py-4 text-sm sm:py-10 md:py-20"
       >
         <DisplayGraphQLQueryModalBody {...props} />
-      </m.div>
+      </motion.div>
     </Dialog>
   );
 };
