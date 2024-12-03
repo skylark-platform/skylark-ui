@@ -308,9 +308,9 @@ export const PanelAudience = (props: PanelAudienceProps) => {
         ) : (
           <>
             <PanelAudienceDimensions {...props} dimensions={dimensions} />
-            {/* {objectType === BuiltInSkylarkObjectType.Availability && (
+            {objectType === BuiltInSkylarkObjectType.Availability && (
               <PanelAudienceSegments {...props} dimensions={dimensions} />
-            )} */}
+            )}
           </>
         ))}
       <PanelLoading isLoading={dimensionsLoading}>
