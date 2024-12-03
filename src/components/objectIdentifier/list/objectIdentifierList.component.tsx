@@ -2,20 +2,24 @@ import clsx from "clsx";
 import { useCallback, useRef } from "react";
 import { useVirtual } from "react-virtual";
 
-import { ObjectIdentifierCard } from "src/components/objectIdentifier/card/objectIdentifierCard.component";
+import {
+  ObjectIdentifierCard,
+  ObjectIdentifierCardProps,
+} from "src/components/objectIdentifier/card/objectIdentifierCard.component";
 import { SetPanelObject } from "src/hooks/state";
 import { SkylarkObject } from "src/interfaces/skylark";
 
-interface ObjectIdentifierListProps {
+type ObjectIdentifierListProps = {
   objects: SkylarkObject[];
   className?: string;
   setPanelObject?: SetPanelObject;
-}
+} & Omit<ObjectIdentifierCardProps, "object" | "onForwardClick">;
 
 export const ObjectIdentifierList = ({
   objects,
   className,
   setPanelObject,
+  ...props
 }: ObjectIdentifierListProps) => {
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -53,7 +57,7 @@ export const ObjectIdentifierList = ({
               <ObjectIdentifierCard
                 object={object}
                 onForwardClick={setPanelObject}
-                hideAvailabilityStatus
+                {...props}
               />
             </div>
           );

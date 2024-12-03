@@ -650,7 +650,11 @@ export const DynamicContentConfigurationEditor = ({
               {`${data.totalCount} objects match the rules specified${configuration.contentLimit ? `, limited to ${configuration.contentLimit}` : ""}.`}
             </p>
             <div className="overflow-scroll flex-grow border border-manatee-200 rounded w-full">
-              <ObjectIdentifierList objects={data.objects} className="px-4" />
+              <ObjectIdentifierList
+                objects={data.objects}
+                className="px-4"
+                hideAvailabilityStatus
+              />
             </div>
           </div>
         )}

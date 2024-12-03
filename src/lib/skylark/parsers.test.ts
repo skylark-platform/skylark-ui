@@ -456,7 +456,7 @@ describe("parseObjectContent", () => {
                 inheritance_source: null,
                 inherited: null,
                 active: true,
-                dimension_breakdown: JSON.stringify({
+                [SkylarkAvailabilityField.DimensionBreakdown]: JSON.stringify({
                   "customer-type": ["premium"],
                 }),
               },

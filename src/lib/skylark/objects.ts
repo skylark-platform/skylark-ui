@@ -27,6 +27,8 @@ import {
   ParsedSkylarkObject,
   SkylarkObject,
   ParsedSkylarkObjectConfig,
+  ParsedSkylarkObjectMetadata,
+  SkylarkAvailabilityField,
 } from "src/interfaces/skylark";
 import {
   getObjectDisplayName,
@@ -575,6 +577,7 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
   options?: {
     objectTypes: string[];
     hiddenFields: string[];
+    uiHiddenFields: string[];
   },
 ): {
   systemMetadataFields: {
@@ -605,7 +608,11 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
     SkylarkSystemField.DataSourceFields,
   ];
   const fieldsToHide = options
-    ? [...options.hiddenFields, ...defaultFieldsToHide]
+    ? [
+        ...options.hiddenFields,
+        ...options.uiHiddenFields,
+        ...defaultFieldsToHide,
+      ]
     : defaultFieldsToHide;
 
   const metadataArrWithHiddenFieldsRemoved = metadataArr.filter(
@@ -676,6 +683,25 @@ export const createDefaultSkylarkObject = (
   return skylarkObject;
 };
 
+const parseDimensionBreakdown = (
+  metadata: ParsedSkylarkObjectMetadata,
+): Record<string, string[]> | null => {
+  try {
+    if (
+      !metadata ||
+      !metadata?.[SkylarkAvailabilityField.DimensionBreakdown] ||
+      typeof metadata?.[SkylarkAvailabilityField.DimensionBreakdown] !==
+        "string"
+    ) {
+      return null;
+    }
+
+    return JSON.parse(metadata[SkylarkAvailabilityField.DimensionBreakdown]);
+  } catch {
+    return null;
+  }
+};
+
 export const convertParsedObjectToIdentifier = (
   parsedObject: ParsedSkylarkObject,
   fallbackConfig?: Record<string, ParsedSkylarkObjectConfig>,
@@ -729,6 +755,20 @@ export const convertParsedObjectToIdentifier = (
         contextualFields: {
           start: metadata?.start === "string" ? metadata.start : "",
           end: metadata?.end === "string" ? metadata.end : "",
+          dimensions: parseDimensionBreakdown(metadata),
+        },
+      };
+
+    return availabilityObject;
+  }
+
+  if (object.objectType === BuiltInSkylarkObjectType.AvailabilitySegment) {
+    const availabilityObject: SkylarkObject<BuiltInSkylarkObjectType.AvailabilitySegment> =
+      {
+        ...object,
+        objectType: BuiltInSkylarkObjectType.AvailabilitySegment,
+        contextualFields: {
+          dimensions: parseDimensionBreakdown(metadata),
         },
       };
 

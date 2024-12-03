@@ -53,6 +53,13 @@ export type SkylarkObject<T = BuiltInSkylarkObjectType | string> =
           contextualFields: {
             start: string | null;
             end: string | null;
+            dimensions: Record<string, string[]> | null;
+          };
+        }
+      | {
+          objectType: BuiltInSkylarkObjectType.AvailabilitySegment;
+          contextualFields: {
+            dimensions: Record<string, string[]> | null;
           };
         }
       | {

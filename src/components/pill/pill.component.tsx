@@ -1,13 +1,16 @@
 import clsx from "clsx";
 import { ReactNode } from "react";
 import { IconType } from "react-icons";
-import { FiX } from "react-icons/fi";
+import { FiInfo, FiX } from "react-icons/fi";
+
+import { Tooltip } from "src/components/tooltip/tooltip.component";
 
 export interface PillProps {
   Icon?: IconType;
   label: ReactNode;
   bgColor?: string | null;
   className?: string;
+  infoTooltip?: ReactNode;
   onDelete?: () => void;
 }
 
@@ -18,6 +21,7 @@ export const Pill = ({
   label,
   bgColor,
   className,
+  infoTooltip,
   Icon,
   onDelete,
 }: PillProps) => (
@@ -46,6 +50,13 @@ export const Pill = ({
       <button className="ml-1" onClick={onDelete}>
         <FiX className="h-4 w-4 text-white" />
       </button>
+    )}
+    {infoTooltip && (
+      <Tooltip tooltip={infoTooltip}>
+        <div className="ml-1">
+          <FiInfo className="text-sm" />
+        </div>
+      </Tooltip>
     )}
   </div>
 );

@@ -1,8 +1,15 @@
 import { Link } from "src/components/navigation/links";
-import { PanelFieldTitle } from "src/components/panel/panelTypography";
+import {
+  PanelFieldTitle,
+  PanelSectionTitle,
+} from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
 import { useImageSize } from "src/hooks/useImageSize";
-import { SkylarkObjectMetadataField } from "src/interfaces/skylark";
+import {
+  BuiltInSkylarkObjectType,
+  SkylarkObject,
+  SkylarkObjectMetadataField,
+} from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
 export const PanelMetadataProperty = ({
@@ -64,5 +71,33 @@ export const RenderedImage = ({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {src && <img className="max-h-64" src={src} alt={alt} />}
     </div>
+  );
+};
+
+export const AvailabilityDimensionBreakdown = ({
+  object,
+}: {
+  object: SkylarkObject<
+    | BuiltInSkylarkObjectType.Availability
+    | BuiltInSkylarkObjectType.AvailabilitySegment
+  >;
+}) => {
+  const slugs =
+    (object.contextualFields?.dimensions &&
+      Object.keys(object.contextualFields.dimensions).sort()) ||
+    null;
+  return (
+    slugs && (
+      <>
+        <PanelSectionTitle text={"Dimensions overview"} />
+        {slugs.map((slug) => (
+          <div className="mb-4" key={slug}>
+            <PanelFieldTitle text={slug} />
+            {object.contextualFields?.dimensions?.[slug] &&
+              object.contextualFields?.dimensions?.[slug].join(", ")}
+          </div>
+        ))}
+      </>
+    )
   );
 };

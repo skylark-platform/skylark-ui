@@ -36,3 +36,8 @@ export type ModifiedAvailabilityDimensions = Record<
     removed: string[];
   }
 >;
+
+export type ModifiedAvailabilitySegments = {
+  added: SkylarkObject[];
+  removed: string[];
+};

@@ -265,17 +265,25 @@ const MultiSelectComponent = (
               "flex-wrap gap-2",
             )}
           >
-            {selectedOptions.map(({ label, value, config }, i, arr) => (
-              <Fragment key={value}>
-                <Pill
-                  label={label || value}
-                  className="my-auto bg-brand-primary text-clip overflow-hidden"
-                  onDelete={() => deselectOption(value)}
-                  bgColor={config?.colour}
-                />
-                {selectedDivider && i < arr.length - 1 && selectedDivider}
-              </Fragment>
-            ))}
+            {selectedOptions.map(
+              ({ label, value, config, disabled, infoTooltip }, i, arr) => (
+                <Fragment key={value}>
+                  <Pill
+                    label={label || value}
+                    className={clsx(
+                      "my-auto text-clip overflow-hidden",
+                      disabled ? "bg-manatee-400" : "bg-brand-primary",
+                    )}
+                    onDelete={
+                      disabled ? undefined : () => deselectOption(value)
+                    }
+                    bgColor={config?.colour}
+                    infoTooltip={infoTooltip}
+                  />
+                  {selectedDivider && i < arr.length - 1 && selectedDivider}
+                </Fragment>
+              ),
+            )}
             <Combobox.Button
               data-testid="multiselect-input"
               as="div"

@@ -309,6 +309,7 @@ export const objectIsAvailability = (
   obj: SkylarkObject,
 ): obj is SkylarkObject<BuiltInSkylarkObjectType.Availability> =>
   obj.objectType === BuiltInSkylarkObjectType.Availability;
+
 export const isAvailabilityOrAvailabilitySegment = (
   objectType: string | null | undefined,
 ) => {
@@ -317,3 +318,12 @@ export const isAvailabilityOrAvailabilitySegment = (
     objectType === BuiltInSkylarkObjectType.AvailabilitySegment
   );
 };
+
+export const objectIsAvailabilityOrAvailabilitySegment = (
+  obj: SkylarkObject,
+): obj is SkylarkObject<
+  | BuiltInSkylarkObjectType.Availability
+  | BuiltInSkylarkObjectType.AvailabilitySegment
+> =>
+  objectIsAvailability(obj) ||
+  obj.objectType === BuiltInSkylarkObjectType.AvailabilitySegment;

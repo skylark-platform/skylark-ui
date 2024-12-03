@@ -231,7 +231,7 @@ export interface GQLSkylarkGetObjectDimensions {
   getObjectDimensions: Pick<SkylarkGraphQLAvailability, "dimensions">;
 }
 
-export interface GQLSkylarkGetObjectDimensions {
+export interface GQLSkylarkGetObjectSegments {
   getObjectSegments: Pick<SkylarkGraphQLAvailability, "segments">;
 }
 

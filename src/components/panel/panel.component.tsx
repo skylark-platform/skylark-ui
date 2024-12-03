@@ -35,6 +35,7 @@ import {
   ModifiedContents,
   ModifiedAvailabilityDimensions,
   ModifiedAvailability,
+  ModifiedAvailabilitySegments,
 } from "src/interfaces/skylark";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
@@ -267,6 +268,9 @@ export const Panel = ({
   const [modifiedAvailabilityDimensions, setModifiedAvailabilityDimensions] =
     useState<ModifiedAvailabilityDimensions | null>(null);
 
+  const [modifiedAvailabilitySegments, setModifiedAvailabilitySegments] =
+    useState<ModifiedAvailabilitySegments | null>(null);
+
   const [modifiedAvailabilityAssignedTo, setModifiedAvailabilityAssignedTo] =
     useState<{
       added: SkylarkObject[];
@@ -436,6 +440,7 @@ export const Panel = ({
   } = useUpdateObjectAvailabilityDimensions({
     objectType,
     onSuccess: () => {
+      setModifiedAvailabilityDimensions(null);
       if (panelInEditMode) setEditMode(false);
     },
     onError: showUpdateErrorToast,
@@ -672,11 +677,9 @@ export const Panel = ({
             <PanelMetadata
               isPage={isPage}
               isLoading={isLoading}
-              uid={uid}
-              language={language}
+              object={object}
               metadata={formParsedMetadata}
               form={metadataForm}
-              objectType={objectType}
               objectMeta={objectMeta}
               objectVersions={data?.meta.versions}
               objectFieldConfig={data?.config.fieldConfig}
@@ -757,12 +760,22 @@ export const Panel = ({
           {selectedTab === PanelTab.AvailabilityAudience && (
             <PanelAudience
               isPage={isPage}
-              objectType={objectType}
-              uid={uid}
+              object={
+                object as SkylarkObject<
+                  | BuiltInSkylarkObjectType.Availability
+                  | BuiltInSkylarkObjectType.AvailabilitySegment
+                >
+              }
               inEditMode={inEditMode}
+              setPanelObject={setPanelObject}
               modifiedAvailabilityDimensions={modifiedAvailabilityDimensions}
               setAvailabilityDimensionValues={(dimensions) => {
                 setModifiedAvailabilityDimensions(dimensions);
+                setEditMode(true);
+              }}
+              modifiedAvailabilitySegments={modifiedAvailabilitySegments}
+              setAvailabilitySegments={(dimensions) => {
+                setModifiedAvailabilitySegments(dimensions);
                 setEditMode(true);
               }}
             />

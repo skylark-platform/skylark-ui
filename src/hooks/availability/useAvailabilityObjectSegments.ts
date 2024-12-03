@@ -6,13 +6,13 @@ import { QueryKeys } from "src/enums/graphql";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkErrorResponse,
-  SkylarkGraphQLAvailabilityDimensionWithValues,
-  GQLSkylarkGetObjectDimensions,
+  GQLSkylarkGetObjectSegments,
+  SkylarkGraphQLAvailabilitySegment,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import { createGetAssignedDimensionsQuery } from "src/lib/graphql/skylark/dynamicQueries";
+import { createGetAssignedSegmentsQuery } from "src/lib/graphql/skylark/dynamicQueries";
 
-export const createGetAvailabilityObjectDimensionsKeyPrefix = ({
+export const createGetAvailabilityObjectSegmentsKeyPrefix = ({
   uid,
   objectType,
 }: {
@@ -20,22 +20,22 @@ export const createGetAvailabilityObjectDimensionsKeyPrefix = ({
   objectType: string;
 }) => [QueryKeys.GetObjectDimensions, uid, objectType];
 
-export const useAvailabilityObjectDimensions = (
+export const useAvailabilityObjectSegments = (
   objectType: string,
   uid: string,
 ) => {
   const { objectOperations: objectMeta } =
     useSkylarkObjectOperations(objectType);
 
-  const query = createGetAssignedDimensionsQuery(objectMeta);
+  const query = createGetAssignedSegmentsQuery(objectMeta);
   const variables = { uid, nextToken: "" };
 
   const { data, isLoading } = useInfiniteQuery<
-    GQLSkylarkGetObjectDimensions,
-    GQLSkylarkErrorResponse<GQLSkylarkGetObjectDimensions>
+    GQLSkylarkGetObjectSegments,
+    GQLSkylarkErrorResponse<GQLSkylarkGetObjectSegments>
   >({
     queryKey: [
-      ...createGetAvailabilityObjectDimensionsKeyPrefix({ uid, objectType }),
+      ...createGetAvailabilityObjectSegmentsKeyPrefix({ uid, objectType }),
       query,
       variables,
     ],
@@ -46,22 +46,20 @@ export const useAvailabilityObjectDimensions = (
         nextToken,
       }),
     getNextPageParam: (lastPage): string | undefined =>
-      lastPage.getObjectDimensions.dimensions?.next_token || undefined,
+      lastPage.getObjectSegments.segments?.next_token || undefined,
     enabled: !!query,
   });
 
-  const availabilityDimensions:
-    | SkylarkGraphQLAvailabilityDimensionWithValues[]
-    | undefined = useMemo(
+  const segments: SkylarkGraphQLAvailabilitySegment[] | undefined = useMemo(
     () =>
       data?.pages?.flatMap(
-        (page) => page.getObjectDimensions?.dimensions?.objects || [],
+        (page) => page.getObjectSegments?.segments?.objects || [],
       ),
     [data?.pages],
   );
 
   return {
-    data: availabilityDimensions,
+    segments,
     query,
     variables,
     isLoading,

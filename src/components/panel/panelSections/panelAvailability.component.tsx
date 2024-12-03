@@ -631,6 +631,7 @@ const PanelAvailabilityReadonlyCard = ({
                     contextualFields: {
                       start: availability.start,
                       end: availability.end,
+                      dimensions: {},
                     },
                   }),
                 )

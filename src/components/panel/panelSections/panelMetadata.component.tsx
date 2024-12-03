@@ -1,7 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { AnimatePresence, m } from "framer-motion";
 import { useMemo, useState } from "react";
-import { FiUploadCloud } from "react-icons/fi";
+import { FiClock, FiRewind, FiUploadCloud } from "react-icons/fi";
 
+import { Button } from "src/components/button";
+import { FiX } from "src/components/icons";
 import { Select, SelectOption } from "src/components/inputs/select";
 import { SkylarkObjectFieldInput } from "src/components/inputs/skylarkObjectFieldInput";
 import {
@@ -11,6 +14,7 @@ import {
 import { pollPanelRefetch } from "src/components/panel/panel.lib";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
+  PanelButton,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
@@ -22,14 +26,21 @@ import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectMeta,
+  SkylarkAvailabilityField,
+  SkylarkObject,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
+import {
+  isAvailabilityOrAvailabilitySegment,
+  objectIsAvailabilityOrAvailabilitySegment,
+} from "src/lib/utils";
 
 import {
+  AvailabilityDimensionBreakdown,
   CalculatedImageSize,
   PanelMetadataProperty,
   RenderedImage,
@@ -40,9 +51,7 @@ import { PanelSectionLayout } from "./panelSectionLayout.component";
 interface PanelMetadataProps {
   isPage?: boolean;
   isLoading?: boolean;
-  uid: string;
-  language: string;
-  objectType: SkylarkObjectType;
+  object: SkylarkObject;
   objectMeta: SkylarkObjectMeta | null;
   metadata: Record<string, SkylarkObjectMetadataField> | null;
   objectFieldConfig?: ParsedSkylarkObjectConfig["fieldConfig"];
@@ -141,16 +150,16 @@ const UploadImageSection = ({
 };
 
 export const PanelMetadata = ({
-  uid,
+  object,
   isPage,
   isLoading,
   metadata,
-  objectType,
   objectMeta,
   objectFieldConfig: objectFieldConfigArr,
-  language,
   form: { register, getValues, control, formState, aiFieldGeneration },
 }: PanelMetadataProps) => {
+  const { uid, objectType, language } = object;
+
   const {
     systemMetadataFields,
     translatableMetadataFields,
@@ -212,8 +221,10 @@ export const PanelMetadata = ({
     htmlId,
   }));
 
+  const [showHistory, setShowHistory] = useState(false);
+
   return (
-    <div className="flex h-full w-full overflow-y-hidden">
+    <div className="flex h-full w-full overflow-y-hidden relative">
       <PanelSectionLayout
         sections={
           objectMeta?.isImage
@@ -250,7 +261,13 @@ export const PanelMetadata = ({
               { length: numSections },
             ) => (
               <div key={id} className="mb-8 md:mb-10">
-                <PanelSectionTitle id={htmlId} text={title} />
+                <PanelSectionTitle id={htmlId} text={title}>
+                  <Button
+                    variant="form"
+                    onClick={() => setShowHistory(true)}
+                    Icon={<FiClock className="text-base ml-1" />}
+                  />
+                </PanelSectionTitle>
                 {metadataFields.map(({ field, config }) => {
                   const fieldConfigFromObject = objectFieldConfigArr?.find(
                     ({ name }) => name === field,
@@ -304,6 +321,9 @@ export const PanelMetadata = ({
               />
             </>
           )}
+          {objectIsAvailabilityOrAvailabilitySegment(object) && (
+            <AvailabilityDimensionBreakdown object={object} />
+          )}
         </form>
         <PanelLoading isLoading={!objectMeta}>
           <Skeleton className="mb-6 h-8 w-64" />
@@ -315,12 +335,36 @@ export const PanelMetadata = ({
           <Skeleton className="h-20 w-full" />
         </PanelLoading>
       </PanelSectionLayout>
-      {isPage && (
-        <PanelMetadataVersionHistory
-          uid={uid}
-          objectType={objectType}
-          language={language}
-        />
+      {isPage ? (
+        <PanelMetadataVersionHistory object={object} />
+      ) : (
+        <AnimatePresence>
+          {showHistory && (
+            <>
+              <m.div
+                className="bg-manatee-900/40 absolute top-0 left-0 right-0 bottom-0"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              />
+              <m.div
+                initial={{ x: 400 }}
+                animate={{ x: 0 }}
+                exit={{ x: 400 }}
+                transition={{ duration: 0.1, type: "spring", bounce: 0.1 }}
+                className="absolute right-0 top-0 bottom-0 bg-white pl-4 shadow-lg"
+              >
+                <PanelMetadataVersionHistory object={object} />
+                <Button
+                  variant="form"
+                  className="absolute top-8 right-4"
+                  onClick={() => setShowHistory(false)}
+                  Icon={<FiX className="text-base" />}
+                />
+              </m.div>
+            </>
+          )}
+        </AnimatePresence>
       )}
     </div>
   );

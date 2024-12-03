@@ -195,3 +195,65 @@ export const createGetAssignedDimensionsQuery = (
 
   return gql(graphQLQuery);
 };
+
+export const createGetAssignedSegmentsQuery = (
+  objectMeta: SkylarkObjectMeta | null,
+) => {
+  if (!objectMeta) {
+    return null;
+  }
+
+  const query = {
+    query: {
+      __name: `GET_${objectMeta.name}_SEGMENTS`,
+      __variables: {
+        uid: "String!",
+        nextToken: "String",
+      },
+      getObjectSegments: {
+        __aliasFor: objectMeta.operations.get.name,
+        __args: {
+          uid: new VariableType("uid"),
+        },
+        __typename: true,
+        segments: {
+          __args: {
+            limit: 100,
+            next_token: new VariableType("nextToken"),
+          },
+          next_token: true,
+          objects: {
+            uid: true,
+            title: true,
+            slug: true,
+            dimensions: {
+              __args: {
+                limit: 100,
+              },
+              next_token: true,
+              objects: {
+                uid: true,
+                title: true,
+                slug: true,
+                values: {
+                  __args: {
+                    limit: 100,
+                  },
+                  objects: {
+                    uid: true,
+                    title: true,
+                    slug: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+
+  const graphQLQuery = wrappedJsonQuery(query);
+
+  return gql(graphQLQuery);
+};

@@ -1,6 +1,7 @@
 import { EnumType } from "json-to-graphql-query";
 
 import {
+  SkylarkAvailabilityField,
   SkylarkObjectMetadataField,
   SkylarkSystemField,
 } from "./objectOperations";
@@ -75,7 +76,7 @@ export interface SkylarkGraphQLAvailabilitySegment {
   slug: string;
   title: string | null;
   active: boolean;
-  dimension_breakdown: string | null; // AWSJSON
+  [SkylarkAvailabilityField.DimensionBreakdown]: string | null; // AWSJSON
   // dimensions?: {
   //   next_token: NextToken;
   //   objects: SkylarkGraphQLAvailabilityDimensionWithValues[];
@@ -96,7 +97,7 @@ export interface SkylarkGraphQLAvailability {
   inheritance_source: boolean | null;
   inherited_by?: SkylarkGraphQLObjectList;
   inherited_from?: SkylarkGraphQLObjectList;
-  dimension_breakdown: string | null; // AWSJSON
+  [SkylarkAvailabilityField.DimensionBreakdown]: string | null; // AWSJSON
   dimensions?: {
     next_token: NextToken;
     objects: SkylarkGraphQLAvailabilityDimensionWithValues[];

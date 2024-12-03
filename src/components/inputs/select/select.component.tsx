@@ -28,6 +28,7 @@ import { formatObjectField, mergeRefs } from "src/lib/utils";
 export interface SelectOption<T> {
   label: string;
   infoTooltip?: ReactNode;
+  disabled?: boolean;
   value: T;
 }
 
@@ -127,9 +128,10 @@ export const SelectOptionComponent = <T extends string | number>({
     key={option.value}
     className={({ active }) =>
       clsx(
-        "relative flex cursor-default select-none items-center text-gray-900",
+        "relative flex cursor-default select-none items-center",
         variant === "pill" ? "px-2" : "px-4 pl-6",
-        (active || isSelected) && "bg-ultramarine-50",
+        (active || isSelected) && !option.disabled && "bg-ultramarine-50",
+        option.disabled ? "bg-manatee-100 text-gray-400" : "text-gray-900",
         className,
       )
     }
@@ -138,14 +140,20 @@ export const SelectOptionComponent = <T extends string | number>({
       ...style,
       height: style?.height || getSelectOptionHeight(variant),
     }}
+    disabled={option.disabled}
   >
     {withCheckbox && (
       <span
         className={clsx(
-          "flex h-5 w-5 min-w-5 items-center justify-center rounded-sm border-2 text-white mr-2",
-          isSelected
-            ? "border-brand-primary bg-brand-primary"
-            : "bg-manatee-200",
+          "flex h-5 w-5 min-w-5 items-center justify-center rounded-sm border-2 mr-2",
+          !isSelected &&
+            (option.disabled
+              ? "text-manatee-600 bg-manatee-400 border-manatee-400"
+              : "text-white bg-manatee-200 border-manatee-200"),
+          isSelected &&
+            (option.disabled
+              ? "text-manatee-100 bg-manatee-400 border-manatee-400"
+              : "border-brand-primary bg-brand-primary text-white"),
         )}
       >
         {isSelected && <FiCheck className="text-lg" />}

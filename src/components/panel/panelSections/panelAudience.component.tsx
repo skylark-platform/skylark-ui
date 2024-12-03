@@ -1,6 +1,11 @@
-import { MultiSelect } from "src/components/inputs/multiselect/multiselect.component";
+import { SkylarkObjectFieldInput } from "src/components/inputs";
+import {
+  MultiSelect,
+  MultiSelectOption,
+} from "src/components/inputs/multiselect/multiselect.component";
 import { SelectOption } from "src/components/inputs/select";
 import { DisplayGraphQLQuery } from "src/components/modals";
+import { ObjectIdentifierList } from "src/components/objectIdentifier";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelFieldTitle,
@@ -10,73 +15,166 @@ import { Skeleton } from "src/components/skeleton";
 import { HREFS } from "src/constants/skylark";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { useAvailabilityObjectDimensions } from "src/hooks/availability/useAvailabilityObjectDimensions";
+import { useAvailabilityObjectSegments } from "src/hooks/availability/useAvailabilityObjectSegments";
+import { SetPanelObject } from "src/hooks/state";
 import {
   BuiltInSkylarkObjectType,
   ModifiedAvailabilityDimensions,
+  ModifiedAvailabilitySegments,
   ParsedSkylarkDimensionsWithValues,
   SkylarkGraphQLAvailabilityDimensionWithValues,
+  SkylarkObject,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
+import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 import { formatObjectField } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
 interface PanelAudienceProps {
   isPage?: boolean;
-  objectType: SkylarkObjectType;
-  uid: string;
+  object: SkylarkObject<
+    | BuiltInSkylarkObjectType.Availability
+    | BuiltInSkylarkObjectType.AvailabilitySegment
+  >;
   inEditMode: boolean;
+  setPanelObject: SetPanelObject;
   modifiedAvailabilityDimensions: ModifiedAvailabilityDimensions | null;
   setAvailabilityDimensionValues: (m: ModifiedAvailabilityDimensions) => void;
+  modifiedAvailabilitySegments: ModifiedAvailabilitySegments | null;
+  setAvailabilitySegments: (m: ModifiedAvailabilitySegments) => void;
 }
 
 const combineServerDimensionsAndModifiedDimensions = (
+  dimensions: ParsedSkylarkDimensionsWithValues[],
+  dimensionsBreakdown: Record<string, string[]> | null | undefined,
   serverDimensions: SkylarkGraphQLAvailabilityDimensionWithValues[] | undefined,
   modifiedAvailabilityDimensions: ModifiedAvailabilityDimensions | null,
-): Record<string, string[]> => {
+): Record<
+  string,
+  { activeValues: string[]; assignedValues: string[]; segmentValues: string[] }
+> => {
   if (!serverDimensions) {
     return {};
   }
 
   // Dimensions use slugs not uids
-  const entries = serverDimensions.map((dimension): [string, string[]] => {
-    const modifiedDimension =
-      modifiedAvailabilityDimensions?.[dimension.slug] || null;
+  const entries = dimensions.map(
+    ({
+      slug: dimensionSlug,
+    }): [
+      string,
+      {
+        activeValues: string[];
+        assignedValues: string[];
+        segmentValues: string[];
+      },
+    ] => {
+      const assignedValues =
+        serverDimensions
+          .find(({ slug }) => slug === dimensionSlug)
+          ?.values.objects.map(({ slug }) => slug) || [];
+      const allActiveValues =
+        dimensionsBreakdown?.[dimensionSlug] || assignedValues || [];
 
-    if (!modifiedAvailabilityDimensions || !modifiedDimension) {
-      const valueSlugs = dimension.values.objects.map(({ slug }) => slug);
-      return [dimension.slug, valueSlugs];
-    }
+      const segmentValues = allActiveValues.filter(
+        (val) => !assignedValues.includes(val),
+      );
 
-    const valueSlugs = [
-      ...dimension.values.objects.map(({ slug }) => slug),
-      ...modifiedDimension.added,
-    ].filter((slug) => !modifiedDimension.removed.includes(slug));
+      const modifiedDimension =
+        modifiedAvailabilityDimensions?.[dimensionSlug] || null;
 
-    return [dimension.slug, valueSlugs];
-  });
+      if (!modifiedAvailabilityDimensions || !modifiedDimension) {
+        return [
+          dimensionSlug,
+          { activeValues: allActiveValues, assignedValues, segmentValues },
+        ];
+      }
+
+      const valueSlugs = [
+        ...allActiveValues,
+        ...modifiedDimension.added,
+      ].filter((slug) => !modifiedDimension.removed.includes(slug));
+
+      return [
+        dimensionSlug,
+        {
+          activeValues: valueSlugs,
+          assignedValues,
+          segmentValues,
+        },
+      ];
+    },
+  );
 
   const selectedDimensionValues = Object.fromEntries(entries);
   return selectedDimensionValues;
 };
 
-const PanelAudienceSegments = () => {
-  return <></>;
+const PanelAudienceSegments = ({
+  object,
+  dimensions,
+  setPanelObject,
+}: Pick<
+  PanelAudienceProps,
+  | "object"
+  | "setPanelObject"
+  | "modifiedAvailabilitySegments"
+  | "setAvailabilitySegments"
+> & { dimensions: ParsedSkylarkDimensionsWithValues[] }) => {
+  const { objectType, uid } = object;
+
+  const {
+    segments,
+    query,
+    variables,
+    isLoading: getObjectLoading,
+  } = useAvailabilityObjectSegments(objectType, uid);
+
+  const objects =
+    segments?.map((segment) =>
+      createDefaultSkylarkObject({
+        ...segment,
+        objectType: BuiltInSkylarkObjectType.AvailabilitySegment,
+        display: {
+          name:
+            segment.title || segment.slug || segment.external_id || segment.uid,
+        },
+      }),
+    ) || [];
+
+  return (
+    <div className="relative">
+      <PanelSectionTitle text={"Segments"} />
+
+      <ObjectIdentifierList
+        objects={objects}
+        hideAvailabilityStatus
+        hideObjectType
+        setPanelObject={setPanelObject}
+      />
+
+      <DisplayGraphQLQuery
+        label={`Get ${objectType} Segments`}
+        query={query}
+        variables={variables}
+        buttonClassName="absolute right-0 -top-2"
+      />
+    </div>
+  );
 };
 
 const PanelAudienceDimensions = ({
-  objectType,
-  uid,
+  object,
   dimensions,
   modifiedAvailabilityDimensions,
   setAvailabilityDimensionValues,
 }: Pick<
   PanelAudienceProps,
-  | "uid"
-  | "objectType"
-  | "modifiedAvailabilityDimensions"
-  | "setAvailabilityDimensionValues"
+  "object" | "modifiedAvailabilityDimensions" | "setAvailabilityDimensionValues"
 > & { dimensions: ParsedSkylarkDimensionsWithValues[] }) => {
+  const { objectType, uid } = object;
+
   const {
     data,
     query,
@@ -85,15 +183,19 @@ const PanelAudienceDimensions = ({
   } = useAvailabilityObjectDimensions(objectType, uid);
 
   const combinedDimensions = combineServerDimensionsAndModifiedDimensions(
+    dimensions,
+    object.contextualFields?.dimensions,
     data,
     modifiedAvailabilityDimensions,
   );
 
   const onChange = (dimensionSlug: string, values: string[]) => {
     const serverValues =
+      object.contextualFields?.dimensions?.[dimensionSlug] ||
       data
         ?.find(({ slug }) => dimensionSlug === slug)
-        ?.values.objects.map(({ slug }) => slug) || [];
+        ?.values.objects.map(({ slug }) => slug) ||
+      [];
 
     const addedValues = values.filter((slug) => !serverValues.includes(slug));
     const removedValues = serverValues.filter((slug) => !values.includes(slug));
@@ -114,23 +216,32 @@ const PanelAudienceDimensions = ({
       <PanelSectionTitle text={"Dimensions"} />
       {dimensions.map((dimension) => {
         const title = formatObjectField(dimension.title || dimension.slug);
-        const options: SelectOption<string>[] = dimension.values
-          .map(
-            (value): SelectOption<string> => ({
+
+        const selectedValues =
+          combinedDimensions?.[dimension.slug]?.activeValues ||
+          modifiedAvailabilityDimensions?.[dimension.slug]?.added ||
+          [];
+        const segmentValues =
+          combinedDimensions?.[dimension.slug]?.segmentValues || [];
+
+        const options: MultiSelectOption[] = dimension.values
+          .map((value): MultiSelectOption => {
+            const isInheritedFromSegment = segmentValues.includes(value.slug);
+
+            return {
               label: value.title || value.slug,
               value: value.slug,
-            }),
-          )
+              infoTooltip:
+                isInheritedFromSegment &&
+                "Inherited from an AvailabilitySegment",
+              disabled: isInheritedFromSegment,
+            };
+          })
           .sort();
 
         const onChangeWrapper = (updatedSelectedValues: string[]) => {
           onChange(dimension.slug, updatedSelectedValues);
         };
-
-        const values =
-          combinedDimensions?.[dimension.slug] ||
-          modifiedAvailabilityDimensions?.[dimension.slug].added ||
-          [];
 
         return (
           <div key={`dimension-card-${dimension.uid}`} className="mb-6">
@@ -144,7 +255,7 @@ const PanelAudienceDimensions = ({
               <MultiSelect
                 renderInPortal
                 options={options}
-                selected={values}
+                selected={selectedValues}
                 onChange={onChangeWrapper}
               />
             )}
@@ -166,7 +277,10 @@ export const PanelAudience = (props: PanelAudienceProps) => {
   const { dimensions, isLoading: dimensionsLoading } =
     useAvailabilityDimensionsWithValues();
 
-  const { isPage, objectType } = props;
+  const {
+    isPage,
+    object: { objectType },
+  } = props;
 
   return (
     <PanelSectionLayout
@@ -193,10 +307,10 @@ export const PanelAudience = (props: PanelAudienceProps) => {
           </>
         ) : (
           <>
-            {objectType === BuiltInSkylarkObjectType.Availability && (
-              <PanelAudienceSegments />
-            )}
             <PanelAudienceDimensions {...props} dimensions={dimensions} />
+            {/* {objectType === BuiltInSkylarkObjectType.Availability && (
+              <PanelAudienceSegments {...props} dimensions={dimensions} />
+            )} */}
           </>
         ))}
       <PanelLoading isLoading={dimensionsLoading}>

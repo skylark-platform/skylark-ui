@@ -1,5 +1,6 @@
 import {
   BuiltInSkylarkObjectType,
+  SkylarkAvailabilityField,
   SkylarkObjectType,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
@@ -82,9 +83,19 @@ export const INPUT_REGEX: Record<string, string | RegExp> = {
 export const OBJECT_OPTIONS: {
   objectTypes: SkylarkObjectType[];
   hiddenFields: string[];
+  uiHiddenFields: string[];
 }[] = [
   {
     objectTypes: [BuiltInSkylarkObjectType.SkylarkImage],
     hiddenFields: ["upload_url", "download_from_url"],
+    uiHiddenFields: [],
+  },
+  {
+    objectTypes: [
+      BuiltInSkylarkObjectType.Availability,
+      BuiltInSkylarkObjectType.AvailabilitySegment,
+    ],
+    uiHiddenFields: [SkylarkAvailabilityField.DimensionBreakdown],
+    hiddenFields: [],
   },
 ];

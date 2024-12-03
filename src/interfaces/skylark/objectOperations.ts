@@ -29,6 +29,7 @@ export enum SkylarkAvailabilityField {
   End = "end",
   Timezone = "timezone",
   Title = "title",
+  DimensionBreakdown = "dimension_breakdown",
 }
 
 export type SkylarkObjectType = string | BuiltInSkylarkObjectType;
