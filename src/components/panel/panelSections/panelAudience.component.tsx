@@ -1,7 +1,4 @@
-import {
-  MultiSelect,
-  MultiSelectOption,
-} from "src/components/inputs/multiselect/multiselect.component";
+import { DimensionMultiSelect } from "src/components/inputs/multiselect/dimensionMultiselect/dimensionMultiselect.component";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierList } from "src/components/objectIdentifier";
 import {
@@ -12,7 +9,6 @@ import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
-  PanelFieldTitle,
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
@@ -313,8 +309,6 @@ const PanelAudienceDimensions = ({
     <div className="relative">
       <PanelSectionTitle text={"Dimensions"} />
       {dimensions.map((dimension) => {
-        const title = formatObjectField(dimension.title || dimension.slug);
-
         const selectedValues =
           combinedDimensions?.[dimension.slug]?.activeValues ||
           modifiedAvailabilityDimensions?.[dimension.slug]?.added ||
@@ -322,44 +316,19 @@ const PanelAudienceDimensions = ({
         const segmentValues =
           combinedDimensions?.[dimension.slug]?.segmentValues || [];
 
-        const options: MultiSelectOption[] = dimension.values
-          .map((value): MultiSelectOption => {
-            const isInheritedFromSegment = segmentValues.includes(value.slug);
-
-            return {
-              label: value.title || value.slug,
-              value: value.slug,
-              infoTooltip:
-                isInheritedFromSegment &&
-                "Inherited from an AvailabilitySegment",
-              disabled: isInheritedFromSegment,
-            };
-          })
-          .sort();
-
-        const onChangeWrapper = (updatedSelectedValues: string[]) => {
-          onChange(dimension.slug, updatedSelectedValues);
-        };
-
-        return (
-          <div key={`dimension-card-${dimension.uid}`} className="mb-6">
-            <PanelFieldTitle
-              text={title}
-              id={`dimensions-panel-${dimension.uid}`}
-            />
-            {getObjectLoading ? (
-              <Skeleton className="h-20 w-full" />
-            ) : (
-              <MultiSelect
-                renderInPortal
-                options={options}
-                selected={selectedValues}
-                onChange={onChangeWrapper}
-                placeholder="Any"
-                hidePlaceholderWhenSelected
-              />
-            )}
-          </div>
+        return getObjectLoading ? (
+          <>
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-20 w-full" />
+          </>
+        ) : (
+          <DimensionMultiSelect
+            key={`dimension-card-${dimension.uid}`}
+            dimension={dimension}
+            onChange={onChange}
+            selected={selectedValues}
+            segmentValues={segmentValues}
+          />
         );
       })}
 
@@ -414,10 +383,10 @@ export const PanelAudience = (props: PanelAudienceProps) => {
           </>
         ) : (
           <>
-            <PanelAudienceDimensions {...props} dimensions={dimensions} />
             {objectType === BuiltInSkylarkObjectType.Availability && (
               <PanelAudienceSegments {...props} dimensions={dimensions} />
             )}
+            <PanelAudienceDimensions {...props} dimensions={dimensions} />
           </>
         ))}
       <PanelLoading isLoading={dimensionsLoading}>
