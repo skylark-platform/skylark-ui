@@ -29,6 +29,7 @@ import {
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectMetadata,
   SkylarkAvailabilityField,
+  ParsedSkylarkObjectAvailability,
 } from "src/interfaces/skylark";
 import {
   getObjectDisplayName,
@@ -683,7 +684,7 @@ export const createDefaultSkylarkObject = (
   return skylarkObject;
 };
 
-const parseDimensionBreakdown = (
+const parseDimensionBreakdownFromField = (
   metadata: ParsedSkylarkObjectMetadata,
 ): Record<string, string[]> | null => {
   try {
@@ -701,6 +702,29 @@ const parseDimensionBreakdown = (
     return null;
   }
 };
+
+const parseDimensionBreakdownFromDimensions = (
+  availability: ParsedSkylarkObjectAvailability,
+): Record<string, string[]> | null => {
+  return (
+    availability?.dimensions?.reduce(
+      (acc, dimension) => ({
+        ...acc,
+        [dimension.slug || ""]: dimension.values
+          .map((value) => value.slug)
+          .filter((value) => !!value),
+      }),
+      {},
+    ) || null
+  );
+};
+
+const parseDimensionBreakdown = ({
+  metadata,
+  availability,
+}: ParsedSkylarkObject) =>
+  parseDimensionBreakdownFromField(metadata) ||
+  parseDimensionBreakdownFromDimensions(availability);
 
 export const convertParsedObjectToIdentifier = (
   parsedObject: ParsedSkylarkObject,
@@ -755,7 +779,7 @@ export const convertParsedObjectToIdentifier = (
         contextualFields: {
           start: metadata?.start === "string" ? metadata.start : "",
           end: metadata?.end === "string" ? metadata.end : "",
-          dimensions: parseDimensionBreakdown(metadata),
+          dimensions: parseDimensionBreakdown(parsedObject),
         },
       };
 
@@ -768,7 +792,7 @@ export const convertParsedObjectToIdentifier = (
         ...object,
         objectType: BuiltInSkylarkObjectType.AvailabilitySegment,
         contextualFields: {
-          dimensions: parseDimensionBreakdown(metadata),
+          dimensions: parseDimensionBreakdown(parsedObject),
         },
       };
 

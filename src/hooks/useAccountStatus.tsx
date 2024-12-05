@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { refetchPanelQueries } from "src/components/panel/panel.lib";
+import { MAX_GRAPHQL_LIMIT } from "src/constants/skylark";
 import { QueryKeys } from "src/enums/graphql";
 import {
   GQLSkylarkErrorResponse,
@@ -97,7 +98,7 @@ export const useAccountStatus = ({
   const { data, error, isLoading, isError } =
     useBackgroundTasksAndActivationStatus<AccountStatus>(selectAllData, {
       poll,
-      backgroundTaskLimit: 100,
+      backgroundTaskLimit: MAX_GRAPHQL_LIMIT,
     });
 
   const isUnauthenticated =

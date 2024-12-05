@@ -14,7 +14,6 @@ import {
 import { pollPanelRefetch } from "src/components/panel/panel.lib";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
-  PanelButton,
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
@@ -26,7 +25,6 @@ import {
   BuiltInSkylarkObjectType,
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectMeta,
-  SkylarkAvailabilityField,
   SkylarkObject,
   SkylarkObjectMeta,
   SkylarkObjectMetadataField,
@@ -34,10 +32,7 @@ import {
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
-import {
-  isAvailabilityOrAvailabilitySegment,
-  objectIsAvailabilityOrAvailabilitySegment,
-} from "src/lib/utils";
+import { objectIsAvailabilityOrAvailabilitySegment } from "src/lib/utils";
 
 import {
   AvailabilityDimensionBreakdown,
@@ -158,7 +153,7 @@ export const PanelMetadata = ({
   objectFieldConfig: objectFieldConfigArr,
   form: { register, getValues, control, formState, aiFieldGeneration },
 }: PanelMetadataProps) => {
-  const { uid, objectType, language } = object;
+  const { uid, objectType } = object;
 
   const {
     systemMetadataFields,

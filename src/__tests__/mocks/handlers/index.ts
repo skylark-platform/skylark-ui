@@ -6,6 +6,7 @@ import { environmentHandlers } from "./environmentHandlers";
 import { flatfileHandlers } from "./flatfile";
 import {
   getObjectAvailabilityDimensionHandlers,
+  getObjectAvailabilitySegmentsHandlers,
   getObjectAvailabilityHandlers,
   getObjectContentHandlers,
   getObjectContentOfHandlers,
@@ -31,6 +32,7 @@ export const handlers = [
   ...getObjectAvailabilityInheritanceHandlers,
   ...getObjectAvailabilityAssignedToHandlers,
   ...getObjectAvailabilityDimensionHandlers,
+  ...getObjectAvailabilitySegmentsHandlers,
   ...getObjectRelationshipsHandlers,
   ...getObjectContentHandlers,
   ...getObjectContentOfHandlers,

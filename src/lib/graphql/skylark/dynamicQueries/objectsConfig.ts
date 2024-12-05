@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 import { EnumType } from "json-to-graphql-query";
 
+import { MAX_GRAPHQL_LIMIT } from "src/constants/skylark";
 import { SkylarkObjectType } from "src/interfaces/skylark";
 
 import { getObjectConfigFields, wrappedJsonQuery } from "./utils";
@@ -53,7 +54,7 @@ export const createGetAllObjectsRelationshipConfigurationQuery = (
             __args: {
               object_type: new EnumType(objectType),
               default: true,
-              limit: 100,
+              limit: MAX_GRAPHQL_LIMIT,
             },
             count: true,
             next_token: true,

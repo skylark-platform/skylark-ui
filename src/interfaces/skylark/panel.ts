@@ -1,3 +1,4 @@
+import { BuiltInSkylarkObjectType } from "./objectOperations";
 import {
   AddedSkylarkObjectContentObject,
   ParsedSkylarkRelationshipConfig,
@@ -38,6 +39,6 @@ export type ModifiedAvailabilityDimensions = Record<
 >;
 
 export type ModifiedAvailabilitySegments = {
-  added: SkylarkObject[];
+  added: SkylarkObject<BuiltInSkylarkObjectType.AvailabilitySegment>[];
   removed: string[];
 };

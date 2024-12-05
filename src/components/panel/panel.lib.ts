@@ -412,6 +412,80 @@ export const handleDroppedAvailabilities = ({
   };
 };
 
+export const handleDroppedAvailabilitySegments = ({
+  existingUids,
+  droppedObjects,
+  activeObjectUid,
+}: {
+  existingUids: string[];
+  droppedObjects: SkylarkObject[];
+  activeObjectUid: string;
+}) => {
+  const { addedObjects, errors } = droppedObjects.reduce(
+    (
+      previous,
+      droppedObject,
+    ): {
+      addedObjects: SkylarkObject<BuiltInSkylarkObjectType.AvailabilitySegment>[];
+      errors: HandleDropError[];
+    } => {
+      if (
+        droppedObject.objectType !==
+        BuiltInSkylarkObjectType.AvailabilitySegment
+      ) {
+        const error: HandleDropError = {
+          type: HandleDropErrorType.INVALID_OBJECT_TYPE,
+          object: droppedObject,
+        };
+        return {
+          ...previous,
+          errors: [...previous.errors, error],
+        };
+      }
+
+      if (activeObjectUid === droppedObject.uid) {
+        const error: HandleDropError = {
+          type: HandleDropErrorType.OBJECTS_ARE_SAME,
+          object: droppedObject,
+        };
+        return {
+          ...previous,
+          errors: [...previous.errors, error],
+        };
+      }
+
+      if (existingUids.includes(droppedObject.uid)) {
+        const error: HandleDropError = {
+          type: HandleDropErrorType.EXISTING_LINK,
+          object: droppedObject,
+        };
+        return {
+          ...previous,
+          errors: [...previous.errors, error],
+        };
+      }
+
+      return {
+        ...previous,
+        addedObjects: [
+          ...previous.addedObjects,
+          droppedObject as SkylarkObject<BuiltInSkylarkObjectType.AvailabilitySegment>,
+        ],
+      };
+    },
+    {
+      addedObjects:
+        [] as SkylarkObject<BuiltInSkylarkObjectType.AvailabilitySegment>[],
+      errors: [] as HandleDropError[],
+    },
+  );
+
+  return {
+    addedObjects,
+    errors,
+  };
+};
+
 export const handleDroppedObjectsToAssignToAvailability = ({
   newObjects,
 }: {

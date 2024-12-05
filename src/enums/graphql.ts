@@ -13,6 +13,7 @@ export enum QueryKeys {
   GetObjectAvailability = "getObjectAvailability",
   GetObjectRelationships = "getObjectRelationships",
   GetObjectDimensions = "getObjectDimensions",
+  GetObjectSegments = "getObjectSegments",
   GetObjectContentOf = "getObjectContentOf",
   GetObjectContent = "getObjectContent",
   Integrations = "integrations",

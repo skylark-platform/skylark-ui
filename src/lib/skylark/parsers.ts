@@ -43,9 +43,9 @@ import {
   ParsedSkylarkObjectMeta,
   SkylarkGraphQLAvailability,
   ParsedSkylarkObjectAvailabilityObject,
-  SkylarkGraphQLAvailabilityList,
   SkylarkObjectImageRelationship,
   SkylarkGraphQLDynamicContentConfiguration,
+  ParsedSkylarkDimensionWithValues,
 } from "src/interfaces/skylark";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
@@ -213,17 +213,24 @@ export const parseAvailabilityObjects = (
 };
 
 const parseObjectAvailability = (
-  unparsedObject?: SkylarkGraphQLAvailabilityList,
+  object?: SkylarkGraphQLObject,
 ): ParsedSkylarkObjectAvailability => {
-  const objects = parseAvailabilityObjects(unparsedObject?.objects);
+  const objects = parseAvailabilityObjects(object?.availability?.objects);
 
-  const status = unparsedObject?.time_window_status
-    ? convertTimeWindowStatus(unparsedObject?.time_window_status)
+  const status = object?.availability?.time_window_status
+    ? convertTimeWindowStatus(object?.availability?.time_window_status)
     : getObjectAvailabilityStatus(objects);
+
+  const dimensions: ParsedSkylarkDimensionWithValues[] =
+    object?.dimensions?.objects.map((dim) => ({
+      ...dim,
+      values: dim.values.objects,
+    })) || [];
 
   return {
     status,
     objects,
+    dimensions,
   };
 };
 
@@ -323,7 +330,7 @@ export const parseObjectContent = (
         removeFieldPrefixFromReturnedObject<ParsedSkylarkObjectMetadata>(
           object,
         );
-      const availability = parseObjectAvailability(object?.availability);
+      const availability = parseObjectAvailability(object);
       return {
         ...convertParsedObjectToIdentifier({
           uid: normalisedObject.uid,
@@ -410,7 +417,7 @@ export const parseSkylarkObject = (
 ): ParsedSkylarkObject => {
   const metadata = parseObjectMetadata(object);
 
-  const availability = parseObjectAvailability(object?.availability);
+  const availability = parseObjectAvailability(object);
   const availabilityStatus = getAvailabilityStatus(
     object.__typename,
     metadata,

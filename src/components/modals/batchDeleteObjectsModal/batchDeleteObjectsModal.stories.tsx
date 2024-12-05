@@ -25,6 +25,7 @@ const object: SkylarkObject = convertParsedObjectToIdentifier({
   availability: {
     status: AvailabilityStatus.Active,
     objects: [],
+    dimensions: [],
   },
 });
 

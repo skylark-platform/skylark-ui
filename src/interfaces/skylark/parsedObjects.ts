@@ -80,7 +80,7 @@ export enum AvailabilityStatus {
   Unavailable = "Unavailable",
 }
 
-export interface ParsedSkylarkDimensionsWithValues
+export interface ParsedSkylarkDimensionWithValues
   extends SkylarkGraphQLAvailabilityDimension {
   values: SkylarkGraphQLAvailabilityDimensionValue[];
 }
@@ -102,6 +102,7 @@ export interface ParsedSkylarkObjectAvailabilityObject {
 export interface ParsedSkylarkObjectAvailability {
   status: AvailabilityStatus | null;
   objects: ParsedSkylarkObjectAvailabilityObject[];
+  dimensions: ParsedSkylarkDimensionWithValues[];
 }
 
 export type SkylarkObjectContentObject = SkylarkObject & {

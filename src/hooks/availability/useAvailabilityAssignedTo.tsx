@@ -59,7 +59,7 @@ export const createGetAvailabilityAssignedToKeyPrefix = ({
   uid,
 }: {
   uid: string;
-}) => [QueryKeys.AvailabilityAssignedTo, { uid }];
+}) => [QueryKeys.AvailabilityAssignedTo, uid];
 
 const generateQueryFunctionAndKey = ({
   allObjectsMeta,

@@ -24,8 +24,10 @@ import GQLSkylarkGetAvailabilityDimensionsQueryFixture from "src/__tests__/fixtu
 import GQLSkylarkGetObjectGenericFixture from "src/__tests__/fixtures/skylark/queries/getObjectGeneric/homepage.json";
 import GQLSkylarkGetMovieRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetSeasonRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/gots04relationships.json";
+import GQLSkylarkGetAvailabilitySegmentsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectSegments/allDevicesAllCustomersAvailability.json";
 import GQLSkylarkGetMovieVersionsFixture from "src/__tests__/fixtures/skylark/queries/getObjectVersions/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetObjectsConfigFixture from "src/__tests__/fixtures/skylark/queries/getObjectsConfig/allObjectsConfig.json";
+import { SkylarkAvailabilityField } from "src/interfaces/skylark";
 import {
   createGetObjectAvailabilityInheritanceQueryName,
   createGetObjectAvailabilityQueryName,
@@ -33,7 +35,6 @@ import {
   createGetObjectContentQueryName,
   createGetObjectQueryName,
   createGetObjectRelationshipsQueryName,
-  createGetObjectVersionMetadataQueryName,
   createGetObjectVersionsQueryName,
   wrapQueryName,
 } from "src/lib/graphql/skylark/dynamicQueries";
@@ -137,13 +138,39 @@ export const getObjectHandlers = [
   ),
 ];
 
-const movieAvailabilityHandler = (
+const getObjectAvailabilityHandler = (
   _: GraphQLRequest<GraphQLVariables>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   res: ResponseComposition<any>,
   ctx: GraphQLContext<Record<string, unknown>>,
 ) => {
-  return res(ctx.data(GQLSkylarkGetMovieQueryAvailabilityFixture.data));
+  const data = {
+    getObjectAvailability: {
+      availability: {
+        ...GQLSkylarkGetMovieQueryAvailabilityFixture.data.getObjectAvailability
+          .availability,
+        objects:
+          GQLSkylarkGetMovieQueryAvailabilityFixture.data.getObjectAvailability.availability.objects.map(
+            (obj) => ({
+              ...obj,
+              [SkylarkAvailabilityField.DimensionBreakdown]: JSON.stringify(
+                obj.dimensions.objects.reduce(
+                  (acc, dimension) => ({
+                    ...acc,
+                    [dimension.slug]: dimension.values.objects.map(
+                      ({ slug }) => slug,
+                    ),
+                  }),
+                  {},
+                ),
+              ),
+            }),
+          ),
+      },
+    },
+  };
+
+  return res(ctx.data(data));
 };
 
 export const getObjectAvailabilityHandlers = [
@@ -156,7 +183,7 @@ export const getObjectAvailabilityHandlers = [
 ].map((objectType) =>
   graphql.query(
     wrapQueryName(createGetObjectAvailabilityQueryName(objectType)),
-    movieAvailabilityHandler,
+    getObjectAvailabilityHandler,
   ),
 );
 
@@ -183,6 +210,12 @@ export const getObjectAvailabilityAssignedToHandlers = [
 export const getObjectAvailabilityDimensionHandlers = [
   graphql.query(wrapQueryName("GET_AVAILABILITY_DIMENSIONS"), (_, res, ctx) => {
     return res(ctx.data(GQLSkylarkGetAvailabilityDimensionsQueryFixture.data));
+  }),
+];
+
+export const getObjectAvailabilitySegmentsHandlers = [
+  graphql.query(wrapQueryName("GET_AVAILABILITY_SEGMENTS"), (_, res, ctx) => {
+    return res(ctx.data(GQLSkylarkGetAvailabilitySegmentsQueryFixture.data));
   }),
 ];
 

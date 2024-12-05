@@ -29,6 +29,7 @@ const defaultObject = convertParsedObjectToIdentifier({
   availability: {
     status: AvailabilityStatus.Active,
     objects: [],
+    dimensions: [],
   },
 });
 

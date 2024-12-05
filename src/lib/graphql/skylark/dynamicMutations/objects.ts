@@ -14,6 +14,8 @@ import {
   SkylarkObject,
   ModifiedContents,
   ModifiedAvailabilityDimensions,
+  ModifiedAvailabilitySegments,
+  SkylarkAvailabilityField,
 } from "src/interfaces/skylark";
 import {
   createDynamicSetContentInput,
@@ -526,13 +528,14 @@ export const createUpdateObjectAvailability = (
 
 export const createUpdateAvailabilityDimensionsMutation = (
   objectMeta: SkylarkObjectMeta | null,
-  modifiedAvailabilityDimensions: ModifiedAvailabilityDimensions,
+  modifiedAvailabilityDimensions: ModifiedAvailabilityDimensions | null,
+  modifiedAvailabilitySegments: ModifiedAvailabilitySegments | null,
 ) => {
   if (
     !objectMeta ||
     !isAvailabilityOrAvailabilitySegment(objectMeta.name) ||
     !objectMeta.operations.update ||
-    !modifiedAvailabilityDimensions
+    (!modifiedAvailabilityDimensions && !modifiedAvailabilitySegments)
   ) {
     return null;
   }
@@ -546,52 +549,54 @@ export const createUpdateAvailabilityDimensionsMutation = (
       dimension_slug: string;
       value_slugs: string[];
     }[];
-  } = Object.entries(modifiedAvailabilityDimensions).reduce(
-    (acc, [dimensionSlug, { added, removed }]) => {
-      if (added.length === 0 && removed.length === 0) {
-        return acc;
-      }
+  } = modifiedAvailabilityDimensions
+    ? Object.entries(modifiedAvailabilityDimensions).reduce(
+        (acc, [dimensionSlug, { added, removed }]) => {
+          if (added.length === 0 && removed.length === 0) {
+            return acc;
+          }
 
-      const valuesToLink: string[] = added.filter(
-        (value) => !removed.includes(value),
-      );
+          const valuesToLink: string[] = added.filter(
+            (value) => !removed.includes(value),
+          );
 
-      const valuesToUnlink: string[] = removed.filter(
-        (value) => !added.includes(value),
-      );
+          const valuesToUnlink: string[] = removed.filter(
+            (value) => !added.includes(value),
+          );
 
-      return {
-        link:
-          valuesToLink.length === 0
-            ? acc.link
-            : [
-                ...acc.link,
-                {
-                  dimension_slug: dimensionSlug,
-                  value_slugs: valuesToLink,
-                },
-              ],
-        unlink:
-          valuesToUnlink.length === 0
-            ? acc.unlink
-            : [
-                ...acc.unlink,
-                {
-                  dimension_slug: dimensionSlug,
-                  value_slugs: valuesToUnlink,
-                },
-              ],
-      };
-    },
-    {
-      link: [] as { dimension_slug: string; value_slugs: string[] }[],
-      unlink: [] as { dimension_slug: string; value_slugs: string[] }[],
-    },
-  );
+          return {
+            link:
+              valuesToLink.length === 0
+                ? acc.link
+                : [
+                    ...acc.link,
+                    {
+                      dimension_slug: dimensionSlug,
+                      value_slugs: valuesToLink,
+                    },
+                  ],
+            unlink:
+              valuesToUnlink.length === 0
+                ? acc.unlink
+                : [
+                    ...acc.unlink,
+                    {
+                      dimension_slug: dimensionSlug,
+                      value_slugs: valuesToUnlink,
+                    },
+                  ],
+          };
+        },
+        {
+          link: [] as { dimension_slug: string; value_slugs: string[] }[],
+          unlink: [] as { dimension_slug: string; value_slugs: string[] }[],
+        },
+      )
+    : { link: [], unlink: [] };
 
   const mutation = {
     mutation: {
-      __name: `UPDATE_${objectMeta.name}_DIMENSIONS`,
+      __name: `UPDATE_${objectMeta.name}_DIMENSIONS_AND_SEGMENTS`,
       __variables: {
         uid: "String!",
       },
@@ -603,9 +608,21 @@ export const createUpdateAvailabilityDimensionsMutation = (
             dimensions: {
               ...parsedDimensionsForRequest,
             },
+            ...(objectMeta.name !== BuiltInSkylarkObjectType.AvailabilitySegment
+              ? {
+                  segments: {
+                    link:
+                      modifiedAvailabilitySegments?.added.map(
+                        ({ uid }) => uid,
+                      ) || [],
+                    unlink: modifiedAvailabilitySegments?.removed || [],
+                  },
+                }
+              : {}),
           },
         },
         uid: true,
+        [SkylarkAvailabilityField.DimensionBreakdown]: true,
       },
     },
   };

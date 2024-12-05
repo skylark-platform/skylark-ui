@@ -15,6 +15,8 @@ export const SAAS_API_KEY = (process.env.NEXT_PUBLIC_SAAS_API_KEY ||
 export const CLOUDINARY_ENVIRONMENT = process.env
   .NEXT_PUBLIC_CLOUDINARY_ENVIRONMENT as string;
 
+export const MAX_GRAPHQL_LIMIT = 100;
+
 export const REQUEST_HEADERS = {
   apiKey: "Authorization",
   bypassCache: "x-bypass-cache",

@@ -4,7 +4,7 @@ import {
   jsonToGraphQLQuery,
 } from "json-to-graphql-query";
 
-import { OBJECT_OPTIONS } from "src/constants/skylark";
+import { MAX_GRAPHQL_LIMIT, OBJECT_OPTIONS } from "src/constants/skylark";
 import {
   SkylarkGraphQLObject,
   SkylarkObjectMeta,
@@ -119,6 +119,49 @@ const getIgnoreAvailabilityVariableAndArg = (shouldAdd: boolean) => {
   };
 };
 
+export const generateDimensionsAndValuesFieldsToReturn = (
+  nextTokenName?: string,
+): object => {
+  const base = {
+    __args: {
+      limit: MAX_GRAPHQL_LIMIT,
+    },
+    next_token: true,
+    objects: {
+      uid: true,
+      external_id: true,
+      title: true,
+      slug: true,
+      description: true,
+      values: {
+        __args: {
+          limit: MAX_GRAPHQL_LIMIT,
+        },
+        next_token: true,
+        objects: {
+          uid: true,
+          external_id: true,
+          title: true,
+          slug: true,
+          description: true,
+        },
+      },
+    },
+  };
+
+  if (nextTokenName) {
+    return {
+      ...base,
+      __args: {
+        ...base.__args,
+        next_token: new VariableType(nextTokenName),
+      },
+    };
+  }
+
+  return base;
+};
+
 export const generateVariablesAndArgs = (
   objectType: SkylarkObjectType | "search" | "genericGetObject",
   operationType: "Query" | "Mutation",
@@ -206,7 +249,7 @@ export const generateAvailabilityRelationshipFields = (
   objectAvailability: SkylarkObjectMeta,
 ) => ({
   __args: {
-    limit: 50, // max
+    limit: MAX_GRAPHQL_LIMIT,
   },
   next_token: true,
   time_window_status: true,
@@ -274,6 +317,11 @@ export const generateRelationshipsToReturn = (
     );
   }
 
+  if (isSearch && isAvailabilityOrAvailabilitySegment(object.name)) {
+    relationshipsToReturn["dimensions"] =
+      generateDimensionsAndValuesFieldsToReturn();
+  }
+
   return relationshipsToReturn;
 };
 
@@ -293,7 +341,7 @@ export const generateContentsToReturn = (
     content: {
       __args: {
         // order: new EnumType("ASC"),
-        limit: 100,
+        limit: MAX_GRAPHQL_LIMIT,
         next_token: new VariableType(opts.nextTokenVariableName),
       },
       next_token: true,

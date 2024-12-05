@@ -565,6 +565,7 @@ describe("batch options", () => {
               availability: {
                 status: AvailabilityStatus.Unavailable,
                 objects: [],
+                dimensions: [],
               },
             } as ParsedSkylarkObject),
             checkedState: true,

@@ -1,13 +1,16 @@
 import gql from "graphql-tag";
 import { VariableType } from "json-to-graphql-query";
 
+import { MAX_GRAPHQL_LIMIT } from "src/constants/skylark";
 import {
+  SkylarkAvailabilityField,
   SkylarkGraphQLAvailabilityDimension,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 
 import {
+  generateDimensionsAndValuesFieldsToReturn,
   generateFieldsToReturn,
   generateVariablesAndArgs,
   wrappedJsonQuery,
@@ -109,7 +112,7 @@ export const createGetAvailabilityAssignedTo = (
         __typename: true,
         assigned_to: {
           __args: {
-            limit: 100,
+            limit: MAX_GRAPHQL_LIMIT,
             next_token: new VariableType("nextToken"),
           },
           next_token: true,
@@ -165,28 +168,9 @@ export const createGetAssignedDimensionsQuery = (
           uid: new VariableType("uid"),
         },
         __typename: true,
-        dimensions: {
-          __args: {
-            limit: 100,
-            next_token: new VariableType("nextToken"),
-          },
-          next_token: true,
-          objects: {
-            uid: true,
-            title: true,
-            slug: true,
-            values: {
-              __args: {
-                limit: 100,
-              },
-              objects: {
-                uid: true,
-                title: true,
-                slug: true,
-              },
-            },
-          },
-        },
+        uid: true,
+        [SkylarkAvailabilityField.DimensionBreakdown]: true,
+        dimensions: generateDimensionsAndValuesFieldsToReturn("nextToken"),
       },
     },
   };
@@ -216,9 +200,11 @@ export const createGetAssignedSegmentsQuery = (
           uid: new VariableType("uid"),
         },
         __typename: true,
+        uid: true,
+        [SkylarkAvailabilityField.DimensionBreakdown]: true,
         segments: {
           __args: {
-            limit: 100,
+            limit: MAX_GRAPHQL_LIMIT,
             next_token: new VariableType("nextToken"),
           },
           next_token: true,
@@ -226,27 +212,7 @@ export const createGetAssignedSegmentsQuery = (
             uid: true,
             title: true,
             slug: true,
-            dimensions: {
-              __args: {
-                limit: 100,
-              },
-              next_token: true,
-              objects: {
-                uid: true,
-                title: true,
-                slug: true,
-                values: {
-                  __args: {
-                    limit: 100,
-                  },
-                  objects: {
-                    uid: true,
-                    title: true,
-                    slug: true,
-                  },
-                },
-              },
-            },
+            dimensions: generateDimensionsAndValuesFieldsToReturn(),
           },
         },
       },

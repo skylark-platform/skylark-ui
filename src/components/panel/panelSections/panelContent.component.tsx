@@ -1,4 +1,4 @@
-import { useDndContext, useDroppable } from "@dnd-kit/core";
+import { useDndContext } from "@dnd-kit/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FiZap } from "react-icons/fi";
 

@@ -1,6 +1,8 @@
 import { getIntrospectionQuery } from "graphql";
 import { gql } from "graphql-tag";
 
+import { MAX_GRAPHQL_LIMIT } from "src/constants/skylark";
+
 import { wrapQueryName } from "./dynamicQueries";
 
 export const SKYLARK_SCHEMA_INTROSPECTION_QUERY_NAME = "IntrospectionQuery";
@@ -20,7 +22,7 @@ export const GET_SKYLARK_OBJECT_TYPES = gql`
 
 export const LIST_AVAILABILITY_DIMENSIONS = gql`
   query ${wrapQueryName("LIST_AVAILABILITY_DIMENSIONS")}($nextToken: String) {
-    listDimensions(next_token: $nextToken, limit: 50) {
+    listDimensions(next_token: $nextToken, limit: ${MAX_GRAPHQL_LIMIT}) {
       objects {
         uid
         external_id
@@ -104,7 +106,7 @@ export const GET_ACCOUNT_STATUS = gql`
 
 export const LIST_SCHEMA_VERSIONS = gql`
   query ${wrapQueryName("LIST_SCHEMA_VERSIONS")}($nextToken: String) {
-    listConfigurationVersions(order: DESC, next_token: $nextToken, limit:100) {
+    listConfigurationVersions(order: DESC, next_token: $nextToken, limit:${MAX_GRAPHQL_LIMIT}) {
       objects {
         active
         base_version
@@ -120,7 +122,7 @@ export const LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION = gql`
   query ${wrapQueryName(
     "LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION",
   )}($objectType: ObjectTypes!, $nextToken: String) {
-    listRelationshipConfiguration(object_type: $objectType, default: true, next_token: $nextToken, limit: 100) {
+    listRelationshipConfiguration(object_type: $objectType, default: true, next_token: $nextToken, limit: ${MAX_GRAPHQL_LIMIT}) {
       count
       next_token
       objects {

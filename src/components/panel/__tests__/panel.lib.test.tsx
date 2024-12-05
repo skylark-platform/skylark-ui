@@ -43,6 +43,7 @@ const panelObject: SkylarkObject = convertParsedObjectToIdentifier({
   availability: {
     status: AvailabilityStatus.Unavailable,
     objects: [],
+    dimensions: [],
   },
 });
 

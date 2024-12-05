@@ -141,14 +141,17 @@ export type SkylarkGraphQLObject = {
   _meta?: SkylarkGraphQLObjectMeta;
   content?: SkylarkGraphQLObjectContent;
   dynamic_content?: SkylarkGraphQLDynamicContentConfiguration;
+  dimensions?: SkylarkGraphQLObjectList<SkylarkGraphQLAvailabilityDimensionWithValues>;
   [key: string]:
     | SkylarkObjectMetadataField
-    | SkylarkGraphQLObjectList<SkylarkGraphQLObject>
     | SkylarkGraphQLAvailabilityList
     | SkylarkGraphQLObjectContent
     | SkylarkGraphQLObjectConfig
     | SkylarkGraphQLObjectMeta
     | SkylarkGraphQLDynamicContentConfiguration
+    | SkylarkGraphQLObjectList<
+        SkylarkGraphQLObject | SkylarkGraphQLAvailabilityDimensionWithValues
+      >
     | undefined;
 };
 

@@ -193,15 +193,17 @@ const DisplayError = ({
 
 const ObjectRuleBlock = ({
   objectRule,
-  validObjectTypes,
+  objectTypes,
   hideDelete,
+  isFirstRuleBlock,
   isLastRuleBlock,
   onChange,
   onDelete,
 }: {
+  isFirstRuleBlock: boolean;
   isLastRuleBlock: boolean;
   objectRule: DynamicSetObjectRule;
-  validObjectTypes: string[];
+  objectTypes: string[];
   hideDelete?: boolean;
   onChange: (r: DynamicSetObjectRule) => void;
   onDelete: () => void;
@@ -209,7 +211,7 @@ const ObjectRuleBlock = ({
   const { objects: allObjectsMeta } = useAllObjectsMeta();
 
   const validObjectMetas = allObjectsMeta?.filter(({ name }) =>
-    validObjectTypes.includes(name),
+    objectTypes.includes(name),
   );
 
   const { sharedRelationships, sharedRelationshipNames } =
@@ -221,7 +223,11 @@ const ObjectRuleBlock = ({
     <div className="relative border border-manatee-200 px-6 rounded py-4 flex">
       <div className="w-full">
         <div className="items-center flex space-x-4 mb-2">
-          <p className="whitespace-nowrap font-bold w-24">are related to</p>
+          <p className="whitespace-nowrap font-bold w-24">
+            {objectTypes.length === 1 && isFirstRuleBlock
+              ? "is related to"
+              : "are related to"}
+          </p>
           <Select
             options={sharedRelationshipNames.map((relationshipName) => ({
               label: sentenceCase(relationshipName),
@@ -399,11 +405,10 @@ const ContentRuleBlock = ({
           <div key={i} className="w-full relative my-2">
             <ObjectRuleBlock
               key={i}
+              isFirstRuleBlock={i === 0}
               isLastRuleBlock={i === arr.length - 1}
               objectRule={objectRule}
-              validObjectTypes={
-                arr?.[i - 1]?.objectType || ruleBlock.objectTypes
-              }
+              objectTypes={arr?.[i - 1]?.objectType || ruleBlock.objectTypes}
               onChange={(ruleBlock) => onObjectRuleChange(ruleBlock, i)}
               onDelete={() => deleteObjectRule(i)}
               hideDelete={i === 0 || i < arr.length - 1}

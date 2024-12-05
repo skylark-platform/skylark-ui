@@ -1,5 +1,6 @@
 import { Link } from "src/components/navigation/links";
 import {
+  PanelEmptyDataText,
   PanelFieldTitle,
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
@@ -97,6 +98,7 @@ export const AvailabilityDimensionBreakdown = ({
               object.contextualFields?.dimensions?.[slug].join(", ")}
           </div>
         ))}
+        {slugs.length === 0 && <PanelEmptyDataText />}
       </>
     )
   );

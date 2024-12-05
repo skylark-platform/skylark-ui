@@ -18,7 +18,7 @@ export const createGetAvailabilityObjectSegmentsKeyPrefix = ({
 }: {
   uid: string;
   objectType: string;
-}) => [QueryKeys.GetObjectDimensions, uid, objectType];
+}) => [QueryKeys.GetObjectSegments, uid, objectType];
 
 export const useAvailabilityObjectSegments = (
   objectType: string,

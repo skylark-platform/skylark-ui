@@ -613,6 +613,7 @@ describe("parseSkylarkObject", () => {
       availability: {
         status: AvailabilityStatus.Unavailable,
         objects: [],
+        dimensions: [],
       },
       images: [],
       content: undefined,
@@ -681,6 +682,7 @@ describe("parseSkylarkObject", () => {
       availability: {
         status: AvailabilityStatus.Unavailable,
         objects: [],
+        dimensions: [],
       },
       images: [],
       content: undefined,
@@ -1172,6 +1174,7 @@ describe("parseUpdatedRelationshipObjects", () => {
     availability: {
       status: AvailabilityStatus.Unavailable,
       objects: [],
+      dimensions: [],
     },
     images: [],
     content: undefined,

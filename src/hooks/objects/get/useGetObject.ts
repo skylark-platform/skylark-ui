@@ -15,7 +15,10 @@ import { GQLSkylarkGetObjectResponse } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
-import { hasProperty } from "src/lib/utils";
+import {
+  hasProperty,
+  isAvailabilityOrAvailabilitySegment,
+} from "src/lib/utils";
 
 export interface GetObjectOptions {
   language: string | null;
@@ -29,7 +32,14 @@ export const createGetObjectKeyPrefix = ({
   objectType: string;
   uid: string;
   language?: string | null;
-}) => [QueryKeys.GetObject, uid, objectType, { language }];
+}) => [
+  QueryKeys.GetObject,
+  uid,
+  objectType,
+  {
+    language: isAvailabilityOrAvailabilitySegment(objectType) ? null : language,
+  },
+];
 
 export const useGetObject = (
   objectType: SkylarkObjectType,

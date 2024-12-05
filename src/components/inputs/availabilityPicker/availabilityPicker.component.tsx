@@ -10,7 +10,7 @@ import { InputLabel } from "src/components/inputs/label/label.component";
 import { UTC_NAME, Select, TimezoneSelect } from "src/components/inputs/select";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
-import { ParsedSkylarkDimensionsWithValues } from "src/interfaces/skylark";
+import { ParsedSkylarkDimensionWithValues } from "src/interfaces/skylark";
 import { parseDateTimeForHTMLForm } from "src/lib/skylark/parsers";
 
 export type AvailabilityDimensionsPickerValues = Record<string, string> | null;
@@ -37,7 +37,7 @@ const AvailabilitySelectors = ({
   close,
   save,
 }: {
-  dimensions: ParsedSkylarkDimensionsWithValues[];
+  dimensions: ParsedSkylarkDimensionWithValues[];
   isLoadingDimensions: boolean;
   initialValues: AvailabilityPickerValues;
   close: () => void;

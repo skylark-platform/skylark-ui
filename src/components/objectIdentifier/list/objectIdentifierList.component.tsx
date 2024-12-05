@@ -13,6 +13,7 @@ type ObjectIdentifierListProps = {
   objects: SkylarkObject[];
   className?: string;
   setPanelObject?: SetPanelObject;
+  onDeleteClick?: (o: SkylarkObject) => void;
 } & Omit<ObjectIdentifierCardProps, "object" | "onForwardClick">;
 
 export const ObjectIdentifierList = ({

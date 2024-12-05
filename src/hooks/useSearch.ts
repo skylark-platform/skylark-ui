@@ -2,6 +2,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { RequestDocument, Variables } from "graphql-request";
 import { useEffect, useMemo } from "react";
 
+import { MAX_GRAPHQL_LIMIT } from "src/constants/skylark";
 import { useUser } from "src/contexts/useUser";
 import { QueryKeys } from "src/enums/graphql";
 import {
@@ -36,7 +37,7 @@ interface UseSearchOpts {
   disabled?: boolean;
 }
 
-export const SEARCH_PAGE_SIZE = 100;
+export const SEARCH_PAGE_SIZE = MAX_GRAPHQL_LIMIT;
 
 export const useSearch = ({
   filters: { query: queryString, objectTypes, language, availability },

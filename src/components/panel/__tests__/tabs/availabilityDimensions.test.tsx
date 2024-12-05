@@ -220,7 +220,7 @@ describe("availabity dimensions view", () => {
     test("edits and saves, but GraphQL returns an error", async () => {
       server.use(
         graphql.mutation(
-          wrapQueryName("UPDATE_AVAILABILITY_DIMENSIONS"),
+          wrapQueryName("UPDATE_AVAILABILITY_DIMENSIONS_AND_SEGMENTS"),
           saveGraphQLError,
         ),
       );

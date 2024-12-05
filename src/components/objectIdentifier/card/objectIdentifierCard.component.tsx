@@ -29,7 +29,7 @@ export interface ObjectIdentifierCardProps {
   forceConfigFromObject?: boolean;
   showDragIcon?: boolean;
   onForwardClick?: SetPanelObject;
-  onDeleteClick?: () => void;
+  onDeleteClick?: (o: SkylarkObject) => void;
 }
 
 export const ObjectIdentifierCard = ({
@@ -108,7 +108,7 @@ export const ObjectIdentifierCard = ({
             "transition-width",
             !disableDeleteClick ? "w-5" : "w-0 !-mx-0",
           )}
-          onClick={onDeleteClick}
+          onClick={() => onDeleteClick(object)}
         >
           {deleteIconVariant === "trash" && (
             <FiTrash2

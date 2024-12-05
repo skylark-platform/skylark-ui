@@ -1,13 +1,17 @@
-import { SkylarkObjectFieldInput } from "src/components/inputs";
 import {
   MultiSelect,
   MultiSelectOption,
 } from "src/components/inputs/multiselect/multiselect.component";
-import { SelectOption } from "src/components/inputs/select";
 import { DisplayGraphQLQuery } from "src/components/modals";
 import { ObjectIdentifierList } from "src/components/objectIdentifier";
+import {
+  HandleDropError,
+  handleDroppedAvailabilitySegments,
+} from "src/components/panel/panel.lib";
+import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
+  PanelEmptyDataText,
   PanelFieldTitle,
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
@@ -16,16 +20,18 @@ import { HREFS } from "src/constants/skylark";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { useAvailabilityObjectDimensions } from "src/hooks/availability/useAvailabilityObjectDimensions";
 import { useAvailabilityObjectSegments } from "src/hooks/availability/useAvailabilityObjectSegments";
+import { useIsDragging } from "src/hooks/dnd/useIsDragging";
+import { usePanelDropzone } from "src/hooks/dnd/usePanelDropzone";
 import { SetPanelObject } from "src/hooks/state";
 import {
   BuiltInSkylarkObjectType,
   ModifiedAvailabilityDimensions,
   ModifiedAvailabilitySegments,
-  ParsedSkylarkDimensionsWithValues,
+  ParsedSkylarkDimensionWithValues,
   SkylarkGraphQLAvailabilityDimensionWithValues,
   SkylarkObject,
-  SkylarkObjectType,
 } from "src/interfaces/skylark";
+import { DragType, DroppableType } from "src/lib/dndkit/dndkit";
 import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 import { formatObjectField } from "src/lib/utils";
 
@@ -42,18 +48,38 @@ interface PanelAudienceProps {
   modifiedAvailabilityDimensions: ModifiedAvailabilityDimensions | null;
   setAvailabilityDimensionValues: (m: ModifiedAvailabilityDimensions) => void;
   modifiedAvailabilitySegments: ModifiedAvailabilitySegments | null;
-  setAvailabilitySegments: (m: ModifiedAvailabilitySegments) => void;
+  setAvailabilitySegments: (
+    m: ModifiedAvailabilitySegments,
+    errors: HandleDropError[],
+  ) => void;
 }
 
 const combineServerDimensionsAndModifiedDimensions = (
-  dimensions: ParsedSkylarkDimensionsWithValues[],
+  dimensions: ParsedSkylarkDimensionWithValues[],
   dimensionsBreakdown: Record<string, string[]> | null | undefined,
   serverDimensions: SkylarkGraphQLAvailabilityDimensionWithValues[] | undefined,
   modifiedAvailabilityDimensions: ModifiedAvailabilityDimensions | null,
+  modifiedAvailabilitySegments: ModifiedAvailabilitySegments | null,
 ): Record<
   string,
   { activeValues: string[]; assignedValues: string[]; segmentValues: string[] }
 > => {
+  const mergedDimensionsBreakdown: Record<string, string[]> = dimensions.reduce(
+    (acc, { slug: dimensionSlug }) => {
+      const assigned = dimensionsBreakdown?.[dimensionSlug] || [];
+      const added =
+        modifiedAvailabilitySegments?.added.flatMap(
+          (segment) =>
+            segment.contextualFields?.dimensions?.[dimensionSlug] || [],
+        ) || [];
+      return {
+        ...acc,
+        [dimensionSlug]: [...new Set([...assigned, ...added])],
+      };
+    },
+    {},
+  );
+
   if (!serverDimensions) {
     return {};
   }
@@ -75,7 +101,7 @@ const combineServerDimensionsAndModifiedDimensions = (
           .find(({ slug }) => slug === dimensionSlug)
           ?.values.objects.map(({ slug }) => slug) || [];
       const allActiveValues =
-        dimensionsBreakdown?.[dimensionSlug] || assignedValues || [];
+        mergedDimensionsBreakdown?.[dimensionSlug] || assignedValues || [];
 
       const segmentValues = allActiveValues.filter(
         (val) => !assignedValues.includes(val),
@@ -115,33 +141,72 @@ const PanelAudienceSegments = ({
   object,
   dimensions,
   setPanelObject,
+  modifiedAvailabilitySegments,
+  setAvailabilitySegments,
 }: Pick<
   PanelAudienceProps,
   | "object"
   | "setPanelObject"
   | "modifiedAvailabilitySegments"
   | "setAvailabilitySegments"
-> & { dimensions: ParsedSkylarkDimensionsWithValues[] }) => {
+> & { dimensions: ParsedSkylarkDimensionWithValues[] }) => {
   const { objectType, uid } = object;
 
   const {
     segments,
     query,
     variables,
-    isLoading: getObjectLoading,
+    isLoading: isSegmentsLoading,
   } = useAvailabilityObjectSegments(objectType, uid);
 
-  const objects =
-    segments?.map((segment) =>
-      createDefaultSkylarkObject({
-        ...segment,
-        objectType: BuiltInSkylarkObjectType.AvailabilitySegment,
-        display: {
-          name:
-            segment.title || segment.slug || segment.external_id || segment.uid,
-        },
-      }),
-    ) || [];
+  usePanelDropzone(DroppableType.PANEL_GENERIC, {
+    onObjectsDropped: (droppedObjects) => {
+      if (droppedObjects && droppedObjects.length > 0) {
+        const existingUids = (segments || [])
+          .filter(
+            ({ uid }) => !modifiedAvailabilitySegments?.removed.includes(uid),
+          )
+          .map(({ uid }) => uid);
+        const addedUids =
+          modifiedAvailabilitySegments?.added.map(({ uid }) => uid) || [];
+        const { addedObjects, errors } = handleDroppedAvailabilitySegments({
+          droppedObjects,
+          existingUids: [...existingUids, ...addedUids],
+          activeObjectUid: uid,
+        });
+
+        setAvailabilitySegments(
+          {
+            removed: modifiedAvailabilitySegments?.removed || [],
+            added: [
+              ...(modifiedAvailabilitySegments?.added || []),
+              ...addedObjects,
+            ],
+          },
+          errors,
+        );
+      }
+    },
+  });
+
+  const objects = [
+    ...(
+      segments?.map((segment) =>
+        createDefaultSkylarkObject({
+          ...segment,
+          objectType: BuiltInSkylarkObjectType.AvailabilitySegment,
+          display: {
+            name:
+              segment.title ||
+              segment.slug ||
+              segment.external_id ||
+              segment.uid,
+          },
+        }),
+      ) || []
+    ).filter(({ uid }) => !modifiedAvailabilitySegments?.removed.includes(uid)),
+    ...(modifiedAvailabilitySegments?.added || []),
+  ];
 
   return (
     <div className="relative">
@@ -152,7 +217,30 @@ const PanelAudienceSegments = ({
         hideAvailabilityStatus
         hideObjectType
         setPanelObject={setPanelObject}
+        onDeleteClick={(o) => {
+          setAvailabilitySegments(
+            {
+              added: (modifiedAvailabilitySegments?.added || []).filter(
+                ({ uid }) => uid !== o.uid,
+              ),
+              removed: [
+                ...(modifiedAvailabilitySegments?.removed || []),
+                o.uid,
+              ],
+            },
+            [],
+          );
+        }}
       />
+      {objects.length === 0 && !isSegmentsLoading && <PanelEmptyDataText />}
+      <PanelLoading isLoading={isSegmentsLoading}>
+        {Array.from({ length: 2 }, (_, i) => (
+          <Skeleton
+            key={`content-skeleton-${i}`}
+            className="mb-2 h-11 w-full max-w-xl"
+          />
+        ))}
+      </PanelLoading>
 
       <DisplayGraphQLQuery
         label={`Get ${objectType} Segments`}
@@ -168,11 +256,15 @@ const PanelAudienceDimensions = ({
   object,
   dimensions,
   modifiedAvailabilityDimensions,
+  modifiedAvailabilitySegments,
   setAvailabilityDimensionValues,
 }: Pick<
   PanelAudienceProps,
-  "object" | "modifiedAvailabilityDimensions" | "setAvailabilityDimensionValues"
-> & { dimensions: ParsedSkylarkDimensionsWithValues[] }) => {
+  | "object"
+  | "modifiedAvailabilityDimensions"
+  | "modifiedAvailabilitySegments"
+  | "setAvailabilityDimensionValues"
+> & { dimensions: ParsedSkylarkDimensionWithValues[] }) => {
   const { objectType, uid } = object;
 
   const {
@@ -187,6 +279,7 @@ const PanelAudienceDimensions = ({
     object.contextualFields?.dimensions,
     data,
     modifiedAvailabilityDimensions,
+    modifiedAvailabilitySegments,
   );
 
   const onChange = (dimensionSlug: string, values: string[]) => {
@@ -282,6 +375,8 @@ export const PanelAudience = (props: PanelAudienceProps) => {
     object: { objectType },
   } = props;
 
+  const [showDropZone] = useIsDragging(DragType.CONTENT_LIBRARY_OBJECT);
+
   return (
     <PanelSectionLayout
       sections={(dimensions || []).map(({ uid, title, slug }) => ({
@@ -291,6 +386,11 @@ export const PanelAudience = (props: PanelAudienceProps) => {
       }))}
       isPage={isPage}
     >
+      {showDropZone && (
+        <div className="absolute top-0 right-0 bottom-0 left-0 bg-white z-50">
+          <PanelDropZone />
+        </div>
+      )}
       {!dimensionsLoading &&
         dimensions &&
         (dimensions.length === 0 ? (
