@@ -753,7 +753,7 @@ export const Panel = ({
           {selectedTab === PanelTab.AvailabilityAssignedTo && (
             <PanelAvailabilityAssignedTo
               isPage={isPage}
-              uid={uid}
+              object={object}
               inEditMode={inEditMode}
               modifiedAvailabilityAssignedTo={modifiedAvailabilityAssignedTo}
               tabState={tabState[PanelTab.AvailabilityAssignedTo]}

@@ -148,6 +148,56 @@ export const createGetAvailabilityAssignedTo = (
   return gql(graphQLQuery);
 };
 
+export const createGetAvailabilitySegmentAssignedTo = (
+  availabilityObjectMeta: SkylarkObjectMeta | null,
+) => {
+  if (!availabilityObjectMeta) {
+    return null;
+  }
+  const common = generateVariablesAndArgs(availabilityObjectMeta.name, "Query");
+
+  const query = {
+    query: {
+      __name: "GET_AVAILABILITYSEGMENTS_ASSIGNED_TO",
+      __variables: {
+        uid: "String!",
+        nextToken: "String",
+      },
+      getAvailabilitySegmentAssignedTo: {
+        __aliasFor: "getAvailabilitySegment",
+        __args: {
+          uid: new VariableType("uid"),
+        },
+        __typename: true,
+        assigned_to: {
+          __args: {
+            limit: MAX_GRAPHQL_LIMIT,
+            next_token: new VariableType("nextToken"),
+          },
+          next_token: true,
+          objects: {
+            inherited: true,
+            inheritance_source: true,
+            active: true,
+            uid: true,
+            __typename: true,
+            ...generateFieldsToReturn(
+              availabilityObjectMeta.fields,
+              availabilityObjectMeta.name,
+              true,
+            ),
+            ...common.fields,
+          },
+        },
+      },
+    },
+  };
+
+  const graphQLQuery = wrappedJsonQuery(query);
+
+  return gql(graphQLQuery);
+};
+
 export const createGetAssignedDimensionsQuery = (
   objectMeta: SkylarkObjectMeta | null,
 ) => {

@@ -14,6 +14,7 @@ import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.
 import { PanelLoading } from "src/components/panel/panelLoading";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { useGetAvailabilityAssignedTo } from "src/hooks/availability/useAvailabilityAssignedTo";
+import { useGetAvailabilitySegmentAssignedTo } from "src/hooks/availability/useAvailabilitySegmentAssignedTo";
 import { useIsDragging } from "src/hooks/dnd/useIsDragging";
 import { usePanelDropzone } from "src/hooks/dnd/usePanelDropzone";
 import { PanelTab, PanelTabState, SetPanelObject } from "src/hooks/state";
@@ -27,7 +28,7 @@ import { DragType, DroppableType } from "src/lib/dndkit/dndkit";
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
 interface PanelAvailabilityAssignedToProps {
-  uid: string;
+  object: SkylarkObject;
   isPage?: boolean;
   inEditMode: boolean;
   modifiedAvailabilityAssignedTo: {
@@ -81,7 +82,7 @@ const mergeServerAndModifiedAssignedTo = (
 };
 
 export const PanelAvailabilityAssignedTo = ({
-  uid,
+  object: { uid, objectType },
   isPage,
   inEditMode,
   modifiedAvailabilityAssignedTo,
@@ -90,7 +91,7 @@ export const PanelAvailabilityAssignedTo = ({
   setModifiedAvailabilityAssignedTo,
   updateActivePanelTabState,
 }: PanelAvailabilityAssignedToProps) => {
-  const [{ objectType, hideInherited }, setFilters] = useState(
+  const [filters, setFilters] = useState(
     tabState.filters || {
       objectType: "",
       hideInherited: false,
@@ -100,15 +101,27 @@ export const PanelAvailabilityAssignedTo = ({
   const setFiltersWrapper = (
     updated: Partial<{ objectType: string; hideInherited: boolean }>,
   ) => {
-    const filters = { objectType, hideInherited, ...updated };
+    const updatedFilters = { ...filters, ...updated };
 
-    setFilters(filters);
+    setFilters(updatedFilters);
     updateActivePanelTabState({
       [PanelTab.AvailabilityAssignedTo]: {
-        filters,
+        filters: updatedFilters,
       },
     });
   };
+
+  const fetchRelatedAvailabilitiesOnly =
+    objectType === BuiltInSkylarkObjectType.AvailabilitySegment;
+
+  const useGetAvailabilityAssignedToRet = useGetAvailabilityAssignedTo(uid, {
+    disabled: fetchRelatedAvailabilitiesOnly,
+  });
+
+  const useGetAvailabilitySegmentAssignedToRet =
+    useGetAvailabilitySegmentAssignedTo(uid, {
+      disabled: !fetchRelatedAvailabilitiesOnly,
+    });
 
   const {
     data,
@@ -118,7 +131,9 @@ export const PanelAvailabilityAssignedTo = ({
     query,
     variables,
     fetchNextPage,
-  } = useGetAvailabilityAssignedTo(uid);
+  } = fetchRelatedAvailabilitiesOnly
+    ? useGetAvailabilitySegmentAssignedToRet
+    : useGetAvailabilityAssignedToRet;
 
   const objects = mergeServerAndModifiedAssignedTo(
     data,
@@ -233,25 +248,29 @@ export const PanelAvailabilityAssignedTo = ({
       >
         <div className="w-full sticky bg-white pt-4 pb-2 top-0 z-10">
           <PanelSectionTitle text={"Assigned to"} />
-          <ObjectTypeSelect
-            onChange={({ objectType }) => setFiltersWrapper({ objectType })}
-            variant="primary"
-            selected={objectType}
-            placeholder="Filter for Object Type"
-            onValueClear={() => setFiltersWrapper({ objectType: "" })}
-            hiddenObjectTypes={[
-              BuiltInSkylarkObjectType.Availability,
-              BuiltInSkylarkObjectType.AvailabilitySegment,
-            ]}
-          />
-          <Checkbox
-            label="Hide objects linked via Inheritance"
-            className="mt-2 font-normal"
-            checked={hideInherited}
-            onCheckedChange={(checked) =>
-              setFiltersWrapper({ hideInherited: Boolean(checked) })
-            }
-          />
+          {objectType !== BuiltInSkylarkObjectType.AvailabilitySegment && (
+            <>
+              <ObjectTypeSelect
+                onChange={({ objectType }) => setFiltersWrapper({ objectType })}
+                variant="primary"
+                selected={filters.objectType}
+                placeholder="Filter for Object Type"
+                onValueClear={() => setFiltersWrapper({ objectType: "" })}
+                hiddenObjectTypes={[
+                  BuiltInSkylarkObjectType.Availability,
+                  BuiltInSkylarkObjectType.AvailabilitySegment,
+                ]}
+              />
+              <Checkbox
+                label="Hide objects linked via Inheritance"
+                className="mt-2 font-normal"
+                checked={filters.hideInherited}
+                onCheckedChange={(checked) =>
+                  setFiltersWrapper({ hideInherited: Boolean(checked) })
+                }
+              />
+            </>
+          )}
           <DisplayGraphQLQuery
             label="Get Availability Assigned To"
             query={query}
@@ -262,9 +281,10 @@ export const PanelAvailabilityAssignedTo = ({
         {objects
           ?.filter(
             (o) =>
-              (!objectType || o.objectType === objectType) &&
-              (!hideInherited ||
-                (hideInherited && !uidsLinkedViaInheritance?.includes(o.uid))),
+              (!filters.objectType || o.objectType === filters.objectType) &&
+              (!filters.hideInherited ||
+                (filters.hideInherited &&
+                  !uidsLinkedViaInheritance?.includes(o.uid))),
           )
           .map((object) => {
             const isNewlyAdded = addedUids?.includes(object.uid);

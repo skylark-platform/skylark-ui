@@ -22,7 +22,7 @@ import { useAvailabilityObjectDimensions } from "src/hooks/availability/useAvail
 import { useAvailabilityObjectSegments } from "src/hooks/availability/useAvailabilityObjectSegments";
 import { useIsDragging } from "src/hooks/dnd/useIsDragging";
 import { usePanelDropzone } from "src/hooks/dnd/usePanelDropzone";
-import { SetPanelObject } from "src/hooks/state";
+import { PanelTab, SetPanelObject } from "src/hooks/state";
 import {
   BuiltInSkylarkObjectType,
   ModifiedAvailabilityDimensions,
@@ -216,7 +216,12 @@ const PanelAudienceSegments = ({
         objects={objects}
         hideAvailabilityStatus
         hideObjectType
-        setPanelObject={setPanelObject}
+        setPanelObject={(object, opts) =>
+          setPanelObject(object, {
+            ...opts,
+            tab: PanelTab.AvailabilityAudience,
+          })
+        }
         onDeleteClick={(o) => {
           setAvailabilitySegments(
             {

@@ -259,6 +259,19 @@ export interface GQLSkylarkGetAvailabilityAssignedResponse {
   };
 }
 
+export interface GQLSkylarkGetAvailabilitySegmentAssignedResponse {
+  getAvailabilitySegmentAssignedTo: {
+    assigned_to: {
+      next_token?: NextToken;
+      objects: (SkylarkGraphQLObject & {
+        inherited: SkylarkGraphQLAvailability["inherited"];
+        inheritance_source: SkylarkGraphQLAvailability["inheritance_source"];
+        active: SkylarkGraphQLAvailability["active"];
+      })[];
+    };
+  };
+}
+
 export interface GQLSkylarkListSchemaVersionsResponse {
   listConfigurationVersions: {
     objects: {

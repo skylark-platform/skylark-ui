@@ -8,52 +8,40 @@ import { DocumentNode } from "graphql";
 import { RequestDocument } from "graphql-request";
 
 import { QueryKeys } from "src/enums/graphql";
-import { useAllObjectsMeta } from "src/hooks/useSkylarkObjectTypes";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkErrorResponse,
   SkylarkObjectMeta,
-  GQLSkylarkGetAvailabilityAssignedResponse,
   AvailabilityAssignedToObject,
-  SkylarkGraphQLObject,
+  GQLSkylarkGetAvailabilitySegmentAssignedResponse,
+  BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import {
-  createGetAvailabilityAssignedTo,
-  removeFieldPrefixFromReturnedObject,
-} from "src/lib/graphql/skylark/dynamicQueries";
+import { createGetAvailabilitySegmentAssignedTo } from "src/lib/graphql/skylark/dynamicQueries";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 const select = (
-  data: InfiniteData<GQLSkylarkGetAvailabilityAssignedResponse>,
+  data: InfiniteData<GQLSkylarkGetAvailabilitySegmentAssignedResponse>,
 ) =>
   data?.pages
     ?.flatMap(
-      (page) => page.getAvailabilityAssignedTo.assigned_to?.objects || [],
+      (page) =>
+        page.getAvailabilitySegmentAssignedTo.assigned_to?.objects || [],
     )
-    .map(
-      ({
-        object,
-        inherited,
-        inheritance_source,
-        active,
-      }): AvailabilityAssignedToObject => {
-        const normalisedObject =
-          removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>(object);
+    .map((object): AvailabilityAssignedToObject => {
+      const parsedObject = convertParsedObjectToIdentifier(
+        parseSkylarkObject(object),
+      );
 
-        const parsedObject = convertParsedObjectToIdentifier(
-          parseSkylarkObject(normalisedObject),
-        );
-
-        return {
-          objectType: object.__typename,
-          inherited: inherited || false,
-          inheritanceSource: inheritance_source || false,
-          active: active ?? true,
-          object: parsedObject,
-        };
-      },
-    ) || [];
+      return {
+        objectType: object.__typename,
+        inherited: object.inherited || false,
+        inheritanceSource: object.inheritance_source || false,
+        active: object.active ?? true,
+        object: parsedObject,
+      };
+    }) || [];
 
 export const createGetAvailabilityAssignedToKeyPrefix = ({
   uid,
@@ -62,26 +50,26 @@ export const createGetAvailabilityAssignedToKeyPrefix = ({
 }) => [QueryKeys.AvailabilityAssignedTo, uid];
 
 const generateQueryFunctionAndKey = ({
-  allObjectsMeta,
+  availabilityObjectMeta,
   variables,
 }: {
-  allObjectsMeta: SkylarkObjectMeta[] | null;
+  availabilityObjectMeta: SkylarkObjectMeta | null;
   variables: {
     uid: string;
   };
 }): {
   queryFn: QueryFunction<
-    GQLSkylarkGetAvailabilityAssignedResponse,
+    GQLSkylarkGetAvailabilitySegmentAssignedResponse,
     QueryKey,
     unknown
   >;
   queryKey: QueryKey;
   query: DocumentNode | null;
 } => {
-  const query = createGetAvailabilityAssignedTo(allObjectsMeta);
+  const query = createGetAvailabilitySegmentAssignedTo(availabilityObjectMeta);
 
   const queryFn: QueryFunction<
-    GQLSkylarkGetAvailabilityAssignedResponse,
+    GQLSkylarkGetAvailabilitySegmentAssignedResponse,
     QueryKey,
     unknown
   > = async ({ pageParam: nextToken }) => {
@@ -104,30 +92,32 @@ const generateQueryFunctionAndKey = ({
   };
 };
 
-export const useGetAvailabilityAssignedTo = (
+export const useGetAvailabilitySegmentAssignedTo = (
   uid: string,
   { disabled }: { disabled?: boolean },
 ) => {
-  const { objects: allObjectsMeta } = useAllObjectsMeta(false);
+  const { objectOperations: availabilityObjectMeta } =
+    useSkylarkObjectOperations(BuiltInSkylarkObjectType.Availability);
 
   const variables = { uid };
 
   const { queryFn, queryKey, query } = generateQueryFunctionAndKey({
-    allObjectsMeta,
+    availabilityObjectMeta,
     variables,
   });
 
   const { data, hasNextPage, fetchNextPage, isLoading, isFetchingNextPage } =
     useInfiniteQuery<
-      GQLSkylarkGetAvailabilityAssignedResponse,
-      GQLSkylarkErrorResponse<GQLSkylarkGetAvailabilityAssignedResponse>,
+      GQLSkylarkGetAvailabilitySegmentAssignedResponse,
+      GQLSkylarkErrorResponse<GQLSkylarkGetAvailabilitySegmentAssignedResponse>,
       AvailabilityAssignedToObject[]
     >({
       queryFn,
       queryKey,
       initialPageParam: "",
       getNextPageParam: (lastPage): string | undefined =>
-        lastPage.getAvailabilityAssignedTo.assigned_to?.next_token || undefined,
+        lastPage.getAvailabilitySegmentAssignedTo.assigned_to?.next_token ||
+        undefined,
       enabled: !!query && !disabled,
       select,
     });
