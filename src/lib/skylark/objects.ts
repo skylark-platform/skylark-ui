@@ -733,6 +733,11 @@ export const convertParsedObjectToIdentifier = (
 ): SkylarkObject => {
   const { uid, objectType, metadata, meta } = parsedObject;
 
+  const availabilityStatus =
+    parsedObject.meta.availabilityStatus ||
+    (parsedObject.availability && parsedObject.availability.status) ||
+    null;
+
   const object: SkylarkObject = {
     uid,
     externalId: metadata.external_id,
@@ -741,9 +746,9 @@ export const convertParsedObjectToIdentifier = (
     language: meta.language,
     availableLanguages: meta.availableLanguages,
     availabilityStatus:
-      parsedObject.meta.availabilityStatus ||
-      (parsedObject.availability && parsedObject.availability.status) ||
-      null,
+      objectType === BuiltInSkylarkObjectType.AvailabilitySegment
+        ? null
+        : availabilityStatus,
     display: {
       name: getObjectDisplayName(parsedObject, fallbackConfig),
       objectType: getObjectTypeDisplayNameFromParsedObject(

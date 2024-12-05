@@ -47,6 +47,7 @@ export interface MultiSelectProps extends NothingFoundProps {
   label?: string;
   labelVariant?: "default" | "form";
   placeholder?: string;
+  hidePlaceholderWhenSelected?: boolean;
   className?: string;
   disabled?: boolean;
   rounded?: boolean;
@@ -139,6 +140,7 @@ const MultiSelectComponent = (
     label,
     labelVariant = "default",
     placeholder,
+    hidePlaceholderWhenSelected,
     className,
     onChange,
     onQueryChange,
@@ -272,7 +274,9 @@ const MultiSelectComponent = (
                     label={label || value}
                     className={clsx(
                       "my-auto text-clip overflow-hidden",
-                      disabled ? "bg-manatee-400" : "bg-brand-primary",
+                      "bg-brand-primary",
+                      // TODO implement disabled colour = hidden because of segments
+                      // disabled ? "bg-manatee-400" : "bg-brand-primary",
                     )}
                     onDelete={
                       disabled ? undefined : () => deselectOption(value)
@@ -299,7 +303,11 @@ const MultiSelectComponent = (
                 onChange={(event) => setQuery(event.target.value)}
                 onKeyDown={callNothingFoundOnEnter}
                 value={query}
-                placeholder={placeholder}
+                placeholder={
+                  hidePlaceholderWhenSelected && selected && selected.length > 0
+                    ? undefined
+                    : placeholder
+                }
                 ref={ref as Ref<HTMLInputElement> | undefined}
               />
             </Combobox.Button>

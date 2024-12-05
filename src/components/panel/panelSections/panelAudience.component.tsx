@@ -355,6 +355,8 @@ const PanelAudienceDimensions = ({
                 options={options}
                 selected={selectedValues}
                 onChange={onChangeWrapper}
+                placeholder="Any"
+                hidePlaceholderWhenSelected
               />
             )}
           </div>
