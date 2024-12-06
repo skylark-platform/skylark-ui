@@ -13,7 +13,7 @@ import {
 import {
   hasProperty,
   insertAtIndex,
-  isAvailabilityOrAvailabilitySegment,
+  isAvailabilityOrAudienceSegment,
 } from "src/lib/utils";
 
 export enum HandleDropErrorType {
@@ -279,7 +279,7 @@ export const handleDroppedContents = ({
       newContentObjects: AddedSkylarkObjectContentObject[];
       errors: HandleDropError[];
     } => {
-      if (isAvailabilityOrAvailabilitySegment(droppedObject.objectType)) {
+      if (isAvailabilityOrAudienceSegment(droppedObject.objectType)) {
         const error: HandleDropError = {
           type: HandleDropErrorType.INVALID_OBJECT_TYPE,
           object: droppedObject,
@@ -412,7 +412,7 @@ export const handleDroppedAvailabilities = ({
   };
 };
 
-export const handleDroppedAvailabilitySegments = ({
+export const handleDroppedAudienceSegments = ({
   existingUids,
   droppedObjects,
   activeObjectUid,
@@ -426,12 +426,11 @@ export const handleDroppedAvailabilitySegments = ({
       previous,
       droppedObject,
     ): {
-      addedObjects: SkylarkObject<BuiltInSkylarkObjectType.AvailabilitySegment>[];
+      addedObjects: SkylarkObject<BuiltInSkylarkObjectType.AudienceSegment>[];
       errors: HandleDropError[];
     } => {
       if (
-        droppedObject.objectType !==
-        BuiltInSkylarkObjectType.AvailabilitySegment
+        droppedObject.objectType !== BuiltInSkylarkObjectType.AudienceSegment
       ) {
         const error: HandleDropError = {
           type: HandleDropErrorType.INVALID_OBJECT_TYPE,
@@ -469,13 +468,13 @@ export const handleDroppedAvailabilitySegments = ({
         ...previous,
         addedObjects: [
           ...previous.addedObjects,
-          droppedObject as SkylarkObject<BuiltInSkylarkObjectType.AvailabilitySegment>,
+          droppedObject as SkylarkObject<BuiltInSkylarkObjectType.AudienceSegment>,
         ],
       };
     },
     {
       addedObjects:
-        [] as SkylarkObject<BuiltInSkylarkObjectType.AvailabilitySegment>[],
+        [] as SkylarkObject<BuiltInSkylarkObjectType.AudienceSegment>[],
       errors: [] as HandleDropError[],
     },
   );
@@ -502,7 +501,7 @@ export const handleDroppedObjectsToAssignToAvailability = ({
       updatedAssignedToObjects: SkylarkObject[];
       errors: HandleDropError[];
     } => {
-      if (isAvailabilityOrAvailabilitySegment(newObject.objectType)) {
+      if (isAvailabilityOrAudienceSegment(newObject.objectType)) {
         const error: HandleDropError = {
           type: HandleDropErrorType.INVALID_OBJECT_TYPE,
           object: newObject,

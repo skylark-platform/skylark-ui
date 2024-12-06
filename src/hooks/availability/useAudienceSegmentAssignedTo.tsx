@@ -13,21 +13,20 @@ import {
   GQLSkylarkErrorResponse,
   SkylarkObjectMeta,
   AvailabilityAssignedToObject,
-  GQLSkylarkGetAvailabilitySegmentAssignedResponse,
+  GQLSkylarkGetAudienceSegmentAssignedResponse,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
-import { createGetAvailabilitySegmentAssignedTo } from "src/lib/graphql/skylark/dynamicQueries";
+import { createGetAudienceSegmentAssignedTo } from "src/lib/graphql/skylark/dynamicQueries";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 const select = (
-  data: InfiniteData<GQLSkylarkGetAvailabilitySegmentAssignedResponse>,
+  data: InfiniteData<GQLSkylarkGetAudienceSegmentAssignedResponse>,
 ) =>
   data?.pages
     ?.flatMap(
-      (page) =>
-        page.getAvailabilitySegmentAssignedTo.assigned_to?.objects || [],
+      (page) => page.getAudienceSegmentAssignedTo.assigned_to?.objects || [],
     )
     .map((object): AvailabilityAssignedToObject => {
       const parsedObject = convertParsedObjectToIdentifier(
@@ -59,17 +58,17 @@ const generateQueryFunctionAndKey = ({
   };
 }): {
   queryFn: QueryFunction<
-    GQLSkylarkGetAvailabilitySegmentAssignedResponse,
+    GQLSkylarkGetAudienceSegmentAssignedResponse,
     QueryKey,
     unknown
   >;
   queryKey: QueryKey;
   query: DocumentNode | null;
 } => {
-  const query = createGetAvailabilitySegmentAssignedTo(availabilityObjectMeta);
+  const query = createGetAudienceSegmentAssignedTo(availabilityObjectMeta);
 
   const queryFn: QueryFunction<
-    GQLSkylarkGetAvailabilitySegmentAssignedResponse,
+    GQLSkylarkGetAudienceSegmentAssignedResponse,
     QueryKey,
     unknown
   > = async ({ pageParam: nextToken }) => {
@@ -92,7 +91,7 @@ const generateQueryFunctionAndKey = ({
   };
 };
 
-export const useGetAvailabilitySegmentAssignedTo = (
+export const useGetAudienceSegmentAssignedTo = (
   uid: string,
   { disabled }: { disabled?: boolean },
 ) => {
@@ -108,15 +107,15 @@ export const useGetAvailabilitySegmentAssignedTo = (
 
   const { data, hasNextPage, fetchNextPage, isLoading, isFetchingNextPage } =
     useInfiniteQuery<
-      GQLSkylarkGetAvailabilitySegmentAssignedResponse,
-      GQLSkylarkErrorResponse<GQLSkylarkGetAvailabilitySegmentAssignedResponse>,
+      GQLSkylarkGetAudienceSegmentAssignedResponse,
+      GQLSkylarkErrorResponse<GQLSkylarkGetAudienceSegmentAssignedResponse>,
       AvailabilityAssignedToObject[]
     >({
       queryFn,
       queryKey,
       initialPageParam: "",
       getNextPageParam: (lastPage): string | undefined =>
-        lastPage.getAvailabilitySegmentAssignedTo.assigned_to?.next_token ||
+        lastPage.getAudienceSegmentAssignedTo.assigned_to?.next_token ||
         undefined,
       enabled: !!query && !disabled,
       select,

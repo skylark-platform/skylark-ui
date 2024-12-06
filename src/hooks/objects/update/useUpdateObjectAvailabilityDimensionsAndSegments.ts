@@ -9,7 +9,7 @@ import {
   GQLSkylarkErrorResponse,
   GQLSkylarkGetObjectResponse,
   ModifiedAvailabilityDimensions,
-  ModifiedAvailabilitySegments,
+  ModifiedAudienceSegments,
   SkylarkAvailabilityField,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -18,7 +18,7 @@ import { createUpdateAvailabilityDimensionsMutation } from "src/lib/graphql/skyl
 interface MutationArgs {
   uid: string;
   modifiedAvailabilityDimensions: ModifiedAvailabilityDimensions | null;
-  modifiedAvailabilitySegments: ModifiedAvailabilitySegments | null;
+  modifiedAudienceSegments: ModifiedAudienceSegments | null;
 }
 
 export const useUpdateObjectAvailabilityDimensionsAndSegments = ({
@@ -37,13 +37,13 @@ export const useUpdateObjectAvailabilityDimensionsAndSegments = ({
     mutationFn: ({
       uid,
       modifiedAvailabilityDimensions,
-      modifiedAvailabilitySegments,
+      modifiedAudienceSegments,
     }: MutationArgs) => {
       const updateAvailabilityObjectDimensionsMutation =
         createUpdateAvailabilityDimensionsMutation(
           objectOperations,
           modifiedAvailabilityDimensions,
-          modifiedAvailabilitySegments,
+          modifiedAudienceSegments,
         );
 
       return skylarkRequest<{

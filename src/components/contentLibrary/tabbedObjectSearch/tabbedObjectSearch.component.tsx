@@ -55,7 +55,7 @@ import {
   createDefaultSkylarkObject,
   splitMetadataIntoSystemTranslatableGlobal,
 } from "src/lib/skylark/objects";
-import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
+import { isAvailabilityOrAudienceSegment } from "src/lib/utils";
 
 type TabbedObjectSearchProps = Omit<
   ObjectSearchProps,
@@ -74,7 +74,7 @@ const generateNewTabColumnStateForObjectType = (
   objectType: string,
   fields: string[],
 ): ObjectSearchInitialColumnsState => {
-  if (isAvailabilityOrAvailabilitySegment(objectType)) {
+  if (isAvailabilityOrAudienceSegment(objectType)) {
     return {
       columns: [
         ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
@@ -342,7 +342,7 @@ const NewTabButton = ({
               generateNewTab(`${readableObjType} objects`, {
                 filters: {
                   objectTypes: [objectType],
-                  language: isAvailabilityOrAvailabilitySegment(objectType)
+                  language: isAvailabilityOrAudienceSegment(objectType)
                     ? null
                     : undefined,
                 },

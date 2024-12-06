@@ -12,6 +12,7 @@ import {
   ParsedSkylarkObjectConfig,
   SkylarkObject,
   SkylarkObjectMetadataField,
+  SkylarkObjectType,
 } from "src/interfaces/skylark";
 
 export const hasProperty = <T, K extends PropertyKey, V = unknown>(
@@ -265,7 +266,7 @@ export const platformMetaKeyClicked = (
 };
 
 export const isSkylarkObjectType = (objectType: string) =>
-  isAvailabilityOrAvailabilitySegment(objectType) ||
+  isAvailabilityOrAudienceSegment(objectType) ||
   objectType.toUpperCase().startsWith("SKYLARK");
 
 export const insertAtIndex = <T>(
@@ -310,20 +311,23 @@ export const objectIsAvailability = (
 ): obj is SkylarkObject<BuiltInSkylarkObjectType.Availability> =>
   obj.objectType === BuiltInSkylarkObjectType.Availability;
 
-export const isAvailabilityOrAvailabilitySegment = (
+export const isAudienceSegment = (objectType: SkylarkObjectType) =>
+  objectType === BuiltInSkylarkObjectType.AvailabilitySegment ||
+  objectType === BuiltInSkylarkObjectType.AudienceSegment;
+
+export const isAvailabilityOrAudienceSegment = (
   objectType: string | null | undefined,
 ) => {
   return (
-    objectType === BuiltInSkylarkObjectType.Availability ||
-    objectType === BuiltInSkylarkObjectType.AvailabilitySegment
+    objectType &&
+    (objectType === BuiltInSkylarkObjectType.Availability ||
+      isAudienceSegment(objectType))
   );
 };
 
-export const objectIsAvailabilityOrAvailabilitySegment = (
+export const objectIsAvailabilityOrAudienceSegment = (
   obj: SkylarkObject,
 ): obj is SkylarkObject<
   | BuiltInSkylarkObjectType.Availability
-  | BuiltInSkylarkObjectType.AvailabilitySegment
-> =>
-  objectIsAvailability(obj) ||
-  obj.objectType === BuiltInSkylarkObjectType.AvailabilitySegment;
+  | BuiltInSkylarkObjectType.AudienceSegment
+> => objectIsAvailability(obj) || isAudienceSegment(obj.objectType);

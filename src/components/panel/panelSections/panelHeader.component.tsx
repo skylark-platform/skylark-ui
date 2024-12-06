@@ -49,7 +49,7 @@ import {
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
 import {
-  isAvailabilityOrAvailabilitySegment,
+  isAvailabilityOrAudienceSegment,
   platformMetaKeyClicked,
 } from "src/lib/utils";
 
@@ -299,6 +299,8 @@ export const PanelHeader = ({
     ],
     [
       language,
+      objectType,
+      objectUid,
       object.display.objectType,
       availableLanguages.length,
       purgeCache,
@@ -394,7 +396,7 @@ export const PanelHeader = ({
           {inEditMode ? (
             <>
               {currentTab === PanelTab.Metadata &&
-              !isAvailabilityOrAvailabilitySegment(objectType) ? (
+              !isAvailabilityOrAudienceSegment(objectType) ? (
                 <ButtonWithDropdown
                   ref={saveButtonRef}
                   success

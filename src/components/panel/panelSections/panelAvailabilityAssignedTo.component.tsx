@@ -13,8 +13,8 @@ import {
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
+import { useGetAudienceSegmentAssignedTo } from "src/hooks/availability/useAudienceSegmentAssignedTo";
 import { useGetAvailabilityAssignedTo } from "src/hooks/availability/useAvailabilityAssignedTo";
-import { useGetAvailabilitySegmentAssignedTo } from "src/hooks/availability/useAvailabilitySegmentAssignedTo";
 import { useIsDragging } from "src/hooks/dnd/useIsDragging";
 import { usePanelDropzone } from "src/hooks/dnd/usePanelDropzone";
 import { PanelTab, PanelTabState, SetPanelObject } from "src/hooks/state";
@@ -24,6 +24,7 @@ import {
   SkylarkObject,
 } from "src/interfaces/skylark";
 import { DragType, DroppableType } from "src/lib/dndkit/dndkit";
+import { isAudienceSegment } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
@@ -111,17 +112,18 @@ export const PanelAvailabilityAssignedTo = ({
     });
   };
 
-  const fetchRelatedAvailabilitiesOnly =
-    objectType === BuiltInSkylarkObjectType.AvailabilitySegment;
+  const fetchRelatedAvailabilitiesOnly = isAudienceSegment(objectType);
 
   const useGetAvailabilityAssignedToRet = useGetAvailabilityAssignedTo(uid, {
     disabled: fetchRelatedAvailabilitiesOnly,
   });
 
-  const useGetAvailabilitySegmentAssignedToRet =
-    useGetAvailabilitySegmentAssignedTo(uid, {
+  const useGetAudienceSegmentAssignedToRet = useGetAudienceSegmentAssignedTo(
+    uid,
+    {
       disabled: !fetchRelatedAvailabilitiesOnly,
-    });
+    },
+  );
 
   const {
     data,
@@ -132,7 +134,7 @@ export const PanelAvailabilityAssignedTo = ({
     variables,
     fetchNextPage,
   } = fetchRelatedAvailabilitiesOnly
-    ? useGetAvailabilitySegmentAssignedToRet
+    ? useGetAudienceSegmentAssignedToRet
     : useGetAvailabilityAssignedToRet;
 
   const objects = mergeServerAndModifiedAssignedTo(
@@ -248,7 +250,7 @@ export const PanelAvailabilityAssignedTo = ({
       >
         <div className="w-full sticky bg-white pt-4 pb-2 top-0 z-10">
           <PanelSectionTitle text={"Assigned to"} />
-          {objectType !== BuiltInSkylarkObjectType.AvailabilitySegment && (
+          {!isAudienceSegment(objectType) && (
             <>
               <ObjectTypeSelect
                 onChange={({ objectType }) => setFiltersWrapper({ objectType })}
@@ -259,6 +261,7 @@ export const PanelAvailabilityAssignedTo = ({
                 hiddenObjectTypes={[
                   BuiltInSkylarkObjectType.Availability,
                   BuiltInSkylarkObjectType.AvailabilitySegment,
+                  BuiltInSkylarkObjectType.AudienceSegment,
                 ]}
               />
               <Checkbox

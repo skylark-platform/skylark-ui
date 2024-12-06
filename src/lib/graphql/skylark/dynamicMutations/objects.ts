@@ -14,7 +14,7 @@ import {
   SkylarkObject,
   ModifiedContents,
   ModifiedAvailabilityDimensions,
-  ModifiedAvailabilitySegments,
+  ModifiedAudienceSegments,
   SkylarkAvailabilityField,
 } from "src/interfaces/skylark";
 import {
@@ -25,7 +25,7 @@ import {
   wrappedJsonMutation,
 } from "src/lib/graphql/skylark/dynamicQueries";
 import { parseMetadataForGraphQLRequest } from "src/lib/skylark/parsers";
-import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
+import { isAvailabilityOrAudienceSegment } from "src/lib/utils";
 
 interface SetContentOperation {
   operation: "link" | "unlink" | "reposition";
@@ -163,11 +163,11 @@ export const createUpdateObjectMetadataMutation = (
     objectMeta.operations.update.inputs,
   );
 
-  const draftVariableObj = isAvailabilityOrAvailabilitySegment(objectMeta.name)
+  const draftVariableObj = isAvailabilityOrAudienceSegment(objectMeta.name)
     ? {}
     : { draft: "Boolean = false" };
 
-  const draftArgObj = isAvailabilityOrAvailabilitySegment(objectMeta.name)
+  const draftArgObj = isAvailabilityOrAudienceSegment(objectMeta.name)
     ? {}
     : { draft: new VariableType("draft") };
 
@@ -529,13 +529,13 @@ export const createUpdateObjectAvailability = (
 export const createUpdateAvailabilityDimensionsMutation = (
   objectMeta: SkylarkObjectMeta | null,
   modifiedAvailabilityDimensions: ModifiedAvailabilityDimensions | null,
-  modifiedAvailabilitySegments: ModifiedAvailabilitySegments | null,
+  modifiedAudienceSegments: ModifiedAudienceSegments | null,
 ) => {
   if (
     !objectMeta ||
-    !isAvailabilityOrAvailabilitySegment(objectMeta.name) ||
+    !isAvailabilityOrAudienceSegment(objectMeta.name) ||
     !objectMeta.operations.update ||
-    (!modifiedAvailabilityDimensions && !modifiedAvailabilitySegments)
+    (!modifiedAvailabilityDimensions && !modifiedAudienceSegments)
   ) {
     return null;
   }
@@ -608,14 +608,13 @@ export const createUpdateAvailabilityDimensionsMutation = (
             dimensions: {
               ...parsedDimensionsForRequest,
             },
-            ...(objectMeta.name !== BuiltInSkylarkObjectType.AvailabilitySegment
+            ...(objectMeta.name !== BuiltInSkylarkObjectType.AudienceSegment
               ? {
                   segments: {
                     link:
-                      modifiedAvailabilitySegments?.added.map(
-                        ({ uid }) => uid,
-                      ) || [],
-                    unlink: modifiedAvailabilitySegments?.removed || [],
+                      modifiedAudienceSegments?.added.map(({ uid }) => uid) ||
+                      [],
+                    unlink: modifiedAudienceSegments?.removed || [],
                   },
                 }
               : {}),

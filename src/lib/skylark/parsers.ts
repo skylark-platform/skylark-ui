@@ -51,6 +51,7 @@ import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dyn
 import {
   convertFieldTypeToHTMLInputType,
   hasProperty,
+  isAudienceSegment,
   isObject,
 } from "src/lib/utils";
 
@@ -404,7 +405,7 @@ const getAvailabilityStatus = (
     return getAvailabilityStatusForAvailabilityObject(metadata);
   }
 
-  if (objectType === BuiltInSkylarkObjectType.AvailabilitySegment) {
+  if (isAudienceSegment(objectType)) {
     return null;
   }
 
