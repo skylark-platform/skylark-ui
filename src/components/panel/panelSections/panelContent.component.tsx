@@ -27,7 +27,6 @@ import {
   SkylarkObject,
   SkylarkOrderDirections,
 } from "src/interfaces/skylark";
-import { DroppableType } from "src/lib/dndkit/dndkit";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
 
@@ -218,11 +217,9 @@ export const PanelContent = ({
         showAllColumns
         existingObjects={objects}
         closeModal={() => setModalState(false)}
-        onSave={({ checkedObjectsState }) => {
+        onSave={({ checkedObjects }) => {
           const { updatedContentObjects, errors } = handleDroppedContents({
-            droppedObjects: checkedObjectsState
-              .filter(({ checkedState }) => checkedState === true)
-              .map(({ object }) => object),
+            droppedObjects: checkedObjects,
             activeObjectUid: uid,
             existingObjects: objects || [],
             indexToInsert: 0,

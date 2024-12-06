@@ -1,5 +1,7 @@
+import { useState } from "react";
+
 import { DimensionMultiSelect } from "src/components/inputs/multiselect/dimensionMultiselect/dimensionMultiselect.component";
-import { DisplayGraphQLQuery } from "src/components/modals";
+import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
 import { ObjectIdentifierList } from "src/components/objectIdentifier";
 import {
   HandleDropError,
@@ -8,17 +10,19 @@ import {
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
+  PanelButton,
   PanelEmptyDataText,
   PanelSectionTitle,
 } from "src/components/panel/panelTypography";
 import { Skeleton } from "src/components/skeleton";
-import { HREFS } from "src/constants/skylark";
+import { HREFS, OBJECT_LIST_TABLE } from "src/constants/skylark";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { useAvailabilityObjectDimensions } from "src/hooks/availability/useAvailabilityObjectDimensions";
 import { useAvailabilityObjectSegments } from "src/hooks/availability/useAvailabilityObjectSegments";
 import { useIsDragging } from "src/hooks/dnd/useIsDragging";
 import { usePanelDropzone } from "src/hooks/dnd/usePanelDropzone";
 import { PanelTab, SetPanelObject } from "src/hooks/state";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   BuiltInSkylarkObjectType,
   ModifiedAvailabilityDimensions,
@@ -148,6 +152,10 @@ const PanelAudienceSegments = ({
 > & { dimensions: ParsedSkylarkDimensionWithValues[] }) => {
   const { objectType, uid } = object;
 
+  const { objectOperations: objectMeta } = useSkylarkObjectOperations(
+    BuiltInSkylarkObjectType.AvailabilitySegment,
+  );
+
   const {
     segments,
     query,
@@ -185,6 +193,8 @@ const PanelAudienceSegments = ({
     },
   });
 
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
   const objects = [
     ...(
       segments?.map((segment) =>
@@ -206,7 +216,16 @@ const PanelAudienceSegments = ({
 
   return (
     <div className="relative">
-      <PanelSectionTitle text={"Segments"} />
+      <div className="flex items-center">
+        <PanelSectionTitle text={"Segments"} />
+        {!isSegmentsLoading && (
+          <PanelButton
+            aria-label={`Open edit content modal`}
+            type="plus"
+            onClick={() => setModalIsOpen(true)}
+          />
+        )}
+      </div>
 
       <ObjectIdentifierList
         objects={objects}
@@ -249,6 +268,37 @@ const PanelAudienceSegments = ({
         variables={variables}
         buttonClassName="absolute right-0 -top-2"
       />
+      {objectMeta && (
+        <SearchObjectsModal
+          title={`Add Audience Segment`}
+          isOpen={modalIsOpen}
+          existingObjects={objects}
+          objectTypes={[BuiltInSkylarkObjectType.AvailabilitySegment]}
+          columns={[
+            OBJECT_LIST_TABLE.columnIds.displayField,
+            ...objectMeta.fields.map(({ name }) => name),
+          ]}
+          closeModal={() => setModalIsOpen(false)}
+          onSave={({ checkedObjects }) => {
+            const { addedObjects, errors } = handleDroppedAvailabilitySegments({
+              droppedObjects: checkedObjects,
+              activeObjectUid: uid,
+              existingUids: objects.map(({ uid }) => uid) || [],
+            });
+
+            setAvailabilitySegments(
+              {
+                removed: modifiedAvailabilitySegments?.removed || [],
+                added: [
+                  ...(modifiedAvailabilitySegments?.added || []),
+                  ...addedObjects,
+                ],
+              },
+              errors,
+            );
+          }}
+        />
+      )}
     </div>
   );
 };
@@ -318,7 +368,7 @@ const PanelAudienceDimensions = ({
 
         return getObjectLoading ? (
           <>
-            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-5 w-full" />
             <Skeleton className="h-20 w-full" />
           </>
         ) : (
