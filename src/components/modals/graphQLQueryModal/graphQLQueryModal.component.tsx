@@ -1,6 +1,6 @@
 import { Dialog } from "@headlessui/react";
-import { AnimatePresence, motion } from "framer-motion";
 import { DocumentNode, print, getOperationAST } from "graphql";
+import { AnimatePresence, motion } from "motion/react";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { FiCopy } from "react-icons/fi";

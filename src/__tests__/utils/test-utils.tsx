@@ -2,7 +2,7 @@ import { DndContext } from "@dnd-kit/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, RenderOptions } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { LazyMotion, domMax } from "framer-motion";
+import { LazyMotion, domMax } from "motion/react";
 import PlausibleProvider from "next-plausible";
 import { ReactElement, ReactNode } from "react";
 import { ToastContainer } from "react-toastify";

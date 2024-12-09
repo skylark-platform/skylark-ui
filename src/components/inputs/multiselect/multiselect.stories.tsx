@@ -1,5 +1,5 @@
 import { StoryFn } from "@storybook/react";
-import { userEvent, waitFor, screen } from "@storybook/testing-library";
+import { userEvent, waitFor, screen } from "@storybook/test";
 import clsx from "clsx";
 
 import { MultiSelect } from "./multiselect.component";

@@ -1,19 +1,21 @@
-import { StoryFn } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import { DeleteObjectModal } from "./deleteObjectModal.component";
 
-export default {
+const meta: Meta = {
   title: "Components/Modals/DeleteObjectModal",
   component: DeleteObjectModal,
   // Decorator to increase Story height https://www.chromatic.com/docs/snapshots#why-are-components-that-render-in-a-portal-tooltip-modal-menu-ge
   decorators: [
-    (StoryComponent: StoryFn) => (
+    (StoryComponent) => (
       <div className="h-screen w-screen">
         <StoryComponent />
       </div>
     ),
   ],
 };
+
+export default meta;
 
 const Template: StoryFn<typeof DeleteObjectModal> = (args) => {
   return <DeleteObjectModal {...args} />;

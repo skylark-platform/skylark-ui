@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
-import { AnimatePresence } from "framer-motion";
 import { DocumentNode } from "graphql";
+import { AnimatePresence } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   FiArrowLeft,

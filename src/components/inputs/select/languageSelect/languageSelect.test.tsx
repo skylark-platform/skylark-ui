@@ -1,7 +1,10 @@
-import { fireEvent } from "@storybook/testing-library";
-
 import GQLSkylarkUserAccountFixture from "src/__tests__/fixtures/skylark/queries/getUserAndAccount.json";
-import { render, screen, waitFor } from "src/__tests__/utils/test-utils";
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+} from "src/__tests__/utils/test-utils";
 
 import { LanguageSelect } from "./languageSelect.component";
 

@@ -17,6 +17,7 @@ import React, {
   Ref,
   ReactNode,
   ReactElement,
+  JSX,
 } from "react";
 import { FiCheck, FiChevronDown, FiInfo } from "react-icons/fi";
 import { useVirtual } from "react-virtual";

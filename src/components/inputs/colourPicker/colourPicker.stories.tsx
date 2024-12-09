@@ -1,4 +1,4 @@
-import { userEvent, screen } from "@storybook/testing-library";
+import { userEvent, screen } from "@storybook/test";
 
 import { ColourPicker } from "./colourPicker.component";
 

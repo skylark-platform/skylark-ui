@@ -1,5 +1,5 @@
 import { StoryFn } from "@storybook/react";
-import { userEvent, waitFor, screen } from "@storybook/testing-library";
+import { userEvent, waitFor, screen } from "@storybook/test";
 
 import { Tooltip } from "./tooltip.component";
 
@@ -8,7 +8,7 @@ export default {
   component: Tooltip,
 };
 
-const Template: StoryFn<typeof Tooltip> = () => (
+const Template: StoryFn = () => (
   <Tooltip tooltip={<span>My tooltip message</span>}>
     <p className="w-28">Hover me</p>
   </Tooltip>

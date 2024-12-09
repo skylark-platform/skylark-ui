@@ -8,7 +8,7 @@ export default {
   title: "Components/Icons",
 };
 
-const Template: StoryFn<React.FC<IconProps>> = (args) => {
+const Template: StoryFn = (args) => {
   return (
     <div className="flex flex-row space-x-2">
       <Icons.Spinner {...args} />
