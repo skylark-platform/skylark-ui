@@ -1,6 +1,9 @@
-import { fireEvent } from "@storybook/testing-library";
-
-import { render, screen, waitFor } from "src/__tests__/utils/test-utils";
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+} from "src/__tests__/utils/test-utils";
 import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 

@@ -9,7 +9,7 @@ import {
 } from "@floating-ui/react";
 import { Menu, Portal } from "@headlessui/react";
 import clsx from "clsx";
-import { ReactNode } from "react";
+import { JSX, ReactNode } from "react";
 
 import { Link } from "src/components/navigation/links";
 import { hasProperty } from "src/lib/utils";

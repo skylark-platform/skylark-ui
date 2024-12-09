@@ -1,13 +1,12 @@
-import { StoryFn } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import { ContentModel } from "./contentModel.component";
 
-export default {
+const meta: Meta = {
   title: "Components/ContentModel",
   component: ContentModel,
-  // Decorator to increase Story height https://www.chromatic.com/docs/snapshots#why-are-components-that-render-in-a-portal-tooltip-modal-menu-ge
   decorators: [
-    (StoryComponent: StoryFn) => (
+    (StoryComponent) => (
       // Padding-top aligns everything as it will be on the content model page with sticky headers in action
       <div className="h-screen w-screen pt-24">
         <StoryComponent />
@@ -16,7 +15,9 @@ export default {
   ],
 };
 
-const Template: StoryFn<typeof ContentModel> = () => {
+export default meta;
+
+const Template: StoryFn = () => {
   return <ContentModel />;
 };
 

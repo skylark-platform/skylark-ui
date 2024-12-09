@@ -1,5 +1,5 @@
 import { StoryFn } from "@storybook/react";
-import { screen, userEvent, waitFor } from "@storybook/testing-library";
+import { screen, userEvent, waitFor } from "@storybook/test";
 import { graphql } from "msw";
 
 import GQLSkylarkAccountStatusAvailabilityBackgroundTasksFixture from "src/__tests__/fixtures/skylark/queries/getAccountStatus/availabilityBackgroundTasksInProgress.json";
@@ -14,7 +14,7 @@ export default {
   component: AccountStatus,
 };
 
-const Template: StoryFn<typeof AccountStatus> = () => <AccountStatus />;
+const Template: StoryFn = () => <AccountStatus />;
 
 const sleep = (timeMs: number) => {
   return new Promise((resolve) => {

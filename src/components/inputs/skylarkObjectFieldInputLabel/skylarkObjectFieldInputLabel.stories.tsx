@@ -26,9 +26,7 @@ const aiFieldGeneration = {
   populateFieldUsingAiValue: () => "",
 };
 
-const Template: StoryFn<typeof SkylarkObjectFieldInputLabel> = ({
-  ...props
-}) => {
+const Template: StoryFn = ({ ...props }) => {
   return <SkylarkObjectFieldInputLabel {...defaultProps} {...props} />;
 };
 

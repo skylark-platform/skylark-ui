@@ -2,6 +2,7 @@ import { Menu } from "@headlessui/react";
 import clsx from "clsx";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
+import { JSX } from "react";
 import { FiFileText, FiLayout, FiTool } from "react-icons/fi";
 import { GrGraphQl } from "react-icons/gr";
 import { TbTerminal2 } from "react-icons/tb";

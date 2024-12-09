@@ -1,6 +1,9 @@
-import { fireEvent, waitFor } from "@storybook/testing-library";
-
-import { render, screen } from "src/__tests__/utils/test-utils";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+} from "src/__tests__/utils/test-utils";
 
 import { ObjectTypeSelect } from "./objectTypeSelect.component";
 

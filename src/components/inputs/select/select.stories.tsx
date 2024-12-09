@@ -1,21 +1,23 @@
-import { StoryFn } from "@storybook/react";
-import { userEvent, waitFor, screen } from "@storybook/testing-library";
+import { StoryFn, Meta } from "@storybook/react";
+import { userEvent, waitFor, screen } from "@storybook/test";
 import clsx from "clsx";
 
 import { Select } from "./select.component";
 
-export default {
+const meta: Meta<typeof Select> = {
   title: "Components/Inputs/Select",
   component: Select,
   // Decorator to increase Story height https://www.chromatic.com/docs/snapshots#why-are-components-that-render-in-a-portal-tooltip-modal-menu-ge
   decorators: [
-    (Story: StoryFn) => (
+    (Story) => (
       <div style={{ height: "300px" }}>
         <Story />
       </div>
     ),
   ],
 };
+
+export default meta;
 
 const options = ["Episode", "Season", "Brand"].map((val) => ({
   label: val,

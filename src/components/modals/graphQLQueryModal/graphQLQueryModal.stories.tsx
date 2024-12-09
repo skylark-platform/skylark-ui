@@ -1,22 +1,24 @@
-import { StoryFn } from "@storybook/react";
-import { userEvent, waitFor, within, screen } from "@storybook/testing-library";
+import { Meta } from "@storybook/react";
+import { userEvent, waitFor, within, screen } from "@storybook/test";
 
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
 
 import { DisplayGraphQLQuery } from "./graphQLQueryModal.component";
 
-export default {
+const meta: Meta = {
   title: "Components/Modals/DisplayGraphQLQuery",
   component: DisplayGraphQLQuery,
   // Decorator to increase Story height https://www.chromatic.com/docs/snapshots#why-are-components-that-render-in-a-portal-tooltip-modal-menu-ge
   decorators: [
-    (StoryComponent: StoryFn) => (
+    (StoryComponent) => (
       <div className="h-screen w-screen">
         <StoryComponent />
       </div>
     ),
   ],
 };
+
+export default meta;
 
 export const Default = {
   args: {

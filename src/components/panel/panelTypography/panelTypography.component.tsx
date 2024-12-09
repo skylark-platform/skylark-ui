@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ReactNode, Ref, forwardRef } from "react";
+import { JSX, ReactNode, Ref, forwardRef } from "react";
 import { CgSpinner } from "react-icons/cg";
 import {
   FiMaximize2,

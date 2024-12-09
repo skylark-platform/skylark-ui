@@ -1,5 +1,5 @@
 import { StoryFn } from "@storybook/react";
-import { userEvent, screen } from "@storybook/testing-library";
+import { userEvent, screen } from "@storybook/test";
 import { VisibilityState } from "@tanstack/react-table";
 
 import { createObjectListingColumns } from "src/components/objectSearch/results/columnConfiguration";

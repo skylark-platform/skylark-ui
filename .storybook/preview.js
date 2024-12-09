@@ -5,7 +5,7 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/work-sans/700.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { LazyMotion, domMax } from "framer-motion";
+import { LazyMotion, domMax } from "motion/react";
 import { initialize as initializeMsw, mswDecorator } from "msw-storybook-addon";
 import PlausibleProvider from "next-plausible";
 import "react-toastify/dist/ReactToastify.min.css";
@@ -19,7 +19,7 @@ initializeMsw();
 const queryClient = new QueryClient();
 
 export const parameters = {
-  actions: { argTypesRegex: "^on[A-Z].*" },
+  // actions: { argTypesRegex: "^on[A-Z].*" },
   controls: {
     matchers: {
       color: /(background|color)$/i,
@@ -50,3 +50,4 @@ export const decorators = [
     );
   },
 ];
+export const tags = ["autodocs"];
