@@ -196,6 +196,12 @@ const getObjectIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
         "./skylark/queries/getObjectDimensions/allDevicesAllCustomersAvailability.json",
     });
   }
+  if (hasOperationName(req, "SL_UI_GET_AVAILABILITY_SEGMENTS")) {
+    req.reply({
+      fixture:
+        "./skylark/queries/getObjectSegments/allDevicesAllCustomersAvailability.json",
+    });
+  }
   if (hasOperationName(req, "SL_UI_GET_OBJECT_GENERIC")) {
     req.reply({
       fixture: "./skylark/queries/getObjectGeneric/homepage.json",
@@ -321,11 +327,13 @@ const updateIntercepts = (req: CyHttpMessages.IncomingHttpRequest) => {
       fixture: "./skylark/mutations/publishObject/publishEpisode.json",
     });
   }
-  if (hasOperationName(req, "SL_UI_UPDATE_AVAILABILITY_DIMENSIONS")) {
-    req.alias = "updateAvailabilityDimensions";
+  if (
+    hasOperationName(req, "SL_UI_UPDATE_AVAILABILITY_DIMENSIONS_AND_SEGMENTS")
+  ) {
+    req.alias = "updateAvailabilityDimensionsAndSegments";
     req.reply({
       data: {
-        updateAvailabilityDimensions: {
+        updateAvailabilityDimensionsAndSegments: {
           uid: "123",
         },
       },
