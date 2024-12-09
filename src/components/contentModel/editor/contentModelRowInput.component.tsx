@@ -30,6 +30,7 @@ import {
 import { parseObjectInputType } from "src/lib/skylark/parsers";
 import { isSkylarkObjectType } from "src/lib/utils";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const graphQLFields: (GQLScalars | "Enum")[] = [
   "String",
   "Int",

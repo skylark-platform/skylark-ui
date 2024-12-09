@@ -1,0 +1,13 @@
+{
+  "data": {
+    "getObjectSegments": {
+      "__typename": "Availability",
+      "uid": "01JEAVQHMW185ST8W5JMZ4R2HE",
+      "dimension_breakdown": "{\"customer-types\":[\"premium\",\"standard\"],\"device-types\":[\"smartphone\",\"pc\"],\"regions\":[\"north-america\"]}",
+      "segments": {
+        "next_token": null,
+        "objects": []
+      }
+    }
+  }
+}

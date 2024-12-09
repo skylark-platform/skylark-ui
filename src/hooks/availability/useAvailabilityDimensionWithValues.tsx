@@ -9,7 +9,7 @@ import { useMemo } from "react";
 import { QueryKeys } from "src/enums/graphql";
 import {
   GQLSkylarkListAvailabilityDimensionValuesResponse,
-  ParsedSkylarkDimensionsWithValues,
+  ParsedSkylarkDimensionWithValues,
   SkylarkGraphQLAvailabilityDimensionWithValues,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -77,7 +77,7 @@ export const useAvailabilityDimensionsWithValues = () => {
   }
 
   const dimensionsWithValues = useMemo(():
-    | ParsedSkylarkDimensionsWithValues[]
+    | ParsedSkylarkDimensionWithValues[]
     | undefined => {
     if (!dimensionsWithoutValues) {
       return undefined;
@@ -85,7 +85,7 @@ export const useAvailabilityDimensionsWithValues = () => {
 
     if (data && !hasNextPage) {
       return dimensionsWithoutValues.map(
-        (dimension): ParsedSkylarkDimensionsWithValues => {
+        (dimension): ParsedSkylarkDimensionWithValues => {
           const dimensionValuePages = data.pages.map((page) => {
             const queryAlias =
               createGetAvailabilityDimensionValuesQueryAlias(dimension);

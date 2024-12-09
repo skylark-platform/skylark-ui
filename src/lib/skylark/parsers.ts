@@ -22,16 +22,15 @@ import {
   NormalizedObjectField,
   ParsedSkylarkObjectAvailability,
   SkylarkGraphQLObjectContent,
-  ParsedSkylarkObjectContent,
+  SkylarkObjectContent,
   ParsedSkylarkObjectMetadata,
-  SkylarkObjectRelationship,
+  SkylarkObjectMetaRelationship,
   SkylarkGraphQLObject,
-  ParsedSkylarkObjectImageRelationship,
   SkylarkObjectMeta,
   ParsedSkylarkObject,
   SkylarkGraphQLObjectImage,
   SkylarkObjectMetadataField,
-  ParsedSkylarkObjectRelationships,
+  SkylarkObjectRelationships,
   BuiltInSkylarkObjectType,
   ParsedSkylarkObjectConfig,
   SkylarkGraphQLObjectConfig,
@@ -46,7 +45,9 @@ import {
   SkylarkGraphQLAvailability,
   ParsedSkylarkObjectAvailabilityObject,
   GQLSkylarkSchemaVersion,
-  SkylarkGraphQLAvailabilityList,
+  SkylarkObjectImageRelationship,
+  SkylarkGraphQLDynamicContentConfiguration,
+  ParsedSkylarkDimensionWithValues,
 } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
@@ -65,6 +66,7 @@ import {
   convertDateToTimezoneAndRemoveOffset,
   convertTimeWindowStatus,
 } from "./availability";
+import { convertParsedObjectToIdentifier } from "./objects";
 
 dayjs.extend(customParseFormat);
 dayjs.extend(advancedFormat);
@@ -164,7 +166,7 @@ export const parseObjectInputFields = (
 export const parseObjectRelationships = (
   objectTypeInterface: IntrospectionObjectType,
   relationshipInputFields?: readonly IntrospectionInputValue[],
-): SkylarkObjectRelationship[] => {
+): SkylarkObjectMetaRelationship[] => {
   if (!relationshipInputFields) {
     return [];
   }
@@ -180,7 +182,7 @@ export const parseObjectRelationships = (
     }),
   );
 
-  const relationships: SkylarkObjectRelationship[] = potentialRelationships
+  const relationships: SkylarkObjectMetaRelationship[] = potentialRelationships
     .filter(
       ({ name, objectTypeWithRelationshipInput }) =>
         name &&
@@ -229,23 +231,31 @@ export const parseAvailabilityObjects = (
 };
 
 const parseObjectAvailability = (
-  unparsedObject?: SkylarkGraphQLAvailabilityList,
+  object?: SkylarkGraphQLObject,
 ): ParsedSkylarkObjectAvailability => {
-  const objects = parseAvailabilityObjects(unparsedObject?.objects);
+  const objects = parseAvailabilityObjects(object?.availability?.objects);
 
-  const status = unparsedObject?.time_window_status
-    ? convertTimeWindowStatus(unparsedObject?.time_window_status)
+  const status = object?.availability?.time_window_status
+    ? convertTimeWindowStatus(object?.availability?.time_window_status)
     : getObjectAvailabilityStatus(objects);
+
+  const dimensions: ParsedSkylarkDimensionWithValues[] =
+    object?.dimensions?.objects.map((dim) => ({
+      ...dim,
+      values: dim.values.objects,
+    })) || [];
 
   return {
     status,
     objects,
+    dimensions,
   };
 };
 
 const parseObjectMeta = (
   meta: SkylarkGraphQLObjectMeta | undefined,
   availabilityStatus: AvailabilityStatus | null,
+  dynamicContentConfiguration?: SkylarkGraphQLDynamicContentConfiguration,
 ): ParsedSkylarkObjectMeta => ({
   availabilityStatus,
   language: meta?.language_data.language || "",
@@ -257,6 +267,10 @@ const parseObjectMeta = (
   created: meta?.created?.date,
   modified: meta?.modified?.date,
   published: meta?.published,
+  hasDynamicContent: Boolean(
+    dynamicContentConfiguration?.dynamic_content_types &&
+      dynamicContentConfiguration?.dynamic_content_types.length > 0,
+  ),
 });
 
 export const parseObjectConfig = (
@@ -327,20 +341,29 @@ export const parseObjectRelationship = <T>(
 
 export const parseObjectContent = (
   unparsedContent?: SkylarkGraphQLObjectContent,
-): ParsedSkylarkObjectContent => {
+): SkylarkObjectContent => {
   const normalisedContentObjects = unparsedContent?.objects.map(
-    ({ object, position }) => {
+    ({ object, position, dynamic }) => {
       const normalisedObject =
         removeFieldPrefixFromReturnedObject<ParsedSkylarkObjectMetadata>(
           object,
         );
-      const availability = parseObjectAvailability(object?.availability);
+      const availability = parseObjectAvailability(object);
       return {
-        objectType: object.__typename,
+        ...convertParsedObjectToIdentifier({
+          uid: normalisedObject.uid,
+          objectType: object.__typename,
+          metadata: normalisedObject,
+          config: parseObjectConfig(object.__typename, object._config),
+          meta: parseObjectMeta(
+            object._meta,
+            availability.status,
+            object.dynamic_content,
+          ),
+          availability,
+        }),
         position,
-        config: parseObjectConfig(object.__typename, object._config),
-        meta: parseObjectMeta(object._meta, availability.status),
-        object: normalisedObject,
+        isDynamic: dynamic || false,
       };
     },
   );
@@ -354,6 +377,7 @@ const parseObjectMetadata = (
   object: SkylarkGraphQLObject,
 ): ParsedSkylarkObjectMetadata => {
   const metadata: ParsedSkylarkObjectMetadata = {
+    type: null,
     ...Object.keys(object).reduce((prev, key) => {
       return {
         ...prev,
@@ -389,21 +413,38 @@ const parseObjectMetadata = (
   return metadata;
 };
 
+const getAvailabilityStatus = (
+  objectType: string,
+  metadata: ParsedSkylarkObjectMetadata,
+  availability: ParsedSkylarkObjectAvailability,
+): AvailabilityStatus | null => {
+  if (objectType === BuiltInSkylarkObjectType.Availability) {
+    return getAvailabilityStatusForAvailabilityObject(metadata);
+  }
+
+  if (objectType === BuiltInSkylarkObjectType.AvailabilitySegment) {
+    return null;
+  }
+
+  return availability.status;
+};
+
 export const parseSkylarkObject = (
   object: SkylarkGraphQLObject,
   objectMeta?: SkylarkObjectMeta | null,
 ): ParsedSkylarkObject => {
   const metadata = parseObjectMetadata(object);
 
-  const availability = parseObjectAvailability(object?.availability);
-  const availabilityStatus =
-    object.__typename === BuiltInSkylarkObjectType.Availability
-      ? getAvailabilityStatusForAvailabilityObject(metadata)
-      : availability.status;
+  const availability = parseObjectAvailability(object);
+  const availabilityStatus = getAvailabilityStatus(
+    object.__typename,
+    metadata,
+    availability,
+  );
 
   const images =
     objectMeta?.builtinObjectRelationships?.images?.relationshipNames.map(
-      (imageField): ParsedSkylarkObjectImageRelationship => {
+      (imageField): SkylarkObjectImageRelationship => {
         const parsedImages =
           hasProperty(object, imageField) &&
           parseObjectRelationship<SkylarkGraphQLObjectImage>(
@@ -425,7 +466,11 @@ export const parseSkylarkObject = (
       objectType: object.__typename,
       uid: object.uid,
       config: parseObjectConfig(object.__typename, object._config),
-      meta: parseObjectMeta(object._meta, availabilityStatus),
+      meta: parseObjectMeta(
+        object._meta,
+        availabilityStatus,
+        object?.dynamic_content,
+      ),
       metadata,
       availability,
       images,
@@ -651,9 +696,9 @@ export const parseMetadataForHTMLForm = (
 };
 
 export const parseUpdatedRelationshipObjects = (
-  relationship: SkylarkObjectRelationship,
-  updatedRelationshipObjects: ParsedSkylarkObjectRelationships,
-  originalRelationshipObjects: ParsedSkylarkObjectRelationships,
+  relationship: SkylarkObjectMetaRelationship,
+  updatedRelationshipObjects: SkylarkObjectRelationships,
+  originalRelationshipObjects: SkylarkObjectRelationships,
 ) => {
   const updatedObjects: string[] =
     updatedRelationshipObjects?.[relationship?.relationshipName]?.objects.map(

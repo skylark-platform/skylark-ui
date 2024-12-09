@@ -1,10 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 
 import { IntegrationUploader } from "src/components/integrations/uploader/uploader.component";
 import { DisplayGraphQLQuery } from "src/components/modals";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import { pollPanelRefetch } from "src/components/panel/panel.lib";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
@@ -20,14 +19,13 @@ import { SetPanelObject } from "src/hooks/state";
 import { useImageSize } from "src/hooks/useImageSize";
 import {
   BuiltInSkylarkObjectType,
-  ParsedSkylarkObject,
+  SkylarkObject,
+  SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
 import {
   addCloudinaryOnTheFlyImageTransformation,
   formatObjectField,
-  getObjectDisplayName,
-  hasProperty,
 } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
@@ -41,16 +39,17 @@ interface PanelImagesProps {
   setPanelObject: SetPanelObject;
 }
 
-const groupImagesByType = (images: ParsedSkylarkObject[]) => {
+const groupImagesByType = (
+  images: SkylarkObject<BuiltInSkylarkObjectType.SkylarkImage>[],
+) => {
   return images.reduce(
-    (acc: { [key: string]: ParsedSkylarkObject[] }, currentValue) => {
-      const key =
-        hasProperty<ParsedSkylarkObject["metadata"], "type", string>(
-          currentValue.metadata,
-          "type",
-        ) && currentValue.metadata.type
-          ? currentValue.metadata.type
-          : "No type set";
+    (
+      acc: {
+        [key: string]: SkylarkObject<BuiltInSkylarkObjectType.SkylarkImage>[];
+      },
+      currentValue,
+    ) => {
+      const key = currentValue.type || "No type set";
 
       if (acc && acc[key])
         return {
@@ -70,23 +69,14 @@ const PanelImage = ({
   object,
   setPanelObject,
 }: {
-  object: ParsedSkylarkObject;
+  object: SkylarkObject<BuiltInSkylarkObjectType.SkylarkImage>;
   inEditMode: boolean;
   setPanelObject: SetPanelObject;
 }) => {
-  const { displayName, src } = useMemo(() => {
-    const displayName = getObjectDisplayName(object);
+  const src =
+    object.contextualFields?.url || object.contextualFields?.external_url || "";
 
-    const src =
-      hasProperty(object.metadata, "url") &&
-      typeof object.metadata.url === "string"
-        ? object.metadata.url
-        : "";
-
-    return { displayName, src };
-  }, [object]);
-
-  const { size } = useImageSize(src);
+  const { size } = useImageSize(src || null);
 
   return (
     <div className="mb-4 break-words">
@@ -94,7 +84,7 @@ const PanelImage = ({
       <img
         className="max-h-64"
         src={addCloudinaryOnTheFlyImageTransformation(src, {})}
-        alt={displayName}
+        alt={object.display.name}
       />
       <ObjectIdentifierCard
         hideObjectType
@@ -128,7 +118,10 @@ export const PanelImages = ({
 
   const images = relationships
     ? Object.values(relationships)?.filter(
-        (rel) => rel.objectType === BuiltInSkylarkObjectType.SkylarkImage,
+        (
+          rel,
+        ): rel is SkylarkObjectRelationship<BuiltInSkylarkObjectType.SkylarkImage> =>
+          rel.objectType === BuiltInSkylarkObjectType.SkylarkImage,
       )
     : [];
 

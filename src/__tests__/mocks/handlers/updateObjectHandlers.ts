@@ -43,11 +43,11 @@ export const updateObjectHandlers = [
   ),
 
   graphql.mutation(
-    wrapQueryName("UPDATE_AVAILABILITY_DIMENSIONS"),
+    wrapQueryName("UPDATE_AVAILABILITY_DIMENSIONS_AND_SEGMENTS"),
     (req, res, ctx) => {
       return res(
         ctx.data({
-          updateAvailabilityDimensions: {
+          updateAvailabilityDimensionsAndSegments: {
             uid: "01GXSR23WH5DHGTXVHXW1TMGBJ",
           },
         }),

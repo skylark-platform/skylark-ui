@@ -5,31 +5,25 @@ import {
   waitFor,
 } from "src/__tests__/utils/test-utils";
 import { CheckedObjectState } from "src/hooks/state";
-import {
-  AvailabilityStatus,
-  ParsedSkylarkObject,
-} from "src/interfaces/skylark";
+import { AvailabilityStatus, SkylarkObject } from "src/interfaces/skylark";
+import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
 import { BulkObjectOptions } from "./bulkObjectOptions.component";
 
-const genParsedObject = (uid: string): ParsedSkylarkObject =>
-  ({
+const getSkylarkObject = (uid: string): SkylarkObject =>
+  createDefaultSkylarkObject({
     uid,
     objectType: "Episode",
-    meta: {
-      availableLanguages: ["en-GB"],
-      language: "en-GB",
-      availabilityStatus: AvailabilityStatus.Active,
-    },
-    config: {},
-    metadata: {},
-  }) as ParsedSkylarkObject;
+    availableLanguages: ["en-GB"],
+    language: "en-GB",
+    availabilityStatus: AvailabilityStatus.Active,
+  });
 
 const defaultCheckedObjectState: CheckedObjectState[] = [
-  { checkedState: true, object: genParsedObject("1") },
-  { checkedState: true, object: genParsedObject("2") },
-  { checkedState: true, object: genParsedObject("3") },
-  { checkedState: false, object: genParsedObject("4") },
+  { checkedState: true, object: getSkylarkObject("1") },
+  { checkedState: true, object: getSkylarkObject("2") },
+  { checkedState: true, object: getSkylarkObject("3") },
+  { checkedState: false, object: getSkylarkObject("4") },
 ];
 
 test("renders as disabled when checkedObjectState is empty", () => {
@@ -44,11 +38,11 @@ test("renders as disabled when checkedObjectState contains no checkedState true 
       checkedObjectsState={[
         {
           checkedState: false,
-          object: genParsedObject("1"),
+          object: getSkylarkObject("1"),
         },
         {
           checkedState: "indeterminate",
-          object: genParsedObject("2"),
+          object: getSkylarkObject("2"),
         },
       ]}
     />,
@@ -61,7 +55,7 @@ test("renders as enabled when checkedObjectState has more than one checked objec
   render(
     <BulkObjectOptions
       checkedObjectsState={[
-        { checkedState: true, object: genParsedObject("1") },
+        { checkedState: true, object: getSkylarkObject("1") },
       ]}
     />,
   );

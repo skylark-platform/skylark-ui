@@ -1,13 +1,16 @@
 import gql from "graphql-tag";
 import { VariableType } from "json-to-graphql-query";
 
+import { MAX_GRAPHQL_LIMIT } from "src/constants/skylark";
 import {
+  SkylarkAvailabilityField,
   SkylarkGraphQLAvailabilityDimension,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
 import { hasProperty } from "src/lib/utils";
 
 import {
+  generateDimensionsAndValuesFieldsToReturn,
   generateFieldsToReturn,
   generateVariablesAndArgs,
   wrappedJsonQuery,
@@ -109,7 +112,7 @@ export const createGetAvailabilityAssignedTo = (
         __typename: true,
         assigned_to: {
           __args: {
-            limit: 100,
+            limit: MAX_GRAPHQL_LIMIT,
             next_token: new VariableType("nextToken"),
           },
           next_token: true,
@@ -134,6 +137,132 @@ export const createGetAvailabilityAssignedTo = (
                 };
               }),
             },
+          },
+        },
+      },
+    },
+  };
+
+  const graphQLQuery = wrappedJsonQuery(query);
+
+  return gql(graphQLQuery);
+};
+
+export const createGetAvailabilitySegmentAssignedTo = (
+  availabilityObjectMeta: SkylarkObjectMeta | null,
+) => {
+  if (!availabilityObjectMeta) {
+    return null;
+  }
+  const common = generateVariablesAndArgs(availabilityObjectMeta.name, "Query");
+
+  const query = {
+    query: {
+      __name: "GET_AVAILABILITYSEGMENTS_ASSIGNED_TO",
+      __variables: {
+        uid: "String!",
+        nextToken: "String",
+      },
+      getAvailabilitySegmentAssignedTo: {
+        __aliasFor: "getAvailabilitySegment",
+        __args: {
+          uid: new VariableType("uid"),
+        },
+        __typename: true,
+        assigned_to: {
+          __args: {
+            limit: MAX_GRAPHQL_LIMIT,
+            next_token: new VariableType("nextToken"),
+          },
+          next_token: true,
+          objects: {
+            inherited: true,
+            inheritance_source: true,
+            active: true,
+            uid: true,
+            __typename: true,
+            ...generateFieldsToReturn(
+              availabilityObjectMeta.fields,
+              availabilityObjectMeta.name,
+              true,
+            ),
+            ...common.fields,
+          },
+        },
+      },
+    },
+  };
+
+  const graphQLQuery = wrappedJsonQuery(query);
+
+  return gql(graphQLQuery);
+};
+
+export const createGetAssignedDimensionsQuery = (
+  objectMeta: SkylarkObjectMeta | null,
+) => {
+  if (!objectMeta) {
+    return null;
+  }
+
+  const query = {
+    query: {
+      __name: `GET_${objectMeta.name}_DIMENSIONS`,
+      __variables: {
+        uid: "String!",
+        nextToken: "String",
+      },
+      getObjectDimensions: {
+        __aliasFor: objectMeta.operations.get.name,
+        __args: {
+          uid: new VariableType("uid"),
+        },
+        __typename: true,
+        uid: true,
+        [SkylarkAvailabilityField.DimensionBreakdown]: true,
+        dimensions: generateDimensionsAndValuesFieldsToReturn("nextToken"),
+      },
+    },
+  };
+
+  const graphQLQuery = wrappedJsonQuery(query);
+
+  return gql(graphQLQuery);
+};
+
+export const createGetAssignedSegmentsQuery = (
+  objectMeta: SkylarkObjectMeta | null,
+) => {
+  if (!objectMeta) {
+    return null;
+  }
+
+  const query = {
+    query: {
+      __name: `GET_${objectMeta.name}_SEGMENTS`,
+      __variables: {
+        uid: "String!",
+        nextToken: "String",
+      },
+      getObjectSegments: {
+        __aliasFor: objectMeta.operations.get.name,
+        __args: {
+          uid: new VariableType("uid"),
+        },
+        __typename: true,
+        uid: true,
+        [SkylarkAvailabilityField.DimensionBreakdown]: true,
+        segments: {
+          __args: {
+            limit: MAX_GRAPHQL_LIMIT,
+            next_token: new VariableType("nextToken"),
+          },
+          next_token: true,
+          objects: {
+            uid: true,
+            title: true,
+            slug: true,
+            dimensions: generateDimensionsAndValuesFieldsToReturn(),
           },
         },
       },

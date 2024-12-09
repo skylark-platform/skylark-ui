@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { m } from "framer-motion";
+import { motion, Target } from "framer-motion";
 import { useState } from "react";
 import {
   FiCheckSquare,
@@ -51,8 +51,12 @@ import {
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
-import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
+import {
+  createDefaultSkylarkObject,
+  splitMetadataIntoSystemTranslatableGlobal,
+} from "src/lib/skylark/objects";
 import { isSkylarkObjectType } from "src/lib/utils";
+import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
 
 type TabbedObjectSearchProps = Omit<
   ObjectSearchProps,
@@ -63,23 +67,28 @@ type TabbedObjectSearchProps = Omit<
 > & {
   accountId: string;
   skipLogoAnimation?: boolean;
-  animate: object;
-  initial: object;
+  animate: Target;
+  initial: Target;
 };
 
 const generateNewTabColumnStateForObjectType = (
   objectType: string,
   fields: string[],
 ): ObjectSearchInitialColumnsState => {
-  if (objectType === BuiltInSkylarkObjectType.Availability) {
+  if (isAvailabilityOrAvailabilitySegment(objectType)) {
     return {
       columns: [
         ...OBJECT_SEARCH_PERMANENT_FROZEN_COLUMNS,
         OBJECT_LIST_TABLE.columnIds.displayField,
-        OBJECT_LIST_TABLE.columnIds.availability,
-        SkylarkAvailabilityField.Start,
-        SkylarkAvailabilityField.End,
-        SkylarkAvailabilityField.Timezone,
+        // Optional fields for Availability only
+        ...(objectType === BuiltInSkylarkObjectType.Availability
+          ? [
+              OBJECT_LIST_TABLE.columnIds.availability,
+              SkylarkAvailabilityField.Start,
+              SkylarkAvailabilityField.End,
+              SkylarkAvailabilityField.Timezone,
+            ]
+          : []),
         SkylarkSystemField.ExternalID,
         SkylarkSystemField.UID,
         SkylarkAvailabilityField.Title,
@@ -334,10 +343,9 @@ const NewTabButton = ({
               generateNewTab(`${readableObjType} objects`, {
                 filters: {
                   objectTypes: [objectType],
-                  language:
-                    objectType === BuiltInSkylarkObjectType.Availability
-                      ? null
-                      : undefined,
+                  language: isAvailabilityOrAvailabilitySegment(objectType)
+                    ? null
+                    : undefined,
                 },
                 columnsState: generateNewTabColumnStateForObjectType(
                   objectType,
@@ -436,7 +444,7 @@ const TabbedObjectSearch = ({
   return (
     <>
       {tabs && (
-        <m.div
+        <motion.div
           initial={initial}
           animate={animate}
           className="flex h-full max-h-full w-full flex-col"
@@ -474,7 +482,7 @@ const TabbedObjectSearch = ({
               <CreateButtons
                 className={clsx("mb-1 justify-end pr-1 md:pr-0")}
                 onObjectCreated={(obj) => {
-                  setPanelObject?.(obj);
+                  setPanelObject?.(createDefaultSkylarkObject(obj));
                 }}
                 preselectedObjectType={
                   activeTab?.filters.objectTypes?.length === 1
@@ -508,7 +516,7 @@ const TabbedObjectSearch = ({
               }
             />
           </div>
-        </m.div>
+        </motion.div>
       )}
     </>
   );

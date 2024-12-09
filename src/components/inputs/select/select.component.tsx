@@ -4,6 +4,7 @@ import {
   flip,
   size,
   autoUpdate,
+  Placement,
 } from "@floating-ui/react";
 import { Combobox, Transition, Portal } from "@headlessui/react";
 import clsx from "clsx";
@@ -27,6 +28,7 @@ import { formatObjectField, mergeRefs } from "src/lib/utils";
 export interface SelectOption<T> {
   label: string;
   infoTooltip?: ReactNode;
+  disabled?: boolean;
   value: T;
 }
 
@@ -36,7 +38,7 @@ export interface SelectProps<T> {
   selected?: T;
   options: SelectOption<T>[];
   label?: string;
-  labelVariant?: "default" | "form" | "header";
+  labelVariant?: "default" | "form" | "header" | "small";
   labelPosition?: "default" | "inline";
   placeholder: string | null;
   className?: string;
@@ -49,6 +51,7 @@ export interface SelectProps<T> {
   renderInPortal?: boolean;
   displayRawSelectedValue?: boolean;
   selectedInfoTooltipPosition?: TooltipSide;
+  floatingPosition?: Placement;
   onChange?: (value: T) => void;
   onValueClear?: () => void;
 }
@@ -84,6 +87,7 @@ export const SelectLabel = <T extends string | number>({
       labelVariant === "default" && "text-sm font-light md:text-base",
       labelVariant === "form" && "block text-sm font-bold",
       labelVariant === "header" && "text-sm md:text-base",
+      labelVariant === "small" && "text-xs text-manatee-300",
     )}
   >
     {labelVariant === "form" ? formatObjectField(label) : label}
@@ -124,9 +128,10 @@ export const SelectOptionComponent = <T extends string | number>({
     key={option.value}
     className={({ active }) =>
       clsx(
-        "relative flex cursor-default select-none items-center text-gray-900",
+        "relative flex cursor-default select-none items-center",
         variant === "pill" ? "px-2" : "px-4 pl-6",
-        (active || isSelected) && "bg-ultramarine-50",
+        (active || isSelected) && !option.disabled && "bg-ultramarine-50",
+        option.disabled ? "bg-manatee-100 text-gray-400" : "text-gray-900",
         className,
       )
     }
@@ -135,14 +140,20 @@ export const SelectOptionComponent = <T extends string | number>({
       ...style,
       height: style?.height || getSelectOptionHeight(variant),
     }}
+    disabled={option.disabled}
   >
     {withCheckbox && (
       <span
         className={clsx(
-          "flex h-5 w-5 min-w-5 items-center justify-center rounded-sm border-2 text-white mr-2",
-          isSelected
-            ? "border-brand-primary bg-brand-primary"
-            : "bg-manatee-200",
+          "flex h-5 w-5 min-w-5 items-center justify-center rounded-sm border-2 mr-2",
+          !isSelected &&
+            (option.disabled
+              ? "text-manatee-600 bg-manatee-400 border-manatee-400"
+              : "text-white bg-manatee-200 border-manatee-200"),
+          isSelected &&
+            (option.disabled
+              ? "text-manatee-100 bg-manatee-400 border-manatee-400"
+              : "border-brand-primary bg-brand-primary text-white"),
         )}
       >
         {isSelected && <FiCheck className="text-lg" />}
@@ -256,7 +267,7 @@ export const VirtualizedOptions = <T extends string | number>({
   );
 };
 
-const OptionsPortalWrapper = ({
+export const OptionsPortalWrapper = ({
   usePortal,
   children,
 }: {
@@ -295,12 +306,13 @@ const SelectComponent = <T extends string | number>(
     withBasicSort,
     renderInPortal,
     displayRawSelectedValue,
+    floatingPosition,
   } = props;
 
   const [query, setQuery] = useState("");
 
   const { refs, floatingStyles } = useFloating({
-    placement: "bottom-start",
+    placement: floatingPosition || "bottom-start",
     middleware: [
       offset(5),
       flip({ padding: 10 }),
@@ -395,7 +407,9 @@ const SelectComponent = <T extends string | number>(
               className={clsx(
                 selectClassName,
                 label && labelPosition === "default" && "mt-2",
-                label && labelPosition === "inline" && "ml-2",
+                label &&
+                  labelPosition === "inline" &&
+                  (labelVariant === "small" ? "ml-1" : "ml-2"),
               )}
               ref={refs.setReference}
             >
@@ -456,8 +470,12 @@ const SelectComponent = <T extends string | number>(
               data-testid="select"
               className={clsx(
                 selectClassName,
+                roundedClassName,
                 sizingClassName,
-                label && "mt-2",
+                label && labelPosition === "default" && "mt-2",
+                label &&
+                  labelPosition === "inline" &&
+                  (labelVariant === "small" ? "ml-1" : "ml-2"),
               )}
               ref={mergeRefs([refs.setReference, propRef])}
             >
@@ -465,6 +483,7 @@ const SelectComponent = <T extends string | number>(
                 className={clsx(
                   "block truncate",
                   !selectedOption?.label && "text-gray-300",
+                  variant === "pill" && "pr-6",
                 )}
               >
                 {selectedOption?.label || placeholder || "Select option"}
@@ -520,7 +539,7 @@ const SelectComponent = <T extends string | number>(
                         </div>
                       </div>
                     )
-                  ) : options.length > 40 ? (
+                  ) : options.length > 60 ? (
                     <VirtualizedOptions
                       variant={variant}
                       options={filteredOptions ?? []}

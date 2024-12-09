@@ -15,6 +15,7 @@ interface PanelSectionLayoutProps {
   withStickyHeaders?: boolean;
   children?: ReactNode;
   withoutPadding?: boolean;
+  withScrollableBody?: boolean;
   onSectionClick?: (s: Section) => void;
 }
 
@@ -37,15 +38,17 @@ export const PanelSectionLayoutComponent = (
     withStickyHeaders,
     withoutPadding,
     children,
+    withScrollableBody = true,
     onSectionClick,
   }: PanelSectionLayoutProps,
   ref: Ref<HTMLDivElement>,
 ) => (
   <div
     className={clsx(
-      "mx-auto w-full max-w-7xl flex-grow overflow-y-hidden text-sm",
+      "mx-auto w-full max-w-7xl flex-grow overflow-y-hidden text-sm flex flex-col relative",
       isPage && "sm:grid sm:grid-cols-[1fr_3fr]",
     )}
+    data-testid="panel-body"
   >
     {isPage && (
       <div
@@ -67,18 +70,22 @@ export const PanelSectionLayoutComponent = (
         ))}
       </div>
     )}
-    <div className="h-full overflow-y-auto" ref={ref}>
-      <div
-        className={clsx(
-          "relative flex min-h-full flex-col",
-          !withoutPadding && "pb-32 md:pb-56",
-          !withoutPadding && withStickyHeaders && "px-6 md:px-8",
-          !withoutPadding && !withStickyHeaders && "p-6 md:p-8",
-        )}
-      >
-        {children}
+    {withScrollableBody ? (
+      <div className="h-full overflow-y-auto" ref={ref}>
+        <div
+          className={clsx(
+            "relative flex min-h-full flex-col",
+            !withoutPadding && "pb-32 md:pb-56",
+            !withoutPadding && withStickyHeaders && "px-6 md:px-8",
+            !withoutPadding && !withStickyHeaders && "p-6 md:p-8",
+          )}
+        >
+          {children}
+        </div>
       </div>
-    </div>
+    ) : (
+      children
+    )}
   </div>
 );
 

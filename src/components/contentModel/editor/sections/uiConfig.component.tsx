@@ -5,7 +5,7 @@ import { Button } from "src/components/button";
 import { ColourPicker } from "src/components/inputs/colourPicker";
 import { TextInput } from "src/components/inputs/input";
 import { Select } from "src/components/inputs/select";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import { Toast } from "src/components/toast/toast.component";
 import { useUpdateObjectTypeConfig } from "src/hooks/schema/update/useUpdateObjectTypeConfig";
 import {
@@ -14,6 +14,10 @@ import {
   SkylarkObjectMeta,
   ParsedSkylarkObjectConfig,
 } from "src/interfaces/skylark";
+import {
+  convertParsedObjectToIdentifier,
+  createDefaultSkylarkObject,
+} from "src/lib/skylark/objects";
 
 import {
   FieldHeader,
@@ -217,29 +221,19 @@ export const UIConfigSection = ({
             <ObjectIdentifierCard
               forceConfigFromObject
               className="shadow px-2"
-              object={{
+              object={createDefaultSkylarkObject({
                 objectType: objectMeta.name,
                 uid: "example",
-                config: {
-                  primaryField: null,
+                display: {
                   colour,
-                  objectTypeDisplayName,
+                  objectType: objectTypeDisplayName,
+                  name: `Example "${primaryField}" value`,
                 },
-                meta: {
-                  language: "",
-                  availableLanguages: [],
-                  availabilityStatus: AvailabilityStatus.Active,
-                  versions: {},
-                },
-                metadata: {
-                  uid: `Example "${primaryField}" value`,
-                  external_id: "",
-                },
-                availability: {
-                  status: AvailabilityStatus.Active,
-                  objects: [],
-                },
-              }}
+                availableLanguages: [],
+                availabilityStatus: AvailabilityStatus.Active,
+                externalId: "",
+                type: null,
+              })}
             />
           </div>
         </div>

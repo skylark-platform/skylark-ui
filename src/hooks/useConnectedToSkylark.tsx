@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import request from "graphql-request";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { REQUEST_HEADERS } from "src/constants/skylark";
 import { GQLSkylarkObjectTypesResponse } from "src/interfaces/graphql/introspection";
@@ -30,7 +30,7 @@ export const useConnectedToSkylark = () => {
 
   const hasCreds = Boolean(currentCreds.uri && currentCreds.token);
 
-  const { data, error, isError, isLoading, isSuccess, refetch } = useQuery<
+  const { data, error, isError, isLoading, isSuccess } = useQuery<
     GQLSkylarkObjectTypesResponse,
     { response?: { errors?: { errorType?: string; message?: string }[] } }
   >({
@@ -53,19 +53,20 @@ export const useConnectedToSkylark = () => {
     staleTime: 5000,
   });
 
-  useEffect(() => {
-    // Reset if storage changes in another tab
+  // Broken - was causing a bug where the GET_SKYLARK_OBJECT_TYPES query was called multiple times
+  // useEffect(() => {
+  //   // Reset if storage changes in another tab
 
-    const refresh = () => {
-      refetch();
-      setOverrideCreds(null);
-    };
+  //   const refresh = () => {
+  //     refetch();
+  //     setOverrideCreds(null);
+  //   };
 
-    window.addEventListener("storage", refresh);
-    return () => {
-      window.removeEventListener("storage", refresh);
-    };
-  }, [refetch]);
+  //   window.addEventListener("storage", refresh);
+  //   return () => {
+  //     window.removeEventListener("storage", refresh);
+  //   };
+  // }, [refetch]);
 
   const unauthenticated =
     error?.response?.errors?.[0]?.errorType === "UnauthorizedException";

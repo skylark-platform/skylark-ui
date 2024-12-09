@@ -4,6 +4,7 @@ import { graphql } from "msw";
 import { server } from "src/__tests__/mocks/server";
 import { render } from "src/__tests__/utils/test-utils";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
+import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
 import { DeleteObjectModal } from "./deleteObjectModal.component";
 
@@ -13,12 +14,13 @@ test("renders the modal", async () => {
       isOpen={true}
       setIsOpen={jest.fn()}
       onDeleteSuccess={jest.fn()}
-      uid="123"
-      objectType="Episode"
-      language="en-GB"
-      objectDisplayName="My Episode"
-      objectTypeDisplayName="Episode"
-      availableLanguages={[]}
+      object={createDefaultSkylarkObject({
+        objectType: "Episode",
+        display: { name: "My Episode" },
+        uid: "123",
+        language: "en-GB",
+        availableLanguages: [],
+      })}
     />,
   );
 
@@ -34,12 +36,13 @@ test("shows text saying it will delete a translation when more than one availabl
       isOpen={true}
       setIsOpen={jest.fn()}
       onDeleteSuccess={jest.fn()}
-      uid="123"
-      objectType="Episode"
-      language="en-GB"
-      objectDisplayName="My Episode"
-      objectTypeDisplayName="Episode"
-      availableLanguages={["en-GB", "pt-PT"]}
+      object={createDefaultSkylarkObject({
+        objectType: "Episode",
+        display: { name: "My Episode" },
+        uid: "123",
+        language: "en-GB",
+        availableLanguages: ["en-GB", "pt-PT"],
+      })}
     />,
   );
 
@@ -60,12 +63,13 @@ test("shows text saying it will delete the object when only one language exists"
       isOpen={true}
       setIsOpen={jest.fn()}
       onDeleteSuccess={jest.fn()}
-      uid="123"
-      objectType="Episode"
-      language="en-GB"
-      objectDisplayName="My Episode"
-      objectTypeDisplayName="Episode"
-      availableLanguages={["en-GB"]}
+      object={createDefaultSkylarkObject({
+        objectType: "Episode",
+        display: { name: "My Episode" },
+        uid: "123",
+        language: "en-GB",
+        availableLanguages: ["en-GB"],
+      })}
     />,
   );
 
@@ -86,12 +90,13 @@ test("shows text saying it will delete the object when only no language is given
       isOpen={true}
       setIsOpen={jest.fn()}
       onDeleteSuccess={jest.fn()}
-      uid="123"
-      objectType="Availability"
-      language=""
-      objectDisplayName="My Availability"
-      objectTypeDisplayName="Availability Rule"
-      availableLanguages={[]}
+      object={createDefaultSkylarkObject({
+        objectType: "Availability",
+        display: { name: "My Availability", objectType: "Availability Rule" },
+        uid: "123",
+        language: "",
+        availableLanguages: [],
+      })}
     />,
   );
 
@@ -114,12 +119,13 @@ test("cancels and closes the modal", async () => {
       isOpen={true}
       setIsOpen={setIsOpen}
       onDeleteSuccess={jest.fn()}
-      uid="123"
-      objectType="Episode"
-      language="en-GB"
-      objectDisplayName="My Episode"
-      objectTypeDisplayName="Episode"
-      availableLanguages={["en-GB", "pt-PT"]}
+      object={createDefaultSkylarkObject({
+        objectType: "Episode",
+        display: { name: "My Episode" },
+        uid: "123",
+        language: "en-GB",
+        availableLanguages: ["en-GB", "pt-PT"],
+      })}
     />,
   );
 
@@ -141,12 +147,13 @@ test("successfully deletes the translation and calls the onSuccess callback", as
       isOpen={true}
       setIsOpen={jest.fn()}
       onDeleteSuccess={onDeleteSuccess}
-      uid="123"
-      objectType="Episode"
-      language="en-GB"
-      objectDisplayName="My Episode"
-      objectTypeDisplayName="Episode"
-      availableLanguages={["en-GB", "pt-PT"]}
+      object={createDefaultSkylarkObject({
+        objectType: "Episode",
+        display: { name: "My Episode" },
+        uid: "123",
+        language: "en-GB",
+        availableLanguages: ["en-GB", "pt-PT"],
+      })}
     />,
   );
 
@@ -176,12 +183,13 @@ test("GraphQL returns an error when deleting object, shows toast", async () => {
       isOpen={true}
       setIsOpen={jest.fn()}
       onDeleteSuccess={onDeleteSuccess}
-      uid="123"
-      objectType="Episode"
-      language="en-GB"
-      objectDisplayName="My Episode"
-      objectTypeDisplayName="Episode"
-      availableLanguages={["en-GB", "pt-PT"]}
+      object={createDefaultSkylarkObject({
+        objectType: "Episode",
+        display: { name: "My Episode" },
+        uid: "123",
+        language: "en-GB",
+        availableLanguages: ["en-GB", "pt-PT"],
+      })}
     />,
   );
 

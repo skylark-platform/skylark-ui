@@ -13,7 +13,7 @@ import {
   GQLSkylarkErrorResponse,
   SkylarkObjectMeta,
   GQLSkylarkGetAvailabilityAssignedResponse,
-  ParsedAvailabilityAssignedToObject,
+  AvailabilityAssignedToObject,
   SkylarkGraphQLObject,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -21,6 +21,7 @@ import {
   createGetAvailabilityAssignedTo,
   removeFieldPrefixFromReturnedObject,
 } from "src/lib/graphql/skylark/dynamicQueries";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 
 const select = (
@@ -36,11 +37,13 @@ const select = (
         inherited,
         inheritance_source,
         active,
-      }): ParsedAvailabilityAssignedToObject => {
+      }): AvailabilityAssignedToObject => {
         const normalisedObject =
           removeFieldPrefixFromReturnedObject<SkylarkGraphQLObject>(object);
 
-        const parsedObject = parseSkylarkObject(normalisedObject);
+        const parsedObject = convertParsedObjectToIdentifier(
+          parseSkylarkObject(normalisedObject),
+        );
 
         return {
           objectType: object.__typename,
@@ -56,7 +59,7 @@ export const createGetAvailabilityAssignedToKeyPrefix = ({
   uid,
 }: {
   uid: string;
-}) => [QueryKeys.AvailabilityAssignedTo, { uid }];
+}) => [QueryKeys.AvailabilityAssignedTo, uid];
 
 const generateQueryFunctionAndKey = ({
   allObjectsMeta,
@@ -101,7 +104,10 @@ const generateQueryFunctionAndKey = ({
   };
 };
 
-export const useGetAvailabilityAssignedTo = (uid: string) => {
+export const useGetAvailabilityAssignedTo = (
+  uid: string,
+  { disabled }: { disabled?: boolean },
+) => {
   const { objects: allObjectsMeta } = useAllObjectsMeta(false);
 
   const variables = { uid };
@@ -115,14 +121,14 @@ export const useGetAvailabilityAssignedTo = (uid: string) => {
     useInfiniteQuery<
       GQLSkylarkGetAvailabilityAssignedResponse,
       GQLSkylarkErrorResponse<GQLSkylarkGetAvailabilityAssignedResponse>,
-      ParsedAvailabilityAssignedToObject[]
+      AvailabilityAssignedToObject[]
     >({
       queryFn,
       queryKey,
       initialPageParam: "",
       getNextPageParam: (lastPage): string | undefined =>
         lastPage.getAvailabilityAssignedTo.assigned_to?.next_token || undefined,
-      enabled: !!query,
+      enabled: !!query && !disabled,
       select,
     });
 

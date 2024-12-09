@@ -18,7 +18,8 @@ import {
   GQLSkylarkErrorResponse,
   SkylarkObjectMeta,
   GQLSkylarkGetObjectContentResponse,
-  ParsedSkylarkObjectContentObject,
+  SkylarkObjectContentObject,
+  ModifiedContents,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectContentQuery } from "src/lib/graphql/skylark/dynamicQueries";
@@ -28,14 +29,43 @@ import { GetObjectOptions } from "./useGetObject";
 
 const select = (
   data: InfiniteData<GQLSkylarkGetObjectContentResponse>,
-): ParsedSkylarkObjectContentObject[] => {
+): {
+  objects: SkylarkObjectContentObject[];
+  config: ModifiedContents["config"];
+  objectTypesInContent: SkylarkObjectType[];
+} => {
   const contentObjects =
     data?.pages?.flatMap(
       (page) => page.getObjectContent.content?.objects || [],
     ) || [];
 
   const parsedContent = parseObjectContent({ objects: contentObjects });
-  return parsedContent.objects;
+
+  const objectTypesInContent = parsedContent.objects.reduce(
+    (arr, { objectType }) =>
+      arr.includes(objectType) ? arr : [...arr, objectType],
+    [] as string[],
+  );
+
+  const contentSortDirection =
+    data?.pages?.[0].getObjectContent?.content_sort_direction || null;
+  const contentSortField =
+    data?.pages?.[0].getObjectContent?.content_sort_field || null;
+
+  const contentLimit =
+    typeof data?.pages?.[0].getObjectContent?.content_sort_field === "number"
+      ? data?.pages?.[0].getObjectContent?.content_sort_field
+      : null;
+
+  return {
+    objects: parsedContent.objects,
+    config: {
+      contentSortDirection,
+      contentSortField,
+      contentLimit,
+    },
+    objectTypesInContent,
+  };
 };
 
 export const createGetObjectContentKeyPrefix = ({
@@ -175,12 +205,25 @@ export const useGetObjectContent = (
   } = useInfiniteQuery<
     GQLSkylarkGetObjectContentResponse,
     GQLSkylarkErrorResponse<GQLSkylarkGetObjectContentResponse>,
-    ParsedSkylarkObjectContentObject[]
+    {
+      objects: SkylarkObjectContentObject[];
+      objectTypesInContent: SkylarkObjectType[];
+      config: ModifiedContents["config"];
+    }
   >({
     queryFn,
     queryKey,
     initialData: {
-      pages: [{ getObjectContent: { content: { objects: [] } } }],
+      pages: [
+        {
+          getObjectContent: {
+            content: { objects: [] },
+            content_sort_field: null,
+            content_sort_direction: null,
+            content_limit: null,
+          },
+        },
+      ],
       pageParams: [],
     },
     initialPageParam: "",

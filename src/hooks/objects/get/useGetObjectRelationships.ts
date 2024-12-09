@@ -10,20 +10,23 @@ import { QueryKeys } from "src/enums/graphql";
 import {
   useAllObjectsMeta,
   useSkylarkObjectOperations,
+  useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkErrorResponse,
   GQLSkylarkGetObjectRelationshipsResponse,
   GQLSkylarkGetObjectResponse,
   NormalizedObjectField,
-  ParsedSkylarkObjectRelationships,
-  SkylarkGraphQLObject,
+  SkylarkObjectRelationships,
   SkylarkGraphQLObjectList,
   SkylarkObjectMeta,
   SkylarkObjectType,
+  SkylarkGraphQLRelationshipList,
+  SkylarkObjectRelationship,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetObjectRelationshipsQuery } from "src/lib/graphql/skylark/dynamicQueries";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { parseSkylarkObject } from "src/lib/skylark/parsers";
 import { getObjectTypeFromListingTypeName, hasProperty } from "src/lib/utils";
 
@@ -47,7 +50,7 @@ const getRelationshipNextTokens = (
     (prev, relationshipName) => {
       const relationship = data[relationshipName] as SkylarkGraphQLObjectList;
 
-      if (relationship.next_token) {
+      if (relationship?.next_token) {
         return {
           ...prev,
           requestVariables: {
@@ -87,6 +90,8 @@ export const useGetObjectRelationships = (
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
   const { objects } = useAllObjectsMeta(true);
+
+  const { objectTypesConfig } = useSkylarkObjectTypesWithConfig();
 
   const relationshipsFields: { [key: string]: NormalizedObjectField[] } =
     objectOperations?.relationships.reduce((acc, { objectType }) => {
@@ -128,7 +133,7 @@ export const useGetObjectRelationships = (
       enabled: query !== null,
     });
 
-  const relationships: ParsedSkylarkObjectRelationships | null = useMemo(() => {
+  const relationships: SkylarkObjectRelationships | null = useMemo(() => {
     if (!data?.pages || data.pages.length === 0) {
       return null;
     }
@@ -138,32 +143,57 @@ export const useGetObjectRelationships = (
         (pageAggregate, name) => {
           const relationship = page.getObjectRelationships[
             name
-          ] as SkylarkGraphQLObjectList;
+          ] as SkylarkGraphQLRelationshipList | null;
+
+          if (!relationship) {
+            return pageAggregate;
+          }
 
           const parsedObjects = relationship.objects.map((relatedObject) =>
-            parseSkylarkObject(relatedObject as SkylarkGraphQLObject),
+            convertParsedObjectToIdentifier(
+              parseSkylarkObject(relatedObject),
+              objectTypesConfig,
+              { additionalFields: true },
+            ),
           );
 
           const objectType = getObjectTypeFromListingTypeName(
             relationship.__typename,
           );
 
+          const parsedRelationship: SkylarkObjectRelationship = hasProperty(
+            pageAggregate,
+            name,
+          )
+            ? {
+                ...pageAggregate[name],
+                objects: [...pageAggregate[name].objects, ...parsedObjects],
+              }
+            : {
+                objectType,
+                objects: parsedObjects,
+                name,
+                config: {
+                  defaultSortField:
+                    relationship.relationship_config?.default_sort_field ||
+                    null,
+                  inheritAvailability:
+                    relationship.relationship_config?.inherit_availability ||
+                    null,
+                },
+              };
+
           return {
             ...pageAggregate,
-            [name]: hasProperty(pageAggregate, name)
-              ? {
-                  ...pageAggregate[name],
-                  objects: [...pageAggregate[name].objects, ...parsedObjects],
-                }
-              : { objectType, objects: parsedObjects, name },
+            [name]: parsedRelationship,
           };
         },
         aggregate,
       );
 
       return obj;
-    }, {} as ParsedSkylarkObjectRelationships);
-  }, [data?.pages]);
+    }, {} as SkylarkObjectRelationships);
+  }, [data?.pages, objectTypesConfig]);
 
   const { relationshipsWithNextPage } = data
     ? getRelationshipNextTokens(data.pages[data.pages.length - 1])

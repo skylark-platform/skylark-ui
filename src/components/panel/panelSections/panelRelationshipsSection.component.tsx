@@ -1,10 +1,10 @@
-import { sentenceCase } from "change-case";
 import clsx from "clsx";
-import { Transition, m } from "framer-motion";
+import { Transition, motion } from "framer-motion";
 import { Ref, forwardRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { SortFieldAndDirectionSelect } from "src/components/inputs/select";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import {
   PanelButton,
   PanelSectionTitle,
@@ -14,27 +14,32 @@ import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
-  ParsedSkylarkObjectRelationship,
   ParsedSkylarkObjectTypeRelationshipConfigurations,
+  SkylarkObjectRelationship,
+  ParsedSkylarkRelationshipConfig,
 } from "src/interfaces/skylark";
-import { formatObjectField, hasProperty } from "src/lib/utils";
+import { formatObjectField } from "src/lib/utils";
 
 interface PanelRelationshipsSectionProps {
   isEmptySection?: boolean;
-  relationship: ParsedSkylarkObjectRelationship;
+  relationship: SkylarkObjectRelationship;
   inEditMode: boolean;
   isFetchingMoreRelationships: boolean;
   newUids: string[];
   isExpanded: boolean;
-  config: ParsedSkylarkObjectTypeRelationshipConfigurations["config"] | null;
+  objectTypeDefaultConfig: ParsedSkylarkRelationshipConfig | null;
+  modifiedConfig?: Partial<ParsedSkylarkRelationshipConfig>;
   setExpandedRelationship: (r: string | null) => void;
   setPanelObject: SetPanelObject;
   removeRelationshipObject: (args: {
     uid: string;
     relationshipName: string;
   }) => void;
+  updateRelationshipConfig: (
+    updatedConfig: Partial<ParsedSkylarkRelationshipConfig>,
+  ) => void;
   setSearchObjectsModalState: (args: {
-    relationship: ParsedSkylarkObjectRelationship;
+    relationship: SkylarkObjectRelationship;
     fields?: string[];
   }) => void;
   hasMoreRelationships?: boolean;
@@ -54,10 +59,12 @@ const PanelRelationshipSectionComponent = (
     isFetchingMoreRelationships,
     newUids,
     isExpanded,
-    config,
+    objectTypeDefaultConfig,
     hasMoreRelationships,
+    modifiedConfig,
     setPanelObject,
     removeRelationshipObject,
+    updateRelationshipConfig,
     setSearchObjectsModalState,
     setExpandedRelationship,
     fetchMoreRelationships,
@@ -79,17 +86,22 @@ const PanelRelationshipSectionComponent = (
 
   const hasShowMore = objects?.length > 4;
 
-  const displayList =
-    hasShowMore && !isExpanded ? objects.slice(0, 5) : objects;
-
   const toggleExpanded = () => {
     setExpandedRelationship(isExpanded ? null : relationshipName);
   };
 
   const canLoadMore = isExpanded && hasMoreRelationships;
 
+  const displayList =
+    hasShowMore && !isExpanded ? objects.slice(0, 5) : objects;
+
+  const activeSortField =
+    modifiedConfig?.defaultSortField ||
+    relationship.config.defaultSortField ||
+    objectTypeDefaultConfig?.defaultSortField;
+
   return (
-    <m.div
+    <motion.div
       ref={ref}
       key={`${relationshipName}-container`}
       className={clsx("pb-6 bg-white")}
@@ -99,7 +111,7 @@ const PanelRelationshipSectionComponent = (
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: "auto" }}
     >
-      <m.div
+      <motion.div
         key={`${relationshipName}-title`}
         layout
         transition={transition}
@@ -142,14 +154,27 @@ const PanelRelationshipSectionComponent = (
             />
           )}
         </div>
-        {!isEmptySection && config?.defaultSortField && (
-          <p className="text-manatee-300 text-xs mb-4 hover:text-manatee-600 transition-colors cursor-default">{`Sorted by: ${sentenceCase(
-            config.defaultSortField,
-          )}`}</p>
+        {!isEmptySection && (
+          <SortFieldAndDirectionSelect
+            hideDirectionSelect
+            objectTypes={[objectType]}
+            variant="pill"
+            containerClassName="mb-2 pb-1 md:pb-2 flex-grow justify-end"
+            values={{
+              sortField:
+                activeSortField ||
+                objectTypeDefaultConfig?.defaultSortField ||
+                "",
+            }}
+            manualSortLabel={`Reset to default (${objectTypeDefaultConfig?.defaultSortField || "Unsorted"})`}
+            onChange={({ sortField }) =>
+              updateRelationshipConfig({ defaultSortField: sortField })
+            }
+          />
         )}
-      </m.div>
+      </motion.div>
 
-      <m.div
+      <motion.div
         key={`${relationshipName}-objects`}
         transition={transition}
         layout="position"
@@ -157,13 +182,12 @@ const PanelRelationshipSectionComponent = (
         <div className="overflow-hidden">
           {displayList?.length > 0 &&
             displayList?.map((obj, index) => {
-              const defaultSortFieldValue =
-                config?.defaultSortField &&
-                hasProperty(obj.metadata, config.defaultSortField) &&
-                obj.metadata[config.defaultSortField];
+              const sortFieldValue = activeSortField
+                ? obj.additionalFields?.[activeSortField]
+                : "";
 
               return (
-                <m.div
+                <motion.div
                   key={`relationship-${obj.objectType}-${obj.uid}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -191,18 +215,14 @@ const PanelRelationshipSectionComponent = (
                       }
                       onForwardClick={setPanelObject}
                     >
-                      {config?.defaultSortField && (
-                        <Tooltip
-                          tooltip={`${sentenceCase(
-                            config.defaultSortField,
-                          )}: ${defaultSortFieldValue}`}
-                        >
+                      {sortFieldValue && (
+                        <Tooltip tooltip={sortFieldValue}>
                           <p
-                            className="flex max-w-8 min-w-3 overflow-hidden whitespace-nowrap text-sm text-manatee-500 cursor-default"
+                            className="flex max-w-8 sm:max-w-full min-w-3 overflow-hidden whitespace-nowrap text-sm text-manatee-500 cursor-default"
                             data-testid="object-sort-field"
                           >
                             <span className="overflow-hidden text-ellipsis">
-                              {defaultSortFieldValue}
+                              {sortFieldValue}
                             </span>
                           </p>
                         </Tooltip>
@@ -218,13 +238,13 @@ const PanelRelationshipSectionComponent = (
                   </div>
 
                   {index < displayList.length - 1 && <PanelSeparator />}
-                </m.div>
+                </motion.div>
               );
             })}
         </div>
-      </m.div>
+      </motion.div>
 
-      <m.div layout className="mb-3" transition={{ duration: 0.08 }}>
+      <motion.div layout className="mb-3" transition={{ duration: 0.08 }}>
         {hasShowMore && toggleExpanded && (
           <>
             <PanelSeparator />
@@ -240,8 +260,8 @@ const PanelRelationshipSectionComponent = (
             </button>
           </>
         )}
-      </m.div>
-    </m.div>
+      </motion.div>
+    </motion.div>
   );
 };
 

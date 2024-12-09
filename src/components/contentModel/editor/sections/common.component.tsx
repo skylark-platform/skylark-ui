@@ -10,6 +10,7 @@ import {
   ParsedSkylarkObjectConfigFieldConfig,
   ParsedSkylarkObjectTypeRelationshipConfigurations,
   SkylarkObjectMeta,
+  SkylarkObjectMetaRelationship,
   SkylarkObjectRelationship,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
@@ -31,7 +32,7 @@ export type ContentModelEditorFormObjectTypeField = {
   isDeleted?: boolean;
   fieldConfig: Omit<ParsedSkylarkObjectConfigFieldConfig, "name"> | null;
 } & (
-  | ({ type: "relationship" } & SkylarkObjectRelationship)
+  | ({ type: "relationship" } & SkylarkObjectMetaRelationship)
   | Omit<NormalizedObjectField, "name">
 );
 
@@ -111,7 +112,7 @@ export const sortSystemFieldsFirst = (
 
 export const combineFieldRelationshipsAndFieldConfigAndSortByConfigPostion = (
   fields: NormalizedObjectField[],
-  relationships: SkylarkObjectRelationship[],
+  relationships: SkylarkObjectMetaRelationship[],
   objectFieldConfig?: ParsedSkylarkObjectConfig,
 ): ContentModelEditorFormObjectTypeField[] => {
   const fieldsWithConfig: ContentModelEditorFormObjectTypeField[] = fields.map(

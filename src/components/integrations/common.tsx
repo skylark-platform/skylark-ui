@@ -2,9 +2,13 @@ import { ButtonProps } from "src/components/button";
 
 export type IntegrationUploadType = "image" | "video";
 
-export type IntegrationUploaderProvider = "mux" | "cloudinary" | "brightcove";
+export type IntegrationUploaderProvider =
+  | "mux"
+  | "cloudinary"
+  | "brightcove"
+  | "wowza";
 
-export type IntegrationUploaderPlaybackPolicy = "signed" | "public" | undefined;
+export type IntegrationUploaderPlaybackPolicy = "signed" | "public" | null;
 
 export interface IntegrationObjectInfo {
   uid: string;
@@ -28,11 +32,13 @@ export const supportedIntegrations: Record<
     cloudinary: true,
     mux: false,
     brightcove: false,
+    wowza: false,
   },
   video: {
     mux: true,
     cloudinary: true,
     brightcove: true,
+    wowza: true,
   },
 };
 

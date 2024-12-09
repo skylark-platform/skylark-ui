@@ -29,13 +29,17 @@
           }
         ]
       },
-      "uid": "01H4MMB075XZ6FDAYJYH8TFMXW",
+      "uid": "01JEAVQHK6RKR52EYYAB1GHE7K",
       "external_id": "recXNjJNyc6nKQIYa",
-      "title": "Always - All devices, all non-kids customer types",
+      "title": "Always - Premium/Standard, Europe/North America",
       "slug": "always-all-devices-all-customer-types",
       "start": "2022-01-01T00:00:00+00:00",
-      "end": "2038-01-19T03:14:07+00:00",
-      "timezone": "UTC"
+      "end": null,
+      "timezone": "UTC",
+      "active": null,
+      "inherited": null,
+      "inheritance_source": null,
+      "dimension_breakdown": "{\"customer-types\":[\"premium\",\"standard\"],\"device-types\":[\"smartphone\",\"pc\"],\"regions\":[\"europe\",\"north-america\"]}"
     }
   }
 }

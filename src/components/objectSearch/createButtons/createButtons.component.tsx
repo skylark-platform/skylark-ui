@@ -9,6 +9,7 @@ import {
 } from "src/components/dropdown/dropdown.component";
 import { CreateObjectModal } from "src/components/modals";
 import {
+  BuiltInSkylarkObjectType,
   SkylarkObjectIdentifier,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -24,14 +25,22 @@ export const CreateButtons = ({
   onObjectCreated,
   preselectedObjectType,
 }: CreateButtonProps) => {
-  const [createObjectModalOpen, setCreateObjectModalOpen] = useState(false);
+  const [createObjectModalState, setCreateObjectModalState] = useState<
+    false | "all" | "sets-only"
+  >(false);
 
   const createOptions = [
+    // {
+    //   id: "create-set",
+    //   text: "Create Set",
+    //   Icon: <FiEdit3 className="text-lg" />,
+    //   onClick: () => setCreateObjectModalState("sets-only"),
+    // },
     {
       id: "create",
       text: "Create Object",
       Icon: <FiEdit3 className="text-lg" />,
-      onClick: () => setCreateObjectModalOpen(true),
+      onClick: () => setCreateObjectModalState("all"),
     },
     {
       id: "import-csv",
@@ -41,9 +50,22 @@ export const CreateButtons = ({
     },
   ];
 
+  const defaultObjectType =
+    createObjectModalState === "sets-only"
+      ? BuiltInSkylarkObjectType.SkylarkSet
+      : preselectedObjectType;
+
   return (
     <>
       <div className={clsx("flex flex-row", className)}>
+        <Button
+          onClick={() => setCreateObjectModalState("sets-only")}
+          variant="outline"
+          className="mr-2"
+          Icon={<FiEdit3 className="text-lg" />}
+        >
+          <span className="hidden sm:inline">Create Set</span>
+        </Button>
         <DropdownMenu options={createOptions} placement="bottom-end">
           <DropdownMenuButton as={Fragment}>
             <Button
@@ -56,16 +78,17 @@ export const CreateButtons = ({
         </DropdownMenu>
       </div>
       <CreateObjectModal
-        isOpen={createObjectModalOpen}
-        setIsOpen={setCreateObjectModalOpen}
+        setTypesOnly={createObjectModalState === "sets-only"}
+        isOpen={!!createObjectModalState}
+        setIsOpen={setCreateObjectModalState}
         onObjectCreated={(obj) => {
-          setCreateObjectModalOpen(false);
+          setCreateObjectModalState(false);
           onObjectCreated?.({
             ...obj,
             language: obj.language || "",
           });
         }}
-        objectType={preselectedObjectType}
+        objectType={defaultObjectType}
       />
     </>
   );

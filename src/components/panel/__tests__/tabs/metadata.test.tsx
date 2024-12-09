@@ -33,6 +33,7 @@ import {
   createGetObjectQueryName,
   wrapQueryName,
 } from "src/lib/graphql/skylark/dynamicQueries";
+import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const useRouter = jest.spyOn(require("next/router"), "useRouter");
@@ -179,7 +180,11 @@ describe("metadata view", () => {
     render(
       <Panel
         {...defaultProps}
-        object={{ uid: "123", objectType: "nonexistant", language: "" }}
+        object={createDefaultSkylarkObject({
+          uid: "123",
+          objectType: "nonexistant",
+          language: "",
+        })}
       />,
     );
 

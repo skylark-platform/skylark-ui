@@ -4,10 +4,12 @@ import { ParsedSkylarkObjectConfigFieldConfig } from "./parsedObjects";
 
 export enum BuiltInSkylarkObjectType {
   Availability = "Availability",
+  AvailabilitySegment = "AvailabilitySegment",
   SkylarkImage = "SkylarkImage",
   SkylarkAsset = "SkylarkAsset",
   SkylarkLiveAsset = "SkylarkLiveAsset",
   SkylarkFavoriteList = "SkylarkFavoriteList",
+  SkylarkSet = "SkylarkSet",
 }
 
 export enum SkylarkSystemField {
@@ -27,12 +29,7 @@ export enum SkylarkAvailabilityField {
   End = "end",
   Timezone = "timezone",
   Title = "title",
-}
-
-export enum SkylarkSystemGraphQLType {
-  SkylarkImageListing = "SkylarkImageListing",
-  SkylarkAssetListing = "SkylarkAssetListing",
-  SkylarkLiveAssetListing = "SkylarkLiveAssetListing",
+  DimensionBreakdown = "dimension_breakdown",
 }
 
 export type SkylarkObjectType = string | BuiltInSkylarkObjectType;
@@ -107,7 +104,7 @@ export interface SkylarkObjectFields {
   };
 }
 
-export type SkylarkObjectRelationship = {
+export type SkylarkObjectMetaRelationship = {
   relationshipName: string;
   reverseRelationshipName: string | null;
   objectType: SkylarkObjectType;
@@ -125,7 +122,7 @@ export interface SkylarkObjectMeta extends SkylarkObjectFields {
     } | null;
   };
   operations: SkylarkObjectOperations;
-  relationships: SkylarkObjectRelationship[];
+  relationships: SkylarkObjectMetaRelationship[];
   hasContent: boolean;
   hasContentOf: boolean;
   hasRelationships: boolean;

@@ -4,7 +4,7 @@ import {
   configureSkylarkIntercepts,
 } from "../../../../support/utils/intercepts";
 
-describe("Content Library - Object Panel - Availability Dimensions tab", () => {
+describe("Content Library - Object Panel - Audience tab", () => {
   beforeEach(() => {
     cy.login();
 
@@ -20,7 +20,7 @@ describe("Content Library - Object Panel - Availability Dimensions tab", () => {
     );
     cy.openContentLibraryObjectPanelByText(allDevicesAllCustomersAvailability);
 
-    cy.contains("button", "Dimensions").click();
+    cy.contains("button", "Audience").click();
 
     cy.contains("Customer type");
     cy.contains("Device type");
@@ -36,15 +36,17 @@ describe("Content Library - Object Panel - Availability Dimensions tab", () => {
     );
     cy.openContentLibraryObjectPanelByText(allDevicesAllCustomersAvailability);
 
-    cy.contains("button", "Dimensions").click();
+    cy.contains("button", "Audience").click();
 
-    cy.contains("Premium")
-      .parent()
-      .within(() => {
-        cy.get("button").click();
-      });
+    cy.get("[data-testid=panel-body]").within(() => {
+      cy.contains("Premium")
+        .parent()
+        .within(() => {
+          cy.get("button").click();
+        });
 
-    cy.contains("Premium").should("not.exist");
+      cy.contains("Premium").should("not.exist");
+    });
 
     cy.contains("Editing");
 
@@ -104,7 +106,10 @@ describe("Content Library - Object Panel - Availability Dimensions tab", () => {
     cy.wait("@getUpdatedAvailabilityDimensions");
 
     cy.contains("Editing").should("not.exist");
-    cy.contains("Premium").should("not.exist");
+
+    cy.get("[data-testid=panel-body]").within(() => {
+      cy.contains("Premium").should("not.exist");
+    });
   });
 
   it("adds a dimension", () => {
@@ -113,13 +118,17 @@ describe("Content Library - Object Panel - Availability Dimensions tab", () => {
     );
     cy.openContentLibraryObjectPanelByText(allDevicesAllCustomersAvailability);
 
-    cy.contains("button", "Dimensions").click();
+    cy.contains("button", "Audience").click();
 
-    cy.contains("Customer type")
-      .parent()
-      .within(() => {
-        cy.get("[data-testid=multiselect-input]").click();
-      });
+    cy.get("[data-testid=panel-body]").within(() => {
+      cy.contains("Premium");
+
+      cy.contains("Customer type")
+        .parent()
+        .within(() => {
+          cy.get("[data-testid=multiselect-input]").click();
+        });
+    });
 
     cy.contains("Kids").click();
 

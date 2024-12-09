@@ -18,65 +18,67 @@ import { screen, waitFor, within } from "src/__tests__/utils/test-utils";
 import { PanelTab, PanelTabState, defaultPanelTabState } from "src/hooks/state";
 import {
   BuiltInSkylarkObjectType,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
 } from "src/interfaces/skylark";
+import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
-export const movieObject: SkylarkObjectIdentifier = {
+export const movieObject: SkylarkObject = createDefaultSkylarkObject({
   uid: GQLSkylarkGetObjectQueryFixture.data.getObject.uid,
   objectType: "Movie",
   language:
     GQLSkylarkGetObjectQueryFixture.data.getObject._meta.language_data.language,
-};
+});
 
-export const draftMovieObject: SkylarkObjectIdentifier = {
+export const draftMovieObject: SkylarkObject = createDefaultSkylarkObject({
   uid: GQLSkylarkGetMovieDraftQueryFixture.data.getObject.uid,
   objectType: "Movie",
   language:
     GQLSkylarkGetMovieDraftQueryFixture.data.getObject._meta.language_data
       .language,
-};
+});
 
-export const imageObject: SkylarkObjectIdentifier = {
+export const imageObject: SkylarkObject = createDefaultSkylarkObject({
   uid: GQLSkylarkGetObjectImageQueryFixture.data.getObject.uid,
   objectType: "SkylarkImage",
   language: "en-GB",
-};
+});
 
-export const episodeObjectEnGB: SkylarkObjectIdentifier = {
+export const episodeObjectEnGB: SkylarkObject = createDefaultSkylarkObject({
   uid: GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject.uid,
   objectType: "Episode",
   language: "en-GB",
-};
+});
 
-export const episodeObjectPtPT: SkylarkObjectIdentifier = {
+export const episodeObjectPtPT: SkylarkObject = createDefaultSkylarkObject({
   uid: GQLSkylarkGetObjectGOTS01E01PTPTQueryFixture.data.getObject.uid,
   objectType: "Episode",
   language: "pt-PT",
-};
+});
 
-export const setObjectWithContent: SkylarkObjectIdentifier = {
+export const setObjectWithContent: SkylarkObject = createDefaultSkylarkObject({
   uid: GQLSkylarkGetHomepageSetQueryFixture.data.getObject.uid,
   objectType: "SkylarkSet",
   language: "en-GB",
-};
+});
 
-export const seasonWithRelationships: SkylarkObjectIdentifier = {
-  uid: GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.uid,
-  objectType: "Season",
-  language: "en-GB",
-};
+export const seasonWithRelationships: SkylarkObject =
+  createDefaultSkylarkObject({
+    uid: GQLSkylarkGetSeasonWithRelationshipsQueryFixture.data.getObject.uid,
+    objectType: "Season",
+    language: "en-GB",
+  });
 
-export const availabilityObject: SkylarkObjectIdentifier = {
+export const availabilityObject: SkylarkObject = createDefaultSkylarkObject({
   uid: GQLSkylarkGetAvailabilityQueryFixture.data.getObject.uid,
   objectType: BuiltInSkylarkObjectType.Availability,
   language: "",
-};
+});
 
-export const skylarkAssetObject: SkylarkObjectIdentifier = {
+export const skylarkAssetObject: SkylarkObject = createDefaultSkylarkObject({
   uid: GQLSkylarkGetSkylarkAssetQueryFixture.data.getObject.uid,
   objectType: BuiltInSkylarkObjectType.SkylarkAsset,
   language: "en-GB",
-};
+});
 
 const tabState: PanelTabState = { ...defaultPanelTabState };
 
@@ -87,6 +89,7 @@ export const defaultProps = {
   updateActivePanelTabState: jest.fn(),
   tab: PanelTab.Metadata,
   tabState,
+  disableListVirtualization: true,
 };
 
 export const saveGraphQLError: ResponseResolver<

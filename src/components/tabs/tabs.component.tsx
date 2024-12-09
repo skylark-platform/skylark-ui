@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { AnimatePresence, Reorder, m } from "framer-motion";
+import { AnimatePresence, Reorder, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight, FiX } from "react-icons/fi";
 
@@ -168,7 +168,7 @@ const ScrollableTabScrollButton = ({
   const x = type === "left" ? -50 : 50;
 
   return (
-    <m.button
+    <motion.button
       className={clsx(
         "absolute bottom-0 flex items-center justify-center border-b border-transparent bg-white px-0.5 py-2 text-gray-400 hover:bg-manatee-50 hover:text-black md:px-2 md:py-3",
         "before:absolute before:bottom-0 before:z-[2] before:h-full before:w-1 before:from-manatee-400/25 before:to-manatee-400 before:content-['']",
@@ -186,7 +186,7 @@ const ScrollableTabScrollButton = ({
       ) : (
         <FiChevronRight className="h-5 w-5" />
       )}
-    </m.button>
+    </motion.button>
   );
 };
 

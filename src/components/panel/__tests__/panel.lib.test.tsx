@@ -8,10 +8,11 @@ import {
   AddedSkylarkObjectContentObject,
   AvailabilityStatus,
   BuiltInSkylarkObjectType,
-  ParsedSkylarkObject,
-  ParsedSkylarkObjectRelationships,
+  SkylarkObjectRelationships,
   SkylarkObjectMeta,
+  SkylarkObject,
 } from "src/interfaces/skylark";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
 const objectMetaRelationships: SkylarkObjectMeta["relationships"] = [
   {
@@ -20,13 +21,14 @@ const objectMetaRelationships: SkylarkObjectMeta["relationships"] = [
   },
 ];
 
-const panelObject: ParsedSkylarkObject = {
+const panelObject: SkylarkObject = convertParsedObjectToIdentifier({
   uid: "PANEL_OBJECT",
   objectType: "Season",
   metadata: {
     uid: "PANEL_OBJECT",
     external_id: "",
     title: "the season",
+    type: null,
   },
   config: {
     primaryField: "title",
@@ -41,33 +43,33 @@ const panelObject: ParsedSkylarkObject = {
   availability: {
     status: AvailabilityStatus.Unavailable,
     objects: [],
+    dimensions: [],
   },
-};
+});
 
-const droppedObjects: ParsedSkylarkObject[] = [
+const droppedObjects: SkylarkObject[] = [
   panelObject,
   {
     ...panelObject,
     uid: "new-season",
-    metadata: { ...panelObject.metadata, uid: "new-season" },
   },
   {
     ...panelObject,
     uid: "new-brand",
-    metadata: { ...panelObject.metadata, uid: "new-brand" },
     objectType: "Brand",
+    contextualFields: null,
   },
   {
     ...panelObject,
     uid: "new-availability",
-    metadata: { ...panelObject.metadata, uid: "new-availability" },
     objectType: BuiltInSkylarkObjectType.Availability,
+    contextualFields: null,
   },
 ];
 
 describe("handleDroppedRelationships", () => {
   test("receives the expected relationships and errors", () => {
-    const existingRelationships: ParsedSkylarkObjectRelationships = {
+    const existingRelationships: SkylarkObjectRelationships = {
       seasons: {
         name: "seasons",
         objectType: "Season",
@@ -75,6 +77,10 @@ describe("handleDroppedRelationships", () => {
           { ...panelObject, uid: "EXISTING_REL" },
           { ...panelObject, uid: "rel-2" },
         ],
+        config: {
+          defaultSortField: "uid",
+          inheritAvailability: false,
+        },
       },
     };
 
@@ -86,7 +92,6 @@ describe("handleDroppedRelationships", () => {
         {
           ...panelObject,
           uid: "EXISTING_REL",
-          metadata: { ...panelObject.metadata, uid: "EXISTING_REL" },
         },
       ],
       objectMetaRelationships,
@@ -102,6 +107,10 @@ describe("handleDroppedRelationships", () => {
       name: "seasons",
       objectType: "Season",
       objects: expect.any(Object),
+      config: {
+        defaultSortField: "uid",
+        inheritAvailability: false,
+      },
     });
     expect(gotSeasons.objects).toHaveLength(3);
     expect(gotSeasons.objects[0]).toHaveProperty("uid", "new-season");
@@ -134,21 +143,22 @@ describe("handleDroppedRelationships", () => {
         type: HandleDropErrorType.EXISTING_LINK,
       },
     ]);
-    expect(got.errors[0].object.metadata).toHaveProperty("uid", "PANEL_OBJECT");
-    expect(got.errors[1].object.metadata).toHaveProperty("uid", "new-brand");
-    expect(got.errors[2].object.metadata).toHaveProperty(
-      "uid",
-      "new-availability",
-    );
-    expect(got.errors[3].object.metadata).toHaveProperty("uid", "EXISTING_REL");
+    expect(got.errors[0].object).toHaveProperty("uid", "PANEL_OBJECT");
+    expect(got.errors[1].object).toHaveProperty("uid", "new-brand");
+    expect(got.errors[2].object).toHaveProperty("uid", "new-availability");
+    expect(got.errors[3].object).toHaveProperty("uid", "EXISTING_REL");
   });
 
   test("receives the expected relationships and errors when targetRelationship is given", () => {
-    const existingRelationships: ParsedSkylarkObjectRelationships = {
+    const existingRelationships: SkylarkObjectRelationships = {
       seasons: {
         name: "seasons",
         objectType: "Season",
         objects: [],
+        config: {
+          defaultSortField: null,
+          inheritAvailability: null,
+        },
       },
     };
 
@@ -159,13 +169,12 @@ describe("handleDroppedRelationships", () => {
         {
           ...panelObject,
           uid: "new-season",
-          metadata: { ...panelObject.metadata, uid: "new-season" },
         },
         {
           ...panelObject,
           objectType: "Episode",
           uid: "invalid-episode",
-          metadata: { ...panelObject.metadata, uid: "invalid-episode" },
+          contextualFields: null,
         },
       ],
       objectMetaRelationships,
@@ -182,6 +191,10 @@ describe("handleDroppedRelationships", () => {
       name: "seasons",
       objectType: "Season",
       objects: expect.any(Object),
+      config: {
+        defaultSortField: null,
+        inheritAvailability: null,
+      },
     });
     expect(gotSeasons.objects).toHaveLength(1);
     expect(gotSeasons.objects[0]).toHaveProperty("uid", "new-season");
@@ -195,24 +208,21 @@ describe("handleDroppedRelationships", () => {
         type: HandleDropErrorType.INVALID_RELATIONSHIP_TYPE,
       },
     ]);
-    expect(got.errors[0].object.metadata).toHaveProperty(
-      "uid",
-      "invalid-episode",
-    );
+    expect(got.errors[0].object).toHaveProperty("uid", "invalid-episode");
   });
 });
 
 describe("handleDroppedContents", () => {
   test("receives the expected content objects and errors", () => {
     const existingOb = {
+      ...panelObject,
+      uid: "EXISTING_OBJECT",
       objectType: panelObject.objectType,
-      config: panelObject.config,
-      meta: panelObject.meta,
-      object: {
-        ...panelObject.metadata,
-        uid: "EXISTING_OBJECT",
-      },
+      // config: panelObject.config,
+      // meta: panelObject.meta,
       position: 0,
+      isDynamic: false,
+      contextualFields: null,
     };
 
     const existingObjectContent: AddedSkylarkObjectContentObject[] = [
@@ -227,8 +237,8 @@ describe("handleDroppedContents", () => {
         ...droppedObjects,
         {
           ...panelObject,
-          uid: existingOb.object.uid,
-          metadata: existingOb.object,
+          uid: existingOb.uid,
+          // metadata: existingOb.object,
         },
       ],
     });
@@ -236,12 +246,12 @@ describe("handleDroppedContents", () => {
     // Check valid content objects
     expect(got.updatedContentObjects).toHaveLength(3);
     expect(got.updatedContentObjects[0]).toEqual(existingOb);
-    expect(got.updatedContentObjects[1].object).toHaveProperty(
+    expect(got.updatedContentObjects[1]).toHaveProperty(
       "uid",
       droppedObjects[1].uid,
     );
     expect(got.updatedContentObjects[1].isNewObject).toBeTruthy();
-    expect(got.updatedContentObjects[2].object).toHaveProperty(
+    expect(got.updatedContentObjects[2]).toHaveProperty(
       "uid",
       droppedObjects[2].uid,
     );
@@ -263,27 +273,21 @@ describe("handleDroppedContents", () => {
         type: HandleDropErrorType.EXISTING_LINK,
       },
     ]);
-    expect(got.errors[0].object.metadata).toHaveProperty("uid", "PANEL_OBJECT");
-    expect(got.errors[1].object.metadata).toHaveProperty(
-      "uid",
-      "new-availability",
-    );
-    expect(got.errors[2].object.metadata).toHaveProperty(
-      "uid",
-      "EXISTING_OBJECT",
-    );
+    expect(got.errors[0].object).toHaveProperty("uid", "PANEL_OBJECT");
+    expect(got.errors[1].object).toHaveProperty("uid", "new-availability");
+    expect(got.errors[2].object).toHaveProperty("uid", "EXISTING_OBJECT");
   });
 
   test("receives the expected content objects, inserted at the correct place", () => {
     const existingOb = {
+      ...panelObject,
+      uid: "EXISTING_OBJECT",
       objectType: panelObject.objectType,
-      config: panelObject.config,
-      meta: panelObject.meta,
-      object: {
-        ...panelObject.metadata,
-        uid: "EXISTING_OBJECT",
-      },
+      // config: panelObject.config,
+      // meta: panelObject.meta,
       position: 0,
+      isDynamic: false,
+      contextualFields: null,
     };
 
     const existingObjectContent: AddedSkylarkObjectContentObject[] = [
@@ -307,14 +311,11 @@ describe("handleDroppedContents", () => {
 
 describe("handleDroppedAvailabilities", () => {
   test("receives the expected availability objects and errors", () => {
-    const existingOb: ParsedSkylarkObject = {
+    const existingOb: SkylarkObject = {
       ...panelObject,
       objectType: BuiltInSkylarkObjectType.Availability,
-      metadata: {
-        ...panelObject.metadata,
-        uid: "EXISTING_OBJECT",
-      },
       uid: "EXISTING_OBJECT",
+      contextualFields: null,
     };
 
     const got = handleDroppedAvailabilities({
@@ -347,12 +348,9 @@ describe("handleDroppedAvailabilities", () => {
         type: HandleDropErrorType.EXISTING_LINK,
       },
     ]);
-    expect(got.errors[0].object.metadata).toHaveProperty("uid", "PANEL_OBJECT");
-    expect(got.errors[1].object.metadata).toHaveProperty("uid", "new-season");
-    expect(got.errors[2].object.metadata).toHaveProperty("uid", "new-brand");
-    expect(got.errors[3].object.metadata).toHaveProperty(
-      "uid",
-      "EXISTING_OBJECT",
-    );
+    expect(got.errors[0].object).toHaveProperty("uid", "PANEL_OBJECT");
+    expect(got.errors[1].object).toHaveProperty("uid", "new-season");
+    expect(got.errors[2].object).toHaveProperty("uid", "new-brand");
+    expect(got.errors[3].object).toHaveProperty("uid", "EXISTING_OBJECT");
   });
 });

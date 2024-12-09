@@ -10,15 +10,17 @@ import {
   useSkylarkObjectTypesWithConfig,
   ObjectTypeWithConfig,
   useSkylarkObjectOperations,
+  ObjectTypesConfigObject,
 } from "src/hooks/useSkylarkObjectTypes";
 import { IntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospection";
+import { ParsedSkylarkObjectConfig } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
 import { isSkylarkObjectType } from "src/lib/utils";
 
 interface ObjectTypeNavigationProps {
   activeObjectType: string | null;
   schemaVersion: SchemaVersion;
-  objectTypesWithConfig: ObjectTypeWithConfig[];
+  objectTypesConfig: ObjectTypesConfigObject;
 }
 
 const ObjectTypeNavigationSection = ({
@@ -66,10 +68,12 @@ const ObjectTypeNavigationSection = ({
 );
 
 const ObjectTypeOverview = ({
-  objectTypeWithConfig: { objectType, config },
+  objectType,
+  objectTypesConfig: config,
   schemaOpts,
 }: {
-  objectTypeWithConfig: ObjectTypeWithConfig;
+  objectType: string;
+  objectTypesConfig: ParsedSkylarkObjectConfig;
   schemaOpts?: IntrospectionQueryOptions;
 }) => {
   const { objectOperations: objectMeta } = useSkylarkObjectOperations(
@@ -155,17 +159,16 @@ const ObjectTypeOverview = ({
 
 export const ObjectTypeSelectAndOverview = ({
   activeObjectType,
-  objectTypesWithConfig,
+  objectTypesConfig,
   schemaVersion,
 }: ObjectTypeNavigationProps) => {
   const { push } = useRouter();
 
   // const { setObjectTypes } = useSkylarkSetObjectTypes(true, schemaOpts);
 
-  const selected = objectTypesWithConfig?.find(
-    ({ objectType }) =>
-      objectType.toLocaleLowerCase() === activeObjectType?.toLocaleLowerCase(),
-  );
+  const selected = activeObjectType
+    ? objectTypesConfig?.[activeObjectType]
+    : undefined;
 
   // TODO section the list by Sets, Custom, Built in
   // const setObjectTypesWithConfig = objectTypesWithConfig?.filter(
@@ -196,12 +199,17 @@ export const ObjectTypeSelectAndOverview = ({
             `/content-model/${schemaVersion.version}/${encodeURIComponent(objectType.toLocaleLowerCase())}`,
           )
         }
-        selected={selected?.objectType || ""}
+        selected={activeObjectType || ""}
         variant="primary"
         displayActualName
         className="w-full"
       />
-      {selected && <ObjectTypeOverview objectTypeWithConfig={selected} />}
+      {selected && activeObjectType && (
+        <ObjectTypeOverview
+          objectType={activeObjectType}
+          objectTypesConfig={selected}
+        />
+      )}
     </div>
   );
 };

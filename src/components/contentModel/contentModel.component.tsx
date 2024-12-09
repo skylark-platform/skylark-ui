@@ -7,12 +7,21 @@ import { Toast } from "src/components/toast/toast.component";
 import { useUpdateObjectTypesFieldConfig } from "src/hooks/schema/update/useUpdateObjectTypesFieldConfig";
 import { useUpdateRelationshipConfig } from "src/hooks/schema/update/useUpdateRelationshipConfig";
 import { useUpdateSchema } from "src/hooks/schema/update/useUpdateSchema";
-import { ObjectTypeWithConfig } from "src/hooks/useSkylarkObjectTypes";
+import {
+  ObjectTypesConfigObject,
+  ObjectTypeWithConfig,
+} from "src/hooks/useSkylarkObjectTypes";
+import {
+  useAllObjectsMeta,
+  useSkylarkObjectTypesWithConfig,
+} from "src/hooks/useSkylarkObjectTypes";
+import { IntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospection";
 import {
   ParsedSkylarkObjectTypesRelationshipConfigurations,
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
+import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
 
 import { ObjectTypeEditor } from "./editor/contentModelEditor.component";
 import {
@@ -26,23 +35,21 @@ interface ContentModelProps {
   schemaVersion: SchemaVersion;
   activeVersionNumber: number;
   objectType: string;
-  objectTypesWithConfig: ObjectTypeWithConfig[];
+  objectTypesConfig: ObjectTypesConfigObject;
   allObjectsMeta: SkylarkObjectMeta[];
   allObjectTypesRelationshipConfig: ParsedSkylarkObjectTypesRelationshipConfigurations;
 }
 
 const createFormValues = (
   allObjectsMeta: SkylarkObjectMeta[],
-  objectTypesWithConfig: ObjectTypeWithConfig[],
+  objectTypesConfig: ObjectTypesConfigObject,
   allObjectTypesRelationshipConfig: ParsedSkylarkObjectTypesRelationshipConfigurations,
 ): ContentModelEditorForm => ({
   objectTypes: Object.fromEntries(
     allObjectsMeta.map((objectMeta) => {
       const { name, relationships } = objectMeta;
 
-      const config = objectTypesWithConfig.find(
-        ({ objectType }) => objectType === name,
-      )?.config;
+      const config = objectTypesConfig?.[name];
 
       const fields =
         combineFieldRelationshipsAndFieldConfigAndSortByConfigPostion(
@@ -50,6 +57,9 @@ const createFormValues = (
           relationships,
           config,
         );
+      // const { objects: allObjectsMeta } = useAllObjectsMeta(true, schemaOpts);
+      // const { objectTypesConfig, isLoading: isLoadingObjectTypesWithConfig } =
+      //   useSkylarkObjectTypesWithConfig({ introspectionOpts: schemaOpts });
 
       console.log(name, { fields });
 
@@ -69,16 +79,14 @@ export const ContentModel = ({
   activeVersionNumber,
   objectType,
   allObjectsMeta,
-  objectTypesWithConfig,
+  objectTypesConfig,
   allObjectTypesRelationshipConfig,
 }: ContentModelProps) => {
   const objectMeta = allObjectsMeta.find(
     ({ name }) => name.toLowerCase() === objectType?.toLowerCase(),
   );
 
-  const config = objectTypesWithConfig.find(
-    ({ objectType }) => objectType === objectMeta?.name,
-  )?.config;
+  const config = objectTypesConfig?.[objectMeta?.name || ""];
 
   const form = useForm<ContentModelEditorForm>({
     // Can't use onSubmit because we don't have a submit button within the form
@@ -88,7 +96,7 @@ export const ContentModel = ({
     // },
     defaultValues: createFormValues(
       allObjectsMeta,
-      objectTypesWithConfig,
+      objectTypesConfig,
       allObjectTypesRelationshipConfig,
     ),
   });
@@ -97,14 +105,14 @@ export const ContentModel = ({
     form.reset(
       createFormValues(
         allObjectsMeta,
-        objectTypesWithConfig,
+        objectTypesConfig,
         allObjectTypesRelationshipConfig,
       ),
     );
   }, [
     allObjectsMeta,
     form,
-    objectTypesWithConfig,
+    objectTypesConfig,
     allObjectTypesRelationshipConfig,
   ]);
 
@@ -262,6 +270,12 @@ export const ContentModel = ({
     }
   };
 
+  // const isLoading =
+  //   !allObjectsMeta ||
+  //   isLoadingObjectTypesWithConfig ||
+  //   (isLoadingRelationshipConfig &&
+  //     !isAvailabilityOrAvailabilitySegment(objectMeta?.name));
+
   return (
     <div className="max-w-8xl mx-auto px-4 md:px-8">
       <ContentModelHeader
@@ -273,13 +287,17 @@ export const ContentModel = ({
         onSave={onSave}
       />
 
-      {allObjectsMeta && objectTypesWithConfig ? (
+      {allObjectsMeta && objectTypesConfig ? (
         <div className="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-5 gap-8">
           <ObjectTypeSelectAndOverview
             activeObjectType={objectType}
             schemaVersion={schemaVersion}
-            objectTypesWithConfig={objectTypesWithConfig}
+            objectTypesConfig={objectTypesConfig}
           />
+          {/* <div className="grid grid-cols-4 gap-4">
+          <ObjectTypeNavigation
+            activeObjectType={activeObjectType}
+            schemaOpts={schemaOpts} */}
 
           <div className="md:col-span-3 xl:col-span-4 h-full">
             {objectMeta && (

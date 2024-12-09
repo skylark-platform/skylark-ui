@@ -12,6 +12,7 @@ interface InputProps
   value?: string;
   onChange: (str: string) => void;
   className?: string;
+  containerClassName?: string;
   label?: string;
   tabIndex?: number;
   withCopy?: boolean;
@@ -23,6 +24,7 @@ export const Input = ({
   value,
   onChange,
   className,
+  containerClassName,
   label,
   withCopy,
   placeholder,
@@ -30,7 +32,7 @@ export const Input = ({
   onEnterKeyPress,
   ...props
 }: InputProps) => (
-  <div className="relative flex flex-col w-full">
+  <div className={clsx("relative flex flex-col w-full", containerClassName)}>
     {label && (
       <InputLabel text={label} htmlFor={label} isRequired={props.required} />
     )}

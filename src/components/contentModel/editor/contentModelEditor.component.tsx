@@ -7,6 +7,10 @@ import {
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
+import {
+  isAvailabilityOrAvailabilitySegment,
+  isSkylarkObjectType,
+} from "src/lib/utils";
 
 import { ContentModelEditorForm } from "./sections/common.component";
 import { FieldsSection } from "./sections/fields.component";
@@ -32,10 +36,8 @@ export const ObjectTypeEditor = ({
       { id: "metadata", name: "Fields" },
     ];
 
-    // if (objectMeta.name !== BuiltInSkylarkObjectType.Availability)
+    // if (!isAvailabilityOrAvailabilitySegment(objectMeta.name))
     //   tabs.push({ id: "relationships", name: "Relationships" });
-
-    tabs.push({ id: "ui-config", name: "UI Config" });
 
     return tabs;
   }, []);
@@ -68,7 +70,7 @@ export const ObjectTypeEditor = ({
           schemaVersion={schemaVersion}
         />
       )}
-      {/* {objectMeta.name !== BuiltInSkylarkObjectType.Availability &&
+      {/* {!isAvailabilityOrAvailabilitySegment(objectMeta.name) &&
         activeTab.id === "relationships" && (
           <RelationshipsSection
             form={form}

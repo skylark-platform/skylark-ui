@@ -1,6 +1,8 @@
 import { getIntrospectionQuery } from "graphql";
 import { gql } from "graphql-tag";
 
+import { MAX_GRAPHQL_LIMIT } from "src/constants/skylark";
+
 import { wrapQueryName } from "./dynamicQueries";
 
 export const SKYLARK_SCHEMA_INTROSPECTION_QUERY_NAME = "IntrospectionQuery";
@@ -20,7 +22,7 @@ export const GET_SKYLARK_OBJECT_TYPES = gql`
 
 export const LIST_AVAILABILITY_DIMENSIONS = gql`
   query ${wrapQueryName("LIST_AVAILABILITY_DIMENSIONS")}($nextToken: String) {
-    listDimensions(next_token: $nextToken, limit: 50) {
+    listDimensions(next_token: $nextToken, limit: ${MAX_GRAPHQL_LIMIT}) {
       objects {
         uid
         external_id
@@ -30,31 +32,6 @@ export const LIST_AVAILABILITY_DIMENSIONS = gql`
       }
       count
       next_token
-    }
-  }
-`;
-
-export const GET_AVAILABILITY_DIMENSIONS = gql`
-  query ${wrapQueryName(
-    "GET_AVAILABILITY_DIMENSIONS",
-  )}($uid: String!, $nextToken: String) {
-    getAvailability(uid: $uid) {
-      title
-      dimensions(limit: 50, next_token: $nextToken) {
-        next_token
-        objects {
-          uid
-          title
-          slug
-          values(limit: 50) {
-            objects {
-              uid
-              title
-              slug
-            }
-          }
-        }
-      }
     }
   }
 `;
@@ -129,7 +106,7 @@ export const GET_ACCOUNT_STATUS = gql`
 
 export const LIST_SCHEMA_VERSIONS = gql`
   query ${wrapQueryName("LIST_SCHEMA_VERSIONS")}($nextToken: String) {
-    listConfigurationVersions(order: DESC, next_token: $nextToken, limit:100) {
+    listConfigurationVersions(order: DESC, next_token: $nextToken, limit:${MAX_GRAPHQL_LIMIT}) {
       objects {
         active
         base_version
@@ -144,12 +121,17 @@ export const LIST_SCHEMA_VERSIONS = gql`
 export const LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION = gql`
   query ${wrapQueryName(
     "LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION",
-  )}($objectType: ObjectTypes!) {
-    listRelationshipConfiguration(object_type: $objectType) {
-      relationship_name
-      config {
-        default_sort_field
-        inherit_availability
+  )}($objectType: ObjectTypes!, $nextToken: String) {
+    listRelationshipConfiguration(object_type: $objectType, default: true, next_token: $nextToken, limit: ${MAX_GRAPHQL_LIMIT}) {
+      count
+      next_token
+      objects {
+        uid
+        relationship_name
+        config {
+          default_sort_field
+          inherit_availability
+        }
       }
     }
   }

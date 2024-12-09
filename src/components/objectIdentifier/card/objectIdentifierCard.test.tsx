@@ -3,12 +3,12 @@ import { PanelTab } from "src/hooks/state";
 import {
   AvailabilityStatus,
   BuiltInSkylarkObjectType,
-  ParsedSkylarkObject,
 } from "src/interfaces/skylark";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
-import { ObjectIdentifierCard } from "./objectIdentifier.component";
+import { ObjectIdentifierCard } from "./objectIdentifierCard.component";
 
-const defaultObject: ParsedSkylarkObject = {
+const defaultObject = convertParsedObjectToIdentifier({
   uid: "123",
   objectType: "SkylarkSet",
   config: {
@@ -18,6 +18,7 @@ const defaultObject: ParsedSkylarkObject = {
     uid: "set-1",
     external_id: "my-set",
     title: "my episode",
+    type: null,
   },
   meta: {
     language: "en-GB",
@@ -28,8 +29,9 @@ const defaultObject: ParsedSkylarkObject = {
   availability: {
     status: AvailabilityStatus.Active,
     objects: [],
+    dimensions: [],
   },
-};
+});
 
 test("displays the Object's display_name when one is given", () => {
   render(<ObjectIdentifierCard object={defaultObject} />);
@@ -41,10 +43,11 @@ test("displays the Object's display_name when one is given", () => {
 test("displays the Object's objectType when no display_name is given", () => {
   const object = {
     ...defaultObject,
-    config: {
-      objectTypeDisplayName: null,
+    display: {
+      ...defaultObject.display,
+      objectType: "",
     },
-  } as unknown as ParsedSkylarkObject;
+  };
   render(<ObjectIdentifierCard object={object} />);
 
   expect(screen.getByText("SkylarkSet")).toBeInTheDocument();
@@ -76,11 +79,7 @@ test("displays arrow when onForwardClick is passed as a prop and calls onForward
 
   fireEvent.click(forwardButton);
 
-  expect(onForwardClick).toHaveBeenCalledWith({
-    uid: "123",
-    objectType: "SkylarkSet",
-    language: "en-GB",
-  });
+  expect(onForwardClick).toHaveBeenCalledWith(defaultObject);
 });
 
 test("displays arrow when onForwardClick is passed as a prop and calls window.open when clicked with the metaKey pressed", async () => {
@@ -106,7 +105,7 @@ test("displays arrow when onForwardClick is passed as a prop and calls window.op
   expect(onForwardClick).not.toHaveBeenCalled();
 
   expect(window.open).toHaveBeenCalledWith(
-    `/object/${defaultObject.objectType}/${defaultObject.uid}?language=${defaultObject.meta.language}`,
+    `/object/${defaultObject.objectType}/${defaultObject.uid}?language=${defaultObject.language}`,
     "_blank",
   );
 });
@@ -143,14 +142,9 @@ test("AvailabilityStatus icon can be clicked to open the Object on its Availabil
 
   fireEvent.click(forwardButton);
 
-  expect(onForwardClick).toHaveBeenCalledWith(
-    {
-      uid: "123",
-      objectType: "SkylarkSet",
-      language: "en-GB",
-    },
-    { tab: PanelTab.Availability },
-  );
+  expect(onForwardClick).toHaveBeenCalledWith(defaultObject, {
+    tab: PanelTab.Availability,
+  });
 });
 
 test("displays AvailabilityStatus icon by default (Future)", () => {
@@ -158,7 +152,7 @@ test("displays AvailabilityStatus icon by default (Future)", () => {
     <ObjectIdentifierCard
       object={{
         ...defaultObject,
-        availability: { status: AvailabilityStatus.Future, objects: [] },
+        availabilityStatus: AvailabilityStatus.Future,
       }}
     />,
   );
@@ -188,6 +182,25 @@ test("does not show AvailabilityStatus icon when object type is Availability", (
       object={{
         ...defaultObject,
         objectType: BuiltInSkylarkObjectType.Availability,
+        contextualFields: null,
+      }}
+    />,
+  );
+
+  expect(
+    screen.queryByLabelText(
+      "This object has at least one active Availability assigned.",
+    ),
+  ).not.toBeInTheDocument();
+});
+
+test("does not show AvailabilityStatus icon when object type is AvailabilitySegment", () => {
+  render(
+    <ObjectIdentifierCard
+      object={{
+        ...defaultObject,
+        objectType: BuiltInSkylarkObjectType.AvailabilitySegment,
+        contextualFields: null,
       }}
     />,
   );

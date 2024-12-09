@@ -1,10 +1,8 @@
 import clsx from "clsx";
-import { FiX } from "react-icons/fi";
 import {
   ToastContainer as ReactToastifyContainer,
   ToastContentProps,
   TypeOptions,
-  Slide,
 } from "react-toastify";
 
 import { GQLSkylarkErrorResponse } from "src/interfaces/skylark";
@@ -97,13 +95,8 @@ export const GraphQLRequestErrorToast = ({
   title: ToastProps["title"];
   error: GQLSkylarkErrorResponse;
 }) => {
-  return (
-    <Toast
-      title={title}
-      message={[
-        `Reason(s):`,
-        ...error.response.errors.map(({ message }) => `- ${message}`),
-      ]}
-    />
-  );
+  const formattedError = error?.response?.errors?.map(
+    ({ message }) => `- ${message}`,
+  ) || [error.toString()];
+  return <Toast title={title} message={[`Reason(s):`, ...formattedError]} />;
 };

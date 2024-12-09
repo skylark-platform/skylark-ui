@@ -1,6 +1,6 @@
 {
   "data": {
-    "getAvailability": {
+    "getObjectDimensions": {
       "title": "Always - All devices, all non-kids customer types",
       "dimensions": {
         "next_token": null,

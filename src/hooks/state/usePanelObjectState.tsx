@@ -6,9 +6,10 @@ import { SEGMENT_KEYS } from "src/constants/segment";
 import {
   ParsedSkylarkObject,
   ParsedSkylarkObjectAvailabilityObject,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { isObjectsDeepEqual } from "src/lib/utils";
 
 export enum PanelTab {
@@ -16,7 +17,7 @@ export enum PanelTab {
   Imagery = "Imagery",
   Playback = "Video",
   Availability = "Availability",
-  AvailabilityDimensions = "Dimensions",
+  AvailabilityAudience = "Audience",
   AvailabilityAssignedTo = "Assigned To",
   Content = "Content",
   ContentOf = "Appears In",
@@ -41,9 +42,10 @@ export interface PanelTabState {
   };
 }
 
-export interface PanelObject extends SkylarkObjectIdentifier {
+export interface PanelState {
   tab: PanelTab;
   tabState: PanelTabState;
+  object: SkylarkObject;
 }
 
 export interface PanelUrlQuery {
@@ -66,7 +68,7 @@ export const defaultPanelTabState: PanelTabState = {
 };
 
 export type SetPanelObject = (
-  newPanelObject: SkylarkObjectIdentifier,
+  newPanelObject: SkylarkObject,
   opts?: {
     tab?: PanelTab;
     tabState?: Partial<PanelTabState>;
@@ -78,26 +80,31 @@ export type SetPanelObject = (
   },
 ) => void;
 
-const createPanelUrlQuery = (object: Partial<PanelObject>) => {
+const createPanelUrlQuery = (state: Partial<PanelState>) => {
+  const { object, tab } = state;
+
   const obj: PanelUrlQuery = {};
-  if (object.uid) {
-    obj.panelUid = object.uid;
-  }
 
-  if (object.objectType) {
-    obj.panelObjectType = object.objectType;
-  }
+  if (object) {
+    if (object.uid) {
+      obj.panelUid = object.uid;
+    }
 
-  if (object.language) {
-    obj.panelLanguage = object.language;
-  }
+    if (object.objectType) {
+      obj.panelObjectType = object.objectType;
+    }
 
-  if (object.tab) {
-    obj.panelTab = object.tab;
-  }
+    if (object.language) {
+      obj.panelLanguage = object.language;
+    }
 
-  if (Object.keys(object).length === 0) {
-    return null;
+    if (Object.keys(object).length === 0) {
+      return null;
+    }
+
+    if (tab) {
+      obj.panelTab = tab;
+    }
   }
 
   return obj;
@@ -149,11 +156,11 @@ export const mergedPanelTabStates = (
   };
 };
 
-export const usePanelObjectState = (initialPanelState?: PanelObject) => {
+export const usePanelObjectState = (initialPanelState?: PanelState) => {
   const { replace, query } = useRouter();
 
   const updatePanelUrlQuery = useCallback(
-    (newPanelState: PanelObject | null) => {
+    (newPanelState: PanelState | null) => {
       if (!newPanelState) {
         return;
       }
@@ -190,9 +197,9 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
   );
 
   const [panelState, setPanelState] = useState<{
-    activePanelState: PanelObject | null;
-    previousPanelStates: PanelObject[];
-    forwardPanelStates: PanelObject[];
+    activePanelState: PanelState | null;
+    previousPanelStates: PanelState[];
+    forwardPanelStates: PanelState[];
   }>({
     activePanelState: initialPanelState || null,
     previousPanelStates: [],
@@ -226,7 +233,7 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
             ? [...oldState.previousPanelStates, oldState.activePanelState]
             : oldState.previousPanelStates,
           activePanelState: {
-            ...newPanelObject,
+            object: newPanelObject,
             tab: updatedTab,
             tabState: mergedPanelTabStates(defaultPanelTabState, tabState),
           },
@@ -346,22 +353,14 @@ export const usePanelObjectState = (initialPanelState?: PanelObject) => {
     replace({ ...cleanedQuery });
   }, [query, replace]);
 
-  const activePanelObject: SkylarkObjectIdentifier | null = useMemo(
-    () =>
-      panelState.activePanelState?.uid === undefined ||
-      panelState.activePanelState?.objectType === undefined ||
-      panelState.activePanelState?.language === undefined
+  const activePanelObject: SkylarkObject | null = useMemo(
+    (): SkylarkObject | null =>
+      panelState.activePanelState?.object.uid === undefined ||
+      panelState.activePanelState?.object.objectType === undefined ||
+      panelState.activePanelState?.object.language === undefined
         ? null
-        : {
-            uid: panelState.activePanelState?.uid,
-            objectType: panelState.activePanelState?.objectType,
-            language: panelState.activePanelState?.language,
-          },
-    [
-      panelState.activePanelState?.language,
-      panelState.activePanelState?.objectType,
-      panelState.activePanelState?.uid,
-    ],
+        : panelState.activePanelState.object,
+    [panelState.activePanelState?.object],
   );
 
   return {
@@ -410,6 +409,20 @@ export const useInitialPanelStateFromQuery = (
             uid: currentPanelQuery.panelUid,
             objectType: currentPanelQuery.panelObjectType,
             language: currentPanelQuery.panelLanguage || "",
+            externalId: null,
+            display: {
+              name: currentPanelQuery.panelUid,
+              objectType: currentPanelQuery.panelObjectType,
+              colour: undefined,
+            },
+            availabilityStatus: null,
+            availableLanguages: [],
+            contextualFields: null,
+            type: null,
+            created: undefined,
+            modified: undefined,
+            published: undefined,
+            hasDynamicContent: false,
           },
           { tab: currentPanelQuery.panelTab as PanelTab | undefined },
         );
@@ -425,3 +438,5 @@ export const useInitialPanelStateFromQuery = (
     setPanelObject,
   ]);
 };
+
+convertParsedObjectToIdentifier;

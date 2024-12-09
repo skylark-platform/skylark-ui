@@ -1,5 +1,6 @@
 import {
   BuiltInSkylarkObjectType,
+  SkylarkAvailabilityField,
   SkylarkObjectType,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
@@ -14,6 +15,8 @@ export const SAAS_API_KEY = (process.env.NEXT_PUBLIC_SAAS_API_KEY ||
 export const CLOUDINARY_ENVIRONMENT = process.env
   .NEXT_PUBLIC_CLOUDINARY_ENVIRONMENT as string;
 
+export const MAX_GRAPHQL_LIMIT = 100;
+
 export const REQUEST_HEADERS = {
   apiKey: "Authorization",
   bypassCache: "x-bypass-cache",
@@ -27,7 +30,6 @@ export const OBJECT_LIST_TABLE = {
   columnIds: {
     dragIcon: "drag-icon",
     objectType: "__typename",
-    objectTypeIndicator: "__typename-indicator",
     displayField: "skylark-ui-display-field",
     checkbox: "skylark-ui-select",
     availability: "availability",
@@ -83,9 +85,19 @@ export const INPUT_REGEX: Record<string, string | RegExp> = {
 export const OBJECT_OPTIONS: {
   objectTypes: SkylarkObjectType[];
   hiddenFields: string[];
+  uiHiddenFields: string[];
 }[] = [
   {
     objectTypes: [BuiltInSkylarkObjectType.SkylarkImage],
     hiddenFields: ["upload_url", "download_from_url"],
+    uiHiddenFields: [],
+  },
+  {
+    objectTypes: [
+      BuiltInSkylarkObjectType.Availability,
+      BuiltInSkylarkObjectType.AvailabilitySegment,
+    ],
+    uiHiddenFields: [SkylarkAvailabilityField.DimensionBreakdown],
+    hiddenFields: [],
   },
 ];

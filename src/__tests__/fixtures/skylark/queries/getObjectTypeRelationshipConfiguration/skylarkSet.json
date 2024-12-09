@@ -1,34 +1,38 @@
 {
   "data": {
-    "listRelationshipConfiguration": [
-      {
-        "relationship_name": "assets",
-        "config": {
-          "default_sort_field": "title_sort",
-          "inherit_availability": null
+    "listRelationshipConfiguration": {
+      "count": 4,
+      "next_token": null,
+      "objects": [
+        {
+          "relationship_name": "assets",
+          "config": {
+            "default_sort_field": "title_sort",
+            "inherit_availability": null
+          }
+        },
+        {
+          "relationship_name": "credits",
+          "config": {
+            "default_sort_field": null,
+            "inherit_availability": true
+          }
+        },
+        {
+          "relationship_name": "images",
+          "config": {
+            "default_sort_field": "file_name",
+            "inherit_availability": null
+          }
+        },
+        {
+          "relationship_name": "tags",
+          "config": {
+            "default_sort_field": null,
+            "inherit_availability": true
+          }
         }
-      },
-      {
-        "relationship_name": "credits",
-        "config": {
-          "default_sort_field": null,
-          "inherit_availability": true
-        }
-      },
-      {
-        "relationship_name": "images",
-        "config": {
-          "default_sort_field": "file_name",
-          "inherit_availability": null
-        }
-      },
-      {
-        "relationship_name": "tags",
-        "config": {
-          "default_sort_field": null,
-          "inherit_availability": true
-        }
-      }
-    ]
+      ]
+    }
   }
 }

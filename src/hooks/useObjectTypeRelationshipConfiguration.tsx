@@ -15,13 +15,14 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetAllObjectsRelationshipConfigurationQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import { LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION } from "src/lib/graphql/skylark/queries";
+import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
 
 import { useSkylarkObjectTypes } from "./useSkylarkObjectTypes";
 
 const mapGQLRelationshipConfigToParsed = ({
   relationship_name,
   config,
-}: GQLSkylarkListObjectTypeRelationshipConfiguration["listRelationshipConfiguration"][0]) => ({
+}: GQLSkylarkListObjectTypeRelationshipConfiguration["listRelationshipConfiguration"]["objects"][0]) => ({
   relationshipName: relationship_name,
   config: {
     defaultSortField: config.default_sort_field,
@@ -32,7 +33,7 @@ const mapGQLRelationshipConfigToParsed = ({
 const select = (
   data: GQLSkylarkListObjectTypeRelationshipConfiguration,
 ): ParsedSkylarkObjectTypeRelationshipConfigurations =>
-  data.listRelationshipConfiguration.reduce(
+  data.listRelationshipConfiguration.objects.reduce(
     (
       prev,
       { relationship_name, config },
@@ -56,8 +57,9 @@ const allObjectTypesSelect = (
       return {
         ...prev,
         [objectType]:
-          relationshipConfiguration?.map(mapGQLRelationshipConfigToParsed) ||
-          [],
+          relationshipConfiguration?.objects.map(
+            mapGQLRelationshipConfigToParsed,
+          ) || [],
       };
     },
     {},
@@ -72,7 +74,7 @@ export const useObjectTypeRelationshipConfiguration = (
     ParsedSkylarkObjectTypeRelationshipConfigurations
   >({
     enabled: Boolean(
-      objectType && objectType !== BuiltInSkylarkObjectType.Availability,
+      objectType && !isAvailabilityOrAvailabilitySegment(objectType),
     ),
     queryKey: [
       QueryKeys.ObjectTypeRelationshipConfig,
@@ -93,7 +95,7 @@ export const useObjectTypeRelationshipConfiguration = (
 };
 
 export const useAllObjectTypesRelationshipConfiguration = () => {
-  const { objectTypes } = useSkylarkObjectTypes(false);
+  const { objectTypes } = useSkylarkObjectTypes({ searchable: false });
 
   const query = createGetAllObjectsRelationshipConfigurationQuery(
     objectTypes?.filter(

@@ -1,10 +1,12 @@
 import {
+  GQLObjectTypeRelationshipConfig,
   NextToken,
   SkylarkGraphQLAPIKey,
   SkylarkGraphQLAvailability,
   SkylarkGraphQLAvailabilityAssignedTo,
   SkylarkGraphQLAvailabilityDimension,
   SkylarkGraphQLAvailabilityDimensionValue,
+  SkylarkGraphQLDynamicContentConfiguration,
   SkylarkGraphQLObject,
   SkylarkGraphQLObjectConfig,
   SkylarkGraphQLObjectContent,
@@ -38,6 +40,13 @@ export interface GQLSkylarkAccountResponse {
     skylark_version: string;
   };
 }
+
+export enum SkylarkOrderDirections {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
+export type GQLSkylarkOrderDirections = SkylarkOrderDirections | null;
 
 export interface GQLSkylarkActivationStatusResponse {
   getActivationStatus: {
@@ -112,6 +121,9 @@ export interface GQLSkylarkGetObjectRelationshipsResponse {
 
 export interface GQLSkylarkGetObjectContentResponse {
   getObjectContent: {
+    content_sort_field: string | null;
+    content_sort_direction: GQLSkylarkOrderDirections;
+    content_limit: number | null;
     content: SkylarkGraphQLObjectContent | null;
   };
 }
@@ -215,28 +227,29 @@ export type GQLSkylarkListAvailabilityDimensionValuesResponse = Record<
   }
 >;
 
-export interface GQLSkylarkGetAvailabilityDimensions {
-  getAvailability: SkylarkGraphQLAvailability;
+export interface GQLSkylarkGetObjectDimensions {
+  getObjectDimensions: Pick<SkylarkGraphQLAvailability, "dimensions">;
 }
 
-export interface GQLObjectTypeRelationshipConfig {
-  default_sort_field: string | null;
-  inherit_availability: boolean;
+export interface GQLSkylarkGetObjectSegments {
+  getObjectSegments: Pick<SkylarkGraphQLAvailability, "segments">;
 }
 
 export interface GQLSkylarkListObjectTypeRelationshipConfiguration {
   listRelationshipConfiguration: {
-    relationship_name: string;
-    config: GQLObjectTypeRelationshipConfig;
-  }[];
+    count: number;
+    next_token: string | null;
+    objects: {
+      uid: string;
+      relationship_name: string;
+      config: GQLObjectTypeRelationshipConfig;
+    }[];
+  };
 }
 
 export type GQLSkylarkListAllObjectTypesRelationshipConfiguration = Record<
   string,
-  | {
-      relationship_name: string;
-      config: GQLObjectTypeRelationshipConfig;
-    }[]
+  | GQLSkylarkListObjectTypeRelationshipConfiguration["listRelationshipConfiguration"]
   | null
 >;
 
@@ -246,6 +259,18 @@ export interface GQLSkylarkGetAvailabilityAssignedResponse {
   };
 }
 
+export interface GQLSkylarkGetAvailabilitySegmentAssignedResponse {
+  getAvailabilitySegmentAssignedTo: {
+    assigned_to: {
+      next_token?: NextToken;
+      objects: (SkylarkGraphQLObject & {
+        inherited: SkylarkGraphQLAvailability["inherited"];
+        inheritance_source: SkylarkGraphQLAvailability["inheritance_source"];
+        active: SkylarkGraphQLAvailability["active"];
+      })[];
+    };
+  };
+}
 export interface GQLSkylarkSchemaVersion {
   active: boolean;
   base_version: number | null;
@@ -267,4 +292,21 @@ export interface GQLSkylarkListAPIKeysResponse {
 
 export interface GQLSkylarkCreateAPIKeyResponse {
   createApiKey: SkylarkGraphQLAPIKey;
+}
+
+export interface GQLSkylarkDynamicContentPreviewResponse {
+  dynamicContentPreview: {
+    count: number;
+    total_count: number;
+    objects: SkylarkGraphQLObject[];
+  };
+}
+
+export interface GQLSkylarkGetObjectDynamicContentConfigurationResponse {
+  getObjectDynamicContentConfiguration: {
+    content_sort_field: string | null;
+    content_sort_direction: GQLSkylarkOrderDirections;
+    content_limit: number | null;
+    dynamic_content: SkylarkGraphQLDynamicContentConfiguration;
+  };
 }

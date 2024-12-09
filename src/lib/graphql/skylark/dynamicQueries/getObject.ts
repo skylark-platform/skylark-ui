@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 import { VariableType } from "json-to-graphql-query";
 
+import { MAX_GRAPHQL_LIMIT } from "src/constants/skylark";
 import {
   SkylarkObjectMeta,
   NormalizedObjectField,
@@ -14,6 +15,7 @@ import {
   getObjectConfigFields,
   generateAvailabilityRelationshipFields,
   wrappedJsonQuery,
+  generateDimensionsAndValuesFieldsToReturn,
 } from "./utils";
 
 export const createGetObjectQueryName = (objectType: string) =>
@@ -119,29 +121,7 @@ export const createGetObjectAvailabilityQuery = (
             inherited: true,
             inheritance_source: true,
             active: true,
-            dimensions: {
-              __args: {
-                limit: 50,
-              },
-              next_token: true,
-              objects: {
-                uid: true,
-                title: true,
-                slug: true,
-                external_id: true,
-                description: true,
-                values: {
-                  objects: {
-                    description: true,
-                    external_id: true,
-                    slug: true,
-                    title: true,
-                    uid: true,
-                  },
-                  next_token: true,
-                },
-              },
-            },
+            dimensions: generateDimensionsAndValuesFieldsToReturn(),
           },
         },
       },
@@ -191,7 +171,7 @@ export const createGetObjectAvailabilityInheritanceQuery = (
             inherited_from: {
               next_token: true,
               __args: {
-                limit: 50,
+                limit: MAX_GRAPHQL_LIMIT,
                 next_token: new VariableType("inheritedFromNextToken"),
               },
               objects: {
@@ -214,7 +194,7 @@ export const createGetObjectAvailabilityInheritanceQuery = (
             inherited_by: {
               next_token: true,
               __args: {
-                limit: 50,
+                limit: MAX_GRAPHQL_LIMIT,
                 next_token: new VariableType("inheritedByNextToken"),
               },
               objects: {
@@ -291,13 +271,16 @@ export const createGetObjectRelationshipsQuery = (
             ...acc,
             [currentValue.relationshipName]: {
               __args: {
-                limit: 100,
+                limit: MAX_GRAPHQL_LIMIT,
                 next_token: new VariableType(
                   `${currentValue.relationshipName}NextToken`,
                 ),
               },
               __typename: true, // To get the ObjectType (Listing)
               next_token: true,
+              relationship_config: {
+                default_sort_field: true,
+              },
               objects: {
                 uid: true,
                 __typename: true,
@@ -356,6 +339,10 @@ export const createGetObjectContentQuery = (
           uid: new VariableType("uid"),
         },
         __typename: true,
+        uid: true,
+        content_sort_field: true,
+        content_sort_direction: true,
+        content_limit: true,
         ...generateContentsToReturn(object, contentTypesToRequest, {
           nextTokenVariableName: "nextToken",
           fetchAvailability: opts?.fetchAvailability,
@@ -395,7 +382,7 @@ export const createGetObjectContentOfQuery = (
         },
         content_of: {
           __args: {
-            limit: 100,
+            limit: MAX_GRAPHQL_LIMIT,
             next_token: new VariableType("nextToken"),
           },
           next_token: true,

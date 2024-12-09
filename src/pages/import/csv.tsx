@@ -80,6 +80,7 @@ const copyText: Record<
   {
     title: string;
     messages: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       [key in "pending" | "success" | "inProgress" | "error"]: string;
     };
   }

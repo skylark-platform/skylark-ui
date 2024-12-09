@@ -1,5 +1,5 @@
 import { DisplayGraphQLQuery } from "src/components/modals";
-import { ObjectIdentifierCard } from "src/components/objectIdentifierCard";
+import { ObjectIdentifierCard } from "src/components/objectIdentifier";
 import { PanelLoading } from "src/components/panel/panelLoading";
 import {
   PanelEmptyDataText,
@@ -9,7 +9,7 @@ import { Skeleton } from "src/components/skeleton";
 import { useGetObjectContentOf } from "src/hooks/objects/get/useGetObjectContentOf";
 import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkSetObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
-import { SkylarkObjectType, ParsedSkylarkObject } from "src/interfaces/skylark";
+import { SkylarkObjectType, SkylarkObject } from "src/interfaces/skylark";
 import { formatObjectField } from "src/lib/utils";
 
 import { PanelSectionLayout } from "./panelSectionLayout.component";
@@ -23,25 +23,22 @@ interface PanelContentOfProps {
   setPanelObject: SetPanelObject;
 }
 
-const groupContentOfByObjectType = (objects?: ParsedSkylarkObject[]) => {
+const groupContentOfByObjectType = (objects?: SkylarkObject[]) => {
   return (
-    objects?.reduce(
-      (acc: { [key: string]: ParsedSkylarkObject[] }, currentValue) => {
-        if (acc && acc[currentValue.objectType])
-          return {
-            ...acc,
-            [currentValue.objectType]: [
-              ...acc[currentValue.objectType],
-              currentValue,
-            ],
-          };
+    objects?.reduce((acc: { [key: string]: SkylarkObject[] }, currentValue) => {
+      if (acc && acc[currentValue.objectType])
         return {
           ...acc,
-          [currentValue.objectType]: [currentValue],
+          [currentValue.objectType]: [
+            ...acc[currentValue.objectType],
+            currentValue,
+          ],
         };
-      },
-      {},
-    ) || {}
+      return {
+        ...acc,
+        [currentValue.objectType]: [currentValue],
+      };
+    }, {}) || {}
   );
 };
 

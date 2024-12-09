@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { SearchType } from "src/hooks/useSearchWithLookupType";
 import {
-  ObjectTypeWithConfig,
+  ObjectTypesConfigObject,
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import { formatReadableDateTime } from "src/lib/skylark/availability";
@@ -23,7 +23,7 @@ const prettifyStrArr = (arr: string[]): string => {
 const buildObjectTypesStr = (
   filteredObjectTypes: string[] | null,
   numObjectTypes?: number,
-  allObjectTypesWithConfig?: ObjectTypeWithConfig[],
+  allObjectTypesWithConfig?: ObjectTypesConfigObject,
 ) => {
   // If object types are null, search will fetch all
   if (
@@ -38,10 +38,8 @@ const buildObjectTypesStr = (
   }
 
   const parsedObjectTypes = filteredObjectTypes.map((objectType) => {
-    const objectTypeWithConfig = allObjectTypesWithConfig?.find(
-      ({ objectType: name }) => name === objectType,
-    );
-    return objectTypeWithConfig?.config.objectTypeDisplayName || objectType;
+    const config = allObjectTypesWithConfig?.[objectType];
+    return config?.objectTypeDisplayName || objectType;
   });
 
   if (filteredObjectTypes.length < 10) {
@@ -81,7 +79,7 @@ export const AvailabilitySummary = ({
     timeTravel: { datetime: string; timezone: string } | null;
   };
 }) => {
-  const { objectTypesWithConfig, numObjectTypes } =
+  const { objectTypesConfig, numObjectTypes } =
     useSkylarkObjectTypesWithConfig();
 
   const { dimensions: allDimensionsWithValues } =
@@ -90,7 +88,7 @@ export const AvailabilitySummary = ({
   const objectTypeStr = buildObjectTypesStr(
     objectTypes,
     numObjectTypes,
-    objectTypesWithConfig,
+    objectTypesConfig,
   );
 
   const translationStr = language ? (

@@ -1,19 +1,19 @@
 import {
-  EnumType,
   IJsonToGraphQLOptions,
   VariableType,
   jsonToGraphQLQuery,
 } from "json-to-graphql-query";
 
-import { OBJECT_OPTIONS } from "src/constants/skylark";
+import { MAX_GRAPHQL_LIMIT, OBJECT_OPTIONS } from "src/constants/skylark";
 import {
-  BuiltInSkylarkObjectType,
   SkylarkGraphQLObject,
   SkylarkObjectMeta,
   SkylarkObjectType,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-import { convertSlugToDimensionHeader } from "src/lib/utils";
+import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
+
+import { createDynamicContentQueryField } from "./dynamicContent";
 
 const fieldNamesToNeverAlias: string[] = [
   SkylarkSystemField.UID,
@@ -119,6 +119,49 @@ const getIgnoreAvailabilityVariableAndArg = (shouldAdd: boolean) => {
   };
 };
 
+export const generateDimensionsAndValuesFieldsToReturn = (
+  nextTokenName?: string,
+): object => {
+  const base = {
+    __args: {
+      limit: MAX_GRAPHQL_LIMIT,
+    },
+    next_token: true,
+    objects: {
+      uid: true,
+      external_id: true,
+      title: true,
+      slug: true,
+      description: true,
+      values: {
+        __args: {
+          limit: MAX_GRAPHQL_LIMIT,
+        },
+        next_token: true,
+        objects: {
+          uid: true,
+          external_id: true,
+          title: true,
+          slug: true,
+          description: true,
+        },
+      },
+    },
+  };
+
+  if (nextTokenName) {
+    return {
+      ...base,
+      __args: {
+        ...base.__args,
+        next_token: new VariableType(nextTokenName),
+      },
+    };
+  }
+
+  return base;
+};
+
 export const generateVariablesAndArgs = (
   objectType: SkylarkObjectType | "search" | "genericGetObject",
   operationType: "Query" | "Mutation",
@@ -134,7 +177,7 @@ export const generateVariablesAndArgs = (
       objectType !== "search" &&
       objectType !== "genericGetObject",
   );
-  if (objectType === BuiltInSkylarkObjectType.Availability) {
+  if (isAvailabilityOrAvailabilitySegment(objectType)) {
     return {
       variables: {},
       args: {},
@@ -206,7 +249,7 @@ export const generateAvailabilityRelationshipFields = (
   objectAvailability: SkylarkObjectMeta,
 ) => ({
   __args: {
-    limit: 50, // max
+    limit: MAX_GRAPHQL_LIMIT,
   },
   next_token: true,
   time_window_status: true,
@@ -240,6 +283,13 @@ export const generateRelationshipsToReturn = (
     }
   }
 
+  if (object.isSet) {
+    relationshipsToReturn.dynamic_content = createDynamicContentQueryField(
+      false,
+      null,
+    );
+  }
+
   const builtinObjectRelationships = object.builtinObjectRelationships;
 
   if (
@@ -267,6 +317,11 @@ export const generateRelationshipsToReturn = (
     );
   }
 
+  if (isSearch && isAvailabilityOrAvailabilitySegment(object.name)) {
+    relationshipsToReturn["dimensions"] =
+      generateDimensionsAndValuesFieldsToReturn();
+  }
+
   return relationshipsToReturn;
 };
 
@@ -285,8 +340,8 @@ export const generateContentsToReturn = (
   return {
     content: {
       __args: {
-        order: new EnumType("ASC"),
-        limit: 100,
+        // order: new EnumType("ASC"),
+        limit: MAX_GRAPHQL_LIMIT,
         next_token: new VariableType(opts.nextTokenVariableName),
       },
       next_token: true,
@@ -303,6 +358,9 @@ export const generateContentsToReturn = (
               true,
               `__${object.name}__`,
             ),
+            ...(object.isSet
+              ? { dynamic_content: createDynamicContentQueryField(false, null) }
+              : {}),
             ...(opts.fetchAvailability && object.availability
               ? {
                   availability: generateAvailabilityRelationshipFields(
@@ -313,6 +371,7 @@ export const generateContentsToReturn = (
           })),
         },
         position: true,
+        dynamic: true,
       },
     },
   };
@@ -339,3 +398,6 @@ export const removeFieldPrefixFromReturnedObject = <T>(
   );
   return result as T;
 };
+
+export const parseSortField = (sortField: string | null) =>
+  sortField !== "__manual" ? sortField : null;

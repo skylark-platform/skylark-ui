@@ -348,15 +348,20 @@ describe("Relationships", () => {
         (req, res, ctx) => {
           return res(
             ctx.data({
-              listRelationshipConfiguration: [
-                {
-                  relationship_name: "images",
-                  config: {
-                    default_sort_field: "title",
-                    inherit_availability: true,
+              listRelationshipConfiguration: {
+                count: 1,
+                next_token: null,
+                objects: [
+                  {
+                    uid: null,
+                    relationship_name: "images",
+                    config: {
+                      default_sort_field: "title",
+                      inherit_availability: true,
+                    },
                   },
-                },
-              ],
+                ],
+              },
             }),
           );
         },

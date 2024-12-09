@@ -51,7 +51,7 @@ export const IntegrationUploader = ({
     onSuccess: onSuccessWrapper,
   };
 
-  if (provider === "mux" || provider === "brightcove") {
+  if (["mux", "brightcove", "wowza"].includes(provider)) {
     return <MuxUploader {...opts} {...commonProps} />;
   }
 

@@ -6,7 +6,6 @@ import {
 } from "./columnConfiguration";
 
 const baseColumnIds = [
-  "__typename-indicator",
   "__typename",
   "skylark-ui-display-field",
   "translation",
@@ -53,11 +52,10 @@ test("adds additional columns", () => {
     withObjectSelect: true,
   });
 
-  expect(got).toHaveLength(14);
+  expect(got).toHaveLength(13);
   expect(getColumnIds(got)).toEqual([
     "drag-icon",
     "skylark-ui-select",
-    "__typename-indicator",
     "__typename",
     "skylark-ui-display-field",
     "translation",

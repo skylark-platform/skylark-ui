@@ -177,7 +177,7 @@ describe("header (tab independent)", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByLabelText("Privacy policy: PRIVATE"),
+        screen.getByLabelText("Privacy policy: signed"),
       ).toBeInTheDocument(),
     );
   });

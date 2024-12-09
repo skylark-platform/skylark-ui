@@ -1,4 +1,7 @@
+import { EnumType } from "json-to-graphql-query";
+
 import {
+  SkylarkAvailabilityField,
   SkylarkObjectMetadataField,
   SkylarkSystemField,
 } from "./objectOperations";
@@ -85,6 +88,19 @@ export interface SkylarkGraphQLAvailabilityDimensionWithValues
   };
 }
 
+export interface SkylarkGraphQLAvailabilitySegment {
+  uid: SkylarkUID;
+  external_id: SkylarkExternalId;
+  slug: string;
+  title: string | null;
+  active: boolean;
+  [SkylarkAvailabilityField.DimensionBreakdown]: string | null; // AWSJSON
+  // dimensions?: {
+  //   next_token: NextToken;
+  //   objects: SkylarkGraphQLAvailabilityDimensionWithValues[];
+  // };
+}
+
 export interface SkylarkGraphQLAvailability {
   __typename: string;
   uid: SkylarkUID;
@@ -99,9 +115,14 @@ export interface SkylarkGraphQLAvailability {
   inheritance_source: boolean | null;
   inherited_by?: SkylarkGraphQLObjectList;
   inherited_from?: SkylarkGraphQLObjectList;
+  [SkylarkAvailabilityField.DimensionBreakdown]: string | null; // AWSJSON
   dimensions?: {
     next_token: NextToken;
     objects: SkylarkGraphQLAvailabilityDimensionWithValues[];
+  };
+  segments?: {
+    next_token: NextToken;
+    objects: SkylarkGraphQLAvailabilitySegment[];
   };
 }
 
@@ -122,6 +143,7 @@ export interface SkylarkGraphQLObjectContent {
   objects: {
     object: SkylarkGraphQLObject;
     position: number;
+    dynamic: boolean | null;
   }[];
 }
 
@@ -136,13 +158,18 @@ export type SkylarkGraphQLObject = {
   _config?: SkylarkGraphQLObjectConfig;
   _meta?: SkylarkGraphQLObjectMeta;
   content?: SkylarkGraphQLObjectContent;
+  dynamic_content?: SkylarkGraphQLDynamicContentConfiguration;
+  dimensions?: SkylarkGraphQLObjectList<SkylarkGraphQLAvailabilityDimensionWithValues>;
   [key: string]:
     | SkylarkObjectMetadataField
-    | SkylarkGraphQLObjectList<SkylarkGraphQLObject>
     | SkylarkGraphQLAvailabilityList
     | SkylarkGraphQLObjectContent
     | SkylarkGraphQLObjectConfig
     | SkylarkGraphQLObjectMeta
+    | SkylarkGraphQLDynamicContentConfiguration
+    | SkylarkGraphQLObjectList<
+        SkylarkGraphQLObject | SkylarkGraphQLAvailabilityDimensionWithValues
+      >
     | undefined;
 };
 
@@ -161,6 +188,16 @@ export type SkylarkGraphQLObjectList<T = SkylarkGraphQLObject> = {
   objects: T[];
 };
 
+export interface GQLObjectTypeRelationshipConfig {
+  default_sort_field: string | null;
+  inherit_availability: boolean | null;
+}
+
+export type SkylarkGraphQLRelationshipList<T = SkylarkGraphQLObject> =
+  SkylarkGraphQLObjectList<T> & {
+    relationship_config: GQLObjectTypeRelationshipConfig | null;
+  };
+
 export type SkylarkGraphQLAvailabilityList =
   SkylarkGraphQLObjectList<SkylarkGraphQLAvailability> & {
     time_window_status: "EXPIRED" | "FUTURE" | "ACTIVE" | "UNAVAILABLE" | null;
@@ -173,4 +210,44 @@ export interface SkylarkGraphQLAPIKey {
   expires: string | null;
   permissions: string[];
   created: string;
+}
+
+export interface SkylarkGraphQLDynamicContentConfigurationRuleBlock {
+  object_types: string[];
+  relationship_name: string;
+  uid: string[] | null;
+  objects: SkylarkGraphQLObject[];
+}
+
+export interface SkylarkGraphQLDynamicContentConfiguration {
+  dynamic_content_types: string[] | null;
+  dynamic_content_rules:
+    | [
+        Pick<
+          SkylarkGraphQLDynamicContentConfigurationRuleBlock,
+          "object_types"
+        > & {
+          relationship_name: null;
+          uid: null;
+          objects: null;
+        },
+        ...Array<SkylarkGraphQLDynamicContentConfigurationRuleBlock>,
+      ][]
+    | null;
+}
+
+export type SkylarkGraphQLDynamicSetRuleBlockInput = Omit<
+  SkylarkGraphQLDynamicContentConfigurationRuleBlock,
+  "object_types" | "objects"
+> & {
+  object_types: EnumType[];
+};
+
+export interface SkylarkDynamicSetInput {
+  dynamic_content_types: EnumType[];
+  dynamic_content_rules: [
+    { object_types: EnumType[] },
+    ...Array<SkylarkGraphQLDynamicSetRuleBlockInput>,
+  ][];
+  limit?: number;
 }

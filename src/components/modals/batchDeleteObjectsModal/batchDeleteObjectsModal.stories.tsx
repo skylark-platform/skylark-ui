@@ -1,14 +1,12 @@
 import { StoryFn } from "@storybook/react";
 import { userEvent, within } from "@storybook/testing-library";
 
-import {
-  AvailabilityStatus,
-  ParsedSkylarkObject,
-} from "src/interfaces/skylark";
+import { AvailabilityStatus, SkylarkObject } from "src/interfaces/skylark";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
 import { BatchDeleteObjectsModal } from "./batchDeleteObjectsModal.component";
 
-const object: ParsedSkylarkObject = {
+const object: SkylarkObject = convertParsedObjectToIdentifier({
   uid: "123",
   objectType: "Episode",
   meta: {
@@ -21,13 +19,15 @@ const object: ParsedSkylarkObject = {
     uid: "123",
     external_id: "",
     title: "My Episode",
+    type: null,
   },
   config: { primaryField: "title" },
   availability: {
     status: AvailabilityStatus.Active,
     objects: [],
+    dimensions: [],
   },
-};
+});
 
 export default {
   title: "Components/Modals/BatchDeleteObjectsModal",

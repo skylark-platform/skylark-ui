@@ -3,14 +3,20 @@ import {
   setObjectOperations,
 } from "src/__tests__/utils/objectOperations";
 import {
-  AvailabilityStatus,
-  ParsedSkylarkObjectContentObject,
+  SkylarkObjectContentObject,
+  SkylarkObject,
 } from "src/interfaces/skylark";
+import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
 import {
   createDeleteObjectMutation,
   createUpdateObjectContentMutation,
 } from "./objects";
+
+const obj: SkylarkObject = createDefaultSkylarkObject({
+  uid: "",
+  objectType: "",
+});
 
 describe("createDeleteObjectMutation", () => {
   test("returns null when the object doesn't have a delete operation", () => {
@@ -44,48 +50,33 @@ describe("createDeleteObjectMutation", () => {
 
 describe("createUpdateSetContentPositionMutation", () => {
   test("returns null when the object doesn't have an update operation", () => {
-    const got = createUpdateObjectContentMutation(null, [], []);
+    const got = createUpdateObjectContentMutation(null, [], [], null);
 
     expect(got).toBeNull();
   });
 
   test("returns expected GraphQL update mutation when no items are reordered", () => {
-    const content: ParsedSkylarkObjectContentObject[] = [
+    const content: SkylarkObjectContentObject[] = [
       {
+        ...obj,
         objectType: "Episode",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
         position: 1,
-        object: { uid: "episode_1", external_id: "" },
+        isDynamic: false,
+        uid: "episode_1",
       },
       {
+        ...obj,
         objectType: "Episode",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        uid: "episode_2",
         position: 2,
-        object: { uid: "episode_2", external_id: "" },
+        isDynamic: false,
       },
       {
+        ...obj,
         objectType: "Movie",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        uid: "movie_1",
         position: 3,
-        object: { uid: "movie_1", external_id: "" },
+        isDynamic: true,
       },
     ];
 
@@ -93,50 +84,36 @@ describe("createUpdateSetContentPositionMutation", () => {
       setObjectOperations,
       content,
       content,
+      null,
     );
 
     expect(got?.loc?.source.body).toContain(
-      `{Episode: {link: [], unlink: [], reposition: [{uid: \"episode_1\", position: 1}, {uid: \"episode_2\", position: 2}]}, Movie: {link: [], unlink: [], reposition: [{uid: \"movie_1\", position: 3}]}`,
+      `content: {Episode: {reposition: [{uid: \"episode_1\", position: 1}, {uid: \"episode_2\", position: 2}]}}}`,
     );
   });
 
   test("returns expected GraphQL update mutation when items are reordered", () => {
-    const content: ParsedSkylarkObjectContentObject[] = [
+    const content: SkylarkObjectContentObject[] = [
       {
+        ...obj,
         objectType: "Episode",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        uid: "episode_1",
         position: 1,
-        object: { uid: "episode_1", external_id: "" },
+        isDynamic: false,
       },
       {
+        ...obj,
         objectType: "Episode",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        uid: "episode_2",
         position: 2,
-        object: { uid: "episode_2", external_id: "" },
+        isDynamic: false,
       },
       {
+        ...obj,
         objectType: "Movie",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        uid: "movie_1",
         position: 3,
-        object: { uid: "movie_1", external_id: "" },
+        isDynamic: true,
       },
     ];
 
@@ -146,50 +123,36 @@ describe("createUpdateSetContentPositionMutation", () => {
       setObjectOperations,
       content,
       updatedContent,
+      null,
     );
 
     expect(got?.loc?.source.body).toContain(
-      `{Episode: {link: [], unlink: [], reposition: [{uid: \"episode_2\", position: 1}, {uid: \"episode_1\", position: 3}]}, Movie: {link: [], unlink: [], reposition: [{uid: \"movie_1\", position: 2}]}`,
+      `content: {Episode: {reposition: [{uid: \"episode_2\", position: 1}, {uid: \"episode_1\", position: 3}]}}}`,
     );
   });
 
   test("returns expected GraphQL update mutation when an item is removed", () => {
-    const content: ParsedSkylarkObjectContentObject[] = [
+    const content: SkylarkObjectContentObject[] = [
       {
+        ...obj,
         objectType: "Episode",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        uid: "episode_1",
         position: 1,
-        object: { uid: "episode_1", external_id: "" },
+        isDynamic: false,
       },
       {
+        ...obj,
         objectType: "Episode",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        uid: "episode_2",
         position: 2,
-        object: { uid: "episode_2", external_id: "" },
+        isDynamic: false,
       },
       {
+        ...obj,
         objectType: "Movie",
-        config: { fieldConfig: [] },
-        meta: {
-          language: "en-GB",
-          availableLanguages: ["en-GB"],
-          availabilityStatus: AvailabilityStatus.Active,
-          versions: {},
-        },
+        uid: "movie_1",
         position: 3,
-        object: { uid: "movie_1", external_id: "" },
+        isDynamic: true,
       },
     ];
 
@@ -199,10 +162,11 @@ describe("createUpdateSetContentPositionMutation", () => {
       setObjectOperations,
       content,
       updatedContent,
+      null,
     );
 
     expect(got?.loc?.source.body).toContain(
-      `{Movie: {link: [], unlink: [], reposition: [{uid: \"movie_1\", position: 1}]}, Episode: {link: [], unlink: [\"episode_2\"], reposition: [{uid: \"episode_1\", position: 2}]}`,
+      `content: {Episode: {reposition: [{uid: \"episode_1\", position: 2}], unlink: [\"episode_2\"]}}}`,
     );
   });
 });

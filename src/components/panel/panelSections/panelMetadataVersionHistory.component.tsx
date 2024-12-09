@@ -1,7 +1,6 @@
 import { sentenceCase } from "change-case";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { useState } from "react";
 import { FiMoreVertical } from "react-icons/fi";
 
 import {
@@ -9,16 +8,20 @@ import {
   DropdownMenuButton,
   DropdownMenuOption,
 } from "src/components/dropdown/dropdown.component";
+import { PanelLoading } from "src/components/panel/panelLoading";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
+import { Skeleton } from "src/components/skeleton";
 import { UserAvatar } from "src/components/user";
 import { useGetObjectVersions } from "src/hooks/objects/get/useGetObjectVersions";
 import { useUserAccount } from "src/hooks/useUserAccount";
 import {
-  SkylarkObjectIdentifier,
+  SkylarkObject,
   SkylarkObjectMetadataField,
 } from "src/interfaces/skylark";
 
-interface PanelMetadataVersionHistoryProps extends SkylarkObjectIdentifier {}
+interface PanelMetadataVersionHistoryProps {
+  object: SkylarkObject;
+}
 
 const FieldDiff = ({
   newValue,
@@ -59,15 +62,19 @@ const FieldDiff = ({
 };
 
 export const PanelMetadataVersionHistory = ({
-  objectType,
-  uid,
-  language,
+  object,
 }: PanelMetadataVersionHistoryProps) => {
+  const { uid, objectType, language } = object;
+
   const { role } = useUserAccount();
 
-  const { versions } = useGetObjectVersions(objectType, uid, {
-    language,
-  });
+  const { versions, isLoading, isError } = useGetObjectVersions(
+    objectType,
+    uid,
+    {
+      language,
+    },
+  );
 
   return (
     <div
@@ -145,6 +152,19 @@ export const PanelMetadataVersionHistory = ({
               </div>
             );
           })}
+        {!isLoading && isError && (
+          <p className="text-sm">
+            Unable to fetch History for {object.display.objectType}.
+          </p>
+        )}
+        <PanelLoading isLoading={isLoading}>
+          {Array.from({ length: 2 }, (_, i) => (
+            <div key={`content-of-skeleton-${i}`} className="mb-8">
+              <Skeleton className="mb-2 h-4 w-full" />
+              <Skeleton className="mb-4 h-36 w-full" />
+            </div>
+          ))}
+        </PanelLoading>
       </div>
     </div>
   );

@@ -11,7 +11,11 @@ import { toast } from "react-toastify";
 
 import { Button } from "src/components/button";
 import { SkylarkObjectFieldInput } from "src/components/inputs";
-import { LanguageSelect, ObjectTypeSelect } from "src/components/inputs/select";
+import {
+  LanguageSelect,
+  ObjectTypeSelect,
+  SetObjectTypeSelect,
+} from "src/components/inputs/select";
 import {
   Modal,
   ModalDescription,
@@ -32,6 +36,7 @@ import {
 } from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectConfig,
+  SkylarkObject,
   SkylarkObjectIdentifier,
   SkylarkObjectMetadataField,
   SkylarkObjectType,
@@ -43,12 +48,9 @@ import { platformMetaKeyClicked } from "src/lib/utils";
 interface CreateObjectModalProps {
   isOpen: boolean;
   objectType?: SkylarkObjectType;
-  createTranslation?: {
-    existingLanguages: string[];
-    objectTypeDisplayName?: string;
-    objectDisplayName?: string;
-  } & SkylarkObjectIdentifier;
-  setIsOpen: (b: boolean) => void;
+  setTypesOnly?: boolean;
+  createTranslation?: SkylarkObject;
+  setIsOpen: (b: false) => void;
   onObjectCreated: (o: SkylarkObjectIdentifier) => void;
 }
 
@@ -57,6 +59,7 @@ const CreateObjectModalBody = forwardRef(
     {
       objectType: defaultObjectType,
       createTranslation,
+      setTypesOnly,
       closeModal,
       onObjectCreated,
     }: Omit<CreateObjectModalProps, "isOpen" | "setIsOpen"> & {
@@ -83,14 +86,12 @@ const CreateObjectModalBody = forwardRef(
       objectType: defaultObjectType || "",
     });
 
-    const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+    const { objectTypesConfig } = useSkylarkObjectTypesWithConfig();
     const objectTypeConfig =
-      selectedObjectTypeConfig ||
-      objectTypesWithConfig?.find(({ objectType: ot }) => ot === objectType)
-        ?.config;
+      selectedObjectTypeConfig || objectTypesConfig?.[objectType];
 
     const objectTypeDisplayName = isCreateTranslationModal
-      ? createTranslation.objectTypeDisplayName || createTranslation.objectType
+      ? createTranslation.display.objectType || createTranslation.objectType
       : objectTypeConfig?.objectTypeDisplayName || objectType;
 
     const { objectOperations } = useSkylarkObjectOperations(
@@ -156,7 +157,7 @@ const CreateObjectModalBody = forwardRef(
             message={`The "${
               object.language
             }" translation has been created for the "${
-              createTranslation?.objectDisplayName || object.uid
+              createTranslation?.display.name || object.uid
             }" ${objectTypeDisplayName}.`}
           />,
         );
@@ -260,7 +261,7 @@ const CreateObjectModalBody = forwardRef(
 
     const isExistingTranslation =
       isCreateTranslationModal && values._language
-        ? createTranslation.existingLanguages.includes(
+        ? createTranslation.availableLanguages.includes(
             values._language as string,
           )
         : false;
@@ -277,29 +278,43 @@ const CreateObjectModalBody = forwardRef(
         <ModalTitle>
           {isCreateTranslationModal
             ? `Create ${objectTypeDisplayName} Translation`
-            : `Create ${objectTypeDisplayName || "Object"}`}
+            : `Create ${objectTypeDisplayName || (setTypesOnly ? "Set" : "Object")}`}
         </ModalTitle>
         <ModalDescription>
           {isCreateTranslationModal
             ? "Select language and add translatable data."
-            : "Select Object Type to get started."}
+            : setTypesOnly
+              ? "Select type of Set to get started."
+              : "Select Object Type to get started."}
         </ModalDescription>
         <form
           className="mt-8 flex w-full flex-col justify-end gap-4"
           onSubmit={handleSubmit(onSubmit)}
         >
-          {!isCreateTranslationModal && (
-            <ObjectTypeSelect
-              ref={objectTypeSelectRef}
-              className="w-full"
-              variant="primary"
-              label="Object Type"
-              labelVariant="form"
-              placeholder="Select Object Type to get started"
-              selected={objectType}
-              onChange={setObjectTypeWithConfig}
-            />
-          )}
+          {!isCreateTranslationModal &&
+            (setTypesOnly ? (
+              <SetObjectTypeSelect
+                ref={objectTypeSelectRef}
+                className="w-full"
+                variant="primary"
+                label="Set Type"
+                labelVariant="form"
+                placeholder="Select type of Set to get started"
+                selected={objectType}
+                onChange={setObjectTypeWithConfig}
+              />
+            ) : (
+              <ObjectTypeSelect
+                ref={objectTypeSelectRef}
+                className="w-full"
+                variant="primary"
+                label="Object Type"
+                labelVariant="form"
+                placeholder="Select Object Type to get started"
+                selected={objectType}
+                onChange={setObjectTypeWithConfig}
+              />
+            ))}
           {objectOperations && (
             <div>
               {(objectOperations.isTranslatable ||

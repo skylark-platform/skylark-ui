@@ -5,7 +5,11 @@ import {
   SelectOption,
   SelectProps,
 } from "src/components/inputs/select";
-import { useSkylarkObjectTypesWithConfig } from "src/hooks/useSkylarkObjectTypes";
+import {
+  ObjectTypeWithConfig,
+  useSkylarkObjectTypesWithConfig,
+  useSkylarkSetObjectTypesWithConfig,
+} from "src/hooks/useSkylarkObjectTypes";
 import {
   ParsedSkylarkObjectConfig,
   SkylarkObjectType,
@@ -39,31 +43,40 @@ const formatLabel = (
   return config?.objectTypeDisplayName || objectType;
 };
 
+const createOptions = (
+  objectTypesWithConfig?: ObjectTypeWithConfig[],
+  hiddenObjectTypes?: string[],
+  displayActualName?: boolean,
+): SelectOption<string>[] =>
+  objectTypesWithConfig
+    ?.filter(
+      ({ objectType }) =>
+        !hiddenObjectTypes || !hiddenObjectTypes.includes(objectType),
+    )
+    .map(({ objectType, config }) => ({
+      value: objectType,
+      label: formatLabel(objectType, config, displayActualName),
+    })) || [];
+
 export const ObjectTypeSelect = forwardRef(
   (
     { hiddenObjectTypes, displayActualName, ...props }: ObjectTypeSelectProps,
     ref: Ref<HTMLButtonElement | HTMLInputElement>,
   ) => {
-    const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+    const { objectTypesWithConfig, objectTypesConfig } =
+      useSkylarkObjectTypesWithConfig();
 
-    const options: SelectOption<string>[] =
-      objectTypesWithConfig
-        ?.filter(
-          ({ objectType }) =>
-            !hiddenObjectTypes || !hiddenObjectTypes.includes(objectType),
-        )
-        .map(({ objectType, config }) => ({
-          value: objectType,
-          label: formatLabel(objectType, config, displayActualName),
-        })) || [];
+    const options: SelectOption<string>[] = createOptions(
+      objectTypesWithConfig,
+      hiddenObjectTypes,
+      displayActualName,
+    );
 
     const onChangeWrapper = (value: string) => {
-      const objectTypeWithConfig = objectTypesWithConfig?.find(
-        ({ objectType }) => objectType === value,
-      );
+      const config = objectTypesConfig?.[value];
       props.onChange({
         objectType: value,
-        config: objectTypeWithConfig?.config,
+        config,
       });
     };
 
@@ -80,3 +93,38 @@ export const ObjectTypeSelect = forwardRef(
   },
 );
 ObjectTypeSelect.displayName = "ObjectTypeSelect";
+
+export const SetObjectTypeSelect = forwardRef(
+  (
+    { hiddenObjectTypes, ...props }: ObjectTypeSelectProps,
+    ref: Ref<HTMLButtonElement | HTMLInputElement>,
+  ) => {
+    const { objectTypesWithConfig, objectTypesConfig } =
+      useSkylarkSetObjectTypesWithConfig();
+
+    const options: SelectOption<string>[] = createOptions(
+      objectTypesWithConfig,
+      hiddenObjectTypes,
+    );
+
+    const onChangeWrapper = (value: string) => {
+      const config = objectTypesConfig?.[value];
+      props.onChange({
+        objectType: value,
+        config,
+      });
+    };
+
+    return (
+      <Select
+        {...props}
+        disabled={options.length === 0 || props.disabled}
+        placeholder={props.placeholder || "Set Type"}
+        options={options}
+        ref={ref}
+        onChange={onChangeWrapper}
+      />
+    );
+  },
+);
+SetObjectTypeSelect.displayName = "SetObjectTypeSelect";

@@ -70,12 +70,9 @@ describe("relationships view", () => {
     await waitFor(() => expect(screen.getAllByText("Episode")).toHaveLength(5));
 
     const withinEpisodesRelationship = within(screen.getByTestId("episodes"));
+    const select = withinEpisodesRelationship.getByTestId("select");
 
-    await waitFor(() => {
-      expect(
-        withinEpisodesRelationship.getByText("Sorted by: Episode number"),
-      ).toBeInTheDocument();
-    });
+    expect(select).toHaveTextContent('"episode_number"');
   });
 
   test("displays the value of the relationship sort field", async () => {
@@ -136,11 +133,13 @@ describe("relationships view", () => {
     })[0];
     fireEvent.click(firstOpenObjectButton);
 
-    expect(setPanelObject).toHaveBeenCalledWith({
-      objectType: "Brand",
-      uid: "01H4MMDGADSP73B3MBM89VZTQC",
-      language: "en-GB",
-    });
+    expect(setPanelObject).toHaveBeenCalledWith(
+      expect.objectContaining({
+        objectType: "Brand",
+        uid: "01H4MMDGADSP73B3MBM89VZTQC",
+        language: "en-GB",
+      }),
+    );
   });
 
   test("makes a relationship active and then closes it", async () => {

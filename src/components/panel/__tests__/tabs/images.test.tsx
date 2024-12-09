@@ -109,11 +109,13 @@ describe("imagery view", () => {
     })[0];
     fireEvent.click(firstOpenObjectButton);
 
-    expect(setPanelObject).toHaveBeenCalledWith({
-      objectType: "SkylarkImage",
-      uid: GQLSkylarkGetObjectRelationshipsQueryFixture.data
-        .getObjectRelationships.images.objects[0].uid,
-      language: "en-GB",
-    });
+    expect(setPanelObject).toHaveBeenCalledWith(
+      expect.objectContaining({
+        objectType: "SkylarkImage",
+        uid: GQLSkylarkGetObjectRelationshipsQueryFixture.data
+          .getObjectRelationships.images.objects[0].uid,
+        language: "en-GB",
+      }),
+    );
   });
 });

@@ -44,7 +44,7 @@ test("opens the Availability Picker when the button is clicked", async () => {
   fireEvent.click(screen.getByTestId("open-availability-picker"));
 
   await waitFor(() => {
-    expect(screen.getByText("Dimensions")).toBeInTheDocument();
+    expect(screen.getByText("Audience")).toBeInTheDocument();
   });
   expect(screen.getByText("Time travel")).toBeInTheDocument();
 

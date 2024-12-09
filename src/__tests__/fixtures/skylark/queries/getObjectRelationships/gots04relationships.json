@@ -4,6 +4,10 @@
       "brands": {
         "__typename": "BrandListing",
         "next_token": null,
+        "relationship_config": {
+          "default_sort_field": "title",
+          "inherit_availability": false
+        },
         "objects": [
           {
             "uid": "01H4MMDGADSP73B3MBM89VZTQC",
@@ -48,6 +52,10 @@
       "episodes": {
         "__typename": "EpisodeListing",
         "next_token": null,
+        "relationship_config": {
+          "default_sort_field": "episode_number",
+          "inherit_availability": false
+        },
         "objects": [
           {
             "uid": "01H4MMDSWKHXDD3YW0DF43G8PM",
@@ -354,6 +362,10 @@
       "genres": {
         "__typename": "GenreListing",
         "next_token": null,
+        "relationship_config": {
+          "default_sort_field": "title_sort",
+          "inherit_availability": false
+        },
         "objects": [
           {
             "uid": "01H4MMC9DNVZCJG43WPS4N1XR7",

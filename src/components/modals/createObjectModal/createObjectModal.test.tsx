@@ -12,6 +12,7 @@ import GQLSkylarkUserAccountFixture from "src/__tests__/fixtures/skylark/queries
 import { server } from "src/__tests__/mocks/server";
 import { render } from "src/__tests__/utils/test-utils";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
+import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
 import { CreateObjectModal } from "./createObjectModal.component";
 
@@ -321,14 +322,12 @@ describe("Create Translation (existing object)", () => {
         isOpen={true}
         setIsOpen={jest.fn()}
         onObjectCreated={jest.fn()}
-        createTranslation={{
+        createTranslation={createDefaultSkylarkObject({
           objectType: "Episode",
-          objectTypeDisplayName: "Episode",
-          objectDisplayName: "GOT S01E01",
+          display: { name: "GOT S01E01" },
           uid: "123",
           language: "en-GB",
-          existingLanguages: [],
-        }}
+        })}
       />,
     );
 
@@ -359,14 +358,12 @@ describe("Create Translation (existing object)", () => {
         isOpen={true}
         setIsOpen={jest.fn()}
         onObjectCreated={jest.fn()}
-        createTranslation={{
+        createTranslation={createDefaultSkylarkObject({
           objectType: "Episode",
-          objectTypeDisplayName: "Episode",
-          objectDisplayName: "GOT S01E01",
+          display: { name: "GOT S01E01" },
           uid: "123",
           language: "en-GB",
-          existingLanguages: [],
-        }}
+        })}
       />,
     );
 
@@ -394,14 +391,13 @@ describe("Create Translation (existing object)", () => {
         isOpen={true}
         setIsOpen={jest.fn()}
         onObjectCreated={jest.fn()}
-        createTranslation={{
+        createTranslation={createDefaultSkylarkObject({
           objectType: "Episode",
-          objectTypeDisplayName: "Episode",
-          objectDisplayName: "GOT S01E01",
+          display: { name: "GOT S01E01" },
           uid: "123",
           language: "en-GB",
-          existingLanguages: ["en-GB"],
-        }}
+          availableLanguages: ["en-GB"],
+        })}
       />,
     );
 
@@ -435,14 +431,13 @@ describe("Create Translation (existing object)", () => {
         isOpen={true}
         setIsOpen={jest.fn()}
         onObjectCreated={onObjectCreated}
-        createTranslation={{
+        createTranslation={createDefaultSkylarkObject({
           objectType: "SkylarkSet",
-          objectTypeDisplayName: "Set",
-          objectDisplayName: "GOT Rail",
+          display: { name: "GOT Rail", objectType: "Set" },
           uid: "123",
           language: "en-GB",
-          existingLanguages: [],
-        }}
+          availableLanguages: [],
+        })}
       />,
     );
 
@@ -493,14 +488,13 @@ describe("Create Translation (existing object)", () => {
         isOpen={true}
         setIsOpen={jest.fn()}
         onObjectCreated={onObjectCreated}
-        createTranslation={{
+        createTranslation={createDefaultSkylarkObject({
           objectType: "SkylarkSet",
-          objectTypeDisplayName: "Set",
-          objectDisplayName: "GOT Rail",
+          display: { name: "GOT Rail", objectType: "Set" },
           uid: "123",
           language: "en-GB",
-          existingLanguages: [],
-        }}
+          availableLanguages: [],
+        })}
       />,
     );
 

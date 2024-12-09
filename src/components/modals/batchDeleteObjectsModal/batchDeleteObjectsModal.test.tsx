@@ -3,15 +3,13 @@ import { graphql } from "msw";
 
 import { server } from "src/__tests__/mocks/server";
 import { render } from "src/__tests__/utils/test-utils";
-import {
-  AvailabilityStatus,
-  ParsedSkylarkObject,
-} from "src/interfaces/skylark";
+import { AvailabilityStatus, SkylarkObject } from "src/interfaces/skylark";
 import { wrapQueryName } from "src/lib/graphql/skylark/dynamicQueries";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 
 import { BatchDeleteObjectsModal } from "./batchDeleteObjectsModal.component";
 
-const object: ParsedSkylarkObject = {
+const object = convertParsedObjectToIdentifier({
   objectType: "Episode",
   uid: "123",
   meta: {
@@ -20,13 +18,14 @@ const object: ParsedSkylarkObject = {
     availabilityStatus: AvailabilityStatus.Unavailable,
     versions: {},
   },
-  metadata: { uid: "123", external_id: "" },
+  metadata: { uid: "123", external_id: "", type: null },
   config: { primaryField: "title" },
   availability: {
     objects: [],
     status: AvailabilityStatus.Unavailable,
+    dimensions: [],
   },
-};
+});
 
 test("renders the modal", async () => {
   render(
@@ -115,7 +114,7 @@ test("shows this translation will be deleted and the object when not all availab
       objectsToBeDeleted={[
         {
           ...object,
-          meta: { ...object.meta, availableLanguages: ["en-GB", "pt-PT"] },
+          availableLanguages: ["en-GB", "pt-PT"],
         },
       ]}
       closeModal={jest.fn()}
@@ -133,19 +132,23 @@ test("shows this translation will be deleted and the object when not all availab
   ).toBeInTheDocument();
 });
 
-test("shows this translation will be deleted and the object when not all available languages are", async () => {
+test("shows these objects will be deleted when each have only one translation", async () => {
+  const object2 = {
+    ...object,
+    uid: "245",
+    objectType: "Movie",
+    contextualFields: null,
+    display: {
+      ...object.display,
+      objectType: "Movie",
+      name: "245",
+    },
+  };
+
   render(
     <BatchDeleteObjectsModal
       isOpen={true}
-      objectsToBeDeleted={[
-        object,
-        {
-          ...object,
-          uid: "245",
-          objectType: "Movie",
-          metadata: { uid: "245", external_id: "" },
-        },
-      ]}
+      objectsToBeDeleted={[object, object2]}
       closeModal={jest.fn()}
       onDeletionComplete={jest.fn()}
     />,
@@ -160,22 +163,15 @@ test("shows this translation will be deleted and the object when not all availab
     screen.getByText("The following objects will be permanently deleted:"),
   ).toBeInTheDocument();
   expect(screen.getByText(object.objectType)).toBeInTheDocument();
-  expect(screen.getByText("123")).toBeInTheDocument();
-  expect(screen.getByText("245")).toBeInTheDocument();
+  expect(screen.getByText(object.display.name)).toBeInTheDocument();
+  expect(screen.getByText(object2.display.name)).toBeInTheDocument();
 });
 
 test("shows some objects will not be deleted when the number of objects exceeds the deletion limit", async () => {
-  const objects: ParsedSkylarkObject[] = Array.from(
-    { length: 150 },
-    (_, i) => ({
-      ...object,
-      uid: `object-${i}`,
-      metadata: {
-        uid: `object-${i}`,
-        external_id: "",
-      },
-    }),
-  );
+  const objects: SkylarkObject[] = Array.from({ length: 150 }, (_, i) => ({
+    ...object,
+    uid: `object-${i}`,
+  }));
   render(
     <BatchDeleteObjectsModal
       isOpen={true}
@@ -212,7 +208,7 @@ describe("activated delete button", () => {
             ...object,
             uid: "245",
             objectType: "Movie",
-            metadata: { uid: "245", external_id: "" },
+            contextualFields: null,
           },
         ]}
         closeModal={closeModal}

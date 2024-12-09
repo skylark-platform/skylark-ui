@@ -22,12 +22,13 @@ import {
   useSkylarkObjectTypesWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
 import {
-  SkylarkObjectIdentifier,
+  SkylarkObject,
   ParsedSkylarkObject,
   BuiltInSkylarkObjectType,
 } from "src/interfaces/skylark";
 import { segment } from "src/lib/analytics/segment";
 import { useDndMonitor } from "src/lib/dndkit/dndkit";
+import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import {
   getObjectDisplayName,
   hasProperty,
@@ -50,7 +51,7 @@ export interface ObjectSearchResultsProps {
   tableColumns: ColumnDef<ObjectSearchTableData, ObjectSearchTableData>[];
   withCreateButtons?: boolean;
   withObjectSelect?: boolean;
-  panelObject?: SkylarkObjectIdentifier | null;
+  panelObject?: SkylarkObject | null;
   setPanelObject?: SetPanelObject;
   fetchNextPage?: () => void;
   searchData?: ObjectSearchTableData[];
@@ -102,15 +103,14 @@ export const ObjectSearchResults = ({
 }: ObjectSearchResultsProps) => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
-  const { objectTypesWithConfig } = useSkylarkObjectTypesWithConfig();
+  const { objectTypesWithConfig, objectTypesConfig } =
+    useSkylarkObjectTypesWithConfig();
 
   const { objects: objectsMeta } = useAllObjectsMeta(true);
 
   const formattedSearchData = useMemo(() => {
     const searchDataWithDisplayField = searchData?.map((obj) => {
-      const { config } = objectTypesWithConfig?.find(
-        ({ objectType }) => objectType === obj.objectType,
-      ) || { config: obj.config };
+      const config = objectTypesConfig?.[obj.objectType] || obj.config;
       return {
         ...obj,
         // When the object type is an image, we want to display its preview in the images tab
@@ -135,7 +135,7 @@ export const ObjectSearchResults = ({
     );
 
     return searchDataWithTopLevelMetadata;
-  }, [objectTypesWithConfig, searchData]);
+  }, [objectTypesConfig, searchData]);
 
   const searchDataLength = searchData?.length || 0;
   const fetchMoreOnBottomReached = useCallback(
@@ -158,11 +158,24 @@ export const ObjectSearchResults = ({
   );
 
   const onRowCheckChange = useCallback(
-    (updated: { object: ParsedSkylarkObject; checkedState: CheckedState }) => {
+    ({
+      rowData: updatedRowData,
+      checkedState: updatedCheckedState,
+    }: {
+      rowData: ObjectSearchTableData;
+      checkedState: CheckedState;
+    }) => {
       if (onObjectCheckedChanged && checkedObjectsState) {
-        const existsIndex = checkedObjectsState.findIndex((c) =>
-          skylarkObjectsAreSame(updated.object, c.object),
+        const object = convertParsedObjectToIdentifier(
+          updatedRowData,
+          objectTypesConfig,
         );
+
+        const existsIndex = checkedObjectsState.findIndex((c) =>
+          skylarkObjectsAreSame(object, c.object),
+        );
+
+        const updated = { object, checkedState: updatedCheckedState };
 
         if (existsIndex > -1) {
           const copyArr = [...checkedObjectsState];
@@ -173,7 +186,7 @@ export const ObjectSearchResults = ({
         }
       }
     },
-    [checkedObjectsState, onObjectCheckedChanged],
+    [checkedObjectsState, objectTypesConfig, onObjectCheckedChanged],
   );
 
   const {
@@ -187,7 +200,10 @@ export const ObjectSearchResults = ({
       ? checkedObjectsState.reduce(
           (acc, { object: checkedObj, checkedState }) => {
             const index = searchData.findIndex((searchDataObj) =>
-              skylarkObjectsAreSame(checkedObj, searchDataObj),
+              skylarkObjectsAreSame(
+                checkedObj,
+                convertParsedObjectToIdentifier(searchDataObj),
+              ),
             );
 
             if (index > -1) {
@@ -225,7 +241,10 @@ export const ObjectSearchResults = ({
             .filter(({ checkedState }) => checkedState !== false)
             .map(({ object }) => {
               const index = searchData.findIndex((searchDataObj) =>
-                skylarkObjectsAreSame(object, searchDataObj),
+                skylarkObjectsAreSame(
+                  object,
+                  convertParsedObjectToIdentifier(searchDataObj),
+                ),
               );
 
               return index;
@@ -244,7 +263,13 @@ export const ObjectSearchResults = ({
               reverseSortedCheckedRows[firstSmallerIndex] + 1 || 0,
               rowIndex + 1,
             )
-            .map((object) => ({ object, checkedState: true }));
+            .map((object) => ({
+              object: convertParsedObjectToIdentifier(
+                object,
+                objectTypesConfig,
+              ),
+              checkedState: true,
+            }));
 
           onObjectCheckedChanged([...checkedObjectsState, ...objectsToCheck]);
         }
@@ -254,7 +279,12 @@ export const ObjectSearchResults = ({
         }
       }
     },
-    [checkedObjectsState, onObjectCheckedChanged, searchData],
+    [
+      checkedObjectsState,
+      objectTypesConfig,
+      onObjectCheckedChanged,
+      searchData,
+    ],
   );
 
   // TODO we may want to refactor this so that hovering doesn't trigger a render
@@ -270,12 +300,6 @@ export const ObjectSearchResults = ({
     () => tableState.columnPinning.left || [],
     [tableState.columnPinning.left],
   );
-
-  const showObjectTypeIndicator =
-    !tableState.columnVisibility[OBJECT_LIST_TABLE.columnIds.objectType] ||
-    frozenColumns.indexOf(OBJECT_LIST_TABLE.columnIds.objectTypeIndicator) +
-      1 !==
-      frozenColumns.indexOf(OBJECT_LIST_TABLE.columnIds.objectType);
 
   const queryClient = useQueryClient();
 
@@ -294,11 +318,9 @@ export const ObjectSearchResults = ({
         if (object) {
           let objectConfig = object.config;
           if (!object.config || !object.config.fieldConfig) {
-            const foundConfig = objectTypesWithConfig?.find(
-              ({ objectType }) => objectType === object.objectType,
-            );
+            const foundConfig = objectTypesConfig?.[object.objectType];
             if (foundConfig) {
-              objectConfig = foundConfig.config;
+              objectConfig = foundConfig;
             }
           }
 
@@ -321,7 +343,7 @@ export const ObjectSearchResults = ({
         setPanelObject(obj, opts, ...args);
       }
     },
-    [objectTypesWithConfig, queryClient, searchData, setPanelObject],
+    [objectTypesConfig, queryClient, searchData, setPanelObject],
   );
 
   const table = useReactTable<ObjectSearchTableData>({
@@ -335,8 +357,6 @@ export const ObjectSearchResults = ({
       ...tableState,
       columnVisibility: {
         ...tableState.columnVisibility,
-        [OBJECT_LIST_TABLE.columnIds.objectTypeIndicator]:
-          showObjectTypeIndicator,
       },
       rowSelection: rowCheckedState,
     },

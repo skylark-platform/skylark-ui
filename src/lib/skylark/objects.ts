@@ -22,16 +22,22 @@ import {
   SkylarkObjectOperations,
   BuiltInSkylarkObjectType,
   SkylarkSystemField,
-  SkylarkSystemGraphQLType,
   NormalizedObjectField,
-  SkylarkObjectRelationship,
+  SkylarkObjectMetaRelationship,
   ParsedSkylarkObject,
-  SkylarkObjectIdentifier,
+  SkylarkObject,
   ParsedSkylarkObjectConfig,
+  ParsedSkylarkObjectMetadata,
+  SkylarkAvailabilityField,
+  ParsedSkylarkObjectAvailability,
 } from "src/interfaces/skylark";
 import {
-  getObjectTypeFromListingTypeName,
   isSkylarkObjectType,
+  getObjectDisplayName,
+  getObjectTypeDisplayNameFromParsedObject,
+  getPlaybackPolicyFromMetadata,
+  getObjectTypeFromListingTypeName,
+  isAvailabilityOrAvailabilitySegment,
 } from "src/lib/utils";
 import { ObjectError } from "src/lib/utils/errors";
 
@@ -162,7 +168,7 @@ const objectHasRelationshipFromInterface = (
 };
 
 const objectRelationshipFieldsFromGraphQLType = (
-  type: SkylarkSystemGraphQLType,
+  objectType: string,
   objectInterface?: IntrospectionObjectType,
 ): {
   objectType: SkylarkObjectType;
@@ -172,11 +178,15 @@ const objectRelationshipFieldsFromGraphQLType = (
     return null;
   }
 
+  const listingType = `${objectType}Listing`;
+  const relationshipListingType = `${objectType}RelationshipListing`;
+
   const relationships = objectInterface.fields
     .filter(
-      (field) =>
-        (field.type as IntrospectionObjectType).name === type &&
-        field.type.kind === "OBJECT",
+      ({ type }) =>
+        ((type as IntrospectionObjectType).name === listingType ||
+          (type as IntrospectionObjectType).name === relationshipListingType) &&
+        type.kind === "OBJECT",
     )
     .map((field) => {
       const typeName = (field.type as IntrospectionObjectType | undefined)
@@ -207,7 +217,7 @@ const getObjectRelationshipsFromInputFields = (
   schemaTypes: IntrospectionQuery["__schema"]["types"],
   objectTypeInterface: IntrospectionObjectType,
   inputFields?: readonly IntrospectionInputValue[],
-): SkylarkObjectRelationship[] => {
+): SkylarkObjectMetaRelationship[] => {
   const relationshipsInput = inputFields?.find(
     (input) => input.name === "relationships",
   );
@@ -278,7 +288,7 @@ const getMutationInfo = (
 
 const getBuiltInObjectTypeRelationships = (
   schema: IntrospectionSchema,
-  relationships: SkylarkObjectRelationship[],
+  relationships: SkylarkObjectMetaRelationship[],
   getObjectInterface?: IntrospectionObjectType,
   ignoreRelationships?: boolean,
 ): SkylarkObjectMeta["builtinObjectRelationships"] => {
@@ -287,7 +297,7 @@ const getBuiltInObjectTypeRelationships = (
   }
 
   const imageRelationships = objectRelationshipFieldsFromGraphQLType(
-    SkylarkSystemGraphQLType.SkylarkImageListing,
+    BuiltInSkylarkObjectType.SkylarkImage,
     getObjectInterface,
   );
   const imageOperations = imageRelationships
@@ -546,7 +556,7 @@ export const getObjectOperations = (
     hasContent,
     hasContentOf,
     hasAvailability,
-    isTranslatable: objectType !== BuiltInSkylarkObjectType.Availability,
+    isTranslatable: !isAvailabilityOrAvailabilitySegment(objectType),
     isImage: objectType === BuiltInSkylarkObjectType.SkylarkImage,
     isSet,
     isBuiltIn: isSkylarkObjectType(objectType),
@@ -588,6 +598,7 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
   options?: {
     objectTypes: string[];
     hiddenFields: string[];
+    uiHiddenFields: string[];
   },
 ): {
   systemMetadataFields: {
@@ -618,7 +629,11 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
     SkylarkSystemField.DataSourceFields,
   ];
   const fieldsToHide = options
-    ? [...options.hiddenFields, ...defaultFieldsToHide]
+    ? [
+        ...options.hiddenFields,
+        ...options.uiHiddenFields,
+        ...defaultFieldsToHide,
+      ]
     : defaultFieldsToHide;
 
   const metadataArrWithHiddenFieldsRemoved = metadataArr.filter(
@@ -654,12 +669,198 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
   };
 };
 
-export const convertParsedObjectToIdentifier = ({
-  uid,
-  objectType,
-  meta: { language },
-}: ParsedSkylarkObject): SkylarkObjectIdentifier => ({
-  uid,
-  objectType,
-  language,
-});
+export const createDefaultSkylarkObject = (
+  args: {
+    uid: SkylarkObject["uid"];
+    objectType: SkylarkObject["objectType"];
+  } & Omit<Partial<SkylarkObject>, "display"> & {
+      display?: Partial<SkylarkObject["display"]>;
+    },
+) => {
+  const skylarkObject: SkylarkObject = {
+    language: "",
+    externalId: null,
+    availabilityStatus: null,
+    availableLanguages: [],
+    contextualFields: null,
+    type: null,
+    created: undefined,
+    modified: undefined,
+    published: undefined,
+    hasDynamicContent: false,
+    ...args,
+    display: {
+      colour: undefined,
+      name: args.uid,
+      objectType: args.objectType,
+      ...args.display,
+    },
+    uid: args.uid,
+    objectType: args.objectType,
+  } as Omit<SkylarkObject, "contextualFields"> & {
+    contextualFields: null;
+  };
+
+  return skylarkObject;
+};
+
+const parseDimensionBreakdownFromField = (
+  metadata: ParsedSkylarkObjectMetadata,
+): Record<string, string[]> | null => {
+  try {
+    if (
+      !metadata ||
+      !metadata?.[SkylarkAvailabilityField.DimensionBreakdown] ||
+      typeof metadata?.[SkylarkAvailabilityField.DimensionBreakdown] !==
+        "string"
+    ) {
+      return null;
+    }
+
+    return JSON.parse(metadata[SkylarkAvailabilityField.DimensionBreakdown]);
+  } catch {
+    return null;
+  }
+};
+
+const parseDimensionBreakdownFromDimensions = (
+  availability: ParsedSkylarkObjectAvailability,
+): Record<string, string[]> | null => {
+  return (
+    availability?.dimensions?.reduce(
+      (acc, dimension) => ({
+        ...acc,
+        [dimension.slug || ""]: dimension.values
+          .map((value) => value.slug)
+          .filter((value) => !!value),
+      }),
+      {},
+    ) || null
+  );
+};
+
+const parseDimensionBreakdown = ({
+  metadata,
+  availability,
+}: ParsedSkylarkObject) =>
+  parseDimensionBreakdownFromField(metadata) ||
+  parseDimensionBreakdownFromDimensions(availability);
+
+export const convertParsedObjectToIdentifier = (
+  parsedObject: ParsedSkylarkObject,
+  fallbackConfig?: Record<string, ParsedSkylarkObjectConfig>,
+  opts?: { additionalFields?: boolean | string[] },
+): SkylarkObject => {
+  const { uid, objectType, metadata, meta } = parsedObject;
+
+  const availabilityStatus =
+    parsedObject.meta.availabilityStatus ||
+    (parsedObject.availability && parsedObject.availability.status) ||
+    null;
+
+  const object: SkylarkObject = {
+    uid,
+    externalId: metadata.external_id,
+    type: metadata?.type || null,
+    objectType,
+    language: meta.language,
+    availableLanguages: meta.availableLanguages,
+    availabilityStatus:
+      objectType === BuiltInSkylarkObjectType.AvailabilitySegment
+        ? null
+        : availabilityStatus,
+    display: {
+      name: getObjectDisplayName(parsedObject, fallbackConfig),
+      objectType: getObjectTypeDisplayNameFromParsedObject(
+        parsedObject,
+        fallbackConfig,
+      ),
+      colour:
+        parsedObject.config?.colour || fallbackConfig?.[objectType]?.colour,
+    },
+    contextualFields: null,
+    created: meta.created,
+    modified: meta.modified,
+    published: meta.published,
+    hasDynamicContent: meta.hasDynamicContent,
+  };
+
+  if (opts) {
+    if (opts.additionalFields && Array.isArray(opts.additionalFields)) {
+      object.additionalFields = opts.additionalFields.reduce(
+        (prev, field) => ({ ...prev, [field]: metadata?.[field] }),
+        {},
+      );
+    } else if (opts.additionalFields === true) {
+      object.additionalFields = metadata;
+    }
+  }
+
+  if (object.objectType === BuiltInSkylarkObjectType.Availability) {
+    const availabilityObject: SkylarkObject<BuiltInSkylarkObjectType.Availability> =
+      {
+        ...object,
+        objectType: BuiltInSkylarkObjectType.Availability,
+        contextualFields: {
+          start: metadata?.start === "string" ? metadata.start : "",
+          end: metadata?.end === "string" ? metadata.end : "",
+          dimensions: parseDimensionBreakdown(parsedObject),
+        },
+      };
+
+    return availabilityObject;
+  }
+
+  if (object.objectType === BuiltInSkylarkObjectType.AvailabilitySegment) {
+    const availabilityObject: SkylarkObject<BuiltInSkylarkObjectType.AvailabilitySegment> =
+      {
+        ...object,
+        objectType: BuiltInSkylarkObjectType.AvailabilitySegment,
+        contextualFields: {
+          dimensions: parseDimensionBreakdown(parsedObject),
+        },
+      };
+
+    return availabilityObject;
+  }
+
+  if (object.objectType === BuiltInSkylarkObjectType.SkylarkImage) {
+    const imageObject: SkylarkObject<BuiltInSkylarkObjectType.SkylarkImage> = {
+      ...object,
+      objectType: BuiltInSkylarkObjectType.SkylarkImage,
+      contextualFields: {
+        url: typeof metadata?.url === "string" ? metadata.url : null,
+        external_url:
+          typeof metadata?.external_url === "string"
+            ? metadata.external_url
+            : null,
+      },
+    };
+
+    return imageObject;
+  }
+
+  if (
+    objectType === BuiltInSkylarkObjectType.SkylarkAsset ||
+    objectType === BuiltInSkylarkObjectType.SkylarkLiveAsset
+  ) {
+    const assetObject: SkylarkObject<
+      | BuiltInSkylarkObjectType.SkylarkAsset
+      | BuiltInSkylarkObjectType.SkylarkLiveAsset
+    > = {
+      ...object,
+      objectType:
+        objectType === BuiltInSkylarkObjectType.SkylarkAsset
+          ? BuiltInSkylarkObjectType.SkylarkAsset
+          : BuiltInSkylarkObjectType.SkylarkLiveAsset,
+      contextualFields: {
+        ...metadata,
+        playbackPolicy: getPlaybackPolicyFromMetadata(metadata),
+      },
+    };
+
+    return assetObject;
+  }
+
+  return object;
+};
