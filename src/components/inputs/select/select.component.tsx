@@ -366,8 +366,7 @@ const SelectComponent = <T extends string | number>(
   );
 
   const selectedOption = selected
-    ? options.find(({ value }) => value === selected) ||
-      options.find(({ value }) => value === selected)
+    ? options.find(({ value }) => value === selected)
     : undefined;
 
   const showClearValueButton = onValueClear && selected;

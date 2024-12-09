@@ -14,6 +14,7 @@ import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
+  ParsedSkylarkObjectTypeRelationshipConfigurations,
   SkylarkObjectRelationship,
   ParsedSkylarkRelationshipConfig,
 } from "src/interfaces/skylark";

@@ -30,8 +30,8 @@ export default function CompareSchemas() {
   const schemaVersionOptions = useMemo(
     () =>
       schemaVersions?.map(
-        ({ version, published, baseVersion }): SelectOption<number> => ({
-          label: `${version}${version === activationStatus?.activeVersion ? " (active)" : ""}${!published ? " (draft)" : ""}`,
+        ({ version, isDraft, baseVersion }): SelectOption<number> => ({
+          label: `${version}${version === activationStatus?.activeVersion ? " (active)" : ""}${isDraft ? " (draft)" : ""}`,
           value: version,
           infoTooltip: baseVersion && <p>{`Base version: ${baseVersion}`}</p>,
         }),

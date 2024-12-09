@@ -8,7 +8,8 @@ import {
   GQLSkylarkErrorResponse,
   GQLSkylarkListAllObjectTypesRelationshipConfiguration,
   GQLSkylarkListObjectTypeRelationshipConfiguration,
-  ParsedSkylarkObjectTypeRelationshipConfiguration,
+  ParsedSkylarkObjectTypeRelationshipConfigurations,
+  ParsedSkylarkObjectTypesRelationshipConfigurations,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -31,12 +32,12 @@ const mapGQLRelationshipConfigToParsed = ({
 
 const select = (
   data: GQLSkylarkListObjectTypeRelationshipConfiguration,
-): ParsedSkylarkObjectTypeRelationshipConfiguration =>
+): ParsedSkylarkObjectTypeRelationshipConfigurations =>
   data.listRelationshipConfiguration.objects.reduce(
     (
       prev,
       { relationship_name, config },
-    ): ParsedSkylarkObjectTypeRelationshipConfiguration => {
+    ): ParsedSkylarkObjectTypeRelationshipConfigurations => {
       return {
         ...prev,
         [relationship_name]: {
@@ -50,7 +51,7 @@ const select = (
 
 const allObjectTypesSelect = (
   data: GQLSkylarkListAllObjectTypesRelationshipConfiguration,
-): Record<string, ParsedSkylarkObjectTypeRelationshipConfiguration> =>
+): Record<string, ParsedSkylarkObjectTypeRelationshipConfigurations> =>
   Object.entries(data).reduce(
     (prev, [objectType, relationshipConfiguration]) => {
       return {
@@ -70,7 +71,7 @@ export const useObjectTypeRelationshipConfiguration = (
   const { data, isLoading } = useQuery<
     GQLSkylarkListObjectTypeRelationshipConfiguration,
     GQLSkylarkErrorResponse<GQLSkylarkListObjectTypeRelationshipConfiguration>,
-    ParsedSkylarkObjectTypeRelationshipConfiguration
+    ParsedSkylarkObjectTypeRelationshipConfigurations
   >({
     enabled: Boolean(
       objectType && !isAvailabilityOrAvailabilitySegment(objectType),
@@ -105,7 +106,7 @@ export const useAllObjectTypesRelationshipConfiguration = () => {
   const { data, isLoading, error } = useQuery<
     GQLSkylarkListAllObjectTypesRelationshipConfiguration,
     GQLSkylarkErrorResponse<GQLSkylarkListAllObjectTypesRelationshipConfiguration>,
-    Record<string, ParsedSkylarkObjectTypeRelationshipConfiguration>
+    ParsedSkylarkObjectTypesRelationshipConfigurations
   >({
     enabled: query !== null,
     queryKey: [QueryKeys.ObjectTypeRelationshipConfig, query],

@@ -1,144 +1,395 @@
-import { Reorder } from "framer-motion";
-import { useCallback } from "react";
+import clsx from "clsx";
+import { Reorder, useDragControls } from "framer-motion";
+import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
+import { FiCheck, FiInfo, FiRotateCcw, FiTrash2 } from "react-icons/fi";
 
-import { ObjectTypeFieldInput } from "src/components/contentModel/editor/contentModelRowInput.component";
+import { Button } from "src/components/button";
+import { AddNewButton } from "src/components/contentModel/editor/contentModelRowInput.component";
 import {
-  InputFieldWithFieldConfig,
-  SkylarkObjectMeta,
-  ParsedSkylarkObjectConfig,
-} from "src/interfaces/skylark";
+  EditObjectFieldModal,
+  EditObjectFieldModalForm,
+} from "src/components/modals/editObjectFieldModal/editObjectFieldModal.component";
+import { InfoTooltip, Tooltip } from "src/components/tooltip/tooltip.component";
+import { SkylarkObjectMeta, SkylarkSystemField } from "src/interfaces/skylark";
+import { SchemaVersion } from "src/interfaces/skylark/environment";
+import { isSkylarkObjectType } from "src/lib/utils";
 
 import {
   ContentModelEditorForm,
+  ContentModelEditorFormObjectTypeField,
   FieldHeader,
-  FieldSectionID,
+  SectionDescription,
   SectionHeader,
   SectionWrapper,
+  sortSystemFieldsFirst,
 } from "./common.component";
 
 interface FieldsSectionProps {
   form: UseFormReturn<ContentModelEditorForm>;
   objectMeta: SkylarkObjectMeta;
-  objectConfig?: ParsedSkylarkObjectConfig;
+  schemaVersion: SchemaVersion;
 }
 
-const FieldSection = ({
-  title,
-  fields,
-  objectMeta,
-  objectConfig,
-  disableReorder,
-  primaryField,
-  onChange,
-  onPrimaryFieldChange,
-}: {
-  title: string;
-  fields: InputFieldWithFieldConfig[];
-  objectMeta: SkylarkObjectMeta;
-  objectConfig?: ParsedSkylarkObjectConfig;
-  disableReorder?: boolean;
-  primaryField?: string | null;
-  onChange: (fields: InputFieldWithFieldConfig[]) => void;
-  onPrimaryFieldChange: (field: string) => void;
-}) => {
-  const handleChange = useCallback(
-    (updatedFieldWithConfig: InputFieldWithFieldConfig) => {
-      const updatedFields = fields.map((fieldWithConfig) => {
-        if (fieldWithConfig.field.name === updatedFieldWithConfig.field.name) {
-          return {
-            ...fieldWithConfig,
-            ...updatedFieldWithConfig,
-          };
-        }
-        return fieldWithConfig;
-      });
+const FieldNameTooltip = ({ field }: { field: string }) => {
+  let tooltip = null;
 
-      onChange(updatedFields);
-    },
-    [fields, onChange],
-  );
+  if (field === SkylarkSystemField.UID) {
+    tooltip = (
+      <div className="">
+        <p>Auto-generated field when an object is created.</p>
+        <p>Can be used to fetch an object. See more here:</p>
+      </div>
+    );
+  }
+
+  if (field === SkylarkSystemField.ExternalID) {
+    tooltip = (
+      <div className="">
+        <p>Special field, you can look stuff up using this</p>
+        <p>Can be used to fetch an object. See more here:</p>
+      </div>
+    );
+  }
+
+  if (field === SkylarkSystemField.Type) {
+    tooltip = (
+      <div className="">
+        <p>Special field, wondering why this is displayed in System Fields?</p>
+        <p>When the field `type` is used, you can filter search using it</p>
+      </div>
+    );
+  }
+
+  if (field === SkylarkSystemField.Slug) {
+    tooltip = (
+      <div className="">
+        <p>Special field, always added to an object as translatable metadata</p>
+        <p>Might have use in the future...</p>
+      </div>
+    );
+  }
+
+  return tooltip ? <InfoTooltip tooltip={tooltip} /> : null;
+};
+
+interface FieldProps {
+  objectType: string;
+  field: ContentModelEditorFormObjectTypeField;
+  isDeleted?: boolean;
+  isNew?: boolean;
+  reorderFieldsDisabled?: boolean;
+  onDelete: (field: ContentModelEditorFormObjectTypeField) => void;
+  onEdit: () => void;
+}
+
+const FieldOriginalType = ({ field }: { field: FieldProps["field"] }) => {
+  const isRelationship = field.type === "relationship";
+
+  const isEnum = !isRelationship && !!field?.enumValues;
+
+  const originalType = isRelationship
+    ? "Relationship"
+    : isEnum
+      ? "Enum"
+      : field.originalType;
 
   return (
-    <div className="mt-4 mb-10">
-      <h4 className="mt-4 mb-2 text-lg font-medium">{title}</h4>
-      <div className="grid grid-cols-7 gap-4 text-manatee-400 font-normal text-sm">
-        <FieldHeader className="col-span-2">Name</FieldHeader>
-        <FieldHeader className="col-span-2" tooltip="The GraphQL type">
-          Type
-        </FieldHeader>
-        <FieldHeader className="col-span-2">Enum / UI type</FieldHeader>
-        <FieldHeader tooltip="When creating an object of this type, this field will be required to be added.">
-          Required
-        </FieldHeader>
-        {/* <FieldHeader tooltip={uiDisplayFieldTooltip}>
-          UI Display field
-        </FieldHeader> */}
-      </div>
-      <Reorder.Group onReorder={onChange} values={fields}>
-        {fields.map((fieldWithConfig) => {
-          const fieldName = fieldWithConfig.field.name;
-          return (
-            <ObjectTypeFieldInput
-              key={`${objectMeta.name}-${fieldName}`}
-              fieldWithConfig={fieldWithConfig}
-              objectMeta={objectMeta}
-              disableReorder={disableReorder}
-              isPrimaryField={
-                primaryField
-                  ? primaryField === fieldName
-                  : objectConfig?.primaryField === fieldName
-              }
-              onChange={handleChange}
-              onPrimaryFieldCheckedChange={(checked) =>
-                onPrimaryFieldChange(checked ? fieldName : "")
-              }
-            />
-          );
-        })}
-      </Reorder.Group>
+    <div className="flex">
+      <p>{originalType}</p>
+      {isRelationship && (
+        <>
+          <Tooltip tooltip={[``]}>
+            <p className="ml-2 flex justify-center items-center text-manatee-500">
+              {`(${field.objectType}`}
+              <FiInfo className="text-sm ml-1" />
+              {`)`}
+            </p>
+          </Tooltip>
+        </>
+      )}
+      {isEnum && (
+        <>
+          <Tooltip
+            tooltip={
+              <>
+                <ul>
+                  {field.enumValues?.map((value) => (
+                    <li key={value}>{value}</li>
+                  ))}
+                </ul>
+              </>
+            }
+          >
+            <p className="ml-2 flex justify-center items-center text-manatee-500">
+              {`(${field.originalType}`}
+              <FiInfo className="text-sm ml-1" />
+              {`)`}
+            </p>
+          </Tooltip>
+        </>
+      )}
+      {field.fieldConfig?.fieldType && field.type === "string" && (
+        <p className="ml-2 flex justify-center items-center text-manatee-500">
+          {`(${field.fieldConfig.fieldType}`}
+          {/* <FiInfo className="text-sm ml-1" /> */}
+          {`)`}
+        </p>
+      )}
     </div>
+  );
+};
+
+const Field = ({
+  objectType,
+  field,
+  isDeleted,
+  isNew,
+  reorderFieldsDisabled,
+  onDelete,
+  onEdit,
+}: FieldProps) => {
+  const dragControls = useDragControls();
+
+  const isRelationship = field.type === "relationship";
+
+  const disableDelete =
+    isSkylarkObjectType(objectType) ||
+    (
+      [SkylarkSystemField.UID, SkylarkSystemField.ExternalID] as string[]
+    ).includes(field.name);
+
+  return (
+    <Reorder.Item
+      value={field}
+      dragListener={false}
+      dragControls={dragControls}
+      className="border-b last-of-type:border-b-0 border-manatee-100"
+      // as="div"
+      // className="relative"
+      // className="my-2 bg-white z-30 border shadow border-manatee-300 rounded-lg items-center h-14 px-2 grid gap-4 grid-cols-3"
+    >
+      <div
+        className={clsx(
+          "relative text-sm items-center h-12 px-2 grid gap-4",
+          "grid-cols-7",
+          isDeleted
+            ? "bg-error/10 text-manatee-300 border-error/15"
+            : "bg-white ",
+        )}
+      >
+        {!(
+          [
+            SkylarkSystemField.UID,
+            SkylarkSystemField.ExternalID,
+            SkylarkSystemField.Type,
+          ] as string[]
+        ).includes(field.name) && (
+          <button
+            disabled={reorderFieldsDisabled}
+            onPointerDown={
+              !reorderFieldsDisabled
+                ? (event) => {
+                    dragControls.start(event);
+                    event.preventDefault();
+                  }
+                : undefined
+            }
+            className={clsx(
+              "absolute left-1 h-full w-4 mr-1 bg-inherit bg-[url('/icons/drag_indicator_black.png')] bg-center bg-no-repeat ",
+              reorderFieldsDisabled ? "opacity-10" : "opacity-30 cursor-grab",
+            )}
+          />
+        )}
+        <div
+          className={clsx(
+            "flex justify-start h-full items-center col-span-2 pl-5",
+          )}
+        >
+          <p>{field.name}</p>
+          <FieldNameTooltip field={field.name} />
+        </div>
+        <div className="flex justify-start items-center h-full col-span-2">
+          <FieldOriginalType field={field} />
+        </div>
+        <div className="flex justify-start items-center col-span-1">
+          {!isRelationship && field.isTranslatable ? (
+            <FiCheck className="text-success text-xl" />
+          ) : (
+            "-"
+          )}
+        </div>
+        <div className="flex justify-start items-center col-span-1">
+          {!isRelationship && field.isRequired ? (
+            <FiCheck className="text-success text-xl" />
+          ) : (
+            "-"
+          )}
+        </div>
+        <div className="flex justify-end items-center col-span-1">
+          <Button variant="form" onClick={() => onEdit()}>
+            Edit
+          </Button>
+          {isDeleted && !isNew ? (
+            <Button
+              variant="ghost"
+              Icon={<FiRotateCcw className="text-base" />}
+              onClick={() => onDelete(field)}
+            />
+          ) : (
+            <Button
+              variant="ghost"
+              Icon={
+                <FiTrash2
+                  className={clsx("text-base", !disableDelete && "text-error")}
+                />
+              }
+              onClick={() => onDelete(field)}
+              disabled={disableDelete}
+              danger
+            />
+          )}
+        </div>
+      </div>
+    </Reorder.Item>
   );
 };
 
 export const FieldsSection = ({
   objectMeta,
   form,
-  objectConfig,
+  schemaVersion,
 }: FieldsSectionProps) => {
-  const onFieldChange = useCallback(
-    (id: FieldSectionID, reorderedFields: InputFieldWithFieldConfig[]) => {
-      form.setValue(`fieldSections.${id}.fields`, reorderedFields, {
+  const [editModalState, setEditModalState] = useState<{
+    isOpen: boolean;
+    initialData: { field: ContentModelEditorFormObjectTypeField } | null;
+  }>({ isOpen: false, initialData: null });
+
+  const addField = () => {
+    setEditModalState({ isOpen: true, initialData: null });
+  };
+
+  const deleteField = (
+    field: ContentModelEditorFormObjectTypeField,
+    index: number,
+  ) => {
+    if (field.isNew) {
+      const currentFields = form.getValues(
+        `objectTypes.${objectMeta.name}.fields`,
+      );
+      currentFields.splice(index, 1);
+      form.setValue(`objectTypes.${objectMeta.name}.fields`, currentFields, {
         shouldDirty: true,
       });
-    },
-    [form],
-  );
+    } else {
+      form.setValue(
+        `objectTypes.${objectMeta.name}.fields.${index}`,
+        {
+          ...field,
+          isDeleted: !Boolean(field.isDeleted),
+        },
+        { shouldDirty: true },
+      );
+    }
+  };
 
-  const fieldSections = form.watch("fieldSections");
-  const primaryField = form.watch("uiConfig.primaryField");
+  const onEditFieldModalSubmit = ({ field }: EditObjectFieldModalForm) => {
+    console.log("onEditFieldModalSubmit", { field });
+    const prevField = editModalState.initialData?.field;
+    const prevName = prevField?.name;
+    const isNew = !prevName;
+    const prevValues = form.getValues(`objectTypes.${objectMeta.name}.fields`);
+
+    const index = isNew
+      ? prevValues.length
+      : prevValues.findIndex((prev) => prev.name === prevName);
+
+    form.setValue(
+      `objectTypes.${objectMeta.name}.fields.${index}`,
+      {
+        ...prevField,
+        ...field,
+        isDeleted: false,
+        isNew,
+      },
+      { shouldDirty: true },
+    );
+
+    setEditModalState({ isOpen: false, initialData: null });
+  };
+
+  const onReorder = (
+    updatedFields: ContentModelEditorFormObjectTypeField[],
+  ) => {
+    console.log({ updatedFields });
+    form.setValue(
+      `objectTypes.${objectMeta.name}.fields`,
+      updatedFields.sort(sortSystemFieldsFirst),
+      {
+        shouldDirty: true,
+      },
+    );
+  };
+
+  const fields = form.watch(`objectTypes.${objectMeta.name}.fields`);
+
+  console.log({ fields });
 
   return (
     <SectionWrapper data-testid="fields-editor">
-      <SectionHeader>Metadata</SectionHeader>
+      <SectionHeader>Fields</SectionHeader>
+      <SectionDescription>
+        Only creating and deleting fields is currently supported.
+      </SectionDescription>
       {/* TODO add Skeleton here with hardcoded headings as sections headers can be filtered out when no fields exist */}
-      {Object.entries(fieldSections).map(([id, { title, fields }]) => (
-        <FieldSection
-          key={id}
-          title={title}
-          fields={fields}
-          objectMeta={objectMeta}
-          objectConfig={objectConfig}
-          disableReorder={id === "system"}
-          primaryField={primaryField}
-          onChange={(fieldsWithConfig) =>
-            onFieldChange(id as FieldSectionID, fieldsWithConfig)
-          }
-          onPrimaryFieldChange={(field) =>
-            form.setValue("uiConfig.primaryField", field, { shouldDirty: true })
-          }
-        />
-      ))}
+      <div className="grid grid-cols-7 gap-4 text-manatee-400 font-normal text-sm">
+        <FieldHeader className="col-span-2 pl-5">Name</FieldHeader>
+        <FieldHeader className="col-span-2" tooltip="The GraphQL type">
+          Type
+        </FieldHeader>
+        <FieldHeader className="col-span-1">Translatable</FieldHeader>
+        <FieldHeader tooltip="When creating an object of this type, this field will be required to be added.">
+          Required
+        </FieldHeader>
+      </div>
+      <Reorder.Group onReorder={onReorder} values={fields}>
+        {fields.map((field, index) => {
+          return (
+            <Field
+              key={field.name}
+              field={field}
+              objectType={objectMeta.name}
+              onDelete={() => deleteField(field, index)}
+              isDeleted={field?.isDeleted}
+              isNew={field?.isNew}
+              onEdit={() =>
+                setEditModalState({
+                  isOpen: true,
+                  initialData: { field },
+                })
+              }
+            />
+          );
+        })}
+      </Reorder.Group>
+      {/* ))} */}
+      <AddNewButton
+        text={
+          objectMeta.isBuiltIn
+            ? "You cannot add fields to built-in object types"
+            : `Add field`
+        }
+        onClick={addField}
+        disabled={objectMeta.isBuiltIn}
+      />
+      <EditObjectFieldModal
+        isOpen={editModalState.isOpen}
+        initialValues={editModalState.initialData || undefined}
+        setIsOpen={(isOpen) =>
+          setEditModalState((prev) => ({ ...prev, isOpen }))
+        }
+        onSubmit={onEditFieldModalSubmit}
+      />
     </SectionWrapper>
   );
 };
