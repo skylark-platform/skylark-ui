@@ -38,7 +38,7 @@ export type ModifiedAvailabilityDimensions = Record<
   }
 >;
 
-export type ModifiedAvailabilitySegments = {
-  added: SkylarkObject<BuiltInSkylarkObjectType.AvailabilitySegment>[];
+export type ModifiedAudienceSegments = {
+  added: SkylarkObject<BuiltInSkylarkObjectType.AudienceSegment>[];
   removed: string[];
 };

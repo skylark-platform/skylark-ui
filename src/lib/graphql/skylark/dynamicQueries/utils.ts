@@ -11,7 +11,7 @@ import {
   SkylarkObjectType,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
-import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
+import { isAvailabilityOrAudienceSegment } from "src/lib/utils";
 
 import { createDynamicContentQueryField } from "./dynamicContent";
 
@@ -177,7 +177,7 @@ export const generateVariablesAndArgs = (
       objectType !== "search" &&
       objectType !== "genericGetObject",
   );
-  if (isAvailabilityOrAvailabilitySegment(objectType)) {
+  if (isAvailabilityOrAudienceSegment(objectType)) {
     return {
       variables: {},
       args: {},
@@ -317,7 +317,7 @@ export const generateRelationshipsToReturn = (
     );
   }
 
-  if (isSearch && isAvailabilityOrAvailabilitySegment(object.name)) {
+  if (isSearch && isAvailabilityOrAudienceSegment(object.name)) {
     relationshipsToReturn["dimensions"] =
       generateDimensionsAndValuesFieldsToReturn();
   }

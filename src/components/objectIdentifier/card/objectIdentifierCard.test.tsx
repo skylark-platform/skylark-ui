@@ -194,12 +194,12 @@ test("does not show AvailabilityStatus icon when object type is Availability", (
   ).not.toBeInTheDocument();
 });
 
-test("does not show AvailabilityStatus icon when object type is AvailabilitySegment", () => {
+test("does not show AvailabilityStatus icon when object type is AudienceSegment", () => {
   render(
     <ObjectIdentifierCard
       object={{
         ...defaultObject,
-        objectType: BuiltInSkylarkObjectType.AvailabilitySegment,
+        objectType: BuiltInSkylarkObjectType.AudienceSegment,
         contextualFields: null,
       }}
     />,

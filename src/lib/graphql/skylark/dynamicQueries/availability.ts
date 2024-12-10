@@ -148,7 +148,7 @@ export const createGetAvailabilityAssignedTo = (
   return gql(graphQLQuery);
 };
 
-export const createGetAvailabilitySegmentAssignedTo = (
+export const createGetAudienceSegmentAssignedTo = (
   availabilityObjectMeta: SkylarkObjectMeta | null,
 ) => {
   if (!availabilityObjectMeta) {
@@ -158,13 +158,13 @@ export const createGetAvailabilitySegmentAssignedTo = (
 
   const query = {
     query: {
-      __name: "GET_AVAILABILITYSEGMENTS_ASSIGNED_TO",
+      __name: "GET_AUDIENCESEGMENT_ASSIGNED_TO",
       __variables: {
         uid: "String!",
         nextToken: "String",
       },
-      getAvailabilitySegmentAssignedTo: {
-        __aliasFor: "getAvailabilitySegment",
+      getAudienceSegmentAssignedTo: {
+        __aliasFor: "getAudienceSegment",
         __args: {
           uid: new VariableType("uid"),
         },

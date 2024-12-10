@@ -21,7 +21,7 @@ import {
   formatObjectField,
   getObjectDisplayName,
   hasProperty,
-  isAvailabilityOrAvailabilitySegment,
+  isAvailabilityOrAudienceSegment,
 } from "src/lib/utils";
 
 import { Cell } from "./grids/cell.component";
@@ -91,7 +91,7 @@ const dragIconColumn = columnHelper.display({
         <div
           className={clsx(
             "h-2 w-2",
-            isAvailabilityOrAvailabilitySegment(original.objectType)
+            isAvailabilityOrAudienceSegment(original.objectType)
               ? "rounded-sm bg-brand-primary"
               : "rounded-full bg-manatee-300",
           )}

@@ -70,7 +70,7 @@ export interface SkylarkGraphQLAvailabilityDimensionWithValues
   };
 }
 
-export interface SkylarkGraphQLAvailabilitySegment {
+export interface SkylarkGraphQLAudienceSegment {
   uid: SkylarkUID;
   external_id: SkylarkExternalId;
   slug: string;
@@ -104,7 +104,7 @@ export interface SkylarkGraphQLAvailability {
   };
   segments?: {
     next_token: NextToken;
-    objects: SkylarkGraphQLAvailabilitySegment[];
+    objects: SkylarkGraphQLAudienceSegment[];
   };
 }
 
