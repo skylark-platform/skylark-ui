@@ -5,7 +5,7 @@ export default function DynamicSets() {
     <div className="pt-40 max-w-6xl mx-auto w-full px-8">
       <DynamicContentConfigurationEditor
         initialConfiguration={null}
-        onConfigurationChange={console.log}
+        onConfigurationChange={console.error}
       />
     </div>
   );
