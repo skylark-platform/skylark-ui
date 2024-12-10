@@ -47,7 +47,7 @@ export const updateObjectHandlers = [
     (req, res, ctx) => {
       return res(
         ctx.data({
-          updateAvailabilityDimensions: {
+          updateAvailabilityDimensionsAndSegments: {
             uid: "01GXSR23WH5DHGTXVHXW1TMGBJ",
           },
         }),

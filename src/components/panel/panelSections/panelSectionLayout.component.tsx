@@ -48,6 +48,7 @@ export const PanelSectionLayoutComponent = (
       "mx-auto w-full max-w-7xl flex-grow overflow-y-hidden text-sm flex flex-col relative",
       isPage && "sm:grid sm:grid-cols-[1fr_3fr]",
     )}
+    data-testid="panel-body"
   >
     {isPage && (
       <div

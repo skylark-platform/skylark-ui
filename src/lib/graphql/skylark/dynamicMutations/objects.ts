@@ -600,7 +600,7 @@ export const createUpdateAvailabilityDimensionsMutation = (
       __variables: {
         uid: "String!",
       },
-      updateAvailabilityDimensions: {
+      updateAvailabilityDimensionsAndSegments: {
         __aliasFor: objectMeta.operations.update.name,
         __args: {
           uid: new VariableType("uid"),

@@ -47,7 +47,7 @@ export const useUpdateObjectAvailabilityDimensionsAndSegments = ({
         );
 
       return skylarkRequest<{
-        updateAvailabilityDimensions: {
+        updateAvailabilityDimensionsAndSegments: {
           uid: string;
           dimension_breakdown: string;
         };
@@ -79,7 +79,8 @@ export const useUpdateObjectAvailabilityDimensionsAndSegments = ({
               getObject: {
                 ...oldData.getObject,
                 [SkylarkAvailabilityField.DimensionBreakdown]:
-                  data.updateAvailabilityDimensions.dimension_breakdown,
+                  data.updateAvailabilityDimensionsAndSegments
+                    .dimension_breakdown,
               },
             };
           }

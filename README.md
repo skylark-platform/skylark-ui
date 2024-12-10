@@ -73,7 +73,7 @@ We made the decision to Open Source the repository so that users are able to tak
 
 Additionally, all requests that are made to Skylark from the UI are using the official Skylark GraphQL API meaning you can use this repository as an aid when developing your own Skylark applications. If this sounds like you, you may also want to check out our [StreamTV application][streamtv] - a demo Streaming App built on Skylark.
 
-[StreamTV][streamtv]: https://github.com/skylark-platform/reference-apps
+[StreamTV][streamtv]: https://github.com/skylark-platform/skylarktv
 
 ---
 
