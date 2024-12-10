@@ -80,7 +80,7 @@ export const AvailabilityDimensionBreakdown = ({
 }: {
   object: SkylarkObject<
     | BuiltInSkylarkObjectType.Availability
-    | BuiltInSkylarkObjectType.AvailabilitySegment
+    | BuiltInSkylarkObjectType.AudienceSegment
   >;
 }) => {
   const slugs =

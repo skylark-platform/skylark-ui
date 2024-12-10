@@ -14,7 +14,7 @@ import {
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetAllObjectsRelationshipConfigurationQuery } from "src/lib/graphql/skylark/dynamicQueries";
 import { LIST_OBJECT_TYPE_RELATIONSHIP_CONFIGURATION } from "src/lib/graphql/skylark/queries";
-import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
+import { isAvailabilityOrAudienceSegment } from "src/lib/utils";
 
 import { useSkylarkObjectTypes } from "./useSkylarkObjectTypes";
 
@@ -73,7 +73,7 @@ export const useObjectTypeRelationshipConfiguration = (
     ParsedSkylarkObjectTypeRelationshipConfiguration
   >({
     enabled: Boolean(
-      objectType && !isAvailabilityOrAvailabilitySegment(objectType),
+      objectType && !isAvailabilityOrAudienceSegment(objectType),
     ),
     queryKey: [
       QueryKeys.ObjectTypeRelationshipConfig,

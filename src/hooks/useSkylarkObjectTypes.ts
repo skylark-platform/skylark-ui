@@ -17,7 +17,7 @@ import {
   getAllObjectsMeta,
 } from "src/lib/skylark/objects";
 import { parseObjectConfig } from "src/lib/skylark/parsers";
-import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
+import { isAvailabilityOrAudienceSegment } from "src/lib/utils";
 import { ObjectError } from "src/lib/utils/errors";
 
 import {
@@ -83,7 +83,7 @@ export const useSkylarkObjectTypes = (
     return opts.withAvailabilityObjectTypes ||
       typeof opts.withAvailabilityObjectTypes === "undefined"
       ? sorted
-      : sorted?.filter((ot) => !isAvailabilityOrAvailabilitySegment(ot));
+      : sorted?.filter((ot) => !isAvailabilityOrAudienceSegment(ot));
   }, [data, opts.withAvailabilityObjectTypes]);
 
   return {

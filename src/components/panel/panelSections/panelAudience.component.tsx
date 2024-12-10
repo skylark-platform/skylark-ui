@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { DimensionMultiSelect } from "src/components/inputs/multiselect/dimensionMultiselect/dimensionMultiselect.component";
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
 import { ObjectIdentifierList } from "src/components/objectIdentifier";
 import {
   HandleDropError,
-  handleDroppedAvailabilitySegments,
+  handleDroppedAudienceSegments,
 } from "src/components/panel/panel.lib";
 import { PanelDropZone } from "src/components/panel/panelDropZone/panelDropZone.component";
 import { PanelLoading } from "src/components/panel/panelLoading";
@@ -26,7 +26,7 @@ import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   BuiltInSkylarkObjectType,
   ModifiedAvailabilityDimensions,
-  ModifiedAvailabilitySegments,
+  ModifiedAudienceSegments,
   ParsedSkylarkDimensionWithValues,
   SkylarkGraphQLAvailabilityDimensionWithValues,
   SkylarkObject,
@@ -41,15 +41,15 @@ interface PanelAudienceProps {
   isPage?: boolean;
   object: SkylarkObject<
     | BuiltInSkylarkObjectType.Availability
-    | BuiltInSkylarkObjectType.AvailabilitySegment
+    | BuiltInSkylarkObjectType.AudienceSegment
   >;
   inEditMode: boolean;
   setPanelObject: SetPanelObject;
   modifiedAvailabilityDimensions: ModifiedAvailabilityDimensions | null;
   setAvailabilityDimensionValues: (m: ModifiedAvailabilityDimensions) => void;
-  modifiedAvailabilitySegments: ModifiedAvailabilitySegments | null;
-  setAvailabilitySegments: (
-    m: ModifiedAvailabilitySegments,
+  modifiedAudienceSegments: ModifiedAudienceSegments | null;
+  setAudienceSegments: (
+    m: ModifiedAudienceSegments,
     errors: HandleDropError[],
   ) => void;
 }
@@ -59,7 +59,7 @@ const combineServerDimensionsAndModifiedDimensions = (
   dimensionsBreakdown: Record<string, string[]> | null | undefined,
   serverDimensions: SkylarkGraphQLAvailabilityDimensionWithValues[] | undefined,
   modifiedAvailabilityDimensions: ModifiedAvailabilityDimensions | null,
-  modifiedAvailabilitySegments: ModifiedAvailabilitySegments | null,
+  modifiedAudienceSegments: ModifiedAudienceSegments | null,
 ): Record<
   string,
   { activeValues: string[]; assignedValues: string[]; segmentValues: string[] }
@@ -68,7 +68,7 @@ const combineServerDimensionsAndModifiedDimensions = (
     (acc, { slug: dimensionSlug }) => {
       const assigned = dimensionsBreakdown?.[dimensionSlug] || [];
       const added =
-        modifiedAvailabilitySegments?.added.flatMap(
+        modifiedAudienceSegments?.added.flatMap(
           (segment) =>
             segment.contextualFields?.dimensions?.[dimensionSlug] || [],
         ) || [];
@@ -141,19 +141,19 @@ const PanelAudienceSegments = ({
   object,
   dimensions,
   setPanelObject,
-  modifiedAvailabilitySegments,
-  setAvailabilitySegments,
+  modifiedAudienceSegments,
+  setAudienceSegments,
 }: Pick<
   PanelAudienceProps,
   | "object"
   | "setPanelObject"
-  | "modifiedAvailabilitySegments"
-  | "setAvailabilitySegments"
+  | "modifiedAudienceSegments"
+  | "setAudienceSegments"
 > & { dimensions: ParsedSkylarkDimensionWithValues[] }) => {
   const { objectType, uid } = object;
 
   const { objectOperations: objectMeta } = useSkylarkObjectOperations(
-    BuiltInSkylarkObjectType.AvailabilitySegment,
+    BuiltInSkylarkObjectType.AudienceSegment,
   );
 
   const {
@@ -167,23 +167,21 @@ const PanelAudienceSegments = ({
     onObjectsDropped: (droppedObjects) => {
       if (droppedObjects && droppedObjects.length > 0) {
         const existingUids = (segments || [])
-          .filter(
-            ({ uid }) => !modifiedAvailabilitySegments?.removed.includes(uid),
-          )
+          .filter(({ uid }) => !modifiedAudienceSegments?.removed.includes(uid))
           .map(({ uid }) => uid);
         const addedUids =
-          modifiedAvailabilitySegments?.added.map(({ uid }) => uid) || [];
-        const { addedObjects, errors } = handleDroppedAvailabilitySegments({
+          modifiedAudienceSegments?.added.map(({ uid }) => uid) || [];
+        const { addedObjects, errors } = handleDroppedAudienceSegments({
           droppedObjects,
           existingUids: [...existingUids, ...addedUids],
           activeObjectUid: uid,
         });
 
-        setAvailabilitySegments(
+        setAudienceSegments(
           {
-            removed: modifiedAvailabilitySegments?.removed || [],
+            removed: modifiedAudienceSegments?.removed || [],
             added: [
-              ...(modifiedAvailabilitySegments?.added || []),
+              ...(modifiedAudienceSegments?.added || []),
               ...addedObjects,
             ],
           },
@@ -200,7 +198,7 @@ const PanelAudienceSegments = ({
       segments?.map((segment) =>
         createDefaultSkylarkObject({
           ...segment,
-          objectType: BuiltInSkylarkObjectType.AvailabilitySegment,
+          objectType: BuiltInSkylarkObjectType.AudienceSegment,
           display: {
             name:
               segment.title ||
@@ -210,8 +208,8 @@ const PanelAudienceSegments = ({
           },
         }),
       ) || []
-    ).filter(({ uid }) => !modifiedAvailabilitySegments?.removed.includes(uid)),
-    ...(modifiedAvailabilitySegments?.added || []),
+    ).filter(({ uid }) => !modifiedAudienceSegments?.removed.includes(uid)),
+    ...(modifiedAudienceSegments?.added || []),
   ];
 
   return (
@@ -238,15 +236,12 @@ const PanelAudienceSegments = ({
           })
         }
         onDeleteClick={(o) => {
-          setAvailabilitySegments(
+          setAudienceSegments(
             {
-              added: (modifiedAvailabilitySegments?.added || []).filter(
+              added: (modifiedAudienceSegments?.added || []).filter(
                 ({ uid }) => uid !== o.uid,
               ),
-              removed: [
-                ...(modifiedAvailabilitySegments?.removed || []),
-                o.uid,
-              ],
+              removed: [...(modifiedAudienceSegments?.removed || []), o.uid],
             },
             [],
           );
@@ -273,24 +268,24 @@ const PanelAudienceSegments = ({
           title={`Add Audience Segment`}
           isOpen={modalIsOpen}
           existingObjects={objects}
-          objectTypes={[BuiltInSkylarkObjectType.AvailabilitySegment]}
+          objectTypes={[BuiltInSkylarkObjectType.AudienceSegment]}
           columns={[
             OBJECT_LIST_TABLE.columnIds.displayField,
             ...objectMeta.fields.map(({ name }) => name),
           ]}
           closeModal={() => setModalIsOpen(false)}
           onSave={({ checkedObjects }) => {
-            const { addedObjects, errors } = handleDroppedAvailabilitySegments({
+            const { addedObjects, errors } = handleDroppedAudienceSegments({
               droppedObjects: checkedObjects,
               activeObjectUid: uid,
               existingUids: objects.map(({ uid }) => uid) || [],
             });
 
-            setAvailabilitySegments(
+            setAudienceSegments(
               {
-                removed: modifiedAvailabilitySegments?.removed || [],
+                removed: modifiedAudienceSegments?.removed || [],
                 added: [
-                  ...(modifiedAvailabilitySegments?.added || []),
+                  ...(modifiedAudienceSegments?.added || []),
                   ...addedObjects,
                 ],
               },
@@ -307,13 +302,13 @@ const PanelAudienceDimensions = ({
   object,
   dimensions,
   modifiedAvailabilityDimensions,
-  modifiedAvailabilitySegments,
+  modifiedAudienceSegments,
   setAvailabilityDimensionValues,
 }: Pick<
   PanelAudienceProps,
   | "object"
   | "modifiedAvailabilityDimensions"
-  | "modifiedAvailabilitySegments"
+  | "modifiedAudienceSegments"
   | "setAvailabilityDimensionValues"
 > & { dimensions: ParsedSkylarkDimensionWithValues[] }) => {
   const { objectType, uid } = object;
@@ -330,7 +325,7 @@ const PanelAudienceDimensions = ({
     object.contextualFields?.dimensions,
     data,
     modifiedAvailabilityDimensions,
-    modifiedAvailabilitySegments,
+    modifiedAudienceSegments,
   );
 
   const onChange = (dimensionSlug: string, values: string[]) => {
@@ -356,7 +351,7 @@ const PanelAudienceDimensions = ({
   };
 
   return (
-    <div className="relative">
+    <div className="relative mt-4">
       <PanelSectionTitle text={"Dimensions"} />
       {dimensions.map((dimension) => {
         const selectedValues =
@@ -367,10 +362,10 @@ const PanelAudienceDimensions = ({
           combinedDimensions?.[dimension.slug]?.segmentValues || [];
 
         return getObjectLoading ? (
-          <>
-            <Skeleton className="h-5 w-full" />
+          <Fragment key={dimension.uid}>
+            <Skeleton className="h-4 w-full mb-1" />
             <Skeleton className="h-20 w-full" />
-          </>
+          </Fragment>
         ) : (
           <DimensionMultiSelect
             key={`dimension-card-${dimension.uid}`}
