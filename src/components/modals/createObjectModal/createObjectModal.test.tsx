@@ -382,7 +382,7 @@ describe("Create Translation (existing object)", () => {
       target: { value: "pt-P" },
     });
 
-    fireEvent.click(screen.getByText("pt-PT"));
+    fireEvent.mouseDown(screen.getByText("pt-PT"));
   });
 
   test("shows an error when an existing translation is selected", async () => {
@@ -416,7 +416,7 @@ describe("Create Translation (existing object)", () => {
       target: { value: "en-G" },
     });
 
-    fireEvent.click(screen.getByText("en-GB"));
+    fireEvent.mouseDown(screen.getByText("en-GB"));
 
     expect(
       screen.getByText('The language "en-GB" is an existing translation.'),
@@ -449,7 +449,7 @@ describe("Create Translation (existing object)", () => {
       target: { value: "pt-P" },
     });
 
-    fireEvent.click(screen.getByText("pt-PT"));
+    fireEvent.mouseDown(screen.getByText("pt-PT"));
 
     const createButton = screen.getByRole("button", {
       name: "Create Translation",
@@ -506,7 +506,7 @@ describe("Create Translation (existing object)", () => {
       target: { value: "pt-P" },
     });
 
-    fireEvent.click(screen.getByText("pt-PT"));
+    fireEvent.mouseDown(screen.getByText("pt-PT"));
 
     const createButton = screen.getByRole("button", {
       name: "Create Translation",

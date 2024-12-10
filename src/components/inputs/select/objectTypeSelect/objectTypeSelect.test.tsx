@@ -34,7 +34,7 @@ test("searches for Episode", async () => {
   expect(gotOptions.length).toBe(1);
   expect(gotOptions[0]).toHaveTextContent("Episode");
 
-  fireEvent.click(screen.getByText("Episode"));
+  fireEvent.mouseDown(screen.getByText("Episode"));
 
   expect(onChange).toHaveBeenCalledWith({
     objectType: "Episode",

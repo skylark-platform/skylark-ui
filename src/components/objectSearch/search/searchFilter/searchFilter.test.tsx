@@ -3,6 +3,7 @@ import {
   screen,
   waitFor,
   fireEvent,
+  prettyDOM,
 } from "src/__tests__/utils/test-utils";
 import { SearchType } from "src/hooks/useSearchWithLookupType";
 import { GET_SKYLARK_OBJECT_TYPES } from "src/lib/graphql/skylark/queries";
@@ -78,7 +79,9 @@ test("changes checkboxes and calls onFilterSave when apply is clicked", async ()
     expect(episodeCheckbox).toHaveAttribute("aria-checked", "false"),
   );
 
-  const uidLookup = await screen.findByLabelText("UID & External ID");
+  const uidLookup = await screen.findByRole("radio", {
+    name: "UID & External ID",
+  });
   await fireEvent.click(uidLookup);
   await waitFor(() =>
     expect(uidLookup).toHaveAttribute("aria-checked", "true"),
@@ -133,7 +136,9 @@ test("changes checkboxes and calls onFilterSave when apply is clicked (old colum
   ).not.toBeInTheDocument();
   expect(screen.getByText("All fields")).toBeInTheDocument();
 
-  const uidLookup = await screen.findByText("UID & External ID");
+  const uidLookup = await screen.findByRole("radio", {
+    name: "UID & External ID",
+  });
   await fireEvent.click(uidLookup);
 
   const seasonCheckbox = await screen.findByRole("checkbox", {

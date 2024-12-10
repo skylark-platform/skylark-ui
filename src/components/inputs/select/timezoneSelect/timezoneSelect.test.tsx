@@ -34,7 +34,7 @@ test('searches for the "Europe/London" timezone', async () => {
   expect(gotOptions.length).toBe(1);
   expect(gotOptions[0]).toHaveTextContent("Europe/London");
 
-  fireEvent.click(screen.getByText("Europe/London"));
+  fireEvent.mouseDown(screen.getByText("Europe/London"));
 
   expect(onChange).toHaveBeenCalledWith("Europe/London");
 });
