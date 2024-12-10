@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { DimensionMultiSelect } from "src/components/inputs/multiselect/dimensionMultiselect/dimensionMultiselect.component";
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
@@ -268,10 +268,7 @@ const PanelAudienceSegments = ({
           title={`Add Audience Segment`}
           isOpen={modalIsOpen}
           existingObjects={objects}
-          objectTypes={[
-            BuiltInSkylarkObjectType.AudienceSegment,
-            BuiltInSkylarkObjectType.AvailabilitySegment,
-          ]}
+          objectTypes={[BuiltInSkylarkObjectType.AudienceSegment]}
           columns={[
             OBJECT_LIST_TABLE.columnIds.displayField,
             ...objectMeta.fields.map(({ name }) => name),
@@ -365,10 +362,10 @@ const PanelAudienceDimensions = ({
           combinedDimensions?.[dimension.slug]?.segmentValues || [];
 
         return getObjectLoading ? (
-          <>
+          <Fragment key={dimension.uid}>
             <Skeleton className="h-4 w-full mb-1" />
             <Skeleton className="h-20 w-full" />
-          </>
+          </Fragment>
         ) : (
           <DimensionMultiSelect
             key={`dimension-card-${dimension.uid}`}

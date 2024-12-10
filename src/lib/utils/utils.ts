@@ -312,7 +312,6 @@ export const objectIsAvailability = (
   obj.objectType === BuiltInSkylarkObjectType.Availability;
 
 export const isAudienceSegment = (objectType: SkylarkObjectType) =>
-  objectType === BuiltInSkylarkObjectType.AvailabilitySegment ||
   objectType === BuiltInSkylarkObjectType.AudienceSegment;
 
 export const isAvailabilityOrAudienceSegment = (

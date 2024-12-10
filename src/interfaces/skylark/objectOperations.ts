@@ -4,7 +4,6 @@ import { ParsedSkylarkObjectConfigFieldConfig } from "./parsedObjects";
 
 export enum BuiltInSkylarkObjectType {
   Availability = "Availability",
-  AvailabilitySegment = "AvailabilitySegment",
   AudienceSegment = "AudienceSegment",
   SkylarkImage = "SkylarkImage",
   SkylarkAsset = "SkylarkAsset",

@@ -95,7 +95,6 @@ export const OBJECT_OPTIONS: {
   {
     objectTypes: [
       BuiltInSkylarkObjectType.Availability,
-      BuiltInSkylarkObjectType.AvailabilitySegment,
       BuiltInSkylarkObjectType.AudienceSegment,
     ],
     uiHiddenFields: [SkylarkAvailabilityField.DimensionBreakdown],

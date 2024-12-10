@@ -260,7 +260,6 @@ export const PanelAvailabilityAssignedTo = ({
                 onValueClear={() => setFiltersWrapper({ objectType: "" })}
                 hiddenObjectTypes={[
                   BuiltInSkylarkObjectType.Availability,
-                  BuiltInSkylarkObjectType.AvailabilitySegment,
                   BuiltInSkylarkObjectType.AudienceSegment,
                 ]}
               />
