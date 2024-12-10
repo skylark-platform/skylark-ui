@@ -7,7 +7,13 @@ import {
   useTransitionStyles,
   shift,
 } from "@floating-ui/react";
-import { Menu, Portal } from "@headlessui/react";
+import {
+  Menu,
+  MenuButton,
+  MenuItems,
+  MenuItem,
+  Portal,
+} from "@headlessui/react";
 import clsx from "clsx";
 import { JSX, ReactNode } from "react";
 
@@ -38,7 +44,7 @@ interface DropdownMenuProps {
   renderInPortal?: boolean;
 }
 
-export const DropdownMenuButton = Menu.Button;
+export const DropdownMenuButton = MenuButton;
 
 const DropdownMenuPortalWrapper = ({
   usePortal,
@@ -54,7 +60,7 @@ const DropdownMenuPortalWrapper = ({
   return <>{children}</>;
 };
 
-const MenuItems = ({
+const DropdownMenuItems = ({
   placement,
   children,
   renderInPortal,
@@ -91,7 +97,7 @@ const MenuItems = ({
             style={{ ...floatingStyles }}
             className="z-50"
           >
-            <Menu.Items
+            <MenuItems
               className={clsx(
                 "mx-auto mt-2 w-60 select-none rounded-sm bg-white text-sm font-bold shadow-lg ring-1 ring-manatee-700 ring-opacity-5 focus:outline-none",
                 "max-h-96 overflow-y-scroll",
@@ -115,7 +121,7 @@ const MenuItems = ({
                   )}
                   <div className="divide-y divide-manatee-100">
                     {options.map((option) => (
-                      <Menu.Item key={option.id}>
+                      <MenuItem key={option.id}>
                         {({ close }) => {
                           const className = clsx(
                             "flex w-full items-center space-x-1 md:space-x-1.5 rounded-sm pl-3 pr-2 py-2 md:py-3 md:pr-4",
@@ -156,12 +162,12 @@ const MenuItems = ({
                             </button>
                           );
                         }}
-                      </Menu.Item>
+                      </MenuItem>
                     ))}
                   </div>
                 </div>
               ))}
-            </Menu.Items>
+            </MenuItems>
           </div>
         </DropdownMenuPortalWrapper>
       )}
@@ -175,7 +181,7 @@ export const DropdownMenu = (props: DropdownMenuProps) => {
       as="div"
       className="relative inline-block text-left text-sm font-bold"
     >
-      {({ open }) => <MenuItems {...props} open={open} />}
+      {({ open }) => <DropdownMenuItems {...props} open={open} />}
     </Menu>
   );
 };

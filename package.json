@@ -32,7 +32,7 @@
     "@fontsource/work-sans": "5.1.0",
     "@graphiql/plugin-explorer": "3.2.3",
     "@graphiql/react": "0.27.0",
-    "@headlessui/react": "1.7.19",
+    "@headlessui/react": "2.2.0",
     "@headlessui/tailwindcss": "0.2.1",
     "@mux/mux-uploader-react": "1.0.3",
     "@radix-ui/react-avatar": "1.1.1",

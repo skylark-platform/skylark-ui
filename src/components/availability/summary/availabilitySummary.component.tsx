@@ -159,6 +159,8 @@ export const AvailabilitySummary = ({
       );
   }
 
+  return <></>;
+
   return (
     <p
       className={clsx(

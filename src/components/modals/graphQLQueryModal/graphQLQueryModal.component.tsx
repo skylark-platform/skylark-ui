@@ -1,4 +1,9 @@
-import { Dialog } from "@headlessui/react";
+import {
+  Description,
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+} from "@headlessui/react";
 import { DocumentNode, print, getOperationAST } from "graphql";
 import { AnimatePresence, motion } from "motion/react";
 import dynamic from "next/dynamic";
@@ -206,7 +211,7 @@ const DisplayGraphQLQueryModalBody = ({
   }, []);
 
   return (
-    <Dialog.Panel className="relative mx-auto flex h-full w-full flex-col overflow-y-hidden rounded bg-white sm:w-11/12 md:w-5/6 lg:w-3/4 xl:w-2/3 2xl:w-1/2">
+    <DialogPanel className="relative mx-auto flex h-full w-full flex-col overflow-y-hidden rounded bg-white sm:w-11/12 md:w-5/6 lg:w-3/4 xl:w-2/3 2xl:w-1/2">
       <div className="sticky top-0 bg-white pt-8 text-black shadow">
         <button
           className="absolute right-4 top-4 sm:right-8 sm:top-9"
@@ -216,15 +221,15 @@ const DisplayGraphQLQueryModalBody = ({
         </button>
 
         <div className="mb-2 px-4 md:mb-4 md:px-8">
-          <Dialog.Title className="mb-2 font-heading text-xl sm:text-2xl md:mb-4 md:text-3xl">
+          <DialogTitle className="mb-2 font-heading text-xl sm:text-2xl md:mb-4 md:text-3xl">
             Query for {label}
-          </Dialog.Title>
+          </DialogTitle>
 
-          <Dialog.Description className="mb-2">
+          <Description className="mb-2">
             The Skylark UI uses dynamic GraphQL Queries generated at runtime to
             match your Skylark Schema exactly. This enables developers to copy
             the query into their application with minimal changes.
-          </Dialog.Description>
+          </Description>
 
           <a
             className="link text-brand-primary"
@@ -277,7 +282,7 @@ const DisplayGraphQLQueryModalBody = ({
           />
         )}
       </div>
-    </Dialog.Panel>
+    </DialogPanel>
   );
 };
 

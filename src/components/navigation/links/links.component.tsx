@@ -1,4 +1,4 @@
-import { Menu } from "@headlessui/react";
+import { Menu, MenuButton } from "@headlessui/react";
 import clsx from "clsx";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -118,10 +118,10 @@ export const NavigationLinks = () => {
             >
               {links ? (
                 <DropdownMenu options={links} placement="bottom-start">
-                  <Menu.Button className="flex w-full items-center justify-center space-x-1 text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:text-sm">
+                  <MenuButton className="flex w-full items-center justify-center space-x-1 text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:text-sm">
                     {Icon}
                     <span>{text}</span>
-                  </Menu.Button>
+                  </MenuButton>
                 </DropdownMenu>
               ) : (
                 <Link

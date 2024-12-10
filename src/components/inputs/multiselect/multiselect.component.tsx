@@ -5,7 +5,13 @@ import {
   size,
   useFloating,
 } from "@floating-ui/react";
-import { Combobox, Transition } from "@headlessui/react";
+import {
+  Combobox,
+  ComboboxButton,
+  ComboboxInput,
+  ComboboxOptions,
+  Transition,
+} from "@headlessui/react";
 import clsx from "clsx";
 import React, {
   useState,
@@ -288,12 +294,12 @@ const MultiSelectComponent = (
                 </Fragment>
               ),
             )}
-            <Combobox.Button
+            <ComboboxButton
               data-testid="multiselect-input"
               as="div"
               className="flex min-w-[6rem] flex-1"
             >
-              <Combobox.Input
+              <ComboboxInput
                 className={clsx(
                   "block w-full truncate border-none bg-manatee-50 pr-2 leading-5 text-gray-900 focus:outline-none focus:ring-0",
                 )}
@@ -310,7 +316,7 @@ const MultiSelectComponent = (
                 }
                 ref={ref as Ref<HTMLInputElement> | undefined}
               />
-            </Combobox.Button>
+            </ComboboxButton>
           </div>
           <Transition
             as="div"
@@ -322,7 +328,7 @@ const MultiSelectComponent = (
           >
             {open && (
               <OptionsPortalWrapper usePortal={!!renderInPortal}>
-                <Combobox.Options
+                <ComboboxOptions
                   static
                   ref={refs.setFloating}
                   style={floatingStyles}
@@ -351,7 +357,7 @@ const MultiSelectComponent = (
                       ))}
                     </SelectOptionsContainer>
                   )}
-                </Combobox.Options>
+                </ComboboxOptions>
               </OptionsPortalWrapper>
             )}
           </Transition>

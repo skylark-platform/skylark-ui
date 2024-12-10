@@ -1,5 +1,4 @@
-import { useFloating, offset, flip, size } from "@floating-ui/react";
-import { Popover } from "@headlessui/react";
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import clsx from "clsx";
 import { useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
@@ -197,29 +196,10 @@ export const AvailabilityPicker = ({
   const { dimensions, isLoading: isLoadingDimensions } =
     useAvailabilityDimensionsWithValues();
 
-  const { refs, floatingStyles } = useFloating({
-    placement: "bottom-start",
-    strategy: "fixed",
-    middleware: [
-      offset(5),
-      flip({ padding: 40 }),
-      size({
-        apply({ rects, elements, availableHeight }) {
-          Object.assign(elements.floating.style, {
-            maxHeight: `${availableHeight}px`,
-            minWidth: `${rects.reference.width}px`,
-          });
-        },
-        padding: 10,
-      }),
-    ],
-  });
-
   return (
     <Popover>
       <div className="group/availability-picker-button relative w-full md:w-52">
-        <Popover.Button
-          ref={refs.setReference}
+        <PopoverButton
           as={Button}
           data-testid="open-availability-picker"
           variant="neutral"
@@ -250,7 +230,7 @@ export const AvailabilityPicker = ({
           >
             <FiChevronDown className="text-xl" aria-hidden="true" />
           </div>
-        </Popover.Button>
+        </PopoverButton>
         {(activeValues.dimensions || activeValues.timeTravel) && (
           <button
             className="absolute inset-y-0 right-8 z-[1] flex items-center px-0.5"
@@ -267,11 +247,10 @@ export const AvailabilityPicker = ({
           </button>
         )}
       </div>
-      <Popover.Panel
-        ref={refs.setFloating}
-        style={floatingStyles}
+      <PopoverPanel
         data-testid="availability-picker"
-        className="bg-manatee z-[50] flex max-h-96 flex-grow flex-col justify-between overflow-y-scroll rounded bg-white px-6 py-6 text-sm shadow-lg shadow-manatee-500 md:-left-20"
+        anchor="bottom start"
+        className="[--anchor-gap:8px] [--anchor-padding:8px] bg-manatee z-[50] flex max-h-96 flex-grow flex-col justify-between overflow-y-scroll rounded bg-white px-6 py-6 text-sm shadow-lg shadow-manatee-500 md:-left-20"
       >
         {({ close }) => (
           <>
@@ -284,7 +263,7 @@ export const AvailabilityPicker = ({
             />
           </>
         )}
-      </Popover.Panel>
+      </PopoverPanel>
     </Popover>
   );
 };

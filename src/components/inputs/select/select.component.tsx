@@ -6,7 +6,13 @@ import {
   autoUpdate,
   Placement,
 } from "@floating-ui/react";
-import { Combobox, Transition, Portal } from "@headlessui/react";
+import {
+  Combobox,
+  Transition,
+  Portal,
+  ComboboxOption,
+  Label,
+} from "@headlessui/react";
 import clsx from "clsx";
 import React, {
   useState,
@@ -81,7 +87,7 @@ export const SelectLabel = <T extends string | number>({
   htmlFor?: string;
   isRequired?: boolean;
 }) => (
-  <Combobox.Label
+  <Label
     htmlFor={htmlFor}
     className={clsx(
       labelPosition === "inline" && "whitespace-pre",
@@ -93,7 +99,7 @@ export const SelectLabel = <T extends string | number>({
   >
     {labelVariant === "form" ? formatObjectField(label) : label}
     {isRequired && <span className="pl-0.5 text-error">*</span>}
-  </Combobox.Label>
+  </Label>
 );
 
 const SelectOptionTooltip = ({
@@ -125,7 +131,7 @@ export const SelectOptionComponent = <T extends string | number>({
   className?: string;
   withCheckbox?: boolean;
 }) => (
-  <Combobox.Option
+  <ComboboxOption
     key={option.value}
     className={({ active }) =>
       clsx(
@@ -171,7 +177,7 @@ export const SelectOptionComponent = <T extends string | number>({
     {option.infoTooltip && (
       <SelectOptionTooltip tooltip={option.infoTooltip} side={"right"} />
     )}
-  </Combobox.Option>
+  </ComboboxOption>
 );
 
 export const SelectOptionsContainer = forwardRef(
@@ -348,8 +354,8 @@ const SelectComponent = <T extends string | number>(
       : options;
 
   const onChangeWrapper = useCallback(
-    (newSelected: SelectOption<T>) => {
-      onChange?.(newSelected.value);
+    (newSelected: T) => {
+      onChange?.(newSelected);
     },
     [onChange],
   );
@@ -377,11 +383,7 @@ const SelectComponent = <T extends string | number>(
     <Combobox
       disabled={disabled || !options}
       onChange={onChangeWrapper}
-      value={
-        (displayRawSelectedValue && selected
-          ? { label: selected, value: selected }
-          : selectedOption) || ""
-      }
+      value={selected}
       name={name}
     >
       {({ open }) => (
