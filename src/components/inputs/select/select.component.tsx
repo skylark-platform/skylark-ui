@@ -6,13 +6,7 @@ import {
   autoUpdate,
   Placement,
 } from "@floating-ui/react";
-import {
-  Combobox,
-  Transition,
-  Portal,
-  ComboboxOption,
-  Label,
-} from "@headlessui/react";
+import { Combobox, Transition, Portal } from "@headlessui/react";
 import clsx from "clsx";
 import React, {
   useState,
@@ -30,7 +24,7 @@ import { useVirtual } from "react-virtual";
 
 import { FiX } from "src/components/icons";
 import { Tooltip, TooltipSide } from "src/components/tooltip/tooltip.component";
-import { formatObjectField, mergeRefs } from "src/lib/utils";
+import { formatObjectField, hasProperty, mergeRefs } from "src/lib/utils";
 
 export interface SelectOption<T> {
   label: string;
@@ -87,7 +81,7 @@ export const SelectLabel = <T extends string | number>({
   htmlFor?: string;
   isRequired?: boolean;
 }) => (
-  <Label
+  <Combobox.Label
     htmlFor={htmlFor}
     className={clsx(
       labelPosition === "inline" && "whitespace-pre",
@@ -99,7 +93,7 @@ export const SelectLabel = <T extends string | number>({
   >
     {labelVariant === "form" ? formatObjectField(label) : label}
     {isRequired && <span className="pl-0.5 text-error">*</span>}
-  </Label>
+  </Combobox.Label>
 );
 
 const SelectOptionTooltip = ({
@@ -131,13 +125,14 @@ export const SelectOptionComponent = <T extends string | number>({
   className?: string;
   withCheckbox?: boolean;
 }) => (
-  <ComboboxOption
+  <Combobox.Option
+    as="li"
     key={option.value}
-    className={({ active }) =>
+    className={({ focus }) =>
       clsx(
         "relative flex cursor-default select-none items-center",
         variant === "pill" ? "px-2" : "px-4 pl-6",
-        (active || isSelected) && !option.disabled && "bg-ultramarine-50",
+        (focus || isSelected) && !option.disabled && "bg-ultramarine-50",
         option.disabled ? "bg-manatee-100 text-gray-400" : "text-gray-900",
         className,
       )
@@ -177,7 +172,7 @@ export const SelectOptionComponent = <T extends string | number>({
     {option.infoTooltip && (
       <SelectOptionTooltip tooltip={option.infoTooltip} side={"right"} />
     )}
-  </ComboboxOption>
+  </Combobox.Option>
 );
 
 export const SelectOptionsContainer = forwardRef(
@@ -354,8 +349,11 @@ const SelectComponent = <T extends string | number>(
       : options;
 
   const onChangeWrapper = useCallback(
-    (newSelected: T) => {
-      onChange?.(newSelected);
+    (newSelected: NoInfer<SelectOption<T>> | null) => {
+      const value = (
+        hasProperty(newSelected, "value") ? newSelected?.value : newSelected
+      ) as T;
+      onChange?.(value);
     },
     [onChange],
   );
@@ -383,8 +381,9 @@ const SelectComponent = <T extends string | number>(
     <Combobox
       disabled={disabled || !options}
       onChange={onChangeWrapper}
-      value={selected}
+      value={selectedOption || null}
       name={name}
+      as="div"
     >
       {({ open }) => (
         <div
@@ -424,8 +423,8 @@ const SelectComponent = <T extends string | number>(
                   roundedClassName,
                   showClearValueButton ? "pr-12" : "pr-8",
                 )}
-                displayValue={(option: SelectOption<T>) =>
-                  `${option.label || option.value || ""}`
+                displayValue={(option: SelectOption<T> | null) =>
+                  `${option?.label || option?.value || ""}`
                 }
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={

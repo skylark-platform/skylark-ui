@@ -1018,7 +1018,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
             </motion.div>
           )}
           {data && (
-            <>
+            <div>
               {inEditMode ? (
                 <PanelAvailabilityEditView
                   {...props}
@@ -1041,7 +1041,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
                   isFetched={isFetched}
                 />
               )}
-            </>
+            </div>
           )}
         </AnimatePresence>
         <PanelLoading

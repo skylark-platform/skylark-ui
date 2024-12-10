@@ -303,8 +303,8 @@ const MultiSelectComponent = (
                 className={clsx(
                   "block w-full truncate border-none bg-manatee-50 pr-2 leading-5 text-gray-900 focus:outline-none focus:ring-0",
                 )}
-                displayValue={(option: MultiSelectOption) =>
-                  option.label || option.value
+                displayValue={(option: MultiSelectOption | null) =>
+                  option?.label || option?.value || ""
                 }
                 onChange={(event) => setQuery(event.target.value)}
                 onKeyDown={callNothingFoundOnEnter}
@@ -330,6 +330,7 @@ const MultiSelectComponent = (
               <OptionsPortalWrapper usePortal={!!renderInPortal}>
                 <ComboboxOptions
                   static
+                  as="ul"
                   ref={refs.setFloating}
                   style={floatingStyles}
                   className="z-50 text-xs sm:text-sm w-72 md:w-96"
