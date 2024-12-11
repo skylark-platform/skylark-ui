@@ -1,5 +1,5 @@
 import { StoryFn } from "@storybook/react";
-import { screen, userEvent } from "@storybook/testing-library";
+import { screen, userEvent } from "@storybook/test";
 
 import { NavigationLinks } from "./links.component";
 
@@ -8,7 +8,7 @@ export default {
   component: NavigationLinks,
 };
 
-const Template: StoryFn<typeof NavigationLinks> = () => <NavigationLinks />;
+const Template: StoryFn = () => <NavigationLinks />;
 
 export const Default = {
   render: Template,

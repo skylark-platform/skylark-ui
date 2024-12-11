@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { AnimatePresence, Transition, motion } from "framer-motion";
+import { AnimatePresence, Transition, motion } from "motion/react";
 import { ReactNode, useMemo } from "react";
 
 import { Spinner } from "src/components/icons";

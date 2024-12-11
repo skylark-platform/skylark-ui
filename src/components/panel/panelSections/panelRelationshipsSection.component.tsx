@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Transition, motion } from "framer-motion";
+import { Transition, motion } from "motion/react";
 import { Ref, forwardRef, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 

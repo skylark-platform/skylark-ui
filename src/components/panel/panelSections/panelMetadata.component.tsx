@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
 import { FiClock, FiUploadCloud } from "react-icons/fi";
 

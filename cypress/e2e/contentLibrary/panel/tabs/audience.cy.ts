@@ -135,7 +135,7 @@ describe("Content Library - Object Panel - Audience tab", () => {
     cy.contains("Editing");
     cy.contains("Kids");
 
-    cy.contains("Save").click();
+    cy.contains("Save").click({ force: true });
 
     cy.contains("Editing").should("not.exist");
   });

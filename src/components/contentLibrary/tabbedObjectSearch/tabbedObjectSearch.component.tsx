@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { motion, Target } from "framer-motion";
+import { motion, Target } from "motion/react";
 import { useState } from "react";
 import {
   FiCheckSquare,

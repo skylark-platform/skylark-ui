@@ -91,13 +91,14 @@ export const AvailabilitySummary = ({
     objectTypesConfig,
   );
 
-  const translationStr = language ? (
-    <>
-      translated to <strong>{language}</strong>{" "}
-    </>
-  ) : (
-    <></>
-  );
+  const translationStr =
+    language && typeof language === "string" ? (
+      <>
+        translated to <strong>{language}</strong>{" "}
+      </>
+    ) : (
+      <></>
+    );
 
   const queryStr = query ? (
     <>

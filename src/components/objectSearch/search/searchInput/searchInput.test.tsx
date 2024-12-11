@@ -1,7 +1,6 @@
-import { fireEvent } from "@storybook/testing-library";
 import { act } from "react-dom/test-utils";
 
-import { render, screen } from "src/__tests__/utils/test-utils";
+import { render, screen, fireEvent } from "src/__tests__/utils/test-utils";
 import { SearchType } from "src/hooks/useSearchWithLookupType";
 
 import { SearchInput } from "./searchInput.component";

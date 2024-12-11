@@ -1,6 +1,6 @@
-import { expect } from "@storybook/jest";
 import { StoryFn } from "@storybook/react";
-import { waitFor, screen } from "@storybook/testing-library";
+import { expect } from "@storybook/test";
+import { waitFor, screen } from "@storybook/test";
 import { useForm } from "react-hook-form";
 
 import { SkylarkObjectMetadataField } from "src/interfaces/skylark";

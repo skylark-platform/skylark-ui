@@ -17,13 +17,14 @@ import React, {
   Ref,
   ReactNode,
   ReactElement,
+  JSX,
 } from "react";
 import { FiCheck, FiChevronDown, FiInfo } from "react-icons/fi";
 import { useVirtual } from "react-virtual";
 
 import { FiX } from "src/components/icons";
 import { Tooltip, TooltipSide } from "src/components/tooltip/tooltip.component";
-import { formatObjectField, mergeRefs } from "src/lib/utils";
+import { formatObjectField, hasProperty, mergeRefs } from "src/lib/utils";
 
 export interface SelectOption<T> {
   label: string;
@@ -125,12 +126,13 @@ export const SelectOptionComponent = <T extends string | number>({
   withCheckbox?: boolean;
 }) => (
   <Combobox.Option
+    as="li"
     key={option.value}
-    className={({ active }) =>
+    className={({ focus }) =>
       clsx(
         "relative flex cursor-default select-none items-center",
         variant === "pill" ? "px-2" : "px-4 pl-6",
-        (active || isSelected) && !option.disabled && "bg-ultramarine-50",
+        (focus || isSelected) && !option.disabled && "bg-ultramarine-50",
         option.disabled ? "bg-manatee-100 text-gray-400" : "text-gray-900",
         className,
       )
@@ -347,8 +349,13 @@ const SelectComponent = <T extends string | number>(
       : options;
 
   const onChangeWrapper = useCallback(
-    (newSelected: SelectOption<T>) => {
-      onChange?.(newSelected.value);
+    (newSelected: NoInfer<SelectOption<T>> | null) => {
+      const value = (
+        newSelected && hasProperty(newSelected, "value")
+          ? newSelected?.value
+          : newSelected
+      ) as T;
+      onChange?.(value);
     },
     [onChange],
   );
@@ -376,12 +383,9 @@ const SelectComponent = <T extends string | number>(
     <Combobox
       disabled={disabled || !options}
       onChange={onChangeWrapper}
-      value={
-        (displayRawSelectedValue && selected
-          ? { label: selected, value: selected }
-          : selectedOption) || ""
-      }
+      value={selectedOption || null}
       name={name}
+      as="div"
     >
       {({ open }) => (
         <div
@@ -421,8 +425,8 @@ const SelectComponent = <T extends string | number>(
                   roundedClassName,
                   showClearValueButton ? "pr-12" : "pr-8",
                 )}
-                displayValue={(option: SelectOption<T>) =>
-                  `${option.label || option.value || ""}`
+                displayValue={(option: SelectOption<T> | null) =>
+                  `${option?.label || option?.value || ""}`
                 }
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={

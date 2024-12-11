@@ -1,6 +1,6 @@
-import { expect } from "@storybook/jest";
 import { StoryFn } from "@storybook/react";
-import { userEvent, waitFor, screen } from "@storybook/testing-library";
+import { expect } from "@storybook/test";
+import { userEvent, waitFor, screen } from "@storybook/test";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -51,7 +51,7 @@ const openToastAndCheckForTitle = async ({
   await userEvent.hover(screen.getByText(args.title));
 };
 
-const Template: StoryFn<typeof Toast> = () => {
+const Template: StoryFn = () => {
   return (
     <>
       <ToastContainer />

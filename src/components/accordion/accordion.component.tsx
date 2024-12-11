@@ -1,4 +1,9 @@
-import { Disclosure, DisclosureProps } from "@headlessui/react";
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  DisclosureProps,
+} from "@headlessui/react";
 import clsx from "clsx";
 import { FiChevronDown } from "react-icons/fi";
 
@@ -18,7 +23,7 @@ export const Accordion = <TTag extends React.ElementType>({
   ...props
 }: AccordionProps<TTag>) => (
   <Disclosure {...props}>
-    <Disclosure.Button
+    <DisclosureButton
       className={clsx(
         "px-4 mt-4 flex justify-between items-center text-left py-2 w-full border rounded",
         isSuccess && "bg-success/10 border-success",
@@ -32,8 +37,8 @@ export const Accordion = <TTag extends React.ElementType>({
     >
       <span>{buttonText}</span>
       <FiChevronDown className="text-xl" />
-    </Disclosure.Button>
-    <Disclosure.Panel
+    </DisclosureButton>
+    <DisclosurePanel
       className={clsx(
         "text-gray-500 p-4 rounded-b-lg",
         isSuccess && "bg-success/5",
@@ -43,6 +48,6 @@ export const Accordion = <TTag extends React.ElementType>({
       )}
     >
       {children}
-    </Disclosure.Panel>
+    </DisclosurePanel>
   </Disclosure>
 );

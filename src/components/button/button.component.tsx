@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { forwardRef, ReactNode, Ref } from "react";
+import { forwardRef, JSX, ReactNode, Ref } from "react";
 import { CgSpinner } from "react-icons/cg";
 
 export interface ButtonProps {

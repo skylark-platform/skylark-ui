@@ -332,8 +332,9 @@ describe("metadata view", () => {
         GQLSkylarkGetObjectGOTS01E01QueryFixture.data.getObject._meta
           .language_data.language,
       );
-      await fireEvent.click(dropdown);
-      await fireEvent.click(screen.getByText("pt-PT"));
+      await fireEvent.mouseDown(dropdown);
+
+      await fireEvent.mouseDown(screen.getByText("pt-PT"));
 
       // Assert
       await waitFor(() =>
