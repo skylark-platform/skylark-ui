@@ -140,7 +140,8 @@
     "@types/react-dom": "19.0.1",
     "string-width": "4.2.3",
     "wrap-ansi": "7.0.0",
-    "jackspeak": "4.0.2"
+    "jackspeak": "4.0.2",
+    "@headlessui/react": "2.2.0"
   },
   "readme": "ERROR: No README data found!",
   "_id": "skylark-ui@0.1.0",
