@@ -351,7 +351,9 @@ const SelectComponent = <T extends string | number>(
   const onChangeWrapper = useCallback(
     (newSelected: NoInfer<SelectOption<T>> | null) => {
       const value = (
-        hasProperty(newSelected, "value") ? newSelected?.value : newSelected
+        newSelected && hasProperty(newSelected, "value")
+          ? newSelected?.value
+          : newSelected
       ) as T;
       onChange?.(value);
     },
