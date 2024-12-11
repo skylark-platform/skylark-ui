@@ -45,7 +45,7 @@ test("changes the checked radio", async () => {
 
   await screen.findByLabelText(options[0].label);
 
-  fireEvent.click(screen.getByLabelText(options[1].label));
+  fireEvent.click(screen.getByRole("radio", { name: options[1].label }));
 
   expect(onChange).toHaveBeenCalledWith(options[1]);
 });
