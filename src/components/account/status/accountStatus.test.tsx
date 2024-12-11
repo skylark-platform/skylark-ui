@@ -1,4 +1,3 @@
-import { fireEvent } from "@storybook/testing-library";
 import { graphql } from "msw";
 
 import GQLSkylarkAccountStatusAvailabilityBackgroundTasksFixture from "src/__tests__/fixtures/skylark/queries/getAccountStatus/availabilityBackgroundTasksInProgress.json";
@@ -7,7 +6,12 @@ import GQLSkylarkAccountStatusDefault from "src/__tests__/fixtures/skylark/queri
 import GQLSkylarkAccountStatusDeletionBackgroundTasksFixture from "src/__tests__/fixtures/skylark/queries/getAccountStatus/deletionBackgroundTasksInProgress.json";
 import GQLSkylarkAccountStatusSchemaUpdate from "src/__tests__/fixtures/skylark/queries/getAccountStatus/schemaUpdateInProgress.json";
 import { server } from "src/__tests__/mocks/server";
-import { render, screen, waitFor } from "src/__tests__/utils/test-utils";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "src/__tests__/utils/test-utils";
 import { GET_ACCOUNT_STATUS } from "src/lib/graphql/skylark/queries";
 
 import { AccountStatus } from "./accountStatus.component";

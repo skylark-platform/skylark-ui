@@ -1,5 +1,5 @@
 import { StoryFn } from "@storybook/react";
-import { screen, userEvent, waitFor } from "@storybook/testing-library";
+import { screen, userEvent, waitFor } from "@storybook/test";
 import React from "react";
 
 import GQLSkylarkGetAvailabilityQueryFixture from "src/__tests__/fixtures/skylark/queries/getObject/allDevicesAllCustomersAvailability.json";

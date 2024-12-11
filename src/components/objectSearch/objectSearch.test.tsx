@@ -359,8 +359,6 @@ test("renders search results with language as null (no default)", async () => {
 test("opens filters and deselects all object types", async () => {
   render(<ObjectSearch id="test" initialColumnState={{ columns: ["uid"] }} />);
 
-  await screen.findByText("Display field"); // Search for table header
-
   fireEvent.click(
     screen.getByRole("button", {
       name: /Open Search Options/i,
@@ -371,6 +369,16 @@ test("opens filters and deselects all object types", async () => {
     expect(screen.getAllByText("Object type").length).toBeGreaterThanOrEqual(1);
   });
 
+  await screen.findByRole("radio", {
+    name: "UID & External ID",
+  });
+
+  expect(screen.queryByText("Episode")).toBeInTheDocument();
+  expect(screen.getByRole("checkbox", { name: "Episode" })).toHaveAttribute(
+    "aria-checked",
+    "false",
+  );
+
   expect(screen.getAllByRole("checkbox")[0]).toHaveAttribute(
     "id",
     "checkbox-toggle-all-object-type",
@@ -378,7 +386,11 @@ test("opens filters and deselects all object types", async () => {
 
   await fireEvent.click(screen.getAllByRole("checkbox")[0]);
 
-  expect(screen.getByLabelText("Episode")).toBeInTheDocument();
+  expect(screen.queryByText("Episode")).toBeInTheDocument();
+  expect(screen.getByRole("checkbox", { name: "Episode" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
 });
 
 test("manually filters to only en-gb translated objects", async () => {
@@ -429,7 +441,7 @@ test("manually filters to only en-gb translated objects", async () => {
   await fireEvent.change(combobox, {
     target: { value: "en-GB" },
   });
-  await fireEvent.click(
+  await fireEvent.mouseDown(
     within(screen.getByTestId("select-options")).getByText("en-GB"),
   );
 

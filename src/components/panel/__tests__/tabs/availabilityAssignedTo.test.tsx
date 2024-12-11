@@ -126,7 +126,7 @@ describe("availabity assigned to view", () => {
     const gotOptions = await screen.findAllByRole("option");
     expect(gotOptions).toHaveLength(1);
 
-    await fireEvent.click(gotOptions[0]);
+    await fireEvent.mouseDown(gotOptions[0]);
 
     expect(await screen.findByText("Science fiction")).toBeInTheDocument();
     expect(screen.queryByText("sound of metal.jpeg")).not.toBeInTheDocument();

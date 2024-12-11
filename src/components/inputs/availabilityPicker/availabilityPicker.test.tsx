@@ -21,16 +21,16 @@ const selectAllDimensions = async () => {
   await waitFor(() => {
     expect(deviceTypeSelect).toBeEnabled();
   });
-  fireEvent.click(deviceTypeSelect);
-  fireEvent.click(screen.getByText("PC"));
+  fireEvent.mouseDown(deviceTypeSelect);
+  fireEvent.mouseDown(screen.getByText("PC"));
 
   // Select device type
   const customerTypeSelect = screen.getByPlaceholderText(
     "Select Customer Type value",
   );
   expect(customerTypeSelect).toBeEnabled();
-  fireEvent.click(customerTypeSelect);
-  fireEvent.click(screen.getByText("Premium"));
+  fireEvent.mouseDown(customerTypeSelect);
+  fireEvent.mouseDown(screen.getByText("Premium"));
 };
 
 test("opens the Availability Picker when the button is clicked", async () => {

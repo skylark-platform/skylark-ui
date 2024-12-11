@@ -7,7 +7,7 @@ export default {
   component: Index,
 };
 
-const Template: StoryFn<typeof Index> = () => {
+const Template: StoryFn = () => {
   return <Index />;
 };
 

@@ -107,14 +107,14 @@ describe("availabity dimensions view", () => {
       fireEvent.click(wrapper);
 
       const combobox = within(wrapper).getByRole("combobox");
-      fireEvent.click(combobox);
+      fireEvent.mouseDown(combobox);
 
       expect(screen.queryAllByText("Standard")).toHaveLength(2);
 
       // Select new option
       expect(screen.queryByText("Kids")).toBeInTheDocument();
       expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(0);
-      fireEvent.click(screen.getByText("Kids"));
+      fireEvent.mouseDown(screen.getByText("Kids"));
 
       // Check Pill is added
       expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(1);
@@ -191,14 +191,14 @@ describe("availabity dimensions view", () => {
       fireEvent.click(wrapper);
 
       const combobox = within(wrapper).getByRole("combobox");
-      fireEvent.click(combobox);
+      fireEvent.mouseDown(combobox);
 
       expect(screen.queryAllByText("Standard")).toHaveLength(2);
 
       // Select new option
       expect(screen.queryByText("Kids")).toBeInTheDocument();
       expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(0);
-      fireEvent.click(screen.getByText("Kids"));
+      fireEvent.mouseDown(screen.getByText("Kids"));
 
       // Check Pill is added
       expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(1);
@@ -250,14 +250,14 @@ describe("availabity dimensions view", () => {
       fireEvent.click(wrapper);
 
       const combobox = within(wrapper).getByRole("combobox");
-      fireEvent.click(combobox);
+      fireEvent.mouseDown(combobox);
 
       expect(screen.queryAllByText("Standard")).toHaveLength(2);
 
       // Select new option
       expect(screen.queryByText("Kids")).toBeInTheDocument();
       expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(0);
-      fireEvent.click(screen.getByText("Kids"));
+      fireEvent.mouseDown(screen.getByText("Kids"));
 
       // Check Pill is added
       expect(within(displayDiv).queryAllByText("Kids")).toHaveLength(1);

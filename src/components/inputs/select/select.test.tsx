@@ -1,6 +1,4 @@
-import { fireEvent } from "@storybook/testing-library";
-
-import { render, screen } from "src/__tests__/utils/test-utils";
+import { render, screen, fireEvent } from "src/__tests__/utils/test-utils";
 
 import { Select, SelectOption } from "./select.component";
 
@@ -81,14 +79,14 @@ test("calls onChange when a new item is selected", async () => {
   );
 
   expect(screen.getByRole("button")).toHaveTextContent("Object Type");
-  await fireEvent.click(screen.getByRole("button"));
+  await fireEvent.mouseDown(screen.getByRole("button"));
 
   const gotOptions = await screen.findAllByRole("option");
   gotOptions.forEach((_, i) => {
     expect(gotOptions[i]).toHaveTextContent(options[i].label);
   });
 
-  await fireEvent.click(screen.getByText("Season"));
+  await fireEvent.mouseDown(screen.getByText("Season"));
 
   expect(onChange).toHaveBeenCalledWith("Season");
 });
@@ -116,7 +114,7 @@ test("searches for Episode", async () => {
   expect(gotOptions.length).toBe(1);
   expect(gotOptions[0]).toHaveTextContent("Episode");
 
-  await fireEvent.click(screen.getByText("Episode"));
+  await fireEvent.mouseDown(screen.getByText("Episode"));
 
   expect(onChange).toHaveBeenCalledWith("Episode");
 });
@@ -168,7 +166,7 @@ test("adds a custom value when allowCustomValue is true and the option is not fo
   expect(gotOptions.length).toBe(1);
   expect(gotOptions[0]).toHaveTextContent('Use "Custom Value"');
 
-  await fireEvent.click(screen.getByText('Use "Custom Value"'));
+  await fireEvent.mouseDown(screen.getByText('Use "Custom Value"'));
 
   expect(onChange).toHaveBeenCalledWith("Custom Value");
 });
@@ -216,7 +214,7 @@ test("renders options with tooltips", async () => {
   const tooltipTrigger = screen.getByTestId("select-tooltip-trigger");
   expect(tooltipTrigger).toBeInTheDocument();
 
-  await fireEvent.click(screen.getByRole("button"));
+  await fireEvent.mouseDown(screen.getByRole("button"));
 
   const gotOptions = await screen.findAllByRole("option");
 

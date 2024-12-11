@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useDragControls, Reorder } from "framer-motion";
+import { useDragControls, Reorder } from "motion/react";
 import { FiInfo } from "react-icons/fi";
 
 import { Checkbox } from "src/components/inputs/checkbox";

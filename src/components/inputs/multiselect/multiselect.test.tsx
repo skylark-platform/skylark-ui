@@ -3,6 +3,7 @@ import {
   screen,
   fireEvent,
   within,
+  prettyDOM,
 } from "src/__tests__/utils/test-utils";
 import { SelectOption } from "src/components/inputs/select";
 
@@ -36,8 +37,8 @@ test("selects an option", () => {
 
   render(<MultiSelect options={options} onChange={onChange} />);
 
-  fireEvent.click(screen.getByRole("combobox"));
-  fireEvent.click(within(screen.getByRole("listbox")).getByText("opt2"));
+  fireEvent.mouseDown(screen.getByRole("combobox"));
+  fireEvent.mouseDown(within(screen.getByRole("listbox")).getByText("opt2"));
 
   expect(onChange).toHaveBeenCalledWith(["opt2"]);
 });
@@ -55,8 +56,8 @@ test("selects an option - virtualised", () => {
     />,
   );
 
-  fireEvent.click(screen.getByRole("combobox"));
-  fireEvent.click(within(screen.getByRole("listbox")).getByText("label-1"));
+  fireEvent.mouseDown(screen.getByRole("combobox"));
+  fireEvent.mouseDown(within(screen.getByRole("listbox")).getByText("label-1"));
 
   expect(onChange).toHaveBeenCalledWith(["value-1"]);
 });
@@ -72,8 +73,8 @@ test("deselects an option", () => {
     />,
   );
 
-  fireEvent.click(screen.getByRole("combobox"));
-  fireEvent.click(within(screen.getByRole("listbox")).getByText("opt2"));
+  fireEvent.mouseDown(screen.getByRole("combobox"));
+  fireEvent.mouseDown(within(screen.getByRole("listbox")).getByText("opt2"));
 
   expect(onChange).toHaveBeenCalledWith(["opt1", "opt3"]);
 });
@@ -89,13 +90,13 @@ test("deselects an option using the x in the pill", () => {
     />,
   );
 
-  fireEvent.click(screen.getByRole("combobox"));
+  fireEvent.mouseDown(screen.getByRole("combobox"));
 
   const selectedPill = within(
     screen.getByTestId("multiselect-input").parentElement as HTMLDivElement,
   ).getByText("opt2").parentElement as HTMLDivElement;
 
-  fireEvent.click(within(selectedPill).getByRole("button"));
+  fireEvent.click(within(selectedPill).getByRole("button", { hidden: true }));
 
   expect(onChange).toHaveBeenCalledWith(["opt1", "opt3"]);
 });

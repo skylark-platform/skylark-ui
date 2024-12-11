@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { JSX } from "react";
 import { FiCopy } from "react-icons/fi";
 
 interface CopyToClipboardProps {

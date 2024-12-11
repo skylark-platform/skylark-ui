@@ -1,3 +1,5 @@
+import { JSX } from "react";
+
 import { Link } from "src/components/navigation/links";
 import {
   PanelEmptyDataText,

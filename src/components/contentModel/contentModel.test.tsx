@@ -150,8 +150,10 @@ describe("UI Config", () => {
     fireEvent.change(withinUIConfigEditor.getByPlaceholderText("SkylarkSet"), {
       target: { value: "CustomSetName" },
     });
-    fireEvent.click(withinUIConfigEditor.getByPlaceholderText("Select option"));
-    fireEvent.click(withinUIConfigEditor.getByText("uid"));
+    fireEvent.mouseDown(
+      withinUIConfigEditor.getByPlaceholderText("Select option"),
+    );
+    fireEvent.mouseDown(withinUIConfigEditor.getByText("uid"));
     fireEvent.click(withinUIConfigEditor.getByTestId("colour-picker-button"));
     fireEvent.change(withinUIConfigEditor.getByPlaceholderText("#"), {
       target: { value: "#226DFF" },
@@ -242,8 +244,10 @@ describe("UI Config", () => {
     fireEvent.change(withinUIConfigEditor.getByPlaceholderText("SkylarkSet"), {
       target: { value: "CustomSetName" },
     });
-    fireEvent.click(withinUIConfigEditor.getByPlaceholderText("Select option"));
-    fireEvent.click(withinUIConfigEditor.getByText("uid"));
+    fireEvent.mouseDown(
+      withinUIConfigEditor.getByPlaceholderText("Select option"),
+    );
+    fireEvent.mouseDown(withinUIConfigEditor.getByText("uid"));
     fireEvent.click(withinUIConfigEditor.getByTestId("colour-picker-button"));
     fireEvent.change(withinUIConfigEditor.getByPlaceholderText("#"), {
       target: { value: "#226DFF" },
@@ -333,8 +337,8 @@ describe("Relationships", () => {
 
     // Change sort field
     expect(imageSortField).toHaveAttribute("data-value", "file_name");
-    fireEvent.click(imageSortField);
-    fireEvent.click(withinImagesRow.getByText("title"));
+    fireEvent.mouseDown(imageSortField);
+    fireEvent.mouseDown(withinImagesRow.getByText("title"));
     expect(imageSortField).toHaveAttribute("data-value", "title");
 
     // Change inherit availability
@@ -399,8 +403,8 @@ describe("Relationships", () => {
     // Change sort field
     const imageSortField = withinImagesRow.getByRole("combobox");
     expect(imageSortField).toHaveAttribute("data-value", "file_name");
-    fireEvent.click(imageSortField);
-    fireEvent.click(withinImagesRow.getByText("title"));
+    fireEvent.mouseDown(imageSortField);
+    fireEvent.mouseDown(withinImagesRow.getByText("title"));
     expect(imageSortField).toHaveAttribute("data-value", "title");
 
     server.use(
@@ -462,8 +466,8 @@ describe("Relationships", () => {
     // Change sort field
     const imageSortField = withinImagesRow.getByRole("combobox");
     expect(imageSortField).toHaveAttribute("data-value", "file_name");
-    fireEvent.click(imageSortField);
-    fireEvent.click(withinImagesRow.getByText("title"));
+    fireEvent.mouseDown(imageSortField);
+    fireEvent.mouseDown(withinImagesRow.getByText("title"));
     expect(imageSortField).toHaveAttribute("data-value", "title");
 
     server.use(
@@ -549,8 +553,8 @@ describe("Schema Version", () => {
 
     const schemaVersionSelect = screen.getByPlaceholderText("Schema Version");
 
-    await fireEvent.click(schemaVersionSelect);
-    await fireEvent.click(screen.getByText("1"));
+    await fireEvent.mouseDown(schemaVersionSelect);
+    await fireEvent.mouseDown(screen.getByText("1"));
 
     // Verify Episode object is no longer in the document
     await waitFor(() => {
@@ -572,8 +576,8 @@ describe("Schema Version", () => {
 
     const schemaVersionSelect = screen.getByPlaceholderText("Schema Version");
 
-    await fireEvent.click(schemaVersionSelect);
-    await fireEvent.click(screen.getByText("1"));
+    await fireEvent.mouseDown(schemaVersionSelect);
+    await fireEvent.mouseDown(screen.getByText("1"));
 
     // Verify Episode object is no longer in the document
     await waitFor(() => {

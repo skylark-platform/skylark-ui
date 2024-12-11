@@ -1,5 +1,5 @@
 import { sentenceCase } from "change-case";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "motion/react";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import { DisplayGraphQLQuery, SearchObjectsModal } from "src/components/modals";
