@@ -107,7 +107,7 @@
     "chromatic": "11.20.0",
     "cypress": "13.16.1",
     "cypress-iframe": "1.0.1",
-    "eslint": "8.57.1",
+    "eslint": "9.16.0",
     "eslint-config-next": "15.0.4",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-jest": "28.9.0",
