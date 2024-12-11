@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
 import { FiClock, FiUploadCloud } from "react-icons/fi";
 
@@ -33,7 +33,7 @@ import {
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { splitMetadataIntoSystemTranslatableGlobal } from "src/lib/skylark/objects";
-import { objectIsAvailabilityOrAvailabilitySegment } from "src/lib/utils";
+import { objectIsAvailabilityOrAudienceSegment } from "src/lib/utils";
 
 import {
   AvailabilityDimensionBreakdown,
@@ -332,7 +332,7 @@ export const PanelMetadata = ({
               />
             </>
           )}
-          {objectIsAvailabilityOrAvailabilitySegment(object) && (
+          {objectIsAvailabilityOrAudienceSegment(object) && (
             <AvailabilityDimensionBreakdown object={object} />
           )}
         </form>

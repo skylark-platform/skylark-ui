@@ -1,5 +1,5 @@
 import { StoryFn } from "@storybook/react";
-import { userEvent, screen } from "@storybook/testing-library";
+import { userEvent, screen } from "@storybook/test";
 
 import {
   DropdownMenu,

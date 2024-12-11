@@ -1,19 +1,21 @@
-import { StoryFn } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import { CreateObjectModal } from "./createObjectModal.component";
 
-export default {
+const meta: Meta = {
   title: "Components/Modals/CreateObjectModal",
   component: CreateObjectModal,
   // Decorator to increase Story height https://www.chromatic.com/docs/snapshots#why-are-components-that-render-in-a-portal-tooltip-modal-menu-ge
   decorators: [
-    (StoryComponent: StoryFn) => (
+    (StoryComponent) => (
       <div className="h-screen w-screen">
         <StoryComponent />
       </div>
     ),
   ],
 };
+
+export default meta;
 
 const Template: StoryFn<typeof CreateObjectModal> = (args) => {
   return <CreateObjectModal {...args} />;

@@ -24,7 +24,7 @@ import GQLSkylarkGetAvailabilityDimensionsQueryFixture from "src/__tests__/fixtu
 import GQLSkylarkGetObjectGenericFixture from "src/__tests__/fixtures/skylark/queries/getObjectGeneric/homepage.json";
 import GQLSkylarkGetMovieRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetSeasonRelationshipsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectRelationships/gots04relationships.json";
-import GQLSkylarkGetAvailabilitySegmentsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectSegments/allDevicesAllCustomersAvailability.json";
+import GQLSkylarkGetAudienceSegmentsQueryFixture from "src/__tests__/fixtures/skylark/queries/getObjectSegments/allDevicesAllCustomersAvailability.json";
 import GQLSkylarkGetMovieVersionsFixture from "src/__tests__/fixtures/skylark/queries/getObjectVersions/fantasticMrFox_All_Availabilities.json";
 import GQLSkylarkGetObjectsConfigFixture from "src/__tests__/fixtures/skylark/queries/getObjectsConfig/allObjectsConfig.json";
 import { SkylarkAvailabilityField } from "src/interfaces/skylark";
@@ -213,9 +213,9 @@ export const getObjectAvailabilityDimensionHandlers = [
   }),
 ];
 
-export const getObjectAvailabilitySegmentsHandlers = [
+export const getObjectAudienceSegmentsHandlers = [
   graphql.query(wrapQueryName("GET_AVAILABILITY_SEGMENTS"), (_, res, ctx) => {
-    return res(ctx.data(GQLSkylarkGetAvailabilitySegmentsQueryFixture.data));
+    return res(ctx.data(GQLSkylarkGetAudienceSegmentsQueryFixture.data));
   }),
 ];
 

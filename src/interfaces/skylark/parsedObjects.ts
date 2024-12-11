@@ -57,7 +57,7 @@ export type SkylarkObject<T = BuiltInSkylarkObjectType | string> =
           };
         }
       | {
-          objectType: BuiltInSkylarkObjectType.AvailabilitySegment;
+          objectType: BuiltInSkylarkObjectType.AudienceSegment;
           contextualFields: {
             dimensions: Record<string, string[]> | null;
           };

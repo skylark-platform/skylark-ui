@@ -37,7 +37,8 @@ import {
   getObjectTypeDisplayNameFromParsedObject,
   getPlaybackPolicyFromMetadata,
   getObjectTypeFromListingTypeName,
-  isAvailabilityOrAvailabilitySegment,
+  isAvailabilityOrAudienceSegment,
+  isAudienceSegment,
 } from "src/lib/utils";
 import { ObjectError } from "src/lib/utils/errors";
 
@@ -556,7 +557,7 @@ export const getObjectOperations = (
     hasContent,
     hasContentOf,
     hasAvailability,
-    isTranslatable: !isAvailabilityOrAvailabilitySegment(objectType),
+    isTranslatable: !isAvailabilityOrAudienceSegment(objectType),
     isImage: objectType === BuiltInSkylarkObjectType.SkylarkImage,
     isSet,
     isBuiltIn: isSkylarkObjectType(objectType),
@@ -765,10 +766,9 @@ export const convertParsedObjectToIdentifier = (
     objectType,
     language: meta.language,
     availableLanguages: meta.availableLanguages,
-    availabilityStatus:
-      objectType === BuiltInSkylarkObjectType.AvailabilitySegment
-        ? null
-        : availabilityStatus,
+    availabilityStatus: isAudienceSegment(objectType)
+      ? null
+      : availabilityStatus,
     display: {
       name: getObjectDisplayName(parsedObject, fallbackConfig),
       objectType: getObjectTypeDisplayNameFromParsedObject(
@@ -811,11 +811,11 @@ export const convertParsedObjectToIdentifier = (
     return availabilityObject;
   }
 
-  if (object.objectType === BuiltInSkylarkObjectType.AvailabilitySegment) {
-    const availabilityObject: SkylarkObject<BuiltInSkylarkObjectType.AvailabilitySegment> =
+  if (isAudienceSegment(object.objectType)) {
+    const availabilityObject: SkylarkObject<BuiltInSkylarkObjectType.AudienceSegment> =
       {
         ...object,
-        objectType: BuiltInSkylarkObjectType.AvailabilitySegment,
+        objectType: BuiltInSkylarkObjectType.AudienceSegment,
         contextualFields: {
           dimensions: parseDimensionBreakdown(parsedObject),
         },

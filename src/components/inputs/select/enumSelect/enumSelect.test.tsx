@@ -1,6 +1,9 @@
-import { fireEvent, waitFor } from "@storybook/testing-library";
-
-import { render, screen } from "src/__tests__/utils/test-utils";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+} from "src/__tests__/utils/test-utils";
 
 import { EnumSelect } from "./enumSelect.component";
 
@@ -31,7 +34,7 @@ test("searches for Episode", async () => {
   expect(gotOptions.length).toBe(1);
   expect(gotOptions[0]).toHaveTextContent("ObjectTypes");
 
-  fireEvent.click(screen.getByText("ObjectTypes"));
+  fireEvent.mouseDown(screen.getByText("ObjectTypes"));
 
   expect(onChange).toHaveBeenCalledWith("ObjectTypes");
 });

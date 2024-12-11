@@ -1,3 +1,5 @@
+import { JSX } from "react";
+
 import { Link } from "src/components/navigation/links";
 import {
   PanelEmptyDataText,
@@ -81,7 +83,7 @@ export const AvailabilityDimensionBreakdown = ({
 }: {
   object: SkylarkObject<
     | BuiltInSkylarkObjectType.Availability
-    | BuiltInSkylarkObjectType.AvailabilitySegment
+    | BuiltInSkylarkObjectType.AudienceSegment
   >;
 }) => {
   const slugs =

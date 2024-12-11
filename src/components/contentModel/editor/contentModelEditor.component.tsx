@@ -8,7 +8,7 @@ import {
 } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
 import {
-  isAvailabilityOrAvailabilitySegment,
+  isAvailabilityOrAudienceSegment,
   isSkylarkObjectType,
 } from "src/lib/utils";
 
@@ -36,7 +36,7 @@ export const ObjectTypeEditor = ({
       { id: "metadata", name: "Fields" },
     ];
 
-    // if (!isAvailabilityOrAvailabilitySegment(objectMeta.name))
+    // if (!isAvailabilityOrAudienceSegment(objectMeta.name))
     //   tabs.push({ id: "relationships", name: "Relationships" });
 
     return tabs;
@@ -70,7 +70,7 @@ export const ObjectTypeEditor = ({
           schemaVersion={schemaVersion}
         />
       )}
-      {/* {!isAvailabilityOrAvailabilitySegment(objectMeta.name) &&
+      {/* {!isAvailabilityOrAudienceSegment(objectMeta.name) &&
         activeTab.id === "relationships" && (
           <RelationshipsSection
             form={form}

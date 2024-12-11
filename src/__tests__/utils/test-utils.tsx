@@ -1,8 +1,9 @@
 import { DndContext } from "@dnd-kit/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, RenderOptions } from "@testing-library/react";
+import { act, render, RenderOptions } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { LazyMotion, domMax } from "framer-motion";
+import { configMocks, mockAnimationsApi } from "jsdom-testing-mocks";
+import { LazyMotion, domMax } from "motion/react";
 import PlausibleProvider from "next-plausible";
 import { ReactElement, ReactNode } from "react";
 import { ToastContainer } from "react-toastify";
@@ -61,6 +62,9 @@ const renderWithMinimalProviders = (
 export const allObjectTypes = introspectionQuery.data.__schema.types
   .find((type) => type.name === "VisibleObject")
   ?.possibleTypes?.map(({ name }) => name) as string[];
+
+configMocks({ act });
+mockAnimationsApi();
 
 // re-export everything
 export * from "@testing-library/react";

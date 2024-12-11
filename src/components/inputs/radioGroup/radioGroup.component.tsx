@@ -1,4 +1,9 @@
-import { RadioGroup as HeadlessUIRadioGroup } from "@headlessui/react";
+import {
+  RadioGroup as HeadlessUIRadioGroup,
+  Label,
+  Radio,
+  RadioGroupOption,
+} from "@headlessui/react";
 import clsx from "clsx";
 import { ElementType } from "react";
 
@@ -33,13 +38,13 @@ export function RadioGroup<ValueType extends string>({
       data-testid={`radio-group-${label?.split(" ").join("-").toLowerCase()}`}
     >
       {label && (
-        <HeadlessUIRadioGroup.Label className="mb-2 select-none font-semibold text-manatee-600">
+        <Label className="mb-2 select-none font-semibold text-manatee-600">
           {label}
-        </HeadlessUIRadioGroup.Label>
+        </Label>
       )}
       <div className="grid grid-flow-col grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {options.map((option) => (
-          <HeadlessUIRadioGroup.Option
+          <Radio
             key={option.value}
             value={option}
             className="group/radio flex w-full flex-row items-center overflow-auto"
@@ -59,17 +64,17 @@ export function RadioGroup<ValueType extends string>({
                   )}
                 </div>
 
-                <HeadlessUIRadioGroup.Label
+                <Label
                   as="span"
                   className={clsx(
                     "select-none overflow-hidden pl-1.5 font-medium text-manatee-500 group-hover/radio:cursor-pointer ui-checked:text-black",
                   )}
                 >
                   {option.label || option.value}
-                </HeadlessUIRadioGroup.Label>
+                </Label>
               </>
             )}
-          </HeadlessUIRadioGroup.Option>
+          </Radio>
         ))}
       </div>
     </HeadlessUIRadioGroup>

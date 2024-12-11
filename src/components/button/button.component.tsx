@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { forwardRef, ReactNode, Ref } from "react";
+import { forwardRef, JSX, ReactNode, Ref } from "react";
 import { CgSpinner } from "react-icons/cg";
 
 export interface ButtonProps {
@@ -67,7 +67,7 @@ export const Button = forwardRef(
       variant === "outline" &&
         "btn-outline btn-primary disabled:border-none disabled:shadow",
       variant === "ghost" &&
-        "btn-ghost text-black hover:bg-transparent p-0 disabled:bg-transparent bg-transparent",
+        "btn-ghost text-black hover:bg-transparent p-0 disabled:bg-transparent bg-transparent min-h-8 h-8",
       variant === "link" && "btn-link",
       (variant === "form" || variant === "form-ghost") &&
         "p-0 h-auto min-h-0 btn-ghost hover:bg-transparent hover:text-brand-primary",

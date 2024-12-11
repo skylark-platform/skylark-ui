@@ -29,14 +29,11 @@ import {
   ModifiedContents,
   ModifiedAvailabilityDimensions,
   ModifiedAvailability,
-  ModifiedAvailabilitySegments,
+  ModifiedAudienceSegments,
 } from "src/interfaces/skylark";
 import { convertParsedObjectToIdentifier } from "src/lib/skylark/objects";
 import { parseMetadataForHTMLForm } from "src/lib/skylark/parsers";
-import {
-  hasProperty,
-  isAvailabilityOrAvailabilitySegment,
-} from "src/lib/utils";
+import { hasProperty, isAvailabilityOrAudienceSegment } from "src/lib/utils";
 
 import {
   HandleDropError,
@@ -246,8 +243,8 @@ export const Panel = ({
   const [modifiedAvailabilityDimensions, setModifiedAvailabilityDimensions] =
     useState<ModifiedAvailabilityDimensions | null>(null);
 
-  const [modifiedAvailabilitySegments, setModifiedAvailabilitySegments] =
-    useState<ModifiedAvailabilitySegments | null>(null);
+  const [modifiedAudienceSegments, setModifiedAudienceSegments] =
+    useState<ModifiedAudienceSegments | null>(null);
 
   const [modifiedAvailabilityAssignedTo, setModifiedAvailabilityAssignedTo] =
     useState<{
@@ -319,7 +316,7 @@ export const Panel = ({
     Boolean(contentObjects?.config) ||
     modifiedRelationships !== null ||
     modifiedAvailabilityObjects !== null ||
-    modifiedAvailabilitySegments !== null ||
+    modifiedAudienceSegments !== null ||
     modifiedAvailabilityAssignedTo !== null;
 
   // When an object is in draft and no values have changed, we want to publish the version on save without creating another version
@@ -343,9 +340,9 @@ export const Panel = ({
         objectMeta?.builtinObjectRelationships?.images && PanelTab.Imagery,
         objectMeta?.hasContentOf && PanelTab.ContentOf,
         objectMeta?.hasAvailability && PanelTab.Availability,
-        isAvailabilityOrAvailabilitySegment(objectMeta?.name) &&
+        isAvailabilityOrAudienceSegment(objectMeta?.name) &&
           PanelTab.AvailabilityAudience,
-        isAvailabilityOrAvailabilitySegment(objectMeta?.name) &&
+        isAvailabilityOrAudienceSegment(objectMeta?.name) &&
           PanelTab.AvailabilityAssignedTo,
       ].filter((tab): tab is PanelTab => !!tab),
     [
@@ -418,7 +415,7 @@ export const Panel = ({
     objectType,
     onSuccess: () => {
       setModifiedAvailabilityDimensions(null);
-      setModifiedAvailabilitySegments(null);
+      setModifiedAudienceSegments(null);
       if (panelInEditMode) setEditMode(false);
     },
     onError: showUpdateErrorToast,
@@ -451,12 +448,12 @@ export const Panel = ({
       updateObjectAvailability({ uid, modifiedAvailabilityObjects });
     } else if (
       selectedTab === PanelTab.AvailabilityAudience &&
-      (modifiedAvailabilityDimensions || modifiedAvailabilitySegments)
+      (modifiedAvailabilityDimensions || modifiedAudienceSegments)
     ) {
       updateObjectAvailabilityDimensionsAndSegments({
         uid,
         modifiedAvailabilityDimensions,
-        modifiedAvailabilitySegments,
+        modifiedAudienceSegments,
       });
     } else if (
       selectedTab === PanelTab.AvailabilityAssignedTo &&
@@ -532,15 +529,15 @@ export const Panel = ({
     [object, selectedTab],
   );
 
-  const handleAvailabilitySegmentObjectsModified = useCallback(
+  const handleAudienceSegmentObjectsModified = useCallback(
     (
-      updatedModifiedAvailabilitySegments: {
-        added: SkylarkObject<BuiltInSkylarkObjectType.AvailabilitySegment>[];
+      updatedModifiedAudienceSegments: {
+        added: SkylarkObject<BuiltInSkylarkObjectType.AudienceSegment>[];
         removed: string[];
       },
       errors: HandleDropError[],
     ) => {
-      setModifiedAvailabilitySegments(updatedModifiedAvailabilitySegments);
+      setModifiedAudienceSegments(updatedModifiedAudienceSegments);
       displayHandleDroppedErrors(errors, selectedTab, object);
     },
     [object, selectedTab],
@@ -605,7 +602,7 @@ export const Panel = ({
             setModifiedRelationships(null);
             setModifiedAvailabilityObjects(null);
             setModifiedAvailabilityDimensions(null);
-            setModifiedAvailabilitySegments(null);
+            setModifiedAudienceSegments(null);
             setModifiedAvailabilityAssignedTo(null);
           }
           setEditMode(!inEditMode);
@@ -736,7 +733,7 @@ export const Panel = ({
               object={
                 object as SkylarkObject<
                   | BuiltInSkylarkObjectType.Availability
-                  | BuiltInSkylarkObjectType.AvailabilitySegment
+                  | BuiltInSkylarkObjectType.AudienceSegment
                 >
               }
               inEditMode={inEditMode}
@@ -746,8 +743,8 @@ export const Panel = ({
                 setModifiedAvailabilityDimensions(dimensions);
                 setEditMode(true);
               }}
-              modifiedAvailabilitySegments={modifiedAvailabilitySegments}
-              setAvailabilitySegments={handleAvailabilitySegmentObjectsModified}
+              modifiedAudienceSegments={modifiedAudienceSegments}
+              setAudienceSegments={handleAudienceSegmentObjectsModified}
             />
           )}
           {selectedTab === PanelTab.AvailabilityAssignedTo && (

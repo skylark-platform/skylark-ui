@@ -1,4 +1,4 @@
-import { Menu } from "@headlessui/react";
+import { Menu, MenuButton } from "@headlessui/react";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
@@ -120,7 +120,7 @@ export const Navigation = ({
         <div className="z-50 flex flex-grow flex-row items-center justify-end space-x-1 md:flex-grow-0 md:space-x-5">
           <AccountStatusAuthButton openAuthModal={openAuthModal} />
           <DropdownMenu options={dropdownOptions} placement="bottom-end">
-            <Menu.Button
+            <MenuButton
               aria-label="User Settings Dropdown"
               className="flex w-full items-center justify-center text-base focus:outline-none focus-visible:ring-2 group-hover:text-black ui-open:text-black md:text-sm"
             >
@@ -136,7 +136,7 @@ export const Navigation = ({
                 {customerIdentifier}
               </span>
               <UserAvatar name={role || customerIdentifier || "S"} src="" />
-            </Menu.Button>
+            </MenuButton>
           </DropdownMenu>
         </div>
 

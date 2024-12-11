@@ -1,6 +1,4 @@
-import { fireEvent } from "@storybook/testing-library";
-
-import { render, screen } from "src/__tests__/utils/test-utils";
+import { render, screen, fireEvent } from "src/__tests__/utils/test-utils";
 
 import { RadioGroup } from "./radioGroup.component";
 
@@ -47,7 +45,7 @@ test("changes the checked radio", async () => {
 
   await screen.findByLabelText(options[0].label);
 
-  fireEvent.click(screen.getByLabelText(options[1].label));
+  fireEvent.click(screen.getByRole("radio", { name: options[1].label }));
 
   expect(onChange).toHaveBeenCalledWith(options[1]);
 });

@@ -1,4 +1,9 @@
-import { Dialog } from "@headlessui/react";
+import {
+  Description,
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+} from "@headlessui/react";
 import clsx from "clsx";
 import { MutableRefObject, ReactNode } from "react";
 import { FiX } from "react-icons/fi";
@@ -22,14 +27,14 @@ export const ModalTitle = ({
   withoutBodyPadding?: ModalProps["withoutBodyPadding"];
   children: ReactNode;
 }) => (
-  <Dialog.Title
+  <DialogTitle
     className={clsx(
       "mb-2 font-heading text-2xl md:mb-4 md:text-3xl",
       withoutBodyPadding && "px-6 md:px-10",
     )}
   >
     {children}
-  </Dialog.Title>
+  </DialogTitle>
 );
 
 export const ModalDescription = ({
@@ -39,9 +44,9 @@ export const ModalDescription = ({
   withoutBodyPadding?: ModalProps["withoutBodyPadding"];
   children: ReactNode;
 }) => (
-  <Dialog.Description className={clsx(withoutBodyPadding && "px-6 md:px-10")}>
+  <Description className={clsx(withoutBodyPadding && "px-6 md:px-10")}>
     {children}
-  </Dialog.Description>
+  </Description>
 );
 
 export const Modal = ({
@@ -68,7 +73,7 @@ export const Modal = ({
         data-testid="dialog-background"
       />
       <div className="fixed inset-0 flex items-center justify-center p-2 text-sm">
-        <Dialog.Panel
+        <DialogPanel
           className={clsx(
             "relative mx-auto flex max-h-[90%] w-full flex-col overflow-y-auto rounded bg-white pb-4 pt-6 md:pb-8 md:pt-10 ",
             size === "small" && "max-w-xl md:w-7/12",
@@ -98,7 +103,7 @@ export const Modal = ({
             </ModalDescription>
           )}
           {children}
-        </Dialog.Panel>
+        </DialogPanel>
       </div>
     </Dialog>
   );

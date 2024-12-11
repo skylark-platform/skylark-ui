@@ -12,7 +12,7 @@ import {
   SkylarkObject,
 } from "src/interfaces/skylark/parsedObjects";
 import {
-  isAvailabilityOrAvailabilitySegment,
+  isAvailabilityOrAudienceSegment,
   platformMetaKeyClicked,
 } from "src/lib/utils";
 
@@ -82,7 +82,7 @@ export const ObjectIdentifierCard = ({
       </p>
       {children}
       {!hideAvailabilityStatus &&
-        !isAvailabilityOrAvailabilitySegment(object.objectType) && (
+        !isAvailabilityOrAudienceSegment(object.objectType) && (
           <button
             onClick={
               onForwardClick &&

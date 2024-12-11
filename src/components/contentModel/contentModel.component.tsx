@@ -21,7 +21,7 @@ import {
   SkylarkObjectMeta,
 } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
-import { isAvailabilityOrAvailabilitySegment } from "src/lib/utils";
+import { isAvailabilityOrAudienceSegment } from "src/lib/utils";
 
 import { ObjectTypeEditor } from "./editor/contentModelEditor.component";
 import {
@@ -274,7 +274,7 @@ export const ContentModel = ({
   //   !allObjectsMeta ||
   //   isLoadingObjectTypesWithConfig ||
   //   (isLoadingRelationshipConfig &&
-  //     !isAvailabilityOrAvailabilitySegment(objectMeta?.name));
+  //     !isAvailabilityOrAudienceSegment(objectMeta?.name));
 
   return (
     <div className="max-w-8xl mx-auto px-4 md:px-8">

@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import { Reorder, useDragControls } from "framer-motion";
-import { useState } from "react";
+import { Reorder, useDragControls } from "motion/react";
+import { useCallback, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { FiCheck, FiInfo, FiRotateCcw, FiTrash2 } from "react-icons/fi";
 

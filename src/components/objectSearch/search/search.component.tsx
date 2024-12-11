@@ -10,8 +10,8 @@ import {
 import { Portal } from "@headlessui/react";
 import { ColumnDef, VisibilityState } from "@tanstack/react-table";
 import clsx from "clsx";
-import { AnimatePresence, motion } from "framer-motion";
 import { DocumentNode } from "graphql";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 
 import { AvailabilityPicker } from "src/components/inputs/availabilityPicker/availabilityPicker.component";

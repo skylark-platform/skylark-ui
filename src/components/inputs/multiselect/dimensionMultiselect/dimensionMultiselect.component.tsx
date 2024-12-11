@@ -29,7 +29,7 @@ export const DimensionMultiSelect = ({
         label: value.title || value.slug,
         value: value.slug,
         infoTooltip:
-          isInheritedFromSegment && "Inherited from an AvailabilitySegment",
+          isInheritedFromSegment && "Inherited from an AudienceSegment",
         disabled: isInheritedFromSegment,
       };
     })

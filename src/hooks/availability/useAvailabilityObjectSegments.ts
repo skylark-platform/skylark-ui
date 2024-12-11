@@ -7,7 +7,7 @@ import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
   GQLSkylarkErrorResponse,
   GQLSkylarkGetObjectSegments,
-  SkylarkGraphQLAvailabilitySegment,
+  SkylarkGraphQLAudienceSegment,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { createGetAssignedSegmentsQuery } from "src/lib/graphql/skylark/dynamicQueries";
@@ -50,7 +50,7 @@ export const useAvailabilityObjectSegments = (
     enabled: !!query,
   });
 
-  const segments: SkylarkGraphQLAvailabilitySegment[] | undefined = useMemo(
+  const segments: SkylarkGraphQLAudienceSegment[] | undefined = useMemo(
     () =>
       data?.pages?.flatMap(
         (page) => page.getObjectSegments?.segments?.objects || [],
