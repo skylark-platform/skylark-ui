@@ -7,6 +7,7 @@ import {
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectTypeRelationshipConfigurations,
+  ParsedSkylarkObjectTypesRelationshipConfigurations,
   SkylarkObjectMeta,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -147,7 +148,7 @@ const unparseObjectConfig = (
 
   const field_config: ObjectTypeConfig["field_config"] =
     parsedConfig?.fieldConfig?.map(({ position, fieldType, name }) => {
-      const field = objectMeta.fields.find((field) => field.name === name);
+      const field = objectMeta.fields.all.find((field) => field.name === name);
 
       const obj: ObjectTypeConfig["field_config"][0] = {
         name,
@@ -190,7 +191,7 @@ const getRelationshipsConfigDefaultSortField = (
     "internal_title",
   ];
 
-  const defaultSortFields = relationshipObjectMeta.fieldConfig.global
+  const defaultSortFields = relationshipObjectMeta.fields.globalNames
     .filter((field) => orderedKnownSortFields.includes(field))
     .sort(
       (a, b) =>
@@ -245,8 +246,8 @@ const unparseGlobalAndLanguageFields = (
 } => {
   const fields = objectMeta.operations.create.inputs.reduce(
     (prev, field) => {
-      const isGlobalField = objectMeta.fieldConfig.global.includes(field.name);
-      const isLanguageField = objectMeta.fieldConfig.translatable.includes(
+      const isGlobalField = objectMeta.fields.globalNames.includes(field.name);
+      const isLanguageField = objectMeta.fields.translatableNames.includes(
         field.name,
       );
 
@@ -322,10 +323,7 @@ const parseDataModel = (
   allObjectMeta: SkylarkObjectMeta[],
   objectTypesWithConfig: ObjectTypeWithConfig[],
   accountUri?: string,
-  relationshipConfiguration?: Record<
-    string,
-    ParsedSkylarkObjectTypeRelationshipConfigurations
-  >,
+  relationshipConfiguration?: ParsedSkylarkObjectTypesRelationshipConfigurations,
 ) => {
   const { systemTypes, customTypes } = allObjectMeta.reduce(
     (

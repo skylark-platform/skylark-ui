@@ -5,9 +5,11 @@ import { useMemo } from "react";
 import { QueryKeys } from "src/enums/graphql";
 import {
   BuiltInSkylarkObjectType,
+  GQLObjectTypeRelationshipConfig,
   GQLSkylarkErrorResponse,
   GQLSkylarkListAllObjectTypesRelationshipConfiguration,
   GQLSkylarkListObjectTypeRelationshipConfiguration,
+  ParsedSkylarkObjectTypeRelationshipConfiguration,
   ParsedSkylarkObjectTypeRelationshipConfigurations,
   ParsedSkylarkObjectTypesRelationshipConfigurations,
   SkylarkObjectType,
@@ -19,47 +21,42 @@ import { isAvailabilityOrAudienceSegment } from "src/lib/utils";
 
 import { useSkylarkObjectTypes } from "./useSkylarkObjectTypes";
 
-const mapGQLRelationshipConfigToParsed = ({
-  relationship_name,
-  config,
-}: GQLSkylarkListObjectTypeRelationshipConfiguration["listRelationshipConfiguration"]["objects"][0]) => ({
-  relationshipName: relationship_name,
-  config: {
-    defaultSortField: config.default_sort_field,
-    inheritAvailability: config.inherit_availability,
+const reducer = (
+  prev: ParsedSkylarkObjectTypeRelationshipConfigurations,
+  {
+    relationship_name,
+    config,
+  }: {
+    uid: string;
+    relationship_name: string;
+    config: GQLObjectTypeRelationshipConfig;
   },
-});
+): ParsedSkylarkObjectTypeRelationshipConfigurations => {
+  const parsedConfig: ParsedSkylarkObjectTypeRelationshipConfiguration = {
+    defaultSortField: config.default_sort_field || null,
+    inheritAvailability: config.inherit_availability || false,
+  };
+
+  return {
+    ...prev,
+    [relationship_name]: parsedConfig,
+  };
+};
 
 const select = (
   data: GQLSkylarkListObjectTypeRelationshipConfiguration,
 ): ParsedSkylarkObjectTypeRelationshipConfigurations =>
-  data.listRelationshipConfiguration.objects.reduce(
-    (
-      prev,
-      { relationship_name, config },
-    ): ParsedSkylarkObjectTypeRelationshipConfigurations => {
-      return {
-        ...prev,
-        [relationship_name]: {
-          defaultSortField: config.default_sort_field || null,
-          inheritAvailability: config.inherit_availability || false,
-        },
-      };
-    },
-    {},
-  );
+  data.listRelationshipConfiguration.objects.reduce(reducer, {});
 
 const allObjectTypesSelect = (
   data: GQLSkylarkListAllObjectTypesRelationshipConfiguration,
-): Record<string, ParsedSkylarkObjectTypeRelationshipConfigurations> =>
+): ParsedSkylarkObjectTypesRelationshipConfigurations =>
   Object.entries(data).reduce(
     (prev, [objectType, relationshipConfiguration]) => {
       return {
         ...prev,
         [objectType]:
-          relationshipConfiguration?.objects.map(
-            mapGQLRelationshipConfigToParsed,
-          ) || [],
+          relationshipConfiguration?.objects.reduce(reducer, {}) || {},
       };
     },
     {},
@@ -120,6 +117,8 @@ export const useAllObjectTypesRelationshipConfiguration = () => {
       error?.response.data ? allObjectTypesSelect(error.response.data) : data,
     [data, error?.response.data],
   );
+
+  console.log({ allObjectTypesRelationshipConfig });
 
   return {
     allObjectTypesRelationshipConfig,

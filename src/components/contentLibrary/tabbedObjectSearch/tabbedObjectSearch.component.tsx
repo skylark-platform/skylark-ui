@@ -319,15 +319,14 @@ const NewTabButton = ({
             const objectMeta = objectsMeta?.find(
               ({ name }) => name === objectType,
             );
-            const objectFields =
-              objectMeta?.fields.map(({ name }) => name) || [];
+            const objectFields = objectMeta?.fields.allNames || [];
 
             const splitFields =
               objectMeta &&
               splitMetadataIntoSystemTranslatableGlobal(
                 objectFields,
-                objectMeta?.fields,
-                objectMeta?.fieldConfig,
+                objectMeta?.fields.all,
+                objectMeta.fields.translatableNames,
                 config.fieldConfig,
               );
 

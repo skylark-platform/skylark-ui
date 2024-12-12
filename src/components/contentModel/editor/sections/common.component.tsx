@@ -7,6 +7,8 @@ import {
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectConfigFieldConfig,
+  ParsedSkylarkObjectTypeRelationshipConfiguration,
+  ParsedSkylarkObjectTypeRelationshipConfigurations,
   SkylarkObjectMetaRelationship,
   SkylarkObjectRelationship,
   SkylarkObjectType,
@@ -28,22 +30,23 @@ export type ContentModelEditorFormObjectTypeField = {
   name: string;
   isNew?: boolean;
   isDeleted?: boolean;
-  fieldConfig: Omit<ParsedSkylarkObjectConfigFieldConfig, "name"> | null;
+  // fieldConfig: Omit<ParsedSkylarkObjectConfigFieldConfig, "name"> | null;
 } & (
-  | ({ type: "relationship" } & SkylarkObjectMetaRelationship)
+  | ({ type: "relationship" } & SkylarkObjectMetaRelationship & {
+        relationshipConfig: ParsedSkylarkObjectTypeRelationshipConfiguration;
+      })
   | Omit<NormalizedObjectField, "name">
 );
-
-export type ContentModelEditorFormObjectTypeRelationship =
-  SkylarkObjectRelationship & {
-    isNew?: boolean;
-    isDeleted?: boolean;
-  };
 
 export interface ContentModelEditorFormObjectTypeUiConfig {
   objectTypeDisplayName: string;
   primaryField: string | undefined | null;
   colour: string | undefined | null;
+  fieldConfigs: Record<
+    string,
+    Omit<ParsedSkylarkObjectConfigFieldConfig, "name" | "position">
+  >;
+  fieldOrder: string[];
 }
 
 export interface ContentModelEditorForm {
@@ -52,7 +55,6 @@ export interface ContentModelEditorForm {
     {
       fields: ContentModelEditorFormObjectTypeField[];
       uiConfig: ContentModelEditorFormObjectTypeUiConfig;
-      // relationships: ContentModelEditorFormObjectTypeRelationship[];
 
       // Should use fieldOrder instead of attaching it to fields so that relationships can be mixed in to the list easily?
       // fieldOrder: string[];
@@ -97,72 +99,60 @@ export const FieldHeader = ({
   </div>
 );
 
-export const sortSystemFieldsFirst = (
-  fieldA: ContentModelEditorFormObjectTypeField,
-  fieldB: ContentModelEditorFormObjectTypeField,
-) => {
+export const sortSystemFieldsFirst = (fieldA: string, fieldB: string) => {
   // Hardcode some system fields to always be in the same place
-  if (fieldA.name == SkylarkSystemField.UID) return -1;
-  if (fieldB.name == SkylarkSystemField.UID) return 1;
+  if (fieldA == SkylarkSystemField.UID) return -1;
+  if (fieldB == SkylarkSystemField.UID) return 1;
 
-  if (fieldA.name == SkylarkSystemField.ExternalID) return -1;
-  if (fieldB.name == SkylarkSystemField.ExternalID) return 1;
+  if (fieldA == SkylarkSystemField.ExternalID) return -1;
+  if (fieldB == SkylarkSystemField.ExternalID) return 1;
 
-  if (fieldA.name == SkylarkSystemField.Type) return -1;
-  if (fieldB.name == SkylarkSystemField.Type) return 1;
+  if (fieldA == SkylarkSystemField.Type) return -1;
+  if (fieldB == SkylarkSystemField.Type) return 1;
 
   return 0;
 };
 
-export const combineFieldRelationshipsAndFieldConfigAndSortByConfigPostion = (
+export const combineFieldRelationshipsAndFieldConfig = (
   fields: NormalizedObjectField[],
   relationships: SkylarkObjectMetaRelationship[],
-  objectFieldConfig?: ParsedSkylarkObjectConfig,
+  relationshipsConfig?: ParsedSkylarkObjectTypeRelationshipConfigurations,
 ): ContentModelEditorFormObjectTypeField[] => {
+  // console.log("com", relationshipsConfig, relationshipsConfig?.["logo"]);
+
   const fieldsWithConfig: ContentModelEditorFormObjectTypeField[] = fields.map(
     (field) => {
-      const fieldConfig = objectFieldConfig?.fieldConfig?.find(
-        ({ name }) => name === field.name,
-      );
-
       return {
         ...field,
-        fieldConfig: fieldConfig || null,
+        // fieldConfig: fieldConfig || null,
       };
     },
   );
 
   const relationshipsWithConfig: ContentModelEditorFormObjectTypeField[] =
     relationships.map((relationship): ContentModelEditorFormObjectTypeField => {
-      const fieldConfig = objectFieldConfig?.fieldConfig?.find(
-        ({ name }) => name === relationship.relationshipName,
-      );
+      const relationshipConfig = relationshipsConfig?.[
+        relationship.relationshipName
+      ] || {
+        defaultSortField: null,
+        inheritAvailability: false,
+      };
 
       return {
         ...relationship,
         name: relationship.relationshipName,
         type: "relationship",
-        fieldConfig: fieldConfig || null,
+        // fieldConfig: fieldConfig || null,
+        relationshipConfig,
       };
     });
 
-  const sortedFieldsAndRelationships = [
+  const fieldsAndRelationships = [
     ...fieldsWithConfig,
     ...relationshipsWithConfig,
-  ].sort((fieldA, fieldB) => {
-    const systemFieldSorted = sortSystemFieldsFirst(fieldA, fieldB);
+  ];
 
-    if (systemFieldSorted !== 0) {
-      return systemFieldSorted;
-    }
-
-    return (fieldA.fieldConfig?.position ?? Infinity) >
-      (fieldB.fieldConfig?.position ?? Infinity)
-      ? 1
-      : -1;
-  });
-
-  return sortedFieldsAndRelationships;
+  return fieldsAndRelationships;
 };
 
 export const calculateContentModelUpdateTypes = (

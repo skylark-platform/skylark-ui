@@ -81,6 +81,9 @@ const SkylarkObjectFieldInputEnum = ({
           placeholder={`Select ${formatObjectField(field.name)}`}
           onChange={field.onChange}
           aria-invalid={error ? "true" : "false"}
+          onValueClear={
+            config.isRequired ? undefined : () => field.onChange(null)
+          }
           disabled={disabled}
         />
       );

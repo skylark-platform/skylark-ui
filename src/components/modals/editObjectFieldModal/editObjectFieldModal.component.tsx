@@ -2,7 +2,10 @@ import React, { forwardRef, useRef } from "react";
 import { Controller, useForm, UseFormReturn } from "react-hook-form";
 
 import { Button } from "src/components/button";
-import { ContentModelEditorFormObjectTypeField } from "src/components/contentModel/editor/sections/common.component";
+import {
+  ContentModelEditorFormObjectTypeField,
+  ContentModelEditorFormObjectTypeUiConfig,
+} from "src/components/contentModel/editor/sections/common.component";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { TextInput } from "src/components/inputs/input";
 import { ObjectTypeSelect, Select } from "src/components/inputs/select";
@@ -26,11 +29,15 @@ import { parseObjectInputType } from "src/lib/skylark/parsers";
 
 export type EditObjectFieldModalForm = {
   field: ContentModelEditorFormObjectTypeField;
+  fieldConfig: ContentModelEditorFormObjectTypeUiConfig["fieldConfigs"][""];
 };
 
 interface EditObjectFieldModalProps {
   isOpen: boolean;
-  initialValues?: { field: ContentModelEditorFormObjectTypeField };
+  initialValues?: {
+    field: ContentModelEditorFormObjectTypeField;
+    fieldConfig: ContentModelEditorFormObjectTypeUiConfig["fieldConfigs"][""];
+  };
   setIsOpen: (b: boolean) => void;
   onSubmit: (f: EditObjectFieldModalForm) => void;
 }
@@ -213,13 +220,13 @@ const EditObjectFieldModalBody = forwardRef(
 
     const { handleSubmit, watch, control, formState, setValue } = form;
 
-    const values = watch("field");
+    const fieldValues = watch("field");
 
     const { enums } = useSkylarkSchemaEnums();
 
     const isEditModal = !!initialValues;
 
-    const isRelationship = values?.type === "relationship";
+    const isRelationship = fieldValues?.type === "relationship";
 
     return (
       <>
@@ -300,8 +307,8 @@ const EditObjectFieldModalBody = forwardRef(
                         ? "Relationship"
                         : field.value === "enum"
                           ? "Enum"
-                          : (values?.type !== "relationship" &&
-                              values?.originalType) ||
+                          : (fieldValues?.type !== "relationship" &&
+                              fieldValues?.originalType) ||
                             "String"
                     }
                   />
@@ -315,13 +322,13 @@ const EditObjectFieldModalBody = forwardRef(
               <FieldFormFields form={form} isEditModal={isEditModal} />
             )}
 
-            {["string"].includes(values?.type) && (
+            {["string"].includes(fieldValues?.type) && (
               <div className="flex flex-col gap-2">
                 <PanelSeparator className="mb-4" />
                 <PanelSectionTitle text="Field config" />
-                {values?.type === "string" && (
+                {fieldValues?.type === "string" && (
                   <Controller
-                    name="field.fieldConfig.fieldType"
+                    name="fieldConfig.fieldType"
                     control={control}
                     render={({ field }) => {
                       return (
@@ -345,6 +352,32 @@ const EditObjectFieldModalBody = forwardRef(
                     }}
                   />
                 )}
+              </div>
+            )}
+
+            {isRelationship && (
+              <div className="flex flex-col gap-2">
+                <PanelSeparator className="mb-4" />
+                <PanelSectionTitle text="Relationship config" />
+                <Controller
+                  name="field.relationshipConfig.defaultSortField"
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <Select
+                        label={`Default sort field (fields on active schema version only)`}
+                        labelVariant="form"
+                        className="w-full"
+                        options={[]}
+                        variant="primary"
+                        selected={field.value}
+                        placeholder=""
+                        onChange={field.onChange}
+                        onValueClear={() => field.onChange(null)}
+                      />
+                    );
+                  }}
+                />
               </div>
             )}
           </div>

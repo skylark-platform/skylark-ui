@@ -65,6 +65,8 @@ export type NormalizedObjectField = {
   isList: boolean;
   isRequired: boolean;
   isTranslatable: boolean;
+  isGlobal: boolean;
+  isUnversioned: boolean;
 };
 
 export type InputFieldWithFieldConfig = {
@@ -95,22 +97,22 @@ export interface SkylarkObjectOperations {
   delete: Mutation;
 }
 
-export interface SkylarkObjectFields {
-  name: SkylarkObjectType;
-  fields: NormalizedObjectField[];
-  fieldConfig: {
-    global: string[];
-    translatable: string[];
-  };
-}
-
 export type SkylarkObjectMetaRelationship = {
   relationshipName: string;
   reverseRelationshipName: string | null;
   objectType: SkylarkObjectType;
 };
 
-export interface SkylarkObjectMeta extends SkylarkObjectFields {
+export interface SkylarkObjectMeta {
+  name: SkylarkObjectType;
+  fields: {
+    all: NormalizedObjectField[];
+    allNames: string[];
+    global: NormalizedObjectField[];
+    translatable: NormalizedObjectField[];
+    globalNames: string[];
+    translatableNames: string[];
+  };
   availability: SkylarkObjectMeta | null;
   builtinObjectRelationships?: {
     hasAssets: boolean;

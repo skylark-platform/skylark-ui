@@ -82,7 +82,7 @@ const PanelRelationshipSectionComponent = (
   });
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
-  const objectFields = objectOperations?.fields.map(({ name }) => name);
+  const objectFields = objectOperations?.fields.allNames;
 
   const hasShowMore = objects?.length > 4;
 

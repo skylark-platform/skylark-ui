@@ -150,6 +150,12 @@ export const parseObjectInputFields = (
           : [];
       }
 
+      const isTranslatable =
+        fieldConfig?.translatable.includes(input.name) || false;
+      const isGlobal = fieldConfig?.global.includes(input.name) || false;
+      // Some fields are not listed as translatable or global in GQL, this commonly means it isn't versioned (see SkylarkSet content_limit)
+      const isUnversioned = !isTranslatable && !isGlobal;
+
       return {
         name: input.name,
         type: type,
@@ -157,7 +163,9 @@ export const parseObjectInputFields = (
         enumValues,
         isList: input.type.kind === "LIST",
         isRequired: input.type.kind === "NON_NULL",
-        isTranslatable: fieldConfig?.translatable.includes(input.name) || false,
+        isTranslatable,
+        isGlobal,
+        isUnversioned,
       };
     });
 

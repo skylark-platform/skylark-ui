@@ -66,15 +66,15 @@ interface SkylarkSchemaComparison {
 }
 
 const diffObjectMetasFields = (
-  baseFields: NormalizedObjectField[],
-  updatedFields: NormalizedObjectField[],
+  baseFields: SkylarkObjectMeta["fields"],
+  updatedFields: SkylarkObjectMeta["fields"],
 ) => {
   // Calculate added and removed fields
-  const addedFields = updatedFields.filter(
-    (field) => !baseFields.find(({ name }) => name === field.name),
+  const addedFields = updatedFields.all.filter(
+    (field) => !baseFields.allNames.includes(field.name),
   );
-  const removedFields = baseFields.filter(
-    (field) => !updatedFields.find(({ name }) => name === field.name),
+  const removedFields = baseFields.all.filter(
+    (field) => !updatedFields.allNames.includes(field.name),
   );
 
   // If fields have been added or removed we don't need to check differing types so ignore them
@@ -82,15 +82,15 @@ const diffObjectMetasFields = (
     ...addedFields.map(({ name }) => name),
     ...removedFields.map(({ name }) => name),
   ];
-  const commonFields = updatedFields.filter(
+  const commonFields = updatedFields.all.filter(
     ({ name }) => !fieldsToIgnore.includes(name),
   );
 
   // Calculate different field types
   const comparedFields: ComparedObjectField[] = commonFields
     .map((field): ComparedObjectField | null => {
-      const baseField = baseFields.find(({ name }) => name === field.name);
-      const updatedField = updatedFields.find(
+      const baseField = baseFields.all.find(({ name }) => name === field.name);
+      const updatedField = updatedFields.all.find(
         ({ name }) => name === field.name,
       );
 

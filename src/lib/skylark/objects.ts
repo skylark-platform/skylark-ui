@@ -125,6 +125,7 @@ const getObjectFields = (
       originalType: createField?.originalType || originalType,
       isRequired: createField?.isRequired || isRequired,
       isTranslatable: fieldConfig?.translatable.includes(name) || false,
+      isGlobal: fieldConfig?.global.includes(name) || false,
     };
   });
 
@@ -541,14 +542,35 @@ export const getObjectOperations = (
     ),
   );
 
+  const fields: SkylarkObjectMeta["fields"] = objectFields.reduce(
+    (acc, field) => ({
+      ...acc,
+      all: [...acc.all, field],
+      allNames: [...acc.allNames, field.name],
+      global: field.isGlobal ? [...acc.global, field] : acc.global,
+      globalNames: field.isGlobal
+        ? [...acc.globalNames, field.name]
+        : acc.globalNames,
+      translatable: field.isTranslatable
+        ? [...acc.translatable, field]
+        : acc.translatable,
+      translatableNames: field.isTranslatable
+        ? [...acc.translatableNames, field.name]
+        : acc.translatableNames,
+    }),
+    {
+      all: [],
+      allNames: [],
+      global: [],
+      globalNames: [],
+      translatable: [],
+      translatableNames: [],
+    } as SkylarkObjectMeta["fields"],
+  );
+
   const objectMeta: SkylarkObjectMeta = {
     name: objectType,
-    fields: objectFields,
-    // Default fieldConfig to all global when translatable fields are not found
-    fieldConfig: fieldConfig || {
-      global: objectFields.map(({ name }) => name),
-      translatable: [],
-    },
+    fields,
     builtinObjectRelationships,
     operations,
     availability,
@@ -594,7 +616,7 @@ export const sortFieldsByConfigPosition = (
 export const splitMetadataIntoSystemTranslatableGlobal = (
   allMetadataFields: string[],
   inputFields: NormalizedObjectField[],
-  fieldConfig: SkylarkObjectMeta["fieldConfig"],
+  translatableFields: SkylarkObjectMeta["fields"]["translatableNames"],
   objectFieldConfig: ParsedSkylarkObjectConfig["fieldConfig"],
   options?: {
     objectTypes: string[];
@@ -611,6 +633,10 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
     config?: NormalizedObjectField;
   }[];
   translatableMetadataFields: {
+    field: string;
+    config?: NormalizedObjectField;
+  }[];
+  nonSystemMetadataFields: {
     field: string;
     config?: NormalizedObjectField;
   }[];
@@ -648,17 +674,19 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
         SYSTEM_FIELDS.indexOf(a) - SYSTEM_FIELDS.indexOf(b),
     );
 
-  const otherFields = metadataArrWithHiddenFieldsRemoved.filter(
-    ({ field }) => !SYSTEM_FIELDS.includes(field),
-  );
-
-  const globalMetadataFields = otherFields
-    .filter(({ field }) => fieldConfig.global.includes(field))
+  const nonSystemMetadataFields = metadataArrWithHiddenFieldsRemoved
+    .filter(({ field }) => !SYSTEM_FIELDS.includes(field))
     .sort((a, b) =>
       sortFieldsByConfigPosition(a.field, b.field, objectFieldConfig),
     );
-  const translatableMetadataFields = otherFields
-    .filter(({ field }) => fieldConfig.translatable.includes(field))
+
+  const globalMetadataFields = nonSystemMetadataFields
+    .filter(({ field }) => !translatableFields.includes(field))
+    .sort((a, b) =>
+      sortFieldsByConfigPosition(a.field, b.field, objectFieldConfig),
+    );
+  const translatableMetadataFields = nonSystemMetadataFields
+    .filter(({ field }) => translatableFields.includes(field))
     .sort((a, b) =>
       sortFieldsByConfigPosition(a.field, b.field, objectFieldConfig),
     );
@@ -667,6 +695,7 @@ export const splitMetadataIntoSystemTranslatableGlobal = (
     systemMetadataFields,
     globalMetadataFields,
     translatableMetadataFields,
+    nonSystemMetadataFields,
   };
 };
 

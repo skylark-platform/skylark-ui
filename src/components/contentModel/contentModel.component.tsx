@@ -19,9 +19,10 @@ import { SchemaVersion } from "src/interfaces/skylark/environment";
 
 import { ObjectTypeEditor } from "./editor/contentModelEditor.component";
 import {
-  combineFieldRelationshipsAndFieldConfigAndSortByConfigPostion,
+  combineFieldRelationshipsAndFieldConfig,
   ContentModelEditorForm,
   ContentModelEditorFormObjectTypeUiConfig,
+  sortSystemFieldsFirst,
 } from "./editor/sections/common.component";
 import { ContentModelHeader } from "./header/contentModelHeader.component";
 import { ObjectTypeSelectAndOverview } from "./navigation/contentModelNavigation.component";
@@ -45,22 +46,52 @@ const createFormValues = (
     allObjectsMeta.map((objectMeta) => {
       const { name, relationships } = objectMeta;
 
-      const config = objectTypesConfig?.[name];
+      const objectTypeConfiguration = objectTypesConfig?.[name];
+      const relationshipsConfiguration =
+        allObjectTypesRelationshipConfig?.[name];
 
-      const fields =
-        combineFieldRelationshipsAndFieldConfigAndSortByConfigPostion(
-          objectMeta.fields,
-          relationships,
-          config,
-        );
+      const fields = combineFieldRelationshipsAndFieldConfig(
+        objectMeta.fields.all,
+        relationships,
+        relationshipsConfiguration,
+      );
       // const { objects: allObjectsMeta } = useAllObjectsMeta(true, schemaOpts);
       // const { objectTypesConfig, isLoading: isLoadingObjectTypesWithConfig } =
       //   useSkylarkObjectTypesWithConfig({ introspectionOpts: schemaOpts });
 
+      const fieldConfigs =
+        objectTypeConfiguration?.fieldConfig?.reduce(
+          (acc, fieldConfig) => ({
+            ...acc,
+            [fieldConfig.name]: { fieldType: fieldConfig.fieldType },
+          }),
+          {} as ContentModelEditorFormObjectTypeUiConfig["fieldConfigs"],
+        ) || {};
+
       const uiConfig: ContentModelEditorFormObjectTypeUiConfig = {
-        objectTypeDisplayName: config.objectTypeDisplayName || "",
-        colour: config.colour || "",
-        primaryField: config.primaryField || "",
+        objectTypeDisplayName:
+          objectTypeConfiguration.objectTypeDisplayName || "",
+        colour: objectTypeConfiguration.colour || "",
+        primaryField: objectTypeConfiguration.primaryField || "",
+        fieldConfigs,
+        fieldOrder:
+          objectTypeConfiguration.fieldConfig
+            ?.sort((fieldA, fieldB) => {
+              const systemFieldSorted = sortSystemFieldsFirst(
+                fieldA.name,
+                fieldB.name,
+              );
+
+              if (systemFieldSorted !== 0) {
+                return systemFieldSorted;
+              }
+
+              return (fieldA?.position ?? Infinity) >
+                (fieldB?.position ?? Infinity)
+                ? 1
+                : -1;
+            })
+            .map(({ name }) => name) || [],
       };
 
       // console.log(name, { fields });
@@ -174,19 +205,22 @@ export const ContentModel = ({
 
   const { updateObjectTypesConfiguration, isUpdatingObjectTypesConfiguration } =
     useUpdateObjectTypesConfiguration({
-      onSuccess: () => {
+      onSuccess: (modifiedObjectTypes) => {
         setUiConfigUpdateSuccessful(true);
 
-        toast.success(
-          <Toast
-            title={`Object Type config updated`}
-            message={[
-              "You may have to refresh for the configuration changes to take effect.",
-            ]}
-          />,
-        );
+        if (modifiedObjectTypes.length > 0) {
+          toast.success(
+            <Toast
+              title={`Object Type config updated`}
+              message={[
+                "You may have to refresh for the configuration changes to take effect.",
+              ]}
+            />,
+          );
+        }
       },
-      onError: () => {
+      onError: (err) => {
+        console.error(err);
         toast.error(
           <Toast
             title={`Object type config update failed`}

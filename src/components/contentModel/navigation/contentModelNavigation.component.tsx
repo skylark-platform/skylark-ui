@@ -109,14 +109,14 @@ const ObjectTypeOverview = ({
     {
       title: "Fields",
       stats: [
-        { id: "fields", text: `Total: ${objectMeta?.fields.length}` },
+        { id: "fields", text: `Total: ${objectMeta?.fields.all.length}` },
         {
           id: "translatable-fields",
-          text: `Translatable: ${objectMeta?.fieldConfig.translatable.length}`,
+          text: `Translatable: ${objectMeta?.fields.translatable.length}`,
         },
         {
           id: "global-fields",
-          text: `Global: ${objectMeta?.fieldConfig.global.length}`,
+          text: `Global: ${objectMeta?.fields.global.length}`,
         },
       ],
     },

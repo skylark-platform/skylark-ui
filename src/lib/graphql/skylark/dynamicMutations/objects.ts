@@ -189,7 +189,7 @@ export const createUpdateObjectMetadataMutation = (
         },
         __typename: true,
         ...common.fields,
-        ...generateFieldsToReturn(objectMeta.fields, objectMeta.name),
+        ...generateFieldsToReturn(objectMeta.fields.all, objectMeta.name),
       },
     },
   };
@@ -233,7 +233,7 @@ export const createPublishVersionMutation = (
         },
         __typename: true,
         ...common.fields,
-        ...generateFieldsToReturn(objectMeta.fields, objectMeta.name),
+        ...generateFieldsToReturn(objectMeta.fields.all, objectMeta.name),
       },
     },
   };

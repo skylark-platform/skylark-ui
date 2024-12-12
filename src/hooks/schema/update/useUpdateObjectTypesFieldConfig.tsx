@@ -111,6 +111,8 @@ const buildEditObjectTypeConfigurationMutation = (
     return null;
   }
 
+  console.log({ objectType, fields, uiConfig });
+
   return {
     key: `${objectType}_setObjectTypeConfiguration`,
     mutation: {
@@ -127,13 +129,20 @@ const buildEditObjectTypeConfigurationMutation = (
               i,
             ): Omit<SkylarkGraphQLObjectConfigFieldConfig, "ui_field_type"> & {
               ui_field_type: EnumType | null;
-            } => ({
-              name: field.name,
-              ui_field_type: field.fieldConfig?.fieldType
-                ? new EnumType(field.fieldConfig?.fieldType)
-                : null,
-              ui_position: i + 1,
-            }),
+            } => {
+              const fieldConfig = uiConfig.fieldConfigs?.[field.name];
+              return {
+                name: field.name,
+                ui_field_type: fieldConfig?.fieldType
+                  ? new EnumType(fieldConfig?.fieldType)
+                  : null,
+                ui_position:
+                  // Either use fieldOrder position or a position greater than the array
+                  // In reality the fieldOrder should contain all fields
+                  uiConfig.fieldOrder.indexOf(field.name) + 1 ||
+                  uiConfig.fieldOrder.length + i + 1,
+              };
+            },
           ),
         },
       },
@@ -219,6 +228,8 @@ export const useUpdateObjectTypesConfiguration = ({
             )
             .map(([ot]) => ot)) ||
         [];
+
+      console.log("here", { modifiedObjectTypes, modifiedFormFields });
 
       const mutation = buildSchemaMutation(formValues, modifiedObjectTypes);
 

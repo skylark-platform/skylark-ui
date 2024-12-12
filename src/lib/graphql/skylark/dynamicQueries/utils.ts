@@ -6,6 +6,7 @@ import {
 
 import { MAX_GRAPHQL_LIMIT, OBJECT_OPTIONS } from "src/constants/skylark";
 import {
+  NormalizedObjectField,
   SkylarkGraphQLObject,
   SkylarkObjectMeta,
   SkylarkObjectType,
@@ -203,7 +204,7 @@ export const generateVariablesAndArgs = (
 };
 
 export const generateFieldsToReturn = (
-  fields: SkylarkObjectMeta["fields"],
+  fields: NormalizedObjectField[],
   objectType: string | null,
   ignoreUid?: boolean,
   fieldAliasPrefix?: string,
@@ -255,7 +256,7 @@ export const generateAvailabilityRelationshipFields = (
   time_window_status: true,
   objects: {
     ...generateFieldsToReturn(
-      objectAvailability?.fields,
+      objectAvailability?.fields.all,
       objectAvailability.name,
     ),
   },
@@ -308,7 +309,7 @@ export const generateRelationshipsToReturn = (
           objects: {
             ...commonGraphQLOpts.objectMeta,
             ...generateFieldsToReturn(
-              builtinObjectRelationships.images?.objectMeta.fields || [],
+              builtinObjectRelationships.images?.objectMeta.fields.all || [],
               builtinObjectRelationships.images?.objectMeta.name || null,
             ),
           },
@@ -353,7 +354,7 @@ export const generateContentsToReturn = (
             __typename: true, // To remove the alias later
             ...commonGraphQLOpts.objectMeta,
             ...generateFieldsToReturn(
-              object.fields,
+              object.fields.all,
               object.name,
               true,
               `__${object.name}__`,

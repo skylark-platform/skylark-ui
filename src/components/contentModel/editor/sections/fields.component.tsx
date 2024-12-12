@@ -17,6 +17,7 @@ import { isSkylarkObjectType } from "src/lib/utils";
 import {
   ContentModelEditorForm,
   ContentModelEditorFormObjectTypeField,
+  ContentModelEditorFormObjectTypeUiConfig,
   FieldHeader,
   SectionDescription,
   SectionHeader,
@@ -74,6 +75,7 @@ const FieldNameTooltip = ({ field }: { field: string }) => {
 interface FieldProps {
   objectType: string;
   field: ContentModelEditorFormObjectTypeField;
+  fieldConfig: ContentModelEditorFormObjectTypeUiConfig["fieldConfigs"][""];
   isDeleted?: boolean;
   isNew?: boolean;
   reorderFieldsDisabled?: boolean;
@@ -81,7 +83,13 @@ interface FieldProps {
   onEdit: () => void;
 }
 
-const FieldOriginalType = ({ field }: { field: FieldProps["field"] }) => {
+const FieldOriginalType = ({
+  field,
+  fieldConfig,
+}: {
+  field: FieldProps["field"];
+  fieldConfig: FieldProps["fieldConfig"] | null;
+}) => {
   const isRelationship = field.type === "relationship";
 
   const isEnum = !isRelationship && !!field?.enumValues;
@@ -97,7 +105,7 @@ const FieldOriginalType = ({ field }: { field: FieldProps["field"] }) => {
       <p>{originalType}</p>
       {isRelationship && (
         <>
-          <Tooltip tooltip={[``]}>
+          <Tooltip tooltip={<></>}>
             <p className="ml-2 flex justify-center items-center text-manatee-500">
               {`(${field.objectType}`}
               <FiInfo className="text-sm ml-1" />
@@ -127,9 +135,9 @@ const FieldOriginalType = ({ field }: { field: FieldProps["field"] }) => {
           </Tooltip>
         </>
       )}
-      {field.fieldConfig?.fieldType && field.type === "string" && (
+      {fieldConfig?.fieldType && field.type === "string" && (
         <p className="ml-2 flex justify-center items-center text-manatee-500">
-          {`(${field.fieldConfig.fieldType}`}
+          {`(${fieldConfig.fieldType}`}
           {/* <FiInfo className="text-sm ml-1" /> */}
           {`)`}
         </p>
@@ -144,6 +152,7 @@ const Field = ({
   isDeleted,
   isNew,
   reorderFieldsDisabled,
+  fieldConfig,
   onDelete,
   onEdit,
 }: FieldProps) => {
@@ -208,7 +217,7 @@ const Field = ({
           <FieldNameTooltip field={field.name} />
         </div>
         <div className="flex justify-start items-center h-full col-span-2">
-          <FieldOriginalType field={field} />
+          <FieldOriginalType field={field} fieldConfig={fieldConfig} />
         </div>
         <div className="flex justify-start items-center col-span-1">
           {!isRelationship && field.isTranslatable ? (
@@ -256,7 +265,10 @@ const Field = ({
 export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
   const [editModalState, setEditModalState] = useState<{
     isOpen: boolean;
-    initialData: { field: ContentModelEditorFormObjectTypeField } | null;
+    initialData: {
+      field: ContentModelEditorFormObjectTypeField;
+      fieldConfig: ContentModelEditorFormObjectTypeUiConfig["fieldConfigs"][""];
+    } | null;
   }>({ isOpen: false, initialData: null });
 
   const addField = () => {
@@ -285,7 +297,10 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
     }
   };
 
-  const onEditFieldModalSubmit = ({ field }: EditObjectFieldModalForm) => {
+  const onEditFieldModalSubmit = ({
+    field,
+    fieldConfig,
+  }: EditObjectFieldModalForm) => {
     console.log("onEditFieldModalSubmit", { field });
     const prevField = editModalState.initialData?.field;
     const prevName = prevField?.name;
@@ -307,6 +322,13 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
       { shouldDirty: true },
     );
 
+    const prevFieldConfig = editModalState.initialData?.fieldConfig;
+    form.setValue(
+      `objectTypes.${objectType}.uiConfig.fieldConfigs.${field.name}`,
+      { ...prevFieldConfig, ...fieldConfig },
+      { shouldDirty: true },
+    );
+
     setEditModalState({ isOpen: false, initialData: null });
   };
 
@@ -315,8 +337,8 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
   ) => {
     console.log({ updatedFields });
     form.setValue(
-      `objectTypes.${objectType}.fields`,
-      updatedFields.sort(sortSystemFieldsFirst),
+      `objectTypes.${objectType}.uiConfig.fieldOrder`,
+      updatedFields.map(({ name }) => name).sort(sortSystemFieldsFirst),
       {
         shouldDirty: true,
       },
@@ -324,6 +346,12 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
   };
 
   const fields = form.watch(`objectTypes.${objectType}.fields`);
+  const fieldOrder = form.watch(
+    `objectTypes.${objectType}.uiConfig.fieldOrder`,
+  );
+  const fieldConfigs = form.watch(
+    `objectTypes.${objectType}.uiConfig.fieldConfigs`,
+  );
 
   console.log({ fields });
 
@@ -347,26 +375,43 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
         </FieldHeader>
       </div>
       <Reorder.Group onReorder={onReorder} values={fields}>
-        {fields.map((field, index) => {
-          return (
-            <Field
-              key={field.name}
-              field={field}
-              objectType={objectType}
-              onDelete={() => deleteField(field, index)}
-              isDeleted={field?.isDeleted}
-              isNew={field?.isNew}
-              onEdit={() =>
-                setEditModalState({
-                  isOpen: true,
-                  initialData: { field },
-                })
-              }
-            />
-          );
-        })}
+        {fields
+          .sort((fieldA, fieldB) => {
+            const systemFieldSorted = sortSystemFieldsFirst(
+              fieldA.name,
+              fieldB.name,
+            );
+
+            if (systemFieldSorted !== 0) {
+              return systemFieldSorted;
+            }
+
+            return (fieldOrder.indexOf(fieldA.name) ?? Infinity) >
+              (fieldOrder.indexOf(fieldB.name) ?? Infinity)
+              ? 1
+              : -1;
+          })
+          .map((field, index) => {
+            const fieldConfig = fieldConfigs?.[field.name];
+            return (
+              <Field
+                key={field.name}
+                field={field}
+                fieldConfig={fieldConfig || null}
+                objectType={objectType}
+                onDelete={() => deleteField(field, index)}
+                isDeleted={field?.isDeleted}
+                isNew={field?.isNew}
+                onEdit={() =>
+                  setEditModalState({
+                    isOpen: true,
+                    initialData: { field, fieldConfig },
+                  })
+                }
+              />
+            );
+          })}
       </Reorder.Group>
-      {/* ))} */}
       <AddNewButton
         text={
           isBuiltInObjectType

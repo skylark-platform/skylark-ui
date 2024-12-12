@@ -6,7 +6,12 @@ import {
   autoUpdate,
   Placement,
 } from "@floating-ui/react";
-import { Combobox, Transition, Portal } from "@headlessui/react";
+import {
+  Combobox,
+  ComboboxButton,
+  Transition,
+  Portal,
+} from "@headlessui/react";
 import clsx from "clsx";
 import React, {
   useState,
@@ -91,7 +96,8 @@ export const SelectLabel = <T extends string | number>({
       labelVariant === "small" && "text-xs text-manatee-300",
     )}
   >
-    {labelVariant === "form" ? formatObjectField(label) : label}
+    {/* {labelVariant === "form" ? formatObjectField(label) : label} */}
+    {label}
     {isRequired && <span className="pl-0.5 text-error">*</span>}
   </Combobox.Label>
 );
@@ -405,7 +411,7 @@ const SelectComponent = <T extends string | number>(
             />
           )}
           {searchable ? (
-            <Combobox.Button
+            <ComboboxButton
               data-testid="select"
               as="div"
               className={clsx(
@@ -449,6 +455,7 @@ const SelectComponent = <T extends string | number>(
                       onValueClear();
                       e.stopPropagation();
                     }}
+                    onMouseDown={(e) => e.stopPropagation()}
                     data-testid="select-clear-value"
                   >
                     <FiX
@@ -468,7 +475,7 @@ const SelectComponent = <T extends string | number>(
                   />
                 </button>
               </span>
-            </Combobox.Button>
+            </ComboboxButton>
           ) : (
             <Combobox.Button
               data-testid="select"

@@ -154,12 +154,13 @@ export const PanelMetadata = ({
   objectFieldConfig: objectFieldConfigArr,
   form: { register, getValues, control, formState, aiFieldGeneration },
 }: PanelMetadataProps) => {
-  const { uid, objectType } = object;
+  const { uid, objectType, language } = object;
 
   const {
     systemMetadataFields,
-    translatableMetadataFields,
-    globalMetadataFields,
+    // translatableMetadataFields,
+    // globalMetadataFields,
+    nonSystemMetadataFields,
   } = useMemo(() => {
     const options = OBJECT_OPTIONS.find(({ objectTypes }) =>
       objectTypes.includes(objectType),
@@ -167,14 +168,15 @@ export const PanelMetadata = ({
 
     return objectMeta
       ? splitMetadataIntoSystemTranslatableGlobal(
-          objectMeta.fields.map(({ name }) => name),
+          objectMeta.fields.allNames,
           objectMeta.operations.update.inputs,
-          objectMeta.fieldConfig,
+          objectMeta.fields.translatableNames,
           objectFieldConfigArr,
           options,
         )
       : {
           systemMetadataFields: [],
+          nonSystemMetadataFields: [],
           translatableMetadataFields: [],
           globalMetadataFields: [],
         };
@@ -184,32 +186,34 @@ export const PanelMetadata = ({
     .filter(({ isRequired }) => isRequired)
     .map(({ name }) => name);
 
-  // const sections = [
-  //   {
-  //     id: "system-metadata",
-  //     title: "System Metadata",
-  //     htmlId: "panel-section-system",
-  //     metadataFields: systemMetadataFields,
-  //   },
-  //   {
-  //     id: "translatable-metadata",
-  //     title: "Translatable Metadata",
-  //     htmlId: "panel-section-translatable",
-  //     metadataFields: translatableMetadataFields,
-  //   },
-  //   {
-  //     id: "global-metadata",
-  //     title: "Global Metadata",
-  //     htmlId: "panel-section-global",
-  //     metadataFields: globalMetadataFields,
-  //   },
-  // ].filter(({ metadataFields }) => metadataFields.length > 0);
+  const sections = [
+    {
+      id: "system-metadata",
+      title: "System Metadata",
+      htmlId: "panel-section-system",
+      metadataFields: systemMetadataFields,
+    },
+    {
+      id: "non-system-metadata",
+      title: "Metadata",
+      htmlId: "panel-section-non-system",
+      metadataFields: nonSystemMetadataFields,
+    },
+    // {
+    //   id: "translatable-metadata",
+    //   title: "Translatable Metadata",
+    //   htmlId: "panel-section-translatable",
+    //   metadataFields: translatableMetadataFields,
+    // },
+    // {
+    //   id: "global-metadata",
+    //   title: "Global Metadata",
+    //   htmlId: "panel-section-global",
+    //   metadataFields: globalMetadataFields,
+    // },
+  ].filter(({ metadataFields }) => metadataFields.length > 0);
 
-  const fields = [
-    ...systemMetadataFields,
-    ...translatableMetadataFields,
-    ...globalMetadataFields,
-  ];
+  const fields = sections.flatMap((section) => section.metadataFields);
 
   const uploadSection = {
     id: "image-upload",
@@ -258,7 +262,7 @@ export const PanelMetadata = ({
           data-loading={isLoading}
           onSubmit={(e) => e.preventDefault()}
         >
-          {/* {fields.map(
+          {sections.map(
             (
               { id, title, metadataFields, htmlId },
               index,
@@ -278,49 +282,48 @@ export const PanelMetadata = ({
                   );
                   const value = getValues(field);
 
-            if (config) {
-              return (
-                <SkylarkObjectFieldInput
-                  idPrefix="panel-metadata"
-                  isLoading={isLoading}
-                  key={field}
-                  field={field}
-                  config={config}
-                  control={control}
-                  register={register}
-                  value={value}
-                  formState={formState}
-                  additionalRequiredFields={requiredFields}
-                  fieldConfigFromObject={fieldConfigFromObject}
-                  aiFieldGeneration={
-                    field !== SkylarkSystemField.ExternalID
-                      ? aiFieldGeneration
-                      : undefined
+                  if (config) {
+                    return (
+                      <SkylarkObjectFieldInput
+                        idPrefix="panel-metadata"
+                        isLoading={isLoading}
+                        key={field}
+                        field={field}
+                        config={config}
+                        control={control}
+                        register={register}
+                        value={value}
+                        formState={formState}
+                        additionalRequiredFields={requiredFields}
+                        fieldConfigFromObject={fieldConfigFromObject}
+                        aiFieldGeneration={
+                          field !== SkylarkSystemField.ExternalID
+                            ? aiFieldGeneration
+                            : undefined
+                        }
+                        labelProps={{
+                          language:
+                            objectMeta?.fields.translatableNames.includes(field)
+                              ? language
+                              : undefined,
+                        }}
+                      />
+                    );
                   }
-                  labelProps={{
-                    language: objectMeta?.fieldConfig.translatable.includes(
-                      field,
-                    )
-                      ? language
-                      : undefined,
-                  }}
-                />
-              );
-            }
 
-            return (
-              <PanelMetadataProperty
-                key={field}
-                property={field}
-                value={value}
-                isLoading={isLoading}
-              />
-            );
-          })}
-          {/* {index < numSections - 1 && <PanelSeparator />}
+                  return (
+                    <PanelMetadataProperty
+                      key={field}
+                      property={field}
+                      value={value}
+                      isLoading={isLoading}
+                    />
+                  );
+                })}
+                {index < numSections - 1 && <PanelSeparator />}
               </div>
             ),
-          )} */}
+          )}
 
           {objectType === BuiltInSkylarkObjectType.SkylarkImage && (
             <>
