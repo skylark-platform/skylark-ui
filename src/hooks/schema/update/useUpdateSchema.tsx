@@ -216,12 +216,12 @@ const buildSchemaMutation = (
   const modifiedObjectTypes =
     modifiedFormFields.objectTypes &&
     Object.entries(modifiedFormFields.objectTypes).filter(([name]) =>
-      Boolean(modifiedFormFields.objectTypes?.[name]),
+      Boolean(modifiedFormFields.objectTypes?.[name].fields),
     );
 
   console.log({ modifiedObjectTypes });
 
-  if (!modifiedObjectTypes) {
+  if (!modifiedObjectTypes || modifiedObjectTypes.length === 0) {
     return null;
   }
 

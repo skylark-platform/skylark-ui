@@ -198,7 +198,17 @@ const EditObjectFieldModalBody = forwardRef(
     const submitButtonRef = useRef<HTMLButtonElement | null>(null);
 
     const form = useForm<EditObjectFieldModalForm>({
-      defaultValues: initialValues || undefined,
+      defaultValues: initialValues || {
+        field: {
+          type: "string",
+          originalType: "String",
+          isRequired: false,
+          isTranslatable: false,
+          isNew: true,
+          isDeleted: false,
+          isList: false,
+        },
+      },
     });
 
     const { handleSubmit, watch, control, formState, setValue } = form;

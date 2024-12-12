@@ -1,17 +1,15 @@
 import clsx from "clsx";
 import { ReactNode } from "react";
+import { UseFormReturn } from "react-hook-form";
 
 import { InfoTooltip } from "src/components/tooltip/tooltip.component";
-import { SYSTEM_FIELDS } from "src/constants/skylark";
 import {
-  InputFieldWithFieldConfig,
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
   ParsedSkylarkObjectConfigFieldConfig,
-  ParsedSkylarkObjectTypeRelationshipConfigurations,
-  SkylarkObjectMeta,
   SkylarkObjectMetaRelationship,
   SkylarkObjectRelationship,
+  SkylarkObjectType,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 
@@ -42,11 +40,18 @@ export type ContentModelEditorFormObjectTypeRelationship =
     isDeleted?: boolean;
   };
 
+export interface ContentModelEditorFormObjectTypeUiConfig {
+  objectTypeDisplayName: string;
+  primaryField: string | undefined | null;
+  colour: string | undefined | null;
+}
+
 export interface ContentModelEditorForm {
   objectTypes: Record<
-    string,
+    SkylarkObjectType,
     {
       fields: ContentModelEditorFormObjectTypeField[];
+      uiConfig: ContentModelEditorFormObjectTypeUiConfig;
       // relationships: ContentModelEditorFormObjectTypeRelationship[];
 
       // Should use fieldOrder instead of attaching it to fields so that relationships can be mixed in to the list easily?
@@ -56,18 +61,17 @@ export interface ContentModelEditorForm {
   // relationshipConfig?: ParsedSkylarkObjectTypeRelationshipConfigurations;
 }
 
-export interface UIConfigForm {
-  // fieldSections: FieldSectionObject;
-  objectTypeDisplayName: string;
-  primaryField: string | undefined | null;
-  colour: string | undefined | null;
+export interface ContentModelSectionStatuses {
+  schema: boolean;
+  uiConfig: boolean;
+  relationshipConfig: boolean;
 }
 
 export const uiDisplayFieldTooltip =
   "A config property that instructs the UI which field it should use when displaying an object on listing pages.";
 
 export const SectionWrapper = (props: { children: ReactNode }) => (
-  <section {...props} className="my-10" />
+  <section {...props} className="mb-6 lg:mb-10" />
 );
 
 export const SectionHeader = ({ children }: { children: ReactNode }) => (
@@ -159,4 +163,27 @@ export const combineFieldRelationshipsAndFieldConfigAndSortByConfigPostion = (
   });
 
   return sortedFieldsAndRelationships;
+};
+
+export const calculateContentModelUpdateTypes = (
+  form: UseFormReturn<ContentModelEditorForm>,
+): ContentModelSectionStatuses => {
+  const defaultUpdateTypes = {
+    schema: false,
+    uiConfig: false,
+    relationshipConfig: false,
+  };
+  return form.formState.dirtyFields.objectTypes
+    ? Object.values(form.formState.dirtyFields.objectTypes).reduce(
+        (prev, { fields, uiConfig }) => {
+          return {
+            ...prev,
+            schema: fields ? true : false,
+            uiConfig: uiConfig ? true : false,
+            relationshipConfig: false,
+          };
+        },
+        defaultUpdateTypes,
+      )
+    : defaultUpdateTypes;
 };

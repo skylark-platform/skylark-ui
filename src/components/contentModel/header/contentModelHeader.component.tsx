@@ -1,20 +1,26 @@
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { FormState, UseFormReturn } from "react-hook-form";
 
 import { Button } from "src/components/button";
 import { ButtonWithDropdown } from "src/components/buttonWithDropdown";
+import {
+  calculateContentModelUpdateTypes,
+  ContentModelEditorForm,
+} from "src/components/contentModel/editor/sections/common.component";
 import { Select, SelectOption } from "src/components/inputs/select";
 import { CompareSchemaVersionsModal } from "src/components/modals";
 import { Tabs } from "src/components/tabs/tabs.component";
 import { Tag } from "src/components/tag";
+import { useSetContentModelSchemaVersion } from "src/hooks/contentModel/useSetSchemaVersion";
 import { useSchemaVersions } from "src/hooks/schema/get/useSchemaVersions";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
 
 interface ContentModelHeaderProps {
   activeSchemaVersion: number;
   schemaVersion: SchemaVersion | null;
-  isEditingSchema: boolean;
-  isUpdatingSchema: boolean;
+  form: UseFormReturn<ContentModelEditorForm>;
+  isSaving: boolean;
   onSave: (createNewSchemaVersion?: boolean) => void;
   onCancel: () => void;
 }
@@ -22,12 +28,14 @@ interface ContentModelHeaderProps {
 export const ContentModelHeader = ({
   activeSchemaVersion,
   schemaVersion,
-  isEditingSchema,
-  isUpdatingSchema,
+  form,
+  isSaving,
   onSave,
   onCancel,
 }: ContentModelHeaderProps) => {
-  const { push, query } = useRouter();
+  const isEditing = form.formState.isDirty;
+
+  const typesOfUpdates = calculateContentModelUpdateTypes(form);
 
   const [activeSchemaModalIsOpen, setActiveSchemaModalIsOpen] = useState(false);
 
@@ -45,9 +53,7 @@ export const ContentModelHeader = ({
     [activeSchemaVersion, schemaVersions],
   );
 
-  const setSchemaVersionWrapper = (value: number) => {
-    push(`/content-model/${value}/${query?.slug?.[1] || ""}`);
-  };
+  const { setSchemaVersion } = useSetContentModelSchemaVersion();
 
   const handleCancel = () => {
     onCancel();
@@ -66,26 +72,25 @@ export const ContentModelHeader = ({
           selectedInfoTooltipPosition="right"
           options={schemaVersionOptions}
           selected={schemaVersion?.version || undefined}
-          onChange={setSchemaVersionWrapper}
-          disabled={schemaVersionOptions.length === 0 || isEditingSchema}
+          onChange={setSchemaVersion}
+          disabled={schemaVersionOptions.length === 0 || isEditing}
         />
         <div className="space-x-2 flex">
-          {isEditingSchema ? (
+          {isEditing ? (
             <>
               <Button
                 variant="outline"
-                // disabled={}
                 danger
                 onClick={handleCancel}
-                // loading={isSaving}
+                disabled={isSaving}
               >
-                {/* Activate selected Schema */}
                 {`Cancel`}
               </Button>
-              {schemaVersion?.isDraft ? (
+              {typesOfUpdates?.schema && schemaVersion?.isDraft ? (
                 <ButtonWithDropdown
                   variant="primary"
-                  loading={isUpdatingSchema}
+                  disabled={isSaving}
+                  onClick={onSave}
                   options={[
                     {
                       id: "new-draft",
@@ -95,12 +100,10 @@ export const ContentModelHeader = ({
                   ]}
                 >{`Update draft version ${schemaVersion.version}`}</ButtonWithDropdown>
               ) : (
-                <Button
-                  variant="primary"
-                  onClick={onSave}
-                  loading={isUpdatingSchema}
-                >
-                  Save changes to new draft version
+                <Button variant="primary" onClick={onSave} disabled={isSaving}>
+                  {!typesOfUpdates?.schema && typesOfUpdates?.uiConfig
+                    ? "Update Object Type Configuration"
+                    : "Save changes to new draft version"}
                 </Button>
               )}
             </>
@@ -126,18 +129,18 @@ export const ContentModelHeader = ({
               </Button>
             </>
           )}
-          {(isEditingSchema || isUpdatingSchema) && (
+          {(isEditing || isSaving) && (
             <Tag
               className="absolute -bottom-10 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap"
-              loading={isUpdatingSchema}
+              loading={isSaving}
             >
               {/* {schemaVersion?.isDraft
                 ? ``
                 : `Editing Version: ${schemaVersion?.version}`} */}
-              {isEditingSchema &&
-                !isUpdatingSchema &&
+              {isEditing &&
+                !isSaving &&
                 `Editing version: ${schemaVersion?.version}`}
-              {isUpdatingSchema &&
+              {isSaving &&
                 (schemaVersion?.isActive
                   ? `Saving changes to new draft version based on ${schemaVersion.version}`
                   : `Updating draft version ${schemaVersion?.version}`)}

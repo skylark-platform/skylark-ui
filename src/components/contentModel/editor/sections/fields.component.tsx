@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { Reorder, useDragControls } from "motion/react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { FiCheck, FiInfo, FiRotateCcw, FiTrash2 } from "react-icons/fi";
 
@@ -11,8 +11,7 @@ import {
   EditObjectFieldModalForm,
 } from "src/components/modals/editObjectFieldModal/editObjectFieldModal.component";
 import { InfoTooltip, Tooltip } from "src/components/tooltip/tooltip.component";
-import { SkylarkObjectMeta, SkylarkSystemField } from "src/interfaces/skylark";
-import { SchemaVersion } from "src/interfaces/skylark/environment";
+import { SkylarkObjectType, SkylarkSystemField } from "src/interfaces/skylark";
 import { isSkylarkObjectType } from "src/lib/utils";
 
 import {
@@ -26,9 +25,8 @@ import {
 } from "./common.component";
 
 interface FieldsSectionProps {
+  objectType: SkylarkObjectType;
   form: UseFormReturn<ContentModelEditorForm>;
-  objectMeta: SkylarkObjectMeta;
-  schemaVersion: SchemaVersion;
 }
 
 const FieldNameTooltip = ({ field }: { field: string }) => {
@@ -255,11 +253,7 @@ const Field = ({
   );
 };
 
-export const FieldsSection = ({
-  objectMeta,
-  form,
-  schemaVersion,
-}: FieldsSectionProps) => {
+export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
   const [editModalState, setEditModalState] = useState<{
     isOpen: boolean;
     initialData: { field: ContentModelEditorFormObjectTypeField } | null;
@@ -274,16 +268,14 @@ export const FieldsSection = ({
     index: number,
   ) => {
     if (field.isNew) {
-      const currentFields = form.getValues(
-        `objectTypes.${objectMeta.name}.fields`,
-      );
+      const currentFields = form.getValues(`objectTypes.${objectType}.fields`);
       currentFields.splice(index, 1);
-      form.setValue(`objectTypes.${objectMeta.name}.fields`, currentFields, {
+      form.setValue(`objectTypes.${objectType}.fields`, currentFields, {
         shouldDirty: true,
       });
     } else {
       form.setValue(
-        `objectTypes.${objectMeta.name}.fields.${index}`,
+        `objectTypes.${objectType}.fields.${index}`,
         {
           ...field,
           isDeleted: !Boolean(field.isDeleted),
@@ -298,14 +290,14 @@ export const FieldsSection = ({
     const prevField = editModalState.initialData?.field;
     const prevName = prevField?.name;
     const isNew = !prevName;
-    const prevValues = form.getValues(`objectTypes.${objectMeta.name}.fields`);
+    const prevValues = form.getValues(`objectTypes.${objectType}.fields`);
 
     const index = isNew
       ? prevValues.length
       : prevValues.findIndex((prev) => prev.name === prevName);
 
     form.setValue(
-      `objectTypes.${objectMeta.name}.fields.${index}`,
+      `objectTypes.${objectType}.fields.${index}`,
       {
         ...prevField,
         ...field,
@@ -323,7 +315,7 @@ export const FieldsSection = ({
   ) => {
     console.log({ updatedFields });
     form.setValue(
-      `objectTypes.${objectMeta.name}.fields`,
+      `objectTypes.${objectType}.fields`,
       updatedFields.sort(sortSystemFieldsFirst),
       {
         shouldDirty: true,
@@ -331,9 +323,11 @@ export const FieldsSection = ({
     );
   };
 
-  const fields = form.watch(`objectTypes.${objectMeta.name}.fields`);
+  const fields = form.watch(`objectTypes.${objectType}.fields`);
 
   console.log({ fields });
+
+  const isBuiltInObjectType = isSkylarkObjectType(objectType);
 
   return (
     <SectionWrapper data-testid="fields-editor">
@@ -342,7 +336,7 @@ export const FieldsSection = ({
         Only creating and deleting fields is currently supported.
       </SectionDescription>
       {/* TODO add Skeleton here with hardcoded headings as sections headers can be filtered out when no fields exist */}
-      <div className="grid grid-cols-7 gap-4 text-manatee-400 font-normal text-sm">
+      <div className="grid grid-cols-7 gap-4 text-manatee-400 font-normal text-sm mt-4">
         <FieldHeader className="col-span-2 pl-5">Name</FieldHeader>
         <FieldHeader className="col-span-2" tooltip="The GraphQL type">
           Type
@@ -358,7 +352,7 @@ export const FieldsSection = ({
             <Field
               key={field.name}
               field={field}
-              objectType={objectMeta.name}
+              objectType={objectType}
               onDelete={() => deleteField(field, index)}
               isDeleted={field?.isDeleted}
               isNew={field?.isNew}
@@ -375,12 +369,12 @@ export const FieldsSection = ({
       {/* ))} */}
       <AddNewButton
         text={
-          objectMeta.isBuiltIn
+          isBuiltInObjectType
             ? "You cannot add fields to built-in object types"
             : `Add field`
         }
         onClick={addField}
-        disabled={objectMeta.isBuiltIn}
+        disabled={isBuiltInObjectType}
       />
       <EditObjectFieldModal
         isOpen={editModalState.isOpen}

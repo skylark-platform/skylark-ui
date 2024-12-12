@@ -106,12 +106,13 @@ export const NavigationLinks = () => {
             href === pathname ||
             subhrefs?.includes(pathname) ||
             shouldMarkAsActive?.(pathname) ||
+            (href && pathname.startsWith(href) && href !== "/") ||
             false;
           return (
             <li
               key={`${text}-${href}`}
               className={clsx(
-                "group flex items-center py-6 text-black md:h-full md:px-4 md:py-0 lg:px-6",
+                "group flex items-center py-6 text-black md:h-full md:px-2 md:py-0 lg:px-4",
                 !isActiveLink &&
                   "[&>a]:text-black/50 [&>div>div>button]:text-black/50",
               )}

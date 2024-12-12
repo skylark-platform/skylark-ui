@@ -52,10 +52,12 @@ export default function ContentModelPage() {
           ({ version }) => version === schemaVersionNumber,
         ) || null;
 
-  const { objectTypes } = useSkylarkObjectTypes(
-    true,
-    schemaVersion ? { schemaVersion: schemaVersion.version } : undefined,
-  );
+  const { objectTypes } = useSkylarkObjectTypes({
+    searchable: true,
+    introspectionOpts: schemaVersion
+      ? { schemaVersion: schemaVersion.version }
+      : undefined,
+  });
 
   useEffect(() => {
     if (
@@ -85,8 +87,8 @@ export default function ContentModelPage() {
       : undefined;
 
   const { objects: allObjectsMeta } = useAllObjectsMeta(true, schemaOpts);
-  const { objectTypesWithConfig, isLoading: isLoadingObjectTypesWithConfig } =
-    useSkylarkObjectTypesWithConfig(schemaOpts);
+  const { objectTypesConfig, isLoading: isLoadingObjectTypesWithConfig } =
+    useSkylarkObjectTypesWithConfig({ introspectionOpts: schemaOpts });
 
   const {
     allObjectTypesRelationshipConfig,
@@ -99,7 +101,7 @@ export default function ContentModelPage() {
       activationStatus?.activeVersion &&
       objectType &&
       allObjectsMeta &&
-      objectTypesWithConfig &&
+      objectTypesConfig &&
       allObjectTypesRelationshipConfig &&
       !isLoadingObjectTypesWithConfig &&
       !isLoadingRelationshipConfig ? (
@@ -109,8 +111,9 @@ export default function ContentModelPage() {
           objectType={objectType}
           activeVersionNumber={activationStatus.activeVersion}
           allObjectsMeta={allObjectsMeta}
-          objectTypesWithConfig={objectTypesWithConfig}
+          objectTypesConfig={objectTypesConfig}
           allObjectTypesRelationshipConfig={allObjectTypesRelationshipConfig}
+          schemaOpts={schemaOpts}
         />
       ) : (
         <div className="flex justify-center w-full mt-20 items-center">

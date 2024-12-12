@@ -1,79 +1,103 @@
 import clsx from "clsx";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { FiChevronDown } from "react-icons/fi";
 
-import { ObjectTypeSelect, Select } from "src/components/inputs/select";
+import {
+  DropdownMenu,
+  DropdownMenuButton,
+  DropdownMenuSection,
+} from "src/components/dropdown/dropdown.component";
 import { ObjectTypePill } from "src/components/pill";
 import {
   useSkylarkSetObjectTypes,
-  useSkylarkObjectTypesWithConfig,
-  ObjectTypeWithConfig,
   useSkylarkObjectOperations,
   ObjectTypesConfigObject,
 } from "src/hooks/useSkylarkObjectTypes";
 import { IntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospection";
 import { ParsedSkylarkObjectConfig } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
-import { isSkylarkObjectType } from "src/lib/utils";
+import {
+  isAvailabilityOrAudienceSegment,
+  isSkylarkObjectType,
+} from "src/lib/utils";
 
 interface ObjectTypeNavigationProps {
   activeObjectType: string | null;
   schemaVersion: SchemaVersion;
   objectTypesConfig: ObjectTypesConfigObject;
+  schemaOpts?: IntrospectionQueryOptions;
 }
 
-const ObjectTypeNavigationSection = ({
-  title,
-  activeObjectType,
-  objectTypesWithConfig,
-}: {
-  title: string;
-  activeObjectType: string | null;
-  objectTypesWithConfig?: ObjectTypeWithConfig[];
-}) => (
-  <div className="flex flex-col justify-start items-start my-4 w-full text-sm">
-    <p className="mb-1 text-base">{title}</p>
-    {objectTypesWithConfig?.map(({ objectType, config }) => {
-      return (
-        <Link
-          key={objectType}
-          className={clsx(
-            "my-1 flex items-center w-full",
-            activeObjectType?.toLowerCase() === objectType.toLowerCase()
-              ? "text-black font-medium"
-              : "text-manatee-600",
-          )}
-          href={`/content-model/${encodeURIComponent(objectType.toLocaleLowerCase())}`}
-        >
-          <span
-            className="w-4 h-4 block rounded mr-1 whitespace-nowrap overflow-hidden text-ellipsis"
-            style={{ backgroundColor: config.colour || undefined }}
-          />
-          {config.objectTypeDisplayName &&
-          config.objectTypeDisplayName !== objectType ? (
-            <>
-              {objectType}{" "}
-              <span className="text-manatee-400 block text-ellipsis font-normal ml-1 whitespace-nowrap overflow-hidden">
-                ({config.objectTypeDisplayName})
-              </span>
-            </>
-          ) : (
-            objectType
-          )}
-        </Link>
-      );
-    })}
-  </div>
-);
+const createObjectTypeOption = (
+  [objectType]: [string, ParsedSkylarkObjectConfig],
+  onChange: (objectType: string) => void,
+) => ({
+  id: objectType,
+  text: objectType,
+  // Icon: <FiSearch className="text-lg" />,
+  onClick: () => onChange(objectType),
+});
+
+const createObjectTypeDropdownOptions = (
+  objectTypesWithConfig: [string, ParsedSkylarkObjectConfig][],
+  validSetObjectTypes: string[],
+  onChange: (objectType: string) => void,
+) => {
+  const setObjectTypes = objectTypesWithConfig.filter(([ot]) =>
+    validSetObjectTypes.includes(ot),
+  );
+  const customObjectTypes = objectTypesWithConfig.filter(
+    ([ot]) => !isSkylarkObjectType(ot) && !validSetObjectTypes.includes(ot),
+  );
+  const skylarkObjectTypes = objectTypesWithConfig.filter(
+    ([ot]) =>
+      isSkylarkObjectType(ot) &&
+      !validSetObjectTypes.includes(ot) &&
+      !isAvailabilityOrAudienceSegment(ot),
+  );
+  const availabilityObjectTypes = objectTypesWithConfig.filter(
+    ([ot]) => isSkylarkObjectType(ot) && isAvailabilityOrAudienceSegment(ot),
+  );
+
+  const objectTypesDropdownOptions: DropdownMenuSection[] = [
+    {
+      id: "set-object-types",
+      label: "Set Object Types",
+      options: setObjectTypes.map((ot) => createObjectTypeOption(ot, onChange)),
+    },
+    {
+      id: "custom-object-types",
+      label: "Custom Object Types",
+      options: customObjectTypes.map((ot) =>
+        createObjectTypeOption(ot, onChange),
+      ),
+    },
+    {
+      id: "skylark-object-types",
+      label: "Built-in Object Types",
+      options: skylarkObjectTypes.map((ot) =>
+        createObjectTypeOption(ot, onChange),
+      ),
+    },
+    {
+      id: "availability-object-types",
+      label: "Availability Object Types",
+      options: availabilityObjectTypes.map((ot) =>
+        createObjectTypeOption(ot, onChange),
+      ),
+    },
+  ].filter(({ options }) => options.length > 0);
+
+  return objectTypesDropdownOptions;
+};
 
 const ObjectTypeOverview = ({
   objectType,
-  objectTypesConfig: config,
+  objectTypeConfig: config,
   schemaOpts,
 }: {
   objectType: string;
-  objectTypesConfig: ParsedSkylarkObjectConfig;
+  objectTypeConfig: ParsedSkylarkObjectConfig;
   schemaOpts?: IntrospectionQueryOptions;
 }) => {
   const { objectOperations: objectMeta } = useSkylarkObjectOperations(
@@ -120,7 +144,7 @@ const ObjectTypeOverview = ({
   ];
 
   return (
-    <div className="flex flex-col items-start mt-8 border-t pt-4 w-full text-sm text-manatee-600">
+    <div className="flex-col items-start mt-8 border-t pt-4 w-full text-sm text-manatee-600 hidden md:flex">
       <h3 className="text-2xl font-semibold text-black">{objectType}</h3>
       <p
         className={clsx(
@@ -158,56 +182,61 @@ const ObjectTypeOverview = ({
 };
 
 export const ObjectTypeSelectAndOverview = ({
-  activeObjectType,
+  activeObjectType: urlObjectType,
   objectTypesConfig,
   schemaVersion,
+  schemaOpts,
 }: ObjectTypeNavigationProps) => {
   const { push } = useRouter();
 
-  // const { setObjectTypes } = useSkylarkSetObjectTypes(true, schemaOpts);
+  const { setObjectTypes } = useSkylarkSetObjectTypes(true, schemaOpts);
 
-  const selected = activeObjectType
-    ? objectTypesConfig?.[activeObjectType]
-    : undefined;
+  const objectTypesWithConfig = Object.entries(objectTypesConfig);
 
-  // TODO section the list by Sets, Custom, Built in
-  // const setObjectTypesWithConfig = objectTypesWithConfig?.filter(
-  //   ({ objectType }) => setObjectTypes?.includes(objectType),
-  // );
-  // const systemObjectTypesWithConfig = objectTypesWithConfig?.filter(
-  //   ({ objectType }) =>
-  //     isSkylarkObjectType(objectType) && !setObjectTypes?.includes(objectType),
-  // );
-  // const customObjectTypesWithConfig = objectTypesWithConfig?.filter(
-  //   ({ objectType }) =>
-  //     !isSkylarkObjectType(objectType) && !setObjectTypes?.includes(objectType),
-  // );
+  const [activeObjectType, objectTypeConfig] = objectTypesWithConfig.find(
+    ([ot]) => ot.toLocaleLowerCase() === urlObjectType?.toLocaleLowerCase(),
+  ) || [undefined, undefined];
 
-  console.log(activeObjectType);
+  const onObjectTypeChange = (objectType: string) => {
+    push(
+      `/content-model/${schemaVersion.version}/${encodeURIComponent(objectType.toLocaleLowerCase())}`,
+    );
+  };
+
+  const objectTypesDropdownOptions = createObjectTypeDropdownOptions(
+    objectTypesWithConfig,
+    setObjectTypes || [],
+    onObjectTypeChange,
+  );
 
   return (
     <div
       className="flex flex-col text-left items-start grid-cols-1"
       data-testid="content-editor-navigation"
     >
-      {/* <Select options={}  /> */}
-      <ObjectTypeSelect
-        label="Object type"
-        labelVariant="header"
-        onChange={({ objectType }) =>
-          push(
-            `/content-model/${schemaVersion.version}/${encodeURIComponent(objectType.toLocaleLowerCase())}`,
-          )
-        }
-        selected={activeObjectType || ""}
-        variant="primary"
-        displayActualName
+      <DropdownMenu
+        options={objectTypesDropdownOptions}
+        placement="bottom"
+        renderInPortal
         className="w-full"
-      />
-      {selected && activeObjectType && (
+      >
+        <DropdownMenuButton
+          className={clsx(
+            "relative w-full flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-4 py-2 font-medium hover:bg-manatee-100 bg-manatee-50 text-black md:py-3",
+          )}
+          aria-label="Change object type"
+        >
+          {/* <Button variant="neutral">
+            {activeObjectType} <FiChevronDown className="text-xl" />
+          </Button> */}
+          <span className="w-full text-left">{activeObjectType}</span>
+          <FiChevronDown className="text-xl" />
+        </DropdownMenuButton>
+      </DropdownMenu>
+      {objectTypeConfig && activeObjectType && (
         <ObjectTypeOverview
           objectType={activeObjectType}
-          objectTypesConfig={selected}
+          objectTypeConfig={objectTypeConfig}
         />
       )}
     </div>
