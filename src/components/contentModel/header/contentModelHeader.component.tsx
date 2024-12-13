@@ -56,12 +56,17 @@ const getTagText = (
   );
 
   if (typesOfUpdates.schema) {
+    const otherUpdatingText = nonSchemaText
+      ? ` and updating ${nonSchemaText}`
+      : "";
+    const otherEditingText = nonSchemaText ? ` and ${nonSchemaText}` : "";
+
     const savingText = schemaVersion?.isActive
-      ? `Creating new draft schema and updating ${nonSchemaText}`
-      : `Updating draft schema and updating ${nonSchemaText}`;
+      ? `Creating new draft schema${otherUpdatingText}`
+      : `Updating draft schema${otherUpdatingText}`;
     return isSaving
       ? savingText
-      : `Editing schema ${schemaVersion?.version} and ${nonSchemaText}`;
+      : `Editing schema (V${schemaVersion?.version})${otherEditingText}`;
   }
 
   return isSaving ? `Updating ${nonSchemaText}` : `Editing ${nonSchemaText}`;

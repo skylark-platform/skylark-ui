@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useRouter } from "next/router";
+import { UseFormReturn } from "react-hook-form";
 import { FiChevronDown } from "react-icons/fi";
 
 import {
@@ -8,6 +9,7 @@ import {
   DropdownMenuSection,
 } from "src/components/dropdown/dropdown.component";
 import { ObjectTypePill } from "src/components/pill";
+import { useSetContentModelSchemaVersion } from "src/hooks/contentModel/useSetSchemaVersion";
 import {
   useSkylarkSetObjectTypes,
   useSkylarkObjectOperations,
@@ -25,14 +27,19 @@ import {
   isSkylarkObjectType,
 } from "src/lib/utils";
 
+import { ContentModelEditorForm } from "../editor/sections/common.component";
+
 interface ObjectTypeNavigationProps {
+  objectTypes: string[];
+  setObjectTypes: string[];
   activeObjectType: string | null;
   activeSchemaVersionNumber: number;
   schemaVersion: SchemaVersion;
+  onAddNewObjectType: () => void;
 }
 
 const createObjectTypeOption = (
-  { objectType }: ObjectTypeWithConfig,
+  objectType: string,
   onChange: (objectType: string) => void,
 ) => ({
   id: objectType,
@@ -42,31 +49,44 @@ const createObjectTypeOption = (
 });
 
 const createObjectTypeDropdownOptions = (
-  objectTypesWithConfig: ObjectTypeWithConfig[],
+  objectTypes: string[],
   validSetObjectTypes: string[],
   onChange: (objectType: string) => void,
+  onAddNew: () => void,
 ) => {
-  const setObjectTypes = objectTypesWithConfig.filter(({ objectType }) =>
+  const setObjectTypes = objectTypes.filter((objectType) =>
     validSetObjectTypes.includes(objectType),
   );
-  const customObjectTypes = objectTypesWithConfig.filter(
-    ({ objectType }) =>
+  const customObjectTypes = objectTypes.filter(
+    (objectType) =>
       !isSkylarkObjectType(objectType) &&
       !validSetObjectTypes.includes(objectType),
   );
-  const skylarkObjectTypes = objectTypesWithConfig.filter(
-    ({ objectType }) =>
+  const skylarkObjectTypes = objectTypes.filter(
+    (objectType) =>
       isSkylarkObjectType(objectType) &&
       !validSetObjectTypes.includes(objectType) &&
       !isAvailabilityOrAudienceSegment(objectType),
   );
-  const availabilityObjectTypes = objectTypesWithConfig.filter(
-    ({ objectType }) =>
+  const availabilityObjectTypes = objectTypes.filter(
+    (objectType) =>
       isSkylarkObjectType(objectType) &&
       isAvailabilityOrAudienceSegment(objectType),
   );
 
   const objectTypesDropdownOptions: DropdownMenuSection[] = [
+    {
+      id: "create-new-object-type",
+      label: "Create",
+      options: [
+        {
+          id: "create-new",
+          text: "Add Object Type",
+          // Icon: <FiSearch className="text-lg" />,
+          onClick: () => onAddNew(),
+        },
+      ],
+    },
     {
       id: "set-object-types",
       label: "Set Object Types",
@@ -189,38 +209,23 @@ const ObjectTypeOverview = ({
 };
 
 export const ObjectTypeSelectAndOverview = ({
-  activeObjectType: urlObjectType,
-  activeSchemaVersionNumber,
+  objectTypes,
+  setObjectTypes,
+  activeObjectType,
   schemaVersion,
+  onAddNewObjectType,
 }: ObjectTypeNavigationProps) => {
-  const { push } = useRouter();
-
-  const schemaOpts = createIntrospectionQueryOptions(
-    schemaVersion,
-    activeSchemaVersionNumber,
-  );
-
-  const { setObjectTypes } = useSkylarkSetObjectTypes(true, schemaOpts);
-
-  const { objectTypesWithConfig, isLoading: isLoadingObjectTypesWithConfig } =
-    useSkylarkObjectTypesWithConfig({ introspectionOpts: schemaOpts });
-
-  const { objectType: activeObjectType, config: objectTypeConfig } =
-    objectTypesWithConfig?.find(
-      ({ objectType: ot }) =>
-        ot.toLocaleLowerCase() === urlObjectType?.toLocaleLowerCase(),
-    ) || { objectType: undefined, config: undefined };
+  const { setSchemaVersion } = useSetContentModelSchemaVersion();
 
   const onObjectTypeChange = (objectType: string) => {
-    push(
-      `/content-model/${schemaVersion.version}/${encodeURIComponent(objectType.toLocaleLowerCase())}`,
-    );
+    setSchemaVersion(schemaVersion.version, objectType);
   };
 
   const objectTypesDropdownOptions = createObjectTypeDropdownOptions(
-    objectTypesWithConfig || [],
+    objectTypes,
     setObjectTypes || [],
     onObjectTypeChange,
+    onAddNewObjectType,
   );
 
   return (
@@ -239,21 +244,18 @@ export const ObjectTypeSelectAndOverview = ({
             "relative w-full flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-4 py-2 font-medium hover:bg-manatee-100 bg-manatee-50 text-black md:py-3",
           )}
           aria-label="Change object type"
-          disabled={!objectTypeConfig}
+          disabled={!objectTypes || objectTypes.length === 0}
         >
-          {/* <Button variant="neutral">
-            {activeObjectType} <FiChevronDown className="text-xl" />
-          </Button> */}
           <span className="w-full text-left">{activeObjectType}</span>
           <FiChevronDown className="text-xl" />
         </DropdownMenuButton>
       </DropdownMenu>
-      {objectTypeConfig && activeObjectType && (
+      {/* {objectTypes && activeObjectType && (
         <ObjectTypeOverview
           objectType={activeObjectType}
           objectTypeConfig={objectTypeConfig}
         />
-      )}
+      )} */}
     </div>
   );
 };

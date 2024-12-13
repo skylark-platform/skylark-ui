@@ -5,8 +5,10 @@ export const useSetContentModelSchemaVersion = () => {
   const { push, query } = useRouter();
 
   const setSchemaVersion = useCallback(
-    (value: number) => {
-      push(`/content-model/${value}/${query?.slug?.[1] || ""}`);
+    (value: number, objectType?: string) => {
+      push(
+        `/content-model/${value}/${encodeURIComponent(objectType || query?.slug?.[1] || "")}`,
+      );
     },
     [query],
   );

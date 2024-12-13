@@ -7,7 +7,7 @@ import { Spinner } from "src/components/icons";
 import { Toast } from "src/components/toast/toast.component";
 import { useSetContentModelSchemaVersion } from "src/hooks/contentModel/useSetSchemaVersion";
 import { useSchemaVersions } from "src/hooks/schema/get/useSchemaVersions";
-import { useUpdateObjectTypesConfiguration } from "src/hooks/schema/update/useUpdateObjectTypesFieldConfig";
+import { useUpdateObjectTypesConfiguration } from "src/hooks/schema/update/useUpdateObjectTypesConfig";
 import { useUpdateRelationshipConfig } from "src/hooks/schema/update/useUpdateRelationshipConfig";
 import { useUpdateSchema } from "src/hooks/schema/update/useUpdateSchema";
 import { useAllObjectTypesRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
@@ -23,7 +23,7 @@ import {
 } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
 
-import { ObjectTypeEditor } from "./editor/contentModelEditor.component";
+import { ContentModelEditor } from "./editor/contentModelEditor.component";
 import {
   combineFieldRelationshipsAndFieldConfig,
   ContentModelEditorForm,
@@ -55,9 +55,12 @@ const createFormValues = (
   objectTypesConfig: ObjectTypesConfigObject,
   allObjectTypesRelationshipConfig: ParsedSkylarkObjectTypesRelationshipConfigurations,
 ): ContentModelEditorForm => ({
+  objectTypeNames: allObjectsMeta.map(({ name }) => name) || [],
+  setObjectTypeNames:
+    allObjectsMeta.filter(({ isSet }) => isSet).map(({ name }) => name) || [],
   objectTypes: Object.fromEntries(
     allObjectsMeta.map((objectMeta) => {
-      const { name, relationships } = objectMeta;
+      const { name, relationships, isSet, isBuiltIn } = objectMeta;
 
       const objectTypeConfiguration = objectTypesConfig?.[name];
       const relationshipsConfiguration =
@@ -68,9 +71,6 @@ const createFormValues = (
         relationships,
         relationshipsConfiguration,
       );
-      // const { objects: allObjectsMeta } = useAllObjectsMeta(true, schemaOpts);
-      // const { objectTypesConfig, isLoading: isLoadingObjectTypesWithConfig } =
-      //   useSkylarkObjectTypesWithConfig({ introspectionOpts: schemaOpts });
 
       const fieldConfigs =
         objectTypeConfiguration?.fieldConfig?.reduce(
@@ -112,6 +112,8 @@ const createFormValues = (
         {
           fields,
           uiConfig,
+          isSet,
+          isBuiltIn,
         },
       ];
     }),
@@ -121,16 +123,12 @@ const createFormValues = (
 const ContentModelComponent = ({
   schemaVersion,
   activeSchemaVersionNumber,
-  objectType,
+  objectType: propObjectType,
   allObjectsMeta,
   objectTypesConfig,
   allObjectTypesRelationshipConfig,
 }: ContentModelComponentProps) => {
   const { setSchemaVersion } = useSetContentModelSchemaVersion();
-
-  const objectMeta = allObjectsMeta.find(
-    ({ name }) => name.toLowerCase() === objectType?.toLowerCase(),
-  );
 
   const form = useForm<ContentModelEditorForm>({
     // Can't use onSubmit because we don't have a submit button within the form
@@ -144,6 +142,14 @@ const ContentModelComponent = ({
       allObjectTypesRelationshipConfig,
     ),
   });
+
+  // Sanitize object type from URL or return original to display not found error
+  const objectType =
+    form
+      .watch("objectTypeNames")
+      ?.find(
+        (ot) => ot.toLocaleLowerCase() === propObjectType.toLocaleLowerCase(),
+      ) || propObjectType;
 
   const [schemaUpdateSuccessful, setSchemaUpdateSuccessful] = useState(false);
   const [uiConfigUpdateSuccessful, setUiConfigUpdateSuccessful] =
@@ -302,7 +308,7 @@ const ContentModelComponent = ({
 
   const onSave = (createNewSchemaVersion?: boolean) => {
     console.log("onSave");
-    if (objectMeta && schemaVersion) {
+    if (schemaVersion) {
       form.handleSubmit((formValues) => {
         console.log({ formValues });
 
@@ -351,36 +357,12 @@ const ContentModelComponent = ({
         onSave={onSave}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-5 gap-8">
-        <ObjectTypeSelectAndOverview
-          activeObjectType={objectType}
-          activeSchemaVersionNumber={activeSchemaVersionNumber}
-          schemaVersion={schemaVersion}
-        />
-        {allObjectsMeta && objectTypesConfig ? (
-          <div className="md:col-span-3 xl:col-span-4 h-full">
-            {objectMeta && (
-              <ObjectTypeEditor
-                key={`${objectType}-editor`}
-                objectMeta={objectMeta}
-                form={form}
-              />
-            )}
-
-            {objectType && !objectMeta && (
-              <p className="mt-10">
-                Requested Object Type &quot;
-                <span className="font-medium">{objectType}</span>
-                &quot; does not exist in this schema version.
-              </p>
-            )}
-          </div>
-        ) : (
-          <div className="flex mt-32 justify-center w-full h-full items-center col-span-full">
-            <Spinner className="h-14 w-14 animate-spin" />
-          </div>
-        )}
-      </div>
+      <ContentModelEditor
+        form={form}
+        objectType={objectType}
+        activeSchemaVersionNumber={activeSchemaVersionNumber}
+        schemaVersion={schemaVersion}
+      />
     </div>
   );
 };

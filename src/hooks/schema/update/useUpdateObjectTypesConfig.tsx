@@ -221,12 +221,16 @@ export const useUpdateObjectTypesConfiguration = ({
   const { mutate, isPending } = useMutation({
     mutationFn: async ({ formValues, modifiedFormFields }: MutationArgs) => {
       const modifiedObjectTypes =
-        (modifiedFormFields.objectTypes &&
+        (
+          modifiedFormFields.objectTypes &&
           Object.entries(modifiedFormFields.objectTypes)
             .filter(([name]) =>
               Boolean(modifiedFormFields.objectTypes?.[name].uiConfig),
             )
-            .map(([ot]) => ot)) ||
+            .map(([ot]) => ot)
+        )
+          // Filter out any newly added object types as they're not in the schema yet so will fail
+          ?.filter((objectType) => !formValues.objectTypes[objectType].isNew) ||
         [];
 
       console.log("here", { modifiedObjectTypes, modifiedFormFields });

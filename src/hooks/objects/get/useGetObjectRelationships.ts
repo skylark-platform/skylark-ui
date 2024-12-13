@@ -37,9 +37,9 @@ type PageParam = Record<string, string>;
 const getFieldsFromObjectType = (
   objects: SkylarkObjectMeta[] | null,
   objectType: string,
-) => {
+): NormalizedObjectField[] => {
   const object = objects?.find(({ name }) => name === objectType);
-  return object?.fields || [];
+  return object?.fields.all || [];
 };
 
 const getRelationshipNextTokens = (

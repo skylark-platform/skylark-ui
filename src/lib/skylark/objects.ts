@@ -364,8 +364,6 @@ export const getObjectOperations = (
     );
   }
 
-  console.log(objectType, { objectTypeInterface });
-
   const queries = (
     schema.types.find(
       ({ name, kind }) => name === schema.queryType.name && kind === "OBJECT",

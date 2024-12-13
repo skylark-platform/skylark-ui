@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { snakeCase } from "change-case";
 import gql from "graphql-tag";
 import { EnumType, VariableType } from "json-to-graphql-query";
 import { FormState } from "react-hook-form";
@@ -213,19 +214,28 @@ const buildSchemaMutation = (
   formValues: ContentModelEditorForm,
   modifiedFormFields: MutationArgs["modifiedFormFields"],
 ) => {
+  const newObjectTypes = Object.entries(formValues.objectTypes)
+    .filter(([_, values]) => values.isNew)
+    .map(([objectType]) => objectType);
+
   const modifiedObjectTypes =
     modifiedFormFields.objectTypes &&
-    Object.entries(modifiedFormFields.objectTypes).filter(([name]) =>
-      Boolean(modifiedFormFields.objectTypes?.[name].fields),
+    Object.entries(modifiedFormFields.objectTypes).filter(
+      ([name]) =>
+        Boolean(modifiedFormFields.objectTypes?.[name].fields) &&
+        !newObjectTypes.includes(name),
     );
 
-  console.log({ modifiedObjectTypes });
+  console.log({ modifiedObjectTypes, newObjectTypes });
 
-  if (!modifiedObjectTypes || modifiedObjectTypes.length === 0) {
+  if (
+    (!modifiedObjectTypes || modifiedObjectTypes.length === 0) &&
+    (!newObjectTypes || newObjectTypes.length === 0)
+  ) {
     return null;
   }
 
-  const gqlOperations = modifiedObjectTypes.reduce(
+  const modifiedObjectTypesGqlOperations = modifiedObjectTypes?.reduce(
     (prevMutations, [objectType, x]) => {
       const mutations = prevMutations;
 
@@ -257,13 +267,58 @@ const buildSchemaMutation = (
     {} as Record<string, object>,
   );
 
+  const newObjectTypesGqlOperations = newObjectTypes?.reduce(
+    (prevMutations, objectType) => {
+      const mutations = prevMutations;
+
+      // const formValue = formValues.objectTypes[objectType];
+      // console.log({ formValue });
+
+      // const fieldConfiguration = buildEditFieldsConfigurationMutation(
+      //   objectType,
+      //   formValue.fields,
+      // );
+
+      // if (fieldConfiguration) {
+      //   mutations[fieldConfiguration.key] = fieldConfiguration.mutation;
+      // }
+
+      // const relationshipConfiguration =
+      //   buildEditRelationshipsConfigurationMutation(
+      //     objectType,
+      //     formValue.fields,
+      //   );
+
+      // if (relationshipConfiguration) {
+      //   mutations[relationshipConfiguration.key] =
+      //     relationshipConfiguration.mutation;
+      // }
+
+      const objectTypeAsSnakeCase = snakeCase(objectType);
+      console.log({ objectType, objectTypeAsSnakeCase });
+
+      mutations[`create_${objectType}`] = {
+        __aliasFor: "createObjectType",
+        __args: {
+          version: new VariableType("version"),
+          object_types: { name: objectTypeAsSnakeCase },
+        },
+        version: true,
+      };
+
+      return mutations;
+    },
+    {} as Record<string, object>,
+  );
+
   const mutation = {
     mutation: {
       __name: `UPDATE_SCHEMA`,
       __variables: {
         version: "Int!",
       },
-      ...gqlOperations,
+      ...(modifiedObjectTypesGqlOperations || {}),
+      ...(newObjectTypesGqlOperations || {}),
     },
   };
 
@@ -297,6 +352,8 @@ export const useUpdateSchema = ({
       modifiedFormFields,
     }: MutationArgs) => {
       let versionToUpdate: SchemaVersion = schemaVersion;
+
+      console.log({ modifiedFormFields });
 
       const mutation = buildSchemaMutation(formValues, modifiedFormFields);
 

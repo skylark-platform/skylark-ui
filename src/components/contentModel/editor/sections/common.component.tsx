@@ -9,6 +9,7 @@ import {
   ParsedSkylarkObjectConfigFieldConfig,
   ParsedSkylarkObjectTypeRelationshipConfiguration,
   ParsedSkylarkObjectTypeRelationshipConfigurations,
+  SkylarkObjectMeta,
   SkylarkObjectMetaRelationship,
   SkylarkObjectRelationship,
   SkylarkObjectType,
@@ -50,11 +51,16 @@ export interface ContentModelEditorFormObjectTypeUiConfig {
 }
 
 export interface ContentModelEditorForm {
+  objectTypeNames: string[];
+  setObjectTypeNames: string[];
   objectTypes: Record<
     SkylarkObjectType,
     {
       fields: ContentModelEditorFormObjectTypeField[];
       uiConfig: ContentModelEditorFormObjectTypeUiConfig;
+      isNew?: boolean;
+      isSet: SkylarkObjectMeta["isSet"];
+      isBuiltIn: SkylarkObjectMeta["isBuiltIn"];
 
       // Should use fieldOrder instead of attaching it to fields so that relationships can be mixed in to the list easily?
       // fieldOrder: string[];
@@ -165,7 +171,16 @@ export const calculateContentModelUpdateTypes = (
   };
   return form.formState.dirtyFields.objectTypes
     ? Object.values(form.formState.dirtyFields.objectTypes).reduce(
-        (prev, { fields, uiConfig }) => {
+        (prev, objectType) => {
+          if (typeof objectType === "boolean" && objectType) {
+            return {
+              ...prev,
+              schema: true,
+            };
+          }
+
+          const { fields, uiConfig } = objectType;
+
           return {
             ...prev,
             schema: fields ? true : false,

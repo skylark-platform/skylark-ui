@@ -332,19 +332,7 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
     setEditModalState({ isOpen: false, initialData: null });
   };
 
-  const onReorder = (
-    updatedFields: ContentModelEditorFormObjectTypeField[],
-  ) => {
-    console.log({ updatedFields });
-    form.setValue(
-      `objectTypes.${objectType}.uiConfig.fieldOrder`,
-      updatedFields.map(({ name }) => name).sort(sortSystemFieldsFirst),
-      {
-        shouldDirty: true,
-      },
-    );
-  };
-
+  const isNewObjectType = form.watch(`objectTypes.${objectType}.isNew`);
   const fields = form.watch(`objectTypes.${objectType}.fields`);
   const fieldOrder = form.watch(
     `objectTypes.${objectType}.uiConfig.fieldOrder`,
@@ -352,6 +340,21 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
   const fieldConfigs = form.watch(
     `objectTypes.${objectType}.uiConfig.fieldConfigs`,
   );
+
+  const onReorder = (
+    updatedFields: ContentModelEditorFormObjectTypeField[],
+  ) => {
+    console.log({ updatedFields });
+    if (!isNewObjectType) {
+      form.setValue(
+        `objectTypes.${objectType}.uiConfig.fieldOrder`,
+        updatedFields.map(({ name }) => name).sort(sortSystemFieldsFirst),
+        {
+          shouldDirty: true,
+        },
+      );
+    }
+  };
 
   const isBuiltInObjectType = isSkylarkObjectType(objectType);
 

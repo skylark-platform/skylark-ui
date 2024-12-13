@@ -30,9 +30,12 @@ test.skip("renders the navigation and finds all Object Types", async () => {
 
   render(
     <ObjectTypeSelectAndOverview
+      setObjectTypes={[BuiltInSkylarkObjectType.SkylarkSet]}
+      objectTypes={[BuiltInSkylarkObjectType.SkylarkSet, "Episode"]}
       activeObjectType={null}
       schemaVersion={schemaVersion}
       activeSchemaVersionNumber={schemaVersion.version}
+      onAddNewObjectType={jest.fn()}
     />,
   );
 
@@ -44,37 +47,24 @@ test.skip("renders the navigation and finds all Object Types", async () => {
   );
 });
 
-test.skip("calls router.push on initial load when activeObjectType is null", async () => {
-  const router = { push: jest.fn() };
-  useRouter.mockReturnValue(router);
-
-  render(
-    <ObjectTypeSelectAndOverview
-      activeObjectType={null}
-      schemaVersion={schemaVersion}
-      activeSchemaVersionNumber={schemaVersion.version}
-    />,
-  );
-
-  await waitFor(() => {
-    expect(router.push).toHaveBeenCalledTimes(1);
-  });
-
-  expect(router.push).toHaveBeenCalledWith("/content-model/SkylarkSet");
-});
-
 test.skip("calls router.push when an object type is clicked", async () => {
   const router = { push: jest.fn() };
 
   render(
     <RouterContext.Provider value={router as unknown as NextRouter}>
       <ObjectTypeSelectAndOverview
+        setObjectTypes={[BuiltInSkylarkObjectType.SkylarkSet]}
+        objectTypes={[BuiltInSkylarkObjectType.SkylarkSet, "Episode"]}
         activeObjectType={BuiltInSkylarkObjectType.SkylarkSet}
         schemaVersion={schemaVersion}
         activeSchemaVersionNumber={schemaVersion.version}
+        onAddNewObjectType={jest.fn()}
       />
     </RouterContext.Provider>,
   );
+
+  const skylarkSet = await screen.findByText("SkylarkSet");
+  fireEvent.click(skylarkSet);
 
   const episode = await screen.findByText("Episode");
   fireEvent.click(episode);

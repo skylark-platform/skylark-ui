@@ -22,7 +22,7 @@ interface UIConfigSectionProps {
 }
 
 export const UIConfigSection = ({ form, objectType }: UIConfigSectionProps) => {
-  const { uiConfig, fields } = form.watch(`objectTypes.${objectType}`);
+  const { uiConfig, fields, isNew } = form.watch(`objectTypes.${objectType}`);
 
   return (
     <SectionWrapper data-testid="uiconfig-editor">
@@ -45,6 +45,7 @@ export const UIConfigSection = ({ form, objectType }: UIConfigSectionProps) => {
           </FieldHeader>
           <div className="col-span-2">
             <TextInput
+              disabled={isNew}
               value={uiConfig?.objectTypeDisplayName || ""}
               onChange={(str) =>
                 form.setValue(
@@ -69,6 +70,7 @@ export const UIConfigSection = ({ form, objectType }: UIConfigSectionProps) => {
                 value: name,
               }))}
               placeholder=""
+              disabled={isNew}
               selected={uiConfig?.primaryField || SkylarkSystemField.UID}
               onChange={(value) =>
                 form.setValue(
@@ -89,6 +91,7 @@ export const UIConfigSection = ({ form, objectType }: UIConfigSectionProps) => {
           </FieldHeader>
           <div className="col-span-2">
             <ColourPicker
+              disabled={isNew}
               colour={uiConfig?.colour || ""}
               onChange={(colour) =>
                 form.setValue(
