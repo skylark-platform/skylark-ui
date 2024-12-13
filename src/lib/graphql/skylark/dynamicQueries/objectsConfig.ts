@@ -9,7 +9,7 @@ import { getObjectConfigFields, wrappedJsonQuery } from "./utils";
 export const createGetAllObjectsConfigQuery = (
   objectTypes?: SkylarkObjectType[],
 ) => {
-  if (!objectTypes) {
+  if (!objectTypes || objectTypes.length === 0) {
     return null;
   }
 
