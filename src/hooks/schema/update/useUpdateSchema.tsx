@@ -13,17 +13,12 @@ import { createSchemaVersionRequest } from "src/hooks/schema/create/useCreateSch
 import { GQLScalars } from "src/interfaces/graphql/introspection";
 import {
   GQLSkylarkErrorResponse,
-  NormalizedObjectField,
   NormalizedObjectFieldType,
-  ParsedSkylarkObjectConfig,
   SkylarkObjectFieldType,
-  SkylarkGraphQLObjectConfig,
-  SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import { wrappedJsonMutation } from "src/lib/graphql/skylark/dynamicQueries";
-import { UPDATE_OBJECT_TYPE_CONFIG } from "src/lib/graphql/skylark/mutations";
 
 interface MutationArgs {
   createNewSchemaVersion: boolean;

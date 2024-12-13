@@ -1,7 +1,7 @@
-import { pascalCase, snakeCase } from "change-case";
 import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 
+import { ObjectTypeSelectAndOverview } from "src/components/contentModel/navigation/contentModelNavigation.component";
 import { Spinner } from "src/components/icons";
 import {
   CreateObjectTypeModal,
@@ -10,17 +10,12 @@ import {
 import { useSetContentModelSchemaVersion } from "src/hooks/contentModel/useSetSchemaVersion";
 import {
   NormalizedObjectField,
-  ParsedSkylarkObjectConfig,
-  ParsedSkylarkObjectConfigFieldConfig,
-  SkylarkObjectMeta,
   SkylarkSystemField,
 } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
 
-import { ObjectTypeSelectAndOverview } from "../navigation/contentModelNavigation.component";
 import {
   ContentModelEditorForm,
-  ContentModelEditorFormObjectTypeField,
   ContentModelEditorFormObjectTypeUiConfig,
 } from "./sections/common.component";
 import { FieldsSection } from "./sections/fields.component";

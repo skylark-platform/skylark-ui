@@ -1,6 +1,4 @@
 import clsx from "clsx";
-import { useRouter } from "next/router";
-import { UseFormReturn } from "react-hook-form";
 import { FiChevronDown } from "react-icons/fi";
 
 import {
@@ -10,24 +8,14 @@ import {
 } from "src/components/dropdown/dropdown.component";
 import { ObjectTypePill } from "src/components/pill";
 import { useSetContentModelSchemaVersion } from "src/hooks/contentModel/useSetSchemaVersion";
-import {
-  useSkylarkSetObjectTypes,
-  useSkylarkObjectOperations,
-  useSkylarkObjectTypesWithConfig,
-  ObjectTypeWithConfig,
-} from "src/hooks/useSkylarkObjectTypes";
-import {
-  createIntrospectionQueryOptions,
-  IntrospectionQueryOptions,
-} from "src/hooks/useSkylarkSchemaIntrospection";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
+import { IntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospection";
 import { ParsedSkylarkObjectConfig } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
 import {
   isAvailabilityOrAudienceSegment,
   isSkylarkObjectType,
 } from "src/lib/utils";
-
-import { ContentModelEditorForm } from "../editor/sections/common.component";
 
 interface ObjectTypeNavigationProps {
   objectTypes: string[];

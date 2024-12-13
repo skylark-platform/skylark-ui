@@ -1,22 +1,14 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { ContentModel } from "src/components/contentModel";
 import { Spinner } from "src/components/icons";
-import { useSchemaVersions } from "src/hooks/schema/get/useSchemaVersions";
 import { useActivationStatus } from "src/hooks/useAccountStatus";
-import { useAllObjectTypesRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import {
-  useAllObjectsMeta,
   useSkylarkObjectTypes,
-  useSkylarkObjectTypesWithConfig,
   useSkylarkSetObjectTypes,
 } from "src/hooks/useSkylarkObjectTypes";
-import {
-  createIntrospectionQueryOptions,
-  IntrospectionQueryOptions,
-} from "src/hooks/useSkylarkSchemaIntrospection";
-import { SchemaVersion } from "src/interfaces/skylark/environment";
+import { createIntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospection";
 
 const parseSchemaVersionNumber = (
   queryValue: string | undefined,
@@ -45,22 +37,27 @@ export default function ContentModelPage() {
   const schemaVersionNumber =
     schemaVersionNumberFromQuery || activationStatus?.activeVersion || null;
 
-  const { setObjectTypes } = useSkylarkSetObjectTypes(
-    true,
-    createIntrospectionQueryOptions(
-      schemaVersionNumberFromQuery
-        ? { version: schemaVersionNumberFromQuery }
-        : null,
-      activationStatus?.activeVersion,
-    ),
+  const introspectionOpts = createIntrospectionQueryOptions(
+    schemaVersionNumberFromQuery
+      ? { version: schemaVersionNumberFromQuery }
+      : null,
+    activationStatus?.activeVersion,
   );
+
+  const { setObjectTypes } = useSkylarkSetObjectTypes(true, introspectionOpts);
+
+  const { objectTypes } = useSkylarkObjectTypes({
+    searchable: true,
+    introspectionOpts,
+  });
 
   useEffect(() => {
     if (
       (!schemaVersionNumberFromQuery && activationStatus && setObjectTypes) ||
       (schemaVersionNumberFromQuery && !objectType && setObjectTypes)
     ) {
-      const url = `/content-model/${schemaVersionNumber || activationStatus?.activeVersion}/${encodeURIComponent(setObjectTypes[0].toLowerCase())}`;
+      const objectType = [...setObjectTypes, ...(objectTypes || [])][0];
+      const url = `/content-model/${schemaVersionNumber || activationStatus?.activeVersion}/${encodeURIComponent(objectType.toLowerCase())}`;
       push(url);
     }
   }, [
