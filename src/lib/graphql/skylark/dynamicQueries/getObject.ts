@@ -360,7 +360,12 @@ export const createGetObjectContentOfQuery = (
   object: SkylarkObjectMeta | null,
   setObjects: SkylarkObjectMeta[],
 ) => {
-  if (!object || !object.operations.get) {
+  if (
+    !object ||
+    !object.operations.get ||
+    !setObjects ||
+    setObjects.length === 0
+  ) {
     return null;
   }
 
