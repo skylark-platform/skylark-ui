@@ -353,9 +353,20 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
     `objectTypes.${objectType}.uiConfig.fieldConfigs`,
   );
 
-  console.log({ fields });
-
   const isBuiltInObjectType = isSkylarkObjectType(objectType);
+
+  const orderedFields = fields.sort((fieldA, fieldB) => {
+    const systemFieldSorted = sortSystemFieldsFirst(fieldA.name, fieldB.name);
+
+    if (systemFieldSorted !== 0) {
+      return systemFieldSorted;
+    }
+
+    return (fieldOrder.indexOf(fieldA.name) ?? Infinity) >
+      (fieldOrder.indexOf(fieldB.name) ?? Infinity)
+      ? 1
+      : -1;
+  });
 
   return (
     <SectionWrapper data-testid="fields-editor">
@@ -374,43 +385,27 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
           Required
         </FieldHeader>
       </div>
-      <Reorder.Group onReorder={onReorder} values={fields}>
-        {fields
-          .sort((fieldA, fieldB) => {
-            const systemFieldSorted = sortSystemFieldsFirst(
-              fieldA.name,
-              fieldB.name,
-            );
-
-            if (systemFieldSorted !== 0) {
-              return systemFieldSorted;
-            }
-
-            return (fieldOrder.indexOf(fieldA.name) ?? Infinity) >
-              (fieldOrder.indexOf(fieldB.name) ?? Infinity)
-              ? 1
-              : -1;
-          })
-          .map((field, index) => {
-            const fieldConfig = fieldConfigs?.[field.name];
-            return (
-              <Field
-                key={field.name}
-                field={field}
-                fieldConfig={fieldConfig || null}
-                objectType={objectType}
-                onDelete={() => deleteField(field, index)}
-                isDeleted={field?.isDeleted}
-                isNew={field?.isNew}
-                onEdit={() =>
-                  setEditModalState({
-                    isOpen: true,
-                    initialData: { field, fieldConfig },
-                  })
-                }
-              />
-            );
-          })}
+      <Reorder.Group onReorder={onReorder} values={orderedFields}>
+        {orderedFields.map((field, index) => {
+          const fieldConfig = fieldConfigs?.[field.name];
+          return (
+            <Field
+              key={field.name}
+              field={field}
+              fieldConfig={fieldConfig || null}
+              objectType={objectType}
+              onDelete={() => deleteField(field, index)}
+              isDeleted={field?.isDeleted}
+              isNew={field?.isNew}
+              onEdit={() =>
+                setEditModalState({
+                  isOpen: true,
+                  initialData: { field, fieldConfig },
+                })
+              }
+            />
+          );
+        })}
       </Reorder.Group>
       <AddNewButton
         text={
@@ -422,6 +417,7 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
         disabled={isBuiltInObjectType}
       />
       <EditObjectFieldModal
+        objectType={objectType}
         isOpen={editModalState.isOpen}
         initialValues={editModalState.initialData || undefined}
         setIsOpen={(isOpen) =>

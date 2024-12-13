@@ -11,9 +11,13 @@ import { ObjectTypePill } from "src/components/pill";
 import {
   useSkylarkSetObjectTypes,
   useSkylarkObjectOperations,
-  ObjectTypesConfigObject,
+  useSkylarkObjectTypesWithConfig,
+  ObjectTypeWithConfig,
 } from "src/hooks/useSkylarkObjectTypes";
-import { IntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospection";
+import {
+  createIntrospectionQueryOptions,
+  IntrospectionQueryOptions,
+} from "src/hooks/useSkylarkSchemaIntrospection";
 import { ParsedSkylarkObjectConfig } from "src/interfaces/skylark";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
 import {
@@ -23,13 +27,12 @@ import {
 
 interface ObjectTypeNavigationProps {
   activeObjectType: string | null;
+  activeSchemaVersionNumber: number;
   schemaVersion: SchemaVersion;
-  objectTypesConfig: ObjectTypesConfigObject;
-  schemaOpts?: IntrospectionQueryOptions;
 }
 
 const createObjectTypeOption = (
-  [objectType]: [string, ParsedSkylarkObjectConfig],
+  { objectType }: ObjectTypeWithConfig,
   onChange: (objectType: string) => void,
 ) => ({
   id: objectType,
@@ -39,24 +42,28 @@ const createObjectTypeOption = (
 });
 
 const createObjectTypeDropdownOptions = (
-  objectTypesWithConfig: [string, ParsedSkylarkObjectConfig][],
+  objectTypesWithConfig: ObjectTypeWithConfig[],
   validSetObjectTypes: string[],
   onChange: (objectType: string) => void,
 ) => {
-  const setObjectTypes = objectTypesWithConfig.filter(([ot]) =>
-    validSetObjectTypes.includes(ot),
+  const setObjectTypes = objectTypesWithConfig.filter(({ objectType }) =>
+    validSetObjectTypes.includes(objectType),
   );
   const customObjectTypes = objectTypesWithConfig.filter(
-    ([ot]) => !isSkylarkObjectType(ot) && !validSetObjectTypes.includes(ot),
+    ({ objectType }) =>
+      !isSkylarkObjectType(objectType) &&
+      !validSetObjectTypes.includes(objectType),
   );
   const skylarkObjectTypes = objectTypesWithConfig.filter(
-    ([ot]) =>
-      isSkylarkObjectType(ot) &&
-      !validSetObjectTypes.includes(ot) &&
-      !isAvailabilityOrAudienceSegment(ot),
+    ({ objectType }) =>
+      isSkylarkObjectType(objectType) &&
+      !validSetObjectTypes.includes(objectType) &&
+      !isAvailabilityOrAudienceSegment(objectType),
   );
   const availabilityObjectTypes = objectTypesWithConfig.filter(
-    ([ot]) => isSkylarkObjectType(ot) && isAvailabilityOrAudienceSegment(ot),
+    ({ objectType }) =>
+      isSkylarkObjectType(objectType) &&
+      isAvailabilityOrAudienceSegment(objectType),
   );
 
   const objectTypesDropdownOptions: DropdownMenuSection[] = [
@@ -159,14 +166,14 @@ const ObjectTypeOverview = ({
       <p className="mt-6 mb-2 text-base text-manatee-800 font-semibold">
         Overview
       </p>
-      <p className="my-1">
-        {`Shown in UI as:`}
+      <div className="my-1">
+        <span>{`Shown in UI as:`}</span>
         <ObjectTypePill
           type={objectType}
           defaultConfig={config}
           className="ml-1"
         />
-      </p>
+      </div>
       {sections.map(({ title, stats }) => (
         <div key={title} className="hidden md:block">
           <p className="mt-4 font-semibold text-manatee-800">{title}</p>
@@ -183,19 +190,26 @@ const ObjectTypeOverview = ({
 
 export const ObjectTypeSelectAndOverview = ({
   activeObjectType: urlObjectType,
-  objectTypesConfig,
+  activeSchemaVersionNumber,
   schemaVersion,
-  schemaOpts,
 }: ObjectTypeNavigationProps) => {
   const { push } = useRouter();
 
+  const schemaOpts = createIntrospectionQueryOptions(
+    schemaVersion,
+    activeSchemaVersionNumber,
+  );
+
   const { setObjectTypes } = useSkylarkSetObjectTypes(true, schemaOpts);
 
-  const objectTypesWithConfig = Object.entries(objectTypesConfig);
+  const { objectTypesWithConfig, isLoading: isLoadingObjectTypesWithConfig } =
+    useSkylarkObjectTypesWithConfig({ introspectionOpts: schemaOpts });
 
-  const [activeObjectType, objectTypeConfig] = objectTypesWithConfig.find(
-    ([ot]) => ot.toLocaleLowerCase() === urlObjectType?.toLocaleLowerCase(),
-  ) || [undefined, undefined];
+  const { objectType: activeObjectType, config: objectTypeConfig } =
+    objectTypesWithConfig?.find(
+      ({ objectType: ot }) =>
+        ot.toLocaleLowerCase() === urlObjectType?.toLocaleLowerCase(),
+    ) || { objectType: undefined, config: undefined };
 
   const onObjectTypeChange = (objectType: string) => {
     push(
@@ -204,7 +218,7 @@ export const ObjectTypeSelectAndOverview = ({
   };
 
   const objectTypesDropdownOptions = createObjectTypeDropdownOptions(
-    objectTypesWithConfig,
+    objectTypesWithConfig || [],
     setObjectTypes || [],
     onObjectTypeChange,
   );
@@ -225,6 +239,7 @@ export const ObjectTypeSelectAndOverview = ({
             "relative w-full flex h-full items-center justify-start whitespace-nowrap rounded rounded-b-none border-b border-b-transparent px-4 py-2 font-medium hover:bg-manatee-100 bg-manatee-50 text-black md:py-3",
           )}
           aria-label="Change object type"
+          disabled={!objectTypeConfig}
         >
           {/* <Button variant="neutral">
             {activeObjectType} <FiChevronDown className="text-xl" />

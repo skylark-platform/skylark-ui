@@ -8,17 +8,33 @@ import {
   fireEvent,
   waitFor,
 } from "src/__tests__/utils/test-utils";
+import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
+import { SchemaVersion } from "src/interfaces/skylark/environment";
 
 import { ObjectTypeSelectAndOverview } from "./contentModelNavigation.component";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const useRouter = jest.spyOn(require("next/router"), "useRouter");
 
+const schemaVersion: SchemaVersion = {
+  version: 1,
+  baseVersion: 0,
+  isActive: true,
+  isDraft: false,
+  isPublished: true,
+};
+
 test.skip("renders the navigation and finds all Object Types", async () => {
   const router = { push: jest.fn() };
   useRouter.mockReturnValue(router);
 
-  render(<ObjectTypeSelectAndOverview activeObjectType={null} />);
+  render(
+    <ObjectTypeSelectAndOverview
+      activeObjectType={null}
+      schemaVersion={schemaVersion}
+      activeSchemaVersionNumber={schemaVersion.version}
+    />,
+  );
 
   await Promise.all(
     allObjectTypes.map(async (objectType) => {
@@ -32,7 +48,13 @@ test.skip("calls router.push on initial load when activeObjectType is null", asy
   const router = { push: jest.fn() };
   useRouter.mockReturnValue(router);
 
-  render(<ObjectTypeSelectAndOverview activeObjectType={null} />);
+  render(
+    <ObjectTypeSelectAndOverview
+      activeObjectType={null}
+      schemaVersion={schemaVersion}
+      activeSchemaVersionNumber={schemaVersion.version}
+    />,
+  );
 
   await waitFor(() => {
     expect(router.push).toHaveBeenCalledTimes(1);
@@ -46,7 +68,11 @@ test.skip("calls router.push when an object type is clicked", async () => {
 
   render(
     <RouterContext.Provider value={router as unknown as NextRouter}>
-      <ObjectTypeSelectAndOverview activeObjectType={"SkylarkSet"} />
+      <ObjectTypeSelectAndOverview
+        activeObjectType={BuiltInSkylarkObjectType.SkylarkSet}
+        schemaVersion={schemaVersion}
+        activeSchemaVersionNumber={schemaVersion.version}
+      />
     </RouterContext.Provider>,
   );
 

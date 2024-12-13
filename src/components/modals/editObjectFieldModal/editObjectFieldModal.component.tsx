@@ -1,14 +1,19 @@
-import React, { forwardRef, useRef } from "react";
+import React, { ForwardedRef, forwardRef, useRef } from "react";
 import { Controller, useForm, UseFormReturn } from "react-hook-form";
 
 import { Button } from "src/components/button";
 import {
+  ContentModelEditorForm,
   ContentModelEditorFormObjectTypeField,
   ContentModelEditorFormObjectTypeUiConfig,
 } from "src/components/contentModel/editor/sections/common.component";
 import { Checkbox } from "src/components/inputs/checkbox";
 import { TextInput } from "src/components/inputs/input";
-import { ObjectTypeSelect, Select } from "src/components/inputs/select";
+import {
+  ObjectTypeSelect,
+  Select,
+  SelectOption,
+} from "src/components/inputs/select";
 import { EnumSelect } from "src/components/inputs/select/enumSelect/enumSelect.component";
 import {
   Modal,
@@ -19,11 +24,13 @@ import {
   PanelSectionTitle,
   PanelSeparator,
 } from "src/components/panel/panelTypography";
+import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import { useSkylarkSchemaEnums } from "src/hooks/useSkylarkSchemaEnums";
 import { GQLScalars } from "src/interfaces/graphql/introspection";
 import {
   NormalizedObjectFieldType,
   SkylarkObjectConfigFieldType,
+  SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { parseObjectInputType } from "src/lib/skylark/parsers";
 
@@ -34,6 +41,7 @@ export type EditObjectFieldModalForm = {
 
 interface EditObjectFieldModalProps {
   isOpen: boolean;
+  objectType: string;
   initialValues?: {
     field: ContentModelEditorFormObjectTypeField;
     fieldConfig: ContentModelEditorFormObjectTypeUiConfig["fieldConfigs"][""];
@@ -194,14 +202,107 @@ const RelationshipFormFields = ({
   ) : null;
 };
 
+const RelationshipConfigFormFields = ({
+  objectType,
+  form,
+  relationshipField,
+}: {
+  objectType: string;
+  form: UseFormReturn<EditObjectFieldModalForm>;
+  relationshipField: ContentModelEditorFormObjectTypeField & {
+    type: "relationship";
+  };
+}) => {
+  const { objectOperations: objectMeta } = useSkylarkObjectOperations(
+    relationshipField.objectType,
+  );
+
+  console.log(form.getValues());
+
+  return (
+    <div className="flex flex-col gap-2">
+      <PanelSeparator className="mb-4" />
+      <PanelSectionTitle text="Relationship config" />
+      <Controller
+        name="field.relationshipConfig.defaultSortField"
+        control={form.control}
+        render={({ field }) => {
+          return (
+            <Select
+              label={`Default sort field (global fields on active schema version only)`}
+              labelVariant="form"
+              className="w-full"
+              options={[
+                { label: "Unsorted", value: null },
+                ...((relationshipField.objectType &&
+                  objectMeta?.fields.global.map(
+                    ({ name, originalType }): SelectOption<string> => ({
+                      value: name,
+                      label: `${name} (${originalType})`,
+                      infoTooltip:
+                        (["AWSJSON"] as GQLScalars[]).includes(originalType) &&
+                        `${originalType} is not recommended for sorting`,
+                    }),
+                  )) ||
+                  []),
+              ]}
+              variant="primary"
+              selected={field.value || null}
+              placeholder="Unsorted"
+              onChange={field.onChange}
+              onValueClear={() => field.onChange(null)}
+              disabled={!objectMeta}
+            />
+          );
+        }}
+      />
+      <Controller
+        name="field.relationshipConfig.inheritAvailability"
+        control={form.control}
+        render={({ field }) => {
+          return (
+            <Select
+              label={`Inherit Availability`}
+              labelVariant="form"
+              className="w-full"
+              options={[
+                {
+                  label: "Off",
+                  value: "off",
+                },
+                {
+                  label: `${relationshipField.name} -> ${relationshipField.reverseRelationshipName}   |   (${relationshipField.objectType} -> ${objectType})`,
+                  value: "this->that",
+                },
+                {
+                  label: `${relationshipField.reverseRelationshipName} -> ${relationshipField.relationshipName}   |   (${objectType} -> ${relationshipField.objectType})`,
+                  value: "that->this",
+                },
+              ]}
+              variant="primary"
+              selected={field.value || "off"}
+              placeholder=""
+              onChange={field.onChange}
+            />
+          );
+        }}
+      />
+    </div>
+  );
+};
+
 const EditObjectFieldModalBody = forwardRef(
-  ({
-    initialValues,
-    onSubmit,
-    closeModal,
-  }: Omit<EditObjectFieldModalProps, "isOpen" | "setIsOpen"> & {
-    closeModal: () => void;
-  }) => {
+  (
+    {
+      objectType,
+      initialValues,
+      onSubmit,
+      closeModal,
+    }: Omit<EditObjectFieldModalProps, "isOpen" | "setIsOpen"> & {
+      closeModal: () => void;
+    },
+    ref: ForwardedRef<HTMLInputElement>,
+  ) => {
     const submitButtonRef = useRef<HTMLButtonElement | null>(null);
 
     const form = useForm<EditObjectFieldModalForm>({
@@ -230,10 +331,10 @@ const EditObjectFieldModalBody = forwardRef(
 
     return (
       <>
-        <ModalTitle>{`${isEditModal ? `Edit ${initialValues.field.name}` : "Add Field"}`}</ModalTitle>
+        <ModalTitle>{`${isEditModal ? `Edit "${initialValues.field.name}" field` : "Add Field"}`}</ModalTitle>
         <ModalDescription>
           Fields can only be created or deleted. Editing only supported for
-          field config. Fields can only be reordered on the active version.
+          field config.
         </ModalDescription>
         <form
           className="mt-8 flex w-full flex-col h-full justify-start"
@@ -249,6 +350,7 @@ const EditObjectFieldModalBody = forwardRef(
                   <TextInput
                     label="Field name"
                     {...field}
+                    ref={ref}
                     disabled={isEditModal}
                     required
                     onChange={(str) =>
@@ -356,29 +458,11 @@ const EditObjectFieldModalBody = forwardRef(
             )}
 
             {isRelationship && (
-              <div className="flex flex-col gap-2">
-                <PanelSeparator className="mb-4" />
-                <PanelSectionTitle text="Relationship config" />
-                <Controller
-                  name="field.relationshipConfig.defaultSortField"
-                  control={control}
-                  render={({ field }) => {
-                    return (
-                      <Select
-                        label={`Default sort field (fields on active schema version only)`}
-                        labelVariant="form"
-                        className="w-full"
-                        options={[]}
-                        variant="primary"
-                        selected={field.value}
-                        placeholder=""
-                        onChange={field.onChange}
-                        onValueClear={() => field.onChange(null)}
-                      />
-                    );
-                  }}
-                />
-              </div>
+              <RelationshipConfigFormFields
+                objectType={objectType}
+                form={form}
+                relationshipField={fieldValues}
+              />
             )}
           </div>
 

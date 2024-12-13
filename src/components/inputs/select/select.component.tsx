@@ -29,7 +29,7 @@ import { useVirtual } from "react-virtual";
 
 import { FiX } from "src/components/icons";
 import { Tooltip, TooltipSide } from "src/components/tooltip/tooltip.component";
-import { formatObjectField, hasProperty, mergeRefs } from "src/lib/utils";
+import { hasProperty, mergeRefs } from "src/lib/utils";
 
 export interface SelectOption<T> {
   label: string;
@@ -62,10 +62,10 @@ export interface SelectProps<T> {
   onValueClear?: () => void;
 }
 
-export const sortSelectOptions = <T extends string | number>(
+export const sortSelectOptions = <T extends string | number | null>(
   { label: labelA, value: valueA }: SelectOption<T>,
   { label: labelB, value: valueB }: SelectOption<T>,
-): number => ((labelA || valueA) > (labelB || valueB) ? 1 : -1);
+): number => ((labelA || valueA || 0) > (labelB || valueB || 0) ? 1 : -1);
 
 export const getSelectOptionHeight = <T extends string | number>(
   variant: SelectProps<T>["variant"],
@@ -378,9 +378,7 @@ const SelectComponent = <T extends string | number>(
     roundedClassName,
   );
 
-  const selectedOption = selected
-    ? options.find(({ value }) => value === selected)
-    : undefined;
+  const selectedOption = options.find(({ value }) => value === selected);
 
   const showClearValueButton = onValueClear && selected;
 

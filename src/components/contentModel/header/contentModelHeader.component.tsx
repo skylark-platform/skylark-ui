@@ -7,6 +7,7 @@ import { ButtonWithDropdown } from "src/components/buttonWithDropdown";
 import {
   calculateContentModelUpdateTypes,
   ContentModelEditorForm,
+  ContentModelSectionStatuses,
 } from "src/components/contentModel/editor/sections/common.component";
 import { Select, SelectOption } from "src/components/inputs/select";
 import { CompareSchemaVersionsModal } from "src/components/modals";
@@ -25,6 +26,47 @@ interface ContentModelHeaderProps {
   onCancel: () => void;
 }
 
+const getTagConfigurationText = (
+  uiConfigurationChanged: boolean,
+  relationshipConfigurationChanged: boolean,
+) => {
+  if (uiConfigurationChanged && relationshipConfigurationChanged) {
+    return "Object UI & Relationship configuration";
+  }
+
+  if (relationshipConfigurationChanged) {
+    return "Object Relationship configuration";
+  }
+
+  if (uiConfigurationChanged) {
+    return "Object UI configuration";
+  }
+
+  return "";
+};
+
+const getTagText = (
+  schemaVersion: SchemaVersion | null,
+  typesOfUpdates: ContentModelSectionStatuses,
+  isSaving: boolean,
+) => {
+  const nonSchemaText = getTagConfigurationText(
+    typesOfUpdates.uiConfig,
+    typesOfUpdates.relationshipConfig,
+  );
+
+  if (typesOfUpdates.schema) {
+    const savingText = schemaVersion?.isActive
+      ? `Creating new draft schema and updating ${nonSchemaText}`
+      : `Updating draft schema and updating ${nonSchemaText}`;
+    return isSaving
+      ? savingText
+      : `Editing schema ${schemaVersion?.version} and ${nonSchemaText}`;
+  }
+
+  return isSaving ? `Updating ${nonSchemaText}` : `Editing ${nonSchemaText}`;
+};
+
 export const ContentModelHeader = ({
   activeSchemaVersion,
   schemaVersion,
@@ -33,7 +75,7 @@ export const ContentModelHeader = ({
   onSave,
   onCancel,
 }: ContentModelHeaderProps) => {
-  const isEditing = form.formState.isDirty;
+  const isEditing = Boolean(form.formState.dirtyFields?.objectTypes);
 
   const typesOfUpdates = calculateContentModelUpdateTypes(form);
 
@@ -101,8 +143,8 @@ export const ContentModelHeader = ({
                 >{`Update draft version ${schemaVersion.version}`}</ButtonWithDropdown>
               ) : (
                 <Button variant="primary" onClick={onSave} disabled={isSaving}>
-                  {!typesOfUpdates?.schema && typesOfUpdates?.uiConfig
-                    ? "Update Object Type Configuration"
+                  {!typesOfUpdates?.schema
+                    ? `Update ${getTagConfigurationText(typesOfUpdates.uiConfig, typesOfUpdates.relationshipConfig)}`
                     : "Save changes to new draft version"}
                 </Button>
               )}
@@ -134,16 +176,7 @@ export const ContentModelHeader = ({
               className="absolute -bottom-10 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap"
               loading={isSaving}
             >
-              {/* {schemaVersion?.isDraft
-                ? ``
-                : `Editing Version: ${schemaVersion?.version}`} */}
-              {isEditing &&
-                !isSaving &&
-                `Editing version: ${schemaVersion?.version}`}
-              {isSaving &&
-                (schemaVersion?.isActive
-                  ? `Saving changes to new draft version based on ${schemaVersion.version}`
-                  : `Updating draft version ${schemaVersion?.version}`)}
+              {getTagText(schemaVersion, typesOfUpdates, isSaving)}
             </Tag>
           )}
         </div>

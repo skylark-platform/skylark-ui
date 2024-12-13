@@ -5,6 +5,7 @@ import {
   CLOUDINARY_ENVIRONMENT,
   DISPLAY_NAME_PRIORITY,
 } from "src/constants/skylark";
+import { IntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospection";
 import {
   BuiltInSkylarkObjectType,
   NormalizedObjectFieldType,
@@ -14,6 +15,7 @@ import {
   SkylarkObjectMetadataField,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
+import { SchemaVersion } from "src/interfaces/skylark/environment";
 
 export const hasProperty = <T, K extends PropertyKey, V = unknown>(
   object: T,

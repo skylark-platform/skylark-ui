@@ -241,7 +241,7 @@ const getObjectRelationshipsFromInputFields = (
   ) as IntrospectionInputObjectType | undefined;
 
   const relationships = parseObjectRelationships(
-    objectTypeInterface,
+    objectTypeInterface.fields,
     relationshipsInterface?.inputFields,
   );
 
@@ -363,6 +363,8 @@ export const getObjectOperations = (
       `Schema: Object "${objectType}" not found`,
     );
   }
+
+  console.log(objectType, { objectTypeInterface });
 
   const queries = (
     schema.types.find(

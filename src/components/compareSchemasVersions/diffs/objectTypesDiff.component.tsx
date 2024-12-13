@@ -118,6 +118,7 @@ const ModifiedObjectTypeSection = ({
                 id: rel.name,
                 from: rel.baseValue,
                 to: rel.updatedValue,
+                modifiedProperties: [],
               }))}
             />
           </Accordion>

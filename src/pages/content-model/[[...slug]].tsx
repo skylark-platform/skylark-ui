@@ -10,8 +10,12 @@ import {
   useAllObjectsMeta,
   useSkylarkObjectTypes,
   useSkylarkObjectTypesWithConfig,
+  useSkylarkSetObjectTypes,
 } from "src/hooks/useSkylarkObjectTypes";
-import { IntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospection";
+import {
+  createIntrospectionQueryOptions,
+  IntrospectionQueryOptions,
+} from "src/hooks/useSkylarkSchemaIntrospection";
 import { SchemaVersion } from "src/interfaces/skylark/environment";
 
 const parseSchemaVersionNumber = (
@@ -31,89 +35,52 @@ const parseSchemaVersionNumber = (
 export default function ContentModelPage() {
   const { query, push } = useRouter();
 
-  const schemaVersionNumber = parseSchemaVersionNumber(query?.slug?.[0]);
+  const schemaVersionNumberFromQuery = parseSchemaVersionNumber(
+    query?.slug?.[0],
+  );
   const objectType = (query?.slug?.[1] as string) || null;
 
   const { activationStatus } = useActivationStatus();
-  const { schemaVersions } = useSchemaVersions();
 
-  const schemaVersion: SchemaVersion | null =
-    schemaVersionNumber === null
-      ? activationStatus?.activeVersion
-        ? {
-            version: activationStatus.activeVersion,
-            baseVersion: -1,
-            isDraft: false,
-            isPublished: true,
-            isActive: true,
-          }
-        : null
-      : schemaVersions?.find(
-          ({ version }) => version === schemaVersionNumber,
-        ) || null;
+  const schemaVersionNumber =
+    schemaVersionNumberFromQuery || activationStatus?.activeVersion || null;
 
-  const { objectTypes } = useSkylarkObjectTypes({
-    searchable: true,
-    introspectionOpts: schemaVersion
-      ? { schemaVersion: schemaVersion.version }
-      : undefined,
-  });
+  const { setObjectTypes } = useSkylarkSetObjectTypes(
+    true,
+    createIntrospectionQueryOptions(
+      schemaVersionNumberFromQuery
+        ? { version: schemaVersionNumberFromQuery }
+        : null,
+      activationStatus?.activeVersion,
+    ),
+  );
 
   useEffect(() => {
     if (
-      (!schemaVersionNumber &&
-        activationStatus?.activeVersion &&
-        objectTypes) ||
-      (schemaVersionNumber && !objectType && objectTypes)
+      (!schemaVersionNumberFromQuery && activationStatus && setObjectTypes) ||
+      (schemaVersionNumberFromQuery && !objectType && setObjectTypes)
     ) {
-      const url = `/content-model/${schemaVersionNumber || activationStatus?.activeVersion}/${encodeURIComponent(objectTypes[0].toLowerCase())}`;
+      const url = `/content-model/${schemaVersionNumber || activationStatus?.activeVersion}/${encodeURIComponent(setObjectTypes[0].toLowerCase())}`;
       push(url);
     }
   }, [
     activationStatus?.activeVersion,
     objectType,
-    objectTypes,
+    setObjectTypes,
     push,
     schemaVersionNumber,
+    schemaVersionNumberFromQuery,
   ]);
-
-  const schemaOpts: IntrospectionQueryOptions | undefined =
-    schemaVersion !== null &&
-    schemaVersion !== undefined &&
-    schemaVersion?.version !== activationStatus?.activeVersion
-      ? {
-          schemaVersion: schemaVersion.version,
-        }
-      : undefined;
-
-  const { objects: allObjectsMeta } = useAllObjectsMeta(true, schemaOpts);
-  const { objectTypesConfig, isLoading: isLoadingObjectTypesWithConfig } =
-    useSkylarkObjectTypesWithConfig({ introspectionOpts: schemaOpts });
-
-  const {
-    allObjectTypesRelationshipConfig,
-    isLoading: isLoadingRelationshipConfig,
-  } = useAllObjectTypesRelationshipConfiguration();
 
   return (
     <div className="pt-nav">
-      {schemaVersion &&
-      activationStatus?.activeVersion &&
-      objectType &&
-      allObjectsMeta &&
-      objectTypesConfig &&
-      allObjectTypesRelationshipConfig &&
-      !isLoadingObjectTypesWithConfig &&
-      !isLoadingRelationshipConfig ? (
+      {objectType &&
+      activationStatus &&
+      activationStatus.activeVersion !== null ? (
         <ContentModel
-          key={schemaVersion.version}
-          schemaVersion={schemaVersion}
           objectType={objectType}
-          activeVersionNumber={activationStatus.activeVersion}
-          allObjectsMeta={allObjectsMeta}
-          objectTypesConfig={objectTypesConfig}
-          allObjectTypesRelationshipConfig={allObjectTypesRelationshipConfig}
-          schemaOpts={schemaOpts}
+          schemaVersionNumber={schemaVersionNumber}
+          activeSchemaVersionNumber={activationStatus?.activeVersion}
         />
       ) : (
         <div className="flex justify-center w-full mt-20 items-center">

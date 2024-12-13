@@ -173,7 +173,7 @@ export const parseObjectInputFields = (
 };
 
 export const parseObjectRelationships = (
-  objectTypeInterface: IntrospectionObjectType,
+  objectTypeInterfaceFields: readonly IntrospectionField[],
   relationshipInputFields?: readonly IntrospectionInputValue[],
 ): SkylarkObjectMetaRelationship[] => {
   if (!relationshipInputFields) {
@@ -199,7 +199,7 @@ export const parseObjectRelationships = (
         objectTypeWithRelationshipInput.endsWith(relationshipInputPostfix),
     )
     .map(({ name, objectTypeWithRelationshipInput }) => {
-      const description = objectTypeInterface.fields.find(
+      const description = objectTypeInterfaceFields.find(
         (field) => field.name === name,
       )?.description;
 

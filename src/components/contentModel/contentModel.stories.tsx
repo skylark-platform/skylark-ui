@@ -1,5 +1,7 @@
 import { StoryFn, Meta } from "@storybook/react";
 
+import { BuiltInSkylarkObjectType } from "src/interfaces/skylark";
+
 import { ContentModel } from "./contentModel.component";
 
 const meta: Meta = {
@@ -18,7 +20,13 @@ const meta: Meta = {
 export default meta;
 
 const Template: StoryFn = () => {
-  return <ContentModel />;
+  return (
+    <ContentModel
+      objectType={BuiltInSkylarkObjectType.SkylarkSet}
+      activeSchemaVersionNumber={0}
+      schemaVersionNumber={0}
+    />
+  );
 };
 
 export const Default = {

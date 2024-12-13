@@ -12,7 +12,7 @@ interface TagProps {
 export const Tag = ({ loading, children, warning, className }: TagProps) => (
   <span
     className={clsx(
-      "flex items-center justify-center rounded  py-1 text-xs  md:text-sm",
+      "flex items-center justify-center rounded py-1 text-xs  md:text-sm",
       className,
       warning
         ? "bg-warning font-medium text-warning-content"

@@ -6,10 +6,16 @@ import { toast } from "react-toastify";
 import { Spinner } from "src/components/icons";
 import { Toast } from "src/components/toast/toast.component";
 import { useSetContentModelSchemaVersion } from "src/hooks/contentModel/useSetSchemaVersion";
+import { useSchemaVersions } from "src/hooks/schema/get/useSchemaVersions";
 import { useUpdateObjectTypesConfiguration } from "src/hooks/schema/update/useUpdateObjectTypesFieldConfig";
 import { useUpdateRelationshipConfig } from "src/hooks/schema/update/useUpdateRelationshipConfig";
 import { useUpdateSchema } from "src/hooks/schema/update/useUpdateSchema";
-import { ObjectTypesConfigObject } from "src/hooks/useSkylarkObjectTypes";
+import { useAllObjectTypesRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
+import {
+  ObjectTypesConfigObject,
+  useAllObjectsMeta,
+  useSkylarkObjectTypesWithConfig,
+} from "src/hooks/useSkylarkObjectTypes";
 import { IntrospectionQueryOptions } from "src/hooks/useSkylarkSchemaIntrospection";
 import {
   ParsedSkylarkObjectTypesRelationshipConfigurations,
@@ -28,14 +34,21 @@ import { ContentModelHeader } from "./header/contentModelHeader.component";
 import { ObjectTypeSelectAndOverview } from "./navigation/contentModelNavigation.component";
 
 interface ContentModelProps {
+  activeSchemaVersionNumber: number;
+  schemaVersionNumber: number | null;
+  objectType: string;
+}
+
+type ContentModelComponentProps = Omit<
+  ContentModelProps,
+  "schemaVersionNumber"
+> & {
   schemaVersion: SchemaVersion;
-  activeVersionNumber: number;
   objectType: string;
   objectTypesConfig: ObjectTypesConfigObject;
   allObjectsMeta: SkylarkObjectMeta[];
   allObjectTypesRelationshipConfig: ParsedSkylarkObjectTypesRelationshipConfigurations;
-  schemaOpts?: IntrospectionQueryOptions;
-}
+};
 
 const createFormValues = (
   allObjectsMeta: SkylarkObjectMeta[],
@@ -94,8 +107,6 @@ const createFormValues = (
             .map(({ name }) => name) || [],
       };
 
-      // console.log(name, { fields });
-
       return [
         name,
         {
@@ -105,18 +116,16 @@ const createFormValues = (
       ];
     }),
   ),
-  // allObjectTypesRelationshipConfig,
 });
 
-export const ContentModel = ({
+const ContentModelComponent = ({
   schemaVersion,
-  activeVersionNumber,
+  activeSchemaVersionNumber,
   objectType,
   allObjectsMeta,
   objectTypesConfig,
   allObjectTypesRelationshipConfig,
-  schemaOpts,
-}: ContentModelProps) => {
+}: ContentModelComponentProps) => {
   const { setSchemaVersion } = useSetContentModelSchemaVersion();
 
   const objectMeta = allObjectsMeta.find(
@@ -193,7 +202,7 @@ export const ContentModel = ({
   const { updateSchema, isUpdatingSchema } = useUpdateSchema({
     onSuccess: (newSchemaVersion) => {
       setSchemaUpdateSuccessful(true);
-      if (newSchemaVersion.version !== activeVersionNumber) {
+      if (newSchemaVersion.version !== activeSchemaVersionNumber) {
         setSchemaVersion(newSchemaVersion.version);
       }
       // push(newSchemaVersion.version)
@@ -330,7 +339,7 @@ export const ContentModel = ({
   return (
     <div className="max-w-8xl mx-auto px-4 md:px-8">
       <ContentModelHeader
-        activeSchemaVersion={activeVersionNumber || 0}
+        activeSchemaVersion={activeSchemaVersionNumber || 0}
         schemaVersion={schemaVersion}
         form={form}
         isSaving={
@@ -342,19 +351,13 @@ export const ContentModel = ({
         onSave={onSave}
       />
 
-      {allObjectsMeta && objectTypesConfig ? (
-        <div className="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-5 gap-8">
-          <ObjectTypeSelectAndOverview
-            activeObjectType={objectType}
-            schemaVersion={schemaVersion}
-            objectTypesConfig={objectTypesConfig}
-            schemaOpts={schemaOpts}
-          />
-          {/* <div className="grid grid-cols-4 gap-4">
-          <ObjectTypeNavigation
-            activeObjectType={activeObjectType}
-            schemaOpts={schemaOpts} */}
-
+      <div className="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-5 gap-8">
+        <ObjectTypeSelectAndOverview
+          activeObjectType={objectType}
+          activeSchemaVersionNumber={activeSchemaVersionNumber}
+          schemaVersion={schemaVersion}
+        />
+        {allObjectsMeta && objectTypesConfig ? (
           <div className="md:col-span-3 xl:col-span-4 h-full">
             {objectMeta && (
               <ObjectTypeEditor
@@ -372,12 +375,80 @@ export const ContentModel = ({
               </p>
             )}
           </div>
-        </div>
+        ) : (
+          <div className="flex mt-32 justify-center w-full h-full items-center col-span-full">
+            <Spinner className="h-14 w-14 animate-spin" />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export const ContentModel = ({
+  objectType,
+  activeSchemaVersionNumber,
+  schemaVersionNumber,
+}: ContentModelProps) => {
+  const { schemaVersions } = useSchemaVersions();
+
+  const schemaVersion: SchemaVersion | null =
+    schemaVersionNumber === null
+      ? typeof activeSchemaVersionNumber === "number"
+        ? {
+            version: activeSchemaVersionNumber,
+            baseVersion: -1,
+            isDraft: false,
+            isPublished: true,
+            isActive: true,
+          }
+        : null
+      : schemaVersions?.find(
+          ({ version }) => version === schemaVersionNumber,
+        ) || null;
+
+  const schemaOpts: IntrospectionQueryOptions | undefined =
+    schemaVersion !== null &&
+    schemaVersion !== undefined &&
+    schemaVersion?.version !== activeSchemaVersionNumber
+      ? {
+          schemaVersion: schemaVersion.version,
+        }
+      : undefined;
+
+  const { objects: allObjectsMeta } = useAllObjectsMeta(true, schemaOpts);
+  const { objectTypesConfig, isLoading: isLoadingObjectTypesWithConfig } =
+    useSkylarkObjectTypesWithConfig({ introspectionOpts: schemaOpts });
+
+  const {
+    allObjectTypesRelationshipConfig,
+    isLoading: isLoadingRelationshipConfig,
+  } = useAllObjectTypesRelationshipConfiguration();
+
+  return (
+    <>
+      {schemaVersion &&
+      typeof activeSchemaVersionNumber === "number" &&
+      objectType &&
+      allObjectsMeta &&
+      objectTypesConfig &&
+      allObjectTypesRelationshipConfig &&
+      !isLoadingObjectTypesWithConfig &&
+      !isLoadingRelationshipConfig ? (
+        <ContentModelComponent
+          key={schemaVersion.version}
+          schemaVersion={schemaVersion}
+          objectType={objectType}
+          activeSchemaVersionNumber={activeSchemaVersionNumber}
+          allObjectsMeta={allObjectsMeta}
+          objectTypesConfig={objectTypesConfig}
+          allObjectTypesRelationshipConfig={allObjectTypesRelationshipConfig}
+        />
       ) : (
-        <div className="flex mt-32 justify-center w-full h-full items-center">
+        <div className="flex justify-center w-full mt-20 items-center">
           <Spinner className="h-14 w-14 animate-spin" />
         </div>
       )}
-    </div>
+    </>
   );
 };
