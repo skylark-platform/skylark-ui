@@ -292,11 +292,39 @@ const buildSchemaMutation = (
       const objectTypeAsSnakeCase = snakeCase(objectType);
       console.log({ objectType, objectTypeAsSnakeCase });
 
+      const formValue = formValues.objectTypes[objectType];
+
+      const fieldConfiguration = buildEditFieldsConfigurationMutation(
+        objectType,
+        formValue.fields,
+      );
+
+      const relationshipConfiguration =
+        buildEditRelationshipsConfigurationMutation(
+          objectType,
+          formValue.fields,
+        );
+
       mutations[`create_${objectType}`] = {
         __aliasFor: "createObjectType",
         __args: {
           version: new VariableType("version"),
-          object_types: { name: objectTypeAsSnakeCase },
+          object_types: {
+            name: objectTypeAsSnakeCase,
+            is_set: formValue.isSet,
+            ...(fieldConfiguration
+              ? { fields: fieldConfiguration.mutation.__args.fields }
+              : {}),
+            ...(relationshipConfiguration
+              ? {
+                  relationships:
+                    relationshipConfiguration.mutation.__args.relationships.map(
+                      // Filter the from_class out
+                      ({ from_class, ...rest }) => rest,
+                    ),
+                }
+              : {}),
+          },
         },
         version: true,
       };

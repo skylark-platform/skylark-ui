@@ -354,7 +354,12 @@ const EditObjectFieldModalBody = forwardRef(
                     disabled={isEditModal}
                     required
                     onChange={(str) =>
-                      field.onChange(str.replaceAll(" ", "_").toLowerCase())
+                      field.onChange(
+                        str
+                          .replaceAll(" ", "_")
+                          .replaceAll("-", "_")
+                          .toLowerCase(),
+                      )
                     }
                   />
                 );
