@@ -21,7 +21,13 @@ const renderAndWaitForEditorToLoad = async (
   const router = { query: { objectType: [activeObjectType] }, push: jest.fn() };
   useRouter.mockReturnValue(router);
 
-  render(<ContentModel />);
+  render(
+    <ContentModel
+      objectType={BuiltInSkylarkObjectType.SkylarkSet}
+      activeSchemaVersionNumber={0}
+      schemaVersionNumber={0}
+    />,
+  );
 
   await waitFor(() => {
     expect(screen.getByTestId("content-model-editor")).toBeInTheDocument();

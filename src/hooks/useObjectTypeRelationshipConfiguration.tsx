@@ -5,10 +5,13 @@ import { useMemo } from "react";
 import { QueryKeys } from "src/enums/graphql";
 import {
   BuiltInSkylarkObjectType,
+  GQLObjectTypeRelationshipConfig,
   GQLSkylarkErrorResponse,
   GQLSkylarkListAllObjectTypesRelationshipConfiguration,
   GQLSkylarkListObjectTypeRelationshipConfiguration,
   ParsedSkylarkObjectTypeRelationshipConfiguration,
+  ParsedSkylarkObjectTypeRelationshipConfigurations,
+  ParsedSkylarkObjectTypesRelationshipConfigurations,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
@@ -18,47 +21,42 @@ import { isAvailabilityOrAudienceSegment } from "src/lib/utils";
 
 import { useSkylarkObjectTypes } from "./useSkylarkObjectTypes";
 
-const mapGQLRelationshipConfigToParsed = ({
-  relationship_name,
-  config,
-}: GQLSkylarkListObjectTypeRelationshipConfiguration["listRelationshipConfiguration"]["objects"][0]) => ({
-  relationshipName: relationship_name,
-  config: {
-    defaultSortField: config.default_sort_field,
-    inheritAvailability: config.inherit_availability,
+const reducer = (
+  prev: ParsedSkylarkObjectTypeRelationshipConfigurations,
+  {
+    relationship_name,
+    config,
+  }: {
+    uid: string;
+    relationship_name: string;
+    config: GQLObjectTypeRelationshipConfig;
   },
-});
+): ParsedSkylarkObjectTypeRelationshipConfigurations => {
+  const parsedConfig: ParsedSkylarkObjectTypeRelationshipConfiguration = {
+    defaultSortField: config.default_sort_field || null,
+    inheritAvailability: config.inherit_availability || false,
+  };
+
+  return {
+    ...prev,
+    [relationship_name]: parsedConfig,
+  };
+};
 
 const select = (
   data: GQLSkylarkListObjectTypeRelationshipConfiguration,
-): ParsedSkylarkObjectTypeRelationshipConfiguration =>
-  data.listRelationshipConfiguration.objects.reduce(
-    (
-      prev,
-      { relationship_name, config },
-    ): ParsedSkylarkObjectTypeRelationshipConfiguration => {
-      return {
-        ...prev,
-        [relationship_name]: {
-          defaultSortField: config.default_sort_field || null,
-          inheritAvailability: config.inherit_availability || false,
-        },
-      };
-    },
-    {},
-  );
+): ParsedSkylarkObjectTypeRelationshipConfigurations =>
+  data.listRelationshipConfiguration.objects.reduce(reducer, {});
 
 const allObjectTypesSelect = (
   data: GQLSkylarkListAllObjectTypesRelationshipConfiguration,
-): Record<string, ParsedSkylarkObjectTypeRelationshipConfiguration> =>
+): ParsedSkylarkObjectTypesRelationshipConfigurations =>
   Object.entries(data).reduce(
     (prev, [objectType, relationshipConfiguration]) => {
       return {
         ...prev,
         [objectType]:
-          relationshipConfiguration?.objects.map(
-            mapGQLRelationshipConfigToParsed,
-          ) || [],
+          relationshipConfiguration?.objects.reduce(reducer, {}) || {},
       };
     },
     {},
@@ -70,7 +68,7 @@ export const useObjectTypeRelationshipConfiguration = (
   const { data, isLoading } = useQuery<
     GQLSkylarkListObjectTypeRelationshipConfiguration,
     GQLSkylarkErrorResponse<GQLSkylarkListObjectTypeRelationshipConfiguration>,
-    ParsedSkylarkObjectTypeRelationshipConfiguration
+    ParsedSkylarkObjectTypeRelationshipConfigurations
   >({
     enabled: Boolean(
       objectType && !isAvailabilityOrAudienceSegment(objectType),
@@ -105,7 +103,7 @@ export const useAllObjectTypesRelationshipConfiguration = () => {
   const { data, isLoading, error } = useQuery<
     GQLSkylarkListAllObjectTypesRelationshipConfiguration,
     GQLSkylarkErrorResponse<GQLSkylarkListAllObjectTypesRelationshipConfiguration>,
-    Record<string, ParsedSkylarkObjectTypeRelationshipConfiguration>
+    ParsedSkylarkObjectTypesRelationshipConfigurations
   >({
     enabled: query !== null,
     queryKey: [QueryKeys.ObjectTypeRelationshipConfig, query],
@@ -119,6 +117,8 @@ export const useAllObjectTypesRelationshipConfiguration = () => {
       error?.response.data ? allObjectTypesSelect(error.response.data) : data,
     [data, error?.response.data],
   );
+
+  console.log({ allObjectTypesRelationshipConfig });
 
   return {
     allObjectTypesRelationshipConfig,

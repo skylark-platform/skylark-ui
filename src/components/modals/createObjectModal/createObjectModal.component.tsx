@@ -230,7 +230,7 @@ const CreateObjectModalBody = forwardRef(
       ? splitMetadataIntoSystemTranslatableGlobal(
           objectOperations.operations.create.inputs.map(({ name }) => name),
           objectOperations.operations.create.inputs,
-          objectOperations.fieldConfig,
+          objectOperations.fields.translatableNames,
           objectTypeConfig?.fieldConfig,
         )
       : {

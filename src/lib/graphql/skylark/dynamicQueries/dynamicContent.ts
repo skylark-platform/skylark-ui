@@ -32,7 +32,7 @@ const createOnSkylarkObjectFields = (
       __typename: true, // To remove the alias later
       // ...common.fields,
       ...generateFieldsToReturn(
-        object.fields,
+        object.fields.all,
         object.name,
         true,
         `__${object.name}__`,

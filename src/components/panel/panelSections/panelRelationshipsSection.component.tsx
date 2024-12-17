@@ -14,6 +14,7 @@ import { Tooltip } from "src/components/tooltip/tooltip.component";
 import { SetPanelObject } from "src/hooks/state";
 import { useSkylarkObjectOperations } from "src/hooks/useSkylarkObjectTypes";
 import {
+  ParsedSkylarkObjectTypeRelationshipConfigurations,
   SkylarkObjectRelationship,
   ParsedSkylarkRelationshipConfig,
 } from "src/interfaces/skylark";
@@ -81,7 +82,7 @@ const PanelRelationshipSectionComponent = (
   });
 
   const { objectOperations } = useSkylarkObjectOperations(objectType);
-  const objectFields = objectOperations?.fields.map(({ name }) => name);
+  const objectFields = objectOperations?.fields.allNames;
 
   const hasShowMore = objects?.length > 4;
 

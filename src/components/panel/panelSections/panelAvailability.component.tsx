@@ -1070,7 +1070,7 @@ export const PanelAvailability = (props: PanelAvailabilityProps) => {
           objectTypes={[BuiltInSkylarkObjectType.Availability]}
           columns={[
             OBJECT_LIST_TABLE.columnIds.displayField,
-            ...availabilityObjectMeta.fields.map(({ name }) => name),
+            ...availabilityObjectMeta.fields.allNames,
           ]}
           closeModal={() => setObjectSearchModalOpen(false)}
           onSave={({ checkedObjectsState }) => {

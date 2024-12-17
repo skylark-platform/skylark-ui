@@ -186,6 +186,21 @@ export type SkylarkObjectRelationships<T = BuiltInSkylarkObjectType | string> =
   Record<string, SkylarkObjectRelationship<T>>;
 
 export interface ParsedSkylarkObjectTypeRelationshipConfiguration {
+  defaultSortField: string | null;
+  inheritAvailability: boolean;
+}
+
+export type ParsedSkylarkObjectTypeRelationshipConfigurations = Record<
+  string,
+  ParsedSkylarkObjectTypeRelationshipConfiguration
+>;
+
+export type ParsedSkylarkObjectTypesRelationshipConfigurations = Record<
+  string,
+  ParsedSkylarkObjectTypeRelationshipConfigurations
+>;
+
+export interface ParsedAvailabilityAssignedToObject {
   [relationshipName: string]: ParsedSkylarkRelationshipConfig;
 }
 

@@ -55,14 +55,14 @@ export const createGetObjectVersionMetadataQuery = (
           published: true,
           global_data: {
             version: true,
-            ...object.fieldConfig.global.reduce(
+            ...object.fields.globalNames.reduce(
               (prev, field) => ({ ...prev, [field]: true }),
               {},
             ),
           },
           language_data: {
             version: true,
-            ...object.fieldConfig.translatable.reduce(
+            ...object.fields.translatableNames.reduce(
               (prev, field) => ({ ...prev, [field]: true }),
               {},
             ),
@@ -109,28 +109,28 @@ export const createGetObjectVersionsQuery = (
         _meta: {
           global_data: {
             history: {
+              ...object.fields.globalNames.reduce(
+                (prev, field) => ({ ...prev, [field]: true }),
+                {},
+              ),
               version: true,
               created: {
                 date: true,
                 user: true,
               },
-              ...object.fieldConfig.global.reduce(
-                (prev, field) => ({ ...prev, [field]: true }),
-                {},
-              ),
             },
           },
           language_data: {
             history: {
+              ...object.fields.translatableNames.reduce(
+                (prev, field) => ({ ...prev, [field]: true }),
+                {},
+              ),
               version: true,
               created: {
                 date: true,
                 user: true,
               },
-              ...object.fieldConfig.translatable.reduce(
-                (prev, field) => ({ ...prev, [field]: true }),
-                {},
-              ),
             },
           },
         },

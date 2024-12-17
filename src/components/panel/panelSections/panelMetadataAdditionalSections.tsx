@@ -33,6 +33,7 @@ export const PanelMetadataProperty = ({
       text={sanitiseText ? formatObjectField(property) : property}
       withCopyValue
       copyValue={value || undefined}
+      id={`panel-metadata-${property}`}
     />
     {isLoading ? (
       <Skeleton className="mb-4 h-5 w-full" />

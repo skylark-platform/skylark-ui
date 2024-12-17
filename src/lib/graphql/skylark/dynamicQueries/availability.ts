@@ -128,7 +128,7 @@ export const createGetAvailabilityAssignedTo = (
                   __typeName: object.name,
                   __typename: true, // To remove the alias later
                   ...generateFieldsToReturn(
-                    object.fields,
+                    object.fields.all,
                     object.name,
                     true,
                     `__${object.name}__`,
@@ -182,7 +182,7 @@ export const createGetAudienceSegmentAssignedTo = (
             uid: true,
             __typename: true,
             ...generateFieldsToReturn(
-              availabilityObjectMeta.fields,
+              availabilityObjectMeta.fields.all,
               availabilityObjectMeta.name,
               true,
             ),

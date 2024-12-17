@@ -271,7 +271,7 @@ const PanelAudienceSegments = ({
           objectTypes={[BuiltInSkylarkObjectType.AudienceSegment]}
           columns={[
             OBJECT_LIST_TABLE.columnIds.displayField,
-            ...objectMeta.fields.map(({ name }) => name),
+            ...objectMeta.fields.allNames,
           ]}
           closeModal={() => setModalIsOpen(false)}
           onSave={({ checkedObjects }) => {

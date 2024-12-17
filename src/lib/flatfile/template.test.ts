@@ -10,6 +10,9 @@ const defaultInput: NormalizedObjectField = {
   originalType: "String",
   isList: false,
   isRequired: false,
+  isGlobal: true,
+  isTranslatable: false,
+  isUnversioned: false,
 };
 
 test("returns basic fields when no inputs are given", () => {
@@ -33,6 +36,9 @@ test("returns all required properties", () => {
       originalType: "String",
       isList: false,
       isRequired: true,
+      isGlobal: true,
+      isTranslatable: false,
+      isUnversioned: false,
     },
     {
       name: "episode_number",
@@ -40,6 +46,9 @@ test("returns all required properties", () => {
       originalType: "Int",
       isList: false,
       isRequired: true,
+      isGlobal: true,
+      isTranslatable: false,
+      isUnversioned: false,
     },
     {
       name: "title",
@@ -47,6 +56,9 @@ test("returns all required properties", () => {
       originalType: "String",
       isList: false,
       isRequired: false,
+      isGlobal: true,
+      isTranslatable: false,
+      isUnversioned: false,
     },
   ];
 

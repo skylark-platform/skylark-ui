@@ -45,6 +45,7 @@ interface SkylarkObjectFieldInputProps {
   fieldConfigFromObject?: ParsedSkylarkObjectConfigFieldConfig;
   aiFieldGeneration?: SkylarkObjectFieldInputLabelProps["aiFieldGeneration"];
   disabled?: boolean;
+  labelProps?: Pick<SkylarkObjectFieldInputLabelProps, "href" | "language">;
 }
 
 interface SkylarkObjectFieldInputComponentProps
@@ -80,6 +81,9 @@ const SkylarkObjectFieldInputEnum = ({
           placeholder={`Select ${formatObjectField(field.name)}`}
           onChange={field.onChange}
           aria-invalid={error ? "true" : "false"}
+          onValueClear={
+            config.isRequired ? undefined : () => field.onChange(null)
+          }
           disabled={disabled}
         />
       );
@@ -244,6 +248,7 @@ export const SkylarkObjectFieldInput = (
     fieldConfigFromObject,
     idPrefix,
     aiFieldGeneration,
+    labelProps,
   } = props;
   const required =
     config.isRequired || additionalRequiredFields?.includes(config.name)
@@ -309,12 +314,13 @@ export const SkylarkObjectFieldInput = (
   return (
     <div className="group/input-field mb-4 text-sm">
       <SkylarkObjectFieldInputLabel
+        {...labelProps}
         idPrefix={idPrefix}
         field={field}
         isRequired={!!required}
         hasValue={Boolean(props.value) || props.value === false}
         copyValue={props.value !== null ? `${props.value}` : undefined}
-        href={config.type === "url" ? `${props.value}` : undefined}
+        href={config.type === "url" ? `${props.value}` : labelProps?.href}
         aiFieldGeneration={aiFieldGeneration}
       />
       {isLoading &&

@@ -175,11 +175,17 @@ const DropdownMenuItems = ({
   );
 };
 
-export const DropdownMenu = (props: DropdownMenuProps) => {
+export const DropdownMenu = ({
+  className,
+  ...props
+}: DropdownMenuProps & { className?: string }) => {
   return (
     <Menu
       as="div"
-      className="relative inline-block text-left text-sm font-bold"
+      className={clsx(
+        "relative inline-block text-left text-sm font-bold",
+        className,
+      )}
     >
       {({ open }) => <DropdownMenuItems {...props} open={open} />}
     </Menu>

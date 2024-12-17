@@ -8,6 +8,7 @@ import {
 import { useCallback } from "react";
 
 import { QueryKeys } from "src/enums/graphql";
+import { SchemaVersion } from "src/interfaces/skylark/environment";
 import { skylarkRequest } from "src/lib/graphql/skylark/client";
 import {
   GET_CONFIGURATION_SCHEMA,
@@ -19,6 +20,19 @@ import { useSkylarkCreds } from "./localStorage/useCreds";
 export interface IntrospectionQueryOptions {
   schemaVersion?: number;
 }
+
+export const createIntrospectionQueryOptions = (
+  schemaVersion: SchemaVersion | { version: number } | undefined | null,
+  activeSchemaVersionNumber?: number | null,
+): IntrospectionQueryOptions | undefined => {
+  if (!schemaVersion || typeof schemaVersion.version !== "number") {
+    return undefined;
+  }
+
+  return schemaVersion.version !== activeSchemaVersionNumber
+    ? { schemaVersion: schemaVersion.version }
+    : undefined;
+};
 
 export const selectSchema = (data: IntrospectionQuery) => data.__schema;
 

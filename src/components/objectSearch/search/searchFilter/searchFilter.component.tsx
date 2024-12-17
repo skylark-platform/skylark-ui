@@ -127,7 +127,7 @@ const FilterColumns = ({
         )?.config;
 
         const options = createCheckboxOptions(
-          objectMeta.fields
+          objectMeta.fields.all
             .filter(({ name }) => !SYSTEM_FIELDS?.includes(name))
             .sort((a, b) =>
               sortFieldsByConfigPosition(a.name, b.name, config?.fieldConfig),
@@ -153,7 +153,7 @@ const FilterColumns = ({
 
     const allObjectFields =
       allObjectsMeta
-        ?.map((objectMeta) => objectMeta.fields.map(({ name }) => name))
+        ?.map((objectMeta) => objectMeta.fields.all.map(({ name }) => name))
         .flatMap((arr) => arr) || [];
     const unassignedColumns = columns
       .filter(

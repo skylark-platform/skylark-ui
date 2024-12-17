@@ -381,7 +381,7 @@ export const createObjectListingColumns = (
             const normalisedField =
               objectMeta?.operations.create.inputs.find(
                 ({ name }) => name === column,
-              ) || objectMeta?.fields.find(({ name }) => name === column);
+              ) || objectMeta?.fields.all.find(({ name }) => name === column);
 
             if (normalisedField) {
               return (

@@ -36,6 +36,12 @@ const navigationItems = [
   //   Icon: <TbLink className="text-xl" />,
   // },
   {
+    text: "Content Model",
+    href: HREFS.relative.contentModel,
+    Icon: <FiTool className="text-xl" />,
+    permissions: ["CONTENT_MODEL_EDIT"], // TODO filter links when permissions have loaded
+  },
+  {
     text: "Developer",
     Icon: <TbTerminal2 className="text-xl" />,
     links: [
@@ -53,12 +59,6 @@ const navigationItems = [
         text: "GraphQL Editor",
         href: HREFS.relative.graphqlEditor,
         Icon: <GrGraphQl className="text-xl" />,
-      },
-      {
-        id: "content-model",
-        text: "Content Model (Alpha)",
-        href: HREFS.relative.contentModel,
-        Icon: <FiTool className="text-xl" />,
       },
     ],
   },
@@ -106,12 +106,13 @@ export const NavigationLinks = () => {
             href === pathname ||
             subhrefs?.includes(pathname) ||
             shouldMarkAsActive?.(pathname) ||
+            (href && pathname.startsWith(href) && href !== "/") ||
             false;
           return (
             <li
               key={`${text}-${href}`}
               className={clsx(
-                "group flex items-center py-6 text-black md:h-full md:px-4 md:py-0 lg:px-6",
+                "group flex items-center py-6 text-black md:h-full md:px-2 md:py-0 lg:px-4",
                 !isActiveLink &&
                   "[&>a]:text-black/50 [&>div>div>button]:text-black/50",
               )}

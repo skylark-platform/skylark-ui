@@ -237,8 +237,7 @@ export const useAllObjectsMeta = (
             : null;
 
         const allFieldNames = objects
-          ?.flatMap(({ fields }) => fields)
-          .map(({ name }) => name)
+          ?.flatMap(({ fields }) => fields.allNames)
           .filter((name, index, self) => self.indexOf(name) === index);
 
         return {
@@ -273,8 +272,7 @@ export const useAllSetObjectsMeta = (
         ? getAllObjectsMeta(schemaResponse, setObjectTypes)
         : [];
     const allFieldNames = setObjects
-      .flatMap(({ fields }) => fields)
-      .map(({ name }) => name)
+      .flatMap(({ fields }) => fields.allNames)
       .filter((name, index, self) => self.indexOf(name) === index);
 
     return {

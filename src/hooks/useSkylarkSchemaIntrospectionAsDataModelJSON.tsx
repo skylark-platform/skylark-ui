@@ -6,7 +6,8 @@
 import {
   NormalizedObjectField,
   ParsedSkylarkObjectConfig,
-  ParsedSkylarkObjectTypeRelationshipConfiguration,
+  ParsedSkylarkObjectTypeRelationshipConfigurations,
+  ParsedSkylarkObjectTypesRelationshipConfigurations,
   SkylarkObjectMeta,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
@@ -147,7 +148,7 @@ const unparseObjectConfig = (
 
   const field_config: ObjectTypeConfig["field_config"] =
     parsedConfig?.fieldConfig?.map(({ position, fieldType, name }) => {
-      const field = objectMeta.fields.find((field) => field.name === name);
+      const field = objectMeta.fields.all.find((field) => field.name === name);
 
       const obj: ObjectTypeConfig["field_config"][0] = {
         name,
@@ -190,7 +191,7 @@ const getRelationshipsConfigDefaultSortField = (
     "internal_title",
   ];
 
-  const defaultSortFields = relationshipObjectMeta.fieldConfig.global
+  const defaultSortFields = relationshipObjectMeta.fields.globalNames
     .filter((field) => orderedKnownSortFields.includes(field))
     .sort(
       (a, b) =>
@@ -203,7 +204,7 @@ const getRelationshipsConfigDefaultSortField = (
 const unparseRelationships = (
   objectMeta: SkylarkObjectMeta,
   allObjectMeta: SkylarkObjectMeta[],
-  objectTypeRelationshipConfig?: ParsedSkylarkObjectTypeRelationshipConfiguration,
+  objectTypeRelationshipConfig?: ParsedSkylarkObjectTypeRelationshipConfigurations,
 ): SystemObjectType["relationships"] => {
   const relationships = objectMeta.relationships.reduce(
     (prev, relationship): SystemObjectType["relationships"] => {
@@ -245,8 +246,8 @@ const unparseGlobalAndLanguageFields = (
 } => {
   const fields = objectMeta.operations.create.inputs.reduce(
     (prev, field) => {
-      const isGlobalField = objectMeta.fieldConfig.global.includes(field.name);
-      const isLanguageField = objectMeta.fieldConfig.translatable.includes(
+      const isGlobalField = objectMeta.fields.globalNames.includes(field.name);
+      const isLanguageField = objectMeta.fields.translatableNames.includes(
         field.name,
       );
 
@@ -294,7 +295,7 @@ const getEnumsForCustomObjects = (
   allObjectMeta: SkylarkObjectMeta[],
 ): DataModel["enums"] => {
   const enumInputFields = allObjectMeta.reduce((prev, objectMeta) => {
-    if (objectMeta.name.toUpperCase().startsWith("SKYLARK")) {
+    if (objectMeta.isBuiltIn) {
       return prev;
     }
 
@@ -322,10 +323,7 @@ const parseDataModel = (
   allObjectMeta: SkylarkObjectMeta[],
   objectTypesWithConfig: ObjectTypeWithConfig[],
   accountUri?: string,
-  relationshipConfiguration?: Record<
-    string,
-    ParsedSkylarkObjectTypeRelationshipConfiguration
-  >,
+  relationshipConfiguration?: ParsedSkylarkObjectTypesRelationshipConfigurations,
 ) => {
   const { systemTypes, customTypes } = allObjectMeta.reduce(
     (
@@ -335,10 +333,6 @@ const parseDataModel = (
       systemTypes: DataModel["system_types"];
       customTypes: DataModel["types"];
     } => {
-      const isSystemObject = objectMeta.name
-        .toUpperCase()
-        .startsWith("SKYLARK");
-
       const objectTypeWithParsedConfig = objectTypesWithConfig.find(
         ({ objectType }) => objectType === objectMeta.name,
       );
@@ -350,7 +344,7 @@ const parseDataModel = (
           relationshipConfiguration[objectMeta.name]) ||
         undefined;
 
-      if (isSystemObject) {
+      if (objectMeta.isBuiltIn) {
         return {
           ...prev,
           systemTypes: {

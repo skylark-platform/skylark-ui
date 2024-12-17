@@ -3,14 +3,14 @@ import { EnumType } from "json-to-graphql-query";
 
 import {
   GQLObjectTypeRelationshipConfig,
-  ParsedSkylarkObjectTypeRelationshipConfiguration,
+  ParsedSkylarkObjectTypeRelationshipConfigurations,
   SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { wrappedJsonMutation } from "src/lib/graphql/skylark/dynamicQueries";
 
 export const createUpdateRelationshipConfigMutation = (
   objectType: SkylarkObjectType,
-  relationshipConfig: ParsedSkylarkObjectTypeRelationshipConfiguration,
+  relationshipConfig: ParsedSkylarkObjectTypeRelationshipConfigurations,
 ) => {
   const relationshipConfigUpdates = Object.entries(relationshipConfig).reduce(
     (prev, [relationshipName, config]) => {

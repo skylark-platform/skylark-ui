@@ -271,15 +271,16 @@ export interface GQLSkylarkGetAudienceSegmentAssignedResponse {
     };
   };
 }
+export interface GQLSkylarkSchemaVersion {
+  active: boolean;
+  base_version: number | null;
+  version: number;
+  published: boolean;
+}
 
 export interface GQLSkylarkListSchemaVersionsResponse {
   listConfigurationVersions: {
-    objects: {
-      active: boolean;
-      base_version: number | null;
-      version: number;
-      published: boolean;
-    }[];
+    objects: GQLSkylarkSchemaVersion[];
     next_token: string | null;
     count: number;
   };
