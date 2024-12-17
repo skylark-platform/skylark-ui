@@ -107,6 +107,7 @@ export const ContentModelEditor = ({
       {
         fields: defaultFields,
         uiConfig: defaultUiConfig,
+        relationshipConfigs: {},
         isNew: true,
         isSet: type === "set" ? true : false,
         isBuiltIn: false,

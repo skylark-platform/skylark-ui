@@ -99,7 +99,7 @@ export interface SkylarkObjectOperations {
 
 export type SkylarkObjectMetaRelationship = {
   relationshipName: string;
-  reverseRelationshipName: string | null;
+  reverseRelationshipName: string;
   objectType: SkylarkObjectType;
 };
 

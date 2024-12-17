@@ -9,6 +9,7 @@ import { AddNewButton } from "src/components/contentModel/editor/contentModelRow
 import {
   EditObjectFieldModal,
   EditObjectFieldModalForm,
+  EditObjectFieldModalFormAvailabilityInheritanceConfiguration,
 } from "src/components/modals/editObjectFieldModal/editObjectFieldModal.component";
 import { InfoTooltip, Tooltip } from "src/components/tooltip/tooltip.component";
 import { SkylarkObjectType, SkylarkSystemField } from "src/interfaces/skylark";
@@ -105,13 +106,13 @@ const FieldOriginalType = ({
       <p>{originalType}</p>
       {isRelationship && (
         <>
-          <Tooltip tooltip={<></>}>
-            <p className="ml-2 flex justify-center items-center text-manatee-500">
-              {`(${field.objectType}`}
-              <FiInfo className="text-sm ml-1" />
-              {`)`}
-            </p>
-          </Tooltip>
+          {/* <Tooltip tooltip={<></>}> */}
+          <p className="ml-2 flex justify-center items-center text-manatee-500">
+            {`(${field.objectType}`}
+            {/* <FiInfo className="text-sm ml-1" /> */}
+            {`)`}
+          </p>
+          {/* </Tooltip> */}
         </>
       )}
       {isEnum && (
@@ -191,23 +192,24 @@ const Field = ({
             SkylarkSystemField.ExternalID,
             SkylarkSystemField.Type,
           ] as string[]
-        ).includes(field.name) && (
-          <button
-            disabled={reorderFieldsDisabled}
-            onPointerDown={
-              !reorderFieldsDisabled
-                ? (event) => {
-                    dragControls.start(event);
-                    event.preventDefault();
-                  }
-                : undefined
-            }
-            className={clsx(
-              "absolute left-1 h-full w-4 mr-1 bg-inherit bg-[url('/icons/drag_indicator_black.png')] bg-center bg-no-repeat ",
-              reorderFieldsDisabled ? "opacity-10" : "opacity-30 cursor-grab",
-            )}
-          />
-        )}
+        ).includes(field.name) &&
+          !isRelationship && (
+            <button
+              disabled={reorderFieldsDisabled}
+              onPointerDown={
+                !reorderFieldsDisabled
+                  ? (event) => {
+                      dragControls.start(event);
+                      event.preventDefault();
+                    }
+                  : undefined
+              }
+              className={clsx(
+                "absolute left-1 h-full w-4 mr-1 bg-inherit bg-[url('/icons/drag_indicator_black.png')] bg-center bg-no-repeat ",
+                reorderFieldsDisabled ? "opacity-10" : "opacity-30 cursor-grab",
+              )}
+            />
+          )}
         <div
           className={clsx(
             "flex justify-start h-full items-center col-span-2 pl-5",
@@ -265,10 +267,7 @@ const Field = ({
 export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
   const [editModalState, setEditModalState] = useState<{
     isOpen: boolean;
-    initialData: {
-      field: ContentModelEditorFormObjectTypeField;
-      fieldConfig: ContentModelEditorFormObjectTypeUiConfig["fieldConfigs"][""];
-    } | null;
+    initialData: EditObjectFieldModalForm | null;
   }>({ isOpen: false, initialData: null });
 
   const addField = () => {
@@ -297,11 +296,17 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
     }
   };
 
-  const onEditFieldModalSubmit = ({
-    field,
-    fieldConfig,
-  }: EditObjectFieldModalForm) => {
-    console.log("onEditFieldModalSubmit", { field });
+  const onEditFieldModalSubmit = (
+    submittedFormValues: EditObjectFieldModalForm,
+  ) => {
+    const {
+      field,
+      fieldConfig,
+      relationshipConfig,
+      availabilityInheritanceConfiguration,
+    } = submittedFormValues;
+
+    console.log("onEditFieldModalSubmit", submittedFormValues);
     const prevField = editModalState.initialData?.field;
     const prevName = prevField?.name;
     const isNew = !prevName;
@@ -329,6 +334,38 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
       { shouldDirty: true },
     );
 
+    form.setValue(
+      `objectTypes.${objectType}.relationshipConfigs.${field.name}.defaultSortField`,
+      relationshipConfig.defaultSortField,
+      { shouldDirty: true },
+    );
+
+    if (field.type === "relationship" && availabilityInheritanceConfiguration) {
+      console.log("SETTING", {
+        objectType,
+        availabilityInheritanceConfiguration,
+        keys: {
+          1: `objectTypes.${objectType}.relationshipConfigs.${availabilityInheritanceConfiguration.obj.relationshipName}.inheritAvailability`,
+          2: `objectTypes.${availabilityInheritanceConfiguration.obj.objectType}.relationshipConfigs.${availabilityInheritanceConfiguration.reverseObj.relationshipName}.inheritAvailability`,
+        },
+      });
+
+      form.setValue(
+        `objectTypes.${objectType}.relationshipConfigs.${availabilityInheritanceConfiguration.obj.relationshipName}.inheritAvailability`,
+        availabilityInheritanceConfiguration.type === "forward" || false,
+        { shouldDirty: true },
+      );
+
+      // Inherit Availability, set both directions
+      form.setValue(
+        `objectTypes.${availabilityInheritanceConfiguration.obj.objectType}.relationshipConfigs.${availabilityInheritanceConfiguration.reverseObj.relationshipName}.inheritAvailability`,
+        availabilityInheritanceConfiguration.type === "backward" || false,
+        { shouldDirty: true },
+      );
+    }
+
+    console.log("After", form.formState.dirtyFields);
+
     setEditModalState({ isOpen: false, initialData: null });
   };
 
@@ -339,6 +376,10 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
   );
   const fieldConfigs = form.watch(
     `objectTypes.${objectType}.uiConfig.fieldConfigs`,
+  );
+
+  const relationshipConfigs = form.watch(
+    `objectTypes.${objectType}.relationshipConfigs`,
   );
 
   const onReorder = (
@@ -365,10 +406,21 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
       return systemFieldSorted;
     }
 
-    return (fieldOrder.indexOf(fieldA.name) ?? Infinity) >
-      (fieldOrder.indexOf(fieldB.name) ?? Infinity)
-      ? 1
-      : -1;
+    if (fieldA.type === "relationship" && fieldB.type === "relationship") {
+      return fieldA.name > fieldB.name ? 1 : -1;
+    }
+
+    const fieldAValue =
+      fieldA.type === "relationship"
+        ? Infinity
+        : (fieldOrder.indexOf(fieldA.name) ?? Infinity);
+
+    const fieldBValue =
+      fieldB.type === "relationship"
+        ? Infinity
+        : (fieldOrder.indexOf(fieldB.name) ?? Infinity);
+
+    return fieldAValue > fieldBValue ? 1 : -1;
   });
 
   return (
@@ -391,6 +443,39 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
       <Reorder.Group onReorder={onReorder} values={orderedFields}>
         {orderedFields.map((field, index) => {
           const fieldConfig = fieldConfigs?.[field.name];
+          const relationshipConfig = relationshipConfigs?.[field.name];
+
+          let availabilityInheritanceConfiguration: EditObjectFieldModalFormAvailabilityInheritanceConfiguration | null =
+            null;
+
+          if (field.type === "relationship") {
+            const reverseInheritAvailability = form.getValues(
+              `objectTypes.${field.objectType}.relationshipConfigs.${field.reverseRelationshipName}.inheritAvailability`,
+            );
+            const availabilityInheritanceType: EditObjectFieldModalFormAvailabilityInheritanceConfiguration["type"] =
+              (relationshipConfig?.inheritAvailability && "forward") ||
+              (reverseInheritAvailability && "backward") ||
+              "off";
+
+            console.log(field.name, {
+              foward: relationshipConfig?.inheritAvailability,
+              backward: reverseInheritAvailability,
+            });
+
+            availabilityInheritanceConfiguration = {
+              type: availabilityInheritanceType, // forward when Season -> episodes, backward when Episode -> season
+              obj: {
+                objectType, // e.g. Season
+                relationshipName: field.relationshipName, // e.g. episodes
+              },
+              reverseObj: {
+                objectType: field.objectType, // e.g. Episode
+                relationshipName: field.reverseRelationshipName, // e.g. seasons
+              },
+            };
+          }
+
+          // TODO figure out how to get reverse relationship config for edit modal form
           return (
             <Field
               key={field.name}
@@ -403,7 +488,12 @@ export const FieldsSection = ({ objectType, form }: FieldsSectionProps) => {
               onEdit={() =>
                 setEditModalState({
                   isOpen: true,
-                  initialData: { field, fieldConfig },
+                  initialData: {
+                    field,
+                    fieldConfig,
+                    relationshipConfig,
+                    availabilityInheritanceConfiguration,
+                  },
                 })
               }
             />

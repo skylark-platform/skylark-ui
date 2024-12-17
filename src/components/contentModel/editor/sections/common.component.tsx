@@ -31,11 +31,8 @@ export type ContentModelEditorFormObjectTypeField = {
   name: string;
   isNew?: boolean;
   isDeleted?: boolean;
-  // fieldConfig: Omit<ParsedSkylarkObjectConfigFieldConfig, "name"> | null;
 } & (
-  | ({ type: "relationship" } & SkylarkObjectMetaRelationship & {
-        relationshipConfig: ParsedSkylarkObjectTypeRelationshipConfiguration;
-      })
+  | ({ type: "relationship" } & SkylarkObjectMetaRelationship)
   | Omit<NormalizedObjectField, "name">
 );
 
@@ -58,6 +55,7 @@ export interface ContentModelEditorForm {
     {
       fields: ContentModelEditorFormObjectTypeField[];
       uiConfig: ContentModelEditorFormObjectTypeUiConfig;
+      relationshipConfigs: ParsedSkylarkObjectTypeRelationshipConfigurations;
       isNew?: boolean;
       isSet: SkylarkObjectMeta["isSet"];
       isBuiltIn: SkylarkObjectMeta["isBuiltIn"];
@@ -66,7 +64,6 @@ export interface ContentModelEditorForm {
       // fieldOrder: string[];
     }
   >;
-  // relationshipConfig?: ParsedSkylarkObjectTypeRelationshipConfigurations;
 }
 
 export interface ContentModelSectionStatuses {
@@ -122,7 +119,7 @@ export const sortSystemFieldsFirst = (fieldA: string, fieldB: string) => {
 export const combineFieldRelationshipsAndFieldConfig = (
   fields: NormalizedObjectField[],
   relationships: SkylarkObjectMetaRelationship[],
-  relationshipsConfig?: ParsedSkylarkObjectTypeRelationshipConfigurations,
+  // relationshipsConfig?: ParsedSkylarkObjectTypeRelationshipConfigurations,
 ): ContentModelEditorFormObjectTypeField[] => {
   // console.log("com", relationshipsConfig, relationshipsConfig?.["logo"]);
 
@@ -137,19 +134,19 @@ export const combineFieldRelationshipsAndFieldConfig = (
 
   const relationshipsWithConfig: ContentModelEditorFormObjectTypeField[] =
     relationships.map((relationship): ContentModelEditorFormObjectTypeField => {
-      const relationshipConfig = relationshipsConfig?.[
-        relationship.relationshipName
-      ] || {
-        defaultSortField: null,
-        inheritAvailability: false,
-      };
+      // const relationshipConfig = relationshipsConfig?.[
+      //   relationship.relationshipName
+      // ] || {
+      //   defaultSortField: null,
+      //   inheritAvailability: false,
+      // };
 
       return {
         ...relationship,
         name: relationship.relationshipName,
         type: "relationship",
         // fieldConfig: fieldConfig || null,
-        relationshipConfig,
+        // relationshipConfig,
       };
     });
 

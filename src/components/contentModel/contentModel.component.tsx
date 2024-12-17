@@ -9,6 +9,7 @@ import { useSetContentModelSchemaVersion } from "src/hooks/contentModel/useSetSc
 import { useSchemaVersions } from "src/hooks/schema/get/useSchemaVersions";
 import { useUpdateObjectTypesConfiguration } from "src/hooks/schema/update/useUpdateObjectTypesConfig";
 import { useUpdateRelationshipConfig } from "src/hooks/schema/update/useUpdateRelationshipConfig";
+import { useUpdateRelationshipsConfigs } from "src/hooks/schema/update/useUpdateRelationshipsConfigs";
 import { useUpdateSchema } from "src/hooks/schema/update/useUpdateSchema";
 import { useAllObjectTypesRelationshipConfiguration } from "src/hooks/useObjectTypeRelationshipConfiguration";
 import {
@@ -69,7 +70,7 @@ const createFormValues = (
       const fields = combineFieldRelationshipsAndFieldConfig(
         objectMeta.fields.all,
         relationships,
-        relationshipsConfiguration,
+        // relationshipsConfiguration,
       );
 
       const fieldConfigs =
@@ -107,11 +108,15 @@ const createFormValues = (
             .map(({ name }) => name) || [],
       };
 
+      const relationshipConfigs: ContentModelEditorForm["objectTypes"][""]["relationshipConfigs"] =
+        relationshipsConfiguration;
+
       return [
         name,
         {
           fields,
           uiConfig,
+          relationshipConfigs,
           isSet,
           isBuiltIn,
         },
@@ -248,19 +253,22 @@ const ContentModelComponent = ({
       },
     });
 
-  const { updateRelationshipConfig, isUpdatingRelationshipConfig } =
-    useUpdateRelationshipConfig({
-      onSuccess: () => {
-        // form.reset(undefined, { keepValues: true });
-        toast.success(
-          <Toast
-            title={`Relationship config updated`}
-            message={[
-              "You may have to refresh for the configuration changes to take effect.",
-              "Additionally, sort field changes will only become active next time you modify the relationship.",
-            ]}
-          />,
-        );
+  const { updateRelationshipsConfigs, isUpdatingRelationshipsConfigs } =
+    useUpdateRelationshipsConfigs({
+      onSuccess: (modifiedObjectTypes) => {
+        setRelationshipConfigUpdateSuccessful(true);
+
+        if (modifiedObjectTypes.length > 0) {
+          toast.success(
+            <Toast
+              title={`Relationship config updated`}
+              message={[
+                "You may have to refresh for the configuration changes to take effect.",
+                "Additionally, sort field changes will only become active next time you modify the relationship.",
+              ]}
+            />,
+          );
+        }
       },
       onError: (e) => {
         const reverseInheritAvailabilityErrorMessage =
@@ -334,10 +342,10 @@ const ContentModelComponent = ({
           modifiedFormFields,
         });
 
-        // updateRelationshipConfig({
-        //   objectType: objectMeta.name,
-        //   relationshipConfig,
-        // });
+        updateRelationshipsConfigs({
+          formValues,
+          modifiedFormFields,
+        });
       })();
     }
   };
@@ -351,7 +359,7 @@ const ContentModelComponent = ({
         isSaving={
           isUpdatingSchema ||
           isUpdatingObjectTypesConfiguration ||
-          isUpdatingRelationshipConfig
+          isUpdatingRelationshipsConfigs
         }
         onCancel={onCancel}
         onSave={onSave}

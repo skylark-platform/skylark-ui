@@ -3,7 +3,6 @@ import { Controller, useForm, UseFormReturn } from "react-hook-form";
 
 import { Button } from "src/components/button";
 import {
-  ContentModelEditorForm,
   ContentModelEditorFormObjectTypeField,
   ContentModelEditorFormObjectTypeUiConfig,
 } from "src/components/contentModel/editor/sections/common.component";
@@ -29,23 +28,31 @@ import { useSkylarkSchemaEnums } from "src/hooks/useSkylarkSchemaEnums";
 import { GQLScalars } from "src/interfaces/graphql/introspection";
 import {
   NormalizedObjectFieldType,
+  ParsedSkylarkRelationshipConfig,
   SkylarkObjectConfigFieldType,
-  SkylarkObjectType,
 } from "src/interfaces/skylark";
 import { parseObjectInputType } from "src/lib/skylark/parsers";
+
+export type EditObjectFieldModalFormAvailabilityInheritanceConfiguration = {
+  type: "off" | "forward" | "backward";
+  obj: { relationshipName: string; objectType: string };
+  reverseObj: { relationshipName: string; objectType: string };
+};
 
 export type EditObjectFieldModalForm = {
   field: ContentModelEditorFormObjectTypeField;
   fieldConfig: ContentModelEditorFormObjectTypeUiConfig["fieldConfigs"][""];
+  relationshipConfig: Omit<
+    ParsedSkylarkRelationshipConfig,
+    "inheritAvailability"
+  >;
+  availabilityInheritanceConfiguration: EditObjectFieldModalFormAvailabilityInheritanceConfiguration | null;
 };
 
 interface EditObjectFieldModalProps {
   isOpen: boolean;
   objectType: string;
-  initialValues?: {
-    field: ContentModelEditorFormObjectTypeField;
-    fieldConfig: ContentModelEditorFormObjectTypeUiConfig["fieldConfigs"][""];
-  };
+  initialValues?: EditObjectFieldModalForm;
   setIsOpen: (b: boolean) => void;
   onSubmit: (f: EditObjectFieldModalForm) => void;
 }
@@ -219,12 +226,31 @@ const RelationshipConfigFormFields = ({
 
   console.log(form.getValues());
 
+  const inheritAvailabilityOptions: SelectOption<
+    EditObjectFieldModalFormAvailabilityInheritanceConfiguration["type"]
+  >[] = [
+    {
+      label: "Off",
+      value: "off",
+    },
+    {
+      label: `${relationshipField.name} -> ${relationshipField.reverseRelationshipName}   |   (${relationshipField.objectType} -> ${objectType})`,
+      value: "forward",
+      infoTooltip: `${objectType} will inherit availability from ${relationshipField.objectType} when linked via the ${relationshipField.name}/${relationshipField.reverseRelationshipName} relationships.`,
+    },
+    {
+      label: `${relationshipField.reverseRelationshipName} -> ${relationshipField.relationshipName}   |   (${objectType} -> ${relationshipField.objectType})`,
+      value: "backward",
+      infoTooltip: `${relationshipField.objectType} will inherit availability from ${objectType} when linked via the ${relationshipField.reverseRelationshipName}/${relationshipField.name} relationships.`,
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-2">
       <PanelSeparator className="mb-4" />
       <PanelSectionTitle text="Relationship config" />
       <Controller
-        name="field.relationshipConfig.defaultSortField"
+        name="relationshipConfig.defaultSortField"
         control={form.control}
         render={({ field }) => {
           return (
@@ -257,7 +283,7 @@ const RelationshipConfigFormFields = ({
         }}
       />
       <Controller
-        name="field.relationshipConfig.inheritAvailability"
+        name="availabilityInheritanceConfiguration"
         control={form.control}
         render={({ field }) => {
           return (
@@ -265,24 +291,23 @@ const RelationshipConfigFormFields = ({
               label={`Inherit Availability`}
               labelVariant="form"
               className="w-full"
-              options={[
-                {
-                  label: "Off",
-                  value: "off",
-                },
-                {
-                  label: `${relationshipField.name} -> ${relationshipField.reverseRelationshipName}   |   (${relationshipField.objectType} -> ${objectType})`,
-                  value: "this->that",
-                },
-                {
-                  label: `${relationshipField.reverseRelationshipName} -> ${relationshipField.relationshipName}   |   (${objectType} -> ${relationshipField.objectType})`,
-                  value: "that->this",
-                },
-              ]}
+              options={inheritAvailabilityOptions}
               variant="primary"
-              selected={field.value || "off"}
+              selected={field.value?.type || "off"}
               placeholder=""
-              onChange={field.onChange}
+              onChange={(type) =>
+                field.onChange({
+                  obj: {
+                    relationshipName: relationshipField.name,
+                    objectType: relationshipField.objectType,
+                  },
+                  reverseObj: {
+                    relationshipName: relationshipField.reverseRelationshipName,
+                    objectType,
+                  },
+                  type,
+                })
+              }
             />
           );
         }}
@@ -316,6 +341,7 @@ const EditObjectFieldModalBody = forwardRef(
           isDeleted: false,
           isList: false,
         },
+        availabilityInheritanceConfiguration: null,
       },
     });
 
