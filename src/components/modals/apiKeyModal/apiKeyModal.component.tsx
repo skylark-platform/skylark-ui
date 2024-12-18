@@ -186,6 +186,7 @@ const ApiKeyModalContent = ({
               selected={selected}
               onChange={field.onChange}
               required
+              renderInPortal
             />
           );
         }}
