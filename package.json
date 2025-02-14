@@ -52,7 +52,7 @@
     "graphql": "16.9.0",
     "graphql-request": "6.1.0",
     "graphql-tag": "2.12.6",
-    "graphql-ws": "5.16.0",
+    "graphql-ws": "6.0.4",
     "json-to-graphql-query": "2.3.0",
     "jsonwebtoken": "9.0.2",
     "motion": "12.0.0-alpha.2",
