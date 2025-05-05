@@ -101,7 +101,7 @@
     "@types/react-dom": "19.0.1",
     "@types/react-syntax-highlighter": "15.5.13",
     "@types/uuid": "10.0.0",
-    "@typescript-eslint/eslint-plugin": "7.18.0",
+    "@typescript-eslint/eslint-plugin": "8.32.0",
     "babel-jest": "29.7.0",
     "babel-loader": "9.2.1",
     "chromatic": "11.20.0",
