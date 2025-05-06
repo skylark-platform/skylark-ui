@@ -305,6 +305,9 @@ describe("generateExampleCSV", () => {
       isList: false,
       isRequired: false,
       enumValues: type === "enum" ? ["enum1", "enum2", "enum3"] : undefined,
+      isGlobal: true,
+      isTranslatable: false,
+      isUnversioned: false,
     }));
 
     const createMutation: SkylarkObjectOperations["create"] = {

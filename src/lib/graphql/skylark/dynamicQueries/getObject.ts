@@ -63,7 +63,7 @@ export const createGetObjectQuery = (
         __typename: true,
         ...common.fields,
         ...getObjectConfigFields(true),
-        ...generateFieldsToReturn(object.fields, object.name),
+        ...generateFieldsToReturn(object.fields.all, object.name),
         ...generateRelationshipsToReturn(object),
       },
     },
@@ -182,7 +182,7 @@ export const createGetObjectAvailabilityInheritanceQuery = (
                     __typename: true, // To remove the alias later
                     ...common.fields,
                     ...generateFieldsToReturn(
-                      object.fields,
+                      object.fields.all,
                       object.name,
                       false,
                       `__${object.name}__`,
@@ -205,7 +205,7 @@ export const createGetObjectAvailabilityInheritanceQuery = (
                     __typename: true, // To remove the alias later
                     ...common.fields,
                     ...generateFieldsToReturn(
-                      object.fields,
+                      object.fields.all,
                       object.name,
                       false,
                       `__${object.name}__`,
@@ -360,7 +360,12 @@ export const createGetObjectContentOfQuery = (
   object: SkylarkObjectMeta | null,
   setObjects: SkylarkObjectMeta[],
 ) => {
-  if (!object || !object.operations.get) {
+  if (
+    !object ||
+    !object.operations.get ||
+    !setObjects ||
+    setObjects.length === 0
+  ) {
     return null;
   }
 
@@ -395,7 +400,7 @@ export const createGetObjectContentOfQuery = (
                 __typename: true, // To remove the alias later
                 ...common.fields,
                 ...generateFieldsToReturn(
-                  object.fields,
+                  object.fields.all,
                   object.name,
                   false,
                   `__${object.name}__`,

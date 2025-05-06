@@ -9,6 +9,7 @@ import {
   IntrospectionListTypeRef,
   IntrospectionNamedTypeRef,
   IntrospectionNonNullTypeRef,
+  IntrospectionObjectType,
   IntrospectionScalarType,
 } from "graphql";
 import { EnumType } from "json-to-graphql-query";
@@ -43,10 +44,12 @@ import {
   ParsedSkylarkObjectMeta,
   SkylarkGraphQLAvailability,
   ParsedSkylarkObjectAvailabilityObject,
+  GQLSkylarkSchemaVersion,
   SkylarkObjectImageRelationship,
   SkylarkGraphQLDynamicContentConfiguration,
   ParsedSkylarkDimensionWithValues,
 } from "src/interfaces/skylark";
+import { SchemaVersion } from "src/interfaces/skylark/environment";
 import { removeFieldPrefixFromReturnedObject } from "src/lib/graphql/skylark/dynamicQueries";
 import {
   convertFieldTypeToHTMLInputType,
@@ -69,11 +72,13 @@ import { convertParsedObjectToIdentifier } from "./objects";
 dayjs.extend(customParseFormat);
 dayjs.extend(advancedFormat);
 
-const parseObjectInputType = (
+export const parseObjectInputType = (
   name?: GQLScalars | string | null,
 ): NormalizedObjectFieldType => {
   if (!name) return "string";
   switch (name) {
+    case "Enum":
+      return "enum";
     case "AWSTimestamp":
       return "timestamp";
     case "AWSTime":
@@ -112,6 +117,7 @@ export const parseObjectInputFields = (
     | IntrospectionField
     | IntrospectionInputValue
   )[],
+  fieldConfig: { translatable: string[]; global: string[] } | null,
   enums: Record<string, IntrospectionEnumType>,
 ): NormalizedObjectField[] => {
   if (!introspectionFields) {
@@ -144,6 +150,12 @@ export const parseObjectInputFields = (
           : [];
       }
 
+      const isTranslatable =
+        fieldConfig?.translatable.includes(input.name) || false;
+      const isGlobal = fieldConfig?.global.includes(input.name) || false;
+      // Some fields are not listed as translatable or global in GQL, this commonly means it isn't versioned (see SkylarkSet content_limit)
+      const isUnversioned = !isTranslatable && !isGlobal;
+
       return {
         name: input.name,
         type: type,
@@ -151,6 +163,9 @@ export const parseObjectInputFields = (
         enumValues,
         isList: input.type.kind === "LIST",
         isRequired: input.type.kind === "NON_NULL",
+        isTranslatable,
+        isGlobal,
+        isUnversioned,
       };
     });
 
@@ -158,6 +173,7 @@ export const parseObjectInputFields = (
 };
 
 export const parseObjectRelationships = (
+  objectTypeInterfaceFields: readonly IntrospectionField[],
   relationshipInputFields?: readonly IntrospectionInputValue[],
 ): SkylarkObjectMetaRelationship[] => {
   if (!relationshipInputFields) {
@@ -182,12 +198,22 @@ export const parseObjectRelationships = (
         objectTypeWithRelationshipInput &&
         objectTypeWithRelationshipInput.endsWith(relationshipInputPostfix),
     )
-    .map(({ name, objectTypeWithRelationshipInput }) => ({
-      relationshipName: name,
-      objectType: (objectTypeWithRelationshipInput as string).split(
-        relationshipInputPostfix,
-      )[0],
-    }));
+    .map(({ name, objectTypeWithRelationshipInput }) => {
+      const description = objectTypeInterfaceFields.find(
+        (field) => field.name === name,
+      )?.description;
+
+      const reverseRelationshipName =
+        description?.trim()?.replace("reverse:", "")?.replace(":", "") || null;
+
+      return {
+        relationshipName: name,
+        objectType: (objectTypeWithRelationshipInput as string).split(
+          relationshipInputPostfix,
+        )[0],
+        reverseRelationshipName,
+      };
+    });
 
   return relationships;
 };
@@ -702,3 +728,16 @@ export const parseUpdatedRelationshipObjects = (
 
   return { relationship, uidsToLink, uidsToUnlink };
 };
+
+export const parseSchemaVersion = ({
+  active,
+  version,
+  base_version,
+  published,
+}: GQLSkylarkSchemaVersion): SchemaVersion => ({
+  isActive: active,
+  version,
+  baseVersion: base_version,
+  isPublished: published,
+  isDraft: !published,
+});

@@ -72,7 +72,7 @@ const createObjectContentSortFieldOptions = (
             objectTypesConfig?.[objectMeta.name]?.objectTypeDisplayName ||
             objectMeta.name;
 
-          const globalObj = objectMeta.fieldConfig.global.reduce(
+          const globalObj = objectMeta.fields.globalNames.reduce(
             (p, field) => ({
               ...p,
               [field]: {
@@ -84,7 +84,7 @@ const createObjectContentSortFieldOptions = (
             prev,
           );
 
-          const translatableObj = objectMeta.fieldConfig.translatable.reduce(
+          const translatableObj = objectMeta.fields.translatableNames.reduce(
             (p, field) => ({
               ...p,
               [`t:${field}`]: {

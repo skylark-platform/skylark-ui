@@ -57,6 +57,14 @@ const WrappedSkylarkObjectFieldInput = ({
   );
 };
 
+const defaultField = {
+  isRequired: false,
+  isList: false,
+  isTranslatable: false,
+  isGlobal: true,
+  isUnversioned: false,
+};
+
 const testFieldConfigs: Record<
   NormalizedObjectFieldType,
   {
@@ -69,8 +77,7 @@ const testFieldConfigs: Record<
     field: {
       name: "booleanfield",
       originalType: "Boolean",
-      isRequired: false,
-      isList: false,
+      ...defaultField,
     },
     value: true,
     invalidValues: [],
@@ -79,8 +86,7 @@ const testFieldConfigs: Record<
     field: {
       name: "stringfield",
       originalType: "String",
-      isRequired: false,
-      isList: false,
+      ...defaultField,
     },
     value: "string",
     invalidValues: [],
@@ -89,8 +95,7 @@ const testFieldConfigs: Record<
     field: {
       name: "intfield",
       originalType: "Int",
-      isRequired: false,
-      isList: false,
+      ...defaultField,
     },
     value: 10,
     invalidValues: ["sdf", 0.8],
@@ -99,8 +104,7 @@ const testFieldConfigs: Record<
     field: {
       name: "floatfield",
       originalType: "Float",
-      isRequired: false,
-      isList: false,
+      ...defaultField,
     },
     value: 0.1,
     invalidValues: ["string"],
@@ -109,8 +113,7 @@ const testFieldConfigs: Record<
     field: {
       name: "datefield",
       originalType: "AWSDate",
-      isRequired: false,
-      isList: false,
+      ...defaultField,
     },
     value: "2000-03-20",
     invalidValues: ["20:11:12"],
@@ -119,8 +122,7 @@ const testFieldConfigs: Record<
     field: {
       name: "timefield",
       originalType: "AWSTime",
-      isRequired: false,
-      isList: false,
+      ...defaultField,
     },
     value: "12:30",
     invalidValues: ["string"],
@@ -129,8 +131,7 @@ const testFieldConfigs: Record<
     field: {
       name: "timestampfield",
       originalType: "AWSTimestamp",
-      isRequired: false,
-      isList: false,
+      ...defaultField,
     },
     value: "1233453453",
     invalidValues: ["string"],
@@ -139,8 +140,7 @@ const testFieldConfigs: Record<
     field: {
       name: "datetimefield",
       originalType: "AWSDateTime",
-      isRequired: false,
-      isList: false,
+      ...defaultField,
     },
     value: "2000-03-20T12:30:00.000",
     invalidValues: ["string"],
@@ -149,8 +149,7 @@ const testFieldConfigs: Record<
     field: {
       name: "emailfield",
       originalType: "AWSEmail",
-      isRequired: false,
-      isList: false,
+      ...defaultField,
     },
     value: "example@example.com",
     invalidValues: ["notanemail.com"],
@@ -159,8 +158,7 @@ const testFieldConfigs: Record<
     field: {
       name: "phonefield",
       originalType: "AWSPhone",
-      isRequired: false,
-      isList: false,
+      ...defaultField,
     },
     value: "+447888888888",
     invalidValues: [],
@@ -169,8 +167,7 @@ const testFieldConfigs: Record<
     field: {
       name: "urlfield",
       originalType: "AWSURL",
-      isRequired: false,
-      isList: false,
+      ...defaultField,
     },
     value: "https://example.com",
     invalidValues: ["example.com"],
@@ -179,8 +176,7 @@ const testFieldConfigs: Record<
     field: {
       name: "ipaddressfield",
       originalType: "AWSIPAddress",
-      isRequired: false,
-      isList: false,
+      ...defaultField,
     },
     value: "192.0.0.1",
     invalidValues: ["123123123.123.123.12123"],
@@ -189,8 +185,7 @@ const testFieldConfigs: Record<
     field: {
       name: "jsonfield",
       originalType: "AWSJSON",
-      isRequired: false,
-      isList: false,
+      ...defaultField,
     },
     value: "{}",
     invalidValues: [],
@@ -200,8 +195,7 @@ const testFieldConfigs: Record<
       name: "enumfield",
       originalType: "String",
       enumValues: ["value1", "value2"],
-      isRequired: false,
-      isList: false,
+      ...defaultField,
     },
     value: "value1",
     invalidValues: [],
@@ -425,9 +419,8 @@ test("copies the value to the clipboard", async () => {
   const config: NormalizedObjectField = {
     name: "stringfield",
     originalType: "String",
-    isRequired: false,
-    isList: false,
     type: "string",
+    ...defaultField,
   };
   const value = "example";
 

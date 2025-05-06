@@ -6,7 +6,12 @@ import {
   autoUpdate,
   Placement,
 } from "@floating-ui/react";
-import { Combobox, Transition, Portal } from "@headlessui/react";
+import {
+  Combobox,
+  ComboboxButton,
+  Transition,
+  Portal,
+} from "@headlessui/react";
 import clsx from "clsx";
 import React, {
   useState,
@@ -24,7 +29,7 @@ import { useVirtual } from "react-virtual";
 
 import { FiX } from "src/components/icons";
 import { Tooltip, TooltipSide } from "src/components/tooltip/tooltip.component";
-import { formatObjectField, hasProperty, mergeRefs } from "src/lib/utils";
+import { hasProperty, mergeRefs } from "src/lib/utils";
 
 export interface SelectOption<T> {
   label: string;
@@ -57,10 +62,10 @@ export interface SelectProps<T> {
   onValueClear?: () => void;
 }
 
-export const sortSelectOptions = <T extends string | number>(
+export const sortSelectOptions = <T extends string | number | null>(
   { label: labelA, value: valueA }: SelectOption<T>,
   { label: labelB, value: valueB }: SelectOption<T>,
-): number => ((labelA || valueA) > (labelB || valueB) ? 1 : -1);
+): number => ((labelA || valueA || 0) > (labelB || valueB || 0) ? 1 : -1);
 
 export const getSelectOptionHeight = <T extends string | number>(
   variant: SelectProps<T>["variant"],
@@ -91,7 +96,8 @@ export const SelectLabel = <T extends string | number>({
       labelVariant === "small" && "text-xs text-manatee-300",
     )}
   >
-    {labelVariant === "form" ? formatObjectField(label) : label}
+    {/* {labelVariant === "form" ? formatObjectField(label) : label} */}
+    {label}
     {isRequired && <span className="pl-0.5 text-error">*</span>}
   </Combobox.Label>
 );
@@ -372,10 +378,7 @@ const SelectComponent = <T extends string | number>(
     roundedClassName,
   );
 
-  const selectedOption = selected
-    ? options.find(({ value }) => value === selected) ||
-      options.find(({ value }) => value === selected)
-    : undefined;
+  const selectedOption = options.find(({ value }) => value === selected);
 
   const showClearValueButton = onValueClear && selected;
 
@@ -406,7 +409,7 @@ const SelectComponent = <T extends string | number>(
             />
           )}
           {searchable ? (
-            <Combobox.Button
+            <ComboboxButton
               data-testid="select"
               as="div"
               className={clsx(
@@ -450,6 +453,7 @@ const SelectComponent = <T extends string | number>(
                       onValueClear();
                       e.stopPropagation();
                     }}
+                    onMouseDown={(e) => e.stopPropagation()}
                     data-testid="select-clear-value"
                   >
                     <FiX
@@ -469,7 +473,7 @@ const SelectComponent = <T extends string | number>(
                   />
                 </button>
               </span>
-            </Combobox.Button>
+            </ComboboxButton>
           ) : (
             <Combobox.Button
               data-testid="select"

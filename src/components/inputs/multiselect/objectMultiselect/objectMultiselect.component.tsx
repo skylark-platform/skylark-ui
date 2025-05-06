@@ -68,14 +68,14 @@ const ObjectMultiSelectComponent = (
   const { objects: allObjectsMeta } = useAllObjectsMeta();
   const columns = useMemo(() => {
     const { global, translatable } = (allObjectsMeta || []).reduce(
-      (prev, { name, fieldConfig }) => {
+      (prev, { name, fields }) => {
         if (!objectTypes.includes(name)) {
           return prev;
         }
 
         return {
-          global: [...prev.global, ...fieldConfig.global],
-          translatable: [...prev.translatable, ...fieldConfig.translatable],
+          global: [...prev.global, ...fields.globalNames],
+          translatable: [...prev.translatable, ...fields.translatableNames],
         };
       },
       { global: [] as string[], translatable: [] as string[] },

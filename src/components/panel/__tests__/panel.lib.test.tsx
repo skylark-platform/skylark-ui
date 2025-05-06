@@ -18,6 +18,7 @@ const objectMetaRelationships: SkylarkObjectMeta["relationships"] = [
   {
     relationshipName: "seasons",
     objectType: "Season",
+    reverseRelationshipName: "reverse_relationships",
   },
 ];
 

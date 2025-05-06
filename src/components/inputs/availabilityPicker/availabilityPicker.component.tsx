@@ -6,13 +6,18 @@ import { FiChevronDown } from "react-icons/fi";
 import { Button } from "src/components/button";
 import { FiX } from "src/components/icons";
 import { InputLabel } from "src/components/inputs/label/label.component";
+import { MultiSelect } from "src/components/inputs/multiselect/multiselect.component";
 import { UTC_NAME, Select, TimezoneSelect } from "src/components/inputs/select";
 import { PanelSectionTitle } from "src/components/panel/panelTypography";
 import { useAvailabilityDimensionsWithValues } from "src/hooks/availability/useAvailabilityDimensionWithValues";
 import { ParsedSkylarkDimensionWithValues } from "src/interfaces/skylark";
 import { parseDateTimeForHTMLForm } from "src/lib/skylark/parsers";
 
-export type AvailabilityDimensionsPickerValues = Record<string, string> | null;
+export type AvailabilityDimensionsPickerValues = Record<
+  string,
+  string
+  // string | string[]
+> | null;
 
 export type TimeTravelPickerValues = {
   datetime: string;
@@ -91,29 +96,55 @@ const AvailabilitySelectors = ({
                 dimensions.length > 3 ? "grid-cols-2" : "grid-cols-1",
               )}
             >
-              {dimensions?.map(({ title, slug, values }) => (
-                <div key={slug} className="w-72">
-                  <InputLabel formatText text={title || slug} isRequired />
-                  <Select
-                    variant="primary"
-                    options={values.map((value) => ({
-                      label: value.title || value.slug,
-                      value: value.slug,
-                    }))}
-                    selected={activeDimensions?.[slug] || ""}
-                    onChange={(updatedValue) =>
-                      setActiveDimensions({
-                        ...activeDimensions,
-                        [slug]: updatedValue,
-                      })
-                    }
-                    disabled={isLoadingDimensions}
-                    placeholder={`Select ${title || slug || "Dimension"} value`}
-                    className="mt-1"
-                    renderInPortal
-                  />
-                </div>
-              ))}
+              {dimensions?.map(({ title, slug, values }) => {
+                // const selectedValues = activeDimensions?.[slug]
+                //   ? typeof activeDimensions?.[slug] === "string"
+                //     ? [activeDimensions?.[slug]]
+                //     : activeDimensions?.[slug]
+                //   : [];
+                return (
+                  <div key={slug} className="w-72">
+                    <InputLabel formatText text={title || slug} isRequired />
+                    <Select
+                      variant="primary"
+                      options={values.map((value) => ({
+                        label: value.title || value.slug,
+                        value: value.slug,
+                      }))}
+                      selected={activeDimensions?.[slug] || ""}
+                      onChange={(updatedValue) =>
+                        setActiveDimensions({
+                          ...activeDimensions,
+                          [slug]: updatedValue,
+                        })
+                      }
+                      disabled={isLoadingDimensions}
+                      placeholder={`Select ${title || slug || "Dimension"} value`}
+                      className="mt-1"
+                      renderInPortal
+                    />
+                    {/* TODO finish Multiselect */}
+                    {/* <MultiSelect
+                      options={values.map((value) => ({
+                        label: value.title || value.slug,
+                        value: value.slug,
+                      }))}
+                      selected={selectedValues}
+                      onChange={(updatedValues) =>
+                        setActiveDimensions({
+                          ...activeDimensions,
+                          [slug]: updatedValues,
+                        })
+                      }
+                      disabled={isLoadingDimensions}
+                      placeholder={`Select ${title || slug || "Dimension"} value`}
+                      hidePlaceholderWhenSelected
+                      className="mt-1"
+                      renderInPortal
+                    /> */}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

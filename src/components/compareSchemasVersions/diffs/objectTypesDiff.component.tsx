@@ -38,7 +38,7 @@ const UnmodifiedObjectTypeSection = ({
                 { name: "Type", property: "originalType" },
                 { name: "Is Required", property: "isRequired" },
               ]}
-              rows={objectMeta.fields.map((field) => ({
+              rows={objectMeta.fields.all.map((field) => ({
                 ...field,
                 id: field.name,
               }))}
@@ -54,6 +54,7 @@ const UnmodifiedObjectTypeSection = ({
                 ]}
                 rows={objectMeta.relationships.map((rel) => ({
                   ...rel,
+                  reverseRelationshipName: rel.reverseRelationshipName || "",
                   id: rel.relationshipName,
                 }))}
               />
@@ -117,6 +118,7 @@ const ModifiedObjectTypeSection = ({
                 id: rel.name,
                 from: rel.baseValue,
                 to: rel.updatedValue,
+                modifiedProperties: [],
               }))}
             />
           </Accordion>

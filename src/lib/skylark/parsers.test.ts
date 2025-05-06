@@ -129,6 +129,10 @@ describe("parseObjectInputFields", () => {
         const [{ type: got }] = parseObjectInputFields(
           objectType,
           [fields] as unknown as IntrospectionField[],
+          {
+            translatable: [fields.name],
+            global: [],
+          },
           {},
         );
         expect(got).toEqual(want);
@@ -153,6 +157,10 @@ describe("parseObjectInputFields", () => {
     const got = parseObjectInputFields(
       objectType,
       [fields] as unknown as IntrospectionField[],
+      {
+        translatable: [fields.name],
+        global: [],
+      },
       {},
     );
     expect(got).toEqual([
@@ -163,6 +171,9 @@ describe("parseObjectInputFields", () => {
         name: "Test",
         type: "boolean",
         originalType: "Boolean",
+        isGlobal: false,
+        isTranslatable: true,
+        isUnversioned: false,
       },
     ]);
   });
@@ -180,6 +191,10 @@ describe("parseObjectInputFields", () => {
     const got = parseObjectInputFields(
       objectType,
       [fields] as unknown as IntrospectionField[],
+      {
+        translatable: [fields.name],
+        global: [],
+      },
       {},
     );
     expect(got).toEqual([
@@ -190,6 +205,9 @@ describe("parseObjectInputFields", () => {
         name: "Test",
         type: "string",
         originalType: "String",
+        isGlobal: false,
+        isTranslatable: true,
+        isUnversioned: false,
       },
     ]);
   });
@@ -207,6 +225,10 @@ describe("parseObjectInputFields", () => {
     const got = parseObjectInputFields(
       objectType,
       [fields] as unknown as IntrospectionField[],
+      {
+        translatable: [fields.name],
+        global: [],
+      },
       {},
     );
     expect(got).toEqual([
@@ -217,6 +239,9 @@ describe("parseObjectInputFields", () => {
         name: "Test",
         type: "string",
         originalType: "String",
+        isGlobal: false,
+        isTranslatable: true,
+        isUnversioned: false,
       },
     ]);
   });
@@ -234,6 +259,10 @@ describe("parseObjectInputFields", () => {
     const got = parseObjectInputFields(
       objectType,
       [fields] as unknown as IntrospectionField[],
+      {
+        translatable: [fields.name],
+        global: [],
+      },
       {
         MyCustomEnum: {
           name: "MyCustomEnum",
@@ -253,6 +282,9 @@ describe("parseObjectInputFields", () => {
         name: "Test",
         type: "enum",
         originalType: "MyCustomEnum",
+        isGlobal: false,
+        isTranslatable: true,
+        isUnversioned: false,
       },
     ]);
   });
@@ -276,6 +308,10 @@ describe("parseObjectInputFields", () => {
       objectType,
       [fields] as unknown as IntrospectionField[],
       {
+        translatable: [fields.name],
+        global: [],
+      },
+      {
         MyCustomEnum: {
           name: "MyCustomEnum",
           kind: "ENUM",
@@ -294,6 +330,9 @@ describe("parseObjectInputFields", () => {
         name: "Test",
         type: "enum",
         originalType: "MyCustomEnum",
+        isGlobal: false,
+        isTranslatable: true,
+        isUnversioned: false,
       },
     ]);
   });
@@ -327,6 +366,10 @@ describe("parseObjectInputFields", () => {
     const got = parseObjectInputFields(
       objectType,
       fields as unknown as IntrospectionField[],
+      {
+        translatable: fields.map(({ name }) => name),
+        global: [],
+      },
       {},
     );
     expect(got).toEqual([]);
@@ -355,11 +398,33 @@ describe("parseObjectRelationships", () => {
     ];
 
     const got = parseObjectRelationships(
+      [
+        {
+          name: "tags",
+          description: " reverse::seasons",
+        },
+        {
+          name: "episodes",
+          description: " reverse::seasons",
+        },
+        {
+          name: "brands",
+          description: " reverse::seasons",
+        },
+      ] as unknown as IntrospectionField[],
       inputFields as unknown as IntrospectionInputValue[],
     );
     expect(got).toEqual([
-      { objectType: "Episode", relationshipName: "episodes" },
-      { objectType: "Brand", relationshipName: "brands" },
+      {
+        objectType: "Episode",
+        relationshipName: "episodes",
+        reverseRelationshipName: "seasons",
+      },
+      {
+        objectType: "Brand",
+        relationshipName: "brands",
+        reverseRelationshipName: "seasons",
+      },
     ]);
   });
 });
@@ -811,48 +876,50 @@ describe("parseInputFieldValue", () => {
 describe("parseMetadataForGraphQLRequest", () => {
   const objectType = "Episode";
 
+  const defaultInputField = {
+    isList: false,
+    isRequired: false,
+    isGlobal: true,
+    isTranslatable: false,
+    isUnversioned: false,
+  };
+
   const inputFields: NormalizedObjectField[] = [
     {
       name: "title",
       type: "string",
       originalType: "String",
-      isList: false,
-      isRequired: false,
+      ...defaultInputField,
     },
     {
       name: SkylarkSystemField.ExternalID,
       type: "string",
       originalType: "String",
-      isList: false,
-      isRequired: false,
+      ...defaultInputField,
     },
     {
       name: "date",
       type: "date",
       originalType: "AWSDate",
-      isList: false,
-      isRequired: false,
+      ...defaultInputField,
     },
     {
       name: "int",
       type: "int",
       originalType: "Int",
-      isList: false,
-      isRequired: false,
+      ...defaultInputField,
     },
     {
       name: "intzero",
       type: "int",
       originalType: "Int",
-      isList: false,
-      isRequired: false,
+      ...defaultInputField,
     },
     {
       name: "floatzero",
       type: "float",
       originalType: "Float",
-      isList: false,
-      isRequired: false,
+      ...defaultInputField,
     },
   ];
 
@@ -959,36 +1026,31 @@ describe("parseMetadataForGraphQLRequest", () => {
         name: "title",
         type: "string",
         originalType: "String",
-        isList: false,
-        isRequired: false,
+        ...defaultInputField,
       },
       {
         name: SkylarkSystemField.ExternalID,
         type: "string",
         originalType: "String",
-        isList: false,
-        isRequired: false,
+        ...defaultInputField,
       },
       {
         name: SkylarkAvailabilityField.Start,
         type: "datetime",
         originalType: "AWSDateTime",
-        isList: false,
-        isRequired: false,
+        ...defaultInputField,
       },
       {
         name: SkylarkAvailabilityField.End,
         type: "datetime",
         originalType: "AWSDateTime",
-        isList: false,
-        isRequired: false,
+        ...defaultInputField,
       },
       {
         name: SkylarkAvailabilityField.Timezone,
         type: "string",
         originalType: "String",
-        isList: false,
-        isRequired: false,
+        ...defaultInputField,
       },
     ];
 
@@ -1037,34 +1099,38 @@ describe("parseMetadataForGraphQLRequest", () => {
 });
 
 describe("parseMetadataForHTMLForm", () => {
+  const defaultInputField = {
+    isList: false,
+    isRequired: false,
+    isGlobal: true,
+    isTranslatable: false,
+    isUnversioned: false,
+  };
+
   const inputFields: NormalizedObjectField[] = [
     {
       name: "title",
       type: "string",
       originalType: "String",
-      isList: false,
-      isRequired: false,
+      ...defaultInputField,
     },
     {
       name: "date",
       type: "date",
       originalType: "AWSDate",
-      isList: false,
-      isRequired: false,
+      ...defaultInputField,
     },
     {
       name: "datetime",
       type: "datetime",
       originalType: "AWSDateTime",
-      isList: false,
-      isRequired: false,
+      ...defaultInputField,
     },
     {
       name: "time",
       type: "time",
       originalType: "AWSTime",
-      isList: false,
-      isRequired: false,
+      ...defaultInputField,
     },
   ];
 
@@ -1125,6 +1191,7 @@ describe("parseUpdatedRelationshipObjects", () => {
   const relationship: SkylarkObjectMetaRelationship = {
     relationshipName: "seasons",
     objectType: "Season",
+    reverseRelationshipName: "episodes",
   };
 
   const parsedRelationship: SkylarkObjectRelationship = {
@@ -1243,7 +1310,11 @@ describe("parseUpdatedRelationshipObjects", () => {
 
   test("returns the correct linked and unlinked uids when relationshipName is not found", () => {
     const result = parseUpdatedRelationshipObjects(
-      { relationshipName: "invalid-relationship", objectType: "season" },
+      {
+        relationshipName: "invalid-relationship",
+        objectType: "season",
+        reverseRelationshipName: "episodes",
+      },
       updatedRelationshipObjects,
       originalRelationshipObjects,
     );
@@ -1251,6 +1322,7 @@ describe("parseUpdatedRelationshipObjects", () => {
       relationship: {
         relationshipName: "invalid-relationship",
         objectType: "season",
+        reverseRelationshipName: "episodes",
       },
       uidsToLink: [],
       uidsToUnlink: [],

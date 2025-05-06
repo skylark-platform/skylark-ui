@@ -7,6 +7,7 @@ import { Button } from "src/components/button";
 import { FiX } from "src/components/icons";
 import { Select, SelectOption } from "src/components/inputs/select";
 import { SkylarkObjectFieldInput } from "src/components/inputs/skylarkObjectFieldInput";
+import { createHtmlForId } from "src/components/inputs/skylarkObjectFieldInputLabel/skylarkObjectFieldInputLabel.component";
 import {
   IntegrationUploader,
   IntegrationUploaderProvider,
@@ -153,12 +154,13 @@ export const PanelMetadata = ({
   objectFieldConfig: objectFieldConfigArr,
   form: { register, getValues, control, formState, aiFieldGeneration },
 }: PanelMetadataProps) => {
-  const { uid, objectType } = object;
+  const { uid, objectType, language } = object;
 
   const {
     systemMetadataFields,
-    translatableMetadataFields,
-    globalMetadataFields,
+    // translatableMetadataFields,
+    // globalMetadataFields,
+    nonSystemMetadataFields,
   } = useMemo(() => {
     const options = OBJECT_OPTIONS.find(({ objectTypes }) =>
       objectTypes.includes(objectType),
@@ -166,14 +168,15 @@ export const PanelMetadata = ({
 
     return objectMeta
       ? splitMetadataIntoSystemTranslatableGlobal(
-          objectMeta.fields.map(({ name }) => name),
+          objectMeta.fields.allNames,
           objectMeta.operations.update.inputs,
-          objectMeta.fieldConfig,
+          objectMeta.fields.translatableNames,
           objectFieldConfigArr,
           options,
         )
       : {
           systemMetadataFields: [],
+          nonSystemMetadataFields: [],
           translatableMetadataFields: [],
           globalMetadataFields: [],
         };
@@ -191,18 +194,26 @@ export const PanelMetadata = ({
       metadataFields: systemMetadataFields,
     },
     {
-      id: "translatable-metadata",
-      title: "Translatable Metadata",
-      htmlId: "panel-section-translatable",
-      metadataFields: translatableMetadataFields,
+      id: "non-system-metadata",
+      title: "Metadata",
+      htmlId: "panel-section-non-system",
+      metadataFields: nonSystemMetadataFields,
     },
-    {
-      id: "global-metadata",
-      title: "Global Metadata",
-      htmlId: "panel-section-global",
-      metadataFields: globalMetadataFields,
-    },
+    // {
+    //   id: "translatable-metadata",
+    //   title: "Translatable Metadata",
+    //   htmlId: "panel-section-translatable",
+    //   metadataFields: translatableMetadataFields,
+    // },
+    // {
+    //   id: "global-metadata",
+    //   title: "Global Metadata",
+    //   htmlId: "panel-section-global",
+    //   metadataFields: globalMetadataFields,
+    // },
   ].filter(({ metadataFields }) => metadataFields.length > 0);
+
+  const fields = sections.flatMap((section) => section.metadataFields);
 
   const uploadSection = {
     id: "image-upload",
@@ -210,10 +221,12 @@ export const PanelMetadata = ({
     title: "Upload",
   };
 
-  const sideBarSections = sections.map(({ id, title, htmlId }) => ({
-    id,
-    title,
-    htmlId,
+  const sideBarSections = fields.map(({ field, config }) => ({
+    id: field,
+    title: field,
+    htmlId: config
+      ? createHtmlForId("panel-metadata", field)
+      : `panel-metadata-${field}`,
   }));
 
   const [showHistory, setShowHistory] = useState(false);
@@ -288,6 +301,12 @@ export const PanelMetadata = ({
                             ? aiFieldGeneration
                             : undefined
                         }
+                        labelProps={{
+                          language:
+                            objectMeta?.fields.translatableNames.includes(field)
+                              ? language
+                              : undefined,
+                        }}
                       />
                     );
                   }

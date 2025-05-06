@@ -20,8 +20,8 @@ describe("getObjectOperations", () => {
     expect(got.name).toEqual("SkylarkAsset");
 
     // Check fields
-    expect(got.fields.length).toBe(19);
-    expect(got.fields).toContainEqual({
+    expect(got.fields.all.length).toBe(19);
+    expect(got.fields.all).toContainEqual({
       enumValues: undefined,
       isList: false,
       isRequired: true,
@@ -29,7 +29,7 @@ describe("getObjectOperations", () => {
       type: "string",
       originalType: "String",
     });
-    expect(got.fields).toContainEqual({
+    expect(got.fields.all).toContainEqual({
       enumValues: undefined,
       isList: false,
       isRequired: false,
@@ -37,25 +37,23 @@ describe("getObjectOperations", () => {
       type: "string",
       originalType: "String",
     });
-    expect(got.fieldConfig).toEqual({
-      global: [
-        "provider",
-        "internal_title",
-        "title_sort",
-        "type",
-        "url",
-        "ingest_file",
-        "release_date",
-        "hls_id",
-        "hls_url",
-        "hls_dashboard",
-        "dash_id",
-        "dash_url",
-        "dash_dashboard",
-        "status",
-      ],
-      translatable: ["title", "slug", "duration"],
-    });
+    expect(got.fields.globalNames).toEqual([
+      "provider",
+      "internal_title",
+      "title_sort",
+      "type",
+      "url",
+      "ingest_file",
+      "release_date",
+      "hls_id",
+      "hls_url",
+      "hls_dashboard",
+      "dash_id",
+      "dash_url",
+      "dash_dashboard",
+      "status",
+    ]);
+    expect(got.fields.translatableNames).toEqual(["title", "slug", "duration"]);
     expect(got.isTranslatable).toBeTruthy();
 
     // Check relationships
@@ -139,8 +137,8 @@ describe("getObjectOperations", () => {
     expect(got.name).toEqual("SkylarkSet");
 
     // Check fields
-    expect(got.fields.length).toBe(12);
-    expect(got.fields).toContainEqual({
+    expect(got.fields.all.length).toBe(12);
+    expect(got.fields.all).toContainEqual({
       enumValues: undefined,
       isList: false,
       isRequired: true,
@@ -148,7 +146,7 @@ describe("getObjectOperations", () => {
       type: "string",
       originalType: "String",
     });
-    expect(got.fields).toContainEqual({
+    expect(got.fields.all).toContainEqual({
       enumValues: undefined,
       isList: false,
       isRequired: false,
@@ -156,17 +154,20 @@ describe("getObjectOperations", () => {
       type: "string",
       originalType: "String",
     });
-    expect(got.fieldConfig).toEqual({
-      global: ["internal_title", "type", "title_sort", "release_date"],
-      translatable: [
-        "slug",
-        "title",
-        "title_short",
-        "synopsis",
-        "synopsis_short",
-        "description",
-      ],
-    });
+    expect(got.fields.globalNames).toEqual([
+      "internal_title",
+      "type",
+      "title_sort",
+      "release_date",
+    ]);
+    expect(got.fields.translatableNames).toEqual([
+      "slug",
+      "title",
+      "title_short",
+      "synopsis",
+      "synopsis_short",
+      "description",
+    ]);
     expect(got.isTranslatable).toBeTruthy();
 
     // Check relationships
@@ -244,8 +245,8 @@ describe("getObjectOperations", () => {
     expect(got.name).toEqual("Availability");
 
     // Check fields
-    expect(got.fields.length).toBe(7);
-    expect(got.fields).toContainEqual({
+    expect(got.fields.all.length).toBe(7);
+    expect(got.fields.all).toContainEqual({
       enumValues: undefined,
       isList: false,
       isRequired: true,
@@ -253,7 +254,7 @@ describe("getObjectOperations", () => {
       type: "string",
       originalType: "String",
     });
-    expect(got.fields).toContainEqual({
+    expect(got.fields.all).toContainEqual({
       enumValues: undefined,
       isList: false,
       isRequired: false,
@@ -261,18 +262,25 @@ describe("getObjectOperations", () => {
       type: "datetime",
       originalType: "AWSDateTime",
     });
-    expect(got.fieldConfig).toEqual({
-      global: [
-        "uid",
-        "external_id",
-        "title",
-        "slug",
-        "start",
-        "end",
-        "timezone",
-      ],
-      translatable: [],
-    });
+    expect(got.fields.allNames).toEqual([
+      "uid",
+      "external_id",
+      "title",
+      "slug",
+      "start",
+      "end",
+      "timezone",
+    ]);
+    expect(got.fields.globalNames).toEqual([
+      "uid",
+      "external_id",
+      "title",
+      "slug",
+      "start",
+      "end",
+      "timezone",
+    ]);
+    expect(got.fields.translatableNames).toEqual([]);
     expect(got.isTranslatable).toBeFalsy();
 
     // Check relationships
@@ -313,7 +321,7 @@ describe("getObjectOperations", () => {
     );
     expect(got.availability).toBeTruthy();
     expect(got.availability?.name).toEqual("Availability");
-    expect(got.availability?.fields.length).toEqual(7);
+    expect(got.availability?.fields.all.length).toEqual(7);
   });
 
   test("returns images for an SkylarkAsset", () => {
@@ -331,7 +339,7 @@ describe("getObjectOperations", () => {
       "SkylarkImage",
     );
     expect(
-      got.builtinObjectRelationships?.images?.objectMeta.fields.length,
+      got.builtinObjectRelationships?.images?.objectMeta.fields.all.length,
     ).toEqual(14);
   });
 
@@ -363,6 +371,6 @@ describe("getAllObjectsMeta", () => {
     ]);
     expect(got.length).toEqual(1);
     expect(got[0].name).toEqual("Episode");
-    expect(got[0].fields.length).toEqual(12);
+    expect(got[0].fields.all.length).toEqual(12);
   });
 });

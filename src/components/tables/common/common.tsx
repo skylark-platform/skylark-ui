@@ -2,7 +2,10 @@ import clsx from "clsx";
 import { ReactNode } from "react";
 import { FiCheck, FiX } from "react-icons/fi";
 
-export type TableData = Record<string, string | boolean | number | string[]>;
+export type TableData = Record<
+  string,
+  string | boolean | number | string[] | null
+>;
 
 export interface BaseTableProps<TData extends TableData> {
   columns: { property: keyof TData; name: string }[];

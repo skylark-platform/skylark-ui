@@ -67,7 +67,7 @@ export const createSearchObjectsQuery = (
               __typeName: object.name,
               __typename: true, // To remove the alias later
               ...generateFieldsToReturn(
-                object.fields,
+                object.fields.all,
                 object.name,
                 true,
                 `__${object.name}__`,

@@ -4,15 +4,8 @@ import { ColourPicker } from "src/components/inputs/colourPicker";
 import { TextInput } from "src/components/inputs/input";
 import { Select } from "src/components/inputs/select";
 import { ObjectIdentifierCard } from "src/components/objectIdentifier";
-import {
-  SkylarkSystemField,
-  AvailabilityStatus,
-  SkylarkObjectMeta,
-} from "src/interfaces/skylark";
-import {
-  convertParsedObjectToIdentifier,
-  createDefaultSkylarkObject,
-} from "src/lib/skylark/objects";
+import { SkylarkSystemField, AvailabilityStatus } from "src/interfaces/skylark";
+import { createDefaultSkylarkObject } from "src/lib/skylark/objects";
 
 import {
   ContentModelEditorForm,
@@ -24,23 +17,25 @@ import {
 } from "./common.component";
 
 interface UIConfigSectionProps {
+  objectType: string;
   form: UseFormReturn<ContentModelEditorForm>;
-  objectMeta: SkylarkObjectMeta;
 }
 
-export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
-  const fieldSections = form.watch("fieldSections");
-  const { objectTypeDisplayName, primaryField, colour } =
-    form.watch("uiConfig");
+export const UIConfigSection = ({ form, objectType }: UIConfigSectionProps) => {
+  const { uiConfig, fields, isNew } = form.watch(`objectTypes.${objectType}`);
 
   return (
     <SectionWrapper data-testid="uiconfig-editor">
       <SectionHeader>UI Config</SectionHeader>
-      <SectionDescription>
-        Control how data for this Object Type is displayed in the UI including
-        field order and UI field type.
-      </SectionDescription>
-      <div className="flex flex-col md:grid md:space-x-8 max-md:space-y-8 grid-cols-2 text-sm text-manatee-600">
+      <div className="">
+        <SectionDescription>
+          Control how objects of this Object Type are displayed in the UI.
+        </SectionDescription>
+        {/* <SectionDescription>
+          It is unversioned and is based on fields in the active content model.
+        </SectionDescription> */}
+      </div>
+      <div className="flex flex-col lg:grid md:gap-8 grid-cols-2 text-sm text-manatee-600">
         <div className="grid grid-cols-3 w-full items-center auto-rows-fr gap-x-2 mt-4 gap-y-1">
           <FieldHeader
             className="col-span-1"
@@ -48,37 +43,46 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
           >
             Display name
           </FieldHeader>
-          {/* <p className="text-black">{objectTypeDisplayName}</p> */}
           <div className="col-span-2">
             <TextInput
-              value={objectTypeDisplayName}
+              disabled={isNew}
+              value={uiConfig?.objectTypeDisplayName || ""}
               onChange={(str) =>
-                form.setValue("uiConfig.objectTypeDisplayName", str, {
-                  shouldDirty: true,
-                })
+                form.setValue(
+                  `objectTypes.${objectType}.uiConfig.objectTypeDisplayName`,
+                  str,
+                  {
+                    shouldDirty: true,
+                  },
+                )
               }
-              placeholder={objectMeta.name}
+              placeholder={objectType}
             />
           </div>
           <FieldHeader className="col-span-1" tooltip={uiDisplayFieldTooltip}>
             Display field
           </FieldHeader>
-          <Select
-            className="col-span-2"
-            variant="primary"
-            options={[
-              ...fieldSections.system.fields,
-              ...fieldSections.translatable.fields,
-              ...fieldSections.global.fields,
-            ].map(({ field }) => ({ label: field.name, value: field.name }))}
-            placeholder=""
-            selected={primaryField || SkylarkSystemField.UID}
-            onChange={(value) =>
-              form.setValue("uiConfig.primaryField", value, {
-                shouldDirty: true,
-              })
-            }
-          />
+          <div className="col-span-2">
+            <Select
+              variant="primary"
+              options={fields.map(({ name }) => ({
+                label: name,
+                value: name,
+              }))}
+              placeholder=""
+              disabled={isNew}
+              selected={uiConfig?.primaryField || SkylarkSystemField.UID}
+              onChange={(value) =>
+                form.setValue(
+                  `objectTypes.${objectType}.uiConfig.primaryField`,
+                  value,
+                  {
+                    shouldDirty: true,
+                  },
+                )
+              }
+            />
+          </div>
           <FieldHeader
             className="col-span-1"
             tooltip="Colour to represent the Object Type in the UI. Useful to identify an Object Type at a glance."
@@ -87,9 +91,14 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
           </FieldHeader>
           <div className="col-span-2">
             <ColourPicker
-              colour={colour || ""}
+              disabled={isNew}
+              colour={uiConfig?.colour || ""}
               onChange={(colour) =>
-                form.setValue("uiConfig.colour", colour, { shouldDirty: true })
+                form.setValue(
+                  `objectTypes.${objectType}.uiConfig.colour`,
+                  colour,
+                  { shouldDirty: true },
+                )
               }
             >
               <span className="group-hover/colour-picker:text-brand-primary text-xs group-hover/colour-picker:underline text-manatee-400">
@@ -97,13 +106,6 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
               </span>
             </ColourPicker>
           </div>
-          <FieldHeader
-            className="col-span-1"
-            tooltip="Controls the display order of fields in the UI. System fields cannot be reordered."
-          >
-            Order
-          </FieldHeader>
-          <p className="col-span-2">Drag the fields below to reorder.</p>
         </div>
         <div className="flex justify-center items-center">
           <div
@@ -115,12 +117,12 @@ export const UIConfigSection = ({ form, objectMeta }: UIConfigSectionProps) => {
               forceConfigFromObject
               className="shadow px-2"
               object={createDefaultSkylarkObject({
-                objectType: objectMeta.name,
+                objectType,
                 uid: "example",
                 display: {
-                  colour,
-                  objectType: objectTypeDisplayName,
-                  name: `Example "${primaryField}" value`,
+                  colour: uiConfig?.colour || "",
+                  objectType: uiConfig?.objectTypeDisplayName || objectType,
+                  name: `Example "${uiConfig?.primaryField || SkylarkSystemField.UID}" value`,
                 },
                 availableLanguages: [],
                 availabilityStatus: AvailabilityStatus.Active,
